@@ -1,167 +1,532 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2072.outbound.protection.outlook.com [40.107.104.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DCC7224C6
-	for <xenomai@lists.linux.dev>; Wed, 20 Mar 2024 07:42:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D96D7224F2
+	for <xenomai@lists.linux.dev>; Wed, 20 Mar 2024 07:42:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.104.72
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1710920542; cv=fail; b=cSPsT8K4IXUFq414LJa/ZTn4FS18utN5UvV5bXXRXIwQqh7Rqoy2/WKEo5PSvcQ864DdjbXcHKhAqlaRuURr7gc3AL7dgrvLkD7U+ofOa1kulkI6gTTQ02k9eerUFXy0JCxu08WGS3bouEmb7mOMTgqq3/9QKmQ6zOy4nybY6Hc=
+	t=1710920548; cv=fail; b=JWkqzY7R7tGX4Wa+Y/p9OUhgwMyt2bzfMLDZwhD8pqUUZaL54barsAD4JqmTH1erWR6QUsBiJyaw8c/JWxzbMteg+t/6wwKuvyJcggCfIi89hbofxBECntT9FI6uS2NPl45zsqEyGrzvOet4y+NVjcqEeIweAdxmiGswhkWeicc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1710920542; c=relaxed/simple;
-	bh=Ybqmq6oW6fNysvoXJoNAWX/CepAYocQtao/IVJmQq+w=;
-	h=From:To:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=Svkj6x19r61/R0czRFSww4XIwrqebHGXXImFwLbyZScakhB2GW+Wg0b4GB1PUZfc2EjmDuiRV1TY4RfOAZYY1ZEcO/tmV7TV6x55egyTTuPYBJspPXHyBzWVqc+UOY6L4YIYTpM5K/g6TG21cz6NJElwIRe62H2/UrJkZDih5dw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nfJAi7GL; arc=fail smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1710920548; c=relaxed/simple;
+	bh=0rsps88cWuHNTwMGqgA4JpN+CpXIiwXU8cSmECP2Bfs=;
+	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=IzuX3lTHrG5Jv1VvKLfCnBsdqPWtoMd+nVzAh7EpqRBp67aLCRB4pl2sl+zFUUpvuSQ12Xza/6L5OZ7F+2lpg1ehLqsNp/4GgjXtpTqorh6y5rLhYZ5ruFdiynIjXqqplwnpmWkmVvFm+TJLHUN5LxXGes9M1sS7kGZfM1UYs/E=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=vIFk5odG; arc=fail smtp.client-ip=40.107.104.72
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nfJAi7GL"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1710920540; x=1742456540;
-  h=from:to:subject:date:message-id:references:in-reply-to:
-   content-transfer-encoding:mime-version;
-  bh=Ybqmq6oW6fNysvoXJoNAWX/CepAYocQtao/IVJmQq+w=;
-  b=nfJAi7GLnbTsZq1NRjOmD6rETtTlZtZ7+sSgW+bOcIqGYE0eAcPs4Fze
-   F+ScJBYBd1aj8AvSdZzWvNF4cQyXZ5IUiEXj+FmrYWa4bc+G4Q7TRrpj2
-   FbpSTgPsWP4bwk4uaTvUvbY1FXm+wAoZ+9VJp6yV+QbzkMo7oXSjXD5gS
-   gXgnGGBEZaBRFLtI1f8i+pcWvQO2N9elsa1GWBuPDzWdfEd3ltaH2MNHQ
-   b88e9njywrGMylmASISEK+FJkyOGjttp/K8ibaCQtCXo8AyPj8uae3JuE
-   JCaG9dBH8q+4ovXGCdGS8YyYZnx6gTzurrKDK0DchYd106kAAI0fYqxLO
-   A==;
-X-IronPort-AV: E=McAfee;i="6600,9927,11018"; a="5677501"
-X-IronPort-AV: E=Sophos;i="6.07,139,1708416000"; 
-   d="scan'208";a="5677501"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2024 00:42:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.07,139,1708416000"; 
-   d="scan'208";a="45039477"
-Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
-  by orviesa002.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 20 Mar 2024 00:42:19 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Wed, 20 Mar 2024 00:42:18 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35; Wed, 20 Mar 2024 00:42:18 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.35 via Frontend Transport; Wed, 20 Mar 2024 00:42:18 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
- by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Wed, 20 Mar 2024 00:42:18 -0700
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="vIFk5odG"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bC3ZsHXqQ0WJnKZQgxi5nqoqb9R49MqjlXQfs8sqyDZ/zoBZrbThHY49lx5hNY0vRwzmo+/dlgUMG4uIYVjKteksTpPDJPLjwAGdqorEQw1t3WfNl3lm1DA4DV24A92zyiJz5OAvwdw8uoJoyEmhK6YfSd4gXxRgM+Ubw63b0TAwnMkiXVMndYzrOCHnEbBHmBIlEsQIDtt0k/4r/n+DSeg+rmYHJPoeXfCgQMSJbdFYwvwsU7BjptlKzECFQYr3ALJHMU4q4lrHBNrol/kwX3rnXkyqh88LVvUdITD+4ICKJEa5qVfjhgUdZO+syYE3/Ez/zSVAn5IxNv8Xz5ftSA==
+ b=SCaJVp0HhP5NN5PzQVjt79mzWCXm81lUFBd/LIR6h+OGm7keiLm4Ik9zqzwSCtTHXAQufDuBVMoEnECoW3uh7VGjU1p4RpItHpUOAoPFaOFTQPEdFRAR5cdkqL2R4HalVikbgiBE56YN9zJzX5cShn7qP9KCxQrrwoLk1PykV1lp9nbi0oQcXe7sKt0OY2dk3RrKgn9WMydfPA3NTs+dH41AJT5E7JNMjZRDICyUUNHBhUwR7gLvi/glm9nMH38SrYF1Jj9JUKt8IfwZ6gf7WnPt3YzrxCMyPskUkOMiAtAZ7p3Z7SWHfX1wZpMZ67IOQXwPHTCqKDrF6cg/hnsSmQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ybqmq6oW6fNysvoXJoNAWX/CepAYocQtao/IVJmQq+w=;
- b=LOhx0QZePNYwAVBcP2gonYRFqzzxLOQZ3OcOWTiI+X+aAJaJsHVHdyvaZUh4BM9czAOHXfm5Ya0Nj5HmYL1wsdDiy8MlbGYyP35RlTUJvgjqvJya7N2Q6jJL/lOORkf1knJ+RZWF6RNSScfyEZYVinV+NTidt+Jgy+MjDt2IAYaE6shZpACykAWE1C0/8uAYqv/y4tpNZ4DFLtCHD51zhAjQZ+HcAsYPNLMjjXS1sZbHM1iEZcp+pfoF40ah8/vaWmp5EP9gV4v3p5XD5E1JVCG6Epa1wPkxbFdB0DgXTvf5RHK+We1Pax/Y0ZtcCaYB0cdwAPkki+YgiquxUQVgAg==
+ bh=EKBLVb5WMUZvIlkGeclAW8GfMhSkz6+7LuZWKYyasTc=;
+ b=Q4DjKAiSWgg+n23Q883xT6734ZMwSS8INeZ8MFAKWr0SAOhGBsMg0jF4WT6ZO5X7bP9rnsSl4R9kg5Nlf/Lydxp/fysU7c78zUXyjcKMPae8i2lPlaLXsN1gY9e5fZOrpgnqCugb23bw8AfDOWE2f+y8IMfT4rQ4D6zNiPKMymaeBfUjOqt18m8IJALxTJSDQLXDxi8su6hDDm5cPHAzROU4geMnGqvQx0mNjkbHmrRNGJj/MYG6asc+LyWvi5kvqiUxnCkOt6PsiRv7ygDe4BMmO9iS0zi0WK/D+8LJDR6jLywtvfOVqEIyCtz/4+wihIuMh2ZcQK8vBqiKWr+8YA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from PH7PR11MB7499.namprd11.prod.outlook.com (2603:10b6:510:278::12)
- by SN7PR11MB8281.namprd11.prod.outlook.com (2603:10b6:806:26b::20) with
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EKBLVb5WMUZvIlkGeclAW8GfMhSkz6+7LuZWKYyasTc=;
+ b=vIFk5odGH7UIXIOoJCsyMSCVQ2hhsj3s8ICojKTcRGgSEUA7VK8v+2btqBjCLskLVUzByQfNhndyHvTvRgTvL9G7mNJoxfmcTMBCFla+Rxnn7fqhten2culmedJnf1W9xI18+r5Pyu3c/R16+j5j36822UerWdVzgJWTcTlnbKMGDg+8VPBoa9+QOc8lRciWBwJIDnkoGXiNhoYAyUVREgo+mfPelHgCCJ+OZCno4cf0jdP56f1pmHxb1tABVY5M00WfCLeDe1JlAFNz8yQy1nuJeGmQeie0CPYpciTNeF6pdBp+9/zwA9SKieHHztPKaGH8bfgK4QYVlePvLJJDUA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by VI1PR10MB3696.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:800:139::23) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7386.17; Wed, 20 Mar
- 2024 07:42:16 +0000
-Received: from PH7PR11MB7499.namprd11.prod.outlook.com
- ([fe80::19d6:5ade:3ea:583d]) by PH7PR11MB7499.namprd11.prod.outlook.com
- ([fe80::19d6:5ade:3ea:583d%3]) with mapi id 15.20.7409.010; Wed, 20 Mar 2024
- 07:42:16 +0000
-From: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: Xenomai Community Call Minutes - Mar 20, 2024
-Thread-Topic: Xenomai Community Call Minutes - Mar 20, 2024
-Thread-Index: AQHaepoh3+5Q0P7sh0KMLphr5tzLYg==
-Date: Wed, 20 Mar 2024 07:42:16 +0000
-Message-ID: <PH7PR11MB7499EACD21DC834251DCFBD8F2332@PH7PR11MB7499.namprd11.prod.outlook.com>
-References: <PH7PR11MB7499F7DDE006A3A7291F61FAF27B2@PH7PR11MB7499.namprd11.prod.outlook.com>
- <PH7PR11MB749929DFFDCFE47376883636F2572@PH7PR11MB7499.namprd11.prod.outlook.com>
- <PH7PR11MB7499F4FFFC62E15096DFF8D3F2562@PH7PR11MB7499.namprd11.prod.outlook.com>
- <PH7PR11MB749910600BAF97BCB41DC3D3F2202@PH7PR11MB7499.namprd11.prod.outlook.com>
-In-Reply-To: <PH7PR11MB749910600BAF97BCB41DC3D3F2202@PH7PR11MB7499.namprd11.prod.outlook.com>
-Accept-Language: en-US
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7386.28; Wed, 20 Mar
+ 2024 07:42:22 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::4e33:3630:e08:77b9]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::4e33:3630:e08:77b9%4]) with mapi id 15.20.7386.025; Wed, 20 Mar 2024
+ 07:42:21 +0000
+Message-ID: <f3da1356-8a59-4bc7-b10c-aafa615e4c9e@siemens.com>
+Date: Wed, 20 Mar 2024 08:42:21 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] testsuite: smokey - new testcase
+ pi_nesting_contend_multicore
 Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH7PR11MB7499:EE_|SN7PR11MB8281:EE_
-x-ms-office365-filtering-correlation-id: da7e0c35-6a3c-43a3-50f3-08dc48b143fd
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: DrMobw2aMjvxJoGJqhFgf4zKtfUrl3cz2gWdKpp+yBKmJo60QhpDnBLWExHiusnaeHmRqGH8Os/bDuIUlEAtwCcB7XnCd9UIQsqJvDKdtV98/bHz0nBcJKo9ilkB1TrYeRjwXL2UnHuWXNTZClDX46ZIqzwczpIBDGll4G/8HFz+hs+P5KKQi/oY+0Sl3ZR5SaKk/nQSlqYvY7vm09tlvY3/BbqIrfLWx84crC53A0fyPslN9W+V/bjIlfZez84s+08nqCRkIcc3JKtobyvoouLZFiMJeLzYSbULUoENJSPU9vsucRUzKKj+HjOd2lE/hwyRxmflpOW2hRTqkaqUcA0++84p9VRMRZkjyCTsNepw3EDXmVxPpcWKRNK0TYVqH5Mzxmp496caViNg6fuxHMrvDZIJOtGnkqX2IgufssD6rLfio7PTE3BXmWp1ys8DFT8MJKnZch2DS/eg7uUyRLKQWsI7XKv1LNBQoQJVxTpRFhk6Dvm1kumseczRgb70Kkk1L6JAtdgag52pqA5n6zBabjD8oJl/3F3xxcAZuA9+gjyg7bi5RiZiqEB6d4PHq+KgtWzzKWC9hmj/3NDR1gcAvQ+m1TB1VeMg3zJCIBFXN4f0Fb2KubnceY9m3k7pMcgLnNi3VAAgCGBbCmWTmogvfjp8dHyA2jDenrlv20MT3I1OSTedJDVXKoUBUo8AcmuIiCqd8d7nZerqTNytkA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH7PR11MB7499.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(376005)(366007)(1800799015)(38070700009);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?TTE1a0VzZ0NHRm5lUlVnMG9PZjJGb0VhRERIQ3p2Vkx1M1NLcmt3b05oNEll?=
- =?utf-8?B?VGVlSGFuRExuY29rOTdaODJOVU91MjN5a2R6N2N1MkwxTCtFRUlub0ZqbDAz?=
- =?utf-8?B?UW1WNm9rc3ljQkdWRjFLRFAzWUVTOTdUNFJwaFVHcEZ0YTlLL01FR2ZCN0s2?=
- =?utf-8?B?OTNRREE4VXkydlk1MkJrZWdLdDBFY2FLOEg4elNHMjkrR1dkL1BKYnE3aFE2?=
- =?utf-8?B?alRqeTFuYld3TS9TdWl0R1R3VDg5WGJ1a3BlZ0syaFJka3VLd0szcFE0cWow?=
- =?utf-8?B?a3k4eGhWZno0a1l2cU1ReENJUTcvbmNOMU1wT3dqTUNsdmtReVhxQjlWMHBv?=
- =?utf-8?B?aGpvR3MrNHJTWitLcExBcHdHS0xZK2dzaEIvVXd1ZDNXYTY3Mys2TUVVN0Fv?=
- =?utf-8?B?NnQzVkh0dHJmWUZ2MjhoSzJlb05uZDFkSnBud2ZvQTF3aTRVbXF5eEQrejNx?=
- =?utf-8?B?bEd4M2UweE1sazRUdHljamI5dXpaZzNDY1dudlZCRGVYRmpSeHdnc3lIL285?=
- =?utf-8?B?cTJ3OGdMOFpFd1F4RGZ3bURKREFZYkI4UGlBdU1lazI3QzQ5Z3prQitBQ3dM?=
- =?utf-8?B?Y1J3SUFMWHJuNndwVHZWekt6NnkyWWFDL3JsM1F5enBRYTBMdEM4SG1qRjZE?=
- =?utf-8?B?SEkxemJ2T0NnN3JleWkveEFjQzRmRWlFRDl1dW80SjlETUI2czVBa29USWdq?=
- =?utf-8?B?WmZxT240WmlPcFRqSGlBWjVIQjRMcWh4Q2lKRDl6SlFuOXg0eWZuVWZYR1Bj?=
- =?utf-8?B?aUNHWXgxWUduL0Jvakc0ZkMzSVNvRjc1T2huYmY5TTIvdjUwWWFHYVlvaU9m?=
- =?utf-8?B?R3pWY1R3VjNRcnZkNVR1NWF1V3BsQk85L08weEllejdZbEc4L1ZEZXdpbnJn?=
- =?utf-8?B?QktNRitEZXJHT0RLSDZUNXAzdnhWeHFDYVJqc1NwNG5OcXNqUW85bUREWXpK?=
- =?utf-8?B?dXRROTZ5a05ZZy93YUJTZUpSQnJESDE5bjB6S0t4TzAvZll1SDU3RWNFam5T?=
- =?utf-8?B?ckNuQ2U2dlRPK3RyQUJSMG1wNEh0b0wwQXQ5bzJIS05Rb3dHVWdDQ0JZT3Jo?=
- =?utf-8?B?TE5TM2hxWEw2SUV5VUdWeXNJRDBwVW5uMnV0WUpwRzRReWlFN3F2b05aUXU0?=
- =?utf-8?B?SEY3MVc1VzJWM2hkb3cvbzNETUc3QmEzNnp2d0hkQkY3ZFpkQmduWkZyU1lU?=
- =?utf-8?B?U0lzTUpZckxKdjU3T0kvUTdiQm13dWFkWjArbTlHM0ZPMkZ6SWtTZUR1RGhw?=
- =?utf-8?B?Mkt3ZEpQcy9LYjVvS0xmZmJCajN6UlNQeHFURG5GVnNQZ1BMd21BdW03alpY?=
- =?utf-8?B?VlVPWitVb1FnWW5Ubk1DRHg4RHlKcnZXb0dxbjdtRWh5ZUlYOFFEQlM1UURt?=
- =?utf-8?B?YlRuR2tsKzhxWmlIa1NvMWQ4dm9rdHc1VUxLVWNOOFVZT3NSM0lNNkhLeU54?=
- =?utf-8?B?aS9wZ1ZQb2llRXRSY3VEQ2oySGRmeUk1SCtDZlhYTGU5RTNpT3JybitxbVJO?=
- =?utf-8?B?Zm5uTnBFMVdRaUVsOU9kb0hPVUFmaG1hcHlHbWdTd2pzOGxWbVFEMUtYZkpU?=
- =?utf-8?B?Tm9HbHVFcksrS0JNakFDWVZUc3BEelI0NlNkSDBEdUdnVE1waGQyeGFmVXl2?=
- =?utf-8?B?V2lYeExxdWh1RFB2K2IzZUR4WVlVWGpoemVBQTBML0lBMEVJdkR4elhvL3Bl?=
- =?utf-8?B?Zm1uRDZzdnNubzRSaWtaeU1mblhMT296SmdkekVXNWJaa2RPTHBXdkxMcHFu?=
- =?utf-8?B?ditqOEMrZ1VWb3ZESWdMa000aXMvUmc3anNGclFkZUFXdGxsd1l4T084WVIx?=
- =?utf-8?B?U3lGQUVSSW9PSmxLdTdKRTNDSmRlMXBiMEVVaTRmdkdod2lRaWJxdStka2pi?=
- =?utf-8?B?amdQV0xpbkZ6aStISnhhbUJZSGlxdmNVTit1eUJqOEtmc294ZFJJc2dLK0x2?=
- =?utf-8?B?VDgwRmpaeTZZK280Y0tGUENOTERBbmplQTROQ1p1b0NUOGJSMlhPNGkvN3p5?=
- =?utf-8?B?bjc1K1NWK2Z2NTZIR3h0VmhkeDNDQ1hjTUFHV2hROXMxMnpmMG8zUFpPM3dJ?=
- =?utf-8?B?RFBvbmUxUk0vTkMwREdNNFBLY2JWWi9TdGFUemdzSkQyV0psUjdFdnZhaWwz?=
- =?utf-8?Q?9Ge7lMOXmXAxMCQlXoyEh36Wr?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+To: Fabian Scheler <Fabian.Scheler@siemens.com>, xenomai@lists.linux.dev
+References: <df16b465-e1b3-4783-ab0d-749bbdc0f802@siemens.com>
+ <20240314131927.27417-1-Fabian.Scheler@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <20240314131927.27417-1-Fabian.Scheler@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR4P281CA0446.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:c6::12) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|VI1PR10MB3696:EE_
+X-MS-Office365-Filtering-Correlation-Id: 353fc947-1670-4e19-f638-08dc48b14709
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info:
+	psX3LU22X4d5IH6ISL5rak414bV+lJOXvZPU2VlFUgQH+QgLfriDjiYRt8IhS+/CflZIY3iewByw6AotpwgJllfAhETj5mFaHsfbD8LT9+nCsPjfyop79l0pcFa8KxdQB2HSJi8nImXhq98FUEOapi1+a5vhajBKlKxIc9GQYWj2Vju0s79huv0cZUBlsnqXhBtHKAIOihv/oTakStuWwevzbcHsLb9DjX9VuhMxPGhutqGCidvhU1w3LATrUafmCuhOUU+JnXzzXdrTgArCKe0D/PmOra6fRhoqZabPKdtv3OV7K1kztq9C9STgsIVcb232Wpb8oug/hIEQFBBYlow7fqntki9rH5D1EFLLjx3SmXdoZrghHeEb0zru7F7NDl/YZMXFUdnW7rRmtiJY0TqP9brvOFetE+x3FWwb2cTRQJ4matHOj0yG9CCUQCfVNgNeM0IQ1qwnpseuEyIyE1biKfoy/x8sOqiAX/sC08Uk1XwsMF7aV1pLC7M78bLCxHYTEmjCXkCLOna9o2U0G+Ti6lfz9FsCZTx7fBQOPJUwULnvM1IKCinTZxPpCysAyyiY2dzQiCbKIi7E7+eQi7jUUdSHlwsIcSIwYc5rt4o/CR+Wj+rVsY7B+doZu1r7378IgUYgEwJAV8lj3vyzaLVl4fV1PMbJhaGwKh6JXWA=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(376005)(366007)(1800799015);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?a3JGM01aZDFVNlI4TDlqNlNhVWhtdDB4QWNWaUt6bDM4WVNGbkY0cmZJOTRt?=
+ =?utf-8?B?dXR1OVkwNG0rOU9BdUVXYk5FZFRFNERoQ01TakhXeGVSbFg4MVRXcE9sdjJF?=
+ =?utf-8?B?S3FGSWVnNGdjbC9JaWQzWVJZUnZNNUFIcjJSdnRhV3JwWUpQZTU1aXNVWHQx?=
+ =?utf-8?B?UlBRcEJ5d2VycFplWDgwbTA5c2k5VGNIMlhyb2oxWW5zN0h5MzFRYWd0NzdR?=
+ =?utf-8?B?V29oU1VncElJNUlnWWJCcWVEaHlobTM1UW51ay9UeWhobWtzczRWelNKNndl?=
+ =?utf-8?B?M3RvZEJaQ0J2VFAvTmNnSXJQSFVRTW5ZRkFDZG4wTkVrMGQ0dDVvcnF1UThn?=
+ =?utf-8?B?MXFNc1FyaVRvMzVpQWpwd1JSaG9QY29XSldwNURwZWJxNlZQbnVWRW5hc052?=
+ =?utf-8?B?ck10eUYvOXpROWFyUG1OLzlPUzhuZms5MlJoY2RjUGV5MnpicVgxaW56RXZV?=
+ =?utf-8?B?citBbk00ZHZ4N3lZZWhuWkFMdWJtKzdIdDN5am5adW9qeExRT0paUjBtVUF4?=
+ =?utf-8?B?TTQ3R3FDNmVuTEkxaTFSU0JTNGN6MExrYXNZQi9DSk13RThkRTVwa2lFTTRy?=
+ =?utf-8?B?M3B3cHdteTBiQllxaDE3bUZvYktkY3h5MGRqVEgxa2pCU3RCS0dYQTQwVVF6?=
+ =?utf-8?B?allmZFBMNFZETGxwa3lWWGZQZzJ0T0gxb241OHd5bDdXWmZ2RzJWcHdiM0Yr?=
+ =?utf-8?B?Ri9nL2FIL1JtWDlTQnBCcXVuOVJHNDdXbE5WSDVyeHJqUVd4YmJTblNoTXhn?=
+ =?utf-8?B?RHlRaVVBdVRzTTFVSGdVNVo1Y1BoWm1oRHluMncvVGxnY2xrbHhzWkdnaTlI?=
+ =?utf-8?B?UHVKNWNHMUdQK0lndFNvcENuNEdyWTlQRkhWTUY3QTJUQ0lNV1F1OHI2WTRo?=
+ =?utf-8?B?NzQxWS9aekFlbzZnQU5qdGFSOElWOEk1eUYyNXFtdjltSnl4Wm5VR1dtLy92?=
+ =?utf-8?B?ZGw0c1lUclpyQ3JlMmRWSmtyNmxIcWFxRW80N21QRkR5Nk0wUmovU2JyZWFL?=
+ =?utf-8?B?WC8vZXdZY2hUM2RLNEcramx5SXRaamlqNEJ3VUxYL0s1NnJka0ZlcTJTYmRq?=
+ =?utf-8?B?aGs1OGRMYXRmNU4wMXI2Z2hkN3NQM1BrbVVDblc4Zm9wNlhJMUJkMlBpT1Y1?=
+ =?utf-8?B?VXZvZ3UyeHVXSjNXZnlFWUFSYkN0ZDh6eHl2ejRBQlNsZ2xWMEVpcmVmREVR?=
+ =?utf-8?B?UkJFdTZaaVdUbWhncG00Rm9MQVdkMnI5T2pWOFVWSTI1TmtCSWtja2JvVWU1?=
+ =?utf-8?B?M3IyV1MyYkJTUk1mK1A0RXNuR3B1bFJyNHhYNFd6Yk1xU1FSTTU3eHladmt4?=
+ =?utf-8?B?bFJyamgrYi81TUhVSUdCYUJyQml4M1g4MWt6ckd4ZURZK3ZRTmNySUxwU1Vm?=
+ =?utf-8?B?eFhJY3kwcTdyRWJBQ2Y1N0NLbWwxYjEreWl3OVZCQVZueENNQk95K2F3Tnc1?=
+ =?utf-8?B?bU1tMGRtMUtXblB4eWlZblU5aUh6MlFodE9pZGJ5MWRIYUl3dWVzM2pEVW1p?=
+ =?utf-8?B?Q3AyeEVVM3dFKzdGM1FqdDJmbndIcU5BeDYzUTZrTmRBME0rb1FQRWJ2NHlM?=
+ =?utf-8?B?dm95MjNhM20xcDBkakZCQkxDOHpFeldJTjhtVkxrWXVkUmxkVGtFYWhsWDhH?=
+ =?utf-8?B?Y1Jsa0VMQzFTN1MzNzRNQk00alR1UWJYNU9jRUJsNWM5VXR5bDRpa1I3MkN3?=
+ =?utf-8?B?QW9RN3lBNVQ0ekF5eVZjRGZBVUxyTzJwTk96aGpaSk42ZnVaNVpmK3A4ZjR2?=
+ =?utf-8?B?a3dsZWd4NC9wdFEvVk1tY0VtT3pmT0xHUVJuTVpFREI0ZkI2TzRER25iK0I3?=
+ =?utf-8?B?bU9aZi9QODVlMURYSGtaQVlMTTdpeWNoWExyRkNoeVNXUzhJelg5TkZ5U25K?=
+ =?utf-8?B?eGx4ZWFBOXdwOTRaZWlkRWVyakRxNlliakVkd1pVb2FwM3JMSU5jK2phWHQy?=
+ =?utf-8?B?TjNySGFFWUtid3U4TEN5YjVtYWI3Qkt2NDF3RnBoUUNHQzh4RXg5VFhJbGJj?=
+ =?utf-8?B?VVRnOXFwNk1NY1M4UWp1ZWlHUG8xYnQyTHdUdFB3OHFEeTNZWHVRZlZyRFha?=
+ =?utf-8?B?bUdqYmt3Zyt6VFJYN3IrckJBaXZoL3AycHY1ZlR1alY3VGdYRTVPeFpEdy9a?=
+ =?utf-8?B?akZQTUZpOTNjaitsQVJINU1uT0lDWHpNaUZ4MDFzYS92TzNkMTFyWGNoOEQ4?=
+ =?utf-8?B?TVE9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 353fc947-1670-4e19-f638-08dc48b14709
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH7PR11MB7499.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: da7e0c35-6a3c-43a3-50f3-08dc48b143fd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Mar 2024 07:42:16.6736
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2024 07:42:21.8862
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gUJFce/IS5ycs+rm/bIYtZz/7xckPmYcPpZJlJiklqjp1/XRabzScabVW9hcnVKNGNPm9WzDkLRORD9NKbzlnw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN7PR11MB8281
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Nt6PHVhl3VD4PHtVohj5u9mb9SPBEXubn+t3cn1bKdv846LQnJTj68/Wbv0tn5F4rHDyJmw7fjAthpzIyG51aA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB3696
 
-DQpBdHRlbmRlZXM6IEphbiBLaXN6a2EsIEZsb3JpYW4gQmV6ZGVrYSwgUmljaGFyZCBXZWluYmVy
-Z2VyDQoJCUNsYXJhIEtvd2Fsc2t5LCBEYXZpZCBPYmVyaG9sbGVuemVyLCBQaWVycmUgRklDSEVV
-WA0KCQkgSGFvIExpLCBIb25nemhhbiBDaGVuDQoNCkNvbW11bml0eSB1cGRhdGU6DQoJCVRlc3Rz
-dWl0ZSBwYXRjaGVzIC0tICB1cGRhdGVkDQoJCVRocmVlIGlzc3VlcyByZXBvcnRlZCAtLSBuZWVk
-IHRvIGZpeCANCgkJTmV4dCB0d28gbWVldGluZ3MgLS0gY2FuY2VsbGVkICggM3RoIGFuZCAxN3Ro
-IEFwcmlsKQ0KT3BlbiBkaXNjdXNzaW9uOg0KCQlTaWduYWwgaGFuZGxpbmcNCgkJSU8gdGVzdGlu
-Zw0KCQlTSUdERUJVRyBzdGFjayB0cmFjZQ0KDQpSZWdhcmRzDQoNCkhvbmd6aGFuIENoZW4NCg0K
-CQkNCgkJDQoJCQ0K
+On 14.03.24 14:19, Fabian Scheler wrote:
+> The testcase ensures that the correct handling of priority boosts in a nested
+> priority-inheritance scenario in a multi-core environment by assigning different
+> threads to different cores if this is possible. On single-core targets all
+> threads are assigned to the same core. In contrast to protect_nesting_protect
+> and protect_nesting_pi only priority-inheritance is involved here.
+> 
+> For more details please refer to the detailed comment before
+> pi_nesting_contend_multicore.
+> 
+> Signed-off-by: Fabian Scheler <Fabian.Scheler@siemens.com>
+> ---
+>  testsuite/smokey/posix-mutex/posix-mutex.c | 303 ++++++++++++++++++++-
+>  1 file changed, 296 insertions(+), 7 deletions(-)
+> 
+> diff --git a/testsuite/smokey/posix-mutex/posix-mutex.c b/testsuite/smokey/posix-mutex/posix-mutex.c
+> index 4aad24964..5cca0d2a1 100644
+> --- a/testsuite/smokey/posix-mutex/posix-mutex.c
+> +++ b/testsuite/smokey/posix-mutex/posix-mutex.c
+> @@ -86,11 +86,12 @@ static int get_effective_prio(void)
+>  	return stat.cprio;
+>  }
+>  
+> -static int create_thread(pthread_t *tid, int policy, int prio,
+> +static int create_thread(pthread_t *tid, int policy, int prio, int cpu,
+>  			 void *(*thread)(void *), void *arg)
+>  {
+>  	struct sched_param param;
+>  	pthread_attr_t thattr;
+> +	cpu_set_t cpuset;
+>  	int ret;
+>  
+>  	pthread_attr_init(&thattr);
+> @@ -99,6 +100,16 @@ static int create_thread(pthread_t *tid, int policy, int prio,
+>  	pthread_attr_setschedparam(&thattr, &param);
+>  	pthread_attr_setinheritsched(&thattr, PTHREAD_EXPLICIT_SCHED);
+>  
+> +	if (cpu != -1) {
+> +		CPU_ZERO(&cpuset);
+> +		CPU_SET(cpu, &cpuset);
+> +
+> +		if (!__T(ret, pthread_attr_setaffinity_np(&thattr,
+> +							  sizeof(cpu_set_t),
+> +							  &cpuset)))
+> +			return ret;
+> +	}
+> +
+>  	if (!__T(ret, pthread_create(tid, &thattr, thread, arg)))
+>  		return ret;
+>  
+> @@ -194,7 +205,7 @@ static int do_timed_contend(pthread_mutex_t *mutex, int prio)
+>  		return ret;
+>  
+>  	args.mutex = mutex;
+> -	ret = create_thread(&tid, SCHED_FIFO, prio,
+> +	ret = create_thread(&tid, SCHED_FIFO, prio, -1,
+>  			    mutex_timed_locker, &args);
+>  	if (ret)
+>  		return ret;
+> @@ -256,7 +267,7 @@ static int do_contend(pthread_mutex_t *mutex, int type)
+>  	smokey_barrier_init(&barrier);
+>  	args.barrier = &barrier;
+>  	args.lock_acquired = 0;
+> -	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_MEDIUM,
+> +	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_MEDIUM, -1,
+>  			    mutex_locker, &args);
+>  	if (ret)
+>  		return ret;
+> @@ -496,7 +507,7 @@ static int do_pi_contend(int prio)
+>  	args.mutex = &mutex;
+>  	smokey_barrier_init(&barrier);
+>  	args.barrier = &barrier;
+> -	ret = create_thread(&tid, SCHED_FIFO, prio,
+> +	ret = create_thread(&tid, SCHED_FIFO, prio, -1,
+>  			    mutex_timed_locker, &args);
+>  	if (ret)
+>  		return ret;
+> @@ -533,6 +544,283 @@ static int pi_contend(void)
+>  	return do_pi_contend(THREAD_PRIO_HIGH);
+>  }
+>  
+> +struct multicore_low_context {
+> +	pthread_mutex_t *mutex1;
+> +	pthread_mutex_t *mutex2;
+> +	struct smokey_barrier *low_barrier;
+> +	struct smokey_barrier *locker1_barrier;
+> +	struct smokey_barrier *locker2_barrier;
+> +	struct smokey_barrier *medium_barrier;
+> +	int *medium_flag;
+> +};
+> +
+> +struct multicore_mutex_locker_context {
+> +	pthread_mutex_t *mutex;
+> +	struct smokey_barrier *barrier;
+> +};
+> +
+> +struct multicore_medium_context {
+> +	int *flag;
+> +	struct smokey_barrier *barrier;
+> +};
+> +
+> +static void *pi_nesting_contend_multicore_low(void *arg)
+> +{
+> +	struct multicore_low_context *context =
+> +		(struct multicore_low_context *)arg;
+> +	int ret;
+> +
+> +	if (!__T(ret, smokey_barrier_wait(context->low_barrier)))
+> +		return (void *)(long)ret;
+> +
+> +	if (!__T(ret, pthread_mutex_lock(context->mutex1)))
+> +		return (void *)(long)ret;
+> +
+> +	if (!__T(ret, pthread_mutex_lock(context->mutex2)))
+> +		return (void *)(long)ret;
+> +
+> +	smokey_barrier_release(context->locker1_barrier);
+> +	smokey_barrier_release(context->locker2_barrier);
+> +	smokey_barrier_release(context->medium_barrier);
+> +
+> +	if (!__T(ret, pthread_mutex_unlock(context->mutex1)))
+> +		return (void *)(long)ret;
+> +
+> +	if (!__Tassert(*(context->medium_flag) == 0))
+> +		return (void *)(long)-10;
+> +
+> +	if (!__T(ret, pthread_mutex_unlock(context->mutex2)))
+> +		return (void *)(long)ret;
+> +
+> +	if (!__Tassert(*(context->medium_flag) == 1))
+> +		return (void *)(long)-20;
+> +
+> +	return NULL;
+> +}
+> +
+> +static void *pi_nesting_contend_multicore_mutex_locker(void *arg)
+> +{
+> +	struct multicore_mutex_locker_context *context =
+> +		(struct multicore_mutex_locker_context *)arg;
+> +	int ret;
+> +
+> +	if (!__T(ret, smokey_barrier_wait(context->barrier)))
+> +		return (void *)(long)ret;
+> +
+> +	if (!__T(ret, pthread_mutex_lock(context->mutex)))
+> +		return (void *)(long)ret;
+> +
+> +	if (!__T(ret, pthread_mutex_unlock(context->mutex)))
+> +		return (void *)(long)ret;
+> +
+> +	return NULL;
+> +}
+> +
+> +static void *pi_nesting_contend_multicore_medium(void *arg)
+> +{
+> +	struct multicore_medium_context *context =
+> +		(struct multicore_medium_context *)arg;
+> +	int ret;
+> +
+> +	if (!__T(ret, smokey_barrier_wait(context->barrier)))
+> +		return (void *)(long)ret;
+> +
+> +	*(context->flag) = 1;
+> +
+> +	return NULL;
+> +}
+> +
+> +static int pi_nesting_contend_multicore_getcpu(cpu_set_t *rt_cpus,
+> +					       cpu_set_t *online_cpus,
+> +					       int num_cpus, int start_cpu)
+> +{
+> +	int tmp_cpu = start_cpu;
+> +	int result_cpu = 0;
+> +	do {
+> +		result_cpu = ++tmp_cpu % num_cpus;
+> +		if (result_cpu == start_cpu) {
+> +			break;
+> +		}
+> +	} while (CPU_ISSET(tmp_cpu, rt_cpus) == 0 ||
+> +		 CPU_ISSET(tmp_cpu, online_cpus));
+> +
+> +	return result_cpu;
+> +}
+> +
+> +/*
+> + * This testcase exercises a nested priority-inheritance-scenario preventing
+> + * uncrontrolled prioritoty-inversion caused by a thread with a medium
+> + * priority.
+> + *
+> + * In this test there are four threads involved:
+> + *
+> + * - low (prio THREAD_PRIO_LOW): holds mutexes mutex1 and mutex2
+> + * - locker1 (prio THREAD_PRIO_HIGH): blocked by mutex1
+> + * - locker2 (prio THREAD_PRIO_VERY_HIGH): blocked by mutex2
+> + * - medium (prio THREAD_PRIO_MEDIUM): "tries" to preempt low
+> + *
+> + * The test ensures that the priority of the low-prio thread is correctly
+> + * restored when it unlocks the pi-mutex and thus is deboosted. This test also
+> + * checks this behavior in a multi-core environment by assigning different
+> + * threads to different cores if this is possible. If only a single core is
+> + * available, all threads are assigned to that core, i.e. the test also works on
+> + * single-core targets.
+> + *
+> + * The threads are allocated to processor cores as follows:
+> + * - low & medium: same core => low_medium_cpu, this is necessary, otherwise
+> + *   medium could not prevent low from running
+> + * - locker1: locker1_cpu != low_medium_cpu if possible
+> + * - locker2: locker2_cpu != low_medium_cpu && locker1_cpu != locker2_cpu if possible
+> + *
+> + * (rough) execution sequence:
+> + * 1.  setup test
+> + * 2.  unblock thread low
+> + * 3.  low: lock mutex1 and mutex2
+> + * 4.  low: unblock locker1, locker2 and medium (in that order)
+> + * 5.  locker1 and locker2: block when locking mutex1 and mutex2 respectively
+> + * 6.  medium: blocked by low due to priority inheritance
+> + * 7.  low: unlock mutex1 => locker1 can finish, medium => still blocked
+> + * 8.  low: unlock mutex2 => locker2 can finish
+> + * 9.  medium: run to completion
+> + * 10. low: run to completion
+> + */
+> +static int pi_nesting_contend_multicore(void)
+> +{
+> +	struct multicore_mutex_locker_context locker1_args, locker2_args;
+> +	int cpu, num_cpus, low_medium_cpu, locker1_cpu, locker2_cpu;
+> +	struct smokey_barrier locker1_barrier, locker2_barrier;
+> +	struct smokey_barrier low_barrier, medium_barrier;
+> +	struct multicore_medium_context medium_args;
+> +	pthread_t low, locker1, locker2, medium;
+> +	struct multicore_low_context low_args;
+> +	pthread_mutex_t mutex1, mutex2;
+> +	cpu_set_t rt_cpus, online_cpus;
+> +	int medium_flag = 0;
+> +	void *status;
+> +	int ret;
+> +
+> +	/* setup test */
+> +
+> +	cpu = get_current_cpu();
+> +
+> +	num_cpus = sysconf(_SC_NPROCESSORS_ONLN);
+> +
+> +	if (!__T(ret, get_realtime_cpu_set(&rt_cpus)))
+> +		return ret;
+> +
+> +	if (!__T(ret, get_online_cpu_set(&online_cpus)))
+> +		return ret;
+> +
+> +	low_medium_cpu = pi_nesting_contend_multicore_getcpu(
+> +		&rt_cpus, &online_cpus, num_cpus, cpu);
+> +	locker1_cpu = pi_nesting_contend_multicore_getcpu(
+> +		&rt_cpus, &online_cpus, num_cpus, low_medium_cpu);
+> +	locker2_cpu = pi_nesting_contend_multicore_getcpu(
+> +		&rt_cpus, &online_cpus, num_cpus, locker1_cpu);
+> +
+> +	if (!__T(ret, smokey_barrier_init(&low_barrier)))
+> +		return ret;
+> +
+> +	if (!__T(ret, smokey_barrier_init(&locker1_barrier)))
+> +		return ret;
+> +
+> +	if (!__T(ret, smokey_barrier_init(&locker2_barrier)))
+> +		return ret;
+> +
+> +	if (!__T(ret, smokey_barrier_init(&medium_barrier)))
+> +		return ret;
+> +
+> +	ret = do_init_mutex(&mutex1, PTHREAD_MUTEX_NORMAL,
+> +			    PTHREAD_PRIO_INHERIT);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = do_init_mutex(&mutex2, PTHREAD_MUTEX_NORMAL,
+> +			    PTHREAD_PRIO_INHERIT);
+> +	if (ret)
+> +		return ret;
+> +
+> +	low_args.mutex1 = &mutex1;
+> +	low_args.mutex2 = &mutex2;
+> +	low_args.low_barrier = &low_barrier;
+> +	low_args.locker1_barrier = &locker1_barrier;
+> +	low_args.locker2_barrier = &locker2_barrier;
+> +	low_args.medium_barrier = &medium_barrier;
+> +	low_args.medium_flag = &medium_flag;
+> +
+> +	locker1_args.mutex = &mutex1;
+> +	locker1_args.barrier = &locker1_barrier;
+> +
+> +	locker2_args.mutex = &mutex2;
+> +	locker2_args.barrier = &locker2_barrier;
+> +
+> +	medium_args.barrier = &medium_barrier;
+> +	medium_args.flag = &medium_flag;
+> +
+> +	if (!__T(ret, create_thread(
+> +			      &low, SCHED_FIFO, THREAD_PRIO_LOW, low_medium_cpu,
+> +			      pi_nesting_contend_multicore_low, &low_args)))
+> +		return ret;
+> +
+> +	if (!__T(ret, create_thread(&locker1, SCHED_FIFO, THREAD_PRIO_HIGH,
+> +				    locker1_cpu,
+> +				    pi_nesting_contend_multicore_mutex_locker,
+> +				    &locker1_args)))
+> +		return ret;
+> +
+> +	if (!__T(ret, create_thread(&locker2, SCHED_FIFO, THREAD_PRIO_VERY_HIGH,
+> +				    locker2_cpu,
+> +				    pi_nesting_contend_multicore_mutex_locker,
+> +				    &locker2_args)))
+> +		return ret;
+> +
+> +	if (!__T(ret, create_thread(&medium, SCHED_FIFO, THREAD_PRIO_MEDIUM,
+> +				    low_medium_cpu,
+> +				    pi_nesting_contend_multicore_medium,
+> +				    &medium_args)))
+> +		return ret;
+> +
+> +	/* start test */
+> +
+> +	smokey_barrier_release(&low_barrier);
+> +
+> +	/* wait for threads to finish */
+> +
+> +	if (!__T(ret, pthread_join(low, &status)))
+> +		return ret;
+> +	if (!__Tassert(status == NULL))
+> +		return -EINVAL;
+> +
+> +	if (!__T(ret, pthread_join(locker1, &status)))
+> +		return ret;
+> +	if (!__Tassert(status == NULL))
+> +		return -EINVAL;
+> +
+> +	if (!__T(ret, pthread_join(locker2, &status)))
+> +		return ret;
+> +	if (!__Tassert(status == NULL))
+> +		return -EINVAL;
+> +
+> +	if (!__T(ret, pthread_join(medium, &status)))
+> +		return ret;
+> +	if (!__Tassert(status == NULL))
+> +		return -EINVAL;
+> +
+> +	/* cleanup test */
+> +
+> +	smokey_barrier_destroy(&low_barrier);
+> +	smokey_barrier_destroy(&locker1_barrier);
+> +	smokey_barrier_destroy(&locker2_barrier);
+> +	smokey_barrier_destroy(&medium_barrier);
+> +
+> +	if (!__T(ret, pthread_mutex_destroy(&mutex1)))
+> +		return ret;
+> +	if (!__T(ret, pthread_mutex_destroy(&mutex2)))
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+>  static void *mutex_locker_steal(void *arg)
+>  {
+>  	struct locker_context *p = arg;
+> @@ -572,7 +860,7 @@ static int do_steal(int may_steal)
+>  	smokey_barrier_init(&barrier);
+>  	args.barrier = &barrier;
+>  	args.lock_acquired = 0;
+> -	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_LOW,
+> +	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_LOW, -1,
+>  			    mutex_locker_steal, &args);
+>  	if (ret)
+>  		return ret;
+> @@ -974,7 +1262,7 @@ static int protect_handover(void)
+>  	smokey_barrier_init(&barrier);
+>  	args.barrier = &barrier;
+>  	args.lock_acquired = 0;
+> -	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_LOW,
+> +	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_LOW, -1,
+>  			    mutex_locker, &args);
+>  	if (ret)
+>  		return ret;
+> @@ -1040,7 +1328,7 @@ static int check_timedlock_abstime_validation(void)
+>  	 * validate the (invalid) timeout
+>  	 */
+>  	args.mutex = &mutex;
+> -	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_LOW,
+> +	ret = create_thread(&tid, SCHED_FIFO, THREAD_PRIO_LOW, -1,
+>  			    mutex_timed_locker_inv_timeout, &args);
+>  
+>  	if (ret)
+> @@ -1114,6 +1402,7 @@ static int run_posix_mutex(struct smokey_test *t, int argc, char *const argv[])
+>  	do_test(timed_contend, MAX_100_MS);
+>  	do_test(weak_mode_switch, MAX_100_MS);
+>  	do_test(pi_contend, MAX_100_MS);
+> +	do_test(pi_nesting_contend_multicore, MAX_100_MS);
+>  	do_test(steal, MAX_100_MS);
+>  	do_test(no_steal, MAX_100_MS);
+>  	do_test(protect_raise, MAX_100_MS);
+
+Thanks, applied.
+
+Jan
+
+-- 
+Siemens AG, Technology
+Linux Expert Center
+
