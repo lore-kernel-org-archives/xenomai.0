@@ -1,36 +1,36 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0381749A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C9CC84D04
 	for <xenomai@lists.linux.dev>; Tue, 26 Mar 2024 06:31:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711434682; cv=none; b=ON95XiyTEe29soZgUrZWH69GAYuh5Fj6PmcyeLd2CR5E8vpgSbJAnTtkLaS5Scy9i9oOWxu81ojQpZzc9kcxF5LziRK+FG+uCvB7oaGzr3fCR8j2U7+kddZkZq0om86XaifoHr+Kmraghu3eE2Vp1StlFmB10iZsEyc8k/6KSYM=
+	t=1711434682; cv=none; b=H9El14gC58gyiHlg3OcvYtlxioK2oAOnyag1natRH4j9NNzNS4U+uNco1kkzcWPhQX85ztf0kvhmAxJOFKboW+TOu3WzpuVA8aUSovWzUW5Vp61rZKzGbyij2c9kTMWupnoss/GjiY+x05jAgpCSGFedndjvhFZPYr7aw2pxzDE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1711434682; c=relaxed/simple;
-	bh=9yi8I/FsAx0A1LIYlBc8wQBG0PoXbSrHUF4Xl7eZA3Y=;
+	bh=aeY18za470d3ip3Q7yJMWFuska97AjzyHRweN+a2iso=;
 	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=P1RFAUsNZSN1mF9FIQeKxMlX/v6CmN5tYpVFwoJcpJgpIlds2XYve+Q2cUDNsWGIzJJgS29IHdAICh9+kjz6L49f+8qGoOmK6NYQtICa3F4r6d7Ma2OCp9f4G5ZHJnsdFEVOTx3LOBC1Hxa7gqwcTclOFcEbN07SzjYZSehSbew=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=oNLhVkL+; arc=none smtp.client-ip=185.136.64.226
+	 MIME-Version; b=PQ/c9PPl10NY/IC3fhXmih4fXZEDmz1qrHfapx9+tQnFtkvU/oDDnjLIWexoiyPpL4flDCSmgbl3CPRthWHDYu03VOwQTxDfckLrRV69HblXn8Ww9/HlDb0xuCNmwnEryZTCk7qCrwekXYGLvfk0fgou4M6xAd0A6XOlPnm1mB8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=P0HAOt3U; arc=none smtp.client-ip=185.136.65.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="oNLhVkL+"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20240326063112ee01006daea7da32a7
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="P0HAOt3U"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202403260631107c76de8bfe3087273b
         for <xenomai@lists.linux.dev>;
-        Tue, 26 Mar 2024 07:31:12 +0100
+        Tue, 26 Mar 2024 07:31:11 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=KkE6uPzAdGGZX/Ykf1YEB6PehIjFCxaqdjUsF3zV8WE=;
- b=oNLhVkL+5i5hi6jq763WRRgNR4KvVGTOBK6CqmN9H7Cw2to/dKNMKrHmSi4AU98plG6hw0
- QkyMiD37JhHwqbt1Ewq+rRdo9rsAwsV0LZZ3D3EEw49tCIyrr6CEjGuHkIboD5S3cTCbKvg9
- DjBDAxfhFy8tAAG58bv/bta3A5cxQ=;
+ bh=sEmJj1M0Llg3k4kRIVMCpUTjwml0wmFKZRPP1I8k5Gc=;
+ b=P0HAOt3UYyjnv+lO5T2iAnNekhR6jhc2wjUZgS+yEt1i3hh4Cvmi+fPc0bBku90rGvdXj2
+ Dd6YcIv30RbADjh49Ofjeu0Ucxsvry+GMNWfo4XwmcVAXp2idvl34XeDM7cjnQSFJDIucne3
+ o92zHy6OYjwIDhr/GS6mxhn2tb2us=;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [PATCH 25/25] drivers/testing: Make private functions static
-Date: Tue, 26 Mar 2024 07:31:04 +0100
-Message-Id: <a34701b78e07c9157c10a888c53381b1621c7a87.1711434664.git.jan.kiszka@siemens.com>
+Subject: [PATCH 17/25] drivers/net/ipv4: Align signatures of rt_ip_build_xmit
+Date: Tue, 26 Mar 2024 07:30:56 +0100
+Message-Id: <0dc7250869db63065a8a14378d7c9250858241e9.1711434664.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1711434664.git.jan.kiszka@siemens.com>
 References: <cover.1711434664.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -45,34 +45,38 @@ Feedback-ID: 519:519-294854:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Addresses missing prototype warnings with kernel 6.8.
+Prototype and actual handlers all use 'unsigned char' for the second
+parameter of getfrag.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/testing/switchtest.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/drivers/net/stack/ipv4/ip_output.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/drivers/testing/switchtest.c b/kernel/drivers/testing/switchtest.c
-index 674cdef736..f8f6c89207 100644
---- a/kernel/drivers/testing/switchtest.c
-+++ b/kernel/drivers/testing/switchtest.c
-@@ -723,14 +723,14 @@ static struct rtdm_device device = {
- 	.label = "switchtest",
- };
- 
--int __init __switchtest_init(void)
-+static int __init __switchtest_init(void)
- {
- 	fp_features = fp_detect();
- 
- 	return rtdm_dev_register(&device);
- }
- 
--void __switchtest_exit(void)
-+static void __switchtest_exit(void)
- {
- 	rtdm_dev_unregister(&device);
- }
+diff --git a/kernel/drivers/net/stack/ipv4/ip_output.c b/kernel/drivers/net/stack/ipv4/ip_output.c
+index 664d0c790f..47da3ca75c 100644
+--- a/kernel/drivers/net/stack/ipv4/ip_output.c
++++ b/kernel/drivers/net/stack/ipv4/ip_output.c
+@@ -38,8 +38,8 @@ static u16 rt_ip_id_count = 0;
+  *  Slow path for fragmented packets
+  */
+ int rt_ip_build_xmit_slow(struct rtsocket *sk,
+-			  int getfrag(const void *, char *, unsigned int,
+-				      unsigned int),
++			  int getfrag(const void *, unsigned char *,
++				      unsigned int, unsigned int),
+ 			  const void *frag, unsigned length,
+ 			  struct dest_route *rt, int msg_flags,
+ 			  unsigned int mtu, unsigned int prio)
+@@ -155,7 +155,7 @@ error:
+  *  Fast path for unfragmented packets.
+  */
+ int rt_ip_build_xmit(struct rtsocket *sk,
+-		     int getfrag(const void *, char *, unsigned int,
++		     int getfrag(const void *, unsigned char *, unsigned int,
+ 				 unsigned int),
+ 		     const void *frag, unsigned length, struct dest_route *rt,
+ 		     int msg_flags)
 -- 
 2.35.3
 
