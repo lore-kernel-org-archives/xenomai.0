@@ -1,36 +1,36 @@
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 040D1745F1
-	for <xenomai@lists.linux.dev>; Tue, 26 Mar 2024 06:31:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B148C71B5C
+	for <xenomai@lists.linux.dev>; Tue, 26 Mar 2024 06:31:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711434682; cv=none; b=nIRjwIT2z/8aOLbZoDx4gVYCJc7yN0XxHXDntgZcp7Xf7I2+SsxoEP7AtnWvDY1t8xWVEzWP0GhQAU8iUmSph8vmBscjYbEFa/nIdTuv8TeW8XgdrVnS+HUVSr6UysyvLmlYWOKZnM3aiADdPWMOLxe/QiMEkLCzBueArB7OIYo=
+	t=1711434682; cv=none; b=NtHjTq1Q0yIOPwaupzLFj8L++lZij3PR+jg+SoFtnQGLj6XItD9L5Y5tU2hlo7gKZoVn1S0zs28zuQog78FSv8LOzhKq6g/+Ve2AVNSD21FWYUBepAsYONFF4zI52/EVkkDA8o7U9D1t9+bw2OdPr5TUOKaO51AWk9kljaZrnH4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1711434682; c=relaxed/simple;
-	bh=ePMmP0GVnQKrP5euXSg2X5V72iEyPW6tZpjlqC9W56w=;
+	bh=qb/tOk3v1a/2khxHyip0PNP9h0TCrM3OQxZRH3gQnhE=;
 	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=PY+XJ2fKVS0W8SfR7QIDzbfNtEfHKTX3uNjBNcssjj2IEEXhFQV7Y7/Ywl9u+IMOyYMUWYuidQFH7fEUAXZkBdfWyqNKLtb9S1tCbPu5MZcBsA38SBp4RnBifPdEScFSI+MKwpx8LR9q8rCpPqClON9gv7aSgNepGECxYftmzLk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=I8kZx4i9; arc=none smtp.client-ip=185.136.64.228
+	 MIME-Version; b=mrOQ9wb/jI0+w1fRcRx67SJgzY7AjqkKvoROjirbpssKnJ5K/f3L0GlYGRv0ZH/xPHuc4vT/y2RD5OKpadmDuyCFwLXs4NL4bGmNQJ+S1ZPWJlP7J1FXrO4xHHSGeub6aXC3d68RUi5dWShXOkFZ5RU3VNaGJklnrli8GxtHTZQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=Qlv889jO; arc=none smtp.client-ip=185.136.65.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="I8kZx4i9"
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20240326063111c9cfecaa081c2b5d1b
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="Qlv889jO"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202403260631115410ff3c7ec84a2e2b
         for <xenomai@lists.linux.dev>;
-        Tue, 26 Mar 2024 07:31:12 +0100
+        Tue, 26 Mar 2024 07:31:11 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=GWkJKpbzz000MPlrXv4m0DFbtIVOcH05GLBTkDscuEs=;
- b=I8kZx4i9ErOYS0mFWpGb6LZQjSxbgkAWw9wamS/lGyAuLzjqjJSXUUWCMQPk/tismup+bq
- Gr5g4oJ6VHYazwIW2BeHe8NRPJNpaHkhRPkmOLzBYpmLUwxvbbCbBSlpLrIqbKhpxJbsVjxt
- 3JjUUmOJrlsGUWIF1W4YsDRDAdbKc=;
+ bh=29sDZiOJwSM2RM/ksUjgoxOGX5/Afsop+jBSpkvG/TM=;
+ b=Qlv889jO+dhW8TBNw9plAwXDRgCO0WqqtrhHlUOLgaWgD1JquQBM44c6fax6KT3dXJfqJw
+ UiRnls6afHYRsgIn06AoxEW4Z6/vUAYmGPZxPahadR1YwnqfOLwQeTcsz+GcSr46oyggjdae
+ pl75GWUmXI4BVktusWxn9qlvKcGg8=;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [PATCH 21/25] drivers/net/e1000: Move e1000_check_options prototype to a header
-Date: Tue, 26 Mar 2024 07:31:00 +0100
-Message-Id: <67d73da532f52ad5d9932965b1c2bca08454b8f2.1711434664.git.jan.kiszka@siemens.com>
+Subject: [PATCH 19/25] drivers/net/corectl: Provide proper prototypes via corectl.h
+Date: Tue, 26 Mar 2024 07:30:58 +0100
+Message-Id: <7c7653e02bb847ef04cf9380ebf93d7ad2c3fbc8.1711434664.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1711434664.git.jan.kiszka@siemens.com>
 References: <cover.1711434664.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -49,40 +49,62 @@ Addresses missing prototype warnings with kernel 6.8.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/drivers/net/drivers/e1000/e1000.h      | 2 ++
- kernel/drivers/net/drivers/e1000/e1000_main.c | 8 --------
- 2 files changed, 2 insertions(+), 8 deletions(-)
+ kernel/drivers/net/stack/corectl.c         |  1 +
+ kernel/drivers/net/stack/include/corectl.h | 20 ++++++++++++++++++++
+ kernel/drivers/net/stack/rtnet_module.c    |  1 +
+ 3 files changed, 22 insertions(+)
+ create mode 100644 kernel/drivers/net/stack/include/corectl.h
 
-diff --git a/kernel/drivers/net/drivers/e1000/e1000.h b/kernel/drivers/net/drivers/e1000/e1000.h
-index 44f1efa9a3..978b6ea9cd 100644
---- a/kernel/drivers/net/drivers/e1000/e1000.h
-+++ b/kernel/drivers/net/drivers/e1000/e1000.h
-@@ -388,4 +388,6 @@ enum e1000_state_t {
- 	__E1000_DRIVER_TESTING,
- 	__E1000_RESETTING,
- };
-+
-+void e1000_check_options(struct e1000_adapter *adapter);
- #endif /* _E1000_H_ */
-diff --git a/kernel/drivers/net/drivers/e1000/e1000_main.c b/kernel/drivers/net/drivers/e1000/e1000_main.c
-index 726b38ab87..bf4fadba9f 100644
---- a/kernel/drivers/net/drivers/e1000/e1000_main.c
-+++ b/kernel/drivers/net/drivers/e1000/e1000_main.c
-@@ -223,14 +223,6 @@ static void e1000_smartspeed(struct e1000_adapter *adapter);
- static int e1000_82547_fifo_workaround(struct e1000_adapter *adapter,
- 				       struct rtskb *skb);
+diff --git a/kernel/drivers/net/stack/corectl.c b/kernel/drivers/net/stack/corectl.c
+index 9301defb27..52b5869ad2 100644
+--- a/kernel/drivers/net/stack/corectl.c
++++ b/kernel/drivers/net/stack/corectl.c
+@@ -17,6 +17,7 @@
+  */
+ #include <asm/xenomai/syscall.h>
+ #include <xenomai/posix/corectl.h>
++#include <corectl.h>
  
--
--
--
--
--/* Exported from other modules */
--
--extern void e1000_check_options(struct e1000_adapter *adapter);
--
- static struct pci_driver e1000_driver = {
- 	.name     = e1000_driver_name,
- 	.id_table = e1000_pci_tbl,
+ static int rtnet_corectl_call(struct notifier_block *self, unsigned long arg,
+ 			      void *cookie)
+diff --git a/kernel/drivers/net/stack/include/corectl.h b/kernel/drivers/net/stack/include/corectl.h
+new file mode 100644
+index 0000000000..6dc7fadeb9
+--- /dev/null
++++ b/kernel/drivers/net/stack/include/corectl.h
+@@ -0,0 +1,20 @@
++/*
++ * Copyright (C) 2016 Gilles Chanteperdrix <gch@xenomai.org>.
++ *
++ * This program is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU General Public License as
++ * published by the Free Software Foundation; either version 2 of the
++ * License, or (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
++ */
++
++void rtnet_corectl_register(void);
++void rtnet_corectl_unregister(void);
+diff --git a/kernel/drivers/net/stack/rtnet_module.c b/kernel/drivers/net/stack/rtnet_module.c
+index 37c61289f6..f16becafef 100644
+--- a/kernel/drivers/net/stack/rtnet_module.c
++++ b/kernel/drivers/net/stack/rtnet_module.c
+@@ -27,6 +27,7 @@
+ #include <linux/proc_fs.h>
+ #include <linux/seq_file.h>
+ 
++#include <corectl.h>
+ #include <rtdev_mgr.h>
+ #include <rtnet_chrdev.h>
+ #include <rtnet_internal.h>
 -- 
 2.35.3
 
