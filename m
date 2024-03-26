@@ -1,36 +1,36 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D454F71B4B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04F2E73504
 	for <xenomai@lists.linux.dev>; Tue, 26 Mar 2024 06:31:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1711434679; cv=none; b=YSHN7GpYKqdVH4BMu44RehbBZ5podLcifIoTSE2YsSG5hrrTV4gU/ETI3LyrEGjauRc+w8bU3Vh1+6xTYWv6yNYLieVVYVcD44EulBVD4ndDt+7t5nRy/+NafzcM42xTd2JWwzuHFQZ8PYMtlxP0uZ9aAvsCdOBSXISgJAnlDIA=
+	t=1711434679; cv=none; b=guBcwj4jPL8NBP/UUw9L3MHs4GmYNU8CMfkiruorQ3UlA2t3HrIQbdbWaq4sdhPIguX+QDHYx/Z0AzrTxCG+NX4SKX5T41K5BVPRFF8XF5oh9g1OfhVBBW+R0yeidDpq6wypG70Q0qvanDKg026rdaQJcw0USKrlQaJxfChKfhY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1711434679; c=relaxed/simple;
-	bh=HPL0dzH+c5sNz2VlNMHJ18cwRz9fWba6QwrG5ZCjoZs=;
+	bh=Kw7rGsk3slrQAi9n+5XcHtd93ViPhyZadZSSZIdW2WM=;
 	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=bVtcpVdaXk7mAoUd1f2dxPKF6Q7fZzkRttUAVdRzwrFsocAGJVi65RGwQ4hn9hzp2YDUatTRdLZRoOQ7KjqRlIkB2dlEvLXcJfAAj6OtNm8YPLaMeYhrORvfCFbAtgSPnDwp4+2B8/Pane8muxZyRldkH3DovScMTSuYTBGyO8c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=TmJy6IgA; arc=none smtp.client-ip=185.136.64.226
+	 MIME-Version; b=m50ilQ9BFCR5XoqwStrPO704/6UFKbJCUdCYCsMkThY1GIMi6dqGDsEa5U20abtwrT18a2fjEFISpPs+YZVji05y9lVbKfdP/BxFMkpURMV0B3m2pYVRnywQqzrzkClr492MCSVzypU3HZ450+m0+QOEnggZP8qlVmLBOMzDAEw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=gf+lF0gJ; arc=none smtp.client-ip=185.136.65.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="TmJy6IgA"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20240326063107d2e895c520dc6d0b46
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="gf+lF0gJ"
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 2024032606310657486764636a5a3506
         for <xenomai@lists.linux.dev>;
-        Tue, 26 Mar 2024 07:31:08 +0100
+        Tue, 26 Mar 2024 07:31:07 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=di9d/CRSrZ2DOzcxhT0DGTnJZq9LtXlAwHd73Ewewwk=;
- b=TmJy6IgAEa2Mxp7r2A8mgNt5hL/Xi7citZf0z1fZQEMqnEOg3YRasFXJbk4AcE0UHTIk8S
- 6FZi/McdRBrc2jkQkn73IEFy6H60bvazLteR1jzV7P5VFinTMBu+WmewiSugDPfYx/x5lhzu
- YtChntjm4JYdxEQfqVuzADMASpy3g=;
+ bh=e/mccopK55Pj9xCmC6x62L5V8OImWGSOrqvOzQVmJoY=;
+ b=gf+lF0gJ3MvYLgBE3W7c4BaMzHhmmx6j318/TGFpfPA1H1XiVGn0vTsA7n/LH7Q0DkH08v
+ 5fiCcZU04EMcOmhFMidDZdmMiNAtgXAD2scuMDAMeFIW7rGCK3WJ1ltKqj8ReWMzgbhv+jCt
+ go/oLPs6iZsxwwfQHrUGHKOyfFOtg=;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [PATCH 07/25] cobalt: Make private functions static
-Date: Tue, 26 Mar 2024 07:30:46 +0100
-Message-Id: <ef5f9fc57094a73040b114f036f67270d7871ea9.1711434664.git.jan.kiszka@siemens.com>
+Subject: [PATCH 05/25] cobalt/arith: Only implement xnarch_generic_full_divmod64 when used
+Date: Tue, 26 Mar 2024 07:30:44 +0100
+Message-Id: <7e95492d50f4d8cd94f5606cce2158b7cf752bbb.1711434664.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1711434664.git.jan.kiszka@siemens.com>
 References: <cover.1711434664.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -45,112 +45,70 @@ Feedback-ID: 519:519-294854:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Addresses missing prototype warnings with kernel 6.8.
+This also resolves warnings about a missing prototype.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kernel/cobalt/clock.c            | 8 ++++----
- kernel/cobalt/dovetail/kevents.c | 2 +-
- kernel/cobalt/posix/mqueue.c     | 2 +-
- kernel/cobalt/timer.c            | 2 +-
- kernel/cobalt/vfile.c            | 8 ++++----
- 5 files changed, 11 insertions(+), 11 deletions(-)
+ include/cobalt/uapi/asm-generic/arith.h | 11 +++++++----
+ kernel/cobalt/arith.c                   |  3 +++
+ 2 files changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/cobalt/clock.c b/kernel/cobalt/clock.c
-index fbb7ddbe95..adbfc65125 100644
---- a/kernel/cobalt/clock.c
-+++ b/kernel/cobalt/clock.c
-@@ -419,12 +419,12 @@ static void cleanup_timerlist_proc(struct xnclock *clock)
- 	xnvfile_destroy_snapshot(&clock->timer_vfile);
- }
+diff --git a/include/cobalt/uapi/asm-generic/arith.h b/include/cobalt/uapi/asm-generic/arith.h
+index d01d01e95a..929baa89cc 100644
+--- a/include/cobalt/uapi/asm-generic/arith.h
++++ b/include/cobalt/uapi/asm-generic/arith.h
+@@ -73,6 +73,13 @@ static inline unsigned long long xnarch_generic_ulldiv (unsigned long long ull,
+ #endif /* !xnarch_uldivrem */
  
--void init_timerlist_root(void)
-+static void init_timerlist_root(void)
+ #ifndef xnarch_divmod64
++#if defined(__KERNEL__) && BITS_PER_LONG < 64
++unsigned long long xnarch_generic_full_divmod64(unsigned long long a,
++						unsigned long long b,
++						unsigned long long *rem);
++#define IMPLEMENT_GENERIC_FULL_DIVMOD64
++#endif
++
+ static inline unsigned long long
+ xnarch_generic_divmod64(unsigned long long a,
+ 			unsigned long long b,
+@@ -80,10 +87,6 @@ xnarch_generic_divmod64(unsigned long long a,
  {
- 	xnvfile_init_dir("timer", &timerlist_vfroot, &cobalt_vfroot);
+ 	unsigned long long q;
+ #if defined(__KERNEL__) && BITS_PER_LONG < 64
+-	unsigned long long
+-		xnarch_generic_full_divmod64(unsigned long long a,
+-					     unsigned long long b,
+-					     unsigned long long *rem);
+ 	if (b <= 0xffffffffULL) {
+ 		unsigned long r;
+ 		q = xnarch_ulldiv(a, b, &r);
+diff --git a/kernel/cobalt/arith.c b/kernel/cobalt/arith.c
+index 5603c2d528..92413014fc 100644
+--- a/kernel/cobalt/arith.c
++++ b/kernel/cobalt/arith.c
+@@ -17,6 +17,7 @@
+  * 02111-1307, USA.
+  */
+ #include <linux/module.h>
++#include <cobalt/kernel/arith.h>
+ 
+ /**
+  * @ingroup cobalt_core
+@@ -31,6 +32,7 @@
+  * @{
+  */
+ 
++#ifdef IMPLEMENT_GENERIC_FULL_DIVMOD64
+ /**
+  * Architecture-independent div64 operation with remainder.
+  *
+@@ -61,5 +63,6 @@ unsigned long long xnarch_generic_full_divmod64(unsigned long long a,
+ 	return q;
  }
+ EXPORT_SYMBOL_GPL(xnarch_generic_full_divmod64);
++#endif
  
--void cleanup_timerlist_root(void)
-+static void cleanup_timerlist_root(void)
- {
- 	xnvfile_destroy_dir(&timerlist_vfroot);
- }
-@@ -445,8 +445,8 @@ static inline void cleanup_timerlist_proc(struct xnclock *clock) { }
- 
- static struct xnvfile_directory clock_vfroot;
- 
--void print_core_clock_status(struct xnclock *clock,
--			     struct xnvfile_regular_iterator *it)
-+static void print_core_clock_status(struct xnclock *clock,
-+				    struct xnvfile_regular_iterator *it)
- {
- 	const char *wd_status = "off";
- 
-diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
-index f78abbdc79..0f70dbc27f 100644
---- a/kernel/cobalt/dovetail/kevents.c
-+++ b/kernel/cobalt/dovetail/kevents.c
-@@ -169,7 +169,7 @@ void pipeline_cleanup_process(void)
- 	dovetail_stop_altsched();
- }
- 
--int handle_ptrace_resume(struct task_struct *tracee)
-+static int handle_ptrace_resume(struct task_struct *tracee)
- {
- 	struct xnthread *thread;
- 	spl_t s;
-diff --git a/kernel/cobalt/posix/mqueue.c b/kernel/cobalt/posix/mqueue.c
-index 5d072eb7fd..853aa6cad8 100644
---- a/kernel/cobalt/posix/mqueue.c
-+++ b/kernel/cobalt/posix/mqueue.c
-@@ -237,7 +237,7 @@ static void mqd_close(struct rtdm_fd *fd)
- 	mq_unref(mq);
- }
- 
--int
-+static int
- mqd_select(struct rtdm_fd *fd, struct xnselector *selector,
- 	   unsigned type, unsigned index)
- {
-diff --git a/kernel/cobalt/timer.c b/kernel/cobalt/timer.c
-index 4b9cea4a97..09f93f7173 100644
---- a/kernel/cobalt/timer.c
-+++ b/kernel/cobalt/timer.c
-@@ -62,7 +62,7 @@ int xntimer_heading_p(struct xntimer *timer)
- 	return 0;
- }
- 
--void xntimer_enqueue_and_program(struct xntimer *timer, xntimerq_t *q)
-+static void xntimer_enqueue_and_program(struct xntimer *timer, xntimerq_t *q)
- {
- 	struct xnsched *sched = xntimer_sched(timer);
- 
-diff --git a/kernel/cobalt/vfile.c b/kernel/cobalt/vfile.c
-index 05fa48a091..e2c0f0a965 100644
---- a/kernel/cobalt/vfile.c
-+++ b/kernel/cobalt/vfile.c
-@@ -314,8 +314,8 @@ static int vfile_snapshot_release(struct inode *inode, struct file *file)
- 	return 0;
- }
- 
--ssize_t vfile_snapshot_write(struct file *file, const char __user *buf,
--			     size_t size, loff_t *ppos)
-+static ssize_t vfile_snapshot_write(struct file *file, const char __user *buf,
-+				    size_t size, loff_t *ppos)
- {
- 	struct xnvfile_snapshot *vfile =
- 		pde_data(file->f_path.dentry->d_inode);
-@@ -562,8 +562,8 @@ static int vfile_regular_release(struct inode *inode, struct file *file)
- 	return 0;
- }
- 
--ssize_t vfile_regular_write(struct file *file, const char __user *buf,
--			    size_t size, loff_t *ppos)
-+static ssize_t vfile_regular_write(struct file *file, const char __user *buf,
-+				   size_t size, loff_t *ppos)
- {
- 	struct xnvfile_regular *vfile =
- 		pde_data(file->f_path.dentry->d_inode);
+ /** @} */
 -- 
 2.35.3
 
