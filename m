@@ -1,160 +1,126 @@
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2139.outbound.protection.outlook.com [40.107.6.139])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B2D05B1E0
-	for <xenomai@lists.linux.dev>; Mon,  8 Apr 2024 16:17:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.6.139
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712593085; cv=fail; b=SXGB5qnMnAN01x0Di9b4D7cCHSz9Q9AXL47Uq3o8c9nDrOplL5BprMF5uBnIkVkz+gAKJWmABgz+o0iz6H5YNV5CXxON2muueHp2r7Xw40mP8J2tIrElXOxY1lhuT/azOnfPmZmykIexSaTcO+2mFUD0Ae2DnX2x1UE44Q0uGJY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712593085; c=relaxed/simple;
-	bh=b6frG4MdXgNeVye1ChTzXte6BMhw0zRXXAGyfi9WPj8=;
-	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=qSUHObgx4qj0+OjzouoGX3VR3O4pJBF9BKFFJ0JvJO9E4UUF/ND1IvyZndJpObPWh8T5sA4Id+Z/+HTBmvfOECVAoKoPnmvRYjji1HUQaAAGJ1AvBFZ4MxwUAyOLutguyvQtkmQPQSL4ehtmrhdj6dRxwvvUkmTmnNglGdvXLWU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=uAYFAVnW; arc=fail smtp.client-ip=40.107.6.139
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00DCA1E489
+	for <xenomai@lists.linux.dev>; Mon,  8 Apr 2024 19:35:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1712604909; cv=none; b=Vt5y8ItBiZy5MU/HXEb91ERyby/KhZCrjZyEvz2znZDZtegAe3xLOoEgPxCwr7JAaDcYZh//t85sQu1RuuBV0OM/K4u6wz9j3vkRHTOz6YAEpMxXbFBejyyMHM+Obu0LLrZY3HIbqm9Yct4bs2hQx+sSz39R9oE/ux2w6QR5cUQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1712604909; c=relaxed/simple;
+	bh=J4Gtyo2k2Ck48vfF96PDow6ovE72SrhGt7HjBJFxGBI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=poh7aIoG3bWyGKoVkjo3hifcofU9LrsNpsUgBgXJqDY8J7KqshjCL76ls9peS400qW7GmSQNN80iI17M8iVQpCndqGMNiE9HXZ4LEmop0nSZN4Wnt5k0/sd8qidUD3r+6lyN5G6ObGJN9NovH2TyeDloZnjaMBCKX3l8+Tzd9S8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Zuw7A1KG; arc=none smtp.client-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="uAYFAVnW"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=N/bRxdMVzuDs7Sb7kTdJV5bpxRmGfs8WOEWK2v9aojr6re5skCa40AKGWSTSF1H3aXJQtHAVp9JoN8BysBWaUdL9ht9gaG8r60iqddJlZloRJMQZ8YGhoDtbG0OppzPbTZYBqN9PiojGQq3oakSJG5a6hGvbJLCKUwqwjbO7l/DqgLi9dq+9rsLwVUdKD7zC7Zbra2ioaC0oPIEPZRJhpC0sB2CWkqk4KjgTwd2NESjpgncMGoB31JxLOojjLJzzqwy0zPeixyvTdpEM1uNq8lqxh55ayOw8gKEcnOT7IFs0wgLEbvKXTxIXOm4RaJAc7ZlRSj8UTcvyN49bK1hl3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=a0CnGl7FFiHpYXsErb7FpwlefX3JLTDTpmvunt1tNzA=;
- b=NiFg+Llp74dtDhSmLEH+ixQAWV+aQCxEugD1Nbm0GmgmWyLD3q17a6OGg2vg9hou0KomCDBu9FZo6pmNnZCo7mGeXxA9ox1bzw6OIlZaLbTfbZwil7FBsXMmRUF17+jEG7A6u9zCBD6AJLVXa1/XNSkA0QzbMoQ8v6Y+NnkoIi227ZKGXf8LEMGeo/xEAtk5EKm5+wEGjp6cK0K5E8OmFIUTyHOSb28DOjK5qcAbIn9e1XFm9CLh5QpQCrFZ1DJeoY0b3chJ4dBCsy+7lNewZD7IalidZzbFJ6hVPCxxkMpXed9qyPPWIuwvuU3R41jkCXi11Kna5LUwGS/0gm+a1g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=a0CnGl7FFiHpYXsErb7FpwlefX3JLTDTpmvunt1tNzA=;
- b=uAYFAVnWe2+ZedizsiqJ6oy6LYSXX5nSXmaieWlrFAKUpS/rnkHayHGDdb5QYl6IGt213NULTgfUlbUE0zT8XrqkG6PTyZwVvj8EqgcoSfDGIR3XNCHUzmoy9cG29Npt1C9jPuygBJpqX4qMg6RCZBYrGzciTfqrlh9gEYR4p8y7mMYbp4sOSZwoDLGf6ga0LePZ+IkYcBBR9/0Si+FqAwHEzxEpwD31Jwg+rUUs8x7o2ugUHvMpGJbwzeQ5oyoHHzV0ZoPVI5cR7T6zjSrGgttFpwJ1VulT32M7Mxfkj5uzG+fV9EWkq+yKw7hOK0vZL6tTqIAo8C3Slxidp8WUwQ==
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DB9PR10MB5881.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:395::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7409.49; Mon, 8 Apr
- 2024 16:17:56 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::4e33:3630:e08:77b9]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::4e33:3630:e08:77b9%4]) with mapi id 15.20.7409.042; Mon, 8 Apr 2024
- 16:17:56 +0000
-Message-ID: <383dc8e2-ab48-4422-9ed5-41858aad88e5@siemens.com>
-Date: Mon, 8 Apr 2024 18:17:55 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] prepare-kernel.sh: Fix typo in variable name
-Content-Language: en-US
-To: Richard Weinberger <richard@nod.at>, xenomai@lists.linux.dev
-References: <20240404093040.15605-1-richard@nod.at>
- <20240404093040.15605-2-richard@nod.at>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <20240404093040.15605-2-richard@nod.at>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0255.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:af::18) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Zuw7A1KG"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-1e2178b2cf2so43965455ad.0
+        for <xenomai@lists.linux.dev>; Mon, 08 Apr 2024 12:35:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1712604907; x=1713209707; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rRKKPbQjyL+rgs9neDacvPwEqdanDZ4yH+QrR13r3F8=;
+        b=Zuw7A1KGYcmk7iXOsJ3VaIOBwvdBi1XZo8HgcJcBE1qWEdxdF4OhUxXy5tkLd3Io3q
+         sn1fXrcdQtQhqdpp/6zhnx4Hj28HGJgGRGU5bqR6iULBiWWElt0gJMIDg1twkXPbFHAC
+         94/YZnRa5ainAS8viKaZHaWGQu5AyFUzYlrEK0BgZIxGlB8Z9pDMrcG61bFyI/dhTAhb
+         nbq9n7LWvLW/2srPVoyKtew0UmHNV2Jcet4AjEo6z+JPqfoOkkFcvXUyLQDtS1T0lCEV
+         H8HNMpaR99gPuErb3WknUcvaTm6N6l90n7JM5zBAFSinHOcujco+iJpcy6bERoJQdWZW
+         x45A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1712604907; x=1713209707;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=rRKKPbQjyL+rgs9neDacvPwEqdanDZ4yH+QrR13r3F8=;
+        b=AphfUMCz5pAedwTWWN9yfErfHsADeVNklX9ABjJKfXqhOHkpzxY72IkHWsIWTHmacs
+         Y0A59S1kb4s8N1dvGFFAwWt4tMjU17BHWVB5sjrn7nwbGAWWwq4jZJQz/OtNggBUModx
+         /rJI2wND5TLt+vwVeREmv0+LzyMsIxQdBikg3TN06Ahv966mFYaoksLvVx7EytKjw7Xv
+         RteEbZeJTZ8h9pDzz7YdFnMTXtC93AxNIqLV128KMOPvy27RA/jXV2I/dmhbDlFfAGfm
+         Pmx95rRDTm/1N8K6mqnQOTUvHUQ8cw42UZQZ1uZIVlQ388qPng192x17UAnJ+lemnkpq
+         BISw==
+X-Forwarded-Encrypted: i=1; AJvYcCVYZaAi/1X+gyQh2r+okY90Hirw7JYdzkgDm/r/dazbP2jP5yYoz9iIx96wL9PGA9byUTMHibK3PLbj/x0nPkXUiQZlLWFSRA==
+X-Gm-Message-State: AOJu0YwWb0avSS5r0lptc0YTCzpDNVQ0zvBis9dELr4XLvf5C4AiHWRp
+	CrkbrkvSJXFgHU23vk3RDn8MmEuIwIoyYArWKMTMsZ+rH3GvuoWctt8cvRymds0L6zcfQVkM6R2
+	mY9SB65wYll7YmXCpgAQ5Try/xhE=
+X-Google-Smtp-Source: AGHT+IEwCQwCwqpOjRYJC4FJD7j9OnxXFRYhRXE+PPF0Yter+gXCPMnILGWw5r51q1lXEVpTqRaffLjxAwf/HIpNlOM=
+X-Received: by 2002:a17:902:d512:b0:1e3:f248:192d with SMTP id
+ b18-20020a170902d51200b001e3f248192dmr6786534plg.18.1712604907232; Mon, 08
+ Apr 2024 12:35:07 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DB9PR10MB5881:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info:
-	bnlGS0tIT7x6L1qko93j72IHpN5r7DU/HV5gsov9nyPXfSgNJBEUGxuQonlnmND5BO5LeePIB/FnA2qUPUvKFXyenSrmz69lzEuKReG+9+BtByZ3hdYAlf4p89fLEhMwMtu/qwSzFz4PXGFeWfngfT5aXpy2kJFQ/qfvT7JI4m+SpWrnP6EZPNbuz3EGEPYfJbr4DPENH9itBvmlQGotbnz8PR9dt/QpaghSUWDajD7a3ZynehT1HayYbvM85000WplSe1tWtinjyjRitUD+immYKpHnpsXtRkn0MbTHQtnP5MKMQD8/86P7/LHLNRyg2OFxnpHpwG35Za8IBVioB2NldZOs/TBj3xtgRe3OFW7OepnHw0edHJ3YWR84fvQxxvXFYWXTYOyvMV/mPWN38ZTBDqFhM3Xdg9hpheXqgDgKctnD4tqaCzVOWeqNuZtu6eJbAO4DjcZfo6qAELIuwJ9KZ2Smc+McVGLQU2IrU1iZ0fziVNGMsqL+6hupbF+tozEJcbdPLLOGEw5a8VphJ869/yX/f0f8pR7XnjYakFi/dX2rAYZbV2hGHMpBt+7v/f+1hDAwaCvTdW8lyPdQr8TKoP5GUcIgmXwyeSp8+7rnMTiuT/qICqlOgymqDEbF4HM0y8UBykpEpzyiw3mvsPzUZamEUoa77uCEXKog7PI=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(1800799015);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?d1RmeE43eDE3REJKUi83WnlCSzhoZk1iSWxCVFZ5S0ExRDlkdlh0a3cwL2VV?=
- =?utf-8?B?cmtHM0RNRm5UYTV2bkJyaVpjZ0xSOHF3WnZlbVNNeDZlMzIxYVMvcGF2QWlR?=
- =?utf-8?B?dmdkN0N6RCtsT3FHaVdzd2s4TzJOTkRXRGVZd24wcTY1OFBpUlNJZEZwQ3pD?=
- =?utf-8?B?WG1KeXhtbDhqVndPSDRTNWFwenhMVTIvdER0YXE0T1puUVBialF3OCtvcXhy?=
- =?utf-8?B?NjZZUEJBTGZNRDBzeGZwcWpXZW1ZenZLSUZRS1ZlQkg1ZEtDcGx2WTkwaGVa?=
- =?utf-8?B?UW1DSzJ1cGVaOW11ZURPNUNROVdTSnVDN3BJTTFndUp6eVpiMmJWRHh3U3hq?=
- =?utf-8?B?Q05hUmRzMDZqRUtVR1ZTaEJBNzNFZUVJNmJNRDRHNjlEMnVNQTZKcEYydDVZ?=
- =?utf-8?B?QTVsc0NySEpqa1lvSk8vR1YzbFZBSThjYjNaN2FxbCtxMjIwclMrMnQxTzU0?=
- =?utf-8?B?c2ZObGJ0ZlZYWHUrdHhnRVhWeVJncmRMckYwWnBCeEZzc0FZY2lreE5HaFB0?=
- =?utf-8?B?Q2RseE9lRnpFekQwa0lVYWFYOUtaRDNNTE1HSnNDSDB4dWd0MklFaFlJNlBk?=
- =?utf-8?B?a1FlM2k0RHE0ZDFNekwraUdaWE1FdGlyMjJYOHZQeWZvWHpvTGhDQ3hsRy9s?=
- =?utf-8?B?NzY5OEoyRjdkTHdlakxSb0Q1L1lBazZMRitMS3Y4OEtVc2Q4c0VucFJNdExs?=
- =?utf-8?B?TytNekFaMEJSc3U2Z1M1Rm9BQkVIKy9Tc01NdklCektnVXJ5Z2xaOTlhY0Jx?=
- =?utf-8?B?dFVseU9Gd3dyK1diQytvUWJNalpQb1FzZmxWdXBNaUxUK0FtL0dOTzNKaDdV?=
- =?utf-8?B?dmVDVGxXOFhlWFpkZ3ZMcGhnRFVicEFnbnJRRGl2VG5PY2trVm53QVMwZFZI?=
- =?utf-8?B?ZmpQN3JRREN0YUNOTjREaEltN0NzbTNyN3hzaWtYVStXQUg2UWhQU0lTMlRm?=
- =?utf-8?B?K2NuRXZ1OUdEZU5IS3N2bnFEL09DSmM0QmprM1FHNGEzYkkvd1ZtTEVERWR3?=
- =?utf-8?B?dUYwVjJXQ3l3TCt4czJFM1hxMVExVi9sS3JkeDRNVXMrVlJsV0hKU3NyYXlD?=
- =?utf-8?B?ZDdaZi9ia1RFdnRuTlJoU2t4OFpTdThvTWN3QSt5SjJIZ0FzV2l5MlNibkZp?=
- =?utf-8?B?RlNIZ0lTMG81alhyb25nOHR4MStLR1EwT2IzMzltdkJ6THk1RHlqc3ovZTc4?=
- =?utf-8?B?Q2x1b2tNbGE1SkU3aHhaSnBuZ3BqWXc0eng0MUlKMVhnUjVqeTNvTFVNSUNH?=
- =?utf-8?B?VmdRNHhFSHpkV1hQcklOV25FZ1pYTFdZSTJieGVTaGFLamNJT0NBT1Bud21D?=
- =?utf-8?B?R2p6MTYxbFV4a28rYnBWdENCR0VvYVU1SGQyQjhyWkRJNFRNKzl2eUFRclRR?=
- =?utf-8?B?SWR3aUFzdGlhb1FkRzdnYTdkOFg5QW4yNXFVQmE5YTVDWWRIazFZTVJBU3hB?=
- =?utf-8?B?OWhBVmhha0FkQ0srd0htWTdSUkN1L1pOSjFzMlhTT3F0RlFvdDRTbmluSGtL?=
- =?utf-8?B?QkZPU3gxc3NUMDhFRjdNS0Z0RDlWSlV1Y2dUR0ViVEtUc09MY1ljSDBSNTRO?=
- =?utf-8?B?YmJSZ2UxUGJWNnV0TjFsbUZ2VFltNjMzVkpvZ2lyaTB3cWZGMzQxM0dhRlU1?=
- =?utf-8?B?a1U5ZXRzZ0lCUHpHL29YVGRzbzByRVJkWTdZVmFXNE1YcXpNb202aENVL3Uz?=
- =?utf-8?B?ZHBFaytOaUVDYmpBdi9CelpqNU1Sdk9aMzE3OFVNMVJ6U1FkQTVvSUtOQ1Nk?=
- =?utf-8?B?Q05EVDBtUU9OSDQwOFdWTUxNR1dUeUNSOWRQTkxLMCs5MmdzOTc0N1VKT3A4?=
- =?utf-8?B?b3JvQWVDanhadXlyaXRtRDEwRVozRHlhS2lTb0NCbEQvcHN4VWJmcFpWeWY2?=
- =?utf-8?B?WHkvOGNtYlhCWFZsSE9CdXMxMEg0TlFac0hHYzFjRCtCSjFVTmJFcjBVT2pS?=
- =?utf-8?B?QVYwNGpEUG5EWmJVRlVNSUY4OEtOOEtHWm5aZ2xva09RVlVUOUxaTjBpdjhJ?=
- =?utf-8?B?YlNJUU5CNHI3ZlNERmNybWJkR0F5a1Z4WVQxeWdVelFRN1ZvLytBTHRldzFu?=
- =?utf-8?B?dGEwdXZiK3JlSERXUmZmQUhzTlpBQTBONE5LTkNIdlAzeUxVMkZrOUN0Q0tx?=
- =?utf-8?B?Zlc0djh3Tk9jVG5uYzU4clBXd200T29MMnRzZG80dG1yNVp2MzNhQXM1eThG?=
- =?utf-8?B?TlE9PQ==?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8510e307-0f31-47b4-4a4b-08dc57e77330
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2024 16:17:56.2194
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ix/gI0qmqjEnA4LY0eYsfurVxz26H5dY8GZbrIhjkAD1/QuC8QW+GOrAUEOaOmNc3+Hkc98bZUlWI46SUO7EqA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB5881
+References: <20240403214811.8979-1-richard@nod.at> <20240403214811.8979-2-richard@nod.at>
+ <3f3e21a2-1f44-4737-b530-ae8b62619c05@siemens.com>
+In-Reply-To: <3f3e21a2-1f44-4737-b530-ae8b62619c05@siemens.com>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Mon, 8 Apr 2024 21:34:53 +0200
+Message-ID: <CAFLxGvxTuEF5sseZz4_tAwA=YLj95rZzFOM+TyYEvK_K1zxn_A@mail.gmail.com>
+Subject: Re: [PATCH 2/2] prepare-kernel.sh: Warn when result can be defective
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Richard Weinberger <richard@nod.at>, xenomai@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 04.04.24 11:30, Richard Weinberger wrote:
-> recursive_opts was added via
-> 3f4c56c74 ("fix prepare-kernel for 2.4 and mindepth argument")
-> but never worked as expected, it's recursive_opt, without "s".
-> 
+On Mon, Apr 8, 2024 at 6:10=E2=80=AFPM Jan Kiszka <jan.kiszka@siemens.com> =
+wrote:
+>
+> On 03.04.24 23:48, Richard Weinberger wrote:
+> > If the target Linux source tree contains stale files which
+> > are owned by Xenomai, the result can be defective.
+> > Detect such situations and warn the user to avoid crazy errors.
+> >
+> > It happened to me twice that the resulting --outpatch was faulty
+> > because my kernel tree contained old Xenomail related files.
+> > Hopefully this saves somebody else valuable debug time.
+> >
+> > Signed-off-by: Richard Weinberger <richard@nod.at>
+> > ---
+> >  scripts/prepare-kernel.sh | 11 ++++++++---
+> >  1 file changed, 8 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
+> > index ed168773247f..f9cf9933da88 100755
+> > --- a/scripts/prepare-kernel.sh
+> > +++ b/scripts/prepare-kernel.sh
+> > @@ -107,13 +107,18 @@ patch_link() {
+> >              d=3D`dirname $f`
+> >              if test "x$output_patch" =3D "x"; then
+> >                  mkdir -p $linux_tree/$link_dir/$d
+> > -                if test x$forcelink =3D x1 -o \
+> > -                ! $xenomai_root/$target_dir/$f -ef $linux_tree/$link_d=
+ir/$f;
+> > -             then
+> > +                if ! test $xenomai_root/$target_dir/$f -ef $linux_tree=
+/$link_dir/$f; then
+> > +                    if test -e $linux_tree/$link_dir/$f -a "x$forcelin=
+k" !=3D "x1"; then
+> > +                        echo "$me: warning: $link_dir/$f already prese=
+nt in Linux kernel tree, resulting source tree might be inconsistent!" >&2
+> > +                        continue
+>
+> Does this actually ever trigger? Aren't we deleting files from the
+> target directory before filling in new ones?
 
-And what was the impact?
+It triggers, e.g.
+rw@foxxylove:~/xenomai (prepare_cleanup)> echo zonk >
+~/linux/kernel/xenomai/lock.c
+rw@foxxylove:~/xenomai (prepare_cleanup)> ./scripts/prepare-kernel.sh
+--linux=3D/home/rw/linux --arch=3Darm64
+prepare-kernel.sh: warning: kernel/xenomai/lock.c already present in
+Linux kernel tree, resulting source tree might be inconsistent!
 
-Looking at where recursive_opt is used, both cases specify additional
-constraint on file names that likely happen to exclude source and target
-directory names. Right?
+Only when using the --forcelink flag existing files will be overwritten.
 
-> Signed-off-by: Richard Weinberger <richard@nod.at>
-> ---
->  scripts/prepare-kernel.sh | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
-> index d50680dba..0b11eca66 100755
-> --- a/scripts/prepare-kernel.sh
-> +++ b/scripts/prepare-kernel.sh
-> @@ -94,7 +94,7 @@ patch_link() {
->                link_makefiles_opt="-name Makefile -o"
->             fi
->             if test x$recursive = xr; then
-> -	       recursive_opts="-mindepth 1"
-> +	       recursive_opt="-mindepth 1"
->  	       dir_opt="-type d -o"
->             else
->  	       recursive_opt="-maxdepth 1"
+> This one makes sense to me, though.
 
-Jan
+Yeah, that one bit me hard.
 
--- 
-Siemens AG, Technology
-Linux Expert Center
-
+Thanks,
+//richard
