@@ -1,38 +1,38 @@
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E7DD12AAD3
-	for <xenomai@lists.linux.dev>; Tue,  9 Apr 2024 11:35:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBB8F85636
+	for <xenomai@lists.linux.dev>; Tue,  9 Apr 2024 11:56:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712662553; cv=none; b=YurL3qPhIFzbW+EkDKxIqlQ2kiBx5pW6LWI96vZdLOA6mzVlcGhhOvbXzB+ompizb0M5E3gOS1gcj/IAcPrh7dmmoOH1s6oDi/owq8NabPnymyFQrBcg7joaxxESEBeIa39nZDms+qyt4tXsnJWCMMEi0aO6Pvd5CDMLlk4pqBg=
+	t=1712663799; cv=none; b=C07qWOmRlCWTTgoIYE1I+dKxFtqrqXhyTNftyba2rtwUn7epdvl4Wnbd3G0WGT6JFjcw6HBNldHKhSMjsWH18oYjxtWcyK4FqgjPtG1t21YUyl0l4a5wbtnEB6zXYT5gF9eobJ0oUxJkV5cJSlbPgLpidRgb1f8aB085bHbz4sU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712662553; c=relaxed/simple;
-	bh=zZHlQZDo5GLo7oxmAMGBw3WQMkI1XEyW0SFWLnrgsaA=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=PtS656gZG5yD3+CXxMYv7hkf1Cm7+wC+Ep9oc9ka6KvcI7HAa5vRGZIlmKXRxoMDM9QKQlCHXN8LZJ0ix0Ix8j0xrQWoKRClhIZYKlSGGf4BjgYNDQeBVU+gYRfabk6CqUCyRo4P5WgYYJw0DGz/Yy01o9Za4NxRfzrpakg5hLE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=W2kCjqIX; arc=none smtp.client-ip=185.136.64.225
+	s=arc-20240116; t=1712663799; c=relaxed/simple;
+	bh=hZ3SG14P+Roa5YsVJlEkvYZK7P/a2IhysgK8Mn1QcWU=;
+	h=Message-ID:Subject:From:To:Cc:Date:Content-Type:MIME-Version; b=SlRCeENJmZXTVSHzDqR0pnH5SM6M9edCEzCIV8FaghufIWV7hlJXjVrcbriOPNdb9hc6tm9ql3f3n5VPvrlcylveIh5mzjaSDE8nWBWleaiJkeZhm/0nw5gfcMh4FHcqqu0QgKXcmLjq/9OfdPu3Hms/9fRap15a301PM1ncd5M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=AT3D2s1x; arc=none smtp.client-ip=185.136.65.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="W2kCjqIX"
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 202404091135454c7635eef3f920e43a
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="AT3D2s1x"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20240409115624937a5d434abd1726a6
         for <xenomai@lists.linux.dev>;
-        Tue, 09 Apr 2024 13:35:45 +0200
+        Tue, 09 Apr 2024 13:56:24 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=MMdaQImnNHb0nI8lFvwfZcJlHNDk8/2LT9T2vZk9zkY=;
- b=W2kCjqIXcWNoO8O3eC/3Qfz2saGIPkksS6atc0VcDDgsSGKISsr457znmn7ggFDJxQP9aC
- aAt73qLASzJRoSute2Xzw3m76ViIMlQuEGuVZj4eHpc0D/3dnJlkk6ToGYfzQdL084bGyDib
- ZiV4TUo1zbYdfcl6NXGiLr0LeUcdk=;
-Message-ID: <94a4793d828e988c4c501da67cc6da6be8408c05.camel@siemens.com>
-Subject: Re: config-4.19.89-ipipe-9-xenomai-3
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=xl80lwwXBxd5O/bEJAEm931jxhTmTDv/mPHdsde+v7Y=;
+ b=AT3D2s1xSUxPXGzXBHbOlVLLQSKvV07oZHxejhAj4oUYKwF9gVeAsNhRZwsQjKfmw92q0i
+ OxB8dJWH86DA+SrTCZZjR/yqOAwXpdvEMkoiLqvtSb9Owl4+k2IoLxBKeeU5S5hw8tFdsZvH
+ 9lvagjem9o8XGKFRM3cCoVx1VjpZA=;
+Message-ID: <2fc736948068580213268be9548154799b5c8633.camel@siemens.com>
+Subject: Problem with rt_task_set_affinity() in combination with
+ xenomai.supported_cpus
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: JerryJun <jerryjun123@163.com>, xenomai@lists.linux.dev
-Date: Tue, 09 Apr 2024 13:35:44 +0200
-In-Reply-To: <3ca18868.5e91.18ec0f24d71.Coremail.jerryjun123@163.com>
-References: <3ca18868.5e91.18ec0f24d71.Coremail.jerryjun123@163.com>
+To: xenomai@lists.linux.dev
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Clara Kowalsky
+	 <clara.kowalsky@siemens.com>
+Date: Tue, 09 Apr 2024 13:56:23 +0200
 Autocrypt: =?US-ASCII?Q?addr=3Dflorian.bezdeka@siemen?=
  =?US-ASCII?Q?s.com;_prefer-encrypt=3Dmutual?=
  =?US-ASCII?Q?;_keydata=3DmQENBFwsf8QBCAC2f4AQWu92LZC4bKyUYRxWIpWqGz790s?=
@@ -77,67 +77,57 @@ MIME-Version: 1.0
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi,
+Hi all,
 
-between 4.19 and 5.10 happened a major change in the underlying
-infrastructure. We moved from ipipe to dovetail with the first 5.10
-based release.
+while looking into recent bug reports we were facing a situation where
+we were seeing completely different behavior of provided test
+applications / reproducers than the original reporter.
 
-It might be that the numbers are (completely) different now, but there
-should be no negative impact.
+It turned out that reproducers were assuming that specific CPUs are
+allowed to run Xenomai applications, which was not the case. The
+cmdline parameter xenomai.supported_cpus=3D0x3 (=3D allow the first 2 CPUs
+to serve RT tasks) was used here to shrink the set of CPUs that are
+allowed to run RT tasks.
+
+Example (out of my head), error handling ignored:
+
+void rt_main(void *arg)
+{
+	// do RT stuff
+}
+
+main()
+{
+	RT_TASK demo_task;
+	cpu_set_t mask;
+	int ret;
+
+	CPU_ZERO(&mask);
+	CPU_SET(3, &mask); // Assumption: CPU 3 is allowed to run
+	                   // RT tasks
+
+	rt_task_create(&demo_task, "demo", 0, 50, 0);
+
+	rt_task_set_affinity(&demo_task, &mask);
+
+	rt_task_start(&demo_task, &rt_main, 0);
+}
+
+rt_task_set_affinity() does not report any error in case the supplied
+CPU mask is "invalid" in terms of "there is no usable CPU available".
+If an invalid affinity was set rt_task_start() will block forever.
+
+How should the application know that the affinity is invalid?
+
+My current understanding is that the there is no hook (provided by
+dovetail) that would allow intersecting the sched_setaffinity() call
+that is used at the end.
+
+Should we implement such a hook? Is there something that I missed?
 
 Best regards,
 Florian
 
-On Tue, 2024-04-09 at 11:41 +0800, JerryJun wrote:
->  hi=EF=BC=8Cxenomai:
-> 	We have an issue where the same application was used on different kernel=
-s , the MSW became larger in kernel-5.10.199 + xenomai-3.2.4 but not encoun=
-tered in kernel-4.19.89 + xenomai-3.1=20
-> 	please give me a hint. kernel-config by attached this email
-> =09
-> 	CPU  PID    MSW        CSW        XSC        PF    STAT       %CPU  NAME
-> 	  0  0      0          9996742    0          0     00018000   99.8  [ROO=
-T/0]
-> 	  1  0      0          2024119195 0          0     00018000   95.3  [ROO=
-T/1]
-> 	  2  0      0          2586560269 0          0     00018000   96.5  [ROO=
-T/2]
-> 	  3  0      0          121156377  0          0     00018000   96.2  [ROO=
-T/3]
-> 	  3  2962   0          121156120  0          0     00000046    3.8  [kth=
-ead1]
-> 	  0  2970   0          9920415    0          0     00000046    0.2  [kth=
-ead2]
-> 	  1  2975   0          1650262    0          0     00000046    0.0  [kth=
-ead3]
-> 	  1  2980   0          3099325    0          0     00000046    0.1  [kth=
-ead4]
-> 	  3  3167   156        181        632        0     000680c0    0.0  XX
-> 	  3  3224   9          9          45         0     000680c0    0.0  sysr=
-egd
-> 	  3  3226   8          8          30         0     000680c0    0.0  sysr=
-egd
-> 	  3  3233   8          8          30         0     000680c0    0.0  YY
-> 	  3  3234   2          3          8          0     00068042    0.0  remo=
-te-agent
-> 	  1  3236   15         372743488  537438761  0     00068046    1.1  AA_3=
-167
-> 	  1  3237   327351466  652251196  327355285  0     00068044    0.9  BB_3=
-167
-> 	  1  3238   666888185  1000550068 2334622549 0     00068044    2.6  CC_3=
-167
-> 	  1  3239   856330     2163224    1710753    0     00068046    0.0  DD_3=
-167
-> 	  1  3240   117        2476148    128        0     00068046    0.0  EE_3=
-167
-> 	  1  3241   15         4962912    26         0     00068046    0.0  FF_3=
-167
-> 	  2  3249   163093685  326186203  163096062  0     000680c0    0.5  GG
-> 	  2  3252   196178072  391844998  196181535  0     00068044    0.5  HH
-> 	  2  3259   141521731  260330959  201102670  0     00068044    0.4  II
-> 	  2  3260   163141603  326283087  163141808  0     00068044    0.5  JJ
-> 	  2  3261   481724449  963372088  481875166  0     00068044    1.3  KK
-> 	  2  3263   163130135  326258458  163132953  0     00068044    0.4  LL
-> 	  2  3441   8648757    12961988   13009962   0     00068042    0.0  MM
+
+
 
