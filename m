@@ -1,43 +1,44 @@
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 321321E867
-	for <xenomai@lists.linux.dev>; Wed, 10 Apr 2024 11:38:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 957BA15B0F2
+	for <xenomai@lists.linux.dev>; Wed, 10 Apr 2024 11:59:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1712749088; cv=none; b=T5n09fl69MjUAc92cYc/+9N6hXSKKdQWjrGJrHywl1ph0zjUhnqfFn9xJE17uP3J8sGRmLOF0YHa06e0sMubOyZ6nEHYhcUOz7QhL3U4wpBRyV7zn0CxGAdAl6Qq8RHKq/Y1RiUSrwlhhxmghRvPlyb79MPDgnAYwdR7n6CR4Xs=
+	t=1712750355; cv=none; b=Zd0c99TcciFrLrvxQKmd1YnOkLonQekj2K99ExKsXXBWISR0PhnhUuq7jypSKzB3aKth4Z2g92v1wraLnGznU4MxQqLqOJbhlOlV7ExVxV8K4uqBY7Fs65HzPQr4acaiDqf4EuFuHaoE+duIiEZoZOZiqN7DAfqnJ12DvInKwYQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1712749088; c=relaxed/simple;
-	bh=Zr2yLst5/6FM8vHaS6lQaiqNEgJkTIEguDev9VvbWG8=;
+	s=arc-20240116; t=1712750355; c=relaxed/simple;
+	bh=pZNZlryFPf2ABrQNRmt7xS3fgm8WHHuHmMyIuPhE9R8=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=OtZ+UMrNCiDxBK6uJSp9MLuUOKWAA9xEqEvpea5GJzTguiMsTPG97SMhx9a356Ze+/9G3HaybHA7Y3qvvTOPboVNoa3BhvG+K4tley5F7DPO4n6FKua3LW8l6si78wGOmAQ9nhpI8DZmOxBm3/tkbb1qTMOtCBqVpvFNzfsHzNo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=g5bYJiTD; arc=none smtp.client-ip=185.136.64.228
+	 Content-Type:MIME-Version; b=XKovjm0KEDypu7AuBBPddmLB6H53+XI8ygftkkjmEEEx+mbLBoNQUJfSK5h6Zw21G1BR+14CMnQ9vAPZCo5M1WGvjTAWbbozqYZUomPWDf4vyzuJ5oLZK43AeZuVvvu/NRqfigEmrGB/WAhYBZA2QJc6LYxvMlQQ8AJqS596hyA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=ZHLD1481; arc=none smtp.client-ip=185.136.64.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="g5bYJiTD"
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20240410113755a52c758434f114114f
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="ZHLD1481"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20240410115902181d1d211713c3ff98
         for <xenomai@lists.linux.dev>;
-        Wed, 10 Apr 2024 13:37:56 +0200
+        Wed, 10 Apr 2024 13:59:02 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=n9Rpa1hzpQ+3DI1YTReiDmYgtEWyGG1GVm9fiWWBLlY=;
- b=g5bYJiTDkmoX4VwJVCKuqp/q8T0+i5Hhid/ffjzaj0DtMFv/8yR8KsXduHhis0DM7EQlJt
- 9eiS0CpswldmdhDBVa3CEQNysYAHMI3cotsjpLdtyNgwkLLL9jwy6QqzdWqoSTkXpPexeH09
- GV8a5nDGSBk+LkBnjrJcOO4H+/zjU=;
-Message-ID: <555d1fbec426cb00fb8bc23412802df51f60bb83.camel@siemens.com>
+ bh=xppKY/Yj++mNraDnEi9ZPHeehGnJhAmhHHXoKObpxX8=;
+ b=ZHLD14814tcpM6SdEjbBLCvp5VwGL/prnBxlWuIuqkEz1M2ZN2ty2O34d+k4b850mICJFS
+ Tuc/vb5M92OYBwg+J1DRAm58tp1+Wdv19SxUJzARM0Fue6Duc+1v546HHZqehowOnfENusDl
+ zsIvbgYPygcYj8vfunW5lKSm3XMmM=;
+Message-ID: <0c9e4bbe6a68452f2ab6c5526609de514ebb2b3a.camel@siemens.com>
 Subject: Re: Problem with rt_task_set_affinity() in combination with
  xenomai.supported_cpus
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
 Cc: Clara Kowalsky <clara.kowalsky@siemens.com>
-Date: Wed, 10 Apr 2024 13:37:54 +0200
-In-Reply-To: <2a1c8a5a-5ebb-4195-b986-7ac1ed849a9b@siemens.com>
+Date: Wed, 10 Apr 2024 13:59:00 +0200
+In-Reply-To: <555d1fbec426cb00fb8bc23412802df51f60bb83.camel@siemens.com>
 References: <2fc736948068580213268be9548154799b5c8633.camel@siemens.com>
 	 <aab40d57-cd36-419d-ad04-5700cbef9d94@siemens.com>
 	 <2315a45d9328c17bd9d7be36c0755bcb4f297744.camel@siemens.com>
 	 <2a1c8a5a-5ebb-4195-b986-7ac1ed849a9b@siemens.com>
+	 <555d1fbec426cb00fb8bc23412802df51f60bb83.camel@siemens.com>
 Autocrypt: =?US-ASCII?Q?addr=3Dflorian.bezdeka@siemen?=
  =?US-ASCII?Q?s.com;_prefer-encrypt=3Dmutual?=
  =?US-ASCII?Q?;_keydata=3DmQENBFwsf8QBCAC2f4AQWu92LZC4bKyUYRxWIpWqGz790s?=
@@ -82,134 +83,148 @@ MIME-Version: 1.0
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On Wed, 2024-04-10 at 12:49 +0200, Jan Kiszka wrote:
-> On 10.04.24 12:09, Florian Bezdeka wrote:
-> > On Tue, 2024-04-09 at 19:13 +0200, Jan Kiszka wrote:
-> > > On 09.04.24 13:56, Florian Bezdeka wrote:
-> > > > Hi all,
+On Wed, 2024-04-10 at 13:37 +0200, Florian Bezdeka wrote:
+> On Wed, 2024-04-10 at 12:49 +0200, Jan Kiszka wrote:
+> > On 10.04.24 12:09, Florian Bezdeka wrote:
+> > > On Tue, 2024-04-09 at 19:13 +0200, Jan Kiszka wrote:
+> > > > On 09.04.24 13:56, Florian Bezdeka wrote:
+> > > > > Hi all,
+> > > > >=20
+> > > > > while looking into recent bug reports we were facing a situation =
+where
+> > > > > we were seeing completely different behavior of provided test
+> > > > > applications / reproducers than the original reporter.
+> > > > >=20
+> > > > > It turned out that reproducers were assuming that specific CPUs a=
+re
+> > > > > allowed to run Xenomai applications, which was not the case. The
+> > > > > cmdline parameter xenomai.supported_cpus=3D0x3 (=3D allow the fir=
+st 2 CPUs
+> > > > > to serve RT tasks) was used here to shrink the set of CPUs that a=
+re
+> > > > > allowed to run RT tasks.
+> > > > >=20
+> > > > > Example (out of my head), error handling ignored:
+> > > > >=20
+> > > > > void rt_main(void *arg)
+> > > > > {
+> > > > > 	// do RT stuff
+> > > > > }
+> > > > >=20
+> > > > > main()
+> > > > > {
+> > > > > 	RT_TASK demo_task;
+> > > > > 	cpu_set_t mask;
+> > > > > 	int ret;
+> > > > >=20
+> > > > > 	CPU_ZERO(&mask);
+> > > > > 	CPU_SET(3, &mask); // Assumption: CPU 3 is allowed to run
+> > > > > 	                   // RT tasks
+> > > > >=20
+> > > > > 	rt_task_create(&demo_task, "demo", 0, 50, 0);
+> > > > >=20
+> > > > > 	rt_task_set_affinity(&demo_task, &mask);
+> > > > >=20
+> > > > > 	rt_task_start(&demo_task, &rt_main, 0);
+> > > > > }
+> > > > >=20
+> > > > > rt_task_set_affinity() does not report any error in case the supp=
+lied
+> > > > > CPU mask is "invalid" in terms of "there is no usable CPU availab=
+le".
+> > > > > If an invalid affinity was set rt_task_start() will block forever=
+.
 > > > >=20
-> > > > while looking into recent bug reports we were facing a situation wh=
-ere
-> > > > we were seeing completely different behavior of provided test
-> > > > applications / reproducers than the original reporter.
-> > > >=20
-> > > > It turned out that reproducers were assuming that specific CPUs are
-> > > > allowed to run Xenomai applications, which was not the case. The
-> > > > cmdline parameter xenomai.supported_cpus=3D0x3 (=3D allow the first=
- 2 CPUs
-> > > > to serve RT tasks) was used here to shrink the set of CPUs that are
-> > > > allowed to run RT tasks.
-> > > >=20
-> > > > Example (out of my head), error handling ignored:
-> > > >=20
-> > > > void rt_main(void *arg)
-> > > > {
-> > > > 	// do RT stuff
-> > > > }
-> > > >=20
-> > > > main()
-> > > > {
-> > > > 	RT_TASK demo_task;
-> > > > 	cpu_set_t mask;
-> > > > 	int ret;
-> > > >=20
-> > > > 	CPU_ZERO(&mask);
-> > > > 	CPU_SET(3, &mask); // Assumption: CPU 3 is allowed to run
-> > > > 	                   // RT tasks
-> > > >=20
-> > > > 	rt_task_create(&demo_task, "demo", 0, 50, 0);
-> > > >=20
-> > > > 	rt_task_set_affinity(&demo_task, &mask);
-> > > >=20
-> > > > 	rt_task_start(&demo_task, &rt_main, 0);
-> > > > }
-> > > >=20
-> > > > rt_task_set_affinity() does not report any error in case the suppli=
-ed
-> > > > CPU mask is "invalid" in terms of "there is no usable CPU available=
-".
-> > > > If an invalid affinity was set rt_task_start() will block forever.
+> > > > But the task was already created, is only waiting for the kick-off =
+by
+> > > > rt_task_start. What happens to it?
 > > >=20
-> > > But the task was already created, is only waiting for the kick-off by
-> > > rt_task_start. What happens to it?
-> >=20
-> > The thread is canceled inside the wakeup path to the primary domain:=
+> > > The thread is canceled inside the wakeup path to the primary domain:=
 =20
-> >=20
-> > [510675.581142] [Xenomai] thread demo[1570] switched to non-rt CPU3, ab=
-orted.
-> >=20
-> > The caller of rt_task_create() will block forever:
-> >=20
-> > #0  0xf7fc7579 in __kernel_vsyscall ()
-> > #1  0xf7e544e7 in syscall () from /lib/i386-linux-gnu/libc.so.6
-> > #2  0xf7f74791 in do_sc_cond_wait_prologue (cnd=3D0xf746b82c, mx=3D0xf7=
-46b758,=20
-> >     err=3D0xffffd9a4, timed=3D0, abstime=3D0x0) at cond.c:243
-> > #3  0xf7f74915 in __cobalt_pthread_cond_wait (cond=3D0xf746b82c,=20
-> >     mutex=3D0xf746b758) at cond.c:329
-> > #4  0xf7f9db5a in threadobj_cond_wait (cond=3D0xf746b82c, lock=3D0xf746=
-b758)
-> >     at ../../include/copperplate/threadobj.h:572
-> > #5  0xf7f9e9a8 in wait_on_barrier (thobj=3D0xf746b750, mask=3D16)
-> >     at threadobj.c:1237
-> > #6  0xf7f9ea92 in threadobj_start (thobj=3D0xf746b750) at threadobj.c:1=
-274
-> > #7  0xf7fb2464 in rt_task_start (task=3D0xffffdb60, entry=3D0x5655647a =
-<rt_main>,=20
-> >     arg=3D0x0) at task.c:644
-> > #8  0x565565b1 in main ()
-> >=20
+> > >=20
+> > > [510675.581142] [Xenomai] thread demo[1570] switched to non-rt CPU3, =
+aborted.
+> > >=20
+> > > The caller of rt_task_create() will block forever:
+> > >=20
+> > > #0  0xf7fc7579 in __kernel_vsyscall ()
+> > > #1  0xf7e544e7 in syscall () from /lib/i386-linux-gnu/libc.so.6
+> > > #2  0xf7f74791 in do_sc_cond_wait_prologue (cnd=3D0xf746b82c, mx=3D0x=
+f746b758,=20
+> > >     err=3D0xffffd9a4, timed=3D0, abstime=3D0x0) at cond.c:243
+> > > #3  0xf7f74915 in __cobalt_pthread_cond_wait (cond=3D0xf746b82c,=20
+> > >     mutex=3D0xf746b758) at cond.c:329
+> > > #4  0xf7f9db5a in threadobj_cond_wait (cond=3D0xf746b82c, lock=3D0xf7=
+46b758)
+> > >     at ../../include/copperplate/threadobj.h:572
+> > > #5  0xf7f9e9a8 in wait_on_barrier (thobj=3D0xf746b750, mask=3D16)
+> > >     at threadobj.c:1237
+> > > #6  0xf7f9ea92 in threadobj_start (thobj=3D0xf746b750) at threadobj.c=
+:1274
+> > > #7  0xf7fb2464 in rt_task_start (task=3D0xffffdb60, entry=3D0x5655647=
+a <rt_main>,=20
+> > >     arg=3D0x0) at task.c:644
+> > > #8  0x565565b1 in main ()
 > > >=20
 > > > >=20
-> > > > How should the application know that the affinity is invalid?
+> > > > >=20
+> > > > > How should the application know that the affinity is invalid?
+> > > > >=20
+> > > > > My current understanding is that the there is no hook (provided b=
+y
+> > > > > dovetail) that would allow intersecting the sched_setaffinity() c=
+all
+> > > > > that is used at the end.
+> > > > >=20
+> > > > > Should we implement such a hook? Is there something that I missed=
+?
+> > > > >=20
 > > > >=20
-> > > > My current understanding is that the there is no hook (provided by
-> > > > dovetail) that would allow intersecting the sched_setaffinity() cal=
-l
-> > > > that is used at the end.
+> > > > We could check the mask from userspace in libalchemy. That would re=
+main
+> > > > racy, though, as the set of supported CPUs could still change after
+> > > > set_affinity and before start.
 > > > >=20
-> > > > Should we implement such a hook? Is there something that I missed?
-> > > >=20
+> > > > Do we only have the problem in libalchemy due to its split create/s=
+tart
+> > > > pattern?
 > > >=20
-> > > We could check the mask from userspace in libalchemy. That would rema=
-in
-> > > racy, though, as the set of supported CPUs could still change after
-> > > set_affinity and before start.
+> > > AFAICT this is a general issue, not limited to the alchemy skin. We
+> > > never intercept sched_setaffinity(), so it's basically a pure Linux
+> > > API.
 > > >=20
-> > > Do we only have the problem in libalchemy due to its split create/sta=
-rt
-> > > pattern?
+> > > I would say - as it is a pure Linux API - that we can not validate
+> > > affinities regarding Xenomai supported CPUs. We could implement
+> > > something for the alchemy skin, but the POSIX skin would need an
+> > > additional wrapper.
+> > >=20
+> > > We have /proc/xenomai/affinity, that might be useful. Not sure if we
+> > > can read that without triggering a Linux migration. IMHO, validation =
+on
+> > > kernel side would be better. At least it would avoid one more wrapper=
+.
 > >=20
-> > AFAICT this is a general issue, not limited to the alchemy skin. We
-> > never intercept sched_setaffinity(), so it's basically a pure Linux
-> > API.
-> >=20
-> > I would say - as it is a pure Linux API - that we can not validate
-> > affinities regarding Xenomai supported CPUs. We could implement
-> > something for the alchemy skin, but the POSIX skin would need an
-> > additional wrapper.
-> >=20
-> > We have /proc/xenomai/affinity, that might be useful. Not sure if we
-> > can read that without triggering a Linux migration. IMHO, validation on
-> > kernel side would be better. At least it would avoid one more wrapper.
+> > Not an issue: sched_setaffinity & Co. are not intercepted, so those are
+> > causing a migration anyway.
 >=20
-> Not an issue: sched_setaffinity & Co. are not intercepted, so those are
-> causing a migration anyway.
+> The remaining open topic would be: How to do that for the POSIX theme,
+> we don't have any kind of interception available for
+> sched_setaffinity() right now.
+>=20
+> I see two possibilities:=C2=A0
+> a) additional an additional wrapper
+> b) validation (by implementing some kind of additional hook into the
+> cobalt core) on kernel side
+>=20
+> Validation in userspace is more racy, but does not require any dovetail
+> extension...
 
-The remaining open topic would be: How to do that for the POSIX theme,
-we don't have any kind of interception available for
-sched_setaffinity() right now.
-
-I see two possibilities:=C2=A0
-a) additional an additional wrapper
-b) validation (by implementing some kind of additional hook into the
-cobalt core) on kernel side
-
-Validation in userspace is more racy, but does not require any dovetail
-extension...
+a) should have been "add an additional wrapper". Sorry.
 
 >=20
-> Jan
+> >=20
+> > Jan
+> >=20
+>=20
 >=20
 
