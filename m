@@ -1,39 +1,39 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEDA384A3E
-	for <xenomai@lists.linux.dev>; Tue, 16 Apr 2024 09:00:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CECB1F19A
+	for <xenomai@lists.linux.dev>; Tue, 16 Apr 2024 09:00:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713258017; cv=none; b=oHo390+cZxjOysAHQrt73BsWlJe3fgbbQ0t/slDZxTDesMklaaMpR5T4WtblqPwHfoWTpTvMLBVGVhqF4kT8YT9wEqfoBjRhyeci9kyJTRpqju5aIFM3FPUVF0LXdrkNIChZ0V+vBgr7GauIiLhl9RuwGsquEVmOs2tO0d08du4=
+	t=1713258029; cv=none; b=rQDKR/74/jOelisqRbAo+dkuo/w5sqJ4VY2/D3PFmSS0DxIteJZurcei7Qjui7fEeyr7Vopj5zkFkm99G6vjDQo9soWjy2b3hT3LosCb/W19x22n6f76iIwjb7P/PiDrUqttfj5XR4hinnQeQmaCVtoemMDrIC3B8uCI710bUAc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713258017; c=relaxed/simple;
-	bh=p29HmyXeNFFKrGgEWukPEVNanMYibXpRJIeBp1ZXJ60=;
+	s=arc-20240116; t=1713258029; c=relaxed/simple;
+	bh=KtDz4Tx/Visomh1uocP8k8Og6g9NaRi53+7ifs6lI60=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=ssDiLn5bWOGsm77Myc/pq0M/lBaTxdHFRpk2uDvYulrUw2WFv8eYca+JLxF6+MbRUIHO6D+JJtDG9BLkyaaLdX/jUXUKpcjzIxm0YwPc8hwrDcRFTvfLFpO5yEVqoOu1lPbEXz3LL5PysmAhQMZqpELkp/nSM3iYTxsFkcT6hCg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=aqqj4rP9; arc=none smtp.client-ip=185.136.64.227
+	 MIME-Version; b=Q99qdQHaQsjHbhb0BSyoyXyWehy5Fd8UVjOFcZzH1aifPGVTPSe1rF04hwWWGu1nmBFCNmW1Rzqwoq2JzG560lpZ+wj2w6iZ1tnC61pOe8fdFUu/XUBWBAQAkLdoixzxE8+wJXf8n+qdRVtnK0mQaQno/Ypc8QR48ND+rIgTI6g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=XTRSrXT1; arc=none smtp.client-ip=185.136.64.228
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="aqqj4rP9"
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20240416090004dcf24bff742f86b941
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="XTRSrXT1"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20240416090016df8d5d817a2ff6e542
         for <xenomai@lists.linux.dev>;
-        Tue, 16 Apr 2024 11:00:04 +0200
+        Tue, 16 Apr 2024 11:00:16 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=clara.kowalsky@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=aSiWKr4sgS/z8WVOCRDxxeTfburfMOCkAvZn9DUyUGg=;
- b=aqqj4rP9MEEuLtZXypmjR8OZ8F51AhxdIK0U7A13IYIbSub7eYI/KgZNRQ9NnPmzrn9KAF
- qw0y3Uxd8Q9cr1oIzb6rFjn/Ej92iTWVRiq0V/8GAEmR8eVeQRy6TpBL/mcNl1FEqXIEnmKJ
- Fxmu7ENUTz5pAXo+K6pfv5ybbrAgw=;
+ bh=0l246zdjL0ShzINasICL9tLHJEMpG5dyqMla5OnMXQk=;
+ b=XTRSrXT1LbHL8zhplIGhtxaAWtGY4nc7aBE6hUvG1UwtXUfLv7C1h1jmsm/4/UuYcrM8hU
+ xJGPz5OPN4vrC3YXQcFfv+B43sydGBCglPhMeXWF+G1vd0GWbXos+iYjl0efd6aZqG2Uybsy
+ PShwxKASrnxE9Ry14iTG2NfbzZBmQ=;
 From: Clara Kowalsky <clara.kowalsky@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: jan.kiszka@siemens.com,
 	florian.bezdeka@siemens.com,
 	Clara Kowalsky <clara.kowalsky@siemens.com>
-Subject: [PATCH 1/5] drivers/gpio: Add driver for BCM2711-based SoCs
-Date: Tue, 16 Apr 2024 10:59:07 +0200
-Message-Id: <20240416085911.62073-2-clara.kowalsky@siemens.com>
+Subject: [PATCH 3/5] testsuite/gpiobench: Synchronize index of loopback mode and react mode
+Date: Tue, 16 Apr 2024 10:59:09 +0200
+Message-Id: <20240416085911.62073-4-clara.kowalsky@siemens.com>
 In-Reply-To: <20240416085911.62073-1-clara.kowalsky@siemens.com>
 References: <20240416085911.62073-1-clara.kowalsky@siemens.com>
 Precedence: bulk
@@ -46,88 +46,55 @@ Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-1047747:519-21489:flowmailer
 
-Add support for BCM2711 pin control driver.
+While the index of the react device is incremented on every round (read,
+write, increment), the index of the loopback is only increased on every
+2nd round (write, read, sleep, repeat last steps, increment). This
+results in the unintuitive behavior that half the number of loops would
+have to be passed as a parameter for the loopback device in order for
+both devices to stop at the same time.
+
+To simplify this, the index of the loopback device is increased for each
+loop. The calculation of the average latency is adjusted.
 
 Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
 ---
- kernel/drivers/gpio/Kconfig        |  8 ++++++++
- kernel/drivers/gpio/Makefile       |  2 ++
- kernel/drivers/gpio/gpio-bcm2711.c | 27 +++++++++++++++++++++++++++
- 3 files changed, 37 insertions(+)
- create mode 100644 kernel/drivers/gpio/gpio-bcm2711.c
+ testsuite/gpiobench/gpiobench.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/drivers/gpio/Kconfig b/kernel/drivers/gpio/Kconfig
-index c257444f0..bc9cbc5e9 100644
---- a/kernel/drivers/gpio/Kconfig
-+++ b/kernel/drivers/gpio/Kconfig
-@@ -17,6 +17,14 @@ config XENO_DRIVERS_GPIO_BCM2835
- 	Enables support for the GPIO controller available from
- 	Broadcom's BCM2835 SoC.
+diff --git a/testsuite/gpiobench/gpiobench.c b/testsuite/gpiobench/gpiobench.c
+index 707f35ae9..1c525269e 100644
+--- a/testsuite/gpiobench/gpiobench.c
++++ b/testsuite/gpiobench/gpiobench.c
+@@ -374,6 +374,7 @@ static void *run_gpiobench_loop(void *cookie)
+ 		/*take a break, nanosleep here will not jeopardize the latency*/
+ 		thread_msleep(10);
  
-+config XENO_DRIVERS_GPIO_BCM2711
-+	depends on MACH_BCM2708 || ARCH_BCM2835
-+	tristate "Support for BCM2711 GPIOs"
-+	help
-+
-+	Enables support for the GPIO controller available from
-+	Broadcom's BCM2711 SoC.
-+
- config XENO_DRIVERS_GPIO_MXC
- 	depends on GPIO_MXC
- 	tristate "Support for MXC GPIOs"
-diff --git a/kernel/drivers/gpio/Makefile b/kernel/drivers/gpio/Makefile
-index e534eab93..89337e3f3 100644
---- a/kernel/drivers/gpio/Makefile
-+++ b/kernel/drivers/gpio/Makefile
-@@ -1,6 +1,7 @@
- ccflags-$(CONFIG_XENO_DRIVERS_GPIO_DEBUG) := -DDEBUG
++		ti.total_cycles = i += 1;
+ 		ret = rw_gpio(GPIO_LOW, i);
+ 		/* send a low level pulse from gpio output pin and
+ 		 * receive an interrupt from the other gpio pin,
+@@ -392,8 +393,8 @@ static void *run_gpiobench_loop(void *cookie)
+ 		thread_msleep(10);
+ 	}
  
- obj-$(CONFIG_XENO_DRIVERS_GPIO_BCM2835) += xeno-gpio-bcm2835.o
-+obj-$(CONFIG_XENO_DRIVERS_GPIO_BCM2711) += xeno-gpio-bcm2711.o
- obj-$(CONFIG_XENO_DRIVERS_GPIO_MXC) += xeno-gpio-mxc.o
- obj-$(CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3) += xeno-gpio-sun8i-h3.o
- obj-$(CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000) += xeno-gpio-zynq7000.o
-@@ -10,6 +11,7 @@ obj-$(CONFIG_XENO_DRIVERS_GPIO_CHERRYVIEW) += xeno-gpio-cherryview.o
- obj-$(CONFIG_XENO_DRIVERS_GPIO) += gpio-core.o
+-	ti.ts.inner_avg /= (ti.total_cycles * 2);
+-	ti.ts.outer_avg /= (ti.total_cycles * 2);
++	ti.ts.inner_avg /= ti.total_cycles;
++	ti.ts.outer_avg /= ti.total_cycles;
  
- xeno-gpio-bcm2835-y := gpio-bcm2835.o
-+xeno-gpio-bcm2711-y := gpio-bcm2711.o
- xeno-gpio-mxc-y := gpio-mxc.o
- xeno-gpio-sun8i-h3-y := gpio-sun8i-h3.o
- xeno-gpio-zynq7000-y := gpio-zynq7000.o
-diff --git a/kernel/drivers/gpio/gpio-bcm2711.c b/kernel/drivers/gpio/gpio-bcm2711.c
-new file mode 100644
-index 000000000..a861def27
---- /dev/null
-+++ b/kernel/drivers/gpio/gpio-bcm2711.c
-@@ -0,0 +1,27 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Copyright (c) Siemens AG 2024
-+ *
-+ * Authors:
-+ *  Clara Kowalsky <clara.kowalsky@siemens.com>
-+ */
-+#include <linux/module.h>
-+#include <rtdm/gpio.h>
-+
-+#define RTDM_SUBCLASS_BCM2711  1
-+
-+static int __init bcm2711_gpio_init(void)
-+{
-+	return rtdm_gpiochip_scan_of(NULL, "brcm,bcm2711-gpio",
-+				     RTDM_SUBCLASS_BCM2711);
-+}
-+module_init(bcm2711_gpio_init);
-+
-+static void __exit bcm2711_gpio_exit(void)
-+{
-+	rtdm_gpiochip_remove_by_type(RTDM_SUBCLASS_BCM2711);
-+}
-+module_exit(bcm2711_gpio_exit);
-+
-+MODULE_LICENSE("GPL");
-+
+ 	return NULL;
+ }
+@@ -506,8 +507,8 @@ static void print_hist(void)
+ 		printf("\nTest is interrupted and exit exceptionally\n");
+ 		printf("Please run again till it exit normally\n");
+ 
+-		ti.ts.inner_avg /= (ti.total_cycles * 2);
+-		ti.ts.outer_avg /= (ti.total_cycles * 2);
++		ti.ts.inner_avg /= ti.total_cycles;
++		ti.ts.outer_avg /= ti.total_cycles;
+ 
+ 	}
+ 	printf("\n");
 -- 
 2.39.2
 
