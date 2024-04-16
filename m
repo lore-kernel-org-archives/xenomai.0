@@ -1,154 +1,251 @@
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A5C967A1A
-	for <xenomai@lists.linux.dev>; Tue, 16 Apr 2024 09:49:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E942385280
+	for <xenomai@lists.linux.dev>; Tue, 16 Apr 2024 10:11:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713260979; cv=none; b=BPpzIwWWU8QHXTw9FdVUXvLoZey6vKMb+WcKtr8SFdYkfI301oYNqqFC4JGyLEHodt7vSWJtCSxFa63qjIyMfTy7BbYJktuMR1sb5o0/zJKU51OVn0Z1y2078JXhkP+439oAwV/HJKMuNTsRg487XZ6wC3JByIkrBDnCZEHRB38=
+	t=1713262280; cv=none; b=N9YaNN4tYgA3mb3k657qfA4Xd1L/xus6TCx+y+kggwlkD22n1akL+IwA0ijaEhRDFOX18iwPouVm+Xl7FMHHxge+ESYJ6r6Q0cUF3MYvu2BxI1xs7Qz3Qodv58SHHxD6UYPfhP5q28tVg6ayOFVfzmYqApWFwTLLvUT9uJJgBWU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713260979; c=relaxed/simple;
-	bh=IfUar5t2OTWqKroocB+WahFM5JBPnaKjumkXVNiY+nU=;
-	h=Message-ID:Date:From:To:Subject:MIME-Version:Content-Type; b=Tq3odjtwiPoJrFFPTtr6i9BcHaDHYxiffW97mkdXIheulqYu/SL5wy/Nuk7kfBtV5YMvGxIUpne1IFwbQ5Iq8L7w+mcHlncE4gujn4Twcvz8WaaCKa2yI3xIjCsUtuVrCgOsUjv3DOETob+1O3Gpm27WH65gFugX3bKvqMPsdl0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=drotek.com; spf=pass smtp.mailfrom=drotek.com; dkim=pass (2048-bit key) header.d=drotek-com.20230601.gappssmtp.com header.i=@drotek-com.20230601.gappssmtp.com header.b=mqPZBr5r; arc=none smtp.client-ip=209.85.167.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=drotek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=drotek.com
+	s=arc-20240116; t=1713262280; c=relaxed/simple;
+	bh=HOEocfKFbG5AqZMiSWczNcP/+814aNFnA+y83oxik14=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Xpi8zB0lIW8EXOf+G5XMq4SuFy2kURQKp7dSxlv8B10XpcC7zKrLRzJlxjV+MXCW5v2B6dMvx1IJkT/OIuKM1+wsogYO3A2I/IQ+aLIpc/P1ReIkrnQZzwEmQ4BYDwsU4kpYGUe+uIXEHbFEenKRVNKshEL/QzQvEghZoHond3E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=jOOoPjdO; arc=none smtp.client-ip=185.136.64.225
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=drotek-com.20230601.gappssmtp.com header.i=@drotek-com.20230601.gappssmtp.com header.b="mqPZBr5r"
-Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-516d4d80d00so5130027e87.0
-        for <xenomai@lists.linux.dev>; Tue, 16 Apr 2024 02:49:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=drotek-com.20230601.gappssmtp.com; s=20230601; t=1713260976; x=1713865776; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:user-agent:subject:to:from
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=xkKFwVBNrkGrs1Z32pLYXtn2mqyARDa53STNPWGzJZE=;
-        b=mqPZBr5rKBRJmVuNSrNTB8LUTXG03pFJex6Gp89AHxS/UWr8KeEBYfyJDgQlgax1sb
-         Wka35cEG9m098tHMzm8W2Cc9VAlpNOUa/J93sdcvT5wa14HSi6v0+4DT2IqSMckqlOi9
-         DYbrIzmrlt6wjtrEIhkKsdzBeIR4YomeoSelsK0QwsgxqgWD4BZw8IPdLAqxHvK0yxLN
-         DFbCfJ4pdi86ympLPkTt5kNaF2l8vNMRFoh8rSBWWcuqtOx+Cn+6eGpc0Q9TLGf+/fDq
-         okTFKuUhLT0AQnn0mN9WB49lHQBMEfJPtdlFs7GijTkKzMGzL4FvHeJmXNlOyUCS/Bav
-         jjtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713260976; x=1713865776;
-        h=content-transfer-encoding:mime-version:user-agent:subject:to:from
-         :date:message-id:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xkKFwVBNrkGrs1Z32pLYXtn2mqyARDa53STNPWGzJZE=;
-        b=Uv5wJkxNmmmjjrOvyi48AYKSshVcEL7iZJ3/7XDtowSINCXlG9yFO0YCRQac+w7gQ3
-         vkbPGjHJXYi0am6Yal0WXCqyIPtrQ5IDJozSlty54lMcsFF7ZpZRwTbFxz8RELOjOEa+
-         fgEcdaZuTj1RN7ECSB0crdU4obleAloycXBq5nPZ3++fJJ4e4sy3dqyjFUk6JB1pstqS
-         duiK4knX2+F0SYZZLnwYCUL1Y7jP1yVzgiASqnPo413qn1webMh3S9V2t+ro+/4f3BPN
-         UccQ0DJzg7bTTV1T90Q/mYaYsEdqe1z8vP3RxNt05HJAtaWC8+31FVUXU0oTjsvWFYBG
-         0iAw==
-X-Gm-Message-State: AOJu0YymzXbx0c6RIuBViPoaSm8COgIE6ASuGkc7QUSa+/Xc+qCe6cxU
-	CgBGma7MuxBP4w9BxnxlbGtyUC6hEAFQ58JN7CVBk6poCjphR1gKiTyq8oeb6CT7F8Ii0+Fj5sl
-	Q
-X-Google-Smtp-Source: AGHT+IHVobv+b24DDxy2iSoAsQHcBDFizPk2Ur8cWdlvwn6qSTvYMAV4bRduxk5EcqLC4jwRnullhA==
-X-Received: by 2002:a05:6512:3d28:b0:518:d85a:adf6 with SMTP id d40-20020a0565123d2800b00518d85aadf6mr5642721lfv.26.1713260975673;
-        Tue, 16 Apr 2024 02:49:35 -0700 (PDT)
-Received: from Edoras.gmail.com (apoitiers-259-1-37-199.w90-55.abo.wanadoo.fr. [90.55.220.199])
-        by smtp.gmail.com with ESMTPSA id d16-20020adff2d0000000b003418364032asm14389811wrp.112.2024.04.16.02.49.35
-        for <xenomai@lists.linux.dev>
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Apr 2024 02:49:35 -0700 (PDT)
-Message-ID: <661e49af.df0a0220.ffef6.a7bc@mx.google.com>
-Date: Tue, 16 Apr 2024 11:49:51 +0200
-From: =?ISO-8859-1?Q?C=E9dric_Ch=E9pied?= <cedric.chepied@drotek.com>
-To: xenomai@lists.linux.dev
-Subject: Posix timer creation failure
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?ISO-8859-4?Q?Goj=F2?=) APEL-LB/10.8 EasyPG/1.0.0
- Emacs/30.0.50 (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="jOOoPjdO"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2024041610110487a19d05ae2d9fd4cc
+        for <xenomai@lists.linux.dev>;
+        Tue, 16 Apr 2024 12:11:04 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=HOEocfKFbG5AqZMiSWczNcP/+814aNFnA+y83oxik14=;
+ b=jOOoPjdOLkcUcgWNfHj/LT9Sp9qpZ96XGAyItfoRQ0s+VTili/o98ec/KNXqi1YvLCt9G3
+ 3P9UwHi8k7G4ZF1WS46FCvaOcMEjmYNXXzJYk8I8e+0E1ytzulLvbrPQ6YpKoL0qFpTSo/tr
+ dOwmPcAm8C7pGIzcbEfZLm2vm4t3U=;
+Message-ID: <c60a8f8e8618536f68fd22cd351ede371ae8464f.camel@siemens.com>
+Subject: Re: Re: config-4.19.89-ipipe-9-xenomai-3
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: JerryJun <jerryjun123@163.com>
+Cc: xenomai@lists.linux.dev
+Date: Tue, 16 Apr 2024 12:11:03 +0200
+In-Reply-To: <5bb56609.ebf7.18ecdae4495.Coremail.jerryjun123@163.com>
+References: <3ca18868.5e91.18ec0f24d71.Coremail.jerryjun123@163.com>
+	 <94a4793d828e988c4c501da67cc6da6be8408c05.camel@siemens.com>
+	 <5bb56609.ebf7.18ecdae4495.Coremail.jerryjun123@163.com>
+Autocrypt: =?US-ASCII?Q?addr=3Dflorian.bezdeka@siemen?=
+ =?US-ASCII?Q?s.com;_prefer-encrypt=3Dmutual?=
+ =?US-ASCII?Q?;_keydata=3DmQENBFwsf8QBCAC2f4AQWu92LZC4bKyUYRxWIpWqGz790s?=
+ =?US-ASCII?Q?pcYkXO7M8kfea4iC8qMxv2hT4HT0LTncRP6WiovVN2PeoOBfN5BSa5z?=
+ =?US-ASCII?Q?LIrZGVXh7KmbdKhwhVU+ynoTq9G5uaO2Kos7Vv7nNCuatIq8tSNILuoB?=
+ =?US-ASCII?Q?DFTAZnJW3y1V7YOwhDCPl5gbLSYqUY3OE0yksbtCcVI5istT4ED6mjQ?=
+ =?US-ASCII?Q?9W+3uH1LrgFeEF0oxTjrEPxO5ZYATz0f/TYC8WiM0sMrV+n0eMDntlzA?=
+ =?US-ASCII?Q?63D6lcRi5mNp2jPsJkq3tbWqyCrAe1sKPVJB44ekFwCk0kDIuhR13Q3R?=
+ =?US-ASCII?Q?HE4Or/9sznhMUQjYueWXvTZfzH/VsQJHABEBAAG0LUZsb3JpYW4gQmV6?=
+ =?US-ASCII?Q?ZGVrYSA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPokBVAQTAQg?=
+ =?US-ASCII?Q?APhYhBAzL4P3jiTHdthsq4cj0O1fnOEBVBQJcLH/FAhsDBQkB4TOABQs?=
+ =?US-ASCII?Q?JCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJEMj0O1fnOEBVc6YIAJ8oO4x?=
+ =?US-ASCII?Q?TjOCpjxaS8XQE6VW50HE9I6ShbQVWUEGhF4qzJaACTQDjdg/aio7qNRa?=
+ =?US-ASCII?Q?mnAy83Hy9sAxKVhXs+1R1fstN+JO8zgD3tJspucUkCiXlYu+Qcv2d6C?=
+ =?US-ASCII?Q?ostv+h4nv8fkSoeLfsQu3GJt6W0RN7t+8H/9fUMXyuB8GWo4bhaZcti6?=
+ =?US-ASCII?Q?78CotGLs6UGZpYEGiAMto8+9zVO/tdY1BkREM6bCVeQ9FnnpTRQy/tU5?=
+ =?US-ASCII?Q?xemMWJI64UUP92TUIbQ3TZKAz4iG/Mle+YjiHBGrJM7TxjE3sDg5J2Fa?=
+ =?US-ASCII?Q?HX4wmZPKGdB6wANKupf6HMMt2y7gduVmMKzgb8PDMLPZwWBSvjELQqz?=
+ =?US-ASCII?Q?hiZAQ0EYLSqZwEIAIR4HMTQC4F4YxatIl6MIDY03zD4M3ZQpgyQ6QFL9?=
+ =?US-ASCII?Q?Dq0I+PGc7A6z5rsGl76+D8pDFSN2BBJiLLlQadxKc3ZyTTlRp4bc=09bf?=
+ =?US-ASCII?Q?FZRmsAXwVfLtBauXxGo9pkyhk8Vcjb2EJm6XR8PH99buGOXlFfTLsmeA?=
+ =?US-ASCII?Q?ji/F4jU3qlUnwZMBvHZwRSFqOGdwKPMvW3FppfmREQ0o4xJ4b/bxGXx?=
+ =?US-ASCII?Q?ko21uyR/S5rEJx6X8Ukw95h3JinXHx/g2cjbKHrWBDKoqtX9IZCamDny?=
+ =?US-ASCII?Q?R+sfLWQbOKOrLNYLwLAQwOTVlZWTgue10G1q6Zi0r8RQ2T1Uy+ZLYagv?=
+ =?US-ASCII?Q?Cbzp/lT7p3mv3ba68llX896c0AEQEAAbQ/QmV6ZGVrYSwgRmxvcmlhbj?=
+ =?US-ASCII?Q?sgQmV6ZGVrYSBGbG9yaWFuIDxmbG9yaWFuLmJlemRla2FAc2llbWVuc?=
+ =?US-ASCII?Q?y5jb20+iQEcBBABCAAGBQJgtKpnAAoJEEoHyE9rG1dPpJYH+gPnqpu7h?=
+ =?US-ASCII?Q?4fsWOxco38e74MsazoUdfndTYP5tgaYTVE51ZhOZBl+4jYaywsmmFm9g?=
+ =?US-ASCII?Q?6N4Tw3GiMEDB4YU1X7gQZ60fDKpYL5SnCu5qZirJ4RCV4LDA0789ir+6?=
+ =?US-ASCII?Q?8/zfwXBTV5QoMH0+MkXB4BL+Km3f7X/GdN5oRoItAyKDBcEfGJo6afT?=
+ =?US-ASCII?Q?PtcUdI9n7ExCSfJwb0SBvvkvUsdNppFDGOOHSioINbEHBs2VUvE43toM?=
+ =?US-ASCII?Q?4mPLfhFIAtDcn5Byt80/kotU8v3Iyf86NYCa+0h77xTsKHcCUqe8Rvow?=
+ =?US-ASCII?Q?bCIbig9GGbbd54TasfqQQOiAkn/WeGl33+UIVX1Q8zo7eyMJHzLJQ3I=3D?=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi all,
+T24gVGh1LCAyMDI0LTA0LTExIGF0IDIzOjAyICswODAwLCBKZXJyeUp1biB3cm90ZToKPiDCoCDC
+oCDCoCBZZXMsIHdlJ3ZlIG5vdGljZWQgdGhpcyBjaGFuZ2UgZnJvbSBpcGlwZSB0byBkZXZvdGFp
+bC4gQWx0aG91Z2ggdGhlc2UgbnVtYmVycyBkaWZmZXJlbmNlIGZyb20gNC4xOSB0byA1LjEwLCB0
+aGVyZSBzaG91bGQgYmUgbm8gaHVnZSBmbHVjdHVhdGlvbiBpbiB0aGUgTVNXLsKgCj4gwqAgwqAg
+QXMgeW91IGNhbiBzZWUgaW4gdGhlIGxvZyBiZWxvdywgdGhpcyBwaGVub21lbm9uIGlzIHNwb3Jh
+ZGljLCBhbmQgdGhlIE1TVyBvZiBhbGwgcmVhbC10aW1lIHRocmVhZHMgc3VkZGVubHkgYmVjb21l
+cyBsYXJnZXIgd2l0aGluIDVzLCBhbmQgd2lsbCBjb250aW51ZSB0byBncm93IGF0IHRoaXMgcmF0
+ZS4gVGhlIHN0YXRlIGNvZGUgaXMgMDAwNjgwNDIgb3IgMDAwNjgwNDQgYXMgaWYgdGhlc2UgdGhy
+ZWFkcyBhcmUgYWx3YXlzIGluIHNlY29uZGFyeSBtb2RlLiBUaGUgcGVyZm9ybWFuY2Ugb2YgcmVh
+bC10aW1lIGFwcGxpY2F0aW9ucyBjYW5ub3QgYmUgZ3VhcmFudGVlZCBhZnRlciBNU1cgaXMgaW5j
+cmVhc2VkLgo+IAlJcyB0aGlzIHBoZW5vbWVub24gcmVsYXRlZCB0byB0aGUgY29uZmlnIFNldHRp
+bmdzIG9mIHRoZSBrZXJuZWwgb3LCoCBvcGVuIC0tZW5hYmxlLWxhenktc2V0c2NoZWQgPwoKSGFy
+ZCB0byB0ZWxsLiBZb3UgbWlnaHQgd2FudCB0byB0cmFjZSB3aGF0IHRoZSBhcHBsaWNhdGlvbiBk
+b2VzIHdoZW4KdGhlIHByb2JsZW0gY29tZXMgdXAuIAoKPiAKPiDCoCAgICAgVElNRVNUQU1QwqAg
+wqAgwqAgwqAgwqAgwqAgwqAgwqAgwqBDUFXCoCDCoCDCoCDCoFBJRMKgIMKgIMKgIMKgIMKgTVNX
+ICAgICAgICAgICAgQ1NXCSAgICAgICBYU0MJCSAgICAgUEbCoCDCoCDCoCBTVEFURcKgIMKgIMKg
+IMKgIMKgJUNQVcKgIMKgICAgICAgICAgTkFNRQo+IDIwMjQwNDA4VDIxMTQ0MyAtwqAgfMKgIMKg
+IMKgIMKgIMKgIDIgfMKgIMKgIMKgIMKgMTEzNSB8wqAgwqAgMTA0NzQ3MyB8wqAgwqAgMjA5ODQ0
+MyB8wqAgwqAgMTA0Nzc5NiB8wqAgwqAgwqAgwqAgwqAgMCB8wqAgwqAwMDA2ODA0NCB8wqAgwqAg
+wqAgwqAgMC40IHwgdGhyZWFkQSA9PT0gTVNXIDEwNDc0NzMgPT09wqAgSW5jcmVhc2U6ICsxMDQ3
+NDczCj4gMjAyNDA0MDhUMjExNDQzIC3CoCB8wqAgwqAgwqAgwqAgwqAgMiB8wqAgwqAgwqAgwqAx
+MTM4IHzCoCDCoCAxMjU2OTYzIHzCoCDCoCAyNTE3MTQ4IHzCoCDCoCAxMjU3MTg3IHzCoCDCoCDC
+oCDCoCDCoCAwIHzCoCDCoDAwMDY4MDQ0IHzCoCDCoCDCoCDCoCAwLjUgfCB0aHJlYWRCID09PSBN
+U1cgMTI1Njk2MyA9PT3CoCBJbmNyZWFzZTogKzEyNTY5NjMKPiAyMDI0MDQwOFQyMTE0NDMgLcKg
+IHzCoCDCoCDCoCDCoCDCoCAyIHzCoCDCoCDCoCDCoDExNDUgfMKgIMKgIDEwNTQ4NDAgfMKgIMKg
+IDIwODU0OTYgfMKgIMKgIDEwODIyMDYgfMKgIMKgIMKgIMKgIMKgIDAgfMKgIMKgMDAwNjgwNDQg
+fMKgIMKgIMKgIMKgIDIuOSB8IHRocmVhZEMgPT09IE1TVyAxMDU0ODQwID09PcKgIEluY3JlYXNl
+OiArMTA1NDg0MAo+IDIwMjQwNDA4VDIxMTQ0MyAtwqAgfMKgIMKgIMKgIMKgIMKgIDIgfMKgIMKg
+IMKgIMKgMTE0NiB8wqAgwqAgMTA0NzIxOSB8wqAgwqAgMjA5ODA1OSB8wqAgwqAgMTA0NzM2MiB8
+wqAgwqAgwqAgwqAgwqAgMCB8wqAgwqAwMDA2ODBjMCB8wqAgwqAgwqAgwqAgMC40IHwgdGhyZWFk
+RCA9PT0gTVNXIDEwNDcyMTkgPT09wqAgSW5jcmVhc2U6ICsxMDQ3MjE5Cj4gMjAyNDA0MDhUMjEx
+NDQzIC3CoCB8wqAgwqAgwqAgwqAgwqAgMiB8wqAgwqAgwqAgwqAxMTQ3IHzCoCDCoCAzMDg4NTA4
+IHzCoCDCoCA2MTg3NzU0IHzCoCDCoCAzMDg4NTU5IHzCoCDCoCDCoCDCoCDCoCAwIHzCoCDCoDAw
+MDY4MDQ0IHzCoCDCoCDCoCDCoCAxLjIgfCB0aHJlYWRFID09PSBNU1cgMzA4ODUwOCA9PT3CoCBJ
+bmNyZWFzZTogKzMwODg1MDgKPiAyMDI0MDQwOFQyMTE0NDMgLcKgIHzCoCDCoCDCoCDCoCDCoCAy
+IHzCoCDCoCDCoCDCoDExNDkgfMKgIMKgIDEwNDcxODkgfMKgIMKgIDIwOTgxNDcgfMKgIMKgIDEw
+NDcyMDYgfMKgIMKgIMKgIMKgIMKgIDAgfMKgIMKgMDAwNjgwNDQgfMKgIMKgIMKgIMKgIDAuNCB8
+IHRocmVhZEYgPT09IE1TVyAxMDQ3MTg5ID09PcKgIEluY3JlYXNlOiArMTA0NzE4OQo+IDIwMjQw
+NDA4VDIxMTQ0MyAtwqAgfMKgIMKgIMKgIMKgIMKgIDIgfMKgIMKgIMKgIMKgMTM1MiB8wqAgwqAg
+wqAgwqAzNDg3IHzCoCDCoCDCoCDCoDUyNDMgfMKgIMKgIMKgIMKgNTI2NyB8wqAgwqAgwqAgwqAg
+wqAgMCB8wqAgwqAwMDA2ODA0MiB8wqAgwqAgwqAgwqAgMC42IHwgdGhyZWFkRyA9PT0gTVNXIDM0
+ODcgPT09wqAgSW5jcmVhc2U6ICszNDg3Cj4gCj4gMjAyNDA0MDhUMjExNDQ4IC3CoCB8wqAgwqAg
+wqAgwqAgwqAgMiB8wqAgwqAgwqAgwqAxMTM1IHzCoCDCoCAxMDYzODkxIHzCoCDCoCAyMTMxMzM1
+IHzCoCDCoCAxMDY0MjI2IHzCoCDCoCDCoCDCoCDCoCAwIHzCoCDCoDAwMDY4MDQ0IHzCoCDCoCDC
+oCDCoCAwLjQgfCB0aHJlYWRBID09PSBNU1cgMTA2Mzg5MSA9PT3CoCBJbmNyZWFzZTogKzE2NDE4
+Cj4gMjAyNDA0MDhUMjExNDQ4IC3CoCB8wqAgwqAgwqAgwqAgwqAgMiB8wqAgwqAgwqAgwqAxMTM4
+IHzCoCDCoCAxMjc2NzY2IHzCoCDCoCAyNTU2NjkzIHzCoCDCoCAxMjc2OTk5IHzCoCDCoCDCoCDC
+oCDCoCAwIHzCoCDCoDAwMDY4MDQ0IHzCoCDCoCDCoCDCoCAwLjUgfCB0aHJlYWRCID09PSBNU1cg
+MTI3Njc2NiA9PT3CoCBJbmNyZWFzZTogKzE5ODAzCj4gMjAyNDA0MDhUMjExNDQ4IC3CoCB8wqAg
+wqAgwqAgwqAgwqAgMiB8wqAgwqAgwqAgwqAxMTQ1IHzCoCDCoCAxMDcyNzUzIHzCoCDCoCAyMTEy
+MTk3IHzCoCDCoCAxMTEyNjY4IHzCoCDCoCDCoCDCoCDCoCAwIHzCoCDCoDAwMDY4MDQ0IHzCoCDC
+oCDCoCDCoCAzLjAgfCB0aHJlYWRDID09PSBNU1cgMTA3Mjc1MyA9PT3CoCBJbmNyZWFzZTogKzE3
+OTEzCj4gMjAyNDA0MDhUMjExNDQ4IC3CoCB8wqAgwqAgwqAgwqAgwqAgMiB8wqAgwqAgwqAgwqAx
+MTQ2IHzCoCDCoCAxMDYzNjIxIHzCoCDCoCAyMTMwOTIzIHzCoCDCoCAxMDYzNzY0IHzCoCDCoCDC
+oCDCoCDCoCAwIHzCoCDCoDAwMDY4MGMwIHzCoCDCoCDCoCDCoCAwLjQgfCB0aHJlYWREID09PSBN
+U1cgMTA2MzYyMSA9PT3CoCBJbmNyZWFzZTogKzE2NDAyCj4gMjAyNDA0MDhUMjExNDQ4IC3CoCB8
+wqAgwqAgwqAgwqAgwqAgMiB8wqAgwqAgwqAgwqAxMTQ3IHzCoCDCoCAzMTM2OTU2IHzCoCDCoCA2
+Mjg0ODA3IHzCoCDCoCAzMTM3MDI1IHzCoCDCoCDCoCDCoCDCoCAwIHzCoCDCoDAwMDY4MGMwIHzC
+oCDCoCDCoCDCoCAxLjIgfCB0aHJlYWRFID09PSBNU1cgMzEzNjk1NiA9PT3CoCBJbmNyZWFzZTog
+KzQ4NDQ4Cj4gMjAyNDA0MDhUMjExNDQ4IC3CoCB8wqAgwqAgwqAgwqAgwqAgMiB8wqAgwqAgwqAg
+wqAxMTQ5IHzCoCDCoCAxMDYzNjE5IHzCoCDCoCAyMTMxMDY4IHzCoCDCoCAxMDYzNjM2IHzCoCDC
+oCDCoCDCoCDCoCAwIHzCoCDCoDAwMDY4MDQ0IHzCoCDCoCDCoCDCoCAwLjQgfCB0aHJlYWRGID09
+PSBNU1cgMTA2MzYxOSA9PT3CoCBJbmNyZWFzZTogKzE2NDMwCj4gMjAyNDA0MDhUMjExNDQ4IC3C
+oCB8wqAgwqAgwqAgwqAgwqAgMiB8wqAgwqAgwqAgwqAxMzUyIHzCoCDCoCDCoCDCoDYxMjcgfMKg
+IMKgIMKgIMKgOTIyMyB8wqAgwqAgwqAgwqA5MjI3IHzCoCDCoCDCoCDCoCDCoCAwIHzCoCDCoDAw
+MDY4MDQyIHzCoCDCoCDCoCDCoCAwLjggfCB0aHJlYWRHID09PSBNU1cgNjEyNyA9PT3CoCBJbmNy
+ZWFzZTogKzI2NDAKPiAKPiAyMDI0MDQwOFQyMTIwMjkgLcKgIHzCoCDCoCDCoCDCoCDCoCAyIHzC
+oCDCoCDCoCDCoDExMzUgfMKgIMKgIDIxODM0MDggfMKgIMKgIDQzNzQ1OTIgfMKgIMKgIDIxODM4
+NDkgfMKgIMKgIMKgIMKgIMKgIDAgfMKgIMKgMDAwNjgwNDQgfMKgIMKgIMKgIMKgIDAuNCB8IHRo
+cmVhZEEgPT09IE1TVyAyMTgzNDA4ID09PcKgIEluY3JlYXNlOiArMTExOTUxNwo+IDIwMjQwNDA4
+VDIxMjAyOSAtwqAgfMKgIMKgIMKgIMKgIMKgIDIgfMKgIMKgIMKgIMKgMTEzOCB8wqAgwqAgMjYy
+Mzg0MyB8wqAgwqAgNTI1MTc4NyB8wqAgwqAgMjYyNDI4NCB8wqAgwqAgwqAgwqAgwqAgMCB8wqAg
+wqAwMDA2ODA0NCB8wqAgwqAgwqAgwqAgMC41IHwgdGhyZWFkQiA9PT0gTVNXIDI2MjM4NDMgPT09
+wqAgSW5jcmVhc2U6ICsxMzQ3MDc3Cj4gMjAyNDA0MDhUMjEyMDI5IC3CoCB8wqAgwqAgwqAgwqAg
+wqAgMiB8wqAgwqAgwqAgwqAxMTQ1IHzCoCDCoCAxOTgxNTU2IHzCoCDCoCAzODU0NDIxIHzCoCDC
+oCAyMTY2MzU5IHzCoCDCoCDCoCDCoCDCoCAwIHzCoCDCoDAwMDY4MDQ0IHzCoCDCoCDCoCDCoCAz
+LjAgfCB0aHJlYWRDID09PSBNU1cgMTk4MTU1NiA9PT3CoCBJbmNyZWFzZTogKzkwODgwMwo+IDIw
+MjQwNDA4VDIxMjAyOSAtwqAgfMKgIMKgIMKgIMKgIMKgIDIgfMKgIMKgIMKgIMKgMTE0NiB8wqAg
+wqAgMjE4MzMxNSB8wqAgwqAgNDM3NDY2NiB8wqAgwqAgMjE4MzQ3OCB8wqAgwqAgwqAgwqAgwqAg
+MCB8wqAgwqAwMDA2ODA0NCB8wqAgwqAgwqAgwqAgMC40IHwgdGhyZWFkRCA9PT0gTVNXIDIxODMz
+MTUgPT09wqAgSW5jcmVhc2U6ICsxMTE5Njk0Cj4gMjAyNDA0MDhUMjEyMDI5IC3CoCB8wqAgwqAg
+wqAgwqAgwqAgMiB8wqAgwqAgwqAgwqAxMTQ3IHzCoCDCoCA2NDMzNDk5IHzCoCDCoDEyODg4NjI4
+IHzCoCDCoCA2NDM3MDc2IHzCoCDCoCDCoCDCoCDCoCAwIHzCoCDCoDAwMDY4MDQ0IHzCoCDCoCDC
+oCDCoCAxLjIgfCB0aHJlYWRFID09PSBNU1cgNjQzMzQ5OSA9PT3CoCBJbmNyZWFzZTogKzMyOTY1
+NDMKPiAyMDI0MDQwOFQyMTIwMjkgLcKgIHzCoCDCoCDCoCDCoCDCoCAyIHzCoCDCoCDCoCDCoDEx
+NDkgfMKgIMKgIDIxODM2MzMgfMKgIMKgIDQzNzUxODEgfMKgIMKgIDIxODQwMDUgfMKgIMKgIMKg
+IMKgIMKgIDAgfMKgIMKgMDAwNjgwNDQgfMKgIMKgIMKgIMKgIDAuNCB8IHRocmVhZEYgPT09IE1T
+VyAyMTgzNjMzID09PcKgIEluY3JlYXNlOiArMTEyMDAxNAo+IDIwMjQwNDA4VDIxMjAyOSAtwqAg
+fMKgIMKgIMKgIMKgIMKgIDIgfMKgIMKgIMKgIMKgMTM1MiB8wqAgwqAgwqAgMjY3ODcgfMKgIMKg
+IMKgIDQzMDk5IHzCoCDCoCDCoCA0MDIxNyB8wqAgwqAgwqAgwqAgwqAgMCB8wqAgwqAwMDA2ODA0
+MiB8wqAgwqAgwqAgwqAgMC42IHwgdGhyZWFkRyA9PT0gTVNXIDI2Nzg3ID09PcKgIEluY3JlYXNl
+OiArMjA2NjAKPiAKPiAyMDI0MDQwOFQyMTIwMzQgLcKgIHzCoCDCoCDCoCDCoCDCoCAyIHzCoCDC
+oCDCoCDCoDExMzUgfMKgIMKgIDIxOTk4MjEgfMKgIMKgIDQ0MDc0NzUgfMKgIMKgIDIyMDAyNzQg
+fMKgIMKgIMKgIMKgIMKgIDAgfMKgIMKgMDAwNjgwNDQgfMKgIMKgIMKgIMKgIDAuNCB8IHRocmVh
+ZEEgPT09IE1TVyAyMTk5ODIxID09PcKgIEluY3JlYXNlOiArMTY0MTMKPiAyMDI0MDQwOFQyMTIw
+MzQgLcKgIHzCoCDCoCDCoCDCoCDCoCAyIHzCoCDCoCDCoCDCoDExMzggfMKgIMKgIDI2NDM2NDcg
+fMKgIMKgIDUyOTEzNDIgfMKgIMKgIDI2NDQwOTcgfMKgIMKgIMKgIMKgIMKgIDAgfMKgIMKgMDAw
+NjgwNDQgfMKgIMKgIMKgIMKgIDAuNSB8IHRocmVhZEIgPT09IE1TVyAyNjQzNjQ3ID09PcKgIElu
+Y3JlYXNlOiArMTk4MDQKPiAyMDI0MDQwOFQyMTIwMzQgLcKgIHzCoCDCoCDCoCDCoCDCoCAyIHzC
+oCDCoCDCoCDCoDExNDUgfMKgIMKgIDE5OTkzODMgfMKgIMKgIDM4ODA2NTEgfMKgIMKgIDIxOTc2
+MTkgfMKgIMKgIMKgIMKgIMKgIDAgfMKgIMKgMDAwNjgwNDQgfMKgIMKgIMKgIMKgIDIuOCB8IHRo
+cmVhZEMgPT09IE1TVyAxOTk5MzgzID09PcKgIEluY3JlYXNlOiArMTc4MjcKPiAyMDI0MDQwOFQy
+MTIwMzQgLcKgIHzCoCDCoCDCoCDCoCDCoCAyIHzCoCDCoCDCoCDCoDExNDYgfMKgIMKgIDIxOTk3
+MTkgfMKgIMKgIDQ0MDc1MjcgfMKgIMKgIDIxOTk4ODIgfMKgIMKgIMKgIMKgIMKgIDAgfMKgIMKg
+MDAwNjgwNDQgfMKgIMKgIMKgIMKgIDAuNCB8IHRocmVhZEQgPT09IE1TVyAyMTk5NzE5ID09PcKg
+IEluY3JlYXNlOiArMTY0MDQKPiAyMDI0MDQwOFQyMTIwMzQgLcKgIHzCoCDCoCDCoCDCoCDCoCAy
+IHzCoCDCoCDCoCDCoDExNDcgfMKgIMKgIDY0ODE4MzEgfMKgIMKgMTI5ODU0MjQgfMKgIMKgIDY0
+ODU0MzQgfMKgIMKgIMKgIMKgIMKgIDAgfMKgIMKgMDAwNjgwNDQgfMKgIMKgIMKgIMKgIDEuMSB8
+IHRocmVhZEUgPT09IE1TVyA2NDgxODMxID09PcKgIEluY3JlYXNlOiArNDgzMzIKPiAyMDI0MDQw
+OFQyMTIwMzQgLcKgIHzCoCDCoCDCoCDCoCDCoCAyIHzCoCDCoCDCoCDCoDExNDkgfMKgIMKgIDIy
+MDAwNDMgfMKgIMKgIDQ0MDgwNzMgfMKgIMKgIDIyMDA0MTUgfMKgIMKgIMKgIMKgIMKgIDAgfMKg
+IMKgMDAwNjgwNDQgfMKgIMKgIMKgIMKgIDAuNCB8IHRocmVhZEYgPT09IE1TVyAyMjAwMDQzID09
+PcKgIEluY3JlYXNlOiArMTY0MTAKPiAyMDI0MDQwOFQyMTIwMzQgLcKgIHzCoCDCoCDCoCDCoCDC
+oCAyIHzCoCDCoCDCoCDCoDEzNTIgfMKgIMKgIMKgIDI5NzI1IHzCoCDCoCDCoCA0NzUzNCB8wqAg
+wqAgwqAgNDQ2MjQgfMKgIMKgIMKgIMKgIMKgIDAgfMKgIMKgMDAwNjgwNDIgfMKgIMKgIMKgIMKg
+IDAuOCB8IHRocmVhZEcgPT09IE1TVyAyOTcyNSA9PT3CoCBJbmNyZWFzZTogKzI5MzgKPiAKPiAK
+PiBBdCAyMDI0LTA0LTA5IDE5OjM1OjQ0LCAiRmxvcmlhbiBCZXpkZWthIiA8Zmxvcmlhbi5iZXpk
+ZWthQHNpZW1lbnMuY29tPiB3cm90ZToKPiA+IEhpLAo+ID4gCj4gPiBiZXR3ZWVuIDQuMTkgYW5k
+IDUuMTAgaGFwcGVuZWQgYSBtYWpvciBjaGFuZ2UgaW4gdGhlIHVuZGVybHlpbmcKPiA+IGluZnJh
+c3RydWN0dXJlLiBXZSBtb3ZlZCBmcm9tIGlwaXBlIHRvIGRvdmV0YWlsIHdpdGggdGhlIGZpcnN0
+IDUuMTAKPiA+IGJhc2VkIHJlbGVhc2UuCj4gPiAKPiA+IEl0IG1pZ2h0IGJlIHRoYXQgdGhlIG51
+bWJlcnMgYXJlIChjb21wbGV0ZWx5KSBkaWZmZXJlbnQgbm93LCBidXQgdGhlcmUKPiA+IHNob3Vs
+ZCBiZSBubyBuZWdhdGl2ZSBpbXBhY3QuCj4gPiAKPiA+IEJlc3QgcmVnYXJkcywKPiA+IEZsb3Jp
+YW4KPiA+IAo+ID4gT24gVHVlLCAyMDI0LTA0LTA5IGF0IDExOjQxICswODAwLCBKZXJyeUp1biB3
+cm90ZToKPiA+ID4gIGhp77yMeGVub21haToKPiA+ID4gCVdlIGhhdmUgYW4gaXNzdWUgd2hlcmUg
+dGhlIHNhbWUgYXBwbGljYXRpb24gd2FzIHVzZWQgb24gZGlmZmVyZW50IGtlcm5lbHMgLCB0aGUg
+TVNXIGJlY2FtZSBsYXJnZXIgaW4ga2VybmVsLTUuMTAuMTk5ICsgeGVub21haS0zLjIuNCBidXQg
+bm90IGVuY291bnRlcmVkIGluIGtlcm5lbC00LjE5Ljg5ICsgeGVub21haS0zLjEgCj4gPiA+IAlw
+bGVhc2UgZ2l2ZSBtZSBhIGhpbnQuIGtlcm5lbC1jb25maWcgYnkgYXR0YWNoZWQgdGhpcyBlbWFp
+bAo+ID4gPiAJCj4gPiA+IAlDUFUgIFBJRCAgICBNU1cgICAgICAgIENTVyAgICAgICAgWFNDICAg
+ICAgICBQRiAgICBTVEFUICAgICAgICVDUFUgIE5BTUUKPiA+ID4gCSAgMCAgMCAgICAgIDAgICAg
+ICAgICAgOTk5Njc0MiAgICAwICAgICAgICAgIDAgICAgIDAwMDE4MDAwICAgOTkuOCAgW1JPT1Qv
+MF0KPiA+ID4gCSAgMSAgMCAgICAgIDAgICAgICAgICAgMjAyNDExOTE5NSAwICAgICAgICAgIDAg
+ICAgIDAwMDE4MDAwICAgOTUuMyAgW1JPT1QvMV0KPiA+ID4gCSAgMiAgMCAgICAgIDAgICAgICAg
+ICAgMjU4NjU2MDI2OSAwICAgICAgICAgIDAgICAgIDAwMDE4MDAwICAgOTYuNSAgW1JPT1QvMl0K
+PiA+ID4gCSAgMyAgMCAgICAgIDAgICAgICAgICAgMTIxMTU2Mzc3ICAwICAgICAgICAgIDAgICAg
+IDAwMDE4MDAwICAgOTYuMiAgW1JPT1QvM10KPiA+ID4gCSAgMyAgMjk2MiAgIDAgICAgICAgICAg
+MTIxMTU2MTIwICAwICAgICAgICAgIDAgICAgIDAwMDAwMDQ2ICAgIDMuOCAgW2t0aGVhZDFdCj4g
+PiA+IAkgIDAgIDI5NzAgICAwICAgICAgICAgIDk5MjA0MTUgICAgMCAgICAgICAgICAwICAgICAw
+MDAwMDA0NiAgICAwLjIgIFtrdGhlYWQyXQo+ID4gPiAJICAxICAyOTc1ICAgMCAgICAgICAgICAx
+NjUwMjYyICAgIDAgICAgICAgICAgMCAgICAgMDAwMDAwNDYgICAgMC4wICBba3RoZWFkM10KPiA+
+ID4gCSAgMSAgMjk4MCAgIDAgICAgICAgICAgMzA5OTMyNSAgICAwICAgICAgICAgIDAgICAgIDAw
+MDAwMDQ2ICAgIDAuMSAgW2t0aGVhZDRdCj4gPiA+IAkgIDMgIDMxNjcgICAxNTYgICAgICAgIDE4
+MSAgICAgICAgNjMyICAgICAgICAwICAgICAwMDA2ODBjMCAgICAwLjAgIFhYCj4gPiA+IAkgIDMg
+IDMyMjQgICA5ICAgICAgICAgIDkgICAgICAgICAgNDUgICAgICAgICAwICAgICAwMDA2ODBjMCAg
+ICAwLjAgIHN5c3JlZ2QKPiA+ID4gCSAgMyAgMzIyNiAgIDggICAgICAgICAgOCAgICAgICAgICAz
+MCAgICAgICAgIDAgICAgIDAwMDY4MGMwICAgIDAuMCAgc3lzcmVnZAo+ID4gPiAJICAzICAzMjMz
+ICAgOCAgICAgICAgICA4ICAgICAgICAgIDMwICAgICAgICAgMCAgICAgMDAwNjgwYzAgICAgMC4w
+ICBZWQo+ID4gPiAJICAzICAzMjM0ICAgMiAgICAgICAgICAzICAgICAgICAgIDggICAgICAgICAg
+MCAgICAgMDAwNjgwNDIgICAgMC4wICByZW1vdGUtYWdlbnQKPiA+ID4gCSAgMSAgMzIzNiAgIDE1
+ICAgICAgICAgMzcyNzQzNDg4ICA1Mzc0Mzg3NjEgIDAgICAgIDAwMDY4MDQ2ICAgIDEuMSAgQUFf
+MzE2Nwo+ID4gPiAJICAxICAzMjM3ICAgMzI3MzUxNDY2ICA2NTIyNTExOTYgIDMyNzM1NTI4NSAg
+MCAgICAgMDAwNjgwNDQgICAgMC45ICBCQl8zMTY3Cj4gPiA+IAkgIDEgIDMyMzggICA2NjY4ODgx
+ODUgIDEwMDA1NTAwNjggMjMzNDYyMjU0OSAwICAgICAwMDA2ODA0NCAgICAyLjYgIENDXzMxNjcK
+PiA+ID4gCSAgMSAgMzIzOSAgIDg1NjMzMCAgICAgMjE2MzIyNCAgICAxNzEwNzUzICAgIDAgICAg
+IDAwMDY4MDQ2ICAgIDAuMCAgRERfMzE2Nwo+ID4gPiAJICAxICAzMjQwICAgMTE3ICAgICAgICAy
+NDc2MTQ4ICAgIDEyOCAgICAgICAgMCAgICAgMDAwNjgwNDYgICAgMC4wICBFRV8zMTY3Cj4gPiA+
+IAkgIDEgIDMyNDEgICAxNSAgICAgICAgIDQ5NjI5MTIgICAgMjYgICAgICAgICAwICAgICAwMDA2
+ODA0NiAgICAwLjAgIEZGXzMxNjcKPiA+ID4gCSAgMiAgMzI0OSAgIDE2MzA5MzY4NSAgMzI2MTg2
+MjAzICAxNjMwOTYwNjIgIDAgICAgIDAwMDY4MGMwICAgIDAuNSAgR0cKPiA+ID4gCSAgMiAgMzI1
+MiAgIDE5NjE3ODA3MiAgMzkxODQ0OTk4ICAxOTYxODE1MzUgIDAgICAgIDAwMDY4MDQ0ICAgIDAu
+NSAgSEgKPiA+ID4gCSAgMiAgMzI1OSAgIDE0MTUyMTczMSAgMjYwMzMwOTU5ICAyMDExMDI2NzAg
+IDAgICAgIDAwMDY4MDQ0ICAgIDAuNCAgSUkKPiA+ID4gCSAgMiAgMzI2MCAgIDE2MzE0MTYwMyAg
+MzI2MjgzMDg3ICAxNjMxNDE4MDggIDAgICAgIDAwMDY4MDQ0ICAgIDAuNSAgSkoKPiA+ID4gCSAg
+MiAgMzI2MSAgIDQ4MTcyNDQ0OSAgOTYzMzcyMDg4ICA0ODE4NzUxNjYgIDAgICAgIDAwMDY4MDQ0
+ICAgIDEuMyAgS0sKPiA+ID4gCSAgMiAgMzI2MyAgIDE2MzEzMDEzNSAgMzI2MjU4NDU4ICAxNjMx
+MzI5NTMgIDAgICAgIDAwMDY4MDQ0ICAgIDAuNCAgTEwKPiA+ID4gCSAgMiAgMzQ0MSAgIDg2NDg3
+NTcgICAgMTI5NjE5ODggICAxMzAwOTk2MiAgIDAgICAgIDAwMDY4MDQyICAgIDAuMCAgTU0KCg==
 
-I'm trying to execute a simple posix timer example (see code below). When I
-compile it "normally", it works fine but when I add xeno-config generated flags
-(to add RT tasks later) the create_timer function fails (invalid argument).
-
-Can somebody tell me what I am doing wrong please ?
-I'm running it on a 32 bit arm (imx6), could it be the "-D_TIME_BITS=64
--D_FILE_OFFSET_BITS=64" options ?
-
-Thanks,
-
-
-Here is the code :
-
-static unsigned int pass_value_by_pointer = 42;
-
-void Timer_has_expired(union sigval timer_data)
-{
-	printf("Timer expiration handler function; %d\n",
-	       *(int*) timer_data.sival_ptr);
-}
-
-int main(void)
-{
-	struct sigevent timer_signal_event;
-	timer_t timer;
-
-	struct itimerspec timer_period;
-
-	printf("Create timer\n");
-	timer_signal_event.sigev_notify = SIGEV_THREAD;
-	timer_signal_event.sigev_notify_function = Timer_has_expired;
-	timer_signal_event.sigev_value.sival_ptr =
-	    (void*) &pass_value_by_pointer; // as will this (both in a structure)
-	timer_signal_event.sigev_notify_attributes = NULL;
-	int ret = timer_create(CLOCK_MONOTONIC, &timer_signal_event, &timer);
-
-	if (ret)
-	{
-		perror("timer_create");
-		exit(EXIT_FAILURE);
-	}
-
-	printf("Start timer\n");
-	timer_period.it_value.tv_sec = 1; // 1 second timer
-	timer_period.it_value.tv_nsec = 0; // no nano-seconds
-	timer_period.it_interval.tv_sec = 0; // non-repeating timer
-	timer_period.it_interval.tv_nsec = 0;
-
-	timer_settime(timer, 0, &timer_period, NULL);
-	sleep(2);
-
-	printf("----------------------------\n");
-	printf("Start timer a second time\n");
-	timer_settime(timer, 0, &timer_period, NULL);
-	sleep(2);
-
-	printf("----------------------------\n");
-	printf("Start timer a third time\n");
-	timer_settime(timer, 0, &timer_period, NULL);
-
-	printf("Cancel timer\n");
-	timer_delete(timer);
-	sleep(2);
-	printf(
-	    "The timer expiration handler function should not have been called\n");
-
-	return EXIT_SUCCESS;
-}
-
-
-Here are compilation flags :
-
-sdk/sysroots/x86_64-fslcsdk-linux/usr/bin/arm-fslc-linux-gnueabi/arm-fslc-linux-gnueabi-gcc   -mthumb -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7 -fstack-protector-strong  -O2 -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -Werror=format-security --sysroot=sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi --sysroot=sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi   -O2 -pipe -g -feliminate-unused-debug-types  -Isdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/include/xenomai/cobalt -Isdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/include/xenomai -O2 -pipe -g -feliminate-unused-debug-types -fmacro-prefix-map=/workdir/build/tmp/work/cortexa7t2hf-neon-fslc-linux-gnueabi/xenomai/3.2.4-r0=/usr/src/debug/xenomai/3.2.4-r0 -fdebug-prefix-map=/workdir/build/tmp/work/cortexa7t2hf-neon-fslc-linux-gnueabi/xenomai/3.2.4-r0=/usr/src/debug/xenomai/3.2.4-r0 -fdebug-prefix-map=sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi= -fdebug-prefix-map=sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi-native= -D_GNU_SOURCE -D_REENTRANT -fasynchronous-unwind-tables -D_TIME_BITS=64 -D_FILE_OFFSET_BITS=64 -D__COBALT__ -Isdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/include/xenomai/alchemy -MD -MT CMakeFiles/timer.dir/timer.c.o -MF CMakeFiles/timer.dir/timer.c.o.d -o CMakeFiles/timer.dir/timer.c.o -c Tests/posixTimer/timer.c
-
-sdk/sysroots/x86_64-fslcsdk-linux/usr/bin/arm-fslc-linux-gnueabi/arm-fslc-linux-gnueabi-gcc   -mthumb -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7 -fstack-protector-strong  -O2 -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -Werror=format-security --sysroot=sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi --sysroot=sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi  -O2 -pipe -g -feliminate-unused-debug-types  -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed  -Wl,-z,relro,-z,now -Wl,--no-as-needed -Wl,@sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/lib/modechk.wrappers -lalchemy -lcopperplate sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/lib/xenomai/bootstrap.o -Wl,--wrap=main -Wl,--dynamic-list=sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/lib/dynlist.ld -Lsdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/lib -lcobalt -lmodechk -lpthread -lrt -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -fmacro-prefix-map=/workdir/build/tmp/work/cortexa7t2hf-neon-fslc-linux-gnueabi/xenomai/3.2.4-r0=/usr/src/debug/xenomai/3.2.4-r0 -fdebug-prefix-map=/workdir/build/tmp/work/cortexa7t2hf-neon-fslc-linux-gnueabi/xenomai/3.2.4-r0=/usr/src/debug/xenomai/3.2.4-r0 -fdebug-prefix-map=sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi= -fdebug-prefix-map=sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi-native= -Wl,-z,relro,-z,now -Wl,@sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/lib/cobalt.wrappers -Wl,@sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/lib/cobalt-glibc-time64.wrappers CMakeFiles/timer.dir/timer.c.o -o timer 
-
-
--- 
-Cédric Chépied
-<cedric.chepied@drotek.com>
-
-<http://events.drotek.com/>
