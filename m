@@ -1,103 +1,65 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C5E712CD91
-	for <xenomai@lists.linux.dev>; Tue, 16 Apr 2024 14:05:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
+Received: from m15.mail.126.com (m15.mail.126.com [45.254.50.223])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id EEACB15B145
+	for <xenomai@lists.linux.dev>; Thu, 18 Apr 2024 10:11:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.50.223
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713276354; cv=none; b=oRwnZIO6+fdxnasLbwfEWJ7s/SxxMlYqgfBiECdZyFUzzhVEzBSTY3VQgNnCDGgQeb7npsZs5qBKxR/rPPD+DMLQEOlsKvoBkZ6QnKIeQEXeN9j+g+m9uegenZJH14GPOl7Pmbi0UT6uTDjj8WQuYmG+qDysp/bsSkV12CFhVTs=
+	t=1713435074; cv=none; b=kb3jNPzBNOR4M1BG3VYmcMZa9OdjCLq7ASFztuhN+gRoRzDTEOnJHZArjtCEJ5swR7z8/SUDhflcRByHZQU/9dsR2lmytxcgPZ3Qy10cde68vUWqyW20dNtliUNdPhe8OTD6wv3NV78CSrBqIOtjichJCigw7EtAtbmztcRMb4Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713276354; c=relaxed/simple;
-	bh=28mc0ng+tInhj615E6Gm4ijQSuEdTqgUy7C6Qkz7yWI=;
-	h=Message-ID:Date:From:To:Cc:Subject:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=aeiktycqJvY4ePvNl0YEy+zlcTsuwWEIFjrBvdkFdybKTroH2U4UnGVD3mtR7YJU/n9lfiHoZ4GywLAYCSQ81fAhY4qHD1l4z0wx5Ep9arqA9UYOPiYsogltH01qHs5ugJjBOOyjY6SxlKdzM3k4ydWWi1Xe4rGNkyRCDl0wGlc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=drotek.com; spf=pass smtp.mailfrom=drotek.com; dkim=pass (2048-bit key) header.d=drotek-com.20230601.gappssmtp.com header.i=@drotek-com.20230601.gappssmtp.com header.b=TwdzoDtT; arc=none smtp.client-ip=209.85.221.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=drotek.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=drotek.com
+	s=arc-20240116; t=1713435074; c=relaxed/simple;
+	bh=MZVyeOV1eOGOgAWQUQpqfwVXKwGmdO54j2C7X/Zsi44=;
+	h=Date:From:To:Subject:Content-Type:MIME-Version:Message-ID; b=F8EhyOhvp6xKQjMKf2kb1E7wx1Scuc0P2BszUNNfOvs03NjlGHi+9gkSouYDYaIa5DDhhv/0uJuJxtR0g4YmiSIsBuieynHJ8i9/HieFQCu4TyFnERVZo+/6CqPSol0MVaA+vKZ+Spm5GylNGVC49Pmb3XvXDEcLrD8iBwixhCE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com; spf=pass smtp.mailfrom=126.com; dkim=fail (1024-bit key) header.d=126.com header.i=@126.com header.b=hbLct3ui reason="signature verification failed"; arc=none smtp.client-ip=45.254.50.223
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=126.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=drotek-com.20230601.gappssmtp.com header.i=@drotek-com.20230601.gappssmtp.com header.b="TwdzoDtT"
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-346b146199eso3189482f8f.0
-        for <xenomai@lists.linux.dev>; Tue, 16 Apr 2024 07:05:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=drotek-com.20230601.gappssmtp.com; s=20230601; t=1713276350; x=1713881150; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:subject:cc:to:from:date:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=o2sL/KN5X2pIWB+gb2/QyI5/1mPX+oXudXYQabHGvhw=;
-        b=TwdzoDtTbkE2Kfx2PnHxVtcjtG+A4NOy+lJo8nOecW/D/bBNijL0LyNUUSE8XdKZKu
-         4kxOrSMUbzscqIh9a8zCFco0SAkArHJxuguhxFljOBC1Lyg2UFCok5Qy6zwJwW2x/sON
-         zfLG9JKrwUyKcrUzM+6dM5hzOKg1wvmWDkdB0qZStvD9YeIyLpkdnHfj8c45w/ndzZov
-         detUYTMihVmLVUtOpbGefRjo6W8Xj0pHy6KXXsT6YHFasF5imQGseagsTccz1BCKOgxH
-         RmHbztN6GSRG3Rrf8KwsfEVZR7n6PvfzY8vs/udnSAhUDlwJI5XN26Of/RgMbR0qtu8C
-         pbVw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713276350; x=1713881150;
-        h=content-transfer-encoding:mime-version:user-agent:references
-         :in-reply-to:subject:cc:to:from:date:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=o2sL/KN5X2pIWB+gb2/QyI5/1mPX+oXudXYQabHGvhw=;
-        b=dCBf4ddbHgxA8lCWXlHIuniyFhx/YEQ5Ee3GFRq294Os/BGpfORsPOFOi+x1SyHMHa
-         9/vWP4mgOQI45EINeWia3KQD+enM23GvDlpd6Y+9uH4kFj2cw0ZeHKSFTCDkZzIyKzS4
-         5dsREgCArdXjMx7QGE/ZwaBxB8tO2V46hZp5rNbL5cRjpMjZPBigka5ZEruPjxHJWZCJ
-         fxNdxKKEbDSkc+vJNZkWMJdOwWciH38dSWcg8l/lbUHa34jgjlcK1AsinlmnqEBXLd55
-         xoZRwoIikujlRs9xP3vVQo3Ng5qa3h2IXmG1fl+syJBVTrUuuJd0pBSQ6/f+Q8QcQMUA
-         8rPw==
-X-Gm-Message-State: AOJu0YyhN0HzuO6uBNq7FhPNxp0xT1cBRvyAgoS0CBGsF+/lLKpntQWE
-	22hag7B19FTpxqrUgQ5bCfSXbtMyOZmgmfEMd+u1zBWYWT3oUvOYzVxwpLCDA3Q=
-X-Google-Smtp-Source: AGHT+IGSmmwxYGy5V7k4sV33OTEgKCkO4WMcvTicTiFvCXP0yJK15Nh73UuBqHoG5/5cMGGKU9aVsQ==
-X-Received: by 2002:adf:efcd:0:b0:346:92d2:a496 with SMTP id i13-20020adfefcd000000b0034692d2a496mr8377166wrp.29.1713276350311;
-        Tue, 16 Apr 2024 07:05:50 -0700 (PDT)
-Received: from Edoras.gmail.com (apoitiers-259-1-37-199.w90-55.abo.wanadoo.fr. [90.55.220.199])
-        by smtp.gmail.com with ESMTPSA id i4-20020a5d6304000000b003437ad152f9sm15008550wru.105.2024.04.16.07.05.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Apr 2024 07:05:49 -0700 (PDT)
-Message-ID: <661e85bd.5d0a0220.a8214.d5f4@mx.google.com>
-Date: Tue, 16 Apr 2024 16:06:05 +0200
-From: =?ISO-8859-1?Q?C=E9dric_Ch=E9pied?= <cedric.chepied@drotek.com>
-To: =?ISO-8859-1?Q?C=E9dric_Ch=E9pied?= <cedric.chepied@drotek.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: Posix timer creation failure
-In-Reply-To: <661e49af.df0a0220.ffef6.a7bc@mx.google.com>
-References: <661e49af.df0a0220.ffef6.a7bc@mx.google.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?ISO-8859-4?Q?Goj=F2?=) APEL-LB/10.8 EasyPG/1.0.0
- Emacs/30.0.50 (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=126.com header.i=@126.com header.b="hbLct3ui"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=pHYkrTHe+AjtKqcsRQCgd863WGKqtrwhx09Fr0lsMhw=; b=h
+	bLct3uiQU2fi89Pp5MWQBvkFSLv7szoC83VbvaKbb0e+iikH2uLaYEgZBvCAdHzc
+	ApNCFtN0DyPnHmXgLKk+dp1ZFbS43O4kVWU0pevEtFwwM5Wi1bLUNsgYjUN4E4a0
+	JznpJIOVhRsQNukuI7VRYVpdP3FvsZdIn8FD2L6Guw=
+Received: from yxianyao$126.com ( [103.161.254.5] ) by
+ ajax-webmail-wmsvr-41-117 (Coremail) ; Thu, 18 Apr 2024 18:10:47 +0800
+ (CST)
+Date: Thu, 18 Apr 2024 18:10:47 +0800 (CST)
+From: "Yao Yongxian" <yxianyao@126.com>
+To: greg@embeddedgreg.com, jan.kiszka@siemens.com, xenomai@lists.linux.dev
+Subject: MSI NOT pipeline-safe & Internal error
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20230109(dcb5de15)
+ Copyright (c) 2002-2024 www.mailtech.cn 126com
+X-NTES-SC: AL_Qu2aAfiYukgv4SmfYOkWmEsQju45WMW0uPwu3YZTOJs0li7T+SceWVtYF1r3996TFRmTlDyofils1uZRVopmQqaKZm/vgqCVCpz1N4Ck7Rzl
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8bit
+MIME-Version: 1.0
+Message-ID: <61031e69.8c6e.18ef0aff82b.Coremail.yxianyao@126.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:_____wD3H5Oo8SBmky9WAA--.57603W
+X-CM-SenderInfo: p10lt0x1drqiyswou0bp/1tbiGAjDs2VLauteXgAEsL
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-Cédric Chépied wrote:
-> I'm trying to execute a simple posix timer example (see code below). When I
-> compile it "normally", it works fine but when I add xeno-config generated flags
-> (to add RT tasks later) the create_timer function fails (invalid argument).
->
-> Here are compilation flags :
-> 
-> sdk/sysroots/x86_64-fslcsdk-linux/usr/bin/arm-fslc-linux-gnueabi/arm-fslc-linux-gnueabi-gcc   -mthumb -mfpu=neon -mfloat-abi=hard -mcpu=cortex-a7 -fstack-protector-strong  -O2 -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -Werror=format-security --sysroot=sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi --sysroot=sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi  -O2 -pipe -g -feliminate-unused-debug-types  -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed  -Wl,-z,relro,-z,now -Wl,--no-as-needed -Wl,@sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/lib/modechk.wrappers -lalchemy -lcopperplate sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/lib/xenomai/bootstrap.o -Wl,--wrap=main -Wl,--dynamic-list=sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/lib/dynlist.ld -Lsdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/lib -lcobalt -lmodechk -lpthread -lrt -Wl,-O1 -Wl,--hash-style=gnu -Wl,--as-needed -fmacro-prefix-map=/workdir/build/tmp/work/cortexa7t2hf-neon-fslc-linux-gnueabi/xenomai/3.2.4-r0=/usr/src/debug/xenomai/3.2.4-r0 -fdebug-prefix-map=/workdir/build/tmp/work/cortexa7t2hf-neon-fslc-linux-gnueabi/xenomai/3.2.4-r0=/usr/src/debug/xenomai/3.2.4-r0 -fdebug-prefix-map=sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi= -fdebug-prefix-map=sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi-native= -Wl,-z,relro,-z,now -Wl,@sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/lib/cobalt.wrappers -Wl,@sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/lib/cobalt-glibc-time64.wrappers CMakeFiles/timer.dir/timer.c.o -o timer 
-> 
- 
-
-Wrappers seem to be the problem. When I link without
-"-Wl,@sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/lib/cobalt.wrappers
--Wl,@sdk/sysroots/cortexa7t2hf-neon-fslc-linux-gnueabi/usr/lib/cobalt-glibc-time64.wrappers",
-timers work. But I won't be able to use the rtcan driver (I won't be able to
-call ioctl on the socket).
-
-It seems to work by adding "-nostdlib" when linking but then I got "undefined
-reference to symbol '__aeabi_unwind_cpp_pr0@@GCC_3.5'".
-If I disable exceptions with "-fno-exceptions" it compiles and runs fine. But I
-need C++ exceptions for my "real" code.
-
-What is the correct way to fix this ?
-
-Thanks,
--- 
-Cédric Chépied
-<cedric.chepied@drotek.com>
-
-<http://events.drotek.com/>
+SGksCgo+T24gTW9uLCBKYW4gMTYsIDIwMjMgYXQgOTo0NCBBTSBKYW4gS2lzemthIDxqYW4ua2lz
+emthQHNpZW1lbnMuY29tPiB3cm90ZToKPj4KPj4gT24gMTYuMDEuMjMgMDk6NDAsIFlhbyxZb25n
+eGlhbiB3cm90ZToKPj4gPgo+PiA+IEhpLAo+PiA+Cj4+ID4gVGhlIGZvbGxvd2luZyBleGNlcHRp
+b24gb2NjdXJyZWQgd2hlbiBydW5uaW5nIHRoZSBrZXJuZWwoTGludXgtNS40LjE4MCwgeGVub21h
+aS0zLjIuMikgb24gYWFyY2g2NCBjb21wdXRlci4KPj4gPiBBdHRhY2htZW50IGlzIHN0YXJ0dXAg
+aW5mb3JtYXRpb24gYW5kIGtlcm5lbCBjb25maWd1cmF0aW9uLgo+PiA+Cj4+ID4gV2hhdCBjYXVz
+ZWQgdGhlIGV4Y2VwdGlvbj8gUGxlYXNlIGdpdmUgbWUgc29tZSBoaW50cyEKPj4KPj4gTWF5YmUg
+anVzdCBzb21ldGhpbmcgbGlrZSB3ZSBoYXZlIGluIERvdmV0YWlsIGFscmVhZHk6Cj4+Cj4+IGh0
+dHBzOi8vc291cmNlLmRlbnguZGUvWGVub21haS9saW51eC1kb3ZldGFpbC8tL2NvbW1pdC80MmY0
+NGNmODU5ZTM1MjVlYjI2ZGMwOTBmZmZhOTdiZmMzNWU4NzBjCj4+Cj4+IEphbgo+Pgo+PiAtLQo+
+PiBTaWVtZW5zIEFHLCBUZWNobm9sb2d5Cj4+IENvbXBldGVuY2UgQ2VudGVyIEVtYmVkZGVkIExp
+bnV4Cj4+Cgo+SGF2ZSB5b3UgcnVuIHRoZSBpcGlwZSBvbiB0aGlzIHBsYXRmb3JtIGJlZm9yZT8g
+IEl0IGxvb2tzIGxpa2UgeW91Cj5oYXZlIGFuIElSUSBzb3VyY2UgdGhhdCBpc24ndCBpcGlwZSBz
+YWZlLCBpdCBtYXkgYmUgY2F1c2luZyBpc3N1ZXMKPndoZW4gdGhlIElSUSBpcyB0cnlpbmcgdG8g
+YmUgaGFuZGxlZC4gIEknbSBub3QgZmFtaWxpYXIgd2l0aCB0aGlzCj5wbGF0Zm9ybS4gRGlkIHlv
+dSBwb3J0IGl0IHRvIGlwaXBlPwoKSXQgcnVucyBvbiBIdWF3ZWkgVGFpc2hhbiBTZXJ2ZXIoQ1BV
+OiBhcm12OCBLdW5wZW5nOTIwKS4KRG9lcyB4ZW5vbWFpL2lwaXBlL2RvdmV0YWlsIG5vdCBzdXBw
+b3J0IHRoaXMgQ1BVL3NlcnZlcqO/CkRvZXMgdGhlIGNvbW11bml0eSBoYXZlIGFueSBwbGFucyB0
+byBzdXBwb3J0IGl0PwoKVGhhbmtzLgoKLS0KWWFvIFlvbmd4aWFuCgo=
