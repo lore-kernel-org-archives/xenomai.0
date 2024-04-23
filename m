@@ -1,90 +1,106 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28C3213B293
-	for <xenomai@lists.linux.dev>; Tue, 23 Apr 2024 14:24:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9396B13B293
+	for <xenomai@lists.linux.dev>; Tue, 23 Apr 2024 14:28:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1713882290; cv=none; b=sgTT4I0R/oXbiWgLJv3IhZKmO15Gj94ZTu7InMtYoFokZC6dOg/p3m6sxf3dCPI53T1maX2bKTswv6nVOvr2lxxn3uss/rjXxHUpoVPeZUDogFWiS62rpJqqjkHWPWPkxlhio9ut8U8BbPxqVtSIozbghDVvo1Z6eBThCYevJ1w=
+	t=1713882528; cv=none; b=WS81LyoJ60Xo3hyp+47LTFhyshD8pmoc3izSNn4bnbWUnCBTvHrMfOOJCrsVjtLqATKZwE4Jin5ZR0fi3Wh2PbRL3vt0lJUlTMU/T8/O4Lax4yNks7G+QjTe0BYlqxrmrD3zJRqDEKJVyywqJ18keGYUYy3sWQbk/pQ+gdNLkoo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1713882290; c=relaxed/simple;
-	bh=M/9uqwvwEptm0uJKf/cIaaPi9hKi8vBhCOxdbtHAFns=;
-	h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
-	 MIME-Version:Content-Type; b=issC2bHiZUkkIgtzoP1QkD8+deBbsKMCXwEbzTmny6nBDNUzueVlwzFsCNUbB+ywIZFkTK8wY4EkZVHq2ZrH0O3m3V4KfGPUwMpJFVDH7BhWDyl1Qt+S5/mXu1+kjaw9qt4JjXWsCgmUV9gXDANIAf3a5wl1W48Ev1O4Ssngnc4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-41a442c9dcbso18379045e9.2
-        for <xenomai@lists.linux.dev>; Tue, 23 Apr 2024 07:24:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1713882286; x=1714487086;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5N4303RhLk18yYWBLVwejMDMPncGCdmAXpmGvhL/YdI=;
-        b=HYxr3nww0rotOJYH0uu33yGlF9BIyiOd0ZIobEIQb3M8PjTOAgvFHe7MorKV6PvVzV
-         28nxebd0glnHZgVj4mu1ASsZwAmSBAzmpHEr6jwXbfB/0r5h8aeOytNn4w7tUzNJH5w1
-         O5/PLGylndfQutUbn2QrViH/x5iMBn+zUlPFb+coMOVYukl9019csP809RadEyaWPyLL
-         nWFNF2S7JiqGa+uLnLP0qZBpmyjPD2bl9e2iUebqbHAp3gYP1JWbOzyzGfv7TVylg9IW
-         5PXitb3rDkuOzuSTBoJ4q34iq1fKOtVJG1/EBEnurFfbH4g80Q1eyQxgXL5BCk41lRH5
-         wahQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWzmuzNMCGQllPd8HTXiD9clepEONHvOtsWOvka91AUXLvjm2Irb6IhJlG6rEf4pegiBgvyuRH+mQ7MT5K3OnlTzc3VLNXncQ==
-X-Gm-Message-State: AOJu0YwBmX4BBSf4Fym9Ym0Kq/VKMBxCI2wKJJb0+jQ99d2NeR443oXU
-	6moV9Amc1CYr98yX12uyqXkU692YfcAAPThuDiDDSXPi92YGpvGdMTSTxf69
-X-Google-Smtp-Source: AGHT+IHgV7uD09Rp+VwKUh5NdgIh0ItNh/V0wlt9hsmTCV7HgzbKNVlLPf5JjLc8jwO6EqF+p1+ilQ==
-X-Received: by 2002:a05:600c:4ed2:b0:418:16c3:499 with SMTP id g18-20020a05600c4ed200b0041816c30499mr8769577wmq.37.1713882286232;
-        Tue, 23 Apr 2024 07:24:46 -0700 (PDT)
-Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id je12-20020a05600c1f8c00b004183edc31adsm24031169wmb.44.2024.04.23.07.24.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 23 Apr 2024 07:24:45 -0700 (PDT)
-References: <20240423104111.32385-1-Fabian.Scheler@siemens.com>
- <636c38d0658c7d1148e3b434351492a1375cfa6d.camel@siemens.com>
- <87sezcz13o.fsf@xenomai.org>
- <1a6970a988ccc03de89e9839a7af11c04b979eb5.camel@siemens.com>
-User-agent: mu4e 1.10.5; emacs 29.3
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: Fabian Scheler <Fabian.Scheler@siemens.com>, Roman Hodek
- <roman.hodek@siemens.com>, xenomai@lists.linux.dev
+	s=arc-20240116; t=1713882528; c=relaxed/simple;
+	bh=8Fe03AYuQq/B09YBQ+rWy0GZat5DBakSzPSlCRvHyEw=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=nB1V84iPgiCV4Ei2WahsWJgVuNfevm9v3xC7Ckx/hOLS/eFIr+JfJ/T+fztul045bqu2g8awRT4yvfx5VJNm6S50Dfz4mr5OHOkRWqVmZfUtDmcK69CDIN+M9qB71MB7VtTlwJ7rQpbivced/iD60kdtEwANTdcofcg8fpJlFiY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Hl12yCOL; arc=none smtp.client-ip=185.136.64.227
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Hl12yCOL"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202404231418314e8deea61cc4c6d6cd
+        for <xenomai@lists.linux.dev>;
+        Tue, 23 Apr 2024 16:18:32 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=8Fe03AYuQq/B09YBQ+rWy0GZat5DBakSzPSlCRvHyEw=;
+ b=Hl12yCOLBFBoQLVCRlJiMaMSD50vC8xXKDtqTaNNOenenzEifn6sSHUFqXwe70t75WZEGg
+ w5S94o79wTLclorPct6PjjP0zYh7d/4aQzsypi34a9NbjkyWH2VQyr/MFu4gQtMgYIOJ+3IO
+ iQqdo12MiR9KIKNZ2FcaQT5fuMQrU=;
+Message-ID: <1a6970a988ccc03de89e9839a7af11c04b979eb5.camel@siemens.com>
 Subject: Re: [PATCH dovetail] x86: irq_pipeline: Add missing definition for
  !CONFIG_IRQ_PIPELINE
-Date: Tue, 23 Apr 2024 16:21:12 +0200
-In-reply-to: <1a6970a988ccc03de89e9839a7af11c04b979eb5.camel@siemens.com>
-Message-ID: <87o7a0yx5f.fsf@xenomai.org>
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>, Fabian Scheler
+	 <Fabian.Scheler@siemens.com>
+Cc: Roman Hodek <roman.hodek@siemens.com>, xenomai@lists.linux.dev
+Date: Tue, 23 Apr 2024 16:18:29 +0200
+In-Reply-To: <87sezcz13o.fsf@xenomai.org>
+References: <20240423104111.32385-1-Fabian.Scheler@siemens.com>
+	 <636c38d0658c7d1148e3b434351492a1375cfa6d.camel@siemens.com>
+	 <87sezcz13o.fsf@xenomai.org>
+Autocrypt: =?US-ASCII?Q?addr=3Dflorian.bezdeka@siemen?=
+ =?US-ASCII?Q?s.com;_prefer-encrypt=3Dmutual?=
+ =?US-ASCII?Q?;_keydata=3DmQENBFwsf8QBCAC2f4AQWu92LZC4bKyUYRxWIpWqGz790s?=
+ =?US-ASCII?Q?pcYkXO7M8kfea4iC8qMxv2hT4HT0LTncRP6WiovVN2PeoOBfN5BSa5z?=
+ =?US-ASCII?Q?LIrZGVXh7KmbdKhwhVU+ynoTq9G5uaO2Kos7Vv7nNCuatIq8tSNILuoB?=
+ =?US-ASCII?Q?DFTAZnJW3y1V7YOwhDCPl5gbLSYqUY3OE0yksbtCcVI5istT4ED6mjQ?=
+ =?US-ASCII?Q?9W+3uH1LrgFeEF0oxTjrEPxO5ZYATz0f/TYC8WiM0sMrV+n0eMDntlzA?=
+ =?US-ASCII?Q?63D6lcRi5mNp2jPsJkq3tbWqyCrAe1sKPVJB44ekFwCk0kDIuhR13Q3R?=
+ =?US-ASCII?Q?HE4Or/9sznhMUQjYueWXvTZfzH/VsQJHABEBAAG0LUZsb3JpYW4gQmV6?=
+ =?US-ASCII?Q?ZGVrYSA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPokBVAQTAQg?=
+ =?US-ASCII?Q?APhYhBAzL4P3jiTHdthsq4cj0O1fnOEBVBQJcLH/FAhsDBQkB4TOABQs?=
+ =?US-ASCII?Q?JCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJEMj0O1fnOEBVc6YIAJ8oO4x?=
+ =?US-ASCII?Q?TjOCpjxaS8XQE6VW50HE9I6ShbQVWUEGhF4qzJaACTQDjdg/aio7qNRa?=
+ =?US-ASCII?Q?mnAy83Hy9sAxKVhXs+1R1fstN+JO8zgD3tJspucUkCiXlYu+Qcv2d6C?=
+ =?US-ASCII?Q?ostv+h4nv8fkSoeLfsQu3GJt6W0RN7t+8H/9fUMXyuB8GWo4bhaZcti6?=
+ =?US-ASCII?Q?78CotGLs6UGZpYEGiAMto8+9zVO/tdY1BkREM6bCVeQ9FnnpTRQy/tU5?=
+ =?US-ASCII?Q?xemMWJI64UUP92TUIbQ3TZKAz4iG/Mle+YjiHBGrJM7TxjE3sDg5J2Fa?=
+ =?US-ASCII?Q?HX4wmZPKGdB6wANKupf6HMMt2y7gduVmMKzgb8PDMLPZwWBSvjELQqz?=
+ =?US-ASCII?Q?hiZAQ0EYLSqZwEIAIR4HMTQC4F4YxatIl6MIDY03zD4M3ZQpgyQ6QFL9?=
+ =?US-ASCII?Q?Dq0I+PGc7A6z5rsGl76+D8pDFSN2BBJiLLlQadxKc3ZyTTlRp4bc=09bf?=
+ =?US-ASCII?Q?FZRmsAXwVfLtBauXxGo9pkyhk8Vcjb2EJm6XR8PH99buGOXlFfTLsmeA?=
+ =?US-ASCII?Q?ji/F4jU3qlUnwZMBvHZwRSFqOGdwKPMvW3FppfmREQ0o4xJ4b/bxGXx?=
+ =?US-ASCII?Q?ko21uyR/S5rEJx6X8Ukw95h3JinXHx/g2cjbKHrWBDKoqtX9IZCamDny?=
+ =?US-ASCII?Q?R+sfLWQbOKOrLNYLwLAQwOTVlZWTgue10G1q6Zi0r8RQ2T1Uy+ZLYagv?=
+ =?US-ASCII?Q?Cbzp/lT7p3mv3ba68llX896c0AEQEAAbQ/QmV6ZGVrYSwgRmxvcmlhbj?=
+ =?US-ASCII?Q?sgQmV6ZGVrYSBGbG9yaWFuIDxmbG9yaWFuLmJlemRla2FAc2llbWVuc?=
+ =?US-ASCII?Q?y5jb20+iQEcBBABCAAGBQJgtKpnAAoJEEoHyE9rG1dPpJYH+gPnqpu7h?=
+ =?US-ASCII?Q?4fsWOxco38e74MsazoUdfndTYP5tgaYTVE51ZhOZBl+4jYaywsmmFm9g?=
+ =?US-ASCII?Q?6N4Tw3GiMEDB4YU1X7gQZ60fDKpYL5SnCu5qZirJ4RCV4LDA0789ir+6?=
+ =?US-ASCII?Q?8/zfwXBTV5QoMH0+MkXB4BL+Km3f7X/GdN5oRoItAyKDBcEfGJo6afT?=
+ =?US-ASCII?Q?PtcUdI9n7ExCSfJwb0SBvvkvUsdNppFDGOOHSioINbEHBs2VUvE43toM?=
+ =?US-ASCII?Q?4mPLfhFIAtDcn5Byt80/kotU8v3Iyf86NYCa+0h77xTsKHcCUqe8Rvow?=
+ =?US-ASCII?Q?bCIbig9GGbbd54TasfqQQOiAkn/WeGl33+UIVX1Q8zo7eyMJHzLJQ3I=3D?=
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
+On Tue, 2024-04-23 at 14:59 +0200, Philippe Gerum wrote:
+> Merged, thanks.
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+Don't know if that is important for you Philippe, but the patch was
+missing a proper "From: " tag in the body.
 
-> On Tue, 2024-04-23 at 14:59 +0200, Philippe Gerum wrote:
->> Merged, thanks.
->
-> Don't know if that is important for you Philippe, but the patch was
-> missing a proper "From: " tag in the body.
->
-> Fabian is now the author, but the signed-off-by tag is from Roman (the
-> initial author).
->
-> Fabian, when re-sending patches (maybe because the original author has
-> no proper mail setup) make sure to add your signed-off-by and a "From:
-> " line as first line of the body.
->
-> git format-patch --from should do it.
->
-> Best regards,
-> Florian
->
+Fabian is now the author, but the signed-off-by tag is from Roman (the
+initial author).
 
-Let's say that the signed-off-by tag is what matters the most to me
-along with a source channel I can trust (in this case siemens.com), but
-having a fully consistent information would be better, indeed.
+Fabian, when re-sending patches (maybe because the original author has
+no proper mail setup) make sure to add your signed-off-by and a "From:
+" line as first line of the body.
 
--- 
-Philippe.
+git format-patch --from should do it.
+
+Best regards,
+Florian
+
+>=20
+> --=20
+> Philippe.
+
