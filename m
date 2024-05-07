@@ -1,98 +1,88 @@
-Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
+Received: from mail-pj1-f41.google.com (mail-pj1-f41.google.com [209.85.216.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1959214E2D0
-	for <xenomai@lists.linux.dev>; Tue,  7 May 2024 09:39:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF0A715ECD5
+	for <xenomai@lists.linux.dev>; Tue,  7 May 2024 21:10:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715074793; cv=none; b=ANoeuGfSJlbbtTkpN7+WunRQ01ibfhiDMJCnx94bbajZ/Z29YYnock53cD0vjQ2ogpOG7I7HxuIzIsOPOr4zxEtYq1t9+mkEOXkCwVUV1vMj1kCNXcAyJnWsnL3/PKDPmdlsfJA7sVph8SkUGS+5xtyHVrY8wA7ky61YqSLywvY=
+	t=1715116247; cv=none; b=Gnmf8ueAF0C2kQORw+rdO1Cmfho5OR/2O0uw7LmgE99CotN4n2mnx5N/YZT1W/E1IlCPIBI542rsB+NKuwlzvhqP8sBn7QTqaCRXfqeV5LChF19Z54kv7y/RmMMM8H8QY8eM0a+9aW3++iVGAbR6mqVnF/DhvIF19E8hfhwrSJ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715074793; c=relaxed/simple;
-	bh=FT5WNAQt5TrvV1NQYd0R4AesT5UK5X5RGuBZMGqmUrU=;
+	s=arc-20240116; t=1715116247; c=relaxed/simple;
+	bh=9z9AkBCW/cdjyVYJN4hvU3sJYVazaGhKOIk4wbXB6v0=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=gx6LM0E++yAziMgmNwHZGjuTa5dXocDCoayE346mogXt/CxhvicaWVLCpM518vDR4AdB5/YRLBfUpe4bHVPA2kFfGCkUiyzSfWXiMtDxr//yzGyXulaaAD1LBLUNzw6cPGAMsnCS0d7PJXwG3AXouRdVrphzRiCFn6N6wG1CebA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=E/elm5iE; arc=none smtp.client-ip=209.85.216.47
+	 To:Cc:Content-Type; b=FqpeOlHhpYRMaOPbk7ihxjUoQWXBKQpKrY2pVoRONHIlyjFMwXcxDyy3j+tcJdkbWiegRnrHNob852zPNOXN8kEPmKUFuf44gQZ2DTkMxSBEdzS12P0LqaPxzM37J654SNAmQbx5sL2BO68vk60cy8p5Iu9fSrmmSBOtvmMxPB0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EKSAto6U; arc=none smtp.client-ip=209.85.216.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E/elm5iE"
-Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-2b36232fa48so2051093a91.1
-        for <xenomai@lists.linux.dev>; Tue, 07 May 2024 02:39:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EKSAto6U"
+Received: by mail-pj1-f41.google.com with SMTP id 98e67ed59e1d1-2b5f3e20615so704494a91.1
+        for <xenomai@lists.linux.dev>; Tue, 07 May 2024 14:10:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1715074791; x=1715679591; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1715116245; x=1715721045; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=FT5WNAQt5TrvV1NQYd0R4AesT5UK5X5RGuBZMGqmUrU=;
-        b=E/elm5iEOrw786886I2MaZXYdS9+CML9dpqmkE4JJt4oSERr9xMn3N6mGvP7AZPSYj
-         aRGEXAgExcVuKcNZneENcATmDAiTGrHKugOdfGY/QXK0vh3zsaGC+rwUSWlyMfH96I/L
-         8jl6gKRxh/tiyZ8GWB5vuY7ufgipaOP5nvcAKE64M42PLcnVp/ODybvweh2xkaMfvaFl
-         3kt4hdsrn13nTJ9u+uImSJNbD6wAe+felW6KGwcfgdweTfMa02rrS8RmatHPkIkv5gYX
-         Ebr4mesIJFFZAtHHzqw2erUgRaJENsSQUr4zvWAwIwKOuEaAfGZhc+78ibWF80xJ35H8
-         qGOw==
+        bh=9z9AkBCW/cdjyVYJN4hvU3sJYVazaGhKOIk4wbXB6v0=;
+        b=EKSAto6UZ7JhVK6MF4wpSoEdwKkSH3UTNvTjimJvtiqZWyiTHcT2zJeYJaVwjZrJeT
+         /rJLqM5IYPYYGj8HojrWZ+5YMU58ELx/OdG47mGOEeqaQi1EL39og28obyZwvggw6Pdo
+         G/QlofnGvEzoK9ODy6+T8RtrBhCEOPuVogPT28kOVOQ77ZT9HhOekwMG7ZyWy2KtcEjD
+         cwC2gUzpJWBFoWkvnT7b4a4qns0jygZ9rRHHjFyCNv8rytB3xN+urwfwiFl+pK8Hdz2f
+         RxqWoEQqbRRcLCUsBTfu16OCKg5EEUV/BTnwccjlPsHLThev9Uuo2U/WMj3dD+1bLhJV
+         BfGg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1715074791; x=1715679591;
+        d=1e100.net; s=20230601; t=1715116245; x=1715721045;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=FT5WNAQt5TrvV1NQYd0R4AesT5UK5X5RGuBZMGqmUrU=;
-        b=HHPSdgV7ZTHYWuV3OWP9GkL1R4CHg0BI7FKjB1GGj6Hg0aZpisNcSgjZZBifYEHeww
-         eRz3Y8TVSk/xQDn7LagPXAvQdEHKe0HilOPqP7gcEce6PzXIbJsWse2Hi1GgHoIRVDLO
-         8O6W+qxz8ZsBQpqtxYjOFHHjdxGG56IrjQxVJvzNhaQKGNwUP1+SuyL/ToEZ51b1aBMP
-         mo7/FTBoER3Rk1kuOtO58/fuG2SvMndJFWXpRVHeDMSWO7Kk3fkvJYFTavANj8ToOFrc
-         3HEv74gb7PGREQ3EVyjSoNV6RPXYwPM9NrWVl7EtCURuGTxNZoyh3pxJlLq29QC7PdTx
-         d4+Q==
-X-Gm-Message-State: AOJu0Yy8Q4i3foIUYtG2k7eH2bZb81oOa6oY+KXeT7QAWqSLQXhUSv+C
-	ePHm9g+fveQz6RPfUVl7fN12UNstVV/FsWLUqk8qkCEvTQ/ahoUynm9F3I82Lc0c3hh17wmLkxI
-	uc0fFgaTqhhiaxqcX3UWJwKTRrew=
-X-Google-Smtp-Source: AGHT+IECV+7JFBuIqwY0ZPTv25vQgLaotWdAATtPlj5xRRdaQGH4jFU4xCo8piLFYQFMfrFwQY4NtcsuC+VGDg95aBk=
-X-Received: by 2002:a17:90a:8581:b0:2b2:7c42:bf6e with SMTP id
- m1-20020a17090a858100b002b27c42bf6emr9935368pjn.12.1715074791325; Tue, 07 May
- 2024 02:39:51 -0700 (PDT)
+        bh=9z9AkBCW/cdjyVYJN4hvU3sJYVazaGhKOIk4wbXB6v0=;
+        b=d86zBYEF0dNme6AeqzUE4ygduIORbJY2BJcx4uGTH/7LjILE9ognorkaQdKehlE6Ta
+         wP4U6Cey54fncUBtVn6g3i5hK9/2YSTiHS/UQzlBPEMd99elcNGOlkZ+j1cN8nmlv38y
+         lrEL8h4ny6Ao5R+f/L51KHfP5CnQ7SrF2YYqHs4CdK9ZSUMZwa5W9g+15ydAQKWVLEnQ
+         bkYn6B/H6IWTFYyRGFNDWfQ0uO+UF0cJ0NVbdvSyZs2kUVOwwe0BAtXIc5R94WOU5qJJ
+         SkvqxwGCm+3TEnjOxlrceUrV6S8hww6ATapGzFr1wALHkj134Oeh9NWvDBhnWodhfwq0
+         C8UQ==
+X-Gm-Message-State: AOJu0YyarGjiPT+A3gsFNcRZcKhg+CM1QNlh+0n+Qmb2fi6+TyA0DuSG
+	tUDMG6DQuI6N+Mvp52j/SuZM6kqf7WA2XIeET75+qv8Qnc08Wse1vB0SH3hSfcD/t12O9y8Vy1/
+	OgUS5EbO7jzANBKQPsjNgCWjYeAU=
+X-Google-Smtp-Source: AGHT+IEQSaPUpF42yEE67msm+VsJDjBip6u2iS17flgG8LcC4oiWQ2WuW1swVAAlrPC5FQ61czKGU+QoY0Jf0fW+IUw=
+X-Received: by 2002:a17:90a:d195:b0:2a2:7a00:f101 with SMTP id
+ 98e67ed59e1d1-2b616be63bbmr716227a91.47.1715116245196; Tue, 07 May 2024
+ 14:10:45 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAFLxGvyY+T1qQTq6gZ5UKfbZsxcan8adyj-Y95BCEA8SYe31=g@mail.gmail.com>
- <PH7PR11MB74999755B34FF7230FCAE0F8F2092@PH7PR11MB7499.namprd11.prod.outlook.com>
- <PH7PR11MB74998A90B5CD2F8E507A20E9F2092@PH7PR11MB7499.namprd11.prod.outlook.com>
- <CAFLxGvzU6c9fz4DAATcq19iLK+B5o6Sjtovacfu1ikr935-1Uw@mail.gmail.com> <PH7PR11MB749982301BE568CE531BB6FEF2082@PH7PR11MB7499.namprd11.prod.outlook.com>
-In-Reply-To: <PH7PR11MB749982301BE568CE531BB6FEF2082@PH7PR11MB7499.namprd11.prod.outlook.com>
+References: <PH7PR11MB7499F7DDE006A3A7291F61FAF27B2@PH7PR11MB7499.namprd11.prod.outlook.com>
+ <PH7PR11MB749929DFFDCFE47376883636F2572@PH7PR11MB7499.namprd11.prod.outlook.com>
+ <PH7PR11MB749988D3E2C96C4F21DAEBE4F2212@PH7PR11MB7499.namprd11.prod.outlook.com>
+ <PH7PR11MB7499C4BB71E159B3AB98D686F2332@PH7PR11MB7499.namprd11.prod.outlook.com>
+In-Reply-To: <PH7PR11MB7499C4BB71E159B3AB98D686F2332@PH7PR11MB7499.namprd11.prod.outlook.com>
 From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Tue, 7 May 2024 11:39:38 +0200
-Message-ID: <CAFLxGvwUW-+DuMGuEX8oRFQYXvPcs3GiEz5uCuZa_uDCQBx-wg@mail.gmail.com>
-Subject: Re: i915 GPU woes
+Date: Tue, 7 May 2024 23:10:32 +0200
+Message-ID: <CAFLxGvxLRSpn34e5OWxV6Z=_oioHiyG1macowe8BSQ8qVcsKKw@mail.gmail.com>
+Subject: Re: Reminder: Xenomai community call on Wednesday, Mar 20, 2024, UTC
+ 7:00 AM
 To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
+Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Apr 16, 2024 at 4:02=E2=80=AFAM Chen, Hongzhan <hongzhan.chen@intel=
+On Wed, Mar 20, 2024 at 3:41=E2=80=AFAM Chen, Hongzhan <hongzhan.chen@intel=
 .com> wrote:
-> >What do you think about the i915 module parameters I have configured?
 >
-> You already set all the parameters we suggest to set for i915 like " i915=
-.disable_power_well=3D0
-> i915.enable_dc=3D0 i915.enable_rc6=3D0" which is to prevent integrated gr=
-aphics from changing power states.
-> If you already narrow down to graphics MMIO related, I do not know if it =
-may help improve performance to limit
-> mem used by graphics via DVMT but there is no such options in your bios.
+> Topics may include but are not limited to upstream/downstream project
+> plans, status updates, and technical discussions. It's an open online
+> meeting that anyone can join and ask questions.
+>
+> Time:
+> Wednesday, Mar 6, 2024, UTC 7:00 AM
+> Paris, France CEST 8:00 AM
+> China CST 3:00 PM
 
-The riddle is more or less solved.
-
-It turned(sic!) out that the problem occurs only on systems with a
-rotated screen.
-Plus, only when the Intel xorg driver is in use.
-By switching to xorg modsetting the problem is gone. Looks like the
-modesetting driver
-causes the GPU to do the screen rotation differently and the GPU no
-longer blocks other
-cores.
-Further I had to disable frame buffer compression (i915.enable_fbc=3D0)
-to get decent results.
+It's been a while. When is the next community call?
 
 --=20
 Thanks,
