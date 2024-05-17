@@ -1,217 +1,186 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A479F52F80
-	for <xenomai@lists.linux.dev>; Fri, 17 May 2024 13:23:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.9
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715952197; cv=fail; b=Y19jJ7GABjGAxXM1rSLblX9TkvtVaAqGEgwy/32B0BzwK4wqpKGuMJ5WpSxB3c9oixan197O7gXSBaXnHukeJh8wu2jEWZc4Z3qO9umY8+IbUhuXt5oduOiJ+3P8zL0cdVWtMXt0JNwV1Oev5MwBRCfIH3+E7CoiuCgrjWh4WAw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715952197; c=relaxed/simple;
-	bh=MPJZt0niaG9DGos3iPVjj36BDIxfYNVM4HExyrUnY84=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=AvBuaHpEBW5YTIGgHxx/g2Wv1u1u4sbQNEdQqSzp8VgbHKRbUs0SrmuIeGbOEHV1D7fb/L4bWlD5Vwj+KlJRwBBQx0fVGcrAev7GUUB+NsnIzTYSBEiSIvkPibPr6RE4fByW1cudH75xaiMSbNoerTRT417gu8ixDqGQPedzqtc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bXjgP9xn; arc=fail smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bXjgP9xn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1715952196; x=1747488196;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=MPJZt0niaG9DGos3iPVjj36BDIxfYNVM4HExyrUnY84=;
-  b=bXjgP9xn44wW3gf3+fpSuYEr/WQXP6REuoFcBZC+R4GnGkY2he9Dahjc
-   U/akmK9ctrLyZFwfeVSF0JdJdUGupH8zHG73NLVKc4UQi9sSghOtF3Zzl
-   VSjTrPxGhT09jGd6Xv27GCduvwctDAk1aVZ1pF4KLYr2nyYaRlNm/DziZ
-   RHyRjguHdVI5WMi1scQ3+obN5xdsdhwPKpslvV4p8tQfCngyEBn5aYrp7
-   lngOmkn4Y/51GJ7auhwmLAQSzPxq3o6FdyjCe+HiGlBmqR+uYcjsch/LJ
-   TX7ganXPjmIAxBg92fnq9omg4mjB6iGsvzpnGONyP8lhAIndw2ERxjdFC
-   g==;
-X-CSE-ConnectionGUID: uTm9lRcFQ+CQwzeCfRfVUg==
-X-CSE-MsgGUID: ZEgoqf1WTgGbQtB1EfbBGg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11074"; a="34642453"
-X-IronPort-AV: E=Sophos;i="6.08,167,1712646000"; 
-   d="scan'208";a="34642453"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2024 06:23:16 -0700
-X-CSE-ConnectionGUID: oVxC0DcyTkqT9YPFLbI2vw==
-X-CSE-MsgGUID: 0qd1npjVQOa3X3VsXRsctQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,167,1712646000"; 
-   d="scan'208";a="36536598"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orviesa003.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 17 May 2024 06:23:09 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Fri, 17 May 2024 06:23:08 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Fri, 17 May 2024 06:23:08 -0700
-Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Fri, 17 May 2024 06:23:08 -0700
-Received: from NAM02-DM3-obe.outbound.protection.outlook.com (104.47.56.41) by
- edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Fri, 17 May 2024 06:23:08 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J/Kmyfvzzbb2f28LaU/yO4CiSyaC9lXfWLX2CKikscfGcUM8JrC9JKYkkvthNhCuqyamw46t5ryYmavGe6b3n4MM7xqF1a4dAstrk9DvEccRnZ55ayipVKaJH/uMg8iWGpJHrQb2y6E4Ptf8Qh1nuQVh6gZ+qxclmqngwrUGdC3a2/7HVfgyQPkjcQt2yW6CjPjWD0pV9u4lUtGpf9IhRFnSKcln3iOBUhH28hyPrPh0TpOxfM6eGer3uvC3Eis8Xs91sMe1dgYScgwwKKatDUWRjKnE8atYaVlOY7oNuMBSwKZh5MezG1JTAbVeBLZ3ylMW02gqBaBZ+ctfkK0LMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MPJZt0niaG9DGos3iPVjj36BDIxfYNVM4HExyrUnY84=;
- b=AbOjhyrdRisVI3OkUOW/jnQ1oNRan511K7KzmxAzC5HJgPShsjmM/mw4ihzfsqVN0uc2hANVzPPNp9Dg25SmECQ9+h3ZkfsVJS2I8jXwaY1U1mtVjfbQPwQZ4wmI3TcPDJ+KXHn4N7UeYS74XAEHQnKiYEh8k6O66h1eswbTvK6dRbyA+B5fw14f/Mr+up4rF4dm7T7ZilPsaCmIU8gi+5EMYjQ/lQgONHvhVdndYsNsd4q9sObSe4v9v4MNjcNEI5Ypkv1SSLCgDm7oPck28tIXWozEuNabDEoFH6Go1qsWSN5KNveVuyIY3OMrWeDraF7+Y7SOi5dD7OGvF/8lIQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from PH0PR11MB5949.namprd11.prod.outlook.com (2603:10b6:510:144::6)
- by MN6PR11MB8218.namprd11.prod.outlook.com (2603:10b6:208:47c::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7544.55; Fri, 17 May
- 2024 13:23:05 +0000
-Received: from PH0PR11MB5949.namprd11.prod.outlook.com
- ([fe80::1c5d:e556:f779:e861]) by PH0PR11MB5949.namprd11.prod.outlook.com
- ([fe80::1c5d:e556:f779:e861%6]) with mapi id 15.20.7544.052; Fri, 17 May 2024
- 13:23:05 +0000
-From: "Nechita, Ionut" <ionut.nechita@intel.com>
-To: Philippe Gerum <rpm@xenomai.org>
-CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: RE: WARN Kernel v6.9-evl-rebase - do_int80_emulation
-Thread-Topic: WARN Kernel v6.9-evl-rebase - do_int80_emulation
-Thread-Index: AdqoUB42H/OnAc6gQSyqVaNVHGTu7wAA2ngAAADkauAAAU+/AAAAI7fA
-Date: Fri, 17 May 2024 13:23:05 +0000
-Message-ID: <PH0PR11MB5949CA43AC47E322BE97B5AAF4EE2@PH0PR11MB5949.namprd11.prod.outlook.com>
-References: <PH0PR11MB59492DDE7F2301CECFD2D8A9F4EE2@PH0PR11MB5949.namprd11.prod.outlook.com>
- <877cfsskke.fsf@xenomai.org>
- <PH0PR11MB5949EC28B447C7534BF8292DF4EE2@PH0PR11MB5949.namprd11.prod.outlook.com>
- <87y188r32a.fsf@xenomai.org>
-In-Reply-To: <87y188r32a.fsf@xenomai.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR11MB5949:EE_|MN6PR11MB8218:EE_
-x-ms-office365-filtering-correlation-id: b2ad3070-d11a-46cf-3175-08dc76747c73
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230031|366007|1800799015|376005|38070700009;
-x-microsoft-antispam-message-info: =?us-ascii?Q?hDutdtl/S+T4viJnp9KxBfg+NO0fgu/F2MJm3f13WOD5o0lD5f9VZRzA1iV1?=
- =?us-ascii?Q?8YjGvsv3w02U4YOdHhNCufRjIKrfHplX6kEUZJN2z+sEG7fYkqL5V30a2VMn?=
- =?us-ascii?Q?2AqhB+eaRl2fxZqMjJaHULZ+2nMWKTYTaqHKUa/gtjUmx38YfreqO5g7nnGn?=
- =?us-ascii?Q?U/cS+1aKgpNR0kxXYiFL5F6FiBRdIbiJsTkOrP+3K6/0OlxvfHtqA1U1rCyM?=
- =?us-ascii?Q?e53O322ANQ/182iaTPOvncKZu5q6cZU/RR2NGcx5DDpFA8pYtu6dVdD5/bKT?=
- =?us-ascii?Q?7+HO/JrrQ5Vf6QML8GQsS/7+RHd99HQDr/7SlR9ZJBqT/lTIMbwzjtSIITgw?=
- =?us-ascii?Q?jybWYw0hA4ENNrUTiaZ8IGmbaSJLLs1qoz6Wgz/Y8pYpzOCyNIlNHB2/pxS4?=
- =?us-ascii?Q?TNPYOfzwDqBzbZdhJ5gOOOjeXBH/k7S2E5RKhWZ9N7z6dF3rNEgNF8r7biDO?=
- =?us-ascii?Q?F/4YUsrtfVYpMKEGcfixrYe/Ni3E1fSgb1CGmZvPFVMEQkKMIPd5IjS0gb6k?=
- =?us-ascii?Q?8QuJTtYDAGmFzM3a+lSFqGu9bGsA8LOSDAYUtsf585yCXi4CVUpsiwyTfp5g?=
- =?us-ascii?Q?zjIO6n62uvnU2jG5qy+zvf2ydX26ZogMWjcRmIV+HmSNiF+KKDCvVesgllgF?=
- =?us-ascii?Q?QKx/k7JEUrYU3EyFkYX1RQTYvj4gcnqe0AB2SNjkdNTegkP2ai6pEJZLwHyZ?=
- =?us-ascii?Q?c55gNA4PJp9SEcUFWA3Ync1l2p4059W3jxvfqQ5GuU38KzOUrdkl1E3zObsJ?=
- =?us-ascii?Q?erpaCm16ZYD9mJWDUfdYFxcql0wqr2+37cAaEV4J+c9SkfIaz+MWr6XB8vRK?=
- =?us-ascii?Q?IpYg+BG7Cg4FlVoYBz4iLK+j9izRxEstJDpJkcdcz1EZk01Gisd9yyxwWLLJ?=
- =?us-ascii?Q?nbyt8GP8bDfA5mRZW6aPqGQaJS7gjajnC9gYVrgPVbdQiBH+rrlgiLt/na2t?=
- =?us-ascii?Q?EAjlqvua8KXzkL4LnTiwwbybrsSMD5SrAsx1aCXVt4sXw47fz0St06yj6hhW?=
- =?us-ascii?Q?uNsXK3KarFLLiQomJgK7ahh2FwKjorDBXjuFqMdwtMszFCcMRR7brYRUZUir?=
- =?us-ascii?Q?zAWdCCfZCY41jXQkm7gnJBYrgWPa3SyylndK5HNmtPEL1jxH+2Fz/kVg5b8i?=
- =?us-ascii?Q?YcTw+R+PM3mDkKIR3fyd1Cd8crlaoI8+q0KW6Up3+NtQLzlg7GWLWhajFgoU?=
- =?us-ascii?Q?lyrTE2BItwsZqEWwFSieyikLYD2zpz79ACosjrEbc3HNmLaqy5nwKIkCWsEw?=
- =?us-ascii?Q?TMELmB/3eO8u8zNsCD6CtRu/emg0H9z7sxW4OPFcRkBoDKLFcZJznN47OaRq?=
- =?us-ascii?Q?dL+DjH488omcQEP0izR2pUxP/uhiYg84hZXv8DfNSOtCtg=3D=3D?=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5949.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(1800799015)(376005)(38070700009);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?WR7o96BZovT/ze7c75b4p3aNVec7MoqIHL0nN8Cn6UnNo97Juey48KU641lY?=
- =?us-ascii?Q?f4zlWw5mUAXKqnutSmV6ey4k3GUAB/hrW6lvE0ffjY5JdvE7zTqcHD01EuuP?=
- =?us-ascii?Q?2XEM/XU64aoKZ07rY+fS3bbO69bBf0XFb2ww2T+iSK560eRN9V5RMaPZQh/P?=
- =?us-ascii?Q?Swa9TG4aBqfdOfQ+y9lJdOtdIvoSFIeM06kVsLVObRMw7YcuYjyDQGh7wNOq?=
- =?us-ascii?Q?HKnTzrRB8XkXis9YBJHVbT3xz1ni8cRnEuAX4bk4tkyqiLzH4rf+D+tJ9Q0M?=
- =?us-ascii?Q?geRi6VxsBS7zuGZdumw+RQhQHxKTuLm/sHesz4SSsmU5NM97v3pu0AKUxPf/?=
- =?us-ascii?Q?QAv4zmZKIDPvmZzH/zxCAgEMXvLcm1IoiYw2asDczNb9b1SssmZWy8g+ltsR?=
- =?us-ascii?Q?bF+XLFI2p9AoHPyhHzNtFrjx85eh60Ss5LFCKaXIMPPudXwYAL7h6VYwgggb?=
- =?us-ascii?Q?Z/K3ecvP3kyT68ok3ZRW/0Z0EcQj7L5jpGvyDIKv0vGpzvJO1xQfLTOb9tiN?=
- =?us-ascii?Q?cN/Zuug4CHXjEmYeKFHWAigtkg8s95Bx/SzYQOhy9SgOCQodgh0M//TFvg1c?=
- =?us-ascii?Q?0ZUmN8RYmx1XCZF0RRcdka9X1qrWFmRdB9Gfjwqb/hns4jLsIOSpNwnbWaDO?=
- =?us-ascii?Q?6jpsv/qF9e6B3JGC8eIE+YjFCI5hDcE+ak5pUaZKnjVI142WR0VBKst7DiAS?=
- =?us-ascii?Q?rxaWC42spiVB7mLNfLsnradEXonypTrPtk//yH4Vqs83TcGIv4KK5ueGmLjn?=
- =?us-ascii?Q?bpZQPS3pXfw8lWVLIPjltJW6jeivU7wsz+8p5QCwus3IwF476M4c+cDNuVB1?=
- =?us-ascii?Q?XdtLaftLGX0dzE8lCUrR/2Ps/FZOI/mTqWWNdFGXth7CBFVOjva0ElPXXgbi?=
- =?us-ascii?Q?Z2RcKNLEtEZbV2ZIy42f/T3tAGrqJe7JPzDZr9k90wayPDTXYulsV8A50Ubf?=
- =?us-ascii?Q?DAqWSyH6ST2B5Oh80J/PtJQHN+QY1ShGXjSC0ThWYcnJJ4kP3CdQURT6FHBY?=
- =?us-ascii?Q?eHfYwi9ZwIocICsw+a4ujtP9WzF+sT3l8izBuELngnc0EKo5Gy7wq56jbgJw?=
- =?us-ascii?Q?kDKGFNeS7AEwT8qLxT+q4ImEjIu8Nzl4TedBpCipj42RNlFCidWSOZusP00G?=
- =?us-ascii?Q?rv8JIO0R28+oQOIjwy6MdHZ709va2ILsdJei+Oy8PfwtEQHyAsuvHUmNviP4?=
- =?us-ascii?Q?0LjKwYFPzJKhLZ/FQim/2Fm3TAH8W2MIftAFJlAj0/i8+iJMcdHMKxytJnQS?=
- =?us-ascii?Q?R5HyHvNOtKzStN+uCYAt9VVs3JTvk/d7ZFg4ax9y1dk4HhWO/CzPLJ+zf0h5?=
- =?us-ascii?Q?E7uwj4Ygow7Q00kzwWNgczUQFO0bVaPcpWzyge9GB/ujf9uPlDxu18W2vyca?=
- =?us-ascii?Q?Y/zWnbBnvPpkV29IuhofTD2uGPz4jnSNpFbiNoNZQhgGN9PL8BTsZGVX2Uqx?=
- =?us-ascii?Q?4ZVJK1khpYawbjT4wY3dU015NWOmMaNJ8TTTrX4hvt8AXf4qRddkTE4tf9jO?=
- =?us-ascii?Q?WG5rtwxQuczVp/5/6/R2/EIiGKxjKoC5Cfpomm2wbkH97H8iNw/pEJnKSoxe?=
- =?us-ascii?Q?XEJJ+uvwVOIDnfksYL5pZnqVp9I1NJUUh5O+48Ub?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAEDC56B70
+	for <xenomai@lists.linux.dev>; Fri, 17 May 2024 13:36:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.201.40.130
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1715952995; cv=none; b=uS6nT+YwVo9d4JzfZJb6Tug/6WhV68tymmFpHiVX07iqgBYQFM3L8K6VdbQud+SVPY5r1ajyF1pe8P/EMdGKDA3qo0//lviZ5OlGHKwqCAIJR9REY/JQD2iVbwq7CpQNQDS8ns9S4YMcVJDAAQplD+LsDH3VlA5cyvpm/zDHlRY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1715952995; c=relaxed/simple;
+	bh=FpPyYiyNGWwxpw5CQCAtuClfVa6e8VVGuSI2lKReZXs=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=OqQRXd/bhlyoyEQAwzewqPVnvGCEnrj00LDkrAWLKfXt8NbkpfJ8WVTPTEWrsnufwi7/kHsUNw2NteAhaNRwHx/sj6JlHdPR9wux5qv3+/gOvrLPGgHFCJuIlOLtcCBjR8phxWxYbQgXtfOZjDvDzCilUPhb/hqk89pKuEHRdZ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at; spf=fail smtp.mailfrom=nod.at; arc=none smtp.client-ip=195.201.40.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
+Received: from localhost (localhost [127.0.0.1])
+	by lithops.sigma-star.at (Postfix) with ESMTP id C82BF63D93BE
+	for <xenomai@lists.linux.dev>; Fri, 17 May 2024 15:36:23 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+	with ESMTP id loq7nKwjhbHv; Fri, 17 May 2024 15:36:23 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by lithops.sigma-star.at (Postfix) with ESMTP id 4EADA63D93A4;
+	Fri, 17 May 2024 15:36:23 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id vz_wxNPULn_e; Fri, 17 May 2024 15:36:23 +0200 (CEST)
+Received: from foxxylove.corp.sigma-star.at (unknown [82.150.214.1])
+	by lithops.sigma-star.at (Postfix) with ESMTPSA id 1AE15647A824;
+	Fri, 17 May 2024 15:36:23 +0200 (CEST)
+From: Richard Weinberger <richard@nod.at>
+To: xenomai@lists.linux.dev
+Cc: Richard Weinberger <richard@nod.at>
+Subject: [PATCH] [RFC] prepare-kernel.sh: Emit architecture agnostic changes
+Date: Fri, 17 May 2024 15:36:03 +0200
+Message-Id: <20240517133603.17554-1-richard@nod.at>
+X-Mailer: git-send-email 2.35.3
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5949.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b2ad3070-d11a-46cf-3175-08dc76747c73
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 May 2024 13:23:05.5525
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: pR+Vak13h5hDVhjEVgBDBMbufsUw06LB5rfzxqlBi+CY7gxO7bUdk5fpOBwBKKEZbxYnPl+I2LfZ6iltjECbLw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN6PR11MB8218
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: quoted-printable
 
-This is happened when CONFIG_DOVETAIL is =3Dn and CONFIG_EVL is =3Dn in .co=
-nfig.
-When using disable this and using generic configuration/flavour; CONFIG_PIN=
-CTRL_CHERRYVIEW with =3Dy is not build.=20
-Maybe rebase is not fully completed on 6.9-rebase-evl.
+If --arch=3D is not passed, emit changes that work on all architectures
+supported by Xenomai, currently arm, arm64 and x86.
+This is especially useful with --outpatch=3D, the resulting patch can be
+used for any architecture later and makes maintaining and building
+a Xenomai enabled kernel easier.
 
+Signed-off-by: Richard Weinberger <richard@nod.at>
+---
+ scripts/Kconfig.frag      |  2 +-
+ scripts/prepare-kernel.sh | 56 +++++++++++++++++----------------------
+ 2 files changed, 25 insertions(+), 33 deletions(-)
 
-Will try to append kernel log build.
+diff --git a/scripts/Kconfig.frag b/scripts/Kconfig.frag
+index b76d25e53..3c9ad2b9f 100644
+--- a/scripts/Kconfig.frag
++++ b/scripts/Kconfig.frag
+@@ -16,7 +16,7 @@ menuconfig XENOMAI
+ 	  Please visit http://xenomai.org for more information.
+=20
+ if XENOMAI
+-source "arch/@SRCARCH@/xenomai/Kconfig"
++source "arch/$(SRCARCH)/xenomai/Kconfig"
+ endif
+=20
+ if MIGRATION
+diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
+index c9aeeb4fa..25f3b4a7c 100755
+--- a/scripts/prepare-kernel.sh
++++ b/scripts/prepare-kernel.sh
+@@ -249,37 +249,24 @@ if test "x$output_patch" !=3D "x"; then
+=20
+ fi
+=20
+-# Infer the default architecture if unspecified.
+-
+-if test x$linux_arch =3D x; then
+-   build_arch=3D`$xenomai_root/config/config.guess`
+-   default_linux_arch=3D`echo $build_arch|cut -f1 -d-`
+-fi
+-
+ while : ; do
+    if test x$linux_arch =3D x; then
+-      if test x$usedefault =3D x; then
+-         echo -n "Target architecture [default $default_linux_arch]: "
+-         read linux_arch
+-      fi
+-      if test "x$linux_arch" =3D x; then
+-         linux_arch=3D$default_linux_arch
+-      fi
++      target_linux_archs=3D(x86 arm arm64)
++      break
+    fi
+    case "$linux_arch" in
+    x86*|i*86|amd*)
+-      linux_arch=3Dx86
++      target_linux_archs=3D(x86)
+       ;;
+    arm)
+-      linux_arch=3Darm
++      target_linux_archs=3D(arm)
+       ;;
+    arm64|aarch64)
+-      linux_arch=3Darm64
++      target_linux_archs=3D(arm64)
+       ;;
+    *)
+       echo "$me: unsupported architecture: $linux_arch" >&2
+-      linux_arch=3D
+-      usedefault=3D
++      exit 1
+       ;;
+    esac
+    if test \! x$linux_arch =3D x; then
+@@ -333,10 +320,12 @@ else
+    cd $curdir
+ fi
+=20
+-if test \! -r $linux_tree/arch/$linux_arch/$arch_probe_header; then
+-   echo "$me: $linux_tree has no IRQ pipeline support for $linux_arch" >=
+&2
+-   exit 2
+-fi
++for a in ${target_linux_archs[@]}; do
++   if test \! -r $linux_tree/arch/$a/$arch_probe_header; then
++      echo "$me: $linux_tree has no IRQ pipeline support for $a" >&2
++      exit 2
++   fi
++done
+=20
+ if test x$verbose =3D x1; then
+    echo "IRQ pipeline installed."
+@@ -369,19 +358,20 @@ case $linux_VERSION.$linux_PATCHLEVEL in
+ 	    -e "s,@VERSION_MINOR@,$version_minor,g" \
+ 	    -e "s,@REVISION_LEVEL@,$revision_level,g" \
+ 	    -e "s,@VERSION_STRING@,$version_string,g" \
+-	    -e "s,@SRCARCH@,$linux_arch,g" \
+ 	    $xenomai_root/scripts/Kconfig.frag |
+             patch_append init/Kconfig
+     fi
+=20
+ test "x$CONFIG_XENO_REVISION_LEVEL" =3D "x" && CONFIG_XENO_REVISION_LEVE=
+L=3D0
+=20
+-    if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$linux_arch/Makefile; t=
+hen
+-	p=3D"KBUILD_CFLAGS +=3D -I\$(srctree)/arch/\$(SRCARCH)/xenomai/include =
+-I\$(srctree)/include/xenomai"
+-	(echo; echo $p) | patch_append arch/$linux_arch/Makefile
+-	p=3D"core-\$(CONFIG_XENOMAI)	+=3D arch/$linux_arch/xenomai/"
+-	echo $p | patch_append arch/$linux_arch/Makefile
+-    fi
++    for a in ${target_linux_archs[@]}; do
++        if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$a/Makefile; then
++	    p=3D"KBUILD_CFLAGS +=3D -I\$(srctree)/arch/\$(SRCARCH)/xenomai/incl=
+ude -I\$(srctree)/include/xenomai"
++	    (echo; echo $p) | patch_append arch/$a/Makefile
++	    p=3D"core-\$(CONFIG_XENOMAI)	+=3D arch/\$(SRCARCH)/xenomai/"
++	    echo $p | patch_append arch/$a/Makefile
++        fi
++    done
+=20
+     patch_architecture_specific=3D"n"
+=20
+@@ -404,8 +394,10 @@ esac
+=20
+ patch_kernelversion_specific=3D"n"
+ patch_architecture_specific=3D"y"
+-patch_link r m kernel/cobalt/arch/$linux_arch arch/$linux_arch/xenomai
+-patch_link n n kernel/cobalt/include/dovetail arch/$linux_arch/include/d=
+ovetail
++for a in ${target_linux_archs[@]}; do
++    patch_link r m kernel/cobalt/arch/$a arch/$a/xenomai
++    patch_link n n kernel/cobalt/include/dovetail arch/$a/include/doveta=
+il
++done
+ patch_architecture_specific=3D"n"
+ patch_link n m kernel/cobalt kernel/xenomai
+ patch_link n cobalt-core.h kernel/cobalt/trace include/trace/events
+--=20
+2.35.3
 
-Best regards,
-Ionut Nechita.
-
------Original Message-----
-From: Philippe Gerum <rpm@xenomai.org>=20
-Sent: Friday, May 17, 2024 4:16 PM
-To: Nechita, Ionut <ionut.nechita@intel.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: WARN Kernel v6.9-evl-rebase - do_int80_emulation
-
-
-"Nechita, Ionut" <ionut.nechita@intel.com> writes:
-
-> Clean now in dmesg.=20
-> Warn message not appear.
-> This patch is fine.
->
-> But I notice issue on compiling CONFIG_PINCTRL_CHERRYVIEW at builtin opti=
-on.
-> Kernel failing when CONFIG_PINCTRL_CHERRYVIEW is =3Dy.
->
-> I use CONFIG_PINCTRL_CHERRYVIEW=3Dn to compiling your change.
->
-
-There must be something else at work. Builds fine here with CONFIG_PINCTRL_=
-CHERRYVIEW=3Dy.
-
-The failing build log would help.
-
---
-Philippe.
