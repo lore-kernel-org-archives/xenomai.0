@@ -1,302 +1,302 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2052.outbound.protection.outlook.com [40.107.104.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E92888479
-	for <xenomai@lists.linux.dev>; Fri, 17 May 2024 15:29:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60F7F13DB88
+	for <xenomai@lists.linux.dev>; Fri, 17 May 2024 17:11:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.104.52
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1715959789; cv=fail; b=Fy4rl3G9PnH9pxkAbcu96Ud1hlNPlWeQgHd7HyFE+P13XvV9OA+GGPP4j6fYsImbvsUdIpSsdjWO8PLmNWXjydK8iBzYNsHWiL2NT9lUwis889uxuh67qvxF1+Z3kRDeTka0Oy8H3APC2L/nL6znCFRupblWIpEAyno2gYRzVMw=
+	t=1715965896; cv=fail; b=Wen+24DaHEj+qC628AJ1QdAMAmcHGcw5W4nPj6TVg+bcdMIC8lg78SSYATpPoAZSrHegIQ5klU6yay47k/lxWU3bRHc/MwxdSA6zEfJPfOrODL+q3/brYzJytqx9IdCCI2wikNhbW3Y2s7VzP4sPET7kTWV7rUvsh6UcD/HlU04=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1715959789; c=relaxed/simple;
-	bh=NPb1GxGGbh4JJ1m3hT3qITLd+nl2Jy87qGbMJOdFxGU=;
-	h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version; b=Akyk1niMMMBi8s7NvzQLnUZjCWUTaDl+CjRGPR6ENd/KaSZtMC3YxLWrtqkjMVFAEq+ye+jlnZP3BPnvZOFbXNbUoMeVd7HF/x/itpPTGwsw6dw9wo3m/09M2peAzwrn1TUZ3A9mRXoQFdL9DP6oAB4EAKh6Vtgelbnl8whzuVs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BR0pKYZ8; arc=fail smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1715965896; c=relaxed/simple;
+	bh=CpE2c7GU1sgvEBhUB9EBvxAwxnIuz1QGDf6ARB/jgYw=;
+	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=isP+8b7YusgAO0RVGC0RpTnOXAqeNd/lRwov6RQuMQUBBRPrIk4Cd3Tps/Mu0f51tN4Yyl+DICCO+PQ8FuIHgAn/3w+l9k+keBOS/G+VejePELtZiBjd1XvsF+2+I/3DWdRDr+/v4wucHZ48Y4ubG+75WPZyKRSKUb5m9Mh7z50=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=xuCtWLA5; arc=fail smtp.client-ip=40.107.104.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BR0pKYZ8"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1715959788; x=1747495788;
-  h=from:to:subject:date:message-id:
-   content-transfer-encoding:mime-version;
-  bh=NPb1GxGGbh4JJ1m3hT3qITLd+nl2Jy87qGbMJOdFxGU=;
-  b=BR0pKYZ8taulOfqTkPQjEgNIc7BRGxtLNcTjibP8nHjkgddT1vteEv2/
-   Q9DwT9E0ohEyUYbsuKniTKlId5XwRa3ICaLSTxXMNHIfjLI+zT6IDAeAy
-   RCe56hIkZ3734I8cWy1VtkmVexaAij0NUE45ouBHHiKZ2u+gShdly+aMy
-   PV6ToUhvJI5XSP5Qrz3xwQKHIDNleVl642IernSIVzyUa7+wgAAUeQp85
-   LoDjlxRDwAJZtk4ZqnFC7DRc6mi3jaz+juVjebY5FYEd1CFdFaRnwHYrl
-   4hMpVuGbgSvlvvtJV8tH1KNwecSV98msgw98xX/TIPQ6u+PsFRGbPmZyI
-   A==;
-X-CSE-ConnectionGUID: Ng3rSen6TOen6laTN5jD2g==
-X-CSE-MsgGUID: hbQq3EylS7OsRJFHfBS3Gg==
-X-IronPort-AV: E=McAfee;i="6600,9927,11075"; a="11984449"
-X-IronPort-AV: E=Sophos;i="6.08,168,1712646000"; 
-   d="scan'208";a="11984449"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2024 08:29:47 -0700
-X-CSE-ConnectionGUID: 2oLpwPI+TC6HI6zpoi3Y2Q==
-X-CSE-MsgGUID: vjV6yfv2Ree68V4KxC7d9A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,168,1712646000"; 
-   d="scan'208";a="36715122"
-Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
-  by orviesa004.jf.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 17 May 2024 08:29:48 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Fri, 17 May 2024 08:29:47 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Fri, 17 May 2024 08:29:46 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Fri, 17 May 2024 08:29:46 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.100)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.35; Fri, 17 May 2024 08:29:46 -0700
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="xuCtWLA5"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fYSxDkDTGoPZvaKH2AWgzuylb3ilUHc7dqk8oZSbsLcvTlme9ABmybYrZOrcjrsZAdbzQJyWiDdCl1FGzqNfIjGSWpxzAx+KAS2o9aDggRRz9MYy+3jHPIOBNf6xQD06C3UUJ4u8x1gXTwF+u1xz+cyh1Uz14rJUVSRpcfpUnYCLTj17QGsl9eal/ltSijGpm3zv02vS5kr8ELuUtz4r3xfuRw9HHr4l+RAe3A/tbAHPrjwvdeyRoohO1rPCs3Blj5VmqrKg9eyZ12XfDIJmIRn6vkh961AT5gMHtehWEBijCfeCKpVkoCJPpRN2VS1sMBMftHqHrjMdxlRtLR9fsg==
+ b=aDrE510Lq0yE9ZyqQP3xSgBRdV0lcIV/mWwZHNz0OLlBIqZBTw+1YO3Vm4WI9eIInJRqrjTUKkuKsreBti/YmlCa0d2OiocgiF08QzKTm3GmQ3Xeg8Xl7jdkjIbW8Xd7O9bV6KTLMFI6myvk+GNurkJswIpcB9LAa8F6Ga86XkSm42oP3NFNdHjJTLldQBoFO4IHrYkMcg73R0FO3zMzobpultPwQubpD5qbMhXj75QfZJad7Mw8NN+TwcTHgaD1m86TLAAoLc6Wgtdb2nSrL9W+PoCGcPkb6tI+phm/Uw9+hzHnwrVqnQEZvqC5nN/6vP2QTYjYysI4B7M77qPF9A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NPb1GxGGbh4JJ1m3hT3qITLd+nl2Jy87qGbMJOdFxGU=;
- b=QmXgzYtd3mZs9g4AAf/EaNlliTkMLsb66FwlCu3ir0tx6Y0c0dpgDYJMnVx6sz4O3rzANXLjRuqixKvFQ1AwPtVTr1kTUIr5MmwsBx8sW7Pl/JBQWvoC8YkGGpjjUcrdGvpw/eeKDVVdMdggMXCiLStHTDrrlI+Qy3VSjtmapKPjDckxoTmjXjO2LHZ4VpsgolmPOAxj6QUo8XmwFWq2zU42scd+OmRWg/jhat/qQr+D9YywVqzZmzH86N7hzVZO576zgfYF+xgPGZM0PiyVR3zHTRXStAgVXSQmiUkSltGK1ql/6moeE8PcKsdvRbvca+9oLjq4sgPojCA1boK8VA==
+ bh=ErslBrCYh2JkHtnpHrXsee+zxV6f6GXuQo/2IVpmsNs=;
+ b=DojKnMeQ/fu0BmNFyXiIY6lZvJctld+qz7VfNenFnysfmsHsdSaut+JC+4IObLDakixejtTcWqNedM6sL1NAiWtnymSvrkBEU3zODZnibclCUkkrD4EgVqFBI5MqngRdWTIf+0ZpULFOOVqMbNt/R7pYrEVhkYqdoMJzr5x0/gYF7YS2AeD/2pY58LveBih3nZmnQxUUpPSQdavlrB1qeRHi9iBUBohCFLMFLjzhrQ4myWG5mamlXAW4UvQqe5HjWgjVQxj/YYXrADM+Y9q1yf4od2RFWRqofBvnAQ272FMXE4fQ1yg04C5rMzkeM6NrgFJ4oER2d0V7P/gQUEdjZQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from PH0PR11MB5949.namprd11.prod.outlook.com (2603:10b6:510:144::6)
- by SJ0PR11MB4989.namprd11.prod.outlook.com (2603:10b6:a03:2d9::22) with
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ErslBrCYh2JkHtnpHrXsee+zxV6f6GXuQo/2IVpmsNs=;
+ b=xuCtWLA584flOpCwWXpi86yyQGvDuDkgw3zyEBJ5mcEVPgxXUH3gsq9bMxgH48FNofQ369hRVJKfhvGzATSytGgIfsOa+BN1YkLZQyt3b5f+2FdQLnioFcYDV/DNlNdCHWoUHu3OkEmhNW4wIiIDoDp47EoCH0pmmL6hq71yYOE2FOEwXn1rjX7bTZ1O9ox+oYXsF7TfS4v5ZRc6e0rH0ds1SFbYNoYYEPVzjTLFaIiVTVhfteqXm+U+vhV4x43HM+C6RS6lJHp1xbSjp+kxvzAcwmtBL+8xVZHA0YelbQs3Cn6uPzM1tFwlwP2/xNZBUOSXUbqGnGQ2zoYUjgBDKg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by AM7PR10MB3574.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:131::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7587.30; Fri, 17 May
- 2024 15:29:42 +0000
-Received: from PH0PR11MB5949.namprd11.prod.outlook.com
- ([fe80::1c5d:e556:f779:e861]) by PH0PR11MB5949.namprd11.prod.outlook.com
- ([fe80::1c5d:e556:f779:e861%6]) with mapi id 15.20.7544.052; Fri, 17 May 2024
- 15:29:39 +0000
-From: "Nechita, Ionut" <ionut.nechita@intel.com>
-To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: WARN Kernel v6.9-evl-rebase - EVL: invalid out-of-band syscall
- <0x43564d41> - Firefox browser
-Thread-Topic: WARN Kernel v6.9-evl-rebase - EVL: invalid out-of-band syscall
- <0x43564d41> - Firefox browser
-Thread-Index: Adqobt1wsEThW759TTGOhdgp/60cKw==
-Date: Fri, 17 May 2024 15:29:39 +0000
-Message-ID: <PH0PR11MB59493E21636F9CA955E2DE8BF4EE2@PH0PR11MB5949.namprd11.prod.outlook.com>
-Accept-Language: en-US
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7587.27; Fri, 17 May
+ 2024 17:11:30 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408%7]) with mapi id 15.20.7587.026; Fri, 17 May 2024
+ 17:11:30 +0000
+Message-ID: <8a950188-ce63-42cf-96e2-ea767fee9c47@siemens.com>
+Date: Fri, 17 May 2024 19:11:26 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] [RFC] prepare-kernel.sh: Emit architecture agnostic
+ changes
+To: Richard Weinberger <richard@nod.at>, xenomai@lists.linux.dev
+References: <20240517133603.17554-1-richard@nod.at>
+From: Jan Kiszka <jan.kiszka@siemens.com>
 Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR11MB5949:EE_|SJ0PR11MB4989:EE_
-x-ms-office365-filtering-correlation-id: adf68c89-caba-4c50-ab19-08dc76862ac3
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230031|366007|1800799015|376005|38070700009;
-x-microsoft-antispam-message-info: =?us-ascii?Q?5TDL83H76eljWwCcijg49ZTQx6WA5CJzwLSU1NzvXNGZcnr9F4QpkX7Jz/j3?=
- =?us-ascii?Q?mwE7SJe3Tor43WiSbWIY8F0irGqolknt2M6uUU1zEAukHW+SXOYifrxmvwKU?=
- =?us-ascii?Q?cR6to/XMhaoWE5wBrSjN4bSo+dwZn5iw30sam8h4sxIJyYXhG44wr3a8XEb3?=
- =?us-ascii?Q?/pksFExc8FFGOUh/c3wmXhlT0sNQL7tjokEOFkP3mxGqouz2fQyk5X83WAcc?=
- =?us-ascii?Q?s3wbZl+XoF8FqiJRL0prLsSV6jflgIUttt0OpsRyekVIzlc3Uo61HmjvmuLT?=
- =?us-ascii?Q?W1WiEAN/UXxPVh5hrJpH0n17UbJ+txY0CiLF+qu13KDIWrYylj2X+Vo1ywW9?=
- =?us-ascii?Q?yRfOK2OGCN9Wol6HMeK+Qji4dRanScNa3veHD6NKTuAIkXW580oeep2bLSCY?=
- =?us-ascii?Q?yJ08WBMeAbY705Y04EyQlGgkNS3lvrppnrukvOJ8rqFu1Z/LGspe1jKFxBgE?=
- =?us-ascii?Q?eznyYqTNplM2VyAHvGqMxefPRbtS1yXI6BQsT964yX/fw+d3ncQh2YUy5SJn?=
- =?us-ascii?Q?fp51OYALLbAXfPmIwiohdRqweGgQUcra33bMftZj0va7VdL0E12Os+XiNgQT?=
- =?us-ascii?Q?C43oH/wLnXOFgWJuf84eiOxBuQxaHGayrK/NO+aAZMaKHlOHEEkyJrFQ7coT?=
- =?us-ascii?Q?v3UizJT8PwvG/U1F7zUra2r3JZQMi8LvicBRNKz/jzB49L5s1V74WLzHeAdV?=
- =?us-ascii?Q?Nrzq+MyR3fnGEA7yrgiZUeiKj/T/iwYNM9RWBSIbcOoPTZGmWJt9D+5WDp+D?=
- =?us-ascii?Q?+jPusFb7YdCeJFCeuxeTFbqTLH6WPUYcX+Ekre5IMrz+JCraEbCTS4OojdDw?=
- =?us-ascii?Q?jRN77xfiUECm1/p8fQI/ZIyS15k6cD20RmMLnU0eA+v6+AHQ1oI1o+6JD+Mw?=
- =?us-ascii?Q?c7llauLyGFt24q4R+vPko0NX8jWXfKwf3kO+OSrgyszfcfAvH6tIWA3jYwbz?=
- =?us-ascii?Q?m/cAjmAjDubOWZ62GXC5gWLodICtF7LAX/0/ECdIMNnarMMm1ipeyT5Pdyov?=
- =?us-ascii?Q?GEjbWO4RFip5FwKcKdAqBF24qCRXswwjgWxHBXlFaEg3TjI59wBPWH/U4gBv?=
- =?us-ascii?Q?lL3ExkUpgwSb0FcMEu6YwMxIlHDPcGu8/Etfe5JvY5AVIt9lcqxDpDeAIUnA?=
- =?us-ascii?Q?llLJGu30eftxMk6IWdxRFVhJeix46NW+/Cojp4CI3Os/XsoxlkvfeLWYdN7G?=
- =?us-ascii?Q?oBd9jqI2IuwRNR4Qm1ATcDWG87kgunZuwZMguX2Lp0r1g1Z0DlCLvPG4vTxW?=
- =?us-ascii?Q?cfc+ZCQqPv/RvNC0tF9BSLNFVA0qzsB4v6Y0N9xm3AGd5nsVn4DdvjhR2XPl?=
- =?us-ascii?Q?zsd4/RfZVV7ZTngQWCbJxG/dWIM36l+dCdn9UjOvUJSfhw=3D=3D?=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5949.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(1800799015)(376005)(38070700009);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?KilzNnRgj0wI0ZA73Yh5DMjKqWDjEZ+G1Ftor9X16fyCtKmk4upKGzCTXYeN?=
- =?us-ascii?Q?6RdmrFYHC1ag9/pkIap0iuf2s4nbLpiMzkTgQcMVrgmbqA1Gs6xhJOJPQrTH?=
- =?us-ascii?Q?dEmiuhio0ubLrb0aCB4ZwJuvZqNypMMGuKFUdf8ORRx2wEOKD0sPSUErGQ+9?=
- =?us-ascii?Q?uLCvXR+hNhVbpPhWUM3Y9RrEV9KmB2DxbcIdBN86hhjeqf9pEdukuykI1A33?=
- =?us-ascii?Q?6OksJ1m42I0UlfyUSJzCmdyEQRaqbvC0XQNz+NlBuR+Q9qbdguN5+dRUzQad?=
- =?us-ascii?Q?GBWNwxHh9Ziz/Gr+jqgDTEbEYpvCf88+I3HQHI8zKW0gVp+9h5hiOQSsjE6W?=
- =?us-ascii?Q?8uYDnyi3s37AjjZsN/WF5aol0bHENBLzxrzbADIXSL1/npc+mp3JfMEkRKm3?=
- =?us-ascii?Q?WIJgzG8CvKyEAaN4VMBFALIT15BbdBdRgPtth/j5b18i560jFzSnRIhrD3Pp?=
- =?us-ascii?Q?3kA3VPDEsYKw1RfqYMPfGQOCxq5W/QeYV9bLuQ8uKFaJlYFaiydbDFSFKmwW?=
- =?us-ascii?Q?pJhPkP4TWVKEnwldS0cRVQLgvK4rf9DlQdXRrQ6f81CvngA26//xpGPevXzL?=
- =?us-ascii?Q?Q5OK+u8xDedqj8YVjg01pcmvLmenhM0X5jMXYmaKkheo9J6nv2N/QNr28E4e?=
- =?us-ascii?Q?fc3Fw6BvHsJ+HoeTFYDcQzPaA6o07DSEn0ojQQQW98MP44VV9GXfeOivKoAN?=
- =?us-ascii?Q?RM/i+3XSq1JRfoJ+6xVfnUzTVSd6CLAsda7ooOM+xVRze0FhXWwoL0jBPoHg?=
- =?us-ascii?Q?56LdPEvXDAYVUeasE5TevAN0MgmG1YgJzAl1+bq41DkNT7TNd3Rjbjp3t0WJ?=
- =?us-ascii?Q?0A31N/hAFK/pBIpYCFbqKTmbv/zow13NZoRzXVoS+6MVktdHeajDmdrYvJwf?=
- =?us-ascii?Q?u6Szhuafh81MKqABTSaB6XRrYbON0O09q5q0ycGuncrNkQV2Faxe4WA1FiFA?=
- =?us-ascii?Q?Svv7MbNhLPQve3B3QPMqLwwPrnob4AFw2KO59zflF1DQLXiFWCZz81Jrz+xR?=
- =?us-ascii?Q?ZmifAuGvsBpne/+yvh8DaSJ4oGxzi02JDsKwD85mzyhPpjFdtKIfL6Gk3IkG?=
- =?us-ascii?Q?9gOa8Yua7qyFG9BBMBeW3S8AWmBGOyvLBGi9+7gbXa5bzQTadfK+Oioil1qt?=
- =?us-ascii?Q?wggJB+HwP6XpWWGGWT+Boq5IW4B298BXWFXbpdIYpB8ImjWhzYFEAMT+ZMZS?=
- =?us-ascii?Q?iMnjp1E2/hnxStcG/zn1nWk4BU4jAMateiCmisEXz6Uemqj3KxranG52yq7V?=
- =?us-ascii?Q?XQ4wGxlumjq9lsLNWB+lc03auAoVWEf1QbQCHJNLXPeCbER+OZaKzjuwmOEw?=
- =?us-ascii?Q?sW+/iJeqsCgWvIzLC5pKsyuTi4jeTKWcUyFLswb85wrSK7ZJa6a4iIxdvbYX?=
- =?us-ascii?Q?ujytSN1s5Z+3toU53SXHN3Sbq2IAGqBrToRg8st+YezFdbO3tiymc/4rfDOp?=
- =?us-ascii?Q?jzmZwsjiK7CjeJcg/tYZUXr3QLVhNSw0Pg+HolGJFPrhgmyOVT5AJg1wr4F0?=
- =?us-ascii?Q?kuTEBaCMok5YZZKWtPpCuWjttLC0pK/Uglkfe8PWp/kTEyFhFAjfbr64i1LT?=
- =?us-ascii?Q?SPYqOoUfnZGJJBcpf4nvG3Dd3dxv6xCsgsdUj+qZ?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20240517133603.17554-1-richard@nod.at>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: CH0PR13CA0006.namprd13.prod.outlook.com
+ (2603:10b6:610:b1::11) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AM7PR10MB3574:EE_
+X-MS-Office365-Filtering-Correlation-Id: d7d785e4-3db7-4e83-31f2-08dc76946532
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|376005|366007;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?R0IyQ2M4NmI0eXZkbTVxY05DWDJzbmZLRkFZM1lNeWJFTFBub3grUDl4L0c5?=
+ =?utf-8?B?TmtRNmlJUFQ3ekZYaUVISkVDd0pkWEF6amwyaEpsWHJQZkNFNzNJS3cwQkEr?=
+ =?utf-8?B?UmxoYnZ0cnNVaHo2R3pnMmsyMndLbEZ0eVZvY3VMVVE3c05GZ0ZwSENMUk1J?=
+ =?utf-8?B?T2VsdVdvQ3BkTFFmREY0aGZEZ1hMcVVhRjVrY3Zxby9KZmJHRHVsU3hkOEF2?=
+ =?utf-8?B?MlRkdGFvZC9kR2dvSFRJRnk0cjM0SFIyd1h5YlVXY0RwMVJBUzVqdFp2M2JI?=
+ =?utf-8?B?S1pRZ2RDeXJxeXQxTGk2NG15d0xSRG82Y0pDcmtuaVZYaEM1aU4wRXZQWUpW?=
+ =?utf-8?B?WlJ1UkthSlExL0hVNlhMQko2VkRIekJZd2lBMEtxdEdGNHBZWTA2NnU0dHA5?=
+ =?utf-8?B?L3pTUmpXNGhRVVNwMms0V1JTUzdsMjRtSWpFcUxsRGVJTU1oRDF2Q2FXL3pD?=
+ =?utf-8?B?N0tYOWVkdUw2TGk5YmdobStXUmtMektpaG1uZENWc2dSNDltVUo3cGpyT2Fz?=
+ =?utf-8?B?OXZkRmdkZ3pKWWllUitPL3ZQcnQ0ZHdtVXVXQUF6bFZrbmpoSWo1cXhKNlZQ?=
+ =?utf-8?B?bUFiTjhNdjdlcFJpUjRyQXlkT3JEcW5ROFhxa05rU3FyNmZmL1NMVEJxSkRW?=
+ =?utf-8?B?cGVKM01nWGlSZXNoU3VvQldrMUdXSkhmSkNGS05pcU03RHNNOCt0VTRmMmZy?=
+ =?utf-8?B?LzZmdTdjSDRnMUtmWFdkMVgrUjdRQkNqWGtsdnBpenpvQ3V0aWJSQWtVSTc3?=
+ =?utf-8?B?Z0NXazR4aUUrZmRmZlpzOUFlK3QwNlBicTBPaEhKQUNlVkl4NmF6WFh0dXZJ?=
+ =?utf-8?B?Ykw5a21RRklDZXVEMWE1YVlVbUQvNUFHWUNGdkpub1BnZ2RPb2plbmNjYVAx?=
+ =?utf-8?B?N24zVzVIWkMyeVRqSjBoTHJVZDQ5dHVnM3paUy9LaXlQT2dzVjdRQURtRFg4?=
+ =?utf-8?B?aGwwWDI2cTVtb2VZMGl6S2VpL1hwdEYrSXYvM0xoMmJobk9DV1Bnd0swVDVa?=
+ =?utf-8?B?dHkxaURpZFdlOWs5ZC9oR1dNSXo0Wm5LV1NOYXRFT2UwTEJMa1FzdFNYdE00?=
+ =?utf-8?B?VmpxYzlOaDQyeUNiSHExa3VFemRTQjhPMWNNcG1IMmUzTm9sSC9xS2NXS2NY?=
+ =?utf-8?B?V3hZZGZGQ0kzbFhabXFHdGRPV3U0T0h0SEVXd1dEYW1xWkx4b3o5L1hVYXJl?=
+ =?utf-8?B?ZDlDZ2MrSSs5TExCODBwdk4xZlJ4R2ozYTFXaGw2YWJ2TUFWV2pKL3Q2R211?=
+ =?utf-8?B?Z29BRGFOcEp5YXNnOENjVVZaRmxnUStwSlJkNG5NdXFCVjNhTkJvNEYzOU56?=
+ =?utf-8?B?ZEkrVm9jRS9TZDNtTENYdmxxVEJkU0lTNmdiRDhxNjdiRkhnTVd2UVI4RkR3?=
+ =?utf-8?B?TmhLRy9tQS8zemxGRXJaNjRTdU5zZkgrMkhzWTRaYkllTnl2a2FTNnp3Nm9n?=
+ =?utf-8?B?M1AxOURLOFNCU0F5V2ZsOEVVVmU1S1RlKzYyak1jNmgwRjI1Y3lRejhvWFBl?=
+ =?utf-8?B?M0lLSDRNMEN2ZjBpZmo4VzEzQkxFMkViVkp0QjlmMCtHVjB2S005dXdLd3J1?=
+ =?utf-8?B?UlkzN0xBcDhVNGRhdW5WNWVyR1hxc1lmZlBYT3VQMHRlYTNFRDdLUisxdUgx?=
+ =?utf-8?Q?r0JQ2Ra9XOBWojNymJsuJVUyh10FYYN9HkdV6F31ICfM=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005)(366007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?MC9zRnZidytwL2o2blBEeHRHRC93ZzBhNFN2czRLKzVFNjUwMEZrbU5nRG5G?=
+ =?utf-8?B?RjRZcDczbEtqaFNTdWlKa2l3eFk0RzJhc1UyUEh6WjVEaXI4anh0TUtDamZ6?=
+ =?utf-8?B?K0U4V1FnRGhvV1VQdEZiREpOR3RzUkxOdkViWTJ0Ujk2NW44LzdXOEZibzU1?=
+ =?utf-8?B?dHFrS1pmbTBOUDlhNkxRcngwYkpIaW91aU83WENOWndMUUdmMDFHMXd2QW9o?=
+ =?utf-8?B?RDlteWl3S1lyRFpuNmx0a050TnpTc0QvUktrYVQzQzZnYitubkcraWtxdlBu?=
+ =?utf-8?B?cGJSSWVZdUpqbXM3ZmNUMklPVkFJM0RST0RCNER2NkIyU2hlYzlHOFRMcTBm?=
+ =?utf-8?B?dFdsN0ppZGFEcXNZMjJQVmNUYWQ4QXBqWlpPb2l4WlJtdDRSOWFSU0tjVUhm?=
+ =?utf-8?B?dFFEc09YNGpvM2xNOGpFN0RhUWtKbXgzTU0zU2treGxPaWhDY0NjUUxNOWVS?=
+ =?utf-8?B?eUVYdHhVenBLbzRxc3JMcXhoZmp3K0pjeHJDcVQyNjJCcG9tL3Izd2ZyS2c5?=
+ =?utf-8?B?K2VaWjk0T0dWeVNpT1owLzhsbEJiN3dpNE1udWhrQVFYQTNNK3R2WEdrK1NJ?=
+ =?utf-8?B?RXZuRlUrTHZBSWNyRmdWYVV6L1c3R2hxcUhFa1prTTVjTmFxa29ybU9yUVJD?=
+ =?utf-8?B?eS9HMHVGZGdKNjA2cUkzZHJqcUQyT2UwV2ZJc0NEL2JCWTdueWxxZldGR0t0?=
+ =?utf-8?B?TUMzUTBjaS9HR3p5d0tKZ2RGd01XM0lORk5RUHB0QTB2U0s4eVN0MmU1UTNp?=
+ =?utf-8?B?NG56RHc4dGNSRnFVclFJcjdocVZtOEtqMFZ4d2RKQ0xYc2g4dmV5cHBYeTV6?=
+ =?utf-8?B?NkRrcERhY0NadlArT1Q5MVNrbGhpRkJEL0o1cnBrandTajZ5RlltYmRLR0hU?=
+ =?utf-8?B?dVBQeGhNM0RYOEd1NkJDdDNVdFN6T0FFQ2NQOTV3YW9OQWdoWjdlbkpKVWRa?=
+ =?utf-8?B?c1lQZVUrN05OWGJzU0IxcTVybXVpWFZ5TVhPUWhNcUk2ZUttMm9mSlR2Sm1w?=
+ =?utf-8?B?NVlFNHFXQmVsak55Ui9ESlg5RFY0dkJZM2s2YjhHRE5hMmc0aDdyY3FaRmN3?=
+ =?utf-8?B?V0ZnN1dzeEw3NlVmd3orUXEvTlloaHVZWGhRRGgrZWRmOWlJdktQYWtkZEJH?=
+ =?utf-8?B?MTRISUhjelJLWFhxWkJULzREbHA4QXA1ckJMWmkwRUFETU9yekhOcnY5K0Z4?=
+ =?utf-8?B?VG1KM3VLMGpnSFhBeUN1RGNxR1pRTWduTWkrelRQQS9iMFA2TDdFODN2ZGxO?=
+ =?utf-8?B?RWJFLzhINWlabkFwbzFuaDZadzE2NEVCak9FcnVNUTYvY0czWm1DMzhzVFkv?=
+ =?utf-8?B?RjB6akswRTZ6OUNOWDJIdXNreVhBU1NjSXFLUjNQeUNFdjQxSTkvbEtKRE40?=
+ =?utf-8?B?SGtIeXV6T1h6ODJZNU5lZFp4MkU3RFF2Uy9vbUUwZlJXdFRvazQ4WXpBcE1V?=
+ =?utf-8?B?Nk5tcjVhU1NtK0NUKzVRMEZlQzZ4c28vOGRqMlZXZFdjSjhpbStlcWFBcXF1?=
+ =?utf-8?B?QTAxZ0VJd3dTZGZJekpqaGFvdUZyN3k5cjZwdmNoOHp6K3lKM2tGUEZmSHpS?=
+ =?utf-8?B?VUVCb2JmTENyaGw5cEVPTXVSZ2xuQnRRb2ovS3JyLyszOVBpTDQrYnhGbFZW?=
+ =?utf-8?B?bDRTNVIyRnlNZUdVUXF3MXgvM3p3MlgydGJBMHY0ajdvWWlGeVBDVVRPaG1N?=
+ =?utf-8?B?Q25EWlNhR1cvUW4rMTZLTUNsOHIweVlnUXp0cng2UHRrYlhIR0xHelVHVy9Z?=
+ =?utf-8?B?UU9ZVng2TDE0Um9VUFJrMlEyN1drMDVxUU5IU3JqR1FGUjlVSDV0Tm1qVDRB?=
+ =?utf-8?B?ejZxOHYrNHFIekYybmxqQ0VFY3VZNVgyUUwzcm1KalhyTVF2WFlCb1NHM3hQ?=
+ =?utf-8?B?Zi9vRnpZeGtEUExDVjk2dFIyblhyQ3lIUk8yS0hSclBxa1BXNGNUdEtOdmhh?=
+ =?utf-8?B?V2dteXVFblYwV1pRa2l5Y3lzUHdOV2VFbmMyWXRMUkt5aEVsb1YzRER0aldO?=
+ =?utf-8?B?d3UrYVNIM0REZlFmVnE4ejY5amFWNmpOUzJRaGI0ZzFTelNkMCtLbjU3aFg1?=
+ =?utf-8?B?dk0rQkF3VnMzbC8xZmVkQlVJdG5GZWFtUUUzem9GN1o5WHVDOWFTZHpKTjFR?=
+ =?utf-8?B?UFlTYVpERi9iZU1kNEowdWtSeTNuMEJmU21wTHF4RmFiR2lVWUlrYlBtMEpI?=
+ =?utf-8?B?MHc9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d7d785e4-3db7-4e83-31f2-08dc76946532
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5949.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: adf68c89-caba-4c50-ab19-08dc76862ac3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 May 2024 15:29:39.4628
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 May 2024 17:11:30.5490
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5/IWyhY085hkEqAb08IOomRhezXQw6Z+8TgMNJ9Tsgs1czdTjn0+s/LZxq/6VFD6cquIJTs4J6hqgDQcVmYgMg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR11MB4989
-X-OriginatorOrg: intel.com
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: teFSrfk2CByP1VUpiQmDW0bLzgSa60D+XNE3yMfqMvA7I43KPM9syzdQSFP4NocmBaWgoJjSY6dQk5++KnsBIQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3574
 
-Hi Xenomai Team,
+On 17.05.24 15:36, Richard Weinberger wrote:
+> If --arch= is not passed, emit changes that work on all architectures
+> supported by Xenomai, currently arm, arm64 and x86.
+> This is especially useful with --outpatch=, the resulting patch can be
+> used for any architecture later and makes maintaining and building
+> a Xenomai enabled kernel easier.
+> 
+> Signed-off-by: Richard Weinberger <richard@nod.at>
+> ---
+>  scripts/Kconfig.frag      |  2 +-
+>  scripts/prepare-kernel.sh | 56 +++++++++++++++++----------------------
+>  2 files changed, 25 insertions(+), 33 deletions(-)
+> 
+> diff --git a/scripts/Kconfig.frag b/scripts/Kconfig.frag
+> index b76d25e53..3c9ad2b9f 100644
+> --- a/scripts/Kconfig.frag
+> +++ b/scripts/Kconfig.frag
+> @@ -16,7 +16,7 @@ menuconfig XENOMAI
+>  	  Please visit http://xenomai.org for more information.
+>  
+>  if XENOMAI
+> -source "arch/@SRCARCH@/xenomai/Kconfig"
+> +source "arch/$(SRCARCH)/xenomai/Kconfig"
 
-I installed today v6.9-evl with all patches suggested by Philippe to resolv=
-e RIP warnings in dmesg.
-But I notice other one behaviour regarding EVL core.
-My system have desktop environment - Ubuntu 22.04 LTS(Gnome Default Desktop=
-).
-I started Firefox Browser to search some things, but i notice more warnings=
- in dmesg when Firefox is started.
+That was likely there for historical reasons. Removing it makes things
+only simpler.
 
-Is normal to have more warning in dmesg for Firefox browser?
-Is only happened when have Firefox browser is opened.
-When Firefox is close at process, messages in dmesg not appear any more.
+>  endif
+>  
+>  if MIGRATION
+> diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
+> index c9aeeb4fa..25f3b4a7c 100755
+> --- a/scripts/prepare-kernel.sh
+> +++ b/scripts/prepare-kernel.sh
+> @@ -249,37 +249,24 @@ if test "x$output_patch" != "x"; then
+>  
+>  fi
+>  
+> -# Infer the default architecture if unspecified.
+> -
+> -if test x$linux_arch = x; then
+> -   build_arch=`$xenomai_root/config/config.guess`
+> -   default_linux_arch=`echo $build_arch|cut -f1 -d-`
+> -fi
+> -
+>  while : ; do
+>     if test x$linux_arch = x; then
+> -      if test x$usedefault = x; then
+> -         echo -n "Target architecture [default $default_linux_arch]: "
+> -         read linux_arch
+> -      fi
+> -      if test "x$linux_arch" = x; then
+> -         linux_arch=$default_linux_arch
+> -      fi
+> +      target_linux_archs=(x86 arm arm64)
 
-Output(dmesg):
+Is there a particular advantage to use a bash array for that, rather
+than just a plain space-separated list?
 
-...
-[ 4767.957239] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4767.957260] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4767.964495] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4767.964517] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4767.964537] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4767.973630] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4767.973649] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4767.973662] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4767.981397] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4767.981408] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4767.994573] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4767.994598] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4767.994611] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.002334] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.002362] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.002372] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.008124] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.008145] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.008156] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.019824] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.033785] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.130543] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.181969] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.206025] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.234148] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.238021] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.482234] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.566334] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.566531] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.566831] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.566851] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.566917] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.567020] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.569456] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.570929] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.571208] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.571315] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.571333] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.571366] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.571419] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.574266] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.576491] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.576690] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.667500] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.667520] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.667756] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.733754] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.733767] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.734012] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.747761] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.747783] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.747796] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.841513] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.841531] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.841549] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.841573] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.841588] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.841603] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.841611] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.841620] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.865061] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.865081] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.865100] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.865133] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.865146] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.865160] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.865169] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.865176] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.924726] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.924750] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.924761] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.944287] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.944304] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.944324] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.944356] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.944368] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.944381] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.944390] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.944397] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.965413] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.965427] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.965451] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4768.965461] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4769.052723] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4769.052741] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4769.052763] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4769.052772] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4769.095874] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4769.095889] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4769.095910] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4769.095929] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4769.122300] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4769.122327] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4769.122346] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4769.180437] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4769.180468] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4769.180482] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4787.485320] usb 1-4: USB disconnect, device number 4
-[ 4788.710873] usb 1-3: USB disconnect, device number 3
-[ 4798.970592] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4798.985661] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4798.985677] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4798.985698] EVL: invalid out-of-band syscall <0x43564d41>
-[ 4798.985715] EVL: invalid out-of-band syscall <0x43564d41>
-...
+> +      break
+>     fi
+>     case "$linux_arch" in
+>     x86*|i*86|amd*)
+> -      linux_arch=x86
+> +      target_linux_archs=(x86)
+>        ;;
+>     arm)
+> -      linux_arch=arm
+> +      target_linux_archs=(arm)
+>        ;;
+>     arm64|aarch64)
+> -      linux_arch=arm64
+> +      target_linux_archs=(arm64)
+>        ;;
+>     *)
+>        echo "$me: unsupported architecture: $linux_arch" >&2
+> -      linux_arch=
+> -      usedefault=
+> +      exit 1
+>        ;;
+>     esac
+>     if test \! x$linux_arch = x; then
+> @@ -333,10 +320,12 @@ else
+>     cd $curdir
+>  fi
+>  
+> -if test \! -r $linux_tree/arch/$linux_arch/$arch_probe_header; then
+> -   echo "$me: $linux_tree has no IRQ pipeline support for $linux_arch" >&2
+> -   exit 2
+> -fi
+> +for a in ${target_linux_archs[@]}; do
+> +   if test \! -r $linux_tree/arch/$a/$arch_probe_header; then
+> +      echo "$me: $linux_tree has no IRQ pipeline support for $a" >&2
+> +      exit 2
+> +   fi
+> +done
+>  
+>  if test x$verbose = x1; then
+>     echo "IRQ pipeline installed."
+> @@ -369,19 +358,20 @@ case $linux_VERSION.$linux_PATCHLEVEL in
+>  	    -e "s,@VERSION_MINOR@,$version_minor,g" \
+>  	    -e "s,@REVISION_LEVEL@,$revision_level,g" \
+>  	    -e "s,@VERSION_STRING@,$version_string,g" \
+> -	    -e "s,@SRCARCH@,$linux_arch,g" \
+>  	    $xenomai_root/scripts/Kconfig.frag |
+>              patch_append init/Kconfig
+>      fi
+>  
+>  test "x$CONFIG_XENO_REVISION_LEVEL" = "x" && CONFIG_XENO_REVISION_LEVEL=0
+>  
+> -    if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$linux_arch/Makefile; then
+> -	p="KBUILD_CFLAGS += -I\$(srctree)/arch/\$(SRCARCH)/xenomai/include -I\$(srctree)/include/xenomai"
+> -	(echo; echo $p) | patch_append arch/$linux_arch/Makefile
+> -	p="core-\$(CONFIG_XENOMAI)	+= arch/$linux_arch/xenomai/"
+> -	echo $p | patch_append arch/$linux_arch/Makefile
+> -    fi
+> +    for a in ${target_linux_archs[@]}; do
+> +        if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$a/Makefile; then
+> +	    p="KBUILD_CFLAGS += -I\$(srctree)/arch/\$(SRCARCH)/xenomai/include -I\$(srctree)/include/xenomai"
+> +	    (echo; echo $p) | patch_append arch/$a/Makefile
+> +	    p="core-\$(CONFIG_XENOMAI)	+= arch/\$(SRCARCH)/xenomai/"
+> +	    echo $p | patch_append arch/$a/Makefile
+> +        fi
+> +    done
+>  
+>      patch_architecture_specific="n"
+>  
+> @@ -404,8 +394,10 @@ esac
+>  
+>  patch_kernelversion_specific="n"
+>  patch_architecture_specific="y"
+> -patch_link r m kernel/cobalt/arch/$linux_arch arch/$linux_arch/xenomai
+> -patch_link n n kernel/cobalt/include/dovetail arch/$linux_arch/include/dovetail
+> +for a in ${target_linux_archs[@]}; do
+> +    patch_link r m kernel/cobalt/arch/$a arch/$a/xenomai
+> +    patch_link n n kernel/cobalt/include/dovetail arch/$a/include/dovetail
+> +done
+>  patch_architecture_specific="n"
+>  patch_link n m kernel/cobalt kernel/xenomai
+>  patch_link n cobalt-core.h kernel/cobalt/trace include/trace/events
 
-Linux 6.9.0-x64v1-evl1 #8 SMP PREEMPT_DYNAMIC IRQ_PIPELINE Fri May 17 16:48=
-:38 EEST 202 x86_64 x86_64 x86_64 GNU/Linux
+This indeed looks like a valuable enhancement.
 
-Best regards,
-Ionut Nechita
+Jan
 
+-- 
+Siemens AG, Technology
+Linux Expert Center
 
