@@ -1,1349 +1,706 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B668A4596F
-	for <xenomai@lists.linux.dev>; Mon, 20 May 2024 09:49:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=192.198.163.15
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716198561; cv=fail; b=uIwQ/lfE2YiuTcFNiZGEy9cV2zrW1rCwF28byv9ZeJsF7muOeSRHuUM9xOa0HfTqKueEszvHttmII5HyMV6fFLO9KZ6yftO9da4QSraVCnNML8bNKvSJP2w5f7zVnYkjVHJ4oVCfnCC5eZPKUm/o0jBY89wda2mmMVA1sLILpH0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716198561; c=relaxed/simple;
-	bh=Ggpo6va+Ews+pi95e5BnDifFAWsegx2e9od8n+jauuo=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=Wv24yU5S4XCcJhEM54hF0kxht+aCGqAJulVU+3Fi2eIF5LmyCN4dOGTRZjXCPNBemF8GU6cWhFe6P0oDJrWuOtOB90LflAo+80qC7Ac1zz2nDd+99bfc556qXAu5u1cdC68KrPyW8EGhNlLsftB8bO1rKghJd6GR51OL2x/v1xo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hOD+duqN; arc=fail smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35DEF28E7
+	for <xenomai@lists.linux.dev>; Mon, 20 May 2024 15:12:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1716217928; cv=none; b=jBDIAG6HG1mtsUs+z9Vo7/RE7rr+j7RAAbq6+WkQw8Lqfk8nemxsdm0LWdAvhI/TaqyHwnHTwe1i0r/nHFEHRo2gBW7psCzGTnIdRlbsISK8Tpr5u2mqOLHXi11g4jgxe5YGv5RdZ78xGIbnz/8dVPCJlUpjxZO6ThlGGNtXU10=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1716217928; c=relaxed/simple;
+	bh=CddQr3vUzmZ7IEd6H2mPa/mhrHgJpcq4CzChJQ5otq4=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Ig/t1/shgiOmAxX5ymVjWekYeWb9yY+uJxmCXpejMXBFU+bS5hgVk4BPT1WjI62asl8q05hJ3W92Hs/Ly7x9lOzLRJuzgvLT1bnP+0HILQNJKL6RWagrWdhQJwb04uerjRWml+o9rYPx/2LejxoyBcM4qqMJ8ESEG76oscFFHAI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=fBIuR+1g; arc=none smtp.client-ip=185.136.65.225
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hOD+duqN"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1716198559; x=1747734559;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=Ggpo6va+Ews+pi95e5BnDifFAWsegx2e9od8n+jauuo=;
-  b=hOD+duqNDT7MhcZk2Txl51b1S8gSsS2wYLeHdb5Sqf1+fVG1tBCTDH26
-   RVi86iJftWIXvs83qSCt6BW/oSKvovJ7EAseavCDhyK9m9hobMHbCskFc
-   JuU0nOPDj6mZPPvGvzKs2gSGo5mURRk/o2J1GVGvVO6R9XPSCecF9c6wW
-   yUI/uMyONJR0breERMQfR2COY1EA6vCvWCHGZGVq7F+DGLHX7d2f0wSvt
-   NPBaIrD+gqk8cssew5uRnxeu44/aY7WsYGIucn/I1BW/9tzRmX31kNQRf
-   4ym/rck1jnIfnCY9EX9K1dKa6EI9XssjAv2KN6SnWoDFz8ot8ySJTxfz5
-   Q==;
-X-CSE-ConnectionGUID: pDVwKhUsSRmlpWpvIE3KJQ==
-X-CSE-MsgGUID: l84sWdCxQ9WPuYEyblTLjQ==
-X-IronPort-AV: E=McAfee;i="6600,9927,11077"; a="12506668"
-X-IronPort-AV: E=Sophos;i="6.08,174,1712646000"; 
-   d="scan'208";a="12506668"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2024 02:49:18 -0700
-X-CSE-ConnectionGUID: ik84Nh0DRFGIUwdmkGfH9A==
-X-CSE-MsgGUID: dhXAJimRRSWll1pOw/3gHA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.08,174,1712646000"; 
-   d="scan'208";a="32463466"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmviesa008.fm.intel.com with ESMTP/TLS/AES256-GCM-SHA384; 20 May 2024 02:49:18 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Mon, 20 May 2024 02:49:17 -0700
-Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39; Mon, 20 May 2024 02:49:17 -0700
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2507.39 via Frontend Transport; Mon, 20 May 2024 02:49:17 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.41) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2507.39; Mon, 20 May 2024 02:49:16 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=csoNNyawIfFBcGagO6ef0NVnctSFVcCTLrrY1owgC6WXYgXbWNGbI2HM0ATMvFfmYF0QgNla0Sn3ocuDsG35A/+EJDj8In6YumITbGmhh4y0COti5CUN7t24YVTQyfjfPi5z4ZSJjing/FD5pThBRrRqcKJSFfJPFaL20xRvxic413jep5WZUR5K+sqERYQSsYHCFisTBQNM1XVIxp6Gv3H2iocQPsUXX+n8plHqUiTlFg3gTSyF0D6WrQ7UjOQ6Z805Ixpp2IMud/0OYZoDzbEaVNqR2Y88EEIOkoqihOaBJRb9eEA0J8/yoXjWTtWPs/faA+/MVI/sTrHgoovreQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=B+KeEeY4+lDDQTteISXRhw1HqtDgMK3Xro1q1qAhxSw=;
- b=jOUAs3AIoXX7rEDNld2cUb+TrXvhFZXGeKXvOusQlNO2xc6904ZkMiyds3RnhDV9umC18mHWyF7df4P87tnEziFJTR43dC2AhdUl4szbynqFmHEHNEtrtPGVRP5VEfQ6r0QFtO0WRWSWnYkU/hV1rH9h3Br+hxRZ9s2jb40gJ765uYekF+LQeoharA/TITSD/wTRmP0gxzVT965izV2nB+cfT8QaqXWN/Y/L7QLTUmSu6UUa7fFgW4cr+vN7Yu0RYRS00bEREJTZpTyqTn3217zHL+hEiwWAfGAGKbqCn2pSbBF4RKvXRwnxGSr4PnjKhBIXswflxycLTVP/GN+OMA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from PH0PR11MB5949.namprd11.prod.outlook.com (2603:10b6:510:144::6)
- by DM4PR11MB7206.namprd11.prod.outlook.com (2603:10b6:8:112::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7587.35; Mon, 20 May
- 2024 09:49:14 +0000
-Received: from PH0PR11MB5949.namprd11.prod.outlook.com
- ([fe80::1c5d:e556:f779:e861]) by PH0PR11MB5949.namprd11.prod.outlook.com
- ([fe80::1c5d:e556:f779:e861%6]) with mapi id 15.20.7544.052; Mon, 20 May 2024
- 09:49:14 +0000
-From: "Nechita, Ionut" <ionut.nechita@intel.com>
-To: Philippe Gerum <rpm@xenomai.org>
-CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: RE: WARN Kernel v6.9-evl-rebase - do_int80_emulation
-Thread-Topic: WARN Kernel v6.9-evl-rebase - do_int80_emulation
-Thread-Index: AdqoUB42H/OnAc6gQSyqVaNVHGTu7wAA2ngAAADkauAAAU+/AAAAI7fAAACbpVAAjtw04A==
-Date: Mon, 20 May 2024 09:49:14 +0000
-Message-ID: <PH0PR11MB59496A3A9FFCB39B7715813AF4E92@PH0PR11MB5949.namprd11.prod.outlook.com>
-References: <PH0PR11MB59492DDE7F2301CECFD2D8A9F4EE2@PH0PR11MB5949.namprd11.prod.outlook.com>
- <877cfsskke.fsf@xenomai.org>
- <PH0PR11MB5949EC28B447C7534BF8292DF4EE2@PH0PR11MB5949.namprd11.prod.outlook.com>
- <87y188r32a.fsf@xenomai.org>
- <PH0PR11MB5949CA43AC47E322BE97B5AAF4EE2@PH0PR11MB5949.namprd11.prod.outlook.com>
- <PH0PR11MB5949D3CFA8AD77346C36097FF4EE2@PH0PR11MB5949.namprd11.prod.outlook.com>
-In-Reply-To: <PH0PR11MB5949D3CFA8AD77346C36097FF4EE2@PH0PR11MB5949.namprd11.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR11MB5949:EE_|DM4PR11MB7206:EE_
-x-ms-office365-filtering-correlation-id: 6b8fc781-ba34-445c-3e41-08dc78b21bab
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230031|366007|376005|1800799015|38070700009;
-x-microsoft-antispam-message-info: =?us-ascii?Q?Wi5trXmbyejwCsuo5tgyJBXuT64QU62yZC7kw2PXVVPu5qumLxopD0Gqn0/9?=
- =?us-ascii?Q?wLjgsdFVUcVcqEHwDvcmvi5oWKuf7HDqyX1d0YTi2l8wWMXI3tCN5TDC7gNs?=
- =?us-ascii?Q?qycXPvJEsZtx42X/H+bh6T4tptJLutGS3mR77kdTqzpuyG/XLn0gsTFapA+a?=
- =?us-ascii?Q?XT2coVpP8pBvC/aMybXQpNGCT0qcg37aySyipMflb5wwmb1lt5oO+FghzHqv?=
- =?us-ascii?Q?C8ntRmgZUVtoetkKvx+9ZZh+0yZLeerU2SBYfrAyC4pcIvakZKxCJDIY0pk3?=
- =?us-ascii?Q?VYaCBQJHj0HCLxNQKhzrS8NGZSmbzE+g+YKKdEch0b8qGdxBbvqjGpIJStxe?=
- =?us-ascii?Q?GOghUILri9ueSNTnddeqzoJbxly26RwlWbK7bC/y9Opp7lEREinMBsuTrkkK?=
- =?us-ascii?Q?oxWCRD8sYviwAC2LtFevfZiAjfmE6edf330VAmQGMpPuRKXAr+eUHoek/BNU?=
- =?us-ascii?Q?kIeWgDb6hdnkmtq04m+ZIGspuxCmvZsnBpmdBKveF1PXwdYgSmk6vySF4+Li?=
- =?us-ascii?Q?57YHdHr2iKMk4B3K/Ai7B6qIeyhVIm/IpAq027zwDXu3DUw1MFX+xDXvM3Ku?=
- =?us-ascii?Q?2I6OqIy43itImYxBQFFkjTnF43J4lhomgqLTc+dncYsRRuABgZqkcM+eLlMJ?=
- =?us-ascii?Q?Ho0YYerxx9MZWBjWXdqcfN+xGKLLRLvIUTNvyvqpg/Eo8jxFgTGebp783KFe?=
- =?us-ascii?Q?D7Q2i2ifWyuw8Ww7BlHDRqQ6uVEV2YQ/kJntPmwwW/a9WN+GSwmVuOMD5SrK?=
- =?us-ascii?Q?OseRz9R1+tewCgGsekw0d9B4hG2xrXA1JPZ/10QpUdHcKHPWafn91WxKdGP6?=
- =?us-ascii?Q?Iy5PRo3MigkgpGjiEdPxB1KisSW2lNTsprp4lC3iKrRsi5dPMrcIMe+5uRoJ?=
- =?us-ascii?Q?l7zvCdfiPp2Hanp5GrjAScPVuamOWmWXMBDpcUcKV3VJGUfW5eiwQqIpVvCf?=
- =?us-ascii?Q?dEc2b0iKXqjn/ks+4iM2PJDZNy0UX40nqlPQ6UFPWvYGaYKlbdL5xmSESQQ6?=
- =?us-ascii?Q?1LiHU0SqRm3sE2pTToNTxCtVs9IRTeh3s3qANtOPwnUMyZ0TLDkUw3yj1vL4?=
- =?us-ascii?Q?xhAy00LhWM1+8jr3kjPGLQ5NMjJtTf1damfJrJ5WE6JnPtXeW25TGuDfPqhK?=
- =?us-ascii?Q?M5SbxC5WDl1zo60ujWvpbVbLfPIAgG6eJYiy7WkXPGQRVHILDttGeE3xdL5X?=
- =?us-ascii?Q?63Bpz5tt8D4lGZJdVwmc12DZF9vH9jwzXv7Yr2wLbRsQE5L1JVR2wdCFGQzV?=
- =?us-ascii?Q?Z5Eg0q0v7ftr2hLWXR/EwEOg132ZUQgS+Za/Cn681vF6FMEcjaqvstBigIpF?=
- =?us-ascii?Q?6h+EaxShzoaGp0Hs9Z1tYIbbCmmKxGqQhbcQREHL1dRFVg=3D=3D?=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR11MB5949.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(1800799015)(38070700009);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?Tz1HoB5PD2e1HSF62gqLNcia6j+alI6D0kGDZb9v0OHWd0VNSIJmXzlBQqgD?=
- =?us-ascii?Q?dIFBzzh9kbWAjBRC7eGwK+kIBKitApj7WeIuxH7ZcT4rbCRYmIBz5WPa+Eiu?=
- =?us-ascii?Q?IqXmBEa8C2PkisAiBaDcQXg5f+FFBK8SI/bv0sWFX36LGc26ypjeAqE6u8Nh?=
- =?us-ascii?Q?2WvaHxFm2C8yeBRXDYCfQvE6LlZ9HOq6LQjZQzTgUZXqtR+Hbasib+aRERQS?=
- =?us-ascii?Q?Cuc269HAweedTEQ4NaB+/po68iwkkWxas5QPfXnPw4610QOlu89CPW01RFHR?=
- =?us-ascii?Q?yaWkfiafXwp4DSrl5HDySdXWLu0bZ+Nqk+Z38Rd/H9tbKbbDjazTdAtEW64B?=
- =?us-ascii?Q?CaJY3ukqFQFR+oD21k+zDpkT0edw1iariVnqYLYmJdWemJuuTu9XWwvupkNr?=
- =?us-ascii?Q?GrKZg70o/1SCbi7mY7R2TUEygaQbmD8ekbutTcbOsiltZV+2NxuTOHnchsYw?=
- =?us-ascii?Q?a12/TcZc+495d0zp2blhG6ZdU5y1HWeturlj/kV/N18CbdYGkVmVtOogin6x?=
- =?us-ascii?Q?+lmQ3AmIYA4zfWv90OGwYa6budLhi6Q//1m4RisotmzzhjYKoyXq5r73Owd9?=
- =?us-ascii?Q?a+kS+FT/kQd1qtwZbqCphf7YUHgdHZWoe3LxiEm1r3cyh9Uiajx7gBe6tCAj?=
- =?us-ascii?Q?mEou50DiNIm5vXXtSP70WhB7hPYvSfM7js8jgG0udkUTbgOhgTeV6Av92XP0?=
- =?us-ascii?Q?3+WCFbO/s45fXC1STjawzAi8YYsWJSuoHC6PjBc2Z3l+zVCbcKPJzO8+XpzQ?=
- =?us-ascii?Q?k1m3xlbgMKt8GHRhrEnbyWl70FpULeEQTseAIkeEOdsY9hsCNFAwHS96LY+2?=
- =?us-ascii?Q?cx7zHoefKNgxCzBoRz32uaFWcfPD46iiVOeaekqsL8W0FwWsDbe/Tl/QEPNV?=
- =?us-ascii?Q?pr1tZCMCp7Ir/Y7W7GU4FHdbNKHzkQcyBeSZWIFR+P4HT/HuuNjUKOHr3Ztl?=
- =?us-ascii?Q?XqIe40t7K2gJg9ygnNesI3RRSWdhgSsLE73TanfRMFu/F0NsauHZAUxu1kGb?=
- =?us-ascii?Q?YYhIcf9siDRpplGNt6iSFH912i5/7r10aoee7+UhCfYNUA4sTLwaRpBmIrGk?=
- =?us-ascii?Q?iBSb5jj4f1Wz5+A0Eps3UAilhZAu4kV/ZwBlGFFmKdmbQDoHUlOjylKWyzAg?=
- =?us-ascii?Q?72H0Ogt7O7k5nM2RMSQ1Z1ERSeUjV3sUWke0zu5fg+PynXn687/8kWiiuTkR?=
- =?us-ascii?Q?pg3R6TjZXA8uvMTOkcXMTLRC+y7TCFGiLLj8Ac+iNfLWcAf6zZfp+xfgbSHt?=
- =?us-ascii?Q?+7KJptAaK8u3OkSpyjhvOmE8jVveJFbsIycY8EtsewKOzpdFbVVUXd9sbNI/?=
- =?us-ascii?Q?7svsa9mUIYNpp8kcPjyAg7Q01n5VIv+VzHOZGemBNOGG5TehMCgGj33dNdcf?=
- =?us-ascii?Q?O0LMHnN0QA3Yp0OeyPOVhOf3dT95EpV8ZKU23uzW17kIxyAjIV9unyHnLwh/?=
- =?us-ascii?Q?2vHFdHhzTrsh/9SJWtw5vDm0rc0gKXpp2kzxQizF8lYEWhwWTCchIP4ycFma?=
- =?us-ascii?Q?3Nt0p4kQ9whAy38yfuNfnk5hqZ5k0nE7vxNnCGtu6bLvqZgLxYfr1KQGl14X?=
- =?us-ascii?Q?ocXdCcBhjzE1ZBL2lpXm0sPD0xlMBWdAuQO8JT7Z?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="fBIuR+1g"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20240520150143101dc06cbefc331c17
+        for <xenomai@lists.linux.dev>;
+        Mon, 20 May 2024 17:01:43 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Cc:References:In-Reply-To;
+ bh=f/z7JK9JtGR0PDNZE757JKuD5VwV4gr+liLYov8TP+8=;
+ b=fBIuR+1gRRDK6y1eOF27WACVtliXX3Le2MhdvINyyxtbHzXtlSD9mKFkG/bZvdiooHGlxY
+ zVZi9CC+1sIu96T2tFVbSGaw1ZcZPTIaM2OICbAIjHOk769awWmnvZlASm7KqTUTRZVjXD2s
+ I+aYPxYRDWBZGMUogfTi3xtOoOjuM=;
+Message-ID: <770b1e4bc42cfa1ba5f4f37cc854956f3e78bb60.camel@siemens.com>
+Subject: Re: NX-protected page
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: JerryJun <jerryjun123@163.com>, "Kowalsky, Clara"
+	 <clara.kowalsky@siemens.com>
+Cc: xenomai <xenomai@lists.linux.dev>, Philippe Gerum <rpm@xenomai.org>
+Date: Mon, 20 May 2024 17:01:41 +0200
+In-Reply-To: <123d35fb.288.18ee41f9711.Coremail.jerryjun123@163.com>
+References: <3ce13f2b.183be.18d2f264758.Coremail.jerryjun123@163.com>
+	 <87ca0f83-bb2f-49fd-8e30-8873778cd8a9@web.de>
+	 <6bec8d20.61c9.18d5e68d09d.Coremail.jerryjun123@163.com>
+	 <e1accac9-4044-4379-8d4f-f0eb7cd9d713@siemens.com>
+	 <fd2a3821-c4e6-4866-bc65-0bbadaf603e5@siemens.com>
+	 <799babe6.660d.18d68cb571a.Coremail.jerryjun123@163.com>
+	 <c79218e4-cc6d-4f34-93b3-e1405978476a@siemens.com>
+	 <40cc100b.12313.18de5d67bf5.Coremail.jerryjun123@163.com>
+	 <AS5PR10MB817389FE4D3AE120BC80E6D393062@AS5PR10MB8173.EURPRD10.PROD.OUTLOOK.COM>
+	 <123d35fb.288.18ee41f9711.Coremail.jerryjun123@163.com>
+Content-Type: multipart/mixed; boundary="=-alrol2+J3Cn1ymy1t3aJ"
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR11MB5949.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6b8fc781-ba34-445c-3e41-08dc78b21bab
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 May 2024 09:49:14.2966
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: uBAwonmIGxjHu2P4H+vxie58z2BHljnKktkUF2HmL1Dc3Q6t/pA/Rh5RfeZm5OMInGfqEKoqqfK7+pBP6zXy2A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR11MB7206
-X-OriginatorOrg: intel.com
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi Philippe,
+--=-alrol2+J3Cn1ymy1t3aJ
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-You are reproduce this issue without CONFIG_EVL and CONFIG_DOVETAIL enabled=
- in config kernel?
+Hi all,
 
-CONFIG_EVL=3Dn
-CONFIG_DOVETAIL=3Dn
+I can reproduce this issue - with a slightly different kernel panic -
+on dovetail 6.9.
 
-BR,
-Ionut.
+As promised in the last Xenomai community call I will share the
+simplified reproducer application and some logs.
 
------Original Message-----
-From: Nechita, Ionut=20
-Sent: Friday, May 17, 2024 4:39 PM
-To: 'Philippe Gerum' <rpm@xenomai.org>
-Cc: 'xenomai@lists.linux.dev' <xenomai@lists.linux.dev>
-Subject: RE: WARN Kernel v6.9-evl-rebase - do_int80_emulation
+The alchemy application in use is attached, the problematic
+rt_task_set_affinity() call is currently deactivated. If activated it
+crashes my qemu instance within 3 sec. You might have to adjust the
+Makefile a bit to find xeno-config on your system.
 
-Snip log for kernel build:
+As rt_task_set_affinity() makes the difference I'm assuming that
+something around affine_move_task() is not properly synchronized.
+
+@Philippe, any ideas?
+
+Some more debug info will follow below the kernel crash dump.
+
+xenomai.supported_cpus=3D3 is part of the kernel cmdline on boot, the
+test appication tries to set a valid cpu mask (0x1) for the spawned RT
+tasks.
+
+[  439.848658] invalid opcode: 0000 [#1] PREEMPT SMP NOPTI IRQ_PIPELINE
+[  439.848666] CPU: 0 PID: 1364013 Comm: xeno-app Not tainted 6.9.0+ #15
+[  439.848670] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.1=
+6.2-debian-1.16.2-1 04/01/2014
+[  439.848673] IRQ stage: Linux
+[  439.848675] RIP: 0010:srso_return_thunk+0x5/0x5f
+[  439.848687] Code: cc cc cc 48 b8 48 8d 64 24 08 c3 cc cc 0f ae e8 e8 f0 =
+ff ff ff 0f 0b 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 e8 db ff ff ff <0f=
+> 0b 66 66 2e 0f 1f 84 00 00
+[  439.848689] RSP: 0018:ffffc90000003f88 EFLAGS: 00010286
+[  439.848693] RAX: ffffffff81f48065 RBX: ffffc9000eacbdb0 RCX: ffff888005e=
+92408
+[  439.848696] RDX: 0000000000000000 RSI: ffff88803e800000 RDI: ffffc9000ea=
+cbdb0
+[  439.848698] RBP: 0000000000000000 R08: ffff888005e92400 R09: 00000000000=
+00000
+[  439.848700] R10: 0000000000000000 R11: 0000000000000001 R12: 00000000000=
+00000
+[  439.848701] R13: 0000000000000000 R14: ffffc900006f3db0 R15: ffff888005c=
+ac86c
+[  439.848732] FS:  00007f616f850580(0000) GS:ffff88803e800000(0000) knlGS:=
+0000000000000000
+[  439.848735] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  439.848737] CR2: 00007f616faa2080 CR3: 00000000049fe000 CR4: 00000000003=
+506f0
+[  439.848739] Call Trace:
+[  439.848801]  <IRQ>
+[  439.848804]  ? die+0x31/0x80
+[  439.848813]  ? do_trap+0xd8/0x100
+[  439.848817]  ? srso_return_thunk+0x5/0x5f
+[  439.848822]  ? do_error_trap+0xf0/0x140
+[  439.848825]  ? srso_return_thunk+0x5/0x5f
+[  439.848828]  ? srso_return_thunk+0x5/0x5f
+[  439.848833]  ? exc_invalid_op+0x90/0xd0
+[  439.848837]  ? srso_return_thunk+0x5/0x5f
+[  439.848841]  ? asm_exc_invalid_op+0x1a/0x20
+[  439.848849]  ? srso_return_thunk+0x5/0x5f
+[  439.848853]  ? srso_return_thunk+0x5/0x5f
+[  439.848857]  ? srso_return_thunk+0x5/0x5f
+[  439.848860]  irq_work_single+0x27/0x60
+[  439.848867]  irq_work_run_list+0x2d/0x40
+[  439.848870]  irq_work_run+0x18/0x30
+[  439.848873]  inband_work_interrupt+0x9/0x20
+[  439.848878]  handle_synthetic_irq+0x7a/0x160
+[  439.848881]  arch_do_IRQ_pipelined+0x84/0x400
+[  439.848887]  </IRQ>
+[  439.848888]  <TASK>
+[  439.848890]  sync_current_irq_stage+0x111/0x170
+[  439.848894]  __inband_irq_enable+0x3e/0x60
+[  439.848897]  _raw_spin_unlock_irqrestore+0x1d/0x40
+[  439.848900]  affine_move_task+0x104/0x4e0
+[  439.848906]  ? __pfx_lostage_task_wakeup+0x10/0x10
+[  439.848917]  __set_cpus_allowed_ptr+0x4f/0x90
+[  439.848920]  __sched_setaffinity+0x8d/0x100
+[  439.848925]  sched_setaffinity+0x166/0x1c0
+[  439.848929]  __x64_sys_sched_setaffinity+0x4d/0x80
+[  439.848932]  do_syscall_64+0x8d/0x1a0
+[  439.848936]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
+[  439.848940] RIP: 0033:0x7f616f93f037
+[  439.848944] Code: 31 c0 48 83 c4 08 c3 0f 1f 40 00 48 8b 15 c1 3d 0e 00 =
+f7 d8 64 89 02 b8 ff ff ff ff c3 66 0f 1f 44 00 00 b8 cb 00 00 00 0f 05 <48=
+> 3d 00 f0 ff ff 77 01 c3 48
+[  439.848946] RSP: 002b:00007ffc06ff02b8 EFLAGS: 00000206 ORIG_RAX: 000000=
+00000000cb
+[  439.848949] RAX: ffffffffffffffda RBX: 00007f616ef892d8 RCX: 00007f616f9=
+3f037
+[  439.848951] RDX: 00007f616ef892d8 RSI: 0000000000000080 RDI: 00000000001=
+4d8be
+[  439.848952] RBP: 00007ffc06ff02f0 R08: 0000000000000000 R09: 00000000fff=
+fffff
+[  439.848954] R10: 00007ffc06ff00a0 R11: 0000000000000206 R12: 00000000000=
+00000
+[  439.848956] R13: 00007ffc06ff0878 R14: 0000563c66118d98 R15: 00007f616fa=
+da020
+[  439.848962]  </TASK>
+[  439.848963] Modules linked in:
+[  439.848967] ---[ end trace 0000000000000000 ]---
+[  439.848969] RIP: 0010:srso_return_thunk+0x5/0x5f
+[  439.848973] Code: cc cc cc 48 b8 48 8d 64 24 08 c3 cc cc 0f ae e8 e8 f0 =
+ff ff ff 0f 0b 66 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 00 e8 db ff ff ff <0f=
+> 0b 66 66 2e 0f 1f 84 00 00
+[  439.848975] RSP: 0018:ffffc90000003f88 EFLAGS: 00010286
+[  439.848977] RAX: ffffffff81f48065 RBX: ffffc9000eacbdb0 RCX: ffff888005e=
+92408
+[  439.848979] RDX: 0000000000000000 RSI: ffff88803e800000 RDI: ffffc9000ea=
+cbdb0
+[  439.848980] RBP: 0000000000000000 R08: ffff888005e92400 R09: 00000000000=
+00000
+[  439.848982] R10: 0000000000000000 R11: 0000000000000001 R12: 00000000000=
+00000
+[  439.848983] R13: 0000000000000000 R14: ffffc900006f3db0 R15: ffff888005c=
+ac86c
+[  439.849010] FS:  00007f616f850580(0000) GS:ffff88803e800000(0000) knlGS:=
+0000000000000000
+[  439.849013] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  439.849015] CR2: 00007f616faa2080 CR3: 00000000049fe000 CR4: 00000000003=
+506f0
+[  439.849017] Kernel panic - not syncing: Fatal exception in interrupt
+[  439.850172] Kernel Offset: disabled
+[  439.992548] ---[ end Kernel panic - not syncing: Fatal exception in inte=
+rrupt ]---
 
 
-...
-  CC [M]  drivers/crypto/intel/qat/qat_c3xxxvf/adf_c3xxxvf_hw_data.o
-  LD [M]  drivers/staging/most/i2c/most_i2c.o
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_pin_dbg_show':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:169:14: note: in expansion of macro 'CLASS'
-  169 |         for (CLASS(_name, scope)(args),                            =
-     \
-      |              ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:632:9: note: in expansion of mac=
-ro 'scoped_guard'
-  632 |         scoped_guard(hard_spinlock_irqsave, &chv_lock) {
-      |         ^~~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:632:9: error: cleanup argument n=
-ot a function
-  CC      drivers/mmc/core/host.o
-  CC [M]  drivers/crypto/intel/qat/qat_420xx/adf_420xx_hw_data.o
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/cleanup.h:120:17: error: implicit declaration of function '=
-class_hard_spinlock_irqsave_constructor'; did you mean 'class_raw_spinlock_=
-irqsave_constructor'? [-Werror=3Dimplicit-function-declaration]
-  120 |                 class_##_name##_constructor
-      |                 ^~~~~~
-./include/linux/cleanup.h:169:14: note: in expansion of macro 'CLASS'
-  169 |         for (CLASS(_name, scope)(args),                            =
-     \
-      |              ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:632:9: note: in expansion of mac=
-ro 'scoped_guard'
-  632 |         scoped_guard(hard_spinlock_irqsave, &chv_lock) {
-      |         ^~~~~~~~~~~~
-./include/linux/cleanup.h:169:9: error: declaration of non-variable 'class_=
-hard_spinlock_irqsave_constructor' in 'for' loop initial declaration
-  169 |         for (CLASS(_name, scope)(args),                            =
-     \
-      |         ^~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:632:9: note: in expansion of mac=
-ro 'scoped_guard'
-  632 |         scoped_guard(hard_spinlock_irqsave, &chv_lock) {
-      |         ^~~~~~~~~~~~
-  LD [M]  drivers/staging/most/net/most_net.o
-  CC [M]  drivers/hwtracing/intel_th/acpi.o
-  CC [M]  drivers/platform/surface/surface_aggregator_cdev.o
-./include/linux/cleanup.h:166:28: error: implicit declaration of function '=
-class_hard_spinlock_irqsave_lock_ptr'; did you mean 'class_raw_spinlock_irq=
-save_lock_ptr'? [-Werror=3Dimplicit-function-declaration]
-  166 | #define __guard_ptr(_name) class_##_name##_lock_ptr
-      |                            ^~~~~~
-./include/linux/cleanup.h:170:28: note: in expansion of macro '__guard_ptr'
-  170 |              *done =3D NULL; __guard_ptr(_name)(&scope) && !done; d=
-one =3D (void *)1)
-      |                            ^~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:632:9: note: in expansion of mac=
-ro 'scoped_guard'
-  632 |         scoped_guard(hard_spinlock_irqsave, &chv_lock) {
-      |         ^~~~~~~~~~~~
-  CC      drivers/devfreq/governor_performance.o
-  CC [M]  drivers/pinctrl/pinctrl-mcp23s08.o
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_pinmux_set_mux=
-':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:164:9: note: in expansion of macro 'CLASS'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:671:9: note: in expansion of mac=
-ro 'guard'
-  671 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-  CC [M]  drivers/ufs/core/ufs-debugfs.o
-drivers/pinctrl/intel/pinctrl-cherryview.c:671:9: error: cleanup argument n=
-ot a function
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/compiler.h:189:45: warning: unused variable '__UNIQUE_ID_gu=
-ard484' [-Wunused-variable]
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                             ^~~~~~~~~~~~
-./include/linux/cleanup.h:119:27: note: in definition of macro 'CLASS'
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |                           ^~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:29: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                             ^~~~~~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:37: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                     ^~~~~~~
-./include/linux/cleanup.h:164:22: note: in expansion of macro '__UNIQUE_ID'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |                      ^~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:671:9: note: in expansion of mac=
-ro 'guard'
-  671 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-  CC      drivers/devfreq/governor_powersave.o
-  CC      drivers/extcon/devres.o
-  CC [M]  drivers/staging/media/ipu3/ipu3-css.o
-  CC [M]  drivers/crypto/intel/qat/qat_4xxx/adf_4xxx_hw_data.o
-  CC [M]  drivers/pinctrl/intel/pinctrl-alderlake.o
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_gpio_request_e=
-nable':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:164:9: note: in expansion of macro 'CLASS'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:747:9: note: in expansion of mac=
-ro 'guard'
-  747 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:747:9: error: cleanup argument n=
-ot a function
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/compiler.h:189:45: warning: unused variable '__UNIQUE_ID_gu=
-ard487' [-Wunused-variable]
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                             ^~~~~~~~~~~~
-./include/linux/cleanup.h:119:27: note: in definition of macro 'CLASS'
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |                           ^~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:29: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                             ^~~~~~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:37: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                     ^~~~~~~
-./include/linux/cleanup.h:164:22: note: in expansion of macro '__UNIQUE_ID'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |                      ^~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:747:9: note: in expansion of mac=
-ro 'guard'
-  747 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-  CC [M]  drivers/staging/vt6655/baseband.o
-  CC [M]  drivers/staging/sm750fb/ddk750_mode.o
-  CC [M]  drivers/pinctrl/intel/pinctrl-broxton.o
-  CC [M]  drivers/staging/fbtft/fbtft-core.o
-  CC [M]  drivers/staging/sm750fb/ddk750_display.o
-  CC [M]  drivers/platform/chrome/chromeos_laptop.o
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_gpio_disable_f=
-ree':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:164:9: note: in expansion of macro 'CLASS'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:796:9: note: in expansion of mac=
-ro 'guard'
-  796 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:796:9: error: cleanup argument n=
-ot a function
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/compiler.h:189:45: warning: unused variable '__UNIQUE_ID_gu=
-ard488' [-Wunused-variable]
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                             ^~~~~~~~~~~~
-./include/linux/cleanup.h:119:27: note: in definition of macro 'CLASS'
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |                           ^~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:29: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                             ^~~~~~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:37: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                     ^~~~~~~
-./include/linux/cleanup.h:164:22: note: in expansion of macro '__UNIQUE_ID'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |                      ^~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:796:9: note: in expansion of mac=
-ro 'guard'
-  796 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-  CC [M]  drivers/ras/amd/atl/denormalize.o
-  LD [M]  drivers/virt/vboxguest/vboxguest.o
-  CC [M]  drivers/mmc/host/sdhci-pci-o2micro.o
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_gpio_set_direc=
-tion':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:164:9: note: in expansion of macro 'CLASS'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:811:9: note: in expansion of mac=
-ro 'guard'
-  811 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:811:9: error: cleanup argument n=
-ot a function
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/compiler.h:189:45: warning: unused variable '__UNIQUE_ID_gu=
-ard489' [-Wunused-variable]
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                             ^~~~~~~~~~~~
-./include/linux/cleanup.h:119:27: note: in definition of macro 'CLASS'
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |                           ^~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:29: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                             ^~~~~~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:37: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                     ^~~~~~~
-./include/linux/cleanup.h:164:22: note: in expansion of macro '__UNIQUE_ID'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |                      ^~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:811:9: note: in expansion of mac=
-ro 'guard'
-  811 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-  CC [M]  drivers/staging/sm750fb/ddk750_swi2c.o
-  AR      drivers/clocksource/built-in.a
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_config_get':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:169:14: note: in expansion of macro 'CLASS'
-  169 |         for (CLASS(_name, scope)(args),                            =
-     \
-      |              ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:842:9: note: in expansion of mac=
-ro 'scoped_guard'
-  842 |         scoped_guard(hard_spinlock_irqsave, &chv_lock) {
-      |         ^~~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:842:9: error: cleanup argument n=
-ot a function
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/cleanup.h:169:9: error: declaration of non-variable 'class_=
-hard_spinlock_irqsave_constructor' in 'for' loop initial declaration
-  169 |         for (CLASS(_name, scope)(args),                            =
-     \
-      |         ^~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:842:9: note: in expansion of mac=
-ro 'scoped_guard'
-  842 |         scoped_guard(hard_spinlock_irqsave, &chv_lock) {
-      |         ^~~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_config_set_pul=
-l':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:164:9: note: in expansion of macro 'CLASS'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:922:9: note: in expansion of mac=
-ro 'guard'
-  922 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:922:9: error: cleanup argument n=
-ot a function
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/compiler.h:189:45: warning: unused variable '__UNIQUE_ID_gu=
-ard490' [-Wunused-variable]
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                             ^~~~~~~~~~~~
-./include/linux/cleanup.h:119:27: note: in definition of macro 'CLASS'
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |                           ^~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:29: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                             ^~~~~~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:37: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                     ^~~~~~~
-./include/linux/cleanup.h:164:22: note: in expansion of macro '__UNIQUE_ID'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |                      ^~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:922:9: note: in expansion of mac=
-ro 'guard'
-  922 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_config_set_ode=
-n':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:164:9: note: in expansion of macro 'CLASS'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:983:9: note: in expansion of mac=
-ro 'guard'
-  983 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:983:9: error: cleanup argument n=
-ot a function
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/compiler.h:189:45: warning: unused variable '__UNIQUE_ID_gu=
-ard491' [-Wunused-variable]
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                             ^~~~~~~~~~~~
-./include/linux/cleanup.h:119:27: note: in definition of macro 'CLASS'
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |                           ^~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:29: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                             ^~~~~~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:37: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                     ^~~~~~~
-./include/linux/cleanup.h:164:22: note: in expansion of macro '__UNIQUE_ID'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |                      ^~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:983:9: note: in expansion of mac=
-ro 'guard'
-  983 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-  CC      drivers/interconnect/debugfs-client.o
-  CC [M]  drivers/pinctrl/intel/pinctrl-cannonlake.o
-  CC [M]  drivers/staging/vt6656/usbpipe.o
-  CC [M]  drivers/staging/vt6655/rxtx.o
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_gpio_get':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:169:14: note: in expansion of macro 'CLASS'
-  169 |         for (CLASS(_name, scope)(args),                            =
-     \
-      |              ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1104:9: note: in expansion of ma=
-cro 'scoped_guard'
- 1104 |         scoped_guard(hard_spinlock_irqsave, &chv_lock)
-      |         ^~~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1104:9: error: cleanup argument =
-not a function
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/cleanup.h:169:9: error: declaration of non-variable 'class_=
-hard_spinlock_irqsave_constructor' in 'for' loop initial declaration
-  169 |         for (CLASS(_name, scope)(args),                            =
-     \
-      |         ^~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1104:9: note: in expansion of ma=
-cro 'scoped_guard'
- 1104 |         scoped_guard(hard_spinlock_irqsave, &chv_lock)
-      |         ^~~~~~~~~~~~
-  CC [M]  drivers/staging/vt6656/channel.o
-  CC      drivers/mmc/core/mmc.o
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_gpio_set':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:164:9: note: in expansion of macro 'CLASS'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1120:9: note: in expansion of ma=
-cro 'guard'
- 1120 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1120:9: error: cleanup argument =
-not a function
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/compiler.h:189:45: warning: unused variable '__UNIQUE_ID_gu=
-ard494' [-Wunused-variable]
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                             ^~~~~~~~~~~~
-./include/linux/cleanup.h:119:27: note: in definition of macro 'CLASS'
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |                           ^~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:29: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                             ^~~~~~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:37: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                     ^~~~~~~
-./include/linux/cleanup.h:164:22: note: in expansion of macro '__UNIQUE_ID'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |                      ^~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1120:9: note: in expansion of ma=
-cro 'guard'
- 1120 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-  CC [M]  drivers/pinctrl/intel/pinctrl-cedarfork.o
-  CC [M]  drivers/extcon/extcon-adc-jack.o
-  CC [M]  drivers/pinctrl/intel/pinctrl-denverton.o
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_gpio_get_direc=
-tion':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:169:14: note: in expansion of macro 'CLASS'
-  169 |         for (CLASS(_name, scope)(args),                            =
-     \
-      |              ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1137:9: note: in expansion of ma=
-cro 'scoped_guard'
- 1137 |         scoped_guard(hard_spinlock_irqsave, &chv_lock)
-      |         ^~~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1137:9: error: cleanup argument =
-not a function
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/cleanup.h:169:9: error: declaration of non-variable 'class_=
-hard_spinlock_irqsave_constructor' in 'for' loop initial declaration
-  169 |         for (CLASS(_name, scope)(args),                            =
-     \
-      |         ^~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1137:9: note: in expansion of ma=
-cro 'scoped_guard'
- 1137 |         scoped_guard(hard_spinlock_irqsave, &chv_lock)
-      |         ^~~~~~~~~~~~
-  CC [M]  drivers/crypto/atmel-i2c.o
-  CC      drivers/mmc/core/mmc_ops.o
-  CC [M]  drivers/ufs/core/ufs_bsg.o
-  CC [M]  drivers/staging/sm750fb/ddk750_dvi.o
-  CC      drivers/of/platform.o
-  CC [M]  drivers/pinctrl/intel/pinctrl-elkhartlake.o
-  CC      drivers/mmc/core/sd.o
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_gpio_irq_ack':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_t'; did you mean 'class_raw_spinlock_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:164:9: note: in expansion of macro 'CLASS'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1179:9: note: in expansion of ma=
-cro 'guard'
- 1179 |         guard(hard_spinlock)(&chv_lock);
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1179:9: error: cleanup argument =
-not a function
-  CC [M]  drivers/ufs/core/ufshcd-crypto.o
-  CC [M]  drivers/crypto/ccp/ccp-dev.o
-  CC [M]  drivers/platform/surface/surface_aggregator_hub.o
-  CC [M]  drivers/crypto/ccp/ccp-ops.o
-  CC      drivers/dpll/dpll_core.o
-  CC      drivers/devfreq/governor_userspace.o
-  CC      drivers/dpll/dpll_netlink.o
-  CC [M]  drivers/pinctrl/intel/pinctrl-emmitsburg.o
-  CC      drivers/mmc/core/sd_ops.o
-  CC      drivers/of/property.o
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/cleanup.h:120:17: error: implicit declaration of function '=
-class_hard_spinlock_constructor'; did you mean 'class_raw_spinlock_construc=
-tor'? [-Werror=3Dimplicit-function-declaration]
-  120 |                 class_##_name##_constructor
-      |                 ^~~~~~
-./include/linux/cleanup.h:164:9: note: in expansion of macro 'CLASS'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1179:9: note: in expansion of ma=
-cro 'guard'
- 1179 |         guard(hard_spinlock)(&chv_lock);
-      |         ^~~~~
-./include/linux/compiler.h:189:45: warning: unused variable '__UNIQUE_ID_gu=
-ard495' [-Wunused-variable]
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                             ^~~~~~~~~~~~
-./include/linux/cleanup.h:119:27: note: in definition of macro 'CLASS'
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |                           ^~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:29: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                             ^~~~~~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:37: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                     ^~~~~~~
-./include/linux/cleanup.h:164:22: note: in expansion of macro '__UNIQUE_ID'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |                      ^~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1179:9: note: in expansion of ma=
-cro 'guard'
- 1179 |         guard(hard_spinlock)(&chv_lock);
-      |         ^~~~~
-  CC      drivers/dpll/dpll_nl.o
-  CC      drivers/of/kobj.o
-  CC      drivers/mmc/core/sdio.o
-  CC [M]  drivers/staging/media/av7110/av7110_hw.o
-  CC      drivers/mmc/core/sdio_ops.o
-  CC [M]  drivers/staging/rts5208/rtsx_scsi.o
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_gpio_irq_mask_=
-unmask':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:164:9: note: in expansion of macro 'CLASS'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1192:9: note: in expansion of ma=
-cro 'guard'
- 1192 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1192:9: error: cleanup argument =
-not a function
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/compiler.h:189:45: warning: unused variable '__UNIQUE_ID_gu=
-ard496' [-Wunused-variable]
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                             ^~~~~~~~~~~~
-./include/linux/cleanup.h:119:27: note: in definition of macro 'CLASS'
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |                           ^~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:29: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                             ^~~~~~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:37: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                     ^~~~~~~
-./include/linux/cleanup.h:164:22: note: in expansion of macro '__UNIQUE_ID'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |                      ^~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1192:9: note: in expansion of ma=
-cro 'guard'
- 1192 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-  CC [M]  drivers/crypto/intel/qat/qat_common/adf_cfg.o
-  CC      drivers/mmc/core/sdio_bus.o
-  CC [M]  drivers/pinctrl/pinctrl-tps6594.o
-  CC [M]  drivers/staging/rts5208/rtsx_card.o
-  CC      drivers/devfreq/governor_passive.o
-  CC [M]  drivers/extcon/extcon-axp288.o
-  LD [M]  drivers/crypto/intel/qat/qat_dh895xcc/qat_dh895xcc.o
-  CC [M]  drivers/staging/rts5208/general.o
-  CC [M]  drivers/hwtracing/intel_th/gth.o
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_gpio_irq_start=
-up':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:169:14: note: in expansion of macro 'CLASS'
-  169 |         for (CLASS(_name, scope)(args),                            =
-     \
-      |              ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1244:9: note: in expansion of ma=
-cro 'scoped_guard'
- 1244 |         scoped_guard(hard_spinlock_irqsave, &chv_lock) {
-      |         ^~~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1244:9: error: cleanup argument =
-not a function
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/cleanup.h:169:9: error: declaration of non-variable 'class_=
-hard_spinlock_irqsave_constructor' in 'for' loop initial declaration
-  169 |         for (CLASS(_name, scope)(args),                            =
-     \
-      |         ^~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1244:9: note: in expansion of ma=
-cro 'scoped_guard'
- 1244 |         scoped_guard(hard_spinlock_irqsave, &chv_lock) {
-      |         ^~~~~~~~~~~~
-  CC [M]  drivers/mmc/host/sdhci-pci-arasan.o
-  CC      drivers/leds/led-core.o
-  CC [M]  drivers/extcon/extcon-fsa9480.o
-  CC [M]  drivers/staging/gdm724x/gdm_mux.o
-  CC      drivers/hv/channel.o
-  CC [M]  drivers/mmc/host/sdhci-pci-dwc-mshc.o
-  CC [M]  drivers/mmc/host/sdhci-pci-gli.o
-  CC      drivers/mmc/core/sdio_cis.o
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_gpio_irq_type'=
+(gdb) list *(affine_move_task+0x104)
+0xffffffff810d0244 is in affine_move_task (kernel/sched/core.c:3091).
+3086				}
+3087			}
+3088			task_rq_unlock(rq, p, rf);
+3089=09
+3090			if (complete)
+3091				complete_all(&pending->done);
+3092		}
+3093=09
+3094		wait_for_completion(&pending->done);
+3095=09
+(gdb)
+
+
+Best regards,
+Florian
+
+On Tue, 2024-04-16 at 07:37 +0800, JerryJun wrote:
+>        Thank you so much for keeping an eye on this.
+> 	Yes, we do use xenomai.supported_cpus =3D 0xf but we bind the real-time =
+thread to cpu2
+> 	You can repeat this problem in the attachment. As can be seen from backt=
+race, this problem is related to the rt_set_affinity API. After we removed =
+this rt_set_affinity API, it returned to normal, but we do not know the rea=
+son
+> 	We ran this test on other kernels and got some results from Crash analys=
+is by kdump. We don't know if this will help us solve the problem
+> =09
+> =C2=A0 =C2=A0 =C2=A0 KERNEL: vmlinux-4.19.89-ipipe-9-xenomai-3.1-20201027
+> =C2=A0 =C2=A0 DUMPFILE: V10-5T/202403231347/dump.202403231347=C2=A0 [PART=
+IAL DUMP]
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 CPUS: 4
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 DATE: Sat Mar 23 13:47:22 2024
+> =C2=A0 =C2=A0 =C2=A0 UPTIME: 05:29:52
+> LOAD AVERAGE: 0.86, 0.67, 0.68
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0TASKS: 436
+> =C2=A0 =C2=A0 NODENAME: debian
+> =C2=A0 =C2=A0 =C2=A0RELEASE: 4.19.89-ipipe-9-xenomai-3.1-20201027
+> =C2=A0 =C2=A0 =C2=A0VERSION: #1 SMP PREEMPT Tue Oct 27 19:51:52 CST 2020
+> =C2=A0 =C2=A0 =C2=A0MACHINE: x86_64=C2=A0 (3600 Mhz)
+> =C2=A0 =C2=A0 =C2=A0 MEMORY: 31.7 GB
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0PANIC: "BUG: unable to handle kernel paging re=
+quest at 00000000000a22e8"
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0PID: 26821
+> =C2=A0 =C2=A0 =C2=A0COMMAND: "rtThread"
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 TASK: ffff888791bc0040=C2=A0 [THREAD_INFO: ff=
+ff888791bc0040]
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0CPU: 2
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0STATE: TASK_RUNNING (PANIC)
+> crash_pageoffset> bt -s
+> PID: 26821=C2=A0 TASK: ffff888791bc0040=C2=A0 CPU: 2=C2=A0 =C2=A0COMMAND:=
+ "rtThread"
+> =C2=A0#0 [ffff88885fe03d10] machine_kexec+337 at ffffffff81041051
+> =C2=A0#1 [ffff88885fe03d58] __crash_kexec+104 at ffffffff810f2818
+> =C2=A0#2 [ffff88885fe03e20] crash_kexec+56 at ffffffff810f39d8
+> =C2=A0#3 [ffff88885fe03e38] oops_end+186 at ffffffff8101795a
+> =C2=A0#4 [ffff88885fe03e58] no_context+439 at ffffffff8104b2a7
+> =C2=A0#5 [ffff88885fe03eb0] __do_page_fault+162 at ffffffff8104b8b2
+> =C2=A0#6 [ffff88885fe03f28] ___xnsched_run+507 at ffffffff811838cb
+> =C2=A0#7 [ffff88885fe03f60] xnintr_core_clock_handler+540 at ffffffff8117=
+cddc
+> =C2=A0#8 [ffff88885fe03fa0] dispatch_irq_head+126 at ffffffff8111953e
+> =C2=A0#9 [ffff88885fe03fc8] __ipipe_handle_irq+103 at ffffffff81037f07
+> #10 [ffff88885fe03ff0] apic_timer_interrupt+18 at ffffffff81801d22
+> --- <IRQ stack> ---
+> bt: cannot transition from IRQ stack to current process stack:
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 IRQ stack pointer: ffff88885fe03d10
+> =C2=A0 =C2=A0 process stack pointer: ffff88885fe03c10
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0current stack base: ffffc90005a30000
+> 	=C2=A0 =C2=A0
+> =C2=A0crash> dis -l ___xnsched_run
+> linux-4.19.89-ipipe-9-xenomai-3.1/kernel/xenomai/sched.c: 1042=C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 if (shadow && ipipe_root_p)
+> 0xffffffff81183887 <___xnsched_run+439>:=C2=A0 =C2=A0 =C2=A0 =C2=A0 test=
+=C2=A0 =C2=A0%r15d,%r15d=C2=A0=C2=A0
+> 0xffffffff8118388a <___xnsched_run+442>:=C2=A0 =C2=A0 =C2=A0 =C2=A0 je=C2=
+=A0 =C2=A0 =C2=A00xffffffff811838b7 <___xnsched_run+487>=C2=A0=C2=A0
+> linux-4.19.89-ipipe-9-xenomai-3.1/./arch/x86/include/asm/irqflags.h: 331=
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ipipe_get_curre=
+nt_domain
+> 0xffffffff8118388c <___xnsched_run+444>:=C2=A0 =C2=A0 =C2=A0 =C2=A0 pushf=
+q
+> 0xffffffff8118388d <___xnsched_run+445>:=C2=A0 =C2=A0 =C2=A0 =C2=A0 pop=
+=C2=A0 =C2=A0 %rdx
+> linux-4.19.89-ipipe-9-xenomai-3.1/./arch/x86/include/asm/irqflags.h: 261
+> 0xffffffff8118388e <___xnsched_run+446>:=C2=A0 =C2=A0 =C2=A0 =C2=A0 cli
+> linux-4.19.89-ipipe-9-xenomai-3.1/./include/linux/ipipe_domain.h: 331=C2=
+=A0 =C2=A0
+> 0xffffffff8118388f <___xnsched_run+447>:=C2=A0 =C2=A0 =C2=A0 =C2=A0 mov=
+=C2=A0 =C2=A0 $0xa2260,%rax=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0
+> linux-4.19.89-ipipe-9-xenomai-3.1/./include/linux/ipipe_domain.h: 269
+> 0xffffffff81183896 <___xnsched_run+454>:=C2=A0 =C2=A0 =C2=A0 =C2=A0 mov=
+=C2=A0 =C2=A0 %gs:0x7ee8b93a(%rip),%rcx=C2=A0 # 0xf1d8=C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0return __ipipe_raw_cpu_read=
+(ipipe_percpu.curr);
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 RCX: ffffffff828021c0=C2=A0 =C2=A0 =C2=A0 =C2=A0ffffffff828021c0:=C2=A0=
+ 0000000000042e80
+> 0xffffffff8118389e <___xnsched_run+462>:=C2=A0 =C2=A0 =C2=A0 =C2=A0 mov=
+=C2=A0 =C2=A0 (%rax,%rcx,1),%rax=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0
+> 0xffffffff811838a2 <___xnsched_run+466>:=C2=A0 =C2=A0 =C2=A0 =C2=A0 mov=
+=C2=A0 =C2=A0 0x42e70(%rax),%rax=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 return __ipipe_get_current_context()->domain;
+> linux-4.19.89-ipipe-9-xenomai-3.1/./arch/x86/include/asm/irqflags.h: 336
+> 0xffffffff811838a9 <___xnsched_run+473>:=C2=A0 =C2=A0 =C2=A0 =C2=A0 push=
+=C2=A0 =C2=A0%rdx
+> 0xffffffff811838aa <___xnsched_run+474>:=C2=A0 =C2=A0 =C2=A0 =C2=A0 popfq
+> linux-4.19.89-ipipe-9-xenomai-3.1/./include/linux/ipipe_domain.h: 334=C2=
+=A0 =C2=A0
+> 0xffffffff811838ab <___xnsched_run+475>:=C2=A0 =C2=A0 =C2=A0 =C2=A0 cmp=
+=C2=A0 =C2=A0 $0xffffffff825f8940,%rax=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0
+> 0xffffffff811838b1 <___xnsched_run+481>:=C2=A0 =C2=A0 =C2=A0 =C2=A0 je=C2=
+=A0 =C2=A00xffffffff81183b06 <___xnsched_run+1078>=C2=A0=C2=A0
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 goto shadow_epilogue;=C2=A0=C2=A0
+> linux-4.19.89-ipipe-9-xenomai-3.1/include/xenomai/cobalt/kernel/sched.h: =
+372=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0
+> 0xffffffff811838b7 <___xnsched_run+487>:=C2=A0 =C2=A0 =C2=A0 =C2=A0 mov=
+=C2=A0 =C2=A0 $0xa4540,%rdi=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 0xffffffff811838be <___xnsched_run+494>=
+:=C2=A0 =C2=A0 =C2=A0 =C2=A0 add=C2=A0 =C2=A0 %gs:0x7ee8b912(%rip),%rdi=C2=
+=A0 =C2=A0# 0xf1d8
+> linux-4.19.89-ipipe-9-xenomai-3.1/kernel/xenomai/sched.c: 1052=C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 xnthread_switch_fpu(sc=
+hed);
+> 0xffffffff811838c6 <___xnsched_run+502>:=C2=A0 =C2=A0 =C2=A0 =C2=A0 callq=
+=C2=A0 0xffffffff81189eb0 <xnthread_switch_fpu>
+> linux-4.19.89-ipipe-9-xenomai-3.1/include/xenomai/cobalt/kernel/trace.h: =
+84
+> 0xffffffff811838cb <___xnsched_run+507>:=C2=A0 =C2=A0 =C2=A0 =C2=A0 mov=
+=C2=A0 =C2=A0 $0x1,%r15d
+>=20
+> [78270.764791] BUG: unable to handle kernel paging request at 00000000000=
+a22e8
+> [78270.771791] PGD 0 P4D 0
+> [78270.774375] Oops: 0000 [#1] PREEMPT SMP NOPTI
+> [78270.778769] CPU: 2 PID: 26821 Comm: RunCommandActor Kdump: loaded Tain=
+ted: P=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0O=C2=A0 =C2=A0 =C2=A0 4.19.8=
+9-ipipe-9-xenomai-3.1-20201027 #1
+> [78270.790893] Hardware name: Supermicro Super Server/C422-SF, BIOS E906.=
+1 04/27/2021
+> [78270.798536] I-pipe domain: Linux
+> [78270.801787] RIP: a2260:0xffff88885fe1c560
+> [78270.805834] Code: 00 00 00 00 00 00 00 00 00 00 c0 8f ea 5f 88 88 ff f=
+f 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 <=
+01> 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00
+> [78270.824763] RSP: 81037f07:00000000000a2260 EFLAGS: ffff88885fe1c560 OR=
+IG_RAX: ffffffff8111953e
+> [78270.833421] RAX: 00000000000a2260 RBX: 0000000000000002 RCX: ffffffff8=
+28021c0
+> [78270.840596] RDX: ffff88885fe1c560 RSI: 0000000000000000 RDI: 000000000=
+0000000
+> [78270.847790] RBP: ffff88885fea4540 R08: 000000000005f3e0 R09: 000000000=
+000fe0c=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0
+> [78270.854984] R10: ffffffff8117cddc R11: 0000000000000002 R12: ffff88885=
+fea5d08=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0
+> [78270.862185] R13: ffffe8ffffc079c8 R14: ffff88885fea4540 R15: ffffffff8=
+11838cb=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0=C2=A0
+> [78270.869335] FS:=C2=A0 00007fe12237c700(0000) GS:ffff88885fe00000(0000)=
+ knlGS:0000000000000000=C2=A0 =C2=A0 =C2=A0 =C2=A0
+> [78270.877499] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [78270.883298] CR2: 00000000000a22e8 CR3: 0000000852a06006 CR4: 000000000=
+01606e0
+> [78270.890465] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 000000000=
+0000000
+> [78270.897658] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 000000000=
+0000400
+> [78270.904843] Call Trace:
+> [78270.996185] CR2: 00000000000a22e8
+>=20
+> From the backtrace above, based on the value stored in the CPU register a=
+t the time of the kernel crash, the location where the page fault was trigg=
+ered appears to be at ___xnsched_run+507.
+> Kernel crash occurs with RAX value 0xa2260 from <___xnsched_run+447>: mov=
+ $0xa2260,%rax. The value of the GS register is ffff88885fe00000, the addre=
+ss of the percpu variable in CPU2.
+> crash> kmem -o
+> PER-CPU OFFSET VALUES:
+> CPU 0: ffff88885fc00000
+> CPU 1: ffff88885fd00000
+> CPU 2: ffff88885fe00000
+> CPU 3: ffff88885ff00000
+>=20
+> The RDX register has the value ffff88885fe1c560, which is the address of =
+the ipipe_percpu variable in CPU2
+> crash> p ipipe_percpu
+> PER-CPU DATA TYPE:
+> struct ipipe_percpu_data ipipe_percpu;
+> PER-CPU ADDRESSES:
+> [0]: ffff88885fc1c560
+> [1]: ffff88885fd1c560
+> [2]: ffff88885fe1c560
+> [3]: ffff88885ff1c560
+>=20
+> <___xnsched_run+454>:=C2=A0 mov %gs:0x7ee8b93a(%rip),%rcx # 0xf1d8 namely=
+ __ipipe_raw_cpu_read(iPipe_percpu.curr) The member of curr is obtained thr=
+ough the ipipe_percpu variable
+> crash> ipipe_percpu_data ffff88885fe1c560 -o
+> struct ipipe_percpu_data {
+> [ffff88885fe1c560] struct ipipe_percpu_domain_data root;
+> [ffff88885fe5f3e0] struct ipipe_percpu_domain_data head;
+> [ffff88885fea2260] struct ipipe_percpu_domain_data *curr;
+> [ffff88885fea2268] struct pt_regs tick_regs;
+> [ffff88885fea2310] int hrtimer_irq;
+> [ffff88885fea2318] struct task_struct *task_hijacked;
+> [ffff88885fea2320] struct task_struct *rqlock_owner;
+> [ffff88885fea2328] struct ipipe_vm_notifier *vm_notifier;
+> [ffff88885fea2330] unsigned long nmi_state;
+> [ffff88885fea2338] struct mm_struct *active_mm;
+> }
+> SIZE: 548320
+>=20
+> RIP a2260:0xffff88885fe1c560 is the location of ipipe_percpu.curr,
+> CR2 00000000000a22e8 Stores the linear address of the page fault when it =
+occurs, which points to the ip member of the struct pt_regs from below, and=
+ the value of the GS segment register + CR2 register is ffff88885fea22e8.
+> crash_pageoffset> struct pt_regs ffff88885fea2268 -o
+> struct pt_regs {
+> [ffff88885fea2268] unsigned long r15;
+> [ffff88885fea2270] unsigned long r14;
+> [ffff88885fea2278] unsigned long r13;
+> [ffff88885fea2280] unsigned long r12;
+> [ffff88885fea2288] unsigned long bp;
+> [ffff88885fea2290] unsigned long bx;
+> [ffff88885fea2298] unsigned long r11;
+> [ffff88885fea22a0] unsigned long r10;
+> [ffff88885fea22a8] unsigned long r9;
+> [ffff88885fea22b0] unsigned long r8;
+> [ffff88885fea22b8] unsigned long ax;
+> [ffff88885fea22c0] unsigned long cx;
+> [ffff88885fea22c8] unsigned long dx;
+> [ffff88885fea22d0] unsigned long si;
+> [ffff88885fea22d8] unsigned long di;
+> [ffff88885fea22e0] unsigned long orig_ax;
+> [ffff88885fea22e8] unsigned long ip;
+> [ffff88885fea22f0] unsigned long cs;
+> [ffff88885fea22f8] unsigned long flags;
+> [ffff88885fea2300] unsigned long sp;
+> [ffff88885fea2308] unsigned long ss;
+> }
+> SIZE: 168
+>=20
+> <___xnsched_run+475>:=C2=A0 cmp $0xffffffff825f8940,%rax Where $0xfffffff=
+f825f8940 is the address of the ipipe_percpu_domain_data root variable in r=
+oot mode.
+> The contents of the register when the kernel crashes appear to be the roo=
+t domain when executing __ipipe_current_domain =3D=3D ipipe_root_domain to =
+determine whether the domain is the root domain at this time. A crash occur=
+s when obtaining the ip member of pt_regs on the percpu variable ipipe_perc=
+pu_data. At present, the rtThread real-time thread is bound to run in CPU2,=
+ and the switch from xenomai mode to linux mode occurs during the run time.=
+ From this log, is the kernel crash caused by a mode switch?
+> Here are some of the meanings of CPU registers:
+> R08 5f3e0: Indicates the offset of ipipe_percpu.head
+> a2260: indicates the offset of ipipe_percpu.curr
+> RBP ffff88885fea4540: struct xnsched nksched
+> R12 ffff88885fea5d08: xnsched.current_account
+> 0xffff88885fe1c560: struct ipipe_percpu_data
+> RCX FFFFFF828021C0: The value is 0000000000042e80
+>=20
+>=20
+> At 2024-04-10 15:46:48, "Kowalsky, Clara" <clara.kowalsky@siemens.com> wr=
+ote:
+> > Hi,
+> >=20
+> > just so you know, we're looking at this issue.
+> > Which cmdline did you use? Was xenomai.supported_cpus set?
+> > In the meantime, if you have more information or if you have been able =
+to create a simplified application where the bug still occurs, please let u=
+s know.
+> >=20
+> > Best
+> > Clara
+> >=20
+> > > -----Original Message-----
+> > > From: JerryJun <jerryjun123@163.com>
+> > > Sent: Montag, 26. Februar 2024 15:34
+> > > To: Kiszka, Jan (T CED) <jan.kiszka@siemens.com>
+> > > Cc: xenomai <xenomai@lists.linux.dev>
+> > > Subject: Re:Re: NX-protected page
+> > >=20
+> > > hi, Jan,  if  you have reproducted it  after trying to run the case f=
+or hours in
+> > > qemu=EF=BC=9F or is there any doubt=EF=BC=9F
+> > >=20
+> > > 2024-02-02 16:37:59, "Jan Kiszka" <jan.kiszka@siemens.com> wrote:
+> > > > On 02.02.24 08:49, JerryJun wrote:
+> > > > >=20
+> > > > > how long did you run it=EF=BC=9Fit will take a while for this cra=
+sh but not more than
+> > > 12 hours at mostly.
+> > > > > ok=EF=BC=8Ci will try to run it without get /proc=E2=80=A6=E2=80=
+=A6 thank you very much.
+> > > > >=20
+> > > >=20
+> > > > Not for hours, but one setup was running for about 30 min. at least=
+.
+> > > >=20
+> > > > Jan
+> > > >=20
+> > > > >=20
+> > > > > At 2024-02-02 14:49:53, "Jan Kiszka" <jan.kiszka@siemens.com> wro=
+te:
+> > > > > > On 01.02.24 08:09, Jan Kiszka wrote:
+> > > > > > > On 31.01.24 08:25, JerryJun wrote:
+> > > > > > > > yet=EF=BC=8C you just do make in the project to product the=
+ binary of oop-test,
+> > > run kill_test.sh , and finally wait kernel oop .
+> > > > > > > > we get the same results of kernel oop in the qemu-amd64, wh=
+ich use
+> > > the config from xenomai-images
+> > > ,"https://eur01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2=
+Fsou
+> > > rce.denx.de%2FXenomai%2Fxenomai-images%2F-
+> > > %2Fblob%2Fmaster%2Frecipes-
+> > > kernel%2Flinux%2Ffiles%2Famd64_defconfig%3Fref_type%3Dheads&data=3D0
+> > > 5%7C02%7Cclara.kowalsky%40siemens.com%7C494bca636f6c48566cc208d
+> > > c36d843eb%7C38ae3bcd95794fd4addab42e1495d55a%7C1%7C0%7C6384
+> > > 45549672638180%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMD
+> > > AiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C0%7C%7C%7C&s
+> > > data=3DxOckYYYOkjKZ3yKchy4B7kkX2eth%2Bqe88Mrd7XjldFw%3D&reserved=3D
+> > > 0", as follow.
+> > > > > > > > [ 6191.671953] BUG: kernel NULL pointer dereference, addres=
+s:
+> > > > > > > > 0000000000000000 [ 6191.671955] #PF: supervisor instruction=
+ fetch
+> > > > > > > > in kernel mode [ 6191.671956] #PF: error_code(0x0010) -
+> > > > > > > > not-present page [ 6191.671956] PGD 0 P4D 0 [ 6191.671958] =
+Oops:
+> > > > > > > > 0010 [#1] PREEMPT SMP PTI IRQ_PIPELINE [ 6191.671959] CPU: =
+3 PID:
+> > > > > > > > 7047 Comm: oop-test Kdump: loaded Not tainted
+> > > > > > > > 5.10.199-devo-3.2.4-20240130 #1 [ 6191.671960] Hardware nam=
+e:
+> > > QEMU
+> > > > > > > > Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014=
+ [
+> > > > > > > > 6191.671961] IRQ stage: Linux [ 6191.671961] RIP: 0010:0x0 =
+[
+> > > > > > > > 6191.671962] Code: Unable to access opcode bytes at RIP
+> > > 0xffffffffffffffd6.
+> > > > > > > > [ 6191.671962] RSP: 0018:ffffc90000118f80 EFLAGS: 00010246 =
+[
+> > > > > > > > 6191.671963] RAX: 0000000000000000 RBX: ffff888108d3d730 RC=
+X:
+> > > > > > > > 0000000000000000 [ 6191.671964] RDX: ffff888108d3d738 RSI:
+> > > > > > > > ffffffff82516284 RDI: ffff888108d3d730 [ 6191.671965] RBP:
+> > > > > > > > 0000000000000000 R08: 0000000000000000 R09:
+> > > 0000000000000001 [
+> > > > > > > > 6191.671965] R10: 0000000000000000 R11: 0000000000000001
+> > > R12:
+> > > > > > > > 0000000000000000 [ 6191.671966] R13: 0000000000000018 R14:
+> > > > > > > > ffffffff811d37e0 R15: 0000000000000000 [ 6191.671967] FS:
+> > > > > > > > 00007fc6e83ea780(0000) GS:ffff88813bd80000(0000)
+> > > > > > > > knlGS:0000000000000000 [ 6191.671967] CS:  0010 DS: 0000 ES=
 :
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:164:9: note: in expansion of macro 'CLASS'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1336:9: note: in expansion of ma=
-cro 'guard'
- 1336 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1336:9: error: cleanup argument =
-not a function
-  CC [M]  drivers/pinctrl/intel/pinctrl-geminilake.o
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/compiler.h:189:45: warning: unused variable '__UNIQUE_ID_gu=
-ard501' [-Wunused-variable]
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                             ^~~~~~~~~~~~
-./include/linux/cleanup.h:119:27: note: in definition of macro 'CLASS'
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |                           ^~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:29: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                             ^~~~~~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:37: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                     ^~~~~~~
-./include/linux/cleanup.h:164:22: note: in expansion of macro '__UNIQUE_ID'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |                      ^~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1336:9: note: in expansion of ma=
-cro 'guard'
- 1336 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-  CC      drivers/hv/channel_mgmt.o
-  CC [M]  drivers/vdpa/vdpa.o
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_gpio_irq_handl=
-er':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:169:14: note: in expansion of macro 'CLASS'
-  169 |         for (CLASS(_name, scope)(args),                            =
-     \
-      |              ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1408:9: note: in expansion of ma=
-cro 'scoped_guard'
- 1408 |         scoped_guard(hard_spinlock_irqsave, &chv_lock)
-      |         ^~~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1408:9: error: cleanup argument =
-not a function
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/cleanup.h:169:9: error: declaration of non-variable 'class_=
-hard_spinlock_irqsave_constructor' in 'for' loop initial declaration
-  169 |         for (CLASS(_name, scope)(args),                            =
-     \
-      |         ^~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1408:9: note: in expansion of ma=
-cro 'scoped_guard'
- 1408 |         scoped_guard(hard_spinlock_irqsave, &chv_lock)
-      |         ^~~~~~~~~~~~
-  CC      drivers/of/fdt.o
-  CC [M]  drivers/staging/media/av7110/av7110_v4l.o
-  CC [M]  drivers/ras/amd/atl/map.o
-  CC [M]  drivers/platform/chrome/chromeos_privacy_screen.o
-  CC [M]  drivers/crypto/intel/qat/qat_c62xvf/adf_drv.o
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_pinctrl_mmio_a=
-ccess_handler':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:164:9: note: in expansion of macro 'CLASS'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1599:9: note: in expansion of ma=
-cro 'guard'
- 1599 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1599:9: error: cleanup argument =
-not a function
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/compiler.h:189:45: warning: unused variable '__UNIQUE_ID_gu=
-ard502' [-Wunused-variable]
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                             ^~~~~~~~~~~~
-./include/linux/cleanup.h:119:27: note: in definition of macro 'CLASS'
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |                           ^~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:29: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                             ^~~~~~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:37: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                     ^~~~~~~
-./include/linux/cleanup.h:164:22: note: in expansion of macro '__UNIQUE_ID'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |                      ^~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1599:9: note: in expansion of ma=
-cro 'guard'
- 1599 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-  CC [M]  drivers/staging/rtl8712/rtl8712_cmd.o
-  CC [M]  drivers/platform/chrome/chromeos_pstore.o
-  CC [M]  drivers/extcon/extcon-gpio.o
-  CC [M]  drivers/extcon/extcon-intel-int3496.o
-  CC      drivers/leds/led-class.o
-  CC [M]  drivers/crypto/intel/qat/qat_c62xvf/adf_c62xvf_hw_data.o
-  CC [M]  drivers/crypto/intel/qat/qat_common/adf_isr.o
-  CC [M]  drivers/crypto/intel/qat/qat_common/adf_ctl_drv.o
-  CC [M]  drivers/crypto/ccp/ccp-dev-v3.o
-  AR      drivers/staging/vme_user/built-in.a
-  CC [M]  drivers/staging/pi433/pi433_if.o
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_pinctrl_suspen=
-d_noirq':
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:164:9: note: in expansion of macro 'CLASS'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1712:9: note: in expansion of ma=
-cro 'guard'
- 1712 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1712:9: error: cleanup argument =
-not a function
-  CC [M]  drivers/staging/rts5208/sd.o
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/compiler.h:189:45: warning: unused variable '__UNIQUE_ID_gu=
-ard503' [-Wunused-variable]
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                             ^~~~~~~~~~~~
-./include/linux/cleanup.h:119:27: note: in definition of macro 'CLASS'
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |                           ^~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:29: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                             ^~~~~~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:37: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                     ^~~~~~~
-./include/linux/cleanup.h:164:22: note: in expansion of macro '__UNIQUE_ID'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |                      ^~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1712:9: note: in expansion of ma=
-cro 'guard'
- 1712 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-  AR      drivers/powercap/built-in.a
-  CC [M]  drivers/staging/fbtft/fbtft-sysfs.o
-  LD [M]  drivers/crypto/intel/qat/qat_c62x/qat_c62x.o
-  CC [M]  drivers/staging/pi433/rf69.o
-  CC [M]  drivers/hsi/hsi_core.o
-  CC [M]  drivers/hwtracing/intel_th/sth.o
-  CC [M]  drivers/accel/habanalabs/common/mmu/mmu.o
-  CC [M]  drivers/pinctrl/intel/pinctrl-icelake.o
-  LD [M]  drivers/crypto/intel/qat/qat_dh895xccvf/qat_dh895xccvf.o
-  CC [M]  drivers/parport/share.o
-  CC [M]  drivers/staging/fbtft/fbtft-bus.o
-  CC [M]  drivers/staging/rts5208/xd.o
-  CC [M]  drivers/parport/ieee1284.o
-  CC [M]  drivers/crypto/ccp/ccp-dev-v5.o
-  CC [M]  drivers/accel/habanalabs/common/mmu/mmu_v1.o
-  CC [M]  drivers/staging/rts5208/ms.o
-drivers/pinctrl/intel/pinctrl-cherryview.c: In function 'chv_pinctrl_resume=
-_noirq':
-  CC [M]  drivers/staging/media/ipu3/ipu3-v4l2.o
-./include/linux/cleanup.h:119:9: error: unknown type name 'class_hard_spinl=
-ock_irqsave_t'; did you mean 'class_raw_spinlock_irqsave_t'?
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |         ^~~~~~
-./include/linux/cleanup.h:164:9: note: in expansion of macro 'CLASS'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |         ^~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1739:9: note: in expansion of ma=
-cro 'guard'
- 1739 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-  CC [M]  drivers/accel/habanalabs/common/mmu/mmu_v2.o
-drivers/pinctrl/intel/pinctrl-cherryview.c:1739:9: error: cleanup argument =
-not a function
-In file included from ./include/linux/preempt.h:11,
-                 from ./include/linux/spinlock.h:56,
-                 from ./include/linux/mmzone.h:8,
-                 from ./include/linux/gfp.h:7,
-                 from ./include/linux/slab.h:16,
-                 from ./include/linux/resource_ext.h:11,
-                 from ./include/linux/acpi.h:13,
-                 from drivers/pinctrl/intel/pinctrl-cherryview.c:13:
-./include/linux/compiler.h:189:45: warning: unused variable '__UNIQUE_ID_gu=
-ard504' [-Wunused-variable]
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                             ^~~~~~~~~~~~
-./include/linux/cleanup.h:119:27: note: in definition of macro 'CLASS'
-  119 |         class_##_name##_t var __cleanup(class_##_name##_destructor)=
- =3D   \
-      |                           ^~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:29: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                             ^~~~~~~
-././include/linux/compiler_types.h:84:22: note: in expansion of macro '___P=
-ASTE'
-   84 | #define __PASTE(a,b) ___PASTE(a,b)
-      |                      ^~~~~~~~
-./include/linux/compiler.h:189:37: note: in expansion of macro '__PASTE'
-  189 | #define __UNIQUE_ID(prefix) __PASTE(__PASTE(__UNIQUE_ID_, prefix), =
-__COUNTER__)
-      |                                     ^~~~~~~
-./include/linux/cleanup.h:164:22: note: in expansion of macro '__UNIQUE_ID'
-  164 |         CLASS(_name, __UNIQUE_ID(guard))
-      |                      ^~~~~~~~~~~
-drivers/pinctrl/intel/pinctrl-cherryview.c:1739:9: note: in expansion of ma=
-cro 'guard'
- 1739 |         guard(hard_spinlock_irqsave)(&chv_lock);
-      |         ^~~~~
-  CC [M]  drivers/parport/ieee1284_ops.o
-  CC [M]  drivers/platform/chrome/chromeos_tbmc.o
-  CC      drivers/platform/x86/amd/wbrf.o
-  LD [M]  drivers/crypto/intel/qat/qat_c3xxx/qat_c3xxx.o
-cc1: some warnings being treated as errors
-make[8]: *** [scripts/Makefile.build:244: drivers/pinctrl/intel/pinctrl-che=
-rryview.o] Error 1
-make[8]: *** Waiting for unfinished jobs....
-  LD [M]  drivers/virt/acrn/acrn.o
-
-...
-
-Best regards,
-Ionut Nechita.
-
------Original Message-----
-From: Nechita, Ionut=20
-Sent: Friday, May 17, 2024 4:23 PM
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@lists.linux.dev
-Subject: RE: WARN Kernel v6.9-evl-rebase - do_int80_emulation
-
-This is happened when CONFIG_DOVETAIL is =3Dn and CONFIG_EVL is =3Dn in .co=
-nfig.
-When using disable this and using generic configuration/flavour; CONFIG_PIN=
-CTRL_CHERRYVIEW with =3Dy is not build.=20
-Maybe rebase is not fully completed on 6.9-rebase-evl.
+> > > 0000 CR0: 0000000080050033 [ 6191.671968] CR2: ffffffffffffffd6 CR3:
+> > > 0000000106750005 CR4: 0000000000170ee0 [ 6191.671968] Call Trace:
+> > > > > > > > [ 6191.671968]  <IRQ>
+> > > > > > > > [ 6191.671969]  ? show_trace_log_lvl+0x1c2/0x2c9 [ 6191.671=
+969]  ?
+> > > > > > > > irq_work_single+0x42/0x80 [ 6191.671969]  ?
+> > > > > > > > __die_body.cold+0x8/0xd [ 6191.671970]  ? no_context+0x13a/=
+0x270
+> > > [
+> > > > > > > > 6191.671970]  ? exc_page_fault+0x6f/0x200 [ 6191.671970]  ?
+> > > > > > > > asm_exc_page_fault+0x1e/0x30 [ 6191.671970]  ?
+> > > > > > > > handle_oob_irq+0x90/0x90 [
+> > > 6191.671971]  irq_work_single+0x42/0x80
+> > > > > > > > [ 6191.671971]  irq_work_run_list+0x2d/0x40 [ 6191.671971]
+> > > > > > > > irq_work_run+0x26/0x40 [ 6191.671972]
+> > > > > > > > inband_work_interrupt+0xa/0x20 [ 6191.671972]
+> > > > > > > > handle_synthetic_irq+0xb1/0x210 [ 6191.671972]
+> > > > > > > > asm_call_irq_on_stack+0x12/0x20 [ 6191.671973]  </IRQ> [
+> > > > > > > > 6191.671973]  arch_do_IRQ_pipelined+0x15d/0x2a0 [ 6191.6719=
+73]
+> > > > > > > > sync_current_irq_stage+0x157/0x1f0
+> > > > > > > > [ 6191.671974]  __inband_irq_enable+0x4b/0x70 [ 6191.671974=
+]
+> > > > > > > > _raw_spin_unlock_irqrestore+0x35/0x70
+> > > > > > > > [ 6191.671974]  __set_cpus_allowed_ptr+0xbf/0x230 [
+> > > 6191.671975]
+> > > > > > > > sched_setaffinity+0x383/0x6b0 [ 6191.671975]
+> > > > > > > > __x64_sys_sched_setaffinity+0x45/0x80
+> > > > > > > > [ 6191.671975]  do_syscall_64+0x39/0x50 [ 6191.671978]
+> > > > > > > > entry_SYSCALL_64_after_hwframe+0x62/0xc7
+> > > > > > > > [ 6191.671979] RIP: 0033:0x7fc6e84d6617 [ 6191.671979] Code=
+: 1f
+> > > 40
+> > > > > > > > 00 48 8b 15 79 c8 0e 00 f7 d8 41 b9 ff ff ff ff 64 89 02 44=
+ 89 c8
+> > > > > > > > c3 66 2e 0f 1f 84 00 00 00 00 00 b8 cb 00 00 00 0f 05 <48> =
+3d 00
+> > > > > > > > f0 ff ff 77 29 41 89 c0 83 f8 ff 74 18 64 c7 04 25 38 00 [
+> > > > > > > > 6191.671980] RSP: 002b:00007ffd574dfde8 EFLAGS: 00000206
+> > > ORIG_RAX:
+> > > > > > > > 00000000000000cb [ 6191.671981] RAX: ffffffffffffffda RBX:
+> > > > > > > > 00007fc6e7b985c8 RCX: 00007fc6e84d6617 [ 6191.671982] RDX:
+> > > > > > > > 00007fc6e7b985f0 RSI: 0000000000000080 RDI:
+> > > 0000000000001b8d [
+> > > > > > > > 6191.671982] RBP: 00007ffd574dfe70 R08: 00007fc6e83ea780 R0=
+9:
+> > > 00000000ffffffff [ 6191.671983] R10: fffffffffffffdca R11:
+> > > 0000000000000206 R12: 000055a818eb61c0 [ 6191.671983] R13:
+> > > 0000000000000000 R14: 0000000000000000 R15: 0000000000000000 [
+> > > 6191.671984] Modules linked in:
+> > > > > > > > [ 6191.671985] CR2: 0000000000000000
+> > > > > > > >=20
+> > > > > > >=20
+> > > > > > > Okay... that is "good" news - looking for some time slot to
+> > > > > > > reproduce and debug myself now.
+> > > > > > >=20
+> > > > > >=20
+> > > > > > I've tried to reproduce, using the .config.yaml below for
+> > > > > > xenomai-images, but it does not trigger here. Do I need to run =
+this
+> > > > > > for hours? What exactly did you do to trigger it in the qemu im=
+age
+> > > > > > of xenomai-images?
+> > > > > >=20
+> > > > > > BTW, I assume the access of /proc/xenomai/sched/stat plays an
+> > > > > > important role in causing the crash, right? You don't get it wi=
+thout them?
+> > > > > >=20
+> > > > > > Jan
+> > > > > >=20
+> > > > > > #
+> > > > > > # Automatically generated by kas 4.2 #
+> > > > > > _source_dir: /repo
+> > > > > > build_system: isar
+> > > > > > header:
+> > > > > >  includes:
+> > > > > >  - kas.yml
+> > > > > >  - board-qemu-amd64.yml
+> > > > > >  - opt-linux-latest-5.10.yml
+> > > > > >  version: 16
+> > > > > > menu_configuration:
+> > > > > >  DEBUG: false
+> > > > > >  KERNEL_4_19: false
+> > > > > >  KERNEL_4_19_LATEST: false
+> > > > > >  KERNEL_5_10: false
+> > > > > >  KERNEL_5_10_LATEST: true
+> > > > > >  KERNEL_5_15: false
+> > > > > >  KERNEL_5_15_LATEST: false
+> > > > > >  KERNEL_5_4: false
+> > > > > >  KERNEL_5_4_LATEST: false
+> > > > > >  KERNEL_6_1: false
+> > > > > >  KERNEL_6_1_LATEST: false
+> > > > > >  TARGET_BBB: false
+> > > > > >  TARGET_HIKEY: false
+> > > > > >  TARGET_QEMU_AMD64: true
+> > > > > >  TARGET_QEMU_ARM: false
+> > > > > >  TARGET_QEMU_ARM64: false
+> > > > > >  TARGET_X86_64_EFI: false
+> > > > > >  XENOMAI3: true
+> > > > > >  XENOMAI4: false
+> > > > > >  XENOMAI_3_0_LATEST: false
+> > > > > >  XENOMAI_3_1_LATEST: false
+> > > > > >  XENOMAI_3_2: true
+> > > > > >  XENOMAI_3_2_LATEST: false
+> > > > > >  XENOMAI_LATEST: false
+> > > > > >=20
+> > > > > > --
+> > > > > > Siemens AG, Technology
+> > > > > > Linux Expert Center
+> > > >=20
+> > > > --
+> > > > Siemens AG, Technology
+> > > > Linux Expert Center
 
 
-Will try to append kernel log build.
+--=-alrol2+J3Cn1ymy1t3aJ
+Content-Type: application/x-compressed-tar; name="xenomai-alchemy-app.tar.gz"
+Content-Disposition: attachment; filename="xenomai-alchemy-app.tar.gz"
+Content-Transfer-Encoding: base64
 
-Best regards,
-Ionut Nechita.
+H4sIAAAAAAAAA+1WeW/iRhTPv55P8ZaQlc0ChgRIBck2CTma5qqAVVfdppZjj2EUYyPb7GZb7Xfv
+m/EJIUcltFLb+UlozLuvefYD9fypyWqma03o9GvNnM30jTWjgdhtt/nZ3G03imeKjWars73dabfa
+nd2NRnOn0d7dgPa6A1mFeRiZAcCG4/rPyr3E/5fiYUX/w8Ba6wz8k/63Gi3e/85OS/b/e+Cp/iPN
+q1vr8cEb3Gm1nur/dgfv/GL/W7s7eP8b63H/PP7n/d9knuXObQp7IQ6AXZ+8JzkpGQo9MsN7ziGb
+NnWYR2H00+Dk8NjoX49gp0EIljBiFjAvgrHr35muQR9YZEQBG49pAPvQ6GVCn31mQ8jGHkpNTM92
+aaBq5C+irNZs9si3Rd0gMvhwquJPxQzGQvvLhLkU1DcrrGiAfGUeupTO1GYDKtDEqUsOrQe6jk8Q
+Uoso35adRZOAmnZo8CGJ1MHIGB0OL6CCMfCahFWRcyWWMpgd8lhAsSY4UlzA8Mwp/bTd7tz2iGLN
+5kZIUROmyEIC1w1ohLUBpf/LB+O3k8GN+pYztV5CGp6M1GYVUiJRHD8AlSsyUVY89grdwP/v3vF8
+MeHQmwUo6KhZIFWs+5/UL1C0KpSCqMb/17bsEqYjnCgYFZpPsjQszC6i6ts060/stgoFq40qtPGH
+tURV5oCK6nHRlSSE0qmJ7cFy+hAbE+qwZf/uJU5R9g45vCzYBb2iKI/C4LUzHZw/Fn1dCiatz8vu
+0QikRoAX8/lAKjovR95f9IYRsd7j4MSALEWVjCo+LVh4XaDc4AvRPTev/uzxuIqbkk/da4dpOVeb
+unRpHlakhNw0KyfLKlZdlZblexHz5rSYGQ9N3HX+gDfdqoK4WhV+7T/Hdy1NMgsmT+A2uWOF4i8w
+iRLvIXV4fnZ+PaourSVxFdIUhrwdzBtjyIL+4r5Z3Bz5wijsil5hLVUKy2gaLuhjJ7MG9pLKrG3/
+r3r/X5n3uOZdui4fL7z/m8n7H78R8Tux2eTv/zYe8v3/HbD5Rp+HgX7HPPzku6dQcwgZXpxfA6K7
+D8lYEHLzYQQJra7784icfDxJCWUVuZrOR4nPDxkO+rksfkxywvH5YBjL4h9Nx/MLc23LDOyUVNE1
+LjjMjBYETNsO57i1H6BSt6pCgRvUNI3cHP2cq8zMKJzfhVFqc0tIi+i26n6siFqEXF2gPmr9uA/T
+e5sFZHAlQuaEYEo+XvdPz+J/ojyub5mu/vBDRxRKJIr7ymFjQvpxrrH/cEJdF0+hr0GtZlka6Z9e
+Hp4Nn5II75m3j4FhzYWC45rjEJ9+NVGuNiaXx7H6q7RdO1FHtcvzo9gpIWiqi18qjo+q2DeNb1bH
+7xLlgFoTH0pHcyy1EOiWMmK/30Xxfl/LSUnZu5B3YIGZcorkOHthSjwVWElqnJc8IpOk/eomc4Xi
+ZVX0CzOcZUXApvGvDygfaLlO3e8WWg/pIoPMJQDvV3mv9AqrXALTzyOHmoWqUMMyHnCfvJQiShxB
+reDi8hhdHJQKBtL0oPxHrC5ovENZ8N1iRNy+5VLTi6mDK/QdOFlBYH37X0JCQkJCQkJCQkJCQkJC
+QkJCQkJC4r+JvwFyLhf7ACgAAA==
 
------Original Message-----
-From: Philippe Gerum <rpm@xenomai.org>=20
-Sent: Friday, May 17, 2024 4:16 PM
-To: Nechita, Ionut <ionut.nechita@intel.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: WARN Kernel v6.9-evl-rebase - do_int80_emulation
 
-
-"Nechita, Ionut" <ionut.nechita@intel.com> writes:
-
-> Clean now in dmesg.=20
-> Warn message not appear.
-> This patch is fine.
->
-> But I notice issue on compiling CONFIG_PINCTRL_CHERRYVIEW at builtin opti=
-on.
-> Kernel failing when CONFIG_PINCTRL_CHERRYVIEW is =3Dy.
->
-> I use CONFIG_PINCTRL_CHERRYVIEW=3Dn to compiling your change.
->
-
-There must be something else at work. Builds fine here with CONFIG_PINCTRL_=
-CHERRYVIEW=3Dy.
-
-The failing build log would help.
-
---
-Philippe.
+--=-alrol2+J3Cn1ymy1t3aJ--
