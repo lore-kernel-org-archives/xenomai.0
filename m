@@ -1,58 +1,58 @@
 Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-ve1eur01on2089.outbound.protection.outlook.com [40.107.14.89])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2D27147C9D
-	for <xenomai@lists.linux.dev>; Tue, 21 May 2024 16:48:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D6A11482F3
+	for <xenomai@lists.linux.dev>; Tue, 21 May 2024 16:48:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.14.89
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716310109; cv=fail; b=uAU+QYLrn6CSEDj8CbrEoG1F4E8Qioz/pzt19uAokxjEgCIyLDMj3BdCqBdo6Fe8n7D7xpHKZ23uMrwidRzj/Jgfg9HbZrAliOVsCWMXMiLouh9jprQ3j4iUDJI222hPloUgMHXIV2f+BYzHjb0fwVCEsHKisQc35YlFWiUy4bM=
+	t=1716310112; cv=fail; b=K5z8uEdGVLCgWIkfA0tpSKLLJAHIGSgWZLZifBD/hMSMH3GW46M5Wb/DY5ctaL1VsTQXkcU0dL7GyCq4vBeH7sOLkeBvE3EueBqJ9plhWxzEPcRglKpb+lcRkEH86+QPB4/Ib2Uodefr5XEkdgm4xJB593xhtiCweRF38SXwrnE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716310109; c=relaxed/simple;
-	bh=glyUidhw9i0GenE9vHr9NrOb+MpNWUaeSDGD2p9BTQs=;
+	s=arc-20240116; t=1716310112; c=relaxed/simple;
+	bh=E8BOJNK++jjLgmJ89gA61kWZv68lo6NhhwrOyF2N2p4=;
 	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=dw3SpExzn2XJjO7dwx/GPvqboD2NOOtxVKdjr4ju7IGiyeW+bp5uS4GKAr3/wEPaWL7AGNCmC2t5HlY2t44RIyoG24I7Zi72KDN3N7lXDE18cSwpf9llEGBfFQCtZY3LXbxVdZZJTNRFfS14zH+xsmYcLXdZdjjbKGAQBYe14BY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=gct6I5gK; arc=fail smtp.client-ip=40.107.14.89
+	 Content-Type:MIME-Version; b=Ao8eooDKPjLP/o9hU6ZwyH/+DXMAmWn+mtVg6X8j7r2hXPqY0kocK+Zv0hINpzPiFVCtl9G7/OJz/PLayfBRGu+8NPk2WZ2nwM47DAfuqrvCXQWNBvFB5RRiDsWvjtzqx7TJuM+DQSc5KFcrEUY2DE2GzMN2XtOQCw/KHnHswwY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=fStDuQRe; arc=fail smtp.client-ip=40.107.14.89
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="gct6I5gK"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="fStDuQRe"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mlHyQc/cJcQLDR9X3CYjGEYrp8ffjQQhl6qv9ZVOg/YwsrWoCmmzFYqA45zUx4cw/iIKWMk+V5VNyw/Z3RkIYVNfH2FdBAhHbKXuYPKX6o/oY2hHs+63woixjpruTiqCAOqNolEyGPVGb4Nc6ABtv2N5eOriWwcJMWyn+PraXTU9JLQnhbe/s1/+uDYIi0rN9LHD08tlaDs6T2CRAK1mjudNoyN0kNTpAlnMIjdNQky3fms5rH22PpzvSXRSxORH+xsEOyMcNFAwCBxLLRiYlIH3wPpWvojq+aPH1FV46rXgIgcG4z/PlEdhOyW6kv7KDXD4Kl4vh3XR876i7OKZcQ==
+ b=oPoZQ3ZMPl+5T5c5LIArjkc7/v3eRo81JE82xeUKLqrDp8rdASAPrQpO/PKdn8SsE5S8RP9JEHOABki73RxPpCh0kvE0s1vQo48LyONobAkdZq9pftIw2SqLxxpatdiwSQHV8kxgcPEH4+Pcwk1w+qUlUVT9kYMxrGweGmT9tC0Nm98ysNAppXVBZEGrMHK1MHsUpPy60d1KI5OmuDqSg6o9gl1ZEf+wrUvmrLjxXhxe7qSKenPa0x/CYlKnjhdO2rx2S7r/wUZYrYy6XxYsvuxWcbWA/V4e9U5fLCD41ZXqLIRdspP6rk0VWbtG8g1KKGJ3GNcSpj6Sun2+XEhvbg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=sLYM84uTb9Fj1rcLm2qA++W3kB86cvIyh9Z38Z0Xw4E=;
- b=CLEcjJmWZTwDmH3C9QgP+/zPG10oTeZe4Brgy8zKWpNu8wwipLcputVEPHJOgGCcC5FDWYgbnwMOOSyqi5MazvwkOLg5Ei4VLvnJwHI61P6DLyDfKbBCCrshF2+AprojgJBfZwae9OntgXAJfKfXRzo+bMUESj7B8jzhHQMPThVkoYO2VGTvRP8kPJANWoOV3pFSlVcbLpIOePdweJ21mM9Muk+jAcfGu4LaQflUt5IJFiyBNb6cvMr8cGDu89j/BCZFqfuIkjX+b8ZqZooENXykQ0v3YbTcrzvCr76V6EG0+5p2o1EIYaf03yQO9AAGJ9qXdfsecqzKxOvaaBn9eg==
+ bh=/haijsnM67SRE6W9kuqT8TA53zNwRuFfFVJ4t3IQxYk=;
+ b=K3MD2OvYHyFPUfvqUvq5UnFE6xnSlBMpSOvfH221Nw7JsquGMi1NJ7PyMbJjdI+Z6BBpCNYwO/kU4evYG3daromcb7Bua7fRg5I63Hk97uIpXJkme/Dwd6X75/MK61ybEXBB4VQXwBwnJnE99rSi5OOvJ5boCjdhawMvOIs44HESZCgZwmqqn/oe1J82BDSoKtTzvfebdhTJo3XTQj2k8dI+ckA5Scjw3yu5qY98Z4feN3xMnXK75yp/nUVreuX3HeAHvwOMlkOW9VD9lQw9PoABKUeo8Ggz990PnLHBlMUhzrfiV/883LTTkKql85MUatvSGHfouE/LekUgMLZwgg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=sLYM84uTb9Fj1rcLm2qA++W3kB86cvIyh9Z38Z0Xw4E=;
- b=gct6I5gKlpn54mMTHCSY2hWe81JKllkN+OCWcdANRw1oX49hbDTd13+yiJ/hiQ9CuyJ7vSj+ThWZRegHj65M2ebTjzGULB9ZEPgu9zLQg+T3F2mUGIWgGJwZWvC81Q1qClOSN0DR8lTywoqt8VJmUg5tfsKNehzseS7lCOGERcv4pDCSx/uJQTXaS1lVENO66Wuq+/Gxco/6Sncvkju/+PlfTK7oe9Bes1GCV7+5X2eaNdCQtUvoR0VNLjiBLdGRBgH1XhU4FvWZGDIjt3ONWMqGRYzHP9E8mAxhGf8Qp0soOW/ZSqqW6ZjQAm7/arl6SIZGXYmp5oZF0Hfl9BX5Kw==
+ bh=/haijsnM67SRE6W9kuqT8TA53zNwRuFfFVJ4t3IQxYk=;
+ b=fStDuQResOOsNXYvSAhF3gKitp59qSieNeDixbwqY36yUjlnsnWxIUliKKQLdTudkAqs5JzhAIurXc+9SHX3QE3f94Pl0U8XC2nVCINwRC1qNnAyjARHRXvrk34BpcWoGhgrBqYooAl3LwIb+olkD6n4dCJ8EfQPRQ6XtONPdSNGxnQUaiCN0cmORd5CYAb2ND6sOIYLBlOUUnEBSHK1qisE8hXp21LbxiZ1A2YS97O0QY2UwsuKYWCH6B7kH0ScZCG5oUGhVJn96dd/7MAXF6j9u1OeEmn2/ysWhKnaLNiaPB8zenv5cHi73B0T0CsmCDHMrzZjuHeydVaHEPnmLg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
  by DU2PR10MB7645.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:497::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7587.36; Tue, 21 May
- 2024 16:48:21 +0000
+ 2024 16:48:25 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408%7]) with mapi id 15.20.7587.035; Tue, 21 May 2024
- 16:48:21 +0000
-Message-ID: <98e0639c-0571-4a5d-8ab9-73863472ac48@siemens.com>
-Date: Tue, 21 May 2024 18:48:19 +0200
+ 16:48:25 +0000
+Message-ID: <01878c51-a76c-4170-bc18-51f631d0c938@siemens.com>
+Date: Tue, 21 May 2024 18:48:25 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/5] drivers/gpio: Add driver for BCM2711-based SoCs
+Subject: Re: [PATCH 2/5] testsuite/gpiobench: Toggle output pin in react mode
 To: Clara Kowalsky <clara.kowalsky@siemens.com>, xenomai@lists.linux.dev
 Cc: florian.bezdeka@siemens.com
 References: <20240416085911.62073-1-clara.kowalsky@siemens.com>
- <20240416085911.62073-2-clara.kowalsky@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
+ <20240416085911.62073-3-clara.kowalsky@siemens.com>
 Content-Language: en-US
-In-Reply-To: <20240416085911.62073-2-clara.kowalsky@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+In-Reply-To: <20240416085911.62073-3-clara.kowalsky@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 X-ClientProxiedBy: FR4P281CA0394.DEUP281.PROD.OUTLOOK.COM
@@ -66,177 +66,132 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DU2PR10MB7645:EE_
-X-MS-Office365-Filtering-Correlation-Id: 37f2bd71-cc48-4136-fa32-08dc79b5d2e8
+X-MS-Office365-Filtering-Correlation-Id: 55485ed9-9075-4903-080b-08dc79b5d568
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230031|376005|1800799015|366007;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?MnBLNExDbG1OeStyWlg3U3hMUW9CM0V5Z1hnOGliWlIrc3V2azdydlU4K3B1?=
- =?utf-8?B?T292Smt3aWlWRGhoNG53STNXTUpXN0tRcGUwUjB5QTI0L1lxeEFzNUtBUHNK?=
- =?utf-8?B?VXBGMU42TE92dk04TldJRG9ZbFpkSnNsZUo3U0w5cGZ6Vmx6UmI4RUZBTkd0?=
- =?utf-8?B?RDZBOFpleXhuNmVxUmpUQUI1dnVwaUdtUEl6V1R0VGdLcFJieUs3c2RQR2JT?=
- =?utf-8?B?SG0xV2xWWWNqT1JvRVd6UjY2SXBpTnNyR3R5bmh0MGQwZ0NJdjJtTUU3ckFt?=
- =?utf-8?B?TGQ1MEhtOEYySWx6b1Y3ZDJUQVJ0UWZZYXA1bTY2S0hoZWIzTjhmTVZ3Nk1v?=
- =?utf-8?B?Y2JQV0dubVdrUk9qRGw1SDJuYmE3b0ZIeXZzbW1UT0xWRXNSaE9wUkF1c1hN?=
- =?utf-8?B?dThwM3lQTjExR3p0U2RVcXhMTWluWk5kMThnNnhHYzBCaWxxbGx6SGpKeEhT?=
- =?utf-8?B?UFFBS2JJK040ak9jK25BdWxMSkRzQWVGSFBURkk0R3Z3RExERllBbG9rSEYr?=
- =?utf-8?B?TkFzT0RETXFCR0tBYVR6Z1ZiczRoUThWSUUvOTEyRTRrK0dMaUZFSVBUdkha?=
- =?utf-8?B?Y2ozZ1VkMElNQVNMc1FmaldnNFVPMnRKcXhhc0VGTFUxbFg2ejRYOVVaZnZs?=
- =?utf-8?B?aUdycXU0WGRwM3Rjd0xnWXpFTGc0WFhZL09TTlN4emlTQWJLNC94UHJheTVZ?=
- =?utf-8?B?eXhzVC9jcGZLQTVreGJMUHF0ODREcmFQenZpSkpVakNKQzdkcjN5eEt4YTl5?=
- =?utf-8?B?T04vTWdBakp6Ykx3R01xQndydFV6bCt4QW50aXMzc1NKWWxTckxoSzdYeDRl?=
- =?utf-8?B?WHQ2K1VNS0pyRlFrVjVwYVFreFdQMlNCL0FKZVd1WjQwRUwzZFlub0FRWm4y?=
- =?utf-8?B?YW5PUzJOcjJaN1R4KzJBV1hRcFRzZm9MUXkyWlE0ZGN6RkxhTEtFTWFoZkVD?=
- =?utf-8?B?QmppL2trb1Y5MUdDYVYrbjBhMlF3N3ZXdDdJaGFKSTF1QWNJeUQ1SHcyTWU1?=
- =?utf-8?B?b0d0M1MzSXkvQkZqRDlOWktJLzVaSXBodkV3UWtYNWhSd2V6bWZ1ZmJSbzZq?=
- =?utf-8?B?RkZBZW1zQlZhZ3FROFdvMWdmSGdDbEhoN3RDZWNWRmNsWWNmQkNlV3l5NW9n?=
- =?utf-8?B?SjlJQjdyU1BVN0xHbEY5cFlORDV4M1dodXk5MmNZWFFnc29QWWRBaVN4a01B?=
- =?utf-8?B?bEJaZkNNTWIxeTM1RHR5NUZCTnc1djU5Vmh5aWFhVkx5RW0xMFR2b2FISDJV?=
- =?utf-8?B?YVJLbzFhSE8waVBJdXF5c3M0Qm4rZGVYdS9mUzc2VVJudnQzdEsvWTNBRS9h?=
- =?utf-8?B?MkFEYTdyTllOeGtjVVA5ekhyTjZVSXh4QUthMzNTZE9kK1o5aXNyaUJBL2U5?=
- =?utf-8?B?MnVYV0NjTUNaSEFSY0djYlRHQ0tGT2NsYW1RY2d6akIrUUpTdk1hNWswZzFi?=
- =?utf-8?B?VDBDSlR1SURJa0VBaCt6djBpUlN6OHNSb2o3aUx6RnY1VE1DcnVGNTZoV1RH?=
- =?utf-8?B?MkdTMUNXS2Z1eWUyVlhmaDlMcVU1cEJiUzlCTnA2cDVnVms2Qnk1NmNpcGdn?=
- =?utf-8?B?M25WY0JTYTZjZHBaQ0VkY3NYRFFzOG5KdG5TcHJGdnJnME84UHFQaGV5NGJw?=
- =?utf-8?B?NVNDcmhSbjU4TnhpUzZLYzlvbGZOMVE9PQ==?=
+	=?utf-8?B?RnQ3N043UytreUpNTTlrMS92WkZnVmhsajlBdDVtcmh4aU9BK0NqWXJlSzJ3?=
+ =?utf-8?B?RzQ2UlQxQ1IrYk9yRFFpWTBFbEJwNTROeTFLVkptRHBRZThKS09iK0ljSTFy?=
+ =?utf-8?B?K0RNckRlTHdnalRsL3RqSmFUa0hERkszVE1raFl0b05YT2YxWWNNVUlIZHlY?=
+ =?utf-8?B?elkxdnhzSlNMbnMyeFlLRHJJRGJQV3hlUzBTUjI0SElmS0ZiMVhkQjVoMVBr?=
+ =?utf-8?B?bTdDRXVGdGlEV2tsODBqSEZVU3ZmZUlLci82bGx4UHJ1dHo2OGU5RzZ5cjhj?=
+ =?utf-8?B?dEZ1M1YwUVN4U2g4ZS9ibU9ENXZMZVVVUlNnazhzd25mWGpZMk43T1NTbEhi?=
+ =?utf-8?B?bkhaNngvcERJaEFTV3NmUkhZdUpKenpOVlcvWGlkdWNla0g3U2pxWWJIbGxZ?=
+ =?utf-8?B?cFRBSndKTElUV2kwaFdSQy9ZblV0eDlFQjhBalczcEpaZGxSVU9tOEV5ZXlL?=
+ =?utf-8?B?cDhVL01tUnBLOE5JREZmZ1RZMk0vRGxqbGJGL3ZNOGtOdGhFelRSVmhBajJI?=
+ =?utf-8?B?cHFBbEFBNFJ3S0U5Z2xNa0dSYzJkTkdqNWlDTCtMR3pkRkdWem9WUFFKck9S?=
+ =?utf-8?B?eE9WdEpjamFCR0wvcy9janVhZ3RzREhHcTR0WXcxdm9lTXM1U2dIdVdMMytm?=
+ =?utf-8?B?T092dTJ0SlNoZ3VxcnJnNkRJM3pvR3AyOFBKYVNGYWhkc0tHc0sweVBReDQ5?=
+ =?utf-8?B?aEtxUC8vNGZZL1dIVjBIQXgyV2F5V1UyZ2E4eXJxVWVGOGxiKzZIemVEYjhr?=
+ =?utf-8?B?RWx5R01YNTNhVkhqY1FxMncrNm1leFA4M3piYmxwWjFUU3lqRGRIbHZKbGls?=
+ =?utf-8?B?bG1kVGx1T0lMcVFxVDlXVzgySVlydklUSDhDdm5BR3FCVmd3V204N0xJdVA1?=
+ =?utf-8?B?djBlS3ZKMnlkRmNhVlo3azUxcUtwK0VvOE1COXdOQUNBREV0NzBINjdRUlEv?=
+ =?utf-8?B?aElFZmVyRkRyaE9MQnNIUVF3ZzZ3UEtQNkdMZ2NTL2lNNWRURDF3U29ETVda?=
+ =?utf-8?B?MU91a0x4cHhXalprK0JPWTgyM0NYazdyNUxDR1IxcThldktjNHVZNnAyUzhz?=
+ =?utf-8?B?R0c0WWlYb01hOFZzMVE0WDZtWlNtbkNEcGZMZXYrVHVnNDFxanVaaWd1RENa?=
+ =?utf-8?B?cGlkcDhDaG14dlhhOXNFYldhckk3ZnJMdG5vT3ZuM1FMVktTTTBMbE5sb3Vp?=
+ =?utf-8?B?NkVTM2w2dUg1dmt2dkxRcWlwSHRMOTErTjlMOUd5SzlscXk4di9PVHAvQ1hZ?=
+ =?utf-8?B?NDdhUHIzak5jbVlQcFdWb0t4RHc0eUFncTRpcVRwVm9yamhHcFVXNWNGOGNE?=
+ =?utf-8?B?bXZLQUU3MktkbTd1eG9UWVE2ODRDRXVUQ3V3UWM2ZUNsdG1PZFJjMUc0YUMy?=
+ =?utf-8?B?d0RFSENPYkI0cDZyaVdDQ0lOY3FtNXZCcUJKVVp6RDg1NUZZWFpxYnd6cVdU?=
+ =?utf-8?B?aG9lcjk5TVlRSWtGSlNERytKckN6ejJuWmVkdEVDU0FlU2Z2RWhpYUlNek9h?=
+ =?utf-8?B?Q2gybm1STEk5aVptanhRZWk0dnd6L1d6WnZEOXUzeXhhWERNblJSY2dNQmVq?=
+ =?utf-8?B?NXo2dGdvV0wzR2VLY0dOdmYvKzhSbFBsM05RUkxrUERVZmdaaEJwNTd6a0hp?=
+ =?utf-8?B?RUlWNUVpb01vU3ZVWndKSG9vZFB2aFBqL0VEYWtYakVodjM5L21QUGpBOVk2?=
+ =?utf-8?B?eENzWmZpa0g1dVd1S3JjUFF0cDhTSS9OdHE5ZzBibTZ2SFdwYm5hSXpRPT0=?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(376005)(1800799015)(366007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WlB1b09leExzQkJ1WjUwWFVWbzNjVmtZS2lESU9rSXp4c1VISUEvL2l6UXVv?=
- =?utf-8?B?S05YZHhRSVNIUGdJaTJ1MWtqYVNrWEcrU0xQSXBtQWpUdkZqQlIrMUVkWVBa?=
- =?utf-8?B?a1F6VkZRMllrTzhRWkV1bCtkOWxJS1ZNb0d5SGY5ZjZ4UzZ0T2ZHVEZsM09v?=
- =?utf-8?B?blBlNVdGWksyZmRSUzlBdUgzS1FacTBHK0lySkpuVVh2ZGYwakQ3Ull4Mk9Z?=
- =?utf-8?B?NjhESHd6TUFUdnRQL0JGYUVoa3NFTURmMC9Ia0VOU0hPa0szWUdRbEl4Y3FH?=
- =?utf-8?B?dzFteTExY3NWQ3dpNFhvRVRoRW9SRWhvMVVsY1AwQXpxK25BOFVaalNZREQ2?=
- =?utf-8?B?WnhCQytsTDJzRm52S2hDcjlyM0N2S1pmRFJxNm5sVGlJZU5UckR3ak0xSFU4?=
- =?utf-8?B?ZEQ2ajlFNlhJUkRqN3JXWmphdGI3TlJXTFZrTEN1dUVSWmxFTmdFOWNKWE8x?=
- =?utf-8?B?Y29wSklvWm05eVFLT1g0TG5BVW5iNnR2MlBKeTRnaVM2Q0FTclIrRzVQV0Fw?=
- =?utf-8?B?N3ZFeitJZkNTQ1lFMjV0eHRZYkxrSjBmR3Y0ZDZUMGRrTDNwTGZyTWlhbVdT?=
- =?utf-8?B?RzBxaktydEVCSHJOZEN3cHVwR1VPOGZoT045Mld5Y3Z6ZHkrWjQrMFFLMHY3?=
- =?utf-8?B?Ri9hRjdqK2FEWFJRR3hzSHNMNTFGZzlQTVlrekY3eWRoWEtGVVJvajZrNElJ?=
- =?utf-8?B?WS9veWs0TDUyZU1pczh3Wjh6T3NueEFES3hScWUrYkVCOFZxS2srWkYzTEVY?=
- =?utf-8?B?TGR3dlplZExiMDRtbmpxVVp5Ui8xRmJOL0NTcDV1RzVaMmZKeEp0RXdvb3hY?=
- =?utf-8?B?RmcxZXlTTTg5bUJISUlDQ2dhTnBoWEJ6bkViMUZFcVRkNzVIWnZoUlB4dXpp?=
- =?utf-8?B?TkltbTEvVS82YXUwV1NoL2c1cWVEV1ZCQnpEcG9IQS95SURRMUFTcEZ5SkJw?=
- =?utf-8?B?NTlVc3AvU1dLM0hmRzMzWHU5RXJLRlNTU28rSWpRZzV3cFIwUnAvZGFyVTJ2?=
- =?utf-8?B?TUsrUmhmTnp4OGNYVWZqZVJCRW1YMHVCa0h5c2hVMGJKem5qWkxCSDNGMThJ?=
- =?utf-8?B?SGxjc2NUMkROdU10RGFWUC9kUVRQWGVzUmREcnhFYk5OMnhyaFlYRC9hakFL?=
- =?utf-8?B?SW1IMW9Gd05qU2dJUzU1ODZpaVFqeXFMZWZ2di9ydEFlOCtNWDNWSXlwajdM?=
- =?utf-8?B?UHZUZDlLTytmSDJYK0t4WC81aGsweWNSOGlFUzF1eFdxSjVXRHdiWnh6L1ZL?=
- =?utf-8?B?MW5rZEdkZ3Z3NzNJRjRFY29NZmhzUUN1SURUTEZtMi96eVRCempQcTJkcklI?=
- =?utf-8?B?bk9WZWN2aUpxVUJvNFR0TnRJa1pYMFQ4cDB6d0kvc0VVNGdKWWxKN3lVOUVj?=
- =?utf-8?B?U0puYU5KVUxGWG01RXBuOTd2alJJRThiR2FEVk43SGozUzdnZHZUNlR5MVNJ?=
- =?utf-8?B?dStCSWQrSmYyNDZzMXRyREtvOXVxSC9lSGtKc0VZYkU0VTlYb2xwNzJ2a3Jq?=
- =?utf-8?B?WEJlSzl0T1NHTEU4N1p4Qml4V2o5bTJsMHVwSVlwRHdJRFR3NWJBTXljUWNt?=
- =?utf-8?B?NTl1Z2RmK01yN25sSEEyV0pGL0JOd0NLRTdaRE1FbjJ3YXpvRkY0OVVvamp5?=
- =?utf-8?B?Y0J1OXVEOGIzenI4anNncE1HTnV0S3dXNndDVUU1ZGkvQ3dCRFpTWlU0VXRh?=
- =?utf-8?B?NnpZRFJwa2tHakYweG80aHpGdlpsbG82KzkzUFBQRUxTZjlSbHdkYVRiZ1dT?=
- =?utf-8?B?b1FWeHY2WHE4bE85ZUxiSXM2Tmk5bk5lUWtOQkF6UVhnVEk5YkJhV0lwOE0x?=
- =?utf-8?B?SkJoOTMrWVg5OFNpTXdrTjRkdWI1eS9TUnhweWcvbkI4UkJxZkdFSE9PTjNG?=
- =?utf-8?B?d0FwbGZUakhjb2FBcjl2Y2IxWDRmTlpucDFlLzhsR3FsMktieThlLzJ3VVAw?=
- =?utf-8?B?c1ZvdUN0TXQxd2NPUFVqWjZ0akJQeVhMWTB1WU52VGpjNWlvV0d6QVJzWDZl?=
- =?utf-8?B?KzlITjlWeWtHaHBMUTcvVVpDR1hqaGxZaVd4MWlSUHJ6R2I4ZmlLcW52ZEUw?=
- =?utf-8?B?YU16L25SQjFsRTV3bVNpdUV3R05rSnlPYWhmMnljVG9zelhRVEtHZFI5WE5n?=
- =?utf-8?Q?iWbp4pmqFiL8KNKe6XKjSDsAj?=
+	=?utf-8?B?QjdLMFdvcWRKRnRDbmtub2F3cFJEd0xlL1ZQdkVJeVFrYjhQVmNlbEkwVFZG?=
+ =?utf-8?B?WldpbmhZSm1xcVpYckNXbG1qMHZrNU9JcWVXaXNLNTRTdEhZWndrb2dkdVRt?=
+ =?utf-8?B?L3F1RUcvbkNINlFFa2NZd1B0SUVCcFJ1K05WdWxIdWg2SzZHKzgwcU9ZYzdz?=
+ =?utf-8?B?RElnd2piN0ovSjB5QTErdjZsUDF2TDh1VVdmb0RQbk1MM1g4S2c1MmV5Wk5n?=
+ =?utf-8?B?bEo1bEh5bUFIM1ZoMGFKWXBjQ09BK1lGUER6TjlXV3JFSHcxd3VkYnNnSHNP?=
+ =?utf-8?B?eEx3MXFNSXh6R0ZqS2VjcHBHZE42OFEvNUxYQi9aeXBnbmhTNFVwTm1wT0JB?=
+ =?utf-8?B?enNQL0R1VVVjcWdkMTBtdmlYLzFiOW9lM29uTWxXL2VEMDZLUzFuY2paVWJ5?=
+ =?utf-8?B?cTdNTjYwSzZ1T2Y2dmVINzB5bTc4L0xpOXF6bVR4SjZEVEZPc2xpditEN3J5?=
+ =?utf-8?B?SGdiNlRXNU1rNThuV3pzRkU5K2FVVDdHNUZHeUhuWDdZekhkelRublJPakZQ?=
+ =?utf-8?B?RytXOExEWHR0dWlMUlE4eTl3dzBKc1pRQUNtQUhJTVlxMzErMkx0SHdtSGtz?=
+ =?utf-8?B?RWVFckJ0SGtDR3RvTHdhODA1QzU0SEM2L3FQVzlKd2I2MkNLdGVudDFiT0Ja?=
+ =?utf-8?B?MVNaaEFjTTRxd3BFTHczR1lqZngrTXZXRWRQN3c1STZzZi85TFpQd2h1SlRJ?=
+ =?utf-8?B?ZUcwR1pGYXZWN2w3aXVmVkhmRmY5dlUwM2pOQ2VPWHJ1QnRXdDU0aUxqTGRD?=
+ =?utf-8?B?eG9oUmlGTFJmV0oxUTNOVnRXZ2dFVGpDS0FmdEhFQi9hTEdQSDFMSE9wcncx?=
+ =?utf-8?B?RUpsNEhJWC9iUG5GcGcwbTlOV0QzT1pEYUhGWVdtdGZIaXE5cW8vUGp6MWRE?=
+ =?utf-8?B?ZnI1Q0thNEhkbGZMYUN4Y3JQcitrcGRnSXVLcG13dXRJMzhhbUZQNjJZM0JX?=
+ =?utf-8?B?L3h2VkZaVGszYXNIaCttM2hGcHJCTHdGZ2JEbjlZWWIwVHA1VkhHc1AzZEJ3?=
+ =?utf-8?B?cFF4MWMzSHFHTm5CS2IvSlBBWlNjWFZhWXlRKy96N1RVVVZrT1pVVTNRSGgw?=
+ =?utf-8?B?eS84dDdhckUrcUVJZFlXY25qa0VOZmk5RG5OcDhvc2VVeFdidmlwM3FxYlho?=
+ =?utf-8?B?a3kwTjJiUHBrTVZvWC9UWitqY1RoK3RpNDFWc3Q0UzVZRkwyQ2JRRUo5eEwx?=
+ =?utf-8?B?MzdsVjB4cFQyVWI5SFNCWjJaK05HV1ZFMlh3MGlPeHZTUzRoK2tMVnpnQlJC?=
+ =?utf-8?B?bGpERGtrVkplVzA5dUU4M3BNMFppSlE4OWZIbFRJYkREcng5Zlo1elRhQnI4?=
+ =?utf-8?B?RnE3UVlrUmlZOWtlSHFYZE96R2FtRUQrNDFUOU56Rll1ZER3UWs3TmdqdGR3?=
+ =?utf-8?B?OXJNaTV6eWJyamQzUC9ZQ1RmTHltNkNGTjQ4ODA2cHBNdXB3RW5MaFg0REgy?=
+ =?utf-8?B?V255ZFJIS2xRalJzdnlkaWZ6dlRINHNlYjNkTSt0ZlUwRFIvdklLVVdxaW1o?=
+ =?utf-8?B?QldhMTZ0TjF5Z0I0UzZDbDM0Qjk3dW55b09xUmN3OWVETjFRQ0Z1NC95RS9I?=
+ =?utf-8?B?REYvNmlyUkVDalZDYkFqL1ZWalVpOFl4d0lOYWV2TjNKMEdZdjhMd0pjcC9O?=
+ =?utf-8?B?clBBdFFSb3BRVnNTSDZKNmF3a0x4cTk2eGJybmRPcUVEeVZlYzRqdVh1SWRu?=
+ =?utf-8?B?VXh4K0svQlJYY2ZpUU5leFhyNUVzbXFCVzNhd21pS05FN1VJeUEzSndibTI2?=
+ =?utf-8?B?N0pPUVZNc1NvN1cyQjRZQ09BNGF3VUF6SHpBUk50dW9haXM5N3QzSjFlanN0?=
+ =?utf-8?B?YWRpdWhGRjR2VUZ1YTFIdmIwalA4RmoxZ1pzZHJFalNFOWVxaVA0Z2lqalJO?=
+ =?utf-8?B?QWZSbUJMbFI2T0tLWEU0bjBuSnJjZW1HRFRvYnJQL1BVSmtGYytGR2pHNnR5?=
+ =?utf-8?B?aTlHTUlLeUlaaS9JYktvSFI5VXEzTXVMbDVCWEowanhySzA4QnlRbjI3bHh1?=
+ =?utf-8?B?TkFNeTBKNlEzU1ZyaXlUZm9ENXJzUWVkNjlrM3JmVlJEbXFJbmhiVXhkLy9V?=
+ =?utf-8?B?UWNpUTlHSUEzd0NpcEhyUEVLeWMzM3hCVXM0dTJPYzlleXZUZk5SU2EybG9Z?=
+ =?utf-8?Q?sSGVWL6waa++l0vyuJj3cMwE5?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 37f2bd71-cc48-4136-fa32-08dc79b5d2e8
+X-MS-Exchange-CrossTenant-Network-Message-Id: 55485ed9-9075-4903-080b-08dc79b5d568
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2024 16:48:21.5353
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2024 16:48:25.6855
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8Q9OWmFduN6BFJ1c76psoH7n4KOeVy3KIyayoBZz1YyoGjdlpFpKxizSxiKwV1SJsEkHkIKKxTS9rFoLmz7X/g==
+X-MS-Exchange-CrossTenant-UserPrincipalName: JNbeKKrQAW9kwhG3Kni8Oci0/ifR2BJTflLT9gunHNJvRGg7ciyvjunLHqeIwaYKBj+qzWMneVo95q8IG0AACg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU2PR10MB7645
 
 On 16.04.24 10:59, Clara Kowalsky wrote:
-> Add support for BCM2711 pin control driver.
+> The gpiobench was tested with one device in loopback mode and another
+> device in react mode. The former sends an asynchronous event to the
+> react device by toggling its output pin. In this test state, however,
+> the react device always responds with a high signal on its output pin.
+> Yet the input pin of the loopback device is set to edge-triggered, which
+> is why the test hangs in read() on both sides after one loop.
 > 
+> For the test to work, the output pin of the react device must toggle
+> between high and low in order for the loopback device to successfully
+> read a change on the input pin.
+> 
+
+So, this is not a feature addition, it is actually a fix, right?
+
 > Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
 > ---
->  kernel/drivers/gpio/Kconfig        |  8 ++++++++
->  kernel/drivers/gpio/Makefile       |  2 ++
->  kernel/drivers/gpio/gpio-bcm2711.c | 27 +++++++++++++++++++++++++++
->  3 files changed, 37 insertions(+)
->  create mode 100644 kernel/drivers/gpio/gpio-bcm2711.c
+>  testsuite/gpiobench/gpiobench.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
 > 
-> diff --git a/kernel/drivers/gpio/Kconfig b/kernel/drivers/gpio/Kconfig
-> index c257444f0..bc9cbc5e9 100644
-> --- a/kernel/drivers/gpio/Kconfig
-> +++ b/kernel/drivers/gpio/Kconfig
-> @@ -17,6 +17,14 @@ config XENO_DRIVERS_GPIO_BCM2835
->  	Enables support for the GPIO controller available from
->  	Broadcom's BCM2835 SoC.
->  
-> +config XENO_DRIVERS_GPIO_BCM2711
-> +	depends on MACH_BCM2708 || ARCH_BCM2835
-> +	tristate "Support for BCM2711 GPIOs"
-> +	help
-> +
-> +	Enables support for the GPIO controller available from
-> +	Broadcom's BCM2711 SoC.
-> +
->  config XENO_DRIVERS_GPIO_MXC
->  	depends on GPIO_MXC
->  	tristate "Support for MXC GPIOs"
-> diff --git a/kernel/drivers/gpio/Makefile b/kernel/drivers/gpio/Makefile
-> index e534eab93..89337e3f3 100644
-> --- a/kernel/drivers/gpio/Makefile
-> +++ b/kernel/drivers/gpio/Makefile
-> @@ -1,6 +1,7 @@
->  ccflags-$(CONFIG_XENO_DRIVERS_GPIO_DEBUG) := -DDEBUG
->  
->  obj-$(CONFIG_XENO_DRIVERS_GPIO_BCM2835) += xeno-gpio-bcm2835.o
-> +obj-$(CONFIG_XENO_DRIVERS_GPIO_BCM2711) += xeno-gpio-bcm2711.o
->  obj-$(CONFIG_XENO_DRIVERS_GPIO_MXC) += xeno-gpio-mxc.o
->  obj-$(CONFIG_XENO_DRIVERS_GPIO_SUN8I_H3) += xeno-gpio-sun8i-h3.o
->  obj-$(CONFIG_XENO_DRIVERS_GPIO_ZYNQ7000) += xeno-gpio-zynq7000.o
-> @@ -10,6 +11,7 @@ obj-$(CONFIG_XENO_DRIVERS_GPIO_CHERRYVIEW) += xeno-gpio-cherryview.o
->  obj-$(CONFIG_XENO_DRIVERS_GPIO) += gpio-core.o
->  
->  xeno-gpio-bcm2835-y := gpio-bcm2835.o
-> +xeno-gpio-bcm2711-y := gpio-bcm2711.o
->  xeno-gpio-mxc-y := gpio-mxc.o
->  xeno-gpio-sun8i-h3-y := gpio-sun8i-h3.o
->  xeno-gpio-zynq7000-y := gpio-zynq7000.o
-> diff --git a/kernel/drivers/gpio/gpio-bcm2711.c b/kernel/drivers/gpio/gpio-bcm2711.c
-> new file mode 100644
-> index 000000000..a861def27
-> --- /dev/null
-> +++ b/kernel/drivers/gpio/gpio-bcm2711.c
-> @@ -0,0 +1,27 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (c) Siemens AG 2024
-> + *
-> + * Authors:
-> + *  Clara Kowalsky <clara.kowalsky@siemens.com>
-> + */
-> +#include <linux/module.h>
-> +#include <rtdm/gpio.h>
-> +
-> +#define RTDM_SUBCLASS_BCM2711  1
-> +
-> +static int __init bcm2711_gpio_init(void)
-> +{
-> +	return rtdm_gpiochip_scan_of(NULL, "brcm,bcm2711-gpio",
-> +				     RTDM_SUBCLASS_BCM2711);
-> +}
-> +module_init(bcm2711_gpio_init);
-> +
-> +static void __exit bcm2711_gpio_exit(void)
-> +{
-> +	rtdm_gpiochip_remove_by_type(RTDM_SUBCLASS_BCM2711);
-> +}
-> +module_exit(bcm2711_gpio_exit);
-> +
-> +MODULE_LICENSE("GPL");
-> +
+> diff --git a/testsuite/gpiobench/gpiobench.c b/testsuite/gpiobench/gpiobench.c
+> index 04c694639..707f35ae9 100644
+> --- a/testsuite/gpiobench/gpiobench.c
+> +++ b/testsuite/gpiobench/gpiobench.c
+> @@ -424,7 +424,11 @@ static void *run_gpiobench_react(void *cookie)
+>  		 * latency box will measure the time elapsed
+>  		 * between the two events
+>  		 */
+> -		value = GPIO_HIGH;
+> +		if((i & 1) == 0)
+                 ^^
+style ("if" is not a function)
 
-Thanks, looks good - but can we also make sure it is built in gitlab-ci
-(https://source.denx.de/Xenomai/xenomai/-/blob/a34701b78e07c9157c10a888c53381b1621c7a87/.gitlab-ci.yml#L166)?
+> +			value = GPIO_HIGH;
+> +		else
+> +			value = GPIO_LOW;
+> +
+>  		ret = write(ti.fd_dev_out, &value, sizeof(value));
+>  		if (ret < 0) {
+>  			printf("RW GPIO write, failed\n");
 
 Jan
 
