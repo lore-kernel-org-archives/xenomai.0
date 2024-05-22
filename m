@@ -1,88 +1,102 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D835513A3F2
-	for <xenomai@lists.linux.dev>; Wed, 22 May 2024 15:34:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAB76139B
+	for <xenomai@lists.linux.dev>; Wed, 22 May 2024 16:05:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.201.40.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716392088; cv=none; b=hifUSTJn8rviGLOs7F2Z3YvqcgYev8A1STsXoVBkeylR/JSckufw1ZCi0fVsEetH4frsqS6qlq4wRhJAZ6Lh+DLpBhz7AcuFqTnJZpjDYoRihOa9NFSRPsENjGqt+9mHXfijKYm4lidkOFDfTPWtbfP3dJgt220C79QEBSbpM6g=
+	t=1716393939; cv=none; b=e4bN7CkiBTqp8wCCsaCPuVBzaUhTT4ujgytHeAas1dPwoh++VnW/59p+8wwzqBvS8I1zdxuBFZASwghOtrOnXr7VQIMxJApTRocEEdx5zcxeoWbNj2VZ3dcetOV7MN5xCOlAuHDD/hAJBPnLd/x8D74V6f5EbvhG85kTT8izBRQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716392088; c=relaxed/simple;
-	bh=l2Slf3NIm5mnAaYLscPjlxE6UTdroQxRj+dQnYfGwVI=;
-	h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
-	 MIME-Version:Content-Type; b=kJiZ6lto9Ogplsq21fKinZRIb9ZOP6rbEXNoU/UkYS0vJumnj4yZkfJ11ViyIXcIFo+DCAuX1winhstiuLbUS9fFC1byRbNC7k5Jc2pcwY7TTJcRSS9tloyIToCzFPyrLDaWNQGBO7m1m3/2kC6ncV4ar2iw9ueMbeGDVwMzt5o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-354e0cc9c5cso618989f8f.0
-        for <xenomai@lists.linux.dev>; Wed, 22 May 2024 08:34:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716392084; x=1716996884;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5YGrLY2QNzN47bLYWrwfIVc/7+YIq/imXxAnaVXrVXU=;
-        b=mUW7XAT1b4EtbTi5H969oG2N+TadgYbxoge8QBD02N3SPS1iVqsm5int5t1E9HzqF2
-         crNqZtBt5IAaivrdimMytAXKtKq6PjLPh67rZapghvJ2+gJqdfJQHnDXkqpZU9EK8u9g
-         ADmJYXc9xHLLf9SpHav5FIUzTUOZKuHOQApZ7vwtt7geAwODJiWacneIWUUhVNxKN+6l
-         4gOGdRSjjNIYxSCjqo0GzVoch7qtBu3S+3ncMk19tSK10rhZ782h4b716m9oBabVqbOV
-         NaMjwtQmUTYuB2q0BrI/gSixojSn0FtrjQMiyHWceTsLQ6gA3yqF6UZ/7IiCB4LAEXkT
-         uT9A==
-X-Gm-Message-State: AOJu0Yy7554cLcRpTXcl/jytVFN2/WXQhViFnlXSoi8ALUQM9QjX2Hij
-	Wgm0UzlWbNdlIlecXWEpAN3ioAPzudHvA70GjOagaWTUnpP21YotxP67bQ==
-X-Google-Smtp-Source: AGHT+IFx+dXVEOttI0MpSBkKERINKyawacXajDM0ZbDIjbywevWwF7WIle6laEBvCkOWE2yJrffX6Q==
-X-Received: by 2002:adf:f4cd:0:b0:345:bcd4:bc99 with SMTP id ffacd0b85a97d-354d8cc8f64mr1906922f8f.11.1716392084170;
-        Wed, 22 May 2024 08:34:44 -0700 (PDT)
-Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-351b79e8e6bsm26912144f8f.65.2024.05.22.08.34.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 May 2024 08:34:43 -0700 (PDT)
-References: <PH0PR11MB59493E21636F9CA955E2DE8BF4EE2@PH0PR11MB5949.namprd11.prod.outlook.com>
- <87wmnmq8v9.fsf@xenomai.org>
- <PH0PR11MB59491C18ADB51F5FEAEF4B3FF4EB2@PH0PR11MB5949.namprd11.prod.outlook.com>
- <PH0PR11MB59490B50D2D2717B8155EFCDF4EB2@PH0PR11MB5949.namprd11.prod.outlook.com>
-User-agent: mu4e 1.10.5; emacs 29.3
-From: Philippe Gerum <rpm@xenomai.org>
-To: "Nechita, Ionut" <ionut.nechita@intel.com>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: Re: WARN Kernel v6.9-evl-rebase - EVL: invalid out-of-band syscall
- <0x43564d41> - Firefox browser
-Date: Wed, 22 May 2024 17:30:52 +0200
-In-reply-to: <PH0PR11MB59490B50D2D2717B8155EFCDF4EB2@PH0PR11MB5949.namprd11.prod.outlook.com>
-Message-ID: <87h6eprhbg.fsf@xenomai.org>
+	s=arc-20240116; t=1716393939; c=relaxed/simple;
+	bh=rc0H+rYBEBGuXMfViZ6Gv+wRn1NStdbwvDtv8EfSxpI=;
+	h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:
+	 MIME-Version:Content-Type; b=NnkEVDzpgb1OrDsnU25mKmGSrcs1tVaAVTFH6BPbvF8bQwzfZWtnvRLLPwtPMswKiDhYtp3RZprp391SbO28be3CC9o4Ql5bpsKsWQ9LLrujEfcguiHSimgVTRpXJ3hnbLJaMUpccH/9BL3OiwYph12HnzYMHOPsyT4s5Z65kV4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at; spf=fail smtp.mailfrom=nod.at; arc=none smtp.client-ip=195.201.40.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
+Received: from localhost (localhost [127.0.0.1])
+	by lithops.sigma-star.at (Postfix) with ESMTP id 73A19606BA2D;
+	Wed, 22 May 2024 18:05:33 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+	with ESMTP id HRHn-V7-nUes; Wed, 22 May 2024 18:05:33 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by lithops.sigma-star.at (Postfix) with ESMTP id 145FA6195FFF;
+	Wed, 22 May 2024 18:05:33 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id lDaTdi3oANDd; Wed, 22 May 2024 18:05:32 +0200 (CEST)
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+	by lithops.sigma-star.at (Postfix) with ESMTP id EC2A16195FD0;
+	Wed, 22 May 2024 18:05:32 +0200 (CEST)
+Date: Wed, 22 May 2024 18:05:32 +0200 (CEST)
+From: Richard Weinberger <richard@nod.at>
+To: xenomai <xenomai@lists.linux.dev>
+Cc: Daniel Bristot de Oliveira <bristot@kernel.org>
+Message-ID: <843802480.134113.1716393932934.JavaMail.zimbra@nod.at>
+In-Reply-To: <14c584dd-2847-40c3-a9c8-d38c38dae98a@kernel.org>
+References: <1716387954-19178-mlmmj-572dc488@lists.linux.dev> <14c584dd-2847-40c3-a9c8-d38c38dae98a@kernel.org>
+Subject: Fwd: [CPF] Real-time Micro-conference at LPC
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
+Thread-Topic: Real-time Micro-conference at LPC
+Thread-Index: Er3nUa6ANimdxRdBiOkam+PxFm6Bfg==
 
-
-"Nechita, Ionut" <ionut.nechita@intel.com> writes:
-
-> Hi Philippe,
->
-> I tested today with your change:
->
-> git diff
-> diff --git a/kernel/evl/syscall.c b/kernel/evl/syscall.c
-> index c2a3f13ebe37..1d02b9d6dd38 100644
-> --- a/kernel/evl/syscall.c
-> +++ b/kernel/evl/syscall.c
-> @@ -269,6 +269,7 @@ static int do_oob_syscall(struct irq_stage *stage, struct pt_regs *regs,
->
->         nr &= ~__OOB_SYSCALL_BIT;
->         if (nr >= NR_EVL_SYSCALLS) {
-> +               WARN_ON_ONCE(1);
->                 printk(EVL_WARNING "invalid out-of-band syscall <%#x>\n", nr);
->                 goto bad_syscall;
->         }
->
-> But this is not working properly.
->
-
-Please, double-check that you are actually testing the right kernel.
-
--- 
-Philippe.
+----- Weitergeleitete Mail -----
+> Von: "Daniel Bristot de Oliveira" <bristot@kernel.org>
+> The real-time community around Linux has been responsible for
+> important changes in the kernel over the last few decades.
+> Preemptive mode, high-resolution timers, threaded IRQs,
+> sleeping locks, tracing, deadline scheduling and formal
+> tracing analysis are integral parts of the kernel rooted
+> in real-time efforts, mainly from the PREEMPT_RT patch set.
+> The real-time and low-latency properties of Linux has
+> enabled a series of modern use cases, like low-latency
+> network communication with NFV and the use of Linux in
+> safety-critical systems.
+> 
+> This MC is the space for the community to discuss the advances of
+> Linux in real-time and low latency features. For example
+> (but not limited to):
+> 
+> - Bits left for the PREEMPT_RT merge
+> - Advances in the fully preemptive mode
+> - CPU isolation (mainly about how to make it dynamic)
+> - Tools for PREEMPT_RT and low latency analysis
+> - Tools for detecting non-optimal usages of the PREEMPT_RT
+> - Improvement on locks non-protected for priority inversion
+> - General improvements for locking
+> - General improvements for scheduling
+> - Other RT operating systems that run in parallel
+>   with Linux and the integration with Linux (e.g., Xenomai).
+> - Real-time virtualization
+> 
+> Examples of topics that the community discussed over the
+> last years that made progress in the RT MC:
+> 
+> - timerlat/osnoise tracers and RTLA
+> - DL server for starvation avoidance
+> - Proxy execution (still under discussion)
+> - Tracing improvements - for example, to trace IPIs
+> 
+> It is important to notice that it is not _only_ about PREEMPT_RT,
+> but anything related to real-time and low latency. For instance,
+> CPU isolation, real-time scheduling, timers, other OSs that
+> run in parallel... and so on.
+> 
+> Join us to discuss the future of real-time and low-latency Linux.
+> 
+> This email has a list of people in Bcc, based on a list of
+> commit authors in sched/locking/power/time. It is far from being
+> complete. So, please forward this message to the people on
+> your team working on scheduling-related topics.
+> 
+> -- Daniel on behalf the organization: Sebastian Andrzej Siewior, Frederic
+> Weisbecker, Steven Rostedt, Juri Lelli and myself.
