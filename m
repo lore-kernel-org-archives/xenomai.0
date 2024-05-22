@@ -1,94 +1,84 @@
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com [209.85.215.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F15A1CD13
-	for <xenomai@lists.linux.dev>; Wed, 22 May 2024 06:43:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.201.40.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C776A18C3D
+	for <xenomai@lists.linux.dev>; Wed, 22 May 2024 06:53:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716360206; cv=none; b=QF5IsQ88Qlh8ZXVhJrF2iJxAPKvtT90tcD9r/7UWu3ML8PBzY+m9xO1l9B5jy7p1R6gJLuViB2Hfkf6qmBeuP+Fpbg51wTkvjjJ/AIiGLbZW8NVWO0uhqY7JIGkeWbWGpYU3m6O/ZrZ2XEHCEZmPvGqfdkjep1YFq4OQE3PKn40=
+	t=1716360803; cv=none; b=FkEDg2th5UPUq2uHCvDQFCb+s+he+evfF5H86G2+gefWyQqNF97Vijo1xvvZXLIR5faOW+WwE7tvhNGjjLeaEYX/IC+2gVRm+6VDANGqakevkaR06r7UF2kh7g2QApcse54+f3xWU7DAygl3Uz/B4U8fS/O1BNF7lAQ/oZCsV0o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716360206; c=relaxed/simple;
-	bh=fpYdA7tad0tTgX3s1lR4HLre7Tyx4RvKmED+gMqYTi8=;
-	h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:
-	 MIME-Version:Content-Type; b=ucaI5HseuSFUvgVOVqLlhmyCukjD263RMD7JXyyYT0O9C/3xIoJUcVc338HPYluwCv5OgcZUgcM7nmlj3zj8X7p8gbGlzxH12L43giTfPLaPHrVyZWbeE/R5p6CKxcjxP8TOvAqT/pV1xZGUIqQo2xyNxl4xkQwcHhrpYOx8ACM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at; spf=fail smtp.mailfrom=nod.at; arc=none smtp.client-ip=195.201.40.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 309286195FFE;
-	Wed, 22 May 2024 08:43:15 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-	with ESMTP id klX29m61CBwM; Wed, 22 May 2024 08:43:14 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id C03836093341;
-	Wed, 22 May 2024 08:43:14 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id CVjYRAg_qd9Q; Wed, 22 May 2024 08:43:14 +0200 (CEST)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-	by lithops.sigma-star.at (Postfix) with ESMTP id A31916195FCA;
-	Wed, 22 May 2024 08:43:14 +0200 (CEST)
-Date: Wed, 22 May 2024 08:43:14 +0200 (CEST)
-From: Richard Weinberger <richard@nod.at>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@lists.linux.dev>
-Message-ID: <1792993044.132105.1716360194595.JavaMail.zimbra@nod.at>
-In-Reply-To: <ba5e0fc8-e2fa-4495-9cf2-69f0ed2d1621@siemens.com>
-References: <20240518112703.30713-1-richard@nod.at> <ba5e0fc8-e2fa-4495-9cf2-69f0ed2d1621@siemens.com>
-Subject: Re: [PATCH] [RFC] prepare-kernel.sh: Add reverse mode
+	s=arc-20240116; t=1716360803; c=relaxed/simple;
+	bh=SiZpswon9lbff3uO8sepybDZmdRXLoGnEGuS8fpi9HM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=gJzQamrA2K5yPHEpC7iQRUamFaPk35up7g4Ni85DfP8hTyWLTQEPxNuNRazmE/pjFmglzjQpnW/ifGuLCRLJX6SSpPU3BUR9Q4z0knjBe9FdyTjeUBcFHNB+MThcKF9ad88Fo3jPLq7jj93yK3bMBpqyqTf5r1hmsTm6Cd++fGE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ifrhQofJ; arc=none smtp.client-ip=209.85.215.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ifrhQofJ"
+Received: by mail-pg1-f179.google.com with SMTP id 41be03b00d2f7-66986f58b43so458268a12.0
+        for <xenomai@lists.linux.dev>; Tue, 21 May 2024 23:53:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1716360801; x=1716965601; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=SiZpswon9lbff3uO8sepybDZmdRXLoGnEGuS8fpi9HM=;
+        b=ifrhQofJInQfOeMOoh/xSgMu6BnfHKrnH/7wdOkcZ96H+JKHS84L/rMhZ4QmT8sfet
+         g3FccEj6caicAAryGuXTinRDPLoei88tsVM5bNDeW2LGvR4c6qcOaLPx8KJ3S2xOvHSA
+         GR8/8al1PUlYNo9+1u0I8Rg+46+CTpTw2UA+fToZJQdkeUWYuZWAm/F5aM1uAhxyuGYB
+         cgE4QG4K0NoQIeVjPYPSggH5VpEyoJh2WG6QxBZLre/q4hDbbMFS5I01wMPflEZvtF+l
+         fYLivGNB5LS5mMEQycPvZbbdOLvn98NYUuciZIvOGFVWI20gy5ME99PMjTeiW0YDQals
+         UO9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716360801; x=1716965601;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SiZpswon9lbff3uO8sepybDZmdRXLoGnEGuS8fpi9HM=;
+        b=Kt6yMLfwz8AyRePxv6u7eiOR7RhRBVUp7KCbtv6Id6kl4fFVjWxhCOGE1ZxptY0PFs
+         A61tX/IFDMKykUMlzoCx+OobuJDUJF2Ug+885gjCGUwOSEeClotcjG4VVPRdA1Mo/Nyx
+         OH7VN0PAHUKsT2vYeOexEGThCDyHtifykIOPvH2JqY4bZSQdferDKZ8IBuK2DMKtLxA0
+         oxTyy+ik5xprPf3n/Qinw1nQNLKQp1xj7tDFAYnn7XM9h/DQOd7XYYj+hgia1IwlOegg
+         DCtDiP/XfkbZ6s29ZsdAPj6v59T1jZ2VeGgGdtBFtCz8G/KjpwjbHD1/6M64kumrEmnV
+         HFpQ==
+X-Gm-Message-State: AOJu0YyGr6j3BTeKWQYhrIMrPKxZfmwuzZWjCtjfN7Q8i0xBhtPkqp/I
+	KnOGXkf+5bJQJCc4n/YoPynFUzM/IcUfugCOi99AewEm6kD/4kN1tofhfeEgvLbfWzUPteYFkPb
+	QRUVc1TK916ampfDSaVjjAWuyNscicnkG
+X-Google-Smtp-Source: AGHT+IGhuNwlfXyCtoytttgwh1Kcmf7hSuIPczLlQ5et9ScH7+SpkaLR3CHROE85LXWPIN/CBVApHbfYKeZYxVFU6JY=
+X-Received: by 2002:a17:90b:68b:b0:2b6:208c:2aee with SMTP id
+ 98e67ed59e1d1-2bd9f604d7cmr1849056a91.20.1716360801021; Tue, 21 May 2024
+ 23:53:21 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+References: <5b789e4b-5375-47fe-a49e-f48fba026250@siemens.com>
+In-Reply-To: <5b789e4b-5375-47fe-a49e-f48fba026250@siemens.com>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Wed, 22 May 2024 08:53:08 +0200
+Message-ID: <CAFLxGvxHA6fOAHs7kzs1i8stS81q68rzq4xGqbtP8NC6Q4UdDA@mail.gmail.com>
+Subject: Re: [PATCH] drivers/spi: Avoid legacy functions and types
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
-Thread-Topic: prepare-kernel.sh: Add reverse mode
-Thread-Index: Grmkx5+zAYeKbDR8nQrtlO8dPs6mhg==
 
------ Urspr=C3=BCngliche Mail -----
-> Von: "Jan Kiszka" <jan.kiszka@siemens.com>
-> Indention is inconsistent - to the degree the existing one of
-> tabs+spaces in the script is considered consistent.
+On Wed, May 22, 2024 at 8:00=E2=80=AFAM Jan Kiszka <jan.kiszka@siemens.com>=
+ wrote:
+>
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+>
+> Those have been dropped with 6.9, but we already have them since 4.13,
+> thus before our current oldest supported kernel.
 
-Yeah, the whole script is a mess wrt. indention.
-I have prepared a patch which converts the whole thing to tabs.
->> +if test x$reverse =3D x1; then
->> +    if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$linux_arch/Makefile; =
-then
->=20
-> Won't linux_arch soon be a list of archs?
+Are the supported kernel versions somewhere available?
+scripts/prepare-kernel.sh should check them too.
+Currently it tests only whether the target kernel is version 2.* and
+aborts if so.
 
-Yes.
-
-In my WIP branch I have glued everything together.
-https://gitlab.com/Xenomai/xenomai-hacker-space/-/commits/rw/prepare_rework=
-/?ref_type=3Dheads
-
-> I like this as it obsoletes my local script :). Just minor notes, and
-> please make sure it goes will with the any-arch patching extension.
-
-Sure. Beside of other fixes I've managed also to get rid of /bin/bash and
-changed the script to POSIX shell.
-shellcheck is now happy up to warning level.
-Info level still gives tons of suggestions I have to review.
-
-Beside of that, what's do you think about the --filterkvers, --filterarch, =
---default and --forcelink
-switches?
-IMHO we can drop them. I don't see much use in them except of adding comple=
-xity.
-
-Same for --dovetail, since no release patches are made anymore.
-
-Also, do we really need interactivity?
-Currently the script can ask the user for the paths to Linux and the doveta=
-il patch.
-IMHO everything should be controlled by command line switches, no script ch=
-itchat needed.
-
+--=20
 Thanks,
 //richard
