@@ -1,68 +1,53 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99FD313D246
-	for <xenomai@lists.linux.dev>; Thu, 23 May 2024 08:46:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.2])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6EF6814A4D0
+	for <xenomai@lists.linux.dev>; Thu, 23 May 2024 11:33:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.2
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716454020; cv=none; b=MuqOEuCzTGNq+Ti/+NlrwGqtR+v1Q4tKWgKxiUr47/QZkcqfT94bVoFKz/3ultDdwHY7GPrLaC/nKWdfa+qaCqyW4PV0cfbOwuz6/cL4MVv3bl2Zg94VmqJiArXfk1Sx2VDYxWammCgtMv18ik2rnHHUkrKr3LAFVAZQtkBnOj8=
+	t=1716464005; cv=none; b=TV0SjZkyIPjoqXcWse+PThw62JvV6UyW71XTbrmmJAhUGQcaNqhovuPeyBzakRJ4A6wbqO7ot4eETl0Luh430iln3qd0mi97DYa19aEUQnUEAgWhdLxyiggxVmLd7koWJUUASkKAepxdkQwheQTUD9C7oGKwO2WFU8zveO9ET7c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716454020; c=relaxed/simple;
-	bh=b2Pi8t1Or9vKzNUwEuvuVWNvi24qcosE+pAs4nCkrZA=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=t5YlzmY2Lf/MXbDlMnDj0JUbIFCq/3yGEXyoapHqtsWFWbDwDEMjHNepif35kJ6VMHmXCU4b0BQk4cGLYBEKVgDzMQtIG9TQZB4MdJav365Fhv9xX7Zo+hvZNmUQtKvTWuQvRT9m3ZnhZ1EOfHfof+SeYXIlJkZkGAEDC8LQEHk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=pRRM7t29; arc=none smtp.client-ip=185.136.65.225
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1716464005; c=relaxed/simple;
+	bh=tcr5SI3OGOLduM6aHCq9jUgLZN3oYD4MxYrwNvMQp0E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dsvpqLxDiPOOetup22pR4JL0Y2jN2pn85Y4bLAolQTpMfhzTQFrJFzQSmAyVZWBMPXv7POpQNWfjz3kai8gJoW4H6TAXDFpYpOEucO8NhKs0YlAqfG8G71ld2Q0eSsoNWbwETYV5zXB8SddISxaxlaZyNNViUy0/bDxB0aXk0eY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=NI8/hjM8; arc=none smtp.client-ip=117.135.210.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="pRRM7t29"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20240523084645a7f0cc8286e2c5ee14
-        for <xenomai@lists.linux.dev>;
-        Thu, 23 May 2024 10:46:46 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=b2Pi8t1Or9vKzNUwEuvuVWNvi24qcosE+pAs4nCkrZA=;
- b=pRRM7t29RfyH6YPWesie+uV+CXWRDq9TrhovXxWTas7w3dbdQLk5qc1G3rRMTfXaKjerY9
- +SMr7pzXSTuCgpJpP3F7H7s3UPeA7MZEMJBKoSl/2YtFog4ct1q3TjCP1TooFJaRutJ3TZZ+
- Fxi3IVO8Cn4KnGWrGnAqrAv6aiZCA=;
-Message-ID: <82b54361348112dc220d25db6c12f284898ddd2d.camel@siemens.com>
-Subject: Re: [PATCH 2/3] rpi4: Add rpi4 (Raspberry Pi 4) as target platform
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: "Jiang, Yi (T CED OES-DE)" <yi.jiang@siemens.com>, "Kiszka, Jan (T CED)"
- <jan.kiszka@siemens.com>, "xenomai@lists.linux.dev"
- <xenomai@lists.linux.dev>
-Date: Thu, 23 May 2024 10:46:44 +0200
-In-Reply-To: <92eb843ac00112e48b460f6b87e4c615dc8fb943.camel@siemens.com>
-References: <20240521134841.21749-1-yi.jiang@siemens.com>
-	 <20240521134841.21749-2-yi.jiang@siemens.com>
-	 <81ab4ff0-6eff-4944-83fe-336c965b9ed3@siemens.com>
-	 <dafbc406f9f93c4a77d3e95fcd5f5d8fa2f792c5.camel@siemens.com>
-	 <92eb843ac00112e48b460f6b87e4c615dc8fb943.camel@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="NI8/hjM8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Date:From:Subject:Message-ID:MIME-Version:
+	Content-Type; bh=tcr5SI3OGOLduM6aHCq9jUgLZN3oYD4MxYrwNvMQp0E=;
+	b=NI8/hjM88CIUp+sX/jqeUeQ1LJRf6XuAHLwt9t7/2loMZdO+tvXnRZBHU9/yrz
+	MAUTzxB6Nj03SoQ+Hx6XbkHySql6fChDqAbR/IQin3ho1Q9Y+RychwQ835msXklg
+	RMbq/aJAMLAgs/7bSzfS3khsYdjXjS/wK+RDDehC2V9HA=
+Received: from localhost (unknown [106.39.130.120])
+	by gzga-smtp-mta-g3-5 (Coremail) with SMTP id _____wDXvwR4KU9mLBWRFg--.27773S2;
+	Thu, 23 May 2024 19:33:13 +0800 (CST)
+Date: Thu, 23 May 2024 11:33:12 +0000
+From: JiajunDu <wonderboy512@163.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: 87ed9urpex.fsf@xenomai.org, xenomai@lists.linux.dev
+Subject: Re: A problem regarding SMP
+Message-ID: <Zk8peHJbgRay+Ya/@2956c958a175>
+References: <Zk68Q+2tgdwEkcS9@2956c958a175>
+ <87r0dtrmbe.fsf@xenomai.org>
+ <87msohrm1a.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <87msohrm1a.fsf@xenomai.org>
+X-CM-TRANSID:_____wDXvwR4KU9mLBWRFg--.27773S2
+X-Coremail-Antispam: 1Uf129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+	VFW2AGmfu7bjvjm3AaLaJ3UbIYCTnIWIevJa73UjIFyTuYvjTRqtCwUUUUU
+X-CM-SenderInfo: xzrqvv5uer5kirs6il2tof0z/xtbBFR7nG2XAlkHsZgAAsP
 
-On Wed, 2024-05-22 at 12:35 +0000, Jiang, Yi (T CED OES-DE) wrote:
-> > Confused.
-> >=20
-> > - My original patch did not touch the arm64 defconfig.
-> > =C2=A0 So I'm still listed as author ("From:" inside the body) but the
-> > patch
-> > =C2=A0 content is different.
-> >=20
->=20
-> Yes, we do not need to keep rpi4.cfg any more, because the original
-> content of rpi4.cfg has been merged to arm64_defconfig.
+Ok, thanks for your reply. Now I understand.
 
-If that really works (especially for the older ipipe kernels for
-tersting xenomai stable branches) the patch needs some reworking.
+Best regards,
+Jiajun
 
-Florian
