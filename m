@@ -1,74 +1,107 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1FC93B29D
-	for <xenomai@lists.linux.dev>; Thu, 23 May 2024 07:32:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B16B13CF9C
+	for <xenomai@lists.linux.dev>; Thu, 23 May 2024 07:59:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716449567; cv=none; b=tTfgCRubjgPZqJcve+FsbJNtQ1NDGmq16SrqIUmpl0KlGJdNjodC2Y+4fTm48lH34wIe6aRbKsiCFeg0P8NA/Z4ebdw/P9YZwIZcXmb7RYscCtNCzvpBXUxvmBRDr6sRVbyTPyXsPbeWGtGJIMWj0sc07tEpx3Zn6A2DtdJyhoE=
+	t=1716451150; cv=none; b=Hpolf3LBHRgMFRoPFDvNwsc6fl7KcqWg5uJ83sLquv5805FXgWaLpm24MD/uHSCBdjgH1HKt3CEm4qquTiCEqmSErQFDy8CIglri2HQO7mG9BTqm0lURNZPhV94QsfWImIfEnX0Kzwxc1jDxtEihwAGEc8hP58rmDW6cK09EIKU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716449567; c=relaxed/simple;
-	bh=YVO7i8QN+6EWRs64rPiwXuUptm4vYUI1OL2UyipzR5g=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=KUjLOfdw3GInyM8CyDps1qul74RXikB3VcBQI2uyA+CWJdAP3yeq91p0gNG7L6RsGrpHZP1ERtPmLGwsk9bc+MoQGEQHqa9ZZpkVDBLRYVFl1OQ/pD2YgWYdseZ5y3q8YD4WmzugeNrbP1/XaD5v91ETywfd5+NFjvk2EDqfdT4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=I4Hs2+Jv; arc=none smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	s=arc-20240116; t=1716451150; c=relaxed/simple;
+	bh=rnkcbQ0HrT/F++5uLzQLuXGm/kBYGSyLVsMiviFq8vk=;
+	h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
+	 MIME-Version:Content-Type; b=TmYRifhJUqFuzcQbhjYCjbG9odwKHkQ0sxXpREcitBOi3GD+Kx0XRtAOj05gFcapAPdhKwmftbfMJVO+uz4nXxbzcbaZ0m7e8Rzz/hZ1VvDeoGkX92NHRBqRUs+WACteOXvF69Dg5o8CrgYC0xA8PIqrt4hJJBTPceYgxQjBz04=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="I4Hs2+Jv"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-43e415ae282so31601071cf.1
-        for <xenomai@lists.linux.dev>; Thu, 23 May 2024 00:32:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1716449565; x=1717054365; darn=lists.linux.dev;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=m9y/Svvux7qhBy3odZVZCSDTXlTX6T1MqLqLDEhfTgo=;
-        b=I4Hs2+JvsVj6YuNL6VAw3AikV4dIw3ggd7NpLZyQsehXCj7qrCfnKn2fm5Nx6+/JFM
-         PnlSy/9iKFIV7jjBpEI0IY7ps33hI6YrZzxN4ebTAefLwh6nA0btsN+UiwlftWayjumN
-         kZE/qpofFj++JbcZvr37AwuoXf05skGBjPdJGv89Ky8cpz2EwOjqbIJdU1z46D6xCGTq
-         890a8vEAX5w6mk3ksi4e3R2lZ3xcFkHemIwa7X4pAwquu2FFC2H7fiEYQ9jiE6IwPxma
-         HP/iZ9rQP44EkWsHsAXjICh5WmvzrRuby0q0XNXSF8PXJrMAtKaFoMimML43S0AUltSr
-         d4tQ==
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-420180b5898so48947525e9.2
+        for <xenomai@lists.linux.dev>; Thu, 23 May 2024 00:59:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716449565; x=1717054365;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=m9y/Svvux7qhBy3odZVZCSDTXlTX6T1MqLqLDEhfTgo=;
-        b=GR4ztV/r85sQiNcxkqPvYEQCH48A2SLsSFZd5GoC7XnvJQY3ep6k5w6VIIjKW8VCtY
-         xwHVdaj+mlh0mwI2eBbsR7lk/Pf9nzt9FyjdeQLFrVrMMJEHjXaaXcxVdtM9M5bsiaiT
-         zjoG4au7acVFDl+OJxcheVAawt84FJpm7RCxp5flVF1koFPlxGycW+yGltK9OcKHSiFo
-         SnhXdmf1mG488gzjKGcxKjyI/QHAKbj+dskioP6/q+L2KVlb2tGUYyH/CfqkkQH1KS5X
-         +Ak8/feNnizTUlPiqwl6Xcdh0M8ygoZvtXlYb9WwhOEgTTHLBh1p3a0kulEJWXRRILAy
-         zk0A==
-X-Gm-Message-State: AOJu0Ywk1eRLvDpkAMl46XCCeImUyMCMcOx+uBVMvEilJmDPdF9hWCA4
-	/omApkc4UlscFHZuYxL/DH0USBFHFvsral21rfOMpVmNe74SQwqzD23LgMHHPqJuzdEBJ8JFuK8
-	ahSErzj1AtkImYvrnXO509PySK6FVD/di
-X-Google-Smtp-Source: AGHT+IGkR/yeA2Oki8bg8gWOwX0Qodg+NDKXE/HUvE8GJoZq0Wv2krk51W7cbh6pMoVpBlQICvVTdppoB5kJauQ4FFk=
-X-Received: by 2002:ac8:5e54:0:b0:43a:b1e3:d6db with SMTP id
- d75a77b69052e-43f9e17a448mr45362431cf.62.1716449564473; Thu, 23 May 2024
- 00:32:44 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1716451146; x=1717055946;
+        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
+         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xEB4SGr5LZ5j4nXZqFGAJFHw4LHlPwXtd22gvvznu5g=;
+        b=LjrX4kd9BWGs+rDjT7zWD5wNBs9YvtJNbQyklm27cta3nZtvos0UbcJER2vw3GSyuY
+         jc5YIUwcGZ/RcOCcVw46lWHVNl/vHNpCF5gRLzTamK9M5lAItq5RJJRT+hWhbmHQs3Dj
+         HDZVAm5pcXrKwFkWOnnjqhXGEITadI8bkgQsj4OPl3NXqqpJ0qQ99x6Uons1D9Lsjsds
+         ElpsSvoQPYplihDK6FgEEuWfeED5llXoACNhBp/n+7VMX6rGpdQZfxqZnMACjKa8o/+/
+         /PJWDZvPIPSiFxJmTfvG3ae8YN9YXDZ1knRqlEYrxc7LYyLYcIerOJB/6E2M0UClC9Ud
+         yf0g==
+X-Gm-Message-State: AOJu0YyKCTsJqZE2iLw33QxVes451KAGuzm5OQMVBejZfm0DasImiZ8v
+	bj3/GdptDyKLOHCfh/EmcEdu43QwMHVXAqyNpnAbw60SkJI+HXo8CrG2vgwD
+X-Google-Smtp-Source: AGHT+IFX/FXV3JO0NIQfVue6GsLna6Jz0wUpvTAMq8CPFPYZLf3cOkclSkDBlgu4u/idTLplhS3JNw==
+X-Received: by 2002:a05:600c:68c5:b0:41c:7bd:5a84 with SMTP id 5b1f17b1804b1-420fd30e3e3mr26733895e9.17.1716451146158;
+        Thu, 23 May 2024 00:59:06 -0700 (PDT)
+Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42100f5a80asm17243665e9.25.2024.05.23.00.59.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 23 May 2024 00:59:05 -0700 (PDT)
+References: <Zk68Q+2tgdwEkcS9@2956c958a175>
+User-agent: mu4e 1.10.5; emacs 29.3
+From: Philippe Gerum <rpm@xenomai.org>
+To: 87ed9urpex.fsf@xenomai.org
+Cc: xenomai@lists.linux.dev
+Subject: Re: A problem regarding SMP
+Date: Thu, 23 May 2024 09:52:06 +0200
+In-reply-to: <Zk68Q+2tgdwEkcS9@2956c958a175>
+Message-ID: <87r0dtrmbe.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Norbert Lange <nolange79@gmail.com>
-Date: Thu, 23 May 2024 09:32:32 +0200
-Message-ID: <CADYdroMJCeW_UNvc6K1p_2dc2-hCDWyATXcDq6iHL5pVSrFknA@mail.gmail.com>
-Subject: Dowload URL for ipipe patches?
-To: xenomai@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 
-Hello,
 
-the older URL's dont work, and I did not find any reference to the
-replacement, even rather recent releases have non-working URLs [0].
-So the links dont work, and the gitlab repository doesnt offer them
-either, eg  [1].
+JiajunDu <wonderboy512@163.com> writes:
 
-Whats the plan going forward?
+> Thanks for your reply!
+>
+> By using a barrier to synchronize all evl kthreads, I did achieve the
+> effect of multiple processes running in parallel. My solution is
+> in the next patch, and the branch I tried on is the latest
+> `v5.13-evl-rebase`.
+>
+> But I still ran into two other problems while trying this solution.
+>
+> The first problem is that `evl_flag` cann't solve the problem. The wait
+> condition in `evl_wait_flag_timeout` is `evl_read_flag`, in which the
+> flag is set to false as soon as the flag is found to be raised in
+> `evl_raise_flag`, so `evl_raise_flag` can only wake up one waiting process
+> at a time. And it's not possible to wake up more processes by calling
+> `evl_raise_flag` multiple times, because it's not possible to determine
+> the time when processes are woken up in the SMP environment. If we did, it's
+> possible to have a situation where two processes are woken up at the same
+> time after the flag was raised twice, and then only one of them can be
+> woken up at the same time. So in light of this, I defined two new functions,
+> `evl_wait_flag_same` and `evl_wait_flag_timeout_same`, to read flags using
+> `evl_peek_flag`.
 
-Regards, Norbert
+The semantics you are looking for are available from evl_wait_queue,
+which basically implements a condition variable.
 
-[0] - https://lore.kernel.org/xenomai/E1qVdKL-0003yN-Ua@xenomai.org/T/#u
-[1] - https://source.denx.de/Xenomai/ipipe-x86/-/tags/ipipe-core-5.4.255-x86-15
+>
+> The second problem is that after using barrier, load balancing is no longer
+> possible when creating processes using `kthread_run`, which is called in
+> `evl_run_kthread`. The phenomenon is that all processes are created on the
+> same CPU. Therefore, I can only specify CPUs manually for load balancing
+> purpose by calling `evl_run_kthread_on_cpu`.
+
+Which is not an issue, is it? Since dynamic load balancing is not
+supported by design by evl (or any earlier xenomai cores for that
+matter), static pinning is the way. So evl_run_kthread_on_cpu should
+indeed be used. Another option would be that each spawned kthread pins
+itself to the right CPU when emerging (set_cpus_allowed).
+
+>
+> The code I tried is available in the next patch. Is there anything we can do
+> about these two problems?
+>
+> Best regards,
+> Jiajun
+
+
+-- 
+Philippe.
