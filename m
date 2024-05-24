@@ -1,219 +1,95 @@
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E371A128376
-	for <xenomai@lists.linux.dev>; Fri, 24 May 2024 08:37:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.201.40.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8741B538A
+	for <xenomai@lists.linux.dev>; Fri, 24 May 2024 11:03:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716539852; cv=none; b=uLLdBXbjgrlt/gwi9xVxfO3H16DnXFMCYDMNn6PczwWVD2KEWl3XclVOD0jhWm9xUfwUdUE7IP97Ohwa/0O2aLRm5NP9ikEutx1/cpcFiqW4yAMHb9D0InoR9frXoZ+wgt30XJ77oFnUR0AsjizY5IBI8ubplgNRZGBTmPyQqfo=
+	t=1716548593; cv=none; b=g4JNvIGTRnw5vLQTY0qO2iFviembt/A47br2DhrJDrlmVFXNP/u4pymypklEZ52mo1hhv/C6jzavloUdefhpslUOphYrM4Uu2PQsy8aqCtLB05cqFNct+yCj138U98V9/mBNSyyKSdTYzcs7EOQWCyFnJgHo2mT/GO87fVh7kNw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716539852; c=relaxed/simple;
-	bh=3D0bSQTzsPgUhgFy/Ed5ja+aOiREL7d6oA8nZ1yKZMA=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=shbJrLIZ8Renwf0NjVCzyDnSxsXe4IyjFpp3yVqA/SXdjq/6fDTJP4CFk4Wa7Ukz36calm+GrzEuYs7uWRXsfroE0IiGO3wJsgAzzff5vCy8N7DDG+tJQ1l3wbtVGWn4j+/ci1NFZkFWULsMdbnebO322mMWOSikBeVy9hrCNwo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at; spf=fail smtp.mailfrom=nod.at; arc=none smtp.client-ip=195.201.40.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 43C1462348A5;
-	Fri, 24 May 2024 10:37:19 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-	with ESMTP id BM0ouHe2GAvM; Fri, 24 May 2024 10:37:18 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id BCA306340E17;
-	Fri, 24 May 2024 10:37:18 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id 7J8LFcU-6zPu; Fri, 24 May 2024 10:37:18 +0200 (CEST)
-Received: from foxxylove.corp.sigma-star.at (unknown [82.150.214.1])
-	by lithops.sigma-star.at (Postfix) with ESMTPSA id 7D3F26195FCF;
-	Fri, 24 May 2024 10:37:18 +0200 (CEST)
-From: Richard Weinberger <richard@nod.at>
+	s=arc-20240116; t=1716548593; c=relaxed/simple;
+	bh=5+Y7BK8mYAyU0pqW/5T2cHtlhp86ROyYXXH0vN/zm+4=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=jgjLiOS8bPL4dyXOt8suGlzWM/mts7KyPWHIftO+1cGbdVw5amQ3mC0MtViwRxIPq0BfXu9/fmKvN+J0gmpOmsoJ64RgzLVh5RHaa/HQkAP/kE25HNxHvOJF3GIp9B07ix1a808EOQIZxEI+ROOudaF1DneNYdUwEiwfZEqhPOI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=yi.jiang@siemens.com header.b=Bxkcg5AV; arc=none smtp.client-ip=185.136.64.225
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=yi.jiang@siemens.com header.b="Bxkcg5AV"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2024052411025710b0b15c60b3761dd0
+        for <xenomai@lists.linux.dev>;
+        Fri, 24 May 2024 13:02:57 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=yi.jiang@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=mJgBR/4mx5D2qzNY8WsF5MoMX8BsxNp6YSsfiwmqgnk=;
+ b=Bxkcg5AVdTDsb1kuvADuXvfnQExujEg0JwRvJZjlBXBtS/Sd1Q0heZlqxJMrVi1zefe4Lo
+ +37lcFISWLP4pmY4tagvwE8yEDzv10YIr0dVerkkhBuy+DqrkPEx8/V+fT7xHRl8G81zEhnk
+ 6kf35zkve93JzjeL5Lyxr1J+xv64k=;
+From: Yi Jiang <yi.jiang@siemens.com>
 To: xenomai@lists.linux.dev
-Cc: lorenz@sigma-star.at,
-	Richard Weinberger <richard@nod.at>
-Subject: [PATCH v2 2/2] alchemytests: Add test case for RT_MUTEX and -EINTR
-Date: Fri, 24 May 2024 10:36:42 +0200
-Message-Id: <20240524083642.19434-3-richard@nod.at>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20240524083642.19434-1-richard@nod.at>
-References: <20240524083642.19434-1-richard@nod.at>
+Cc: florian.bezdeka@siemens.com,
+	jan.kiszka@siemens.com,
+	Yi Jiang <yi.jiang@siemens.com>
+Subject: [PATCH v2 0/3] rpi4: add Xenomai building support for RPi4
+Date: Fri, 24 May 2024 13:02:51 +0200
+Message-Id: <20240524110254.37483-1-yi.jiang@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-1325609:519-21489:flowmailer
 
-Make sure rt_task_unblock() can unblock a mutex waiter.
+Hi, all,
 
-Co-developed-by: Lorenz Kofler <lorenz@sigma-star.at>
-Signed-off-by: Lorenz Kofler <lorenz@sigma-star.at>
-Signed-off-by: Richard Weinberger <richard@nod.at>
----
- testsuite/smokey/alchemytests/Makefile.am    |   5 +
- testsuite/smokey/alchemytests/alchemytests.c |   1 +
- testsuite/smokey/alchemytests/mutex-2.c      | 111 +++++++++++++++++++
- 3 files changed, 117 insertions(+)
- create mode 100644 testsuite/smokey/alchemytests/mutex-2.c
+this is the second version of the series for adding Xenomai building support for RPi4.
 
-diff --git a/testsuite/smokey/alchemytests/Makefile.am b/testsuite/smokey=
-/alchemytests/Makefile.am
-index 3525dfa09..eba82f8ec 100644
---- a/testsuite/smokey/alchemytests/Makefile.am
-+++ b/testsuite/smokey/alchemytests/Makefile.am
-@@ -20,6 +20,7 @@ test_PROGRAMS =3D				\
- 		alchemytests_mq2	\
- 		alchemytests_mq3	\
- 		alchemytests_mutex1	\
-+		alchemytests_mutex2	\
- 		alchemytests_pipe1	\
- 		alchemytests_sem1	\
- 		alchemytests_sem2	\
-@@ -69,6 +70,10 @@ alchemytests_mutex1_SOURCES =3D mutex-1.c
- alchemytests_mutex1_CPPFLAGS =3D $(alchemycppflags)
- alchemytests_mutex1_LDADD =3D $(alchemyldadd)
- alchemytests_mutex1_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
-+alchemytests_mutex2_SOURCES =3D mutex-2.c
-+alchemytests_mutex2_CPPFLAGS =3D $(alchemycppflags)
-+alchemytests_mutex2_LDADD =3D $(alchemyldadd)
-+alchemytests_mutex2_LDFLAGS =3D @XENO_AUTOINIT_LDFLAGS@
- alchemytests_pipe1_SOURCES =3D pipe-1.c
- alchemytests_pipe1_CPPFLAGS =3D $(alchemycppflags)
- alchemytests_pipe1_LDADD =3D $(alchemyldadd)
-diff --git a/testsuite/smokey/alchemytests/alchemytests.c b/testsuite/smo=
-key/alchemytests/alchemytests.c
-index 9a937f3a0..947fa37b9 100644
---- a/testsuite/smokey/alchemytests/alchemytests.c
-+++ b/testsuite/smokey/alchemytests/alchemytests.c
-@@ -12,6 +12,7 @@ static const char * const tests[] =3D {
- 	"alchemytests_mq2",
- 	"alchemytests_mq3",
- 	"alchemytests_mutex1",
-+	"alchemytests_mutex2",
- 	"alchemytests_pipe1",
- 	"alchemytests_sem1",
- 	"alchemytests_sem2",
-diff --git a/testsuite/smokey/alchemytests/mutex-2.c b/testsuite/smokey/a=
-lchemytests/mutex-2.c
-new file mode 100644
-index 000000000..cb2c2710f
---- /dev/null
-+++ b/testsuite/smokey/alchemytests/mutex-2.c
-@@ -0,0 +1,111 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <copperplate/traceobj.h>
-+#include <alchemy/task.h>
-+#include <alchemy/mutex.h>
-+
-+static struct traceobj trobj;
-+
-+static int tseq[] =3D {
-+	1, 2, 3, 4, 5, 6, 7, 8, 9,
-+};
-+
-+static RT_TASK t_a, t_b, t_c;
-+
-+static RT_MUTEX mutex;
-+
-+static void task_a(void *arg)
-+{
-+	int ret;
-+
-+	traceobj_enter(&trobj);
-+
-+	traceobj_mark(&trobj, 3);
-+
-+	ret =3D rt_mutex_acquire(&mutex, 1000000000ULL);
-+	traceobj_check(&trobj, ret, -EINTR);
-+
-+	traceobj_mark(&trobj, 6);
-+
-+	traceobj_exit(&trobj);
-+}
-+
-+static void task_c(void *arg)
-+{
-+	int ret;
-+
-+	traceobj_enter(&trobj);
-+
-+	traceobj_mark(&trobj, 4);
-+
-+	ret =3D rt_mutex_acquire(&mutex, TM_INFINITE);
-+	traceobj_check(&trobj, ret, -EINTR);
-+
-+	traceobj_mark(&trobj, 8);
-+
-+	traceobj_exit(&trobj);
-+}
-+
-+static void task_b(void *arg)
-+{
-+	int ret;
-+
-+	traceobj_enter(&trobj);
-+
-+	ret =3D rt_mutex_create(&mutex, "MUTEX");
-+	traceobj_check(&trobj, ret, 0);
-+
-+	traceobj_mark(&trobj, 1);
-+
-+	ret =3D rt_mutex_acquire(&mutex, TM_INFINITE);
-+	traceobj_check(&trobj, ret, 0);
-+
-+	traceobj_mark(&trobj, 2);
-+
-+	traceobj_exit(&trobj);
-+	rt_task_suspend(rt_task_self());
-+}
-+
-+int main(int argc, char *const argv[])
-+{
-+	int ret;
-+
-+	traceobj_init(&trobj, argv[0], sizeof(tseq) / sizeof(int));
-+
-+	ret =3D rt_task_create(&t_b, "taskB", 0, 21, 0);
-+	traceobj_check(&trobj, ret, 0);
-+
-+	ret =3D rt_task_start(&t_b, task_b, NULL);
-+	traceobj_check(&trobj, ret, 0);
-+
-+	ret =3D rt_task_create(&t_a, "taskA", 0, 20, 0);
-+	traceobj_check(&trobj, ret, 0);
-+
-+	ret =3D rt_task_start(&t_a, task_a, NULL);
-+	traceobj_check(&trobj, ret, 0);
-+
-+	ret =3D rt_task_create(&t_c, "taskC", 0, 20, 0);
-+	traceobj_check(&trobj, ret, 0);
-+
-+	ret =3D rt_task_start(&t_c, task_c, NULL);
-+	traceobj_check(&trobj, ret, 0);
-+
-+	traceobj_mark(&trobj, 5);
-+
-+	ret =3D rt_task_unblock(&t_a);
-+	traceobj_check(&trobj, ret, 0);
-+
-+	traceobj_mark(&trobj, 7);
-+
-+	ret =3D rt_task_unblock(&t_c);
-+	traceobj_check(&trobj, ret, 0);
-+
-+	traceobj_mark(&trobj, 9);
-+
-+	traceobj_join(&trobj);
-+
-+	traceobj_verify(&trobj, tseq, sizeof(tseq) / sizeof(int));
-+
-+	exit(0);
-+}
---=20
-2.35.3
+Thanks Florian and Jan for your comments on v1.
+
+Changelog v1 -> v2:
+- [PATCH v2 2/3]: Remove rpi4.cfg.
+- [PATCH v2 3/3]: Rename patch, and reword the patch description.
+
+Best regards,
+Yi Jiang
+
+
+Florian Bezdeka (2):
+  rpi-firmware: Add recipe for building version 20230405
+  rpi4: Add rpi4 (Raspberry Pi 4) as target platform
+
+Yi Jiang (1):
+  rpi4: add building options for rpi4; remove build options of old
+    kernel and Xenomai versions in kas menu for rpi4.
+
+ Kconfig                                       | 14 +++++---
+ board-rpi4.yml                                | 15 +++++++++
+ conf/machine/rpi4.conf                        | 32 +++++++++++++++++++
+ .../rpi-firmware/files/debian/aliases.dts     | 18 +++++++++++
+ .../rpi-firmware/files/debian/cmdline.txt     |  1 +
+ .../rpi-firmware/files/debian/config.txt      | 12 +++++++
+ .../files/debian/rpi-firmware.install         |  9 ++++++
+ recipes-bsp/rpi-firmware/files/rules          |  7 ++++
+ .../rpi-firmware/rpi-firmware_1.20230405.bb   | 30 +++++++++++++++++
+ .../customizations/files/primary.network      |  2 +-
+ recipes-kernel/linux/files/arm64_defconfig    | 10 ++++--
+ .../linux/linux-xenomai-3-dovetail.inc        |  1 +
+ .../linux/linux-xenomai-3_latest.bb           |  1 +
+ wic/rpi4.wks                                  | 17 ++++++++++
+ 14 files changed, 161 insertions(+), 8 deletions(-)
+ create mode 100644 board-rpi4.yml
+ create mode 100644 conf/machine/rpi4.conf
+ create mode 100644 recipes-bsp/rpi-firmware/files/debian/aliases.dts
+ create mode 100644 recipes-bsp/rpi-firmware/files/debian/cmdline.txt
+ create mode 100644 recipes-bsp/rpi-firmware/files/debian/config.txt
+ create mode 100644 recipes-bsp/rpi-firmware/files/debian/rpi-firmware.install
+ create mode 100644 recipes-bsp/rpi-firmware/files/rules
+ create mode 100644 recipes-bsp/rpi-firmware/rpi-firmware_1.20230405.bb
+ create mode 100644 wic/rpi4.wks
+
+-- 
+2.39.2
 
