@@ -1,41 +1,41 @@
 Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0230C3D967
-	for <xenomai@lists.linux.dev>; Sat, 25 May 2024 11:58:41 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 740153FBB7
+	for <xenomai@lists.linux.dev>; Sat, 25 May 2024 11:58:42 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.201.40.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716638323; cv=none; b=Tp+VSjpIYHme53FjV0ptYtiDSwNefWX3iFRBsFCJKScRvWP+nySqmFUrFnIcVI47M99rKKvGMJoHiaPEQtX3ZIp1kp53DgU0+GoGA5SYzW1WIUYsR1W0VK/T2YS8GvW22Se10V9i8Hp9yyWHR9nW23PduEkiywKyDgAq76a47aI=
+	t=1716638323; cv=none; b=sV3aac6RV9ciiR39IKCAASOTv4QEKq0kzZ5ck4pkrAxTQ753iKGit6xp8GLkFbmEOeTKhO40+cmuSGPeaDo3He9LtWuYXyEtiq6kvWYAKCvLJiY0GOAVix8VhOfDEh9DDmIeopjhS3wmWazeRQdlMXUg2Nq1WekKFyloMIWSIZk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1716638323; c=relaxed/simple;
-	bh=sm5vjuGjANmkXyvYg49ye7j2C3yfHMzYKOh/8GAr77M=;
+	bh=rp0AmKBVWfCsNH3ANtNY0BrJkrXCBKoOrRjpBOgvN8c=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=O9cVxGGXZw7hhYrtCBFTbI4bf1VQ8+P1OZQapO5SmF6LOsytka5zH3bM84dyysCc7VZJUZrulJVfCOt2f9qyB0XeCAoL2oqoSPI1yr20KogcPJTLVty1l1icVvD9E9FMnDiF4v1qK95CdMX7ZTNUmqvak/V5CU1r0fojWyID4PM=
+	 MIME-Version; b=HBicAW6LpQ/Taz4zY+4rwT08XP8D+7CjF/p+tfmDTTWHm/p1OS0CXBiV/0O/ecOwKXyDSCHOnlnr5E2muBIVHJE8cDyWNzv1QBIQ3Bw4XteA5vQ7vK+5gXFyOWuSv58WVCWqEDNPXRjZ7JhzKJsuNJG/F/4qC2m0e7Q6vlPt/u8=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at; spf=fail smtp.mailfrom=nod.at; arc=none smtp.client-ip=195.201.40.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
 Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id DBA906343503;
-	Sat, 25 May 2024 13:58:29 +0200 (CEST)
+	by lithops.sigma-star.at (Postfix) with ESMTP id E334B6195FFB;
+	Sat, 25 May 2024 13:58:30 +0200 (CEST)
 Received: from lithops.sigma-star.at ([127.0.0.1])
 	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-	with ESMTP id 1qsFQknqElLk; Sat, 25 May 2024 13:58:29 +0200 (CEST)
+	with ESMTP id 6NBgRSBdYgB7; Sat, 25 May 2024 13:58:30 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 7A90A64103F3;
-	Sat, 25 May 2024 13:58:29 +0200 (CEST)
+	by lithops.sigma-star.at (Postfix) with ESMTP id A1AC9644CE8C;
+	Sat, 25 May 2024 13:58:30 +0200 (CEST)
 Received: from lithops.sigma-star.at ([127.0.0.1])
 	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id ozwjN9uyhjOy; Sat, 25 May 2024 13:58:29 +0200 (CEST)
+	with ESMTP id nkX8bJ43h6To; Sat, 25 May 2024 13:58:30 +0200 (CEST)
 Received: from foxxylove.corp.sigma-star.at (unknown [82.150.214.1])
-	by lithops.sigma-star.at (Postfix) with ESMTPSA id 24E4E6340E17;
-	Sat, 25 May 2024 13:58:29 +0200 (CEST)
+	by lithops.sigma-star.at (Postfix) with ESMTPSA id 5D4B66340E17;
+	Sat, 25 May 2024 13:58:30 +0200 (CEST)
 From: Richard Weinberger <richard@nod.at>
 To: xenomai@lists.linux.dev
 Cc: upstream+xenomai@sigma-star.at,
 	Richard Weinberger <richard@nod.at>
-Subject: [PATCH 07/16] prepare-kernel.sh: Don't use eval
-Date: Sat, 25 May 2024 13:57:57 +0200
-Message-Id: <20240525115806.12101-8-richard@nod.at>
+Subject: [PATCH 13/16] prepare-kernel.sh: Define command line variables
+Date: Sat, 25 May 2024 13:58:03 +0200
+Message-Id: <20240525115806.12101-14-richard@nod.at>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20240525115806.12101-1-richard@nod.at>
 References: <20240525115806.12101-1-richard@nod.at>
@@ -47,57 +47,45 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-eval is evil and confuses shellcheck.
-
-Fixes:
-In scripts/prepare-kernel.sh line 302:
-linux_version=3D"$linux_VERSION.$linux_PATCHLEVEL.$linux_SUBLEVEL"
-               ^------------^ SC2154 (warning): linux_VERSION is referenc=
-ed but not assigned (did you mean 'linux_version'?).
-                              ^---------------^ SC2154 (warning): linux_P=
-ATCHLEVEL is referenced but not assigned.
-                                                ^-------------^ SC2154 (w=
-arning): linux_SUBLEVEL is referenced but not assigned.
-
-In scripts/prepare-kernel.sh line 305:
-        echo "Preparing kernel $linux_version$linux_EXTRAVERSION in $linu=
-x_tree..."
-                                             ^-----------------^ SC2154 (=
-warning): linux_EXTRAVERSION is referenced but not assigned.
-
-Instead of using eval plus grep and sed, just use good old awk.
-Tested also with busybox awk.
+To use "set -u" later, define all variables that can be set via the comma=
+nd line.
 
 Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- scripts/prepare-kernel.sh | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ scripts/prepare-kernel.sh | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
 diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
-index e78c48e61..3c13d471f 100755
+index a8179518b..43883ded3 100755
 --- a/scripts/prepare-kernel.sh
 +++ b/scripts/prepare-kernel.sh
-@@ -298,10 +298,10 @@ if [ ! -z $foo ] ; then
- fi
- unset foo
+@@ -3,9 +3,6 @@ set -e
 =20
--eval linux_`grep '^EXTRAVERSION =3D' $linux_tree/Makefile | sed -e 's, ,=
-,g'`
--eval linux_`grep '^PATCHLEVEL =3D' $linux_tree/Makefile | sed -e 's, ,,g=
-'`
--eval linux_`grep '^SUBLEVEL =3D' $linux_tree/Makefile | sed -e 's, ,,g'`
--eval linux_`grep '^VERSION =3D' $linux_tree/Makefile | sed -e 's, ,,g'`
-+linux_EXTRAVERSION=3D`awk -F=3D '/^EXTRAVERSION =3D/{ gsub(/ /, "", $2);=
- print $2}' $linux_tree/Makefile`
-+linux_PATCHLEVEL=3D`awk -F=3D '/^PATCHLEVEL =3D/{ gsub(/ /, "", $2); pri=
-nt $2}' $linux_tree/Makefile`
-+linux_SUBLEVEL=3D`awk -F=3D '/^SUBLEVEL =3D/{ gsub(/ /, "", $2); print $=
-2}' $linux_tree/Makefile`
-+linux_VERSION=3D`awk -F=3D '/^VERSION =3D/{ gsub(/ /, "", $2); print $2}=
-' $linux_tree/Makefile`
+ unset CDPATH
 =20
- linux_version=3D"$linux_VERSION.$linux_PATCHLEVEL.$linux_SUBLEVEL"
+-# Default path to kernel tree
+-linux_tree=3D.
+-
+ patch_copytempfile() {
+ 	file=3D"$1"
+ 	if ! test -f "$temp_tree/$file"; then
+@@ -120,6 +117,14 @@ generate_patch() {
+ usage=3D'usage: prepare-kernel --linux=3D<linux-tree> [--dovetail=3D<dov=
+etail-patch>] [--arch=3D<arch>] [--outpatch=3D<file> [--verbose] [--rever=
+se]'
+ me=3D`basename $0`
 =20
++# Default path to kernel tree
++linux_tree=3D.
++output_patch=3D""
++linux_arch=3D""
++reverse=3D0
++pipeline_patch=3D""
++verbose=3D0
++
+ while test $# -gt 0; do
+ 	case "$1" in
+ 	--linux=3D*)
 --=20
 2.35.3
 
