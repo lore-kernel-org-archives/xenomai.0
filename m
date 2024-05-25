@@ -1,41 +1,41 @@
 Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6E393E470
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7759F3D3B9
 	for <xenomai@lists.linux.dev>; Sat, 25 May 2024 11:58:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.201.40.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716638320; cv=none; b=GNH8V4S/CP78aRkbEdqydnlBDZFM5BwObcph98URYDP8xbqprX1c7nKw64XpWSyfMZbk1Lu4DrZkb2VJQF6hAfmkVGeV7sjxtlK7xtIf6G2ABiD+6JMArEHHJFo/Xj1uG9kRVallYPMsPbhalmn76YbfqlTdqgpHg6PXjY5mgCg=
+	t=1716638320; cv=none; b=fJRk597M972JPeWnuYjyimvJQioGne1c7sANnsmB9mbXss7GOzcq1PhWp6aqYkZ380RemV1PohIEYtLwGnTHDwbMgUq6t1W18yIv6pot8rlA0TJEB1VhCWyvsxL+ho1SUsCny/V25rN2EndWNVIkHpfK+NUcSuK8o/EzN1z8/RE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1716638320; c=relaxed/simple;
-	bh=jT3R8A9yw7tLVWFhDXTVF8lNHd7Go8qVl8OGp97/MFs=;
+	bh=ahQBeWRmeUENIiSD+JgnQk3OpStcZqp/CFEYoKbtT0g=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=VGyKdJo42gQn/+FY8NXJU+6bQ1yUEXGXZ5o1f8ZDScWbdFmIYG7jxShbeDewgSC0DZRW0Bf9HVElhFN5u0N5pKFAH0HW471by/D6ebcam8vPQnYwuBSyqDCkySzIZPWi29w4KHDpUZRYac1PuTJJPy4szs8rhQlAqiQQxXoXjIw=
+	 MIME-Version; b=Tt0tjkov0uUyFbMuvpTuop1vdVqor2AqsSBFQa71Uhn33oh9W53g/0Y4fRB1m1kTfUkcY6xFwfNS1uVwwGH123P3NgeLknP7+80OXw+/J6doDWKDo1sqQCOCF5B6zA8k86MSS0bRZ8bIZtUe/kpQcYGwDP5RAFGFlY3S+5MJWfQ=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at; spf=fail smtp.mailfrom=nod.at; arc=none smtp.client-ip=195.201.40.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
 Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id E6EDD64103EF;
+	by lithops.sigma-star.at (Postfix) with ESMTP id 8C82D6195FDC;
 	Sat, 25 May 2024 13:58:28 +0200 (CEST)
 Received: from lithops.sigma-star.at ([127.0.0.1])
 	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-	with ESMTP id by5Nrp70SQXi; Sat, 25 May 2024 13:58:28 +0200 (CEST)
+	with ESMTP id xVy1jXLe3-tD; Sat, 25 May 2024 13:58:27 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 1B654626FAF9;
-	Sat, 25 May 2024 13:58:28 +0200 (CEST)
+	by lithops.sigma-star.at (Postfix) with ESMTP id C922E62348A5;
+	Sat, 25 May 2024 13:58:27 +0200 (CEST)
 Received: from lithops.sigma-star.at ([127.0.0.1])
 	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id WbnDt5c4Jkgv; Sat, 25 May 2024 13:58:28 +0200 (CEST)
+	with ESMTP id ZvovSCrEKOr6; Sat, 25 May 2024 13:58:27 +0200 (CEST)
 Received: from foxxylove.corp.sigma-star.at (unknown [82.150.214.1])
-	by lithops.sigma-star.at (Postfix) with ESMTPSA id C42A46195FCF;
+	by lithops.sigma-star.at (Postfix) with ESMTPSA id 98ED36195FDC;
 	Sat, 25 May 2024 13:58:27 +0200 (CEST)
 From: Richard Weinberger <richard@nod.at>
 To: xenomai@lists.linux.dev
 Cc: upstream+xenomai@sigma-star.at,
 	Richard Weinberger <richard@nod.at>
-Subject: [PATCH 02/16] prepare-kernel.sh: Emit architecture agnostic changes
-Date: Sat, 25 May 2024 13:57:52 +0200
-Message-Id: <20240525115806.12101-3-richard@nod.at>
+Subject: [PATCH 01/16] prepare-kernel.sh: Add reverse mode
+Date: Sat, 25 May 2024 13:57:51 +0200
+Message-Id: <20240525115806.12101-2-richard@nod.at>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20240525115806.12101-1-richard@nod.at>
 References: <20240525115806.12101-1-richard@nod.at>
@@ -47,185 +47,217 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-If --arch=3D is not passed, emit changes that work on all architectures
-supported by Xenomai, currently arm, arm64 and x86.
-This is especially useful with --outpatch=3D, the resulting patch can be
-used for any architecture later and makes maintaining and building
-a Xenomai enabled kernel easier.
+There is currently no way to undo preparing of a kernel, except using
+--outpatch and reverting the resulting patch later.
+But in link mode the kernel tree needs manual cleaning,
+which can be tedious if a git clean -f -d -x is not possible.
+
+The new --reverse flag offers this feature, it removes all previously
+created symlinks and directories.
+To be able to undo effects by patch_append(), keep a .orig file link
+as the script already does for symlinks in the linux tree.
 
 Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- scripts/Kconfig.frag      |  2 +-
- scripts/prepare-kernel.sh | 97 +++++++++++++++++----------------------
- 2 files changed, 44 insertions(+), 55 deletions(-)
+ scripts/prepare-kernel.sh | 73 +++++++++++++++++++++++++++++++--------
+ 1 file changed, 59 insertions(+), 14 deletions(-)
 
-diff --git a/scripts/Kconfig.frag b/scripts/Kconfig.frag
-index b76d25e53..3c9ad2b9f 100644
---- a/scripts/Kconfig.frag
-+++ b/scripts/Kconfig.frag
-@@ -16,7 +16,7 @@ menuconfig XENOMAI
- 	  Please visit http://xenomai.org for more information.
-=20
- if XENOMAI
--source "arch/@SRCARCH@/xenomai/Kconfig"
-+source "arch/$(SRCARCH)/xenomai/Kconfig"
- endif
-=20
- if MIGRATION
 diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
-index f0f81471f..826236c34 100755
+index faf3e7235..f0f81471f 100755
 --- a/scripts/prepare-kernel.sh
 +++ b/scripts/prepare-kernel.sh
-@@ -247,13 +247,6 @@ if test \! -r $linux_tree/Makefile; then
+@@ -55,7 +55,9 @@ patch_append() {
+ 	if test -L "$linux_tree/$file" ; then
+ 	    mv "$linux_tree/$file" "$linux_tree/$file.orig"
+ 	    cp "$linux_tree/$file.orig" "$linux_tree/$file"
+-	fi
++        else
++            cp "$linux_tree/$file" "$linux_tree/$file.orig"
++        fi
+ 	chmod +w "$linux_tree/$file"
+         cat >> "$linux_tree/$file"
+     else
+@@ -66,6 +68,16 @@ patch_append() {
+     fi
+ }
+=20
++patch_reverse() {
++    file=3D"$1"
++    if test "x$output_patch" =3D "x"; then
++        if test -L "$linux_tree/$file" ; then
++            rm "$linux_tree/$file"
++        fi
++        mv "$linux_tree/$file.orig" "$linux_tree/$file"
++    fi
++}
++
+ patch_link() {
+     recursive=3D"$1"         # "r" or "n"
+     link_file=3D"$2"         # "m", "n" or some file (basename) from $ta=
+rget_dir
+@@ -106,11 +118,15 @@ patch_link() {
+             f=3D`echo $f | cut -d/ -f2-`
+             d=3D`dirname $f`
+             if test "x$output_patch" =3D "x"; then
+-                mkdir -p $linux_tree/$link_dir/$d
+-                if test x$forcelink =3D x1 -o \
+-		   ! $xenomai_root/$target_dir/$f -ef $linux_tree/$link_dir/$f;
+-		then
+-                    ln -sf $xenomai_root/$target_dir/$f $linux_tree/$lin=
+k_dir/$f
++                if test x$reverse =3D x1; then
++                    rm -f $linux_tree/$link_dir/$f
++                else
++                    mkdir -p $linux_tree/$link_dir/$d
++                    if test x$forcelink =3D x1 -o \
++		       ! $xenomai_root/$target_dir/$f -ef $linux_tree/$link_dir/$f;
++		    then
++                        ln -sf $xenomai_root/$target_dir/$f $linux_tree/=
+$link_dir/$f
++                    fi
+                 fi
+             else
+                 if test `check_filter $link_dir/$f` =3D "ok"; then
+@@ -122,6 +138,11 @@ patch_link() {
+                 fi
+             fi
+         done
++        if test x$reverse =3D x1; then
++            if ! find $linux_tree/$link_dir -not -type d | grep -q . ; t=
+hen
++                rm -rf $linux_tree/$link_dir
++            fi
++        fi
+     )
+ }
+=20
+@@ -138,7 +159,7 @@ generate_patch() {
+ }
+=20
+=20
+-usage=3D'usage: prepare-kernel --linux=3D<linux-tree> [--dovetail=3D<dov=
+etail-patch>] [--arch=3D<arch>] [--outpatch=3D<file> [--filterkvers=3Dy|n=
+] [--filterarch=3Dy|n]] [--forcelink] [--default] [--verbose]'
++usage=3D'usage: prepare-kernel --linux=3D<linux-tree> [--dovetail=3D<dov=
+etail-patch>] [--arch=3D<arch>] [--outpatch=3D<file> [--filterkvers=3Dy|n=
+] [--filterarch=3Dy|n]] [--forcelink] [--default] [--verbose] [--reverse]=
+'
+ me=3D`basename $0`
+=20
+ while test $# -gt 0; do
+@@ -174,6 +195,9 @@ while test $# -gt 0; do
+     --verbose)
+ 	verbose=3D1
+ 	;;
++    --reverse)
++	reverse=3D1
++	;;
+     --help)
+ 	echo "$usage"
+ 	exit 0
+@@ -223,8 +247,19 @@ if test \! -r $linux_tree/Makefile; then
     exit 2
  fi
 =20
--if test x$reverse =3D x1; then
--    if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$linux_arch/Makefile; t=
++if test x$reverse =3D x1; then
++    if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$linux_arch/Makefile; t=
 hen
--        echo "$me: $linux_tree is not prepared with Xenomai" >&2
--	exit 2
--    fi
--fi
--
++        echo "$me: $linux_tree is not prepared with Xenomai" >&2
++	exit 2
++    fi
++fi
++
  # Create an empty output patch file, and initialize the temporary tree.
  if test "x$output_patch" !=3D "x"; then
-     if test x$reverse =3D x1; then
-@@ -274,42 +267,33 @@ if test "x$output_patch" !=3D "x"; then
++    if test x$reverse =3D x1; then
++	echo "$me: --reverse and --outpatch are not compatible"
++	exit 1
++    fi
 =20
- fi
-=20
--# Infer the default architecture if unspecified.
--
- if test x$linux_arch =3D x; then
--   build_arch=3D`$xenomai_root/config/config.guess`
--   default_linux_arch=3D`echo $build_arch|cut -f1 -d-`
-+	target_linux_archs=3D"x86 arm arm64"
-+else
-+	case "$linux_arch" in
-+		x86*|i*86|amd*)
-+		target_linux_archs=3D"x86"
-+	;;
-+	arm)
-+		target_linux_archs=3D"arm"
-+	;;
-+	arm64|aarch64)
-+		target_linux_archs=3D"arm64"
-+	;;
-+	*)
-+		echo "$me: unsupported architecture: $linux_arch" >&2
-+		exit 1
-+	;;
-+	esac
- fi
-=20
--while : ; do
--   if test x$linux_arch =3D x; then
--      if test x$usedefault =3D x; then
--         echo -n "Target architecture [default $default_linux_arch]: "
--         read linux_arch
--      fi
--      if test "x$linux_arch" =3D x; then
--         linux_arch=3D$default_linux_arch
--      fi
--   fi
--   case "$linux_arch" in
--   x86*|i*86|amd*)
--      linux_arch=3Dx86
--      ;;
--   arm)
--      linux_arch=3Darm
--      ;;
--   arm64|aarch64)
--      linux_arch=3Darm64
--      ;;
--   *)
--      echo "$me: unsupported architecture: $linux_arch" >&2
--      linux_arch=3D
--      usedefault=3D
--      ;;
--   esac
--   if test \! x$linux_arch =3D x; then
--      break
--   fi
-+for a in $target_linux_archs; do
-+	if test x$reverse =3D x1; then
-+		if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$a/Makefile; then
-+			echo "$me: $linux_tree is not prepared with Xenomai" >&2
-+			exit 2
-+		fi
-+	fi
- done
-=20
- foo=3D`grep '^KERNELSRC    :=3D ' $linux_tree/Makefile | cut -d=3D -f2`
-@@ -358,10 +342,12 @@ else
-    cd $curdir
- fi
-=20
--if test \! -r $linux_tree/arch/$linux_arch/$arch_probe_header; then
--   echo "$me: $linux_tree has no IRQ pipeline support for $linux_arch" >=
-&2
--   exit 2
--fi
-+for a in $target_linux_archs; do
-+   if test \! -r $linux_tree/arch/$a/$arch_probe_header; then
-+      echo "$me: $linux_tree has no IRQ pipeline support for $a" >&2
-+      exit 2
-+   fi
-+done
-=20
- if test x$verbose =3D x1; then
-    echo "IRQ pipeline installed."
-@@ -394,7 +380,6 @@ case $linux_VERSION.$linux_PATCHLEVEL in
- 	    -e "s,@VERSION_MINOR@,$version_minor,g" \
- 	    -e "s,@REVISION_LEVEL@,$revision_level,g" \
- 	    -e "s,@VERSION_STRING@,$version_string,g" \
--	    -e "s,@SRCARCH@,$linux_arch,g" \
+     temp_tree=3D`mktemp -d prepare-kernel-XXX --tmpdir`
+     if [ $? -ne 0 ]; then
+@@ -362,15 +397,18 @@ case $linux_VERSION.$linux_PATCHLEVEL in
+ 	    -e "s,@SRCARCH@,$linux_arch,g" \
  	    $xenomai_root/scripts/Kconfig.frag |
              patch_append init/Kconfig
-     elif test x$reverse =3D x1; then
-@@ -403,13 +388,15 @@ case $linux_VERSION.$linux_PATCHLEVEL in
++    elif test x$reverse =3D x1; then
++        patch_reverse init/Kconfig
+     fi
 =20
  test "x$CONFIG_XENO_REVISION_LEVEL" =3D "x" && CONFIG_XENO_REVISION_LEVE=
 L=3D0
 =20
--    if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$linux_arch/Makefile; t=
+     if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$linux_arch/Makefile; t=
 hen
--	p1=3D"KBUILD_CFLAGS +=3D -I\$(srctree)/arch/\$(SRCARCH)/xenomai/include=
+-	p=3D"KBUILD_CFLAGS +=3D -I\$(srctree)/arch/\$(SRCARCH)/xenomai/include =
+-I\$(srctree)/include/xenomai"
+-	(echo; echo $p) | patch_append arch/$linux_arch/Makefile
+-	p=3D"core-\$(CONFIG_XENOMAI)	+=3D arch/$linux_arch/xenomai/"
+-	echo $p | patch_append arch/$linux_arch/Makefile
++	p1=3D"KBUILD_CFLAGS +=3D -I\$(srctree)/arch/\$(SRCARCH)/xenomai/include=
  -I\$(srctree)/include/xenomai"
--	p2=3D"core-\$(CONFIG_XENOMAI)	+=3D arch/$linux_arch/xenomai/"
--	(echo; echo $p1; echo $p2) | patch_append arch/$linux_arch/Makefile
--    elif test x$reverse =3D x1; then
--        patch_reverse arch/$linux_arch/Makefile
--    fi
-+    for a in $target_linux_archs; do
-+        if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$a/Makefile; then
-+            p1=3D"KBUILD_CFLAGS +=3D -I\$(srctree)/arch/\$(SRCARCH)/xeno=
-mai/include -I\$(srctree)/include/xenomai"
-+            p2=3D"core-\$(CONFIG_XENOMAI)	+=3D arch/$a/xenomai/"
-+            (echo; echo $p1; echo $p2) | patch_append arch/$a/Makefile
-+        elif test x$reverse =3D x1; then
-+            patch_reverse arch/$a/Makefile
-+       fi
-+    done
++	p2=3D"core-\$(CONFIG_XENOMAI)	+=3D arch/$linux_arch/xenomai/"
++	(echo; echo $p1; echo $p2) | patch_append arch/$linux_arch/Makefile
++    elif test x$reverse =3D x1; then
++        patch_reverse arch/$linux_arch/Makefile
+     fi
 =20
      patch_architecture_specific=3D"n"
+@@ -378,11 +416,15 @@ test "x$CONFIG_XENO_REVISION_LEVEL" =3D "x" && CONF=
+IG_XENO_REVISION_LEVEL=3D0
+     if ! grep -q CONFIG_XENOMAI $linux_tree/drivers/Makefile; then
+ 	p=3D"obj-\$(CONFIG_XENOMAI)		+=3D xenomai/"
+ 	( echo ; echo $p ) | patch_append drivers/Makefile
++    elif test x$reverse =3D x1; then
++        patch_reverse drivers/Makefile
+     fi
 =20
-@@ -439,8 +426,10 @@ esac
+     if ! grep -q CONFIG_XENOMAI $linux_tree/kernel/Makefile; then
+ 	p=3D"obj-\$(CONFIG_XENOMAI)		+=3D xenomai/"
+ 	( echo ; echo $p ) | patch_append kernel/Makefile
++    elif test x$reverse =3D x1; then
++        patch_reverse kernel/Makefile
+     fi
+     ;;
+=20
+@@ -391,13 +433,15 @@ esac
+ # Create local directories then symlink to the source files from
+ # there, so that we don't pollute the Xenomai source tree with
+ # compilation files.
++#
++# Keep link dirs (4th parameter) descending, otherwise --reverse
++# is not able to cleanup these directories!
 =20
  patch_kernelversion_specific=3D"n"
  patch_architecture_specific=3D"y"
--patch_link r m kernel/cobalt/arch/$linux_arch arch/$linux_arch/xenomai
--patch_link n n kernel/cobalt/include/dovetail arch/$linux_arch/include/d=
+ patch_link r m kernel/cobalt/arch/$linux_arch arch/$linux_arch/xenomai
+ patch_link n n kernel/cobalt/include/dovetail arch/$linux_arch/include/d=
 ovetail
-+for a in $target_linux_archs; do
-+    patch_link r m kernel/cobalt/arch/$a arch/$a/xenomai
-+    patch_link n n kernel/cobalt/include/dovetail arch/$a/include/doveta=
-il
-+done
  patch_architecture_specific=3D"n"
+-patch_link n m kernel/cobalt kernel/xenomai
  patch_link n cobalt-core.h kernel/cobalt/trace include/trace/events
  patch_link n cobalt-rtdm.h kernel/cobalt/trace include/trace/events
+ patch_link n cobalt-posix.h kernel/cobalt/trace include/trace/events
+@@ -405,14 +449,15 @@ patch_link r n kernel/cobalt/include/asm-generic/xe=
+nomai include/asm-generic/xen
+ patch_link n m kernel/cobalt/posix kernel/xenomai/posix
+ patch_link n m kernel/cobalt/rtdm kernel/xenomai/rtdm
+ patch_link n m kernel/cobalt/dovetail kernel/xenomai/pipeline
++patch_link n m kernel/cobalt kernel/xenomai
+ patch_link r m kernel/drivers drivers/xenomai
+ patch_link n n include/cobalt/kernel include/xenomai/cobalt/kernel
+-patch_link r n include/cobalt/kernel/rtdm include/xenomai/rtdm
+ patch_link r n include/cobalt/kernel/dovetail/pipeline include/xenomai/p=
+ipeline
+ patch_link r n include/cobalt/uapi include/xenomai/cobalt/uapi
+ patch_link r n include/rtdm/uapi include/xenomai/rtdm/uapi
+-patch_link n version.h include/xenomai include/xenomai
++patch_link r n include/cobalt/kernel/rtdm include/xenomai/rtdm
+ patch_link n stdarg.h kernel/cobalt/include/linux include/xenomai/linux
++patch_link n version.h include/xenomai include/xenomai
+=20
+ if test "x$output_patch" !=3D "x"; then
+     if test x$verbose =3D x1; then
 --=20
 2.35.3
 
