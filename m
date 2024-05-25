@@ -1,79 +1,80 @@
 Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B35C3D3B8
-	for <xenomai@lists.linux.dev>; Fri, 24 May 2024 22:35:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6E0B3E462
+	for <xenomai@lists.linux.dev>; Sat, 25 May 2024 11:58:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.201.40.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716590149; cv=none; b=dc2tziZzS+LAF3475pRXmIWSgFwuiBvYkz9Y+AjqWi5EZbBlozdb2gOvFnEmXfRTVoapE5PEht8pLEGF7DD9QNFkO78eFX4MBftiZxL+BT3xB6lCZAt1lkMDl2DW9zuQTZekfei4Wd2Q1kPE5afm1bDoNzFhjvHzqrgC+98xH3I=
+	t=1716638319; cv=none; b=tr7pAwmP6ZqY6dnkxF/8Yc3iQYE7+ON42NVgYnl7ylbXg4QYHBD8Et7bjl0WyuN61HbCyL+jQfwabai6PGf9aIec4hX1ta3Wkm2Hlqkfg4v/BhkDOz9Dwtt4pEUdMc1R2ksEW23P2WtmJjRFBeKjS914iCz8XDtrtgaHT1ayruw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716590149; c=relaxed/simple;
-	bh=hvtBAHxc5C3QCoBGejCdsC6kkteVdNZ3fUKr5kNjyN8=;
-	h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:
-	 MIME-Version:Content-Type; b=nhDTo5GTCfBrpx6hmtb7YHuYYywFqpvp2Mi8xGVlN1VXAVzAzaFR+rFMhUuZhIn7hvyTYPQAmfkWrpAHtCIUHRpHE4ccW2EiWm5IbaYmGOgyH7vTZJXGY5+wr3Rb9X1kfD8kFxbokFWTr+BGilPc4D1l/BQK0vOHBIyhSGyw0dU=
+	s=arc-20240116; t=1716638319; c=relaxed/simple;
+	bh=jF39tRUIuAdVRnz2Qc12V9wAX20daq+oWrYehCAvglc=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=smkamIZd/WsMSWQ6NjO05Op6BqwpJYnQGSStVk82FwvgZDgnTWufD/LFhsmuDQpGKqU+anbzYCccN2wYMvRivFBepaLdQUJ7uOeKV2kH73yewpGmU2hXt+Z9UMtd+mRP/uVSCOR+MSXn3M4CMmbnejV6kXgeUwK7eP6jpzirCEE=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at; spf=fail smtp.mailfrom=nod.at; arc=none smtp.client-ip=195.201.40.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
 Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id AC95662348A5;
-	Sat, 25 May 2024 00:35:43 +0200 (CEST)
+	by lithops.sigma-star.at (Postfix) with ESMTP id 1A59D626FAF9;
+	Sat, 25 May 2024 13:58:29 +0200 (CEST)
 Received: from lithops.sigma-star.at ([127.0.0.1])
 	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-	with ESMTP id mj--0TfpTUDu; Sat, 25 May 2024 00:35:43 +0200 (CEST)
+	with ESMTP id ACBydy6JFOsQ; Sat, 25 May 2024 13:58:28 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 4C5EC61B8F3E;
-	Sat, 25 May 2024 00:35:43 +0200 (CEST)
+	by lithops.sigma-star.at (Postfix) with ESMTP id B7D5E64103ED;
+	Sat, 25 May 2024 13:58:28 +0200 (CEST)
 Received: from lithops.sigma-star.at ([127.0.0.1])
 	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id qNhTPgP6jOvc; Sat, 25 May 2024 00:35:43 +0200 (CEST)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 2F7996093341;
-	Sat, 25 May 2024 00:35:43 +0200 (CEST)
-Date: Sat, 25 May 2024 00:35:43 +0200 (CEST)
+	with ESMTP id kt9dKH7C5Oz2; Sat, 25 May 2024 13:58:28 +0200 (CEST)
+Received: from foxxylove.corp.sigma-star.at (unknown [82.150.214.1])
+	by lithops.sigma-star.at (Postfix) with ESMTPSA id 523FE6340E1A;
+	Sat, 25 May 2024 13:58:28 +0200 (CEST)
 From: Richard Weinberger <richard@nod.at>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@lists.linux.dev>
-Message-ID: <1615728829.144867.1716590143069.JavaMail.zimbra@nod.at>
-In-Reply-To: <3e8c206d-b730-495e-b204-13087853fd46@siemens.com>
-References: <20240518112703.30713-1-richard@nod.at> <ba5e0fc8-e2fa-4495-9cf2-69f0ed2d1621@siemens.com> <1792993044.132105.1716360194595.JavaMail.zimbra@nod.at> <770b74df-11fc-482a-9d2b-119b92e7097a@siemens.com> <784543910.133534.1716384735664.JavaMail.zimbra@nod.at> <3e8c206d-b730-495e-b204-13087853fd46@siemens.com>
-Subject: Re: [PATCH] [RFC] prepare-kernel.sh: Add reverse mode
+To: xenomai@lists.linux.dev
+Cc: upstream+xenomai@sigma-star.at,
+	Richard Weinberger <richard@nod.at>
+Subject: [PATCH 04/16] prepare-kernel.sh: Improve kernel tree check
+Date: Sat, 25 May 2024 13:57:54 +0200
+Message-Id: <20240525115806.12101-5-richard@nod.at>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20240525115806.12101-1-richard@nod.at>
+References: <20240525115806.12101-1-richard@nod.at>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF97 (Linux)/8.8.12_GA_3809)
-Thread-Topic: prepare-kernel.sh: Add reverse mode
-Thread-Index: HMlbGVpOGW1edVhrwMlFph5pihXT0Q==
 
------ Urspr=C3=BCngliche Mail -----
-> Von: "Jan Kiszka" <jan.kiszka@siemens.com>
-> The only difference of enforced linking might then be time updates in
-> the metadata. But don't ask me about the pros and cons...
+Currently any directory that contains a Makefile is treated as kernel tre=
+e.
+This causes strange errors when calling the script without parameters
+within the Xenomai tree.
 
-In 2006, Gilles changed the test from "-h" to "-ef" via
-7098866e0 ("Fix prepare-kernel.sh when it is run in order to change the xen=
-omai directory to which the kernel is linked").
+$ ./scripts/prepare-kernel.sh
+./scripts/prepare-kernel.sh: line 298: linux_: command not found
 
-So, the script no longer checked just for the directory entry being a symli=
-nk,
-it checked also whether the symlink points to the right location.
-The use case was, you have an already prepared kernel and move/update the X=
-enomai folder.
-As as consequence the symlinks are still present but point to the wrong loc=
-ation,
-but prepare-kernel.sh didn't update them.
+Fix it by checking for a more specific file in the kernel tree.
 
-To avoid this state, --forcelink should have been used.
-But looks like Gilles didn't like that and made --forcelink more or less
-obsolete with his change.
+Signed-off-by: Richard Weinberger <richard@nod.at>
+---
+ scripts/prepare-kernel.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Since make (and every other sane build system) follows symlinks, I don't se=
-e
-a reason to keep --forcelink.
+diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
+index 534531e2b..800528058 100755
+--- a/scripts/prepare-kernel.sh
++++ b/scripts/prepare-kernel.sh
+@@ -237,7 +237,7 @@ done
+=20
+ linux_tree=3D`cd $linux_tree && pwd`
+=20
+-if test \! -r $linux_tree/Makefile; then
++if test \! -r $linux_tree/kernel/kallsyms.c; then
+ 	echo "$me: $linux_tree is not a valid Linux kernel tree" >&2
+ 	exit 2
+ fi
+--=20
+2.35.3
 
-Thanks,
-//richard
