@@ -1,223 +1,179 @@
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on2048.outbound.protection.outlook.com [40.107.6.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f176.google.com (mail-pg1-f176.google.com [209.85.215.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3F4A6E611
-	for <xenomai@lists.linux.dev>; Tue, 28 May 2024 09:34:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.6.48
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716888872; cv=fail; b=gD1FbPhn2LVxeBObRM2+dpGBKREJLJBWan6peMHfC8cjBRM3yuOsRtmT022HbSSXk39NvV1tofkeeZtGkrRVmDJO1QEZSBbOvWr4BXkOwo6485d1BZqJwsDmr2bSd2AhHUEEWHMhGKwJeGwdlKgNKpS3pr5Q2VvackAB8ioBlOM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716888872; c=relaxed/simple;
-	bh=VhU1X4uMUXkVAcld1UMlPEQvs/edZkHRK/G6GTY8UEU=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=STdtrl9gwi4XlaAcHxHoou5uBDfvXbT1QIzCZ1JGbTeEKIOpn4uNPasQVAe9OZEzfJE1zFN+10OgzhxRCUjOZAfzBOuMhxEwo/tMkO0BF+yxXyIDGy0+a83p+xB7oPAAI0VrqWWBPPhDnJDfbetklLTycuIUwABSkWlDY7CL9Gs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=n9m41JW+; arc=fail smtp.client-ip=40.107.6.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 088946E611
+	for <xenomai@lists.linux.dev>; Tue, 28 May 2024 09:36:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.176
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1716889001; cv=none; b=U/zup2+2c5Dn+qN0Pc3rfJL5j+ISLuDU8I0aw9ALXTUTze7gWIovdy1PCgTaXcTjbcs7DkLZs067ggMvcT0SHzqdITpGxoI5rHfNT+2lBG4yiOj6Zdfgguy17GUxqu2L1Hr1NKGerAycSmZOD/yCxRmKVrYt6VBeXVU6CG1mnXo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1716889001; c=relaxed/simple;
+	bh=9sQTDI8cv30pXwBnIWacwxgxrRi74xsrFPpOvz529kk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=GG+vJwUfOmQjlk2+poQ6kpx2RKQD57G4hRE9nBc/fW5kooWpHpnpblMbM9zvBp5hwTs66fwWNn5PKe+3XUR6dECo9hSsTDlKRmiT+6CKGND6E3wV0PsShDxGGlXa4CR4jAsnHedBAf1Ju8AlKS+BAFYlJ+yACvdoJMVASJn/zyE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FxAqrpeM; arc=none smtp.client-ip=209.85.215.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="n9m41JW+"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Iopae71pWEoo+s6j076E/CxLnW/ur1x0TfX4PFN8QMU/GTXsMOytASQmJEHyiDCeXoa6YWAX/XtQJbvqEd9Cym70DJdIQk/XHv5MXvFnbaLnqhRcbm9lN4Ci2djxa7ZgA4E/HT+O2+qEbl0xSAMDUb/JDh0tDoKeD3wLt3U4/2z1bKpomc2KavsaISv6c22HK37Vc72ByIFFtoxWhmstDIsh+koxyuMjZ8vtI6psw3SJ5VqKZ810tSqcmgE1IkU01QvaCYQW5ddbOk4DaDpc74382AbDWyWvfAH6GD4eG1ei0NMKvQi50rRg6DsSvO8dY5rrH45aX1Pu1ZU4say4oA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XZBLrlqtbWzELeuWuMIV+4TlB+mD0urybzvDMS8QyH8=;
- b=VUTn82kdCTxssVul8B2YfLdtzC6Qsif+e2noNbXw6lk0O3AUnGrfodGBsKrupRC7Lcxu5catG2/sVTzgoTy4QWcxMxAlQ6yU3Gfiit2ydEfPWQbmlojtTxWkGFKXU6OGKWaYpA9lggltUQ2eqTTQtaHEUwkQhF/S3da/DdjvhQZSy1wQInPEgnsvueOMXh1DPJRVhI+fAFQO59uuyi/eOsNerCUa6JWx3HazgbtHLK7sgBk2LqYQln4WZzx7A/OELp5T+7ZJwyHyFllmPVYdP9KdczLqwe30vlHJrPaJAXQV1YZItiXC8SNFKqpr2EO0uMfE1AI5Zz5dOtltA7kzdA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XZBLrlqtbWzELeuWuMIV+4TlB+mD0urybzvDMS8QyH8=;
- b=n9m41JW+roiZY3iBS0lj0veu0s78+rmwkIzeGZ9iC3xaxPk7F/WxLlChVNYyw9vmsLeQZTQT6IXQY8ZvENAdJYYVvUPWVkiCxjdoa+rhVKmbIIhr588/PJMkeQrVO1DW7jJbEGSMdq7mHArZ+CQCllWtvZEGDapZ0OtTx0jW3sZuujkjH7fa4jSxIu0fWBFkcv537RiKBacyK2LcJkVjVwEUeIuQgbeAee1tXifG2BX21zsH27Q0B3hpCKp1TRqD5qSyTjEClu/kP4fFwdRfBCPvwsZ8EP4VJexL1o/M71K/v1KV7+nlxWwoqXl+aTj/1eiDnBUIpNcaOocpBLsFSQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by GV1PR10MB8385.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:1cb::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7611.30; Tue, 28 May
- 2024 09:34:27 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8fe1:7e71:cf4a:7408%7]) with mapi id 15.20.7611.030; Tue, 28 May 2024
- 09:34:27 +0000
-Message-ID: <b22f524c-f1b3-4981-bb67-6f936b14e507@siemens.com>
-Date: Tue, 28 May 2024 11:34:25 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/4] xnthread_set_periodic: Improve period adjusting
- support
-To: David Oberhollenzer <david.oberhollenzer@sigma-star.at>,
- xenomai@lists.linux.dev
-Cc: richard@nod.at, lorenz@sigma-star.at
-References: <20240528070432.6669-1-david.oberhollenzer@sigma-star.at>
- <20240528070432.6669-2-david.oberhollenzer@sigma-star.at>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Content-Language: en-US
-In-Reply-To: <20240528070432.6669-2-david.oberhollenzer@sigma-star.at>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR5P281CA0007.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:f2::17) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FxAqrpeM"
+Received: by mail-pg1-f176.google.com with SMTP id 41be03b00d2f7-657a07878easo544602a12.0
+        for <xenomai@lists.linux.dev>; Tue, 28 May 2024 02:36:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1716888999; x=1717493799; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sTNIhsPvWYpJ5o1RZHp7U7kP3SwEsrJZKLLj7nTAaVw=;
+        b=FxAqrpeMKkLhR5xozrHZ7wPmwigvmp45P/1aTWmViWUag5yxHB3XIwijwMH3vq3ELG
+         26SCETBaoDMP87bA/lo7/d9xFuHJy6ZswH2CW8ITenwU+l6Ni5edckBykyBX0Opq4MEb
+         EMY0iEtTG76fzsURu6vVPcteBB95lIdukdjiCdwF1NRiEjwsIG9xry69Les+nmeS9dv5
+         S3jq0UYOKn5g833SMRFQL4SL3B4tp4Iyc3ZwJtE17V3oDYYniarZK8aJ5pbEgs6Xc7El
+         BW7bWVqZoq2THnWV3K0qPsC4ZhgfE0H6d08NIPNi9ihGIv0PVWjKmLyVKxvlaI+Aa2it
+         b3sA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1716888999; x=1717493799;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=sTNIhsPvWYpJ5o1RZHp7U7kP3SwEsrJZKLLj7nTAaVw=;
+        b=a/UwBz5I5z0j9xLbY7pO23JUOSOVFInSc5OB5Og4/WaLSjnT2vxo+48gRHIvU8JJXs
+         8T3O9YBprZLK34wq7zG2f033JSdAeq4dtjme/MK1SC84Pe55ro5MuUYxUE0Ae5J2FU3t
+         CHjwtB2qrym9Sd/wtCjlfhfq7bHDGCDaJqgiBKJlb++92tGTYB0w+EWgFYLuG5qzit1w
+         22pCztpd7Wi5dlcRjCRYvEWRKix6Rte9wxHyQBUWlWqgzixJFjBHTRzSI+kZN6ea4oCe
+         JEml4TFqChjg+4oEy3HHr+g9POv6zHLPPV53+iu8UmQvU1OYIwjX5C5L+ADP0pSaV+M3
+         ndxg==
+X-Forwarded-Encrypted: i=1; AJvYcCW4u+KnjevDfZL2ulDx+G6Tcsqd47AyxUMFpEOdhd5b/PNexlUsJMWL42TrYvwF0NatCbkImtd40kAzDIaYsl8mNhKEV/GsPg==
+X-Gm-Message-State: AOJu0YzgIAnwRjYYoS6wd1ZI7BtBPtCWXyElhawKALvp7Bq5oOstyuNl
+	Ks5rbp00TcV6Uog70KF/nL7nEUoyFabiTtl6LbNkjf2OGlik0ot6mAVOVwtu7wTeJsnSkHqTxml
+	ZoV0fe2/MkMbDBAjH+lVeIccukYw=
+X-Google-Smtp-Source: AGHT+IF9ddIen49/toMgHcCukyS9QGtDpc689EaHd3Cs7Fk8LM0zp2zF9Bk0lMrCvjI/YBiWNXVu9G/5QdeXdNp0G/4=
+X-Received: by 2002:a17:90a:e996:b0:2bf:4c7a:e47a with SMTP id
+ 98e67ed59e1d1-2bf5f71a61bmr12778079a91.42.1716888999217; Tue, 28 May 2024
+ 02:36:39 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GV1PR10MB8385:EE_
-X-MS-Office365-Filtering-Correlation-Id: 09a9ce0b-2b5e-4609-0a1e-08dc7ef95e14
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|376005|366007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?NHEydHNGYkJVc3dSZFpRMllwNUZ3Tm9YRWxmeFpPSmJBQ2loSDY1TGhZUUlq?=
- =?utf-8?B?YVdqeHRzOW0rRVZFTTkwNW5PcjgvZ1cyNnpJbHRyMkZjc0p5ZFdXcnRnbDhV?=
- =?utf-8?B?aWlDeTlQTUFGbjJUdndBWURQMkJSUEJPbGxNN3ZoTmdlT0oyaER6dnd1TUJE?=
- =?utf-8?B?cjJTR0dZR0gyamNvRndTSnIwN2ZjZTJ5VGZPeTR2bU1yb2RTT3Q4cDcxRW5C?=
- =?utf-8?B?L2JrNVV6N29WWHBsc0k1SnBTQXBHUjJaY0dYVjJVelVPemIzWUNqU0xSd0VZ?=
- =?utf-8?B?VThxTVFKYjB3d2VId3lvUE5NaDRMeVdYbVNyK2NaaEJ1eGVlc1VMQTc5eVVT?=
- =?utf-8?B?a2M4Nk90Mzg4a2tZbkpHakdpUEZ0Rm5abTRwWWx5ekJwUFJrRU1SdUMyb2pY?=
- =?utf-8?B?a21QaUxDTWEvZEpSVHlLZFVIaVdwYkE2Z2pXQTFUVDZxekp0ODBOMDRRVkJk?=
- =?utf-8?B?TUpVUFo0OW54ZlNvaGY1NGtWT2NwU3dtNCtaZUNlL2xhdm4wWmtnRmxBUkVZ?=
- =?utf-8?B?dWpqWUZFSCtWekxoOUJ2elUxc0MxSldWc1JGcWwzRnFmUXFkOUVsaFFMUUFr?=
- =?utf-8?B?enBtaW5laVRCSnA2VklWTkJ0bjFKeXZ2Z1ZnR1NGYWRubFE1Wk1vVHo1bHln?=
- =?utf-8?B?a2VFamJLejV1cEJFZDViYlRyaWJKbE1vbHVTa1lXbXZlVmRBTndLQ29TUTBL?=
- =?utf-8?B?RXp4R2pESEtRYnBHQk1vNWVsdExvY1hpUUlvM1ptcy9jdm9KcEJEd3g0aXVp?=
- =?utf-8?B?eGVVUVpsanBLcy94NERxeEx6N2JQbEkxOGhLQWNKK2RQQlZ0TzI0ZW1kbDN4?=
- =?utf-8?B?b2pvYWJsbEcvWEhMUTl0azdTU3ZoQzlBSEtEMkxGZUdPbS9CUW8rVnlaVmk0?=
- =?utf-8?B?NjEvdVNVZDhDMnFuOTZMTU4yQjkyUXVmcGYwZUh2bWxORFQ3S3UvUnZuNFZk?=
- =?utf-8?B?emVGejFkbGw1R0pHYTBGQWx3UDBFamg1dUNzTEdQZmdjbGxYaHNGNGFNbUZN?=
- =?utf-8?B?Y21lc2tSTE1IM1YwQnYvNUNPT2dLM2tRSVN1SGhvcHBPZzF0K0VCbGJ1NVgv?=
- =?utf-8?B?MldBb3N6dVNmSkNYclRVc1JSRVhKNEVzdWZpcSt3QndIbjBNNkZsd3RRUUl3?=
- =?utf-8?B?OEMwUXZBZmV2Q2RNUk1XcDhqSmtyVGZ0V085VVJXdHdRVTlhYXlSMTErMzJW?=
- =?utf-8?B?ZlVleGN4bXZwZmlxRnJlQnhUbkJYVUl3YUJJeERCNGJpL0NRZ3NjNC9FK2sv?=
- =?utf-8?B?Q01aQXdESVp5dWpOYlBxSVRpeFJzQnhvb2FwRTJ1cXpOMUFVd0FFSWhzbDJa?=
- =?utf-8?B?VzY1RXZpbHZndlM1QUxJUEMyS3pGekVVUFpPYWVkbzhMMGpCb0dFVzkzdUF1?=
- =?utf-8?B?TWU2ejI5b1FrZkZ3Q2JzbHZ2QTc2dGVsSzY0Y25VcjNDaUR5c2lKQm5zdXFa?=
- =?utf-8?B?QTdlZHJjcm44U0FnNWVONmRCOFFJN3ZDN3B5NEIxbWZsYVFUTEt4R1dScFU4?=
- =?utf-8?B?Ylp5cmRIdGJMN01nNmtCb0tOaU9nL2ZRRTdhK0crdFdQYnJ5bkxlNmphaXEz?=
- =?utf-8?B?VEVPbHYzVURqb3ZLcUhROHg3eGVzRHc3NzN1ajNqQVl3VFJPempwSlFQU1RJ?=
- =?utf-8?B?M1FSMlFGNnBrTHRWUTBON0JNTzA5dTBkMTNua0ZkU3FuaDNRLzJUejFNRGdE?=
- =?utf-8?B?WjZOMGpkSzd0VzgwMTBOWUttcXMycVR6R0k0elQwTHdOaVBTaHd5TWNRPT0=?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005)(366007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?TUhDK01qSWVFeXFYTEQxbjNoMEp4Q1g5Y0U5REdJV1BKUFB2bTA3UEtUTzZw?=
- =?utf-8?B?YzlTTUhsRzZwOU0yUnF2Z1FiUDc3WUtIRFMxc1B2SmcyUTMwMnphd3NCblFZ?=
- =?utf-8?B?RkR4QjZOckN4RkVwaGJMUHV2VHNQYmc3ZFh5RXFCQ1hqNkg0UjFweXBtcjB0?=
- =?utf-8?B?VkU4eUhiNTJ2eXlXSktuMzl3REhXeTd3NnNaa3VpZURWeFp1NFRrcVNJSiti?=
- =?utf-8?B?dUttZjdlb21oSW94L2FOOGJqUFpxL05OVHZtNVkyU0h2MDRQNXdycG9OWXp0?=
- =?utf-8?B?ZWF1RjMwYk1UamNrTGRQaGJjNDhSSmlnSndVbThkWWM4M3g4cTBSd0RCWSsy?=
- =?utf-8?B?Wkp5QUxZRVNHSXpHN1VmTHA1MWNlL0VyZVN5VWhTQjZETjBUWFVwR2VtMVZm?=
- =?utf-8?B?dnh0cmI1bi9rYXFwN1B2bjdXbnp2TVNzSWd4aWZFSG5TNzhxMlFKVXRXbVl1?=
- =?utf-8?B?UDR2MlcrQkVjVzJqMUtqQXJQbEd6V0dENjBJY1pCUVAyMDlwQnZyZ2Q1d2NC?=
- =?utf-8?B?UldrUCtaazdaY0UwYlRjaE5YZldLN3FPQnlNa2hBZ2hKVjFiUVdxandlY01C?=
- =?utf-8?B?eHpZZnB5NmdheWE0a3FINUt3bmFiQzVKQnBsNGJJNXFUWHdVM2dsUXZRK09u?=
- =?utf-8?B?QW1YMnV6YkU4d2orQ2ZMU29UczRiMjY4ekJoWVJEdUhCU2Roejd3WWlHTkdH?=
- =?utf-8?B?QjBXVWpXT2pOK3VMczdJZ0hBUE1ZNVJtckJVVTM2aXlzNnNHWWF6Rzg5S2xj?=
- =?utf-8?B?dHpsMm10OU5JWERNeHBBUWRURktESWpNQjdjb1UwRUNWcXdzQ0NkUFA2NzRQ?=
- =?utf-8?B?eDlocGswc29pM3pscVpuQmE2blFQbXhFNVJiVlhJSnNyQnRxOS94cDZ1N1dF?=
- =?utf-8?B?VmxPdVJpMlJLYXR4bU5sUzFocHZUdWExWS9pNC9DYkhLb2pObjFKMGR4bTFr?=
- =?utf-8?B?NDVtdGZVL21MT1NLcUIwSWRSMWVDeWp2dkN0UHVWM3hNKzVicWV3VGhZdk1V?=
- =?utf-8?B?MWh1ZFkxTG9Ed2ZJamZJdlZvU0RSemR5ZCs4cHBTYlkzTW9GZjNYbEE3RUxP?=
- =?utf-8?B?Y0w4aXU5NEhxYWsxYmtMTHhOVHZKS0xtNWdON2d5RU1DTHlEencwYndkajM4?=
- =?utf-8?B?dnF2NkFLa1ljcC9jbHlISExxRW5zdGtJaTJXMTYrcXpwOGtvMGZob2FYQXAw?=
- =?utf-8?B?a054QzhFSFp6Y1l6bkNJQWdhT0NYRTNQekgwUjEzdGdRc2xSNWhFSGx4SXhC?=
- =?utf-8?B?bXZ6aHlQbFR0OTJEYzFPNDJFQ0l6cmNYM1dZUW1UQUIzS2dLdVRZcFI0bVlC?=
- =?utf-8?B?UUQrSnY5cWptZ1lvbTVGM0JHWTZrR3U4RkNtS3htMGlGR25GR2FpbWxYekhG?=
- =?utf-8?B?Tmhsd3ZReFFoYjFiTTIzTVFHQVR5enRyZWUwQnZydFhxWEI2a2RHR0hzV0Fx?=
- =?utf-8?B?NXZoTExYUzR2TTRYd2dTVDhQSXF3MDVaZE4yOU5QQjBJRXdNZy90WmRSV05n?=
- =?utf-8?B?bjQzUXZuQS9JbUl4TUZ4cS9lbk5rUmtVUWpQMkhscUptMkh6d1l0a3dqQmx5?=
- =?utf-8?B?NndxdVVFQThHNkNVMHhOdlZmMHpBb2Q2d1dudEJMTjZIY29kQzkrMFhiR0xS?=
- =?utf-8?B?V1hmQ0NIVWo1OHBUSXZLUko4anQ1WUIxYUozalJzSE5BN0diSXZ0MkN0TER2?=
- =?utf-8?B?aHZDZ3RlUERiL29zRjRPRUlHcnR0Z1EwdjFQOTBaZElmMCtZSkZDTG13UlNK?=
- =?utf-8?B?RWVrNXNqZ0NNeUhwMkVQdFd2QzlhS2FvR253cVliakFOOU5HUUxOem8wbENT?=
- =?utf-8?B?VEpQdGIyUDhJbFNELzNkYi9Fc1dZcENqZVcrbWVTQ09zbUU5V1NHNVVtazcy?=
- =?utf-8?B?TmNac3V0VXVMSExCa0ZMN1hpUW93cGJZKy95TldncGx6a3JybkFxVW9kZ2Jr?=
- =?utf-8?B?elZzaHpwR3B3ZVJTbUlPemxYMXlrQUZaYTdEV1JJMEtBbmsyb01mNTdMekJi?=
- =?utf-8?B?ZWp1cUYvZFN5b2J5THBKVHVwZ1JPdHlra1RiRm9GUkFDN3lPVnYyYkYwckYz?=
- =?utf-8?B?OTg3VCtqYW14WGUvZnEwNDEzdTJUaHVMR2g2VmRKanBUUi90M0dZeVF3T2hR?=
- =?utf-8?B?N2ZMNVRYMUplYm9BSXZteS85bEtLZEY0T0RPdWd0Ry9vZzgyWUVKcW1Ya2ho?=
- =?utf-8?B?RkE9PQ==?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 09a9ce0b-2b5e-4609-0a1e-08dc7ef95e14
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2024 09:34:27.0947
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vfzCgkVJN0VpXER5cwqwYDx7kDFt09m8lRmrBacSFJ120AEckNRDtb7HeGkngTGSPk5RzdsaynUqH+I8AFiELQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR10MB8385
+References: <CAH0t8y01h5W8Hsa=xvUJCyQM5VeA8CSTftBvLYrzbzQHenv7zw@mail.gmail.com>
+ <PH7PR11MB749952ADE786FE1D78EA1A91F2F12@PH7PR11MB7499.namprd11.prod.outlook.com>
+ <5de1a72a-ce0c-492a-b5ba-5bdc659df4a7@siemens.com> <PH7PR11MB7499FB6B26032D1645F9BDD6F2F12@PH7PR11MB7499.namprd11.prod.outlook.com>
+In-Reply-To: <PH7PR11MB7499FB6B26032D1645F9BDD6F2F12@PH7PR11MB7499.namprd11.prod.outlook.com>
+From: =?UTF-8?B?VGFtw6FzIFBhw6Fs?= <paal.tam@gmail.com>
+Date: Tue, 28 May 2024 11:35:11 +0200
+Message-ID: <CAH0t8y2ibgH-yuGS_GZphqmVO3o5k25gKZUchBXt9oy9E=9aCQ@mail.gmail.com>
+Subject: Re: rt_igc fails to bing an i225-V Ethernet device
+To: "Chen, Hongzhan" <hongzhan.chen@intel.com>
+Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, xenomai <xenomai@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 28.05.24 09:01, David Oberhollenzer wrote:
-> Currently, when a periodic task invokes xnthread_set_periodic() multiple
-> times, the timer is reset each time. Consequently, the period drifts
-> because the elapsed time is not taken into consideration.
-> 
-> To improve the situation, this patch alters the behavior when idate
-> is XN_INFINITE, to keep the current timeout value and alter the period
-> only after the current period expires.
-> 
-> Signed-off-by: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
-> ---
->  kernel/cobalt/thread.c | 18 ++++++++++++------
->  1 file changed, 12 insertions(+), 6 deletions(-)
-> 
-> diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-> index cf3b4dbb0..de97b7e70 100644
-> --- a/kernel/cobalt/thread.c
-> +++ b/kernel/cobalt/thread.c
-> @@ -1273,9 +1273,10 @@ EXPORT_SYMBOL_GPL(xnthread_unblock);
->   * point, expressed in nanoseconds. The affected thread will be
->   * delayed by the first call to xnthread_wait_period() until this
->   * point is reached. If @a idate is equal to XN_INFINITE, the first
-> - * release point is set to @a period nanoseconds after the current
-> - * date. In the latter case, @a timeout_mode is not considered and can
-> - * have any valid value.
-> + * release point is set to the end of the current period, or to
-> + * @a period nanoseconds after the current date, if thread was not
-> + * periodic before. For XN_INFINITE, @a timeout_mode is not considered
-> + * and can have any valid value.
->   *
->   * @param timeout_mode The mode of the @a idate parameter. It can
->   * either be set to XN_ABSOLUTE or XN_REALTIME with @a idate different
-> @@ -1336,9 +1337,14 @@ int xnthread_set_periodic(struct xnthread *thread, xnticks_t idate,
->  
->  	xntimer_set_affinity(&thread->ptimer, thread->sched);
->  
-> -	if (idate == XN_INFINITE)
-> -		xntimer_start(&thread->ptimer, period, period, XN_RELATIVE);
-> -	else {
-> +	if (idate == XN_INFINITE) {
-> +		xnticks_t start = period;
-> +
-> +		if (xntimer_running_p(&thread->ptimer))
-> +			start = __xntimer_get_timeout(&thread->ptimer);
-> +
-> +		xntimer_start(&thread->ptimer, start, period, XN_RELATIVE);
+After applying the patch, it works fine!
+Thank you very much!
 
-Doesn't that mean that we skip over the next tick and fire only after
-that one + the new period?
+Best regards,
+Tamas
 
-| ........|...........|.................|
-last      now         next              actual
-tick                  old tick          next tick
-                      (start)           (start+period)
-
-> +	} else {
->  		if (timeout_mode == XN_REALTIME)
->  			idate -= xnclock_get_offset(xntimer_clock(&thread->ptimer));
->  		else if (timeout_mode != XN_ABSOLUTE) {
-
-Jan
-
--- 
-Siemens AG, Technology
-Linux Expert Center
-
+Chen, Hongzhan <hongzhan.chen@intel.com> ezt =C3=ADrta (id=C5=91pont: 2024.=
+ m=C3=A1j.
+28., K, 9:31):
+>
+>
+>
+> >-----Original Message-----
+> >From: Jan Kiszka <jan.kiszka@siemens.com>
+> >Sent: Tuesday, May 28, 2024 1:22 PM
+> >To: Chen, Hongzhan <hongzhan.chen@intel.com>; Tam=C3=A1s Pa=C3=A1l
+> ><paal.tam@gmail.com>; xenomai <xenomai@lists.linux.dev>
+> >Subject: Re: rt_igc fails to bing an i225-V Ethernet device
+> >
+> >On 28.05.24 05:30, Chen, Hongzhan wrote:
+> >>
+> >>
+> >>> -----Original Message-----
+> >>> From: Tam=C3=A1s Pa=C3=A1l <paal.tam@gmail.com>
+> >>> Sent: Monday, May 27, 2024 9:09 PM
+> >>> To: xenomai <xenomai@lists.linux.dev>
+> >>> Subject: rt_igc fails to bing an i225-V Ethernet device
+> >>>
+> >>> Dear All,
+> >>>
+> >>> I am experimenting an Intel NUC 12 Pro small PC (NUC12WSHi3). It has
+> >>> an Intel i225-V Ethernet controller, that works fine under Linux, but
+> >>> I cannot make it work via Xenomai (Cobalt core).
+> >>>
+> >>> I downloaded the latest Xenomai-master tree, and the
+> >>> v6.8-dovetail-rebase kernel tree. The building procedure went well.
+> >>> Xenomai also working as expected.
+> >>>
+> >>> This is the i225-V device in the system (the result of lspci -v comma=
+nd):
+> >>>
+> >>> 72:00.0 Ethernet controller: Intel Corporation Ethernet Controller
+> >>> I225-V (rev 03)
+> >>> Subsystem: Intel Corporation Ethernet Controller I225-V
+> >>> Flags: fast devsel, IRQ 16, IOMMU group 16
+> >>> Memory at 84200000 (32-bit, non-prefetchable) [size=3D1M]
+> >>> Memory at 84300000 (32-bit, non-prefetchable) [size=3D16K]
+> >>> Capabilities: [40] Power Management version 3
+> >>> Capabilities: [50] MSI: Enable- Count=3D1/1 Maskable+ 64bit+
+> >>> Capabilities: [70] MSI-X: Enable- Count=3D5 Masked-
+> >>> Capabilities: [a0] Express Endpoint, MSI 00
+> >>> Capabilities: [100] Advanced Error Reporting
+> >>> Capabilities: [140] Device Serial Number 48-21-0b-ff-ff-5f-cf-d2
+> >>> Capabilities: [1c0] Latency Tolerance Reporting
+> >>> Capabilities: [1f0] Precision Time Measurement
+> >>> Capabilities: [1e0] L1 PM Substates
+> >>> Kernel modules: igc, rt_igc
+> >>>
+> >>> This is my init script:
+> >>>
+> >>> #!/bin/bash
+> >>> ifconfig enp114s0 down
+> >>> #remove the device first
+> >>> echo "0000:72:00.0" > /sys/bus/pci/drivers/igc/unbind
+> >>> rmmod igc
+> >>> modprobe rtnet
+> >>> modprobe rtpacket
+> >>> modprobe rt_igc
+> >>> echo "0000:72:00.0" > /sys/bus/pci/drivers/rt_igc/bind
+> >>> sleep 1
+> >>> /usr/xenomai/sbin/rtifconfig rteth0 up
+> >>> /usr/xenomai/sbin/rtifconfig -a
+> >>>
+> >>> This is what I see on the console (line 9 is the echo command for rt_=
+igc) :
+> >>>
+> >>> ./start_rtnet_intel: line 9: echo: write error: No such file or direc=
+tory
+> >>> ioctl: No such device
+> >>>
+> >>>
+> >>> These two lines appear in dmesg:
+> >>>
+> >>> [   25.325872] igc 0000:72:00.0 enp114s0: PHC removed
+> >>> [   25.389790] rt_igc: probe of 0000:72:00.0 failed with error -2
+> >>
+> >> According to the error number, if it equal to IGC_ERR_PHY,  there shou=
+ld be
+> >something
+> >> wrong with phy init.
+> >>
+> >
+> >Is the rt_igc code base we have sufficiently recent for this NIC generat=
+ion?
+>
+> No, I just ported from one specific Linux-dovetail version which was upda=
+ted at that time when I was trying to implement rt_igc
+>
+> Regards
+>
+> Hongzhan Chen
+> >
+> >Jan
+> >
+> >--
+> >Siemens AG, Technology
+> >Linux Expert Center
+>
