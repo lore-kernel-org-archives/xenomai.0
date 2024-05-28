@@ -1,156 +1,193 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2083.outbound.protection.outlook.com [40.107.104.83])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51E7D16D313
-	for <xenomai@lists.linux.dev>; Tue, 28 May 2024 11:58:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716897505; cv=none; b=K56jOgrgNwHr68J5bshASObZWisw1K5Mx3N9vhPPhjpbdiYk08DW74U+/Gt45pXfMLtCfJgWdFHU9AiEIEr5siP6eAkctUvw7ohIsgw+5zYNU0O+5x+Ltq/zOMgCwF+AqU1sdr9DaAvNT5Sl5MnUrmr8+Duh5mdm0/AhNsuo1o8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716897505; c=relaxed/simple;
-	bh=ynJJsks55CP2th1vmLJjKD7aNgkz24PID0exzRlnYTw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Y1iXTV0qxNpfHEXBS/IIB4RPdggAcNC1EmUWTuoqn6pSzW2AJpc/VLQoNUMAA4rkyWVBqfOrw7mtUKhq4vTkIM+VliiXoemLagCPLAboz6ZoSXqK4gs8+idRq1hKcpNLN6FECCiDrwA1+q9oT/MmfLE4qvDP8ca3CGIMjiirqOA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at; spf=pass smtp.mailfrom=sigma-star.at; dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b=OgKPBopy; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sigma-star.at
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00F6916132E
+	for <xenomai@lists.linux.dev>; Tue, 28 May 2024 13:36:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.104.83
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1716903387; cv=fail; b=qjRsUl/zSrf3HbKbth32z6BvYoaEcesAARAtgDUfoVc2yDsyZRlsw3RMjYeJPsDM6x9Rymae+rA+Hpa1hksMi0BjZLQhA6WQ4BhU2p1/KcVCBqAd0A/9f9QNPjYzAW8y6XnEV1iNMby5KVZ9k4hI98rQuOEfVGcHjOynwGY656o=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1716903387; c=relaxed/simple;
+	bh=QRk/b5CBLrnxTL1LZg8al4bDvs0XqWdbAc8SxuHlV7I=;
+	h=Message-ID:Date:Subject:From:To:Cc:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=hEDz/f8OBTmV6LHogppwT8rVK/X3cRgZzs5bCaj9GzE67Vd+C+rt1bOKWlNzet/EVY5E0Lb+x+hqctx6V45L9DHXBHox+Gitm801QCtYv2yhJpEHoM1H/Bt7y6Iu31V1HQJOOIx54hoSg1AipwVSUbZRJ5ZuHGEGntVOymy9eQg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=HEEfKWlv; arc=fail smtp.client-ip=40.107.104.83
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b="OgKPBopy"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-42101a2ac2cso5459885e9.0
-        for <xenomai@lists.linux.dev>; Tue, 28 May 2024 04:58:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sigma-star.at; s=google; t=1716897500; x=1717502300; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Q5wHYmhtoWY98TeI0p7eO1FyO2OdlloO6ZqlXOnVOhE=;
-        b=OgKPBopyzdgBUgXJTVwFuzTLysLhggpbPrYdLRxA+tknchfAXBUEGvMAz9loSfL2V4
-         UQWYbhmwuFBlyDQg8NklSPJHQIh/mZ352vrn/ncI7tOAF3FcrKoHl5X+SWlyQhYBoDCm
-         KfgKD2YagwY2cqAO6V32FqSxNUDJprrF/n4cfLldgXmfrc3V9ux3CJBGzQdRX1fD++SA
-         2Bsr8kEP9N6f5+ucIkTpPUMa9NqbpvfPPGfrfBZKcqZoQoeNQRPlTQH5GOrnOf7lcRz0
-         GOyABUOuoeJ0J8a0Q7jCTFJlTGfWX35cf3T0Pl38sOQz9QZ7hjk2V9LpIrdag3nDS0tv
-         tckg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716897500; x=1717502300;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Q5wHYmhtoWY98TeI0p7eO1FyO2OdlloO6ZqlXOnVOhE=;
-        b=gn0FHlt2k+ZgwGm1OapxAb8mtYRvWRn3oTeUKhOjj2/cSI8/Htiow+aKqz1iDYoGHJ
-         h/WHhW49lW2YtBsBVLBUAk8cugOCVv9yomu98I+6YhnIfrcA3E0NJpmO3FpPtFGKmgza
-         nDrYy4xn6fbE3mhZsQzvdIBYCP589hR2kM9ZM0vjUL0GCDIE4VyB9gA11VRoso81S0g0
-         QU7WJAYMDDqScspGO9YhKjn0XDWw25JcrFQFQLBJ+92yK/kzg1j+VTATQpqwQ30firf1
-         0DoIVl/PEXd6rAy9UZlE7vjlnZ0aRPGbxX+4j9GvA3xXlB/+dnL5zBqFDPgLjmfEbVGJ
-         Y/yQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVuBQlSVV1AM7vdV8QB8TL4slIUI/4esZY86dbYOGyA6X/2N8VlKpWr34joW8yIR3jVEf+NihvfC9FZBrx7uRP83zFoOrR+Uw==
-X-Gm-Message-State: AOJu0Yw/1BKpt3kUayiWgMBQCXRjJqOtJ46xEjpAIFEcV0U35PWoZY33
-	zvg94nhLeFpStshc2xjgOR3fu0SqnqZotVu/FneP+GV9iCOaXoO4VBk+bnMiQJg=
-X-Google-Smtp-Source: AGHT+IF0fyhI2R9TN2s6m5gh6YhNKpLCo8nPbeu5BhtsrJGKmmezp2+rlQmJgrFmkgOVaXzjLLFOUQ==
-X-Received: by 2002:a05:600c:458a:b0:41f:3ee0:a302 with SMTP id 5b1f17b1804b1-421089fea64mr85153135e9.30.1716897500277;
-        Tue, 28 May 2024 04:58:20 -0700 (PDT)
-Received: from [10.115.255.165] ([82.150.214.1])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42100f15f66sm170021905e9.14.2024.05.28.04.58.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 28 May 2024 04:58:19 -0700 (PDT)
-Message-ID: <5472aa3d-6245-4bb8-afbf-ae4d702e7d29@sigma-star.at>
-Date: Tue, 28 May 2024 13:58:18 +0200
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="HEEfKWlv"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Uy1ilrIrIOmC7mHzDPxzYRFP7iIKfL5y1iKOtmcsnal5M5flo/drwByrmLqqTYODpl5z3dM/J7Pi3ZyGREn9DvcrtP/MN2v8GDySsf7HW4uREsrtaLElfm5ECdH4tex6PS2yYMRLhKbt0MUTiju3KTpm/+gJAlqQH7GbjNo4aA8iGpniYOCORn2wOEzm41MstgcuoPTBaOYxqJ6Irud18Nnsd0aSki8AhLVBj/WvoswLdXY+2MRz3ufIKJVKhLh1UIsFqo4xTvta2/AJE5VspH+i2NGSXp53QjtjwVdBh/RoV+G3IO3wwLtsMz8ixE+mqcrxO0+1hf8CxvfdX+nMFw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/lkHecfivsAfsHloYVHKYV50CwzfG5JsiObG8aqxeKg=;
+ b=Iey3kD+kU8A3Nr6oaPa4xUPoTV2gh3Vb9f5I1ERLhKxKvdapAJve3ic9HKw/OOrAnySdC4iV+sFzJi72MehajGS8xP4//HzBhBh0GjdFnNDt8i8iBKYleiAvnS7oN/iPvbEnoggCPB1SltCFFUe6+M40IIvQlVbocsj4UjGzbHhVg/1RtZFrB2k71+hQD1BP/IwFOG2am94hkWxXXJqPZ2+pZEjGaqFdtYMNB1YmCnw8+5SUgntsNIMYfoOhe9CfktATywX6p5JhG/Gxjsgk/l95MddkCnl3kIJwWHB89E67ymKUCzYY20/NSSO16ZMtR1cEUeXhXPxPSuhL4OaKPg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/lkHecfivsAfsHloYVHKYV50CwzfG5JsiObG8aqxeKg=;
+ b=HEEfKWlvgQQs2tsr+zSWinV06ucW4NhUc8a+G0SDtvxL9RgiV5V1S6SwohWMwSRfAaXdgi+fWxhZK5pihJLcMpBm8k8EnnkyL3CXH1P4rFx+bqFMEOuPHkZcoVRIoJ9MB3y5kYYUqGdhy61MMyhxHIldZc7jl1gUChTdyWXZStlZKWvgRb+RALdbHbCr1fdpZUucAAi7EY9ffkc3ZvIzuqfkHWs0RGccewUfNVIVOAf0u/9erXVU24dOlQaQvR5ioAVhYE/acuSqBOVcFeUFqyoHquF3TaoxWxzTfTT/uUH/0K+X+ekt8GUSjZ+aXR92hlR28IfioC8m3g+x8nSkWw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by PAXPR10MB5784.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:24a::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7611.29; Tue, 28 May
+ 2024 13:36:19 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408%7]) with mapi id 15.20.7611.030; Tue, 28 May 2024
+ 13:36:19 +0000
+Message-ID: <3b4a7ed5-ac29-4897-9606-388106db0dd5@siemens.com>
+Date: Tue, 28 May 2024 15:36:14 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/2] Fix rt_task_unblock for RT_MUTEX
+From: Jan Kiszka <jan.kiszka@siemens.com>
+To: Richard Weinberger <richard@nod.at>, xenomai@lists.linux.dev
+Cc: lorenz@sigma-star.at
+References: <20240524083642.19434-1-richard@nod.at>
+ <ac6d6c40-aac4-4568-8bb0-244ee293c5ea@siemens.com>
+Content-Language: en-US
+In-Reply-To: <ac6d6c40-aac4-4568-8bb0-244ee293c5ea@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: CH0PR03CA0385.namprd03.prod.outlook.com
+ (2603:10b6:610:119::20) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/4] xnthread_set_periodic: Improve period adjusting
- support
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
-Cc: richard@nod.at, lorenz@sigma-star.at
-References: <20240528070432.6669-1-david.oberhollenzer@sigma-star.at>
- <20240528070432.6669-2-david.oberhollenzer@sigma-star.at>
- <b22f524c-f1b3-4981-bb67-6f936b14e507@siemens.com>
- <fc1d19dc-49a5-4b66-91af-38889c8f32b4@siemens.com>
-Content-Language: en-US
-From: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
-In-Reply-To: <fc1d19dc-49a5-4b66-91af-38889c8f32b4@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|PAXPR10MB5784:EE_
+X-MS-Office365-Filtering-Correlation-Id: f2437ac6-f00d-4304-7a48-08dc7f1b27e9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|1800799015|376005;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?V1JCbVRKblVmaDBpa25DNkZUbjkraGdPVFBKeGE4Zy9zL2xkZGFIQ3VsSXZw?=
+ =?utf-8?B?MXJhZlppZ3hjaTR0a29UMlY1aFlOcnN6NUV2eXRxWDRkR042RnpFUS9TV2xy?=
+ =?utf-8?B?aWRKengrQmVYdGRHNEo3b0lrTWM4ZGYzTGI5bU9tbWdqRkxKVVBGVjU1bWlZ?=
+ =?utf-8?B?dE56RWtSajVBendNM1NQanhPaTYzRUhRMFhmQVBsT0hKK1Q4eTF2Wlcvdyt1?=
+ =?utf-8?B?Q2d3UXZiYXkrWm5UclZpY3RDWis3RTRxbTZNU3RuMExkVjJFZTZSeG9yUStV?=
+ =?utf-8?B?TGcyTG04QnlncVBoa2ROWTVtaDcvOFNSOUVFNm5jb0dRSDZMdi94K1J5R2NO?=
+ =?utf-8?B?cE5lQzUwR0pBT0Z4U1JEMGpQZzhKeVNYZnNoN2hIUE1aVWdEQlV6YVpFK3hs?=
+ =?utf-8?B?TEVyRmZFeGUwNTdoMjhqbVFRZk5jZkhyZ21PdDA0eEZUK3JEYXFaSUVPWjZH?=
+ =?utf-8?B?Wno4K08xR042T2doTzRickJ5QWxDb3djek9zZXNqQTF6aFhOY1FNUU11V1I4?=
+ =?utf-8?B?bFhrbWdIUXNLTWFrbXdiV3pIL25SRHYxeHZld3JXazExanE0N3J0WjQra21n?=
+ =?utf-8?B?dkNqN1IrTTBFNHVyRzlzem1qSHl1eDlEd0tlYlA3UUh6dkFON1pxdVFOK2Nv?=
+ =?utf-8?B?Szc3UjA2SC9say9mbGV1OWZDektFK1VvWWQvUmhKelFNMzhMb0pBVTJ6SGs4?=
+ =?utf-8?B?cE43VkJjNklFRjBPM0xKQXF6T1k1SGZKTVN5cFZNUzk3YzVXUE8zKzNoUWVv?=
+ =?utf-8?B?ZUgyRFkzOVRhQWZDYUJPdjFrdFh4UjNWTU5tYUVsS3daZTBiZGtuV0x4cjBF?=
+ =?utf-8?B?QWhuWVZJekk1TzRjTGJWUkZKaVlvdlppb0Q1akk3RXo3U0c1REtoSkR0R2ZR?=
+ =?utf-8?B?OUgxdzlScy9lcno4SVIvZnhUTituWWttcFZETk5oZW9KNHJoWHowaTJTQlhk?=
+ =?utf-8?B?TFFBTDlXNld3L2xWR1RKRjJKaENNYlFXb05UVTM3cE0zNVZhSUtuVWduSFg2?=
+ =?utf-8?B?S01Hb1I4d2p0UHo1RFh0TUh5dTFwbmpWMm5lUnJRWXYzbVhtSjJHVmV5S1M5?=
+ =?utf-8?B?ZkNaa0RVd0xpZFg4UVFGWHQwYmh4YUxFLzAvZGdUOHBVVnVJYlh0djRnTllY?=
+ =?utf-8?B?cDFneUVSTXQyVUszOHE0dE8wNG5zYnVEeTREbDBoVkJrR2t0RkQ3SDFSRVZS?=
+ =?utf-8?B?SDlUNDF3SVpqc1l3bHBwa2NoRkJGK085UHNXcndPSU1udFRCUm9JQ2J0MVBx?=
+ =?utf-8?B?SGJmQXBoZ0I2OU1VNjNoeG9oRTkzbWJQY1BmNXp6T0I1WmExajgvekdJVkFm?=
+ =?utf-8?B?d2VVMDNkenRDbitxcHBvVTdrZUlWRVZaNjNEVlhDcUhZOHY2Y3Y0R2pyMklL?=
+ =?utf-8?B?RE5mUWJlem51T0hzRWJZUmo3T0NwMTNPTmlYeTJ0RFI0Qkc1YU52TWZZc2ZT?=
+ =?utf-8?B?WXJFUFA4NndpZ3BxdyswWU1vQ1dlQlRHS1A2c1Z6Znd6dEVXMjUvTkR2bC96?=
+ =?utf-8?B?bmRUZEZWajNhcGZzZVM2bUF4TDZscU1yb25uazY1L1ZNM3Ftb3B2Vksxd1hq?=
+ =?utf-8?B?a3F6SXQrN2h6VU43MXk1UHN5R042OFgwRTJJVlRnSmI1SjFpUHd3UTVVMlBM?=
+ =?utf-8?Q?gxwtATJU4y20jhMA5EqGxBl2mMj4UDntM5IZrRVEBeBc=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(366007)(1800799015)(376005);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?ZDlHYXIwSm9xU1dDMjlCRmluNDdQK21LNHM0S05OT2F1MVlCamxoeXJWeFZv?=
+ =?utf-8?B?TzNYdTFrQjEwRWg4S0lKc3I3OXpleXpyY2xjdFN1MWNxNHhWckU4ZGN2ck5j?=
+ =?utf-8?B?THpWRVZmbG1Od21sUzBqYWgwaGR6bXRjaUtab2RuT253bDF5T21qbFRyYWpv?=
+ =?utf-8?B?OGhpUHBUZ0w5WlRsRW1Hd0VFVzg5ZndST05DSlNsNnd5UEQ2TDdJRHJ2MTA1?=
+ =?utf-8?B?Z2dSMVNJUUdna0lGeHNZcjh6OWNpa3pmU2pYTUx6aVdwZWwxYzdTeGRwQVlY?=
+ =?utf-8?B?VkwxSk1zd2VqZ3BZbkcxWkVzS2RPWE9RVDArZFZRS293NW1tK1VBVUYvNjBx?=
+ =?utf-8?B?Wi9XaXVKRU1zRDBRSW5qYjJraG8yYis0VDlsUTdKMHBXenh4WW9mVGg3UXJr?=
+ =?utf-8?B?K2dmODYxMmxzWDd4VDY1TjFrRzViVEU4MmJ1K3p1YU5WTXNoU3R4WDNqSTJQ?=
+ =?utf-8?B?RDdsZkJYOXNhTnlmY0tCOURmWWxKNFdHYWVrTDlKVDUveEVTTXBVcitJaE0w?=
+ =?utf-8?B?Q0UxdWxPOEl2TVJDTHJQZnd1MEp2L2R2Ymg2M0JWcDJzY3lQcmJKbis2L2RG?=
+ =?utf-8?B?RDd5dVpsLzNRNFV4SHdEeEZSSHpVeFdyL1RPaWdDd0c1a01yK3FVbG9CMUJU?=
+ =?utf-8?B?YXIzUE4rakJYbGJueTlWK2xnQTJJTzh3ZTNMU2p4ZDdKWnlnVjdsRjFGZkpa?=
+ =?utf-8?B?VUgxUzdsV0FCOEYxTlhaczFoZWpaSWlUOHpFRzhIL1RxZzJwUUVpaGZSWmRW?=
+ =?utf-8?B?Nmx2QW9mRVpNUG0wU2xuVE9BMThVS0ZiUWNsTStZMUYzZWtLdGVSeTBHd0Z2?=
+ =?utf-8?B?Y0kzL0w2NWxzNUdmTVJqMFdDM3ZsOS9MUndqanZ3Ly9ZYUNackhUZHJ2Y1h4?=
+ =?utf-8?B?eExHQ08xV3MyZ2liRDBkM0dVK1NOaGZnT3pneDMrR002ZVRCbWdiUG5lT09w?=
+ =?utf-8?B?bHorUkdnYXIraGtrcXVLWGFlQzdBWWhjemw5RjlQTkVwN2JKTGYrb1pKRWNp?=
+ =?utf-8?B?NDAyUzdtZHFaUzhzd3pUYWovKzBTaTh4b2NUUkIxbHp5eW5SU0FvQStucm9B?=
+ =?utf-8?B?Wmd4dzFZUVV3MUpiU2FEdjltSVNVL1JSWkNpcUROekdRWHJQNXp0NE1kVCtK?=
+ =?utf-8?B?azVlZk5JSTZ6YysrNzR4dHl4SWx0WTY5S3pjZ3pQcXBWQ0hxK1BMQzMyb1Np?=
+ =?utf-8?B?NmxLUk1tVk5CdTdmNUphK3FKQWxJUzNGc0NDNVhkK0trUUN1V29WSStyaEtU?=
+ =?utf-8?B?RzIybDdtaUFoWjRGRS9iWkNBWDc4Nzhoc0lRNFl2QlBocm5XaURNN2Npc1RO?=
+ =?utf-8?B?OGh4UmhtWGY0akt4NndJcitqVkdNRkZlMmtBMS85VmxjeXZRbWErTlRZQVo3?=
+ =?utf-8?B?RWh2N1ZYNHhQQVRkNUJMazI0TDUzZXkxVE5FV2hEOUdWRkEyZWhDaWNVa25u?=
+ =?utf-8?B?NFk0eTBXSnZEc0NEc0ZZQm9LUHNEeTZoYmM4SmU5M1QrdmNGaEd0T2pLMmlC?=
+ =?utf-8?B?a1d5N1FZT2doZGFZUkd3dVg2T2hYT0ZiVk91MHlMdjZ3U1RVdnVnYU9Ba2Z5?=
+ =?utf-8?B?d3ZXbnhrSDZydHVvVm03L24vOEw5R2NIeVlZMTUrdjFzc2NwcXFMdUJaWlQy?=
+ =?utf-8?B?aE45S2VmWmZ5Vzk3OGc1YnUxVTRUSGtGb2hFZmhkUGdWdnRKNGttYkhiekZt?=
+ =?utf-8?B?a0svaE5LTDVsTGdab05mZXlqak8vL0NBbmhTY0FtMUY4VXZ4M2Q3cjJiR0pP?=
+ =?utf-8?B?Z0RhNlo1OXpHdWt0L3IzWEFmZFlWbU92aWNsMWhLUGlsTUtnOC9ybTR2bWJB?=
+ =?utf-8?B?RU1jMzNUY3hTazY4UmROcXd0MXNsbDA2WkZJQTFMcGZzdlQ4c0RWWUVmVFlT?=
+ =?utf-8?B?bTdJMWJ0NG5QTFRNdnpoUjhsR01DRGZlWUJQZHRiRzhlMEpWVDJKMnh3Tml4?=
+ =?utf-8?B?WHRnZjNBKzltVkJ0UnYwaFhyVkRkRVA4NzI0MzdRVUlSeHRkTGlFU2FqQm9H?=
+ =?utf-8?B?cUZMSnF4SEZrQ25Pc1lNWlhjeXJtZk9QS0w1ZHZnNE1lekRNcCt1cmFpRzR1?=
+ =?utf-8?B?MTdJVm1Wa2VtUjRJc08xUHNiOGlVN3ZmTlpkRWo5S3NjbXJyUlNTM2pGZTBj?=
+ =?utf-8?B?aThiNnlmSlRzb0VhdFVDZmk1RzN0U2x3bm91SEpHWlhSblpuL1RuUzRpb3px?=
+ =?utf-8?B?a2c9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f2437ac6-f00d-4304-7a48-08dc7f1b27e9
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2024 13:36:19.2643
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6YRr+JkDMspoiQ3GgsmrA1r3U2Ysn1Lx5ZZ3RBuspMa6DjKgXrJTALuXX+MFv1kpe/14oEtKT8l2+ZgU24sZpw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR10MB5784
 
-Hi,
-
-On 5/28/24 11:38, Jan Kiszka wrote:
-> On 28.05.24 11:34, Jan Kiszka wrote:
->> On 28.05.24 09:01, David Oberhollenzer wrote:
->>> Currently, when a periodic task invokes xnthread_set_periodic() multiple
->>> times, the timer is reset each time. Consequently, the period drifts
->>> because the elapsed time is not taken into consideration.
->>>
->>> To improve the situation, this patch alters the behavior when idate
->>> is XN_INFINITE, to keep the current timeout value and alter the period
->>> only after the current period expires.
->>>
->>> Signed-off-by: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
->>> ---
->>>   kernel/cobalt/thread.c | 18 ++++++++++++------
->>>   1 file changed, 12 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
->>> index cf3b4dbb0..de97b7e70 100644
->>> --- a/kernel/cobalt/thread.c
->>> +++ b/kernel/cobalt/thread.c
->>> @@ -1273,9 +1273,10 @@ EXPORT_SYMBOL_GPL(xnthread_unblock);
->>>    * point, expressed in nanoseconds. The affected thread will be
->>>    * delayed by the first call to xnthread_wait_period() until this
->>>    * point is reached. If @a idate is equal to XN_INFINITE, the first
->>> - * release point is set to @a period nanoseconds after the current
->>> - * date. In the latter case, @a timeout_mode is not considered and can
->>> - * have any valid value.
->>> + * release point is set to the end of the current period, or to
->>> + * @a period nanoseconds after the current date, if thread was not
->>> + * periodic before. For XN_INFINITE, @a timeout_mode is not considered
->>> + * and can have any valid value.
->>>    *
->>>    * @param timeout_mode The mode of the @a idate parameter. It can
->>>    * either be set to XN_ABSOLUTE or XN_REALTIME with @a idate different
->>> @@ -1336,9 +1337,14 @@ int xnthread_set_periodic(struct xnthread *thread, xnticks_t idate,
->>>   
->>>   	xntimer_set_affinity(&thread->ptimer, thread->sched);
->>>   
->>> -	if (idate == XN_INFINITE)
->>> -		xntimer_start(&thread->ptimer, period, period, XN_RELATIVE);
->>> -	else {
->>> +	if (idate == XN_INFINITE) {
->>> +		xnticks_t start = period;
->>> +
->>> +		if (xntimer_running_p(&thread->ptimer))
->>> +			start = __xntimer_get_timeout(&thread->ptimer);
->>> +
->>> +		xntimer_start(&thread->ptimer, start, period, XN_RELATIVE);
+On 28.05.24 07:24, Jan Kiszka wrote:
+> On 24.05.24 10:36, Richard Weinberger wrote:
+>> Changes since v1 [0]:
+>> - Better names for EINTR capable functions
+>> - Remove want_eintr flag and loop around __pthread_mutex_lock()
+>> - Correctly integrate mutex-2 test into smokey test framework
 >>
->> Doesn't that mean that we skip over the next tick and fire only after
->> that one + the new period?
+>> [0]: https://lore.kernel.org/xenomai/91a15d69-ea68-49a9-8daf-d52ae31f6d49@siemens.com/T/#mf76a46eaa5ec033bacdfc63ca219af3bb84356b3
 >>
->> | ........|...........|.................|
->> last      now         next              actual
->> tick                  old tick          next tick
->>                        (start)           (start+period)
+>> Richard Weinberger (2):
+>>   Alchemy: Fix rt_task_unblock() for RT_MUTEX
+>>   alchemytests: Add test case for RT_MUTEX and -EINTR
 >>
-
-According to the documentation of xntimer_start(), the `value` argument specifies
-the first time the timer fires ("The date of the initial timer shot"). Then, the
-interval would be used after that ("used for reprogramming the next timer shot")?
-
-So, to my understanding of the documentation, the timer should first fire
-at "old tick", and then apply the new period?
-
-At least that is the intention here, complete the current period with the current
-interval value, then switch over to the new one.
-
+>>  include/cobalt/pthread.h                     |   5 +
+>>  lib/alchemy/mutex.c                          |   8 ++
+>>  lib/cobalt/mutex.c                           |  44 ++++++--
+>>  testsuite/smokey/alchemytests/Makefile.am    |   5 +
+>>  testsuite/smokey/alchemytests/alchemytests.c |   1 +
+>>  testsuite/smokey/alchemytests/mutex-2.c      | 111 +++++++++++++++++++
+>>  6 files changed, 164 insertions(+), 10 deletions(-)
+>>  create mode 100644 testsuite/smokey/alchemytests/mutex-2.c
+>>
 > 
-> And you also need to update the documentation of rtdm_task_set_period, no?
+> Thanks, applied (just not yet pushed - our lab has some hick-up).
 > 
 
-Ah, yes, I must have missed the mention of that case in MIGRATION.adoc
+Now done - all red:
 
-Thanks,
+2024-05-28T11:51:59 FAILURE rt_thread_body:117: pthread_mutex_lock
+returned 4 instead of 0 - Interrupted system call
 
-David
+Please have a look.
+
+Jan
+
+-- 
+Siemens AG, Technology
+Linux Expert Center
+
