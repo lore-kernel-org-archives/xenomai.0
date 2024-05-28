@@ -1,174 +1,133 @@
-Received: from mail-pj1-f50.google.com (mail-pj1-f50.google.com [209.85.216.50])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27F2313FEE
-	for <xenomai@lists.linux.dev>; Tue, 28 May 2024 07:00:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF9E35339B
+	for <xenomai@lists.linux.dev>; Tue, 28 May 2024 07:04:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716879612; cv=none; b=HwXOG/s/OojB5iljAwVGvRD+ucuzeSBE26eZsvD6/bB/txjIARJly+XxxEXUXVPHRXQ3Y4m/gUQACvIbztmcgmc33+MssZP0lGi74ZDSIqXDcXPcp/8nPfZXFUgaLRFcHcIo/Pk5nUYDd5AwIhMwLKiZK8hCf0rwvceFobULKjg=
+	t=1716879893; cv=none; b=jx/dqSHHea3CEioUs+Mw8QoyVBW0WtDF1Q5uy9LkV4XL3UP8v8LPWB48GDvvbddtg0nKYgjy3lJ8g3F/LC6n5ZziR/NuYvBc262sdWP6NKBI6HwvAGVRuJ/TFBuP5TKIBsO5zTCeoUxA9jHEyPgo1IYx/WsCvy2r80Qz4vdmAR4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716879612; c=relaxed/simple;
-	bh=iFbiR58KaZFH79B24pI4BU0dE0pN6R2aI6we0j7QT9c=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=n3Gi/zg7SUv5r/lGGvyXGmzADc9lucHCBkd8OwSQr40VLh6rjYHQZhMfFtL8HoDQRFU/LAlPPMIqLGjwnLgv15d90jlGrBJTukNI4VPxBXOoG+WgY9UVHtq7gUU88i9gjMB+rDRs3YGWT+7YDdwpZ500FJPlwDtQfS9jAaHiQVY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cDlI85An; arc=none smtp.client-ip=209.85.216.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1716879893; c=relaxed/simple;
+	bh=/m3OnG1M+6q6gSgPDsN0srRCax72/gmNwbSLxzUXetA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=NrDvoRmuTp1dF+hMO934XHbtlrLNcLx+ogiSMDa4mND6kV0J3jZaP9OyA+cX9KJ04ZNKOMJDdB2H3oZg6ymkcO7SX0pOb0+BvChqGUof6k56XLtNGK790kdmKUw5zQaZzrUx+yuv6JZ2IgH9inB/vCJkUKHou9ymqoW+feE0tbI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at; spf=pass smtp.mailfrom=sigma-star.at; dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b=Qhzt34YC; arc=none smtp.client-ip=209.85.128.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sigma-star.at
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cDlI85An"
-Received: by mail-pj1-f50.google.com with SMTP id 98e67ed59e1d1-2bff7b9503aso341294a91.1
-        for <xenomai@lists.linux.dev>; Tue, 28 May 2024 00:00:10 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b="Qhzt34YC"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-420180b58c3so3595375e9.2
+        for <xenomai@lists.linux.dev>; Tue, 28 May 2024 00:04:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1716879610; x=1717484410; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=sigma-star.at; s=google; t=1716879889; x=1717484689; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=JItbsAIaylSpBzTuVu/1LWuvr0LMik1rRtVvEgb0O/k=;
-        b=cDlI85AnXAqYGXp+mkKk/FTzOzk28npFczYUks4O/WAawXfhhraPWXDimHg264HZRx
-         oQUsHDEibh8f/+iUJD/CvV5aMl6iAC0GnR9dOWIL9kfo8/OtU/QTFyZ7ojHPc9+nzBWw
-         UVnorPYhyulXxnHQLf8KrpWn610c4WzXtgXnzm5w5qB/ypN+hEsetcEvgCyUl4tkLgKS
-         tUWnDJEL48pkzS4V8GOqWQbSlXgokN1UG+xgvHHKbfo0GExNzCn3JRv2+TDhYbjJgzrO
-         Kq2SI0S/fMFoG1XLXDjJa9041pKJC4EsfMLj2k8qU4vz1Mu76fFIkZ5T3Zl2A0tNm0Ni
-         WeNw==
+        bh=amJiYbGasPHj6GUK6eQHOJXz8aeg8xcdHveRBE3LCUg=;
+        b=Qhzt34YCFUI/4Vsn2YKI6Eb3MImJxcGCuJw2pQcQ43TJAIU1Ot3tZvj+1lO9oQgpY7
+         yHJElW60/wSuVgB/XJ1LUChEysgbJ3DBX7lYVrJeuwhPqdiBMKvcjY0dqNkR1EMoD+pI
+         cncK990sCixWIGWsSLFr/umU+98CKjOBgrR4qBA3VB7DMt7PImM9lwa+aFyh40sXccLp
+         hEmM5Qewju7k4yZBUE8ktrmtXOjlOpb0oR0IrNf+lO6ett4m0lXYs9gGpbDv8EjUcY8m
+         3/mFDNdTeFrTB9z3WuMKREnslOzP6xsHL583hYXmnd+aHQ32Mg/Tn+GxGQE4px2AoJ/B
+         E/Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1716879610; x=1717484410;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+        d=1e100.net; s=20230601; t=1716879889; x=1717484689;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=JItbsAIaylSpBzTuVu/1LWuvr0LMik1rRtVvEgb0O/k=;
-        b=NHSPYIwOT2qR9Dt3aDMUdUkKqYKtxvTeQXkgDV64Obf7FBxsZJFtwiwhNGp8QSJNQm
-         hc0u5NWGJLF0ANILldBVHfIPw2AAM1yK3Z4winW6GexOWDF1e73AEQ2c+lET3MnQFKue
-         BRI62zV3pbh42LYWPBduS/A+j0R0zApm2SR4VcIUVZBjIpeJ+8Yi4SPqIXIfCWZeN6J8
-         wruq4Yy2wtIqmfitgjDVNUNszmpcX2F2RrTAwn/B+UeWVavB5f6ycYkg2EoPSnR8FJru
-         sMKNIdeS417tx4GMgRIh3zY6ZuVQzNOiBn4C1we4Sf7psYyg0O3ekQnH3zksb7isCbWt
-         KwGw==
-X-Forwarded-Encrypted: i=1; AJvYcCVdrNFATOAK+c4pfMNqeWzV1zlZCpzgdxrBLtGMAVpDaHY34PYMBXnGl4nj377Ecfqv/BYuoy0owlqVBKskEaqqOc9NLwOkQg==
-X-Gm-Message-State: AOJu0YwIjjO2RDE8nBwbOwbqv6CgIlHivoPVSCEkOn76ItqPwkTXATG4
-	BCOFaBVZ0k44GjtgZIWFfj58PifCAB3M58+g35ds/F0mqFqqnRPh4L4nkwSY6SDUPy5SDuAHsbI
-	FQWqsyq3Ek+jA7AMVRIGIgFyJlvo=
-X-Google-Smtp-Source: AGHT+IGhApeMcQtMsnc8PLF6UpfMIDR8FvJbly9+6Qx19VqkKB5A7lXUV8lqV84LYIDUZ6Sp8BhBx3VxigKeSTpdvKM=
-X-Received: by 2002:a17:90b:3113:b0:2bd:f3ee:c903 with SMTP id
- 98e67ed59e1d1-2bf5e0b818cmr11089448a91.0.1716879610016; Tue, 28 May 2024
- 00:00:10 -0700 (PDT)
+        bh=amJiYbGasPHj6GUK6eQHOJXz8aeg8xcdHveRBE3LCUg=;
+        b=ifqH8uYfa1a/cpRLTcaf3NspyromT4HjrBx1NUVWCdciPfIsqg6vvJdVYtzG5l0RRf
+         eCw7CRECrvd61CHUajULBtrCM95ICa2whXBVBuyXonPctOuj3ZCpmQcFAKWehzIzBnRU
+         K+2F8HaK+t01ODc5Oo2Xs1qE4d1lvvg2sTOjB6Bd2aUQnHas0e/HCj1+e0K/nxwwrFTO
+         v5QgJ89xDhsiEmfn+nkcIunDnU7mtvLrO5hvJMdbjIljKRcPkqE2Re3nwlf1DsYx/A5r
+         La3Yfr67aRHb4VIg3FmNoG/ybPMTvOqabDqPSco5MHfOLz/Qivbko67nLVVt3LzjFMhX
+         eHTQ==
+X-Gm-Message-State: AOJu0YzbxOAjhEMOSa70b+OihgmNfVg2smM9/p3KD31ql6uz778urusx
+	RVpNR7bHZAMUcGj9+x9jHyDTNuEUcjca/EDqf8hb0JPPVnURTcXhRN7SBuIwKVq6jMcNsUbYYZy
+	z
+X-Google-Smtp-Source: AGHT+IHYirk8FIyIJA62TFuhxz2dQjpnQdRbj8Omen56dQ4CieVV0rZC6pJOLr6Pd4e9Szuyu6MLdQ==
+X-Received: by 2002:a05:600c:2282:b0:416:bc18:2a00 with SMTP id 5b1f17b1804b1-42108aba991mr91826615e9.38.1716879889331;
+        Tue, 28 May 2024 00:04:49 -0700 (PDT)
+Received: from localtoast.corp.sigma-star.at ([82.150.214.1])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42100eecbd4sm164340355e9.8.2024.05.28.00.04.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 May 2024 00:04:49 -0700 (PDT)
+From: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
+To: xenomai@lists.linux.dev
+Cc: richard@nod.at,
+	lorenz@sigma-star.at,
+	David Oberhollenzer <david.oberhollenzer@sigma-star.at>
+Subject: [PATCH 2/4] lib/copperplate: Add threadobj_get_periodic
+Date: Tue, 28 May 2024 09:01:38 +0200
+Message-ID: <20240528070432.6669-3-david.oberhollenzer@sigma-star.at>
+X-Mailer: git-send-email 2.45.0
+In-Reply-To: <20240528070432.6669-1-david.oberhollenzer@sigma-star.at>
+References: <20240528070432.6669-1-david.oberhollenzer@sigma-star.at>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAH0t8y01h5W8Hsa=xvUJCyQM5VeA8CSTftBvLYrzbzQHenv7zw@mail.gmail.com>
- <PH7PR11MB749952ADE786FE1D78EA1A91F2F12@PH7PR11MB7499.namprd11.prod.outlook.com>
- <5de1a72a-ce0c-492a-b5ba-5bdc659df4a7@siemens.com>
-In-Reply-To: <5de1a72a-ce0c-492a-b5ba-5bdc659df4a7@siemens.com>
-From: =?UTF-8?B?VGFtw6FzIFBhw6Fs?= <paal.tam@gmail.com>
-Date: Tue, 28 May 2024 08:58:42 +0200
-Message-ID: <CAH0t8y2+1w+4VKsJYRdEDrZoRiVmkVXT60qt3t5oOSsq7SoXbg@mail.gmail.com>
-Subject: Re: rt_igc fails to bing an i225-V Ethernet device
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: "Chen, Hongzhan" <hongzhan.chen@intel.com>, xenomai <xenomai@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-I have an M2 size Ethernet card working in a different PC. It is also
-an i225-V. It works fine in that other PC, but in this one it
-generates the same error. The differences between the two cases I see
-is the very high PCI slot number and the higher IRQ number with the
-"IOMMU group" indication via lspci.
+This function serves as a counterpart to threadobj_set_periodic,
+allowing us to obtain the expiration time and interval of a
+periodic thread.
 
-I tried to set the debug level other than zero in igc_main.c here:
+Signed-off-by: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
+---
+ include/copperplate/threadobj.h |  4 ++++
+ lib/copperplate/threadobj.c     | 21 +++++++++++++++++++++
+ 2 files changed, 25 insertions(+)
 
-module_param(debug, int, 0);
+diff --git a/include/copperplate/threadobj.h b/include/copperplate/threadobj.h
+index c8363415b..bf57cf6f7 100644
+--- a/include/copperplate/threadobj.h
++++ b/include/copperplate/threadobj.h
+@@ -365,6 +365,10 @@ int threadobj_set_periodic(struct threadobj *thobj,
+ 			   const struct timespec *__restrict__ idate,
+ 			   const struct timespec *__restrict__ period);
+ 
++int threadobj_get_periodic(struct threadobj *thobj,
++			   struct timespec *__restrict__ idate,
++			   struct timespec *__restrict__ period);
++
+ int threadobj_wait_period(unsigned long *overruns_r) __must_check;
+ 
+ void threadobj_spin(ticks_t ns);
+diff --git a/lib/copperplate/threadobj.c b/lib/copperplate/threadobj.c
+index 0782ffb11..91b7c41fb 100644
+--- a/lib/copperplate/threadobj.c
++++ b/lib/copperplate/threadobj.c
+@@ -1661,6 +1661,27 @@ int threadobj_set_periodic(struct threadobj *thobj,
+ 	return 0;
+ }
+ 
++int threadobj_get_periodic(struct threadobj *thobj,
++			   struct timespec *__restrict__ idate,
++			   struct timespec *__restrict__ period)
++{				/* thobj->lock held */
++	struct itimerspec its;
++	int ret;
++
++	__threadobj_check_locked(thobj);
++
++	if (!(thobj->status & __THREAD_S_PERIODIC))
++		return __bt(-EINVAL);
++
++	ret = __RT(timer_gettime(thobj->periodic_timer, &its));
++	if (ret)
++		return __bt(-errno);
++
++	*idate = its.it_value;
++	*period = its.it_interval;
++	return 0;
++}
++
+ int threadobj_wait_period(unsigned long *overruns_r)
+ {
+ 	struct threadobj *current = threadobj_current();
+-- 
+2.45.0
 
-Numbers below 10 works only (other values generate compiler errors),
-but no new kernel info appeared.
-
-If it is a PHY error as the error code is -IGC_ERR_PHY, where should I
-add debug prink to get closer to the problem?
-
-Thank you,
-Tamas
-
-Jan Kiszka <jan.kiszka@siemens.com> ezt =C3=ADrta (id=C5=91pont: 2024. m=C3=
-=A1j. 28., K, 7:22):
->
-> On 28.05.24 05:30, Chen, Hongzhan wrote:
-> >
-> >
-> >> -----Original Message-----
-> >> From: Tam=C3=A1s Pa=C3=A1l <paal.tam@gmail.com>
-> >> Sent: Monday, May 27, 2024 9:09 PM
-> >> To: xenomai <xenomai@lists.linux.dev>
-> >> Subject: rt_igc fails to bing an i225-V Ethernet device
-> >>
-> >> Dear All,
-> >>
-> >> I am experimenting an Intel NUC 12 Pro small PC (NUC12WSHi3). It has
-> >> an Intel i225-V Ethernet controller, that works fine under Linux, but
-> >> I cannot make it work via Xenomai (Cobalt core).
-> >>
-> >> I downloaded the latest Xenomai-master tree, and the
-> >> v6.8-dovetail-rebase kernel tree. The building procedure went well.
-> >> Xenomai also working as expected.
-> >>
-> >> This is the i225-V device in the system (the result of lspci -v comman=
-d):
-> >>
-> >> 72:00.0 Ethernet controller: Intel Corporation Ethernet Controller
-> >> I225-V (rev 03)
-> >> Subsystem: Intel Corporation Ethernet Controller I225-V
-> >> Flags: fast devsel, IRQ 16, IOMMU group 16
-> >> Memory at 84200000 (32-bit, non-prefetchable) [size=3D1M]
-> >> Memory at 84300000 (32-bit, non-prefetchable) [size=3D16K]
-> >> Capabilities: [40] Power Management version 3
-> >> Capabilities: [50] MSI: Enable- Count=3D1/1 Maskable+ 64bit+
-> >> Capabilities: [70] MSI-X: Enable- Count=3D5 Masked-
-> >> Capabilities: [a0] Express Endpoint, MSI 00
-> >> Capabilities: [100] Advanced Error Reporting
-> >> Capabilities: [140] Device Serial Number 48-21-0b-ff-ff-5f-cf-d2
-> >> Capabilities: [1c0] Latency Tolerance Reporting
-> >> Capabilities: [1f0] Precision Time Measurement
-> >> Capabilities: [1e0] L1 PM Substates
-> >> Kernel modules: igc, rt_igc
-> >>
-> >> This is my init script:
-> >>
-> >> #!/bin/bash
-> >> ifconfig enp114s0 down
-> >> #remove the device first
-> >> echo "0000:72:00.0" > /sys/bus/pci/drivers/igc/unbind
-> >> rmmod igc
-> >> modprobe rtnet
-> >> modprobe rtpacket
-> >> modprobe rt_igc
-> >> echo "0000:72:00.0" > /sys/bus/pci/drivers/rt_igc/bind
-> >> sleep 1
-> >> /usr/xenomai/sbin/rtifconfig rteth0 up
-> >> /usr/xenomai/sbin/rtifconfig -a
-> >>
-> >> This is what I see on the console (line 9 is the echo command for rt_i=
-gc) :
-> >>
-> >> ./start_rtnet_intel: line 9: echo: write error: No such file or direct=
-ory
-> >> ioctl: No such device
-> >>
-> >>
-> >> These two lines appear in dmesg:
-> >>
-> >> [   25.325872] igc 0000:72:00.0 enp114s0: PHC removed
-> >> [   25.389790] rt_igc: probe of 0000:72:00.0 failed with error -2
-> >
-> > According to the error number, if it equal to IGC_ERR_PHY,  there shoul=
-d be something
-> > wrong with phy init.
-> >
->
-> Is the rt_igc code base we have sufficiently recent for this NIC generati=
-on?
->
-> Jan
->
-> --
-> Siemens AG, Technology
-> Linux Expert Center
->
