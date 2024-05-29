@@ -1,60 +1,64 @@
-Received: from EUR04-VI1-obe.outbound.protection.outlook.com (mail-vi1eur04on2044.outbound.protection.outlook.com [40.107.8.44])
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on2089.outbound.protection.outlook.com [40.107.7.89])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F4FBE576
-	for <xenomai@lists.linux.dev>; Wed, 29 May 2024 16:16:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.8.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17C9C1591FC
+	for <xenomai@lists.linux.dev>; Wed, 29 May 2024 17:03:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.7.89
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1716999364; cv=fail; b=LNubBb3nCzVnpb7fJCgknVHRoH0xqiwNHJWPiCB3PC7zikL+s0IABYomMAH2N7DlQRf0t0Pm8ybxoGh/jydAwc1dKi/faG/0+/xzkvbvthBFnZ4q9B1Kqpbau6vyKbI9JlXWwPqF7NejrN4CttNOEmZLcHA9WihyUFf56lMbf7M=
+	t=1717002231; cv=fail; b=YnWmHM0pHCVcY71WA2cS5/GK6FW81hVaPrhQOcVYrxgYq+o+BybeLQBJLmFgKneEMM4xODYDEOZwGtlan2BAN+a4Cvmo5/EWx3gn9teMJc09uKC31wRLjfWV70H5p0bBSslr6Hk4a5IEH3/RvPvWboiEjb4Pwfvo5w03ttAR4xA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1716999364; c=relaxed/simple;
-	bh=ouRdk/h97H/Pw+AMpfWJ7yRGah1p4+INvHy4pNl0PkA=;
-	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=WQ4k8L7dyGxzKZ+n29/cte5zCQ6zgZMbMg18fqY2S2lxsYVCMPpUkIlZ56zMx7qEfZsQ6+yslFEhb2xvGKDFVvPsbZW7A0NNlz7C5gqo2JjirRzXYEO0gM+yk/+mrmTrEpSNRUd2mv+FS1MyleNi0gaw8Sx1FPnN1z28meTgUBY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=gaM9d6Kj; arc=fail smtp.client-ip=40.107.8.44
+	s=arc-20240116; t=1717002231; c=relaxed/simple;
+	bh=fevO6VPy3orgO1fE9E5BHCJg0WXB77qAp94geC04/+8=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=mrbjWOE3iileVMRvRlyUS2ZKFcVxSK2Qc+8OdLZWah4QpGyqFsOfjO52JQWyCP6L2EdB0lBxMS+WJrFvbJBdTrJJkwuGJ3oumT2HrCFGwAT/P/P7FbtW4fJXSpwAlQ/He6Dk+C3c4CM/hA6LI5+KTdmZCjK+SS618lQyzaUu5WY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=k3ZBput4; arc=fail smtp.client-ip=40.107.7.89
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="gaM9d6Kj"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="k3ZBput4"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MBGWzsLy2Ut6rKmAJ1Cy82g9f7umjJ3lW5CuvUHnspW7KtLcApCCC8qZlQiF9QBU/BvJVhGt9eN5rbfhZJn17ZEfaApe9vhh8NpZPhcc5dgmv+otFo3PVutnb39srvKBllzS1iqwNn9tEN1mfzYNSZMGUx05eJY2Llx1GNDxUftojiokPbHY6OHgtSK0hWNUCsAMRSSf94rxPC2yVkSBynk9VNE8aLcZbJWj7qrZYEgVthEm43SAH0oyqigpcHaZ6+wWyUCZfUuHvWwzSwQNEtWaFsCa4ZEHSavOGypRHBY1cHeycnYlfHzasdvB84MEpHD29j7QTrobhJn5iDctag==
+ b=GSxVphZAS5giq1oU/dm8Jm9SFozthsalLcCDWuD1gJibxB/9p+kUslLJv5OhhAvI4/YUpALo3Wuj3h4IYCFL8bDxWMoBRGQv9+RQR4g7vm39+s2+vya+iKQgRB1LqcY0QPk75ZJwVlBlSVpFXrH8mk55s2uf5vogLYIklb4QV6miQFshMVV61xRZau+NmL03KAQV6FZwxxTrOcPAYOvB4jgRFassMV9Pre4ZRhgg/u4D289Z1eGLVJcyNNWV+P7hC57y9N0Jhn/RqCIg2nbHKrC1BeT6KezH2tXbjDChE8b2C3Mci9v2pndjjRH6g+WnrpjWO9bFQhTz++3sWr8tEQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xroM0cxctImI19hG/zK5niroHjPEztjQ3bPpWzyXDiE=;
- b=hxCDvnt2d5aL8IQVw2Co3tLtbkUKPGpJmPX46kHpm9TLJOKDrnfnl7bXin76+t1+MKNbL8ITGcJgJxRPXRPhzCQcUFLYZaxQICGHNPJ8PLCffSnd7WmE0TaM9W6oPVx1pIyojF8QsGEWNwNqHDSdeC9Ev/1xB5+sPTQ3I6qV/+asGGTO4+APoBv3UhS0UCj86NXIRoT1JCccio261x/VQ1XrmffJtBQw+FLupJlGbIVaXYMXNB+j1gPtJrPOfahG4pNgmQIU46wueqXRJiIYyLeYucgcmX2s8Pf4usueTEX2kcPZNjoKJqffCrO3yfLWdVDSx/Bc6UOrtlREo/896g==
+ bh=NgnXHEOe4ZzYkWzllyMlY5BOQosXkBL4rEQVGaw2QLI=;
+ b=F5q3JA1Qxy5ycO1WPimfUzCJiktiOyoBim6nBWWEV22UlabsOkbw7bFcxYll8Qv44/Xdf2HhAVVlqeWUjf7Zuawy7kouJ9j1TVSJkZl50jJDK2HXJBUXpMf7XtUe4HtbbQZG/wAI5ilzOAVSBBHbBh5vvENWKhzTgWGnzkNM0vOb83EuVZJbbCnVBIjbM4WL5+zN11o+q4/DYFYaeOSI+ZOn4aJLzkJUXXLHkQqZ515AajXv3S7wxyZqNEVr+dGeJLNcr3LfkYK8oRY4Z33cosT1k9af3QqIhhR7CNR3Z18TJ0Izyz/vSGbfChoSJ6R6v53BABA7P8Pw5PKrJBfpFg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xroM0cxctImI19hG/zK5niroHjPEztjQ3bPpWzyXDiE=;
- b=gaM9d6Kjo4kqSIJct8AwyAKyyrl/AMIGZE3G7wFM0dhG5W7kerx15JAVG1cA+FnaWc5yAx9N/Z4/AJ2gzhirKz5kJRFecSjYspJ4vPoVaEdZqfvwZIFTNMFEmSgRZOdSb//muM2bpJk5exfWEqtewdCLJWbweNaJufBLBmUvD6qyvqUUh5bXkpNw+viF3e8Sb5uh6I/uqbMN7fxH38rUnjKuL8r1kMkv01YHByfmv6qpJzihMxKzOw08oLVI3c+hhvFiWWjN5/37IMtUA344VpOQ6+2oJsmwnYOiKKfTm7xYIqBzcPS2a2zmj3gXowLK0HVhAwd3Wxv28G6jrckvGA==
+ bh=NgnXHEOe4ZzYkWzllyMlY5BOQosXkBL4rEQVGaw2QLI=;
+ b=k3ZBput40PW7PScjqo6q51s99rRZ/Nsk1iysJ/CumIwF03wWdwsERqNe9saN4L7d9JmQf18PIjTroujQcTrbVYempHhejVmeBhUxiwy84x8OC+aETbNK7JJfDe63UimbfD050fn4Iub+bfl3jekphOm5wzIfuIbipSH5bjQhpUTlHd/K8sdb0DJI3gANuXRXZiWAMQL6/7Kx3RBQ/75CCEgapUbXq4R2P5iWDJbCjnq8Hqn6/18myaf0pQizGTVFQxPWQHHn8VpgZlrwBJcgQ4ZUHXJHfGE8CSC4YBklDCV8os2l30XFD6VgspqXIG+0+ISIpC+2bb1Sp2g+ysq0sA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DU0PR10MB6654.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:402::15) with
+ by VI1PR10MB3694.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:800:135::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7611.30; Wed, 29 May
- 2024 16:15:59 +0000
+ 2024 17:03:45 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408%7]) with mapi id 15.20.7611.030; Wed, 29 May 2024
- 16:15:59 +0000
-Message-ID: <c8d10088-1ec3-4f1d-a44f-ae0481dbe6be@siemens.com>
-Date: Wed, 29 May 2024 18:15:58 +0200
+ 17:03:45 +0000
+Message-ID: <3331f257-aa7f-4f2d-be03-542cb0be58ac@siemens.com>
+Date: Wed, 29 May 2024 19:03:43 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] drivers:igc: fail to init phy
-To: Hongzhan Chen <hongzhan.chen@intel.com>, xenomai@lists.linux.dev
-References: <20240529015742.603110-1-hongzhan.chen@intel.com>
+Subject: Re: [PATCH v2 0/2] Fix rt_task_unblock for RT_MUTEX
+To: Richard Weinberger <richard@nod.at>
+Cc: xenomai <xenomai@lists.linux.dev>, lorenz@sigma-star.at
+References: <20240524083642.19434-1-richard@nod.at>
+ <ac6d6c40-aac4-4568-8bb0-244ee293c5ea@siemens.com>
+ <3b4a7ed5-ac29-4897-9606-388106db0dd5@siemens.com>
+ <1871297586.157252.1716906580685.JavaMail.zimbra@nod.at>
 From: Jan Kiszka <jan.kiszka@siemens.com>
 Content-Language: en-US
-In-Reply-To: <20240529015742.603110-1-hongzhan.chen@intel.com>
+In-Reply-To: <1871297586.157252.1716906580685.JavaMail.zimbra@nod.at>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR2P281CA0086.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:9b::14) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR0P281CA0241.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:af::19) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -63,217 +67,142 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DU0PR10MB6654:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5c5158fa-b865-45a5-1cc1-08dc7ffaa095
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|VI1PR10MB3694:EE_
+X-MS-Office365-Filtering-Correlation-Id: 93cbf0f1-cf04-440e-cec9-08dc80014ca6
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|1800799015|376005;
+X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|376005|1800799015;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?QzRMTjU4eGhsU1dqVFhXMENTZGR2MWRBNXN5OVVLbk4rcGtBa1BKekdNdFhE?=
- =?utf-8?B?MjNobzZocENRSlpOV3p6WW5VU1N4MnlxcEJGeUVvbHZTb1huL3lnU1Y4ZGZt?=
- =?utf-8?B?UE10VHRDSld1T001M0g5QmdjWkdLTkNUMHdTdDJ6TnFZUkxzY084RnJtTWQy?=
- =?utf-8?B?ZnkwZFAwN0NDd2RDZjF1QW9EODRBR2FselVlajk2MWs4Zm9QZ25nM1VLWHM5?=
- =?utf-8?B?bnZ0S0RORlBnVzBiaHE3NjIzUE4zVGNDWVFzOU1RMjlZK1hxWEhTcjN5Zk11?=
- =?utf-8?B?eUFQOUdiNXhYWWZQem9zYnB4dlZnb29INHZZc1dxbUQ3U1pxdC9ZK01FeHRS?=
- =?utf-8?B?bk92dC8yeWV2NloxeUVsVVpZN2wySUxCNG5aSEhzS09XNk8rOUhXeGpVZUpG?=
- =?utf-8?B?amtWRkhQQ0QzUGFuL1pWK3k4THdYUGNqNzhIVGJsOW5xSmp5WVZuV2RMVnpU?=
- =?utf-8?B?aStEK3B3WDZEN0trbWVvMU1rWk96eUdoUHErNS96cDliWkR6NzEzc1pLUk13?=
- =?utf-8?B?dmEyV0hTSi9BYmc0dU0vZlJwWUtwbmFYWFlNRVdxcXFFVFA4V1c2OG5BRXBX?=
- =?utf-8?B?ZjZTZ3NualA0K3JacmhQTm9HZ1RlWC9iSnRDaXB3MnpUM2FFSXFVY3l3QWs2?=
- =?utf-8?B?Y3lxRWs3enpubUJaS3BrbnIwZ3B5WE44NmFVYThkVWN6ci9qQnBPaEd2UWFk?=
- =?utf-8?B?ZVQwd1BhVTloelNyNTdUbWJtN2ljNkpHcTlaa05kNmV6dTg3dWdvYWJWRGF2?=
- =?utf-8?B?OWZDcUdWS1BjTHd2UUkwVkwvMGhFN0x2KzhEYUsrQmhwdmlZTWxZUTErOWNn?=
- =?utf-8?B?L2t3cUFScCt6ZEFzQjRMTmtEbS81SzNybHp1TjRUWkVIVFdqRFlsYVZieE42?=
- =?utf-8?B?Smo2RVFoT1Bld3FkVlI3T0dhZ3ZYcTczRkYzaElYTVhOdlhndUdGdnZPN3Zu?=
- =?utf-8?B?Y0NxZS96d3J3S2hUZlAzUEgrdUdpS1YyU3NKSWFKQXpxc0FJNlF1VTNkRXRa?=
- =?utf-8?B?ZWdCRDRXYnBOblJGS2FndTczQy8ySHFyRkxiSGhucGJKZFpBMEM1SmVkdkVC?=
- =?utf-8?B?UmdXcm4vT010M1VteUMybnROeXZJNThKNGZqQlNqdkNwWXZMSFhvRm8yOUVn?=
- =?utf-8?B?SE9VYmdPUmM1b1QyUlM3V1A5ZGVjdXNzbTVzQk5WUUFkeDN3SmdUTnpycllS?=
- =?utf-8?B?dW9kSWZJMXFnRnpNWGdLSitTMzN4dTMvUytrQzE5UDJFb3JPRDJGYXNkN05S?=
- =?utf-8?B?ZDNiZXp1Sy96V1NsNjJMbklIZCtFYll3YTg2NHJXd3ZoQUVFMDFZWDAxM0ty?=
- =?utf-8?B?YTYwcnJLQjlTQ0Ria0lnSTlWRXBBcE11ZFdsbnhYUFFQVmNFb05VQ3VEZTBF?=
- =?utf-8?B?dnhtY2pTN0p5SmhvNzA2V2o3OEUwb3crN205WTU4ajVBcTFHKzRGbGJzRXlS?=
- =?utf-8?B?TmFNcnlRWkx3UU1relkrTGsyeWwyczJIUGFQamptMGhxRnBmTDdtSGdYK1Rk?=
- =?utf-8?B?aWNIY3JDQ1ZZQ1hpVXRRQlcyL2hRU0NIbHYyMU5wMGhGV0tCUEtBRGpmWTVl?=
- =?utf-8?B?OXMzRWdPQmptS2ZURzIzR2lkWVpVU1BVZFdERFlPV01IR2ltcjgxL2VGNUhs?=
- =?utf-8?B?cHhodWoweUdPRUpNU0NzNVVOVlNrUUNhNDRBVUFQTjFlZDlXWU5JSjdjeVdT?=
- =?utf-8?B?bU1rWU8wblRnNmtZRTJhRWJQczVIR0syY09PYi83THNQcEZnSGNqa21RPT0=?=
+	=?utf-8?B?clZwVGg0Zm5ENEJ0My9VVngyd25leDZGMkk5dGxPU3M5eXkvRDBwMjBXOEJ4?=
+ =?utf-8?B?RktKS0E1dThTNkxySzY2bFR2YUtWOEJQTVA3NHF3Zmx0eENuMk5LcGJxcGJW?=
+ =?utf-8?B?S1hVR1MrUFdyRC9EZmpFS1pySmI5djlOL2ZoNmozMmRkSm1tS1JHT0pTL3Ax?=
+ =?utf-8?B?cUJwYVVoYzJTZXh5c3UyNDRzVVJpS1BGUk1vYkpyQ1ZFNGpmQ0NQeFdISHB1?=
+ =?utf-8?B?OW5UOWdWY1A4Z2FlNlk1ZDV1UWZqb296V091RXFOeWhmM2RTOHk2K2NDQWZw?=
+ =?utf-8?B?eGZwWUhaaDdTU1dkUGE0Ui9ydFJmZkpheUoyVXdxdmYycllqZnZ6eUtrSkdj?=
+ =?utf-8?B?TkxOVXNzODdPcUVDUkFVMmYwOVZ0NmcvWkxGczRxT0swYlVORVlFOWlMaFYr?=
+ =?utf-8?B?K2tSeWxobXB2cmhBeGJ1bm83RDVReCtFNW0zVUdpODB6M3djV0NNZ0U0dXk1?=
+ =?utf-8?B?aDM1eVEyKzBwNGl0ZHp0VExzS0QyU2dlOHdhS2dzbmQrSVlKV1lxaHJoeUZE?=
+ =?utf-8?B?OXAyUXVlOUN0THczbTF4YzY2cXlFZ3hqbEVqR3ZpMm1qSlBxY0pvK2JaRFNl?=
+ =?utf-8?B?NmpYMy9qZEZrZU15dmNRQjRsTWYzNUpUU0kyVG5DUHB4MTJLN2NnUVE2NE9K?=
+ =?utf-8?B?R3JDRXJlcDAwMTQydDF1UlFkekJad1VnTW8rZ2piU0NreXpjaFFYM3VjTk1B?=
+ =?utf-8?B?cm5WVlJjWTJ1Ui9tUTJKaE9XSmRBWjRMd2lhN01UTjRHcmdTZ1F1blFIS3Nz?=
+ =?utf-8?B?cTcyS0JRdkg2NXJkQTZoR2Z1dEZnUnFsM01RRnhpbjJjQ2Fpa2tvbCtYOTNN?=
+ =?utf-8?B?NCtjSzd5VFlMYXhiSmt4bVM1cEpqOGUyOGJHQlU3K0crZ210bVVhdzZXSVhD?=
+ =?utf-8?B?SjYvT013aDJIY2plZ1BEdUh2MnhDVjN4aUllRjNKVTJxanVjR0dKVWNCRngr?=
+ =?utf-8?B?VE9QN1VaZnNBWGJXdW0yS0dNcFNjVU9Ia2c0T2NNdG9XS3dHVDBUUFlLdDFl?=
+ =?utf-8?B?ZUIwOWxOUFhQR1FCdG55OXYwUWdjano3Rnh5RnV0cW1uY1Z2NElzTHNpanZ1?=
+ =?utf-8?B?ckppT1NxYlUwZ2plSVhDWkRBZlgvZlV0dHVqc3I3eVg1L2lwbmE5QWJzcHZY?=
+ =?utf-8?B?R211OHI0bnJ6UnFUcDNuVWExQndZcTRnQllqZFZ0R1kxYjJFMXNuSkN0NDhQ?=
+ =?utf-8?B?UlNJeEROWVNxdnhQcGR3UFJ6V04xODNBNFZzekNJenRRakRDVnIzc09rb1l0?=
+ =?utf-8?B?RnNlclFMUXFCRTVCNzJuRXorelNGSjF2dTZKT2h6cDZxSFlLTlAxeEljcDJu?=
+ =?utf-8?B?MmdMekZHV2lpVWdRelpiR3NtRWhIL09LSGUrVzYyZGlkOVA5a1NzSXd6SHJY?=
+ =?utf-8?B?emE0eE5nWjBOUmhxVkdrdVZ0YkZyMmdNeGVZKy9pYzFRQU1Nc2dSaS9JTGRp?=
+ =?utf-8?B?bHFieGZiZ0RoN2toWktKZmU2WHBoSExJaGtocTlaSk0ySDRpenRyVkJiSUlY?=
+ =?utf-8?B?bHRCR1hWY3RuSVZOQkRZTjdvdGR3WXpnd3VhWTJGY2JQcTh0dEZJZy9FZ05R?=
+ =?utf-8?B?ZGtuK0F0b0FlTTZEbGdVRDVQSTB0UUFvL1BFZHdZOVpJODQzSi9mSThwc1A5?=
+ =?utf-8?B?dWhsZ2l0QzhVOUNpaXZpVWxSVFZmT3c9PQ==?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(366007)(1800799015)(376005);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(366007)(376005)(1800799015);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?elpDdW9MOEI4NkdYd0h1Yjk1K3VPZDRnSkU1YjZXNFJsQUVLaWt0TFZMdTNJ?=
- =?utf-8?B?WmI2Y2pUdWNTUnEvbjdQMDJrRHorU2ZDQnVDSWVKelBPN0RoK3JjeEVJWEVo?=
- =?utf-8?B?Z09vQURTclJzNEtRa1NFQVhzanR5dmFOa2phMWFpeVlUQ0FGSTBHcDlUNmd6?=
- =?utf-8?B?V1pwZ0NuNi9zSHJZeFBGeXhPaXJ0OTVTTzJkZEhQekN0QkFZLzM0eWd0V09m?=
- =?utf-8?B?VnF2dWUrMlhjVDVWUi8vd2JPdVJwQ1lsaklWdnR2bGxZa2o2NWR4TE4vQnM1?=
- =?utf-8?B?VnVsM1BwRVBVaVVpV0dzVUxkR3MzZmlQMWp4MXFwUWRncmpRVDAzcTd0WTl6?=
- =?utf-8?B?WkNUbnFWbVh2RXkzbm4zTDZEWDVHSTlwaGdJalNLYzZrWDVhNU0rQUVjVnlD?=
- =?utf-8?B?UDZybTRYRWVaY0p1K2VqVHppRWxHMWdoTDl6b1k5d1llcFZhdHdKWUR4dWky?=
- =?utf-8?B?SURzTllpamNOS3czeUczTnpFN2J0aDVJQ0xmdXR6OEdXWW1ab1d5WFU5VmVL?=
- =?utf-8?B?U1dzcDJqamVoL002YVJxVmNkRHJEaEVIaVlUMUY1RXNiTEp4Zm13bGRwSTkv?=
- =?utf-8?B?dEx5NjYyOVQ5NS9DaWNNQkI2Y1BsOW8vSlVVTlUwQm5BSHFqaDJXT2ZrMExM?=
- =?utf-8?B?WTJJRjVCMUpPbnpmNUVma2tQNU9NMnpGR0s2bEQzb3BIQVBjQ2I2WmZGd09E?=
- =?utf-8?B?bktnZVhGc04yRmxSNFE4b1UyeTRMSVlXeUd4YjBFUmRHTzN1VnNCMjB2VjND?=
- =?utf-8?B?YTFVR05zbmdOajN5MFQzL0FaZnlRNlA3aFBxaElWZk8xSDRxb2U4L1BQdEEz?=
- =?utf-8?B?SHFoeVZsME1QRncyeUlPeE0vZUp5c3pVS0dCSTFlSkVpY3pCWFBzTmc1anVE?=
- =?utf-8?B?TzI2NVliQlpELzV0K0lML1J4cGhiaDJlMXFGMEhWbGxvNFpVdzNFQVhWN0h6?=
- =?utf-8?B?QmduRlpVYktoR2xMTUN6ZThXTmFXVUlQN2RzSGFJeTF6OVNNRmJQYWwxblFQ?=
- =?utf-8?B?ZzRuYnJ1UDhlRkNBRjVqZEhHWlB2ZGlHbWxlUFRBZXJTVVJsOGlnL0RZRk5q?=
- =?utf-8?B?MjJTMTR4RUF6cUFBblJhdC82bG52UUZmNzRiZU9sTjNONllsMk1uK29vYWNj?=
- =?utf-8?B?T0pWSWdBUk9JSjBOR0V2WnVtWUQ3L2ZzdmdUTW5SVnhEbnZWdEVuekljNjB2?=
- =?utf-8?B?UGtXNklLb29xWTBXWS9pVUlldlUwNjMrMGJwUzFvU0FYV2xLL09tdTdIMy9U?=
- =?utf-8?B?UVZWSEJvSzBTZUgvS1p6eTBZN0VPLzhoU0ZjcHdtWnE1YlJzdU4wRDRsQ3dw?=
- =?utf-8?B?UVBOUWd0ZWRTNC9jWldVaTlGRHhla2h6MGo4WWFycGoyeHpnN3NtUTRZTjRo?=
- =?utf-8?B?TmtuWXFLY1JzZlFzS0hsV2FuQmxiQ3Nqd2lQaXE3UDRYYk5XNEtPWSt4cTJI?=
- =?utf-8?B?S0x4cVJCYThsOVZNMk50M2RYazgzUjVxY0E3L21PZHN4UEd6djZiUlhTR1lj?=
- =?utf-8?B?aGx0Q3NiVjdUQnZ0UytPTENvM1Y4NlNCcktucEg4SEJJRXNFWGVBdkhzeEwx?=
- =?utf-8?B?dmFONEdYZEc5SmhCcVZmRkg5MDJaWFJFSGZXTm81T3hnbjQ2MHNsUUErdmJH?=
- =?utf-8?B?RHg0bUcrK3A2M1FoNlJxTk9YVGEyNmt4eU9SVis5dWRRN1pXbHFZc245VUpF?=
- =?utf-8?B?Wm9wdW9BWWZOMGVPeHlFS3lER1NJbHo0VlMzM3NJRXIxeXY5eCtxaSt6K1JH?=
- =?utf-8?B?MU5FaGRIa3didTh1NnJ2amtHeHdOOFRXK09YaUVwbHFKOEFDOXNrWmRWWjU0?=
- =?utf-8?B?Z0oxdGdWb04vRHVFcHBaN09PODVsR1lPSkt0dW1paEVySmNhYm1vYnovUW0r?=
- =?utf-8?B?cW9yYW4yanJKd3lJdGZjN3hldXBPZyt3Q2JUdnoyMERtaEtSVkp2czIxU3Iw?=
- =?utf-8?B?NG5TZ1owdFpLUUZHSVdySWZybUlVL2paMEtsOWZ2R1lYbXhoeFRTTEJ6Z3lN?=
- =?utf-8?B?eWJNQjhaS3ZWcU91ZFpnOWtSdDBqMUtLYnhhcS84UmtYUTIxQzBIa3NjRC9z?=
- =?utf-8?B?RzJCelQ4Nlp5enN6ZGFSMFdHSVlzVWdEbmRyTGYyTWhuQzR0SUJUMTErK0JU?=
- =?utf-8?Q?R9mrY1hfj1DCU3wtMXWVv09wp?=
+	=?utf-8?B?b3U1RVE4OU9VTlZTcFhMMnhVQmNNdHFYRHhtamZxUU0rLzhWdTQxcFJHQ2VW?=
+ =?utf-8?B?bmN1OFczM0l4Y3B2d0o0Rk9hRTFoNGVxampQclR2YTYxS3MvZGhWYU0yWTlx?=
+ =?utf-8?B?Qk4rUVpDbW9kSG05SDV0Q2xod3dwRnA5V1huamNPQ2UvQkVIRE5jeEVKcXp1?=
+ =?utf-8?B?aTRaMWtRanp4WGpabk9qUGthd3A0M1VlYUpmai9Ob0hjOXJFdEVHS1hwd3Ja?=
+ =?utf-8?B?bWtTcFcxd3B2Z3dIMDEzU0ZhOThRNDBJUldCamlZNVFEelZVUmN6U2dNNkJG?=
+ =?utf-8?B?M0pmcUpGVVRvekJ3V1lBNWJmUG9hY08rdzArb0RVZ3VMMGcvMUM5NWtXYkJY?=
+ =?utf-8?B?dE1yeDJ2T0pvUWc0SzRTTWJkMjd4L1FnWUZyODJWdGZPL0pzUXFBZGJnY29H?=
+ =?utf-8?B?QXloQTVrMldvTG00L2NETmMxa0JxSGtiNC9FL24vQzllaktlMEJSeDJheXNv?=
+ =?utf-8?B?Z3Y4ZW0rR3kvcUdHYVpVY3BvNTRZRlpHSitnTTlicllFY2E0a2VscXkzRFZN?=
+ =?utf-8?B?bGpLR3lURlg1b3BkSG5oOEpvNTZhUGNNMFBJdEdDcnNQMSt5UFd2dDc0cDhQ?=
+ =?utf-8?B?T3ZtdWpTbitDOFJzMXlPVGczMmZUQisrZ1VOeERxYlhDK09KSVp3b1VmSG1O?=
+ =?utf-8?B?ZGNqc3FzYzl0TWNMUU90OXlvc2tiZ0dHNmlHY0xGY2NEK2JwN3hNV25sSTh2?=
+ =?utf-8?B?b0o1a3NWS0dzbXhMVWpESU12QU9WMys4RmppQ1N6SGxrSkpEV2diWUJzYkUz?=
+ =?utf-8?B?T3NueTdKdmlTazVZQm1Td3pOdzh3dVhKMlI1ckNLUmlZaCtuT053ZGRYNXZH?=
+ =?utf-8?B?aHhwTzd5T2U0Sk92YjhxOW9VaDdjbDZoVEZHaHZEVDUxNEVmUy9TVlM4M0U4?=
+ =?utf-8?B?eEZPTERSK2FsdUVnOWpxZXFWNkw4czBUa0tHUkFKSjNEd1Z3eGltSitqd21t?=
+ =?utf-8?B?UTBmTG5NTmo1MGRFUmczZ1VIM28wNnBvZHg3YkFDTGNXZVgyRHhDYUJ4ay8w?=
+ =?utf-8?B?Q3p3U1VmTmFhbmE5WmpCQnBnckwwVmdFTFkzMmdXdmx1aEtwREJnYWt1OVpw?=
+ =?utf-8?B?VklsSlVsU1YzT1FsbTVGQnd3WVZhZ3Jpakg4dFdsZWxxa0s0TGltUnpHYU1D?=
+ =?utf-8?B?N1UzVVgzcG84T2xKOFBHd3IwWWt1c0lVNlQzNnh0WGZMYlhBN2ZtMkNvNGhW?=
+ =?utf-8?B?NlY2YTBnYzY1a3RDVVNQVGMxbitEWGxmWllUdDdaYURIMS9lUGM3c2lrMThy?=
+ =?utf-8?B?R0RLUjJNdmFIRVBNSGNES0R1MkwxbmVNNVh3T3pta0NMdVJWcWY2WTBQWERt?=
+ =?utf-8?B?V2FuaUhhUnV1SDdwYWp0T3lOaythYUJFNFp3ZFlrM0xIaTFJd2ZUM29oQ0Ew?=
+ =?utf-8?B?WXNBSjA3YXRTZ1JUenVZV3BIUkVJKzhCWHpScFBpeVBrVnZVd21BaWlTOHJw?=
+ =?utf-8?B?ZVdaVE9qL1ZQNkh6M0szWGRxVmRQOElta3RDZjJJZkw3bGRzaWJTYjlwZGpa?=
+ =?utf-8?B?K3c0L294a0ZsU0MrTUZJM1JXYlNFT0hYYnpKc3orZnhoV0VQUnZ2NDQ0N0tT?=
+ =?utf-8?B?NEFGaHYzWWVqaTl6OUYrZ0dEMFQwQnZMSk94bWRUV1hCWlFlcGdPWGg2dzZT?=
+ =?utf-8?B?TzFRLytvMmVaTi9xV0d4L1ZCODJkVlFGanRYNVBZMm9NZHpROHFDRmRWck1M?=
+ =?utf-8?B?d05ZWEVhSkFLbEFFV2ZzZ3I4Q04rUDFyM3llVzJZa1NZYmFlTkErNzZFZmJk?=
+ =?utf-8?B?WDBRMTdZTGxydjdKaUMyVjU1THAxZWhkZ0NjQSt1NGZWdXMyUk9nRGs0WUVl?=
+ =?utf-8?B?TFNaTDNHWU9KdWhMR1gwM3IvWk9BSnhoVlBDbzRYM1dWVU9KOHllRGJxYWxZ?=
+ =?utf-8?B?QWVHWUVmdlRCSXRmMkY1OCswWXFrZHpUQnZNOE5BeDVuVEgyejFsLzN1M0NU?=
+ =?utf-8?B?ZG5KQk10RkJtK0tPRzVrd1c4N2M2TUJIelh0UXFNbUJqK29GTEJNMFFIL2V1?=
+ =?utf-8?B?NFZwajl5WFFqZGJ4LyszYzZ6Zjd1clg2SnVtTko1Wkl0Z3hQUDN3alpjMzkw?=
+ =?utf-8?B?L2JlWkxBVktZOHVvRno0azB3ZXIzOVBQNUVBNmM3cmw1TXRHbzcyclZVRHRp?=
+ =?utf-8?Q?rZsVlo0P3vIaXlBvrzRcBJiaa?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c5158fa-b865-45a5-1cc1-08dc7ffaa095
+X-MS-Exchange-CrossTenant-Network-Message-Id: 93cbf0f1-cf04-440e-cec9-08dc80014ca6
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2024 16:15:59.3559
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2024 17:03:45.0199
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fFPt4b+rccVZZU8KuVfqPGnwLpp42VAyVw/UXet3Qr9lKJIO8phWsq2CA9SL6tFvWx4QQ2K6mJMseXFbyoW83Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB6654
+X-MS-Exchange-CrossTenant-UserPrincipalName: fLts/w5cqjKhXbQfLkqLfw2M//4Aql3jvI6Sp6KtAI9Ob8+zVwEiFIs9faVENW0x+KNVfncEtY4Zn6d9InOGxw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB3694
 
-On 29.05.24 03:57, Hongzhan Chen wrote:
-> merge commit 170110adbecc1c603baa57246c15d38ef1faa0fa:
-> Author: Sasha Neftin <sasha.neftin@intel.com>
-> igc: Remove _I_PHY_ID checking
-> i225 devices have only one PHY vendor. There is no point checking
-> I_PHY_ID during the link establishment and auto-negotiation process.
-> This patch comes to clean up these pointless checkings.
+On 28.05.24 16:29, Richard Weinberger wrote:
+> ----- Ursprüngliche Mail -----
+>> Von: "Jan Kiszka" <jan.kiszka@siemens.com>
+>> An: "richard" <richard@nod.at>, "xenomai" <xenomai@lists.linux.dev>
+>> CC: lorenz@sigma-star.at
+>> Gesendet: Dienstag, 28. Mai 2024 15:36:14
+>> Betreff: Re: [PATCH v2 0/2] Fix rt_task_unblock for RT_MUTEX
 > 
-> and commit fc7116a79a86500e15520658f279b6536ff9f700:
-> Author: Sasha Neftin <sasha.neftin@intel.com>
-> igc: Fix BUG: scheduling while atomic
-> Replace usleep_range() method with udelay() method to allow atomic contexts
-> in low-level MDIO access functions
+>> On 28.05.24 07:24, Jan Kiszka wrote:
+>>> On 24.05.24 10:36, Richard Weinberger wrote:
+>>>> Changes since v1 [0]:
+>>>> - Better names for EINTR capable functions
+>>>> - Remove want_eintr flag and loop around __pthread_mutex_lock()
+>>>> - Correctly integrate mutex-2 test into smokey test framework
+>>>>
+>>>> [0]:
+>>>> https://lore.kernel.org/xenomai/91a15d69-ea68-49a9-8daf-d52ae31f6d49@siemens.com/T/#mf76a46eaa5ec033bacdfc63ca219af3bb84356b3
+>>>>
+>>>> Richard Weinberger (2):
+>>>>   Alchemy: Fix rt_task_unblock() for RT_MUTEX
+>>>>   alchemytests: Add test case for RT_MUTEX and -EINTR
+>>>>
+>>>>  include/cobalt/pthread.h                     |   5 +
+>>>>  lib/alchemy/mutex.c                          |   8 ++
+>>>>  lib/cobalt/mutex.c                           |  44 ++++++--
+>>>>  testsuite/smokey/alchemytests/Makefile.am    |   5 +
+>>>>  testsuite/smokey/alchemytests/alchemytests.c |   1 +
+>>>>  testsuite/smokey/alchemytests/mutex-2.c      | 111 +++++++++++++++++++
+>>>>  6 files changed, 164 insertions(+), 10 deletions(-)
+>>>>  create mode 100644 testsuite/smokey/alchemytests/mutex-2.c
+>>>>
+>>>
+>>> Thanks, applied (just not yet pushed - our lab has some hick-up).
+>>>
+>>
+>> Now done - all red:
 > 
-> and commit c9cfcdd111d7f82831ec9f205f4370427739b9d5
-> Author: Corinna Vinschen <vinschen@redhat.com>
-> igc: igc_read_phy_reg_gpy: drop premature return
-> igc_read_phy_reg_gpy checks the return value from igc_read_phy_reg_mdic
-> and if it's not 0, returns immediately. By doing this, it leaves the HW
-> semaphore in the acquired state.
+> *grrr* sorry for that.
+>  
+>> 2024-05-28T11:51:59 FAILURE rt_thread_body:117: pthread_mutex_lock
+>> returned 4 instead of 0 - Interrupted system call
 > 
-> and commit d4706de93cf7c766df288501b141bcb9fd9b3ee4
-> Author: Corinna Vinschen <vinschen@redhat.com>
-> igc: igc_write_phy_reg_gpy: drop premature return
+> I'm pretty sure the problem is:
 > 
-> Signed-off-by: Hongzhan Chen <hongzhan.chen@intel.com>
+> ... while (ret == -EINTR);
 > 
-> diff --git a/kernel/drivers/net/drivers/igc/igc_base.c b/kernel/drivers/net/drivers/igc/igc_base.c
-> index fd37d2c20..7f3523f0d 100644
-> --- a/kernel/drivers/net/drivers/igc/igc_base.c
-> +++ b/kernel/drivers/net/drivers/igc/igc_base.c
-> @@ -187,15 +187,7 @@ static s32 igc_init_phy_params_base(struct igc_hw *hw)
->  
->  	igc_check_for_copper_link(hw);
->  
-> -	/* Verify phy id and set remaining function pointers */
-> -	switch (phy->id) {
-> -	case I225_I_PHY_ID:
-> -		phy->type	= igc_phy_i225;
-> -		break;
-> -	default:
-> -		ret_val = -IGC_ERR_PHY;
-> -		goto out;
-> -	}
-> +	phy->type = igc_phy_i225;
->  
->  out:
->  	return ret_val;
-> diff --git a/kernel/drivers/net/drivers/igc/igc_main.c b/kernel/drivers/net/drivers/igc/igc_main.c
-> index fcd08335f..60c59d991 100644
-> --- a/kernel/drivers/net/drivers/igc/igc_main.c
-> +++ b/kernel/drivers/net/drivers/igc/igc_main.c
-> @@ -2880,8 +2880,7 @@ bool igc_has_link(struct igc_adapter *adapter)
->  		break;
->  	}
->  
-> -	if (hw->mac.type == igc_i225 &&
-> -	    hw->phy.id == I225_I_PHY_ID) {
-> +	if (hw->mac.type == igc_i225) {
->  		if (!rtnetif_carrier_ok(adapter->netdev)) {
->  			adapter->flags &= ~IGC_FLAG_NEED_LINK_UPDATE;
->  		} else if (!(adapter->flags & IGC_FLAG_NEED_LINK_UPDATE)) {
-> diff --git a/kernel/drivers/net/drivers/igc/igc_phy.c b/kernel/drivers/net/drivers/igc/igc_phy.c
-> index 8e1799508..3a103406e 100644
-> --- a/kernel/drivers/net/drivers/igc/igc_phy.c
-> +++ b/kernel/drivers/net/drivers/igc/igc_phy.c
-> @@ -249,8 +249,7 @@ static s32 igc_phy_setup_autoneg(struct igc_hw *hw)
->  			return ret_val;
->  	}
->  
-> -	if ((phy->autoneg_mask & ADVERTISE_2500_FULL) &&
-> -	    hw->phy.id == I225_I_PHY_ID) {
-> +	if (phy->autoneg_mask & ADVERTISE_2500_FULL) {
->  		/* Read the MULTI GBT AN Control Register - reg 7.32 */
->  		ret_val = phy->ops.read_reg(hw, (STANDARD_AN_REG_MASK <<
->  					    MMD_DEVADDR_SHIFT) |
-> @@ -390,8 +389,7 @@ static s32 igc_phy_setup_autoneg(struct igc_hw *hw)
->  		ret_val = phy->ops.write_reg(hw, PHY_1000T_CTRL,
->  					     mii_1000t_ctrl_reg);
->  
-> -	if ((phy->autoneg_mask & ADVERTISE_2500_FULL) &&
-> -	    hw->phy.id == I225_I_PHY_ID)
-> +	if (phy->autoneg_mask & ADVERTISE_2500_FULL)
->  		ret_val = phy->ops.write_reg(hw,
->  					     (STANDARD_AN_REG_MASK <<
->  					     MMD_DEVADDR_SHIFT) |
-> @@ -583,7 +581,7 @@ static s32 igc_read_phy_reg_mdic(struct igc_hw *hw, u32 offset, u16 *data)
->  	 * the lower time out
->  	 */
->  	for (i = 0; i < IGC_GEN_POLL_TIMEOUT; i++) {
-> -		usleep_range(500, 1000);
-> +		udelay(50);
->  		mdic = rd32(IGC_MDIC);
->  		if (mdic & IGC_MDIC_READY)
->  			break;
-> @@ -640,7 +638,7 @@ static s32 igc_write_phy_reg_mdic(struct igc_hw *hw, u32 offset, u16 data)
->  	 * the lower time out
->  	 */
->  	for (i = 0; i < IGC_GEN_POLL_TIMEOUT; i++) {
-> -		usleep_range(500, 1000);
-> +		udelay(50);
->  		mdic = rd32(IGC_MDIC);
->  		if (mdic & IGC_MDIC_READY)
->  			break;
-> @@ -748,8 +746,6 @@ s32 igc_write_phy_reg_gpy(struct igc_hw *hw, u32 offset, u16 data)
->  		if (ret_val)
->  			return ret_val;
->  		ret_val = igc_write_phy_reg_mdic(hw, offset, data);
-> -		if (ret_val)
-> -			return ret_val;
->  		hw->phy.ops.release(hw);
->  	} else {
->  		ret_val = igc_write_xmdio_reg(hw, (u16)offset, dev_addr,
-> @@ -781,8 +777,6 @@ s32 igc_read_phy_reg_gpy(struct igc_hw *hw, u32 offset, u16 *data)
->  		if (ret_val)
->  			return ret_val;
->  		ret_val = igc_read_phy_reg_mdic(hw, offset, data);
-> -		if (ret_val)
-> -			return ret_val;
->  		hw->phy.ops.release(hw);
->  	} else {
->  		ret_val = igc_read_xmdio_reg(hw, (u16)offset, dev_addr,
+> Should be ret == EINTR because -ret is returned.
+> 
 
-Thanks, applied.
+Seems that was it, fixed up now in next.
 
 Jan
 
