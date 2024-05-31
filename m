@@ -1,83 +1,92 @@
 Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C25D71103
-	for <xenomai@lists.linux.dev>; Fri, 31 May 2024 07:11:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 390B5156F46
+	for <xenomai@lists.linux.dev>; Fri, 31 May 2024 11:20:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717139513; cv=none; b=q2q/45br8ulSvw7ofiTnCm3sai5QGGKZL8EOJs3R9SLkfWRqK8Q9JyTdRf+Fzfm6qNnW+mBtH1R3BtdTwPg86HwILykpzs95HJkeOOQfOq9pGjQVRWWEkySPBD/24U4uFqJDBspo0dmVklNlwJ6zzUyBJTB/75Ax5jPZ3Lweks0=
+	t=1717154435; cv=none; b=oeGHI7cQpGbQ5CXYsYLlMC+WCtiZdOBHQgojxvXA63foOZ0C5ZuKhlc32nxwn5zDmHL4n8Kc+dwX+mlIKIHzKDrNXpA2NEAWQ3inWN/PHTlyHa2aKYEu11H/LaEn/N8oYSSq/Ci2S1h5K82/2iOCQcieghHX24/UC+dmu5CMcuI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717139513; c=relaxed/simple;
-	bh=T0CrQPWBRdJyLK3OtpUsHxEexY+ZjZszivc97bIYn3A=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=HHGb5J0PvDb7MuO+fNGRmjPNliCUyGXTem43RdLNQsStuTr0L4ywAT2SKHNk9mlY5ZE6T39u5+7KKzc3tSOfuvYCpEZJsLFmPVjCTT+zgSfGU5UgjPwPgGV6gmnbmmAxlcBtX9TCvMbkF3PLWnHP8HBIsIEk5SYULJzchL7Ok68=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=BEDB8uE5; arc=none smtp.client-ip=185.136.65.226
+	s=arc-20240116; t=1717154435; c=relaxed/simple;
+	bh=zkQHmSuIQHNgbLqLNpz0Ph/DXdIIeX0snkoutPpHnsI=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=R2kpDLv2hyePGPWqz4qOHgsMZacJAqf/eoTpui+xk0ej8aCq/spbqFN0YzDX5ZYc1ZT/937SwNhs8h0SYV0tiRRCg05+gfXlEHu4gy6xiuRl3PpU6raMRHvExNxgrE9T7H+l6m+8+E0lQ2rUB6ngm2DwfimuW+Ce7WhpP3zvNNs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=pdbNxI5a; arc=none smtp.client-ip=185.136.65.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="BEDB8uE5"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 2024053107113988c72faef65e0e6cf9
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="pdbNxI5a"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20240531112029d3c049e136d09f97a1
         for <xenomai@lists.linux.dev>;
-        Fri, 31 May 2024 09:11:39 +0200
+        Fri, 31 May 2024 13:20:29 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=Y6Hoh79E40tT1GAckploNyfNh2P388oStJTilXSYTTw=;
- b=BEDB8uE5LC0RjpiRyX6fie7kXa8Fr8Syccm9jdENzjJ1VlG1UuldRuuauL0CJsdQvzOE90
- Nrn2+Sd4Wk7lvz09wIR3R8OEsO4yU7eKZYM7ibW4HSfbIPV6/D0/upPo+2p836jXX5KoAN2R
- mWomoaOKis1BjL3brSM3OQxfnfLM0=;
-Message-ID: <207f29ba1fe51a1656c5f72cb719ba0fab5b2e6d.camel@siemens.com>
-Subject: Re: Dowload URL for ipipe patches?
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=F4Kybf3rIUb4c+buS8qSzUegCoZFKFJ5nE1pTVwArD0=;
+ b=pdbNxI5a51RnBQXKrBqMETqAsOvPnUDfm+0vlSVcFzUpDmmJG7Xxx0FJgiZs8WzFd9+/2B
+ OL9gGIN9/ZpLQt2rxPyPdqtnakKPJO00x5/Zbbkx4ZHuAV0Tluo4mHe3iuObnat1Sejx16dn
+ jCQVQdIHiN8gfTUnYXnxLgWEmTAtg=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Norbert Lange <nolange79@gmail.com>, xenomai@lists.linux.dev
-Date: Fri, 31 May 2024 09:11:38 +0200
-In-Reply-To: <CADYdroMJCeW_UNvc6K1p_2dc2-hCDWyATXcDq6iHL5pVSrFknA@mail.gmail.com>
-References: 
-	<CADYdroMJCeW_UNvc6K1p_2dc2-hCDWyATXcDq6iHL5pVSrFknA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Date: Fri, 31 May 2024 13:20:28 +0200
+Subject: [PATCH RFC dovetail 6.9 1/2] KVM: x86: dovetail: Fix stalling
+ HYPERVISOR_CALLBACK_VECTOR
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240531-flo-fix-kvm-guest-for-6-9-v1-1-1c895c256f8d@siemens.com>
+References: <20240531-flo-fix-kvm-guest-for-6-9-v1-0-1c895c256f8d@siemens.com>
+In-Reply-To: <20240531-flo-fix-kvm-guest-for-6-9-v1-0-1c895c256f8d@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>, 
+ Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi Norbert,
+Linux commit
+8f4a29b0e8a4 ("x86/traps: Add sysvec_install() to install a system interrupt handler")
+migrated from alloc_intr_gate() to sysvec_install() for registering the
+HYPERVISOR_CALLBACK_VECTOR in arch/x86/kernel/kvm.c.
 
-On Thu, 2024-05-23 at 09:32 +0200, Norbert Lange wrote:
-> Hello,
->=20
-> the older URL's dont work, and I did not find any reference to the
-> replacement, even rather recent releases have non-working URLs [0].
-> So the links dont work, and the gitlab repository doesnt offer them
-> either, eg  [1].
->=20
-> Whats the plan going forward?
+As a result the call stack for sysvec_kvm_asyncpf_interrupt looks like
+that:
 
-the main point is: I-Pipe is "dead" / in maintenance only mode. The
-last supported Linux version was 5.4. We have dovetail for modern
-kernels, so the way forward is "use dovetail".
+  <IRQ>
+  ? __sysvec_kvm_asyncpf_interrupt+0xa9/0xb0
+  ? __sysvec_kvm_asyncpf_interrupt+0xa9/0xb0
+  sysvec_kvm_asyncpf_interrupt+0x3e/0x80
+  </IRQ>
 
-That said, we have a downloads archive [2] here. That might help to
-some degree, "newer" I-Pipe versions are available through the
-architecture specific ipipe git repositories, so no "ready for
-download" patches anymore (as far as I know). For x86 it's [3].
+With that, no additional IRQ chip is involved, so the affected vector /
+IRQ is never ACKed at APIC level. apic_eoi() has no effect in case IRQ
+pipelining is active.
 
+Migration to __epic_eoi() fixes that problem, dovetail is able to boot
+in setups where the async page fault KVM feature is advertised.
 
-Best regards,
-Florian
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ arch/x86/kernel/kvm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-[2] https://source.denx.de/Xenomai/download-archive
-[3] https://source.denx.de/Xenomai/ipipe-x86
+diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+index c65e88f94f32..d767b2fede14 100644
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -297,7 +297,7 @@ DEFINE_IDTENTRY_SYSVEC(sysvec_kvm_asyncpf_interrupt)
+ 	struct pt_regs *old_regs = set_irq_regs(regs);
+ 	u32 token;
+ 
+-	apic_eoi();
++	__apic_eoi();
+ 
+ 	inc_irq_stat(irq_hv_callback_count);
+ 
 
->=20
-> Regards, Norbert
->=20
-> [0] - https://lore.kernel.org/xenomai/E1qVdKL-0003yN-Ua@xenomai.org/T/#u
-> [1] - https://source.denx.de/Xenomai/ipipe-x86/-/tags/ipipe-core-5.4.255-=
-x86-15
->=20
+-- 
+2.39.2
 
