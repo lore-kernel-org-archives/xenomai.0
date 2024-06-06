@@ -1,42 +1,36 @@
-Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 634161D47A4
-	for <xenomai@lists.linux.dev>; Wed,  5 Jun 2024 12:23:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.228
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AC9331A89
+	for <xenomai@lists.linux.dev>; Thu,  6 Jun 2024 07:47:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717590212; cv=none; b=lkBPFALtBLpGBsDDc3VH9XIYqw65V7lF14TlLc8Gm8aF2LrBVdR6a+7KncP1srDbDrx5W+f+RgUJTt2pJPCcjrS5w7H7iTjTkq5EcnTjeuYmHPrVSqCMiEevZd5gElV5hsh3iu7SrFCNJwE7aR+QdUXjd85Z4mgoadpFDA5yYy4=
+	t=1717660054; cv=none; b=Y4CdmRDD5i73HqSblG2R+0fky51Wgd8R3iHseCheN+z+ilCgNTIdtLUbEJhk8OUUk280ePF+i0blyn4rPv32aTl0HNXCMBhOuAONxvoXk8+qDECTYjmrsV252UUinbjuGCvmUbq5QDg8T9/AW1XfPYs0eIekFw3Qbd7gnPEYfyI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717590212; c=relaxed/simple;
-	bh=EsRvpZHlh0dOkqnSaXwgVmCPcr43Cj+92QR2OauFrrM=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=nWleg81n2kD9Whuk0N4zwv9crY3ofJKn7d3zSDOFtE6Go2HHXsIs54Mh6CA5EtK9ZkGperyD1ZPJklU1qesnvB9oSUyl4uHQxcABUJo0qkD9u+ASEcTmQRNIpStReILljc0YdAfTgKsBPZZcA+GL/vxgw0mIwUHFgnpEWdEn8iw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=H16Oxpn6; arc=none smtp.client-ip=185.136.65.228
+	s=arc-20240116; t=1717660054; c=relaxed/simple;
+	bh=6wotfgVkQHwxTok9hkPDB1lbk2kyczDDZHPwCh39rNs=;
+	h=Message-ID:Subject:From:To:Cc:Date:Content-Type:MIME-Version; b=soSsN8Bb0e3V2VmFdmuUU2pBNcs/IM0CJwLzEuY8Ids/UoZhs5tVmD1e0ltRw4O6Bbi6TApo17iIZcDec2VinqZgZIUKWKFlbUBvRB2h16NVt+gOGg+Dn6zWxCx6iFlr+4SOy2CEPcKNmpKdtHK7fNukl3oBQV9KW+t0Orl8aGA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=WjZk0rsc; arc=none smtp.client-ip=185.136.65.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="H16Oxpn6"
-Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 2024060512232378f9e0e3387bbd9e4d
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="WjZk0rsc"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20240606074722db985930359a8f48a2
         for <xenomai@lists.linux.dev>;
-        Wed, 05 Jun 2024 14:23:23 +0200
+        Thu, 06 Jun 2024 09:47:22 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=x3wGibJqP2QZLEuehZ9Nd6RNJdvCyPGCHguTCp1QWxo=;
- b=H16Oxpn6MlLt2Hni5as8YVu9MSa9RlqNHTIWidHtncKcuDjvac5kN2iINLR4bjCIFivg4j
- ksvxUVdDzCv4cwCW5Mq6L0SY0J6YBzCQ7/Yg49/J5C6MpLSkXJUtT+V89xXhaUbGPBMwGePv
- i6HcyqLyMq7gORWmF0tBUsI0+D6lQ=;
-Message-ID: <9803f96bf9e2da37e224e66fd273c3549697560a.camel@siemens.com>
-Subject: Re: [PATCH RFC dovetail 6.9 0/2] Input needed: Boot hang, dovetail
- 6.9 as KVM guest
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=XJEv/mBwX1HB0GHtAuQMlsSJolBaMc+uxeAEVznyZrc=;
+ b=WjZk0rscZlQkbF1kqcybfoJA6fgMbdcsLxVSoSqVeATxzfPy6AoIbliEfvVIq2ursreVnR
+ VNCAFO6nLvc3ya+8ffMb49YQ1tEgrp7jHlIY9CvwCOzwkExA9YtbMXvMOxQP9FxUtpxQ0zxs
+ fHeZA1V2iX+EQ63gzCKMgZqxxygfM=;
+Message-ID: <1a4aa9f3bfb30fe5b5955fea1486a5fb8b040ff2.camel@siemens.com>
+Subject: Dovetail/Xenomai 3: Timer tick locking problem
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: xenomai@lists.linux.dev
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
-Date: Wed, 05 Jun 2024 14:23:21 +0200
-In-Reply-To: <b1960ceb203102668cc920aeec3b97e7f7c6387f.camel@siemens.com>
-References: 
-	<20240531-flo-fix-kvm-guest-for-6-9-v1-0-1c895c256f8d@siemens.com>
-	 <b1960ceb203102668cc920aeec3b97e7f7c6387f.camel@siemens.com>
+To: xenomai@lists.linux.dev, Philippe Gerum <rpm@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
+Date: Thu, 06 Jun 2024 09:47:21 +0200
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -48,42 +42,111 @@ MIME-Version: 1.0
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On Fri, 2024-05-31 at 21:29 +0200, Florian Bezdeka wrote:
-> On Fri, 2024-05-31 at 13:20 +0200, Florian Bezdeka wrote:
-> > @Philippe: Any ideas? Which way is correct?
-> > Patch 1 references a Linux commit that changed the registering part of
-> > the involved IRQ/vector. Is that considered problematic?
-> > idt_install_sysvec is now being called with the asm_ prefix as
-> > argument...
->=20
-> This is understood now. The asm_ prefix is fine, the low level entry
-> point has to be passed, we end up in the C world after the usual
-> trampoline code.
->=20
-> Still open:
-> With the first variant I get exactly one IRQ per vCPU during boot. I
-> can't see such "spurious" IRQs with the second variant (=3D patch 2
-> applied):
->=20
-> Taken from /proc/interrupts
-> HYP:          1          1          1          1   Hypervisor callback in=
-terrupts
->=20
-> Can someone enlighten me?
+Hi all,
 
-That is also understood now. The special inband handling of that sysvec
-is missing in do_sysvec_inband(). Will be part of v2. With that I'm
-able to see the "missing spurious interrupts".
+I'm searching for the root cause of the following WARNING - followed by
+a complete system hang:
 
-Meanwhile I'm quite sure that the second variant is the way to go. I
-think we want those async page faults to be handled inband.
 
->=20
-> Best regards and have a nice weekend,
-> Florian
->=20
->=20
-> --=20
-> Siemens AG, Technology
-> Linux Expert Center
+[Xenomai] lock 00000000e04e7d2d already unlocked on CPU #3
+          last owner =3D kernel/xenomai/pipeline/intr.c:26 (xnintr_core_clo=
+ck_handler(), CPU #-2)
+CPU: 3 PID: 31 Comm: ksoftirqd/3 Not tainted 6.1.34-xenomai-1 #1
+Hardware name: innotek GmbH VirtualBox/VirtualBox, BIOS VirtualBox 12/01/20=
+06
+
+
+Up to now I'm only able to reproduce that with VirtualBox when the PV
+spinlock infrastructure is enabled. It takes ~5 min to stall the system
+by running stress-ng with the --iomix stressor. "nopvspin" to the
+kernel cmdline "solves" this problem for now.
+
+I'm able to stall the same image with the --iomix stressor when running
+on kvm/qemu as well. Obviously there is no warning triggered. I'm using
+"pci=3Dnomsi" on the kernel cmdline to get the same IRQ routing (via
+IOAPIC) as VBox.
+
+While reading all the related code I had some questions that I would
+like to have answered.=20
+
+
+First question:
+Broken locking when Xenomai timer tick interrupts an OOB task?=C2=A0
+
+The call stack into the xnintr_core_clock_handler():
+
+#0  xnintr_host_tick (sched=3D0xffff88803e8ab060) at kernel/xenomai/pipelin=
+e/intr.c:14
+#1  xnintr_core_clock_handler () at kernel/xenomai/pipeline/intr.c:40
+#2  0xffffffff81061fdc in clockevents_handle_event (ced=3D0xffff88803e89c28=
+0) at ./include/linux/clockchips.h:281
+#3  lapic_oob_handler (irq=3D<optimized out>, dev_id=3D<optimized out>) at =
+arch/x86/kernel/apic/apic.c:503
+#4  0xffffffff81112ecc in do_oob_irq (desc=3Ddesc@entry=3D0xffff88800392940=
+0) at kernel/irq/pipeline.c:933
+#5  0xffffffff8111315a in handle_oob_irq (desc=3D0xffff888003929400) at ker=
+nel/irq/pipeline.c:1036
+#6  handle_oob_irq (desc=3D0xffff888003929400) at kernel/irq/pipeline.c:991
+#7  0xffffffff811133ff in generic_handle_irq_desc (desc=3D0xffff88800392940=
+0) at ./include/linux/irqdesc.h:161
+#8  generic_pipeline_irq_desc (desc=3Ddesc@entry=3D0xffff888003929400) at k=
+ernel/irq/pipeline.c:1141
+#9  0xffffffff81070e78 in arch_handle_irq (regs=3Dregs@entry=3D0xffffc90000=
+09be38, vector=3Dvector@entry=3D236 '\354', irq_movable=3Dirq_movable@entry=
+=3Dfalse) at arch/x86/kernel/irq_pipeline.c:243
+#10 0xffffffff81f48dcb in arch_pipeline_entry (regs=3D0xffffc9000009be38, v=
+ector=3D236 '\354') at arch/x86/kernel/irq_pipeline.c:291
+#11 0xffffffff8200148a in asm_sysvec_apic_timer_interrupt () at ./arch/x86/=
+include/asm/idtentry.h:760
+#12 0x0000000000000000 in ?? ()
+
+To my understanding this is an OOB IRQ, interrupting any task, OOB
+tasks included. The code in xnintr_core_clock_handler():
+
+	xnlock_get(&nklock);
+	xnclock_tick(&nkclock);
+	xnlock_put(&nklock);
+
+When running over an OOB task that is currently owning nklock, we will
+release the lock unconditionally, leaving the task "unprotected" /
+unsynchronized. Right?
+
+There is no OOB task running on my system yet, so it's likely not my
+original problem.
+
+
+Second question:
+Back to the original problem. If I interpret the warning correctly
+something like
+
+    CPU #2                      CPU #3
+                                xnlock_get(&nklock)
+    xnlock_get(&nklock)
+    xnlock_put(&nklock)
+                                xnlock_put(&nklock) (triggers WARN)
+
+must have happened. I think we agree that the infrastructure behind
+xnlock_get() should take care that this scenario can never happen. Any
+ideas what is going on here? Might that be a bug in the VBox PV
+implementation?
+
+The vCPUs should be "parked"/"halted" instead of spinning. On x86 we
+run into kvm_wait() doing a "sti;hlt;" combination.
+
+Once kicked by the current lock holder we should wake up and continue
+after "hlt;". Even if this goes somehow wrong, some checks about
+spurious wakeups are in place.
+
+Might that be a memory "visibility problem", maybe due to a missing
+barrier?
+
+
+Ideas welcome...
+
+Best regards,
+Florian
+
+--=20
+Siemens AG, Technology
+Linux Expert Center
 
