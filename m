@@ -1,39 +1,39 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC793194C8C
-	for <xenomai@lists.linux.dev>; Fri,  7 Jun 2024 13:46:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 937F0194C9D
+	for <xenomai@lists.linux.dev>; Fri,  7 Jun 2024 13:46:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717767973; cv=none; b=AjQj+XSfK2Vu0hloy7QtIdHJHMWtnEkkqHJaC+bq2RiFYQ31ZyTeybRhRmxJIwHsCxwwFyG8ifz5GVUuuW2XxecaIv5qsAtpxfdFX/rJmrqqzauFaGEOOYnCFnM7Wh2uR3Ts4w4uI+MkozxTpVkinL3aItyxpKRNKN6vNk2z8gA=
+	t=1717767976; cv=none; b=hmuYaymiMJLFCseY0NJR1xFRAoh4Leo8JoOTQ2ttyPHvK+KWFaPsBsHoF/fvORsoCnJPT2/DAvGLSuHoFuqL8pAHckww/7rsbrCFjXDvjiOQzebwgUM1gqJ2SDzidWsqnVFgMBzxHq2p5UKlH+6VIuqkDE6hlcbY9yAAk4HgwLo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717767973; c=relaxed/simple;
-	bh=V/rTOftrVubPQdgxuaS5r4zAgX9arDYamOm9Q6GlvBs=;
+	s=arc-20240116; t=1717767976; c=relaxed/simple;
+	bh=7xA+Wa7tIRS2Ye32UEGdSrVCJ2/oe2/Rq+pFzRrZBiU=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=bZZ/iJmUgPB0dTJ2R2lsRK8EMMuEVPkEc5TfQiVoKpqJrMhKxrpeevy1UAVVDZmeFIH70MEjUVTYZ0hNoCCnrBOHcSE50gsPNb5PdJrFOkTaRqort+UJvCMZcKTL5VCW/NiAJpM3VCaQB7Tzb2dCuHGCMc1M5HPugtyFQKrRGGU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=AcgF/jc9; arc=none smtp.client-ip=185.136.65.226
+	 MIME-Version; b=H4bBjcqjjlMq9qb3KMGjmrtQfL7gm7N5aJuzJ/rCeKVFkOk7Gv5CduqF7ZQ5vU5gpA+YRfBISa7zC0i/k77yuhTQZ0CID4Bv7XjOekS6V+40TqC8jeDRINXTh0PyoPsxottMtN6vbg+n9EUrY44Qb2qqolI+xDFN1BZwB8AbdY8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=k4bf3bDg; arc=none smtp.client-ip=185.136.64.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="AcgF/jc9"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202406071346076b85a7170ff9d64d59
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="k4bf3bDg"
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20240607134611ecc869587cf37a192b
         for <xenomai@lists.linux.dev>;
-        Fri, 07 Jun 2024 15:46:07 +0200
+        Fri, 07 Jun 2024 15:46:11 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=clara.kowalsky@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=/yTX+c8qKODjuEcow4DDL7bspadTC3bWaKOsb7ctMWE=;
- b=AcgF/jc9My54a8Jb0963F6RTL78sTFm3Ope2/nG8Z7pND5p4rSGKGfNRPXMtQZSqxXKSg3
- Vnt1ZD83/u8Quhw2fLdefX3w9ODXkmKW1sH2prtJ1OM6iNSbNgOwBjFxhLD7CDG73YkAi76h
- vGj91aFYhF+3JKUzWjdtXQ2VU1e/U=;
+ bh=FDpdrXBKM4DMRZZYeU/w5SjCuQMyca4vppQPK7kzoAg=;
+ b=k4bf3bDgLPUOTMrnrYsrVoJ9m6hxeun1XGJ0tiFx2gVO5SSn0ue2Kcq6xmPK7eXZMVxvVL
+ vlV2kUj0LKxo2bzZUGeNp8amTkEmzBEe/iCqKu0drFwQKuZyR5olZtWoi9HxeMxdp4tkO3r+
+ YllsmmcQ9/jvd6fB6VaGYfyUOI/K8=;
 From: Clara Kowalsky <clara.kowalsky@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: jan.kiszka@siemens.com,
 	florian.bezdeka@siemens.com,
 	Clara Kowalsky <clara.kowalsky@siemens.com>
-Subject: [PATCH v2 2/3] testsuite/gpiobench: Fix output pin in react mode
-Date: Fri,  7 Jun 2024 15:45:50 +0200
-Message-Id: <20240607134551.3450170-3-clara.kowalsky@siemens.com>
+Subject: [PATCH v2 3/3] testsuite/gpiobench: Synchronize index of loopback mode and react mode
+Date: Fri,  7 Jun 2024 15:45:51 +0200
+Message-Id: <20240607134551.3450170-4-clara.kowalsky@siemens.com>
 In-Reply-To: <20240607134551.3450170-1-clara.kowalsky@siemens.com>
 References: <20240607134551.3450170-1-clara.kowalsky@siemens.com>
 Precedence: bulk
@@ -46,39 +46,56 @@ Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-1047747:519-21489:flowmailer
 
-The gpiobench was tested with one device in loopback mode and another
-device in react mode. The former sends an asynchronous event to the
-react device by toggling its output pin. In this test state, however,
-the react device always responds with a high signal on its output pin.
-Yet the input pin of the loopback device is set to edge-triggered, which
-is why the test hangs in read() on both sides after one loop.
+While the index of the react device is incremented on every round (read,
+write, increment), the index of the loopback is only increased on every
+2nd round (write, read, sleep, repeat last steps, increment). This
+results in the unintuitive behavior that half the number of loops would
+have to be passed as a parameter for the loopback device in order for
+both devices to stop at the same time.
 
-For the test to work, the output pin of the react device must toggle
-between high and low in order for the loopback device to successfully
-read a change on the input pin.
+To simplify this, the index of the loopback device is increased for each
+loop. The calculation of the average latency is adjusted.
 
 Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
 ---
- testsuite/gpiobench/gpiobench.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ testsuite/gpiobench/gpiobench.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/testsuite/gpiobench/gpiobench.c b/testsuite/gpiobench/gpiobench.c
-index 86b2c32ce..79a2dee29 100644
+index 79a2dee29..dfd936c0e 100644
 --- a/testsuite/gpiobench/gpiobench.c
 +++ b/testsuite/gpiobench/gpiobench.c
-@@ -424,7 +424,11 @@ static void *run_gpiobench_react(void *cookie)
- 		 * latency box will measure the time elapsed
- 		 * between the two events
- 		 */
--		value = GPIO_HIGH;
-+		if (!(i & 1))
-+			value = GPIO_HIGH;
-+		else
-+			value = GPIO_LOW;
-+
- 		ret = write(ti.fd_dev_out, &value, sizeof(value));
- 		if (ret < 0) {
- 			printf("RW GPIO write, failed\n");
+@@ -374,6 +374,8 @@ static void *run_gpiobench_loop(void *cookie)
+ 		/*take a break, nanosleep here will not jeopardize the latency*/
+ 		thread_msleep(10);
+ 
++		i += 1;
++		ti.total_cycles = i;
+ 		ret = rw_gpio(GPIO_LOW, i);
+ 		/* send a low level pulse from gpio output pin and
+ 		 * receive an interrupt from the other gpio pin,
+@@ -392,8 +394,8 @@ static void *run_gpiobench_loop(void *cookie)
+ 		thread_msleep(10);
+ 	}
+ 
+-	ti.ts.inner_avg /= (ti.total_cycles * 2);
+-	ti.ts.outer_avg /= (ti.total_cycles * 2);
++	ti.ts.inner_avg /= ti.total_cycles;
++	ti.ts.outer_avg /= ti.total_cycles;
+ 
+ 	return NULL;
+ }
+@@ -506,8 +508,8 @@ static void print_hist(void)
+ 		printf("\nTest is interrupted and exit exceptionally\n");
+ 		printf("Please run again till it exit normally\n");
+ 
+-		ti.ts.inner_avg /= (ti.total_cycles * 2);
+-		ti.ts.outer_avg /= (ti.total_cycles * 2);
++		ti.ts.inner_avg /= ti.total_cycles;
++		ti.ts.outer_avg /= ti.total_cycles;
+ 
+ 	}
+ 	printf("\n");
 -- 
 2.39.2
 
