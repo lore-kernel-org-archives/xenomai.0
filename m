@@ -1,232 +1,211 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E29591F5F6
-	for <xenomai@lists.linux.dev>; Sat,  8 Jun 2024 19:53:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5438120B33
+	for <xenomai@lists.linux.dev>; Sun,  9 Jun 2024 11:45:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717876429; cv=none; b=j7a4GU0CJC34NrFUemn54PQkWye0hNfECULOkxz45HYBODSPAnq+33dJ1M2vd1Ha75wTQI1zB5yV1dQxtsqZUGaoSyxiPuwKVcjr5rC8D9FS634QQSNEZpFkoGSXGAkSJI32XIpxMOw3pZjSP97AfIIOCg4fvAD/AFsS0JGh7oE=
+	t=1717933514; cv=none; b=rrV5HMQTPuVARO9RPMxzpaacrYkgODgaPrkOjjsQZXefQNdZRFpeRP/5hwiD+Y3aySfJ6Ta2w9d1vun6iYmu3O3K0tGP063Ur9fZ/AZ1thr9IabBInvgQfuj8lETfndc8/twP4LN+nP3jngwQVlkIPb8TyJzQ2bCbs2vgRe83vk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717876429; c=relaxed/simple;
-	bh=6ZqURra2qTTJc8FuYfq3kclZQGiFowOzaZoqKkvoIh8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=st6KBsegpMHnSH4rPSS9twAMhwxc/myXFEWL9QtA3i0OfWzkKAEQfBy9ZAcKefUuRIK2EnuGDYXnQpyo1DikK52dMRHhdBXxQ22PkXBAMG59weKuw6BYFsmRmZaqcsm3dvav6uQ/o7Z2WtOo5Qt6tN4ATGmGBCLlXYEIitkttUA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at; spf=pass smtp.mailfrom=sigma-star.at; dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b=RmHFNGEX; arc=none smtp.client-ip=209.85.221.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sigma-star.at
+	s=arc-20240116; t=1717933514; c=relaxed/simple;
+	bh=2eTJiegbVWQTKnN8eQNwFMs9Nyq3q4FuPst1n5JX60o=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=UgWgysSvARRUszLDw+jMBB1MmYXBWeohDrj/PFooeFdK2MICe5YpwOZOi9MKmSfqbXvXR2CJiZ30zCPj5UBDKyHSr4yxhRbtsWLOta8AyL0L50grORrClp7R8ujkuxNMIOn42pgMZZMz2D5El6FwPxz9f2B0Y8YkER575PaQb98=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=G1yocVCC; arc=none smtp.client-ip=185.136.64.227
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b="RmHFNGEX"
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-35f089e35e7so1229500f8f.0
-        for <xenomai@lists.linux.dev>; Sat, 08 Jun 2024 12:53:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sigma-star.at; s=google; t=1717876425; x=1718481225; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=0gANKBntAtGK5wT3dq5JQDnUQmkGPnqRpbW4Oq9gxkU=;
-        b=RmHFNGEXan/kIGJn2q6LbU3Hy6RFkhaEOVN7f+cB6uEqIFcWmt595Oe1/8Mqj/vdjH
-         eh3et6W7L9Q97nJyqG50qpaeNxOWjpnFa9Ms6QNvGypKgR0Lt4/OmROdzMSTwq3qOq89
-         X+OQtPQoHcu/4MGvlxkBSnYlJWohZW3hUHD1PEn0sv+Gb+dXjEqDL0mDoOxtpO//gH2b
-         sFVKEOohHbtWvXl8YujW8PgTZUsKBWmlGuOwwdYpIApaf/MecK9J1cOL3MR4wy4CrUqP
-         30er4yy9fEZv7oyqUyACs9PDqIaUw/gGBnrSieKdNCX6RAShGH7y2jxe8FnCo/7SrqQC
-         PpXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1717876425; x=1718481225;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=0gANKBntAtGK5wT3dq5JQDnUQmkGPnqRpbW4Oq9gxkU=;
-        b=WjmMRKwP+//IgEq65NegIR3kyA2dWZt6B03tUlz0ZD+TuQ+ml3JEMOMVR0vLZG0Gz7
-         LN43Ekjmn/eun+zBpSmz6Yr6zpX0L5SMXe+UicP7QrofJr7HsWmaLCaNZH90v/oB3tAU
-         MGIJnJ6wAeLHTbyjsdZdWZWCjDZV4SAMZJsQHIW44UOtKqQFavfqQrtYBCGoTuVGqfzf
-         BkJX02lcMpoih1/7jBSMdocqS/rZQezOKzAa+msR6BG5e6L3ekrk3E3FrSOrpbcZbQAz
-         kPaVXDE8kiCO+KIqgkclc+uaeAX99wJqElRKKUxMkTkHhkKBA4/6QAmSJ+vRHJ7ShZgp
-         f11A==
-X-Gm-Message-State: AOJu0YzHI2nyvhp1DYVnf4vzgwqVeAcXpAGC/n2jeu3lpFhmtAsh1zGR
-	E0CCxzv5CVQTvzjAAqDWJxy/eiW2YQ0K+SiEnJpcpwIyNAIPEeoojg1yFgYqdguOrJU8AwTe0YF
-	5
-X-Google-Smtp-Source: AGHT+IEMPY0Unul636zVpsL5r64bMmFNeL4PKHWtgDdV3medJKWyjUV187fPX4/OAJP+T9lrg6eH7g==
-X-Received: by 2002:a05:6000:a84:b0:35f:1f3c:b637 with SMTP id ffacd0b85a97d-35f1f3cb6f8mr89240f8f.3.1717876425124;
-        Sat, 08 Jun 2024 12:53:45 -0700 (PDT)
-Received: from localtoast.asozial.it-syndikat.org (212-186-38-205.cable.dynamic.surfer.at. [212.186.38.205])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-35f1c423932sm1149608f8f.114.2024.06.08.12.53.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 Jun 2024 12:53:44 -0700 (PDT)
-From: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
-To: xenomai@lists.linux.dev
-Cc: richard@nod.at,
-	lorenz@sigma-star.at,
-	David Oberhollenzer <david.oberhollenzer@sigma-star.at>
-Subject: [PATCH v2 4/4] testsuite: smokey - new testcase alchemy/task-11
-Date: Sat,  8 Jun 2024 21:52:52 +0200
-Message-ID: <20240608195337.11137-5-david.oberhollenzer@sigma-star.at>
-X-Mailer: git-send-email 2.45.0
-In-Reply-To: <20240608195337.11137-1-david.oberhollenzer@sigma-star.at>
-References: <20240608195337.11137-1-david.oberhollenzer@sigma-star.at>
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="G1yocVCC"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20240609114458fd1578b6bbb21c2bec
+        for <xenomai@lists.linux.dev>;
+        Sun, 09 Jun 2024 13:44:59 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=MhroDn/iMP6+Gd/u4QUx1/gSqBmuCH8kSr9+5OM34cU=;
+ b=G1yocVCCX4YLC5O1awiv4pTcg/58OJMZmyp8La5mkHkBZmG3S36wY+xCjX1eoZIFem8lym
+ vkeOsFtAIFIcTv6h3jS4+gxac9eY1Jyl/H1Ubh5wvMB5r/n+0kExm4WwkHzMl2LDr2vDiZJr
+ vb/XjPTKIJNQyalp5Vf6ZlJX8GazA=;
+Message-ID: <f57d19d9549525a94e1c22d0d9b520150afda04f.camel@siemens.com>
+Subject: Re: [PATCH RFC dovetail 6.9 v2 2/2] KVM: x86: dovetail: Allow
+ kvm_wait() to be called from any context
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
+Cc: Philippe Gerum <rpm@xenomai.org>
+Date: Sun, 09 Jun 2024 13:44:56 +0200
+In-Reply-To: <73b55cbb-0d7d-4552-9102-cc7c16e5834c@siemens.com>
+References: 
+	<20240531-flo-fix-kvm-guest-for-6-9-v2-0-5534fcae4eb5@siemens.com>
+	 <20240531-flo-fix-kvm-guest-for-6-9-v2-2-5534fcae4eb5@siemens.com>
+	 <73b55cbb-0d7d-4552-9102-cc7c16e5834c@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-The testcase ensures the correct switching of the task period. If we
-switch the period after a number of iterations, the current iteration
-still needs to complete with the old period. The iterations following
-that need to complete with the new period.
+On Sat, 2024-06-08 at 07:31 +0200, Jan Kiszka wrote:
+> On 08.06.24 01:04, Florian Bezdeka wrote:
+> > kvm_wait() unconditionally enabled HW interrupts when called from
+> > pipeline entry code. That broke the PV (paravirtualized) spinlock
+> > implementation.
+> >=20
+> > When running with CONFIG_IRQ_PIPELINE enabled we always call
+> > safe_halt() to allow HW IRQs to be handled.
+> >=20
+> > The !CONFIG_IRQ_PIPELINE part is now re-synced with the version of
+> > Linux.
+> >=20
+> > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> > ---
+> >  arch/x86/kernel/kvm.c | 59 +++++++++++++++++++++++++++++++++++++++++++=
+++------
+> >  1 file changed, 53 insertions(+), 6 deletions(-)
+> >=20
+> > diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+> > index 655b1cf8c9ab..3180a26cdfe1 100644
+> > --- a/arch/x86/kernel/kvm.c
+> > +++ b/arch/x86/kernel/kvm.c
+> > @@ -1059,22 +1059,69 @@ static void kvm_wait(u8 *ptr, u8 val)
+> >  	 * for irq enabled case to avoid hang when lock info is overwritten
+> >  	 * in irq spinlock slowpath and no spurious interrupt occur to save u=
+s.
+> >  	 */
+> > +
+> > +#ifdef CONFIG_IRQ_PIPELINE
+> > +	unsigned long flags;
+> > +
+> > +	/*
+> > +	 * We always use safe_halt() to be interruptable by HW IRQs.
+>=20
+> Nope, see below.
+>=20
+> > +	 *
+> > +	 * HW IRQs off:
+>=20
+> Let's stick with the nomenclature "hard" instead of "hw".
+>=20
+> > +	 *
+> > +	 * Wake up on next HW IRQ or by a vCPU kick triggered by the current
+> > +	 * lock owner.
+> > +	 */
+> > +	if (hard_irqs_disabled()) {
+> > +		if (READ_ONCE(*ptr) =3D=3D val) {
+> > +			safe_halt(); // enables HW IRQs
+> > +			hard_local_irq_disable();
+>=20
+> Just halt() - if we entered this with hard irqs off, we cannot assume
+> that it is fine to take an IRQ before returning. The kernel doesn't do
+> that either for Linux IRQs.
 
-Signed-off-by: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
----
- testsuite/smokey/alchemytests/Makefile.am    |   7 +-
- testsuite/smokey/alchemytests/alchemytests.c |   3 +-
- testsuite/smokey/alchemytests/task-11.c      | 101 +++++++++++++++++++
- 3 files changed, 109 insertions(+), 2 deletions(-)
- create mode 100644 testsuite/smokey/alchemytests/task-11.c
+ACK.
 
-diff --git a/testsuite/smokey/alchemytests/Makefile.am b/testsuite/smokey/alchemytests/Makefile.am
-index eba82f8ec..5fe481c29 100644
---- a/testsuite/smokey/alchemytests/Makefile.am
-+++ b/testsuite/smokey/alchemytests/Makefile.am
-@@ -33,7 +33,8 @@ test_PROGRAMS =				\
- 		alchemytests_task7	\
- 		alchemytests_task8	\
- 		alchemytests_task9	\
--		alchemytests_task10
-+		alchemytests_task10	\
-+		alchemytests_task11
- 
- alchemycppflags =			\
- 	$(XENO_USER_CFLAGS)		\
-@@ -138,3 +139,7 @@ alchemytests_task10_SOURCES = task-10.c
- alchemytests_task10_CPPFLAGS = $(alchemycppflags)
- alchemytests_task10_LDADD = $(alchemyldadd)
- alchemytests_task10_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+alchemytests_task11_SOURCES = task-11.c
-+alchemytests_task11_CPPFLAGS = $(alchemycppflags)
-+alchemytests_task11_LDADD = $(alchemyldadd)
-+alchemytests_task11_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-diff --git a/testsuite/smokey/alchemytests/alchemytests.c b/testsuite/smokey/alchemytests/alchemytests.c
-index 947fa37b9..177d59b9c 100644
---- a/testsuite/smokey/alchemytests/alchemytests.c
-+++ b/testsuite/smokey/alchemytests/alchemytests.c
-@@ -25,7 +25,8 @@ static const char * const tests[] = {
- 	"alchemytests_task7",
- 	"alchemytests_task8",
- 	"alchemytests_task9",
--	"alchemytests_task10"
-+	"alchemytests_task10",
-+	"alchemytests_task11"
- };
- 
- static int run_alchemytests(struct smokey_test *t, int argc, char *const argv[])
-diff --git a/testsuite/smokey/alchemytests/task-11.c b/testsuite/smokey/alchemytests/task-11.c
-new file mode 100644
-index 000000000..062c24219
---- /dev/null
-+++ b/testsuite/smokey/alchemytests/task-11.c
-@@ -0,0 +1,101 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <copperplate/traceobj.h>
-+#include <alchemy/task.h>
-+#include <alchemy/timer.h>
-+
-+#define TEST_ITERATIONS (10)
-+#define PERIOD_SWITCH_ITERATION (5)
-+
-+#define PERIOD_INITIAL (2000 * 1000)
-+#define PERIOD_SWITCH (1000 * 1000)
-+#define PERIOD_ERROR_MAX (5)
-+
-+static RT_TASK t_test;
-+static ticks_t duration[TEST_ITERATIONS];
-+
-+static struct traceobj trobj;
-+
-+static int tseq[] = {
-+	1, 2,
-+	3, 4, 3, 4, 3, 4, 3, 4, 3, 4,
-+	3, 4, 3, 4, 3, 4, 3, 4, 3, 4,
-+	5, 6, 7
-+};
-+
-+static void test_task(void *arg)
-+{
-+	(void)arg;
-+
-+	traceobj_enter(&trobj);
-+
-+	traceobj_mark(&trobj, 2);
-+
-+	rt_task_set_periodic(NULL, TM_NOW, PERIOD_INITIAL);
-+
-+	for (size_t i = 0; i < TEST_ITERATIONS; ++i) {
-+		ticks_t start, end;
-+		int ret;
-+
-+		traceobj_mark(&trobj, 3);
-+
-+		start = clockobj_get_time(&alchemy_clock);
-+
-+		if (i == PERIOD_SWITCH_ITERATION)
-+			rt_task_set_periodic(NULL, TM_NOW, PERIOD_SWITCH);
-+
-+		ret = rt_task_wait_period(NULL);
-+		traceobj_check(&trobj, ret, 0);
-+
-+		end = clockobj_get_time(&alchemy_clock);
-+
-+		duration[i] = end - start;
-+
-+		traceobj_mark(&trobj, 4);
-+	}
-+
-+	traceobj_mark(&trobj, 5);
-+
-+	traceobj_exit(&trobj);
-+}
-+
-+int main(int argc, char *const argv[])
-+{
-+	int ret;
-+
-+	traceobj_init(&trobj, argv[0], sizeof(tseq) / sizeof(int));
-+
-+	ret = rt_task_create(&t_test, "test_task", 0, 99, 0);
-+	traceobj_check(&trobj, ret, 0);
-+
-+	traceobj_mark(&trobj, 1);
-+
-+	ret = rt_task_start(&t_test, test_task, NULL);
-+	traceobj_check(&trobj, ret, 0);
-+
-+	traceobj_join(&trobj);
-+
-+	traceobj_mark(&trobj, 6);
-+
-+	for (size_t i = 0; i < TEST_ITERATIONS; ++i) {
-+		ticks_t value, expect, diff, error;
-+
-+		expect = PERIOD_INITIAL;
-+		if (i > PERIOD_SWITCH_ITERATION)
-+			expect = PERIOD_SWITCH;
-+
-+		value = duration[i];
-+
-+		diff = value < expect ? (expect - value) : (value - expect);
-+		error = (100 * diff) / expect;
-+
-+		traceobj_assert(&trobj, error <= PERIOD_ERROR_MAX);
-+	}
-+
-+	traceobj_mark(&trobj, 7);
-+
-+	traceobj_verify(&trobj, tseq, sizeof(tseq) / sizeof(int));
-+
-+	exit(0);
-+}
--- 
-2.45.0
+>=20
+> > +		}
+> > +		return;
+> > +	}
+> > +
+> > +	/*
+> > +	 * HW IRQs on:
+> > +	 *
+> > +	 * If inband IRQs are disabled the LOCKDEP state is already correct.
+> > +	 * We can disable/enable HW IRQs without further bookkeeping.
+> > +	 * =3D Linux IRQ context
+> > +	 *
+> > +	 * If inband IRQs are enabled we have to inform tracing / LOCKDEP
+> > +	 * infrastructure about the HW IRQ disable/enable event.
+> > +	 * =3D Task context
+> > +	 */
+> >  	if (irqs_disabled()) {
+> > -		hard_local_irq_disable();
+> > +		flags =3D hard_local_irq_save();
+>=20
+> Why this? We have tested that state above and know it for sure. Just
+> keep hard_local_irq_disable().
+
+Paranoia and to clearly express that we try to restore the state to the
+state that was observed on function entry. As hard IRQs are/were on the
+result of irqs_disabled() might be outdated. (I think that would be a
+Dovetail BUG(), but paranoia...)
+
+No strong feelings here. I can change this if this is preferred on
+other ends.
+
+>=20
+> > =20
+> >  		if (READ_ONCE(*ptr) =3D=3D val)
+> > -			halt();
+> > +			safe_halt(); // enables HW IRQs
+>=20
+> Yep, this is needed to avoid delaying hard irqs while waiting for the
+> Linux lock-holder.
+>=20
+> > =20
+> > -		hard_local_irq_enable();
+> > +		hard_local_irq_restore(flags);
+> >  	} else {
+> > -		local_irq_disable_full();
+> > +		local_irq_save_full(flags);
+>=20
+> See above.
+>=20
+> > +
+> > +		if (READ_ONCE(*ptr) =3D=3D val) {
+> > +			safe_halt(); // enables HW IRQs
+> > +			hard_local_irq_disable(); // fix HW state for LOCKDEP
+> > +		}
+> > +
+> > +		local_irq_restore_full(flags);
+>=20
+> How about this instead?
+>=20
+> if (READ_ONCE(*ptr) =3D=3D val) {
+> 	safe_halt(); /* enables hard irqs */
+> 	local_irq_disable();
+
+Confused. I think you mean local_irq_enable(), right? Otherwise we
+would jump back with hard IRQs on (again), but inband IRQs disabled.
+
+> } else {
+> 	local_irq_enabled_full();
+> }
+>=20
+>=20
+> > +	}
+> > +
+> > +#else /* !CONFIG_IRQ_PIPELINE */
+> > +	if (irqs_disabled()) {
+> > +		if (READ_ONCE(*ptr) =3D=3D val)
+> > +			halt();
+> > +	} else {
+> > +		local_irq_disable();
+> > =20
+> >  		/* safe_halt() will enable IRQ */
+> >  		if (READ_ONCE(*ptr) =3D=3D val)
+> >  			safe_halt();
+> > -
+> > -		local_irq_enable_full();
+> > +		else
+> > +			local_irq_enable();
+> >  	}
+> > +#endif
+>=20
+> Yeah, we indeed need to preserve the original version for the
+> !IRQ_PIPELINE case. This was also broken.
+>=20
+> Jan
+>=20
+> >  }
+> > =20
+> >  /*
+> >=20
+>=20
+> --=20
+> Siemens AG, Technology
+> Linux Expert Center
 
