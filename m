@@ -1,60 +1,61 @@
-Received: from EUR03-VI1-obe.outbound.protection.outlook.com (mail-vi1eur03on2066.outbound.protection.outlook.com [40.107.103.66])
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2041.outbound.protection.outlook.com [40.107.104.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A101C2594
-	for <xenomai@lists.linux.dev>; Mon, 10 Jun 2024 04:22:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.103.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C8246FC7
+	for <xenomai@lists.linux.dev>; Mon, 10 Jun 2024 05:43:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.104.41
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1717993326; cv=fail; b=mD4ypFlGvQK26EoVPxF/EAzoEHIJoBq/Tm+29+x3suDUZjmXIv4KTBMwUXTNBx3hHn10kJ+4d2oakM7P7EOTB2bUoPEK8GtPx/+l0wEKuQkIi5RLANpBBDUYuGVuj+yk/b4NjBzcgUR8n46Mgu8KdR2/aHLTAOLlHIp+lYPILFo=
+	t=1717998234; cv=fail; b=BTGnHAvjfjw73mGBsYqcCBTYfJycoHBv20bHAj23Z8r08J9LFZvZSQSYWqphvOswLAaaWE3zYjFX7cIA8YhWcVl0mCKCFsjaPQTIjZTJkH5UbJDvEHfvGdvsyB5aP6AWmPzcy4aSCOshRnj58AWgJwnS9ViI9KlJ84qpvwcx7/c=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1717993326; c=relaxed/simple;
-	bh=tABO5fVwbAzsqGInFIQ3kTmiLtc+mS0wvk9qomYvEIQ=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=S6c9gj2yhIGbfnAhT3yfZ3JS3oPX1FmfavCICzlQ8AaWfw7mMn4ump19obl4htemXMk7Jxch09k3/3pbdXEmYhF31v1ohXaHmO2nzNV1t6q+ckQeZpWWeFP6YMfIL4Nh/E+ZSWHImAPxyflG2n54vTSxzpYyMZafCQfMX0rmXZc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=U359jSzC; arc=fail smtp.client-ip=40.107.103.66
+	s=arc-20240116; t=1717998234; c=relaxed/simple;
+	bh=HEMYEcDt7NWl1cSRMC8QltQCgFAqSFhdse7uo0VRun8=;
+	h=Message-ID:Date:Subject:From:To:Cc:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=CaAJ7QhSxgNZF9vF9fneXhOPgZMcSLzIv2mjOtGK7OIxVx7YfhOour5EW1QJpKrkpzqMdmfuMvxklMoAe2aWLSbYHY3SFG2UFJr5nKayxWZ+eNlWqSfsX5BVmxZBk6ZfmMNmQl7jvzM4WWocXPAtwsZK1wZtHux0Xzp5FcduV5g=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=pfFl4fyo; arc=fail smtp.client-ip=40.107.104.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="U359jSzC"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="pfFl4fyo"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hlQrsLNMgfih27prSEFDXB/xFwi4xXhjH6fKY6qe4q1TXfmPTDzuURwMd9kqCyb12F//YKsetwEbi4QuVChbRWZ5k57fwuQQF1o0iyA6QN+5hgphdKcy+n8wDXp2/VN1JV9vgRiblxWDe/kOkn7PhOdeFImCWg0HRoqUAmDJvf2tIA1WqF59WAykNxBnVScvSWo998y8mWwacsdjpEsuwQYJX9o0s3QL8wuNGngJJBDC+dKXRitkq5A96rqdZReWRH2UI1mpEo7GtKyiHac5vJwit8Qo4sIlxyvdikGg+LG1zvtTdyuKxwWj63j7+y9chg/R/0+27BfZF5oA3jkD+Q==
+ b=X3YxDeOwNbKNCdAiu2I9Eb6TDPhKFuJ8RdIKAEnwDYBA9xaf5dV6cKhQHvWV0+1E3AxQj9RzEoliOKKKI0bFX6aMsw/cMkXoqLP8wCu7B9mGd2UdPeLiUJeho+ugaEOyjqPpFeuMpps5eMHZ6ZQHFqPwvZ95HsHqFeYQqqub3an+5vRRF2TULwsHvnhJa8lfmbmXgnw2m45C3SWiZeGUbcvoVcwFs3ZuPfeM/c6l64fqYvehabZGC+Eq9mFqZICPb7KRZur7mn3bczKLqiPDzsKcPSx5m1inmSX2MVgGJFc+Psfwik7mWQKJqP0LW+kaRivYbpVu3qalnWR2mtP70w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iEiqm/BqZd2T6u+fJUVMmyhc7l5DBhiC5vAY8qnLRes=;
- b=fIAGbYD5I+yD/HJOt9WvGWB6dYnE/QQi0Xe+H19jWmsIbpLrFqDR+pvuxgD76W/F1W4KYiIgqKiPadf/TdpCIQWnGkkv032CN5GCmmoZ8jziSQ5pStDhmX4Qbe9ydL5yDwTHbladqSwIMv/PQfSt9QdrgIwKQCLQGgbart+iYteRaQ5rEBjdMYex4Pm0D3qmzOUT8BHNS+oKX74HAS9pQCVolKj61utugSM6tW4gQs88ubRupiZNSAMhILKcbiHZnNREtsUOz0StiAZWNkBwQcYH3UWTvQcykETm87keT9rjDB764XtgirGMOhbC4QWXxp10brSy+x9C5VIQDxhv6A==
+ bh=7IlsD//kvV1UL6ZHR82KDwcSsIojT+Cn37j6BCBoS1M=;
+ b=Y+LYQSoHvuMPEDtxuCHlecr2Nh5jRDDR8R2QW4LgarE9svfCGQ2YVi+eXD4mr3vpY0GaPHKZ1vb6R88fIXMVJYNJQjYSoMfZFRp8meTpOOBxlvjlYkXEr4qWPeIRfU1T24vqSjt17Tio5xu0mhM764+OLS8WuyCNjHufnkbVDK/DXblv9Txhv1B2+OA1aMKn19tj3HmSXiArcQtsPyWYTevYxb/Xad1s6ovdm2Ui8u6WdknfDh1/ut4Bx8uwbrQIuHgFbMHHprARScEF8WlL/JQWITv+PNUP+7ZNFTl+zPD+CnUrCiEwZEjEz/qcSatxRKzJTa1jGGT9AoH8jbZAuQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iEiqm/BqZd2T6u+fJUVMmyhc7l5DBhiC5vAY8qnLRes=;
- b=U359jSzCY9ac5NRrmgUpgztYalJz74dCYNaIVOfGkdlxj0GaY840I3hnQ3Q3LClm2s+xzLe29ltBPhpEDfVNB46js39vrYb5grQkI4yDdZteKZnEMdSm+YwvfTZRrxG6GAOYZ+ispHiSjD9801HgiT8gorZWF6IMyZwBDX9uFdRph1b+K1aOeDLC5ZInPhdcCXKfz6873TBDVYyBsAAhpJUdPDK5shfmhsZsZeI3uHFXvpP67nJWbz+b6mwaNJiKOg2EnmkemiR/eGSE8kD2FEhfuKdIIYNhnjaM2cBnkhkN08XwijtLA7xAAX3RIsStxKqFnyk9r8zDo2gOFFxgxA==
+ bh=7IlsD//kvV1UL6ZHR82KDwcSsIojT+Cn37j6BCBoS1M=;
+ b=pfFl4fyorGlZq6B6CsgUBYM2RDhMPnb+ijeKyAYRGYZ46DueRwl2fF+zDZ27S8YCgPllNAEuzIZzaAM9FYPhN4PQvNqzqpb16px6rLV/42tWXqzL3hyywxeYNJolc11cQ/PWqROeQrQLQX6cJO73wa5xMyGOInYZ/j2ZBuf31cyH3ckrejSX7aEgmF0Lush6Yh1GoHDVz+8NF8a1YF923RbPoMJMM0XxFy1J4dAM4flURUZBU9YtD8lw32glmONsvsfWcbUGZb5SxW9+/AbdZr5WXmE8vuJ8kfNacUqKUxVjmPl5OadXjLRRorjvPzXP8hpzkxvCQgnMZRInP0XRHw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DB9PR10MB5138.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:331::20) with
+ by AS8PR10MB6433.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:56c::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7633.36; Mon, 10 Jun
- 2024 04:21:58 +0000
+ 2024 05:43:47 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408%7]) with mapi id 15.20.7633.036; Mon, 10 Jun 2024
- 04:21:58 +0000
-Message-ID: <dc350628-f444-41e4-93e8-b9724046b5a0@siemens.com>
-Date: Mon, 10 Jun 2024 06:21:54 +0200
+ 05:43:47 +0000
+Message-ID: <5c4192f8-067d-4a92-9ea2-ac5e77ff65bf@siemens.com>
+Date: Mon, 10 Jun 2024 07:43:45 +0200
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH RFC dovetail 6.9 v2 2/2] KVM: x86: dovetail: Allow
  kvm_wait() to be called from any context
+From: Jan Kiszka <jan.kiszka@siemens.com>
 To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
 Cc: Philippe Gerum <rpm@xenomai.org>
 References: <20240531-flo-fix-kvm-guest-for-6-9-v2-0-5534fcae4eb5@siemens.com>
  <20240531-flo-fix-kvm-guest-for-6-9-v2-2-5534fcae4eb5@siemens.com>
  <73b55cbb-0d7d-4552-9102-cc7c16e5834c@siemens.com>
  <f57d19d9549525a94e1c22d0d9b520150afda04f.camel@siemens.com>
+ <dc350628-f444-41e4-93e8-b9724046b5a0@siemens.com>
 Content-Language: en-US
-From: Jan Kiszka <jan.kiszka@siemens.com>
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
  uNUqthIkgLGWzKugodvkcCK8Wbyw+1vxcl4Lw56WezLsOTfu7oi7Z0vp1XkrLcM0tofTbClW
@@ -98,11 +99,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <f57d19d9549525a94e1c22d0d9b520150afda04f.camel@siemens.com>
+In-Reply-To: <dc350628-f444-41e4-93e8-b9724046b5a0@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0154.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a2::7) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR3P281CA0179.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a0::16) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -111,258 +112,235 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DB9PR10MB5138:EE_
-X-MS-Office365-Filtering-Correlation-Id: 509fb992-9aa1-47cd-d7f7-08dc8904de1d
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS8PR10MB6433:EE_
+X-MS-Office365-Filtering-Correlation-Id: fcec5825-aec5-401c-4062-08dc89104c5a
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230031|366007|1800799015|376005;
+X-Microsoft-Antispam: BCL:0;ARA:13230031|1800799015|376005|366007;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?L3NvL2NEbWxNYVVYLzBBdnVMcjRWSEx6VVJ6bkRZeTZ3L2RLMFdJYXU0Qnkr?=
- =?utf-8?B?bnkwKzlLejU0Sit0c2JSTHNJUktCc0ZNVmxjeEhBL09XanFUQjRJcjFiaVBh?=
- =?utf-8?B?cEtCUXFTekFQUTJPTUJpWGV4L1NBUDU4NG1PNWpQYmFyczMyc2FzN2JBS2tX?=
- =?utf-8?B?RkRYeXgvMmRXOHp1MHlrcUZUYjZWTllLUEZBcWtJUHpwSFEzMW4xMzh6d1hB?=
- =?utf-8?B?eWprQ2Y0M0NJYWNuTUFUcnJ6QngweEJJSVFZYUdiTUc0K0NHaDhuM2dHcXFO?=
- =?utf-8?B?VWt3eGNpMzZyZVMvcXhFdHBMZWE0a1B0aVpaR01vZXp3eWswUXVQTTRKNXNO?=
- =?utf-8?B?OFIrdlo1QWNvUUdleG1nTVV6N3BaM3pLSE1LaVJ1eTFpZFhKUngwdUpRaEtE?=
- =?utf-8?B?L1V0M096WWtQUzZMU2g0Y1dlNHUvdFNOVG10ekRWWXdrWFI0eVA2L1Vta0w4?=
- =?utf-8?B?TUhoU0dudkllckZYSUhCelVXYi84Rk9XZno2S1RqSCtsc0xmRndRU1FpUCsr?=
- =?utf-8?B?MHBNa0ZhbmxaaHF2UnFxK1BQMWg5SHZjSlZ5VkNzOUprakh5RmpybHpoakRO?=
- =?utf-8?B?VjBVMW42aHBQWk5rVnlXMEFwa3pEUHlIWWpaN0x1bWJrbXBGVllsR0htYUxp?=
- =?utf-8?B?c0JxMFlyclY5NmpMUmQvYStWOEdwRFFHOFRKdU1qOWR3MGY0VlNVb2tXbHc3?=
- =?utf-8?B?UEVldnphMFBOUE5UM24zZXhNc3c0TE9yamFaMkxGaXdVZDYzV2FKYytscHJT?=
- =?utf-8?B?aHdmWUpJaXJCTEY3b01GY1RGQlJWR21XZEdJMUVhZGdyQ0E1SHMvb2kzc1dj?=
- =?utf-8?B?NmhENlJaaUVZb2VpeWQ2WGhuNlI4QnZkbndlVnpqbnZBeGRRYURZNW10VjJW?=
- =?utf-8?B?ckZoR2JYTWZrcDR0TEZBQXE0YXVDeHFseFRFdVRvREpXencyK2FoUTJ2bTNz?=
- =?utf-8?B?YlIyS2J0dTlqRDA1OEdyaGJSRjRpWHdXc01MUzF4M2pkUVM3c0ozVWdLV0do?=
- =?utf-8?B?ZFdKcGNjMThUTHZ4d3R6S1NZQVMvUW12NjdLcUR5cXVRbWVabjRPbDhvTnp1?=
- =?utf-8?B?OUFUU0dnMzZXU2JDbDlrY1kzVzdZNHJsN0F0bmk2YVhIYzdEcGFlSFRwREQy?=
- =?utf-8?B?eDJPbU0rSUFHNnh0RTkvVVY2Zm1XQlIzdGdwWndyVWt0eGFMVEdDTGJXb1RP?=
- =?utf-8?B?bTBwc053LzZROTlnQWxsTmQ1ZnZHQjFveXc0NTdtRlBXUEt4U0N1SXRub1NK?=
- =?utf-8?B?OHpXdVVWYm1DT2RtZ09nU3BFMitwR0UzeFJwNTF1dzZrNHhvd0grTzhoSjNK?=
- =?utf-8?B?dFZMbjdKSUJYcVEzaTc2Nnl3WXYyYU1EMjBrUE9vSlNhVVpxcWo2bVJVZHVt?=
- =?utf-8?B?dHdrcXFTdjBzRXFGNnFUT2lzVDdyM0c1MGZTT1Y4V3pJODc4N2ZOZ01IQTgv?=
- =?utf-8?B?eUlsdkEwdk9uTDUwT3pyaE9FSU43MThiUG0yVm16VXNVeWxVNElHbmJRdDJj?=
- =?utf-8?B?c0VFczgyVWh0L3hHNzZmWDF6S2Iyd3dsUEoxTjNxSU9pM0JrUzcwYXNYZkRQ?=
- =?utf-8?B?V3RCRmtnS3dBei9idzBPY1VZRXhnRU9RWkNNbHhhcUN2b3BPVEE0Z3NYL1JT?=
- =?utf-8?B?aEo5NnpqY1I5SjJjblJqSG91dFA4M0w1R2JrczBoYkEwanVlNUVyN0lMY1RS?=
- =?utf-8?B?UTNLQzNNRmRCVEdJUEVVU1JZNm5icnZlZ3dsVTdoQTlHYjQ1U2duaGhSSGJv?=
- =?utf-8?Q?O2hn7JlWBoHUnD9feNUwBT4o82LmXAw99jsT9tf?=
+	=?utf-8?B?VFNNN2lHeG41Zk9NZk05YU01eHUvSVIwaGJzRWFmaWs1cy93V2w3NlNvRGJR?=
+ =?utf-8?B?dFpDc0hraHVFZ1JBYng3a3k2OFArWTVLeW4vS3JkUjBTSEdMazdhbjZRc1pk?=
+ =?utf-8?B?V0xTS3huTFVlVktLZXg0b29Pd3hQelUxQ3VQbHVlR1UwRG0rMytlQmM3ZVJQ?=
+ =?utf-8?B?QkZUZzhsOTNRaTV6akxlMTRpa3M2YXNCUGloNHJhWXlaNG4yYk8rclhDRTh0?=
+ =?utf-8?B?bDhUMlRMa3M2QVJHQkkrbkc1Y0w4SXN5TFFVVlBKTzZGQWlIR3V5Ny8wUjZ0?=
+ =?utf-8?B?NzNuQXB4ak9vS3diUWM5T1NZWUpBcGRRRS9hVGJUVTJaL1VVZC9IQk5UR0Zr?=
+ =?utf-8?B?MHEzcTRITFYvL1A5MERoVjEwM2JyY3JyK0xaZnpyQkpNM01hY3dubmtCd29k?=
+ =?utf-8?B?R0hKTCt1cWV3VGE5ZjVNL2VBcHgwaVJuc2lqcDYvOE9oSGpWendGZU13VWlL?=
+ =?utf-8?B?czFCakVWZUliN1Z1YjNuSS9nSmFOdkpVWE1qS0wvTHo0cUEvZmpDbmxPbDRk?=
+ =?utf-8?B?THEvdGs5eUZMKzduV0o4V0FGWUtKM3UwOGZCcEtxUnpoSVJQVzcySXd5N3dC?=
+ =?utf-8?B?cGdlOWdPcEVOeVhRMHVVYW5YK0ZTRG9pUFlBZHNLZGEva0dkb05XY3VvalZr?=
+ =?utf-8?B?KzV2WktkNWFUNHFQZFh1OWN1Q2xlcjNjUUN3WFdvREpuWGNnd1pqdnR5VG91?=
+ =?utf-8?B?SmJycElDVkFOU3hrSUt5THdpb3JDS0ttRzRUOFlyWjB4bUc5anhsbUQ0VVpm?=
+ =?utf-8?B?OGk0Y0Fub21IR09Ga0JqSUlXYzNzdldLd1A2TnNuSmFnalZsT1VXR2s5OEd4?=
+ =?utf-8?B?M1dWRk1oeHU5WmU3eVgxL2V0a1VSN3M2Rk5wS2V0VXZkT2t3RitLNGFIWDdi?=
+ =?utf-8?B?bVFQc3VpSGRtQzJSYUUzL3dkWnJNMlZSNEZNMVdDamVPUHYzL1kyN2w5MjA1?=
+ =?utf-8?B?Y0poNEtBb0dETC9kbDdBK3o5bjNTamdRVkpPcHZ1cDZ4VStVQ1hZNUlzd2o4?=
+ =?utf-8?B?ZVV5eW9pU0U3Y29ubHVYVjFHelhFbkN0NGpHTjhUVFd4VVZKTFlqbldiMEVi?=
+ =?utf-8?B?anJIc2lOYjJWWml0M2hNME5YNVJINzN0MFhPdndoN0Z4MitoaldWd1pka2VI?=
+ =?utf-8?B?T0RINjZGeHdwNXVFLzRYZFRYTnZHVlNQZW9ndEUrVmNWVmxHMzY5Znptb05N?=
+ =?utf-8?B?RFRncHc2YTZzZ3IwMDZWQkZlTUNnR0F3UDJrT3g4U2dHMFV6Njh3TXNmUGRN?=
+ =?utf-8?B?SFpEeW1La3R5RFIyQ2JOdENDWHNFQ0V2N3dvWkdCczRQRy9ZMmtvRXVPL0FG?=
+ =?utf-8?B?UUZmZTUxdUh1S3VlSE9TTTEwQ1h3WHptZk5YREFYa3MyMTJGM2hzNGN1TFBY?=
+ =?utf-8?B?dkdjUVhUbnNlTjZ5QUs5ZlExYUFRL1Y0SkpIWVlzRUFyQldubS9ZbFA4Q2g3?=
+ =?utf-8?B?UnFPRjdPNElZY09FK2xIbWVralBUa1c4RTRURDFGN2wvd09rNFB1dnlmRCtZ?=
+ =?utf-8?B?MjJjVFpWaGtFR3hZRi9lMXVSWXU0TURGdXZnOERZTVJQei9pOVhWLzBSWXM1?=
+ =?utf-8?B?UXlPYytwTElYWEErTlFrR0JrTGZNZnRPV2FhNFVtUGp3N0V5SE01UEh4Zlhy?=
+ =?utf-8?B?SGVRRHlYT08rQUI2YmhKVlVKYTNvNjJFZE9HblloMko1YWhCU3ZvMlhwSURk?=
+ =?utf-8?B?aVFQSjNMdXNmZFRXdGRZRTRsTmNZc0ZSQ0ZvejNwRFltR1pKeDd3bFh5dHQ1?=
+ =?utf-8?Q?eNzPrOPmz3wsKxtY8QCNWkRjeKzMEZPDuxVMRM6?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(366007)(1800799015)(376005);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230031)(1800799015)(376005)(366007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ZFZvN0RScTlRaVBMazdVRDNMOE9yM0VIanNEMllEUkhsNmpMZi9nTmpacUg3?=
- =?utf-8?B?b21FOElYbkFpMkJXRmlPQjhZN0tyaFBJYWgyQ2lGTFYreW5mN0hMR2JtSkZJ?=
- =?utf-8?B?STZodEREY1E4V2phc1N3Z0EvbDQ5RUYwTXRwZ0NucEhRSUtsT01hS3hoTzFq?=
- =?utf-8?B?aXU5TzFVOEVSckE3NnlUT2xwN29LZWd2cFNRMXo5cUdiQXVKK1haZWV3Tmw3?=
- =?utf-8?B?SE9OL3I4L1N3UHZ6NHpZTFBPNWhkYWx5VUJ1MDM2RFVKNDcvNzlVMlZzVC9Q?=
- =?utf-8?B?NFlnTjBVUDNuL1NNQ0IyU2tMZDM3TEJiVjJ2TVBiekFSazBDU25QcmRpMzF5?=
- =?utf-8?B?RjRiNFBmS3hvZ0RXQWNTODlMeTJYd1FUOStFeEVoOG9DSUROSWpmSldlbjZE?=
- =?utf-8?B?aENpNUdRRmJ1S0ZYOTFMMVgrNG5UZ2pOekxRMGgrTTYyNUF5WDBkdFJ3T2wv?=
- =?utf-8?B?cnlUVUlPYkIwcWRiSUt6WERMaXJpN1BWRDR3UU5Id2JqMUZUTS9oMTBVcG9m?=
- =?utf-8?B?TklJc0RwVUJNODUvcHJPV3FER2oxOSswWnNkbksvOE13a2ZNRkVUdG83TlE5?=
- =?utf-8?B?ZktSZGMwZW5FbFhDaUpzL3ZDNXhlZi9NUUdkZ1psK2ZBSVRJMVBqaHZWUW9q?=
- =?utf-8?B?V0oydXN1TWprZkhsYmw0L2JXcXpXMW1jY2lOWHRHczljLzc3Q1dNMXlJbUVT?=
- =?utf-8?B?bjVGOHdVNGxFbTRWaEJsSHdhdWMwd1RveWh4VC9pTFhOUytZbTNUYWRXWk5w?=
- =?utf-8?B?am1yeStGa1h1UUxEWXRLZzBuRHIwZTB1MDRMV3hrdkpoVXR4MjlJLzhWeE1B?=
- =?utf-8?B?STRUSjUzYzdDSUdONi9aMXNBY2FVWDI2c2pEbTJlVStvZFh2a0RxaW1DZUZO?=
- =?utf-8?B?akJGb1I4d2pleXU0cEdETE10d1B0SU5IY3BnR1FBZXBmczFxdjJzYUJkei9Z?=
- =?utf-8?B?bzdLSkUyaFdUTFF3UFlET2xqODFSYTlZQnlQZzJoQ0lkM0l4alpBTnM4ZjF6?=
- =?utf-8?B?L0xxaURaNTJIZXJiWGhGdU5zVUE4K2x1V0V6c2xVNnBvc0trZ3d2NXpEVDk5?=
- =?utf-8?B?SWVnYk1uMXArMEo5TlBDWEJTV284ZXlPemdVeEd0NGpkUG1iZ1BvYXY4VHBr?=
- =?utf-8?B?STMwTHIxa1EvS3ZUTmthaW5hbmRidFZSeTMxQU9BQjlUcXIxUGZ6WU5mTjFr?=
- =?utf-8?B?aUR6dUhzb1RmUHp1VXNsOEU5V3ZtTkVJV3BjdEJHQUJJQlpOd3NxUitvWUFq?=
- =?utf-8?B?Qm42dWVyZFAwenZjdmQ3cUI4MERJb3JSQ0JOb2thd0VvczNXU3pTT2U3YWlv?=
- =?utf-8?B?b0k2SG1RWEp4QXd6NC9lS0J3R1NnWjBBNjdHdFZodTZYQnRVN0dISXhPbEdM?=
- =?utf-8?B?dXFNV1FwSUJKYytJOGJTRzIzaUJtRXNrMitvZnM3TDlxMzNtSE5RcU43aDJz?=
- =?utf-8?B?U05QaFJuWVZkRlVhMCtvZ2pjVUNGK20rUUFlWWNmUlBXdnkrRDBvUmZoR213?=
- =?utf-8?B?c1pMSnA5WjA5N3lKNWNIZVBrOUluRVpiMW5EbmFXOEprSTZiSGpwMWZBWkJL?=
- =?utf-8?B?WHdSV2VQVmY2VVNDRHE5SlEwMEhkak51MUVqdE1KdjU2ZTRYeHdJQWdsRzcy?=
- =?utf-8?B?dytaa0dNZFFrRnpuajBOdkNXTmE0amZIejFiNzFmU0ZKSElnQ2cva3JqVnpE?=
- =?utf-8?B?MGtkYWRNNHV4K3ZnREg3bnhsRW5wMHpsdTV0L1pYYWVkWkxWd1pDamwwQkpB?=
- =?utf-8?B?NU41ZWZKVit0dVE1ZnhLZWZuZVdrWjlIdnpVRi8xQVNXV3YxVzNJNTNZaEkx?=
- =?utf-8?B?M0dkQ3lFRnA2NmRuNHlqMFF1Y1FtZmtvNzlzSzNXMnJBclg5ZW9QTzZ4Qi8x?=
- =?utf-8?B?bmwwTnAyQWVUQWVvekhlWVdQY3pPWThraVUwRFB4SVc3Q3JUeUVyWGxRZ1du?=
- =?utf-8?B?Sk1LWjBZVERzdU9WV3BWMDlBM3c5ckV1Z3gyV3AyTUI4cjVuZ0x5bllGWFVz?=
- =?utf-8?B?YVNsLzI2NkU2d1crWnpUcDYrVWl3aGgxUFptbHF1QjMzZ1BMa3dRbUFyV1pw?=
- =?utf-8?B?UER2SFhvcDIvZUNKMlRtdXRvV1p3S0hLdG42dGRHbXYrYWlHNnZudDZva1kz?=
- =?utf-8?Q?z7srNgpYVFNQZmNgctjMn59Y0?=
+	=?utf-8?B?TXp6NEluNnE4V0FpbDI3YWdPYVozSmhySHdScmpnVFZUbkVLaHkyU3NaMGRJ?=
+ =?utf-8?B?RkY2UFgzSHBvdTBaUmJZUDhVK1hFOVpyRVE5RGQvWXlKaDNSNXY2UXhxZ2Nm?=
+ =?utf-8?B?dEpoVDA5ejg5VmR3YXhSSDNkM2lsZlR1ZUxaYzFFcnRsa2tuNW1hY3pMeitN?=
+ =?utf-8?B?SW80d2c0L3c3TXBQN1o3WXZldExLNWRyQmwvUGlOc2V0REtOOVJLYXkySS94?=
+ =?utf-8?B?ZUZ5UWFJQXIvSFhuSzd0Y2ZrUDRacGVjNG5pT2FNYUtJQlY3VDFZbzFZa0ZF?=
+ =?utf-8?B?M3F6N2VQNWtZVmwzWmZyZ2RmUlU2eHZ5S1VTN01YblQ0YjlRcmJyeGlMcVNN?=
+ =?utf-8?B?a2VTL1F5amlmd0IwaGpiMGNXcitCYm9VdHJxU3V2YmsyVTlKcU9qU1RIR21U?=
+ =?utf-8?B?UzhyUm02UkpJN0xEUUpOcG1hRXBVc1FGYTlkWXJIcHE3RTZSMEhWZ3AwOG5o?=
+ =?utf-8?B?cVZzbmw0VnVZVTFTMlZRYzBIcUFSenRlRDFCVk9pUkVqeEFuVmhUVlBySmNF?=
+ =?utf-8?B?NWdBSSsxQU5JK0NFNlRNNWhhWTJIZUxKS0EzWUVNNW9VcTR0NzgwTnZmdzZh?=
+ =?utf-8?B?cnN5bnNwSlQ1Mk5kUWtZOStrZVFHNm5VdklzTVhWNlRGQUUzNnlxYVZOd25Q?=
+ =?utf-8?B?NExrN1NsN28vQmZhTDJHUGtsU2ovYkpUMGJIZzBjV2dVZHJNbE1tanFTM0lS?=
+ =?utf-8?B?WHlmNkpyaHlWSVFjSnV0OWIrQzFGUHJDMkVBVXlQUHZZa3N1dUNmZHFoUHFQ?=
+ =?utf-8?B?NkdLakxUd3hQaXdwTGZxdTNQOXkyVTlTcURuSk1NMWZ3TmlsQWJ6dVM3d053?=
+ =?utf-8?B?ZVhoWWd0NUhtZmZ1L01ud2JmTTlmVFl0U1FKZmttemxyVU5WZ0o0TUVoWkZK?=
+ =?utf-8?B?M1hyZG56VmhsWkVKdUR2ODlxY0Z2YkNmSTBFeDZ0NGdLWVlvdDQ4blRjeStn?=
+ =?utf-8?B?TWRzOEhZSG9TVFpOQ2Z4QkJGSmJXK1N3dmdYQ3NaT2FJVlBWOU0vMlJRczZn?=
+ =?utf-8?B?TC8yZkZKY2lBWWN5V2RmM09pUktNbUJzR1FaTmZLdkp0Z0dlS1huYlJOU0or?=
+ =?utf-8?B?R2J5aFc1d3N5WkUvZTdja0JEcWFTU1dQaGU4eVc1TjFiSTFUdFNnMGFGUXdJ?=
+ =?utf-8?B?bklBUk1xaGxoOHBIam80K0ludkZNRmxjSlp3SmlJai8rOHl4ZEZSaHdrdGMy?=
+ =?utf-8?B?d0FZTXI1QjZ3VHl2ZnA4ZWJTVUFJd2RTbGc1dE92TGJHaGlXTEVOQkFaL2Jw?=
+ =?utf-8?B?UWpoYXlYL3dTdlNLNzBFYStWaUcwaXVXTzFNMGhzbmJPSEtJWlhvZ0szaTI0?=
+ =?utf-8?B?M3piNjRIM2tCbThROHJrNEtUZFZ2cXhGUC9iRVJjOFNmYUdwNThISGs4elQ3?=
+ =?utf-8?B?dDNWcEhqOXlXNTJjZzBXKzdNMFUzZm5yVjdXTVpWU3lQMnFDTFBLQjErWU94?=
+ =?utf-8?B?SS9EZU9mMXkvWUlaczRWZklMZzVuMWE5MGRLM24zUGJISC9QVmtidzY4ak96?=
+ =?utf-8?B?a3l6OW9EVDd6ZlBiVzJWczVvOTVwVytJdUFPNWFWSEREaEM4UCtzTjhyMDl2?=
+ =?utf-8?B?L29ORjJ2ZXBPa3FmM1Z5RXNuQTh4d0tYcHhmRlJTcDJXRkNzWXJmSnhOUkF6?=
+ =?utf-8?B?MlFUYXY0cW9mdHFucmUxOGFHMVEzV1hodHZQWW9Ub3lvN3JHbmU0RHBHeG5N?=
+ =?utf-8?B?Y25FcFVpSS96MFB4S0x4c0pJZ1dRcVhWUDdsbGxPMHNNU1Q3eTQ2Y1VkQng0?=
+ =?utf-8?B?by9CaWkxKzNwTmtDejE1WkxYM29kRE9IV1UxSXk0dTluL21PQVkvaFJ5Yk13?=
+ =?utf-8?B?STZGWUxiSWRkM2owVDZtdmpBVWZBZUtGK053ZE5NWnZseVNTazNLWlNONUZH?=
+ =?utf-8?B?WVpmeDJMazlrVW9RaWlCSXphd3VucmY2YStoOEJwb0E5Q3lwNHJhbDFNU0oz?=
+ =?utf-8?B?SFFiVyszYmhiYzZUZDQ0VU5XMHJDWGYxU3ZvU2N6RUl0aXFHTWwrN0NuTVYw?=
+ =?utf-8?B?UEthTzJOUFJ4Tk5rS0l3RUZiTWhnQVp3TUpQTEF2ZnJDRmQyUTNSWlN6elVV?=
+ =?utf-8?B?TmxBcnpTWjhja0xTaXNMaWhYY1V0c2loandqaHo3SjNzY3F2WFJHK3hrWXFu?=
+ =?utf-8?Q?Rw5ub+htOvmvKdrItLcYn7pUQ?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 509fb992-9aa1-47cd-d7f7-08dc8904de1d
+X-MS-Exchange-CrossTenant-Network-Message-Id: fcec5825-aec5-401c-4062-08dc89104c5a
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2024 04:21:58.0216
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2024 05:43:47.4320
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YGdD+P0A3I24AU+LTv4N6V9QXtBrDYBa82tBXs2ZRel3aHbi8Z77Sb8dDcFhAPloOnnll6DwlPTd8WiTvFPD1Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB5138
+X-MS-Exchange-CrossTenant-UserPrincipalName: /lUl7BDvIHjiqTWtMrXNL1ii1EK3/WEIBYpgB30CB78HEfDHDWcXxS6aaHLcLl+YesV0CLbpR6vZaRN6t/vEEw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB6433
 
-On 09.06.24 13:44, Florian Bezdeka wrote:
-> On Sat, 2024-06-08 at 07:31 +0200, Jan Kiszka wrote:
->> On 08.06.24 01:04, Florian Bezdeka wrote:
->>> kvm_wait() unconditionally enabled HW interrupts when called from
->>> pipeline entry code. That broke the PV (paravirtualized) spinlock
->>> implementation.
+On 10.06.24 06:21, Jan Kiszka wrote:
+> On 09.06.24 13:44, Florian Bezdeka wrote:
+>> On Sat, 2024-06-08 at 07:31 +0200, Jan Kiszka wrote:
+>>> On 08.06.24 01:04, Florian Bezdeka wrote:
+>>>> kvm_wait() unconditionally enabled HW interrupts when called from
+>>>> pipeline entry code. That broke the PV (paravirtualized) spinlock
+>>>> implementation.
+>>>>
+>>>> When running with CONFIG_IRQ_PIPELINE enabled we always call
+>>>> safe_halt() to allow HW IRQs to be handled.
+>>>>
+>>>> The !CONFIG_IRQ_PIPELINE part is now re-synced with the version of
+>>>> Linux.
+>>>>
+>>>> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+>>>> ---
+>>>>  arch/x86/kernel/kvm.c | 59 +++++++++++++++++++++++++++++++++++++++++++++------
+>>>>  1 file changed, 53 insertions(+), 6 deletions(-)
+>>>>
+>>>> diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+>>>> index 655b1cf8c9ab..3180a26cdfe1 100644
+>>>> --- a/arch/x86/kernel/kvm.c
+>>>> +++ b/arch/x86/kernel/kvm.c
+>>>> @@ -1059,22 +1059,69 @@ static void kvm_wait(u8 *ptr, u8 val)
+>>>>  	 * for irq enabled case to avoid hang when lock info is overwritten
+>>>>  	 * in irq spinlock slowpath and no spurious interrupt occur to save us.
+>>>>  	 */
+>>>> +
+>>>> +#ifdef CONFIG_IRQ_PIPELINE
+>>>> +	unsigned long flags;
+>>>> +
+>>>> +	/*
+>>>> +	 * We always use safe_halt() to be interruptable by HW IRQs.
 >>>
->>> When running with CONFIG_IRQ_PIPELINE enabled we always call
->>> safe_halt() to allow HW IRQs to be handled.
+>>> Nope, see below.
 >>>
->>> The !CONFIG_IRQ_PIPELINE part is now re-synced with the version of
->>> Linux.
+>>>> +	 *
+>>>> +	 * HW IRQs off:
 >>>
->>> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
->>> ---
->>>  arch/x86/kernel/kvm.c | 59 +++++++++++++++++++++++++++++++++++++++++++++------
->>>  1 file changed, 53 insertions(+), 6 deletions(-)
+>>> Let's stick with the nomenclature "hard" instead of "hw".
 >>>
->>> diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
->>> index 655b1cf8c9ab..3180a26cdfe1 100644
->>> --- a/arch/x86/kernel/kvm.c
->>> +++ b/arch/x86/kernel/kvm.c
->>> @@ -1059,22 +1059,69 @@ static void kvm_wait(u8 *ptr, u8 val)
->>>  	 * for irq enabled case to avoid hang when lock info is overwritten
->>>  	 * in irq spinlock slowpath and no spurious interrupt occur to save us.
->>>  	 */
->>> +
->>> +#ifdef CONFIG_IRQ_PIPELINE
->>> +	unsigned long flags;
->>> +
->>> +	/*
->>> +	 * We always use safe_halt() to be interruptable by HW IRQs.
+>>>> +	 *
+>>>> +	 * Wake up on next HW IRQ or by a vCPU kick triggered by the current
+>>>> +	 * lock owner.
+>>>> +	 */
+>>>> +	if (hard_irqs_disabled()) {
+>>>> +		if (READ_ONCE(*ptr) == val) {
+>>>> +			safe_halt(); // enables HW IRQs
+>>>> +			hard_local_irq_disable();
+>>>
+>>> Just halt() - if we entered this with hard irqs off, we cannot assume
+>>> that it is fine to take an IRQ before returning. The kernel doesn't do
+>>> that either for Linux IRQs.
 >>
->> Nope, see below.
+>> ACK.
 >>
->>> +	 *
->>> +	 * HW IRQs off:
+>>>
+>>>> +		}
+>>>> +		return;
+>>>> +	}
+>>>> +
+>>>> +	/*
+>>>> +	 * HW IRQs on:
+>>>> +	 *
+>>>> +	 * If inband IRQs are disabled the LOCKDEP state is already correct.
+>>>> +	 * We can disable/enable HW IRQs without further bookkeeping.
+>>>> +	 * = Linux IRQ context
+>>>> +	 *
+>>>> +	 * If inband IRQs are enabled we have to inform tracing / LOCKDEP
+>>>> +	 * infrastructure about the HW IRQ disable/enable event.
+>>>> +	 * = Task context
+>>>> +	 */
+>>>>  	if (irqs_disabled()) {
+>>>> -		hard_local_irq_disable();
+>>>> +		flags = hard_local_irq_save();
+>>>
+>>> Why this? We have tested that state above and know it for sure. Just
+>>> keep hard_local_irq_disable().
 >>
->> Let's stick with the nomenclature "hard" instead of "hw".
+>> Paranoia and to clearly express that we try to restore the state to the
+>> state that was observed on function entry. As hard IRQs are/were on the
+>> result of irqs_disabled() might be outdated. (I think that would be a
+>> Dovetail BUG(), but paranoia...)
 >>
->>> +	 *
->>> +	 * Wake up on next HW IRQ or by a vCPU kick triggered by the current
->>> +	 * lock owner.
->>> +	 */
->>> +	if (hard_irqs_disabled()) {
->>> +		if (READ_ONCE(*ptr) == val) {
->>> +			safe_halt(); // enables HW IRQs
->>> +			hard_local_irq_disable();
+>> No strong feelings here. I can change this if this is preferred on
+>> other ends.
 >>
->> Just halt() - if we entered this with hard irqs off, we cannot assume
->> that it is fine to take an IRQ before returning. The kernel doesn't do
->> that either for Linux IRQs.
+>>>
+>>>>  
+>>>>  		if (READ_ONCE(*ptr) == val)
+>>>> -			halt();
+>>>> +			safe_halt(); // enables HW IRQs
+>>>
+>>> Yep, this is needed to avoid delaying hard irqs while waiting for the
+>>> Linux lock-holder.
+>>>
+>>>>  
+>>>> -		hard_local_irq_enable();
+>>>> +		hard_local_irq_restore(flags);
+>>>>  	} else {
+>>>> -		local_irq_disable_full();
+>>>> +		local_irq_save_full(flags);
+>>>
+>>> See above.
+>>>
+>>>> +
+>>>> +		if (READ_ONCE(*ptr) == val) {
+>>>> +			safe_halt(); // enables HW IRQs
+>>>> +			hard_local_irq_disable(); // fix HW state for LOCKDEP
+>>>> +		}
+>>>> +
+>>>> +		local_irq_restore_full(flags);
+>>>
+>>> How about this instead?
+>>>
+>>> if (READ_ONCE(*ptr) == val) {
+>>> 	safe_halt(); /* enables hard irqs */
+>>> 	local_irq_disable();
+>>
+>> Confused. I think you mean local_irq_enable(), right? Otherwise we
+>> would jump back with hard IRQs on (again), but inband IRQs disabled.
+>>
 > 
-> ACK.
-> 
->>
->>> +		}
->>> +		return;
->>> +	}
->>> +
->>> +	/*
->>> +	 * HW IRQs on:
->>> +	 *
->>> +	 * If inband IRQs are disabled the LOCKDEP state is already correct.
->>> +	 * We can disable/enable HW IRQs without further bookkeeping.
->>> +	 * = Linux IRQ context
->>> +	 *
->>> +	 * If inband IRQs are enabled we have to inform tracing / LOCKDEP
->>> +	 * infrastructure about the HW IRQ disable/enable event.
->>> +	 * = Task context
->>> +	 */
->>>  	if (irqs_disabled()) {
->>> -		hard_local_irq_disable();
->>> +		flags = hard_local_irq_save();
->>
->> Why this? We have tested that state above and know it for sure. Just
->> keep hard_local_irq_disable().
-> 
-> Paranoia and to clearly express that we try to restore the state to the
-> state that was observed on function entry. As hard IRQs are/were on the
-> result of irqs_disabled() might be outdated. (I think that would be a
-> Dovetail BUG(), but paranoia...)
-> 
-> No strong feelings here. I can change this if this is preferred on
-> other ends.
-> 
->>
->>>  
->>>  		if (READ_ONCE(*ptr) == val)
->>> -			halt();
->>> +			safe_halt(); // enables HW IRQs
->>
->> Yep, this is needed to avoid delaying hard irqs while waiting for the
->> Linux lock-holder.
->>
->>>  
->>> -		hard_local_irq_enable();
->>> +		hard_local_irq_restore(flags);
->>>  	} else {
->>> -		local_irq_disable_full();
->>> +		local_irq_save_full(flags);
->>
->> See above.
->>
->>> +
->>> +		if (READ_ONCE(*ptr) == val) {
->>> +			safe_halt(); // enables HW IRQs
->>> +			hard_local_irq_disable(); // fix HW state for LOCKDEP
->>> +		}
->>> +
->>> +		local_irq_restore_full(flags);
->>
->> How about this instead?
->>
->> if (READ_ONCE(*ptr) == val) {
->> 	safe_halt(); /* enables hard irqs */
->> 	local_irq_disable();
-> 
-> Confused. I think you mean local_irq_enable(), right? Otherwise we
-> would jump back with hard IRQs on (again), but inband IRQs disabled.
+> Yes, enable. The goal is to avoid that hard-irq back and forth.
 > 
 
-Yes, enable. The goal is to avoid that hard-irq back and forth.
+Actually, there is no need for this dance at all. Just translate the
+Linux version of the "irqs on" branch to dovetail:
+
+	hard_local_irq_disable();
+
+	/* safe_halt() will enable IRQ */
+	if (READ_ONCE(*ptr) == val)
+		native_safe_halt();
+	else
+		hard_local_irq_enable();
+
+There is no reason to touch the Linux IRQ mask. It's open on entry, and
+we can take any type of IRQ while waiting.
 
 Jan
-
->> } else {
->> 	local_irq_enabled_full();
->> }
->>
->>
->>> +	}
->>> +
->>> +#else /* !CONFIG_IRQ_PIPELINE */
->>> +	if (irqs_disabled()) {
->>> +		if (READ_ONCE(*ptr) == val)
->>> +			halt();
->>> +	} else {
->>> +		local_irq_disable();
->>>  
->>>  		/* safe_halt() will enable IRQ */
->>>  		if (READ_ONCE(*ptr) == val)
->>>  			safe_halt();
->>> -
->>> -		local_irq_enable_full();
->>> +		else
->>> +			local_irq_enable();
->>>  	}
->>> +#endif
->>
->> Yeah, we indeed need to preserve the original version for the
->> !IRQ_PIPELINE case. This was also broken.
->>
->> Jan
->>
->>>  }
->>>  
->>>  /*
->>>
->>
->> -- 
->> Siemens AG, Technology
->> Linux Expert Center
-> 
 
 -- 
 Siemens AG, Technology
