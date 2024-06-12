@@ -1,96 +1,85 @@
-Received: from smtp5-g21.free.fr (smtp5-g21.free.fr [212.27.42.5])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECB7C16F0FD
-	for <xenomai@lists.linux.dev>; Wed, 12 Jun 2024 12:09:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.27.42.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87B2616FF3E
+	for <xenomai@lists.linux.dev>; Wed, 12 Jun 2024 12:40:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718194143; cv=none; b=c3CC7tlsPT+6nJMqf4xwjKdtoPWZ+fXNhAA149wQG30kpwucNp8S0IJau5nt7L3l761tlszan7OOIjk53m8WdThAHAaK43ss4HYISx4rrOJlf5MgwpIFl0TSg02ln12xNM/baGHnPfDWLGaeKDlTCMygqAkf7fpA88wxSmKTO0Q=
+	t=1718196029; cv=none; b=cOn/jEl0sHzu/XikFyDs06OnIftQB+h1zN3nfdRHmaI2blM0CqqkVCCH0Tb5xl9fBs8c2pWi9KYimaZZrLv/2/b8kOJK20Cx0fknCZu+cWgwXQqz6Rucgr+S5bAFn7NRbWcwKOgY9zR5zaKSEg4VJeT98nmG0P32VFzoQt6AVe0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718194143; c=relaxed/simple;
-	bh=axQCzyIggzmUW4AHhP//aOUka4YKSihudDBzD2S2m4s=;
-	h=From:In-Reply-To:Content-Type:Date:Cc:To:MIME-Version:Message-ID:
-	 Subject; b=QrnTvD3vovEgi6+VA199GeCy5dxk24vd1cJR/7LiqPhXk0r01pxbv4ReQJVOicJZfzCKSMX0qF3yIAXjx77/9mKhSNpD6KHHFiwWYcFHQcVfk6IoW+lLuv4R++Fy/jjahwINXS65BKqe//wqYakHY4pC7/NIcHnvL1cv2oVrwfE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thom.fr.eu.org; spf=pass smtp.mailfrom=thom.fr.eu.org; dkim=permerror (0-bit key) header.d=thom.fr.eu.org header.i=@thom.fr.eu.org header.b=VIPmDTmv; arc=none smtp.client-ip=212.27.42.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thom.fr.eu.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=thom.fr.eu.org
+	s=arc-20240116; t=1718196029; c=relaxed/simple;
+	bh=WDUUjvy447S97hr1LSaaEZlY+kp2LWBl7ipPTxSW/NE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=X+NfM0GNixvatCn9TKnzwkMl3RfECkY1onBJAY/380ss2mFj+U82FeE52/6qY020yThCxjziKI/vtA8V2eiAasCd1a7ofz4SojyCdciKF9NwNDlZROlQbPF++RxhBCza19z8ovMirMfJpJJJ/C/raWCPqalikANC706NorR90HI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KUJo6uZC; arc=none smtp.client-ip=209.85.208.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=permerror (0-bit key) header.d=thom.fr.eu.org header.i=@thom.fr.eu.org header.b="VIPmDTmv"
-Received: from mail.thom.fr.eu.org (unknown [IPv6:2a01:e0a:2aa:1dd0::2])
-	by smtp5-g21.free.fr (Postfix) with ESMTPS id BEEAE6013C;
-	Wed, 12 Jun 2024 14:08:57 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by mail.thom.fr.eu.org (8.15.2/8.15.2/Debian-22) with ESMTP id 45CC8uKg409204;
-	Wed, 12 Jun 2024 14:08:56 +0200
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/simple; d=thom.fr.eu.org;
-	s=default; t=1718194136;
-	bh=axQCzyIggzmUW4AHhP//aOUka4YKSihudDBzD2S2m4s=;
-	h=From:In-Reply-To:Date:Cc:To:Subject;
-	b=VIPmDTmva7FIcD9f5QT1nAFHnEWfq1TRLOZyQwSWmbnqA241hIuEeIG6tl2MYMtS3
-	 kPe8LAdNhwAZdbcgXbV5hy6cZ8j7QTxHMFy376fdyszppMohq2S9/Kd9/h4afMRoj2
-	 O9OTNc1YIZ3WoZUOL9Mlh9xWUrrg2tZZBFzRAznC75sWykJ7YmHacJH6SddCcmaW1T
-	 b0fKCTxLM7rKKJR/bDAD6vKuSYvg1liejdQ55jBkXS3yHEBBMASPA4jroPLtvNO1nR
-	 zYoKoUV4adJanocNyAXvhm1T0L8YSWQ5d1H+dZlHOJH5IAmh7XEKZWYlSvMcvEXfoK
-	 Y1NgWvGoWGlqw==
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-In-Reply-To: <PH7PR11MB74994E73E4A092626F492425F2C02@PH7PR11MB7499.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
-X-Forward: 217.109.173.233, 147.161.182.115
-Date: Wed, 12 Jun 2024 14:08:56 +0200
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-To: =?utf-8?q?Chen=2C_Hongzhan?= <hongzhan.chen@intel.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KUJo6uZC"
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-57c75464e77so2856941a12.0
+        for <xenomai@lists.linux.dev>; Wed, 12 Jun 2024 05:40:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1718196026; x=1718800826; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Jz4uczjKRGSUjdfy7r+he9pcIot/HJD6Oxw6D3GCEIU=;
+        b=KUJo6uZC1JrQKcWZjHQGN0/nNnAHSYi5uPGxoYtAWUwj9ppSsl5pXh38471on7KLXH
+         4W+uhTnnOi70QCwdiHBCgVfVgUw8PPgcT2/R1QffbtDSespdQZ4cEyM4cfqbhKweqiry
+         gUZa7f71lnR0N1DeIGl0TBj+xbXXK8FC57zcJ1zjGyF7jN4SSe9nFDRUoyTOFSOJJjfw
+         C6RRepDduArF8k0o/6ApjdqPQ06IGHodLNj5GldoP/khrhX3kA0LyQ5xxLH369p6YC5P
+         fy3LyQTPsXQGgc38rSHD+tUTRDrJ7ayWwdvgA/I9i1k5wjzij07ZOagDvaV4rC9Nr2YK
+         Q17w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1718196026; x=1718800826;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=Jz4uczjKRGSUjdfy7r+he9pcIot/HJD6Oxw6D3GCEIU=;
+        b=odIHlP5mHt85ntR35fBPuFFkUu5B8QHQkekpHKQ07T/ZfUJuoBu2oksn7nEzszk20T
+         YNRiwCcMhQzOR4WYHU/MuMRPTbbL9iH8s+qCe1ijEDH2axtnzyh4xw6rGaM7TvKi6icP
+         fb0NUsIhgjiw/IcoILGKnT17yCkLUiqgSqzY5KZZOltLgTjwQz3MOD5HOP5XZC9o2w1f
+         zs/XIniTrKl7YlqTCF8rJ2VVkdJspizRAonSJWokabSARX98Ljd1to42RZrsTV4yq4yz
+         CSrgwd4RqPp41zYnAws0jBUwAy2WnMyyh+yCT0jnFS2rVKzruK/f7Iy5NZ7KpdoDozwO
+         0CnQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVaf56iLGD0WhsxQRAitoh9UWTMFftvh74jbRrKcHotxiFz7kaIZYYvq1OwABOBK7xrZiva/Jn6C52MI8eWt9cVustCA5a1MA==
+X-Gm-Message-State: AOJu0YzrWza8zF6OjPQRgWdl5uhgrC8uPsfdQuBNow7AouSb4zWQt6Oh
+	xJgneI+tY+fI+4l4J8C2asMacPZrIYPESVqEREKzjNiHsfKBAwNeiJYWbZ4GAPu6jvg9JqX8xlT
+	dsrE7zRnhust+tPrMeQv7etRf8/U=
+X-Google-Smtp-Source: AGHT+IEezx8rPRz0tsSpKJ0k16pd1Ht/VhAZzoXxS35+uzP1PR80o++VHO6HiYVIPMqjJSwIt5VSexRsoigCvfagb+w=
+X-Received: by 2002:a17:907:7da4:b0:a6f:501c:5da8 with SMTP id
+ a640c23a62f3a-a6f501c62d0mr9594866b.22.1718196025492; Wed, 12 Jun 2024
+ 05:40:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <1158-66699000-d-2e725200@6131804>
-Subject: =?utf-8?q?RE=3A?= Porting RT net driver to dovetail
-User-Agent: SOGoMail 5.0.1
+References: <PH7PR11MB74994E73E4A092626F492425F2C02@PH7PR11MB7499.namprd11.prod.outlook.com>
+ <1158-66699000-d-2e725200@6131804>
+In-Reply-To: <1158-66699000-d-2e725200@6131804>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Wed, 12 Jun 2024 14:40:10 +0200
+Message-ID: <CAFLxGvzhmZEL4+22UjkPD34g9AqMfdA4xUavug5itv_1GR=dPA@mail.gmail.com>
+Subject: Re: Porting RT net driver to dovetail
+To: =?UTF-8?Q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+Cc: "Chen, Hongzhan" <hongzhan.chen@intel.com>, 
+	"xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.10 at tls-srv-03
-X-Virus-Status: Clean
 
-Thanks for the answer.
-
-Maybe I mixed things up, but I thought that with dovetail, one would so=
-mehow use  linux network stack with special OOB drivers, and have no mo=
-re to rely on RTNET. Is that correct ?
-
-Fran=C3=A7ois 
-
-Le Mercredi, Juin 12, 2024 10:07 CEST, "Chen, Hongzhan" <hongzhan.chen@=
-intel.com> a =C3=A9crit: 
- 
-> 
-> 
-> >-----Original Message-----
-> >From: Fran=C3=A7ois Legal <devel@thom.fr.eu.org>
-> >Sent: Wednesday, June 12, 2024 3:08 PM
-> >To: xenomai@lists.linux.dev
-> >Subject: Porting RT net driver to dovetail
-> >
-> >Hello list,
-> >
-> >could anybody point me to some example NIC driver for dovetail. I'm =
-starting
-> 
-> Theoretically, the existing NIC drivers in Xenomai 3.2 is compatible =
-with Dovetail. 
-> The drivers works with I-PIPE still works with Dovetail. I just had t=
-ested rt=5Figb and rt=5Figc
-> on limited NICs and platforms two years ago and cannot suggest more.
-> 
-> Regards
-> 
-> Hongzhan Chen
-> 
-> >to transition from ipipe/rtdm to dovetail.
-> >
-> >Thanks in advance
-> >
-> >Fran=C3=A7ois
-> >
+On Wed, Jun 12, 2024 at 2:09=E2=80=AFPM Fran=C3=A7ois Legal <devel@thom.fr.=
+eu.org> wrote:
 >
+> Thanks for the answer.
+>
+> Maybe I mixed things up, but I thought that with dovetail, one would some=
+how use  linux network stack with special OOB drivers, and have no more to =
+rely on RTNET. Is that correct ?
 
+It depends on whether you want to use Xenomai or EVL.
+
+--=20
+Thanks,
+//richard
