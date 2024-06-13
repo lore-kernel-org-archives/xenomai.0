@@ -1,151 +1,259 @@
-Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51E9F26AE4
-	for <xenomai@lists.linux.dev>; Thu, 13 Jun 2024 16:10:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3D54381B0
+	for <xenomai@lists.linux.dev>; Thu, 13 Jun 2024 16:25:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718295003; cv=none; b=EoxCr7/ikpKkjWJSuMfIFK9uHHLnjknQO2daPd6eY3O/cR4/Yh0bYXLbbmbr/lW7gxnqrGnsq8IM46RijcBoZNF9huTaiaPvmjx/HPY2JyJCQG3A9h2vWmaCxX6FU9IKNGQqUZ0lzzvIPXqN2E5tbZjL0VDZ5uNs9T980T5jqcA=
+	t=1718295953; cv=none; b=LoMryzgP95zdt6gyKnE8oXgEquz79Vvx08Vh9ls3W5J4gXlQo6M29haANbLYixrU0zNFfwkkwg8XzSEwsrLDd1f+bfNOr/9mfyeneIM1L+3AZQsTWMqUhXVrmS8T+5bD/WUO52VQ1/Oooz0Qi0eWvbUeaW3ma8+t5fyWcvkNLX8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718295003; c=relaxed/simple;
-	bh=OMHKfytuOBpz0sRTc/7mH2eL6cNn7WKrcH7g8qs0sW0=;
-	h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
-	 MIME-Version:Content-Type; b=E5SoVyrIouA54hegd9yx84BhF0BZdQEM6etfR/6vx0CoaAjnxXvwNzKqMTLjgqHvWaKwJOO0ClPxRiI7MnoeGD5S5oUzZH58tFQyFNCWcULlUJM3owNh01NxSELiWsCUQaFpdHTW0UgD8xEROe17scgwfYYOVUxyb3yVoKKJ3HQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.208.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-lj1-f170.google.com with SMTP id 38308e7fff4ca-2eadaac1d28so11247761fa.3
-        for <xenomai@lists.linux.dev>; Thu, 13 Jun 2024 09:10:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718294999; x=1718899799;
-        h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
-         :user-agent:references:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=2kLUG/gUwLUZHQeHAkyawNVFpadINRuWVcHFOEtjbFY=;
-        b=gCXMVgmqKVll5JJkjd/EXsv+tFGG93Gu6yAsiFaXbx/fX8I6GTUu7t88h1t4WXECWW
-         ts526TEAFkKMZg/5+grBhw/UArEUDkv+CpWPQz0YGwauiiaIKevHBJxV2M8mg3GpmxEs
-         Hch+4Pdks9iL5yUcWxoNY8cZGCRgvWL5ILK4mva5/KRa7FUcObrvOvdCYJGNNmmmZWAB
-         A03LFW90Fe2cTNKi3NrqXqsgJ8kBFz0nkaoUH0iMZq+OOAL7Frw91zD+78nXjeKvjGgV
-         PKDHz+c6eHq1Ry53+6Suld4rps0l5y8oWivkSmfKsZ9S2IrV1uHAiwYVz2a6n260PkLD
-         ks6Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVOoX425OLDbsDaEYu8JXj+bqSP5Wa6Pc2fZWvNRjggoO7VIaD4eOIj6H7ZPTdDlm6H7XPYZYwUsufrj5N5b/DgfWVHOxkqQQ==
-X-Gm-Message-State: AOJu0YwQqG9B0pzYeQQ9Ex4qGEB6CTAA8pKoWIqR/CultVl6OfkxRnPQ
-	V30IRXEx4UzI26UTlfSwYNIzJhgMjTiTJPrkzavmm5USlgHDjm54x+0h8Q==
-X-Google-Smtp-Source: AGHT+IHuj89UBkAZK6V4br6B0QnEqywZuT9Jmwlfl5F4FTYL7eKXAjC9AmKSCRYKC3YxoEyp29TkNA==
-X-Received: by 2002:a2e:9dda:0:b0:2e1:2169:a5cc with SMTP id 38308e7fff4ca-2ec0e46d9e8mr2079041fa.15.1718294999080;
-        Thu, 13 Jun 2024 09:09:59 -0700 (PDT)
-Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-422f2f30925sm30832665e9.0.2024.06.13.09.09.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jun 2024 09:09:58 -0700 (PDT)
-References: <20240613134557.4013044-1-tobias.schaffner@siemens.com>
- <20240613134557.4013044-4-tobias.schaffner@siemens.com>
- <87jzisrkfo.fsf@xenomai.org>
- <dbe94d71-1fdf-41d5-bc84-76923a66bc2a@siemens.com>
-User-agent: mu4e 1.10.5; emacs 29.3
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
-Subject: Re: [libevl][PATCH 3/4] evl-test: Start evl-test with load by default
-Date: Thu, 13 Jun 2024 18:09:46 +0200
-In-reply-to: <dbe94d71-1fdf-41d5-bc84-76923a66bc2a@siemens.com>
-Message-ID: <8734pgrfhl.fsf@xenomai.org>
+	s=arc-20240116; t=1718295953; c=relaxed/simple;
+	bh=Gr6WjIJxS8mlucL+CGNsavSNgj9200c1w/xMeYGW8GQ=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=seALfiRp+Lgl08UtUQ+/Nmz5517ioocR2rKVXviSlTL3Td5eaEIXEatvaeebTqJ61uys447T/vaungPU2LUzTZbk/I3pniCCsZzYTtSYg10T720QD0iTgpjpjEgYnP51g39Ey0ywTjF2S3LJq+oCOvwxkctfvDqCSvosf7uNDsw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=GHVq+cG1; arc=none smtp.client-ip=185.136.64.227
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="GHVq+cG1"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202406131615361fdd27fe5fc2267b2f
+        for <xenomai@lists.linux.dev>;
+        Thu, 13 Jun 2024 18:15:36 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=PHKU7n+o2HrJux1vh7ZVk6bXabapg74baqy9FO86DVk=;
+ b=GHVq+cG1Y+cfXOSXxsJq4XXmPhtiuMflOVroBSK9AroCQql2xXRyEEwz2VC8A+DCxNgle/
+ nLC3ovfyhvfk1rXUd7ILD5Q44SNHgGGxby5lQk1Uvi5Yt2veEusuIdhXyT0e2EtHq/0bx2yu
+ d0nc/7HTvk2A4ZB2srs4CcEtNXe6Y=;
+Message-ID: <79f348d6442039a74eaa2f4129d1a5af5845ffdd.camel@siemens.com>
+Subject: Re: [PATCH RFC dovetail 6.9 v2 2/2] KVM: x86: dovetail: Allow
+ kvm_wait() to be called from any context
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
+Cc: Philippe Gerum <rpm@xenomai.org>
+Date: Thu, 13 Jun 2024 18:15:34 +0200
+In-Reply-To: <9c69a0a9-8307-4cf4-804b-1ba49353bb52@siemens.com>
+References: 
+	<20240531-flo-fix-kvm-guest-for-6-9-v2-0-5534fcae4eb5@siemens.com>
+	 <20240531-flo-fix-kvm-guest-for-6-9-v2-2-5534fcae4eb5@siemens.com>
+	 <73b55cbb-0d7d-4552-9102-cc7c16e5834c@siemens.com>
+	 <f57d19d9549525a94e1c22d0d9b520150afda04f.camel@siemens.com>
+	 <dc350628-f444-41e4-93e8-b9724046b5a0@siemens.com>
+	 <5c4192f8-067d-4a92-9ea2-ac5e77ff65bf@siemens.com>
+	 <fe10e88839a636a104fa1fedbe75e424664763e1.camel@siemens.com>
+	 <9c69a0a9-8307-4cf4-804b-1ba49353bb52@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
+
+On Mon, 2024-06-10 at 23:16 +0200, Jan Kiszka wrote:
+> On 10.06.24 09:58, Florian Bezdeka wrote:
+> > On Mon, 2024-06-10 at 07:43 +0200, Jan Kiszka wrote:
+> > > On 10.06.24 06:21, Jan Kiszka wrote:
+> > > > On 09.06.24 13:44, Florian Bezdeka wrote:
+> > > > > On Sat, 2024-06-08 at 07:31 +0200, Jan Kiszka wrote:
+> > > > > > On 08.06.24 01:04, Florian Bezdeka wrote:
+> > > > > > > kvm_wait() unconditionally enabled HW interrupts when called =
+from
+> > > > > > > pipeline entry code. That broke the PV (paravirtualized) spin=
+lock
+> > > > > > > implementation.
+> > > > > > >=20
+> > > > > > > When running with CONFIG_IRQ_PIPELINE enabled we always call
+> > > > > > > safe_halt() to allow HW IRQs to be handled.
+> > > > > > >=20
+> > > > > > > The !CONFIG_IRQ_PIPELINE part is now re-synced with the versi=
+on of
+> > > > > > > Linux.
+> > > > > > >=20
+> > > > > > > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> > > > > > > ---
+> > > > > > >  arch/x86/kernel/kvm.c | 59 +++++++++++++++++++++++++++++++++=
+++++++++++++------
+> > > > > > >  1 file changed, 53 insertions(+), 6 deletions(-)
+> > > > > > >=20
+> > > > > > > diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+> > > > > > > index 655b1cf8c9ab..3180a26cdfe1 100644
+> > > > > > > --- a/arch/x86/kernel/kvm.c
+> > > > > > > +++ b/arch/x86/kernel/kvm.c
+> > > > > > > @@ -1059,22 +1059,69 @@ static void kvm_wait(u8 *ptr, u8 val)
+> > > > > > >  	 * for irq enabled case to avoid hang when lock info is ove=
+rwritten
+> > > > > > >  	 * in irq spinlock slowpath and no spurious interrupt occur=
+ to save us.
+> > > > > > >  	 */
+> > > > > > > +
+> > > > > > > +#ifdef CONFIG_IRQ_PIPELINE
+> > > > > > > +	unsigned long flags;
+> > > > > > > +
+> > > > > > > +	/*
+> > > > > > > +	 * We always use safe_halt() to be interruptable by HW IRQs=
+.
+> > > > > >=20
+> > > > > > Nope, see below.
+> > > > > >=20
+> > > > > > > +	 *
+> > > > > > > +	 * HW IRQs off:
+> > > > > >=20
+> > > > > > Let's stick with the nomenclature "hard" instead of "hw".
+> > > > > >=20
+> > > > > > > +	 *
+> > > > > > > +	 * Wake up on next HW IRQ or by a vCPU kick triggered by th=
+e current
+> > > > > > > +	 * lock owner.
+> > > > > > > +	 */
+> > > > > > > +	if (hard_irqs_disabled()) {
+> > > > > > > +		if (READ_ONCE(*ptr) =3D=3D val) {
+> > > > > > > +			safe_halt(); // enables HW IRQs
+> > > > > > > +			hard_local_irq_disable();
+> > > > > >=20
+> > > > > > Just halt() - if we entered this with hard irqs off, we cannot =
+assume
+> > > > > > that it is fine to take an IRQ before returning. The kernel doe=
+sn't do
+> > > > > > that either for Linux IRQs.
+> > > > >=20
+> > > > > ACK.
+> > > > >=20
+> > > > > >=20
+> > > > > > > +		}
+> > > > > > > +		return;
+> > > > > > > +	}
+> > > > > > > +
+> > > > > > > +	/*
+> > > > > > > +	 * HW IRQs on:
+> > > > > > > +	 *
+> > > > > > > +	 * If inband IRQs are disabled the LOCKDEP state is already=
+ correct.
+> > > > > > > +	 * We can disable/enable HW IRQs without further bookkeepin=
+g.
+> > > > > > > +	 * =3D Linux IRQ context
+> > > > > > > +	 *
+> > > > > > > +	 * If inband IRQs are enabled we have to inform tracing / L=
+OCKDEP
+> > > > > > > +	 * infrastructure about the HW IRQ disable/enable event.
+> > > > > > > +	 * =3D Task context
+> > > > > > > +	 */
+> > > > > > >  	if (irqs_disabled()) {
+> > > > > > > -		hard_local_irq_disable();
+> > > > > > > +		flags =3D hard_local_irq_save();
+> > > > > >=20
+> > > > > > Why this? We have tested that state above and know it for sure.=
+ Just
+> > > > > > keep hard_local_irq_disable().
+> > > > >=20
+> > > > > Paranoia and to clearly express that we try to restore the state =
+to the
+> > > > > state that was observed on function entry. As hard IRQs are/were =
+on the
+> > > > > result of irqs_disabled() might be outdated. (I think that would =
+be a
+> > > > > Dovetail BUG(), but paranoia...)
+> > > > >=20
+> > > > > No strong feelings here. I can change this if this is preferred o=
+n
+> > > > > other ends.
+> > > > >=20
+> > > > > >=20
+> > > > > > > =20
+> > > > > > >  		if (READ_ONCE(*ptr) =3D=3D val)
+> > > > > > > -			halt();
+> > > > > > > +			safe_halt(); // enables HW IRQs
+> > > > > >=20
+> > > > > > Yep, this is needed to avoid delaying hard irqs while waiting f=
+or the
+> > > > > > Linux lock-holder.
+> > > > > >=20
+> > > > > > > =20
+> > > > > > > -		hard_local_irq_enable();
+> > > > > > > +		hard_local_irq_restore(flags);
+> > > > > > >  	} else {
+> > > > > > > -		local_irq_disable_full();
+> > > > > > > +		local_irq_save_full(flags);
+> > > > > >=20
+> > > > > > See above.
+> > > > > >=20
+> > > > > > > +
+> > > > > > > +		if (READ_ONCE(*ptr) =3D=3D val) {
+> > > > > > > +			safe_halt(); // enables HW IRQs
+> > > > > > > +			hard_local_irq_disable(); // fix HW state for LOCKDEP
+> > > > > > > +		}
+> > > > > > > +
+> > > > > > > +		local_irq_restore_full(flags);
+> > > > > >=20
+> > > > > > How about this instead?
+> > > > > >=20
+> > > > > > if (READ_ONCE(*ptr) =3D=3D val) {
+> > > > > > 	safe_halt(); /* enables hard irqs */
+> > > > > > 	local_irq_disable();
+> > > > >=20
+> > > > > Confused. I think you mean local_irq_enable(), right? Otherwise w=
+e
+> > > > > would jump back with hard IRQs on (again), but inband IRQs disabl=
+ed.
+> > > > >=20
+> > > >=20
+> > > > Yes, enable. The goal is to avoid that hard-irq back and forth.
+> > > >=20
+> > >=20
+> > > Actually, there is no need for this dance at all. Just translate the
+> > > Linux version of the "irqs on" branch to dovetail:
+> > >=20
+> > > 	hard_local_irq_disable();
+> > >=20
+> > > 	/* safe_halt() will enable IRQ */
+> > > 	if (READ_ONCE(*ptr) =3D=3D val)
+> > > 		native_safe_halt();
+> > > 	else
+> > > 		hard_local_irq_enable();
+> > >=20
+> > > There is no reason to touch the Linux IRQ mask. It's open on entry, a=
+nd
+> > > we can take any type of IRQ while waiting.
+> >=20
+> > Correct, but we would miss this hard IRQ disable event in the tracing
+> > infrastructure. Is that OK?
+>=20
+> Not sure if hard irqs are actually traced. I thought they aren't with
+> the given functions. If they are, you are right.
+
+hard_local_irq_disable() simply turns hard IRQs off. See
+native_irq_disable().
+
+The replacement of local_irq_disable_full() is:
+
+do {
+	native_irq_disable();
+	do {
+		bool was_disabled =3D (arch_irqs_disabled());
+		arch_local_irq_disable();
+		if (!was_disabled)
+			trace_hardirqs_off();
+	} while (0);
+} while (0)
 
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+It's basically hard_local_irq_disable() + tracing when the inband IRQs
+were enabled. That would be the case here. Do you agree?
 
-> On 13.06.24 16:16, Philippe Gerum wrote:
->> 
->> Tobias Schaffner <tobias.schaffner@siemens.com> writes:
->> 
->>> Stress evl with a load command while running the tests. The load command
->>> may be set to an empty string to run tests without stressing the system.
->>>
->>> To align with xeno-test the -l command line argument was used for the load
->>> command. Listing of the unittests can now be done with --list and --List.
->>>
->> 
->> Nak. Compat with xeno-test is definitely not a requirement if this means
->> breaking the existing evl command line usage. Besides, --List looks
->> strange as an option. Let's pick a different option for the load command
->> instead.
->> 
->>> The load command is moved to its own process group to allow a clean
->>> teardown of the load process with all its subprocesses.
->>>
->>> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
->>> ---
->>>  utils/evl-test | 71 +++++++++++++++++++++++++++++++++++++++++++-------
->>>  1 file changed, 61 insertions(+), 10 deletions(-)
->>>
->>> diff --git a/utils/evl-test b/utils/evl-test
->>> index 5c1c3da..fb85f69 100644
->>> --- a/utils/evl-test
->>> +++ b/utils/evl-test
->>> @@ -6,33 +6,79 @@ if test \! -d $EVL_TESTDIR; then
->>>     exit 2
->>>  fi
->>>  
->>> -usage() {
->>> -   echo >&2 "usage: $(basename $1) [-l][-L][-k][-h][-u] [test-list]"
->>> -}
->>> -
->>>  keep_going=false
->>>  do_list=false
->>>  full_path=false
->>>  unittests_only=false
->>> +load_cmd="dohell 900"
->>> +load_cmd_pgid_file="/tmp/evl_test_load_cmd_$$"
->>> +
->>> +usage() {
->>> +   cat >&2 <<EOF
->>> +evl test -h
->>> +
->>> +This help text.
->>> +
->>> +evl test [ -l "load command" ] [ -k ] [ -u ] [ --list ] [ --List ]
->>> +
->>> +Run a basic test/benchmark of evl on your platform, by first starting a
->>> +few unit tests, then running the latency test under the load generated by
->>> +"load-command".
->>> +
->>> +By default, the load command is "dohell 900", which will generate load during
->>> +15 minutes. To generate a more realistic load see dohell help.
->>> +
->>> +This script accepts the -k option to tell the unit test loop to keep
->>> +going upon a failing test. Otherwise evl test stops immediately.
->>> +
->> 
->> To be fixed wrt the comment on the previous patch.
->> 
->>> +Use -u if you want to skip the latency test and only run the unittests.
->>> +
->>> +Use --list to output all the tests available. --List will print all the tests
->>> +with their full path.
->>> +
->>> +Example:
->>> +evl test -l "dohell -s 192.168.0.5 -m /mnt -l /ltp"
->>> +
->>> +Will generate load including network load using the server at IP address
->>> +192.168.0.5, some I/O under the moint point /mnt, and the LTP testsuite
->>> +installed under the /ltp directory, and use the latency test by measuring the
->>> +timer irq latency.
->> 
->> We should use stress-ng or something alike, instead of the obsolete
->> dohell script.
->
-> Fact is that dohell does better than stress-ng, at least in the configs
-> of the latter that I've seen before.
->
+I think it's worth to keep / get a trace event here. The underlying
+hypervisor might be the source of some latency. Would be good to see
+that in the trace.
 
-See my comment on the dohell patch.
+Florian
 
--- 
-Philippe.
+>=20
+> Jan
+>=20
+> --=20
+> Siemens AG, Technology
+> Linux Expert Center
+
