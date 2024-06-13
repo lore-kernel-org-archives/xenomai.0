@@ -1,52 +1,52 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 197E31DFFC
-	for <xenomai@lists.linux.dev>; Thu, 13 Jun 2024 14:23:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A0C3142E73
+	for <xenomai@lists.linux.dev>; Thu, 13 Jun 2024 14:26:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718288624; cv=none; b=VNgM81BJ0QrVsw2WyyCPLcGk8KBJK6PbCBjthpD1z17ifYHyVoeet9/3DHWQsEJbCzPnjtHgd+QPUITS1rb/dS3QRch5EEFVBc5FV1gGCpLwF2KwyyUPyiB+z4RNWPOy7ay1d+TYSaJHFpABolCumv5Jn8MfWH6TgEIJLq1zrY4=
+	t=1718288794; cv=none; b=UvivXWDNXYRbq+dVXLaKNo2aP8YiK1N7dG31Ai4U/QX19UugHg4oaXAu5Cel2qE+X+9P9t7njT8mNQ3apRlmWbOrbqQ4kUjmW3vHTb7UlsJtZoe/lIQvt35lWSYasdlRzVHWwHqpO5S24M9tO6AzNehvcH0Kw2L2iRy5ujC+MXo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718288624; c=relaxed/simple;
-	bh=W30jvV/7or1ugX/mYhKJ/G1Uzj7sIjU4m3q8Y4XPJ9o=;
+	s=arc-20240116; t=1718288794; c=relaxed/simple;
+	bh=YAKczWre9HE1HJvdC5Wq+wXmNYULKJB5bQLnc2OeHxI=;
 	h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
-	 MIME-Version:Content-Type; b=KvF3pwAU2g/9gw580yhaNyIGqUq92LYXC6MEi0kQ6K0xlcVIUAuMdzogwTIv5/UV5j3DWTau/CcXjJ28m29RXSNNAPzToPHoSjZZnCeOPa7blSOJyjFgxobjRw1lHQQhS0BOEHjvkbaMgXrTFH29juBl3noyq5/NHt9XfrQnIJI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.46
+	 MIME-Version:Content-Type; b=IPEmLeq1u4FbhCOrTLTvIkVpzpcIoKJ7wwbD+b0A9uFi54079OGonYUNzQ2mKLev273tQtT/URredE89SpEBYpK22WdvItz89fYq5OdUCWUK5BnuZ3COf0QMUXMwW8dFRV60uFFTslW3R2O/lPzmecCUtAAR2//TTdKTFe3MO64=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-35f0f4746c2so858325f8f.3
-        for <xenomai@lists.linux.dev>; Thu, 13 Jun 2024 07:23:42 -0700 (PDT)
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-35e1fcd0c0fso922190f8f.0
+        for <xenomai@lists.linux.dev>; Thu, 13 Jun 2024 07:26:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718288621; x=1718893421;
+        d=1e100.net; s=20230601; t=1718288791; x=1718893591;
         h=mime-version:message-id:in-reply-to:date:subject:cc:to:from
          :user-agent:references:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=bhc4aZmGiH2qnHYbFSvUnNuIwLHv6OHMC0Xh/ZzM9i0=;
-        b=geNBKTmrIxVfXE/xhKxCv2/Jb0XVbmElHwRvpd5m8iVrSueFP6ZyKvf10lgTJcMgHb
-         lqETPUnPM9R5fGfJuuehjzHKihEKS9gM0CSLG2Lc3pIuEkmUp/sDp37nXmmTmDpKgnBC
-         oEMrKZS8+EObD4S/Mf8yyDUKRfC5DrwWUUIunKg1ePqvydrGJw4Vl3mSxFcyUTOxJNgw
-         GQ03SFPNnGZvCquEQR7H2e7r5Bykw+wKcNE+5PRtQvlGRiHWMP+2Iz8sm0I0BaH2EoTa
-         YdRjxc1bEkHXSA3jZGeGgARfWV2bfV0oCZzC0qMj8ZHmsFTAVuL4DOZKtQmejL3lX6NG
-         XDIw==
-X-Gm-Message-State: AOJu0YxObGBFBhAGWNVmTj/4jBVjQT2Rqhb6xNt8huWs2bOZZcapWUEl
-	0mZqGFQr6PysP4HgF9bIUOFVwOO64749oRc88HFrVruY+YqsVy8t
-X-Google-Smtp-Source: AGHT+IFF5vSq8d8uiClX9LB9+EUpdeNWJSFgxo4Ab9vF+GAuA83vnyWOQeLR205/rVUgPG/P4RipDQ==
-X-Received: by 2002:a5d:540e:0:b0:34d:b549:9465 with SMTP id ffacd0b85a97d-35fe88cb0aamr3467380f8f.32.1718288621430;
-        Thu, 13 Jun 2024 07:23:41 -0700 (PDT)
+        bh=roW0zROq9X57FumGcbz0tp1ZTIadAez56YexvTJp2JU=;
+        b=JrPctUIZCvPyo+Lb74AL1MD+/y2XCZh70qZsSD9KQ1/NRGsuVW4rAsVAw150skSZn+
+         9Vuf9PWFnf5G4HDab34Gq0tLmRUaHBoaGsUT1pCKOfIFWP4V9kg5CqKJQ656la4Y0t3t
+         61GX6AXRimbi3foSpNFoBw1zTuvx3fRuX4ytIQGCNs6YAeXh3vae8wGyFyONLhNgYren
+         55Y06bX6db00X/7g2m9QRm0YhXyuAEdE3uqWTaZ6AGQq5x6mLsSYmpif5queCXuKOG+W
+         AGQ3OVfUf2LevoraNRPpIaweRzPUKBFtkB5mdJ4nTPlrR8G4nPPmu2Bn/UbYbwY6khoL
+         NkXg==
+X-Gm-Message-State: AOJu0YwW/VeXOI4qPO5QS8idzqU6GGNyOkddgKgx5PTB5jo6K6zKlozQ
+	/m08yO6QyO+UGhBFTPFNrEY8gXYd1JCc/aprCEuZsiI13DoQMMuO
+X-Google-Smtp-Source: AGHT+IHU1aVQrHDy9bMF/7w6nEWj/wXBJAsTc8HUHRKUUEvo+felKX1IbntHFkbMo/QKHDBJ/mR9CA==
+X-Received: by 2002:adf:e98e:0:b0:35f:2a53:e563 with SMTP id ffacd0b85a97d-35fdf7adae1mr3459884f8f.36.1718288791103;
+        Thu, 13 Jun 2024 07:26:31 -0700 (PDT)
 Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-36075104954sm1857879f8f.99.2024.06.13.07.23.40
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3607509353csm1896890f8f.22.2024.06.13.07.26.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 Jun 2024 07:23:41 -0700 (PDT)
+        Thu, 13 Jun 2024 07:26:30 -0700 (PDT)
 References: <20240613134557.4013044-1-tobias.schaffner@siemens.com>
- <20240613134557.4013044-2-tobias.schaffner@siemens.com>
+ <20240613134557.4013044-5-tobias.schaffner@siemens.com>
 User-agent: mu4e 1.10.5; emacs 29.3
 From: Philippe Gerum <rpm@xenomai.org>
 To: Tobias Schaffner <tobias.schaffner@siemens.com>
 Cc: xenomai@lists.linux.dev, jan.kiszka@siemens.com
-Subject: Re: [libevl][PATCH 1/4] Copy dohell from Xenomai 3
-Date: Thu, 13 Jun 2024 16:23:15 +0200
-In-reply-to: <20240613134557.4013044-2-tobias.schaffner@siemens.com>
-Message-ID: <87frtgrker.fsf@xenomai.org>
+Subject: Re: [libevl][PATCH 4/4] evl-test: Add hectic for real-time stress
+Date: Thu, 13 Jun 2024 16:26:13 +0200
+In-reply-to: <20240613134557.4013044-5-tobias.schaffner@siemens.com>
+Message-ID: <87bk44rka1.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -58,11 +58,63 @@ Content-Type: text/plain
 
 Tobias Schaffner <tobias.schaffner@siemens.com> writes:
 
-> Dohell is used as the default load generator in Xenomai 3. Add it to
-> libevl to be able to stress the system while testing evl.
+> The -r option allows to add realtime-stress by running hectic in the
+> background while running the tests.
 >
+> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+> ---
+>  utils/evl-test | 14 +++++++++++++-
+>  1 file changed, 13 insertions(+), 1 deletion(-)
+>
+> diff --git a/utils/evl-test b/utils/evl-test
+> index fb85f69..9a12d58 100644
+> --- a/utils/evl-test
+> +++ b/utils/evl-test
+> @@ -12,6 +12,7 @@ full_path=false
+>  unittests_only=false
+>  load_cmd="dohell 900"
+>  load_cmd_pgid_file="/tmp/evl_test_load_cmd_$$"
+> +rt_load_pid=""
+>  
+>  usage() {
+>     cat >&2 <<EOF
+> @@ -19,7 +20,7 @@ evl test -h
+>  
+>  This help text.
+>  
+> -evl test [ -l "load command" ] [ -k ] [ -u ] [ --list ] [ --List ]
+> +evl test [ -l "load command" ] [ -k ] [ -r ] [ -u ] [ --list ] [ --List ]
+>  
+>  Run a basic test/benchmark of evl on your platform, by first starting a
+>  few unit tests, then running the latency test under the load generated by
+> @@ -31,6 +32,10 @@ By default, the load command is "dohell 900", which will generate load during
+>  This script accepts the -k option to tell the unit test loop to keep
+>  going upon a failing test. Otherwise evl test stops immediately.
+>  
+> +If the script is passed the -r option, real-time stress is added to the test,
+> +with the help of the "hectic" test. But beware: the latency test figures are
+> +then no longer meaningful.
+> +
+>  Use -u if you want to skip the latency test and only run the unittests.
+>  
+>  Use --list to output all the tests available. --List will print all the tests
+> @@ -67,6 +72,8 @@ while :; do
+>            shift;;
+>        -l) load_cmd="$2"
+>            shift 2;;
+> +      -r) rt_load=true;
+> +          shift;;
+>        -u) unittests_only=true
+>            shift;;
+>        --list) do_list=true
+> @@ -113,6 +120,11 @@ if test ! -z "${load_cmd}"; then
+>     setsid /bin/sh -c "${load_cmd} & echo \$\$ > ${load_cmd_pgid_file}"
+>  fi
+>  
+> +if test x$rt_load = xtrue; then
+> +   hectic > /dev/null 2>&1 &
 
-dohell is obsolete. Let's move to stress-ng or something alike for x4.
+hectic -s 200 is even more stressful.
 
 -- 
 Philippe.
