@@ -1,91 +1,74 @@
-Received: from smtp5-g21.free.fr (smtp5-g21.free.fr [212.27.42.5])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2BF6137C27
-	for <xenomai@lists.linux.dev>; Thu, 13 Jun 2024 06:18:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.27.42.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BBC82119
+	for <xenomai@lists.linux.dev>; Thu, 13 Jun 2024 08:08:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718259537; cv=none; b=uGZZlwKLcSkAdo+sqSlal1gF1gtErqhBNPhGd5kxq2ggN/7ZSq08UQOdvmKhcbmLCFEiuZr5D+E2xC1XQGJFWmSPditm/389nVkKc3rn7a8+nsFs6TVueREpkFa5Mm4XebvpTtbzTrvk8KOA9GUEgl2Wk4SehzoXlsRLeHEcJy8=
+	t=1718266088; cv=none; b=JQquaXSFIo/F8y1iaGwh2eUtorbFbkDmKY7npD/CyG819FfilMLWK4nGyNwW/JmfeZMrSPtrEOGgNGK3OwY7GGLA0moe8nIlRawZhubD4rJn88rEOR2EpkMEq5ics1DXjvsnJxyYMPhpciED5DXovBE/TaArk7dCkKeyANCV2GY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718259537; c=relaxed/simple;
-	bh=if8zy47XVu0s5c9QivWuWlVbKbK+7kBrQL1IN9lQTXo=;
-	h=From:In-Reply-To:Content-Type:Date:Cc:To:MIME-Version:Message-ID:
-	 Subject; b=NMEq/RYd5ev/ClC57X98lNQymmchS3VeOtr6XMjJrF4L/sP4U1HOT7UKdiaDqC7adcuDlXXavSZiIlvg/Mdr+vCpgU0U5fsjD/Y9p6+uEYVsoTnJA0MhY6jZ0qrWvjqJm5RIFXwzd4ukcza3EgVCqOvFZTFWkOTyqwKvUNepWPQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thom.fr.eu.org; spf=pass smtp.mailfrom=thom.fr.eu.org; dkim=permerror (0-bit key) header.d=thom.fr.eu.org header.i=@thom.fr.eu.org header.b=X83u2d2y; arc=none smtp.client-ip=212.27.42.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thom.fr.eu.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=thom.fr.eu.org
+	s=arc-20240116; t=1718266088; c=relaxed/simple;
+	bh=xULPOVOS+p0fXRLH9CQBcU/qQE8jngWrBY7ctoNEpWU=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=QFQUtGArkc5OHBeE4uJtqU5KoW7aFKyF7zgGUV5sxrvLa66xLtGrVAlXb+IW2YvujqhsbuH3Yg1LoY2a3A8d0LHF4oc/GoshhZQGqqmq+ZNXq6/irOazpryjtMybmThah9ypXUH61ehVUhatsuZ5Q+cQTbgrVivUsB5e9ygsXUk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=E/EvyTns; arc=none smtp.client-ip=185.136.64.225
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=permerror (0-bit key) header.d=thom.fr.eu.org header.i=@thom.fr.eu.org header.b="X83u2d2y"
-Received: from mail.thom.fr.eu.org (unknown [IPv6:2a01:e0a:2aa:1dd0::2])
-	by smtp5-g21.free.fr (Postfix) with ESMTPS id 46F9B5FF3F;
-	Thu, 13 Jun 2024 08:18:48 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by mail.thom.fr.eu.org (8.15.2/8.15.2/Debian-22) with ESMTP id 45D6IiPo445367;
-	Thu, 13 Jun 2024 08:18:44 +0200
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/simple; d=thom.fr.eu.org;
-	s=default; t=1718259525;
-	bh=if8zy47XVu0s5c9QivWuWlVbKbK+7kBrQL1IN9lQTXo=;
-	h=From:In-Reply-To:Date:Cc:To:Subject;
-	b=X83u2d2yJxMzSAxBPmkgUQ8Y+LUubRxSrbn6dUT+5XlXaDnCi3nVjDGyW1TzJAJK6
-	 J7RdrkUOxWUIduyUQ0M2w1HV1OsYrZTdy0c1jSVSoS5l3fIJZ0Viv6YfLsI5NaLRmJ
-	 dJ7bydUlJZRyJj15bvl0eJgXWEup7/9sMZd2udr32BUgCY07fzf6KGnHPhx+LyzLp4
-	 1rbPLd3WsaUdpYXvBmS8sETOCBhhqxVhtO+6+O7R+2klD5Jf4LuRjdOhqJGdVgeYUQ
-	 9JA+nP1XiAtwoj1yvRqL2SvoijAPVlNhiFGjbLJx58/ka9s91IC3AWfpriCMjKyB9Y
-	 HerEf3IIyOVjQ==
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-In-Reply-To: <871q52ry16.fsf@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-X-Forward: 217.109.173.233, 147.161.180.87
-Date: Thu, 13 Jun 2024 08:18:44 +0200
-Cc: "Richard Weinberger" <richard.weinberger@gmail.com>,
-        =?utf-8?q?Chen=2C_Hongzhan?= <hongzhan.chen@intel.com>,
-        "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-To: "Philippe Gerum" <rpm@xenomai.org>
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="E/EvyTns"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2024061308075501c4e33b2466ed413b
+        for <xenomai@lists.linux.dev>;
+        Thu, 13 Jun 2024 10:07:55 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=/jGkpIYcqRFauXWVh9euo0D88uUBD7bYGVuSI+rBWWo=;
+ b=E/EvyTns4JccfF9waSYVvsbV17RaGeuYVABxT4SzSoOXyglMdG/q8nCDCn4nodEMUA0kbA
+ OjCacSgjIR9o2BBX6ju0ZtGeMLQF2cnv0Jnui64wzmVZST3mO6jsPksebIRvPLinecJ7iibQ
+ I+sDmAd1oNIF20x0LEf1yvSop/eiY=;
+Message-ID: <e8572de411ac7bc002cd08c276bc967aaf9c5ab3.camel@siemens.com>
+Subject: Re: [PATCH v2 1/4] xnthread_set_periodic: Improve period adjusting
+ support
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: David Oberhollenzer <david.oberhollenzer@sigma-star.at>, 
+	xenomai@lists.linux.dev
+Cc: richard@nod.at, lorenz@sigma-star.at, Jan Kiszka <jan.kiszka@siemens.com>
+Date: Thu, 13 Jun 2024 10:07:52 +0200
+In-Reply-To: <20240608195337.11137-2-david.oberhollenzer@sigma-star.at>
+References: <20240608195337.11137-1-david.oberhollenzer@sigma-star.at>
+	 <20240608195337.11137-2-david.oberhollenzer@sigma-star.at>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <1157-666a8f80-f-41294d00@43403104>
-Subject: =?utf-8?q?Re=3A?= Porting RT net driver to dovetail
-User-Agent: SOGoMail 5.0.1
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.10 at tls-srv-03
-X-Virus-Status: Clean
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Thanks for the clarification.
+On Sat, 2024-06-08 at 21:52 +0200, David Oberhollenzer wrote:
+>  	xntimer_set_affinity(&thread->ptimer, thread->sched);
+> =20
+> -	if (idate =3D=3D XN_INFINITE)
+> -		xntimer_start(&thread->ptimer, period, period, XN_RELATIVE);
+> -	else {
+> +	if (idate =3D=3D XN_INFINITE) {
+> +		idate =3D period;
+> +
+> +		if (xntimer_running_p(&thread->ptimer))
+> +			idate =3D __xntimer_get_timeout(&thread->ptimer);
+> +
+> +		xntimer_start(&thread->ptimer, idate, period, XN_RELATIVE);
+> +	} else {
+>  		if (timeout_mode =3D=3D XN_REALTIME)
+>  			idate -=3D xnclock_get_offset(xntimer_clock(&thread->ptimer));
+>  		else if (timeout_mode !=3D XN_ABSOLUTE) {
 
-I'm not sure I understand the sentence "ATM, we only have a real-time c=
-apable raw socket interface".
-In my application, we only use RTNET for level 2 communication. Is this=
- already available.
+This changes the behavior of rtdm_task_wait_period() when called again
+while the timer is already running. This documentation is updated (note
+the comment from Jan) but what about backward compatibility?
 
-And so, back to the original question, how do I transition from an RTNE=
-T/RTDM NIC to an EVL/??? one ?
-
-Thanks in advance
-
-Fran=C3=A7ois
-
-Le Mercredi, Juin 12, 2024 17:09 CEST, Philippe Gerum <rpm@xenomai.org>=
- a =C3=A9crit: 
- 
-> 
-> Fran=C3=A7ois Legal <devel@thom.fr.eu.org> writes:
-> 
-> > Well, I'm not sure but last time I checked, RTNET would not be part=
- of xenomai 4 IIRC. So I guess EVL is the way to go.
-> >
-> 
-> Correct, this is the one providing a real-time net stack based on the=
-
-> dovetail net services (which RTnet does not use). This work is ongoin=
-g
-> (see the wip/net branch of the linux-evl tree). ETA: mid-july for a
-> complete UDP stack. ATM, we only have a real-time capable raw socket
-> interface.
-> 
-> -- 
-> Philippe.
-
+I think we are allowed to change that in the upcoming 3.3 release, but
+should we add an additional note about that change somewhere?
