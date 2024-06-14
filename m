@@ -1,34 +1,35 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D5386196446
-	for <xenomai@lists.linux.dev>; Fri, 14 Jun 2024 11:53:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6AA6195B2A
+	for <xenomai@lists.linux.dev>; Fri, 14 Jun 2024 11:53:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718365995; cv=none; b=k1HiAJmMHCacMAuuvz6TflZfTc3WNlC/dyM6lJN0saGCcuuKDMCyQVzTZNEw4dnQehYQlllQIVbPSVmxLPaTIv901IEaAmuDZtwi7SftssR3V3KQImaNieL/1aIo5aJSjijhCbFNsAiHJSywcSAC2FxiI7j7fZYlXP49OOd3tD4=
+	t=1718365998; cv=none; b=uNJu2NP5n0uXEVDJk/qIUj3PgONRG14ejls0ubXaTQvi6+aJWsrkm3EbEvosn44QvFDCMSWTxAC1j9kHm5u74l7OY9hqC+11RsetU5qDLapXuF7AXMoorvRySv0sHwyIeHaWnGM4orwsdosczkgtke0Vr4dzlXOpWVpIj47xvtA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718365995; c=relaxed/simple;
-	bh=D4UVpL2zZqyUtgVrbAeKaw+H5E30IaYzz/AzPoKf/Os=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=p3jZjHtS6B8lEV6+jsClRde6qEZ+EXfV4HcipAVGNSVAwnWvO+Q1hZsbQeDjixBtE4uOYVOD1m8b2B+ugqkU/xSXI05c/wZzZauXTUkk4MNEQIK6m4/mk1emm7L36OPComWRfWoadgdopclP5yptAkLQUYi9en18Ghr9u15voZk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=pd3NVX/n; arc=none smtp.client-ip=185.136.64.227
+	s=arc-20240116; t=1718365998; c=relaxed/simple;
+	bh=kc07ACyl64pRPY1untesXTq0W7yGJ2+IMUXH4gRrYpE=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=Cu+6vftcGByHKZx/3OnfAR7xRChlJpaJKcjh89nSMdishoxziy8zZ3S6f+NtkN+Cuhvn0ZNwXJQ+HYsLjOfm3HrHmi/TWwn1kWS4jahU/ZgN2/iTpLUD9IVMHUUUyjFraOcOGbIoYRDIi8UIVu4Dfc0mHn1PT6jg4a29d0s73lA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=GAj5mbRg; arc=none smtp.client-ip=185.136.65.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="pd3NVX/n"
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202406141153061b57f54316c05fc116
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="GAj5mbRg"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202406141153060eea387f23a291fd4d
         for <xenomai@lists.linux.dev>;
-        Fri, 14 Jun 2024 13:53:06 +0200
+        Fri, 14 Jun 2024 13:53:07 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=jjviLOYp7LNXu7ek2x7qVQqbv1/nLhYXPVcQ6Na4Mz0=;
- b=pd3NVX/n6ldSNKyqDSkscI1fmIbfj8AKScdW5OUaqMCX/rmEKW56xVAhLlBO/2x4pOdF3a
- BwLdik+fPVY3o3S0EejQ0JdrusJC2d3dDRcg5ZgeC127Stac8htc/1RRG4lm0WNKAPRkerp7
- 8CGYy0lRWHMXgZb5hLewNezFoTweQ=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=kKCQeePvvu5qsW9fCeov9KZ1+k5S7sbidiBHKiA8Uvs=;
+ b=GAj5mbRg2fG2MJ5TA7zTp5JDd8nxmm6Gn5cLahOYkjh3ZPuPsGzy8DAaghsSqFSRFEB9eM
+ s0qkBvfQCV7WQcTj8mPWSOylmXi64Yy1IsRApI4X/CCv1YIXIFLQLSDwOw/BFOiVN4LrUJAR
+ UOSjKMRMWEtaLOTeN65izPB6dE6+o=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH dovetail v3 0/2] Fix KVM guest support of dovetail
-Date: Fri, 14 Jun 2024 13:53:04 +0200
-Message-Id: <20240531-flo-fix-kvm-guest-for-6-9-v3-0-ebcf517500a3@siemens.com>
+Date: Fri, 14 Jun 2024 13:53:06 +0200
+Subject: [PATCH dovetail v3 2/2] KVM: x86: dovetail: Allow kvm_wait() to be
+ called from any context
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -37,61 +38,110 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIACAvbGYC/42OQQ6DIBREr2JY9zeAYrSr3qPpAuGjpAoNKGljv
- HsJu+5czkzmzewkYrAYya3aScBko/Uui/pSETVJNyJYnTXhlDdU1AzM7MHYD7zSAuOGcQXjA7T
- Qg0DTMikV7aQmuT/IiDAE6dSUCW6b52y+A+Z2GXwQ7ROu0s7kmZPJxtWHb3mSWMlPjCYGFJjqe
- qG4aE2n79Higi5elV8KN/HTLJ5ZQtSNURIbHMQ/6ziOHxy8tG4vAQAA
+Message-Id: <20240531-flo-fix-kvm-guest-for-6-9-v3-2-ebcf517500a3@siemens.com>
+References: <20240531-flo-fix-kvm-guest-for-6-9-v3-0-ebcf517500a3@siemens.com>
+In-Reply-To: <20240531-flo-fix-kvm-guest-for-6-9-v3-0-ebcf517500a3@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>, 
  Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi all, 
+kvm_wait() unconditionally enabled HW interrupts when called from
+pipeline entry code. That broke the PV (paravirtualized) spinlock
+implementation.
 
-this is hopefully the final version of the dovetail KVM guest support
-enablement. Dovetail failed to boot without patch 1 and crashed without
-patch 2 under high IO load scenarios.
+The following calling contexts are supported now:
+  - pipeline entry, hard IRQs off:
+    Wakeup on vCPU kicks only, triggered by the current lock owner via
+    hypercall. Using halt().
 
-Tested with LOCKDEP / PROVE_LOCKING enabled. Stress-Tests passed on two
-different hypervisors, namely KVM and VirtualBox.
+  - Linux IRQ context, hard IRQs on, inband IRQs off:
+    Wakeup on the next hard IRQ, or by a vCPU kick.
+    Using safe_halt().
 
-All dovetail versions (down to 5.10) are affected. Backporting would be
-required on my end, I need 6.1 to be fixed.
+  - Task context, hard IRQs on, inband IRQs on:
+    Same as Linux IRQ context. We stall the inband stage before calling
+    safe_halt().
 
-This patches apply down to 5.15, 5.10 would need manual backporting. I
-can look into that once this series is accepted for 6.9.
-
-CC: Jan Kiszka <jan.kiszka@siemens.com>
-CC: Philippe Gerum <rpm@xenomai.org>
+The !CONFIG_IRQ_PIPELINE part is now re-synced with the version of
+Linux.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
-Changes in v3:
-- Removed RFC tag
-- Took care of review comments from Jan (patch 2) 
-- Link to v2: https://lore.kernel.org/r/20240531-flo-fix-kvm-guest-for-6-9-v2-0-5534fcae4eb5@siemens.com
+ arch/x86/kernel/kvm.c | 47 ++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 42 insertions(+), 5 deletions(-)
 
-Changes in v2:
-- Drop patch one 
-- Now patch 1: Handle async page faults inband, rework patch subject
-- Now patch 2: Fix kvm_wait(), PV spinlocks
-- Link to v1: https://lore.kernel.org/r/20240531-flo-fix-kvm-guest-for-6-9-v1-0-1c895c256f8d@siemens.com
+diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+index 655b1cf8c9ab..76bd881e1137 100644
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -1059,22 +1059,59 @@ static void kvm_wait(u8 *ptr, u8 val)
+ 	 * for irq enabled case to avoid hang when lock info is overwritten
+ 	 * in irq spinlock slowpath and no spurious interrupt occur to save us.
+ 	 */
+-	if (irqs_disabled()) {
+-		hard_local_irq_disable();
+ 
++#ifdef CONFIG_IRQ_PIPELINE
++
++	/*
++	 * Hard IRQs off:
++	 * Only wake up on a vCPU kick triggered by the current lock owner.
++	 */
++	if (hard_irqs_disabled()) {
+ 		if (READ_ONCE(*ptr) == val)
+ 			halt();
++		return;
++	}
+ 
+-		hard_local_irq_enable();
++	/*
++	 * Hard IRQs on:
++	 *
++	 * We always use safe_halt() to be interruptable by hard IRQs.
++	 *
++	 * Inband IRQs disabled: Linux IRQ context
++	 * Inband IRQs enabled: Task context
++	 */
++	if (irqs_disabled()) {
++		hard_local_irq_disable();
++
++		if (READ_ONCE(*ptr) == val)
++			safe_halt(); /* enables hard IRQs */
++		else
++			hard_local_irq_enable();
+ 	} else {
+ 		local_irq_disable_full();
+ 
++		if (READ_ONCE(*ptr) == val) {
++			safe_halt(); /* enables hard irqs */
++			local_irq_enable();
++		} else {
++			local_irq_enable_full();
++		}
++	}
++
++#else /* !CONFIG_IRQ_PIPELINE */
++	if (irqs_disabled()) {
++		if (READ_ONCE(*ptr) == val)
++			halt();
++	} else {
++		local_irq_disable();
++
+ 		/* safe_halt() will enable IRQ */
+ 		if (READ_ONCE(*ptr) == val)
+ 			safe_halt();
+-
+-		local_irq_enable_full();
++		else
++			local_irq_enable();
+ 	}
++#endif
+ }
+ 
+ /*
 
----
-Florian Bezdeka (2):
-      KVM: x86: dovetail: Move handling async page faults to the inband stage
-      KVM: x86: dovetail: Allow kvm_wait() to be called from any context
-
- arch/x86/include/asm/idtentry.h |  2 +-
- arch/x86/kernel/irq_pipeline.c  |  6 +++++
- arch/x86/kernel/kvm.c           | 50 ++++++++++++++++++++++++++++++++++++-----
- 3 files changed, 51 insertions(+), 7 deletions(-)
----
-base-commit: 17865a05b459df6e7e7e38018b15b29a96df49af
-change-id: 20240531-flo-fix-kvm-guest-for-6-9-5ef61aac08ad
-
-Best regards,
 -- 
-Florian Bezdeka <florian.bezdeka@siemens.com>
+2.39.2
 
