@@ -1,65 +1,65 @@
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+Received: from mail-lj1-f170.google.com (mail-lj1-f170.google.com [209.85.208.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98799192B7A
-	for <xenomai@lists.linux.dev>; Mon, 17 Jun 2024 09:19:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CDB8192B7A
+	for <xenomai@lists.linux.dev>; Mon, 17 Jun 2024 09:19:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1718615946; cv=none; b=MfqxRjmXO+5Y6jhr8v8TF5Q3Ak04I0s+ceozjicfRyvhe1ahgjsE0ofvc0ASemiHDT3JJIXRrBhYZi7keyaHw0+KaDnCqXd5VskvUKCJ3/Z/9WGIS+WBCkRFB7/dIq7NRphZ5TuVAS6Qs9fsI1Ngd+Bdq5gTwycUrJigP4UCS1M=
+	t=1718615949; cv=none; b=TZpmA8b4JoacsPlyp2XziSF/cPk/LCNUviRAFwFV4G/PKen/CptZ5Ai0dBeq+jM1KDi/GRC6NIyhlg5fwhEi0um08U34seSeGxlVhkYV6Lj/yXCN2YgWHT6zZmTOfx1zLCGkruWAg7DEwCaN4LULTJZTzZL+boHCasls20bzuB0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1718615946; c=relaxed/simple;
-	bh=D30xRV0WpHK+FSq0YXeEk6i1jYuBv1Hyw+hgLTKz3Es=;
+	s=arc-20240116; t=1718615949; c=relaxed/simple;
+	bh=qHjPUtns6gJQ4hg5abMb7wMeGs2Ir9aA2fKCFavCgR4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=AJt3r0YlVly45Hu8VvduLwPZsERILMVRKE11NTJBT8Whom6+ny0tZWrdCUL71VKrEuRMVHHZhSHH2bcz6YSAE6qtEHgUFEt19wohKOuvPG2MILUvNkoM/+4L/3+RZKEwcoV4/fOMk8bgQQR9siyBQ21eaJlSwNoDFg1QLhaeI7A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at; spf=pass smtp.mailfrom=sigma-star.at; dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b=TFW0ghvM; arc=none smtp.client-ip=209.85.208.182
+	 MIME-Version; b=B0tEA82F8G47EgIlRD7n+v+dAc+qHyFcuqQmu7yZW9/Mu0/FPIlI6q5giDjYVfRzCCTftnzYgmb32pSrDfojkHPl79uRtMk0cAZm4dFsikL4pwKaNCoIsClvFdXdBiSZ3ZGWptVsm33uGbt657WhctvwSpengBe7Wzd5A/dJnSY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at; spf=pass smtp.mailfrom=sigma-star.at; dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b=joO5Yh8M; arc=none smtp.client-ip=209.85.208.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sigma-star.at
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b="TFW0ghvM"
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-2ec1620a956so36816961fa.1
-        for <xenomai@lists.linux.dev>; Mon, 17 Jun 2024 02:19:03 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b="joO5Yh8M"
+Received: by mail-lj1-f170.google.com with SMTP id 38308e7fff4ca-2ebdfe26242so47475651fa.0
+        for <xenomai@lists.linux.dev>; Mon, 17 Jun 2024 02:19:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sigma-star.at; s=google; t=1718615941; x=1719220741; darn=lists.linux.dev;
+        d=sigma-star.at; s=google; t=1718615946; x=1719220746; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=/TEjhj1wnavYAjcFm2qOZIgc0N9IeYaC67m4xBL2GVY=;
-        b=TFW0ghvMuepEc8+kUH3sJimEqu1yVzC8YOKrGIFRakTIoRkQT4GDu84dLk1NOTpims
-         t3Vw+KwKgJVjW4Wa04A/H5Oo2MtKq7zb10o2qxCCOWSjkVh/oBcAbDQt9zjgJNv9pfTe
-         gANglFJm/y34H3Vll5rI0agez4zictDV2wmzV60gN7HCvDCMXrVY2j+JwLqiwK/GBNqR
-         e50e4e2B4XRzNadOtCvWHHoF65fhjFaIF19R9hXvea5ZvQMva5V9g/mMcztMFJKWTtId
-         EtKKRfRdLugD7mPBGCgbfO60RDMV2lAiQL2dHQu7Hqphi2vrRfmOT2bEy72zRl7AGK/R
-         12Eg==
+        bh=1IrlTA6TypBaD1KUVeoVcO3IiqlYgNmMXGEm04El5FE=;
+        b=joO5Yh8Ml7odJWTZF53slOfVGlGKayLlhWK4y3tCtiy8ZJ0Nh3woAj19mmHwIATe1H
+         ZQhNEdjnWnn3ANs4ccB6Y/aP6LCutEZjWQmA53xrMNnGz/J6copQx9gvrY8yZfYPxL35
+         XbcQxvt3ld2zHev5QMxGcv33CMKLT3bbu4HjOXJukEPl6ayNWi8/Bw/WjoW+eJ9yCPsR
+         gyXa3LJS+7fv3XYOxY5PiRfa55FiX2pA/3HzphqFPRHcgq19UPREAWynS1qiCp+Fn4x6
+         7J+i4yzNnoc0W9LX54ln4VoTtLSLqvlegntXsZtbCAsP8IPhooFe61SrXu1DK/he5ACq
+         AZSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1718615941; x=1719220741;
+        d=1e100.net; s=20230601; t=1718615946; x=1719220746;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=/TEjhj1wnavYAjcFm2qOZIgc0N9IeYaC67m4xBL2GVY=;
-        b=CkfdTLQvMBByHL6VaYfKEbUCmwqXNaUNRpAdm4JI4b1FMkFx1qw3ubHKlACe+fwvnq
-         +k9UugE1Lmtm6Cylvz2n96LLfUKho9IZ4EFUS4n2/CG6i0h1oTLqRy3rCXuV/C2HyS2l
-         K3jzfF7o5QXtUV30ve8GlzHNkP7WJYVYCuRtXBF852F0WwuhbWbXVYpWiIr8TWIZlve9
-         GRMzzfX7w5ScoH8v+OON5ilTHR1Oo0/cuh5+j/8a+OUNudZ2csa3g1+aoaj4hmmdLsMO
-         PrIiHwON+zen0GrE64SlddhQnuhR1DjZB65gOllTqduvoKj1C2nfo4uw8vO75R8erHQi
-         Pf8A==
-X-Gm-Message-State: AOJu0YxE1FFculDrquWOKQXy0MQdWlPJxJxscq5jmVuD+wyOCLul4wRY
-	KW+PYxukXtYKfFcaM7rGdB1wnGgOvJt9x6B8ixDrFGFNn5oC2iH/sFCPfvo8CRJV7omRi+KuF4F
-	P
-X-Google-Smtp-Source: AGHT+IGZ9YmKV5QcOTZGBtTkU8Ip6JRzr19RxbDnSlvzBL430wkKBuyk+dEH3qkOILs4EOAKasouWw==
-X-Received: by 2002:a2e:a548:0:b0:2ec:165a:224a with SMTP id 38308e7fff4ca-2ec165a242cmr74005021fa.36.1718615941694;
-        Mon, 17 Jun 2024 02:19:01 -0700 (PDT)
+        bh=1IrlTA6TypBaD1KUVeoVcO3IiqlYgNmMXGEm04El5FE=;
+        b=YJxlq3XCz2t/Oh5GAXrVKFKyu+wL3LeX1kfg7uR/MdYpzm7+AkSxMVojUyUH6jOV/R
+         9jtQuJbgjQjuPbHq6Ht3NtsyUUuxMiXEEXVJqc6G0UB7ON5Qz/s5NonRo5DaBa0vjoe8
+         rMjkH3l4BcV+8xS6rZtV2fb2vXGWUvjnslX9F5yUxvCQ4fyxI79j5mtvfsxDUA+iBluF
+         UhxwJCSvh6FwINcuVvu/fTeUFRl/h3JrjsQwDgVwqiM1TNngAq7HMsvNUDyVfAYMS22D
+         sY2mEeT6OcVBo6rjDyE5GboXkbfUyImstxc0Z2DnmwupQ0RothT0EEXF2Cky2kLNV0hM
+         AIbA==
+X-Gm-Message-State: AOJu0YwP73ddFF9AVXChcpmTrG2/93d7LM9ya28Gep+mTtxVkMj6v3zP
+	MPWATmZF68sR9KE3E5GreYs+sUjMuU8yXZesAG+6lYidcL42CBXPMs2X8+JNvC4p+vhOAXM7EZr
+	F
+X-Google-Smtp-Source: AGHT+IFMn2X9sqCC7biScCDgWLwcbGQn1w70n2tQq/GwbMgBNJTw/Yx+2VoH32WntvwfG0jvn5oIWQ==
+X-Received: by 2002:a2e:7a01:0:b0:2ec:27e6:39ba with SMTP id 38308e7fff4ca-2ec27e63bc6mr28229011fa.53.1718615945805;
+        Mon, 17 Jun 2024 02:19:05 -0700 (PDT)
 Received: from localtoast.corp.sigma-star.at ([82.150.214.1])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f855eeff53sm75591125ad.181.2024.06.17.02.18.58
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-1f855eeff53sm75591125ad.181.2024.06.17.02.19.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jun 2024 02:19:01 -0700 (PDT)
+        Mon, 17 Jun 2024 02:19:05 -0700 (PDT)
 From: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
 To: xenomai@lists.linux.dev
 Cc: richard@nod.at,
 	lorenz@sigma-star.at,
 	David Oberhollenzer <david.oberhollenzer@sigma-star.at>
-Subject: [PATCH v3 3/4] lib/alchemy: Improve period adjusting support
-Date: Mon, 17 Jun 2024 11:16:53 +0200
-Message-ID: <20240617091654.66342-4-david.oberhollenzer@sigma-star.at>
+Subject: [PATCH v3 4/4] testsuite: smokey - new testcase alchemy/task-11
+Date: Mon, 17 Jun 2024 11:16:54 +0200
+Message-ID: <20240617091654.66342-5-david.oberhollenzer@sigma-star.at>
 X-Mailer: git-send-email 2.45.1
 In-Reply-To: <20240617091654.66342-1-david.oberhollenzer@sigma-star.at>
 References: <20240617091654.66342-1-david.oberhollenzer@sigma-star.at>
@@ -71,84 +71,162 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-When using TM_NOW for idate on a periodic taks, make sure the
-update affects the next period and the current period still
-expires when it is supposed to.
+The testcase ensures the correct switching of the task period. If we
+switch the period after a number of iterations, the current iteration
+still needs to complete with the old period. The iterations following
+that need to complete with the new period.
 
 Signed-off-by: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
 ---
- lib/alchemy/task.c | 31 +++++++++++++++++++------------
- 1 file changed, 19 insertions(+), 12 deletions(-)
+ testsuite/smokey/alchemytests/Makefile.am    |   7 +-
+ testsuite/smokey/alchemytests/alchemytests.c |   3 +-
+ testsuite/smokey/alchemytests/task-11.c      | 101 +++++++++++++++++++
+ 3 files changed, 109 insertions(+), 2 deletions(-)
+ create mode 100644 testsuite/smokey/alchemytests/task-11.c
 
-diff --git a/lib/alchemy/task.c b/lib/alchemy/task.c
-index ed5f2f804..42fca5a31 100644
---- a/lib/alchemy/task.c
-+++ b/lib/alchemy/task.c
-@@ -799,7 +799,8 @@ undo:
-  *
-  * @param idate The initial (absolute) date of the first release
-  * point, expressed in clock ticks (see note).  If @a idate is equal
-- * to TM_NOW, the current system date is used.
-+ * to TM_NOW, the end of the current period is used, or the current
-+ * system date if the task was not periodic before.
-  *
-  * @param period The period of the task, expressed in clock ticks (see
-  * note). Passing TM_INFINITE stops the task's periodic timer if
-@@ -839,13 +840,22 @@ CURRENT_IMPL(int, rt_task_set_periodic,
- int rt_task_set_periodic(RT_TASK *task, RTIME idate, RTIME period)
- #endif
- {
--	struct timespec its, pts, now;
-+	struct timespec its, old_its, pts, old_pts, now;
- 	struct alchemy_task *tcb;
- 	struct service svc;
- 	int ret;
+diff --git a/testsuite/smokey/alchemytests/Makefile.am b/testsuite/smokey/alchemytests/Makefile.am
+index eba82f8ec..5fe481c29 100644
+--- a/testsuite/smokey/alchemytests/Makefile.am
++++ b/testsuite/smokey/alchemytests/Makefile.am
+@@ -33,7 +33,8 @@ test_PROGRAMS =				\
+ 		alchemytests_task7	\
+ 		alchemytests_task8	\
+ 		alchemytests_task9	\
+-		alchemytests_task10
++		alchemytests_task10	\
++		alchemytests_task11
  
- 	CANCEL_DEFER(svc);
+ alchemycppflags =			\
+ 	$(XENO_USER_CFLAGS)		\
+@@ -138,3 +139,7 @@ alchemytests_task10_SOURCES = task-10.c
+ alchemytests_task10_CPPFLAGS = $(alchemycppflags)
+ alchemytests_task10_LDADD = $(alchemyldadd)
+ alchemytests_task10_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
++alchemytests_task11_SOURCES = task-11.c
++alchemytests_task11_CPPFLAGS = $(alchemycppflags)
++alchemytests_task11_LDADD = $(alchemyldadd)
++alchemytests_task11_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
+diff --git a/testsuite/smokey/alchemytests/alchemytests.c b/testsuite/smokey/alchemytests/alchemytests.c
+index 947fa37b9..177d59b9c 100644
+--- a/testsuite/smokey/alchemytests/alchemytests.c
++++ b/testsuite/smokey/alchemytests/alchemytests.c
+@@ -25,7 +25,8 @@ static const char * const tests[] = {
+ 	"alchemytests_task7",
+ 	"alchemytests_task8",
+ 	"alchemytests_task9",
+-	"alchemytests_task10"
++	"alchemytests_task10",
++	"alchemytests_task11"
+ };
  
-+	tcb = get_alchemy_task_or_self(task, &ret);
-+	if (tcb == NULL)
-+		goto out;
+ static int run_alchemytests(struct smokey_test *t, int argc, char *const argv[])
+diff --git a/testsuite/smokey/alchemytests/task-11.c b/testsuite/smokey/alchemytests/task-11.c
+new file mode 100644
+index 000000000..062c24219
+--- /dev/null
++++ b/testsuite/smokey/alchemytests/task-11.c
+@@ -0,0 +1,101 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <stdio.h>
++#include <stdlib.h>
++#include <copperplate/traceobj.h>
++#include <alchemy/task.h>
++#include <alchemy/timer.h>
 +
-+	if (!threadobj_local_p(&tcb->thobj)) {
-+		ret = -EINVAL;
-+		goto out;
++#define TEST_ITERATIONS (10)
++#define PERIOD_SWITCH_ITERATION (5)
++
++#define PERIOD_INITIAL (2000 * 1000)
++#define PERIOD_SWITCH (1000 * 1000)
++#define PERIOD_ERROR_MAX (5)
++
++static RT_TASK t_test;
++static ticks_t duration[TEST_ITERATIONS];
++
++static struct traceobj trobj;
++
++static int tseq[] = {
++	1, 2,
++	3, 4, 3, 4, 3, 4, 3, 4, 3, 4,
++	3, 4, 3, 4, 3, 4, 3, 4, 3, 4,
++	5, 6, 7
++};
++
++static void test_task(void *arg)
++{
++	(void)arg;
++
++	traceobj_enter(&trobj);
++
++	traceobj_mark(&trobj, 2);
++
++	rt_task_set_periodic(NULL, TM_NOW, PERIOD_INITIAL);
++
++	for (size_t i = 0; i < TEST_ITERATIONS; ++i) {
++		ticks_t start, end;
++		int ret;
++
++		traceobj_mark(&trobj, 3);
++
++		start = clockobj_get_time(&alchemy_clock);
++
++		if (i == PERIOD_SWITCH_ITERATION)
++			rt_task_set_periodic(NULL, TM_NOW, PERIOD_SWITCH);
++
++		ret = rt_task_wait_period(NULL);
++		traceobj_check(&trobj, ret, 0);
++
++		end = clockobj_get_time(&alchemy_clock);
++
++		duration[i] = end - start;
++
++		traceobj_mark(&trobj, 4);
 +	}
 +
- 	if (period == TM_INFINITE) {
- 		pts.tv_sec = 0;
- 		pts.tv_nsec = 0;
-@@ -854,7 +864,13 @@ int rt_task_set_periodic(RT_TASK *task, RTIME idate, RTIME period)
- 		clockobj_ticks_to_timespec(&alchemy_clock, period, &pts);
- 		if (idate == TM_NOW) {
- 			__RT(clock_gettime(CLOCK_COPPERPLATE, &now));
--			timespec_add(&its, &now, &pts);
++	traceobj_mark(&trobj, 5);
 +
-+			if (threadobj_get_periodic(&tcb->thobj, &old_its,
-+						   &old_pts) == 0) {
-+				timespec_add(&its, &now, &old_its);
-+			} else {
-+				timespec_add(&its, &now, &pts);
-+			}
- 		} else
- 			/*
- 			 * idate is an absolute time specification
-@@ -864,15 +880,6 @@ int rt_task_set_periodic(RT_TASK *task, RTIME idate, RTIME period)
- 			clockobj_ticks_to_timespec(&alchemy_clock, idate, &its);
- 	}
- 
--	tcb = get_alchemy_task_or_self(task, &ret);
--	if (tcb == NULL)
--		goto out;
--
--	if (!threadobj_local_p(&tcb->thobj)) {
--		ret = -EINVAL;
--		goto out;
--	}
--
- 	ret = threadobj_set_periodic(&tcb->thobj, &its, &pts);
- 	put_alchemy_task(tcb);
- out:
++	traceobj_exit(&trobj);
++}
++
++int main(int argc, char *const argv[])
++{
++	int ret;
++
++	traceobj_init(&trobj, argv[0], sizeof(tseq) / sizeof(int));
++
++	ret = rt_task_create(&t_test, "test_task", 0, 99, 0);
++	traceobj_check(&trobj, ret, 0);
++
++	traceobj_mark(&trobj, 1);
++
++	ret = rt_task_start(&t_test, test_task, NULL);
++	traceobj_check(&trobj, ret, 0);
++
++	traceobj_join(&trobj);
++
++	traceobj_mark(&trobj, 6);
++
++	for (size_t i = 0; i < TEST_ITERATIONS; ++i) {
++		ticks_t value, expect, diff, error;
++
++		expect = PERIOD_INITIAL;
++		if (i > PERIOD_SWITCH_ITERATION)
++			expect = PERIOD_SWITCH;
++
++		value = duration[i];
++
++		diff = value < expect ? (expect - value) : (value - expect);
++		error = (100 * diff) / expect;
++
++		traceobj_assert(&trobj, error <= PERIOD_ERROR_MAX);
++	}
++
++	traceobj_mark(&trobj, 7);
++
++	traceobj_verify(&trobj, tseq, sizeof(tseq) / sizeof(int));
++
++	exit(0);
++}
 -- 
 2.45.1
 
