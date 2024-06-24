@@ -1,41 +1,44 @@
 Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2DDC2233B
-	for <xenomai@lists.linux.dev>; Mon, 24 Jun 2024 20:34:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D44221A08B0
+	for <xenomai@lists.linux.dev>; Mon, 24 Jun 2024 20:34:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.201.40.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719261244; cv=none; b=FZIDTL/nD3rrRgU44lgxa9Oun4QF/p50gyy8QxcsBT6Nm/ufMJhp7G/buj+DV/6hBDnAXC7TBOJLOp1aBM4h5frugSgiC7ysd+lHWrCazcgcZUY1aHe02UE/6WWXvtuSG7O4B3m5Mfm5LmBEsuNYHKdJQM24mrFRqkk9EtDMTyI=
+	t=1719261244; cv=none; b=NheoC61k2ZjBCbSqqyIOJWwkH9HrMxNC6PrQqe2jfrz3WovSnKZMkei8pL7zQ2pGfrMKcrBEHYjIZBp5Vh/E1nAtYN2j2jkbpheS8GfbsgZxDgLJsgQgaC9rYZayAJsgT+AiosgUmVvHw1/1QD4vdphR4apf3PhRdDJYMlEmR2Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1719261244; c=relaxed/simple;
-	bh=ryX6b06qIFqQNR605CGgrCmRi/o1vXipz1+eJIFy8gU=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=bJ1w66OkBafGQ7Dp+7nbguVDXH2ydBjyPBt+Q9lfvZ7JBLE/P1emdIhDekbfSVMKl2eEFtLkNYnHF9IyA7nXdLo9qT2Yfvfk5Ek3LfFJh2hhRCIG+/uWoRSlbBDwqQw/MY3T/47sLxugUKJbZ09/eZa9L+7NJgT9H9lHieHXp4s=
+	bh=OwsrJ2yPQrbFhsA0OB/MJ11jvUu6evmJQXpNefv1Qqk=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=EBMEmt3YTxtJYmohtcQZ700NrLf5naKGGu1iuAj+DrIhk2V636EH5cxqdy+3qITf7heox2/rDKgHXZod/fTjc3sHotg0U/8WmQhB0qnsXhmETALPy3VZ19z9yS6PtEQgvOjQRMbD1B2Tsnxew3BELcwkEL992ZM7jNfc/NDXAfM=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at; spf=fail smtp.mailfrom=nod.at; arc=none smtp.client-ip=195.201.40.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
 Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 6B2CD6343B2C;
-	Mon, 24 Jun 2024 22:33:53 +0200 (CEST)
+	by lithops.sigma-star.at (Postfix) with ESMTP id 5323561966AF;
+	Mon, 24 Jun 2024 22:33:54 +0200 (CEST)
 Received: from lithops.sigma-star.at ([127.0.0.1])
 	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-	with ESMTP id UCE-A7Zhmujy; Mon, 24 Jun 2024 22:33:52 +0200 (CEST)
+	with ESMTP id 0fzPMk7lW5TG; Mon, 24 Jun 2024 22:33:53 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id C57F56195FD1;
-	Mon, 24 Jun 2024 22:33:52 +0200 (CEST)
+	by lithops.sigma-star.at (Postfix) with ESMTP id AD2FE6195FE9;
+	Mon, 24 Jun 2024 22:33:53 +0200 (CEST)
 Received: from lithops.sigma-star.at ([127.0.0.1])
 	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id xAqR2Otk9cLA; Mon, 24 Jun 2024 22:33:52 +0200 (CEST)
+	with ESMTP id aj8Eo0k0u0D8; Mon, 24 Jun 2024 22:33:53 +0200 (CEST)
 Received: from foxxylove.corp.sigma-star.at (unknown [82.150.214.1])
-	by lithops.sigma-star.at (Postfix) with ESMTPSA id 9652861966AF;
-	Mon, 24 Jun 2024 22:33:52 +0200 (CEST)
+	by lithops.sigma-star.at (Postfix) with ESMTPSA id 56F2761966AF;
+	Mon, 24 Jun 2024 22:33:53 +0200 (CEST)
 From: Richard Weinberger <richard@nod.at>
 To: xenomai@lists.linux.dev
 Cc: upstream+xenomai@sigma-star.at,
 	Richard Weinberger <richard@nod.at>
-Subject: [PATCH v2 00/14] Assorted Cleanups For prepare-kernel.sh
-Date: Mon, 24 Jun 2024 22:33:27 +0200
-Message-Id: <20240624203341.6263-1-richard@nod.at>
+Subject: [PATCH 05/14] prepare-kernel.sh: Disable SC2115 warning around $linux_tree
+Date: Mon, 24 Jun 2024 22:33:32 +0200
+Message-Id: <20240624203341.6263-6-richard@nod.at>
 X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20240624203341.6263-1-richard@nod.at>
+References: <20240624203341.6263-1-richard@nod.at>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -44,45 +47,27 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-This series contains the following improvements and cleanups.
+The script makes sure that $linux_tree is valid, it cannot be empty.
 
-- Implement --reverse to undo the effects of the script
-- Emit changes that work on any architecture, renders --arch=3D optional
-- Switch from /bin/bash to /bin/sh
-- Make shellcheck happy up to warning level, info level is still a lot of=
- work
-- Convert the whole script to tabs
-- Remove dead and in vain code
-- Various fixes
+Signed-off-by: Richard Weinberger <richard@nod.at>
+---
+ scripts/prepare-kernel.sh | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Changes since v1[0]:
-- Rebased to current next branch
-- Reorganized patch series
-- Worked in feedback from Jan and Florian
-
-Richard Weinberger (14):
-  prepare-kernel.sh: Convert to tabs
-  prepare-kernel.sh: Add reverse mode
-  prepare-kernel.sh: Emit architecture agnostic changes
-  prepare-kernel.sh: Improve kernel tree check
-  prepare-kernel.sh: Disable SC2115 warning around $linux_tree
-  prepare-kernel.sh: Remove --filterkvers=3D and --filterarch=3D
-  prepare-kernel.sh: Remove interactivity
-  prepare-kernel.sh: Don't depend on bash
-  prepare-kernel.sh: Remove --forcelink
-  prepare-kernel.sh: Fix dovetail check
-  prepare-kernel.sh: Define command line variables
-  prepare-kernel.sh: Remove dead code
-  prepare-kernel.sh: Don't allow uninitialized variables
-  prepare-kernel.sh: Remove kernel version check
-
- scripts/Kconfig.frag      |   2 +-
- scripts/prepare-kernel.sh | 587 +++++++++++++++++---------------------
- 2 files changed, 268 insertions(+), 321 deletions(-)
-
-[0]: https://lore.kernel.org/xenomai/20240525115806.12101-1-richard@nod.a=
-t/
-
+diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
+index 5712f760d..30c5be2aa 100755
+--- a/scripts/prepare-kernel.sh
++++ b/scripts/prepare-kernel.sh
+@@ -138,7 +138,8 @@ patch_link() {
+ 	done
+ 	if test x$reverse =3D x1; then
+ 		if ! find $linux_tree/$link_dir -not -type d | grep -q . ; then
+-			rm -rf $linux_tree/$link_dir
++			# shellcheck disable=3DSC2115
++			rm -rf ${linux_tree}/$link_dir
+ 		fi
+ 	fi
+ 	)
 --=20
 2.35.3
 
