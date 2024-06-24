@@ -1,41 +1,41 @@
 Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E42501A08C0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E41D31A08BA
 	for <xenomai@lists.linux.dev>; Mon, 24 Jun 2024 20:34:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.201.40.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719261248; cv=none; b=h4acaGJai02/f7qUfZUv3WSWDpMqktJCHXwqywToLQo5c7NTkwaYdtcu4lHrTmTu0OmbcPcA7m1ElgsgZtgMPN9lmVRWaWH3vR+12+LybUmpvk6a5of2A3QG/vX/HjqX9MzwsVJ8lkBT+oqPe/ekpFLX4+Ek4iWDDzrI1ipVbuk=
+	t=1719261248; cv=none; b=lO1N57U0veB7aB36QyylkYZsJgETwZyryy02eXzd/VohiEn5217oXjRA+wFyCKi/6nip6gCK+A9/zT6A/7McZ6HhtsgQQs1+GcbZtSOlo3zreHv0bnqbGReFvkt1UXOX+xJJfBmSrARkd8U+rrlJ5NHIr4mzk2D+5UqDDzRLfA0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1719261248; c=relaxed/simple;
-	bh=aVrzg+J46wWkmQMXPVvY5HmVzMN5fND53iSkdAif5Kg=;
+	bh=q56wdxNLovPR3h7sSAaFPc5XyO88tZKTSc03fV5hzPI=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=ci/P66p9RQ7fy1IqoNOHhtDhKDy5xWYMw7jh3CDMdNnyGbL5xYo5K/v8xiLt4tNqtLU9g7fdeus6CDGRMN7nk2AMDBkLSAWqwEGQgMctz2AgM2+/vH4ErNDk4VWPFr9yNtPPf4JBYYmDDjqJrD9Q7g4N7lgVAceaSSIhbdCLY5I=
+	 MIME-Version; b=RqhNnjT/zfTXyjsE411oxwbf3xL9QUWRCr5rvhmF2NiQpDEKub2L21gPHZ35XrZT2XkSH7oBK+BLSQls+siq37ycXRLSnjYbEudxlhwhWzTbSs8yuZ9vZCCO7Ct3WV1USvLIrl1WnyqTbKIJjIjy+lz3MRbE0yYVCbGlweWiZ1o=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at; spf=fail smtp.mailfrom=nod.at; arc=none smtp.client-ip=195.201.40.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
 Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 94C7F61966B8;
+	by lithops.sigma-star.at (Postfix) with ESMTP id B5133626FAFC;
 	Mon, 24 Jun 2024 22:33:55 +0200 (CEST)
 Received: from lithops.sigma-star.at ([127.0.0.1])
 	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-	with ESMTP id 8ChuR0HMcVLT; Mon, 24 Jun 2024 22:33:54 +0200 (CEST)
+	with ESMTP id Nv9iXfDPQaN9; Mon, 24 Jun 2024 22:33:54 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 33127644CE7C;
+	by lithops.sigma-star.at (Postfix) with ESMTP id A640D63D93AD;
 	Mon, 24 Jun 2024 22:33:54 +0200 (CEST)
 Received: from lithops.sigma-star.at ([127.0.0.1])
 	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id QlppiiiBZiX9; Mon, 24 Jun 2024 22:33:54 +0200 (CEST)
+	with ESMTP id xIbdtthXYl1Q; Mon, 24 Jun 2024 22:33:54 +0200 (CEST)
 Received: from foxxylove.corp.sigma-star.at (unknown [82.150.214.1])
-	by lithops.sigma-star.at (Postfix) with ESMTPSA id C9E0F61966AF;
-	Mon, 24 Jun 2024 22:33:53 +0200 (CEST)
+	by lithops.sigma-star.at (Postfix) with ESMTPSA id 5D72D6195FD1;
+	Mon, 24 Jun 2024 22:33:54 +0200 (CEST)
 From: Richard Weinberger <richard@nod.at>
 To: xenomai@lists.linux.dev
 Cc: upstream+xenomai@sigma-star.at,
 	Richard Weinberger <richard@nod.at>
-Subject: [PATCH 07/14] prepare-kernel.sh: Remove interactivity
-Date: Mon, 24 Jun 2024 22:33:34 +0200
-Message-Id: <20240624203341.6263-8-richard@nod.at>
+Subject: [PATCH 10/14] prepare-kernel.sh: Fix dovetail check
+Date: Mon, 24 Jun 2024 22:33:37 +0200
+Message-Id: <20240624203341.6263-11-richard@nod.at>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20240624203341.6263-1-richard@nod.at>
 References: <20240624203341.6263-1-richard@nod.at>
@@ -47,90 +47,50 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-Let's reduce complexity and remove user interaction, all parameters
-shall get set using command line switches instead.
-This makes also --default obsolete, if someone passes --linux=3D (empty)
-to the script, it will from now on automatically fall back to /lib/module=
-s/`uname -r`/source.
+$probe_header and $arch_probe_header are only set when --dovetail=3D is u=
+sed,
+otherwise they are unset and checking whether the kernel has dovetail
+always succeeds.
+
+Fix by remove the variables and use the header files directly.
 
 Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- scripts/prepare-kernel.sh | 36 +++++++++---------------------------
- 1 file changed, 9 insertions(+), 27 deletions(-)
+ scripts/prepare-kernel.sh | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
-index ad2cacd4e..a6eb6c1e0 100755
+index d16e3feab..cc1907b63 100755
 --- a/scripts/prepare-kernel.sh
 +++ b/scripts/prepare-kernel.sh
-@@ -119,7 +119,7 @@ generate_patch() {
- 	)
- }
+@@ -129,8 +129,6 @@ while test $# -gt 0; do
+ 	--dovetail=3D*)
+ 		pipeline_patch=3D`echo $1|sed -e 's,^--dovetail=3D\\(.*\\)$,\\1,g'`
+ 		pipeline_patch=3D`eval "echo $pipeline_patch"`
+-		probe_header=3Dinclude/linux/dovetail.h
+-		arch_probe_header=3Dinclude/asm/dovetail.h
+ 	;;
+ 	--arch=3D*)
+ 		linux_arch=3D`echo $1|sed -e 's,^--arch=3D\\(.*\\)$,\\1,g'`
+@@ -257,7 +255,7 @@ if test x$verbose =3D x1; then
+ 	echo "Preparing kernel $linux_version$linux_EXTRAVERSION in $linux_tree=
+..."
+ fi
 =20
--usage=3D'usage: prepare-kernel --linux=3D<linux-tree> [--dovetail=3D<dov=
-etail-patch>] [--arch=3D<arch>] [--outpatch=3D<file> [--forcelink] [--def=
-ault] [--verbose] [--reverse]'
-+usage=3D'usage: prepare-kernel --linux=3D<linux-tree> [--dovetail=3D<dov=
-etail-patch>] [--arch=3D<arch>] [--outpatch=3D<file> [--forcelink] [--ver=
-bose] [--reverse]'
- me=3D`basename $0`
-=20
- while test $# -gt 0; do
-@@ -150,7 +150,7 @@ while test $# -gt 0; do
- 		forcelink=3D1
- 		;;
- 	--default)
--		usedefault=3D1
-+		echo "$me: warning: --default is deprecated and now always on" >&2
- 		;;
- 	--verbose)
- 		verbose=3D1
-@@ -182,23 +182,9 @@ xenomai_root=3D`cd $xenomai_root && pwd`
-=20
- default_linux_tree=3D/lib/modules/`uname -r`/source
-=20
--while test x$linux_tree =3D x; do
--	if test x$usedefault =3D x; then
--		echo -n "Linux tree [default $default_linux_tree]: "
--		read linux_tree
--	fi
--	if test x$linux_tree =3D x; then
--		linux_tree=3D$default_linux_tree
--	fi
--	if test \! -x "$linux_tree"; then
--		echo "$me: cannot access Linux tree in $linux_tree"
--		linux_tree=3D
--		usedefault=3D
--		default_linux_tree=3D/usr/src
--	else
--		break
--	fi
--done
-+if test x$linux_tree =3D x; then
-+	linux_tree=3D$default_linux_tree
-+fi
-=20
- linux_tree=3D`cd $linux_tree && pwd`
-=20
-@@ -281,14 +267,10 @@ else
+-if test -r $linux_tree/$probe_header; then
++if test -r $linux_tree/include/linux/dovetail.h; then
  	if test x$verbose =3D x1; then
- 		echo "$me: no IRQ pipeline support found." >&2
+ 		echo "IRQ pipeline found - bypassing patch."
  	fi
--	while test x$pipeline_patch =3D x; do
--		echo -n "IRQ pipeline patch: "
--		read pipeline_patch
--		if test \! -r "$pipeline_patch" -o x$pipeline_patch =3D x; then
--			echo "$me: cannot read IRQ pipeline support from $pipeline_patch" >&2
--			pipeline_patch=3D
--		fi
--	done
-+	if test x$pipeline_patch =3D x; then
-+		echo "$me: no IRQ pipeline support found in $linux_tree and --dovetail=
-=3D not set" >&2
-+		exit 2
-+	fi
- 	patchdir=3D`dirname $pipeline_patch`;
- 	patchdir=3D`cd $patchdir && pwd`
- 	pipeline_patch=3D$patchdir/`basename $pipeline_patch`
+@@ -283,7 +281,7 @@ else
+ fi
+=20
+ for a in $target_linux_archs; do
+-	if test \! -r $linux_tree/arch/$a/$arch_probe_header; then
++	if test \! -r $linux_tree/arch/$a/include/asm/dovetail.h; then
+ 		echo "$me: $linux_tree has no IRQ pipeline support for $a" >&2
+ 		exit 2
+ 	fi
 --=20
 2.35.3
 
