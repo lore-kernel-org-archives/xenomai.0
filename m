@@ -1,99 +1,104 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 715D2482DD
-	for <xenomai@lists.linux.dev>; Mon, 24 Jun 2024 07:57:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8154B125D6
+	for <xenomai@lists.linux.dev>; Mon, 24 Jun 2024 10:31:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719215868; cv=none; b=b4Uf2UUOc3JFOI0TqzMmB2LKd09Bc3M/vQ9jxXOJOQbqNql/eUP0T27x6fzbxG4wc0bpCsc82n5ZFYI1rzKpJFssNhT79ksfLltF/ABW1WVMig5aiI95lcXqDpRpG0vQ679BfyoipFbd2BMKM5YJh/1UX6B/6Xdu2DJWwL9oZpA=
+	t=1719225100; cv=none; b=H17d7Rk17aWwyq2G0l0xqvsgxN3WaO5zUMzgcDa8GUCY6k0Y20tth9azsSJS6z/PLg61KsMDe0ARbbHYAlRpYeQ5dmwP0ZWvnvepQtm1ysONrLWB0ZBujXJNpSpr1zXUc/tIXEapxsOCzORabBWZNvs/cbZgTTOpbCBNnInsJEQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719215868; c=relaxed/simple;
-	bh=UHFhdan9H0GhHYXKlmi8hhWWXWh6a44MrZ8zQZNvd9Q=;
-	h=References:From:To:Cc:Subject:Date:In-reply-to:Message-ID:
-	 MIME-Version:Content-Type; b=kX0it5HXPZsoLHLHnhi/COfKK/+rel21LVBXdPPTIxy3EzG/u4dLoBYA1Y0Im3QcLJizc51zHp3Bt3Hse4uqm2Qm7IIFUHEKHjZd0BOm1jDuD1nHpWSmtZD4jayzaxtNOCWZgYVHMtX+g+IoHzg8ZNnceqdaOmqdkW+KfNTlJ9s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-424720e73e0so35396525e9.0
-        for <xenomai@lists.linux.dev>; Mon, 24 Jun 2024 00:57:46 -0700 (PDT)
+	s=arc-20240116; t=1719225100; c=relaxed/simple;
+	bh=oblWUwTGypa74PbMsguUyUNGneaXLRKdfJDYi8rq7zk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=uXtqqfWtGB8l1jYC3DAhcG8GXz7+cuGxsO9/w5RLObxy8Fs/0MZffcEUGHGJ0od+wUeaPp9FbRbuHcJcdE35aHs9/cWpNBBzE8YhUwPghCqTM1sy/+uz/zwJnfZBIOdghqMkOfIiFLEt5BtTRAKv9OK5BK2iyDCFTQpsR+mhJYw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at; spf=pass smtp.mailfrom=sigma-star.at; dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b=gsFx+gZx; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sigma-star.at
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b="gsFx+gZx"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4218008c613so34520465e9.2
+        for <xenomai@lists.linux.dev>; Mon, 24 Jun 2024 03:31:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sigma-star.at; s=google; t=1719225095; x=1719829895; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=pexNJ4N2D7nQqoW8oGAaWP+kUngVTc7ejXA6W+sWyYo=;
+        b=gsFx+gZxkMvxt857UPRJPsCObms2svyAQ5S6JxFua5G5A5NPL9r7fqfyl02wiZWnGt
+         Vaubtu6A14ErVsnNC6Tf02clUXym4HvVu0hZGCz7KpFaotE1fIUx4/FdDHjUgIJmv/HF
+         A0FMRaMp615HMZghDLsLSN2ZuT1b+6pScax8M0yXv3B8yPe6O9FR2JZRSO/Ly39jBoFc
+         xVspKdIlXqMTQNOSpA7nBWCqzK3pVHeyFs5z4QhSm7VbALjyCFeHyrkGMQLYVbQjj4bz
+         ZvqzPrHrCW1HDSG9k1oAQMkJXyuhEoR6gTEv7OWNAA7qyW1RXbBkX0eAUhjOjkNuAu4U
+         G3Ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1719215865; x=1719820665;
-        h=content-transfer-encoding:mime-version:message-id:in-reply-to:date
-         :subject:cc:to:from:user-agent:references:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=dzLFiGYcU8+2SZTHJXOEbf2tXxJ5/RFNFyzsmpjkgKI=;
-        b=MjejIMGaqo0gshroDrPKfhhcvim2NTky91lhiYv4DOgrFnfUKs65ZM5oqyTtH4ic8n
-         CT1Ngc6DvZQqaBpzTsushiLf+9qn3CuG6ZI8u23eWYSDfp2wbh/td7a+BLghaP3lr+Mn
-         ez+mfEfzh130oSoZG3WiwZsIlyMZHJOluQkbefoSEpOWeINAt61ZOR3BdXmP3ciJJREU
-         L36ONFLgVrbDVZk8gKKg018s1Zghmrypj5Wz1r3nCIr5Ep37D8jNRXvkFGMPFzT65W+y
-         qEzzt3l4pW75nZab9XCcCaO8eli/XykjZRiuq4iqOjipH6ghjMmqSk0rqNCfDDKHwGTy
-         C9Xg==
-X-Forwarded-Encrypted: i=1; AJvYcCVepuWsfE4S63kfGFPjgBOYoSAUbmU38ag5ldMQ0t/H0Lq3Yekr7+UheRv1ritHZKW9OidLj5VS4CURtFPrs63nPtIWGnlpvA==
-X-Gm-Message-State: AOJu0Ywqsa7mQO3czCnZTah7Yx55oWsVjQOm/IBoLaJstospriHMk/cg
-	qkrWdbrxRr+RwAGZKR3XWT6KrLvpuKwqWYCnjOsKAbUrRk83vRZOu9qhJetD
-X-Google-Smtp-Source: AGHT+IEzEpvffnn4ikm4h3K1rc8qzlRUMLUqXhu89Emer/H3W4QJUQOKBZ3mSM0b7jAMxNPkCol/IA==
-X-Received: by 2002:a05:6000:1a8d:b0:366:f010:8817 with SMTP id ffacd0b85a97d-366f010890dmr1816644f8f.55.1719215864509;
-        Mon, 24 Jun 2024 00:57:44 -0700 (PDT)
-Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4247cf5272esm167038425e9.0.2024.06.24.00.57.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jun 2024 00:57:43 -0700 (PDT)
-References: <871q52ry16.fsf@xenomai.org> <1157-666a8f80-f-41294d00@43403104>
-User-agent: mu4e 1.10.5; emacs 29.3
-From: Philippe Gerum <rpm@xenomai.org>
-To: =?utf-8?Q?Fran=C3=A7ois?= Legal <devel@thom.fr.eu.org>
-Cc: Richard Weinberger <richard.weinberger@gmail.com>, "Chen, Hongzhan"
- <hongzhan.chen@intel.com>, "xenomai@lists.linux.dev"
- <xenomai@lists.linux.dev>
-Subject: Re: Porting RT net driver to dovetail
-Date: Mon, 24 Jun 2024 09:46:37 +0200
-In-reply-to: <1157-666a8f80-f-41294d00@43403104>
-Message-ID: <87msnaojrh.fsf@xenomai.org>
+        d=1e100.net; s=20230601; t=1719225095; x=1719829895;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=pexNJ4N2D7nQqoW8oGAaWP+kUngVTc7ejXA6W+sWyYo=;
+        b=GXVdj13bq5x5NGV3wc8w4rdasDueSXaVJu++d8nFSTYxomx4nFst3i4yLFfRSbvgOJ
+         yVgBEPrq5UHln0cMwEYbREY+5v8/ZjDY+1n/LJ8mDAvVn7dAnLFDMu8WVVCLwdBG1k9f
+         8/ORCPlVeCDbBEJixRtS2JmMEW5pHrtX5Kw3QerBNmqffEo7YO5OlohhZQnUUwZ0r/Y5
+         zpP7VfhMPzsYjTIHEeyHt+OvSsiAbEASnAi+imZ2OmEC4Q9w7i/WoUfpedkUokwM5Hh5
+         GWYu6uBqVZNKjq0x+QA4ouKXTy/oei7Ojy+yKGHmScoR07fxFamVkrf05vlow9/p/Tv5
+         cD7A==
+X-Forwarded-Encrypted: i=1; AJvYcCXYS3bYOSeZmyDSsHnQiCajv21nqp3dp3cBBiqpmVeYx140+VyXMdNDMk4MuA1vafJhsMEAngxnA3SXdUjfi7aNWKSHGEAJNg==
+X-Gm-Message-State: AOJu0YxP0TvXAO1X0uFp+buvF28+wme/H4sJdj5daqPx2Y65AwE1/bO+
+	OMawii35VgrZpnUxPdzhPvVkcu4ZHTsJooHsigfJoXMPSM3pu9C+0BghmBTD1ts=
+X-Google-Smtp-Source: AGHT+IHAnF2XdLqcM0al7R5/hsBArhQ0+eWRxHBV3XXo/E60fXAJ1DzmHEWnb1tiv2+90AbUMbzT4A==
+X-Received: by 2002:a05:600c:54e1:b0:424:9024:d45e with SMTP id 5b1f17b1804b1-4249024d4c3mr18164045e9.4.1719225094629;
+        Mon, 24 Jun 2024 03:31:34 -0700 (PDT)
+Received: from [10.115.255.165] ([82.150.214.1])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4247d2190desm167502875e9.48.2024.06.24.03.31.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jun 2024 03:31:34 -0700 (PDT)
+Message-ID: <64890924-793c-4e36-9db4-761c391b9906@sigma-star.at>
+Date: Mon, 24 Jun 2024 12:31:33 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 4/4] testsuite: smokey - new testcase alchemy/task-11
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
+Cc: richard@nod.at, lorenz@sigma-star.at
+References: <20240617091654.66342-1-david.oberhollenzer@sigma-star.at>
+ <20240617091654.66342-5-david.oberhollenzer@sigma-star.at>
+ <655ed859-97cf-4a9d-b9ad-08ad9dedeab5@siemens.com>
+Content-Language: en-US
+From: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
+In-Reply-To: <655ed859-97cf-4a9d-b9ad-08ad9dedeab5@siemens.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
+On 6/17/24 18:45, Jan Kiszka wrote:
+> 
+> This causes sporadic failures in qemu, see e.g.
+> 
+> https://source.denx.de/Xenomai/xenomai-images/-/jobs/852670
+> 
+> Could it be that we need to add some "VM slack" here, like we have in
+> other tests already?
+> 
 
-Fran=C3=A7ois Legal <devel@thom.fr.eu.org> writes:
+In addition to actual hardware, I did test this on Qemu, including
+on a busy build server.
 
-> Thanks for the clarification.
->
-> I'm not sure I understand the sentence "ATM, we only have a real-time cap=
-able raw socket interface".
+I added some slack for Qemu, and what I though was a generous error
+threshold, but I guess the fundamental problem itself won't go away
+and always trigger on sufficiently slow/clogged machines.
 
-See https://source.denx.de/Xenomai/xenomai4/libevl/-/blob/master/tidbits/oo=
-b-net-icmp.c?ref_type=3Dheads
+As I understand it, your fix compltely disables the test on Qemu?
 
-> In my application, we only use RTNET for level 2 communication. Is this a=
-lready available.
->
-> And so, back to the original question, how do I transition from an RTNET/=
-RTDM NIC to an EVL/??? one ?
->
+I did find a `smokey_on_vm` flag that is used in the mutex test. As an
+alternative, the PERIOD_INITIAL and PERIOD_SWITCH macros could be
+modified to give it even more slack, depending on that flag.
 
-When the upcoming EVL netstack is fully available (i.e. including the
-driver<->evl interface along with the UDP layer), you will add
-out-of-band support code to the vanilla driver directly. Typically, a
-couple of handlers added to struct net_device_ops, such as:
+But then again, the fundamental issue remains. I guess it make sense
+to disable it for the Qemu pipline as you already did.
 
-#ifdef CONFIG_NET_OOB
-	int			(*ndo_enable_oob)(struct net_device *dev);
-	void			(*ndo_disable_oob)(struct net_device *dev);
-	struct sk_buff *	(*ndo_alloc_tx_oob)(struct net_device *ndev);
-#endif
+Thanks,
 
-The idea is to reuse the vanilla infrastructure as much as possible
-instead of forking the driver code. There are a few techniques to have
-in mind for doing so while preventing too many merge conflicts whenever
-the upstream code changes, the netstack will come with the FEC driver
-adapted that way as an illustration.
-
-ETA: end of july.
-
---=20
-Philippe.
+David
