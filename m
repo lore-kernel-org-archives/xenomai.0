@@ -1,41 +1,41 @@
 Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B38E1A0732
-	for <xenomai@lists.linux.dev>; Mon, 24 Jun 2024 20:34:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A8DA1A08C4
+	for <xenomai@lists.linux.dev>; Mon, 24 Jun 2024 20:34:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.201.40.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719261249; cv=none; b=dajS84pef3nf9GuNlxGgi6w8+uCxLzgHdRs6ZBYoCyqthivaTLhvKdLgUueZW5l0cN2F3fZ/SdN+rzMU6B2yipi5mKq/P/Wo3hco4I6wkdO/lJ9wvB+uYrKdQplVG1onXwWNxIm5xzxBITZp9vGRyhRcqCZoMlabAS3Lkk3qsww=
+	t=1719261249; cv=none; b=k2R5YeTSwMBeWnoFg0PuHzIBKrp6Fgu8n1OW26DyazF0x5pt8Q20rCWzEM3j4K27l72S3EATzRnZF8jywBtrdFzT3CM24aekisx4TwTTGTC9dyl7D4M28Z0O7gtTKyaH1pWcCELzzWQ+YEIfYEL2oVOed7sLYch2UZgB8wmrX78=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1719261249; c=relaxed/simple;
-	bh=glT3pxOxczXuOiHpIX15RU0RnHz6wOycfiME5E519tI=;
+	bh=BKGZPvLJOiGBbUpmxSl5WgY5ut6HVN7pCFfwG1wOKrM=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=ouQ0tTYywZAS4RZ3XUNgysdJXpMy1FClDTRczKZzv4qGyAbpKf8KJqZ2AkaPu1WU3eBqfcxCFZYAuGtd5raFW8ido4/MxgdLmmYryA6KgI7CfY22AOT7RvhaCWTQ8DAyQKG/fy7SYLzw07W88U3Aj2sjiOFMYdu73vm6R3CLBrA=
+	 MIME-Version; b=YCWs6X0v64tWKUujimB4SB9+GvQ00ZZIwisfyMtuf3f4+Oq3yEXE+t14Qt1DJs2LLi3pOyidJAsw3U9eqlDT2GOrc5MPaOflaJNeDNZQxo/lZeDRE/iGobXsmAFLk4N3mQFusZTTTPwRorv5WDAp/hsl8KyIGAjjBwsUq+mMwXA=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at; spf=fail smtp.mailfrom=nod.at; arc=none smtp.client-ip=195.201.40.130
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
 Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
 Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id E2F3E63CDC39;
-	Mon, 24 Jun 2024 22:33:54 +0200 (CEST)
+	by lithops.sigma-star.at (Postfix) with ESMTP id 2B4966195FD3;
+	Mon, 24 Jun 2024 22:33:56 +0200 (CEST)
 Received: from lithops.sigma-star.at ([127.0.0.1])
 	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-	with ESMTP id 7fIxK1ERZx1m; Mon, 24 Jun 2024 22:33:53 +0200 (CEST)
+	with ESMTP id FfrqK8S1ZTsu; Mon, 24 Jun 2024 22:33:55 +0200 (CEST)
 Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 35A656195FFE;
-	Mon, 24 Jun 2024 22:33:53 +0200 (CEST)
+	by lithops.sigma-star.at (Postfix) with ESMTP id AA5076450959;
+	Mon, 24 Jun 2024 22:33:55 +0200 (CEST)
 Received: from lithops.sigma-star.at ([127.0.0.1])
 	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id ST_WaqA6f-Hg; Mon, 24 Jun 2024 22:33:53 +0200 (CEST)
+	with ESMTP id LN06MzDFD6-I; Mon, 24 Jun 2024 22:33:55 +0200 (CEST)
 Received: from foxxylove.corp.sigma-star.at (unknown [82.150.214.1])
-	by lithops.sigma-star.at (Postfix) with ESMTPSA id 0ACDD61966B8;
-	Mon, 24 Jun 2024 22:33:53 +0200 (CEST)
+	by lithops.sigma-star.at (Postfix) with ESMTPSA id 6C7C56195FD3;
+	Mon, 24 Jun 2024 22:33:55 +0200 (CEST)
 From: Richard Weinberger <richard@nod.at>
 To: xenomai@lists.linux.dev
 Cc: upstream+xenomai@sigma-star.at,
 	Richard Weinberger <richard@nod.at>
-Subject: [PATCH 03/14] prepare-kernel.sh: Emit architecture agnostic changes
-Date: Mon, 24 Jun 2024 22:33:30 +0200
-Message-Id: <20240624203341.6263-4-richard@nod.at>
+Subject: [PATCH 14/14] prepare-kernel.sh: Remove kernel version check
+Date: Mon, 24 Jun 2024 22:33:41 +0200
+Message-Id: <20240624203341.6263-15-richard@nod.at>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20240624203341.6263-1-richard@nod.at>
 References: <20240624203341.6263-1-richard@nod.at>
@@ -47,169 +47,154 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 
-If --arch=3D is not passed, emit changes that work on all architectures
-supported by Xenomai, currently arm, arm64 and x86.
-This is especially useful with --outpatch=3D, the resulting patch can be
-used for any architecture later and makes maintaining and building
-a Xenomai enabled kernel easier.
+The kernel version is only used to test whether the kernel is extremely o=
+ld
+and verbose logging.
+IMHO it's worth the complexity of reading it from the kernel tree.
 
 Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- scripts/Kconfig.frag      |  2 +-
- scripts/prepare-kernel.sh | 77 +++++++++++++++++----------------------
- 2 files changed, 34 insertions(+), 45 deletions(-)
+ scripts/prepare-kernel.sh | 95 ++++++++++++++++-----------------------
+ 1 file changed, 39 insertions(+), 56 deletions(-)
 
-diff --git a/scripts/Kconfig.frag b/scripts/Kconfig.frag
-index b76d25e53..3c9ad2b9f 100644
---- a/scripts/Kconfig.frag
-+++ b/scripts/Kconfig.frag
-@@ -16,7 +16,7 @@ menuconfig XENOMAI
- 	  Please visit http://xenomai.org for more information.
-=20
- if XENOMAI
--source "arch/@SRCARCH@/xenomai/Kconfig"
-+source "arch/$(SRCARCH)/xenomai/Kconfig"
- endif
-=20
- if MIGRATION
 diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
-index f294ef0fa..aa845e65e 100755
+index 276273a96..20c384f13 100755
 --- a/scripts/prepare-kernel.sh
 +++ b/scripts/prepare-kernel.sh
-@@ -244,13 +244,6 @@ if test \! -r $linux_tree/Makefile; then
- 	exit 2
+@@ -250,15 +250,8 @@ if [ ! -z $foo ] ; then
+ fi
+ unset foo
+=20
+-eval linux_`grep '^EXTRAVERSION =3D' $linux_tree/Makefile | sed -e 's, ,=
+,g'`
+-eval linux_`grep '^PATCHLEVEL =3D' $linux_tree/Makefile | sed -e 's, ,,g=
+'`
+-eval linux_`grep '^SUBLEVEL =3D' $linux_tree/Makefile | sed -e 's, ,,g'`
+-eval linux_`grep '^VERSION =3D' $linux_tree/Makefile | sed -e 's, ,,g'`
+-
+-linux_version=3D"$linux_VERSION.$linux_PATCHLEVEL.$linux_SUBLEVEL"
+-
+ if test x$verbose =3D x1; then
+-	echo "Preparing kernel $linux_version$linux_EXTRAVERSION in $linux_tree=
+..."
++	echo "Preparing kernel $linux_tree..."
  fi
 =20
--if test x$reverse =3D x1; then
--	if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$linux_arch/Makefile; then
--		echo "$me: $linux_tree is not prepared with Xenomai" >&2
--		exit 2
--	fi
--fi
--
- # Create an empty output patch file, and initialize the temporary tree.
- if test "x$output_patch" !=3D "x"; then
- 	temp_tree=3D`mktemp -d prepare-kernel-XXX --tmpdir`
-@@ -271,41 +264,32 @@ if test "x$output_patch" !=3D "x"; then
-=20
+ if test -r $linux_tree/include/linux/dovetail.h; then
+@@ -279,7 +272,7 @@ else
+ 	curdir=3D$PWD
+ 	cd $linux_tree && patch --dry-run -p1 -f < $pipeline_patch || {
+ 		cd $curdir;
+-		echo "$me: Unable to patch kernel $linux_version$linux_EXTRAVERSION wi=
+th `basename $pipeline_patch`." >&2
++		echo "$me: Unable to patch kernel $linux_tree with `basename $pipeline=
+_patch`." >&2
+ 		exit 2;
+ 	}
+ 	patch -p1 -f -s < $pipeline_patch
+@@ -297,58 +290,48 @@ if test x$verbose =3D x1; then
+ 	echo "IRQ pipeline installed."
  fi
 =20
--# Infer the default architecture if unspecified.
+-case $linux_VERSION.$linux_PATCHLEVEL in
 -
- if test x$linux_arch =3D x; then
--	build_arch=3D`$xenomai_root/config/config.guess`
--	default_linux_arch=3D`echo $build_arch|cut -f1 -d-`
--fi
+-	2.*)
 -
--while : ; do
--	if test x$linux_arch =3D x; then
--		if test x$usedefault =3D x; then
--			echo -n "Target architecture [default $default_linux_arch]: "
--			read linux_arch
--		fi
--		if test "x$linux_arch" =3D x; then
--			linux_arch=3D$default_linux_arch
--		fi
+-	echo "$me: Unsupported kernel version $linux_VERSION.$linux_PATCHLEVEL.=
+x" >&2
+-	exit 2
+-	;;
+-
+-	*)
+-
+-	if ! grep -q XENOMAI $linux_tree/init/Kconfig; then
+-		version_stamp=3D`cat $xenomai_root/config/version-code`
+-		version_major=3D`expr $version_stamp : '\([[0-9]]*\)' || true`
+-		version_minor=3D`expr $version_stamp : '[[0-9]]*\.\([[0-9]*]*\)' || tr=
+ue`
+-		revision_level=3D`expr $version_stamp : '[[0-9]]*\.[[0-9]*]*\.\([[0-9]=
+*]*\)' || true`
+-	if [ -z "$revision_level" ]; then
+-		revision_level=3D0
 -	fi
-+	target_linux_archs=3D"x86 arm arm64"
-+else
- 	case "$linux_arch" in
- 		x86*|i*86|amd*)
--		linux_arch=3Dx86
-+		target_linux_archs=3D"x86"
- 	;;
- 	arm)
--		linux_arch=3Darm
-+		target_linux_archs=3D"arm"
- 	;;
- 	arm64|aarch64)
--		linux_arch=3Darm64
-+		target_linux_archs=3D"arm64"
- 	;;
- 	*)
- 		echo "$me: unsupported architecture: $linux_arch" >&2
--		linux_arch=3D
--		usedefault=3D
-+		exit 1
- 	;;
- 	esac
--	if test \! x$linux_arch =3D x; then
--		break
+-	version_string=3D`cat $xenomai_root/config/version-label`
+-	sed -e "s,@VERSION_MAJOR@,$version_major,g" \
+-		-e "s,@VERSION_MINOR@,$version_minor,g" \
+-		-e "s,@REVISION_LEVEL@,$revision_level,g" \
+-		-e "s,@VERSION_STRING@,$version_string,g" \
+-		$xenomai_root/scripts/Kconfig.frag |
++if ! grep -q XENOMAI $linux_tree/init/Kconfig; then
++	version_stamp=3D`cat $xenomai_root/config/version-code`
++	version_major=3D`expr $version_stamp : '\([[0-9]]*\)' || true`
++	version_minor=3D`expr $version_stamp : '[[0-9]]*\.\([[0-9]*]*\)' || tru=
+e`
++	revision_level=3D`expr $version_stamp : '[[0-9]]*\.[[0-9]*]*\.\([[0-9]*=
+]*\)' || true`
++if [ -z "$revision_level" ]; then
++	revision_level=3D0
++fi
++version_string=3D`cat $xenomai_root/config/version-label`
++sed -e "s,@VERSION_MAJOR@,$version_major,g" \
++	-e "s,@VERSION_MINOR@,$version_minor,g" \
++	-e "s,@REVISION_LEVEL@,$revision_level,g" \
++	-e "s,@VERSION_STRING@,$version_string,g" \
++	$xenomai_root/scripts/Kconfig.frag |
+ 		patch_append init/Kconfig
+-	fi
+-
+-	for a in $target_linux_archs; do
+-		if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$a/Makefile; then
+-			p1=3D"KBUILD_CFLAGS +=3D -I\$(srctree)/arch/\$(SRCARCH)/xenomai/inclu=
+de -I\$(srctree)/include/xenomai"
+-			p2=3D"core-\$(CONFIG_XENOMAI)	+=3D arch/$a/xenomai/"
+-			(echo; echo $p1; echo $p2) | patch_append arch/$a/Makefile
+-		elif test x$reverse =3D x1; then
+-			patch_reverse arch/$a/Makefile
+-		fi
+-	done
++elif test x$reverse =3D x1; then
++	patch_reverse init/Kconfig
++fi
+=20
+-	if ! grep -q CONFIG_XENOMAI $linux_tree/drivers/Makefile; then
+-		p=3D"obj-\$(CONFIG_XENOMAI)		+=3D xenomai/"
+-		( echo ; echo $p ) | patch_append drivers/Makefile
++for a in $target_linux_archs; do
++	if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$a/Makefile; then
++		p1=3D"KBUILD_CFLAGS +=3D -I\$(srctree)/arch/\$(SRCARCH)/xenomai/includ=
+e -I\$(srctree)/include/xenomai"
++		p2=3D"core-\$(CONFIG_XENOMAI)	+=3D arch/$a/xenomai/"
++		(echo; echo $p1; echo $p2) | patch_append arch/$a/Makefile
+ 	elif test x$reverse =3D x1; then
+-		patch_reverse drivers/Makefile
++		patch_reverse arch/$a/Makefile
+ 	fi
++done
+=20
+-	if ! grep -q CONFIG_XENOMAI $linux_tree/kernel/Makefile; then
+-		p=3D"obj-\$(CONFIG_XENOMAI)		+=3D xenomai/"
+-		( echo ; echo $p ) | patch_append kernel/Makefile
+-	elif test x$reverse =3D x1; then
+-		patch_reverse kernel/Makefile
+-	fi
+-	;;
+-esac
++if ! grep -q CONFIG_XENOMAI $linux_tree/drivers/Makefile; then
++	p=3D"obj-\$(CONFIG_XENOMAI)		+=3D xenomai/"
++	( echo ; echo $p ) | patch_append drivers/Makefile
++elif test x$reverse =3D x1; then
++	patch_reverse drivers/Makefile
 +fi
 +
-+for a in $target_linux_archs; do
-+	if test x$reverse =3D x1; then
-+		if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$a/Makefile; then
-+			echo "$me: $linux_tree is not prepared with Xenomai" >&2
-+			exit 2
-+		fi
- 	fi
- done
++if ! grep -q CONFIG_XENOMAI $linux_tree/kernel/Makefile; then
++	p=3D"obj-\$(CONFIG_XENOMAI)		+=3D xenomai/"
++	( echo ; echo $p ) | patch_append kernel/Makefile
++elif test x$reverse =3D x1; then
++	patch_reverse kernel/Makefile
++fi
 =20
-@@ -355,10 +339,12 @@ else
- 	cd $curdir
- fi
-=20
--if test \! -r $linux_tree/arch/$linux_arch/$arch_probe_header; then
--	echo "$me: $linux_tree has no IRQ pipeline support for $linux_arch" >&2
--	exit 2
--fi
-+for a in $target_linux_archs; do
-+	if test \! -r $linux_tree/arch/$a/$arch_probe_header; then
-+		echo "$me: $linux_tree has no IRQ pipeline support for $a" >&2
-+		exit 2
-+	fi
-+done
-=20
- if test x$verbose =3D x1; then
- 	echo "IRQ pipeline installed."
-@@ -391,20 +377,21 @@ case $linux_VERSION.$linux_PATCHLEVEL in
- 		-e "s,@VERSION_MINOR@,$version_minor,g" \
- 		-e "s,@REVISION_LEVEL@,$revision_level,g" \
- 		-e "s,@VERSION_STRING@,$version_string,g" \
--		-e "s,@SRCARCH@,$linux_arch,g" \
- 		$xenomai_root/scripts/Kconfig.frag |
- 		patch_append init/Kconfig
- 	fi
-=20
- test "x$CONFIG_XENO_REVISION_LEVEL" =3D "x" && CONFIG_XENO_REVISION_LEVE=
-L=3D0
-=20
--	if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$linux_arch/Makefile; then
--		p1=3D"KBUILD_CFLAGS +=3D -I\$(srctree)/arch/\$(SRCARCH)/xenomai/includ=
-e -I\$(srctree)/include/xenomai"
--		p2=3D"core-\$(CONFIG_XENOMAI)	+=3D arch/$linux_arch/xenomai/"
--		(echo; echo $p1; echo $p2) | patch_append arch/$linux_arch/Makefile
--	elif test x$reverse =3D x1; then
--		patch_reverse arch/$linux_arch/Makefile
--	fi
-+	for a in $target_linux_archs; do
-+		if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$a/Makefile; then
-+			p1=3D"KBUILD_CFLAGS +=3D -I\$(srctree)/arch/\$(SRCARCH)/xenomai/inclu=
-de -I\$(srctree)/include/xenomai"
-+			p2=3D"core-\$(CONFIG_XENOMAI)	+=3D arch/$a/xenomai/"
-+			(echo; echo $p1; echo $p2) | patch_append arch/$a/Makefile
-+		elif test x$reverse =3D x1; then
-+			patch_reverse arch/$a/Makefile
-+		fi
-+	done
-=20
- 	patch_architecture_specific=3D"n"
-=20
-@@ -433,8 +420,10 @@ esac
-=20
- patch_kernelversion_specific=3D"n"
- patch_architecture_specific=3D"y"
--patch_link r m kernel/cobalt/arch/$linux_arch arch/$linux_arch/xenomai
--patch_link n n kernel/cobalt/include/dovetail arch/$linux_arch/include/d=
-ovetail
-+for a in $target_linux_archs; do
-+	patch_link r m kernel/cobalt/arch/$a arch/$a/xenomai
-+	patch_link n n kernel/cobalt/include/dovetail arch/$a/include/dovetail
-+done
- patch_architecture_specific=3D"n"
- patch_link n cobalt-core.h kernel/cobalt/trace include/trace/events
- patch_link n cobalt-rtdm.h kernel/cobalt/trace include/trace/events
+ # Create local directories then symlink to the source files from
+ # there, so that we don't pollute the Xenomai source tree with
 --=20
 2.35.3
 
