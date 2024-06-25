@@ -1,55 +1,54 @@
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2085.outbound.protection.outlook.com [40.107.21.85])
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2043.outbound.protection.outlook.com [40.107.20.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB8AB14A091
-	for <xenomai@lists.linux.dev>; Tue, 25 Jun 2024 15:44:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.21.85
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED87C2E62F
+	for <xenomai@lists.linux.dev>; Tue, 25 Jun 2024 15:47:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.20.43
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719330301; cv=fail; b=TdT8gnpwY3OQ9K4WfnBys6uba1bjKcJfR2HfcM1uZY+3Jj25lvLf0MAB17lve43oxqm3bLygcOfrnx9lG+JQbShlKdlRCkU3yeC7w7GDUOZcnoTKtRPs0UsowaZzAg92xtQzKyKmqOA4Mn8zAJceMWetO6Tuh+gCo3/rQFq1RL4=
+	t=1719330428; cv=fail; b=VwBMj2/LWZMPz1RPqDmZLpE1JvyTFYQ6PGQWWOQC/hDJ2z+1Fn81hcn4KtLL3OyWmrRav4crm7CDxQO3bpQ96EW4QxkcgNFBi4Dfo8s6Qsxhr+Y/GKzf6UAnnunCm3zQz9RnqqnDgSexobprvpcfa0zyxEGLGBmFIlwfp/IXZM8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719330301; c=relaxed/simple;
-	bh=flyA4wcD9o4IHQgMyj6TwOM0mhy6Nxl08jsREG8JDkM=;
+	s=arc-20240116; t=1719330428; c=relaxed/simple;
+	bh=+MXqLowPwXfoKFz/+dyvlQXId4fntZwH0MMyhbow8lk=;
 	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=Jm6OQ3opeay69RFNrSx1Ac1tYzDbVneH6WQNmy2NY9L/fkLOptnM60ZcKpaUmCR5nDR790AK8TKq9UcirhroIGU64XJZ7Z3enHXYlz5DqX/ZV1ksmeCJNpbxMPb+kisNwwx4Cp7MiIQd7q4EGFf0GpPMJD6du1SDrJrHNKWijCI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=DSz0pVp7; arc=fail smtp.client-ip=40.107.21.85
+	 Content-Type:MIME-Version; b=AxLCTMcj1QaSy/MY39X7FYlGBIQuLaweBEMcGj0JQn2C8NkBJK4CpiZqeDHc6h/eppZtNzQRzngjbsU8LkudI9Tsg3EZz4hQvfoZbBQSSnMVJJS9ooG4LQRyKQivhTkOdmdaE62niqP3/3DiEge0NknzwN5JlBMk5J27SiRXCXQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=NPJp5GLT; arc=fail smtp.client-ip=40.107.20.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="DSz0pVp7"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="NPJp5GLT"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NvQpxiAJb0MiD9b5aDYgQLDtTxekl1wmVT/o84D7Brcxnr4sNerhGdLZLzr4HQv2cxMTDqMdFO3r4hao8xCuXV+g0WTUBuC7GMXv9W+W+Qhe6AjP0YjRiLLFeBFxRos0Cmr2+RYqy7UONDYEMo7vIiyzhUg0rA07TXHk2mcANc5tL+cZyD6CBQzRq/P9pbOSYQiIeRYJHdiEFqRAnn7pYYLj5glyu7VTO5SWCueN62e5HzDW01SgYZRhNXBkJUeSjoZTKtAfJe3ni8PRA46HYJvKSl/NU/aN8MTcEpykGLAYr2DW/zn0YCqGQpPZqJhKsglhggh+IoiToX2ucXwmhA==
+ b=M1WPgz9FPKP70THZZjf8fZsKuI4IKlNs32ExbARYERC1kr+ZEqXM50lld1OiPpelDf1IOCvsJzP1LswqEuwX/HUbCVRrK4IPjPLPzYlK2BVm7husqXeZiZz2TE+10bqCUR8wRme1IEtn5ZHfOvYObCA0fbSXnhDTavJ2cQhvG0FPV4xSg7jTpvUmtsb9vKIz/Aie9MTI1SH1X7mr/QyPcWZFbPmijEq6Ve4X+41NlOukqJwPL4Z7YmNsVblUIq5ZGx++0zy7hP3C2ALbYZXtHVKwgU8+LNvXZ7DR6nIWoabwCa8gXKKQEUlIiJr6MPdC4m1knoHTwcz8oXuHqLUULQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=A1Ao6k4r9FIPL78gEJO4Hbntd5B59SkA06dQ869DBuU=;
- b=mPD/VGH1sjEqbUYuw9Az6ySaCZ6BuNHtRpeznDvfHQK4GbF85nEnczVSTqswgMt8nXWYAR4ORsByAguPuboNEErW+FmuvwBwRfQ3Y2H33pI4tEC63U7D7kd93y7yyes2/w6r91o83GyqxW37kSeQPn8hm3aCR6q7CLNrZfypDSSwFsSEw8DCSMknyVPfR8Q1E+r8oMksZ3xAvbjV7bfC9iA2jR9gzDO6T6i+5SLphoC9g/YotxEuRBUAl1IvRCP/Fv48XehLSKB7E4nEMtYIrUGFiDVZJiEWug03lVDcWpnLll/uVzPcQACr8TH4EZB8zQA5XgRQwllVddiGOsSoWQ==
+ bh=A59S4k2mVKftQ7Tg+XhiUuavXW6o6YxNZ7/i2vMnhEo=;
+ b=H8NVJPfFgXZLx8VuVfhgazz7Hy5Ksm/8XGvd9H2oyl+gQTPvcRqFhj5prETl5kBws+shTbbVqHxeKS5fo4sQqDxi8Pp/Fa2wZvkZztlnvkCxIpEgEBUuxUvgHPtkHoYLe56dxLbPERhPaC1MuIDmBgbymxpcIWdU9SLcYQqx5LntDubI57YIQC3aIUo1Rdct7E8gNJuYbbF2NxYB8+16B6fJuwtCOErUs6jZPxyfPVCRrNXd9PVbFGJ6xdeGM9njv9lfvPuFoE1mxI0CH/cFYaz3M7fXiOY9/N4wC2N0XGEgNNNG6yUwQ0xaJI85zRVdfaT5U02/duIKg1KmsPXH2A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=A1Ao6k4r9FIPL78gEJO4Hbntd5B59SkA06dQ869DBuU=;
- b=DSz0pVp7htD8J71RTUNpnBot5iu1NZYJ2YQdStTINODMMIfl+9eVC6aBjbTFVHkwFIHEcDzeLeCYqtsUs9wJwfUtdfSdXKGzdbsZfBixX6ea9u5mwTyA93Hht1HpHusLSddfJ7VoyxmkRsO8E3VZ24In3+jzhVow2IeixRXyxnB1i+xAWsWwAKZ34TT8LK8UZdZ0yr++g9k+K16cxVlQwrca6YuwJTx6COxhZvRDqKSKlvvKxK1RRWX6ZZK2eNMK0SMy1RU+OFnf12R+yXdnCsR3KlBBIicsBblxeF0LJajd6h4CjsOijriJ1yiQ+N8ykHe0FDsrk7Ss5Cdg+8LbuA==
+ bh=A59S4k2mVKftQ7Tg+XhiUuavXW6o6YxNZ7/i2vMnhEo=;
+ b=NPJp5GLTPfaBHtcEGCHYAyh3R3+j7HPLPgWCBgkIJGCzz+zTdFyz4TdmH5Nn5glXAFrTY8YbugGx7OZODZf2pD1YnA1PAJywre3Da/tB5IKAx7AnHgImFpNAGjrz5YrPOvcF41n5H/00Z4SOIWcEMowObt5Xp36vJ3b7a/A1RNHbJ5F9wF3+C1tsG+qy3fS5xGKZxHxbkIuA7hc15SA76kbHOUj4shXCR3a2AedpnhyRtCtENzPiyEFnDzJRnNsPGOEa3XmsAsllw1Q3fJWaf5jrwflL01foSvwGRsRlgLfjbI86s/BVWLAcksi+7GFZWijFGbrHbWfaU8TPn1yyLw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by PAWPR10MB6902.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:33e::5) with
+ by GVXPR10MB8800.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:1e8::8) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7698.29; Tue, 25 Jun
- 2024 15:44:53 +0000
+ 2024 15:47:02 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408%7]) with mapi id 15.20.7698.025; Tue, 25 Jun 2024
- 15:44:52 +0000
-Message-ID: <393ed939-97f8-4f53-a719-6f6723e50d97@siemens.com>
-Date: Tue, 25 Jun 2024 17:44:47 +0200
+ 15:47:02 +0000
+Message-ID: <dfd637b9-9ffd-4952-848e-5b57cde21ec3@siemens.com>
+Date: Tue, 25 Jun 2024 17:46:56 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 02/14] prepare-kernel.sh: Add reverse mode
+Subject: Re: [PATCH v2 00/14] Assorted Cleanups For prepare-kernel.sh
 To: Richard Weinberger <richard@nod.at>, xenomai@lists.linux.dev
 Cc: upstream+xenomai@sigma-star.at
 References: <20240624203341.6263-1-richard@nod.at>
- <20240624203341.6263-3-richard@nod.at>
 From: Jan Kiszka <jan.kiszka@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
@@ -95,11 +94,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <20240624203341.6263-3-richard@nod.at>
+In-Reply-To: <20240624203341.6263-1-richard@nod.at>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH0PR13CA0028.namprd13.prod.outlook.com
- (2603:10b6:610:b1::33) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: CH0PR13CA0004.namprd13.prod.outlook.com
+ (2603:10b6:610:b1::9) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -108,292 +107,136 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|PAWPR10MB6902:EE_
-X-MS-Office365-Filtering-Correlation-Id: 35b27584-1b90-4a63-38ec-08dc952dc13a
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GVXPR10MB8800:EE_
+X-MS-Office365-Filtering-Correlation-Id: 85af0048-19da-45f1-9d85-08dc952e0e33
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230038|1800799022|366014|376012;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?MElUeUNMZmkrOHZtS3BUSGNmN2tPT2dvM1RxeGF1dldoTWN3ci9ieGs3ejBD?=
- =?utf-8?B?YVljOWs3ajVJeStYZnVoZGlrcG1naHlwNzVPRFFHUm8rdVN0WmgycU9FbUky?=
- =?utf-8?B?NGZYbEs5NEFsZkJOOW45YzdlYmUvczZnYkJrZXI3VzZRSU11MWtLSUdwbUl0?=
- =?utf-8?B?MUp1QjllTW56OFgwUlBFZStmQ29qcjhNTmVFRzZDT0VleDNoaE90amNpR214?=
- =?utf-8?B?aDZlcGt2WmdtYkt2M2Q3SnBhMEIwUUdhOUpJaU1ETytnaXY2RnR4WVFnSWhK?=
- =?utf-8?B?NVZTZXRVZ1JQa211VmZCb3lsY2NicGpiSEtKSDlHMkNjLy8wLzViWWRlWDJu?=
- =?utf-8?B?UndTY1JTbEhTM3pVM2syakZYY296d3JVYlVJbG5TUXdIL2xaWVo3ZXFZeHBv?=
- =?utf-8?B?RXgzaUpZbFFGK2NObThOaVphM2RmQUhIVVMyaHdqdHpiOUloY3o4Ymk1OHFy?=
- =?utf-8?B?VWNLR2pONUdFRzdaa3drZ1l2cDdUN20xNEpiM1dYQmo0RG04SERoS0hwVndB?=
- =?utf-8?B?Zm9XcmpWVmJEY0ROQWZ5WmgzT29XdkZpMmVoY3Jlb3JiTVpjSCtsVWZDWTl3?=
- =?utf-8?B?RTFjMmRDV3JISGRmQlJIT3UyN01WSU1HYUE4YXZUNVV0dzlIcW4wakhsYmZZ?=
- =?utf-8?B?YldZTFprcE5uc3VIMnFrNURHOWtjR2hXRmJsSFZqWUorRHdNTTBJaUlkNGd1?=
- =?utf-8?B?SGNVTC8rbVpnSHh6cnJRUjVmbjNDbGNSdDg2NFd2OS9YSjYvMVB3NTJZMDJJ?=
- =?utf-8?B?K1c2YXVaZ2M4eWNtMDMwaEx1OHVETUliMVgycHlLUEd2UXQxR1E4MlF3eWFi?=
- =?utf-8?B?cTFOSk9wNm9vd2oxL2ZIRkpzbHZWSlBaZnRQa2xIV0RPb3IvOVJ5UlE3b2g3?=
- =?utf-8?B?UnNkNTdLdmdzRlpjMDA0SG5PU1lxTVFPZXRZcFBBei9RU2o3TEFRUlRmQkQr?=
- =?utf-8?B?eW05UnQreEE3dEowejZ0WUR0L3FJNGlZOEhQUEhwaTVpVlUxRUF6UTZFOVN3?=
- =?utf-8?B?M3JHRXdIWE4wbTIvK3BoWGVRWk5ZM0UxOXY2eXNMTndBamlHVmZyS1l6L1I3?=
- =?utf-8?B?YzQyOUdpK1BxSFFHRmVEdldHOFUxR3IrZ0xvd0lCaTM1VnF0QnlRYkQxU0lr?=
- =?utf-8?B?RFpXbVFoTnc4K3h5QTRFZlJIay9meW05ZXJoTm13U3lGNCtFWjRiV2Zxdm15?=
- =?utf-8?B?ZVB0eUlvS0xDV01UdTV5Y0NDS3ExZTN2c1VyenJWYkhidi9BemJEM2R0Y3gv?=
- =?utf-8?B?blR0V2FTNWxxcTljY1RYYUdUL3ZCaTRYSlhDV0pwZ1ZPZ0NFbjNDajBVTkhp?=
- =?utf-8?B?azNqZU5Zd3pySnoyWjQvd2Y0RkE3YTMyVjYweEVMSWhxcXUyK2JXcW02RGZL?=
- =?utf-8?B?N25xUndFbUNiWG5MOWdVQ3c2U2VxbCtPNmFLODJ0TVJWQ1FrbG9QZ2x5ZVB0?=
- =?utf-8?B?Vml6c1hOYXViZUFhbGttY0RMRmJhczVVNlcreXBJUzRndURuRUVZKzNpK1pU?=
- =?utf-8?B?MWFyT2cwY3FSUGxmT015azhsd2R0Z2ltVVpDeDVKdldCM0h5VGsyRllYdEZK?=
- =?utf-8?B?OG5tL2hNUDM0UU5Yak1SYUt5aE1OaWtkMi9PZlEzN2Z6MElwME1JM3kxcjVG?=
- =?utf-8?B?eWNOTDl1Z0dNWEUzaXNQZHVCUTVQUDh4SjlINnBITkpjc25wTXp0M1lOZmNB?=
- =?utf-8?B?U2s5REdRL242VmNXOWZZdi9mWk1oSDd6YnY3WUdQdmYwR2MzMi9PQ1BmaUhY?=
- =?utf-8?B?T2NHaHRYTXJ2UWFlRERVNmRHNTM4RHROejVLWUdYRWlaQ0RhRWdBVU9CU0Q3?=
- =?utf-8?B?T2RCLy9TSEM5Y2pldmlsdz09?=
+	=?utf-8?B?d1ZDbHBzVkg3N2h4aGxDVkFFRVRKM2tFb0NiL2RxV3BIc1VkTnFWSHYyc1Fw?=
+ =?utf-8?B?cXQ1czg2dUwveHR4VzZ0U1lnaGo1TjF3SXpqNnlDc1h0b2ljcW1KT0NRQ1Nj?=
+ =?utf-8?B?MGZmTm9lY0VDRmd6MmlaVVV0MWU2RHA4Mk9ka0xIaXpEUWlGN3N0WkNnMWR1?=
+ =?utf-8?B?MG96VjJvL1hNVHFoU2tjN3lDdHhmQTNtYVV3aGtReUlWQ1BpM1AwaVdCT09n?=
+ =?utf-8?B?MnBSRkZFRHB0U0NoMUtqNHRrcVh4dktrWC9JZFNiSVBYQ0VHc0ppQmQ3VU5y?=
+ =?utf-8?B?OWpud2xGa2ZCNUZRTWpGcE5SdGVVd0Uzdzd0K3RSRFFFUEdkVUJWdGJyTHFw?=
+ =?utf-8?B?R05PRzAyNDFBRzJUbUpOWjZrUDJ4RTdPZ21kaWZrajhwVWh4blBpOXVjVmZJ?=
+ =?utf-8?B?UU1oaEdwVVlYUHp3QXIyU2F2WUNYUUtaclJsWVN4UW1IZmQ3RzVBYjhwYzkw?=
+ =?utf-8?B?dEVDN0NSNFJhU0NScERmdDZkWjM0bVdFRXlYdVB5NURmcXl3Snl6TWNJRUFF?=
+ =?utf-8?B?eVVqSWF0amlYaXZiNGV5anM2RXdDc2V3dlNBMi9ENEplYXVDNUU3NWs1cFFH?=
+ =?utf-8?B?Wk1uWkFSVlhjVEgyUFd2b2NsWGlub0ducDlJWFN1anhRNXFYaUIxbUgxbTc2?=
+ =?utf-8?B?S0pUZkNpMEUvVlRUUVd4VUsrWk53aENnVXlFbWFLL1NPcU1oOTVEUEZOZDJv?=
+ =?utf-8?B?K29TNEZlZDZCREZwemxRekdWV3U2SmhYaEpuN3BXb2t0Ny9mVjFOczFwMG03?=
+ =?utf-8?B?aVRaV0lEMUpkaVVoM3lEb2dnRFVmakpJMzdQWXJTS0lTMTB5UXdacW96ZDht?=
+ =?utf-8?B?bXdtaGJjMWpRVHlkS0RDVWl4MUh1cmIyS0toT2JSOTY0NFR6enFsRzl4ZXZO?=
+ =?utf-8?B?K0hqc3dCTGh0NDFla0hEM3gzUVUwS1k4YmFOS1lVOTZoWFpFbGc3Q09yV0ZQ?=
+ =?utf-8?B?eEhOcW9TVXp5YjhyMWJqTnF0dkNLcnRiSXlubVUzd3ZQQ2QzR1VDNWdDeFBi?=
+ =?utf-8?B?SEtidDg2VzVsVjFTNGlvV09KcDVNZkRmU3ljV3dDdXptd0lyZzRMWWlrTlBL?=
+ =?utf-8?B?V1R4UFZOWDZQTllwcGVwWUNTY0VQdFQwWFNrSldseS8vWTZYNlRNaHFBNFdH?=
+ =?utf-8?B?Zi9TZGxVall5WXNabzN2OGRVcStkZ3ZFbEVzN1JoNWxTaXJzRVluZGdFamx0?=
+ =?utf-8?B?Qno3bGI4T3Jidmx4bklxRzE4RmNBTW1BaW1tT2pKM3ZMd2J6UW05aDNxUmJS?=
+ =?utf-8?B?SmtuenlRWlRLL1Z0U1hWcUlLc3Z1VncwajJYbHlFZXdFQVk4MDE3NEdodTU0?=
+ =?utf-8?B?ZTlBNnFvMEpOUXlUUE1JOXVOcklWZTk5d1JjQXk0Q2JPTDduVVVWMU9DTi9S?=
+ =?utf-8?B?bFZmeWs5THpQZkNwaGovalFvTVBsMU1EUVVOVHgzUm9tcENuaVdRUXRIQ2Rn?=
+ =?utf-8?B?ZlpnT0Y0b3JSNnFCbHNEbVFoRmJmREN6aVUrcHd0OHUwWDZRZzU4T0hYZTFl?=
+ =?utf-8?B?aXYvNDJDcGZ6SEtsVFk2bkpUYXNqaHBVVG1PRDRpYTk0RXdHVzEwSEVITXhq?=
+ =?utf-8?B?MFpCTjE4R3NkTm1LOHU2eXp1ZXZNNldic2xoNmhHU2NwMS94L1RjWWlaY3N3?=
+ =?utf-8?B?Y2tZSXQ0cTRxYldUUlp0NWpnVGhJbjZOVVZsM3dJMENEQmgrRENqeWxNeG5n?=
+ =?utf-8?Q?PQg4l2k72PWwf23lnRDg?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230038)(1800799022)(366014)(376012);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?VFhYLzlWanZKMFF6dk5ZQjZEa3p6ZDhTZVhEMVVrU005NWpGa3N1T1ppSVNB?=
- =?utf-8?B?YzIxcjVONlRhTm1mUTF2cjdnb1RMVmE1ZGNBVzBCbk1FSGFKNHYzblpvbEtX?=
- =?utf-8?B?SWNReVdVK1QxaFYwRldaUFFhYk85Q2JHeHNwcm0zRnIzVngxK01UdjB1VVRz?=
- =?utf-8?B?dlRtb3FLTVA5Y3pDMWFsRnJhSnFSZ0dlZUI5ZFRiK0JZZmhwWThSWUg3VGZQ?=
- =?utf-8?B?NmRPTTlObzJaZ29UREFXeGRXdnBPcitJTGtvUml3RFpzTU5YNDhMNDRESmcz?=
- =?utf-8?B?NEh6eUxkemRjQUdrVU5zWXBLb0J3MGJnWkQ3OE8xcFp3dHc5eHkrV3JSZmts?=
- =?utf-8?B?ODgyK2loZGtPRzNpb2Fqemg2VHdzZyt4Sm5DZE1scHdKQ21aQi9ZS1lRZm44?=
- =?utf-8?B?NWcrM0JhVWtkNW1ZR2o2T1pKQTgxdG9QSlpWY1EvUWdUODA4OWh4SkhPUDVH?=
- =?utf-8?B?YVBDdDI2dy9KNFpoNTJ5bkI4YWFDSGJoN3RpZnAwRU41UGpOTVZLWHFXcDZp?=
- =?utf-8?B?OTY1bW5Md3dLUjVIdDI3dm9yTjFsN3ZCUHBOWnl1aGhuOHA5M0RSWkNKbUFy?=
- =?utf-8?B?d0tKRnh6bVdPcHRCV1YrUkxFRHZrTzlFT290aTJ6eVZjNDYxQmJPemQzbi9h?=
- =?utf-8?B?blVXREY4c2xIQW1DbXlhWERUbU9JK0NzbXZTYkR5MWh0MGJFTUJRNmVaVnlW?=
- =?utf-8?B?VERoQXY1TjFKZEFYR095bGFFK0h4RDVWdC9EVkpTaTRvalFUTzJuOWZnZndk?=
- =?utf-8?B?SzZiUEFsNk1STVlrazBjOVlzdGJzd3NFZDZyYTA3N3Y3eGNMaEFKSllkeVlz?=
- =?utf-8?B?NGRkUm1pSEFqYjMydlhGVCtISmRrWFF5ZU1xd3VneFQ3a1RNVFhrVlQzU0J6?=
- =?utf-8?B?RGo1MkZ4NmlpQjNDZDY4QjlPN3dpNmRSak1WbzhqMmdZd2JZWWhnL1hHd1Jt?=
- =?utf-8?B?a1dGU0FRQ0R6NFZZd2JzWG9wNWJXMFhuM0VFSHZJUDdOUXY5VnBzclNoZCtF?=
- =?utf-8?B?bUhkZzU4MDQ4UTVYaWhFU3IwVHZmRUZ4NzFsMmV0TVVYaHArWEdoUk9TdXJJ?=
- =?utf-8?B?Y0t0Sk1VYzQvSW1aVk5IU0QvU1lsWEpJdEFyWEFTUk5RVkxZdDdqYkR2Y0la?=
- =?utf-8?B?azlTVnpZUjY1UFZSU0R2dXA3M1NOd0tGS1FMWG1neG5HUmZsQnFIakN2ZGV2?=
- =?utf-8?B?R1YxU2VjQlNLY2ZPNTRWbTBuTnczNTFjL2NaK1VBOFJMOFd3cTFFM0pqbUdV?=
- =?utf-8?B?czVUUU1CczVqSEdaYjdCTXpvSDZ6d0ZMRTdDSDFKVTBDZDZwY1V4L3BTdFpU?=
- =?utf-8?B?RlRJTHpqNGhuM29hdW1sUkMrTVRORnN2dzhRcHRaVERwdVRJcDFoZDEvU3lv?=
- =?utf-8?B?K1dQU3lDY0JWemEzMjJqNDVISUUxY1BEWm1lTmR5cGxpZHZDaWtLN2RTV04z?=
- =?utf-8?B?VXVHTlBNa0xtVWgzWnRTMEk3eVdvQ2VVRGVwc2Q3MU1OYmN0TFFpUXg4d0kz?=
- =?utf-8?B?cWY4M2RtQnk1a0c1RVp1a1d6TzY2N01abEJhTXFPWFlxZVRrYUpkV2JzbkhE?=
- =?utf-8?B?cEdNMnU0UWhaVnhZM1NJUFFPUzczcFhaQUVXeFVuc0xEdm5GT05KV2dwYWdy?=
- =?utf-8?B?bWRvTHpPQU5ycjFialFpTWRhSlU5aUpNRFFTek04Rmpxd1lxMWFDV0V2RGxT?=
- =?utf-8?B?d3MrdS9JTi9kZytOU2RuWUFCc1R3QUJSVzFyM01QTDVwSTdZbFZqWjFRNzdr?=
- =?utf-8?B?RHU2KzZzNUs3YlBOQXJJV25KdlkwRmZ3Z05saDdTazZpeGxLQXdxMGZKRFgy?=
- =?utf-8?B?SDFKeHNDZkk4Y2NaUXUyU1lvN2lkZ3Z1bUd4Y0VOYjNwWUdSMWFlY3lRQ25w?=
- =?utf-8?B?THdoK1RXSC83c2Y4c2lQOFN6cjFUc3VSZGlMRHl4NndhUFc4RjF1Qk1hT2tm?=
- =?utf-8?B?TGl4cEZocStBSmFnWTlwTmNjQTBqTWVkWENVQmV6K0ZqRTRpY05yaURuZW5w?=
- =?utf-8?B?Q2xQK0pRdm1XR2hDK2YzSVN0clBPR1hyQ29nREZZUS9RbnZLdGJaUWVSdkpE?=
- =?utf-8?B?VmZGeGsrWkFZbWVBZGk3eTJKYWthc25CWWQzR3RMRTZ2M0pOampPZkg0ZWg0?=
- =?utf-8?B?TUdVeW1hRFRmRjNXVVNISEZMNmVxNWZLK0F5SDlVNzZRZXB0b1NNckI1dCtH?=
- =?utf-8?B?UVE9PQ==?=
+	=?utf-8?B?TUJFaC9MWGNlUHdQZC93OFVjRm4xOW9pYzNyOFg5Q1lDUFlNWTh4SnEvYm9E?=
+ =?utf-8?B?NWtieFM3RXpSNk1iNHVKdE53TzRHR1lPWHplTUFsVmZHM29ZaUI2VHl2RFFG?=
+ =?utf-8?B?KzVlOG9vM3NmUmc2NmhaU0NEcklnOWVjM2FZUGVySmF5cG9DVjF1NitURyt3?=
+ =?utf-8?B?dk41Qk42ZlliTnRXRFVYT2JCb1A0QzFBMk1vYkNzNTlRcUtpZWxQNWMxaEFz?=
+ =?utf-8?B?TkZEZXdEblY0b2xWckxjSnRFWTFVRGxkbGNad2xPaGxFcWV6Snk0QVZlM0I2?=
+ =?utf-8?B?Zlg0WkYvN2lGTm44NXFNV3dwK09KaVB4cjZ6SHdkTGsvWktQTjlXblI3MHdJ?=
+ =?utf-8?B?RGJCaGNnQWRZajNNVVZVTkFaaUR6a3BGMDhlUHhKRE80NkhVOXg3MWFOK3BR?=
+ =?utf-8?B?dDZnMWcwSUovUDZjQ1RzempxYVhBVDZMdTdLNVYrK1pwaTFLeG5aTHJiVEls?=
+ =?utf-8?B?MXRWcjNmQ0liZnY5Z0E3ajRkcDBVazhlMmdXMDhtU1dkZDFFbVplWHc2a1ph?=
+ =?utf-8?B?c1FDejF2RUJtUHZ1TVd3VHlXUFJ5aUFVUjhOeFY1eW9sbGtySXphRkI0Qzht?=
+ =?utf-8?B?dTg4eHRNSGkxNGJYcEFZTG1VcC84bGV5UFZXK1ZTZUh3N0N1SEhRNzllb0xB?=
+ =?utf-8?B?cm5ZREoxbmY0bEtzT3l0cGNGU3dFQk4wbFBpTkQyUHdlRlhhTjhJMmdxSE5F?=
+ =?utf-8?B?NXpOZXVnMFp2eW9ubENya3RIVU05aEdsRXhqSnVENEQ3QVRNK3FNWXN1cGF6?=
+ =?utf-8?B?WnU1T0g5UDVBWnZrWlJYT1NmaVRWbFh3RTNHbGZnN3VuTlFTWkFQMitSSGhU?=
+ =?utf-8?B?RUtxNFI2Sy9QckJjR2FCKzdzT0lrMDBPNE01ZG9DcFZqVWs4MXhMNUVRMHMz?=
+ =?utf-8?B?WmVlSnd3WkFDdkdzcUlmc2ZEbE9tUkRKZ00vMFRkNGhrcW9pL0Vrd2QzMm12?=
+ =?utf-8?B?T3ZieVloZytpdmx2c1V3UWdjdXJXeUlmaHV5N0lGbzZXU1J2VEM0dHNUSS9L?=
+ =?utf-8?B?S3dRRWxiMVhHZTJkNUpJa1V5MDI0dkdTRXpRRldNOFUycjlDRktIS3loeEcv?=
+ =?utf-8?B?T1VGdUtVa1NjL25wRlpSM3FWNUY2UHNXTG9sZHora1c2S3F3NzhzLzdTRUFz?=
+ =?utf-8?B?RnlDN3ZOb1laWkM2R0liamZxTHovNzdaRjBveENWVFp0OGtzcjJQVm83N3B4?=
+ =?utf-8?B?S05UaThKM1RHRmk4a3h1SWxzQlZKeEE3OGtEZWlmUURXT043dW9ycENwSDIv?=
+ =?utf-8?B?NDZxTFFMUytCUUdhdlJLb2YrN2o4ZEpoQ2cxUjVBWVRuZkg3d1FXUDErSXho?=
+ =?utf-8?B?b1g2K2pWS3YvR2Y5SE91bGxHVmREMkU5QUxuY0JWUCs1UElwOCtGSkF2cmt3?=
+ =?utf-8?B?OHlzMENwZUNWRXNjdGlaTzFib2ZBQW1rQjF4WHdKS2Z2RStxMW9hakh3YVdG?=
+ =?utf-8?B?ZU1MTnlJSzhCZDE2YjE5YVlQR2pRRy9PYXR4OWhoY25PaUhlcms2TlM5NnhT?=
+ =?utf-8?B?My9sNmg4NkxFT3RKMDF4b3Q2VVRmS1VSRmNGWE1wUUhGVDVhUnIxVUh6dDht?=
+ =?utf-8?B?VFlibnFFRy95elV2Y0pJUUhtcFlQU09JRUxiS2t3c1p2VWlvUC8veGVnYWxH?=
+ =?utf-8?B?dVFyenV0c3VsZnhKd0hjNzJLK09Wak5pU21TcFpPaGc0MW1EWGIrSGF0MVFi?=
+ =?utf-8?B?bnhMVXF2ekNwOGJaQ3FHYzlRbjlES2RjNXBGdzBqaUtGaDhBOWw3MjQwc3BK?=
+ =?utf-8?B?KytOZDdsS3NDMmJ4NElPRGNRNm41MU9nNGMzRm8rTmVuR0syTEFnSXgzUzY3?=
+ =?utf-8?B?VEV2ZFFoV2pFY0ZrNVgwbXdxVWVPSGtlb0NKMGh4M2VGUXFPUVZucThQd21p?=
+ =?utf-8?B?bzhNQkhXUjdBUUdxQjM4aWE4dDMvcEE0ZFBKd0ZnL2JSd2dxeTFYTmt2d0Rp?=
+ =?utf-8?B?L2ZGSng3cG5QSHkybTlWa2d2b3A5K2M1R1VBUTU0K3RKbXhXVC90aURsSU00?=
+ =?utf-8?B?UzNnZjRBaGZtTFhoVXJOVW41QkZZNERtUVJBUVVxM0ovZUw1Vk5ReENBT25o?=
+ =?utf-8?B?eHR4NlZPVEFzUlFiYkJ5OWRDNnovUFk5MmhLcG1lSGVzTmRSTjd6aUFEL2c1?=
+ =?utf-8?B?ODNBSWJEWFFoZlo2bmRubVZ5ZDNWZy9OYy9ZRCtOcU0vZ2JLQlhMbFRHcWlQ?=
+ =?utf-8?B?Zmc9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 35b27584-1b90-4a63-38ec-08dc952dc13a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 85af0048-19da-45f1-9d85-08dc952e0e33
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jun 2024 15:44:52.8636
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jun 2024 15:47:02.0926
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vH4GBZdnloF9tN6Y1pX01pW41ZfoRbSos+Xu+2k9bOwajdNmBuQjjAP2tV7pchWxrj12LsbKzX8YjbB5Cyb18w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR10MB6902
+X-MS-Exchange-CrossTenant-UserPrincipalName: MPPyIkgWEIRiwqomAlbxx8wLycU2CrI21RZoOyWjKhnpHADMHKfZXq80Udcnv6etyRUIo0yGw6tFSnsZ4ondgA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR10MB8800
 
 On 24.06.24 22:33, Richard Weinberger wrote:
-> There is currently no way to undo preparing of a kernel, except using
-> --outpatch and reverting the resulting patch later.
-> But in link mode the kernel tree needs manual cleaning,
-> which can be tedious if a git clean -f -d -x is not possible.
+> This series contains the following improvements and cleanups.
 > 
-> The new --reverse flag offers this feature, it removes all previously
-> created symlinks and directories.
-> To be able to undo effects by patch_append(), keep a .orig file link
-> as the script already does for symlinks in the linux tree.
+> - Implement --reverse to undo the effects of the script
+> - Emit changes that work on any architecture, renders --arch= optional
+> - Switch from /bin/bash to /bin/sh
+> - Make shellcheck happy up to warning level, info level is still a lot of work
+> - Convert the whole script to tabs
+> - Remove dead and in vain code
+> - Various fixes
 > 
-> Signed-off-by: Richard Weinberger <richard@nod.at>
-> ---
->  scripts/prepare-kernel.sh | 71 +++++++++++++++++++++++++++++++--------
->  1 file changed, 57 insertions(+), 14 deletions(-)
+> Changes since v1[0]:
+> - Rebased to current next branch
+> - Reorganized patch series
+> - Worked in feedback from Jan and Florian
 > 
-> diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
-> index 9299aaa97..f294ef0fa 100755
-> --- a/scripts/prepare-kernel.sh
-> +++ b/scripts/prepare-kernel.sh
-> @@ -55,6 +55,8 @@ patch_append() {
->  		if test -L "$linux_tree/$file" ; then
->  			mv "$linux_tree/$file" "$linux_tree/$file.orig"
->  			cp "$linux_tree/$file.orig" "$linux_tree/$file"
-> +		else
-> +			cp "$linux_tree/$file" "$linux_tree/$file.orig"
->  		fi
->  		chmod +w "$linux_tree/$file"
->  		cat >> "$linux_tree/$file"
-> @@ -66,6 +68,16 @@ patch_append() {
->  	fi
->  }
->  
-> +patch_reverse() {
-> +	file="$1"
-> +	if test "x$output_patch" = "x"; then
-> +		if test -L "$linux_tree/$file" ; then
-> +			rm "$linux_tree/$file"
-> +		fi
-> +		mv "$linux_tree/$file.orig" "$linux_tree/$file"
-> +	fi
-> +}
-> +
->  patch_link() {
->  	recursive="$1"		   # "r" or "n"
->  	link_file="$2"		   # "m", "n" or some file (basename) from $target_dir
-> @@ -104,11 +116,15 @@ patch_link() {
->  		f=`echo $f | cut -d/ -f2-`
->  		d=`dirname $f`
->  		if test "x$output_patch" = "x"; then
-> -			mkdir -p $linux_tree/$link_dir/$d
-> -			if test x$forcelink = x1 -o \
-> -				! $xenomai_root/$target_dir/$f -ef $linux_tree/$link_dir/$f;
-> -			then
-> -				ln -sf $xenomai_root/$target_dir/$f $linux_tree/$link_dir/$f
-> +			if test x$reverse = x1; then
-> +				rm -f $linux_tree/$link_dir/$f
-> +			else
-> +				mkdir -p $linux_tree/$link_dir/$d
-> +				if test x$forcelink = x1 -o \
-> +					! $xenomai_root/$target_dir/$f -ef $linux_tree/$link_dir/$f;
-> +				then
-> +					ln -sf $xenomai_root/$target_dir/$f $linux_tree/$link_dir/$f
-> +				fi
->  			fi
->  		else
->  			if test `check_filter $link_dir/$f` = "ok"; then
-> @@ -120,6 +136,11 @@ patch_link() {
->  			fi
->  		fi
->  	done
-> +	if test x$reverse = x1; then
-> +		if ! find $linux_tree/$link_dir -not -type d | grep -q . ; then
-> +			rm -rf $linux_tree/$link_dir
-> +		fi
-> +	fi
->  	)
->  }
->  
-> @@ -135,8 +156,7 @@ generate_patch() {
->  	)
->  }
->  
-> -
-> -usage='usage: prepare-kernel --linux=<linux-tree> [--dovetail=<dovetail-patch>] [--arch=<arch>] [--outpatch=<file> [--filterkvers=y|n] [--filterarch=y|n]] [--forcelink] [--default] [--verbose]'
-> +usage='usage: prepare-kernel --linux=<linux-tree> [--dovetail=<dovetail-patch>] [--arch=<arch>] [--outpatch=<file> [--filterkvers=y|n] [--filterarch=y|n]] [--forcelink] [--default] [--verbose] [--reverse]'
->  me=`basename $0`
->  
->  while test $# -gt 0; do
-> @@ -172,6 +192,9 @@ while test $# -gt 0; do
->  	--verbose)
->  		verbose=1
->  	;;
-> +	--reverse)
-> +		reverse=1
-> +	;;
->  	--help)
->  		echo "$usage"
->  		exit 0
-> @@ -221,6 +244,13 @@ if test \! -r $linux_tree/Makefile; then
->  	exit 2
->  fi
->  
-> +if test x$reverse = x1; then
-> +	if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$linux_arch/Makefile; then
-> +		echo "$me: $linux_tree is not prepared with Xenomai" >&2
-> +		exit 2
-> +	fi
-> +fi
-> +
->  # Create an empty output patch file, and initialize the temporary tree.
->  if test "x$output_patch" != "x"; then
->  	temp_tree=`mktemp -d prepare-kernel-XXX --tmpdir`
-> @@ -229,6 +259,11 @@ if test "x$output_patch" != "x"; then
->  		exit 1
->  	fi
->  
-> +	if test x$reverse = x1; then
-> +		echo "$me: --reverse and --outpatch are not compatible"
-> +		exit 1
-> +	fi
-> +
->  	patchdir=`dirname $output_patch`
->  	patchdir=`cd $patchdir && pwd`
->  	output_patch=$patchdir/`basename $output_patch`
-> @@ -364,10 +399,11 @@ case $linux_VERSION.$linux_PATCHLEVEL in
->  test "x$CONFIG_XENO_REVISION_LEVEL" = "x" && CONFIG_XENO_REVISION_LEVEL=0
->  
->  	if ! grep -q CONFIG_XENOMAI $linux_tree/arch/$linux_arch/Makefile; then
-> -		p="KBUILD_CFLAGS += -I\$(srctree)/arch/\$(SRCARCH)/xenomai/include -I\$(srctree)/include/xenomai"
-> -		(echo; echo $p) | patch_append arch/$linux_arch/Makefile
-> -		p="core-\$(CONFIG_XENOMAI)	+= arch/$linux_arch/xenomai/"
-> -		echo $p | patch_append arch/$linux_arch/Makefile
-> +		p1="KBUILD_CFLAGS += -I\$(srctree)/arch/\$(SRCARCH)/xenomai/include -I\$(srctree)/include/xenomai"
-> +		p2="core-\$(CONFIG_XENOMAI)	+= arch/$linux_arch/xenomai/"
-> +		(echo; echo $p1; echo $p2) | patch_append arch/$linux_arch/Makefile
-> +	elif test x$reverse = x1; then
-> +		patch_reverse arch/$linux_arch/Makefile
->  	fi
->  
->  	patch_architecture_specific="n"
-> @@ -375,11 +411,15 @@ test "x$CONFIG_XENO_REVISION_LEVEL" = "x" && CONFIG_XENO_REVISION_LEVEL=0
->  	if ! grep -q CONFIG_XENOMAI $linux_tree/drivers/Makefile; then
->  		p="obj-\$(CONFIG_XENOMAI)		+= xenomai/"
->  		( echo ; echo $p ) | patch_append drivers/Makefile
-> +	elif test x$reverse = x1; then
-> +		patch_reverse drivers/Makefile
->  	fi
->  
->  	if ! grep -q CONFIG_XENOMAI $linux_tree/kernel/Makefile; then
->  		p="obj-\$(CONFIG_XENOMAI)		+= xenomai/"
->  		( echo ; echo $p ) | patch_append kernel/Makefile
-> +	elif test x$reverse = x1; then
-> +		patch_reverse kernel/Makefile
->  	fi
->  	;;
->  esac
-> @@ -387,13 +427,15 @@ esac
->  # Create local directories then symlink to the source files from
->  # there, so that we don't pollute the Xenomai source tree with
->  # compilation files.
-> +#
-> +# Keep link dirs (4th parameter) descending, otherwise --reverse
-> +# is not able to cleanup these directories!
->  
->  patch_kernelversion_specific="n"
->  patch_architecture_specific="y"
->  patch_link r m kernel/cobalt/arch/$linux_arch arch/$linux_arch/xenomai
->  patch_link n n kernel/cobalt/include/dovetail arch/$linux_arch/include/dovetail
->  patch_architecture_specific="n"
-> -patch_link n m kernel/cobalt kernel/xenomai
->  patch_link n cobalt-core.h kernel/cobalt/trace include/trace/events
->  patch_link n cobalt-rtdm.h kernel/cobalt/trace include/trace/events
->  patch_link n cobalt-posix.h kernel/cobalt/trace include/trace/events
-> @@ -401,14 +443,15 @@ patch_link r n kernel/cobalt/include/asm-generic/xenomai include/asm-generic/xen
->  patch_link n m kernel/cobalt/posix kernel/xenomai/posix
->  patch_link n m kernel/cobalt/rtdm kernel/xenomai/rtdm
->  patch_link n m kernel/cobalt/dovetail kernel/xenomai/pipeline
-> +patch_link n m kernel/cobalt kernel/xenomai
->  patch_link r m kernel/drivers drivers/xenomai
->  patch_link n n include/cobalt/kernel include/xenomai/cobalt/kernel
-> -patch_link r n include/cobalt/kernel/rtdm include/xenomai/rtdm
->  patch_link r n include/cobalt/kernel/dovetail/pipeline include/xenomai/pipeline
->  patch_link r n include/cobalt/uapi include/xenomai/cobalt/uapi
->  patch_link r n include/rtdm/uapi include/xenomai/rtdm/uapi
-> -patch_link n version.h include/xenomai include/xenomai
-> +patch_link r n include/cobalt/kernel/rtdm include/xenomai/rtdm
->  patch_link n stdarg.h kernel/cobalt/include/linux include/xenomai/linux
-> +patch_link n version.h include/xenomai include/xenomai
->  
->  if test "x$output_patch" != "x"; then
->  	if test x$verbose = x1; then
+> Richard Weinberger (14):
+>   prepare-kernel.sh: Convert to tabs
+>   prepare-kernel.sh: Add reverse mode
+>   prepare-kernel.sh: Emit architecture agnostic changes
+>   prepare-kernel.sh: Improve kernel tree check
+>   prepare-kernel.sh: Disable SC2115 warning around $linux_tree
+>   prepare-kernel.sh: Remove --filterkvers= and --filterarch=
+>   prepare-kernel.sh: Remove interactivity
+>   prepare-kernel.sh: Don't depend on bash
+>   prepare-kernel.sh: Remove --forcelink
+>   prepare-kernel.sh: Fix dovetail check
+>   prepare-kernel.sh: Define command line variables
+>   prepare-kernel.sh: Remove dead code
+>   prepare-kernel.sh: Don't allow uninitialized variables
+>   prepare-kernel.sh: Remove kernel version check
+> 
+>  scripts/Kconfig.frag      |   2 +-
+>  scripts/prepare-kernel.sh | 587 +++++++++++++++++---------------------
+>  2 files changed, 268 insertions(+), 321 deletions(-)
+> 
+> [0]: https://lore.kernel.org/xenomai/20240525115806.12101-1-richard@nod.at/
+> 
 
-The reverse mode is missing coverage for init/Kconfig. Only patch 14
-introduces it. Fixing up while merging.
+Thanks, series with smaller adjustments in next now. The final diff is
+limited to whitespaces, though.
 
 Jan
 
