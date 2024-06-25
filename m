@@ -1,222 +1,119 @@
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C11A1A08B2
-	for <xenomai@lists.linux.dev>; Mon, 24 Jun 2024 20:34:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.201.40.130
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89F94148836
+	for <xenomai@lists.linux.dev>; Tue, 25 Jun 2024 09:03:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719261249; cv=none; b=BQuRf5ID9McvMWMzI7a7LHSE06SJb1gdq0IPM7yegxY7t+fDhhqRJr/5u8CQmVB75EHWuvZzSpvEjGFz1SZ85H18d68H3uitsX5yLZXWudiFQpnxc99Ro35UfsO4t5wuCs5QlquCCecSm7LZ2+rOsRYDVrc4gj+2s8gD8Tp8myE=
+	t=1719306211; cv=none; b=CPX6/FfCw3ijGzccp1I7GOqhtMIhCh8EravsYzCGbQI6k7WsHqj/vrU704Yswk5ejZa7qBnbXAQvXVyGnfQDIGZ2G7Plthc1/sRFRVcwiJqHKiPCj1o4gx6tNld9o0I3uJ2A4zSbIK+Hki45UyyfO7AP1rb1fRDI2k7PDh2lbVc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719261249; c=relaxed/simple;
-	bh=sF+soEyDMAQ+qC4+3GvoSIj6ZXBbEOLhX9Xo6eMba8s=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=oWu03V09NbP+lpWqrXZsnFcw4bQ7lqT3+0kKwaX0SsZBAE8/5BNypoWbY2VUa/n8fPpXpF8hxTNNjvyCzqnVdWmeyhiiQStTz9GuC4yVJ6B5fvfrLaODduAMwa6gxrl78CzCUBYLsOXIZNwfyrvMSWyVmJmRXAyrY6f6rGHZNsI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at; spf=fail smtp.mailfrom=nod.at; arc=none smtp.client-ip=195.201.40.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id C520E644CE7C;
-	Mon, 24 Jun 2024 22:33:55 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-	with ESMTP id eSH9g3TClhZr; Mon, 24 Jun 2024 22:33:54 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id EA2106343B54;
-	Mon, 24 Jun 2024 22:33:53 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id oYoasDbzec3A; Mon, 24 Jun 2024 22:33:53 +0200 (CEST)
-Received: from foxxylove.corp.sigma-star.at (unknown [82.150.214.1])
-	by lithops.sigma-star.at (Postfix) with ESMTPSA id 9D9356195FD1;
-	Mon, 24 Jun 2024 22:33:53 +0200 (CEST)
-From: Richard Weinberger <richard@nod.at>
-To: xenomai@lists.linux.dev
-Cc: upstream+xenomai@sigma-star.at,
-	Richard Weinberger <richard@nod.at>
-Subject: [PATCH 06/14] prepare-kernel.sh: Remove --filterkvers= and --filterarch=
-Date: Mon, 24 Jun 2024 22:33:33 +0200
-Message-Id: <20240624203341.6263-7-richard@nod.at>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20240624203341.6263-1-richard@nod.at>
-References: <20240624203341.6263-1-richard@nod.at>
+	s=arc-20240116; t=1719306211; c=relaxed/simple;
+	bh=MlXqrA3j27baup2eMRYzCGZYqrdFACoAREVazhsltAU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=Cvg91r+vDl0CK+NmF3LkEcMj3U/r0S0stvKx2HN//DEFsH6E2YMh/XeBjWQzNjiv8nKPCvWxCLAREH+8S8IR50/dCPgxI7fwb2WYfXiMxGT3DLJC0bi3LIHifRskso53BC7jyOINVnrrGI9Wr6uH5SXxaJwaebmqD9k0dIUF4L4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=FjAKNt+E; arc=none smtp.client-ip=185.136.64.227
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="FjAKNt+E"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20240625090319e751851e5f0af5c660
+        for <xenomai@lists.linux.dev>;
+        Tue, 25 Jun 2024 11:03:19 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=PXYJwVNgn68VcbCuNjNjRo5wDePT/CcycuSgtrnhm+4=;
+ b=FjAKNt+E1pMKMcEOUJCH3wEDSPiL6qR6nflI/JzAzRrg+ArPYcTvbltSKouLnq/DDQgTSv
+ n0F5IaSs5uRA2+UOuFicDYIPBzbYTC3eMXnB6q2XK8OHhCY5ZruAnbrFNXNdlhfOp4oxD+px
+ pX60S9BNBJvW2zKuL5IXBzwqpLf7U=;
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Date: Tue, 25 Jun 2024 11:03:15 +0200
+Subject: [PATCH dovetail v5 1/2] KVM: x86: dovetail: Move handling async
+ page faults to the inband stage
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20240531-flo-fix-kvm-guest-for-6-9-v5-1-1efec77fe0a0@siemens.com>
+References: <20240531-flo-fix-kvm-guest-for-6-9-v5-0-1efec77fe0a0@siemens.com>
+In-Reply-To: <20240531-flo-fix-kvm-guest-for-6-9-v5-0-1efec77fe0a0@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>, 
+ Florian Bezdeka <florian.bezdeka@siemens.com>
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-These days (not) applying kernel version or architecture specific changes
-is no longer needed for development.
-Let's simplify the code and remove this feature.
+Dovetail was stuck in the boot phase as KVM guest on a system that
+reported the asynchronous page fault handling feature.
 
-Signed-off-by: Richard Weinberger <richard@nod.at>
+The apic_eoi() call in sysvec_kvm_asyncpf_interrupt() has no effect in
+case CONFIG_IRQPIPELINE is enabled, thus those IRQs / vectors where
+never ACKed at APIC level, the CPUs stalled.
+
+Instead of migrating to __apic_oie() the IDT entry for
+HYPERVISOR_CALLBACK_VECTOR for KVM on x86 is now marked as PIPELINED.
+Other architectures (and other guest extensions) already used
+DECLARE_IDTENTRY_SYSVEC_PIPELINED().
+
+The imbalance of how HYPERVISOR_CALLBACK_VECTOR is being used /
+pipelined goes back to 5.10. Backporting might be required.
+
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- scripts/prepare-kernel.sh | 65 ++++++---------------------------------
- 1 file changed, 9 insertions(+), 56 deletions(-)
+ arch/x86/include/asm/idtentry.h | 2 +-
+ arch/x86/kernel/irq_pipeline.c  | 6 ++++++
+ arch/x86/kernel/kvm.c           | 3 ++-
+ 3 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
-index 30c5be2aa..ad2cacd4e 100755
---- a/scripts/prepare-kernel.sh
-+++ b/scripts/prepare-kernel.sh
-@@ -3,28 +3,6 @@ set -e
-=20
- unset CDPATH
-=20
--# At all time, this variable must be set to either:
--# "y" if the changes to the Linux tree are specific to the kernel versio=
-n;
--# "n" otherwise.
--patch_kernelversion_specific=3D"n"
--
--# At all time, this variable must be set to either:
--# "y" if the changes to the Linux tree are specific to the architecture;
--# "n" otherwise.
--patch_architecture_specific=3D"n"
--
--# At all time, this variable must be set to either:
--# "y": ignore kernel-version-specific changes;
--# "n": ignore non-kernel-version-specific changes;
--# "b": don't filter according to the kernel version.
--patch_kernelversion_filter=3D"b"
--
--# At all time, this variable must be set to either:
--# "y": ignore architecture-specific changes;
--# "n": ignore non-architecture-specific changes;
--# "b": don't filter according to the architecture.
--patch_architecture_filter=3D"b"
--
- # Default path to kernel tree
- linux_tree=3D.
-=20
-@@ -37,18 +15,6 @@ patch_copytempfile() {
- 	fi
+diff --git a/arch/x86/include/asm/idtentry.h b/arch/x86/include/asm/idtentry.h
+index 500f4e8c6542..e544b24f61bf 100644
+--- a/arch/x86/include/asm/idtentry.h
++++ b/arch/x86/include/asm/idtentry.h
+@@ -829,7 +829,7 @@ DECLARE_IDTENTRY_SYSVEC_PIPELINED(HYPERVISOR_CALLBACK_VECTOR,	sysvec_xen_hvm_cal
+ #endif
+ 
+ #ifdef CONFIG_KVM_GUEST
+-DECLARE_IDTENTRY_SYSVEC(HYPERVISOR_CALLBACK_VECTOR,	sysvec_kvm_asyncpf_interrupt);
++DECLARE_IDTENTRY_SYSVEC_PIPELINED(HYPERVISOR_CALLBACK_VECTOR,	sysvec_kvm_asyncpf_interrupt);
+ #endif
+ 
+ #undef X86_TRAP_OTHER
+diff --git a/arch/x86/kernel/irq_pipeline.c b/arch/x86/kernel/irq_pipeline.c
+index 15b6cbdb8f13..73e97fba55e7 100644
+--- a/arch/x86/kernel/irq_pipeline.c
++++ b/arch/x86/kernel/irq_pipeline.c
+@@ -155,6 +155,12 @@ static void do_sysvec_inband(struct irq_desc *desc, struct pt_regs *regs)
+ 		run_sysvec_on_irqstack_cond(__sysvec_acrn_hv_callback,
+ 					regs);
+ 		break;
++#endif
++#ifdef CONFIG_KVM_GUEST
++	case HYPERVISOR_CALLBACK_VECTOR:
++		run_sysvec_on_irqstack_cond(__sysvec_kvm_asyncpf_interrupt,
++					    regs);
++		break;
+ #endif
+ 	case LOCAL_TIMER_VECTOR:
+ 		run_sysvec_on_irqstack_cond(__sysvec_apic_timer_interrupt,
+diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+index c65e88f94f32..655b1cf8c9ab 100644
+--- a/arch/x86/kernel/kvm.c
++++ b/arch/x86/kernel/kvm.c
+@@ -292,7 +292,8 @@ noinstr bool __kvm_handle_async_pf(struct pt_regs *regs, u32 token)
+ 	return true;
  }
-=20
--check_filter() {
--	if test "$patch_kernelversion_specific" !=3D "$patch_kernelversion_filt=
-er" \
--		-a "$patch_architecture_specific" !=3D "$patch_architecture_filter"; t=
-hen
--		echo ok
--	elif test -e "$temp_tree/$1"; then
--		echo "$me: inconsistent multiple changes to $1 in Linux kernel tree" >=
-&2
--		echo error
--	else
--		echo ignore
--	fi
--}
--
- patch_append() {
- 	file=3D"$1"
- 	if test "x$output_patch" =3D "x"; then
-@@ -61,10 +27,8 @@ patch_append() {
- 		chmod +w "$linux_tree/$file"
- 		cat >> "$linux_tree/$file"
- 	else
--		if test `check_filter $file` =3D "ok"; then
--			patch_copytempfile "$file"
--			cat >> "$temp_tree/$file"
--		fi
-+		patch_copytempfile "$file"
-+		cat >> "$temp_tree/$file"
- 	fi
- }
-=20
-@@ -127,13 +91,11 @@ patch_link() {
- 				fi
- 			fi
- 		else
--			if test `check_filter $link_dir/$f` =3D "ok"; then
--				if test -e $linux_tree/$link_dir/$f; then
--					echo "$me: warning: $link_dir/$f already present in Linux kernel tr=
-ee, output patch might be defective" >&2
--				fi
--				mkdir -p $temp_tree/$link_dir/$d
--				cp $xenomai_root/$target_dir/$f $temp_tree/$link_dir/$f
-+			if test -e $linux_tree/$link_dir/$f; then
-+				echo "$me: warning: $link_dir/$f already present in Linux kernel tre=
-e, output patch might be defective" >&2
- 			fi
-+			mkdir -p $temp_tree/$link_dir/$d
-+			cp $xenomai_root/$target_dir/$f $temp_tree/$link_dir/$f
- 		fi
- 	done
- 	if test x$reverse =3D x1; then
-@@ -157,7 +119,7 @@ generate_patch() {
- 	)
- }
-=20
--usage=3D'usage: prepare-kernel --linux=3D<linux-tree> [--dovetail=3D<dov=
-etail-patch>] [--arch=3D<arch>] [--outpatch=3D<file> [--filterkvers=3Dy|n=
-] [--filterarch=3Dy|n]] [--forcelink] [--default] [--verbose] [--reverse]=
-'
-+usage=3D'usage: prepare-kernel --linux=3D<linux-tree> [--dovetail=3D<dov=
-etail-patch>] [--arch=3D<arch>] [--outpatch=3D<file> [--forcelink] [--def=
-ault] [--verbose] [--reverse]'
- me=3D`basename $0`
-=20
- while test $# -gt 0; do
-@@ -179,10 +141,10 @@ while test $# -gt 0; do
- 		output_patch=3D`echo $1|sed -e 's,^--outpatch=3D\\(.*\\)$,\\1,g'`
- 	;;
- 	--filterkvers=3D*)
--		patch_kernelversion_filter=3D`echo $1|sed -e 's,^--filterkvers=3D\\(.*=
-\\)$,\\1,g'`
-+		echo "$me: warning: --filterkvers=3D is deprecated and now a no-op" >&=
-2
- 		;;
- 	--filterarch=3D*)
--		patch_architecture_filter=3D`echo $1|sed -e 's,^--filterarch=3D\\(.*\\=
-)$,\\1,g'`
-+		echo "$me: warning: --filterarch=3D is deprecated and now a no-op" >&2
- 		;;
- 	--forcelink)
- 		forcelink=3D1
-@@ -351,8 +313,6 @@ if test x$verbose =3D x1; then
- 	echo "IRQ pipeline installed."
- fi
-=20
--patch_kernelversion_specific=3D"y"
--
- case $linux_VERSION.$linux_PATCHLEVEL in
-=20
- 	2.*)
-@@ -363,8 +323,6 @@ case $linux_VERSION.$linux_PATCHLEVEL in
-=20
- 	*)
-=20
--	patch_architecture_specific=3D"y"
--
- 	if ! grep -q XENOMAI $linux_tree/init/Kconfig; then
- 		version_stamp=3D`cat $xenomai_root/config/version-code`
- 		version_major=3D`expr $version_stamp : '\([[0-9]]*\)' || true`
-@@ -394,8 +352,6 @@ test "x$CONFIG_XENO_REVISION_LEVEL" =3D "x" && CONFIG=
-_XENO_REVISION_LEVEL=3D0
- 		fi
- 	done
-=20
--	patch_architecture_specific=3D"n"
--
- 	if ! grep -q CONFIG_XENOMAI $linux_tree/drivers/Makefile; then
- 		p=3D"obj-\$(CONFIG_XENOMAI)		+=3D xenomai/"
- 		( echo ; echo $p ) | patch_append drivers/Makefile
-@@ -419,13 +375,10 @@ esac
- # Keep link dirs (4th parameter) descending, otherwise --reverse
- # is not able to cleanup these directories!
-=20
--patch_kernelversion_specific=3D"n"
--patch_architecture_specific=3D"y"
- for a in $target_linux_archs; do
- 	patch_link r m kernel/cobalt/arch/$a arch/$a/xenomai
- 	patch_link n n kernel/cobalt/include/dovetail arch/$a/include/dovetail
- done
--patch_architecture_specific=3D"n"
- patch_link n cobalt-core.h kernel/cobalt/trace include/trace/events
- patch_link n cobalt-rtdm.h kernel/cobalt/trace include/trace/events
- patch_link n cobalt-posix.h kernel/cobalt/trace include/trace/events
---=20
-2.35.3
+ 
+-DEFINE_IDTENTRY_SYSVEC(sysvec_kvm_asyncpf_interrupt)
++DEFINE_IDTENTRY_SYSVEC_PIPELINED(HYPERVISOR_CALLBACK_VECTOR,
++				 sysvec_kvm_asyncpf_interrupt)
+ {
+ 	struct pt_regs *old_regs = set_irq_regs(regs);
+ 	u32 token;
+
+-- 
+2.39.2
 
