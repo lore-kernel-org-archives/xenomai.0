@@ -1,62 +1,75 @@
-Received: from smtpfb1-g21.free.fr (smtpfb1-g21.free.fr [212.27.42.9])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9B2C653365
-	for <xenomai@lists.linux.dev>; Mon,  1 Jul 2024 06:55:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.27.42.9
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC1A51B809
+	for <xenomai@lists.linux.dev>; Mon,  1 Jul 2024 07:08:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1719816914; cv=none; b=jylOrlXAPpevjBNxWBz72I2byp5OadNg7ky1mcQ6WQ6JUjhA0hhPtzIhyCHwcBhfZklMjaMLyl7GdcjYjCH9XmNHkvpnqoCZrHVDEZx/0kJD2e4U2hMYdJQFFCqAfZ+SKDNMHNaLFXkSTjMuOfSUorUrc32tXq5bnW/BmTSC7/w=
+	t=1719817703; cv=none; b=mH9asy8Us/wgChb6qi2tYTHgwe2WXZScPJNyKNJeVX8hCGdq2DVr8Py+nfJ9oZfHKhOOafSiAeWRR129im61dMKHxs8GpttPB6xpHBn7M7OKiS7+l4wQOJi1vLkfi90G9QkltDMa0VeO8EJO81Lz9zd2E+eH/ezU9Gy8CZklHJY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1719816914; c=relaxed/simple;
-	bh=XmyERkqgIbycZIr1hr9HhXrb0Lg3msKWsCkFvD6s9Ak=;
-	h=From:To:MIME-Version:Date:Subject:Message-ID:Content-Type; b=D+Ztk9yvx5W3+xsaJuGi+X4FmQfcBEJo1wijPbtgYhe/n+J7sEmxpq+1uUK6inub1KY8aIXK6vjmKmftvK3GcXEkZR6IILKU1qMkAf8MLMTvvzo3JcGWe+WydLxrzt2ibVZRkCMOsISN0de8UH/cxA60q8KIh+KYTEwUnFjop6U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thom.fr.eu.org; spf=pass smtp.mailfrom=thom.fr.eu.org; dkim=permerror (0-bit key) header.d=thom.fr.eu.org header.i=@thom.fr.eu.org header.b=Navmn1ez; arc=none smtp.client-ip=212.27.42.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thom.fr.eu.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=thom.fr.eu.org
+	s=arc-20240116; t=1719817703; c=relaxed/simple;
+	bh=tz8HHOrqotAHxwVCPraK4b5IY6W0rnG9X2+vGDTIftc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=saEuFBxoot/Nnju7VlHupmVYpvw+UC8j2Q2dBXN501jHyh1R7w53B4LcY0nGZ4gW67zRSAMXfOdXMJaVKXbvrx0uQSorBgsXBaLdc4JcWnzOrH1R7wXSVIAEpLUOKGDRVrHkY0U/rpnCiVpKCfHYeAaqsWYK47GMYhkPDPK1jQ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=yi.jiang@siemens.com header.b=KaQ4uIEW; arc=none smtp.client-ip=185.136.64.228
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=permerror (0-bit key) header.d=thom.fr.eu.org header.i=@thom.fr.eu.org header.b="Navmn1ez"
-Received: from smtp5-g21.free.fr (smtp5-g21.free.fr [212.27.42.5])
-	by smtpfb1-g21.free.fr (Postfix) with ESMTP id 7C08F839118
-	for <xenomai@lists.linux.dev>; Mon,  1 Jul 2024 08:48:05 +0200 (CEST)
-Received: from mail.thom.fr.eu.org (unknown [82.64.149.25])
-	by smtp5-g21.free.fr (Postfix) with ESMTPS id 488F75FF88
-	for <xenomai@lists.linux.dev>; Mon,  1 Jul 2024 08:47:58 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by mail.thom.fr.eu.org (8.15.2/8.15.2/Debian-22) with ESMTP id 4616lv1j124828
-	for <xenomai@lists.linux.dev>; Mon, 1 Jul 2024 08:47:57 +0200
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/simple; d=thom.fr.eu.org;
-	s=default; t=1719816477;
-	bh=XmyERkqgIbycZIr1hr9HhXrb0Lg3msKWsCkFvD6s9Ak=;
-	h=From:To:Date:Subject;
-	b=Navmn1ezAB0iC2pzN4ZlgkmyBYiy8u9qWSRoIT7GPnKR4nXkeESf2lrcnDxLRhlPo
-	 Blf5r5NrVL6mxA8Rvk7677qHxAi8CvpPMLZCnv1IqIX/dFjJFACzOOFoznxtOHtItF
-	 5OfW6QUHSr/w7jQUV7AjnY+GOJMEcLO26Wu9phdjHKEr5G5r0MAWc85vLOOb3RKGYe
-	 DLozydqExqzLSxblt1n0o32vOlPSGVjni99XhihADINTrAXItdObeKs8ntgmB5iMYb
-	 TQ8tZQqmzkQARmicN8jlgC7L/1LVsVddHQfKJurnzRiwpSlBTmy7ui/Ywr9qN2TDlX
-	 gK5eppPQ7GDgg==
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=yi.jiang@siemens.com header.b="KaQ4uIEW"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 2024070107080916991c67b925648b56
+        for <xenomai@lists.linux.dev>;
+        Mon, 01 Jul 2024 09:08:10 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=yi.jiang@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=ccc83p2eXoUbDwG5QVPD0baNk36I0Ap+0rFHevZKUDU=;
+ b=KaQ4uIEWwzYo13kKYS5VUTvFdoMqRNPnDUHg98n+h06afKpn3vSvAAEP+tjZYMfv5b75cM
+ nglG43FSzjYW75Pzn2Sk4Mk9y18YdajxULauNTT2U6JtlVfzExE/lI8FEA1zbHNivJbCLBAO
+ sdI8iBPPdDp8pyNLACg4WXVMvxlf4=;
+From: Yi Jiang <yi.jiang@siemens.com>
 To: xenomai@lists.linux.dev
-User-Agent: SOGoMail 5.0.1
+Cc: jan.kiszka@siemens.com,
+	florian.bezdeka@siemens.com,
+	quirin.gylstorff@siemens.com,
+	Yi Jiang <yi.jiang@siemens.com>
+Subject: [PATCH v2 0/4] ci: add LAVA integration support for Xenomai on RPi4
+Date: Mon,  1 Jul 2024 09:08:03 +0200
+Message-Id: <20240701070807.14465-1-yi.jiang@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Date: Mon, 01 Jul 2024 08:47:57 +0200
-Subject: Thread safety of cobalt syslog/syslogv call
-Message-ID: <10fc-66825100-3-27de53c0@198494754>
-X-Forward: 217.109.173.233, 165.225.204.113
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.10 at tls-srv-03
-X-Virus-Status: Clean
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-1325609:519-21489:flowmailer
 
-Hello,
+Hi, all,
 
-I was wondering whether or not the syslog/vsyslog calls in cobalt runti=
-me libs are thread safe. I observer strange behaviour in my logs under =
-heavy log load.
+this patch series integrate RPi4 to the LAVA, which support Xenomai (kernel version 6.6) to be deployed on RPi4 remotely.
 
-Thanks
+Changelog:
+v1 -> v2:
+- change the order of [PATCH 3/4] and [PATCH 4/4]
+- [PATCH v2 1/4]: add a new commit message to clarify that U-boot cannot take use of the local DTB file on the board, therefore we must provide the DTB for LAVA.
+- [PATCH v2 4/4]: remove rpi4 setup for kernel 5.10, 5,15, 6.1; remove hikey setup for kernel 6.6.
 
-Fran=C3=A7ois
+Best regards,
+Yi Jiang
+
+Yi Jiang (4):
+  ci: specify the dtb file for rpi4 in machine conf
+  ci: add gitlab-ci-base configurations for rpi4
+  ci: add test job configurations for rpi4
+  ci: use rpi4 instead of hikey for kernel 6.6 deployment
+
+ ci/gitlab-ci-base.yml       | 14 +++++++-
+ ci/kernel_6_6.yml           | 10 +++---
+ conf/machine/rpi4.conf      |  2 ++
+ tests/jobs/xenomai-rpi4.yml | 72 +++++++++++++++++++++++++++++++++++++
+ 4 files changed, 92 insertions(+), 6 deletions(-)
+ create mode 100644 tests/jobs/xenomai-rpi4.yml
+
+-- 
+2.39.2
 
