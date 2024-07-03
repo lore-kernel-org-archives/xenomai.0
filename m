@@ -1,35 +1,35 @@
 Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17CD2173336
-	for <xenomai@lists.linux.dev>; Wed,  3 Jul 2024 13:25:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C08F5173345
+	for <xenomai@lists.linux.dev>; Wed,  3 Jul 2024 13:25:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720013147; cv=none; b=rMn/fme4U9UaUxv8uWiL4R18HJVA2zTgNmwAp/SaSF9Ty9qsgUh31x2m084RCYNcFUUalJomt604wn3j/CsE6hwjXKrd+Qszp1HnaPqOhw8HvY/JnN7Fj5Mj0v6qb0pHzvIwyWVytZnvGMMrYr1gUTdcNdCBP7LSOwrMl+fAo8Y=
+	t=1720013147; cv=none; b=PQ7G4rnLdWrWKQfQ3wFdqoWj0tVUWqNoLkOiVKm8IcW2A0p6gbSDKhsso/dTKhc7OPYTg480UNCx6OGQMXcXzD68JSCuvoTGzxYeaJQvP92a8nwuLumH5bZNnetQ+iyXZAlzxBuanpjLRv/jnZ53C9Q7eA7GbPlpyQegLMMCpi4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1720013147; c=relaxed/simple;
-	bh=uQD20W32igFQdJE30yQk8qJwoJmMVx819lTyOIuu3HY=;
+	bh=gLMtRRZ5zqLfDngPIITr+FkT3TZ2vAUkprO1pvE42UQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=LIiGYnuO0JVM3wH6zwntIL9w9m1sZJnOhijOJufDQGh4jAREDi69HR1XpdxhUwHhqZGqlxIno/HZLNjN+dvayp+C+e5Lqv0Kv2YBWgpraxwqXY3/jPt/U7Sp67016/Zzc620ABXsqX1lbMDYMOPMRmqzBTADbQa19mPqidBBGSA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=bQt/SUD1; arc=none smtp.client-ip=185.136.64.226
+	 In-Reply-To:To:Cc; b=YnogCUhHQmWGcxCFqVc1/oiHMywCbPRz2ex40MIcFD9wvUGEmJ9zhUAiM1uWZzbzWskV4/I43eDqmvBv7RN/5zk8mCqbfaTiDGTAtiBgZio08u47iUCTGWepN7XENOxYAHWJVvGs5TJjs9ywORi+no1SVYVoNZUFde9eI2BVXPc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Mzr9I1H+; arc=none smtp.client-ip=185.136.64.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="bQt/SUD1"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 2024070313254138151205c77c856fdf
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Mzr9I1H+"
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20240703132542520a06c03b1e23555e
         for <xenomai@lists.linux.dev>;
-        Wed, 03 Jul 2024 15:25:41 +0200
+        Wed, 03 Jul 2024 15:25:42 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=mrrMjeQwB2+RNMLSnzwtYyVP7VENggo3K/MZ2EodTfU=;
- b=bQt/SUD1fA4Wfaics0fAcfQENisQKw1BUYa/VuGyy9URbGqkf8XQ5DhSS2yxC9jYDkQesK
- YXwKYhzs45e+TYIaoSN2+czRzPglPdnO1oIUjxvOjTeeqJ4bwTQHWDS9mO7CkZrUclTBuVdG
- TsVtclYKHxCphOpfUMOtHnnVdnb4s=;
+ bh=WYi3P89m5tkoPLHppY5W0BWmTjvAu7/G9Be7gm2JXDg=;
+ b=Mzr9I1H+LaRUDlKeZwzwoiXBA3mYNmQwsg5XfYkU7S3Dr8ZozeI62p3n8vGiQPNEACHFRz
+ XM9ZZ71KEg/dG5qPLEgjiFDiCndxSQfcnGoMpyTcQE4syL2iiRZ9IaelBd9y1X5Vaol95wOA
+ sFrB72JWD3yfqrucM2b/AqdM+QeV8=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Wed, 03 Jul 2024 15:25:32 +0200
-Subject: [PATCH 09/33] drivers/net/e1000: Migrate from rtdm_printk() and
- printk() to pr_*()
+Date: Wed, 03 Jul 2024 15:25:34 +0200
+Subject: [PATCH 11/33] drivers/experimental/e1000: Migrate from
+ rtdm_printk() and printk() to pr_*()
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -38,7 +38,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240702-flo-removal-of-rtdm_printk-v1-9-cc91bffdd063@siemens.com>
+Message-Id: <20240702-flo-removal-of-rtdm_printk-v1-11-cc91bffdd063@siemens.com>
 References: <20240702-flo-removal-of-rtdm_printk-v1-0-cc91bffdd063@siemens.com>
 In-Reply-To: <20240702-flo-removal-of-rtdm_printk-v1-0-cc91bffdd063@siemens.com>
 To: xenomai@lists.linux.dev
@@ -59,107 +59,137 @@ No functional change.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/drivers/net/drivers/e1000/e1000.h       | 16 +++++++++-------
- kernel/drivers/net/drivers/e1000/e1000_main.c  | 18 +++++++++---------
- kernel/drivers/net/drivers/e1000/e1000_osdep.h |  2 +-
- 3 files changed, 19 insertions(+), 17 deletions(-)
+ .../drivers/net/drivers/experimental/e1000/e1000.h | 14 ++++++----
+ .../net/drivers/experimental/e1000/e1000_main.c    | 32 ++++++++++++----------
+ 2 files changed, 25 insertions(+), 21 deletions(-)
 
-diff --git a/kernel/drivers/net/drivers/e1000/e1000.h b/kernel/drivers/net/drivers/e1000/e1000.h
-index 978b6ea9c..e38649bbf 100644
---- a/kernel/drivers/net/drivers/e1000/e1000.h
-+++ b/kernel/drivers/net/drivers/e1000/e1000.h
-@@ -103,18 +103,20 @@ struct e1000_adapter;
- #include "e1000_hw.h"
+diff --git a/kernel/drivers/net/drivers/experimental/e1000/e1000.h b/kernel/drivers/net/drivers/experimental/e1000/e1000.h
+index 8b9830b99..986eeb088 100644
+--- a/kernel/drivers/net/drivers/experimental/e1000/e1000.h
++++ b/kernel/drivers/net/drivers/experimental/e1000/e1000.h
+@@ -47,13 +47,15 @@ struct e1000_adapter;
  
- #ifdef DBG
--#define E1000_DBG(args...) printk(KERN_DEBUG "e1000: " args)
-+#define E1000_DBG(args...) pr_debug(args)
- #else
  #define E1000_DBG(args...)
- #endif
  
 -#define E1000_ERR(args...) printk(KERN_ERR "e1000: " args)
-+#undef pr_fmt
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++#define E1000_ERR(args...) pr_err(args)
  
 -#define PFX "e1000: "
 -#define DPRINTK(nlevel, klevel, fmt, args...) \
 -	(void)((NETIF_MSG_##nlevel & adapter->msg_enable) && \
 -	printk(KERN_##klevel PFX "%s: %s: " fmt, adapter->netdev->name, \
 -		__FUNCTION__ , ## args))
++#undef pr_fmt
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
 +#define DPRINTK(nlevel, klevel, fmt, args...)                           \
 +	(void)((NETIF_MSG_##nlevel & adapter->msg_enable) &&            \
 +	       printk(KERN_##klevel "%s: %s: %s: " fmt, KBUILD_MODNAME, \
 +		      adapter->netdev->name, __FUNCTION__, ##args))
-+
-+#define E1000_ERR(args...) pr_err(args)
  
  #define E1000_MAX_INTR 10
  
-diff --git a/kernel/drivers/net/drivers/e1000/e1000_main.c b/kernel/drivers/net/drivers/e1000/e1000_main.c
-index bf4fadba9..ff24b6fa6 100644
---- a/kernel/drivers/net/drivers/e1000/e1000_main.c
-+++ b/kernel/drivers/net/drivers/e1000/e1000_main.c
-@@ -264,10 +264,9 @@ static int __init
- e1000_init_module(void)
+diff --git a/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c b/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
+index 76cfb0dee..56f172636 100644
+--- a/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
++++ b/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
+@@ -460,11 +460,11 @@ MODULE_PARM_DESC(pciif, "PCI Interface: 'all' (default), 'pci', 'pcie'");
+ static int __init e1000_init_module(void)
  {
  	int ret;
--	printk(KERN_INFO "%s - version %s\n",
--	       e1000_driver_string, e1000_driver_version);
-+	pr_info("%s - version %s\n", e1000_driver_string, e1000_driver_version);
+-    strcpy(e1000_driver_name, THIS_MODULE->name);
+-	printk(KERN_INFO "%s - %s version %s (pciif: %s)\n",
+-	       e1000_driver_string, e1000_driver_name, e1000_driver_version, pciif);
++	strcpy(e1000_driver_name, THIS_MODULE->name);
++	pr_info("%s - %s version %s (pciif: %s)\n", e1000_driver_string,
++		e1000_driver_name, e1000_driver_version, pciif);
  
 -	printk(KERN_INFO "%s\n", e1000_copyright);
 +	pr_info("%s\n", e1000_copyright);
  
- 	ret = pci_register_driver(&e1000_driver);
+ 
+     if (0 == strcmp(pciif, "pcie"))
+@@ -486,10 +486,11 @@ static int __init e1000_init_module(void)
+ #endif
+ 	if (copybreak != COPYBREAK_DEFAULT) {
+ 		if (copybreak == 0)
+-			printk(KERN_INFO "e1000: copybreak disabled\n");
++			pr_info("e1000: copybreak disabled\n");
+ 		else
+-			printk(KERN_INFO "e1000: copybreak enabled for "
+-			       "packets <= %u bytes\n", copybreak);
++			pr_info("e1000: copybreak enabled for "
++				"packets <= %u bytes\n",
++				copybreak);
+ 	}
  	return ret;
-@@ -911,9 +910,9 @@ static int e1000_probe(struct pci_dev *pdev,
+ }
+@@ -1376,8 +1377,9 @@ static int e1000_probe(struct pci_dev *pdev,
  		 "32-bit"));
  	}
  
--	printk(KERN_INFO "e1000: hw ");
 -	for (i = 0; i < 6; i++)
--		printk(KERN_CONT "%2.2x%c", netdev->dev_addr[i], i == 5 ? '\n' : ':');
-+	pr_info("e1000: hw %2.2x:%2.2x:%2.2x:%2.2x:%2.2x:%2.2x\n",
-+		netdev->dev_addr[0], netdev->dev_addr[1], netdev->dev_addr[2],
-+		netdev->dev_addr[3], netdev->dev_addr[4], netdev->dev_addr[5]);
+-		printk("%2.2x%c", netdev->dev_addr[i], i == 5 ? '\n' : ':');
++	pr_debug("%2.2x:%2.2x:%2.2x:%2.2x:%2.2x:%2.2x\n", netdev->dev_addr[0],
++		 netdev->dev_addr[1], netdev->dev_addr[2], netdev->dev_addr[3],
++		 netdev->dev_addr[4], netdev->dev_addr[5]);
  
  	/* reset the hardware with the new settings */
  	e1000_reset(adapter);
-@@ -2557,7 +2556,8 @@ e1000_xmit_frame(struct rtskb *skb, struct rtnet_device *netdev)
- 	if (unlikely(E1000_DESC_UNUSED(tx_ring) < count + 2)) {
- 		rtnetif_stop_queue(netdev);
- 		rtdm_lock_put_irqrestore(&tx_ring->tx_lock, context);
+@@ -3848,7 +3850,7 @@ static int e1000_xmit_frame_ring(struct sk_buff *skb,
+ 	 * head, otherwise try next time */
+ 	if (unlikely(e1000_maybe_stop_tx(netdev, tx_ring, count + 2))) {
+ 		rtdm_lock_put_irqrestore(&tx_ring->tx_lock, irq_flags);
 -		rtdm_printk("FATAL: rt_e1000 ran into tail close to head situation!\n");
-+		pr_err("FATAL: rt_e1000 ran into tail close to"
-+		       "head situation!\n");
++		pr_crit("FATAL: rt_e1000 ran into tail close to head situation!\n");
  		return NETDEV_TX_BUSY;
  	}
  
-@@ -2568,8 +2568,8 @@ e1000_xmit_frame(struct rtskb *skb, struct rtnet_device *netdev)
- 
- 			/* FIXME: warn the user earlier, i.e. on startup if
- 			   half-duplex is detected! */
--			rtdm_printk("FATAL: rt_e1000 ran into 82547 "
--				    "controller bug!\n");
-+			pr_err("FATAL: rt_e1000 ran into 82547 "
-+			       "controller bug!\n");
+@@ -3859,7 +3861,7 @@ static int e1000_xmit_frame_ring(struct sk_buff *skb,
+ 			if (!test_bit(__E1000_DOWN, &adapter->state))
+ 				schedule_delayed_work(&adapter->fifo_stall_task,
+ 						      1);
+-		    rtdm_printk("FATAL: rt_e1000 ran into tail 82547 controller bug!\n");
++			pr_crit("FATAL: rt_e1000 ran into tail 82547 controller bug!\n");
  			return NETDEV_TX_BUSY;
  		}
  	}
-diff --git a/kernel/drivers/net/drivers/e1000/e1000_osdep.h b/kernel/drivers/net/drivers/e1000/e1000_osdep.h
-index 8de304848..54d3b8ff9 100644
---- a/kernel/drivers/net/drivers/e1000/e1000_osdep.h
-+++ b/kernel/drivers/net/drivers/e1000/e1000_osdep.h
-@@ -70,7 +70,7 @@ typedef enum {
-     TRUE = 1
- } boolean_t;
+@@ -4897,7 +4899,7 @@ static bool e1000_clean_rx_irq(struct e1000_adapter *adapter,
+ 	bool cleaned = FALSE;
+ 	unsigned int total_rx_bytes=0, total_rx_packets=0;
  
--#define MSGOUT(S, A, B)	printk(KERN_DEBUG S "\n", A, B)
-+#define MSGOUT(S, A, B)	pr_debug(S "\n", A, B)
+-	// rtdm_printk("<2> e1000_clean_rx_irq %i\n", __LINE__);
++	// pr_debug("<2> e1000_clean_rx_irq %i\n", __LINE__);
  
- #ifdef DBG
- #define DEBUGOUT(S)		printk(KERN_DEBUG S "\n")
+ 	i = rx_ring->next_to_clean;
+ 	rx_desc = E1000_RX_DESC(*rx_ring, i);
+@@ -5808,7 +5810,7 @@ static int e1000_resume(struct pci_dev *pdev)
+ 	pci_set_power_state(pdev, PCI_D0);
+ 	pci_restore_state(pdev);
+ 	if ((err = pci_enable_device(pdev))) {
+-		printk(KERN_ERR "e1000: Cannot enable PCI device from suspend\n");
++		pr_err("Cannot enable PCI device from suspend\n");
+ 		return err;
+ 	}
+ 	pci_set_master(pdev);
+@@ -5909,7 +5911,7 @@ static pci_ers_result_t e1000_io_slot_reset(struct pci_dev *pdev)
+ 	struct e1000_adapter *adapter = netdev->priv;
+ 
+ 	if (pci_enable_device(pdev)) {
+-		printk(KERN_ERR "e1000: Cannot re-enable PCI device after reset.\n");
++		pr_err("Cannot re-enable PCI device after reset.\n");
+ 		return PCI_ERS_RESULT_DISCONNECT;
+ 	}
+ 	pci_set_master(pdev);
+@@ -5940,7 +5942,7 @@ static void e1000_io_resume(struct pci_dev *pdev)
+ 
+ 	if (rtnetif_running(netdev)) {
+ 		if (e1000_up(adapter)) {
+-			printk("e1000: can't bring device back up after reset\n");
++			pr_err("can't bring device back up after reset\n");
+ 			return;
+ 		}
+ 	}
 
 -- 
 2.39.2
