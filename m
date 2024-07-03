@@ -1,35 +1,34 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7A2F17A596
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B38C117A59B
 	for <xenomai@lists.linux.dev>; Wed,  3 Jul 2024 13:25:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720013149; cv=none; b=mcvopeP8XvGrWWTyaA/IxtCyIAyZaxcCPfFGhExXsHflpuzsvACVl8RFnlnpmWv5s6GKRKJXzn/gPXtYN0JMtEYTWCzFI/R+84Uit6QRX/uzmF/Sd1i79y9Y0ab/CbKnmBVV0tFUxe+epyytteFnY/wB8DgUZRFBWhSypZEFWwc=
+	t=1720013149; cv=none; b=kLmT1A7HVYuj+PnLXffYlGxC8Da5NWZQ3MqLSDbXEAmoGuauEAPkyI77cbnnB/FtsFi7bM179qH2BX6jCyT9j7fZk0Oz52E+1KBVb448/rRIeXnlelGYFo9ZVqNUzBDEOM1uVPZEw1QJl4A74a19P4wGHW+DJCOsKzC1cCuJNBU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1720013149; c=relaxed/simple;
-	bh=5LDOK8vvQ59XXgi+yh+L99eByVvlI7jXnpnPZRioQH8=;
+	bh=Vvta6BakRaKNBLG84yuwGvL1QWWNJ3YflzlDKCpAkns=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=j37nPfXiZ6F6CUc5zB+TDA4jNgrmejhHCpxWvZ6tDj8mRobREEYdGBzo0aeFdKmChdM9f2fXE3+NJ0HRfDDk/PwQb1VnXGYH+9q5rZKH4f85c+9JqO3wDamt6+a6UmrVdOIqplcrJ8yBFycPX492+P4DCC9Ddeozmeeg+ZkD1Lc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=jCFCFklM; arc=none smtp.client-ip=185.136.64.226
+	 In-Reply-To:To:Cc; b=BxiY0BwT8rFNJ3zrBuxpWV52XC2rnaFkls5kdV/rAcUBUEjdp+a+VAVUv5RP/ci0vBrC3nfLbsJl9nZv7irk7P6qDVc1z7zNk/6kardStQKPuEdG0lKp3CkHAq01Gr5vS8YA2fHZqIpmgy2fYkQbd7FpOQrsniOKrZNqvy/ADiQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=uoySfCLD; arc=none smtp.client-ip=185.136.64.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="jCFCFklM"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20240703132544818a45bffeff9ee9d1
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="uoySfCLD"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20240703132539a3e3d0b7e64a7517fb
         for <xenomai@lists.linux.dev>;
-        Wed, 03 Jul 2024 15:25:44 +0200
+        Wed, 03 Jul 2024 15:25:40 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=xW1HVwAGZ9JeB/QEBZpwc2zGR5eoslEQba3HSb0fjY0=;
- b=jCFCFklMmr8u3QPA8J40siuvXyy56IXLeDEfmxzoYvWhSOZBU1DBqIqC6B3thu+gmfo1R8
- BFPzfiMgISNetxOVw2ufdf0Ue7R5cOYl2B8OWUeSn+1gT354c4ti7f8R0A9w7z1Dyzq+8BUy
- 2gs5E74zwRdGAheyuMUvcaNMdd7xA=;
+ bh=Ow8cKT5LT0gL/VGHVK463fqMDMcGFlcim93CSh4z+Fc=;
+ b=uoySfCLDR+hysYHm9tRmxpo5U7vJQChhoX4+O5tIizlWWl+XKDK5ijkrR1fdRLCdoAjMpq
+ dlFfgkrZI8mg6boo46nRmRMKBcIH9z21gp8cYt3RPUMRY4+WH6Y5YlqBYQm+ll16RBwc8pmx
+ UVmDnjT0gB287CIibUbdLDK8cbZJM=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Wed, 03 Jul 2024 15:25:38 +0200
-Subject: [PATCH 15/33] drivers/8139too: Migrate from rtdm_printk() and
- printk() to pr_*()
+Date: Wed, 03 Jul 2024 15:25:29 +0200
+Subject: [PATCH 06/33] drivers/can/sja1000: Migrate from printk() to pr_*()
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -38,7 +37,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240702-flo-removal-of-rtdm_printk-v1-15-cc91bffdd063@siemens.com>
+Message-Id: <20240702-flo-removal-of-rtdm_printk-v1-6-cc91bffdd063@siemens.com>
 References: <20240702-flo-removal-of-rtdm_printk-v1-0-cc91bffdd063@siemens.com>
 In-Reply-To: <20240702-flo-removal-of-rtdm_printk-v1-0-cc91bffdd063@siemens.com>
 To: xenomai@lists.linux.dev
@@ -47,221 +46,431 @@ Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-A few (rtdm_)printk() calls were missing log level information. The
-default log level (= warn) did not fit well for them.
+Some printk() calls were missing log level information. The default
+level (= warn) does not fit well for most of them.
 
 The missing log level is addressed by migrating to the pr_*() API.
-
-rtdm_printk() itself is just an alias for printk(). Migrating helps to
-remove this function once all drivers were updated.
 
 No functional change.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/drivers/net/drivers/8139too.c | 50 ++++++++++++++++++------------------
- 1 file changed, 25 insertions(+), 25 deletions(-)
+ kernel/drivers/can/sja1000/rtcan_adv_pci.c   |  4 +++-
+ kernel/drivers/can/sja1000/rtcan_esd_pci.c   | 10 ++++++----
+ kernel/drivers/can/sja1000/rtcan_isa.c       |  8 +++++---
+ kernel/drivers/can/sja1000/rtcan_ixxat_pci.c | 17 +++++++++--------
+ kernel/drivers/can/sja1000/rtcan_mem.c       |  8 +++++---
+ kernel/drivers/can/sja1000/rtcan_peak_dng.c  | 25 ++++++++++++-------------
+ kernel/drivers/can/sja1000/rtcan_peak_pci.c  | 22 ++++++++++++----------
+ kernel/drivers/can/sja1000/rtcan_sja1000.c   | 25 +++++++++++++------------
+ 8 files changed, 65 insertions(+), 54 deletions(-)
 
-diff --git a/kernel/drivers/net/drivers/8139too.c b/kernel/drivers/net/drivers/8139too.c
-index c335b300b..5325940fd 100644
---- a/kernel/drivers/net/drivers/8139too.c
-+++ b/kernel/drivers/net/drivers/8139too.c
-@@ -31,6 +31,8 @@
- #define DRV_NAME            "rt_8139too"
- #define DRV_VERSION         "0.9.24-rt0.7"
+diff --git a/kernel/drivers/can/sja1000/rtcan_adv_pci.c b/kernel/drivers/can/sja1000/rtcan_adv_pci.c
+index f09be056b..33724a4c4 100644
+--- a/kernel/drivers/can/sja1000/rtcan_adv_pci.c
++++ b/kernel/drivers/can/sja1000/rtcan_adv_pci.c
+@@ -18,6 +18,8 @@
+  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  */
  
-+#define pr_fmt(fmt) DRV_NAME ": " fmt
++#define pr_fmt(fmt) "RTcan: " fmt
 +
  #include <linux/module.h>
- #include <linux/kernel.h>
- #include <linux/compiler.h>
-@@ -70,7 +72,6 @@ MODULE_PARM_DESC(rx_pool_size, "number of receive buffers");
- 
- 
- #define RTL8139_DRIVER_NAME   DRV_NAME " Fast Ethernet driver " DRV_VERSION
--#define PFX DRV_NAME ": "
- 
- /* enable PIO instead of MMIO, if CONFIG_8139TOO_PIO is selected */
- /* *** RTnet ***
-@@ -639,7 +640,7 @@ static int rtl8139_init_board (struct pci_dev *pdev,
- 	rtdev=rt_alloc_etherdev(sizeof (struct rtl8139_private),
- 				rx_pool_size + NUM_TX_DESC);
- 	if (rtdev==NULL) {
--		rtdm_printk (KERN_ERR PFX "%s: Unable to alloc new net device\n", pci_name(pdev));
-+		pr_err("%s: Unable to alloc new net device\n", pci_name(pdev));
- 		return -ENOMEM;
+ #include <linux/ioport.h>
+ #include <linux/delay.h>
+@@ -217,7 +219,7 @@ static int rtcan_adv_pci_add_chan(struct pci_dev *pdev,
+ 	/* Register SJA1000 device */
+ 	ret = rtcan_sja1000_register(dev);
+ 	if (ret) {
+-		printk(KERN_ERR "ERROR %d while trying to register SJA1000 device!\n",
++		pr_err("ERROR %d while trying to register SJA1000 device!\n",
+ 		       ret);
+ 		goto failure_iounmap;
  	}
- 	rtdev_alloc_name(rtdev, "rteth%d");
-@@ -677,25 +678,25 @@ static int rtl8139_init_board (struct pci_dev *pdev,
+diff --git a/kernel/drivers/can/sja1000/rtcan_esd_pci.c b/kernel/drivers/can/sja1000/rtcan_esd_pci.c
+index 2b5a19caf..795e9f676 100644
+--- a/kernel/drivers/can/sja1000/rtcan_esd_pci.c
++++ b/kernel/drivers/can/sja1000/rtcan_esd_pci.c
+@@ -20,6 +20,8 @@
+  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  */
  
- 	/* make sure PCI base addr 0 is PIO */
- 	if (!(pio_flags & IORESOURCE_IO)) {
--		rtdm_printk (KERN_ERR PFX "%s: region #0 not a PIO resource, aborting\n", pci_name(pdev));
-+		pr_err("%s: region #0 not a PIO resource, aborting\n", pci_name(pdev));
- 		rc = -ENODEV;
- 		goto err_out;
- 	}
- 	/* check for weird/broken PCI region reporting */
- 	if (pio_len < RTL_MIN_IO_SIZE) {
--		rtdm_printk (KERN_ERR PFX "%s: Invalid PCI I/O region size(s), aborting\n", pci_name(pdev));
-+		pr_err("%s: Invalid PCI I/O region size(s), aborting\n", pci_name(pdev));
- 		rc = -ENODEV;
- 		goto err_out;
- 	}
- #else
- 	/* make sure PCI base addr 1 is MMIO */
- 	if (!(mmio_flags & IORESOURCE_MEM)) {
--		rtdm_printk(KERN_ERR PFX "%s: region #1 not an MMIO resource, aborting\n", pci_name(pdev));
-+		pr_err("%s: region #1 not an MMIO resource, aborting\n", pci_name(pdev));
- 		rc = -ENODEV;
- 		goto err_out;
- 	}
- 	if (mmio_len < RTL_MIN_IO_SIZE) {
--		rtdm_printk(KERN_ERR PFX "%s: Invalid PCI mem region size(s), aborting\n", pci_name(pdev));
-+		pr_err("%s: Invalid PCI mem region size(s), aborting\n", pci_name(pdev));
- 		rc = -ENODEV;
- 		goto err_out;
- 	}
-@@ -709,7 +710,7 @@ static int rtl8139_init_board (struct pci_dev *pdev,
- 	/* ioremap MMIO region */
- 	ioaddr = ioremap (mmio_start, mmio_len);
- 	if (ioaddr == NULL) {
--		rtdm_printk(KERN_ERR PFX "%s: cannot remap MMIO, aborting\n", pci_name(pdev));
-+		pr_err("%s: cannot remap MMIO, aborting\n", pci_name(pdev));
- 		rc = -EIO;
- 		goto err_out;
- 	}
-@@ -722,7 +723,7 @@ static int rtl8139_init_board (struct pci_dev *pdev,
++#define pr_fmt(fmt) "RTcan: " fmt
++
+ #include <linux/module.h>
+ #include <linux/ioport.h>
+ #include <linux/delay.h>
+@@ -140,8 +142,8 @@ static void rtcan_esd_pci_del_chan(struct rtcan_device *dev)
  
- 	/* check for missing/broken hardware */
- 	if (RTL_R32 (TxConfig) == 0xFFFFFFFF) {
--		rtdm_printk(KERN_ERR PFX "%s: Chip not responding, ignoring board\n", pci_name(pdev));
-+		pr_err("%s: Chip not responding, ignoring board\n", pci_name(pdev));
- 		rc = -EIO;
- 		goto err_out;
+ 	board = (struct rtcan_esd_pci *)dev->board_priv;
+ 
+-	printk("Removing %s %s device %s\n",
+-		esd_pci_board_name, dev->ctrl_name, dev->name);
++	pr_info("Removing %s %s device %s\n", esd_pci_board_name,
++		dev->ctrl_name, dev->name);
+ 
+ 	rtcan_sja1000_unregister(dev);
+ 
+@@ -198,8 +200,8 @@ static int rtcan_esd_pci_add_chan(struct pci_dev *pdev, int channel,
+ 	/* Register SJA1000 device */
+ 	ret = rtcan_sja1000_register(dev);
+ 	if (ret) {
+-		printk(KERN_ERR "ERROR %d while trying to register SJA1000 "
+-				"device!\n", ret);
++		pr_err("ERROR %d while trying to register SJA1000 device!\n",
++		       ret);
+ 		goto failure;
  	}
-@@ -735,8 +736,8 @@ static int rtl8139_init_board (struct pci_dev *pdev,
- 			goto match;
- 		}
  
--	rtdm_printk("rt8139too: unknown chip version, assuming RTL-8139\n");
--	rtdm_printk("rt8139too: TxConfig = 0x%08x\n", RTL_R32 (TxConfig));
-+	pr_info("%s: unknown chip version, assuming RTL-8139\n", pci_name(pdev));
-+	pr_info("%s: TxConfig = 0x%08x\n", pci_name(pdev), RTL_R32 (TxConfig));
+diff --git a/kernel/drivers/can/sja1000/rtcan_isa.c b/kernel/drivers/can/sja1000/rtcan_isa.c
+index c658fdfc3..9c56b047e 100644
+--- a/kernel/drivers/can/sja1000/rtcan_isa.c
++++ b/kernel/drivers/can/sja1000/rtcan_isa.c
+@@ -20,6 +20,8 @@
+  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  */
  
- 	tp->chipset = 0;
++#define pr_fmt(fmt) "RTcan: " fmt
++
+ #include <linux/module.h>
+ #include <linux/ioport.h>
+ #include <linux/delay.h>
+@@ -135,8 +137,8 @@ static int __init rtcan_isa_init_one(int idx)
  
-@@ -808,7 +809,7 @@ static int rtl8139_init_one (struct pci_dev *pdev,
- 	{
- 		static int printed_version;
- 		if (!printed_version++)
--			rtdm_printk (KERN_INFO RTL8139_DRIVER_NAME "\n");
-+			pr_info(RTL8139_DRIVER_NAME "\n");
+ 	ret = rtcan_sja1000_register(dev);
+ 	if (ret) {
+-		printk(KERN_ERR "ERROR %d while trying to register SJA1000 "
+-		       "device!\n", ret);
++		pr_err("ERROR %d while trying to register SJA1000 device!\n",
++		       ret);
+ 		goto out_free_region;
  	}
- #endif
  
-@@ -861,7 +862,7 @@ static int rtl8139_init_one (struct pci_dev *pdev,
- 			tp->medialock = 1;
+@@ -174,7 +176,7 @@ static int __init rtcan_isa_init(void)
+ 	if (devices)
+ 		return 0;
+ 
+-	printk(KERN_ERR "ERROR! No devices specified! "
++	pr_err("ERROR! No devices specified! "
+ 	       "Use io=<port1>[,...] irq=<irq1>[,...]\n");
+ 	return -EINVAL;
+ }
+diff --git a/kernel/drivers/can/sja1000/rtcan_ixxat_pci.c b/kernel/drivers/can/sja1000/rtcan_ixxat_pci.c
+index 9c5197f83..ff91c6a12 100644
+--- a/kernel/drivers/can/sja1000/rtcan_ixxat_pci.c
++++ b/kernel/drivers/can/sja1000/rtcan_ixxat_pci.c
+@@ -16,6 +16,11 @@
+  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  */
+ 
++#define RTCAN_DEV_NAME "rtcan%d"
++#define RTCAN_DRV_NAME "IXXAT-PCI-CAN"
++
++#define pr_fmt(fmt) RTCAN_DRV_NAME ": " fmt
++
+ #include <linux/module.h>
+ #include <linux/ioport.h>
+ #include <linux/delay.h>
+@@ -32,9 +37,6 @@
+ #include <rtcan_sja1000.h>
+ #include <rtcan_sja1000_regs.h>
+ 
+-#define RTCAN_DEV_NAME "rtcan%d"
+-#define RTCAN_DRV_NAME "IXXAT-PCI-CAN"
+-
+ static char *ixxat_pci_board_name = "IXXAT-PCI";
+ 
+ MODULE_AUTHOR("Wolfgang Grandegger <wg@grandegger.com>");
+@@ -102,8 +104,8 @@ static void rtcan_ixxat_pci_del_chan(struct rtcan_device *dev)
+ 
+     board = (struct rtcan_ixxat_pci *)dev->board_priv;
+ 
+-    printk("Removing %s %s device %s\n",
+-	   ixxat_pci_board_name, dev->ctrl_name, dev->name);
++    pr_info("Removing %s %s device %s\n", ixxat_pci_board_name, dev->ctrl_name,
++	    dev->name);
+ 
+     rtcan_sja1000_unregister(dev);
+ 
+@@ -188,9 +190,8 @@ static int rtcan_ixxat_pci_add_chan(struct pci_dev *pdev,
+     /* Register SJA1000 device */
+     ret = rtcan_sja1000_register(dev);
+     if (ret) {
+-	printk(KERN_ERR "ERROR %d while trying to register SJA1000 device!\n",
+-	       ret);
+-	goto failure;
++	    pr_err("ERROR %d while trying to register SJA1000 device!\n", ret);
++	    goto failure;
+     }
+ 
+     if (channel != CHANNEL_SLAVE)
+diff --git a/kernel/drivers/can/sja1000/rtcan_mem.c b/kernel/drivers/can/sja1000/rtcan_mem.c
+index 8c90574c2..980eba979 100644
+--- a/kernel/drivers/can/sja1000/rtcan_mem.c
++++ b/kernel/drivers/can/sja1000/rtcan_mem.c
+@@ -28,6 +28,8 @@
+  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  */
+ 
++#define pr_fmt(fmt) "RTcan: " fmt
++
+ #include <linux/module.h>
+ #include <linux/ioport.h>
+ #include <linux/delay.h>
+@@ -144,8 +146,8 @@ static int __init rtcan_mem_init_one(int idx)
+ 
+ 	ret = rtcan_sja1000_register(dev);
+ 	if (ret) {
+-		printk(KERN_ERR "ERROR %d while trying to register SJA1000 "
+-		       "device!\n", ret);
++		pr_err("ERROR %d while trying to register SJA1000 device!\n",
++		       ret);
+ 		goto out_iounmap;
  	}
- 	if (tp->default_port) {
--		rtdm_printk(KERN_INFO "  Forcing %dMbps %s-duplex operation.\n",
-+		pr_info("  Forcing %dMbps %s-duplex operation.\n",
- 			    (option & 0x20 ? 100 : 10),
- 			    (option & 0x10 ? "full" : "half"));
- 		mdio_write(rtdev, tp->phys[0], 0,
-@@ -1297,7 +1298,7 @@ static int rtl8139_start_xmit (struct rtskb *skb, struct rtnet_device *rtdev)
- 	dev_kfree_rtskb(skb);
  
- #ifdef DEBUG
--	rtdm_printk ("%s: Queued Tx packet size %u to slot %d.\n", rtdev->name, len, entry);
-+	pr_debug("%s: Queued Tx packet size %u to slot %d.\n", rtdev->name, len, entry);
- #endif
+@@ -186,7 +188,7 @@ static int __init rtcan_mem_init(void)
+ 	if (devices)
+ 		return 0;
+ 
+-	printk(KERN_ERR "ERROR! No devices specified! "
++	pr_err("ERROR! No devices specified! "
+ 	       "Use mem=<port1>[,...] irq=<irq1>[,...]\n");
+ 	return -EINVAL;
+ }
+diff --git a/kernel/drivers/can/sja1000/rtcan_peak_dng.c b/kernel/drivers/can/sja1000/rtcan_peak_dng.c
+index f949c7669..e201bf2ad 100644
+--- a/kernel/drivers/can/sja1000/rtcan_peak_dng.c
++++ b/kernel/drivers/can/sja1000/rtcan_peak_dng.c
+@@ -21,6 +21,11 @@
+  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  */
+ 
++#define RTCAN_DEV_NAME    "rtcan%d"
++#define RTCAN_DRV_NAME    "PEAK-Dongle"
++
++#define pr_fmt(fmt) RTCAN_DRV_NAME ": " fmt
++
+ #include <linux/module.h>
+ #include <linux/ioport.h>
+ #include <linux/version.h>
+@@ -36,9 +41,6 @@
+ #include <rtcan_sja1000.h>
+ #include <rtcan_sja1000_regs.h>
+ 
+-#define RTCAN_DEV_NAME    "rtcan%d"
+-#define RTCAN_DRV_NAME    "PEAK-Dongle"
+-
+ #define RTCAN_PEAK_DNG_MAX_DEV 1
+ 
+ static char *dongle_board_name = "PEAK-Dongle";
+@@ -164,7 +166,7 @@ static void dongle_set_ecr(u16 port, struct rtcan_peak_dng *dng)
+     outb((dng->old_ecr & 0x1F) | 0x20, ecr);
+ 
+     if (dng->old_ecr == 0xff)
+-	printk(KERN_DEBUG "%s: realy ECP mode configured?\n", RTCAN_DRV_NAME);
++	pr_debug("really ECP mode configured?\n");
+ }
+ 
+ static void dongle_restore_ecr(u16 port, struct rtcan_peak_dng *dng)
+@@ -173,7 +175,7 @@ static void dongle_restore_ecr(u16 port, struct rtcan_peak_dng *dng)
+ 
+     outb(dng->old_ecr, ecr);
+ 
+-    printk(KERN_DEBUG "%s: restore ECR\n", RTCAN_DRV_NAME);
++    pr_debug("restore ECR\n");
+ }
+ 
+ static inline void rtcan_peak_dng_enable(struct rtcan_device *dev)
+@@ -220,8 +222,7 @@ static int __init rtcan_peak_dng_init_one(int idx)
+     else if (strncmp(type[idx], "epp", 3) == 0)
+ 	dtype = DONGLE_TYPE_EPP;
+     else {
+-	printk("%s: type %s is invalid, use \"sp\" or \"epp\".",
+-	       RTCAN_DRV_NAME, type[idx]);
++	pr_debug("type %s is invalid, use \"sp\" or \"epp\".", type[idx]);
+ 	return -EINVAL;
+     }
+ 
+@@ -283,9 +284,8 @@ static int __init rtcan_peak_dng_init_one(int idx)
+     /* Register RTDM device */
+     ret = rtcan_sja1000_register(dev);
+     if (ret) {
+-	printk(KERN_ERR "ERROR while trying to register SJA1000 device %d!\n",
+-	       ret);
+-	goto out_free_region2;
++	    pr_err("ERROR while trying to register SJA1000 device %d!\n", ret);
++	    goto out_free_region2;
+     }
+ 
+     rtcan_peak_dng_devs[idx] = dev;
+@@ -369,7 +369,7 @@ static int __init rtcan_peak_dng_init(void)
+ 	 i++) {
+ 
+ 	if ((ret = rtcan_peak_dng_init_one(i)) != 0) {
+-	    printk(KERN_ERR "%s: Init failed with %d\n", RTCAN_DRV_NAME, ret);
++	    pr_err("Init failed with %d\n", ret);
+ 	    goto cleanup;
+ 	}
+ 	done++;
+@@ -377,8 +377,7 @@ static int __init rtcan_peak_dng_init(void)
+     if (done)
+ 	return 0;
+ 
+-    printk(KERN_ERR "%s: Please specify type=epp or type=sp\n",
+-	   RTCAN_DRV_NAME);
++    pr_err("Please specify type=epp or type=sp\n");
+ 
+ cleanup:
+     rtcan_peak_dng_exit();
+diff --git a/kernel/drivers/can/sja1000/rtcan_peak_pci.c b/kernel/drivers/can/sja1000/rtcan_peak_pci.c
+index 19f728b41..dfae45a87 100644
+--- a/kernel/drivers/can/sja1000/rtcan_peak_pci.c
++++ b/kernel/drivers/can/sja1000/rtcan_peak_pci.c
+@@ -21,6 +21,11 @@
+  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  */
+ 
++#define RTCAN_DEV_NAME    "rtcan%d"
++#define RTCAN_DRV_NAME    "PEAK-PCI-CAN"
++
++#define pr_fmt(fmt) RTCAN_DRV_NAME ": " fmt
++
+ #include <linux/module.h>
+ #include <linux/ioport.h>
+ #include <linux/delay.h>
+@@ -36,8 +41,7 @@
+ #include <rtcan_sja1000.h>
+ #include <rtcan_sja1000_regs.h>
+ 
+-#define RTCAN_DEV_NAME    "rtcan%d"
+-#define RTCAN_DRV_NAME    "PEAK-PCI-CAN"
++
+ 
+ static char *peak_pci_board_name = "PEAK-PCI";
+ 
+@@ -138,7 +142,7 @@ static void rtcan_peak_pci_del_chan(struct rtcan_device *dev,
+ 
+     switch (init_step) {
+     case 0:			/* Full cleanup */
+-	printk("Removing %s %s device %s\n",
++	pr_info("Removing %s %s device %s\n",
+ 	       peak_pci_board_name, dev->ctrl_name, dev->name);
+ 	rtcan_sja1000_unregister(dev);
+ 	fallthrough;
+@@ -260,15 +264,14 @@ static int rtcan_peak_pci_add_chan(struct pci_dev *pdev, int channel,
+     writew(pita_icr_high, board->conf_addr + PITA_ICR + 2);
+     init_step = 5;
+ 
+-    printk("%s: base_addr=%p conf_addr=%p irq=%d\n", RTCAN_DRV_NAME,
+-	   board->base_addr, board->conf_addr, chip->irq_num);
++    pr_info("base_addr=%p conf_addr=%p irq=%d\n", board->base_addr,
++	    board->conf_addr, chip->irq_num);
+ 
+     /* Register SJA1000 device */
+     ret = rtcan_sja1000_register(dev);
+     if (ret) {
+-	printk(KERN_ERR
+-	       "ERROR %d while trying to register SJA1000 device!\n", ret);
+-	goto failure;
++	    pr_err("ERROR %d while trying to register SJA1000 device!\n", ret);
++	    goto failure;
+     }
+ 
+     if (channel != CHANNEL_SLAVE)
+@@ -291,8 +294,7 @@ static int peak_pci_init_one(struct pci_dev *pdev,
+     if (!rtdm_available())
+ 	return -ENODEV;
+ 
+-    printk("%s: initializing device %04x:%04x\n",
+-	   RTCAN_DRV_NAME,  pdev->vendor, pdev->device);
++    pr_info("initializing device %04x:%04x\n", pdev->vendor, pdev->device);
+ 
+     if ((ret = pci_enable_device (pdev)))
+ 	goto failure;
+diff --git a/kernel/drivers/can/sja1000/rtcan_sja1000.c b/kernel/drivers/can/sja1000/rtcan_sja1000.c
+index 887c4e493..073a34325 100644
+--- a/kernel/drivers/can/sja1000/rtcan_sja1000.c
++++ b/kernel/drivers/can/sja1000/rtcan_sja1000.c
+@@ -34,6 +34,8 @@
+  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  */
+ 
++#define pr_fmt(fmt) "RTcan: " fmt
++
+ #include <linux/module.h>
+ 
+ #include <rtdm/driver.h>
+@@ -634,7 +636,7 @@ static int rtcan_sja_set_bit_time(struct rtcan_device *dev,
+ 	return -EINVAL;
+     }
+ 
+-    printk("%s: btr0=%#x btr1=%#x\n", __func__, btr0, btr1);
++    pr_debug("%s: btr0=%#x btr1=%#x\n", __func__, btr0, btr1);
+     chip->write_reg(dev, SJA_BTR0, btr0);
+     chip->write_reg(dev, SJA_BTR1, btr1);
+ 
+@@ -759,7 +761,7 @@ int rtcan_sja1000_register(struct rtcan_device *dev)
+ 
+     if ((chip->read_reg(dev, SJA_SR) &
+ 	 (SJA_SR_RBS | SJA_SR_DOS | SJA_SR_TBS)) != SJA_SR_TBS) {
+-	printk("ERROR! No SJA1000 device found!\n");
++	pr_err("ERROR! No SJA1000 device found!\n");
+ 	return -ENODEV;
+     }
+ 
+@@ -780,10 +782,10 @@ int rtcan_sja1000_register(struct rtcan_device *dev)
+ 			   chip->irq_num, rtcan_sja_interrupt,
+ 			   chip->irq_flags, sja_ctrl_name, dev);
+     if (ret) {
+-	printk(KERN_ERR "ERROR %d: IRQ %d is %s!\n",
+-	       ret, chip->irq_num, ret == -EBUSY ?
+-	       "busy, check shared interrupt support" : "invalid");
+-	return ret;
++	    pr_err("ERROR %d: IRQ %d is %s!\n", ret, chip->irq_num,
++		   ret == -EBUSY ? "busy, check shared interrupt support" :
++				   "invalid");
++	    return ret;
+     }
+ 
+     sja1000_chip_config(dev);
+@@ -791,9 +793,8 @@ int rtcan_sja1000_register(struct rtcan_device *dev)
+     /* Register RTDM device */
+     ret = rtcan_dev_register(dev);
+     if (ret) {
+-	    printk(KERN_ERR
+-		   "ERROR %d while trying to register RTCAN device!\n", ret);
+-	goto out_irq_free;
++	    pr_err("ERROR %d while trying to register RTCAN device!\n", ret);
++	    goto out_irq_free;
+     }
+ 
+     rtcan_sja_create_proc(dev);
+@@ -810,7 +811,7 @@ int rtcan_sja1000_register(struct rtcan_device *dev)
+ /* Cleanup module */
+ void rtcan_sja1000_unregister(struct rtcan_device *dev)
+ {
+-    printk("Unregistering SJA1000 device %s\n", dev->name);
++    pr_info("Unregistering SJA1000 device %s\n", dev->name);
+ 
+     rtdm_irq_disable(&dev->irq_handle);
+     rtcan_sja_mode_stop(dev, NULL);
+@@ -824,14 +825,14 @@ static int __init rtcan_sja_init(void)
+ 	if (!rtdm_available())
+ 		return -ENOSYS;
+ 
+-	printk("RTCAN SJA1000 driver initialized\n");
++	pr_info("RTCAN SJA1000 driver initialized\n");
  	return 0;
  }
-@@ -1356,7 +1357,7 @@ static void rtl8139_tx_interrupt (struct rtnet_device *rtdev,
- 		/* Note: TxCarrierLost is always asserted at 100mbps. */
- 		if (txstatus & (TxOutOfWindow | TxAborted)) {
- 			/* There was an major error, log it. */
--			rtdm_printk("%s: Transmit error, Tx status %8.8x.\n",
-+			pr_err("%s: Transmit error, Tx status %8.8x.\n",
- 				    rtdev->name, txstatus);
- 			tp->stats.tx_errors++;
- 			if (txstatus & TxAborted) {
-@@ -1409,8 +1410,8 @@ static void rtl8139_rx_err
- #endif */
- 
- 	/* RTnet-TODO: We really need an error manager to handle such issues... */
--	rtdm_printk("%s: FATAL - Ethernet frame had errors, status %8.8x.\n",
--		    rtdev->name, rx_status);
-+	pr_err("%s: FATAL - Ethernet frame had errors, status %8.8x.\n",
-+       	       rtdev->name, rx_status);
- }
  
  
-@@ -1482,7 +1483,7 @@ static void rtl8139_rx_interrupt (struct rtnet_device *rtdev,
- 			tp->stats.rx_bytes += pkt_size;
- 			tp->stats.rx_packets++;
- 		} else {
--			rtdm_printk (KERN_WARNING"%s: Memory squeeze, dropping packet.\n", rtdev->name);
-+			pr_warn("%s: Memory squeeze, dropping packet.\n", rtdev->name);
- 			tp->stats.rx_dropped++;
- 		}
- 
-@@ -1502,8 +1503,7 @@ static void rtl8139_weird_interrupt (struct rtnet_device *rtdev,
- 				     void *ioaddr,
- 				     int status, int link_changed)
+ static void __exit rtcan_sja_exit(void)
  {
--	rtdm_printk ("%s: Abnormal interrupt, status %8.8x.\n",
--		      rtdev->name, status);
-+	pr_err("%s: Abnormal interrupt, status %8.8x.\n", rtdev->name, status);
- 
- 	/* Update the error count. */
- 	tp->stats.rx_missed_errors += RTL_R32 (RxMissed);
-@@ -1530,7 +1530,7 @@ static void rtl8139_weird_interrupt (struct rtnet_device *rtdev,
- 		pci_read_config_word (tp->pci_dev, PCI_STATUS, &pci_cmd_status);
- 		pci_write_config_word (tp->pci_dev, PCI_STATUS, pci_cmd_status);
- 
--		rtdm_printk (KERN_ERR "%s: PCI Bus error %4.4x.\n", rtdev->name, pci_cmd_status);
-+		pr_err("%s: PCI Bus error %4.4x.\n", rtdev->name, pci_cmd_status);
- 	}
+-	printk("%s removed\n", sja_ctrl_name);
++	pr_info("%s removed\n", sja_ctrl_name);
  }
  
-@@ -1611,7 +1611,7 @@ static int rtl8139_close (struct rtnet_device *rtdev)
- 	void *ioaddr = tp->mmio_addr;
- 	rtdm_lockctx_t context;
- 
--	printk ("%s: Shutting down ethercard, status was 0x%4.4x.\n", rtdev->name, RTL_R16 (IntrStatus));
-+	pr_info("%s: Shutting down ethercard, status was 0x%4.4x.\n", rtdev->name, RTL_R16 (IntrStatus));
- 
- 	rtnetif_stop_queue (rtdev);
- 
-@@ -1660,14 +1660,14 @@ static void __set_rx_mode (struct rtnet_device *rtdev)
- 	u32 tmp;
- 
- #ifdef DEBUG
--	rtdm_printk ("%s:   rtl8139_set_rx_mode(%4.4x) done -- Rx config %8.8lx.\n",
--			rtdev->name, rtdev->flags, RTL_R32 (RxConfig));
-+	pr_debug("%s:   rtl8139_set_rx_mode(%4.4x) done -- Rx config %8.8lx.\n",
-+		 rtdev->name, rtdev->flags, RTL_R32 (RxConfig));
- #endif
- 
- 	/* Note: do not reorder, GCC is clever about common statements. */
- 	if (rtdev->flags & IFF_PROMISC) {
- 		/* Unconditionally log net taps. */
--		/*printk (KERN_NOTICE "%s: Promiscuous mode enabled.\n", rtdev->name);*/
-+		/*pr_notice("%s: Promiscuous mode enabled.\n", rtdev->name);*/
- 		rx_mode = AcceptBroadcast | AcceptMulticast | AcceptMyPhys | AcceptAllPhys;
- 		mc_filter[1] = mc_filter[0] = 0xffffffff;
- 	} else if (rtdev->flags & IFF_ALLMULTI) {
-@@ -1716,7 +1716,7 @@ static int __init rtl8139_init_module (void)
- 	 */
- 
- #ifdef MODULE
--	printk (KERN_INFO RTL8139_DRIVER_NAME "\n");
-+	pr_info(RTL8139_DRIVER_NAME "\n");
- #endif
- 
- 	return pci_register_driver (&rtl8139_pci_driver);
+ module_init(rtcan_sja_init);
 
 -- 
 2.39.2
