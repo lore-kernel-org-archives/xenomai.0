@@ -1,35 +1,35 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0B38173336
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E4BB17A58A
 	for <xenomai@lists.linux.dev>; Wed,  3 Jul 2024 13:25:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720013150; cv=none; b=elWMoOw+goQG8tmF+KKeX0yE38MZ33sNqQUMyXIHhBCs+Ce9mb5p0L1CvfftIE1/LPY5CjzC2fgHDNBQPKFj226snEWrPqegz0c/yQRK072iGFehiS78x26vHliLVDKB2B76WUyumBzelqpD0n9TEHRsagp7a+D4YXNEgVb312I=
+	t=1720013150; cv=none; b=TXVkdkTMnJfadmvo3mJrrQSxnQ2+NIITv7alzJNZFInECUYm8ynTqUdxJTplEtHHwoPkSSDIre9ypXjdG9bKWWfoFTa0v7IPi4Zai1PKslslL0BNSBdA9y6qolFNqc6iNhm7LRGYPlTyyOIlhdHtDTM++nGhGTOqX6jaV35OVxU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1720013150; c=relaxed/simple;
-	bh=9CM4IHNjg1HupXh0Pxmzna2FTK+EtbngvOA+ERNwvrY=;
+	bh=qXrA6zObL7MBb3c5F7qZSh8mL2OJQKOgoVe0qeXBjmc=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=IWc+mQemSLi/4ka71nRMEkyf/wEbD9DWjLtr+Y2r6Dm76YYR/s+DLf+VBdglaqMZ6mQj1NG7k+rd4CbUjkG/iSCHxRCfFkCad5MtZF9RZpXHgVpgGFIdwP6+zgbZGWScStPJ8RkIEnFfG/POOhGa/d6+oZ2WV+SGayCCJmIotVQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Ws9zeto5; arc=none smtp.client-ip=185.136.65.225
+	 In-Reply-To:To:Cc; b=RgzNR8qmv5mzEvStKRhPv5ZCCiwTvMXJwL4mqgcwIdPagKy4JLxhjmCxJS7x+vWMfCtw9DctFWI3IsRGaOfR8qg0+2vOPZbfG1jIbp9ml70uMC/egrbNNubAOJ7BZDMvoNMbJozcVaJcoY6CgfPKXu7SK/IWRkhshUSz177yF3Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=LqL63BxT; arc=none smtp.client-ip=185.136.65.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Ws9zeto5"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20240703132539a5f304c36bd5313720
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="LqL63BxT"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 2024070313253850467183e31688f431
         for <xenomai@lists.linux.dev>;
-        Wed, 03 Jul 2024 15:25:39 +0200
+        Wed, 03 Jul 2024 15:25:38 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=B4NZSRdYKYy4W9DeGlE4pfQ1ISeZPLlDng1HH6npETk=;
- b=Ws9zeto5XrfSUGnQBWMlDgWeLQfMauUuYMNlOfXz0DGsbeAt+9jENuJSeG4xWxzD8gV9oz
- FoVI2wOKFhs2K1oX6GvtRx4+LNoH0A+qtnCyzTEl3B4z3DuHiSW7wbnUMhbmU480xEuhHbQq
- D66y6/sCf4QwcAneqsQU1kvt5vT7w=;
+ bh=4WkLj4WbmHKQLZV4V15q++qS8OAvb3XNQZN62lOsUEA=;
+ b=LqL63BxTcjFDbs0lOq0nq867pep1JgvIgUWvWlgCiLq5QrrCOWAedk+U1NmatJ6VQtvbgz
+ Re6TNarBAPMBe445uXtFDCVodr07hBnj3MvWWPnf/lo9V3FCov7i+Y2PPGDy9RlGkNf0ykW1
+ 3FlOMgsVtWOJ1MYczRwlSdzgLiKSQ=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Wed, 03 Jul 2024 15:25:28 +0200
-Subject: [PATCH 05/33] drivers/can/peak_canfd: Migrate from rtdm_printk()
- to pr_*()
+Date: Wed, 03 Jul 2024 15:25:26 +0200
+Subject: [PATCH 03/33] drivers/analogy: Migrate from rtdm_printk() and
+ printk() to pr_*()
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -38,7 +38,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240702-flo-removal-of-rtdm_printk-v1-5-cc91bffdd063@siemens.com>
+Message-Id: <20240702-flo-removal-of-rtdm_printk-v1-3-cc91bffdd063@siemens.com>
 References: <20240702-flo-removal-of-rtdm_printk-v1-0-cc91bffdd063@siemens.com>
 In-Reply-To: <20240702-flo-removal-of-rtdm_printk-v1-0-cc91bffdd063@siemens.com>
 To: xenomai@lists.linux.dev
@@ -47,133 +47,381 @@ Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-The rtdm_printk() calls were missing log level information. The default
-level (= warn) does not fit well for most of them.
+There were a lot of (rtdm_)printk() calls with missing log level
+information. The default level (= warn) does not fit well for most of
+them.
 
-The missing log level is addressed by migrating to the pr_*() API.
-
-On the long run we want to get rid of rtdm_printk(), which is only an
-alias for printk() these days.
+Adding log levels is addressed by migrating to the pr_*() API.
 
 No functional change.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/drivers/can/peak_canfd/rtcan_peak_canfd.c | 41 +++++++++++-------------
- 1 file changed, 18 insertions(+), 23 deletions(-)
+ include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h  | 16 ++---
+ .../analogy/national_instruments/mio_common.c      |  3 +
+ kernel/drivers/analogy/national_instruments/mite.c | 68 +++++++++++-----------
+ .../drivers/analogy/national_instruments/ni_660x.c |  2 +
+ .../drivers/analogy/national_instruments/ni_mio.h  |  2 +-
+ .../drivers/analogy/national_instruments/ni_stc.h  | 19 +++---
+ .../drivers/analogy/national_instruments/pcimio.c  | 21 +++----
+ 7 files changed, 69 insertions(+), 62 deletions(-)
 
-diff --git a/kernel/drivers/can/peak_canfd/rtcan_peak_canfd.c b/kernel/drivers/can/peak_canfd/rtcan_peak_canfd.c
-index 4ecc1e965..5214159b3 100644
---- a/kernel/drivers/can/peak_canfd/rtcan_peak_canfd.c
-+++ b/kernel/drivers/can/peak_canfd/rtcan_peak_canfd.c
-@@ -5,15 +5,17 @@
-  * Copyright (C) 2001-2021 PEAK System-Technik GmbH
-  * Copyright (C) 2019-2021 Stephane Grosjean <s.grosjean@peak-system.com>
+diff --git a/include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h b/include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h
+index 1de219f96..2adcb15b5 100644
+--- a/include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h
++++ b/include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h
+@@ -35,14 +35,14 @@
+ 
+ #define RTDM_SUBCLASS_ANALOGY 0
+ 
+-#define __a4l_err(fmt, args...)  rtdm_printk(KERN_ERR A4L_PROMPT fmt, ##args)
+-#define __a4l_warn(fmt, args...) rtdm_printk(KERN_WARNING A4L_PROMPT fmt, ##args)
++#define __a4l_err(fmt, args...)  pr_err(A4L_PROMPT fmt, ##args)
++#define __a4l_warn(fmt, args...) pr_warn(A4L_PROMPT fmt, ##args)
+ 
+ #ifdef  CONFIG_XENO_DRIVERS_ANALOGY_DEBUG_FTRACE
+ #define __a4l_info(fmt, args...) trace_printk(fmt, ##args)
+ #else
+-#define __a4l_info(fmt, args...) 						\
+-        rtdm_printk(KERN_INFO A4L_PROMPT "%s: " fmt, __FUNCTION__, ##args)
++#define __a4l_info(fmt, args...) \
++	pr_info(A4L_PROMPT "%s: " fmt, __FUNCTION__, ##args)
+ #endif
+ 
+ #ifdef CONFIG_XENO_DRIVERS_ANALOGY_DEBUG
+@@ -53,10 +53,10 @@
+ 		trace_printk(fmt, ##args); 				\
+ 	} while (0)
+ #else
+-#define __a4l_dbg(level, debug, fmt, args...)						\
+-	do {										\
+-	if ((debug) >= (level))								\
+-		rtdm_printk(KERN_DEBUG A4L_PROMPT "%s: " fmt, __FUNCTION__ , ##args);	\
++#define __a4l_dbg(level, debug, fmt, args...)                                  \
++	do {                                                                   \
++		if ((debug) >= (level))                                        \
++			pr_debug(A4L_PROMPT "%s: " fmt, __FUNCTION__, ##args); \
+ 	} while (0)
+ #endif
+ 
+diff --git a/kernel/drivers/analogy/national_instruments/mio_common.c b/kernel/drivers/analogy/national_instruments/mio_common.c
+index 7cd57ecf2..ae9af547a 100644
+--- a/kernel/drivers/analogy/national_instruments/mio_common.c
++++ b/kernel/drivers/analogy/national_instruments/mio_common.c
+@@ -42,6 +42,9 @@
+  *   as yet. Terry Barnaby, BEAM Ltd.
+  *
   */
 +
-+#define DRV_NAME "xeno_peak_canfd"
-+#define RTCAN_DEV_NAME "rtcan%d"
-+#define RTCAN_CTRLR_NAME "peak_canfd"
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 +
-+#define pr_fmt(fmt) DRV_NAME ": " fmt
+ #include <linux/module.h>
+ #include <linux/slab.h>
+ #include "../intel/8255.h"
+diff --git a/kernel/drivers/analogy/national_instruments/mite.c b/kernel/drivers/analogy/national_instruments/mite.c
+index 2f2014bcd..736656f06 100644
+--- a/kernel/drivers/analogy/national_instruments/mite.c
++++ b/kernel/drivers/analogy/national_instruments/mite.c
+@@ -41,11 +41,13 @@
+  * ISSUES:
+  */
+ 
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 +
- #include "rtcan_dev.h"
- #include "rtcan_raw.h"
- #include "rtcan_peak_canfd_user.h"
+ #include <linux/module.h>
+ #include "mite.h"
  
--#define DRV_NAME		"xeno_peak_canfd"
--
--#define RTCAN_DEV_NAME		"rtcan%d"
--#define RTCAN_CTRLR_NAME	"peak_canfd"
--
- /* bittiming ranges of the PEAK-System PC CAN-FD interfaces */
- static const struct can_bittiming_const peak_canfd_nominal_const = {
- 	.name = RTCAN_CTRLR_NAME,
-@@ -261,8 +263,7 @@ static int pucan_handle_status(struct peak_canfd_priv *priv,
+ #ifdef CONFIG_DEBUG_MITE
+-#define MDPRINTK(fmt, args...) rtdm_printk(fmt, ##args)
++#define MDPRINTK(fmt, args...) pr_debug(fmt, ##args)
+ #else /* !CONFIG_DEBUG_MITE */
+ #define MDPRINTK(fmt, args...)
+ #endif /* CONFIG_DEBUG_MITE */
+@@ -254,17 +256,14 @@ void a4l_mite_list_devices(void)
+ {
+ 	struct list_head *this;
  
- 	/* test state error bits according to their priority */
- 	if (pucan_status_is_busoff(msg)) {
--		rtdm_printk(DRV_NAME " CAN%u: Bus-off entry status\n",
--			    priv->index+1);
-+		pr_info("CAN%u: Bus-off entry status\n", priv->index + 1);
- 		rdev->state = CAN_STATE_BUS_OFF;
- 		cf->can_id |= CAN_ERR_BUSOFF;
+-	printk("Analogy: MITE: Available NI device IDs:");
++	pr_info("Analogy: MITE: Available NI device IDs:\n");
+ 	list_for_each(this, &mite_devices) {
+ 		struct mite_struct *mite =
+ 			list_entry(this, struct mite_struct, list);
  
-@@ -270,8 +271,7 @@ static int pucan_handle_status(struct peak_canfd_priv *priv,
- 		rtdm_sem_destroy(&rdev->tx_sem);
- 
- 	} else if (pucan_status_is_passive(msg)) {
--		rtdm_printk(DRV_NAME " CAN%u: Error passive status\n",
--			    priv->index+1);
-+		pr_info("CAN%u: Error passive status\n", priv->index + 1);
- 		rdev->state = CAN_STATE_ERROR_PASSIVE;
- 		cf->can_id |= CAN_ERR_CRTL;
- 		cf->data[1] = (priv->bec.txerr > priv->bec.rxerr) ?
-@@ -281,8 +281,7 @@ static int pucan_handle_status(struct peak_canfd_priv *priv,
- 		cf->data[7] = priv->bec.rxerr;
- 
- 	} else if (pucan_status_is_warning(msg)) {
--		rtdm_printk(DRV_NAME " CAN%u: Error warning status\n",
--			    priv->index+1);
-+		pr_info("CAN%u: Error warning status\n", priv->index + 1);
- 		rdev->state = CAN_STATE_ERROR_WARNING;
- 
- 		cf->can_id |= CAN_ERR_CRTL;
-@@ -294,8 +293,7 @@ static int pucan_handle_status(struct peak_canfd_priv *priv,
- 
- 	} else if (rdev->state != CAN_STATE_ERROR_ACTIVE) {
- 		/* back to ERROR_ACTIVE */
--		rtdm_printk(DRV_NAME " CAN%u: Error active status\n",
--			    priv->index+1);
-+		pr_info("CAN%u: Error active status\n", priv->index + 1);
- 		rdev->state = CAN_STATE_ERROR_ACTIVE;
+-		printk(" 0x%04x", mite_device_id(mite));
+-		if(mite->used)
+-			printk("(used)");
++		pr_info(" 0x%04x%s\n", mite_device_id(mite),
++			mite->used ? " (used)" : "");
  	}
- 
-@@ -456,8 +454,7 @@ static int peak_canfd_stop(struct rtcan_device *rdev,
- 		/* go back to RESET mode */
- 		err = pucan_set_reset_mode(priv);
- 		if (err) {
--			rtdm_printk(DRV_NAME " CAN%u: reset failed\n",
--				    priv->index+1);
-+			pr_err("CAN%u: reset failed\n", priv->index + 1);
- 			break;
- 		}
- 
-@@ -511,9 +508,8 @@ static int peak_canfd_set_bittiming(struct rtcan_device *rdev,
- 
- 	/* can't support BTR0BTR1 mode with clock greater than 8 MHz */
- 	if (pbt->type != CAN_BITTIME_STD) {
--		rtdm_printk(DRV_NAME
--			    " CAN%u: unsupported bittiming mode %u\n",
--			    priv->index+1, pbt->type);
-+		pr_err("CAN%u: unsupported bittiming mode %u\n",
-+		       priv->index + 1, pbt->type);
- 		return -EINVAL;
- 	}
- 
-@@ -530,8 +526,8 @@ static int peak_canfd_set_bittiming(struct rtcan_device *rdev,
- 
- 	cmd->ewl = 96;	/* default */
- 
--	rtdm_printk(DRV_NAME ": nominal: brp=%u tseg1=%u tseg2=%u sjw=%u\n",
--		   le16_to_cpu(cmd->brp), cmd->tseg1, cmd->tseg2, cmd->sjw_t);
-+	pr_debug("nominal: brp=%u tseg1=%u tseg2=%u sjw=%u\n",
-+		 le16_to_cpu(cmd->brp), cmd->tseg1, cmd->tseg2, cmd->sjw_t);
- 
- 	return pucan_write_cmd(priv);
+-
+-	printk("\n");
  }
-@@ -553,9 +549,8 @@ static netdev_tx_t peak_canfd_start_xmit(struct rtcan_device *rdev,
- 	 * (auto-)restart mechanism
- 	 */
- 	if (!msg) {
--		rtdm_printk(DRV_NAME
--			    " CAN%u: skb lost (No room left in tx buffer)\n",
--			    priv->index+1);
-+		pr_err("CAN%u: skb lost (No room left in tx buffer)\n",
-+		       priv->index + 1);
+ 
+ 
+@@ -399,7 +398,7 @@ int a4l_mite_buf_change(struct mite_dma_descriptor_ring *ring, struct a4l_subdev
+ 				   n_links * sizeof(struct mite_dma_descriptor),
+ 				   &ring->descriptors_dma_addr, GFP_ATOMIC);
+ 	if (!ring->descriptors) {
+-		printk("MITE: ring buffer allocation failed\n");
++		pr_err("MITE: ring buffer allocation failed\n");
+ 		return -ENOMEM;
+ 	}
+ 	ring->n_links = n_links;
+@@ -716,63 +715,62 @@ void a4l_mite_dump_regs(struct mite_channel *mite_chan)
+ 	unsigned long addr = 0;
+ 	unsigned long temp = 0;
+ 
+-	printk("a4l_mite_dump_regs ch%i\n", mite_chan->channel);
+-	printk("mite address is  =0x%08lx\n", mite_io_addr);
++	pr_info("a4l_mite_dump_regs ch%i\n", mite_chan->channel);
++	pr_info("mite address is  =0x%08lx\n", mite_io_addr);
+ 
+ 	addr = mite_io_addr + MITE_CHOR(mite_chan->channel);
+-	printk("mite status[CHOR]at 0x%08lx =0x%08lx\n", addr, temp =
+-	       readl((void *)addr));
++	pr_info("mite status[CHOR]at 0x%08lx =0x%08lx\n", addr,
++		temp = readl((void *)addr));
+ 	a4l_mite_decode(mite_CHOR_strings, temp);
+ 	addr = mite_io_addr + MITE_CHCR(mite_chan->channel);
+-	printk("mite status[CHCR]at 0x%08lx =0x%08lx\n", addr, temp =
+-	       readl((void *)addr));
++	pr_info("mite status[CHCR]at 0x%08lx =0x%08lx\n", addr,
++		temp = readl((void *)addr));
+ 	a4l_mite_decode(mite_CHCR_strings, temp);
+ 	addr = mite_io_addr + MITE_TCR(mite_chan->channel);
+-	printk("mite status[TCR] at 0x%08lx =0x%08x\n", addr,
+-	       readl((void *)addr));
++	pr_info("mite status[TCR] at 0x%08lx =0x%08x\n", addr,
++		readl((void *)addr));
+ 	addr = mite_io_addr + MITE_MCR(mite_chan->channel);
+-	printk("mite status[MCR] at 0x%08lx =0x%08lx\n", addr, temp =
+-	       readl((void *)addr));
++	pr_info("mite status[MCR] at 0x%08lx =0x%08lx\n", addr,
++		temp = readl((void *)addr));
+ 	a4l_mite_decode(mite_MCR_strings, temp);
+ 
+ 	addr = mite_io_addr + MITE_MAR(mite_chan->channel);
+-	printk("mite status[MAR] at 0x%08lx =0x%08x\n", addr,
+-	       readl((void *)addr));
++	pr_info("mite status[MAR] at 0x%08lx =0x%08x\n", addr,
++		readl((void *)addr));
+ 	addr = mite_io_addr + MITE_DCR(mite_chan->channel);
+-	printk("mite status[DCR] at 0x%08lx =0x%08lx\n", addr, temp =
+-	       readl((void *)addr));
++	pr_info("mite status[DCR] at 0x%08lx =0x%08lx\n", addr,
++		temp = readl((void *)addr));
+ 	a4l_mite_decode(mite_DCR_strings, temp);
+ 	addr = mite_io_addr + MITE_DAR(mite_chan->channel);
+-	printk("mite status[DAR] at 0x%08lx =0x%08x\n", addr,
+-	       readl((void *)addr));
++	pr_info("mite status[DAR] at 0x%08lx =0x%08x\n", addr,
++		readl((void *)addr));
+ 	addr = mite_io_addr + MITE_LKCR(mite_chan->channel);
+-	printk("mite status[LKCR]at 0x%08lx =0x%08lx\n", addr, temp =
+-	       readl((void *)addr));
++	pr_info("mite status[LKCR]at 0x%08lx =0x%08lx\n", addr,
++		temp = readl((void *)addr));
+ 	a4l_mite_decode(mite_LKCR_strings, temp);
+ 	addr = mite_io_addr + MITE_LKAR(mite_chan->channel);
+-	printk("mite status[LKAR]at 0x%08lx =0x%08x\n", addr,
+-	       readl((void *)addr));
++	pr_info("mite status[LKAR]at 0x%08lx =0x%08x\n", addr,
++		readl((void *)addr));
+ 
+ 	addr = mite_io_addr + MITE_CHSR(mite_chan->channel);
+-	printk("mite status[CHSR]at 0x%08lx =0x%08lx\n", addr, temp =
+-	       readl((void *)addr));
++	pr_info("mite status[CHSR]at 0x%08lx =0x%08lx\n", addr,
++		temp = readl((void *)addr));
+ 	a4l_mite_decode(mite_CHSR_strings, temp);
+ 	addr = mite_io_addr + MITE_FCR(mite_chan->channel);
+-	printk("mite status[FCR] at 0x%08lx =0x%08x\n\n", addr,
+-	       readl((void *)addr));
++	pr_info("mite status[FCR] at 0x%08lx =0x%08x\n\n", addr,
++		readl((void *)addr));
+ }
+ 
+-
+ static void a4l_mite_decode(const char *const bit_str[], unsigned int bits)
+ {
+ 	int i;
+ 
+ 	for (i = 31; i >= 0; i--) {
+ 		if (bits & (1 << i)) {
+-			printk(" %s", bit_str[i]);
++			pr_info(" %s", bit_str[i]);
+ 		}
+ 	}
+-	printk("\n");
++	pr_info("\n");
+ }
+ 
+ #endif /* CONFIG_DEBUG_MITE */
+diff --git a/kernel/drivers/analogy/national_instruments/ni_660x.c b/kernel/drivers/analogy/national_instruments/ni_660x.c
+index eeac4b402..73a4891e9 100644
+--- a/kernel/drivers/analogy/national_instruments/ni_660x.c
++++ b/kernel/drivers/analogy/national_instruments/ni_660x.c
+@@ -45,6 +45,8 @@
+  *   Julien Delange <julien.delange@esa.int>
+  */
+ 
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
+ #include <linux/interrupt.h>
+ 
+ #include <linux/module.h>
+diff --git a/kernel/drivers/analogy/national_instruments/ni_mio.h b/kernel/drivers/analogy/national_instruments/ni_mio.h
+index 7fee167f9..97068897e 100644
+--- a/kernel/drivers/analogy/national_instruments/ni_mio.h
++++ b/kernel/drivers/analogy/national_instruments/ni_mio.h
+@@ -22,7 +22,7 @@
+ /* Debug stuff */
+ 
+ #ifdef CONFIG_DEBUG_MIO
+-#define MDPRINTK(fmt, args...) rtdm_printk(format, ##args)
++#define MDPRINTK(fmt, args...) pr_debug(fmt, ##args)
+ #else /* !CONFIG_DEBUG_MIO */
+ #define MDPRINTK(fmt, args...)
+ #endif /* CONFIG_DEBUG_MIO */
+diff --git a/kernel/drivers/analogy/national_instruments/ni_stc.h b/kernel/drivers/analogy/national_instruments/ni_stc.h
+index 85fd86f18..f774af3f5 100644
+--- a/kernel/drivers/analogy/national_instruments/ni_stc.h
++++ b/kernel/drivers/analogy/national_instruments/ni_stc.h
+@@ -327,8 +327,8 @@ static inline unsigned int RTSI_Output_Bit(unsigned channel, int is_mseries)
+ 	}
+ 	if(channel > max_channel)
+ 	{
+-		rtdm_printk("%s: bug, invalid RTSI_channel=%i\n",
+-			    __FUNCTION__, channel);
++		pr_err("%s: bug, invalid RTSI_channel=%i\n", __FUNCTION__,
++		       channel);
  		return 0;
  	}
+ 	return 1 << (base_bit_shift + channel);
+@@ -1029,7 +1029,7 @@ static inline int M_Offset_Static_AI_Control(int i)
+ 	};
+ 	if(((unsigned)i) >= ARRAY_SIZE(offset))
+ 	{
+-		rtdm_printk("%s: invalid channel=%i\n", __FUNCTION__, i);
++		pr_err("%s: invalid channel=%i\n", __FUNCTION__, i);
+ 		return offset[0];
+ 	}
+ 	return offset[i];
+@@ -1045,7 +1045,7 @@ static inline int M_Offset_AO_Reference_Attenuation(int channel)
+ 	};
+ 	if(((unsigned)channel) >= ARRAY_SIZE(offset))
+ 	{
+-		rtdm_printk("%s: invalid channel=%i\n", __FUNCTION__, channel);
++		pr_err("%s: invalid channel=%i\n", __FUNCTION__, channel);
+ 		return offset[0];
+ 	}
+ 	return offset[channel];
+@@ -1054,7 +1054,8 @@ static inline unsigned M_Offset_PFI_Output_Select(unsigned n)
+ {
+ 	if(n < 1 || n > NUM_PFI_OUTPUT_SELECT_REGS)
+ 	{
+-		rtdm_printk("%s: invalid pfi output select register=%i\n", __FUNCTION__, n);
++		pr_err("%s: invalid pfi output select register=%i\n",
++		       __FUNCTION__, n);
+ 		return M_Offset_PFI_Output_Select_1;
+ 	}
+ 	return M_Offset_PFI_Output_Select_1 + (n - 1) * 2;
+@@ -1102,7 +1103,8 @@ unsigned int MSeries_PLL_In_Source_Select_RTSI_Bits(unsigned int RTSI_channel)
+ {
+ 	if(RTSI_channel > 7)
+ 	{
+-		rtdm_printk("%s: bug, invalid RTSI_channel=%i\n", __FUNCTION__, RTSI_channel);
++		pr_err("%s: bug, invalid RTSI_channel=%i\n", __FUNCTION__,
++		       RTSI_channel);
+ 		return 0;
+ 	}
+ 	if(RTSI_channel == 7) return MSeries_PLL_In_Source_Select_RTSI7_Bits;
+@@ -1121,7 +1123,7 @@ unsigned int MSeries_PLL_Divisor_Bits(unsigned int divisor)
+ 	static const unsigned int max_divisor = 0x10;
+ 	if(divisor < 1 || divisor > max_divisor)
+ 	{
+-		rtdm_printk("%s: bug, invalid divisor=%i\n", __FUNCTION__, divisor);
++		pr_err("%s: bug, invalid divisor=%i\n", __FUNCTION__, divisor);
+ 		return 0;
+ 	}
+ 	return (divisor & 0xf) << 8;
+@@ -1132,7 +1134,8 @@ unsigned int MSeries_PLL_Multiplier_Bits(unsigned int multiplier)
+ 	static const unsigned int max_multiplier = 0x100;
+ 	if(multiplier < 1 || multiplier > max_multiplier)
+ 	{
+-		rtdm_printk("%s: bug, invalid multiplier=%i\n", __FUNCTION__, multiplier);
++		pr_err("%s: bug, invalid multiplier=%i\n", __FUNCTION__,
++		       multiplier);
+ 		return 0;
+ 	}
+ 	return multiplier & 0xff;
+diff --git a/kernel/drivers/analogy/national_instruments/pcimio.c b/kernel/drivers/analogy/national_instruments/pcimio.c
+index 40ca8f76d..687d9d465 100644
+--- a/kernel/drivers/analogy/national_instruments/pcimio.c
++++ b/kernel/drivers/analogy/national_instruments/pcimio.c
+@@ -80,6 +80,8 @@
+  *
+  */
  
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
+ #include <linux/module.h>
+ #include <rtdm/analogy/device.h>
+ 
+@@ -1224,7 +1226,7 @@ static void m_series_stc_writew(struct a4l_device *dev, uint16_t data, int reg)
+ 		offset = M_Offset_AO_FIFO_Clear;
+ 		break;
+ 	case DIO_Control_Register:
+-		rtdm_printk("%s: FIXME: register 0x%x does not map cleanly on to m-series boards.\n", __FUNCTION__, reg);
++		pr_warn("%s: FIXME: register 0x%x does not map cleanly on to m-series boards.\n", __FUNCTION__, reg);
+ 		return;
+ 		break;
+ 	case G_Autoincrement_Register(0):
+@@ -1285,8 +1287,8 @@ static void m_series_stc_writew(struct a4l_device *dev, uint16_t data, int reg)
+ 		by M_Offset_Static_Digital_Output (32 bit) and
+ 		M_Offset_SCXI_Serial_Data_Out (8 bit) */
+ 	default:
+-		rtdm_printk("%s: bug! unhandled register=0x%x in switch.\n",
+-			    __FUNCTION__, reg);
++		pr_err("%s: bug! unhandled register=0x%x in switch.\n",
++		       __FUNCTION__, reg);
+ 		BUG();
+ 		return;
+ 	}
+@@ -1320,9 +1322,8 @@ static uint16_t m_series_stc_readw(struct a4l_device *dev, int reg)
+ 		offset = M_Offset_G01_Status;
+ 		break;
+ 	default:
+-		rtdm_printk("%s: bug! "
+-			    "unhandled register=0x%x in switch.\n",
+-			    __FUNCTION__, reg);
++		pr_err("%s: bug! unhandled register=0x%x in switch.\n",
++		       __FUNCTION__, reg);
+ 		BUG();
+ 		return 0;
+ 		break;
+@@ -1364,8 +1365,8 @@ static void m_series_stc_writel(struct a4l_device *dev, uint32_t data, int reg)
+ 		offset = M_Offset_G1_Load_B;
+ 		break;
+ 	default:
+-		rtdm_printk("%s: bug! unhandled register=0x%x in switch.\n",
+-			    __FUNCTION__, reg);
++		pr_err("%s: bug! unhandled register=0x%x in switch.\n",
++		       __FUNCTION__, reg);
+ 		BUG();
+ 		return;
+ 	}
+@@ -1390,8 +1391,8 @@ static uint32_t m_series_stc_readl(struct a4l_device *dev, int reg)
+ 		offset = M_Offset_G1_Save;
+ 		break;
+ 	default:
+-		rtdm_printk("%s: bug! unhandled register=0x%x in switch.\n",
+-			    __FUNCTION__, reg);
++		pr_err("%s: bug! unhandled register=0x%x in switch.\n",
++		       __FUNCTION__, reg);
+ 		BUG();
+ 		return 0;
+ 	}
 
 -- 
 2.39.2
