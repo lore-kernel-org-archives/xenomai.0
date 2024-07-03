@@ -1,35 +1,35 @@
 Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C08F5173345
-	for <xenomai@lists.linux.dev>; Wed,  3 Jul 2024 13:25:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17C7E13A25B
+	for <xenomai@lists.linux.dev>; Wed,  3 Jul 2024 13:25:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720013147; cv=none; b=PQ7G4rnLdWrWKQfQ3wFdqoWj0tVUWqNoLkOiVKm8IcW2A0p6gbSDKhsso/dTKhc7OPYTg480UNCx6OGQMXcXzD68JSCuvoTGzxYeaJQvP92a8nwuLumH5bZNnetQ+iyXZAlzxBuanpjLRv/jnZ53C9Q7eA7GbPlpyQegLMMCpi4=
+	t=1720013148; cv=none; b=QL5YiR98SAce6l7y7H9J1cbRuALQoZw581fK3PznPIqarnA5TnfxqZJNFLIZF5lZpG+OXqJO6d8pak9KOZTAQYLPuR5/VOixNUoO9HqO22gSDTQN4JM9nJN1XByM0BBzJmQ+6uemo1u88a6B5CgKwN2irGGyNJgbXfAEjSJWSZc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720013147; c=relaxed/simple;
-	bh=gLMtRRZ5zqLfDngPIITr+FkT3TZ2vAUkprO1pvE42UQ=;
+	s=arc-20240116; t=1720013148; c=relaxed/simple;
+	bh=NB4J/JqjIWpdp2Dpaopj2jNTQh116THraTW0s9Yy3sQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=YnogCUhHQmWGcxCFqVc1/oiHMywCbPRz2ex40MIcFD9wvUGEmJ9zhUAiM1uWZzbzWskV4/I43eDqmvBv7RN/5zk8mCqbfaTiDGTAtiBgZio08u47iUCTGWepN7XENOxYAHWJVvGs5TJjs9ywORi+no1SVYVoNZUFde9eI2BVXPc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Mzr9I1H+; arc=none smtp.client-ip=185.136.64.226
+	 In-Reply-To:To:Cc; b=LJ+9bCZvzc5RoE4O9pbpxk+HbEed+cHsvL26NCj22RlFYfOQFt4W+kdZidh4mIymwuOMQrsLr3xFQeJRu7JOUcK2vFk/ayNwYruNblfSJukz+yaQst6j7/UCxVV8GzVogkAnTF/ceIlganUUouu4TjT/fLRYIt0eYDkaUt1Roq4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=do4cx+/7; arc=none smtp.client-ip=185.136.64.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Mzr9I1H+"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20240703132542520a06c03b1e23555e
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="do4cx+/7"
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202407031325406f9734060e7de5fdd8
         for <xenomai@lists.linux.dev>;
-        Wed, 03 Jul 2024 15:25:42 +0200
+        Wed, 03 Jul 2024 15:25:40 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=WYi3P89m5tkoPLHppY5W0BWmTjvAu7/G9Be7gm2JXDg=;
- b=Mzr9I1H+LaRUDlKeZwzwoiXBA3mYNmQwsg5XfYkU7S3Dr8ZozeI62p3n8vGiQPNEACHFRz
- XM9ZZ71KEg/dG5qPLEgjiFDiCndxSQfcnGoMpyTcQE4syL2iiRZ9IaelBd9y1X5Vaol95wOA
- sFrB72JWD3yfqrucM2b/AqdM+QeV8=;
+ bh=8fqbGYgg5Og1l1o77Tmshw+9W0Di+w0u+rRlt01OxK0=;
+ b=do4cx+/7J+VaLg5uaxhTI3eT2aR1dcYFjza3Zzkqn9rowIdGQxHlgRPhucBOCTDJw0AY+K
+ 0/C5q09eY0Md92j3YfBCexzycot7JeJKG5xU4AkncjHgFMc2X5sx97tQvki1XM0VhIjFx71n
+ rJANzmNrCCEuicVUnVdLNWWq73qH8=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Wed, 03 Jul 2024 15:25:34 +0200
-Subject: [PATCH 11/33] drivers/experimental/e1000: Migrate from
- rtdm_printk() and printk() to pr_*()
+Date: Wed, 03 Jul 2024 15:25:31 +0200
+Subject: [PATCH 08/33] drivers/net/addons: Migrate from rtdm_printk() and
+ printk() to pr_*()
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -38,7 +38,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240702-flo-removal-of-rtdm_printk-v1-11-cc91bffdd063@siemens.com>
+Message-Id: <20240702-flo-removal-of-rtdm_printk-v1-8-cc91bffdd063@siemens.com>
 References: <20240702-flo-removal-of-rtdm_printk-v1-0-cc91bffdd063@siemens.com>
 In-Reply-To: <20240702-flo-removal-of-rtdm_printk-v1-0-cc91bffdd063@siemens.com>
 To: xenomai@lists.linux.dev
@@ -47,8 +47,8 @@ Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Some (rtdm_)printk() calls were missing log level information. The
-default level (= warn) does not fit well for most of them.
+(rtdm_)printk() calls were missing log level information. The default
+level (= warn) does not fit well for most of them.
 
 The missing log level is addressed by migrating to the pr_*() API.
 
@@ -59,137 +59,136 @@ No functional change.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- .../drivers/net/drivers/experimental/e1000/e1000.h | 14 ++++++----
- .../net/drivers/experimental/e1000/e1000_main.c    | 32 ++++++++++++----------
- 2 files changed, 25 insertions(+), 21 deletions(-)
+ kernel/drivers/net/addons/cap.c   | 22 ++++++++++++----------
+ kernel/drivers/net/addons/proxy.c | 10 ++++++----
+ 2 files changed, 18 insertions(+), 14 deletions(-)
 
-diff --git a/kernel/drivers/net/drivers/experimental/e1000/e1000.h b/kernel/drivers/net/drivers/experimental/e1000/e1000.h
-index 8b9830b99..986eeb088 100644
---- a/kernel/drivers/net/drivers/experimental/e1000/e1000.h
-+++ b/kernel/drivers/net/drivers/experimental/e1000/e1000.h
-@@ -47,13 +47,15 @@ struct e1000_adapter;
+diff --git a/kernel/drivers/net/addons/cap.c b/kernel/drivers/net/addons/cap.c
+index 27d90f3ca..12cea2bf2 100644
+--- a/kernel/drivers/net/addons/cap.c
++++ b/kernel/drivers/net/addons/cap.c
+@@ -22,6 +22,8 @@
+  *
+  */
  
- #define E1000_DBG(args...)
- 
--#define E1000_ERR(args...) printk(KERN_ERR "e1000: " args)
-+#define E1000_ERR(args...) pr_err(args)
- 
--#define PFX "e1000: "
--#define DPRINTK(nlevel, klevel, fmt, args...) \
--	(void)((NETIF_MSG_##nlevel & adapter->msg_enable) && \
--	printk(KERN_##klevel PFX "%s: %s: " fmt, adapter->netdev->name, \
--		__FUNCTION__ , ## args))
-+#undef pr_fmt
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++#define pr_fmt(fmt) "RTcap: " fmt
 +
-+#define DPRINTK(nlevel, klevel, fmt, args...)                           \
-+	(void)((NETIF_MSG_##nlevel & adapter->msg_enable) &&            \
-+	       printk(KERN_##klevel "%s: %s: %s: " fmt, KBUILD_MODNAME, \
-+		      adapter->netdev->name, __FUNCTION__, ##args))
- 
- #define E1000_MAX_INTR 10
- 
-diff --git a/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c b/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
-index 76cfb0dee..56f172636 100644
---- a/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
-+++ b/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
-@@ -460,11 +460,11 @@ MODULE_PARM_DESC(pciif, "PCI Interface: 'all' (default), 'pci', 'pcie'");
- static int __init e1000_init_module(void)
- {
- 	int ret;
--    strcpy(e1000_driver_name, THIS_MODULE->name);
--	printk(KERN_INFO "%s - %s version %s (pciif: %s)\n",
--	       e1000_driver_string, e1000_driver_name, e1000_driver_version, pciif);
-+	strcpy(e1000_driver_name, THIS_MODULE->name);
-+	pr_info("%s - %s version %s (pciif: %s)\n", e1000_driver_string,
-+		e1000_driver_name, e1000_driver_version, pciif);
- 
--	printk(KERN_INFO "%s\n", e1000_copyright);
-+	pr_info("%s\n", e1000_copyright);
- 
- 
-     if (0 == strcmp(pciif, "pcie"))
-@@ -486,10 +486,11 @@ static int __init e1000_init_module(void)
- #endif
- 	if (copybreak != COPYBREAK_DEFAULT) {
- 		if (copybreak == 0)
--			printk(KERN_INFO "e1000: copybreak disabled\n");
-+			pr_info("e1000: copybreak disabled\n");
- 		else
--			printk(KERN_INFO "e1000: copybreak enabled for "
--			       "packets <= %u bytes\n", copybreak);
-+			pr_info("e1000: copybreak enabled for "
-+				"packets <= %u bytes\n",
-+				copybreak);
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+ #include <linux/netdevice.h>
+@@ -250,7 +252,7 @@ static void rtcap_signal_handler(rtdm_nrtsig_t *nrtsig, void *arg)
+ 				rtcap_kfree_rtskb(rtskb);
+ 			}
+ 		} else {
+-			printk("RTcap: unable to allocate linux skb\n");
++			pr_err("unable to allocate linux skb\n");
+ 			rtcap_kfree_rtskb(rtskb);
+ 		}
  	}
- 	return ret;
+@@ -351,7 +353,7 @@ static int __init rtcap_init(void)
+ 	int devices = 0;
+ 	int i;
+ 
+-	printk("RTcap: real-time capturing interface\n");
++	pr_info("real-time capturing interface\n");
+ 
+ 	rtskb_queue_init(&cap_queue);
+ 
+@@ -366,8 +368,8 @@ static int __init rtcap_init(void)
+ 
+ 			if (test_bit(PRIV_FLAG_UP, &rtdev->priv_flags)) {
+ 				mutex_unlock(&rtdev->nrt_lock);
+-				printk("RTcap: %s busy, skipping device!\n",
+-				       rtdev->name);
++				pr_info("%s busy, skipping device!\n",
++					rtdev->name);
+ 				rtdev_dereference(rtdev);
+ 				continue;
+ 			}
+@@ -375,9 +377,9 @@ static int __init rtcap_init(void)
+ 			if (rtdev->mac_priv != NULL) {
+ 				mutex_unlock(&rtdev->nrt_lock);
+ 
+-				printk("RTcap: RTmac discipline already active on device %s. "
+-				       "Load RTcap before RTmac!\n",
+-				       rtdev->name);
++				pr_info("RTmac discipline already active on device %s. "
++					"Load RTcap before RTmac!\n",
++					rtdev->name);
+ 
+ 				rtdev_dereference(rtdev);
+ 				continue;
+@@ -447,7 +449,7 @@ static int __init rtcap_init(void)
+ 	}
+ 
+ 	if (devices == 0) {
+-		printk("RTcap: no real-time devices found!\n");
++		pr_err("no real-time devices found!\n");
+ 		ret = -ENODEV;
+ 		goto error2;
+ 	}
+@@ -468,7 +470,7 @@ static int __init rtcap_init(void)
+ error3:
+ 	mutex_unlock(&rtdev->nrt_lock);
+ 	rtdev_dereference(rtdev);
+-	printk("RTcap: unable to register %s!\n", dev->name);
++	pr_err("unable to register %s!\n", dev->name);
+ 
+ error2:
+ 	cleanup_tap_devices();
+@@ -496,7 +498,7 @@ static void rtcap_cleanup(void)
+ 
+ 	rtskb_pool_release(&cap_pool);
+ 
+-	printk("RTcap: unloaded\n");
++	pr_info("unloaded\n");
  }
-@@ -1376,8 +1377,9 @@ static int e1000_probe(struct pci_dev *pdev,
- 		 "32-bit"));
+ 
+ module_init(rtcap_init);
+diff --git a/kernel/drivers/net/addons/proxy.c b/kernel/drivers/net/addons/proxy.c
+index b37b42c9d..752cdfe9f 100644
+--- a/kernel/drivers/net/addons/proxy.c
++++ b/kernel/drivers/net/addons/proxy.c
+@@ -36,6 +36,8 @@
+  * Mathias Koehrer - mathias_koehrer@yahoo.de
+ */
+ 
++#define pr_fmt(fmt) "RTproxy: " fmt
++
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+ #include <linux/kernel.h>
+@@ -213,7 +215,7 @@ static void rtnetproxy_recv(struct rtskb *rtskb)
+ 	/* Acquire rtskb (JK) */
+ 	if (rtskb_acquire(rtskb, &rtskb_pool) != 0) {
+ 		dev_rtnetproxy->stats.rx_dropped++;
+-		rtdm_printk("rtnetproxy_recv: No free rtskb in pool\n");
++		pr_err("rtnetproxy_recv: No free rtskb in pool\n");
+ 		kfree_rtskb(rtskb);
+ 		return;
  	}
+@@ -341,10 +343,10 @@ static int __init rtnetproxy_init_module(void)
  
--	for (i = 0; i < 6; i++)
--		printk("%2.2x%c", netdev->dev_addr[i], i == 5 ? '\n' : ':');
-+	pr_debug("%2.2x:%2.2x:%2.2x:%2.2x:%2.2x:%2.2x\n", netdev->dev_addr[0],
-+		 netdev->dev_addr[1], netdev->dev_addr[2], netdev->dev_addr[3],
-+		 netdev->dev_addr[4], netdev->dev_addr[5]);
- 
- 	/* reset the hardware with the new settings */
- 	e1000_reset(adapter);
-@@ -3848,7 +3850,7 @@ static int e1000_xmit_frame_ring(struct sk_buff *skb,
- 	 * head, otherwise try next time */
- 	if (unlikely(e1000_maybe_stop_tx(netdev, tx_ring, count + 2))) {
- 		rtdm_lock_put_irqrestore(&tx_ring->tx_lock, irq_flags);
--		rtdm_printk("FATAL: rt_e1000 ran into tail close to head situation!\n");
-+		pr_crit("FATAL: rt_e1000 ran into tail close to head situation!\n");
- 		return NETDEV_TX_BUSY;
+ #ifdef CONFIG_XENO_DRIVERS_NET_ADDON_PROXY_ARP
+ 	if ((rtnetproxy_rtdev = rtdev_get_by_name(rtdev_attach)) == NULL) {
+-		printk("Couldn't attach to %s\n", rtdev_attach);
++		pr_err("Couldn't attach to %s\n", rtdev_attach);
+ 		return -EINVAL;
  	}
+-	printk("RTproxy attached to %s\n", rtdev_attach);
++	pr_info("RTproxy attached to %s\n", rtdev_attach);
+ #endif
  
-@@ -3859,7 +3861,7 @@ static int e1000_xmit_frame_ring(struct sk_buff *skb,
- 			if (!test_bit(__E1000_DOWN, &adapter->state))
- 				schedule_delayed_work(&adapter->fifo_stall_task,
- 						      1);
--		    rtdm_printk("FATAL: rt_e1000 ran into tail 82547 controller bug!\n");
-+			pr_crit("FATAL: rt_e1000 ran into tail 82547 controller bug!\n");
- 			return NETDEV_TX_BUSY;
- 		}
- 	}
-@@ -4897,7 +4899,7 @@ static bool e1000_clean_rx_irq(struct e1000_adapter *adapter,
- 	bool cleaned = FALSE;
- 	unsigned int total_rx_bytes=0, total_rx_packets=0;
+ 	/* Initialize the proxy's rtskb pool (JK) */
+@@ -381,7 +383,7 @@ static int __init rtnetproxy_init_module(void)
+ 	/* Register with RTnet */
+ 	rt_ip_fallback_handler = rtnetproxy_recv;
  
--	// rtdm_printk("<2> e1000_clean_rx_irq %i\n", __LINE__);
-+	// pr_debug("<2> e1000_clean_rx_irq %i\n", __LINE__);
+-	printk("rtnetproxy installed as \"%s\"\n", dev_rtnetproxy->name);
++	pr_info("rtnetproxy installed as \"%s\"\n", dev_rtnetproxy->name);
  
- 	i = rx_ring->next_to_clean;
- 	rx_desc = E1000_RX_DESC(*rx_ring, i);
-@@ -5808,7 +5810,7 @@ static int e1000_resume(struct pci_dev *pdev)
- 	pci_set_power_state(pdev, PCI_D0);
- 	pci_restore_state(pdev);
- 	if ((err = pci_enable_device(pdev))) {
--		printk(KERN_ERR "e1000: Cannot enable PCI device from suspend\n");
-+		pr_err("Cannot enable PCI device from suspend\n");
- 		return err;
- 	}
- 	pci_set_master(pdev);
-@@ -5909,7 +5911,7 @@ static pci_ers_result_t e1000_io_slot_reset(struct pci_dev *pdev)
- 	struct e1000_adapter *adapter = netdev->priv;
+ 	return 0;
  
- 	if (pci_enable_device(pdev)) {
--		printk(KERN_ERR "e1000: Cannot re-enable PCI device after reset.\n");
-+		pr_err("Cannot re-enable PCI device after reset.\n");
- 		return PCI_ERS_RESULT_DISCONNECT;
- 	}
- 	pci_set_master(pdev);
-@@ -5940,7 +5942,7 @@ static void e1000_io_resume(struct pci_dev *pdev)
- 
- 	if (rtnetif_running(netdev)) {
- 		if (e1000_up(adapter)) {
--			printk("e1000: can't bring device back up after reset\n");
-+			pr_err("can't bring device back up after reset\n");
- 			return;
- 		}
- 	}
 
 -- 
 2.39.2
