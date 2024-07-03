@@ -1,55 +1,55 @@
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2066.outbound.protection.outlook.com [40.107.21.66])
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2076.outbound.protection.outlook.com [40.107.21.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3DE1181D0A
-	for <xenomai@lists.linux.dev>; Wed,  3 Jul 2024 16:41:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.21.66
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C741A174EFC
+	for <xenomai@lists.linux.dev>; Wed,  3 Jul 2024 16:49:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.21.76
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720024892; cv=fail; b=m+RVT8D7DQ8bQ1Wcm/U2/DrchNYMgMxQo5JOf0lfnxyDIM8KsKkmcuOvVfSgctk/4gMNEoT2qeLVph4agRblur4pSc7D30miRGqJARU3GJu8SleLaQUrJ/AcyOaq+3MtJ/mDKN6Peww7xtEkwURpni7cDb3BOOb2lM+bLYPV0fE=
+	t=1720025383; cv=fail; b=p+VKJr/FyIWelhiXKMdL4yEZI7xamg5/j95hK5tC6nTwPAfFVBsDLZyAEwRBVTLM92fQtmWCzdvyVlEHJojItbFvUub82INOrHCXjVYMOJ+UkiwZ+fnD4PA77zjxIyJpzurT6oclBAMs3Y/uZXNdGlfW3Qv6J4fADE+BWFtgwvg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720024892; c=relaxed/simple;
-	bh=m+QvpIN+l67TEAexCoELHDOwInRM2np4Umdnt+IVleQ=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=aL56B3w4MYG1uYbu/Y989lSuejjOz/wrvsPYP3L8vzToe8+Cqtxo9UM6M7Q6UXc/XHmk2HPi0EjAA7ww2RW7yV8cNl8cvsQpavRfmYjzy8rcvySMZqTME3Pssc3sWm4Nqtwfs9aIm3XkpBi2ExWglpb9Mpm2HQEgFLe3dlHuADY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=sdctWzh+; arc=fail smtp.client-ip=40.107.21.66
+	s=arc-20240116; t=1720025383; c=relaxed/simple;
+	bh=OiNtoUM9YSDqyWBpyOJMkcun9cNPvdaAY9eRF46kA8k=;
+	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=TeIjfpbFuhRIY6EuxqDnHGkb6qRyuQi68UizoC6weCzj8ZymSVuT6DJQBvGjFj0mw97cLJehRJznilsUBuxLIOyqaNZ4LDL+ThO0FlQfucwh1Dw0Hkbn1hv61NwS4+rdNIOjD8ZCsYvAPHlGp9UqsJQ+XLgFRtnWPSRMHS0nOHg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=YEFkveuG; arc=fail smtp.client-ip=40.107.21.76
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="sdctWzh+"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="YEFkveuG"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aitwQL/KTraM8WKNC+VWrxTJd+Epl0UfZdbQo1Vsm4vqcNEcjFPHhWCwKC0J4mZIgXf0qBBhvwWE3S/qBHVo6EUGxTsCz4zrrF6JVtO8bXCbALo3GlbA53ayqXacO11oQ2fQCgpR2ouP4QZjYq9pOuZf3wkQ2HhZxxdN37CmWvV7cgJFBZq0iQ/BCNmKQSA591gmsUExzY3aUwrr8L7Jvdr8qKPVdXy7qP4P3CGGPUGtGuYkGn+N7ZJTKgYaqpSP+44V7//YihV8ZBiOCZq5wIGuZel+R0fnv3PKTE7XC2cK41i2qM+T5A48wDMyw6qDJki2JuNMgYBnmxPTTOXciA==
+ b=Jvi32XCmq0FhtGduPWlKEGpSHm4F3PcII4W9+QnyRiA6/SXjU2WVRLKzNvljOMBXdJtudI2B0vyrqFC634lvbs1VO4lFosA0X0Z9+hYmLq12xecMQuiW+xGrZVHHblApGzgqun0B9if8IcGJdKwxA5lESb3tPVpvneckR/9HAVeozIgiycsbTqqfpW/arI/kRdLSV7N8V2YUWbE/fVO5O8leBN2X3WZMaRKJ9D3Fp28mXrBGyAwkto4qo7ZiAurxMWLpdDfphLZd+gJ66PvB7Zej5SA1DmtiZ1IL1pAm4R1ucgV8unnoqSWpq+kOlLvHDOoHDfjyZkEjYgUGzuKbvQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2HduA8/19/AJ1ccJHSxTeX0jDwyafrEut2ZUA86bUlY=;
- b=DJpG9+tyTaZC6n3AL1nHpeWxaXWmjytUv5G30zY8rC6l/2P4H7H4ijMNmPLHI7lfLxWLqKdn3ZvmCmxMzxBPjxCk/awsTHdt90JM6BaIlotqMqOGnRMp2NMVyVVehrLCevAD4KkGAIvojvuG9/+dVDmZ8WwWe+lBE854wOUYOcqK54rGIHCWpT7LuE7OuWlysaWLS7y+gvRV2PMNBSm7cD7CWb59y9URoUotYvT2ZfjPGm3MjF/rI8cQaj/S47yHP1rFJNzUAaalyj1cE5bwXcn4/7OBk9fka5CYDDjxSVDrM0EZfsX65TfEiNOyWrp282APRxD5WlwOgq0b+JFVbg==
+ bh=YP0ISj4W6OdcUf8KdwgDCRMju1xOmYxw4aOm2R6S+YQ=;
+ b=SJuBZXKLP64eoAq9NxksgPX6it+LILshXUYHwlswaxleI7QPBFaIzH2+nNjPYYVOwLxV7swPaeUoqalD3UPuJV3LyiHIwk1NytMvxH84rbf9oN0itCWGWsGeM86Fe0EKdCMrGa5YlCLghSBZtPu8R2HVEJaNuP4/oqOugfx7OyfVCXAQBHLcsbML/Gq47anXdlt2QN1aMT/qkY+EDJ7eI22B2qAbO+22eetph/Z2HHM85gva8rTiFzhwZMc3R282PzXU0f8jF6yB7w7VH88wiEfH4MHhYP2LuUM3KvwkJgKTsBqrMM7AxvPb286RweNvZMdRGF8qW+2HFVehpVvbgg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2HduA8/19/AJ1ccJHSxTeX0jDwyafrEut2ZUA86bUlY=;
- b=sdctWzh+Q+Cf4xGZJIaByZkh2+lSRr4bPmxKyDkkO4Ns1RJ6yhdMLoRIqGXtwIz4hXv1ovpC3UfyndMhtuxmALMStWbvko+VRVnNB4pxBz5RPJ0xNO6yk/35Jg3uXvaGvojJ/5zSNiMvcCy7k0j6aAZ5+GShpxAWl2zI5Sm7iIPKzbhxlRKtPepk0m3SlANyahCDQ7+8OBt8YMDmJVQopfzo2sOUcoJYGsZXE/psTKNT5D6vu6ZlZEi/tN/gs/bc5RkCcrPeeedez5G4RBJJDhK42CyK5dUXx+TK3dfgUQJLhStvi4fyvF2RB5NjAglGv11OTvWcBrtxfQfNkhF0TA==
+ bh=YP0ISj4W6OdcUf8KdwgDCRMju1xOmYxw4aOm2R6S+YQ=;
+ b=YEFkveuGQOHpdQ4KZQ4OJgkh/zAaaRsWlaKzwyu5y2kXkd5K/h2uNdoCV94aBfbO3UMEpfwk+hYDym9Og+QbLqzIYRo89oXGfXK+Fft6vd2rbQ1JA/rEXpB7obMWwm0Ve4MhLduDXx+qHWkjesW1HlMAYtA4EDO1F928wU9O7agboFCzGEuiienRjpKawJWVQM+V6vDSg7QpgricvM5AMbP472RiFqsqIEJT66AumeR/BLZFfBb/BdQzsGQxWPRqRpw8S60Al0KGJqgRFXFdlY+LmdNzSLgO8yziEjTwhaG6Jq55a1chi4b1VKx+BVXdjhaGZWRbToVufoQcawdOeA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by AS1PR10MB5772.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:47f::20) with
+ by DB4PR10MB7520.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:3cc::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7719.29; Wed, 3 Jul
- 2024 16:41:25 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7741.23; Wed, 3 Jul
+ 2024 16:49:34 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408%4]) with mapi id 15.20.7719.029; Wed, 3 Jul 2024
- 16:41:25 +0000
-Message-ID: <5ede1870-d80c-45a5-bbf0-f7b09d517450@siemens.com>
-Date: Wed, 3 Jul 2024 18:41:23 +0200
+ 16:49:34 +0000
+Message-ID: <56a2015f-c36d-4836-9b63-881ff98dda24@siemens.com>
+Date: Wed, 3 Jul 2024 18:49:30 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/4] ci: add LAVA integration support for Xenomai on
- RPi4
-To: Yi Jiang <yi.jiang@siemens.com>, xenomai@lists.linux.dev
-Cc: florian.bezdeka@siemens.com, quirin.gylstorff@siemens.com
-References: <20240701070807.14465-1-yi.jiang@siemens.com>
+Subject: Re: [PATCH 03/33] drivers/analogy: Migrate from rtdm_printk() and
+ printk() to pr_*()
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
+References: <20240702-flo-removal-of-rtdm_printk-v1-0-cc91bffdd063@siemens.com>
+ <20240702-flo-removal-of-rtdm_printk-v1-3-cc91bffdd063@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
@@ -95,11 +95,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <20240701070807.14465-1-yi.jiang@siemens.com>
+In-Reply-To: <20240702-flo-removal-of-rtdm_printk-v1-3-cc91bffdd063@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR2P281CA0015.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a::25) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR0P281CA0191.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:ab::14) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -108,127 +108,316 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS1PR10MB5772:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6661e5d3-8526-43b4-4cd5-08dc9b7efa79
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DB4PR10MB7520:EE_
+X-MS-Office365-Filtering-Correlation-Id: 62a36e92-d94b-4cdf-99df-08dc9b801e28
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?YkNJdVovRzArQ29OQUdGKytlM2JONmYvMTQvTVZtS0R2V1ZXaTcwVTMweWF5?=
- =?utf-8?B?cjBFeEtXem5POGNDQ1psSnBZaFZ0UDZVTFg1WjVtV0pUK210SkFqMDZVZlFt?=
- =?utf-8?B?S2ZWbVJCWlViRXlneFZFdEErQVRRR00rZElCdWxhV0kxWGhNazZGY3RGbTRY?=
- =?utf-8?B?Y250QXhaREloVUdZbDhqOFg5ZkdyNXE4M0w3UWVtWkJjVUtsaWJBblUrZ1hl?=
- =?utf-8?B?UVMremhsc0pEMmRjbU5OMVlCa0FoR0ZITGk4RkVNVGYzREFHeXJNa0ZNWGt5?=
- =?utf-8?B?Z2xxVytWQVVRNHRWVkFqSVVRV1ZwNXhCdXc4eFdZZ0hDbnArdEdIK2lJYzRh?=
- =?utf-8?B?SXZIT0hoZFNPQzdFbU94dExES25sQk5BeVI2cFhoRGhySFhFd3Rvbi90Uko4?=
- =?utf-8?B?SnpuVCthLzJFa21xTlJGWWlnVWltcHZVcmduaVFKR1RScHJEUHFiZXNtaXlj?=
- =?utf-8?B?SWYrckt1QUdBVHNpaXN6WkFwSkd5NmdDRi9rdnJ1NHhoK2QrZzQvVXRMNFVW?=
- =?utf-8?B?bHZXY3ErQXB3VXdVK1dFZTBVcVJHTFBUejk5OG9ZMXFYTEtYY0IrS2xPaHhE?=
- =?utf-8?B?OStCcXJtbks2V2Yxajg3Tk5pSGdMR2FteGhvY3lJRVNLdENQYW43SVR5SjQ5?=
- =?utf-8?B?emNUK3pYUmZDY0g4NitDZCtSV0pWV3JhazMwdTkxazBvLzVvTHMyWEZNbVFw?=
- =?utf-8?B?d1hGUkpZbENSdGVkK3NHZGtEd09GNlRnUDdxb0g4MTNIT2lzdDA3aEpZQ2dv?=
- =?utf-8?B?UDJQd1U2SEk3NzFxYlVpcEE3ZnVvTXdzZjlpWWZuMW9UajVydHlEb201K1cz?=
- =?utf-8?B?QmcwbThiNk1ONGlxOFZnK2ljS2JkWk1DQ3IrSjNoa0pGZFQrZnlwTWg2WXQ5?=
- =?utf-8?B?ZDBWNGNTWXhvSE1vNUZ3RWI1WEdWV3dXQjR2aWhGbUFMUEpQZ2ZJOVgyWDJk?=
- =?utf-8?B?bGt2ME9ET05FU1p5b1I4U01hWFFRQ1prNjR6QkhYTXg1djJTazRUVVBvTHk3?=
- =?utf-8?B?UUFDVjlRWVR4d2QwZXRIQ3JUUUdZak5LRklyODlacENxaXBpOWV4M2FWMjhu?=
- =?utf-8?B?SlZSYzA2OWFFdGZSOURLc0UwYUd4THl2ZlVjclgrVEpWa0FvVGRRd2xFZCt2?=
- =?utf-8?B?eFpRb0puelBGQVE3c1pURWZKb1dyTnRQTVgxNHFJZDR3bUNZaUdvekxhRW1k?=
- =?utf-8?B?cUd1QU5OcUNMN1gxQzJKWEhtaThHdXljaFAyZDFBZkUyQk1tbGEzU1hPMEFH?=
- =?utf-8?B?NjB0WHlDc01qWkFLbStTM2c5RnZrU2xoNS9VVkczdDZXQ3R0cGt6VUFQcmFu?=
- =?utf-8?B?U1U1d2hIbTB2VjNQZWNHaUVVSnFsYVBDaWZTWUpEUFc0aFcrYXZRbTN4TllK?=
- =?utf-8?B?UWV0bzBWRXVwQVQ3RDdDbUxDdHlCalhlYXhObzYrTm96aDZRdnk0aVlrWHUw?=
- =?utf-8?B?dENmK05OTEkwR2ExMHY2QkNoazZ2d3pzNEZMaWYxNTV6TGFxcXVKMXNzb3k4?=
- =?utf-8?B?SVdUV0tQTmZ5MzlvZWdvMmZwTXMvZGR3UVNFM1phc0pDczF5WWgwaSs0TWJN?=
- =?utf-8?B?eFZEWm0wWTFveHhPNUVBaFNOUEVMLys3c1krcGQzSTJyNDExUnBPM0NlN2VC?=
- =?utf-8?B?UkcwY2JBaDJ4L1JPV3BhS3ZjY1hCTGxKa3poKzVFUjNlcWtlN2hnOGNHRWV3?=
- =?utf-8?B?WTdtNWw3TnpjLzZIUlFwZGFZbEtuQVU3eFdrUHlJZVZseCtLSkRRaHpJWXdj?=
- =?utf-8?B?OVpGQXZ3RDZiNVhKenQrZ21acWg2OE1abU1IYktCRUtrZzZvMDUzRVhIU1Jm?=
- =?utf-8?B?ODNSQWVaQ3FYQmhHWGM1dz09?=
+	=?utf-8?B?cTFHQ3VRMlZDNHlUdWlpY0IzcVp5SVRtaGhTZW85Lzg4MGJ4OVBsL2U4L1My?=
+ =?utf-8?B?L2dKUjZlcEJERHdRSlFxWHRkZnFhNkZrYm1rd0Y4L3lJZVR3aXdaVlZMTXJR?=
+ =?utf-8?B?UU94UlZoSjhOL0VOOEpVZVZ3UE5QeGlGTUZNVS95YWtxOTNGNWhJc3BWU3li?=
+ =?utf-8?B?QjJsWEZHNG96VTFDMTJQQlphYTk3ZkdOYytEa29vbG9Zb3V1L0xnaWZhSzN5?=
+ =?utf-8?B?VDVTcnp1R2Y5M2J2Rm1FYkZzS1BzZUgxY0Uyc2FZQSs5UVJtSmtWbUJScXo2?=
+ =?utf-8?B?bXZUUWdSbTZHeDRzenREbWVWS3R2MGpYNWVvRkE3aDFUUi85WHNJWHFIZC9y?=
+ =?utf-8?B?WUVaa1pLOEQ3Z25sN3VWZnVTa1RiaXFkNlAzdGVDMlY5Zi84OXFQUXVZajlJ?=
+ =?utf-8?B?MVM3OU5tZXJFNGNGUVRRT1NoWEFYdThHSGtYSG9jZEpHN3dHYjNGRElUeEtx?=
+ =?utf-8?B?UmhXSUxwU0xnWW80d29lUDJsSm1nVDZ3bUo1b3Niemx6aGpxZDh5TDd4SXJw?=
+ =?utf-8?B?UHZWM1ppYzNNbXBsa3VibklndlVVSlJWaUFieTVxRFlqZ2xBTlJrVW5PbmpV?=
+ =?utf-8?B?T2FwbUdYYWhoMWVXUCtDTi9xWHhRK3BNallmeW85UW9ONEwwNzMvc3VLc3da?=
+ =?utf-8?B?ZHhRdEYxaitZcDZKYXZ3akl3VUM3ZklZYzBYNzNzYVgvMXZTeDJFTDBtZFM0?=
+ =?utf-8?B?YTVJZVRxYTFlcGY2Sm0zTWZJTFp0VWc3aFErV3JyRExoZGJUR3VOS2EzRkhz?=
+ =?utf-8?B?aG56aDJnVElvTG1XbUN6aDFVRmxNUGdQcklLTU4vM05rTWs3U0dLMERjem9z?=
+ =?utf-8?B?V2JNQmJqS1RHRFhtQkNNZ0x1N1dyYzhBTnRHRzlpWDFEZjZoMDRQcUlWV0p1?=
+ =?utf-8?B?UlhpQlRaNXdveVRDbFNuMmtvTHUxTG42T3RXWGRkdVlMOTNCVFQ5cnlWMExV?=
+ =?utf-8?B?N2NNckNZeSsyTGF6ZUU0dGI3dWRsSDV3SUlLbFNKQUpwZWFxNzI3SWNzRGhD?=
+ =?utf-8?B?UWovVjQ4M2s0MFJtTUt6WXE0WGYzOVl3cW1XQWhXVm04MmdLem8vQmZUcyt6?=
+ =?utf-8?B?anR5Vk9KTDVITWtmVUM2bWt1Y1R6NWp4bWpDNzE2OVFQUlZ5cVZqMWpiK0h1?=
+ =?utf-8?B?WG9CQTc3Y09rUVI4ZkhSR3ZjS0RFdGZYbkxYbnBMOW1JeXV4WlR5Nm9YOTRi?=
+ =?utf-8?B?bmlKNTdnQXVnTkx0UzMrQUFFdDFPRWdHbXV3V2Q3eis4b0RyQ2VqcGF0MTJV?=
+ =?utf-8?B?YVNzcjg2Q255ZDczblVuTU53dkcyaEpaMFh1NnJKV0ZzNThGTnNyYXg0NUVF?=
+ =?utf-8?B?cDQ3dTk0QVd6QUJLOU9GZjRvZTBWMEdWaTdJYUgxNThVdmRKWXlVUXp6eExn?=
+ =?utf-8?B?U2JUZlpIR2hndXFRdllZZlVHSFhrbzFpVmQ3Wkl6R3Z5NGFLMEtyVW9Tbm5W?=
+ =?utf-8?B?SmJkTFNqUmxvNFBrRzBmSHFsbWRTZ2JPR1AyTnZhcGFjTzJQYnRzOHlXNFJB?=
+ =?utf-8?B?OWcrMHh3cTFQZDdlTlJuajZ5aTByNmtuMW85ZkJaWDJRMEJURWdzc0VmdGlW?=
+ =?utf-8?B?dndhaDB5QWxEeTNhVEdmMEJzS1BZb3RmNWJpY2w1MWtmdFJzNnZGWm00NWNi?=
+ =?utf-8?B?ZTd2RjM2SHFpVzlRY0s5QlovRXRMSlQ0ZloxYTI4OWhJbGFXaG1ZWmI0VGVY?=
+ =?utf-8?B?anEvdWxtWnZTK3lFalQ0ZEZXRDVzMFZyQUZ2UjdQeENtZnV1aVV2S21nZ1BK?=
+ =?utf-8?B?QXU4cXo2Z2hsT2ptaUFPR0YxT0Y5RWlaTE9nUXZCbi90TDMxb2RhYnZNWWU1?=
+ =?utf-8?B?VFhsZ1JQYTNtcDBYa2R3dz09?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?RWwyYU5jNS9ITmJyc3VCdkhDZ1I1RmdwRVk1OXZWR1VGSDg4UHh1RHdGbi9I?=
- =?utf-8?B?ZDROZ2lpQzBKOTR3amRFQ0dBTzNPZ0ZXSlFGY3dvR3dQV2EyME81c1Z1bzA2?=
- =?utf-8?B?bG5yOWd1MndSN0FSVFBFUnFrZjIrV1p0TGJ3d2VKYVdLNEdBOFBrRzErb3Ji?=
- =?utf-8?B?YkwzQUVVTFQrZ04vYTJhQXVad3d6L2RzTjloMkVHVE5tK0NEcFFjRTFnNlk0?=
- =?utf-8?B?T1p4Q1JBc3hXK2ttK1N3cmlKNXZNSzNPL1YwUDBZdk9KVDhPWDRjSXdLTzhp?=
- =?utf-8?B?MGtBRCtSV21XVTJZV0FjSGVuUVJaVXJFVU1oQm1nVm5rYjBUWWxHMCtteDY5?=
- =?utf-8?B?REgxdk1sM0tRWDhLVU05a2Y2UUd2WW5OV21aVGpNQ3VGRWtrWmZHVE5lcTZa?=
- =?utf-8?B?eWJrZzVEREVVS3h5Z2NPN0VvbWhMVzNYdGk1TEdpa3B6ZzJSN1EzUkcxbkVl?=
- =?utf-8?B?SGg3blEyYllueis3SXBtZlpuWXQ1QzVQRmFiZThCZU9ldmtyV3hLeGhHdmt4?=
- =?utf-8?B?QkE0T3dmMjdLUzArT3FmSkdhTjB2TG9EcXVnV0NmUU11WmxmN1Z0b3RYdmoz?=
- =?utf-8?B?Wks4YVF6Qm5ndDBnUkJGdE15bnJWbkFhYUliM3JXSDU4ZXg5UUVwR3dSeGpk?=
- =?utf-8?B?cFZPQkZ5L01RckllMEt5b3lZOVVmM3pSc0RpN0JsRVoyU0s3VHh0blBLaCtx?=
- =?utf-8?B?UHQ1Yis3b0hYRXNsN1lOWnY4d3B5dDdOajZjOUhJc0hFWTVSSzFtak05aHhu?=
- =?utf-8?B?VDlrRVYySitacXZ4M2psa0FsRDYrMU5LOGdQWlFPUHU1MThzWi9KWTY3VVBG?=
- =?utf-8?B?bU5nT09ZaDJIb0cxRDNQN045S0J3SmNFRzFpRnFBMGhsN3VCMDV0UExWK0Jl?=
- =?utf-8?B?aG5mbGg1UmEvZ3A2UG4ybjFWeU1lVHg4cXpEa3RFKy9zM2NNWjdsUzBMZ0Zn?=
- =?utf-8?B?dzgyZUxwc2dnVHEzcVg5VU1VdndRUEN5MkZoUnlDbUZUcUNDRXU4Q1ByeUFa?=
- =?utf-8?B?Ty9PbkdCeU15NVRLcDVKQnI2bGNLVS9nY0VMTzVGRVk4VS83UWhjMHE3b3Vj?=
- =?utf-8?B?dE1HMWVQOFAzekgwY2FKNE5kK3JKcWszaFFoSWl1V1N3NmZOTmNQYWtCc2Zr?=
- =?utf-8?B?ankzL1VNTlBPVVJtdktPUm1xOS9NNk5hYVJocG5uVVR4aU50aHgzbkpjeUY5?=
- =?utf-8?B?REs2TDFEejVxcWE3YnROdEgvMWFkbFdNY3FKTUNJOHhBMzYzSWFNa1pvL2dm?=
- =?utf-8?B?dm5JZmxvU3k3YTgxU25PYnJqRVY3WDB5cTFwZmxmRmE1bTZTS3lZZzA0ZXEr?=
- =?utf-8?B?blVvMEdiaUtmSldsK1VWdzJ6MEp3OThmd0RZUDFVdTRVcDdNeHJLeFV3cjJk?=
- =?utf-8?B?eXlHS0FlcmV6cmgvTk56SE9QbnNIOU92REhUS0FtbmFDUnE4aG5VOGdUQ1lw?=
- =?utf-8?B?ejE3NnIwcTdUVkYrSmRLNEFIUkNoSElGT3RVbDVUazJkWkhURSt6aitCRHg2?=
- =?utf-8?B?T2h3ODVlS24xcksrT2hJam01d2NKVlc0bDFDTHlxQmRxWUV2eThhOHJSL0hx?=
- =?utf-8?B?RTRsVHVmbDdRVEJjK2ZoWjhkYzBEWHMxSytYRGM1VGZkWUxObGlIbnJpdlFo?=
- =?utf-8?B?TE1ZNS9xMXQwQkg2R3BLN3ZWdmhkS3NDa2dFVXltOW1uQnN2dXRjQmJFOEpB?=
- =?utf-8?B?eEFRNDU5WFFwb0d4MFcxS1ROdC9DOWtLd0FMcVZOL3hpWXVkbmVueFJ3dFBl?=
- =?utf-8?B?enE0R2psdnJhR21OREw2cURFREk1VjFJUjIwbW95dnk4bWlNL0w3OEpUUE1Q?=
- =?utf-8?B?Y2ZEQWZBYnVHemdWWnlCUUErU0h0M0pBMmI4b1g4TXlmdjdNaEIxNTZNV1J3?=
- =?utf-8?B?cVFEMkNvMnFncUxqcXBueWt5bDJyQitHQW1acytPdEJFODBJV1VQcUVoWkI3?=
- =?utf-8?B?UnROZjhWTllqZHhuRGV3R2ljalh3RkdhVTBhQXo5S3VrSnJQeHdoWkdXU1B0?=
- =?utf-8?B?eTgrSWtVeTJROWxEaDcxYTRLYlkwa1hNOHBvTVV3d0Zzc1JGaWN5bWh6c3Bm?=
- =?utf-8?B?K0FNQnQwZnZHTWVWMFdaVU95SUt2WWdJc2tYeXpYOHJBSjZWVCtONUNlaldI?=
- =?utf-8?B?TURrY01UQklPcnJWRE9MZGdsQWxiajVITUk4OWp0UHFpWFFwR1hYYlloTkJo?=
- =?utf-8?B?Y3c9PQ==?=
+	=?utf-8?B?L3BLVmRDUElxOEk1YW5IVWZ0ZTlZaFlyTDBsRERYdkc2RmFtUHFkOE85eWFx?=
+ =?utf-8?B?eUZvdDhNcTZtVE5wR2piMEVrSUdwWnRyUEw3NXM2RU5VQU0vVGU4K1ViSXZR?=
+ =?utf-8?B?Y1BSbGdmcXNYK0ZWR092NW1weG1hZmVsUWtYUTZEc1BEV2dNSlBqeHF2dEVI?=
+ =?utf-8?B?V3dxR3QzN3hrYjF4SEc0djdQb2ZKdWdFbkcrSkh0TTNSMWg1bkRENDY5NWVG?=
+ =?utf-8?B?czhrUE5WOUp6dkdZN2xBdmxhMm92eHVhMjVJZzJtamZINFhpekhEQkdGMTlh?=
+ =?utf-8?B?NVFtZW9rUkhnZzRoeXlrVmVsUXZDdlVuZWtSTVBoaVF0L09TWUQvbE82MFQ5?=
+ =?utf-8?B?UDlCdUpmOUhHamxYRXJVZjR2Zm5vMk83cE5IYVowMFBKSDVUZ1M5TEw0b0lK?=
+ =?utf-8?B?aGVQQUdZenExWnp3N1QzNGEzbG1PZllRbVRMOFpuYVZ2Y0pKaWpDbmxBZ2t5?=
+ =?utf-8?B?TDdNcTB5dlpMT1YveGpFSnNYdCsvZE10b2x1V0dpWEk2Uy9oUCtpYnJ4R1Bn?=
+ =?utf-8?B?bDB3dXBUeXFnb3U5OXJLcU83SjFlNWsvaGtyN3JrLzhMTFkveVNSbXNBUzcx?=
+ =?utf-8?B?WWtDWnJ6WlRVQTkrWkdvYjZyYWJ2NUxON0UzVnl4TUtEMVhFWnVJWS96M3Nm?=
+ =?utf-8?B?K0ppU1phYTVWR2d3aWlWQng4VGJ3ZnVBcDdldGhLYnB0Zk9FR0lVMkJFNjEr?=
+ =?utf-8?B?R3BHb3IxbkJlZ1pZNlgwNTYzTWc1N040M0VuN2FMY2F1ZERUTXRhUzl5aExY?=
+ =?utf-8?B?R0xDQ2JLSHFWbGVlRVM3V1dkR3BIc1J2RFYxZEVYY01JcTlVOHYrRnF5dzNk?=
+ =?utf-8?B?THhzbFZ3RjNNNDY1M3pNcEFXdmNwT1RNeTdSZlo5bTdDdVl4UExYK1BBcVFv?=
+ =?utf-8?B?Uk9wcUxrVVhERHNiNFpaSHVwK2twWnppR0xicW9hTTlnUllodHc1WEV4N1lX?=
+ =?utf-8?B?TWd1aUc5OWp4YStRN2dDbnhLaHc1ejZ4RldsTCsweTkyVGxtbVNnZmxDR2F5?=
+ =?utf-8?B?RC9OQjRpWVlNK2pHZm9aY0lwTkc5TlhsaWRFOVovWWUzelRqZTl4UFpCQzZ4?=
+ =?utf-8?B?VTdGejNZbTZjVTlacDNQczNWcDdpTnZuWUFNeDdUUnYzOUU4K3BIRitkYjhr?=
+ =?utf-8?B?WnBTWHdwbzVTR2lWM3V4SEhOaXRJcVA5d3Q0dmI3N3JwQ0xJUklFZ3lyd29p?=
+ =?utf-8?B?UGNuckdHM3REV3I1QWcyeTVCUWNib0QwamVlYU1hMnBmWnorVUVrZ0JPblJI?=
+ =?utf-8?B?bjRHMnhxYnhHZzNsL2hlZ25HZWpIb3BRWmpmUjN4K3EvWU5kdU9oaEV5UTYr?=
+ =?utf-8?B?RWt2YUI3STI4SytnMGNRajNXNE11Z1hWK3E1Mm1XYWZpNTQwYS9aT0tFM1Ez?=
+ =?utf-8?B?UE9Fbk40OVdwMXhRQlVveHBNS0lOWGlUelFoSUROa0E1SUMvSklqZE9tV3Qy?=
+ =?utf-8?B?S2kxb3VNK3hiTkh5QldIVTNISC9kbGc2d1pIWlVLUWdqOEVPbFk3cGhYSitI?=
+ =?utf-8?B?dG9PNlBrdWlIcGZjSGZBQkdjdGZCRGlEUjFWbUlTTTg1VHNDSms2TFBLVmhj?=
+ =?utf-8?B?clBGbVdrSFpKUTgwdEM5Mi9NemVtenZOZzFNTkRtN1VRQ3RreGdUTlJiZEt1?=
+ =?utf-8?B?eG11Um1nY0srMGFSQ3pxWm84U3VPaDNlOTI2U210L0Q0MFNzWXcrc1dDdUFK?=
+ =?utf-8?B?aURVZGJDd0gyR2p5RFNrV3kxK1VhVXhNLzlONHJZcW9GUUpFdVBsZXJkbmZJ?=
+ =?utf-8?B?WTFhMVVKRXpzam5kOVEzMVFMWDVjK0RoNGk2V1BpQVc0WTVSeFduSDZ1QVI4?=
+ =?utf-8?B?OVEzcEgwdjBuNm9pRHpVZHQ5L2VUb2RTci9zdDNhZCsrZldaUGVmai9PbmQy?=
+ =?utf-8?B?YUVWV0VtUlVIQ2N2aWpXUGpia0xsZmxWQXB1QndBTmhtYU5TVVhLaG55dTZM?=
+ =?utf-8?B?Y1FXNGxobXNtUktWZEp2TmJnUUJKSmpseXc2emp4QlZSVmRtU3hNNTdhRDNP?=
+ =?utf-8?B?Z21jb2JtR2NXc0xrVWVRaFJlY09DV2NFUk9jTW1DcW5jUjdlT0Y3aElHOXBO?=
+ =?utf-8?B?dGt6NzkwNEtZakxGdXB1a29GSGRaQ2xRcUlvYWJ5SWx4dXIrczFqL3c1R1Rl?=
+ =?utf-8?B?VXp2OXJ6MFlEczkxVTlSZ0tZU0RLU3hReFVmTTErR3M2Tlc3Qk9vSGt0YlpN?=
+ =?utf-8?B?RVE9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6661e5d3-8526-43b4-4cd5-08dc9b7efa79
+X-MS-Exchange-CrossTenant-Network-Message-Id: 62a36e92-d94b-4cdf-99df-08dc9b801e28
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2024 16:41:25.1117
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2024 16:49:34.4699
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vKIzqpBFcUqMHu8WySR/+447dyPXK+U0mh3OY/vFSncA/BWXmY+xpI+//9+5/xWxxgUZdwlIdgNT5hFWBs6Uaw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR10MB5772
+X-MS-Exchange-CrossTenant-UserPrincipalName: yEaPtrbZmOVPa7FjzqyV+ASpknjDeqiD5FE7gsJcRR1ViDKlofXx4lLffUaekFQUwxYCLoIp/1NCtkRmHnowhA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB4PR10MB7520
 
-On 01.07.24 09:08, Yi Jiang wrote:
-> Hi, all,
+On 03.07.24 15:25, Florian Bezdeka wrote:
+> There were a lot of (rtdm_)printk() calls with missing log level
+> information. The default level (= warn) does not fit well for most of
+> them.
 > 
-> this patch series integrate RPi4 to the LAVA, which support Xenomai (kernel version 6.6) to be deployed on RPi4 remotely.
+> Adding log levels is addressed by migrating to the pr_*() API.
 > 
-> Changelog:
-> v1 -> v2:
-> - change the order of [PATCH 3/4] and [PATCH 4/4]
-> - [PATCH v2 1/4]: add a new commit message to clarify that U-boot cannot take use of the local DTB file on the board, therefore we must provide the DTB for LAVA.
-> - [PATCH v2 4/4]: remove rpi4 setup for kernel 5.10, 5,15, 6.1; remove hikey setup for kernel 6.6.
-> 
-> Best regards,
-> Yi Jiang
-> 
-> Yi Jiang (4):
->   ci: specify the dtb file for rpi4 in machine conf
->   ci: add gitlab-ci-base configurations for rpi4
->   ci: add test job configurations for rpi4
->   ci: use rpi4 instead of hikey for kernel 6.6 deployment
-> 
->  ci/gitlab-ci-base.yml       | 14 +++++++-
->  ci/kernel_6_6.yml           | 10 +++---
->  conf/machine/rpi4.conf      |  2 ++
->  tests/jobs/xenomai-rpi4.yml | 72 +++++++++++++++++++++++++++++++++++++
->  4 files changed, 92 insertions(+), 6 deletions(-)
->  create mode 100644 tests/jobs/xenomai-rpi4.yml
-> 
+> No functional change.
 
-Thanks, all applied, and the pipeline worked fine (for this device, we
-have an unrelated regression on the beaglebone right now).
+Besides the rewrapping topic below: By giving the outputs a log-level,
+you do have a functional change. Some messages may now only appear if
+the system is set to the right loglevel. Not agains the change, just
+against this statement.
+
+> 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h  | 16 ++---
+>  .../analogy/national_instruments/mio_common.c      |  3 +
+>  kernel/drivers/analogy/national_instruments/mite.c | 68 +++++++++++-----------
+>  .../drivers/analogy/national_instruments/ni_660x.c |  2 +
+>  .../drivers/analogy/national_instruments/ni_mio.h  |  2 +-
+>  .../drivers/analogy/national_instruments/ni_stc.h  | 19 +++---
+>  .../drivers/analogy/national_instruments/pcimio.c  | 21 +++----
+>  7 files changed, 69 insertions(+), 62 deletions(-)
+> 
+> diff --git a/include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h b/include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h
+> index 1de219f96..2adcb15b5 100644
+> --- a/include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h
+> +++ b/include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h
+> @@ -35,14 +35,14 @@
+>  
+>  #define RTDM_SUBCLASS_ANALOGY 0
+>  
+> -#define __a4l_err(fmt, args...)  rtdm_printk(KERN_ERR A4L_PROMPT fmt, ##args)
+> -#define __a4l_warn(fmt, args...) rtdm_printk(KERN_WARNING A4L_PROMPT fmt, ##args)
+> +#define __a4l_err(fmt, args...)  pr_err(A4L_PROMPT fmt, ##args)
+> +#define __a4l_warn(fmt, args...) pr_warn(A4L_PROMPT fmt, ##args)
+>  
+>  #ifdef  CONFIG_XENO_DRIVERS_ANALOGY_DEBUG_FTRACE
+>  #define __a4l_info(fmt, args...) trace_printk(fmt, ##args)
+>  #else
+> -#define __a4l_info(fmt, args...) 						\
+> -        rtdm_printk(KERN_INFO A4L_PROMPT "%s: " fmt, __FUNCTION__, ##args)
+> +#define __a4l_info(fmt, args...) \
+> +	pr_info(A4L_PROMPT "%s: " fmt, __FUNCTION__, ##args)
+>  #endif
+>  
+>  #ifdef CONFIG_XENO_DRIVERS_ANALOGY_DEBUG
+> @@ -53,10 +53,10 @@
+>  		trace_printk(fmt, ##args); 				\
+>  	} while (0)
+>  #else
+> -#define __a4l_dbg(level, debug, fmt, args...)						\
+> -	do {										\
+> -	if ((debug) >= (level))								\
+> -		rtdm_printk(KERN_DEBUG A4L_PROMPT "%s: " fmt, __FUNCTION__ , ##args);	\
+> +#define __a4l_dbg(level, debug, fmt, args...)                                  \
+> +	do {                                                                   \
+> +		if ((debug) >= (level))                                        \
+> +			pr_debug(A4L_PROMPT "%s: " fmt, __FUNCTION__, ##args); \
+>  	} while (0)
+>  #endif
+>  
+> diff --git a/kernel/drivers/analogy/national_instruments/mio_common.c b/kernel/drivers/analogy/national_instruments/mio_common.c
+> index 7cd57ecf2..ae9af547a 100644
+> --- a/kernel/drivers/analogy/national_instruments/mio_common.c
+> +++ b/kernel/drivers/analogy/national_instruments/mio_common.c
+> @@ -42,6 +42,9 @@
+>   *   as yet. Terry Barnaby, BEAM Ltd.
+>   *
+>   */
+> +
+> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> +
+>  #include <linux/module.h>
+>  #include <linux/slab.h>
+>  #include "../intel/8255.h"
+> diff --git a/kernel/drivers/analogy/national_instruments/mite.c b/kernel/drivers/analogy/national_instruments/mite.c
+> index 2f2014bcd..736656f06 100644
+> --- a/kernel/drivers/analogy/national_instruments/mite.c
+> +++ b/kernel/drivers/analogy/national_instruments/mite.c
+> @@ -41,11 +41,13 @@
+>   * ISSUES:
+>   */
+>  
+> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> +
+>  #include <linux/module.h>
+>  #include "mite.h"
+>  
+>  #ifdef CONFIG_DEBUG_MITE
+> -#define MDPRINTK(fmt, args...) rtdm_printk(fmt, ##args)
+> +#define MDPRINTK(fmt, args...) pr_debug(fmt, ##args)
+>  #else /* !CONFIG_DEBUG_MITE */
+>  #define MDPRINTK(fmt, args...)
+>  #endif /* CONFIG_DEBUG_MITE */
+> @@ -254,17 +256,14 @@ void a4l_mite_list_devices(void)
+>  {
+>  	struct list_head *this;
+>  
+> -	printk("Analogy: MITE: Available NI device IDs:");
+> +	pr_info("Analogy: MITE: Available NI device IDs:\n");
+>  	list_for_each(this, &mite_devices) {
+>  		struct mite_struct *mite =
+>  			list_entry(this, struct mite_struct, list);
+>  
+> -		printk(" 0x%04x", mite_device_id(mite));
+> -		if(mite->used)
+> -			printk("(used)");
+> +		pr_info(" 0x%04x%s\n", mite_device_id(mite),
+> +			mite->used ? " (used)" : "");
+>  	}
+> -
+> -	printk("\n");
+
+Hmm, no functional changes...? Is there a reason to rewrap the lines here...
+
+>  }
+>  
+>  
+> @@ -399,7 +398,7 @@ int a4l_mite_buf_change(struct mite_dma_descriptor_ring *ring, struct a4l_subdev
+>  				   n_links * sizeof(struct mite_dma_descriptor),
+>  				   &ring->descriptors_dma_addr, GFP_ATOMIC);
+>  	if (!ring->descriptors) {
+> -		printk("MITE: ring buffer allocation failed\n");
+> +		pr_err("MITE: ring buffer allocation failed\n");
+>  		return -ENOMEM;
+>  	}
+>  	ring->n_links = n_links;
+> @@ -716,63 +715,62 @@ void a4l_mite_dump_regs(struct mite_channel *mite_chan)
+>  	unsigned long addr = 0;
+>  	unsigned long temp = 0;
+>  
+> -	printk("a4l_mite_dump_regs ch%i\n", mite_chan->channel);
+> -	printk("mite address is  =0x%08lx\n", mite_io_addr);
+> +	pr_info("a4l_mite_dump_regs ch%i\n", mite_chan->channel);
+> +	pr_info("mite address is  =0x%08lx\n", mite_io_addr);
+>  
+>  	addr = mite_io_addr + MITE_CHOR(mite_chan->channel);
+> -	printk("mite status[CHOR]at 0x%08lx =0x%08lx\n", addr, temp =
+> -	       readl((void *)addr));
+> +	pr_info("mite status[CHOR]at 0x%08lx =0x%08lx\n", addr,
+> +		temp = readl((void *)addr));
+>  	a4l_mite_decode(mite_CHOR_strings, temp);
+>  	addr = mite_io_addr + MITE_CHCR(mite_chan->channel);
+> -	printk("mite status[CHCR]at 0x%08lx =0x%08lx\n", addr, temp =
+> -	       readl((void *)addr));
+> +	pr_info("mite status[CHCR]at 0x%08lx =0x%08lx\n", addr,
+> +		temp = readl((void *)addr));
+>  	a4l_mite_decode(mite_CHCR_strings, temp);
+>  	addr = mite_io_addr + MITE_TCR(mite_chan->channel);
+> -	printk("mite status[TCR] at 0x%08lx =0x%08x\n", addr,
+> -	       readl((void *)addr));
+> +	pr_info("mite status[TCR] at 0x%08lx =0x%08x\n", addr,
+> +		readl((void *)addr));
+>  	addr = mite_io_addr + MITE_MCR(mite_chan->channel);
+> -	printk("mite status[MCR] at 0x%08lx =0x%08lx\n", addr, temp =
+> -	       readl((void *)addr));
+> +	pr_info("mite status[MCR] at 0x%08lx =0x%08lx\n", addr,
+> +		temp = readl((void *)addr));
+>  	a4l_mite_decode(mite_MCR_strings, temp);
+>  
+>  	addr = mite_io_addr + MITE_MAR(mite_chan->channel);
+> -	printk("mite status[MAR] at 0x%08lx =0x%08x\n", addr,
+> -	       readl((void *)addr));
+> +	pr_info("mite status[MAR] at 0x%08lx =0x%08x\n", addr,
+> +		readl((void *)addr));
+>  	addr = mite_io_addr + MITE_DCR(mite_chan->channel);
+> -	printk("mite status[DCR] at 0x%08lx =0x%08lx\n", addr, temp =
+> -	       readl((void *)addr));
+> +	pr_info("mite status[DCR] at 0x%08lx =0x%08lx\n", addr,
+> +		temp = readl((void *)addr));
+>  	a4l_mite_decode(mite_DCR_strings, temp);
+>  	addr = mite_io_addr + MITE_DAR(mite_chan->channel);
+> -	printk("mite status[DAR] at 0x%08lx =0x%08x\n", addr,
+> -	       readl((void *)addr));
+> +	pr_info("mite status[DAR] at 0x%08lx =0x%08x\n", addr,
+> +		readl((void *)addr));
+>  	addr = mite_io_addr + MITE_LKCR(mite_chan->channel);
+> -	printk("mite status[LKCR]at 0x%08lx =0x%08lx\n", addr, temp =
+> -	       readl((void *)addr));
+> +	pr_info("mite status[LKCR]at 0x%08lx =0x%08lx\n", addr,
+> +		temp = readl((void *)addr));
+>  	a4l_mite_decode(mite_LKCR_strings, temp);
+>  	addr = mite_io_addr + MITE_LKAR(mite_chan->channel);
+> -	printk("mite status[LKAR]at 0x%08lx =0x%08x\n", addr,
+> -	       readl((void *)addr));
+> +	pr_info("mite status[LKAR]at 0x%08lx =0x%08x\n", addr,
+> +		readl((void *)addr));
+>  
+>  	addr = mite_io_addr + MITE_CHSR(mite_chan->channel);
+> -	printk("mite status[CHSR]at 0x%08lx =0x%08lx\n", addr, temp =
+> -	       readl((void *)addr));
+> +	pr_info("mite status[CHSR]at 0x%08lx =0x%08lx\n", addr,
+> +		temp = readl((void *)addr));
+>  	a4l_mite_decode(mite_CHSR_strings, temp);
+>  	addr = mite_io_addr + MITE_FCR(mite_chan->channel);
+> -	printk("mite status[FCR] at 0x%08lx =0x%08x\n\n", addr,
+> -	       readl((void *)addr));
+> +	pr_info("mite status[FCR] at 0x%08lx =0x%08x\n\n", addr,
+> +		readl((void *)addr));
+>  }
+>  
+> -
+>  static void a4l_mite_decode(const char *const bit_str[], unsigned int bits)
+>  {
+>  	int i;
+>  
+>  	for (i = 31; i >= 0; i--) {
+>  		if (bits & (1 << i)) {
+> -			printk(" %s", bit_str[i]);
+> +			pr_info(" %s", bit_str[i]);
+>  		}
+>  	}
+> -	printk("\n");
+> +	pr_info("\n");
+
+...but not here?
 
 Jan
 
