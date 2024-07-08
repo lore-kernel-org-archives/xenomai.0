@@ -1,478 +1,240 @@
-Received: from EX2019-1.sgssemi.com (mail.sgssemi.com [103.220.74.238])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EA076FB9
-	for <xenomai@lists.linux.dev>; Mon,  8 Jul 2024 04:15:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.220.74.238
+Received: from m15.mail.126.com (m15.mail.126.com [45.254.50.224])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id A32F679F2
+	for <xenomai@lists.linux.dev>; Mon,  8 Jul 2024 04:38:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.254.50.224
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720412130; cv=none; b=d5qvY1SlI1f+qFe3FN0wTs8CjJTENmV3MvNwtEWBJmnEeViU2k6FZGDUbEPv6FuwiD+uKkW8Ozf5fOThMcdhXvbM79CvbpGLwwMeAVrD+8SvY8uOJmYpNmXyNXsBKh3rILdFknCoMY3Y7rUpvpiwdLYItmOiXiA1MmuEz6SlQyo=
+	t=1720413524; cv=none; b=WOuKkye8h2zaVG2o1crEvmysRALsmhO/v5iPfBZMhWT0BIsg+DGEZFe4d3Ric67SAbS4LwCBaiaz4xdpAJXE12sHF/yp+bistiGrFKvQYK8WSRsoKQBZm9lFKyAuYcZxQJa+hsJCIAV8WeP8a3ImCdejJ8lAU/bzMEIP/ku2P94=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720412130; c=relaxed/simple;
-	bh=LQkn5O9EypCmZ8frgYVNWJOwq0dcQknWmjcYR/yWu7Q=;
-	h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version; b=PpzWpHbcOEUXgMMZFkwaL5PrGvZbQ1H25uUulCe8vs/cgHIMcJvhaTx8yx51g9g9cEJh2d///NQfdklEzsw/LkByA1x7adsi632PeiPtAtvDah1wPmVlbmwT2rrvy2j9aaqcFoOkKQfm78+yIyfOSatenn07bSQ9QHKv0e9FyD8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sgssemi.com; spf=pass smtp.mailfrom=sgssemi.com; arc=none smtp.client-ip=103.220.74.238
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sgssemi.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sgssemi.com
-Received: from EX2019-2.sgssemi.com (10.121.10.5) by EX2019-1.sgssemi.com
- (10.121.10.4) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1118.7; Mon, 8 Jul 2024
- 12:00:09 +0800
-Received: from EX2019-2.sgssemi.com ([fe80::8dbb:4941:901f:e7ff]) by
- EX2019-2.sgssemi.com ([fe80::8dbb:4941:901f:e7ff%9]) with mapi id
- 15.02.1118.007; Mon, 8 Jul 2024 12:00:09 +0800
-From: =?gb2312?B?TmluZ193ZWkozqTE/ik=?= <Ning_wei@sgssemi.com>
-To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+	s=arc-20240116; t=1720413524; c=relaxed/simple;
+	bh=9s3i3DW1RfxpTInY2f8HyHFJRS9AgfiECNdyc86FZkE=;
+	h=Date:From:To:Subject:Content-Type:MIME-Version:Message-ID; b=fFbnRNcnaF4cfkG420n6KQIA7nZBM78t9nMi6x/W5a+qJSrQhacfJ88TA9C/HsLRpS3QWA7L7sHL7d59BW3Rx1v+U74vt0vaUd8gVYWs5tR6qsqYxXjyOVaWIxJlixJoA8m5m2HsztjsdULXO7B/y3jJvnIWxdtXBnHm7WP7p94=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com; spf=pass smtp.mailfrom=126.com; dkim=pass (1024-bit key) header.d=126.com header.i=@126.com header.b=Id/JvBPZ; arc=none smtp.client-ip=45.254.50.224
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=126.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=126.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=126.com header.i=@126.com header.b="Id/JvBPZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=+DcWS5rVZRecu8VMIvpjtLg03p1Wz/+wkqYp23SYoZs=; b=I
+	d/JvBPZ+InefscrBjxrWk/59tDFvYKp6WPXTTCq1Co/yCR8U0kVVTAdTsczKUuev
+	KK1LWYQlPH5VmvZ8mkyUMqebTrltJ8qqGeUHWFgdK+f1XHD4O/8QICMxlFIMKFzl
+	sP5fNZGf6IUKvcY/FTUc+B1ElaQUXUx11cLaZmROPE=
+Received: from tcwntc$126.com ( [218.25.85.12] ) by
+ ajax-webmail-wmsvr-41-114 (Coremail) ; Mon, 8 Jul 2024 11:53:11 +0800 (CST)
+Date: Mon, 8 Jul 2024 11:53:11 +0800 (CST)
+From: Ning <tcwntc@126.com>
+To: xenomai@lists.linux.dev
 Subject: KernelOops xenomai3
-Thread-Topic: KernelOops xenomai3
-Thread-Index: AdrQ61CiTnUgh4ulR7mIcaxunVHRPQ==
-Date: Mon, 8 Jul 2024 04:00:09 +0000
-Message-ID: <3f2cdc0ae2804139b7d7ff4112466647@sgssemi.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator:
-Content-Type: multipart/mixed;
-	boundary="_006_3f2cdc0ae2804139b7d7ff4112466647sgssemicom_"
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20230109(dcb5de15)
+ Copyright (c) 2002-2024 www.mailtech.cn 126com
+X-NTES-SC: AL_Qu2ZAviav08i5yCcbOkXm0oWgOs/WMazuP8h3oZXP5E0ky7z0BoHR2ZyG1fxy8SlMiKgqQGHXyN87PRZfJVqQLg6i6Ta/MGGlDW8TjduaOgL
+Content-Type: multipart/mixed; 
+	boundary="----=_Part_61975_967223543.1720410791052"
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Message-ID: <58e7c003.4261.19090795c8d.Coremail.tcwntc@126.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:_____wD3P2yoYotmZWQkAA--.10600W
+X-CM-SenderInfo: hwfz03bf6rjloofrz/1tbirwgW4WVLavNy7gAAs7
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
---_006_3f2cdc0ae2804139b7d7ff4112466647sgssemicom_
-Content-Type: multipart/alternative;
-	boundary="_000_3f2cdc0ae2804139b7d7ff4112466647sgssemicom_"
+------=_Part_61975_967223543.1720410791052
+Content-Type: multipart/alternative; 
+	boundary="----=_Part_61977_106228992.1720410791052"
 
---_000_3f2cdc0ae2804139b7d7ff4112466647sgssemicom_
-Content-Type: text/plain; charset="gb2312"
+------=_Part_61977_106228992.1720410791052
+Content-Type: text/plain; charset=GBK
 Content-Transfer-Encoding: base64
 
-SGkgYWxsLA0KDQpUaGVyZSBhcmUgc29tZSBLZXJuZWxPb3BzZXMgd2hlbiBJIHJ1biBJZ0ggRXRo
-ZXJDQVQgbWFzdGVyLg0KSXQgc2VlbXMgdGhlIG9vcHNlcyBkaWQgbm90IGltcGFjdCB0aGUgc3lz
-dGVtIGFuZCB0aGUgcHJvY2VzcyBydW5uaW5nLg0KSSBhdHRhY2ggdGhlIC5jb25maWcgZmlsZS4N
-CkNvdWxkIHlvdSBwbGVhc2UgZ2l2ZSBtZSBzb21lIHN1Z2dlc3Rpb25zPw0KDQpLZXJuZWw6IDUu
-NC4xMDINClByb2JsZW1UeXBlOiBLZXJuZWxPb3BzDQpBbm5vdGF0aW9uOiBZb3VyIHN5c3RlbSBt
-aWdodCBiZWNvbWUgdW5zdGFibGUgbm93IGFuZCBtaWdodCBuZWVkIHRvIGJlIHJlc3RhcnRlZC4N
-CkRhdGU6IEZyaSBKdWwgIDUgMTg6MTc6MTQgMjAyNA0KRmFpbHVyZTogb29wcw0KT29wc1RleHQ6
-DQogRXRoZXJDQVQgREVCVUcgMC05OiBFeHBlZGl0ZWQgZG93bmxvYWQgcmVxdWVzdDoNCiBFdGhl
-ckNBVCBERUJVRzogMDAgMjAgMkYgMTMgMUMgMDAgMDIgMDAgMDAgMDANCiBFdGhlckNBVCBERUJV
-RyAwLTk6IERvd25sb2FkIHJlc3BvbnNlOg0KIEV0aGVyQ0FUIERFQlVHOiAwMCAzMCA2MCAxMyAx
-QyAwMCAwMiAwMCAwMCAwMA0KIEV0aGVyQ0FUIERFQlVHIDAtOTogU3VjY2Vzc2Z1bGx5IGNvbmZp
-Z3VyZWQgUERPIGFzc2lnbm1lbnQgb2YgU00zLg0KIEV0aGVyQ0FUIERFQlVHIDAtOTogU00yOiBB
-ZGRyIDB4MTEwMCwgU2l6ZSAgNDgsIEN0cmwgMHgyNCwgRW4gMQ0KIEV0aGVyQ0FUIERFQlVHIDAt
-OTogU00zOiBBZGRyIDB4MTIyMCwgU2l6ZSAgNDgsIEN0cmwgMHgyMCwgRW4gMQ0KIEV0aGVyQ0FU
-IERFQlVHIDAgMDo5OiBGTU1VOiBMb2dBZGRyIDB4MDEwMDAwNjksIFNpemUgIDQ4LCBQaHlzQWRk
-ciAweDExMDAsIFNNMiwgRGlyIG91dA0KIEV0aGVyQ0FUIERFQlVHIDAgMDo5OiBGTU1VOiBMb2dB
-ZGRyIDB4MDEwMDAwNjksIFNpemUgIDQ4LCBQaHlzQWRkciAweDEyMjAsIFNNMywgRGlyIGluDQog
-RXRoZXJDQVQgREVCVUcgMC05OiBOb3cgaW4gU0FGRU9QLg0KIEV0aGVyQ0FUIERFQlVHIDAtOTog
-Tm93IGluIE9QLiBGaW5pc2hlZCBjb25maWd1cmF0aW9uLg0KIEV0aGVyQ0FUIDA6IFNsYXZlIHN0
-YXRlcyBvbiBtYWluIGRldmljZTogT1AuDQogRXRoZXJDQVQgMDogRG9tYWluIDA6IDggd29ya2lu
-ZyBjb3VudGVyIGNoYW5nZXMgLSBub3cgMjEvMjEgKDIxKzApLg0KDQpQYWNrYWdlOiBsaW51eC1p
-bWFnZS01LjQuMTAyLXhlbm9tYWkyNDA1MjcgMDEgW21vZGlmaWVkOiBsaWIvbW9kdWxlcy81LjQu
-MTAyLXhlbm9tYWkyNDA1MjcvbW9kdWxlcy5kZXAgbGliL21vZHVsZXMvNS40LjEwMi14ZW5vbWFp
-MjQwNTI3L21vZHVsZXMuc3ltYm9scyBsaWIvbW9kdWxlcy81LjQuMTAyLXhlbm9tYWkyNDA1Mjcv
-bW9kdWxlcy5zeW1ib2xzLmJpbiBsaWIvbW9kdWxlcy81LjQuMTAyLXhlbm9tYWkyNDA1MjcvbW9k
-dWxlcy5kZXAuYmluXSBbb3JpZ2luOiB1bmtub3duXQ0KU291cmNlUGFja2FnZTogbGludXgNClRh
-Z3M6IGtlcm5lbC1vb3BzDQpVbmFtZTogTGludXggNS40LjEwMi14ZW5vbWFpMjQwNTI3IHg4Nl82
-NA0KDQpQcm9ibGVtVHlwZTogS2VybmVsT29wcw0KQW5ub3RhdGlvbjogWW91ciBzeXN0ZW0gbWln
-aHQgYmVjb21lIHVuc3RhYmxlIG5vdyBhbmQgbWlnaHQgbmVlZCB0byBiZSByZXN0YXJ0ZWQuDQpE
-YXRlOiBNb24gSnVsICA4IDA5OjEwOjI2IDIwMjQNCkZhaWx1cmU6IG9vcHMNCk9vcHNUZXh0Og0K
-IEV0aGVyQ0FUIERFQlVHOiAwNCAxQQ0KIEV0aGVyQ0FUIERFQlVHIDAtOTogRXhwZWRpdGVkIGRv
-d25sb2FkIHJlcXVlc3Q6DQogRXRoZXJDQVQgREVCVUc6IDAwIDIwIDJCIDEzIDFDIDAxIDA0IDFB
-IDAwIDAwDQogRXRoZXJDQVQgREVCVUcgMC05OiBEb3dubG9hZCByZXNwb25zZToNCiBFdGhlckNB
-VCBERUJVRzogMDAgMzAgNjAgMTMgMUMgMDEgMDQgMUEgMDAgMDANCiBFdGhlckNBVCBERUJVRyAw
-LTk6IEFzc2lnbmluZyBQRE8gMHgxQTA1IGF0IHBvc2l0aW9uIDIuDQogRXRoZXJDQVQgREVCVUcg
-MC05OiBEb3dubG9hZGluZyBTRE8gMHgxQzEzOjAyLg0KIEV0aGVyQ0FUIERFQlVHOiAwNSAxQQ0K
-IEV0aGVyQ0FUIERFQlVHIDAtOTogRXhwZWRpdGVkIGRvd25sb2FkIHJlcXVlc3Q6DQogRXRoZXJD
-QVQgREVCVUc6IDAwIDIwIDJCIDEzIDFDIDAyIDA1IDFBIDAwIDAwDQogRXRoZXJDQVQgREVCVUcg
-MC05OiBEb3dubG9hZCByZXNwb25zZToNCiBFdGhlckNBVCBERUJVRzogMDAgMzAgNjAgMTMgMUMg
-MDIgMDUgMUEgMDAgMDANCiBFdGhlckNBVCBERUJVRyAwLTk6IFNldHRpbmcgbnVtYmVyIG9mIGFz
-c2lnbmVkIFBET3MgdG8gMi4NCiBFdGhlckNBVCBERUJVRyAwLTk6IERvd25sb2FkaW5nIFNETyAw
-eDFDMTM6MDAuDQogRXRoZXJDQVQgREVCVUc6IDAyDQogRXRoZXJDQVQgREVCVUcgMC05OiBFeHBl
-ZGl0ZWQgZG93bmxvYWQgcmVxdWVzdDoNCiBFdGhlckNBVCBERUJVRzogMDAgMjAgMkYgMTMgMUMg
-MDAgMDIgMDAgMDAgMDANCiBFdGhlckNBVCBERUJVRyAwLTk6IERvd25sb2FkIHJlc3BvbnNlOg0K
-IEV0aGVyQ0FUIERFQlVHOiAwMCAzMCA2MCAxMyAxQyAwMCAwMiAwMCAwMCAwMA0KIEV0aGVyQ0FU
-IERFQlVHIDAtOTogU3VjY2Vzc2Z1bGx5IGNvbmZpZ3VyZWQgUERPIGFzc2lnbm1lbnQgb2YgU00z
-Lg0KIEV0aGVyQ0FUIERFQlVHIDAtOTogU00yOiBBZGRyIDB4MTEwMCwgU2l6ZSAgNDgsIEN0cmwg
-MHgyNCwgRW4gMQ0KIEV0aGVyQ0FUIERFQlVHIDAtOTogU00zOiBBZGRyIDB4MTIyMCwgU2l6ZSAg
-NDgsIEN0cmwgMHgyMCwgRW4gMQ0KIEV0aGVyQ0FUIERFQlVHIDAgMDo5OiBGTU1VOiBMb2dBZGRy
-IDB4MDEwMDAwNjksIFNpemUgIDQ4LCBQaHlzQWRkciAweDExMDAsIFNNMiwgRGlyIG91dA0KIEV0
-aGVyQ0FUIERFQlVHIDAgMDo5OiBGTU1VOiBMb2dBZGRyIDB4MDEwMDAwNjksIFNpemUgIDQ4LCBQ
-aHlzQWRkciAweDEyMjAsIFNNMywgRGlyIGluDQogRXRoZXJDQVQgREVCVUcgMC05OiBOb3cgaW4g
-U0FGRU9QLg0KIEV0aGVyQ0FUIERFQlVHIDAtOTogTm93IGluIE9QLiBGaW5pc2hlZCBjb25maWd1
-cmF0aW9uLg0KIEV0aGVyQ0FUIDA6IFNsYXZlIHN0YXRlcyBvbiBtYWluIGRldmljZTogT1AuDQog
-RXRoZXJDQVQgMDogRG9tYWluIDA6IDggd29ya2luZyBjb3VudGVyIGNoYW5nZXMgLSBub3cgMjEv
-MjEgKDIxKzApLg0KIFsyMjY1NzUuODIzODEzXSBwZXJmOiBpbnRlcnJ1cHQgdG9vayB0b28gbG9u
-ZyAoMjUwMSA+IDI1MDApLCBsb3dlcmluZyBrZXJuZWwucGVyZl9ldmVudF9tYXhfc2FtcGxlX3Jh
-dGUgdG8gNzk3NTANCg0KUGFja2FnZTogbGludXgtaW1hZ2UtNS40LjEwMi14ZW5vbWFpMjQwNTI3
-IDAxIFttb2RpZmllZDogbGliL21vZHVsZXMvNS40LjEwMi14ZW5vbWFpMjQwNTI3L21vZHVsZXMu
-ZGVwIGxpYi9tb2R1bGVzLzUuNC4xMDIteGVub21haTI0MDUyNy9tb2R1bGVzLnN5bWJvbHMgbGli
-L21vZHVsZXMvNS40LjEwMi14ZW5vbWFpMjQwNTI3L21vZHVsZXMuc3ltYm9scy5iaW4gbGliL21v
-ZHVsZXMvNS40LjEwMi14ZW5vbWFpMjQwNTI3L21vZHVsZXMuZGVwLmJpbl0gW29yaWdpbjogdW5r
-bm93bl0NClNvdXJjZVBhY2thZ2U6IGxpbnV4DQpUYWdzOiBrZXJuZWwtb29wcw0KVW5hbWU6IExp
-bnV4IDUuNC4xMDIteGVub21haTI0MDUyNyB4ODZfNjQNCg0KDQoNClRoYW5rcywNCk1pbHRvbldl
-aQ0KDQo=
+SGkgYWxsLAoKClRoZXJlIGFyZSBzb21lIEtlcm5lbE9vcHNlcyB3aGVuIEkgcnVuIElnSCBFdGhl
+ckNBVCBtYXN0ZXIuIApJdCBzZWVtcyB0aGUgb29wc2VzIGRpZCBub3QgaW1wYWN0IHRoZSBzeXN0
+ZW0gYW5kIHRoZSBwcm9jZXNzIHJ1bm5pbmcuCkkgYXR0YWNoIHRoZSAuY29uZmlnIGZpbGUuCkNv
+dWxkIHlvdSBwbGVhc2UgZ2l2ZSBtZSBzb21lIHN1Z2dlc3Rpb25zPwoKCktlcm5lbDogNS40LjEw
+MgpQcm9ibGVtVHlwZTogS2VybmVsT29wcwpBbm5vdGF0aW9uOiBZb3VyIHN5c3RlbSBtaWdodCBi
+ZWNvbWUgdW5zdGFibGUgbm93IGFuZCBtaWdodCBuZWVkIHRvIGJlIHJlc3RhcnRlZC4KRGF0ZTog
+RnJpIEp1bCAgNSAxODoxNzoxNCAyMDI0CkZhaWx1cmU6IG9vcHMKT29wc1RleHQ6CiBFdGhlckNB
+VCBERUJVRyAwLTk6IEV4cGVkaXRlZCBkb3dubG9hZCByZXF1ZXN0OgogRXRoZXJDQVQgREVCVUc6
+IDAwIDIwIDJGIDEzIDFDIDAwIDAyIDAwIDAwIDAwIAogRXRoZXJDQVQgREVCVUcgMC05OiBEb3du
+bG9hZCByZXNwb25zZToKIEV0aGVyQ0FUIERFQlVHOiAwMCAzMCA2MCAxMyAxQyAwMCAwMiAwMCAw
+MCAwMCAKIEV0aGVyQ0FUIERFQlVHIDAtOTogU3VjY2Vzc2Z1bGx5IGNvbmZpZ3VyZWQgUERPIGFz
+c2lnbm1lbnQgb2YgU00zLgogRXRoZXJDQVQgREVCVUcgMC05OiBTTTI6IEFkZHIgMHgxMTAwLCBT
+aXplICA0OCwgQ3RybCAweDI0LCBFbiAxCiBFdGhlckNBVCBERUJVRyAwLTk6IFNNMzogQWRkciAw
+eDEyMjAsIFNpemUgIDQ4LCBDdHJsIDB4MjAsIEVuIDEKIEV0aGVyQ0FUIERFQlVHIDAgMDo5OiBG
+TU1VOiBMb2dBZGRyIDB4MDEwMDAwNjksIFNpemUgIDQ4LCBQaHlzQWRkciAweDExMDAsIFNNMiwg
+RGlyIG91dAogRXRoZXJDQVQgREVCVUcgMCAwOjk6IEZNTVU6IExvZ0FkZHIgMHgwMTAwMDA2OSwg
+U2l6ZSAgNDgsIFBoeXNBZGRyIDB4MTIyMCwgU00zLCBEaXIgaW4KIEV0aGVyQ0FUIERFQlVHIDAt
+OTogTm93IGluIFNBRkVPUC4KIEV0aGVyQ0FUIERFQlVHIDAtOTogTm93IGluIE9QLiBGaW5pc2hl
+ZCBjb25maWd1cmF0aW9uLgogRXRoZXJDQVQgMDogU2xhdmUgc3RhdGVzIG9uIG1haW4gZGV2aWNl
+OiBPUC4KIEV0aGVyQ0FUIDA6IERvbWFpbiAwOiA4IHdvcmtpbmcgY291bnRlciBjaGFuZ2VzIC0g
+bm93IDIxLzIxICgyMSswKS4KIApQYWNrYWdlOiBsaW51eC1pbWFnZS01LjQuMTAyLXhlbm9tYWky
+NDA1MjcgMDEgW21vZGlmaWVkOiBsaWIvbW9kdWxlcy81LjQuMTAyLXhlbm9tYWkyNDA1MjcvbW9k
+dWxlcy5kZXAgbGliL21vZHVsZXMvNS40LjEwMi14ZW5vbWFpMjQwNTI3L21vZHVsZXMuc3ltYm9s
+cyBsaWIvbW9kdWxlcy81LjQuMTAyLXhlbm9tYWkyNDA1MjcvbW9kdWxlcy5zeW1ib2xzLmJpbiBs
+aWIvbW9kdWxlcy81LjQuMTAyLXhlbm9tYWkyNDA1MjcvbW9kdWxlcy5kZXAuYmluXSBbb3JpZ2lu
+OiB1bmtub3duXQpTb3VyY2VQYWNrYWdlOiBsaW51eApUYWdzOiBrZXJuZWwtb29wcwpVbmFtZTog
+TGludXggNS40LjEwMi14ZW5vbWFpMjQwNTI3IHg4Nl82NAoKClByb2JsZW1UeXBlOiBLZXJuZWxP
+b3BzCkFubm90YXRpb246IFlvdXIgc3lzdGVtIG1pZ2h0IGJlY29tZSB1bnN0YWJsZSBub3cgYW5k
+IG1pZ2h0IG5lZWQgdG8gYmUgcmVzdGFydGVkLgpEYXRlOiBNb24gSnVsICA4IDA5OjEwOjI2IDIw
+MjQKRmFpbHVyZTogb29wcwpPb3BzVGV4dDoKIEV0aGVyQ0FUIERFQlVHOiAwNCAxQSAKIEV0aGVy
+Q0FUIERFQlVHIDAtOTogRXhwZWRpdGVkIGRvd25sb2FkIHJlcXVlc3Q6CiBFdGhlckNBVCBERUJV
+RzogMDAgMjAgMkIgMTMgMUMgMDEgMDQgMUEgMDAgMDAgCiBFdGhlckNBVCBERUJVRyAwLTk6IERv
+d25sb2FkIHJlc3BvbnNlOgogRXRoZXJDQVQgREVCVUc6IDAwIDMwIDYwIDEzIDFDIDAxIDA0IDFB
+IDAwIDAwIAogRXRoZXJDQVQgREVCVUcgMC05OiBBc3NpZ25pbmcgUERPIDB4MUEwNSBhdCBwb3Np
+dGlvbiAyLgogRXRoZXJDQVQgREVCVUcgMC05OiBEb3dubG9hZGluZyBTRE8gMHgxQzEzOjAyLgog
+RXRoZXJDQVQgREVCVUc6IDA1IDFBIAogRXRoZXJDQVQgREVCVUcgMC05OiBFeHBlZGl0ZWQgZG93
+bmxvYWQgcmVxdWVzdDoKIEV0aGVyQ0FUIERFQlVHOiAwMCAyMCAyQiAxMyAxQyAwMiAwNSAxQSAw
+MCAwMCAKIEV0aGVyQ0FUIERFQlVHIDAtOTogRG93bmxvYWQgcmVzcG9uc2U6CiBFdGhlckNBVCBE
+RUJVRzogMDAgMzAgNjAgMTMgMUMgMDIgMDUgMUEgMDAgMDAgCiBFdGhlckNBVCBERUJVRyAwLTk6
+IFNldHRpbmcgbnVtYmVyIG9mIGFzc2lnbmVkIFBET3MgdG8gMi4KIEV0aGVyQ0FUIERFQlVHIDAt
+OTogRG93bmxvYWRpbmcgU0RPIDB4MUMxMzowMC4KIEV0aGVyQ0FUIERFQlVHOiAwMiAKIEV0aGVy
+Q0FUIERFQlVHIDAtOTogRXhwZWRpdGVkIGRvd25sb2FkIHJlcXVlc3Q6CiBFdGhlckNBVCBERUJV
+RzogMDAgMjAgMkYgMTMgMUMgMDAgMDIgMDAgMDAgMDAgCiBFdGhlckNBVCBERUJVRyAwLTk6IERv
+d25sb2FkIHJlc3BvbnNlOgogRXRoZXJDQVQgREVCVUc6IDAwIDMwIDYwIDEzIDFDIDAwIDAyIDAw
+IDAwIDAwIAogRXRoZXJDQVQgREVCVUcgMC05OiBTdWNjZXNzZnVsbHkgY29uZmlndXJlZCBQRE8g
+YXNzaWdubWVudCBvZiBTTTMuCiBFdGhlckNBVCBERUJVRyAwLTk6IFNNMjogQWRkciAweDExMDAs
+IFNpemUgIDQ4LCBDdHJsIDB4MjQsIEVuIDEKIEV0aGVyQ0FUIERFQlVHIDAtOTogU00zOiBBZGRy
+IDB4MTIyMCwgU2l6ZSAgNDgsIEN0cmwgMHgyMCwgRW4gMQogRXRoZXJDQVQgREVCVUcgMCAwOjk6
+IEZNTVU6IExvZ0FkZHIgMHgwMTAwMDA2OSwgU2l6ZSAgNDgsIFBoeXNBZGRyIDB4MTEwMCwgU00y
+LCBEaXIgb3V0CiBFdGhlckNBVCBERUJVRyAwIDA6OTogRk1NVTogTG9nQWRkciAweDAxMDAwMDY5
+LCBTaXplICA0OCwgUGh5c0FkZHIgMHgxMjIwLCBTTTMsIERpciBpbgogRXRoZXJDQVQgREVCVUcg
+MC05OiBOb3cgaW4gU0FGRU9QLgogRXRoZXJDQVQgREVCVUcgMC05OiBOb3cgaW4gT1AuIEZpbmlz
+aGVkIGNvbmZpZ3VyYXRpb24uCiBFdGhlckNBVCAwOiBTbGF2ZSBzdGF0ZXMgb24gbWFpbiBkZXZp
+Y2U6IE9QLgogRXRoZXJDQVQgMDogRG9tYWluIDA6IDggd29ya2luZyBjb3VudGVyIGNoYW5nZXMg
+LSBub3cgMjEvMjEgKDIxKzApLgogWzIyNjU3NS44MjM4MTNdIHBlcmY6IGludGVycnVwdCB0b29r
+IHRvbyBsb25nICgyNTAxID4gMjUwMCksIGxvd2VyaW5nIGtlcm5lbC5wZXJmX2V2ZW50X21heF9z
+YW1wbGVfcmF0ZSB0byA3OTc1MAogClBhY2thZ2U6IGxpbnV4LWltYWdlLTUuNC4xMDIteGVub21h
+aTI0MDUyNyAwMSBbbW9kaWZpZWQ6IGxpYi9tb2R1bGVzLzUuNC4xMDIteGVub21haTI0MDUyNy9t
+b2R1bGVzLmRlcCBsaWIvbW9kdWxlcy81LjQuMTAyLXhlbm9tYWkyNDA1MjcvbW9kdWxlcy5zeW1i
+b2xzIGxpYi9tb2R1bGVzLzUuNC4xMDIteGVub21haTI0MDUyNy9tb2R1bGVzLnN5bWJvbHMuYmlu
+IGxpYi9tb2R1bGVzLzUuNC4xMDIteGVub21haTI0MDUyNy9tb2R1bGVzLmRlcC5iaW5dIFtvcmln
+aW46IHVua25vd25dClNvdXJjZVBhY2thZ2U6IGxpbnV4ClRhZ3M6IGtlcm5lbC1vb3BzClVuYW1l
+OiBMaW51eCA1LjQuMTAyLXhlbm9tYWkyNDA1MjcgeDg2XzY0CgoKVGhhbmtzLApNaWx0b25XZWk=
 
---_000_3f2cdc0ae2804139b7d7ff4112466647sgssemicom_
-Content-Type: text/html; charset="gb2312"
-Content-Transfer-Encoding: quoted-printable
+------=_Part_61977_106228992.1720410791052
+Content-Type: text/html; charset=GBK
+Content-Transfer-Encoding: base64
 
-<html xmlns:v=3D"urn:schemas-microsoft-com:vml" xmlns:o=3D"urn:schemas-micr=
-osoft-com:office:office" xmlns:w=3D"urn:schemas-microsoft-com:office:word" =
-xmlns:m=3D"http://schemas.microsoft.com/office/2004/12/omml" xmlns=3D"http:=
-//www.w3.org/TR/REC-html40">
-<head>
-<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dgb2312">
-<meta name=3D"Generator" content=3D"Microsoft Word 15 (filtered medium)">
-<style><!--
-/* Font Definitions */
-@font-face
-	{font-family:=CB=CE=CC=E5;
-	panose-1:2 1 6 0 3 1 1 1 1 1;}
-@font-face
-	{font-family:"Cambria Math";
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
-@font-face
-	{font-family:=B5=C8=CF=DF;
-	panose-1:2 1 6 0 3 1 1 1 1 1;}
-@font-face
-	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
-@font-face
-	{font-family:"\@=B5=C8=CF=DF";
-	panose-1:2 1 6 0 3 1 1 1 1 1;}
-@font-face
-	{font-family:"\@=CB=CE=CC=E5";
-	panose-1:2 1 6 0 3 1 1 1 1 1;}
-/* Style Definitions */
-p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin:0cm;
-	margin-bottom:.0001pt;
-	text-align:justify;
-	text-justify:inter-ideograph;
-	font-size:10.5pt;
-	font-family:=B5=C8=CF=DF;}
-a:link, span.MsoHyperlink
-	{mso-style-priority:99;
-	color:#0563C1;
-	text-decoration:underline;}
-a:visited, span.MsoHyperlinkFollowed
-	{mso-style-priority:99;
-	color:#954F72;
-	text-decoration:underline;}
-p.msonormal0, li.msonormal0, div.msonormal0
-	{mso-style-name:msonormal;
-	mso-margin-top-alt:auto;
-	margin-right:0cm;
-	mso-margin-bottom-alt:auto;
-	margin-left:0cm;
-	font-size:12.0pt;
-	font-family:=CB=CE=CC=E5;}
-span.EmailStyle18
-	{mso-style-type:personal-compose;
-	font-family:=B5=C8=CF=DF;
-	color:windowtext;}
-.MsoChpDefault
-	{mso-style-type:export-only;
-	font-size:10.0pt;
-	font-family:=B5=C8=CF=DF;}
-/* Page Definitions */
-@page WordSection1
-	{size:612.0pt 792.0pt;
-	margin:72.0pt 90.0pt 72.0pt 90.0pt;}
-div.WordSection1
-	{page:WordSection1;}
---></style><!--[if gte mso 9]><xml>
-<o:shapedefaults v:ext=3D"edit" spidmax=3D"1026" />
-</xml><![endif]--><!--[if gte mso 9]><xml>
-<o:shapelayout v:ext=3D"edit">
-<o:idmap v:ext=3D"edit" data=3D"1" />
-</o:shapelayout></xml><![endif]-->
-</head>
-<body lang=3D"ZH-CN" link=3D"#0563C1" vlink=3D"#954F72" style=3D"text-justi=
-fy-trim:punctuation">
-<div class=3D"WordSection1">
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->Hi all,<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
-><o:p>&nbsp;</o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->There are some KernelOopses when I run IgH EtherCAT master.&nbsp;<o:p></o:=
-p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->It seems the oopses did not impact the system and the process running.<o:p=
-></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->I attach the .config file.<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->Could you please give me some suggestions?<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
-><o:p>&nbsp;</o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->Kernel: 5.4.102<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->ProblemType: KernelOops<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->Annotation: Your system might become unstable now and might need to be res=
-tarted.<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->Date: Fri Jul&nbsp; 5 18:17:14 2024<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->Failure: oops<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->OopsText:<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Expedited download request:<o:p></o:p></span></p=
->
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG: 00 20 2F 13 1C 00 02 00 00 00&nbsp;<o:p></o:p></span=
-></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Download response:<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG: 00 30 60 13 1C 00 02 00 00 00&nbsp;<o:p></o:p></span=
-></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Successfully configured PDO assignment of SM3.<o=
-:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: SM2: Addr 0x1100, Size&nbsp; 48, Ctrl 0x24, En 1=
-<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: SM3: Addr 0x1220, Size&nbsp; 48, Ctrl 0x20, En 1=
-<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0 0:9: FMMU: LogAddr 0x01000069, Size&nbsp; 48, PhysA=
-ddr 0x1100, SM2, Dir out<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0 0:9: FMMU: LogAddr 0x01000069, Size&nbsp; 48, PhysA=
-ddr 0x1220, SM3, Dir in<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Now in SAFEOP.<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Now in OP. Finished configuration.<o:p></o:p></s=
-pan></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT 0: Slave states on main device: OP.<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT 0: Domain 0: 8 working counter changes - now 21/21 (21&#43;=
-0).<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->Package: linux-image-5.4.102-xenomai240527 01 [modified: lib/modules/5.4.1=
-02-xenomai240527/modules.dep lib/modules/5.4.102-xenomai240527/modules.symb=
-ols
- lib/modules/5.4.102-xenomai240527/modules.symbols.bin lib/modules/5.4.102-=
-xenomai240527/modules.dep.bin] [origin: unknown]<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->SourcePackage: linux<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->Tags: kernel-oops<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->Uname: Linux 5.4.102-xenomai240527 x86_64<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
-><o:p>&nbsp;</o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->ProblemType: KernelOops<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->Annotation: Your system might become unstable now and might need to be res=
-tarted.<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->Date: Mon Jul&nbsp; 8 09:10:26 2024<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->Failure: oops<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->OopsText:<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG: 04 1A&nbsp;<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Expedited download request:<o:p></o:p></span></p=
->
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG: 00 20 2B 13 1C 01 04 1A 00 00&nbsp;<o:p></o:p></span=
-></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Download response:<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG: 00 30 60 13 1C 01 04 1A 00 00&nbsp;<o:p></o:p></span=
-></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Assigning PDO 0x1A05 at position 2.<o:p></o:p></=
-span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Downloading SDO 0x1C13:02.<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG: 05 1A&nbsp;<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Expedited download request:<o:p></o:p></span></p=
->
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG: 00 20 2B 13 1C 02 05 1A 00 00&nbsp;<o:p></o:p></span=
-></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Download response:<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG: 00 30 60 13 1C 02 05 1A 00 00&nbsp;<o:p></o:p></span=
-></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Setting number of assigned PDOs to 2.<o:p></o:p>=
-</span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Downloading SDO 0x1C13:00.<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG: 02&nbsp;<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Expedited download request:<o:p></o:p></span></p=
->
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG: 00 20 2F 13 1C 00 02 00 00 00&nbsp;<o:p></o:p></span=
-></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Download response:<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG: 00 30 60 13 1C 00 02 00 00 00&nbsp;<o:p></o:p></span=
-></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Successfully configured PDO assignment of SM3.<o=
-:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: SM2: Addr 0x1100, Size&nbsp; 48, Ctrl 0x24, En 1=
-<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: SM3: Addr 0x1220, Size&nbsp; 48, Ctrl 0x20, En 1=
-<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0 0:9: FMMU: LogAddr 0x01000069, Size&nbsp; 48, PhysA=
-ddr 0x1100, SM2, Dir out<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0 0:9: FMMU: LogAddr 0x01000069, Size&nbsp; 48, PhysA=
-ddr 0x1220, SM3, Dir in<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Now in SAFEOP.<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT DEBUG 0-9: Now in OP. Finished configuration.<o:p></o:p></s=
-pan></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT 0: Slave states on main device: OP.<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;EtherCAT 0: Domain 0: 8 working counter changes - now 21/21 (21&#43;=
-0).<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;[226575.823813] perf: interrupt took too long (2501 &gt; 2500), lowe=
-ring kernel.perf_event_max_sample_rate to 79750<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->&nbsp;<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->Package: linux-image-5.4.102-xenomai240527 01 [modified: lib/modules/5.4.1=
-02-xenomai240527/modules.dep lib/modules/5.4.102-xenomai240527/modules.symb=
-ols
- lib/modules/5.4.102-xenomai240527/modules.symbols.bin lib/modules/5.4.102-=
-xenomai240527/modules.dep.bin] [origin: unknown]<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->SourcePackage: linux<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->Tags: kernel-oops<o:p></o:p></span></p>
-<p class=3D"MsoNormal" align=3D"left" style=3D"text-align:left"><span lang=
-=3D"EN-US" style=3D"font-family:&quot;Calibri&quot;,sans-serif;color:black"=
->Uname: Linux 5.4.102-xenomai240527 x86_64<o:p></o:p></span></p>
-<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-family:&quot;Cali=
-bri&quot;,sans-serif"><o:p>&nbsp;</o:p></span></p>
-<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-family:&quot;Cali=
-bri&quot;,sans-serif"><o:p>&nbsp;</o:p></span></p>
-<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-family:&quot;Cali=
-bri&quot;,sans-serif"><o:p>&nbsp;</o:p></span></p>
-<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-family:&quot;Cali=
-bri&quot;,sans-serif">Thanks,<o:p></o:p></span></p>
-<p class=3D"MsoNormal"><span lang=3D"EN-US" style=3D"font-family:&quot;Cali=
-bri&quot;,sans-serif">MiltonWei<o:p></o:p></span></p>
-<p class=3D"MsoNormal"><span lang=3D"EN-US"><o:p>&nbsp;</o:p></span></p>
-</div>
-</body>
-</html>
+PGRpdiBzdHlsZT0ibGluZS1oZWlnaHQ6MS43O2NvbG9yOiMwMDAwMDA7Zm9udC1zaXplOjE0cHg7
+Zm9udC1mYW1pbHk6QXJpYWwiPjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+SGkgYWxsLDwvZGl2Pjxk
+aXYgc3R5bGU9Im1hcmdpbjowOyI+PGJyPjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+VGhl
+cmUgYXJlIHNvbWUgS2VybmVsT29wc2VzIHdoZW4gSSBydW4gSWdIIEV0aGVyQ0FUIG1hc3Rlci4m
+bmJzcDs8L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46MDsiPkl0IHNlZW1zIHRoZSBvb3BzZXMgZGlk
+IG5vdCBpbXBhY3QgdGhlIHN5c3RlbSBhbmQgdGhlIHByb2Nlc3MgcnVubmluZy48L2Rpdj48ZGl2
+IHN0eWxlPSJtYXJnaW46MDsiPkkgYXR0YWNoIHRoZSAuY29uZmlnIGZpbGUuPC9kaXY+PGRpdiBz
+dHlsZT0ibWFyZ2luOjA7Ij5Db3VsZCB5b3UgcGxlYXNlIGdpdmUgbWUgc29tZSBzdWdnZXN0aW9u
+cz88L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46MDsiPjxicj48L2Rpdj48ZGl2IHN0eWxlPSJtYXJn
+aW46MDsiPktlcm5lbDogNS40LjEwMjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+PGRpdiBz
+dHlsZT0ibWFyZ2luOjA7Ij5Qcm9ibGVtVHlwZTogS2VybmVsT29wczwvZGl2PjxkaXYgc3R5bGU9
+Im1hcmdpbjowOyI+QW5ub3RhdGlvbjogWW91ciBzeXN0ZW0gbWlnaHQgYmVjb21lIHVuc3RhYmxl
+IG5vdyBhbmQgbWlnaHQgbmVlZCB0byBiZSByZXN0YXJ0ZWQuPC9kaXY+PGRpdiBzdHlsZT0ibWFy
+Z2luOjA7Ij5EYXRlOiBGcmkgSnVsJm5ic3A7IDUgMTg6MTc6MTQgMjAyNDwvZGl2PjxkaXYgc3R5
+bGU9Im1hcmdpbjowOyI+RmFpbHVyZTogb29wczwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+
+T29wc1RleHQ6PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luOjA7Ij4mbmJzcDtFdGhlckNBVCBERUJV
+RyAwLTk6IEV4cGVkaXRlZCBkb3dubG9hZCByZXF1ZXN0OjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdp
+bjowOyI+Jm5ic3A7RXRoZXJDQVQgREVCVUc6IDAwIDIwIDJGIDEzIDFDIDAwIDAyIDAwIDAwIDAw
+Jm5ic3A7PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luOjA7Ij4mbmJzcDtFdGhlckNBVCBERUJVRyAw
+LTk6IERvd25sb2FkIHJlc3BvbnNlOjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+Jm5ic3A7
+RXRoZXJDQVQgREVCVUc6IDAwIDMwIDYwIDEzIDFDIDAwIDAyIDAwIDAwIDAwJm5ic3A7PC9kaXY+
+PGRpdiBzdHlsZT0ibWFyZ2luOjA7Ij4mbmJzcDtFdGhlckNBVCBERUJVRyAwLTk6IFN1Y2Nlc3Nm
+dWxseSBjb25maWd1cmVkIFBETyBhc3NpZ25tZW50IG9mIFNNMy48L2Rpdj48ZGl2IHN0eWxlPSJt
+YXJnaW46MDsiPiZuYnNwO0V0aGVyQ0FUIERFQlVHIDAtOTogU00yOiBBZGRyIDB4MTEwMCwgU2l6
+ZSZuYnNwOyA0OCwgQ3RybCAweDI0LCBFbiAxPC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luOjA7Ij4m
+bmJzcDtFdGhlckNBVCBERUJVRyAwLTk6IFNNMzogQWRkciAweDEyMjAsIFNpemUmbmJzcDsgNDgs
+IEN0cmwgMHgyMCwgRW4gMTwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+Jm5ic3A7RXRoZXJD
+QVQgREVCVUcgMCAwOjk6IEZNTVU6IExvZ0FkZHIgMHgwMTAwMDA2OSwgU2l6ZSZuYnNwOyA0OCwg
+UGh5c0FkZHIgMHgxMTAwLCBTTTIsIERpciBvdXQ8L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46MDsi
+PiZuYnNwO0V0aGVyQ0FUIERFQlVHIDAgMDo5OiBGTU1VOiBMb2dBZGRyIDB4MDEwMDAwNjksIFNp
+emUmbmJzcDsgNDgsIFBoeXNBZGRyIDB4MTIyMCwgU00zLCBEaXIgaW48L2Rpdj48ZGl2IHN0eWxl
+PSJtYXJnaW46MDsiPiZuYnNwO0V0aGVyQ0FUIERFQlVHIDAtOTogTm93IGluIFNBRkVPUC48L2Rp
+dj48ZGl2IHN0eWxlPSJtYXJnaW46MDsiPiZuYnNwO0V0aGVyQ0FUIERFQlVHIDAtOTogTm93IGlu
+IE9QLiBGaW5pc2hlZCBjb25maWd1cmF0aW9uLjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+
+Jm5ic3A7RXRoZXJDQVQgMDogU2xhdmUgc3RhdGVzIG9uIG1haW4gZGV2aWNlOiBPUC48L2Rpdj48
+ZGl2IHN0eWxlPSJtYXJnaW46MDsiPiZuYnNwO0V0aGVyQ0FUIDA6IERvbWFpbiAwOiA4IHdvcmtp
+bmcgY291bnRlciBjaGFuZ2VzIC0gbm93IDIxLzIxICgyMSswKS48L2Rpdj48ZGl2IHN0eWxlPSJt
+YXJnaW46MDsiPiZuYnNwOzwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+UGFja2FnZTogbGlu
+dXgtaW1hZ2UtNS40LjEwMi14ZW5vbWFpMjQwNTI3IDAxIFttb2RpZmllZDogbGliL21vZHVsZXMv
+NS40LjEwMi14ZW5vbWFpMjQwNTI3L21vZHVsZXMuZGVwIGxpYi9tb2R1bGVzLzUuNC4xMDIteGVu
+b21haTI0MDUyNy9tb2R1bGVzLnN5bWJvbHMgbGliL21vZHVsZXMvNS40LjEwMi14ZW5vbWFpMjQw
+NTI3L21vZHVsZXMuc3ltYm9scy5iaW4gbGliL21vZHVsZXMvNS40LjEwMi14ZW5vbWFpMjQwNTI3
+L21vZHVsZXMuZGVwLmJpbl0gW29yaWdpbjogdW5rbm93bl08L2Rpdj48ZGl2IHN0eWxlPSJtYXJn
+aW46MDsiPlNvdXJjZVBhY2thZ2U6IGxpbnV4PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luOjA7Ij5U
+YWdzOiBrZXJuZWwtb29wczwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+VW5hbWU6IExpbnV4
+IDUuNC4xMDIteGVub21haTI0MDUyNyB4ODZfNjQ8L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46MDsi
+Pjxicj48L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46MDsiPjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+
+UHJvYmxlbVR5cGU6IEtlcm5lbE9vcHM8L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46MDsiPkFubm90
+YXRpb246IFlvdXIgc3lzdGVtIG1pZ2h0IGJlY29tZSB1bnN0YWJsZSBub3cgYW5kIG1pZ2h0IG5l
+ZWQgdG8gYmUgcmVzdGFydGVkLjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+RGF0ZTogTW9u
+IEp1bCZuYnNwOyA4IDA5OjEwOjI2IDIwMjQ8L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46MDsiPkZh
+aWx1cmU6IG9vcHM8L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46MDsiPk9vcHNUZXh0OjwvZGl2Pjxk
+aXYgc3R5bGU9Im1hcmdpbjowOyI+Jm5ic3A7RXRoZXJDQVQgREVCVUc6IDA0IDFBJm5ic3A7PC9k
+aXY+PGRpdiBzdHlsZT0ibWFyZ2luOjA7Ij4mbmJzcDtFdGhlckNBVCBERUJVRyAwLTk6IEV4cGVk
+aXRlZCBkb3dubG9hZCByZXF1ZXN0OjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+Jm5ic3A7
+RXRoZXJDQVQgREVCVUc6IDAwIDIwIDJCIDEzIDFDIDAxIDA0IDFBIDAwIDAwJm5ic3A7PC9kaXY+
+PGRpdiBzdHlsZT0ibWFyZ2luOjA7Ij4mbmJzcDtFdGhlckNBVCBERUJVRyAwLTk6IERvd25sb2Fk
+IHJlc3BvbnNlOjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+Jm5ic3A7RXRoZXJDQVQgREVC
+VUc6IDAwIDMwIDYwIDEzIDFDIDAxIDA0IDFBIDAwIDAwJm5ic3A7PC9kaXY+PGRpdiBzdHlsZT0i
+bWFyZ2luOjA7Ij4mbmJzcDtFdGhlckNBVCBERUJVRyAwLTk6IEFzc2lnbmluZyBQRE8gMHgxQTA1
+IGF0IHBvc2l0aW9uIDIuPC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luOjA7Ij4mbmJzcDtFdGhlckNB
+VCBERUJVRyAwLTk6IERvd25sb2FkaW5nIFNETyAweDFDMTM6MDIuPC9kaXY+PGRpdiBzdHlsZT0i
+bWFyZ2luOjA7Ij4mbmJzcDtFdGhlckNBVCBERUJVRzogMDUgMUEmbmJzcDs8L2Rpdj48ZGl2IHN0
+eWxlPSJtYXJnaW46MDsiPiZuYnNwO0V0aGVyQ0FUIERFQlVHIDAtOTogRXhwZWRpdGVkIGRvd25s
+b2FkIHJlcXVlc3Q6PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luOjA7Ij4mbmJzcDtFdGhlckNBVCBE
+RUJVRzogMDAgMjAgMkIgMTMgMUMgMDIgMDUgMUEgMDAgMDAmbmJzcDs8L2Rpdj48ZGl2IHN0eWxl
+PSJtYXJnaW46MDsiPiZuYnNwO0V0aGVyQ0FUIERFQlVHIDAtOTogRG93bmxvYWQgcmVzcG9uc2U6
+PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luOjA7Ij4mbmJzcDtFdGhlckNBVCBERUJVRzogMDAgMzAg
+NjAgMTMgMUMgMDIgMDUgMUEgMDAgMDAmbmJzcDs8L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46MDsi
+PiZuYnNwO0V0aGVyQ0FUIERFQlVHIDAtOTogU2V0dGluZyBudW1iZXIgb2YgYXNzaWduZWQgUERP
+cyB0byAyLjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+Jm5ic3A7RXRoZXJDQVQgREVCVUcg
+MC05OiBEb3dubG9hZGluZyBTRE8gMHgxQzEzOjAwLjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjow
+OyI+Jm5ic3A7RXRoZXJDQVQgREVCVUc6IDAyJm5ic3A7PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2lu
+OjA7Ij4mbmJzcDtFdGhlckNBVCBERUJVRyAwLTk6IEV4cGVkaXRlZCBkb3dubG9hZCByZXF1ZXN0
+OjwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+Jm5ic3A7RXRoZXJDQVQgREVCVUc6IDAwIDIw
+IDJGIDEzIDFDIDAwIDAyIDAwIDAwIDAwJm5ic3A7PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luOjA7
+Ij4mbmJzcDtFdGhlckNBVCBERUJVRyAwLTk6IERvd25sb2FkIHJlc3BvbnNlOjwvZGl2PjxkaXYg
+c3R5bGU9Im1hcmdpbjowOyI+Jm5ic3A7RXRoZXJDQVQgREVCVUc6IDAwIDMwIDYwIDEzIDFDIDAw
+IDAyIDAwIDAwIDAwJm5ic3A7PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luOjA7Ij4mbmJzcDtFdGhl
+ckNBVCBERUJVRyAwLTk6IFN1Y2Nlc3NmdWxseSBjb25maWd1cmVkIFBETyBhc3NpZ25tZW50IG9m
+IFNNMy48L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46MDsiPiZuYnNwO0V0aGVyQ0FUIERFQlVHIDAt
+OTogU00yOiBBZGRyIDB4MTEwMCwgU2l6ZSZuYnNwOyA0OCwgQ3RybCAweDI0LCBFbiAxPC9kaXY+
+PGRpdiBzdHlsZT0ibWFyZ2luOjA7Ij4mbmJzcDtFdGhlckNBVCBERUJVRyAwLTk6IFNNMzogQWRk
+ciAweDEyMjAsIFNpemUmbmJzcDsgNDgsIEN0cmwgMHgyMCwgRW4gMTwvZGl2PjxkaXYgc3R5bGU9
+Im1hcmdpbjowOyI+Jm5ic3A7RXRoZXJDQVQgREVCVUcgMCAwOjk6IEZNTVU6IExvZ0FkZHIgMHgw
+MTAwMDA2OSwgU2l6ZSZuYnNwOyA0OCwgUGh5c0FkZHIgMHgxMTAwLCBTTTIsIERpciBvdXQ8L2Rp
+dj48ZGl2IHN0eWxlPSJtYXJnaW46MDsiPiZuYnNwO0V0aGVyQ0FUIERFQlVHIDAgMDo5OiBGTU1V
+OiBMb2dBZGRyIDB4MDEwMDAwNjksIFNpemUmbmJzcDsgNDgsIFBoeXNBZGRyIDB4MTIyMCwgU00z
+LCBEaXIgaW48L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46MDsiPiZuYnNwO0V0aGVyQ0FUIERFQlVH
+IDAtOTogTm93IGluIFNBRkVPUC48L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46MDsiPiZuYnNwO0V0
+aGVyQ0FUIERFQlVHIDAtOTogTm93IGluIE9QLiBGaW5pc2hlZCBjb25maWd1cmF0aW9uLjwvZGl2
+PjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+Jm5ic3A7RXRoZXJDQVQgMDogU2xhdmUgc3RhdGVzIG9u
+IG1haW4gZGV2aWNlOiBPUC48L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46MDsiPiZuYnNwO0V0aGVy
+Q0FUIDA6IERvbWFpbiAwOiA4IHdvcmtpbmcgY291bnRlciBjaGFuZ2VzIC0gbm93IDIxLzIxICgy
+MSswKS48L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46MDsiPiZuYnNwO1syMjY1NzUuODIzODEzXSBw
+ZXJmOiBpbnRlcnJ1cHQgdG9vayB0b28gbG9uZyAoMjUwMSAmZ3Q7IDI1MDApLCBsb3dlcmluZyBr
+ZXJuZWwucGVyZl9ldmVudF9tYXhfc2FtcGxlX3JhdGUgdG8gNzk3NTA8L2Rpdj48ZGl2IHN0eWxl
+PSJtYXJnaW46MDsiPiZuYnNwOzwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+UGFja2FnZTog
+bGludXgtaW1hZ2UtNS40LjEwMi14ZW5vbWFpMjQwNTI3IDAxIFttb2RpZmllZDogbGliL21vZHVs
+ZXMvNS40LjEwMi14ZW5vbWFpMjQwNTI3L21vZHVsZXMuZGVwIGxpYi9tb2R1bGVzLzUuNC4xMDIt
+eGVub21haTI0MDUyNy9tb2R1bGVzLnN5bWJvbHMgbGliL21vZHVsZXMvNS40LjEwMi14ZW5vbWFp
+MjQwNTI3L21vZHVsZXMuc3ltYm9scy5iaW4gbGliL21vZHVsZXMvNS40LjEwMi14ZW5vbWFpMjQw
+NTI3L21vZHVsZXMuZGVwLmJpbl0gW29yaWdpbjogdW5rbm93bl08L2Rpdj48ZGl2IHN0eWxlPSJt
+YXJnaW46MDsiPlNvdXJjZVBhY2thZ2U6IGxpbnV4PC9kaXY+PGRpdiBzdHlsZT0ibWFyZ2luOjA7
+Ij5UYWdzOiBrZXJuZWwtb29wczwvZGl2PjxkaXYgc3R5bGU9Im1hcmdpbjowOyI+VW5hbWU6IExp
+bnV4IDUuNC4xMDIteGVub21haTI0MDUyNyB4ODZfNjQ8L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46
+MDsiPjxicj48L2Rpdj48ZGl2IHN0eWxlPSJtYXJnaW46MDsiPlRoYW5rcyw8L2Rpdj48ZGl2IHN0
+eWxlPSJtYXJnaW46MDsiPk1pbHRvbldlaTwvZGl2PjwvZGl2PjwvZGl2PjwvZGl2Pg==
+------=_Part_61977_106228992.1720410791052--
 
---_000_3f2cdc0ae2804139b7d7ff4112466647sgssemicom_--
-
---_006_3f2cdc0ae2804139b7d7ff4112466647sgssemicom_
-Content-Type: application/octet-stream;
-	name="linux-image-5.4.102-xenomai240527.108689.crash"
-Content-Description: linux-image-5.4.102-xenomai240527.108689.crash
+------=_Part_61975_967223543.1720410791052
+Content-Type: application/octet-stream; 
+	name=linux-image-5.4.102-xenomai240527.108689.crash
+Content-Transfer-Encoding: base64
 Content-Disposition: attachment;
-	filename="linux-image-5.4.102-xenomai240527.108689.crash"; size=2052;
-	creation-date="Mon, 08 Jul 2024 03:58:11 GMT";
-	modification-date="Mon, 08 Jul 2024 03:58:11 GMT"
-Content-Transfer-Encoding: base64
+ filename="linux-image-5.4.102-xenomai240527.108689.crash"
 
 UHJvYmxlbVR5cGU6IEtlcm5lbE9vcHMKQW5ub3RhdGlvbjogWW91ciBzeXN0ZW0gbWlnaHQgYmVj
 b21lIHVuc3RhYmxlIG5vdyBhbmQgbWlnaHQgbmVlZCB0byBiZSByZXN0YXJ0ZWQuCkRhdGU6IE1v
@@ -511,15 +273,12 @@ L21vZHVsZXMuc3ltYm9scy5iaW4gbGliL21vZHVsZXMvNS40LjEwMi14ZW5vbWFpMjQwNTI3L21v
 ZHVsZXMuZGVwLmJpbl0gW29yaWdpbjogdW5rbm93bl0KU291cmNlUGFja2FnZTogbGludXgKVGFn
 czoga2VybmVsLW9vcHMKVW5hbWU6IExpbnV4IDUuNC4xMDIteGVub21haTI0MDUyNyB4ODZfNjQK
 
---_006_3f2cdc0ae2804139b7d7ff4112466647sgssemicom_
-Content-Type: application/octet-stream;
-	name="linux-image-5.4.102-xenomai240527.212985.crash"
-Content-Description: linux-image-5.4.102-xenomai240527.212985.crash
-Content-Disposition: attachment;
-	filename="linux-image-5.4.102-xenomai240527.212985.crash"; size=3559;
-	creation-date="Mon, 08 Jul 2024 03:58:11 GMT";
-	modification-date="Mon, 08 Jul 2024 03:58:11 GMT"
+------=_Part_61975_967223543.1720410791052
+Content-Type: application/octet-stream; 
+	name=linux-image-5.4.102-xenomai240527.212985.crash
 Content-Transfer-Encoding: base64
+Content-Disposition: attachment;
+ filename="linux-image-5.4.102-xenomai240527.212985.crash"
 
 UHJvYmxlbVR5cGU6IEtlcm5lbE9vcHMKQW5ub3RhdGlvbjogWW91ciBzeXN0ZW0gbWlnaHQgYmVj
 b21lIHVuc3RhYmxlIG5vdyBhbmQgbWlnaHQgbmVlZCB0byBiZSByZXN0YXJ0ZWQuCkRhdGU6IEZy
@@ -584,14 +343,10 @@ bGVzLzUuNC4xMDIteGVub21haTI0MDUyNy9tb2R1bGVzLnN5bWJvbHMuYmluIGxpYi9tb2R1bGVz
 LzUuNC4xMDIteGVub21haTI0MDUyNy9tb2R1bGVzLmRlcC5iaW5dIFtvcmlnaW46IHVua25vd25d
 ClNvdXJjZVBhY2thZ2U6IGxpbnV4ClRhZ3M6IGtlcm5lbC1vb3BzClVuYW1lOiBMaW51eCA1LjQu
 MTAyLXhlbm9tYWkyNDA1MjcgeDg2XzY0Cg==
-
---_006_3f2cdc0ae2804139b7d7ff4112466647sgssemicom_
-Content-Type: application/octet-stream; name="ATT58957.config"
-Content-Description: ATT58957.config
-Content-Disposition: attachment; filename="ATT58957.config"; size=233427;
-	creation-date="Mon, 08 Jul 2024 03:58:11 GMT";
-	modification-date="Mon, 08 Jul 2024 03:58:11 GMT"
+------=_Part_61975_967223543.1720410791052
+Content-Type: application/octet-stream; name=.config
 Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename=".config"
 
 IwojIEF1dG9tYXRpY2FsbHkgZ2VuZXJhdGVkIGZpbGU7IERPIE5PVCBFRElULgojIExpbnV4L3g4
 Nl82NCA1LjQuMTAyIEtlcm5lbCBDb25maWd1cmF0aW9uCiMKCiMKIyBDb21waWxlcjogZ2NjIChV
@@ -4689,5 +4444,5 @@ cyBub3Qgc2V0CkNPTkZJR19YODZfREVCVUdfRlBVPXkKQ09ORklHX1BVTklUX0FUT01fREVCVUc9
 bQojIENPTkZJR19VTldJTkRFUl9PUkMgaXMgbm90IHNldApDT05GSUdfVU5XSU5ERVJfRlJBTUVf
 UE9JTlRFUj15CiMgQ09ORklHX1VOV0lOREVSX0dVRVNTIGlzIG5vdCBzZXQKIyBlbmQgb2YgS2Vy
 bmVsIGhhY2tpbmcK
+------=_Part_61975_967223543.1720410791052--
 
---_006_3f2cdc0ae2804139b7d7ff4112466647sgssemicom_--
