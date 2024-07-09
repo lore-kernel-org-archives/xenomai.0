@@ -1,60 +1,60 @@
 Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2066.outbound.protection.outlook.com [40.107.20.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 774F0153509
-	for <xenomai@lists.linux.dev>; Tue,  9 Jul 2024 08:35:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A33DB153567
+	for <xenomai@lists.linux.dev>; Tue,  9 Jul 2024 08:35:49 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.20.66
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720514149; cv=fail; b=FMn3hW8ps5KyAy4/VSlgWmIY2lGcvVyCdGeqw5Mr86GDqEdg6dW+oRPqFDmHpWbBYV898kjBxmeNOq1l9Lu9tXYpyDSP/MAQr7Q7x5FWCQYCAdKjb67kxdI20C0UsoskPtNnythnGMIMYAWg7M5vRXUMR82pNTle6UffEMrRFp8=
+	t=1720514152; cv=fail; b=gru339QTROXnePUMk8aJs8brzP44pNRJzf8BMW/yKJleB6WVdBHAf6TE1w8SqrvLoziF6mHQRYGJt97aNhdwdPxILFMrx0WSJ/84ENhZIauUCDQkXTsT4S33PnSLfH/Oq5V6sNTvdTanT+wTPtcTU08q/alG//xNo9evhfX5gyE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720514149; c=relaxed/simple;
-	bh=BW4/T5kNbCdrljwm6fcg26VroPVg0LIuRGT+7ZTX4qI=;
+	s=arc-20240116; t=1720514152; c=relaxed/simple;
+	bh=CNfw0h+duIKL9CondxshLLjedE6YfABGLok0kmh7Dds=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=RztROF5OObR9eQSU7Cn7LTOPsMM61j1wZ1cESBmsjg1i0wbpjl+5Y6d+H+F8/ROfMjFDupFCSuelEkEkZL4fEiiaT9ATuEZEVHAzBGqii0KiAUxhnNYbZf16GdQOei/hFpG+TFJsWf7ZACQbAJ4gTTNI+U466Yphthd2r9ImXnk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=zgh+cmkk; arc=fail smtp.client-ip=40.107.20.66
+	 Content-Type:MIME-Version; b=NJF9ObnKS4XSrUGwIs8w70/DXLYY1LKcPbIrHqc54PQ91Nm1sTtoMukMqn2iJGB89gcT2wzgjKSGwXMTR3pB5OKs55MmDscrHZFi4kEplzeip4k6IriXp54AM4W5XTyEmXiQzihq5j+KQpe0f4qIXMMy9iysGKxOqwGfOIdnaZk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=L12HL6fw; arc=fail smtp.client-ip=40.107.20.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="zgh+cmkk"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="L12HL6fw"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GTzj0qmcxzPSxXPq7DMP1S1MiWoGAgTXpzfrvVHcNttO3vqFvAm0SY10kVRbCd1vtE8ceBc2WFNYVocpzo8I/R+zXO6bRhBEGzvlB3lTDrCe1Ye+FD4WG9IZez9Ait9aIpa134CBBrf14a4AM2E4RxPvOiFoh5YDoCF2/cUzssr7Rz1rExPVfzz3cFPIFTzsHjD0zKwb38gYyKPk3tIAy67zTTHu1kLR06XuNdSgrI2VNghDRscfaTQ7YSjQhhjvNYDtZU4paao+ReS3RK7nLUkcGkUUDGnHyEAeamrJPtWsAxT8dKReFxHTGmflR6AbzCjZubqZRHB9y4Z7vzCh4g==
+ b=mNDSpEXba4dNKUY7kmmdRBFnVQq8vzkaByMiTTKquP5T2c7sLJ37IbwjTp8sIayaOAcV50AZfTa2YxRISVrr7ogws4AjE2bUNFCcGXj6bSGx59Vs/Swml8e6mtCODe+7Zi9poETONwB1eDs0JvfOYwvS3VIkVHMa95D2j+NZy1dVLzQRE/+2CGfU2M+SmAred9L/Zcjw6ogb9udCnYmaXezib5ERtoUfae/uvPVKCsjWI2+j0xQ7MSG4JzqMgp6iThDegZGNfcEdKEkaeoZQji33gdGwH0sZyQ+RMIHSgxxT4c+ZTD/OrwpaRcogHW5zAesFMmaG4xtJS0l6nPoGiQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=W1tf4A8GHBjodNdJw913SGjrRzXOphhRH7rCQ8LHSRM=;
- b=fFTMDH34pyqhGPn5rfeMKcxFRhHdcGpuUOJX08Dvd9bFeqVGSVEsBOyfomwpNPGWp8r8Q+tdEdEckfUM6Y6mEnrqVK1HZygX4oE0BqzO1veernyASJzVecD/sdiVQhLVdzdA4mmSjrGI+jyLLMcHxslJCSGM3gqEjNGojoZrU8dPFiIcSkgEFEHiYAGS3Knzh1yMQiK0BQ9LSIWupQLA84ESmrsABYpu9oT7xZqsjgYFgGI3gNWmStT60Dz6oLAhOVKvN7t70bvQWgTjwCv6O3HCoxEXoSaePKS+1DiCJZwQ5/5O0yBS/HwCc9OxIwNNQHxvysSmiLmfxcNaIfpMNw==
+ bh=PaoTVMexwuVsDwq4fAhufJ/qgAXGO4hQbvMhXHPJaKM=;
+ b=Z6+TbqDtymShpPwtyvqAg86IcLsG/Nrja6JAYBW4oN1WjS8vv1Xn2brY5Ceuvxg0rY2ZuJIIKNlZn/Ib8fAw7+Ss6DvpS3z8DEkOdeMVqXOIVAHAEbcKNE9n0K7rGAbasZWLEOomy5XmRfwtNZIhGb1sAnn98txhOuP4A1jotTVa+gUkab4YmQIKYJxMxQQZ/Qa3fGVwGtdFfjP3fm23jlL482CcILpBMvdxXETaABVw8VsyZTBR5hx4yFeqRNedI42mvKHmWkdu8pcaCTDPKkaSxUeWPNONPIuD1RQsu2uJ4lMWobwfG9g72PumRZRH+TWMBINJrN3+a0ddVg5oYg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=W1tf4A8GHBjodNdJw913SGjrRzXOphhRH7rCQ8LHSRM=;
- b=zgh+cmkkFv/0Sker3G9BXnVL6O1Fz2WaJW2F8t4Hrcpio0gdBdlhTUqFcphiZ0AYy4s0nHdZVxOc1p/Kf3iaQLvPxi1JxC5Ef1Wz8d68kvkhd5rgBTQBMy2jxEHze+PpZptR+H4fKK22BADAl88pchzhiCv/nVIDBmZRdYZ+VU4zbi8Ihwdv0PuPUnFJikJWOjZLfrfM+YnVPhKHZZdfPHthroeZsme0iwfHRZHTwKHVawOeGO7MLs+CiUT2GACTHzYJ5ALAnQ5OyusCXgqtJcVz72EUqWxR67drqKs9UK9RQCo2E8nzoK7eFO4xFPUGQ0cxx34+phHkW+4MlsC6/A==
+ bh=PaoTVMexwuVsDwq4fAhufJ/qgAXGO4hQbvMhXHPJaKM=;
+ b=L12HL6fwCSlfRPEwq+zK8A21tgoet2Dk/AIMMSEfAhfli2dfsGbplni9aLCo/s2n4Dc23dm/eK2xo/VRM4hz1hQDJup1OAdPuP9e3cpLupVsNVVEqN3woilRuKPvjJw4K9NQCEsQ+xQDfdz8l6XqpCN8d63HGom8csmfWUEGYH0lqafrEqVulPfifLOTbOdJoQHCoA011qNFEOnAIct0f0A+MITFNagmCuXhdkLlJIqhu+evWwm4Z40B6ClhmhA7f6byk0uyqSVNwuULujAQ8/9HVLdszTa9rNI1ScRjnh42zrcGzKVp51IB/P4MR6CSLcOh0exiKedHYRppCxpl4g==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:550::8)
  by AS8PR10MB6436.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:569::6) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7741.35; Tue, 9 Jul
- 2024 08:35:36 +0000
+ 2024 08:35:38 +0000
 Received: from AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::4cbc:c0b7:27cc:2082]) by AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::4cbc:c0b7:27cc:2082%6]) with mapi id 15.20.7741.033; Tue, 9 Jul 2024
- 08:35:36 +0000
+ 08:35:38 +0000
 From: Tobias Schaffner <tobias.schaffner@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: Tobias Schaffner <tobias.schaffner@siemens.com>
-Subject: [PATCH 4/5] ci: Add a long term latency test
-Date: Tue,  9 Jul 2024 10:35:23 +0200
-Message-Id: <20240709083524.739194-5-tobias.schaffner@siemens.com>
+Subject: [PATCH 5/5] ci: Add latency treshold to longterm tests
+Date: Tue,  9 Jul 2024 10:35:24 +0200
+Message-Id: <20240709083524.739194-6-tobias.schaffner@siemens.com>
 X-Mailer: git-send-email 2.40.1
 In-Reply-To: <20240709083524.739194-1-tobias.schaffner@siemens.com>
 References: <20240709083524.739194-1-tobias.schaffner@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: FR0P281CA0117.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a8::15) To AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR0P281CA0116.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a8::18) To AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:550::8)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -64,141 +64,198 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AS2PR10MB6349:EE_|AS8PR10MB6436:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8879e527-a9f9-48cc-34f8-08dc9ff21b19
+X-MS-Office365-Filtering-Correlation-Id: a08fe2f3-6a2b-4266-52c9-08dc9ff21c0f
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?eMYoBPhuuIiVNdaDN5fCScWtkzTAfRUHkRpCrxinK//hUBH1Vhh0dE6UiUux?=
- =?us-ascii?Q?avYRYl+lHd29thVL3ISIP/+evdtInJgbg7rFXV9Cm0zsZ0ht9bszXvub0ejW?=
- =?us-ascii?Q?dTLFcEpDGT8NFAwaa+YeHZbt1sWZ5/cTEYZ70T+QdAJOPZ0YPC6nMltAcVFF?=
- =?us-ascii?Q?uhW6BC+iSz7SRNqddrCRSpcJtp8YPifzzVX5/UXsEV3sp3BvJEh75GwwyB/n?=
- =?us-ascii?Q?mNtfldp6jx8JonX20Neq45bRyiSTsBeMtbHd/MGk9NEVtH/XR2rwjBpwYGo9?=
- =?us-ascii?Q?G/84QFbE5KulyUPsFSYsXQHZqY/q0Fb9gpQPoYEl9XXtm3CNyJ3WFM9ZcOFL?=
- =?us-ascii?Q?63X2OlvbbdBwnLoROinEWOvfkREKa2ASvc2V6UzN4fgb6bkf0Mhe3jpwiOhj?=
- =?us-ascii?Q?zVFvTPZLz8VgwwDC2+H3HTiALgtVOud1RYigzsSq5FKB92DSAUc4ZP11R5AV?=
- =?us-ascii?Q?PWQOLJZ9aI9Zf2Cu0IyNiE4gEHr8MmO7hytBvrGs3CUpF1/Atc444ZoLvL35?=
- =?us-ascii?Q?ClRW0EvRFMmkz5Ys656qx2ZA3PDhViXdNmDgY7wZFiB52ttnGH4MFDNKJrDv?=
- =?us-ascii?Q?YB7xN5GPx0TNbt8ylQzy8GQSFT37xmrpo7DLfkNeDGxOt/gGJNBJLJYCGX4P?=
- =?us-ascii?Q?cIXfvousMQEj8NbVH6XcQit6M7EW1xNtY7W0Zpc5Y44PB9D/KRb+dzuPS0xr?=
- =?us-ascii?Q?Nb4H4ZkbC5eGZ121XHXh998wK6sWNbLDYuUP1KNUWMYp3iljimPz1h3N+zQW?=
- =?us-ascii?Q?NYv3X6XFW1ubIY6yMFoxENckpwMvCPLhgdkIfjaGqJ11Q8eNoS6TUIoDQTCa?=
- =?us-ascii?Q?2Doauz41g0V65vmQ6qHBT74TtSJQIRJXLovB3sbkFqWrBvjcV+s7vZPrHP1D?=
- =?us-ascii?Q?KVXjoL2WxoRt+JVh+5JfiC3VPoF/jeAPKtSmjD7ncFJuarTRVctMU+P79Zpo?=
- =?us-ascii?Q?NCD5fzG9D9HwaGXROa52DHbLvzZmQIfgV9MMfmPA8/0VBSraNwatTLMutd/q?=
- =?us-ascii?Q?IUKsbrUsHsXUnln1i1+ndsxQ/kPzEBA7CP6trIyyKKZBc/r4hzwq/jhPfbBa?=
- =?us-ascii?Q?EHSG836MNbR9Idq55qjTXuR56YqzDZpdMbiBTepIyS6dyby96vYTquNXe14F?=
- =?us-ascii?Q?/I5SIcLTbKe+iU9V/vBkeIhoJfZQ53p7aj7Nd05jW+sQhIiM5oHzv+xHLtNq?=
- =?us-ascii?Q?dPR5gC0aHVjpCawuW9AFkuMDbpdJpOMEvjDgZH42bWnQ00mR4bw1ZIRAIRvR?=
- =?us-ascii?Q?ANCXtL4ao+Ho4AV+li8hgilLikV46eaGwV2QT4Qgf+r3D8daUU07j9AU8Zbx?=
- =?us-ascii?Q?ofDoqu+EnUlvX8fl/Tm400U7d0V9SzJfLaHfJueAursp+Q=3D=3D?=
+	=?us-ascii?Q?eJfctmtp2I9Z4Z+s+doDOR80UcQC05sCI3w1gZ8tdUXwManDtw7p4TTFb/Mo?=
+ =?us-ascii?Q?7RYUMVoMLmSoGbs9ecqhLUZPU4s3hF9YagTThyKgn+cshnR8sioLYcJAyOZd?=
+ =?us-ascii?Q?gsFFVPtdasdEOUc8jQg0X/waDi0ad5+ZRFZ8JlO4BwGn12F8yrnEgS0nVljw?=
+ =?us-ascii?Q?GSJfUwaCSKtOyKEvPeBftmkcBiVyR/e23VKwvVRJymqpyv9Oa9z3J8gnIjyZ?=
+ =?us-ascii?Q?IndGUcTxotSE7q1Qn0SaXbFYacXEUwewCxsyb+CL0c+hDfRnEp30lhacwlUz?=
+ =?us-ascii?Q?L5sNMtpknztDuWO4rCsM4brkGXabPsUt/lTSiJHf83NfIj5EzcEbT9f1zdag?=
+ =?us-ascii?Q?NHlqy/ambzBO8plao3taFEXDcE+2AAueDZiEhT3O4aAgMg+HXlD1IF/QG0Em?=
+ =?us-ascii?Q?dfJIeSky/5w14ZCjdghB1WGFcN56ixKcE3Hw0CinaGPbCLuic02VdV4tev1+?=
+ =?us-ascii?Q?lQ9sifCPCgFZhx3m83RMvfp3wVMRWxPzc8WNq3JojgKDn+Hp+c110xMUqBck?=
+ =?us-ascii?Q?8pj5Obf/39p8fPox7mBxCf6p4Mkd44zYOYdL8BLsKd+XGSWkZirSJTTM9x2b?=
+ =?us-ascii?Q?nAZVgyLob2a0WUBGGlNn8xk0SNgyN37uHyzFJeqfYJNKOy9lEOu387MhzsNw?=
+ =?us-ascii?Q?XT9yLg8Xgi/xK5dKgeRO4CpeaIVHcTzmd+43u5V0BmyPCebPPve6uGuH6qPu?=
+ =?us-ascii?Q?ZDYwpV0FZo5WDfpNuJXuF1Hj28HfwrFCcaVfPlCUjB/AkC7t3qR3FgaJI/Hl?=
+ =?us-ascii?Q?68iOA/ikH5f2QPRFGN/1FC3vmT9DA639kLcBu9BOZWnBXWx9mYckzpcHmZtg?=
+ =?us-ascii?Q?wvyacr+PH9ofpnYsqB3ja6cXrvFxxLfEGBxxGHQE2KYNcq4XLskYzE4O9hEM?=
+ =?us-ascii?Q?c0NJi8ou8CaSVxFuQEDw/3lFJDlZmNZ5sfUF7TjbEQyBJ8csH7AGlA3QryE0?=
+ =?us-ascii?Q?aoDEXUnNJ74K86KLjwe22PtK4FIRjQFJorCcNjSGaW4900hHejELycGXaJRV?=
+ =?us-ascii?Q?AElYSv+7InarUeFqVyBGVYykC+ZIp8XiSPwfgXZNM8Z+u5qZgt2xRQ/eYw/f?=
+ =?us-ascii?Q?ThLPv+7K5SekJmoxBRqYiGdDIxS/29cGX6PzymmT7f4p9pipgj/Y9wef/6tK?=
+ =?us-ascii?Q?5TJzes/HE1pj+GDO5IkPbn180EbimxtB/KCj4L2di4h6y6eMP4yglJXM5y18?=
+ =?us-ascii?Q?8iC3D7SnHyiFx3JkrU+zdRvhHGXT1RrjDyEcGF6V4bsAsPjYoKCUyx3J4lq8?=
+ =?us-ascii?Q?ILItbQzNy5AvXLzAIFCdNrXvWveXBYZIaw/7Sg+1fE6kTyfLXWj76PHj+ifB?=
+ =?us-ascii?Q?Gqe0lDAS88Xvi1QzXc2TkK0CYXkB5+PUFqZB5uTRR0onVw=3D=3D?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?JG68VwV3DBEPouw0vsHamxhDvG02ZPDouxT1tOztHo7uQ00hpUKUE9UUrhh8?=
- =?us-ascii?Q?JmOSRzmkwK8ahDcqGDx68KuMohtBek3rEX5r/OluwyrHreoOxLfG4twDOySx?=
- =?us-ascii?Q?1TNFUpuKHfC1+A+LrWwI82y/3uhCkIQON9x48JmFGRTlzHPcVNFS2oRqGuBh?=
- =?us-ascii?Q?/oc/PzoC4nTUJc74hOfUi39aaTn93qBYKcBeCFFJXvAYFonSvZNMN8obmCsg?=
- =?us-ascii?Q?vF9HleSvNccJ0tUSI5ZTbmLAwEv9DOqsF7SfvpPwNTNsnJ3e6ijQC6bckVk2?=
- =?us-ascii?Q?s2QqfcrdnCsLNxiyiGFsoHFMSxwchRq0iNvCm1tEFCNuhDuWgvX0prxgFfd/?=
- =?us-ascii?Q?6Z2EJVHrhAWboLDKMWmzP5u+5WgbwbFNJnj1ZLrxpEe0ARAuEq40LnbPSKTg?=
- =?us-ascii?Q?kz3m34TbqoFaTNfPJostIMcTUZtGr5PFA+RjP6bnLW4CFT/UL/5HuZOUuNxP?=
- =?us-ascii?Q?dn5xVoABCNTfYyNITdTY/GKcceBH0GDa34kzltwNGas8hd42BOUI9/PsjdeC?=
- =?us-ascii?Q?7nHKzF+OHiGn7NlJ/QCR7cU6f6v89+BPLga9vYKn4ofWVvjPnSdVA8Zu2FXw?=
- =?us-ascii?Q?x19EIZZ7uoE1xi46U+eD+FXDlkoTgwynMbMki191J+TcTfVYkl9GFmIj5b8v?=
- =?us-ascii?Q?+S1WfRJZDnkIBpqGNpj7KlxQmpq3+3Vflro9WLMGhXN1q7eBrQ3xUBhmudWh?=
- =?us-ascii?Q?F0J5etySBu3+4SrMy+WT49f2QFXDaIJjLhVdEURkFbqZBrjFqRZq/onjdx6e?=
- =?us-ascii?Q?AOf30TPVvrMTz4kBSPh0xorWi8NkWbZaw0porI0b57ObVMiYD/p0rS9UUCeP?=
- =?us-ascii?Q?5V23BVV5gBDVPDIyWMBqj54ysKETmqZkZmTIfdA3vf9inCXA9R6GS/at/kpJ?=
- =?us-ascii?Q?cn3o09TM5PUNHKbvuPnnXTBtJzd0+MBXlHdyw4As9mpHS4EaKf6xQT/5lXSU?=
- =?us-ascii?Q?kYrQrGN8ETxD3oErYulyEVqRY8dthvoSAm3Yqy0V9GMv1W9eNSpt10TP9Yi5?=
- =?us-ascii?Q?Dsw/NASS63H4rUtrwbhWO4R53RyP20cVXz+GQa2asbRjL38pSTvtVfeT/udT?=
- =?us-ascii?Q?oIXEMqzO30M3fa+L6OE/8/6lJVzJPXuL23x0df3h+TnDIGdjzCUczfkIoUvQ?=
- =?us-ascii?Q?4ZVWXaO/rz8lIBujuTKM8FaWR8xcFUkmgefCRyrXKYUnkEHgK782BiXOQil9?=
- =?us-ascii?Q?SwQCpVCNHKx5tc47Zh+7ZtUvJR5T1sKTXWWz7Yl2EnBCbW4BC2cVfUiu/1xo?=
- =?us-ascii?Q?L+0G0+lu16JOZ3u6ehE8P6lNVJvatHNSnHagAXRVE/4CeRFfOBKnikZVJpR8?=
- =?us-ascii?Q?Yys7FD9Dg9YIfq+weh/Ug4z48rjU7ytJnAjbRKMf5Bh4u4IK963ptG7ii6Y8?=
- =?us-ascii?Q?RbuvFAJzr4U4rS1Pm7lcYpl9WHUqQm62RK5//24iJzOQXbaFfpHdQhqjm6Fn?=
- =?us-ascii?Q?OT5kVAfuF0N2SrS0oL/NkWTU3NBR0MyaYgUTJlughaZssXbGp+7HfTVpqPid?=
- =?us-ascii?Q?0sCiJdIW2YuG/MMnUIzc51W3rFyGUhUk+G54V/wkhDrw8XzUQ/nCuxlS+HJh?=
- =?us-ascii?Q?V9HmIg4tO4Awy6DCN/NPHd3SXzpvLF2DfZiycNMwahCK7u1PQ4mfgeIBWKuH?=
- =?us-ascii?Q?UQ=3D=3D?=
+	=?us-ascii?Q?5G7TvVftv+rNCBjZ32ARXYQZBArvUP1X/CDB9qDcLWYF6W90oRzKuOWzM5ow?=
+ =?us-ascii?Q?sL62AN6ZA1PvUAkwMfW84jUt94/+bx4UwUi9s3OUMpE3zre+VDOyaifjhPFo?=
+ =?us-ascii?Q?crss0tjM4aINFr9aCbfJrNs0039TRmBsQzLUW3mtHf6Olpp0qx0FYCOgxy79?=
+ =?us-ascii?Q?PbZg4MQCjZVdauuobzdXonFEg/t043n7YgRkBEDy0pAOqlOD71eaGiDtA+oX?=
+ =?us-ascii?Q?Jyzdv6Tc7173fc03dYf3wv1LEwpDuifzIMngW2yvNtft+lkPMI604UvbrrtO?=
+ =?us-ascii?Q?nxn8It3EiKAj2oJ8QZmZo0rBTw+tbNiENEv2Gk26GPpiBl/i5tOlqyskzJGx?=
+ =?us-ascii?Q?InR0v8lRUgpFnaOXemV2M+ag3YZxqr6pfOHg6CzzLPO22LCsI70X5gwXinQI?=
+ =?us-ascii?Q?IOv7ZzzIR2RxwUVZAb2f48pfI7UxIkI3zFV8ESiCx1Dr/KdWApcMlOeqIEMR?=
+ =?us-ascii?Q?AtHdQWSUqjdKUKU1gos0kkLvVdmmKGg7UuVQpZhMm6MdnYyWhsNgl2y8Yfq7?=
+ =?us-ascii?Q?BFJXrsFo85leqTh5/roO/f3+ugk7ND2v0LPCAVE9bKIgBczfOQkzhIArfDOX?=
+ =?us-ascii?Q?O/PsTFNjR5qFYQGk+9ybq+mIXSRjG7VUcoEoMndKwpTup1ugzf93blFGal92?=
+ =?us-ascii?Q?+AUQDIA0SlAz0iYQFgGcEPEQwMV315VS6DeIdwfuD5xXTvLLJzNqQh8opdjK?=
+ =?us-ascii?Q?FTwYqdcNrrdVW1lrU2ImeGxQmMFht1dpMeGafmTcSUabsYcvwgR0WHJH2xtY?=
+ =?us-ascii?Q?gptfyWTLWs2Rn4fOG9W4Yi6GkwCcijZCcevbFOZTPI1NMeFlA1Lkm2DJzcXo?=
+ =?us-ascii?Q?jPPL3SD0ho87tql69o4vtagOtupaAOjW2yVV+nFYC3ncU36v4jnBL2ZK3OXs?=
+ =?us-ascii?Q?j7VnzFG4Fho7hTOx2vVTPaqTDu6/kpNEFKhS4T+ekM8aMe3Dk5zJqRfLmaF+?=
+ =?us-ascii?Q?1ONnx9rpBKFMD9Hlr8WM80dQtcs3on9GrQqoraTAupO9MGEQnPEbLipSpMy1?=
+ =?us-ascii?Q?LxL4K/7iO2NTWf9nafAGPCs+zOZSFJYi/9pTXxZ8ntoBrnCAKmohXLFK1z+E?=
+ =?us-ascii?Q?EnHqYoHGRXaltI0HC9Vx+EjBnwLK5C6U73Jkk67Rnhq4/hVkvpttPdnIJD1z?=
+ =?us-ascii?Q?3vcVyh39tzKy3Imu5xzClHGYK8Fb4NJSUB3vP+JaLnKMsOIQDPiU801sSZlp?=
+ =?us-ascii?Q?4ImpGYW0KdD45upjHWmtRTCcWHkT4surusss7O/juAKC8yy/OIoyu6ot68jN?=
+ =?us-ascii?Q?fhrliPcEsVE4XdOwq/iI1ttxp80oqwL0YKVJ5DHFuOWTzqUjfDjM9vxfvGRo?=
+ =?us-ascii?Q?+GzvqovoW7gDyLgX7Rwb0oHJMyDOOin5iS9ZQltcdgWjEFCgE7Z1tX5E0V3U?=
+ =?us-ascii?Q?VayGwEuEGVcCkBVJpCLcdxYLC//WzdHnpK90y3uauHBba9o3Osn8u8hyep/n?=
+ =?us-ascii?Q?LFZDc7VSoqt2+DHeS6eBwWkyrFfD4RIrn3v+6SW7TUgQdCDLcvqFA6ndeCZU?=
+ =?us-ascii?Q?YErq5hXMmHp7W08VUU9CuaIdWKpL4r3q4y6mJVMqS96z6dUFSpDP5PExNgYR?=
+ =?us-ascii?Q?D3fhlFCBz5C0vMkO1v5M0x2v4kedKycxVBdtQ1MzyQM70fjZBneyT0lZHWF5?=
+ =?us-ascii?Q?Tw=3D=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8879e527-a9f9-48cc-34f8-08dc9ff21b19
+X-MS-Exchange-CrossTenant-Network-Message-Id: a08fe2f3-6a2b-4266-52c9-08dc9ff21c0f
 X-MS-Exchange-CrossTenant-AuthSource: AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jul 2024 08:35:36.6296
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jul 2024 08:35:38.2203
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vtBVk0EeADWa+l3vfAN6lbV+9S/kAzKZhaOPtxDOLzd9Q5TLrSFvtgEUo3ha/OblwoTLJOoxUp/VpvT2MmsUsUCc0vgkJfxggGYCKDrambo=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6ZDZsfhbcPuymLU/MA70MpvDWeugjU5e6B3VUPT3YhhzNQaE01/ImoRnPAmz/+9TLcIHhtVYY4zoEOKeIRqrPH/mjZqPYcPaEFK8NPbhHIY=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB6436
 
-Add a long term latency test that is only running on physical targets.
-The duration is set to 30 minutes for testing purposes.
+Add the latency treshold patch to next builds as long as it is not
+merged. Use the new treshold option in longterm tests to guarantee a
+worst case latency of 100us.
 
 Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
 ---
- .gitlab-ci.yml                  | 10 +++++++++-
- ci/xenomai_3_next_long_term.yml | 21 +++++++++++++++++++++
- 2 files changed, 30 insertions(+), 1 deletion(-)
- create mode 100644 ci/xenomai_3_next_long_term.yml
+ ci/xenomai_3_next_long_term.yml               |  2 +-
+ ...tency-treshold-option-to-latency-tes.patch | 76 +++++++++++++++++++
+ recipes-xenomai/xenomai/xenomai_master.bb     |  3 +-
+ 3 files changed, 79 insertions(+), 2 deletions(-)
+ create mode 100644 recipes-xenomai/xenomai/files/0001-testsuite-add-latency-treshold-option-to-latency-tes.patch
 
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index 9edf635..803feaf 100644
---- a/.gitlab-ci.yml
-+++ b/.gitlab-ci.yml
-@@ -23,7 +23,7 @@ stages:
-     forward:
-       pipeline_variables: true
-   rules:
--    - if: '$ONLY_RUN == null || $ONLY_RUN == $CI_JOB_NAME || $ONLY_RUN == "xenomai-3/${CI_JOB_NAME}"'
-+    - if: '$CI_PIPELINE_SOURCE == "push" && ($ONLY_RUN == null || $ONLY_RUN == $CI_JOB_NAME || $ONLY_RUN == "xenomai-3/${CI_JOB_NAME}")'
- 
- 
- stable/v3.0.x:
-@@ -49,3 +49,11 @@ xenomai-3/next:
-   trigger:
-     include:
-       - local: '/ci/xenomai_3_next.yml'
-+
-+xenomai-3/next-long-term:
-+  extends: .parent
-+  trigger:
-+    include:
-+      - local: '/ci/xenomai_3_next_long_term.yml'
-+  rules:
-+  - if: $CI_PIPELINE_SOURCE == "schedule"
 diff --git a/ci/xenomai_3_next_long_term.yml b/ci/xenomai_3_next_long_term.yml
-new file mode 100644
-index 0000000..0edaca5
---- /dev/null
+index 0edaca5..d5a93a7 100644
+--- a/ci/xenomai_3_next_long_term.yml
 +++ b/ci/xenomai_3_next_long_term.yml
-@@ -0,0 +1,21 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2024
-+#
-+# Authors:
-+#  Tobias Schaffner <tobias.schaffner@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
+@@ -17,5 +17,5 @@ variables:
+   XENOMAI_BUILD_OPTION: ":opt-xenomai-next.yml"
+   XENOMAI_VERSION: "next"
+   LATEST_KERNEL_VERSION: "6.6"
+-  TEST_COMMAND: "xeno-test -k -l 'dohell -m /tmp 3600' -- -T 3600"
++  TEST_COMMAND: "xeno-test -k -l 'dohell -m /tmp 3600' -- -T 3600 -m 100"
+   TEST_TIMEOUT_MINUTES: 80
+diff --git a/recipes-xenomai/xenomai/files/0001-testsuite-add-latency-treshold-option-to-latency-tes.patch b/recipes-xenomai/xenomai/files/0001-testsuite-add-latency-treshold-option-to-latency-tes.patch
+new file mode 100644
+index 0000000..6adb7d8
+--- /dev/null
++++ b/recipes-xenomai/xenomai/files/0001-testsuite-add-latency-treshold-option-to-latency-tes.patch
+@@ -0,0 +1,76 @@
++From 032a29ccb649cc2d076f14e7769bdee8eba8ecfe Mon Sep 17 00:00:00 2001
++From: Tobias Schaffner <tobias.schaffner@siemens.com>
++Date: Fri, 21 Jun 2024 09:35:08 +0200
++Subject: [PATCH] testsuite: add latency treshold option to latency test
 +
-+include:
-+  - local: '/ci/gitlab-ci-base.yml'
-+  - local: '/ci/kernel_6_6_physical.yml'
++Add an -m option that allows to set a maximum latency treshhold to the
++latency test.
 +
-+variables:
-+  XENOMAI_BUILD_OPTION: ":opt-xenomai-next.yml"
-+  XENOMAI_VERSION: "next"
-+  LATEST_KERNEL_VERSION: "6.6"
-+  TEST_COMMAND: "xeno-test -k -l 'dohell -m /tmp 3600' -- -T 3600"
-+  TEST_TIMEOUT_MINUTES: 80
++If the option is used, the test will fail if the maximum measured
++latency is larger than the treshold passed in microseconds.
++
++This is mainly implemented for CI long term latency tests to
++automatically let the pipeline fail if the measured latency is higher
++than expected.
++
++Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
++---
++ testsuite/latency/latency.c | 14 +++++++++++++-
++ 1 file changed, 13 insertions(+), 1 deletion(-)
++
++diff --git a/testsuite/latency/latency.c b/testsuite/latency/latency.c
++index 7856b48b8..52e315d9d 100644
++--- a/testsuite/latency/latency.c
+++++ b/testsuite/latency/latency.c
++@@ -89,6 +89,7 @@ int32_t *histogram_avg = NULL, *histogram_max = NULL, *histogram_min = NULL;
++ char *do_gnuplot = NULL;
++ int do_histogram = 0, do_stats = 0, finished = 0;
++ int bucketsize = 1000;		/* default = 1000ns, -B <size> to override */
+++int max_latency_treshold = 0;	/* default = 0 (diabled), -m <max> (in us) to override */
++ 
++ #define need_histo() (do_histogram || do_stats || do_gnuplot)
++ 
++@@ -536,6 +537,12 @@ static void cleanup(void)
++ 	if (histogram_min)
++ 		free(histogram_min);
++ 
+++	if (max_latency_treshold > 0 && (double)gmaxjitter / 1000 > max_latency_treshold) {
+++		printf("\nMaximum latency exceeded: %11.3f > %d\n",
+++		       (double)gmaxjitter / 1000, max_latency_treshold);
+++		exit(1);
+++	}
+++
++ 	exit(0);
++ }
++ 
++@@ -614,6 +621,7 @@ void application_usage(void)
++ 		"-c <cpu>                        pin measuring task down to given CPU\n"
++ 		"-P <priority>                   task priority (test mode 0 and 1 only)\n"
++ 		"-b                              break upon mode switch\n"
+++		"-m <max>                        fail if the maximum latency is larger than max\n"
++ 		);
++ }
++ 
++@@ -648,7 +656,7 @@ int main(int argc, char *const *argv)
++ 	cpu_set_t cpus;
++ 	sigset_t mask;
++ 
++-	while ((c = getopt(argc, argv, "g:hp:l:T:qH:B:sD:t:fc:P:b")) != EOF)
+++	while ((c = getopt(argc, argv, "g:hp:l:T:qH:B:sD:t:fc:P:bm:")) != EOF)
++ 		switch (c) {
++ 		case 'g':
++ 			do_gnuplot = strdup(optarg);
++@@ -722,6 +730,10 @@ int main(int argc, char *const *argv)
++ 			stop_upon_switch = 1;
++ 			break;
++ 
+++		case 'm':
+++			max_latency_treshold = atoi(optarg);
+++			break;
+++
++ 		default:
++ 			xenomai_usage();
++ 			exit(2);
++-- 
++2.40.1
++
+diff --git a/recipes-xenomai/xenomai/xenomai_master.bb b/recipes-xenomai/xenomai/xenomai_master.bb
+index a2e8802..07a63ec 100644
+--- a/recipes-xenomai/xenomai/xenomai_master.bb
++++ b/recipes-xenomai/xenomai/xenomai_master.bb
+@@ -15,7 +15,8 @@ require xenomai.inc
+ CHANGELOG_V = "9999-${PV}"
+ 
+ SRC_URI = " \
+-    git://github.com/xenomai-ci/xenomai.git;protocol=https;branch=${PV}"
++    git://github.com/xenomai-ci/xenomai.git;protocol=https;branch=${PV} \
++    file://0001-testsuite-add-latency-treshold-option-to-latency-tes.patch"
+ SRCREV = "${AUTOREV}"
+ 
+ S = "${WORKDIR}/git"
 -- 
 2.40.1
 
