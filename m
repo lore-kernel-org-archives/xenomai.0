@@ -1,137 +1,99 @@
-Received: from toucan.tulip.relay.mailchannels.net (toucan.tulip.relay.mailchannels.net [23.83.218.254])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF2AB12DDAE
-	for <xenomai@lists.linux.dev>; Tue,  9 Jul 2024 19:46:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.218.254
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720554404; cv=pass; b=hLbfe6o4brj4vvvdExw/SkghDQT1KQMXgbldG8ywy0y2pHKG3uiCaKepRp84LruNyW7aTccqDRqrKZnkw6lCfj7zLQxplUr+mVGW/NR/7AGE+zRndMp14u3wKkSLeIZSc+Jdq6D9fiLX15gw9WFU6EdtTAByP00cqat3sE3N8XU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720554404; c=relaxed/simple;
-	bh=gz9D4T7EL0eQUEO+VMaoEGks/PkoD0WjPXMV2um+jwg=;
-	h=Subject:To:References:From:Message-ID:Date:MIME-Version:
-	 In-Reply-To:Content-Type; b=HNVPiuQUfz41rR1bhNluzsQlYclzHPKL0bwamk86DrazCoEvXZUwnkg2g1Na72OY9PAeqoQ9nVDhXzSmxXUNb1DwvNr8Z4eG2lVbuPvnKo2mKSE12/l+k+D1rg1hsBFOeIBo2NmHIrWnbUSLIoCSw9R1VVnxFa+RnB16N6qzQrI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bela.io; spf=pass smtp.mailfrom=bela.io; dkim=pass (2048-bit key) header.d=bela.io header.i=@bela.io header.b=Zf1eGMSM; arc=pass smtp.client-ip=23.83.218.254
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=bela.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bela.io
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bela.io header.i=@bela.io header.b="Zf1eGMSM"
-X-Sender-Id: dreamhost|x-authsender|giulio@bela.io
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-	by relay.mailchannels.net (Postfix) with ESMTP id B79D62C30E7;
-	Tue,  9 Jul 2024 19:38:26 +0000 (UTC)
-Received: from pdx1-sub0-mail-a209.dreamhost.com (unknown [127.0.0.6])
-	(Authenticated sender: dreamhost)
-	by relay.mailchannels.net (Postfix) with ESMTPA id 50F9A2C3F88;
-	Tue,  9 Jul 2024 19:38:25 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1720553905; a=rsa-sha256;
-	cv=none;
-	b=IHik2g3euvumpSobTYFSaOLH98RqddcSHfMK8pV5nYE47OYAXcOWgUojSRMC9aOeOwVxIh
-	lb9yW7U0wy98kqxp3IuQaZAI1cYGeRHoA63LMr4+/zuCvZ/3rUJ0q2Om3bs0mmNTR9U4oR
-	iUbt9OMKKPIUw+tRj3ER3jHE4lLIImrllydeBKkGT8jQe7xUbijlQ97cKgI2MexkW5UkFI
-	8+3cGVqnvD2oqyosoDE88fdyYi/qD5/o/5WUvojptvDcNFSFkKKlTf0+CvBJViz7vrWvzY
-	TC84HnYhkDfphXK9ZdAdmYbDgMYGXilWZeY0iDh5EqJ7GKHUG8YaAS7vGC8HAQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-	s=arc-2022; t=1720553905;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:dkim-signature;
-	bh=3SofecoZpua/J9bBPDmyIuLp3d8lDB5T6jDT1gmEQMQ=;
-	b=Nxi2Y3iXCBYLYtcA6wsCdFCHnTZr+qisvoKq99aOs2k3nAU+iC3aD6/5Leuqf4M0Fgm1k6
-	Vh7P+qLBiP1Coi/BoJ9NzyaLLKMC+D48a2zkM8kD6xNADCISX66+xkJIy2K8njcTWcEVDR
-	qPE4yNvZfmCfdFIwjHGXwShOrtXgu0k2Eu6NXyL+JDL2Cgd+pKPwE3FzbInj8OVYYgWD2a
-	K8I5LukIJUTvFM3UU3zT56XpidCHfjEYICZytyB5sywGP5KhNaDHKTrTwhHzOnbpV1Qgih
-	toqZF8fgsGVNKYCuxsb4gTBCzkdiqnuntuzMu7a60rsBjYOGyxg4dSOhWPyZDg==
-ARC-Authentication-Results: i=1;
-	rspamd-6db77b4858-7wjsr;
-	auth=pass smtp.auth=dreamhost smtp.mailfrom=giulio@bela.io
-X-Sender-Id: dreamhost|x-authsender|giulio@bela.io
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|giulio@bela.io
-X-MailChannels-Auth-Id: dreamhost
-X-Invention-Stupid: 1e20a85d3f3bcdfd_1720553905711_1624072568
-X-MC-Loop-Signature: 1720553905711:3291949727
-X-MC-Ingress-Time: 1720553905710
-Received: from pdx1-sub0-mail-a209.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-	by 100.117.230.9 (trex/6.9.2);
-	Tue, 09 Jul 2024 19:38:25 +0000
-Received: from giulios-MacBook-Pro.local (unknown [186.99.138.208])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: giulio@bela.io)
-	by pdx1-sub0-mail-a209.dreamhost.com (Postfix) with ESMTPSA id 4WJWW45nvLzRG;
-	Tue,  9 Jul 2024 12:38:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bela.io;
-	s=dreamhost; t=1720553905;
-	bh=3SofecoZpua/J9bBPDmyIuLp3d8lDB5T6jDT1gmEQMQ=;
-	h=Subject:To:From:Date:Content-Type:Content-Transfer-Encoding;
-	b=Zf1eGMSMUAcrkLd6xzKAewC5GPWUzyo+uujBGaTpQdJfAki4l7rQtZe7BghDBjicL
-	 nrPk55MzfQ3FAeV+BbLugPBuQh3HrtzGryI0UUDCdvtdqCAQwuwxAWEZ9PZG02dTKs
-	 VxMYjKdkp8wcmgS70riWFwho+L7MJTvzOrjE/1DO+Qeid3+epDAXT21lREObV5Ernh
-	 YnHrOZTLs1V1Xa0YHscDchBUq663IilC/hG5OXUdWGAzsYLHi0uY8u/f36RDpU1bgH
-	 N5u8juVRi4Uj1xXahJZpcONjvivJ+TiQQvSReCqoXyPuypmwVHt+4nO43lmRoy50Bx
-	 bUjOy6UR4raKw==
-Subject: Re: [EVL] xbuf preserving message boundaries
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@lists.linux.dev>
-References: <63f65db0-f9e9-c720-940a-dd6276f93076@bela.io>
- <87plrmgybk.fsf@xenomai.org>
-From: Giulio Moro <giulio@bela.io>
-Message-ID: <b6fca6a9-8d69-9445-03a3-0b3ca6afa82c@bela.io>
-Date: Tue, 9 Jul 2024 14:38:23 -0500
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 14.3; rv:91.0)
- Gecko/20100101 Firefox/91.0 SeaMonkey/2.53.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9449112E1E9
+	for <xenomai@lists.linux.dev>; Tue,  9 Jul 2024 21:07:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1720559250; cv=none; b=nRqPvs5bOOQvdbLBNQdndgjPWUVehntmMJJEj5K/MtacVjGGLbflZ724LbwH2JP/WX7qI7fEbVzWhfw7CbVkKCNRBhm2dQxsadkKWDnnMashCvndy8+nxiPMtoeAcfidon4FvC6kOZMWRmtEvBMfwAtVlRnEWTXwNhotqaiVFvw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1720559250; c=relaxed/simple;
+	bh=lNG8cy+Sh8APa6ij4upbM6S58eSgmsBZJuLj/CW74es=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=TN+u6xSTL0X2ZNf/dX0b127ZHYeTr9/JEbHgRzoYbGLHlf28RQ58a6U+oJ42Nc1KXDByAPjG0ivKajLWsY7dBjqUVP5vJpkB4kR8DPl/Th9rj+kjEHwnwi1H9HHVxJdkYFPEB/fP7V2MYZTcK82M4/LegypbmycfIkY3hNBlAtQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-42679f33fefso6864035e9.2
+        for <xenomai@lists.linux.dev>; Tue, 09 Jul 2024 14:07:28 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1720559247; x=1721164047;
+        h=mime-version:message-id:date:user-agent:references:in-reply-to
+         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=jKeHewAT676+rwqlNAYCSn/gARMkQzIFGeGYTGYgIyo=;
+        b=h6OJo9EbZS///Nob0QAkNSaYTXqxyhzxXGtmIQ0P1f6RC1d2+VNyXOpvhXzR8za1TR
+         XClknO4njznkUqNPvwDoERoz84Xx1FmJATxv4l0PYLkbU6o0Zu5mEHdEpFVKVmn+PaU9
+         wnisQBnBt9H9kO8psX4MvEzwW09G0VJSZRhVou0aDj/FFPtun/DfivvkbjO8mvGT4N1R
+         I5wwmRTTmVUBad7NvEpySqcSle0+ERsx9eB5tbQwR+j2M1LUwOUww5eMnUj8lQfCTef4
+         WBAw6wOrnmN/zXPItQsNEXvqEm5uUl36q31zjo3SaB8swSXQCkgOQAdSe+ppwInu6VZw
+         FWNQ==
+X-Gm-Message-State: AOJu0YySf9sRMj4yQ9xbLEc9uFI801Hm5GnOuvBTxP78qZT5gwN0iK5a
+	OzMAP7HLkbUdAFb6KEvbmufkHQ5Qu1YDjQ3kygig6EQfWtyEcQc8z4VmQQ==
+X-Google-Smtp-Source: AGHT+IEcDK7ltZY0P0u0ua5fHbrX7mMrYH+/sP951ZVI9l19o6M4y3iUULYh36TfPLk6PSDQeoFnfg==
+X-Received: by 2002:a7b:cd98:0:b0:426:6157:7ad3 with SMTP id 5b1f17b1804b1-426707e388bmr23321275e9.19.1720559246775;
+        Tue, 09 Jul 2024 14:07:26 -0700 (PDT)
+Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-367cdfab136sm3506516f8f.98.2024.07.09.14.07.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 09 Jul 2024 14:07:26 -0700 (PDT)
+From: Philippe Gerum <rpm@xenomai.org>
+To: Giulio Moro <giulio@bela.io>
+Cc: xenomai@lists.linux.dev
+Subject: Re: EVL documentations issues
+In-Reply-To: <7e4de8bf-c42c-7592-ee44-022d0e75fb68@bela.io> (Giulio Moro's
+	message of "Tue, 9 Jul 2024 10:45:04 -0500")
+References: <7e4de8bf-c42c-7592-ee44-022d0e75fb68@bela.io>
+User-Agent: mu4e 1.12.1; emacs 29.4
+Date: Tue, 09 Jul 2024 23:07:25 +0200
+Message-ID: <87wmluff5e.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-In-Reply-To: <87plrmgybk.fsf@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 
-> Philippe Gerum wrote on 09/07/2024 14:27:
-> Unlike the XDDP protocol, keeping message boundaries with the cross
-> buffer - which is a circular FIFO buffer - requires to either use a
-> fixed message size, or have the application code implement some variable
-> length management at buffer level using some fixed header.
+Giulio Moro <giulio@bela.io> writes:
 
-Thanks for clarifying that.
+> Hi there,
+> going through the documentation for EVL I noticed the following:
+> - at https://evlproject.org/core/user-api/function_index/ the
+> functions evl_udelay(),
 
-Another place where the idea that datagram-based communication on xbufs is available is advertised is at https://evlproject.org/core/user-api/proxy/index.htm :
+Mm, legacy name which eventually became evl_usleep() in order to match usleep(3).
 
-> you could also use a cross-buffer for sending some wakeup datagram from the out-of-band caller to the in-band waiter. This is best if you actually have more data to pass on to the in-band thread than a discrete notification event.
+> evl_new_clock(),
 
-This text and the one I reported earlier should probably be amended to reflect the reality of things and avoid confusion.
+Once a forward looking statement which did not go anywhere
+eventually. We don't need that call, a custom clock can be accessed by
+opening the corresponding clock device in the /dev/evl/clock hierarchy
+as soon as some EVL driver implements and advertises it to the EVL
+core. The returned fd can be used with the generic oob_read/write()
+calls to submit requests to such clock.
 
-Best,
-Giulio
+> evl_get_thread_mode() (at least) are not going anywhere and they are also not mentioned in the libevl source code.
 
+This fell into the cracks in the early days. This would be an alias to
+evl_set_thread_mode(fd, 0, &oldmask), with oldmask containing the
+current state.
 
-Philippe Gerum wrote on 09/07/2024 14:27:
-> Giulio Moro <giulio@bela.io> writes:
-> 
->> (is this the right list? or should xenomai@lists.linux.dev be used instead?)
->>
-> 
-> xenomai@xenomai.org is redirected to xenomai@lists.linux.dev.
-> 
->> This page https://evlproject.org/core/user-api/xbuf/index.html states
->>> A cross-buffer can be used for transferring fixed-size or variable-size data, supports message-based and byte-oriented streams.
->>
->> However further down it says:
->>> If you plan to send fixed-size messages through a cross-buffer and keeping the message boundaries intact matters, you should pick a buffer size which is a multiple of the basic message size, reading and writing complete messages at each transfer.
->>
->> Is keeping message boundaries possible only with messages of a known size (i.e.: it is not actually implemented and it's down to the user to do that)? Or is it possible to preserve message boundaries for arbitrary sizes? I am interested in achieving a behaviour similar to what was available on Xenomai3 via the  socket(AF_RTIPC, SOCK_DGRAM, IPCPROTO_XDDP) call.
->>
-> 
-> Unlike the XDDP protocol, keeping message boundaries with the cross
-> buffer - which is a circular FIFO buffer - requires to either use a
-> fixed message size, or have the application code implement some variable
-> length management at buffer level using some fixed header.
-> 
+> - in practical use, evl_usleep() seems to have a limit of 1000000 as an argument. Is that expected? The limit is undocumented and the corresponding -EINVAL return value is also undocumented.
+
+Yes, the 1sec limit is wanted, for longer sleeps evl_sleep_until() can
+be used with an absolute timeout though. Documentation mentioning EINVAL
+was indeed missing though, fixed now.
+
+> - evl_add_pollfd() and evl_mod_pollfd ()take an undocumented union evl_value pollval. The tests use evl_nil.
+
+Doc is upcoming.
+
+> - there are several broken links. I found these with https://www.deadlinkchecker.com/ entering evlproject.org  as the starting page. I report the result  below for convenience, but the kast column "Source link text" is much more usable when viewed on the site as it is a clickable link to the page containing the broken link
+>
+>
+
+Thanks, all fixed now.
+
+-- 
+Philippe.
