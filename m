@@ -1,55 +1,54 @@
-Received: from EUR02-AM0-obe.outbound.protection.outlook.com (mail-am0eur02on2084.outbound.protection.outlook.com [40.107.247.84])
+Received: from EUR03-VI1-obe.outbound.protection.outlook.com (mail-vi1eur03on2064.outbound.protection.outlook.com [40.107.103.64])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6CA815F40D
-	for <xenomai@lists.linux.dev>; Thu, 11 Jul 2024 16:14:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.247.84
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F20E8F72
+	for <xenomai@lists.linux.dev>; Thu, 11 Jul 2024 16:20:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.103.64
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720714467; cv=fail; b=YEiPXsg5GtprS83wWKWzFY5APjaLimOqE9UTdR0ctkqX80ibnQWcuA6ihoZZerW3sDWJNi5/4Ngu/wOkfN7L+EbUW1oylW95S4pwlyf109AYM0JMn6WFOcZSgykX406EzIIlqET1nWcFqxMoejj7vPlglSFI2vv7LUBbc3kOJdU=
+	t=1720714809; cv=fail; b=ioYYUGXVq2jSXEDHhrEjoszgSkuLi9Eei9ABYq+72lku7BKIFSsVV6WlM+Ex4AZzBQHY/lLiUMwngT2qDJq2wj1YuncNUsxkQLwtC4csCG3m6tzCuMPzEXfDinqGMjsZoNGRZ0bJdqFUgf84TWFEbBTGpnVhmM5+GvOgpf5jqSg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720714467; c=relaxed/simple;
-	bh=TkDrcg6gEGMmVjLfWwxKBOmSOLFUYHl4vY7xJ1A43FA=;
+	s=arc-20240116; t=1720714809; c=relaxed/simple;
+	bh=r6gVBeRaMO6b2ce4LGYn3vlss4piGtAXu2969R3eaN8=;
 	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=WleeGWESGObsHNCGeFkfZyDkSjxjw+ZFDdCDsj0VFWUtWNO3hNISWvYcROAtE+3kfEBocI5IH96AGBMbwp4abvsuFwIE1FWIphY57TiBvjkyXitLq0JOkiil+ctMFC417qON6CRVxDig2ebWQeh78hmiRh08px0ip7AsD50fZS0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=uqTKevUM; arc=fail smtp.client-ip=40.107.247.84
+	 Content-Type:MIME-Version; b=O/go8glyYn1AK8jcbtb4wEDtM2O0RPTegDOlJtRo9ZPMe2DdNWyYSbt8zLW+cCeVSVYFRj6OJNjN3PbW3/gk97agV3nTNqidOR4O5YzoY+eKSf/YV+etQ0PwdATGPnyMVEOlmzHWHwHxaL9/Bh6ANbdOBjgtXK4sy6WG2rAbkUg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=wQLcllw/; arc=fail smtp.client-ip=40.107.103.64
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="uqTKevUM"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="wQLcllw/"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=rRzs2c2QZuHFov0gMWHRhuIQ9ynQSU8J561Osak9acDlAbdEmxKVw8TOf3Rw8m57I23cs2jz8u0rsJptz7ZcTh/751+yAtOM8Q3kgDdjvD04vBFYnXdLWSJtuegYFnp1Qe1gxaPNO0QusxRszmh6JFUZiX9FlC1Dy4qog9rRHexUs9Fwl1rK/DIu9As5A6CU9Ce4JTrbEiECnN3XVyhv5S7t/9Tiq2Yus8OE4CxJ55uL9DBaepVnW+AeCliCKkfVtYAeMm4xAvTzrTP/RPQ+QbUPEde7f9t4S73XCHd62XGzobpl+LUDfvHZ6HkoQiuwUmDoalFnZt5Tu5SDTk0nOw==
+ b=DUErHYxTAHEEJ/Qa8ugO4yHZ1kLZbuRKEfkvHCwgjg1yWt5SelBCDpWoklvTHA/Sb67GBd+ZCX8Xdx/ZGQKSF+DmKw+14Y7THG1iLAx+WPNU6sn74sFHym3wrwjwWIAhlGtEqpYaiLWFOZwuhMAdsKQ2dW2rMXDsWGXIgKRZdgVofxx6C/WJ5FeW7iJCz8e5syywunHPAF4Wfa+Gfos4c9+sz6ly28hTEUdU2p/0LHjRxTln9GcRx4I4hBZo+a7eH85M0eO20DMfwE887DqqnC+M7btAsDOPC5Fn8cgMrHDqhG8fedtBqfY5Z8C5lSUt4R6+dIWEBLP5PRfuOIB0cw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dQRbszAxB0bhcPEUd49EXsEJCctjgDCmEfuv5Hz9wek=;
- b=xuQqJmkXbyzOmQ/nShRzYUSVUrplpHCQJ2UG/4kR6lAI73fUdDOz4EcpuEL7XDUSv3D6uL2/2PHMouIWvY2VIa1c3DXHDJQsSxA2yDs2ynGSZdFBV/z9bGqRNF/oYKEnJMVijuDxX2g3P6XPvLd+SCqIshA2RVGTJyUNR2I7LccRwA3w0VPlB7uFG9nDqvHS2/g1+0ruFJXy1CfaGRkS+AsCgK9WSMA04AuRVYwnsOvbwuplI0wafXREWRgr35ZiO9eBOSpVclg6P0px2FzfYk5C/SzKvS/uAfmZ/xuf1GAnUchKt7XxdD6b78gQPqtXDaTJYSiDUO4zN6zFJz9QKw==
+ bh=uAJDTrqLGbfSE0nkWvUrWRcrlEtIxQZ1Y73LJXDXMis=;
+ b=j0gQmKLVpH3HRchBpXJUli4Q1SPY4iwyRbV/7cKCvu/o2hCih5og1z5+0pwCcQ+iVr0zhH274KZU+FVw9tu7rq2Bmm+v2y+bYvDdyZC3reC+fOoux2zArEbEKX2052jhWMiKmHsDoC+AQ3+9R3VPkwgF1qRIFZVvqClK3SUwCy5H1e1Ltzwrj0pB8hNkv0ddOnmIxWRdymi9BxNv08t1qy247qu70mA8DNxuImelMlRBn/KTU+S5kltwCA4E1JEGEij5dqHn9uBiFf3HDt8HvLhpUEwhMw2mYtBQDIpD+eHFvWE+S3QujFsf6A0dF+/xnacF6fbsdMQPiPqMMGXcyg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dQRbszAxB0bhcPEUd49EXsEJCctjgDCmEfuv5Hz9wek=;
- b=uqTKevUM2tLYmlJU6kIBowiorW8p0iApzJ0Pg46+wF4/wLzA8fz24qHji1sfW/hcO/2iBpZp+Y9p802a0eKppUUluMjmKbDO7mHhpPnAqqA0gshEmzNOcow2od8J3fKhbHywrX1Loia+d2xkM/AyUiyISyKzQHMsTEVaTsBiI6KvAcIH/rM1qIrGeLqv31Y6lCJZqHCVl40xo+fsLlLODaHe7TsSHXMv2Rak/UjO7LzpfzbqYLtooKjxEDpJEEENlL75KA0/7qf8drk3nQ5SzZ+vQjO1SkNBbEajLmkiwLDHzTFNqNllGSEVABHbYT/yQWOGFCXIiw7IZV2C+RM0Aw==
+ bh=uAJDTrqLGbfSE0nkWvUrWRcrlEtIxQZ1Y73LJXDXMis=;
+ b=wQLcllw/GzBfSRVyFvh3/POONWUiBriN4Jos0stiUjDCKsBRioMlrxppD22w9FieJNO+XTmGhEpxQCsuEs6Pzru2nYn9FuO3SVFPU9/NTHcdoKjs6Ez2PrIFSoNHleBFZefY4S5OvOCNpslG8HgzeJuQAVTROAo9Qb9/L/DsbIgutfDvsqKMLu+ApRACwGsgBQUxBWDFq9KhyRDCPbA3haL/kE9zzDkYO01FjcwrW/SQcjhKjlLEPoO2X80xt9MXSW/1FoL44oj4On64x0vAdIZBSU94ehixXtNqJiSo+Y5Rd1HMmXgKPfIQpZe1XIhgct3r0wkixzAmrCoYqy+yxw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by AM0PR10MB3329.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:185::21) with
+ by DU0PR10MB6509.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:407::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7741.35; Thu, 11 Jul
- 2024 16:14:20 +0000
+ 2024 16:20:03 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408%4]) with mapi id 15.20.7741.033; Thu, 11 Jul 2024
- 16:14:19 +0000
-Message-ID: <e04882ea-4d3f-431d-9e7a-6c48dc4c82b6@siemens.com>
-Date: Thu, 11 Jul 2024 18:14:15 +0200
+ 16:20:03 +0000
+Message-ID: <74e5a98e-22b1-436f-a96e-93259572b762@siemens.com>
+Date: Thu, 11 Jul 2024 18:20:01 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 27/33] drivers/stack/ipv4: Migrate from rtdm_printk() and
- printk() to pr_*()
+Subject: Re: [PATCH 00/33] drivers: Fix missing printk log levels, remove
+ rtdm_printk()
 To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
 References: <20240702-flo-removal-of-rtdm_printk-v1-0-cc91bffdd063@siemens.com>
- <20240702-flo-removal-of-rtdm_printk-v1-27-cc91bffdd063@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
@@ -95,11 +94,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <20240702-flo-removal-of-rtdm_printk-v1-27-cc91bffdd063@siemens.com>
+In-Reply-To: <20240702-flo-removal-of-rtdm_printk-v1-0-cc91bffdd063@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH2PR14CA0024.namprd14.prod.outlook.com
- (2603:10b6:610:60::34) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR3P281CA0119.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a3::19) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -108,330 +107,270 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AM0PR10MB3329:EE_
-X-MS-Office365-Filtering-Correlation-Id: c95f159e-c030-4432-ea1f-08dca1c48501
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DU0PR10MB6509:EE_
+X-MS-Office365-Filtering-Correlation-Id: 66706956-98b4-48fe-d846-08dca1c551a1
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?eUdkaG1FTkhZeWZyRW93NVRIb1Qvd2d6TWg3M0loTXplRW44OWVCREdYYk13?=
- =?utf-8?B?KzBEYUl1S1hBRW41ZjdPS1hJa05Xd1NZblVkWmRRZ0VFcE80bGtaakFtcEpW?=
- =?utf-8?B?b2FYdVdRV1RPNkpLYVYzWkpFdGdxUVlidllJTDFVeTlLbXlrMHM3QUE5ZWFm?=
- =?utf-8?B?MmliaFNlc0p2a3FxczlqOW9oczZmd0JHRUI2aGwrcitoWDNwVWhQcU1IT3Vo?=
- =?utf-8?B?K0lWeGFZdXZEUmovK1VGZ1FVUTBOQTBROVJrWDBvYUdLWEVuUXNBdkMvTUR4?=
- =?utf-8?B?SHpsS2JxU01UUVcrd0w2OTdJcGJYUzAzTENIa2Z5MklaR0ZVK3ZocGRpejZ0?=
- =?utf-8?B?OUxpYlQydC9iOGl4cVg3cnlwRkJ5MHJWeWxBeXZseE1ZM2E4NmpWRUREcno5?=
- =?utf-8?B?bkZ2WGFYRXJhVHEreFBVaDlGR3NIcCtGbUExT0M3Z25uajFwZjVZaEFDNGpV?=
- =?utf-8?B?NzdYbzhNeiswNDBoRDBxZGhsbzM3ME81R3pkWXFhWXk0dzNXRmEyRWZWK2NF?=
- =?utf-8?B?aGZSS2FZTDd6Z1MxSlhIbExJZ1VIQnA5QnR6S2dsK0FpdzNPYTRwYlZxR3Ay?=
- =?utf-8?B?bnFTZURNV3dBR3UyQlJWdVhBWXY2Q0ZHNC9FM0NtYWNaSFVWUFJ2UlhCQnhR?=
- =?utf-8?B?c2doeEZMTEFWOE1QTkxlT1BjMlVaTDhueHFZb3NEL21rY2FnbGh0RDVoUzRN?=
- =?utf-8?B?b1JzS0tFMSthWTNJdnRQOW5ETTQ4TVRaYS8zNUdpcG9oN1dJRlpiMWNKRkNL?=
- =?utf-8?B?TlluNTJac21FK3NGVmpudEplbVM1YmJSRDBqcjYwL3lzd1MzelVFV29FRnVP?=
- =?utf-8?B?OWZNUm9vbGdXN2RTdW91dmlmREtSdGg0b29mNEF3YXpDZmhFS29pUTUrZXJa?=
- =?utf-8?B?d1ZESDRJZUNVdzgzbzlVc3B3cTJXZ2dvOXNHUytYZ1dhUVpEb3VxaFAyaW5h?=
- =?utf-8?B?TG1OYm95Nno3UGF5SkR3VnpMOTFMSjhaL1lRZlBUcHcvelpPcHMyWUVpWmZP?=
- =?utf-8?B?RFNzN3BWZHRJSDRsWGJTZEw0WHQ5bHpWbmlkMCt5TklaZm54RC9CTm1rSk9H?=
- =?utf-8?B?SFdmMFc1eXZMMXV3ZzhuMG9MRTJoZUJieXNpS1hSWmVOZDUrdXlSTkdQc0lT?=
- =?utf-8?B?ZnVnQ25kM2JKaFNFNHJBaWdjbjdJK2hTd3k5bExwMnp0UHpCclZTbU0rMm4x?=
- =?utf-8?B?dDJrcGFOS3ByZUdFZ2M4KzZ5b3pxVjZpSUZQYnplMFlmRE1IUEcwbC9scWd4?=
- =?utf-8?B?bkkraEgzdDFFR3pYMGVkM1E2WTRkY3Zma0l2Z2w4bUg2YU1Rd2p5WTJRSGRN?=
- =?utf-8?B?Z3F1OUZLa0pOcWVrNS90US9VQ2RNODlxVHFiQi82WVV1UjJhUVhnZkVJUjJF?=
- =?utf-8?B?WkhjOU8rSSs1M3pVdG9VbkpHUDF4RG9SY1h6Ym9waEpaNS85NitCRldRS2V3?=
- =?utf-8?B?RzJudzNnM1NScnpKUnRNZW04QnNaZkorS0RYV1NKL0xNNVdrSTVHRlZ2bDE3?=
- =?utf-8?B?dmtnRjRqZmtaNWtQbkhJYmwzUzVKa2c4NEdxY2ZKdE5iS01VRXM1T2FJYUpL?=
- =?utf-8?B?WlNEQ05NMUJ0M2dPaWI2c2I4WmN3RjVkSUJNcGpzN20wM0t1L2YwNGFZSmh5?=
- =?utf-8?B?ZnJsU1RUenlNWFRHazlKNXlXczNONElieU5aRnI4ZkU3ZUVQTEhvcUpsZHU4?=
- =?utf-8?B?RjZDUnQ0WEVNbFJ6SFNSZ2ZwQjZaVjl1b3JGZnUxcUcxZ293enNQMTd0Z0o4?=
- =?utf-8?B?eXJjemJWSGVQU1ZkUmx2b1g5Nng0d0xUd1gwUy93STVYVmVJMGdnN2VubWZH?=
- =?utf-8?B?cnlTOG5NRnRUV2pCb2ZuZz09?=
+	=?utf-8?B?LzFCc2dwL295amNMSHV0QnJ0QnFIUUZFaitYWlZPQkRFNGpmQ2RQQ0ttbVpu?=
+ =?utf-8?B?aE0zUDhVWHFzcXF5YnRxaEl5Z0hlaUpKdEVFUHVPc1FLbU5aSXVuYjJlazVq?=
+ =?utf-8?B?NDZUVlUzOSt1SVdOZ05xRENIT1BDeGpidC9mTklOUjJKSTV5SmZhNFhIdTgy?=
+ =?utf-8?B?N0F1TjhtMjFwdUlvSkhDTHBlLzZ6azlvSEZENUdVNm5RMHJGTS82SVJZdkd1?=
+ =?utf-8?B?V3hucDJXVzBkQkJIV3RrWnF1c3J0OG1mM25YbEJKc0VmeHBqcjAxL0NXWDIz?=
+ =?utf-8?B?ZmRQUmlGdEd3MmljTjkwSVhxU0VPQ1g2akR3TDBtRmcrcGVKekZ2VFhMUG9G?=
+ =?utf-8?B?YmRGSUYrL0ZrV25SdjNTMlZhK1FWVUtSSDdpdWFkdmtQSE9aTzQ2bENQRXYw?=
+ =?utf-8?B?ZDArNnpTUVhPVjRpdW1xcVg3TS9vUFUzTkxZOTdGVFR0RTdxakdmWWJhcEZN?=
+ =?utf-8?B?bENLTTZQbFp3UE5KNU1tazhPYVBwN205eHdadUxNWElqMGNwa1hkaDQ2K1Vr?=
+ =?utf-8?B?cms1ZCtZU1BzZ0RmWUFNbkRLWU9VRjlKeU9XaEd5TkFoMGFvUXdqMmpkcHdN?=
+ =?utf-8?B?V1VadVptTFJ4WE9VQ2hEMDYybzI0S25wVHhYdDI3dnplLzZLbU5TYUg2dkRa?=
+ =?utf-8?B?bzZNcnlhT0s2bFZlQm9VdCtkejViRFdwekN1K2dsckF2OFIyOU9ncnBLV0ZF?=
+ =?utf-8?B?RnFaV1kxMHZGL0dyM0RyaW01dlhJWlhDS2NCdENxbkZ5cWx5aWRPZHMrNXVp?=
+ =?utf-8?B?c1JObkRETGFOZWl5SmVnK2N5Z1ZBaUIxRTNWSk05ZnE2L2grbjJ5ZE1NR1Bh?=
+ =?utf-8?B?Q3AvbXdZczB1SUJ0d1Y4UDVvczd5bUFSQTZtUU5LeTRjWk9MQml2OUZNVWYv?=
+ =?utf-8?B?ZUQ3dFlQbFJjTjk3ei9BeXRRRVpVWittZDQwNXdubmhCWWpTejg2Y003Z1oz?=
+ =?utf-8?B?enRwRVJoRU9wSWQ3ODhXdjM3S3QyY1dOWXFrS01LZ0poNzJiOHYwc2ExZGV5?=
+ =?utf-8?B?aHUxcVpjTkNMbmxOTWh1WDFqZ1RzeUpmTHY3Q3prY1kzaFBsNm56WDBOVmZm?=
+ =?utf-8?B?OUx3SEFXZXRGeEUrVHJRRW9pZlZic0dHUkpNWElpTWVlVGJqZE42Rk9zWjVh?=
+ =?utf-8?B?TU9wcEluQ3NSQTQvcnNUWk80SVBobUhpem9SV3NlV29McCt1S0NmTkRMVDlT?=
+ =?utf-8?B?MC9UdlRGWm1mTzFmMytZeEw5ZWRMUXM0ZXoxaUNuZGs1d2NKR3lsMnQ1R3dI?=
+ =?utf-8?B?UlJJM2NjYmxaTWtSNUxrck0vMFU4bE1OTjd0TkNoTzd2K0JPNVVFYUhkS1BZ?=
+ =?utf-8?B?R0pDUHVSb25uc3JaeTdQRjNlRmZKeVBCZERjdzdncHorbVA1dUtqRUJTVjBI?=
+ =?utf-8?B?RFdOeXdJbDlxTU1lWklTL1pHeFlic2xNR0V3dlZFeHNhTjJ5Ym9hTThFZnND?=
+ =?utf-8?B?QjRyZlFPT1R4T1RrTjJNSlpYU2FoVzNtYjg3S09RZlJiUkJuRXd1dXFydC9T?=
+ =?utf-8?B?VUNlbkdWS211aEVKNlllUk1LNVVPQUpLTnlZZ0x6cFVoMnpXbHg0ZXlFd1JY?=
+ =?utf-8?B?Z2RsdHhrYTZHSUZZRXJrREVJMHRTM2xkNWhZSzFOODZybXdTYkRlZVlwUGlZ?=
+ =?utf-8?B?c2pGNENlaGk2bjJ2SnlXSmhiVkFGZ0EyUnlCUWZaL0Y0bzZWNGZ5S3Rta3Ru?=
+ =?utf-8?B?aHdEbHJCZ1kxLzlZZVZKaExsZnR5emFja3VCMDhHTFdueVVwYkRPYzZLTUtU?=
+ =?utf-8?B?ZGdvQjlyMUR4cWtrSFNncGU4TmdZRStidVFTbCt6RHJQak9ockJFdWdWS1VH?=
+ =?utf-8?B?ZmtBc2k0dmNCTWR6VTMxUT09?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?dTV4bWpvUUxFRFV2QmdpWXR3M2prYW45K05MWDdRcVlMcVRwY2RDY1pGRzVC?=
- =?utf-8?B?aFVSOUV3c1JzekxiN05FQUZEMjEwZXRiUUEvT2psOG41VnZMTW14K0J5U2kz?=
- =?utf-8?B?elVsK3djQTBRM3VNa0J1WDJjZWI2U09qRzI4L1A1R1Z4V1haSWZzWU1SYnRh?=
- =?utf-8?B?OW93cmxKRGRJa1drbDYyTTRBdWZZMWdwb2cyK24zZHJLdU1NVjVXS2FzS1BX?=
- =?utf-8?B?S3dQYitaVmdJTmhiOHYwS05Sd2RPcmZIWHJPN2wwaEVQZ0FTWXR6NFNXa3U5?=
- =?utf-8?B?bVdFRDBMN0o2eHJVbzRIdGhqQVozazJEWU91TDhyZitwTGlBN3Q3RU10K21G?=
- =?utf-8?B?SXJhQ3AwY0diRHBaWFJQS0xjaEdGcjh3YlhQbjVzYjFqN0l2aWk4TkNBN3Ez?=
- =?utf-8?B?ei9mQ21uenpNUUkzZ2I2Y1hpUm5mTkJXNXZqWVZvdG5zdUxoTVhMOStyYVJY?=
- =?utf-8?B?eGtEdzVRNUtKTHRMR2Jma3NJdzdadG55dDVGUzlQNlRjN3EvSzMyTmNiMm5M?=
- =?utf-8?B?eXRBUnJKaWRva0EzTFFwbFFjYXE1T3JvY0prZzNXajZ6dURCUUxxek5iNW5L?=
- =?utf-8?B?WHJYKzRZd3ROblNMRDYrdHR6WXgybm5PR1owY0R6cjRHRy9WMTVVbFRuaXlR?=
- =?utf-8?B?VXI3RmUxa3pKeG5sV2NFS3hyL1RPYm5rSVVQMU13UUpaUkpZQmxheG1OUkls?=
- =?utf-8?B?M1FteG1yeE8yK2wvSWJ1LzFVODg5N2tRSkZiZW5HNjRqdTN4L0Y0a0Y5VTZJ?=
- =?utf-8?B?S1V4bGVIYmtBMlhtSG5FeHUvV3o2NEZleEFtalZhWm4yVGp0NnA2RFZpVDl2?=
- =?utf-8?B?ZmxUK09SQ0xMQWZwbVpjUVZ5VERyQXQ0bHJSYUk5SUVoQ0ZOdWxDMEhENW9L?=
- =?utf-8?B?cXV3bitCbjE2b01uMHJJR3pyQ2dXR0Z5cHZaUzJRcENOM01PajB5WDJKRFBx?=
- =?utf-8?B?aVdCVkJoNzdGRTV5Q2hpZzE3ek9peGV0VTZhSUdCOExYUXhIQjZKNFo3bitH?=
- =?utf-8?B?ZDdQS2NTeStqYm5hSjlNMXBPajNNZ2ZWWDdxQW1zQ3loR2t1SnUwSldtSGJE?=
- =?utf-8?B?QlVuMkRmTFIvZWVkK2ZlckFpK2VBaGNqM1lGVFhLcXh5VHAyM0VIZy9aRzAx?=
- =?utf-8?B?b3FkdURGN1pGSGVSaWxyWXNTdzlOWlJYcXk0aGRTY2JlVTNqUk1kakFOcTU5?=
- =?utf-8?B?ZkJESWhPbWJlTGc3TEhkMlN4UkFHVldKZGQ5OFJIYmhIK3F6UnNoQVRqR2J3?=
- =?utf-8?B?dTNESlpEbUxwWkNTY08wcW44VXl4enpZVG9kSGFkVGVhVUVrb0lKR3BRaVZG?=
- =?utf-8?B?YmlLRXFYMWNpZTlWS1YvUzYzRmhTOFRsZFpxcEtuVmtEenZ6RzdQTk1PVjFD?=
- =?utf-8?B?NyszL3BBY1B3eGp5NnZxdW96ZkFaWnI1VGpna1pQMTducmtFTnJ6YnhMYko1?=
- =?utf-8?B?OGFZd1I4ZHc3MlMzS2VDdGlBZFdmdGhvQkRFTGZiZ3hWOXAyditXQWIzRXdY?=
- =?utf-8?B?cDVKVVZHTm9aNW5wZFo5VE5MOEhLUWhyeWNrTjA0WDV2YmFMdVllYU9xbTIz?=
- =?utf-8?B?U2ZmQU9HM1pBUzNBRk1jTFNHRFRrSG1aRDg5cEhxanFOOEdzSVJzSTZNbnZh?=
- =?utf-8?B?WVBQYUI0Q1RvcDd4RFRTSnZRZ2R3azNHRzZZcktnd2l6K25wbFd4dWk0ZXFm?=
- =?utf-8?B?ZmNSemNGUUVoeWxEUzlsekx2cE16aEhJdkxMRW9sWlV0RDdyZGRQUXM3dHpH?=
- =?utf-8?B?d1FZbU43TjlPKzRnSkJ2blJhRmVsalZCVG8yTi9xUURtYWc5REk0K2JrbjVo?=
- =?utf-8?B?ei90ZTNlaTFOVnN3YkRtS1hodUs2bjBYMldUNWs5aEZBb3QvNm5yWFVIRW1O?=
- =?utf-8?B?Z1QvaU1QVUQ5SzZlSjN5RXlMcnlNbWtNUjZITVZ5ZTUvcWZXRTE5OERDaWhk?=
- =?utf-8?B?YWdNMktyRFU4STVxRGJnaUZabW94eWljbEZWZE5FRkhrR0VNYllEd1dGK0ov?=
- =?utf-8?B?MjJ2bHZ6SFNLNXQ4OUZ1Q3M2Z3BEbkNRc2pjUnZIdS9iUnVOelRIUzdhL21D?=
- =?utf-8?B?UTFPY2dSVHN5Q2FWYWp6WHdVc1hhZzkyS0g4NDQ3RG5kN3EreVV1VjdkTDNy?=
- =?utf-8?B?NXowbm9LUVBzNTlENnBJNytMcm9UajNDTC9CZ0VBSEJQcGdPUjVmSis5WEEy?=
- =?utf-8?B?aWc9PQ==?=
+	=?utf-8?B?bDJpclJ5N0hGdmlJYVNqUFdBc0ZKSno2ZTQvT0tPbmlrUnJCd1UzbUlLWFRm?=
+ =?utf-8?B?Y1BTZHk1aHg3djF5QWNhQWtDMGlhSld1blVTL3BtbzZUVktuaHRTMTE2dFlZ?=
+ =?utf-8?B?cWdNSGxvc2NTd0d4SUthcFlHcUZTSTZ6SFFQbWJpTGNDYmZycmpsNkpaMDlS?=
+ =?utf-8?B?ekY2RjlqQTRpNjVtZThjQ05BMkpoM1NrTWhJRXpMdnV3M2MrL3VRaVpqaG1L?=
+ =?utf-8?B?UHEwcUFacDhKQy9aL3VXb2NKYkdzNytLOS9SL3gwaTg5bFgrcURod253Qmdw?=
+ =?utf-8?B?eTB5OHVrNkJWekhLaEhDYzlVbFA2d2oxOEFCbEZYTytmb1U3YUNndDBPWFQv?=
+ =?utf-8?B?T05JY0EzOCs4dWd2czhydVJvMGRWVkx4RUdvODR5YUZ4bHg3K2N1MVNzWlZn?=
+ =?utf-8?B?dHo3bjJYRVZFTXB5NFVzOXJVT2ZUbHAzQ0NyazJ0eWZqZXFEK2V6Y0VieGxX?=
+ =?utf-8?B?WStkblJJdFJVcHREajJoVVhZMnk0Um9hd2lXVG1ESHFlU3lPRGpWeGtZdVNV?=
+ =?utf-8?B?T0ZYWkJac2xZcXZQYzRBZzIrTld3dm1kZDl0TzRmRTEwU3ZsVHQwVk5jZW1J?=
+ =?utf-8?B?T05ocjhDdG80SStRV2g5QkFjZWY2eTBTeHp1cnYvY0I4cmpGdU85dm5GNGlD?=
+ =?utf-8?B?RGpPTDcrUE8zbGFZU1VzYjdJdTVnSTllTTNWUmQ4OUhibEM1OExVb0gxRnVx?=
+ =?utf-8?B?N1VDRFJWL0RFRGNEWmxwL2lxVEJYOS83ZkVrVkc1NkF5YlNLaFBVSjNvSDNL?=
+ =?utf-8?B?dDRKTnBXZEdLUkNKeVVBY242WHQ1TW0wQTN4a2QxbGM5cWl0TE9QTnhvSXNS?=
+ =?utf-8?B?U21vZ3dKSUUyLzV2NC9EYkp2REVLZkpiaFY1djB2VDJCU0srblpwU3hiQ2VY?=
+ =?utf-8?B?MXVZUkg3TnZONFh0V3pzancrUHlFelFtR2VsSVFiWjdnRTZuTWFKVmdLTTNN?=
+ =?utf-8?B?KzZQOE5BTzh6YjlVNEhFRTQ1Q0dUckM5K2RBcklwUkpRR1dWeWFVTHBJSDRP?=
+ =?utf-8?B?MFc3WWE1d2x0Tm1zUGs3QU5sZTVIV1ZUV3F1bURiZ25pa1VuRVNBTDdzdmdr?=
+ =?utf-8?B?R2lwN2ovK0RDSWZ6S1lyWDU1MXpuRnlWSzR1eXBHTTVIYXBUZmNrZ0xJNzZK?=
+ =?utf-8?B?QUROeE80OGsyWTI5WmRmS2ljZEVHdmdMQTNOYmVweFFxZWJJOWlMZFM0bjVo?=
+ =?utf-8?B?amtyRzFRcnZLbVg2elRxMTA1UXhEWkRaajRUZC9iWUtTQVVhTS83N2VkVmZk?=
+ =?utf-8?B?a1BBdWVOM0JNRzFuYnhDUGFmRzZFM3RpajdEcGtxOFBDRFFweVZac0dNdEx3?=
+ =?utf-8?B?T0psSnVySy80bjVRSU1hZkVDV3hHbkY3cmhNNmxSYXJBMVB6R1FyMWx0WUxN?=
+ =?utf-8?B?VkFkaVA3c2JLR0ZrMGVRL1owRktCRWd1TXFqY1dwdktNdzJvWDJZeFVVV005?=
+ =?utf-8?B?TlpBRldDUGtxK29aYStvdDRJTER1NWUxWGdNSXV2WEptS3dPb3BpandPQXhq?=
+ =?utf-8?B?Zk5XZEVOMkphcGIvUGJ5TTlpWk56QlBvUCs4dERuT2FTVWd5M3BQR2R2aVV6?=
+ =?utf-8?B?ZldHa0tlNm9MSDUwNmJWNDRRSjhQRnQ4bGZ1cGQyckxVM01JTkVOV09VbHJR?=
+ =?utf-8?B?VDY2YTkwZzR1M2pubDRMd3R0ZnVKb3pFNG1FVFJxb2orM1NoZk1YdXlEZG9V?=
+ =?utf-8?B?c0lLTHNRU0Y5Y2dDdDZ5ZTBoOW5JUDVmNHVMUCt3aE1UWE9XZDNIR3hSNTdU?=
+ =?utf-8?B?NHZZN3ZGMWE5SFhuZy9CYitRcXFLalQ3Zlh0Ym13N3JTMXRncEJDZWpjdEdI?=
+ =?utf-8?B?ZmRES3hQSStBNXJwQjNqQW9PMnkzR2JGbTNQZnQwNFY4bDloN1lHemxLZXZy?=
+ =?utf-8?B?U1BkdUpoZUU0aWtXTDdFbXJFS2dueHNtYy9KM25nTWEweC9YekhLMCtST1Fn?=
+ =?utf-8?B?WlFLYXowYVJzQVZ2QzZrSXpzbXpydkdGbC9mS0hMeU51VFEvQXJmUlhpOGcx?=
+ =?utf-8?B?dHpsNE93dWVrYXJHTHdxaVRWbG51VkVzMlFoVjNtczEvYjQxWEJDYXFLMjhO?=
+ =?utf-8?B?SWdlRXZaOG45c0dPbnpRV0R3NXFrUE9iaUhOOXVLNzVOcFNuajYzZUdYc01J?=
+ =?utf-8?B?aVg4eTZWOUo5WXVDOEVHYWtUMGUvUjdBMUFVZ0M0WXlTdEdQb2VraFZIWW5X?=
+ =?utf-8?B?S1E9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c95f159e-c030-4432-ea1f-08dca1c48501
+X-MS-Exchange-CrossTenant-Network-Message-Id: 66706956-98b4-48fe-d846-08dca1c551a1
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2024 16:14:19.9284
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2024 16:20:03.1021
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZXgCwwiJtKgqQep+q5R92RP+UE6tHUmQeuu1gctfaj78Qi0E0oZrtSfKA3oWety9eP1NifASwgHmo/oFCA6RRw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB3329
+X-MS-Exchange-CrossTenant-UserPrincipalName: vNvGk+WsJb22O0gEF1EvPvybM2vfWqyy/PLXXbSq5NpjlPN9SumW/mmPQHeq0NkIKOqh3qXnhnDEx7jodjEEEg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB6509
 
 On 03.07.24 15:25, Florian Bezdeka wrote:
-> Some (rtdm_)printk() calls were missing log level information. The
-> default log level (= warn) did not fit well for them.
+> Hi all,
 > 
-> The missing log level is addressed by migrating to the pr_*() API.
+> some background first:
 > 
-> rtdm_printk() itself is just an alias for printk(). Migrating helps to
-> remove this function once all drivers were updated.
+> It happened several times now that logs produced by CI runs contained
+> important warnings (or any log level above) but the actual test run was
+> still marked as success.
 > 
-> No functional change.
+> The idea is to add something like a "dmesg check" script to the CI
+> infrastructure that basically fails the CI run if anything above Warning
+> (or any other defined log level) is detected.
+> 
+> That requries us to get "warn free". The problem: The default value of
+> CONFIG_MESSAGE_LOGLEVEL_DEFAULT is 4, which means WARNING. So whenever 
+> someone calls printk() without any log level it will generate a warning.
+> 
+> This series revisits all of our printk() calls, making sure we use the
+> correct log level. Especially printing version information is no longer
+> producing warnings.
+> 
+> As most printk() calls reside in drivers there is another point that is
+> addressed now: Migrate away from rtdm_printk(). This function will be
+> removed at the end. rtmd_printk() was only a wrapper for printk(). We
+> can remove this wrapper and migrate to the "modern" pr_*()
+> infrastructure.
+> 
+> With that series applied we are closer to the "warn free" goal, but not
+> there yet. Some remaining "warnings" have to be addressed upstream while
+> others might not go away in all of our test scenarios. Some filtering
+> might be necessary... We might find some inspiration at the kernel CI
+> project.
+> 
+> This series is compile tested only, no runtime tests could be performed
+> on my side. I don't have the necessary hardware at hand.
+> 
+> CC: Jan Kiszka <jan.kiszka@siemens.com>
 > 
 > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 > ---
->  kernel/drivers/net/stack/ipv4/icmp.c           | 25 +++++------
->  kernel/drivers/net/stack/ipv4/ip_fragment.c    | 17 +++----
->  kernel/drivers/net/stack/ipv4/ip_input.c       |  4 +-
->  kernel/drivers/net/stack/ipv4/protocol.c       |  4 +-
->  kernel/drivers/net/stack/ipv4/route.c          | 21 ++++-----
->  kernel/drivers/net/stack/ipv4/tcp/tcp.c        | 62 +++++++++++++-------------
->  kernel/drivers/net/stack/ipv4/tcp/timerwheel.c |  9 ++--
->  kernel/drivers/net/stack/ipv4/udp/udp.c        |  4 +-
->  8 files changed, 73 insertions(+), 73 deletions(-)
+> Florian Bezdeka (33):
+>       cobalt/clock: Use xenomai specific log level
+>       cobalt/x86: Add missing log level to printk()
+>       drivers/analogy: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/serial: Migrate from printk() to pr_*()
+>       drivers/can/peak_canfd: Migrate from rtdm_printk() to pr_*()
+>       drivers/can/sja1000: Migrate from printk() to pr_*()
+>       drivers/can: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/net/addons: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/net/e1000: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/net/e1000e: Migrate from printk() to pr_*()
+>       drivers/experimental/e1000: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/experimental/rt2500: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/freescale: Add missing log levels of rtdm_printk_ratelimited()
+>       drivers/tulip: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/8139too: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/eepro100: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/eth1394: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/natsemi: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/pcnet32: Migrate from printk() to pr_*()
+>       drivers/r8169: Migrate from printk() to pr_*()
+>       drivers/r8169: Remove RT_DBG_PRINT() macro
+>       drivers/r8169: Remove DBG_PRINT() macro
+>       drivers/r8169: Remove rt_assert() macro
+>       drivers/r8169: Rework assert()
+>       drivers/via-rhine: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/experimental/3c59x: Remove unused / broken driver
+>       drivers/stack/ipv4: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/net/stack/rtcfg: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/stack/rtmac: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/stack/rtwlan: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/stack: Migrate from rtdm_printk() and printk() to pr_*()
+>       drivers/spi: Migrate from printk() to pr_*()
+>       cobalt/rtdm: Finally remove rtdm_printk()
 > 
-> diff --git a/kernel/drivers/net/stack/ipv4/icmp.c b/kernel/drivers/net/stack/ipv4/icmp.c
-> index c3b80b18d..d96b4fc5d 100644
-> --- a/kernel/drivers/net/stack/ipv4/icmp.c
-> +++ b/kernel/drivers/net/stack/ipv4/icmp.c
-> @@ -24,6 +24,8 @@
->   *
->   */
->  
-> +#define pr_fmt(fmt) "RTnet: " fmt
-> +
->  #include <linux/types.h>
->  #include <linux/socket.h>
->  #include <linux/in.h>
-> @@ -184,8 +186,7 @@ static void rt_icmp_send_reply(struct icmp_bxm *icmp_param, struct rtskb *skb)
->  
->  	rtdev_dereference(rt.rtdev);
->  
-> -	RTNET_ASSERT(err == 0,
-> -		     rtdm_printk("RTnet: %s() error in xmit\n", __FUNCTION__););
-> +	RTNET_ASSERT(err == 0, pr_err("%s() error in xmit\n", __FUNCTION__););
->  	(void)err;
->  }
->  
-> @@ -254,11 +255,10 @@ static int rt_icmp_glue_request_bits(const void *p, unsigned char *to,
->  	unsigned long csum;
->  
->  	/* TODO: add support for fragmented ICMP packets */
-> -	RTNET_ASSERT(
-> -		offset == 0,
-> -		rtdm_printk("RTnet: %s() does not support fragmentation.\n",
-> +	RTNET_ASSERT(offset == 0,
-> +		     pr_err("%s() does not support fragmentation.\n",
->  			    __FUNCTION__);
-> -		return -1;);
-> +		     return -1;);
->  
->  	csum = rtnet_csum_copy((void *)&icmp_param->head, to,
->  			       icmp_param->head_len,
-> @@ -435,23 +435,22 @@ static void rt_icmp_rcv(struct rtskb *skb)
->  
->  	/* check header sanity and don't accept fragmented packets */
->  	if ((length < sizeof(struct icmphdr)) || (skb->next != NULL)) {
-> -		rtdm_printk("RTnet: improper length in icmp packet\n");
-> +		pr_debug("improper length in icmp packet\n");
->  		goto cleanup;
->  	}
->  
->  	if (ip_compute_csum((unsigned char *)icmpHdr, length)) {
-> -		rtdm_printk("RTnet: invalid checksum in icmp packet %d\n",
-> -			    length);
-> +		pr_debug("invalid checksum in icmp packet %d\n", length);
->  		goto cleanup;
->  	}
->  
->  	if (!rtskb_pull(skb, sizeof(struct icmphdr))) {
-> -		rtdm_printk("RTnet: pull failed %p\n", (skb->sk));
-> +		pr_debug("pull failed %p\n", (skb->sk));
->  		goto cleanup;
->  	}
->  
->  	if (icmpHdr->type > NR_ICMP_TYPES) {
-> -		rtdm_printk("RTnet: invalid icmp type\n");
-> +		pr_debug("invalid icmp type\n");
->  		goto cleanup;
->  	}
->  
-> @@ -467,7 +466,7 @@ cleanup:
->   */
->  static void rt_icmp_rcv_err(struct rtskb *skb)
->  {
-> -	rtdm_printk("RTnet: rt_icmp_rcv err\n");
-> +	pr_err("rt_icmp_rcv err\n");
->  }
->  
->  /***
-> @@ -492,7 +491,7 @@ void __init rt_icmp_init(void)
->  				   ICMP_REPLY_POOL_SIZE);
->  	BUG_ON(skbs < 0);
->  	if (skbs < ICMP_REPLY_POOL_SIZE)
-> -		printk("RTnet: allocated only %d icmp rtskbs\n", skbs);
-> +		pr_debug("allocated only %d icmp rtskbs\n", skbs);
->  
->  	icmp_socket->prot.inet.tos = 0;
->  	icmp_fd->refs = 1;
-> diff --git a/kernel/drivers/net/stack/ipv4/ip_fragment.c b/kernel/drivers/net/stack/ipv4/ip_fragment.c
-> index 113a71238..d20cbf52b 100644
-> --- a/kernel/drivers/net/stack/ipv4/ip_fragment.c
-> +++ b/kernel/drivers/net/stack/ipv4/ip_fragment.c
-> @@ -19,6 +19,8 @@
->   * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
->   */
->  
-> +#define pr_fmt(fmt) "RTnet: " fmt
-> +
->  #include <linux/module.h>
->  #include <net/checksum.h>
->  #include <net/ip.h>
-> @@ -96,7 +98,7 @@ static void alloc_collector(struct rtskb *skb, struct rtsocket *sock)
->  		rtdm_lock_put_irqrestore(&p_coll->frags.lock, context);
->  	}
->  
-> -	rtdm_printk("RTnet: IP fragmentation - no collector available\n");
-> +	pr_err("IP fragmentation - no collector available\n");
->  	kfree_rtskb(skb);
->  }
->  
-> @@ -132,10 +134,9 @@ static struct rtskb *add_to_collector(struct rtskb *skb, unsigned int offset,
->  							 context);
->  
->  #ifdef FRAG_DBG
-> -				rtdm_printk(
-> -					"RTnet: Compensation pool empty - IP fragments "
-> -					"dropped (saddr:%x, daddr:%x)\n",
-> -					iph->saddr, iph->daddr);
-> +				pr_err("Compensation pool empty - IP fragments "
-> +				       "dropped (saddr:%x, daddr:%x)\n",
-> +				       iph->saddr, iph->daddr);
->  #endif
->  
->  				kfree_rtskb(first_skb);
-> @@ -197,9 +198,9 @@ static struct rtskb *add_to_collector(struct rtskb *skb, unsigned int offset,
->  #endif
->  
->  #ifdef FRAG_DBG
-> -	rtdm_printk("RTnet: Unordered IP fragment (saddr:%x, daddr:%x)"
-> -		    " - dropped\n",
-> -		    iph->saddr, iph->daddr);
-> +	pr_info("Unordered IP fragment (saddr:%x, daddr:%x)"
-> +		" - dropped\n",
-> +		iph->saddr, iph->daddr);
->  #endif
->  
->  	kfree_rtskb(skb);
-> diff --git a/kernel/drivers/net/stack/ipv4/ip_input.c b/kernel/drivers/net/stack/ipv4/ip_input.c
-> index 26642ef6f..933e38b56 100644
-> --- a/kernel/drivers/net/stack/ipv4/ip_input.c
-> +++ b/kernel/drivers/net/stack/ipv4/ip_input.c
-> @@ -21,6 +21,8 @@
->   *
->   */
->  
-> +#define pr_fmt(fmt) "RTnet: " fmt
-> +
->  #include <linux/bitops.h>
->  #include <net/checksum.h>
->  #include <net/ip.h>
-> @@ -102,7 +104,7 @@ static inline void rt_ip_local_deliver(struct rtskb *skb)
->  #endif /* CONFIG_XENO_DRIVERS_NET_ADDON_PROXY */
->  	} else {
->  		if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_RTIPV4_DEBUG))
-> -			rtdm_printk("RTnet: no protocol found\n");
-> +			pr_err("no protocol found\n");
->  		kfree_rtskb(skb);
->  	}
->  }
-> diff --git a/kernel/drivers/net/stack/ipv4/protocol.c b/kernel/drivers/net/stack/ipv4/protocol.c
-> index f56177da8..bd74b05ba 100644
-> --- a/kernel/drivers/net/stack/ipv4/protocol.c
-> +++ b/kernel/drivers/net/stack/ipv4/protocol.c
-> @@ -23,6 +23,8 @@
->   *
->   */
->  
-> +#define pr_fmt(fmt) "RTnet: " fmt
-> +
->  #include <linux/socket.h>
->  #include <linux/in.h>
->  
-> @@ -80,7 +82,7 @@ int rt_inet_socket(struct rtdm_fd *fd, int protocol)
->  	if ((prot != NULL) && (prot->protocol == protocol))
->  		return prot->init_socket(fd);
->  	else {
-> -		rtdm_printk("RTnet: protocol with id %d not found\n", protocol);
-> +		pr_err("protocol with id %d not found\n", protocol);
->  
->  		return -ENOPROTOOPT;
->  	}
-> diff --git a/kernel/drivers/net/stack/ipv4/route.c b/kernel/drivers/net/stack/ipv4/route.c
-> index d9a9c8b9b..0863c9d03 100644
-> --- a/kernel/drivers/net/stack/ipv4/route.c
-> +++ b/kernel/drivers/net/stack/ipv4/route.c
-> @@ -22,6 +22,8 @@
->   *
->   */
->  
-> +#define pr_fmt(fmt) "RTnet: " fmt
-> +
->  #include <linux/moduleparam.h>
->  #include <net/ip.h>
->  
-> @@ -479,7 +481,7 @@ err2:
->  	xnvfile_destroy_regular(&rtnet_ipv4_route_vfile);
->  
->  err1:
-> -	printk("RTnet: unable to initialize /proc entries (route)\n");
-> +	pr_err("unable to initialize /proc entries (route)\n");
->  	return err;
->  }
->  
-> @@ -588,8 +590,7 @@ int rt_ip_route_add_host(u32 addr, unsigned char *dev_addr,
->  	} else {
->  		rtdm_lock_put_irqrestore(&host_table_lock, context);
->  
-> -		/*ERRMSG*/ rtdm_printk(
-> -			"RTnet: no more host routes available\n");
-> +		/*ERRMSG*/ pr_err("no more host routes available\n");
+>  include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h  |   16 +-
+>  include/cobalt/kernel/rtdm/driver.h                |    2 -
+>  kernel/cobalt/arch/x86/c1e.c                       |    4 +-
+>  kernel/cobalt/clock.c                              |    2 +-
+>  kernel/cobalt/rtdm/drvlib.c                        |   13 -
+>  .../analogy/national_instruments/mio_common.c      |    3 +
+>  kernel/drivers/analogy/national_instruments/mite.c |   68 +-
+>  .../drivers/analogy/national_instruments/ni_660x.c |    2 +
+>  .../drivers/analogy/national_instruments/ni_mio.h  |    2 +-
+>  .../drivers/analogy/national_instruments/ni_stc.h  |   19 +-
+>  .../drivers/analogy/national_instruments/pcimio.c  |   21 +-
+>  kernel/drivers/can/peak_canfd/rtcan_peak_canfd.c   |   41 +-
+>  kernel/drivers/can/rtcan_dev.c                     |   12 +-
+>  kernel/drivers/can/rtcan_internal.h                |   14 +-
+>  kernel/drivers/can/rtcan_module.c                  |   10 +-
+>  kernel/drivers/can/rtcan_raw.c                     |    4 +-
+>  kernel/drivers/can/rtcan_raw_filter.c              |    9 +-
+>  kernel/drivers/can/rtcan_virt.c                    |   16 +-
+>  kernel/drivers/can/sja1000/rtcan_adv_pci.c         |    4 +-
+>  kernel/drivers/can/sja1000/rtcan_esd_pci.c         |   10 +-
+>  kernel/drivers/can/sja1000/rtcan_isa.c             |    8 +-
+>  kernel/drivers/can/sja1000/rtcan_ixxat_pci.c       |   17 +-
+>  kernel/drivers/can/sja1000/rtcan_mem.c             |    8 +-
+>  kernel/drivers/can/sja1000/rtcan_peak_dng.c        |   25 +-
+>  kernel/drivers/can/sja1000/rtcan_peak_pci.c        |   22 +-
+>  kernel/drivers/can/sja1000/rtcan_sja1000.c         |   25 +-
+>  kernel/drivers/net/addons/cap.c                    |   22 +-
+>  kernel/drivers/net/addons/proxy.c                  |   10 +-
+>  kernel/drivers/net/doc/README.drvporting           |    3 +-
+>  kernel/drivers/net/drivers/8139too.c               |   50 +-
+>  kernel/drivers/net/drivers/e1000/e1000.h           |   16 +-
+>  kernel/drivers/net/drivers/e1000/e1000_main.c      |   18 +-
+>  kernel/drivers/net/drivers/e1000/e1000_osdep.h     |    2 +-
+>  kernel/drivers/net/drivers/e1000e/netdev.c         |  205 +-
+>  kernel/drivers/net/drivers/eepro100.c              |  235 +-
+>  kernel/drivers/net/drivers/eth1394.c               |   83 +-
+>  kernel/drivers/net/drivers/experimental/3c59x.c    | 2752 --------------------
+>  kernel/drivers/net/drivers/experimental/Kconfig    |    4 -
+>  kernel/drivers/net/drivers/experimental/Makefile   |    4 -
+>  .../drivers/net/drivers/experimental/e1000/e1000.h |   14 +-
+>  .../net/drivers/experimental/e1000/e1000_main.c    |   32 +-
+>  .../net/drivers/experimental/rt2500/rt2500pci.c    |    4 +-
+>  .../net/drivers/experimental/rt2500/rt2x00.h       |   37 +-
+>  .../net/drivers/experimental/rt2500/rt2x00core.c   |    7 +-
+>  kernel/drivers/net/drivers/freescale/fec_main.c    |    8 +-
+>  kernel/drivers/net/drivers/natsemi.c               |  188 +-
+>  kernel/drivers/net/drivers/pcnet32.c               |  136 +-
+>  kernel/drivers/net/drivers/r8169.c                 |  219 +-
+>  kernel/drivers/net/drivers/tulip/21142.c           |    6 +-
+>  kernel/drivers/net/drivers/tulip/eeprom.c          |   22 +-
+>  kernel/drivers/net/drivers/tulip/interrupt.c       |   42 +-
+>  kernel/drivers/net/drivers/tulip/media.c           |   38 +-
+>  kernel/drivers/net/drivers/tulip/pnic.c            |    4 +-
+>  kernel/drivers/net/drivers/tulip/pnic2.c           |   14 +-
+>  kernel/drivers/net/drivers/tulip/tulip_core.c      |   96 +-
+>  kernel/drivers/net/drivers/via-rhine.c             |  184 +-
+>  kernel/drivers/net/stack/include/rtcfg/rtcfg.h     |    5 +-
+>  kernel/drivers/net/stack/include/rtmac/tdma/tdma.h |    9 -
+>  kernel/drivers/net/stack/include/rtnet_internal.h  |    2 +-
+>  kernel/drivers/net/stack/include/rtwlan.h          |   14 -
+>  kernel/drivers/net/stack/ipv4/icmp.c               |   25 +-
+>  kernel/drivers/net/stack/ipv4/ip_fragment.c        |   17 +-
+>  kernel/drivers/net/stack/ipv4/ip_input.c           |    4 +-
+>  kernel/drivers/net/stack/ipv4/protocol.c           |    4 +-
+>  kernel/drivers/net/stack/ipv4/route.c              |   21 +-
+>  kernel/drivers/net/stack/ipv4/tcp/tcp.c            |   62 +-
+>  kernel/drivers/net/stack/ipv4/tcp/timerwheel.c     |    9 +-
+>  kernel/drivers/net/stack/ipv4/udp/udp.c            |    4 +-
+>  .../drivers/net/stack/rtcfg/rtcfg_client_event.c   |    5 +-
+>  kernel/drivers/net/stack/rtcfg/rtcfg_module.c      |    6 +-
+>  kernel/drivers/net/stack/rtcfg/rtcfg_proc.c        |    4 +-
+>  kernel/drivers/net/stack/rtdev.c                   |   20 +-
+>  .../drivers/net/stack/rtmac/nomac/nomac_module.c   |    6 +-
+>  kernel/drivers/net/stack/rtmac/rtmac_disc.c        |   14 +-
+>  kernel/drivers/net/stack/rtmac/rtmac_module.c      |    6 +-
+>  kernel/drivers/net/stack/rtmac/rtmac_proc.c        |    4 +-
+>  kernel/drivers/net/stack/rtmac/rtmac_proto.c       |    9 +-
+>  kernel/drivers/net/stack/rtmac/rtmac_vnic.c        |    4 +-
+>  kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c   |   10 +-
+>  kernel/drivers/net/stack/rtmac/tdma/tdma_module.c  |    7 +-
+>  kernel/drivers/net/stack/rtmac/tdma/tdma_proto.c   |   15 +-
+>  kernel/drivers/net/stack/rtnet_chrdev.c            |    4 +-
+>  kernel/drivers/net/stack/rtnet_module.c            |   10 +-
+>  kernel/drivers/net/stack/rtskb.c                   |   13 +-
+>  kernel/drivers/net/stack/rtwlan.c                  |    6 +-
+>  kernel/drivers/net/stack/stack_mgr.c               |   10 +-
+>  kernel/drivers/serial/mpc52xx_uart.c               |    9 +-
+>  kernel/drivers/spi/spi-master.c                    |    2 +-
+>  88 files changed, 1187 insertions(+), 3985 deletions(-)
+> ---
+> base-commit: 00454d5d127c29b93f8c0babf1336bfc35be3b98
+> change-id: 20240702-flo-removal-of-rtdm_printk-b5320a2a2930
+> 
+> Best regards,
 
-I think we can get rid of all those archaic /*ERRMSG*/ markers at that
-time. I don't call why exactly they were left behind, but the fact that
-these are error messages is now documented via pr_err.
+Thanks for the tedious work! Looks good with only few remarks. Once
+addressed, I would still pull this into 3.3, probably issuing an rc2
+afterwards.
 
 Jan
 
