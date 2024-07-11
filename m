@@ -1,55 +1,52 @@
-Received: from EUR03-VI1-obe.outbound.protection.outlook.com (mail-vi1eur03on2064.outbound.protection.outlook.com [40.107.103.64])
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2078.outbound.protection.outlook.com [40.107.21.78])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F20E8F72
-	for <xenomai@lists.linux.dev>; Thu, 11 Jul 2024 16:20:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.103.64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AA53450FA
+	for <xenomai@lists.linux.dev>; Thu, 11 Jul 2024 17:11:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.21.78
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720714809; cv=fail; b=ioYYUGXVq2jSXEDHhrEjoszgSkuLi9Eei9ABYq+72lku7BKIFSsVV6WlM+Ex4AZzBQHY/lLiUMwngT2qDJq2wj1YuncNUsxkQLwtC4csCG3m6tzCuMPzEXfDinqGMjsZoNGRZ0bJdqFUgf84TWFEbBTGpnVhmM5+GvOgpf5jqSg=
+	t=1720717866; cv=fail; b=ezZuXdHxKvw11f6A18jPHEsXmuR1TVLZ4xus6Dij0qgc/HaRXn7Ju91ZFRP5FhcPRr4J/ZjVZeEHKCqk3XR8T9FsC130DyREhqc1mqY1Ugss1o1MDuJ6TTrfceeTkPtDuz42MC3lJxI6Aqr4NN+w2pHsS5sFWGoR1N+u0WcjrJ8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720714809; c=relaxed/simple;
-	bh=r6gVBeRaMO6b2ce4LGYn3vlss4piGtAXu2969R3eaN8=;
-	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=O/go8glyYn1AK8jcbtb4wEDtM2O0RPTegDOlJtRo9ZPMe2DdNWyYSbt8zLW+cCeVSVYFRj6OJNjN3PbW3/gk97agV3nTNqidOR4O5YzoY+eKSf/YV+etQ0PwdATGPnyMVEOlmzHWHwHxaL9/Bh6ANbdOBjgtXK4sy6WG2rAbkUg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=wQLcllw/; arc=fail smtp.client-ip=40.107.103.64
+	s=arc-20240116; t=1720717866; c=relaxed/simple;
+	bh=wm8pfTehhfEVyWcuoc16Emi1Cjci9CSCntx6f2K2YeU=;
+	h=Message-ID:Date:From:Subject:To:Content-Type:MIME-Version; b=ciONUxm2R1e/i3I8q1tEVLO7txl48JkKxDr6XNxKbJX7K4+BYG27mjqasn3ODq5qBqvX8KAstFIA5DXtFsSAjUz4HfGOq9rN2NUaY8rI3WoenMW1S+SgOLVikd6pcZSgHVOKzO/OlZNZiPJaI81OlC+veNeXRAja/9Hnt3VuESA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=Ku31WkW5; arc=fail smtp.client-ip=40.107.21.78
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="wQLcllw/"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="Ku31WkW5"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=DUErHYxTAHEEJ/Qa8ugO4yHZ1kLZbuRKEfkvHCwgjg1yWt5SelBCDpWoklvTHA/Sb67GBd+ZCX8Xdx/ZGQKSF+DmKw+14Y7THG1iLAx+WPNU6sn74sFHym3wrwjwWIAhlGtEqpYaiLWFOZwuhMAdsKQ2dW2rMXDsWGXIgKRZdgVofxx6C/WJ5FeW7iJCz8e5syywunHPAF4Wfa+Gfos4c9+sz6ly28hTEUdU2p/0LHjRxTln9GcRx4I4hBZo+a7eH85M0eO20DMfwE887DqqnC+M7btAsDOPC5Fn8cgMrHDqhG8fedtBqfY5Z8C5lSUt4R6+dIWEBLP5PRfuOIB0cw==
+ b=JyZgnROZWVm5k1QcZ0vMeGyPVooDZe1i3v+DDO/8Fg/cS6Q4EwKqGK92jAM8vl0q+0A9XmQYGs8knToU91Wf3cJA8fDEVgqXZr99gWpNz5gCauomoK1adKfZWpIHGAwpRiNsQ5xPsiSXU9qrLLSyfGrD6M/93DPl1K0Xqr9jUj8ayZh1g04gJweYEpqN17MQ95y0ymzAskN6cp6oMPBWApZ625LLB1GFYTw1VfTQC6erQzlY2s5lsyRLs5Kox2OqjfYyfaMwst+/MqGOa9aYiSf0ddSk7SMBdE15lsPRJQjSkyr71q4Dj93E7ZMsnMDeNeK87YbfsFOzSrGaAad/iQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uAJDTrqLGbfSE0nkWvUrWRcrlEtIxQZ1Y73LJXDXMis=;
- b=j0gQmKLVpH3HRchBpXJUli4Q1SPY4iwyRbV/7cKCvu/o2hCih5og1z5+0pwCcQ+iVr0zhH274KZU+FVw9tu7rq2Bmm+v2y+bYvDdyZC3reC+fOoux2zArEbEKX2052jhWMiKmHsDoC+AQ3+9R3VPkwgF1qRIFZVvqClK3SUwCy5H1e1Ltzwrj0pB8hNkv0ddOnmIxWRdymi9BxNv08t1qy247qu70mA8DNxuImelMlRBn/KTU+S5kltwCA4E1JEGEij5dqHn9uBiFf3HDt8HvLhpUEwhMw2mYtBQDIpD+eHFvWE+S3QujFsf6A0dF+/xnacF6fbsdMQPiPqMMGXcyg==
+ bh=Np4Toi/ww79/B9Edbi/EZ1E5nBD472140nZJzQNqauU=;
+ b=vyD/sJ9cBPSPVgZZ+UUtPNmtZOBqTgkzYBnYhucgJSIQHADEQx6nlnBmNWMeOZSEVEeclPGTE0g0Sfd754cfaS7nnTn7w2YTHXZaAZkHZHWNjwwbHCW7reS7Lm7PYmxUvF5VxYAAfT19K+UzJppdq7pQkauU84dOqxU0x/k539kj8Ss1zCUTPqDX+PGaWbvJKw0If55lLNZCo6Q9gkKIxAeAWatuyOSlUwQRp/0DsyOQPFCRj4i/ivrlnhHNmKykii671wW05uSLAO8DgmC7orvzI9iO3fDeJClcOF5FXht0nHACzrP1oEkeMPwO0QapoDOLSpplt1HAAZ59ko1SsQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uAJDTrqLGbfSE0nkWvUrWRcrlEtIxQZ1Y73LJXDXMis=;
- b=wQLcllw/GzBfSRVyFvh3/POONWUiBriN4Jos0stiUjDCKsBRioMlrxppD22w9FieJNO+XTmGhEpxQCsuEs6Pzru2nYn9FuO3SVFPU9/NTHcdoKjs6Ez2PrIFSoNHleBFZefY4S5OvOCNpslG8HgzeJuQAVTROAo9Qb9/L/DsbIgutfDvsqKMLu+ApRACwGsgBQUxBWDFq9KhyRDCPbA3haL/kE9zzDkYO01FjcwrW/SQcjhKjlLEPoO2X80xt9MXSW/1FoL44oj4On64x0vAdIZBSU94ehixXtNqJiSo+Y5Rd1HMmXgKPfIQpZe1XIhgct3r0wkixzAmrCoYqy+yxw==
+ bh=Np4Toi/ww79/B9Edbi/EZ1E5nBD472140nZJzQNqauU=;
+ b=Ku31WkW594MxmPUlOo550UTQcEyi2+x/rWzicRJBZA9y/GSnEdAE0Q1aBnG5dop0xalU7c2g3iqKw2jfAL7RlAgiCG95sArlnRMGQQqEj/oEdC4DoKQsjNYj9tmhpAWaf9A4ffzDJxX/VNFEEgr2Cev4mSEBjibmIRSuE23jBM+90OO9poiJKNYdsKYkxwwTAwYhJqP6uKKG0962R474AKXTG7TXcl+rUmYP3kf1wpFgoSUgYOGVdMm0E5CdaMVPxmPZzahubOL5/DIrgRsMGkNrS/MR4Q1fALHHTfsKAKmSu1IJStURN9XQcKVWgSPtsGGjWgDyJ/4yG5+M1H4IcQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DU0PR10MB6509.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:407::20) with
+ by GVXPR10MB8378.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:1da::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7741.35; Thu, 11 Jul
- 2024 16:20:03 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7762.20; Thu, 11 Jul
+ 2024 17:10:58 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408%4]) with mapi id 15.20.7741.033; Thu, 11 Jul 2024
- 16:20:03 +0000
-Message-ID: <74e5a98e-22b1-436f-a96e-93259572b762@siemens.com>
-Date: Thu, 11 Jul 2024 18:20:01 +0200
+ 17:10:58 +0000
+Message-ID: <dc646d7d-1ab7-48ee-8356-d75908a3e12c@siemens.com>
+Date: Thu, 11 Jul 2024 19:10:54 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/33] drivers: Fix missing printk log levels, remove
- rtdm_printk()
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
-References: <20240702-flo-removal-of-rtdm_printk-v1-0-cc91bffdd063@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [ANNOUNCE] Xenomai 3.2.5 released
+To: Xenomai <xenomai@lists.linux.dev>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
@@ -94,11 +91,10 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <20240702-flo-removal-of-rtdm_printk-v1-0-cc91bffdd063@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR3P281CA0119.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a3::19) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: CH2PR05CA0058.namprd05.prod.outlook.com
+ (2603:10b6:610:38::35) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -107,274 +103,119 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DU0PR10MB6509:EE_
-X-MS-Office365-Filtering-Correlation-Id: 66706956-98b4-48fe-d846-08dca1c551a1
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GVXPR10MB8378:EE_
+X-MS-Office365-Filtering-Correlation-Id: e21ae00d-1333-42c6-5fff-08dca1cc6e7b
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?LzFCc2dwL295amNMSHV0QnJ0QnFIUUZFaitYWlZPQkRFNGpmQ2RQQ0ttbVpu?=
- =?utf-8?B?aE0zUDhVWHFzcXF5YnRxaEl5Z0hlaUpKdEVFUHVPc1FLbU5aSXVuYjJlazVq?=
- =?utf-8?B?NDZUVlUzOSt1SVdOZ05xRENIT1BDeGpidC9mTklOUjJKSTV5SmZhNFhIdTgy?=
- =?utf-8?B?N0F1TjhtMjFwdUlvSkhDTHBlLzZ6azlvSEZENUdVNm5RMHJGTS82SVJZdkd1?=
- =?utf-8?B?V3hucDJXVzBkQkJIV3RrWnF1c3J0OG1mM25YbEJKc0VmeHBqcjAxL0NXWDIz?=
- =?utf-8?B?ZmRQUmlGdEd3MmljTjkwSVhxU0VPQ1g2akR3TDBtRmcrcGVKekZ2VFhMUG9G?=
- =?utf-8?B?YmRGSUYrL0ZrV25SdjNTMlZhK1FWVUtSSDdpdWFkdmtQSE9aTzQ2bENQRXYw?=
- =?utf-8?B?ZDArNnpTUVhPVjRpdW1xcVg3TS9vUFUzTkxZOTdGVFR0RTdxakdmWWJhcEZN?=
- =?utf-8?B?bENLTTZQbFp3UE5KNU1tazhPYVBwN205eHdadUxNWElqMGNwa1hkaDQ2K1Vr?=
- =?utf-8?B?cms1ZCtZU1BzZ0RmWUFNbkRLWU9VRjlKeU9XaEd5TkFoMGFvUXdqMmpkcHdN?=
- =?utf-8?B?V1VadVptTFJ4WE9VQ2hEMDYybzI0S25wVHhYdDI3dnplLzZLbU5TYUg2dkRa?=
- =?utf-8?B?bzZNcnlhT0s2bFZlQm9VdCtkejViRFdwekN1K2dsckF2OFIyOU9ncnBLV0ZF?=
- =?utf-8?B?RnFaV1kxMHZGL0dyM0RyaW01dlhJWlhDS2NCdENxbkZ5cWx5aWRPZHMrNXVp?=
- =?utf-8?B?c1JObkRETGFOZWl5SmVnK2N5Z1ZBaUIxRTNWSk05ZnE2L2grbjJ5ZE1NR1Bh?=
- =?utf-8?B?Q3AvbXdZczB1SUJ0d1Y4UDVvczd5bUFSQTZtUU5LeTRjWk9MQml2OUZNVWYv?=
- =?utf-8?B?ZUQ3dFlQbFJjTjk3ei9BeXRRRVpVWittZDQwNXdubmhCWWpTejg2Y003Z1oz?=
- =?utf-8?B?enRwRVJoRU9wSWQ3ODhXdjM3S3QyY1dOWXFrS01LZ0poNzJiOHYwc2ExZGV5?=
- =?utf-8?B?aHUxcVpjTkNMbmxOTWh1WDFqZ1RzeUpmTHY3Q3prY1kzaFBsNm56WDBOVmZm?=
- =?utf-8?B?OUx3SEFXZXRGeEUrVHJRRW9pZlZic0dHUkpNWElpTWVlVGJqZE42Rk9zWjVh?=
- =?utf-8?B?TU9wcEluQ3NSQTQvcnNUWk80SVBobUhpem9SV3NlV29McCt1S0NmTkRMVDlT?=
- =?utf-8?B?MC9UdlRGWm1mTzFmMytZeEw5ZWRMUXM0ZXoxaUNuZGs1d2NKR3lsMnQ1R3dI?=
- =?utf-8?B?UlJJM2NjYmxaTWtSNUxrck0vMFU4bE1OTjd0TkNoTzd2K0JPNVVFYUhkS1BZ?=
- =?utf-8?B?R0pDUHVSb25uc3JaeTdQRjNlRmZKeVBCZERjdzdncHorbVA1dUtqRUJTVjBI?=
- =?utf-8?B?RFdOeXdJbDlxTU1lWklTL1pHeFlic2xNR0V3dlZFeHNhTjJ5Ym9hTThFZnND?=
- =?utf-8?B?QjRyZlFPT1R4T1RrTjJNSlpYU2FoVzNtYjg3S09RZlJiUkJuRXd1dXFydC9T?=
- =?utf-8?B?VUNlbkdWS211aEVKNlllUk1LNVVPQUpLTnlZZ0x6cFVoMnpXbHg0ZXlFd1JY?=
- =?utf-8?B?Z2RsdHhrYTZHSUZZRXJrREVJMHRTM2xkNWhZSzFOODZybXdTYkRlZVlwUGlZ?=
- =?utf-8?B?c2pGNENlaGk2bjJ2SnlXSmhiVkFGZ0EyUnlCUWZaL0Y0bzZWNGZ5S3Rta3Ru?=
- =?utf-8?B?aHdEbHJCZ1kxLzlZZVZKaExsZnR5emFja3VCMDhHTFdueVVwYkRPYzZLTUtU?=
- =?utf-8?B?ZGdvQjlyMUR4cWtrSFNncGU4TmdZRStidVFTbCt6RHJQak9ockJFdWdWS1VH?=
- =?utf-8?B?ZmtBc2k0dmNCTWR6VTMxUT09?=
+	=?utf-8?B?bVE1cHcwMWhmWXp2UFM2MmxzYzc3ZkhHTlhFUXlMMWQ0U1ZuUUFaa1FnRTZF?=
+ =?utf-8?B?WlY5eFlXbUkvek5GOVppMGM2YjFhV2hwY3V4amQ3RkhmWnhBU0NUM2ozSmE4?=
+ =?utf-8?B?WjhUcGVSU1dTbHl0QVVLK29yYmdFUWcxaVRpdDdhWEZjQ2FMeWkvUitYMGpB?=
+ =?utf-8?B?K1lFUXlXVmEzZkJycCsyM2ZLNDNwQUJkL2F4K1d1L2ROMUlRbXpENzJOVEFo?=
+ =?utf-8?B?Q1VjejdqK0psWmUwUUNsWmNKQmpkYVFsZWIxUWVUSFplbUc2dk00WUVrMGVs?=
+ =?utf-8?B?aEo3SEdacXErdzkzeHd0dHFzMnRwOVRRclpQUVRXOWluSE5tZ0hiYUh1OWc5?=
+ =?utf-8?B?elgvUDc0WlpOTTJtcGhYQURORU5NWEdDS2M2TFJQaUxDV1doN1UrTGRxR0cv?=
+ =?utf-8?B?SnVqWlRaNU5XcWFLUWttUWd1M1lCNmVMMXBieUJwRUF4dGVua3k2TlRPd2hp?=
+ =?utf-8?B?Z3dES2RITHVvQ04wdGVJWmZYQmdwZHVOV1lyUzZ0d1hSdWtBaTg2eDdieTNH?=
+ =?utf-8?B?WGJsZlo5dCtLRzlFUUNHQzhWVW9uTmdDbElGaWlFRHNqZXlVeG1JbFk4czYz?=
+ =?utf-8?B?NXFrZUxrb3NMNnd6ZFplbmpMbk9CWXU5UXV1T0hnVkxUWXcvVEZKd3FNUnhi?=
+ =?utf-8?B?RkdPdjlnTUV5RkRtUmljSEl5WW1DRmtOQk4yNmR3ZEFFMXRrdEsvSUR5WEgr?=
+ =?utf-8?B?ZFhmQXJ0K1VBc0Z4OVhsQlJBREpuRCtMQ3VtVE8za1JETXB1Tjd4WVFHOEsv?=
+ =?utf-8?B?SzBwOTVXWHpzZzVKaXRGSk1qUWNUbzFGRi9na2dXcGJFRkxSUmQ3T2hvSW9a?=
+ =?utf-8?B?VmpQbFJJRllac1dzazJCbUdBeWZoWmxMSlBsTmtpdThFZWhURldsaFA3Zmg0?=
+ =?utf-8?B?UE5VbU0rL1JaclZRUlMrbVhvSDBwQ1lKZ0pvbFJicE9KV2M5NW5kU1lCN01S?=
+ =?utf-8?B?aWlrMk9HcWpjcC80cFc2RE5NYzg4dmt4ZnlJNGVjOWhOWkRCUG4xNVpxNWRW?=
+ =?utf-8?B?SGVwWkpNcnhheGtUWStLUGt6emFmbGp5N3loS25GY3VUY1p0RjlHRVNiT2Z3?=
+ =?utf-8?B?Mzh2djM5cGU4T1N4TFYzMms0YlR0aTZ0dFdvb0ZXaDB3T2ZONWJCWTRyOGEz?=
+ =?utf-8?B?OTIvbEI1ME1FZnRUVzcvNXlXMElmKzEvMWs0L3ZUM3BteUdyMHNNUXhjUkRT?=
+ =?utf-8?B?ZnU0cStRSlViNlJJb1RZeTd4Ymt0N0E5Qnl5Smp4d1ppYnQvM3oxYzI2M29T?=
+ =?utf-8?B?Und3NEt5SVJwZkR6czk2ejgrV0w2QVVQNTRBd0tkaXhqOWRVSzdRVHpCVGpm?=
+ =?utf-8?B?NVdkOTBmWE5GaHFEZkVQOTBDbGNRZGVrMFg1eHhUQlRtL0ZRTmNER1NZUit5?=
+ =?utf-8?B?MFFWKzB1c0FKWG05NkEwb0gveG9rRVgrTnhWK0RRQnU3Nkd6cUlRZGY1eHpB?=
+ =?utf-8?B?WHlOREsxNGpTRFhmSnhvZm15VXBQVHh4NTBrWHNLN2RzSDJTZUczMkVRRU1W?=
+ =?utf-8?B?MUlQUHZLeUlWdGpyRU1IYm9DZUJXVGpkd1lOdm9Eb0k1QmRTYjBIbG5janJ2?=
+ =?utf-8?B?RXhtTzZWNkhIcDFGMGdVcVkrQWNZaHVGZERtZnFwWHk2RXQwdmdtbEVnZ1pQ?=
+ =?utf-8?B?UmdWWHNNdlZidldjL3pLMllVeXdYT2hVKzFEY2ZnRS9sVmxldHFzOVVxWk9u?=
+ =?utf-8?B?S0V2cXpDTUJIWk9DamoxQU1WSXMrQ09iRFJ5aGNRZER2Y0llVUZTc3lUZWIy?=
+ =?utf-8?Q?4LAgryv7k3tyAu5qjY=3D?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?bDJpclJ5N0hGdmlJYVNqUFdBc0ZKSno2ZTQvT0tPbmlrUnJCd1UzbUlLWFRm?=
- =?utf-8?B?Y1BTZHk1aHg3djF5QWNhQWtDMGlhSld1blVTL3BtbzZUVktuaHRTMTE2dFlZ?=
- =?utf-8?B?cWdNSGxvc2NTd0d4SUthcFlHcUZTSTZ6SFFQbWJpTGNDYmZycmpsNkpaMDlS?=
- =?utf-8?B?ekY2RjlqQTRpNjVtZThjQ05BMkpoM1NrTWhJRXpMdnV3M2MrL3VRaVpqaG1L?=
- =?utf-8?B?UHEwcUFacDhKQy9aL3VXb2NKYkdzNytLOS9SL3gwaTg5bFgrcURod253Qmdw?=
- =?utf-8?B?eTB5OHVrNkJWekhLaEhDYzlVbFA2d2oxOEFCbEZYTytmb1U3YUNndDBPWFQv?=
- =?utf-8?B?T05JY0EzOCs4dWd2czhydVJvMGRWVkx4RUdvODR5YUZ4bHg3K2N1MVNzWlZn?=
- =?utf-8?B?dHo3bjJYRVZFTXB5NFVzOXJVT2ZUbHAzQ0NyazJ0eWZqZXFEK2V6Y0VieGxX?=
- =?utf-8?B?WStkblJJdFJVcHREajJoVVhZMnk0Um9hd2lXVG1ESHFlU3lPRGpWeGtZdVNV?=
- =?utf-8?B?T0ZYWkJac2xZcXZQYzRBZzIrTld3dm1kZDl0TzRmRTEwU3ZsVHQwVk5jZW1J?=
- =?utf-8?B?T05ocjhDdG80SStRV2g5QkFjZWY2eTBTeHp1cnYvY0I4cmpGdU85dm5GNGlD?=
- =?utf-8?B?RGpPTDcrUE8zbGFZU1VzYjdJdTVnSTllTTNWUmQ4OUhibEM1OExVb0gxRnVx?=
- =?utf-8?B?N1VDRFJWL0RFRGNEWmxwL2lxVEJYOS83ZkVrVkc1NkF5YlNLaFBVSjNvSDNL?=
- =?utf-8?B?dDRKTnBXZEdLUkNKeVVBY242WHQ1TW0wQTN4a2QxbGM5cWl0TE9QTnhvSXNS?=
- =?utf-8?B?U21vZ3dKSUUyLzV2NC9EYkp2REVLZkpiaFY1djB2VDJCU0srblpwU3hiQ2VY?=
- =?utf-8?B?MXVZUkg3TnZONFh0V3pzancrUHlFelFtR2VsSVFiWjdnRTZuTWFKVmdLTTNN?=
- =?utf-8?B?KzZQOE5BTzh6YjlVNEhFRTQ1Q0dUckM5K2RBcklwUkpRR1dWeWFVTHBJSDRP?=
- =?utf-8?B?MFc3WWE1d2x0Tm1zUGs3QU5sZTVIV1ZUV3F1bURiZ25pa1VuRVNBTDdzdmdr?=
- =?utf-8?B?R2lwN2ovK0RDSWZ6S1lyWDU1MXpuRnlWSzR1eXBHTTVIYXBUZmNrZ0xJNzZK?=
- =?utf-8?B?QUROeE80OGsyWTI5WmRmS2ljZEVHdmdMQTNOYmVweFFxZWJJOWlMZFM0bjVo?=
- =?utf-8?B?amtyRzFRcnZLbVg2elRxMTA1UXhEWkRaajRUZC9iWUtTQVVhTS83N2VkVmZk?=
- =?utf-8?B?a1BBdWVOM0JNRzFuYnhDUGFmRzZFM3RpajdEcGtxOFBDRFFweVZac0dNdEx3?=
- =?utf-8?B?T0psSnVySy80bjVRSU1hZkVDV3hHbkY3cmhNNmxSYXJBMVB6R1FyMWx0WUxN?=
- =?utf-8?B?VkFkaVA3c2JLR0ZrMGVRL1owRktCRWd1TXFqY1dwdktNdzJvWDJZeFVVV005?=
- =?utf-8?B?TlpBRldDUGtxK29aYStvdDRJTER1NWUxWGdNSXV2WEptS3dPb3BpandPQXhq?=
- =?utf-8?B?Zk5XZEVOMkphcGIvUGJ5TTlpWk56QlBvUCs4dERuT2FTVWd5M3BQR2R2aVV6?=
- =?utf-8?B?ZldHa0tlNm9MSDUwNmJWNDRRSjhQRnQ4bGZ1cGQyckxVM01JTkVOV09VbHJR?=
- =?utf-8?B?VDY2YTkwZzR1M2pubDRMd3R0ZnVKb3pFNG1FVFJxb2orM1NoZk1YdXlEZG9V?=
- =?utf-8?B?c0lLTHNRU0Y5Y2dDdDZ5ZTBoOW5JUDVmNHVMUCt3aE1UWE9XZDNIR3hSNTdU?=
- =?utf-8?B?NHZZN3ZGMWE5SFhuZy9CYitRcXFLalQ3Zlh0Ym13N3JTMXRncEJDZWpjdEdI?=
- =?utf-8?B?ZmRES3hQSStBNXJwQjNqQW9PMnkzR2JGbTNQZnQwNFY4bDloN1lHemxLZXZy?=
- =?utf-8?B?U1BkdUpoZUU0aWtXTDdFbXJFS2dueHNtYy9KM25nTWEweC9YekhLMCtST1Fn?=
- =?utf-8?B?WlFLYXowYVJzQVZ2QzZrSXpzbXpydkdGbC9mS0hMeU51VFEvQXJmUlhpOGcx?=
- =?utf-8?B?dHpsNE93dWVrYXJHTHdxaVRWbG51VkVzMlFoVjNtczEvYjQxWEJDYXFLMjhO?=
- =?utf-8?B?SWdlRXZaOG45c0dPbnpRV0R3NXFrUE9iaUhOOXVLNzVOcFNuajYzZUdYc01J?=
- =?utf-8?B?aVg4eTZWOUo5WXVDOEVHYWtUMGUvUjdBMUFVZ0M0WXlTdEdQb2VraFZIWW5X?=
- =?utf-8?B?S1E9PQ==?=
+	=?utf-8?B?RlduNWhjZGtmdVZ4S3hIVUNLUVdqdnFWZWo5cnBsa2V4UWszbldxbUpteFhZ?=
+ =?utf-8?B?YkNEWS9aVFNTc2IyQXZTcjc0bTYrL1I0dlNWQXFvQVlmSktQRzFpWUtMaFdQ?=
+ =?utf-8?B?U2lMcjIyaWpub2NQYnpYZ2JzYXBSTG43ejJvNlNLdFdFdG53QkZVRzhpY2lS?=
+ =?utf-8?B?OXo0Q1FTK3VNMnp0ZWdCMDBlbTlIQnRSRVZ6Tkc1a29JNmM3SnladWF3QThU?=
+ =?utf-8?B?aGs1cjQ1UXlSU2Jrc3EvSXZFWENpNTVtcXVXcUYybVFkZi8zeU52M1VGMVZ0?=
+ =?utf-8?B?dTNWd0M1L3RROFpCaFlXYmM4ZGVyU09uWGsxR1V6VmE4UVVjR2Z3NXRDNUtz?=
+ =?utf-8?B?SlY3ZUEwckN6dm5FNmF4ejhBRkhmR1RqT0JuOEZpYXZGVGg1VVRYZFYySmZo?=
+ =?utf-8?B?RlJXL21VMnV6cWpXaFM2RzNWaGlJUTZCR0lsWTNlbHpsaitnR2NLZHZUQWhB?=
+ =?utf-8?B?NFQ4V3gxNWVsSXBlZEVnQ0lCTEttbVY0VnFkUEV2OGNpNERtOWwySmZMR0Zn?=
+ =?utf-8?B?b0lDQkxNeWxSNTVTK3ZWSjRQQjAybDVPeWVHT0NCNzk3MDgzendtdS9ueGRu?=
+ =?utf-8?B?eFNITHc2aUVadEpQWkhVOWh1YXlnWnpCNGJ1dDNhQ2VibEVzZUdiMHZXc3NJ?=
+ =?utf-8?B?ZkpvVCtXZ0hUbWhkVFVyMG1QekxpRXdOdVJOM3JCNng5TS9YczlKc2tJQUhF?=
+ =?utf-8?B?UW1EQlExdDU4SWw5UDB0SlVpemsvVDlCQnBGVGpsdXdtRmdMUlYvcWNZaDF5?=
+ =?utf-8?B?TUJQdlJsMDl2UXBVYWxEVytLMDRJNGFTRkZGdE05SjBKSjBaeFlJOVZrdUdu?=
+ =?utf-8?B?TTU0QytqdVp2Yjc4a2tmVTVwbXdqYzlMVHJLRVNubDFQeWNWQyszbEt2Mzl6?=
+ =?utf-8?B?YlBBeklPaUV3ZHFBK3huY2Z5R3pPM2dPQUVVb21PblU1ODhnYzNRbVdCZGpz?=
+ =?utf-8?B?ZkFTYzkwcWoyNVk0TTJlMUo4OEVibmFNWElPbjZ2Nk9KbXo3NmI2VUZKRUZL?=
+ =?utf-8?B?Z3lrSS9FdDB1alQwK0RZYkhwNEpLRUl4eU5FY3JaQXJMb1hLWTNHaXJCOHRK?=
+ =?utf-8?B?bDUybnQ2YjFvNmMyTmtNSUE1NGZtNWJhbHRkNGsvSEllbFNaZXJRQkRmWnVp?=
+ =?utf-8?B?LzJubHArRGw4dkdsNENKM1ZEOElFdEdpdzd3YmU1RVBFeVlyZmd1Z1o2Ry9v?=
+ =?utf-8?B?UmJvNmNsYXRENWR6N2U0WDYvcmxWT1Q2UWxnbUJCWEFEWHdrb3ZnVzJpc2VF?=
+ =?utf-8?B?NHFJTXRjUjVZclUrcURXVGhpTTZzR1AyV3AxN3pRS2hzTytwSXpkS0ZUWVJz?=
+ =?utf-8?B?TWtLNFJ5emt5VUNvak9hRUVnbWRJN0tnUG41MDN3NHF4aWY2UzVHZnk1K2pK?=
+ =?utf-8?B?eUVCMUgzSDB3dys4U2FmWXZGZlJBNnNwSGFRaXViYWQxWldsZERKby9EK242?=
+ =?utf-8?B?OERyeUFoMmp3dGFqT2xyMzlxdENBYW5oMjI0aWU4R29IYk95T3hmOThRaTBj?=
+ =?utf-8?B?TUc1S3NvWHgyTHFQcGFFaXNhOXNPYzZYT0tlUk0yVm1tdmdOU1o0WnlNRUpJ?=
+ =?utf-8?B?V0puOGZ4cmFjVmdVMVlUNG52b1BCNStYbGtGUU0rNU1XMWJCSmdhZ1JNZ0NC?=
+ =?utf-8?B?UkZxUlBlNHdMMVh0V2pZdDFOMkN6L2FJdmlvYWVMWDNNZldSK3NITGwyRk1K?=
+ =?utf-8?B?ME1QRW9wRWxkS21XL0YyTUhsZVk3dHVLeW1JNnFlY2t1aktyZ0pKR0JBdjVr?=
+ =?utf-8?B?NVcyR1JPLzlvVkdkRWNQc1l1MnFhME5yTXJqTXNuVVl0RDlhY1d3QUt6cWZL?=
+ =?utf-8?B?M203Qk9HUXFaclRWNDVrQ3MySkhqajJPaitYbFNBZ3JQY1QzWUJEOGJiK1pX?=
+ =?utf-8?B?YmlHV2dyTktOZmZCZEV2VjV6dk8raXZPS2Y1eGtaV1N2RjhQckREbHAwVnAz?=
+ =?utf-8?B?aFVNdUNyWWVCMm9SbGU2YUlib0cvbkVtNk1EVTR3bUtlUG9DT0Q2TldTTGlT?=
+ =?utf-8?B?cDBnWDlOR0pNWUpJLytpdmdOYWdBMERieG1aU0ZSMFRwV0tSWDJvRDVqRUlh?=
+ =?utf-8?B?SG5ldWJBelNDa0liajVHMVNXbzVFNXJNMGhTR0pUMEw4L0w2WXorTXZwNnBT?=
+ =?utf-8?B?TUt3eHVkY3Nac2dGSE1ZL1lSbFllWVBLRGoyWVNPb2p0dGhXRWVsZzl0ZDJ2?=
+ =?utf-8?B?c3c9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 66706956-98b4-48fe-d846-08dca1c551a1
+X-MS-Exchange-CrossTenant-Network-Message-Id: e21ae00d-1333-42c6-5fff-08dca1cc6e7b
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2024 16:20:03.1021
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jul 2024 17:10:58.0481
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vNvGk+WsJb22O0gEF1EvPvybM2vfWqyy/PLXXbSq5NpjlPN9SumW/mmPQHeq0NkIKOqh3qXnhnDEx7jodjEEEg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB6509
+X-MS-Exchange-CrossTenant-UserPrincipalName: lRbyRIQDWW1Ergku2rUFEs/RyRWx1RmQMh6OzkyK+W30kwv8xpY5WGhQ0o9OMCYOXUV0aaOKTUEUvTVdZzyPiQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR10MB8378
 
-On 03.07.24 15:25, Florian Bezdeka wrote:
-> Hi all,
-> 
-> some background first:
-> 
-> It happened several times now that logs produced by CI runs contained
-> important warnings (or any log level above) but the actual test run was
-> still marked as success.
-> 
-> The idea is to add something like a "dmesg check" script to the CI
-> infrastructure that basically fails the CI run if anything above Warning
-> (or any other defined log level) is detected.
-> 
-> That requries us to get "warn free". The problem: The default value of
-> CONFIG_MESSAGE_LOGLEVEL_DEFAULT is 4, which means WARNING. So whenever 
-> someone calls printk() without any log level it will generate a warning.
-> 
-> This series revisits all of our printk() calls, making sure we use the
-> correct log level. Especially printing version information is no longer
-> producing warnings.
-> 
-> As most printk() calls reside in drivers there is another point that is
-> addressed now: Migrate away from rtdm_printk(). This function will be
-> removed at the end. rtmd_printk() was only a wrapper for printk(). We
-> can remove this wrapper and migrate to the "modern" pr_*()
-> infrastructure.
-> 
-> With that series applied we are closer to the "warn free" goal, but not
-> there yet. Some remaining "warnings" have to be addressed upstream while
-> others might not go away in all of our test scenarios. Some filtering
-> might be necessary... We might find some inspiration at the kernel CI
-> project.
-> 
-> This series is compile tested only, no runtime tests could be performed
-> on my side. I don't have the necessary hardware at hand.
-> 
-> CC: Jan Kiszka <jan.kiszka@siemens.com>
-> 
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
-> Florian Bezdeka (33):
->       cobalt/clock: Use xenomai specific log level
->       cobalt/x86: Add missing log level to printk()
->       drivers/analogy: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/serial: Migrate from printk() to pr_*()
->       drivers/can/peak_canfd: Migrate from rtdm_printk() to pr_*()
->       drivers/can/sja1000: Migrate from printk() to pr_*()
->       drivers/can: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/net/addons: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/net/e1000: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/net/e1000e: Migrate from printk() to pr_*()
->       drivers/experimental/e1000: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/experimental/rt2500: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/freescale: Add missing log levels of rtdm_printk_ratelimited()
->       drivers/tulip: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/8139too: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/eepro100: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/eth1394: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/natsemi: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/pcnet32: Migrate from printk() to pr_*()
->       drivers/r8169: Migrate from printk() to pr_*()
->       drivers/r8169: Remove RT_DBG_PRINT() macro
->       drivers/r8169: Remove DBG_PRINT() macro
->       drivers/r8169: Remove rt_assert() macro
->       drivers/r8169: Rework assert()
->       drivers/via-rhine: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/experimental/3c59x: Remove unused / broken driver
->       drivers/stack/ipv4: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/net/stack/rtcfg: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/stack/rtmac: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/stack/rtwlan: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/stack: Migrate from rtdm_printk() and printk() to pr_*()
->       drivers/spi: Migrate from printk() to pr_*()
->       cobalt/rtdm: Finally remove rtdm_printk()
-> 
->  include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h  |   16 +-
->  include/cobalt/kernel/rtdm/driver.h                |    2 -
->  kernel/cobalt/arch/x86/c1e.c                       |    4 +-
->  kernel/cobalt/clock.c                              |    2 +-
->  kernel/cobalt/rtdm/drvlib.c                        |   13 -
->  .../analogy/national_instruments/mio_common.c      |    3 +
->  kernel/drivers/analogy/national_instruments/mite.c |   68 +-
->  .../drivers/analogy/national_instruments/ni_660x.c |    2 +
->  .../drivers/analogy/national_instruments/ni_mio.h  |    2 +-
->  .../drivers/analogy/national_instruments/ni_stc.h  |   19 +-
->  .../drivers/analogy/national_instruments/pcimio.c  |   21 +-
->  kernel/drivers/can/peak_canfd/rtcan_peak_canfd.c   |   41 +-
->  kernel/drivers/can/rtcan_dev.c                     |   12 +-
->  kernel/drivers/can/rtcan_internal.h                |   14 +-
->  kernel/drivers/can/rtcan_module.c                  |   10 +-
->  kernel/drivers/can/rtcan_raw.c                     |    4 +-
->  kernel/drivers/can/rtcan_raw_filter.c              |    9 +-
->  kernel/drivers/can/rtcan_virt.c                    |   16 +-
->  kernel/drivers/can/sja1000/rtcan_adv_pci.c         |    4 +-
->  kernel/drivers/can/sja1000/rtcan_esd_pci.c         |   10 +-
->  kernel/drivers/can/sja1000/rtcan_isa.c             |    8 +-
->  kernel/drivers/can/sja1000/rtcan_ixxat_pci.c       |   17 +-
->  kernel/drivers/can/sja1000/rtcan_mem.c             |    8 +-
->  kernel/drivers/can/sja1000/rtcan_peak_dng.c        |   25 +-
->  kernel/drivers/can/sja1000/rtcan_peak_pci.c        |   22 +-
->  kernel/drivers/can/sja1000/rtcan_sja1000.c         |   25 +-
->  kernel/drivers/net/addons/cap.c                    |   22 +-
->  kernel/drivers/net/addons/proxy.c                  |   10 +-
->  kernel/drivers/net/doc/README.drvporting           |    3 +-
->  kernel/drivers/net/drivers/8139too.c               |   50 +-
->  kernel/drivers/net/drivers/e1000/e1000.h           |   16 +-
->  kernel/drivers/net/drivers/e1000/e1000_main.c      |   18 +-
->  kernel/drivers/net/drivers/e1000/e1000_osdep.h     |    2 +-
->  kernel/drivers/net/drivers/e1000e/netdev.c         |  205 +-
->  kernel/drivers/net/drivers/eepro100.c              |  235 +-
->  kernel/drivers/net/drivers/eth1394.c               |   83 +-
->  kernel/drivers/net/drivers/experimental/3c59x.c    | 2752 --------------------
->  kernel/drivers/net/drivers/experimental/Kconfig    |    4 -
->  kernel/drivers/net/drivers/experimental/Makefile   |    4 -
->  .../drivers/net/drivers/experimental/e1000/e1000.h |   14 +-
->  .../net/drivers/experimental/e1000/e1000_main.c    |   32 +-
->  .../net/drivers/experimental/rt2500/rt2500pci.c    |    4 +-
->  .../net/drivers/experimental/rt2500/rt2x00.h       |   37 +-
->  .../net/drivers/experimental/rt2500/rt2x00core.c   |    7 +-
->  kernel/drivers/net/drivers/freescale/fec_main.c    |    8 +-
->  kernel/drivers/net/drivers/natsemi.c               |  188 +-
->  kernel/drivers/net/drivers/pcnet32.c               |  136 +-
->  kernel/drivers/net/drivers/r8169.c                 |  219 +-
->  kernel/drivers/net/drivers/tulip/21142.c           |    6 +-
->  kernel/drivers/net/drivers/tulip/eeprom.c          |   22 +-
->  kernel/drivers/net/drivers/tulip/interrupt.c       |   42 +-
->  kernel/drivers/net/drivers/tulip/media.c           |   38 +-
->  kernel/drivers/net/drivers/tulip/pnic.c            |    4 +-
->  kernel/drivers/net/drivers/tulip/pnic2.c           |   14 +-
->  kernel/drivers/net/drivers/tulip/tulip_core.c      |   96 +-
->  kernel/drivers/net/drivers/via-rhine.c             |  184 +-
->  kernel/drivers/net/stack/include/rtcfg/rtcfg.h     |    5 +-
->  kernel/drivers/net/stack/include/rtmac/tdma/tdma.h |    9 -
->  kernel/drivers/net/stack/include/rtnet_internal.h  |    2 +-
->  kernel/drivers/net/stack/include/rtwlan.h          |   14 -
->  kernel/drivers/net/stack/ipv4/icmp.c               |   25 +-
->  kernel/drivers/net/stack/ipv4/ip_fragment.c        |   17 +-
->  kernel/drivers/net/stack/ipv4/ip_input.c           |    4 +-
->  kernel/drivers/net/stack/ipv4/protocol.c           |    4 +-
->  kernel/drivers/net/stack/ipv4/route.c              |   21 +-
->  kernel/drivers/net/stack/ipv4/tcp/tcp.c            |   62 +-
->  kernel/drivers/net/stack/ipv4/tcp/timerwheel.c     |    9 +-
->  kernel/drivers/net/stack/ipv4/udp/udp.c            |    4 +-
->  .../drivers/net/stack/rtcfg/rtcfg_client_event.c   |    5 +-
->  kernel/drivers/net/stack/rtcfg/rtcfg_module.c      |    6 +-
->  kernel/drivers/net/stack/rtcfg/rtcfg_proc.c        |    4 +-
->  kernel/drivers/net/stack/rtdev.c                   |   20 +-
->  .../drivers/net/stack/rtmac/nomac/nomac_module.c   |    6 +-
->  kernel/drivers/net/stack/rtmac/rtmac_disc.c        |   14 +-
->  kernel/drivers/net/stack/rtmac/rtmac_module.c      |    6 +-
->  kernel/drivers/net/stack/rtmac/rtmac_proc.c        |    4 +-
->  kernel/drivers/net/stack/rtmac/rtmac_proto.c       |    9 +-
->  kernel/drivers/net/stack/rtmac/rtmac_vnic.c        |    4 +-
->  kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c   |   10 +-
->  kernel/drivers/net/stack/rtmac/tdma/tdma_module.c  |    7 +-
->  kernel/drivers/net/stack/rtmac/tdma/tdma_proto.c   |   15 +-
->  kernel/drivers/net/stack/rtnet_chrdev.c            |    4 +-
->  kernel/drivers/net/stack/rtnet_module.c            |   10 +-
->  kernel/drivers/net/stack/rtskb.c                   |   13 +-
->  kernel/drivers/net/stack/rtwlan.c                  |    6 +-
->  kernel/drivers/net/stack/stack_mgr.c               |   10 +-
->  kernel/drivers/serial/mpc52xx_uart.c               |    9 +-
->  kernel/drivers/spi/spi-master.c                    |    2 +-
->  88 files changed, 1187 insertions(+), 3985 deletions(-)
-> ---
-> base-commit: 00454d5d127c29b93f8c0babf1336bfc35be3b98
-> change-id: 20240702-flo-removal-of-rtdm_printk-b5320a2a2930
-> 
-> Best regards,
+A small but important update for the 3.2 series: This fixes building 
+against latest stable kernels, 4.19, 5,10 and 6.1.
 
-Thanks for the tedious work! Looks good with only few remarks. Once
-addressed, I would still pull this into 3.3, probably issuing an rc2
-afterwards.
+Download: https://source.denx.de/Xenomai/xenomai/-/archive/v3.2.5/xenomai-v3.2.5.tar.bz2
+
+Changes since 3.2.4:
+
+Fabian Scheler (1):
+      testsuite/smokey/gdb: Fix race-condition
+
+Jan Kiszka (6):
+      ci: Do not run CI for tags
+      Make uncapped kernel SUBLEVEL available to wrappers
+      Fix detection of dev_addr_set availability on 4.19 kernels
+      cobalt/posix/timer: Rename timer_* functions
+      Account for close_fd renaming backport to 5.10.220
+      config: Bump version number
+
+Richard Weinberger (1):
+      cobalt/drvlib: Prefault io memory again
 
 Jan
 
 -- 
 Siemens AG, Technology
 Linux Expert Center
-
