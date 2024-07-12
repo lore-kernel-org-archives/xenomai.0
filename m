@@ -1,35 +1,35 @@
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C2B015E5BA
-	for <xenomai@lists.linux.dev>; Fri, 12 Jul 2024 10:49:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66FFB15ECE3
+	for <xenomai@lists.linux.dev>; Fri, 12 Jul 2024 10:49:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720781345; cv=none; b=HnoperdXpBSSq6Rwl9iMa3yJ8u8uJ2T+FYud3RjSkZHVy4HzMjHRh9wqiJtvND4lS03gu/OCyFqTPhRqhbWFvv+TnOxDEsOEExur9bJvVLPROrEqvVvwgCVDVT+0Hs2TuqWMNNmnzqS1erzSVqJbo/BYUUEvoMzYBttAFk88WFo=
+	t=1720781345; cv=none; b=FBmHIRMrBom8PlOURUziHGh+j8dDy2bwILS+ou/X7iwSqTIX7ugeUrGz1JF8XQycjVzlP8LRk4dz8SM6mD4vcILn10VEXcxRCZ0WrP4R5imGxecyAyBEs2DPFSF/UXM4rrQFiae+IwMt/fwmZXuUc4H+WvSXn6fWKyWJ9u6gapQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1720781345; c=relaxed/simple;
-	bh=CUQu0bB4KgQV1cRfou9VGntnn/pugQDmVcZ3TktgXTE=;
+	bh=g/+6TxVz8vWN9NQ6rjYczirn63hQZC/c6ecc9pRRQLY=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Z8zYM51JvSDy+Nw2Voyxac7f3pORwnpBEm/DY/rS3TX9rKn2U5c03+VXQXNIwaYcMzWglxIhOAp4fhZW49S/s4uw+BszYNejz9AvqGiJFGG7oi6b5fEwkqaBFBM1xc5/jCaOaxrhQqsH34Wq95+/cLHNnaqBRwxCTh/fWeM8v5A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=m2QKBxXL; arc=none smtp.client-ip=185.136.64.228
+	 In-Reply-To:To:Cc; b=cRa+c/lPO5l1lPHFRoWxTnRzuwp5XJ/U4GmjBPRMj8kGCVj8JibehIcPS0ESAjG6Y5fJHD00SzhOhwPQx3YS+Ev5pH1RMfQiwpcl2hym2gcF0s3CE0d20MjhnktTcow4MIgB7H1NzfqbsZcn7jR1tV25iTptKEiK7ztUybFLqSc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=imzOcKkI; arc=none smtp.client-ip=185.136.65.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="m2QKBxXL"
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20240712104900946f42d4fb16ea3762
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="imzOcKkI"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20240712104901d15b565294c2cea341
         for <xenomai@lists.linux.dev>;
-        Fri, 12 Jul 2024 12:49:00 +0200
+        Fri, 12 Jul 2024 12:49:01 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=qo13OfWY6Wed4orHOJKBkZsooFJQ1Ac1/gFG7xn59WI=;
- b=m2QKBxXLxGuFrvAeVzuP4fGLwzPCCPlPXPNaBZe6qPH3z/OUQa3dSZXR9mqGXurEXDteOb
- iT8CrMgyXG6MiKUqih7aBtfcz0uHtvEr3yD4x/Sx6kUo5e74qA7EcOf590f5jfP2l4QxB0np
- J9qS3W5o6fN7T7uCEf8ICC9i+PKGo=;
+ bh=GL/NAqtwIP92iRQpxXaRsgwTL0pZ6T5QFfY3KBbEnQw=;
+ b=imzOcKkIJm8CF11X8AGSgbc2Ir6YVHMCu/xpRkcm2vVZJ711SafM3gBs3+RzeN+TXAVSHj
+ zeiRlNg1Rv0++gxD2eojB7UKWNxSDnwbKXPyYGz1iQvd08L41kS34QFRf6NAZNHQFKuq6kfZ
+ 9jFXPVk6O+rC6SXB4/xCXzzi0L+eI=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 12 Jul 2024 12:49:14 +0200
-Subject: [PATCH v2 28/33] drivers/net/stack/rtcfg: Migrate from
- rtdm_printk() and printk() to pr_*()
+Date: Fri, 12 Jul 2024 12:49:17 +0200
+Subject: [PATCH v2 31/33] drivers/stack: Migrate from rtdm_printk() and
+ printk() to pr_*()
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -38,7 +38,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240702-flo-removal-of-rtdm_printk-v2-28-facd992606c7@siemens.com>
+Message-Id: <20240702-flo-removal-of-rtdm_printk-v2-31-facd992606c7@siemens.com>
 References: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
 In-Reply-To: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
 To: xenomai@lists.linux.dev
@@ -57,105 +57,259 @@ remove this function once all drivers were updated.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/drivers/net/stack/include/rtcfg/rtcfg.h      | 5 +++--
- kernel/drivers/net/stack/rtcfg/rtcfg_client_event.c | 5 +++--
- kernel/drivers/net/stack/rtcfg/rtcfg_module.c       | 6 ++++--
- kernel/drivers/net/stack/rtcfg/rtcfg_proc.c         | 4 +++-
- 4 files changed, 13 insertions(+), 7 deletions(-)
+ kernel/drivers/net/stack/include/rtnet_internal.h |  2 +-
+ kernel/drivers/net/stack/rtdev.c                  | 20 +++++++++++---------
+ kernel/drivers/net/stack/rtnet_chrdev.c           |  4 +++-
+ kernel/drivers/net/stack/rtnet_module.c           | 10 ++++++----
+ kernel/drivers/net/stack/rtskb.c                  | 13 +++++++------
+ kernel/drivers/net/stack/stack_mgr.c              | 10 ++++++----
+ 6 files changed, 34 insertions(+), 25 deletions(-)
 
-diff --git a/kernel/drivers/net/stack/include/rtcfg/rtcfg.h b/kernel/drivers/net/stack/include/rtcfg/rtcfg.h
-index 0b7cb539c..6148019fc 100644
---- a/kernel/drivers/net/stack/include/rtcfg/rtcfg.h
-+++ b/kernel/drivers/net/stack/include/rtcfg/rtcfg.h
-@@ -39,9 +39,10 @@ extern int rtcfg_debug;
- /* use 0 for production, 1 for verification, >2 for debug */
- #define RTCFG_DEFAULT_DEBUG_LEVEL 10
- 
--#define RTCFG_DEBUG(n, args...) (rtcfg_debug >= (n)) ? (rtdm_printk(args)) : 0
-+#define RTCFG_DEBUG(n, fmt, ...)                                               \
-+	(rtcfg_debug >= (n)) ? (pr_debug(fmt, ##__VA_ARGS__)) : 0
- #else
--#define RTCFG_DEBUG(n, args...)
-+#define RTCFG_DEBUG(n, fmt, ...)
- #endif /* CONFIG_RTCFG_DEBUG */
- 
- #endif /* __RTCFG_H_INTERNAL_ */
-diff --git a/kernel/drivers/net/stack/rtcfg/rtcfg_client_event.c b/kernel/drivers/net/stack/rtcfg/rtcfg_client_event.c
-index cf9e1fc83..3dfd0aed3 100644
---- a/kernel/drivers/net/stack/rtcfg/rtcfg_client_event.c
-+++ b/kernel/drivers/net/stack/rtcfg/rtcfg_client_event.c
-@@ -22,6 +22,8 @@
-  *
-  */
- 
-+#define pr_fmt(fmt) "RTcfg: " fmt
-+
- #include <ipv4/route.h>
- #include <rtcfg/rtcfg.h>
- #include <rtcfg/rtcfg_event.h>
-@@ -882,8 +884,7 @@ static void rtcfg_client_recv_stage_2_cfg(int ifindex, struct rtskb *rtskb)
- 		}
- 
- 		if (ret < 0)
--			/*ERRMSG*/ rtdm_printk(
--				"RTcfg: unable to create timer task\n");
-+			pr_err("unable to create timer task\n");
- 		else
- 			set_bit(FLAG_TIMER_STARTED, &rtcfg_dev->flags);
+diff --git a/kernel/drivers/net/stack/include/rtnet_internal.h b/kernel/drivers/net/stack/include/rtnet_internal.h
+index ec7e6141f..73f48c7a5 100644
+--- a/kernel/drivers/net/stack/include/rtnet_internal.h
++++ b/kernel/drivers/net/stack/include/rtnet_internal.h
+@@ -34,7 +34,7 @@
+ #ifdef CONFIG_XENO_DRIVERS_NET_CHECKED
+ #define RTNET_ASSERT(expr, func)                                               \
+ 	if (!(expr)) {                                                         \
+-		rtdm_printk("Assertion failed! %s:%s:%d %s\n", __FILE__,       \
++		pr_err("Assertion failed! %s:%s:%d %s\n", __FILE__,            \
+ 			    __FUNCTION__, __LINE__, (#expr));                  \
+ 		func                                                           \
  	}
-diff --git a/kernel/drivers/net/stack/rtcfg/rtcfg_module.c b/kernel/drivers/net/stack/rtcfg/rtcfg_module.c
-index 5e597e818..857237744 100644
---- a/kernel/drivers/net/stack/rtcfg/rtcfg_module.c
-+++ b/kernel/drivers/net/stack/rtcfg/rtcfg_module.c
-@@ -22,6 +22,8 @@
+diff --git a/kernel/drivers/net/stack/rtdev.c b/kernel/drivers/net/stack/rtdev.c
+index 7c50a9e9e..9bf867e95 100644
+--- a/kernel/drivers/net/stack/rtdev.c
++++ b/kernel/drivers/net/stack/rtdev.c
+@@ -23,6 +23,8 @@
   *
   */
  
-+#define pr_fmt(fmt) "RTcfg: " fmt
++#define pr_fmt(fmt) "RTnet: " fmt
 +
- #include <linux/module.h>
- #include <linux/moduleparam.h>
- #include <linux/kernel.h>
-@@ -37,7 +39,7 @@ static int __init rtcfg_init(void)
- {
- 	int ret;
+ #include <linux/spinlock.h>
+ #include <linux/if.h>
+ #include <linux/if_arp.h> /* ARPHRD_ETHER */
+@@ -243,7 +245,7 @@ static int rtdev_init(struct rtnet_device *rtdev, unsigned dev_pool_size)
+ 	ret = rtskb_pool_init(&rtdev->dev_pool, dev_pool_size, &rtdev_ops,
+ 			      rtdev);
+ 	if (ret < dev_pool_size) {
+-		printk(KERN_ERR "RTnet: cannot allocate rtnet device pool\n");
++		pr_err("cannot allocate rtnet device pool\n");
+ 		rtskb_pool_release(&rtdev->dev_pool);
+ 		return -ENOMEM;
+ 	}
+@@ -287,7 +289,7 @@ static struct rtnet_device *rtdev_alloc(unsigned sizeof_priv,
  
--	printk("RTcfg: init real-time configuration distribution protocol\n");
-+	pr_info("init real-time configuration distribution protocol\n");
+ 	rtdev = kzalloc(alloc_size, GFP_KERNEL);
+ 	if (rtdev == NULL) {
+-		printk(KERN_ERR "RTnet: cannot allocate rtnet device\n");
++		pr_err("cannot allocate rtnet device\n");
+ 		return NULL;
+ 	}
  
- 	ret = rtcfg_init_ioctls();
- 	if (ret != 0)
-@@ -76,7 +78,7 @@ static void rtcfg_cleanup(void)
- 	rtcfg_cleanup_state_machines();
- 	rtcfg_cleanup_ioctls();
+@@ -403,7 +405,7 @@ static int rtskb_map(struct rtnet_device *rtdev, struct rtskb *skb)
+ 		return -ENOMEM;
  
--	printk("RTcfg: unloaded\n");
-+	pr_info("unloaded\n");
- }
+ 	if (skb->buf_dma_addr != RTSKB_UNMAPPED && addr != skb->buf_dma_addr) {
+-		printk("RTnet: device %s maps skb differently than others. "
++		pr_err("device %s maps skb differently than others. "
+ 		       "Different IOMMU domain?\nThis is not supported.\n",
+ 		       rtdev->name);
+ 		return -EACCES;
+@@ -589,7 +591,7 @@ int rt_register_rtnetdev(struct rtnet_device *rtdev)
+ 	/* Default state at registration is that the device is present. */
+ 	set_bit(__RTNET_LINK_STATE_PRESENT, &rtdev->link_state);
  
- module_init(rtcfg_init);
-diff --git a/kernel/drivers/net/stack/rtcfg/rtcfg_proc.c b/kernel/drivers/net/stack/rtcfg/rtcfg_proc.c
-index 2e138180f..ea0a17207 100644
---- a/kernel/drivers/net/stack/rtcfg/rtcfg_proc.c
-+++ b/kernel/drivers/net/stack/rtcfg/rtcfg_proc.c
-@@ -22,6 +22,8 @@
-  *
-  */
+-	printk("RTnet: registered %s\n", rtdev->name);
++	pr_info("registered %s\n", rtdev->name);
  
-+#define pr_fmt(fmt) "RTcfg: " fmt
-+
- #include <rtdev.h>
- #include <rtnet_internal.h>
- #include <rtnet_port.h>
-@@ -325,7 +327,7 @@ int rtcfg_init_proc(void)
  	return 0;
  
- err1:
--	printk("RTcfg: unable to initialise /proc entries\n");
-+	pr_err("unable to initialise /proc entries\n");
+@@ -617,7 +619,7 @@ int rt_unregister_rtnetdev(struct rtnet_device *rtdev)
+ 	rtdm_lockctx_t context;
+ 
+ 	RTNET_ASSERT(rtdev->ifindex != 0,
+-		     printk("RTnet: device %s/%p was not registered\n",
++		     pr_err("device %s/%p was not registered\n",
+ 			    rtdev->name, rtdev);
+ 		     return -ENODEV;);
+ 
+@@ -649,9 +651,9 @@ int rt_unregister_rtnetdev(struct rtnet_device *rtdev)
+ 	clear_bit(__RTNET_LINK_STATE_PRESENT, &rtdev->link_state);
+ 
+ 	RTNET_ASSERT(atomic_read(&rtdev->refcount) == 0,
+-		     printk("RTnet: rtdev reference counter < 0!\n"););
++		     pr_err("rtdev reference counter < 0!\n"););
+ 
+-	printk("RTnet: unregistered %s\n", rtdev->name);
++	pr_info("unregistered %s\n", rtdev->name);
+ 
+ 	return 0;
+ }
+@@ -868,7 +870,7 @@ int rtdev_xmit(struct rtskb *rtskb)
+ 		/* on error we must free the rtskb here */
+ 		kfree_rtskb(rtskb);
+ 
+-		rtdm_printk("hard_start_xmit returned %d\n", err);
++		pr_err("hard_start_xmit returned %d\n", err);
+ 	}
+ 
+ 	return err;
+@@ -901,7 +903,7 @@ int rtdev_xmit_proxy(struct rtskb *rtskb)
+ 			/* on error we must free the rtskb here */
+ 			kfree_rtskb(rtskb);
+ 
+-			rtdm_printk("hard_start_xmit returned %d\n", err);
++			pr_err("hard_start_xmit returned %d\n", err);
+ 		}
+ 	}
+ 
+diff --git a/kernel/drivers/net/stack/rtnet_chrdev.c b/kernel/drivers/net/stack/rtnet_chrdev.c
+index fa859c3bc..bb6e304d4 100644
+--- a/kernel/drivers/net/stack/rtnet_chrdev.c
++++ b/kernel/drivers/net/stack/rtnet_chrdev.c
+@@ -22,6 +22,8 @@
+  *
+  */
+ 
++#define pr_fmt(fmt) "RTnet: " fmt
++
+ #include <linux/kernel.h>
+ #include <linux/errno.h>
+ #include <linux/if_arp.h>
+@@ -218,7 +220,7 @@ int __init rtnet_chrdev_init(void)
+ 
+ 	err = misc_register(&rtnet_chr_misc_dev);
+ 	if (err) {
+-		printk("RTnet: unable to register rtnet management device/class "
++		pr_err("unable to register rtnet management device/class "
+ 		       "(error %d)\n",
+ 		       err);
+ 		return err;
+diff --git a/kernel/drivers/net/stack/rtnet_module.c b/kernel/drivers/net/stack/rtnet_module.c
+index c245502cd..287ad1620 100644
+--- a/kernel/drivers/net/stack/rtnet_module.c
++++ b/kernel/drivers/net/stack/rtnet_module.c
+@@ -21,6 +21,8 @@
+  *
+  */
+ 
++#define pr_fmt(fmt) "RTnet: " fmt
++
+ #include <linux/module.h>
+ #include <linux/kernel.h>
+ #include <linux/init.h>
+@@ -298,7 +300,7 @@ error2:
+ 	xnvfile_destroy_dir(&rtnet_proc_root);
+ 
+ error1:
+-	printk("RTnet: unable to initialize /proc entries\n");
++	pr_err("unable to initialize /proc entries\n");
  	return err;
  }
  
+@@ -322,8 +324,8 @@ static int __init rtnet_init(void)
+ 	if (!rtdm_available())
+ 		return -ENOSYS;
+ 
+-	printk("\n*** RTnet for Xenomai v" XENO_VERSION_STRING " ***\n\n");
+-	printk("RTnet: initialising real-time networking\n");
++	pr_info("\n*** RTnet for Xenomai v" XENO_VERSION_STRING " ***\n\n");
++	pr_info("initialising real-time networking\n");
+ 
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(6,4,0)
+ 	rtnet_class = class_create("rtnet");
+@@ -409,7 +411,7 @@ static void __exit rtnet_release(void)
+ 
+ 	class_destroy(rtnet_class);
+ 
+-	printk("RTnet: unloaded\n");
++	pr_info("unloaded\n");
+ }
+ 
+ module_init(rtnet_init);
+diff --git a/kernel/drivers/net/stack/rtskb.c b/kernel/drivers/net/stack/rtskb.c
+index e92cb3c64..fde421b36 100644
+--- a/kernel/drivers/net/stack/rtskb.c
++++ b/kernel/drivers/net/stack/rtskb.c
+@@ -21,6 +21,8 @@
+  *
+  */
+ 
++#define pr_fmt(fmt) "RTnet: " fmt
++
+ #include <linux/moduleparam.h>
+ #include <linux/slab.h>
+ #include <rtnet_checksum.h>
+@@ -125,8 +127,8 @@ EXPORT_SYMBOL_GPL(rtskb_copy_and_csum_dev);
+  */
+ void rtskb_over_panic(struct rtskb *skb, int sz, void *here)
+ {
+-	rtdm_printk("RTnet: rtskb_put :over: %p:%d put:%d dev:%s\n", here,
+-		    skb->len, sz, (skb->rtdev) ? skb->rtdev->name : "<NULL>");
++	pr_err("rtskb_put :over: %p:%d put:%d dev:%s\n", here, skb->len, sz,
++	       (skb->rtdev) ? skb->rtdev->name : "<NULL>");
+ }
+ 
+ EXPORT_SYMBOL_GPL(rtskb_over_panic);
+@@ -141,8 +143,8 @@ EXPORT_SYMBOL_GPL(rtskb_over_panic);
+  */
+ void rtskb_under_panic(struct rtskb *skb, int sz, void *here)
+ {
+-	rtdm_printk("RTnet: rtskb_push :under: %p:%d put:%d dev:%s\n", here,
+-		    skb->len, sz, (skb->rtdev) ? skb->rtdev->name : "<NULL>");
++	pr_err("rtskb_push :under: %p:%d put:%d dev:%s\n", here, skb->len, sz,
++	       (skb->rtdev) ? skb->rtdev->name : "<NULL>");
+ }
+ 
+ EXPORT_SYMBOL_GPL(rtskb_under_panic);
+@@ -370,8 +372,7 @@ unsigned int rtskb_pool_extend(struct rtskb_pool *pool, unsigned int add_rtskbs)
+ 	for (i = 0; i < add_rtskbs; i++) {
+ 		/* get rtskb from slab pool */
+ 		if (!(skb = kmem_cache_alloc(rtskb_slab_pool, GFP_KERNEL))) {
+-			printk(KERN_ERR
+-			       "RTnet: rtskb allocation from slab pool failed\n");
++			pr_err("rtskb allocation from slab pool failed\n");
+ 			break;
+ 		}
+ 
+diff --git a/kernel/drivers/net/stack/stack_mgr.c b/kernel/drivers/net/stack/stack_mgr.c
+index a7e22458a..b30a74549 100644
+--- a/kernel/drivers/net/stack/stack_mgr.c
++++ b/kernel/drivers/net/stack/stack_mgr.c
+@@ -22,6 +22,8 @@
+  *
+  */
+ 
++#define pr_fmt(fmt) "RTnet: " fmt
++
+ #include <linux/moduleparam.h>
+ 
+ #include <rtdev.h>
+@@ -111,7 +113,7 @@ void rtnetif_rx(struct rtskb *skb)
+ 	RTNET_ASSERT(skb->rtdev != NULL, return;);
+ 
+ 	if (unlikely(rtskb_fifo_insert_inirq(&rx.fifo, skb) < 0)) {
+-		rtdm_printk("RTnet: dropping packet in %s()\n", __FUNCTION__);
++		pr_warn("dropping packet in %s()\n", __FUNCTION__);
+ 		kfree_rtskb(skb);
+ 	}
+ }
+@@ -179,9 +181,9 @@ __DELIVER_PREFIX void rt_stack_deliver(struct rtskb *rtskb)
+ 	/* Don't warn if ETH_P_ALL listener were present or when running in
+        promiscuous mode (RTcap). */
+ 	if (unlikely(!eth_p_all_hit && !(rtdev->flags & IFF_PROMISC)))
+-		rtdm_printk("RTnet: no one cared for packet with layer 3 "
+-			    "protocol type 0x%04x\n",
+-			    ntohs(rtskb->protocol));
++		pr_warn("no one cared for packet with layer 3 "
++			"protocol type 0x%04x\n",
++			ntohs(rtskb->protocol));
+ 
+ 	kfree_rtskb(rtskb);
+ }
 
 -- 
 2.39.2
