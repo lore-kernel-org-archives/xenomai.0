@@ -1,34 +1,35 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFC2F15B54E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2455C15B555
 	for <xenomai@lists.linux.dev>; Fri, 12 Jul 2024 10:49:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720781342; cv=none; b=HR1uEKsVq+00FyX0LKTGH6ia+57GbyXgMaD20XE8Rk5sC6HptOVnsTjqH+P15bOVZT6AQ+vMky2rYq74gAGsWyMD7x0y7YlRFfhqY+53v5EdVbRDC+EILUiPRxzOZjT6qz+rHBSY0SzvRzQrKaQ1rNjx/uSoT/Fs8d7CD3eYqk8=
+	t=1720781342; cv=none; b=hKXQUoCyD+sqZ0NIZkOpXBKy5oGZ782lZlFknQt8kZaGbV5G+rgOhEVtDG/Uy8RqEzDJFW+437f0sozwWyXDc0Hg3cfUNh72U6v+tq8SskC728cajDnNFcb3bPzHqNwiQxqsn+UbbVgCB97PFz4xIl1Bpqd+Yu5LSWC9Tsx8Cao=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1720781342; c=relaxed/simple;
-	bh=H0MkBrY/YzE7caNliLbqg5l6kBmH1+N7MA4MY+f97/w=;
+	bh=Q7iKBjpaWBk9YRr0qVZ8AxLoizLZQNhSwZCWuGIjdjA=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=jsj2buS2qsBY2H8mPqSn0ngiki/8RBQmQCY5JHb+LXtssxYe9l8WPxqVKkr3kk0RPYZl1TI+O/i0ApWh2btO/ibjKlDOk/lwNzaZDdas1F/27omoyZ/mDjESZ1UnE78JFLym8Nq1mx1IZZYohiL5QV+h6K6KQakoqqc3xIEaBmk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=FSeyYomo; arc=none smtp.client-ip=185.136.64.226
+	 In-Reply-To:To:Cc; b=KM1KEpQsALOtBC4QbkSC83ChdNbrF5qeXJRIvFG71aKN+949vpXbrgF7fUtxy4i8IDE8fNg9PnjP9jTAqG7tttyuUB2QAajaNxl42NCCqNU6p2wJJWT4MgNIeVwBwbJtYkv5mIcnsCBIz1gUDGrI4NaYfvkRjYM0QuMUAsHeS9U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=pU5ksQBb; arc=none smtp.client-ip=185.136.64.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="FSeyYomo"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20240712104857d8907f8d05b1bdfa07
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="pU5ksQBb"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20240712104853fcbc720dc017b67191
         for <xenomai@lists.linux.dev>;
-        Fri, 12 Jul 2024 12:48:58 +0200
+        Fri, 12 Jul 2024 12:48:53 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=z76snBRzVijyxq3o6gVX9AhovoWZKcMljSsnoI36/dE=;
- b=FSeyYomogwJXQMpPCIHjfWgSs1upppUbfT5aXrIzYQEu/eIUWMsgsOHKpLwGRsbJgQmEmX
- cR1Y9/5apo84E3tW7Vn+56ga2aX5GPX3n+ah48ZAiQyIyK6pH85SH0D44i/5LKh6bklx3UwA
- stqJzv1g6f+n+WTfAfYCcPfvkNHHI=;
+ bh=7WchKUNPh8uMru8ef4wN6hkqp0ONcn4lIrJb4BWMgaI=;
+ b=pU5ksQBbLHVMkYYfc36emtcuxToWA8sw6sBBFP3H9BaD9YKKzb5Ffx+EoxUTOUQCkK6UYi
+ 6Kl7ApoCoSUIuH0FWXybFEveMhXNa9vRQ7GlocfVTt8T2VU8T64B8VM86olilHZZMRDRIOr0
+ 6sPxevqPLAa3jjViMl5nO7v+pqbX8=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 12 Jul 2024 12:49:09 +0200
-Subject: [PATCH v2 23/33] drivers/r8169: Remove rt_assert() macro
+Date: Fri, 12 Jul 2024 12:48:57 +0200
+Subject: [PATCH v2 11/33] drivers/experimental/e1000: Migrate from
+ rtdm_printk() and printk() to pr_*()
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -37,7 +38,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240702-flo-removal-of-rtdm_printk-v2-23-facd992606c7@siemens.com>
+Message-Id: <20240702-flo-removal-of-rtdm_printk-v2-11-facd992606c7@siemens.com>
 References: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
 In-Reply-To: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
 To: xenomai@lists.linux.dev
@@ -46,56 +47,147 @@ Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-There is no difference to the assert() macro. Cleaning up rt_assert().
+Some (rtdm_)printk() calls were missing log level information. The
+default level (= warn) does not fit well for most of them.
+
+The missing log level is addressed by migrating to the pr_*() API.
+
+rtdm_printk() itself is just an alias for printk(). Migrating helps to
+remove this function once all drivers were updated.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/drivers/net/drivers/r8169.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+ .../drivers/net/drivers/experimental/e1000/e1000.h | 14 ++++++----
+ .../net/drivers/experimental/e1000/e1000_main.c    | 32 ++++++++++++----------
+ 2 files changed, 25 insertions(+), 21 deletions(-)
 
-diff --git a/kernel/drivers/net/drivers/r8169.c b/kernel/drivers/net/drivers/r8169.c
-index 8f57752ad..295e34a60 100644
---- a/kernel/drivers/net/drivers/r8169.c
-+++ b/kernel/drivers/net/drivers/r8169.c
-@@ -99,12 +99,8 @@ RTL8169_VERSION "2.2"	<2004/08/09>
- #ifdef RTL8169_DEBUG
- 	#define assert(expr) \
- 		if(!(expr)) { pr_err("Assertion failed! %s,%s,%s,line=%d\n", #expr,__FILE__,__FUNCTION__,__LINE__); }
--	/*** RTnet / <kk>: rt_assert must be used instead of assert() within interrupt context! ***/
--	#define rt_assert(expr) \
--		if(!(expr)) { pr_err("Assertion failed! %s,%s,%s,line=%d\n", #expr,__FILE__,__FUNCTION__,__LINE__); }
- #else
- 	#define assert(expr) do {} while (0)
--	#define rt_assert(expr) do {} while (0)
- #endif	// end of #ifdef RTL8169_DEBUG
+diff --git a/kernel/drivers/net/drivers/experimental/e1000/e1000.h b/kernel/drivers/net/drivers/experimental/e1000/e1000.h
+index 8b9830b99..986eeb088 100644
+--- a/kernel/drivers/net/drivers/experimental/e1000/e1000.h
++++ b/kernel/drivers/net/drivers/experimental/e1000/e1000.h
+@@ -47,13 +47,15 @@ struct e1000_adapter;
  
- /* media options */
-@@ -1490,9 +1486,9 @@ static void rtl8169_tx_interrupt (struct rtnet_device *rtdev, struct rtl8169_pri
- 	//int entry = priv->cur_tx % NUM_TX_DESC;	/* <kk> */
- 	int txloop_cnt = 0;
+ #define E1000_DBG(args...)
  
--	rt_assert (rtdev != NULL);
--	rt_assert (priv != NULL);
--	rt_assert (ioaddr != 0);
-+	assert(rtdev != NULL);
-+	assert(priv != NULL);
-+	assert(ioaddr != 0);
+-#define E1000_ERR(args...) printk(KERN_ERR "e1000: " args)
++#define E1000_ERR(args...) pr_err(args)
  
- 	rtdm_lock_get(&priv->lock); /*** RTnet ***/
+-#define PFX "e1000: "
+-#define DPRINTK(nlevel, klevel, fmt, args...) \
+-	(void)((NETIF_MSG_##nlevel & adapter->msg_enable) && \
+-	printk(KERN_##klevel PFX "%s: %s: " fmt, adapter->netdev->name, \
+-		__FUNCTION__ , ## args))
++#undef pr_fmt
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++#define DPRINTK(nlevel, klevel, fmt, args...)                           \
++	(void)((NETIF_MSG_##nlevel & adapter->msg_enable) &&            \
++	       printk(KERN_##klevel "%s: %s: %s: " fmt, KBUILD_MODNAME, \
++		      adapter->netdev->name, __FUNCTION__, ##args))
  
-@@ -1551,9 +1547,9 @@ static void rtl8169_rx_interrupt (struct rtnet_device *rtdev, struct rtl8169_pri
- 	struct rtskb *rx_skb;
- 	struct	RxDesc	*rxdesc;
+ #define E1000_MAX_INTR 10
  
--	rt_assert (rtdev != NULL);
--	rt_assert (priv != NULL);
--	rt_assert (ioaddr != 0);
-+	assert(rtdev != NULL);
-+	assert(priv != NULL);
-+	assert(ioaddr != 0);
+diff --git a/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c b/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
+index 76cfb0dee..56f172636 100644
+--- a/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
++++ b/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
+@@ -460,11 +460,11 @@ MODULE_PARM_DESC(pciif, "PCI Interface: 'all' (default), 'pci', 'pcie'");
+ static int __init e1000_init_module(void)
+ {
+ 	int ret;
+-    strcpy(e1000_driver_name, THIS_MODULE->name);
+-	printk(KERN_INFO "%s - %s version %s (pciif: %s)\n",
+-	       e1000_driver_string, e1000_driver_name, e1000_driver_version, pciif);
++	strcpy(e1000_driver_name, THIS_MODULE->name);
++	pr_info("%s - %s version %s (pciif: %s)\n", e1000_driver_string,
++		e1000_driver_name, e1000_driver_version, pciif);
+ 
+-	printk(KERN_INFO "%s\n", e1000_copyright);
++	pr_info("%s\n", e1000_copyright);
  
  
- 	cur_rx = priv->cur_rx;
+     if (0 == strcmp(pciif, "pcie"))
+@@ -486,10 +486,11 @@ static int __init e1000_init_module(void)
+ #endif
+ 	if (copybreak != COPYBREAK_DEFAULT) {
+ 		if (copybreak == 0)
+-			printk(KERN_INFO "e1000: copybreak disabled\n");
++			pr_info("e1000: copybreak disabled\n");
+ 		else
+-			printk(KERN_INFO "e1000: copybreak enabled for "
+-			       "packets <= %u bytes\n", copybreak);
++			pr_info("e1000: copybreak enabled for "
++				"packets <= %u bytes\n",
++				copybreak);
+ 	}
+ 	return ret;
+ }
+@@ -1376,8 +1377,9 @@ static int e1000_probe(struct pci_dev *pdev,
+ 		 "32-bit"));
+ 	}
+ 
+-	for (i = 0; i < 6; i++)
+-		printk("%2.2x%c", netdev->dev_addr[i], i == 5 ? '\n' : ':');
++	pr_debug("%2.2x:%2.2x:%2.2x:%2.2x:%2.2x:%2.2x\n", netdev->dev_addr[0],
++		 netdev->dev_addr[1], netdev->dev_addr[2], netdev->dev_addr[3],
++		 netdev->dev_addr[4], netdev->dev_addr[5]);
+ 
+ 	/* reset the hardware with the new settings */
+ 	e1000_reset(adapter);
+@@ -3848,7 +3850,7 @@ static int e1000_xmit_frame_ring(struct sk_buff *skb,
+ 	 * head, otherwise try next time */
+ 	if (unlikely(e1000_maybe_stop_tx(netdev, tx_ring, count + 2))) {
+ 		rtdm_lock_put_irqrestore(&tx_ring->tx_lock, irq_flags);
+-		rtdm_printk("FATAL: rt_e1000 ran into tail close to head situation!\n");
++		pr_crit("FATAL: rt_e1000 ran into tail close to head situation!\n");
+ 		return NETDEV_TX_BUSY;
+ 	}
+ 
+@@ -3859,7 +3861,7 @@ static int e1000_xmit_frame_ring(struct sk_buff *skb,
+ 			if (!test_bit(__E1000_DOWN, &adapter->state))
+ 				schedule_delayed_work(&adapter->fifo_stall_task,
+ 						      1);
+-		    rtdm_printk("FATAL: rt_e1000 ran into tail 82547 controller bug!\n");
++			pr_crit("FATAL: rt_e1000 ran into tail 82547 controller bug!\n");
+ 			return NETDEV_TX_BUSY;
+ 		}
+ 	}
+@@ -4897,7 +4899,7 @@ static bool e1000_clean_rx_irq(struct e1000_adapter *adapter,
+ 	bool cleaned = FALSE;
+ 	unsigned int total_rx_bytes=0, total_rx_packets=0;
+ 
+-	// rtdm_printk("<2> e1000_clean_rx_irq %i\n", __LINE__);
++	// pr_debug("<2> e1000_clean_rx_irq %i\n", __LINE__);
+ 
+ 	i = rx_ring->next_to_clean;
+ 	rx_desc = E1000_RX_DESC(*rx_ring, i);
+@@ -5808,7 +5810,7 @@ static int e1000_resume(struct pci_dev *pdev)
+ 	pci_set_power_state(pdev, PCI_D0);
+ 	pci_restore_state(pdev);
+ 	if ((err = pci_enable_device(pdev))) {
+-		printk(KERN_ERR "e1000: Cannot enable PCI device from suspend\n");
++		pr_err("Cannot enable PCI device from suspend\n");
+ 		return err;
+ 	}
+ 	pci_set_master(pdev);
+@@ -5909,7 +5911,7 @@ static pci_ers_result_t e1000_io_slot_reset(struct pci_dev *pdev)
+ 	struct e1000_adapter *adapter = netdev->priv;
+ 
+ 	if (pci_enable_device(pdev)) {
+-		printk(KERN_ERR "e1000: Cannot re-enable PCI device after reset.\n");
++		pr_err("Cannot re-enable PCI device after reset.\n");
+ 		return PCI_ERS_RESULT_DISCONNECT;
+ 	}
+ 	pci_set_master(pdev);
+@@ -5940,7 +5942,7 @@ static void e1000_io_resume(struct pci_dev *pdev)
+ 
+ 	if (rtnetif_running(netdev)) {
+ 		if (e1000_up(adapter)) {
+-			printk("e1000: can't bring device back up after reset\n");
++			pr_err("can't bring device back up after reset\n");
+ 			return;
+ 		}
+ 	}
 
 -- 
 2.39.2
