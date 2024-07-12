@@ -1,34 +1,34 @@
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC86A153823
-	for <xenomai@lists.linux.dev>; Fri, 12 Jul 2024 10:48:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BF0915B0FE
+	for <xenomai@lists.linux.dev>; Fri, 12 Jul 2024 10:49:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720781342; cv=none; b=iWJxQmQBMgcDGbybbA5TYIKXEBbWFwM//32V5gd5JDThaW0ZAxNfpj0vPmYU4VwMiSIHhkT46KEI+8hO49lo7QcPoYEtIwyiKLaTMgI6NKXWu05QvbdzwKU08Gy5PToYzsh61GbNVUPCfhkwJZS0SlEiCWyimqtzv/QWeV0I03s=
+	t=1720781342; cv=none; b=EI77fQnsRqZ0ntvs4NBycRxE3MlhUPA+9irxrbW9l/5tCLOEjWAuuEmrc0JVw6YK66FkkjFKHdvk3FBdxiBv+wLrJlj7vSAjRSXqPvd40p+VIHHj2wmC+3MDhhLgx5kQJjKMSafEi4ew0h1QoegY/Qf2vaw1v6bluslDh4lx/Ng=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1720781342; c=relaxed/simple;
-	bh=fHs/IxwBWXvtDU9DYrljx32Hyic8cYfj9V35cxUQzEQ=;
+	bh=2a3SRYl3VBMyXsb67EdgVQARreUJBCE8x2/nkmaJ8k4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Tp7PA4iJqrmNGp+cRHovotM64ythXUK0QuZ5kXrcD1gn8rrCPCrW6Jh4yWouQifMQrlXCty6PBmTOnNM7fpKHUWdTiIWnu2HtJKXHID06glcEpZn5v66Bh7AxtXtY10F+rPRyWITPpx6xmobWzQA73D6LGsQVXzrbq3gIX1bqB0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=HehpMaBE; arc=none smtp.client-ip=185.136.65.227
+	 In-Reply-To:To:Cc; b=IBwn6YjvtS1aqzNPcVAwVkUkY6IcexsBdvMZHei0avixzsVgxNEucV8Ga0jDUN0JJHrLZ8QYFhXASV6Q9HXPChyOx3c37iiwQSFsPl4Q4mn+ut8vPiK6okp5xtTI60ZB8Zt5XvFzjf1jAgTAZ8Mbn+T0VgLJe3JAgaiKZRIXsgk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=LcfaxTks; arc=none smtp.client-ip=185.136.64.228
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="HehpMaBE"
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 2024071210485614954315b8218bbb7c
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="LcfaxTks"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 202407121048589af57861f02448b01f
         for <xenomai@lists.linux.dev>;
-        Fri, 12 Jul 2024 12:48:56 +0200
+        Fri, 12 Jul 2024 12:48:58 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=AmZCkKwZhwDAZYz1efvWGHk1q9OIaUxAa5urF7ZAdjY=;
- b=HehpMaBEXhvi2goDiauZ2eQVJgkgiYEZxNVDYcsZgF5NX7OUt5qKz3pGhv9J6l3eXhr1iF
- JlGioovJ+gkkODX5m9cKDdyaIQdf7oHEmqWlr/VmzF0Ie5cj9jgWDlvfDWfk2ofygm4TJ3he
- jAITckUxzQuBFfXYa7fdVH0rJkNuI=;
+ bh=hn8TFX00kYh/IRrKZh+5bJxUHH2UA1+cdvTcjwWfgs4=;
+ b=LcfaxTksTWG8OTL+o3qRU6j1N10MhrS2UoNYuVqKkhUfPOUoDEvG5VT76HSrzLK/82JFWu
+ UeEizlsttChyCscMw9wllteGyNvYrTEsjH3icn8uC+tOKYPKyPqq+0CybjCduh3dbAdaXWbZ
+ bfXM+KCMfUNvpNkcjcTnw0e8MX7gY=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 12 Jul 2024 12:49:05 +0200
-Subject: [PATCH v2 19/33] drivers/pcnet32: Migrate from printk() to pr_*()
+Date: Fri, 12 Jul 2024 12:49:10 +0200
+Subject: [PATCH v2 24/33] drivers/r8169: Rework assert()
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -37,7 +37,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240702-flo-removal-of-rtdm_printk-v2-19-facd992606c7@siemens.com>
+Message-Id: <20240702-flo-removal-of-rtdm_printk-v2-24-facd992606c7@siemens.com>
 References: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
 In-Reply-To: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
 To: xenomai@lists.linux.dev
@@ -46,393 +46,42 @@ Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Some printk() calls were missing log level information. The default
-level (= warn) did fit well for them.
-
-The missing log level is addressed by migrating to the pr_*() API.
-
-All pr_*() calls are now in sync with the upstream driver (taken from
-Linux 6.9). The usage of pr_cont() is not SMP safe but the upstream
-driver has the same issue.
+Surround the condition check with a do{} while (0) block and reformat
+according to coding style.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/drivers/net/drivers/pcnet32.c | 136 +++++++++++++++--------------------
- 1 file changed, 59 insertions(+), 77 deletions(-)
+ kernel/drivers/net/drivers/r8169.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/drivers/net/drivers/pcnet32.c b/kernel/drivers/net/drivers/pcnet32.c
-index eebb66ecb..0ac423c11 100644
---- a/kernel/drivers/net/drivers/pcnet32.c
-+++ b/kernel/drivers/net/drivers/pcnet32.c
-@@ -25,7 +25,8 @@
- #define DRV_NAME "pcnet32-rt"
- #define DRV_VERSION "1.27a-RTnet-0.2"
- #define DRV_RELDATE "2003-09-24"
--#define PFX DRV_NAME ": "
-+
-+#define pr_fmt(fmt) DRV_NAME ": " fmt
+diff --git a/kernel/drivers/net/drivers/r8169.c b/kernel/drivers/net/drivers/r8169.c
+index 295e34a60..7fd60dff2 100644
+--- a/kernel/drivers/net/drivers/r8169.c
++++ b/kernel/drivers/net/drivers/r8169.c
+@@ -95,13 +95,18 @@ RTL8169_VERSION "2.2"	<2004/08/09>
+ #undef RTL8169_DYNAMIC_CONTROL
+ #undef RTL8169_USE_IO
  
- static const char *version =
- 	DRV_NAME ".c:v" DRV_VERSION " " DRV_RELDATE " Jan.Kiszka@web.de\n";
-@@ -509,21 +510,20 @@ static int pcnet32_probe_pci(struct pci_dev *pdev,
- 
- 	err = pci_enable_device(pdev);
- 	if (err < 0) {
--		printk(KERN_ERR PFX "failed to enable device -- err=%d\n", err);
-+		pr_err("failed to enable device -- err=%d\n", err);
- 		return err;
- 	}
- 	pci_set_master(pdev);
- 
- 	ioaddr = pci_resource_start(pdev, 0);
- 	if (!ioaddr) {
--		printk(KERN_ERR PFX "card has no PCI IO resources, aborting\n");
-+		pr_err("card has no PCI IO resources, aborting\n");
- 		return -ENODEV;
- 	}
- 
- 	err = dma_set_mask(&pdev->dev, PCNET32_DMA_MASK);
- 	if (err) {
--		printk(KERN_ERR PFX
--		       "architecture does not support 32bit PCI busmaster DMA\n");
-+		pr_err("architecture does not support 32bit PCI busmaster DMA\n");
- 		return err;
- 	}
- 
-@@ -571,8 +571,7 @@ static int pcnet32_probe1(unsigned long ioaddr, unsigned int irq_line,
- 	chip_version =
- 		a->read_csr(ioaddr, 88) | (a->read_csr(ioaddr, 89) << 16);
- 	if (pcnet32_debug > 2)
--		printk(KERN_INFO "  PCnet chip version is %#x.\n",
--		       chip_version);
-+		pr_info("PCnet chip version is %#x.\n", chip_version);
- 	if ((chip_version & 0xfff) != 0x003)
- 		return -ENODEV;
- 
-@@ -626,7 +625,7 @@ static int pcnet32_probe1(unsigned long ioaddr, unsigned int irq_line,
- 		/* switch to home wiring mode */
- 		media = a->read_bcr(ioaddr, 49);
- 		if (pcnet32_debug > 2)
--			printk(KERN_DEBUG PFX "media reset to %#x.\n", media);
-+			pr_debug("media reset to %#x.\n", media);
- 		a->write_bcr(ioaddr, 49, media);
- 		break;
- 	case 0x2627:
-@@ -635,8 +634,7 @@ static int pcnet32_probe1(unsigned long ioaddr, unsigned int irq_line,
- 		mii = 1;
- 		break;
- 	default:
--		printk(KERN_INFO PFX "PCnet version %#x, no PCnet32 chip.\n",
--		       chip_version);
-+		pr_info("PCnet version %#x, no PCnet32 chip.\n", chip_version);
- 		return -ENODEV;
- 	}
- 
-@@ -665,7 +663,7 @@ static int pcnet32_probe1(unsigned long ioaddr, unsigned int irq_line,
- 	dev->sysbind = &pdev->dev;
- 	/*** RTnet ***/
- 
--	printk(KERN_INFO PFX "%s at %#3lx,", chipname, ioaddr);
-+	pr_info("%s at %#3lx,", chipname, ioaddr);
- 
- 	/* In most chips, after a chip reset, the ethernet address is read from the
-      * station address PROM at the base address and programmed into the
-@@ -694,8 +692,8 @@ static int pcnet32_probe1(unsigned long ioaddr, unsigned int irq_line,
- 		if (!is_valid_ether_addr(dev->dev_addr) &&
- 		    is_valid_ether_addr(promaddr)) {
- #endif
--			printk(" warning: CSR address invalid,\n");
--			printk(KERN_INFO "    using instead PROM address of");
-+			pr_cont(" warning: CSR address invalid,\n");
-+			pr_info("    using instead PROM address of");
- 			memcpy(dev->dev_addr, promaddr, 6);
- 		}
- 	}
-@@ -705,43 +703,43 @@ static int pcnet32_probe1(unsigned long ioaddr, unsigned int irq_line,
- 		memset(dev->dev_addr, 0, sizeof(dev->dev_addr));
- 
- 	for (i = 0; i < 6; i++)
--		printk(" %2.2x", dev->dev_addr[i]);
-+		pr_cont(" %2.2x", dev->dev_addr[i]);
- 
- 	if (((chip_version + 1) & 0xfffe) ==
- 	    0x2624) { /* Version 0x2623 or 0x2624 */
- 		i = a->read_csr(ioaddr, 80) & 0x0C00; /* Check tx_start_pt */
--		printk("\n" KERN_INFO "    tx_start_pt(0x%04x):", i);
-+		pr_info("    tx_start_pt(0x%04x):", i);
- 		switch (i >> 10) {
- 		case 0:
--			printk("  20 bytes,");
-+			pr_cont("  20 bytes,");
- 			break;
- 		case 1:
--			printk("  64 bytes,");
-+			pr_cont("  64 bytes,");
- 			break;
- 		case 2:
--			printk(" 128 bytes,");
-+			pr_cont(" 128 bytes,");
- 			break;
- 		case 3:
--			printk("~220 bytes,");
-+			pr_cont("~220 bytes,");
- 			break;
- 		}
- 		i = a->read_bcr(ioaddr, 18); /* Check Burst/Bus control */
--		printk(" BCR18(%x):", i & 0xffff);
-+		pr_cont(" BCR18(%x):", i & 0xffff);
- 		if (i & (1 << 5))
--			printk("BurstWrEn ");
-+			pr_cont("BurstWrEn ");
- 		if (i & (1 << 6))
--			printk("BurstRdEn ");
-+			pr_cont("BurstRdEn ");
- 		if (i & (1 << 7))
--			printk("DWordIO ");
-+			pr_cont("DWordIO ");
- 		if (i & (1 << 11))
--			printk("NoUFlow ");
-+			pr_cont("NoUFlow ");
- 		i = a->read_bcr(ioaddr, 25);
--		printk("\n" KERN_INFO "    SRAMSIZE=0x%04x,", i << 8);
-+		pr_info("    SRAMSIZE=0x%04x,", i << 8);
- 		i = a->read_bcr(ioaddr, 26);
--		printk(" SRAM_BND=0x%04x,", i << 8);
-+		pr_cont(" SRAM_BND=0x%04x,", i << 8);
- 		i = a->read_bcr(ioaddr, 27);
- 		if (i & (1 << 14))
--			printk("LowLatRx");
-+			pr_cont("LowLatRx");
- 	}
- 
- 	dev->base_addr = ioaddr;
-@@ -785,7 +783,7 @@ static int pcnet32_probe1(unsigned long ioaddr, unsigned int irq_line,
- 		lp->options |= PCNET32_PORT_FD;
- 
- 	if (!a) {
--		printk(KERN_ERR PFX "No access methods\n");
-+		pr_err("No access methods\n");
- 		dma_free_coherent(&lp->pci_dev->dev, sizeof(*lp), lp,
- 				  lp->dma_addr);
- 		release_region(ioaddr, PCNET32_TOTAL_SIZE);
-@@ -827,7 +825,7 @@ static int pcnet32_probe1(unsigned long ioaddr, unsigned int irq_line,
- 	}
- 
- 	if (dev->irq >= 2)
--		printk(" assigned IRQ %d.\n", dev->irq);
-+		pr_info("assigned IRQ %d.\n", dev->irq);
- 	else {
- 		unsigned long irq_mask = probe_irq_on();
- 
-@@ -842,9 +840,9 @@ static int pcnet32_probe1(unsigned long ioaddr, unsigned int irq_line,
- 
- 		dev->irq = probe_irq_off(irq_mask);
- 		if (dev->irq)
--			printk(", probed IRQ %d.\n", dev->irq);
-+			pr_info("probed IRQ %d.\n", dev->irq);
- 		else {
--			printk(", failed to detect IRQ line.\n");
-+			pr_info("failed to detect IRQ line.\n");
- 			dma_free_coherent(&lp->pci_dev->dev, sizeof(*lp), lp,
- 					  lp->dma_addr);
- 			release_region(ioaddr, PCNET32_TOTAL_SIZE);
-@@ -878,7 +876,7 @@ static int pcnet32_probe1(unsigned long ioaddr, unsigned int irq_line,
- 	}
- 	/*** RTnet ***/
- 
--	printk(KERN_INFO "%s: registered as %s\n", dev->name, lp->name);
-+	pr_info("%s: registered as %s\n", dev->name, lp->name);
- 	return 0;
- }
- 
-@@ -912,7 +910,7 @@ static int pcnet32_open(struct rtnet_device *dev) /*** RTnet ***/
- 	lp->a.write_bcr(ioaddr, 20, 2);
- 
- 	if (pcnet32_debug > 1)
--		printk(KERN_DEBUG
-+		pr_debug(
- 		       "%s: pcnet32_open() irq %d tx/rx rings %#x/%#x init %#x.\n",
- 		       dev->name, dev->irq,
- 		       (u32)(lp->dma_addr +
-@@ -1017,7 +1015,7 @@ static int pcnet32_open(struct rtnet_device *dev) /*** RTnet ***/
- 	lp->a.write_csr(ioaddr, 0, 0x0042);
- 
- 	if (pcnet32_debug > 2)
--		printk(KERN_DEBUG
-+		pr_debug(
- 		       "%s: pcnet32 open after %d ticks, init block %#x csr0 %4.4x.\n",
- 		       dev->name, i,
- 		       (u32)(lp->dma_addr +
-@@ -1076,7 +1074,7 @@ static int pcnet32_init_ring(struct rtnet_device *dev) /*** RTnet ***/
- 					      dev,
- 					      PKT_BUF_SZ))) { /*** RTnet ***/
- 				/* there is not much, we can do at this point */
--				printk(KERN_ERR
-+				pr_err(
- 				       "%s: pcnet32_init_ring rtnetdev_alloc_rtskb failed.\n",
- 				       dev->name);
- 				return -1;
-@@ -1122,9 +1120,8 @@ static int pcnet32_start_xmit(struct rtskb *skb,
- 	rtdm_lockctx_t context;
- 
- 	if (pcnet32_debug > 3) {
--		rtdm_printk(KERN_DEBUG
--			    "%s: pcnet32_start_xmit() called, csr0 %4.4x.\n",
--			    dev->name, lp->a.read_csr(ioaddr, 0));
-+		pr_debug("%s: pcnet32_start_xmit() called, csr0 %4.4x.\n",
-+			 dev->name, lp->a.read_csr(ioaddr, 0));
- 	}
- 
- 	/*** RTnet ***/
-@@ -1207,12 +1204,12 @@ static int pcnet32_interrupt(rtdm_irq_t *irq_handle) /*** RTnet ***/
- 	int ret = RTDM_IRQ_NONE;
- 
- 	/*** RTnet ***
--    if (!dev) {
--	rtdm_printk (KERN_DEBUG "%s(): irq %d for unknown device\n",
-+	if (!dev) {
-+		pr_debug("%s(): irq %d for unknown device\n",
- 		__FUNCTION__, irq);
- 	return;
--    }
-- *** RTnet ***/
-+	}
-+	*** RTnet ***/
- 
- 	ioaddr = dev->base_addr;
- 	lp = dev->priv;
-@@ -1230,10 +1227,8 @@ static int pcnet32_interrupt(rtdm_irq_t *irq_handle) /*** RTnet ***/
- 		must_restart = 0;
- 
- 		if (pcnet32_debug > 5)
--			rtdm_printk(
--				KERN_DEBUG
--				"%s: interrupt  csr0=%#2.2x new csr=%#2.2x.\n",
--				dev->name, csr0, lp->a.read_csr(ioaddr, 0));
-+			pr_debug("%s: interrupt  csr0=%#2.2x new csr=%#2.2x.\n",
-+				 dev->name, csr0, lp->a.read_csr(ioaddr, 0));
- 
- 		if (csr0 & 0x0400) /* Rx interrupt */
- 			pcnet32_rx(dev, &time_stamp);
-@@ -1267,10 +1262,8 @@ static int pcnet32_interrupt(rtdm_irq_t *irq_handle) /*** RTnet ***/
- 						lp->stats.tx_fifo_errors++;
- 						/* Ackk!  On FIFO errors the Tx unit is turned off! */
- 						/* Remove this verbosity later! */
--						rtdm_printk(
--							KERN_ERR
--							"%s: Tx FIFO error! CSR0=%4.4x\n",
--							dev->name, csr0);
-+						pr_err("%s: Tx FIFO error! CSR0=%4.4x\n",
-+						       dev->name, csr0);
- 						must_restart = 1;
- 					}
+-
+ #ifdef RTL8169_DEBUG
+-	#define assert(expr) \
+-		if(!(expr)) { pr_err("Assertion failed! %s,%s,%s,line=%d\n", #expr,__FILE__,__FUNCTION__,__LINE__); }
++#define assert(expr)                                                          \
++	do {                                                                  \
++		if (!(expr))                                                  \
++			pr_err("Assertion failed! %s,%s,%s,line=%d\n", #expr, \
++			       __FILE__, __FUNCTION__, __LINE__);             \
++	} while (0)
  #else
-@@ -1279,11 +1272,8 @@ static int pcnet32_interrupt(rtdm_irq_t *irq_handle) /*** RTnet ***/
- 						if (!lp->dxsuflo) { /* If controller doesn't recover ... */
- 							/* Ackk!  On FIFO errors the Tx unit is turned off! */
- 							/* Remove this verbosity later! */
--							rtdm_printk(
--								KERN_ERR
--								"%s: Tx FIFO error! CSR0=%4.4x\n",
--								dev->name,
--								csr0);
-+							pr_err("%s: Tx FIFO error! CSR0=%4.4x\n",
-+							       dev->name, csr0);
- 							must_restart = 1;
- 						}
- 					}
-@@ -1310,11 +1300,9 @@ static int pcnet32_interrupt(rtdm_irq_t *irq_handle) /*** RTnet ***/
- 			}
+-	#define assert(expr) do {} while (0)
+-#endif	// end of #ifdef RTL8169_DEBUG
++#define assert(expr) \
++	do {         \
++	} while (0)
++#endif /* ! RTL8169_DEBUG */
  
- 			if (lp->cur_tx - dirty_tx >= TX_RING_SIZE) {
--				rtdm_printk(
--					KERN_ERR
--					"%s: out-of-sync dirty pointer, %d vs. %d, full=%d.\n",
--					dev->name, dirty_tx, lp->cur_tx,
--					lp->tx_full);
-+				pr_err("%s: out-of-sync dirty pointer, %d vs. %d, full=%d.\n",
-+				       dev->name, dirty_tx, lp->cur_tx,
-+				       lp->tx_full);
- 				dirty_tx += TX_RING_SIZE;
- 			}
- 
-@@ -1345,10 +1333,8 @@ static int pcnet32_interrupt(rtdm_irq_t *irq_handle) /*** RTnet ***/
- 			lp->stats.rx_errors++; /* Missed a Rx frame. */
- 		}
- 		if (csr0 & 0x0800) {
--			rtdm_printk(
--				KERN_ERR
--				"%s: Bus master arbitration failure, status %4.4x.\n",
--				dev->name, csr0);
-+			pr_err("%s: Bus master arbitration failure, status %4.4x.\n",
-+			       dev->name, csr0);
- 			/* unlike for the lance, there is no restart needed */
- 		}
- 
-@@ -1361,8 +1347,8 @@ static int pcnet32_interrupt(rtdm_irq_t *irq_handle) /*** RTnet ***/
- 	lp->a.write_rap(ioaddr, rap);
- 
- 	if (pcnet32_debug > 4)
--		rtdm_printk(KERN_DEBUG "%s: exiting interrupt, csr0=%#4.4x.\n",
--			    dev->name, lp->a.read_csr(ioaddr, 0));
-+		pr_debug("%s: exiting interrupt, csr0=%#4.4x.\n", dev->name,
-+			 lp->a.read_csr(ioaddr, 0));
- 
- 	/*** RTnet ***/
- 	rtdm_lock_put(&lp->lock);
-@@ -1412,8 +1398,7 @@ static int pcnet32_rx(struct rtnet_device *dev,
- 			struct rtskb *skb; /*** RTnet ***/
- 
- 			if (pkt_len < 60) {
--				rtdm_printk(KERN_ERR "%s: Runt packet!\n",
--					    dev->name);
-+				pr_err("%s: Runt packet!\n", dev->name);
- 				lp->stats.rx_errors++;
- 			} else {
- 				/*** RTnet ***/
-@@ -1452,10 +1437,8 @@ static int pcnet32_rx(struct rtnet_device *dev,
- 
- 				if (skb == NULL) {
- 					int i;
--					rtdm_printk(
--						KERN_ERR
--						"%s: Memory squeeze, deferring packet.\n",
--						dev->name);
-+					pr_err("%s: Memory squeeze, deferring packet.\n",
-+					       dev->name);
- 					for (i = 0; i < RX_RING_SIZE; i++)
- 						if ((short)le16_to_cpu(
- 							    lp->rx_ring[(entry +
-@@ -1506,9 +1489,8 @@ static int pcnet32_close(struct rtnet_device *dev) /*** RTnet ***/
- 	lp->stats.rx_missed_errors = lp->a.read_csr(ioaddr, 112);
- 
- 	if (pcnet32_debug > 1)
--		printk(KERN_DEBUG
--		       "%s: Shutting down ethercard, status was %2.2x.\n",
--		       dev->name, lp->a.read_csr(ioaddr, 0));
-+		pr_debug("%s: Shutting down ethercard, status was %2.2x.\n",
-+			 dev->name, lp->a.read_csr(ioaddr, 0));
- 
- 	/* We stop the PCNET32 here -- it occasionally polls memory if we don't. */
- 	lp->a.write_csr(ioaddr, 0, 0x0004);
-@@ -1606,7 +1588,7 @@ MODULE_LICENSE("GPL");
- 
- static int __init pcnet32_init_module(void)
- {
--	printk(KERN_INFO "%s", version);
-+	pr_info("%s", version);
- 
- 	if (local_debug > 0)
- 		pcnet32_debug = local_debug;
-@@ -1623,7 +1605,7 @@ static int __init pcnet32_init_module(void)
- 		pcnet32_probe_vlbus();
- 
- 	if (cards_found)
--		printk(KERN_INFO PFX "%d cards_found.\n", cards_found);
-+		pr_info("%d cards_found.\n", cards_found);
- 
- 	return (pcnet32_have_pci + cards_found) ? 0 : -ENODEV;
- }
+ /* media options */
+ #define MAX_UNITS 8
 
 -- 
 2.39.2
