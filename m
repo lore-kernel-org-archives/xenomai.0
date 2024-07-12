@@ -1,35 +1,35 @@
-Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9059515B0FE
-	for <xenomai@lists.linux.dev>; Fri, 12 Jul 2024 10:49:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.228
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 496FE15B984
+	for <xenomai@lists.linux.dev>; Fri, 12 Jul 2024 10:49:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720781345; cv=none; b=IAuZDmxEdPH5+LnoXXzj05lPyEigICPfZM3MZy7oGxAhN8+UC+wdur2+H+f82O7lX7fH9qPxp6xyHXPNBJa/Udctexco+p1bELurUH8xdTssx+Tm6+zwJy3ucKQmel404hB1w6wNpTc01e2lQk1TbkL7AdlQbTqT9KascPCprNg=
+	t=1720781347; cv=none; b=sf685lZh8QRXp3dkx0d/zmsBZvC/lIb1lS5Ud45vB+LNhYqvS4eZYOWWh/8ANVHaJeyj9rnVmGN8zuQQUbSq88vt4/Xmphuhibk4KpjGOb1rpnxC+KJxOxXV+w+aF6OGFfGM5QkRds1ers/PHD9ywPDIt6lM9rhqDUfnmr9mXDE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720781345; c=relaxed/simple;
-	bh=yWapngkO55nVqlzw8lddkEaPM22U+EWaxlzGRdxWbxk=;
+	s=arc-20240116; t=1720781347; c=relaxed/simple;
+	bh=57AF/VJhJtARibmId2yEvgE1si4gvh5c3x91s1TWIVQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=HVj+EScyJFWZnFSKQX19uonY0Zp/fCKLOKhZ09YSddx1c/UnDeMigR0u8CoXl3fNXQM6w2C/WscUwpmz6/VmO96fCpmohDmYpBYRVDF4oGP20V5x9Ua4gzTBTyzFTRZB4SVxHeIvR3s4gxIkYrrnL6JtvEA76H86dxMIGnS+2eg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=gIjPiiq3; arc=none smtp.client-ip=185.136.65.228
+	 In-Reply-To:To:Cc; b=XNAT90im3eaqRpzCm0yNRhM3z6igCj4i0Ba6iHShGocQRbNE7gdbSTwdqWDyfqirkRx0r2XmQZsM72JMXG6Xt5pYv48F1fYV4OmGEZjuSAPlWdOwC2zPFFZQT8caBKuefbaHnh30regA1Mt2jCJFKeS+upprGygtDEfSuKdJTLc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=kg7He0d3; arc=none smtp.client-ip=185.136.64.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="gIjPiiq3"
-Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 20240712104900dde7a7c027a0da88da
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="kg7He0d3"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202407121048554ea580d555efcf688a
         for <xenomai@lists.linux.dev>;
-        Fri, 12 Jul 2024 12:49:00 +0200
+        Fri, 12 Jul 2024 12:48:56 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=r0VLJL5YDLUHA4QpJsdLOQdhddGPIH3Z0l7BzrTBbqM=;
- b=gIjPiiq3fjNiiRPvJ3FBCBgQDda/IrjsvqMqmN+tIu44LYsC3Wmh48hIi+hYBD0ta1WqLD
- YO4yFLadFGBDUJeVnIv2vU/qPyWO9SVKzFGhJto9UJzQ6pkszgPEpBKpQKw4RXZ53+9/pnxv
- b2pq8flS/N9LoRHHq6FphQaGhP4HI=;
+ bh=W8GHXYmMXTRp8HAMXmvA5bIHFLkcsVi5Lb8XPaIaLy4=;
+ b=kg7He0d37Wc6GI0XFgj1np1ouAEPmiyjNQyMsFBLHUa2ZiIg8s1x2W2AUsm1KwYOoS/cey
+ P6nXSHfhxsX3BUaBhuZwqMeuhxwyfn+3e4y9FjjChMX+eDIkoFxNhWvIq6WaqDvMTWJ76jA0
+ S9uIUIJENgY4u1Dr3D8dVGdqF1PsM=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 12 Jul 2024 12:49:15 +0200
-Subject: [PATCH v2 29/33] drivers/stack/rtmac: Migrate from rtdm_printk()
- and printk() to pr_*()
+Date: Fri, 12 Jul 2024 12:49:04 +0200
+Subject: [PATCH v2 18/33] drivers/natsemi: Migrate from rtdm_printk() and
+ printk() to pr_*()
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -38,7 +38,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240702-flo-removal-of-rtdm_printk-v2-29-facd992606c7@siemens.com>
+Message-Id: <20240702-flo-removal-of-rtdm_printk-v2-18-facd992606c7@siemens.com>
 References: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
 In-Reply-To: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
 To: xenomai@lists.linux.dev
@@ -50,352 +50,463 @@ Feedback-ID: 519:519-68982:519-21489:flowmailer
 Some (rtdm_)printk() calls were missing log level information. The
 default level (= warn) did not fit well for them.
 
-The missing log level is addressed by migrating the pr_*() API.
+The missing log level is addressed by migrating to the pr_*() API.
 
 rtdm_printk() itself is just an alias for printk(). Migrating helps to
 remove this function once all drivers were updated.
 
-The print_jobs() macro was unused. Cleaning up instead of doing the
-migration.
-
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/drivers/net/stack/include/rtmac/tdma/tdma.h  |  9 ---------
- kernel/drivers/net/stack/rtmac/nomac/nomac_module.c |  6 ++++--
- kernel/drivers/net/stack/rtmac/rtmac_disc.c         | 14 +++++++-------
- kernel/drivers/net/stack/rtmac/rtmac_module.c       |  6 ++++--
- kernel/drivers/net/stack/rtmac/rtmac_proc.c         |  4 +++-
- kernel/drivers/net/stack/rtmac/rtmac_proto.c        |  9 +++++----
- kernel/drivers/net/stack/rtmac/rtmac_vnic.c         |  4 +++-
- kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c    | 10 ++++++----
- kernel/drivers/net/stack/rtmac/tdma/tdma_module.c   |  7 ++++---
- kernel/drivers/net/stack/rtmac/tdma/tdma_proto.c    | 14 ++++++--------
- 10 files changed, 42 insertions(+), 41 deletions(-)
+ kernel/drivers/net/drivers/natsemi.c | 188 ++++++++++++++++-------------------
+ 1 file changed, 85 insertions(+), 103 deletions(-)
 
-diff --git a/kernel/drivers/net/stack/include/rtmac/tdma/tdma.h b/kernel/drivers/net/stack/include/rtmac/tdma/tdma.h
-index 9574c2dca..84cab716d 100644
---- a/kernel/drivers/net/stack/include/rtmac/tdma/tdma.h
-+++ b/kernel/drivers/net/stack/include/rtmac/tdma/tdma.h
-@@ -149,13 +149,4 @@ struct tdma_priv {
+diff --git a/kernel/drivers/net/drivers/natsemi.c b/kernel/drivers/net/drivers/natsemi.c
+index 82d1c3350..5f80e6054 100644
+--- a/kernel/drivers/net/drivers/natsemi.c
++++ b/kernel/drivers/net/drivers/natsemi.c
+@@ -141,6 +141,8 @@
+ 	Ported to RTNET: December 2003, Erik Buit <e.buit@student.utwente.nl>
+ */
  
- extern struct rtmac_disc tdma_disc;
- 
--#define print_jobs()                                                           \
--	do {                                                                   \
--		struct tdma_job *entry;                                        \
--		rtdm_printk("%s:%d - ", __FUNCTION__, __LINE__);               \
--		list_for_each_entry (entry, &tdma->first_job->entry, entry)    \
--			rtdm_printk("%d ", entry->id);                         \
--		rtdm_printk("\n");                                             \
--	} while (0)
--
- #endif /* __TDMA_H_ */
-diff --git a/kernel/drivers/net/stack/rtmac/nomac/nomac_module.c b/kernel/drivers/net/stack/rtmac/nomac/nomac_module.c
-index 1a36e3363..3bd2b0d69 100644
---- a/kernel/drivers/net/stack/rtmac/nomac/nomac_module.c
-+++ b/kernel/drivers/net/stack/rtmac/nomac/nomac_module.c
-@@ -22,6 +22,8 @@
-  *
-  */
- 
-+#define pr_fmt(fmt) "RTmac/NoMAC: " fmt
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 +
- #include <linux/init.h>
- #include <linux/module.h>
+ #if !defined(__OPTIMIZE__)
+ #warning  You must compile this file with the correct options!
+ #warning  See the last lines of the source file.
+@@ -246,7 +248,7 @@ static int full_duplex[MAX_UNITS];
  
-@@ -131,7 +133,7 @@ static int __init nomac_init(void)
- {
- 	int ret;
- 
--	printk("RTmac/NoMAC: init void media access control mechanism\n");
-+	pr_info("init void media access control mechanism\n");
- 
- 	ret = nomac_proto_init();
- 	if (ret < 0)
-@@ -151,7 +153,7 @@ static void nomac_release(void)
- 	rtmac_disc_deregister(&nomac_disc);
- 	nomac_proto_cleanup();
- 
--	printk("RTmac/NoMAC: unloaded\n");
-+	pr_info("unloaded\n");
- }
- 
- module_init(nomac_init);
-diff --git a/kernel/drivers/net/stack/rtmac/rtmac_disc.c b/kernel/drivers/net/stack/rtmac/rtmac_disc.c
-index 5806db19d..d5b0a7a63 100644
---- a/kernel/drivers/net/stack/rtmac/rtmac_disc.c
-+++ b/kernel/drivers/net/stack/rtmac/rtmac_disc.c
-@@ -22,6 +22,8 @@
-  *
-  */
- 
-+#define pr_fmt(fmt) "RTmac: " fmt
-+
- #include <linux/module.h>
- #include <linux/errno.h>
- #include <linux/slab.h>
-@@ -58,8 +60,8 @@ int rtmac_disc_attach(struct rtnet_device *rtdev, struct rtmac_disc *disc)
- 	RTNET_ASSERT(disc->attach != NULL, return -EINVAL;);
- 
- 	if (rtdev->mac_disc) {
--		printk("RTmac: another discipline for rtdev '%s' active.\n",
--		       rtdev->name);
-+		pr_info("another discipline for rtdev '%s' active.\n",
-+			rtdev->name);
- 		return -EBUSY;
- 	}
- 
-@@ -77,7 +79,7 @@ int rtmac_disc_attach(struct rtnet_device *rtdev, struct rtmac_disc *disc)
- 	/* alloc memory */
- 	priv = kmalloc(sizeof(struct rtmac_priv) + disc->priv_size, GFP_KERNEL);
- 	if (!priv) {
--		printk("RTmac: kmalloc returned NULL for rtmac!\n");
-+		pr_err("kmalloc returned NULL for rtmac!\n");
- 		return -ENOMEM;
- 	}
- 	priv->orig_start_xmit = rtdev->start_xmit;
-@@ -98,8 +100,7 @@ int rtmac_disc_attach(struct rtnet_device *rtdev, struct rtmac_disc *disc)
- 	/* create the VNIC */
- 	ret = rtmac_vnic_add(rtdev, disc->vnic_xmit);
- 	if (ret < 0) {
--		printk("RTmac: Warning, VNIC creation failed for rtdev %s.\n",
--		       rtdev->name);
-+		pr_warn("VNIC creation failed for rtdev %s.\n", rtdev->name);
- 		goto err_disc_detach;
- 	}
- 
-@@ -205,8 +206,7 @@ int __rtmac_disc_register(struct rtmac_disc *disc, struct module *module)
- 	disc->owner = module;
- 
- 	if (rtmac_get_disc_by_name(disc->name) != NULL) {
--		printk("RTmac: discipline '%s' already registered!\n",
--		       disc->name);
-+		pr_info("discipline '%s' already registered!\n", disc->name);
- 		return -EBUSY;
- 	}
- 
-diff --git a/kernel/drivers/net/stack/rtmac/rtmac_module.c b/kernel/drivers/net/stack/rtmac/rtmac_module.c
-index 0a4e1b750..d4174dd32 100644
---- a/kernel/drivers/net/stack/rtmac/rtmac_module.c
-+++ b/kernel/drivers/net/stack/rtmac/rtmac_module.c
-@@ -19,6 +19,8 @@
-  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-  */
- 
-+#define pr_fmt(fmt) "RTmac: " fmt
-+
- #include <linux/module.h>
- #include <linux/kernel.h>
- #include <linux/init.h>
-@@ -34,7 +36,7 @@ static int __init rtmac_init(void)
- {
- 	int ret = 0;
- 
--	printk("RTmac: init realtime media access control\n");
-+	pr_info("init realtime media access control\n");
- 
- #ifdef CONFIG_XENO_OPT_VFILE
- 	ret = rtmac_proc_register();
-@@ -70,7 +72,7 @@ static void rtmac_release(void)
- 	rtmac_proc_release();
+ /* These identify the driver base version and may not be removed. */
+ static char version[] =
+-  KERN_INFO DRV_NAME " dp8381x driver, version "
++  DRV_NAME " dp8381x driver, version "
+       DRV_VERSION ", " DRV_RELDATE "\n"
+   KERN_INFO "  originally by Donald Becker <becker@scyld.com>\n"
+   KERN_INFO "  http://www.scyld.com/network/natsemi.html\n"
+@@ -747,7 +749,7 @@ static int natsemi_probe1 (struct pci_dev *pdev,
+ #ifndef MODULE
+ 	static int printed_version;
+ 	if (!printed_version++)
+-		rtdm_printk(version);
++		pr_info(version);
  #endif
  
--	printk("RTmac: unloaded\n");
-+	pr_info("unloaded\n");
- }
+ 	i = pci_enable_device(pdev);
+@@ -781,7 +783,7 @@ static int natsemi_probe1 (struct pci_dev *pdev,
+ 	dev = rt_alloc_etherdev(sizeof(struct netdev_private),
+ 				RX_RING_SIZE * 2 + TX_RING_SIZE);
+ 	if (dev == NULL) {
+-		rtdm_printk(KERN_ERR "init_ethernet failed for card #%d\n", find_cnt);
++		pr_err("init_ethernet failed for card #%d\n", find_cnt);
+ 		goto err_out;
+ 	}
+ 	rtdev_alloc_name(dev, "rteth%d");
+@@ -846,8 +848,7 @@ static int natsemi_probe1 (struct pci_dev *pdev,
+ 		if (option & 0x200)
+ 			np->full_duplex = 1;
+ 		if (option & 15)
+-			rtdm_printk(KERN_INFO
+-				"%s: ignoring user supplied media type %d",
++			pr_info("%s: ignoring user supplied media type %d",
+ 				dev->name, option & 15);
+ 	}
+ 	if (find_cnt < MAX_UNITS  &&  full_duplex[find_cnt])
+@@ -878,37 +879,34 @@ static int natsemi_probe1 (struct pci_dev *pdev,
+ 	rtnetif_carrier_off(dev);
  
- module_init(rtmac_init);
-diff --git a/kernel/drivers/net/stack/rtmac/rtmac_proc.c b/kernel/drivers/net/stack/rtmac/rtmac_proc.c
-index 3f0c3aa4e..300a7efbd 100644
---- a/kernel/drivers/net/stack/rtmac/rtmac_proc.c
-+++ b/kernel/drivers/net/stack/rtmac/rtmac_proc.c
-@@ -22,6 +22,8 @@
-  *
-  */
- 
-+#define pr_fmt(fmt) "RTmac: " fmt
-+
- #include <linux/module.h>
- 
- #include <rtnet_internal.h>
-@@ -118,7 +120,7 @@ err2:
- 	xnvfile_destroy_dir(&rtmac_proc_root);
- 
- err1:
--	/*ERRMSG*/ printk("RTmac: unable to initialize /proc entries\n");
-+	pr_err("unable to initialize /proc entries\n");
- 	return err;
- }
- 
-diff --git a/kernel/drivers/net/stack/rtmac/rtmac_proto.c b/kernel/drivers/net/stack/rtmac/rtmac_proto.c
-index 5d9d834a1..45c5f179a 100644
---- a/kernel/drivers/net/stack/rtmac/rtmac_proto.c
-+++ b/kernel/drivers/net/stack/rtmac/rtmac_proto.c
-@@ -22,6 +22,8 @@
-  *
-  */
- 
-+#define pr_fmt(fmt) "RTmac: " fmt
-+
- #include <rtdm/driver.h>
- #include <stack_mgr.h>
- #include <rtmac/rtmac_disc.h>
-@@ -41,10 +43,9 @@ static int rtmac_proto_rx(struct rtskb *skb, struct rtpacket_type *pt)
- 	rtskb_pull(skb, sizeof(struct rtmac_hdr));
- 
- 	if (hdr->ver != RTMAC_VERSION) {
--		rtdm_printk(
--			"RTmac: received unsupported RTmac protocol version on "
--			"device %s.  Got 0x%x but expected 0x%x\n",
--			skb->rtdev->name, hdr->ver, RTMAC_VERSION);
-+		pr_err("received unsupported RTmac protocol version on "
-+		       "device %s.  Got 0x%x but expected 0x%x\n",
-+		       skb->rtdev->name, hdr->ver, RTMAC_VERSION);
- 		goto error;
+ 	if (netif_msg_drv(np)) {
+-		rtdm_printk(KERN_INFO "%s: %s at %#08lx, ",
+-			dev->name, natsemi_pci_info[chip_idx].name, ioaddr);
+-		for (i = 0; i < ETH_ALEN-1; i++)
+-				rtdm_printk("%02x:", dev->dev_addr[i]);
+-		rtdm_printk("%02x, IRQ %d.\n", dev->dev_addr[i], irq);
++		pr_info("%s: %s at %#08lx, %02x:%02x:%02x:%02x:%02x:%02x, IRQ %d.\n",
++			dev->name, natsemi_pci_info[chip_idx].name, ioaddr,
++			dev->dev_addr[0], dev->dev_addr[1], dev->dev_addr[2],
++			dev->dev_addr[3], dev->dev_addr[4], dev->dev_addr[5],
++			irq);
  	}
  
-diff --git a/kernel/drivers/net/stack/rtmac/rtmac_vnic.c b/kernel/drivers/net/stack/rtmac/rtmac_vnic.c
-index 4b41785db..b4464f21b 100644
---- a/kernel/drivers/net/stack/rtmac/rtmac_vnic.c
-+++ b/kernel/drivers/net/stack/rtmac/rtmac_vnic.c
-@@ -19,6 +19,8 @@
-  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-  */
- 
-+#define pr_fmt(fmt) "RTmac: " fmt
-+
- #include <linux/moduleparam.h>
- #include <linux/netdevice.h>
- #include <linux/etherdevice.h>
-@@ -106,7 +108,7 @@ static void rtmac_vnic_signal_handler(rtdm_nrtsig_t *nrtsig, void *arg)
- 
- 			netif_rx(skb);
- 		} else {
--			printk("RTmac: VNIC fails to allocate linux skb\n");
-+			pr_err("VNIC fails to allocate linux skb\n");
- 			kfree_rtskb(rtskb);
- 		}
+ 	np->advertising = mdio_read(dev, 1, MII_ADVERTISE);
+ 	if ((readl((void *)(ioaddr + ChipConfig)) & 0xe000) != 0xe000
+ 	 && netif_msg_probe(np)) {
+ 		u32 chip_config = readl((void *)(ioaddr + ChipConfig));
+-		rtdm_printk(KERN_INFO "%s: Transceiver default autonegotiation %s "
++		pr_info("%s: Transceiver default autonegotiation %s "
+ 			"10%s %s duplex.\n",
+ 			dev->name,
+-			chip_config & CfgAnegEnable ?
+-			  "enabled, advertise" : "disabled, force",
++			chip_config & CfgAnegEnable ? "enabled, advertise" :
++						      "disabled, force",
+ 			chip_config & CfgAneg100 ? "0" : "",
+ 			chip_config & CfgAnegFull ? "full" : "half");
  	}
-diff --git a/kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c b/kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c
-index 02230064d..9805305b9 100644
---- a/kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c
-+++ b/kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c
-@@ -22,6 +22,8 @@
-  *
-  */
+ 	if (netif_msg_probe(np))
+-		rtdm_printk(KERN_INFO
+-			"%s: Transceiver status %#04x advertising %#04x.\n",
++		pr_info("%s: Transceiver status %#04x advertising %#04x.\n",
+ 			dev->name, mdio_read(dev, 1, MII_BMSR),
+ 			np->advertising);
  
-+#define pr_fmt(fmt) "TDMA: " fmt
-+
- #include <linux/module.h>
- #include <linux/delay.h>
- #include <linux/uaccess.h>
-@@ -108,7 +110,7 @@ static int tdma_ioctl_master(struct rtnet_device *rtdev,
- 		tdma->sync_job.id = WAIT_ON_SYNC;
- 	} else {
- 		if (test_bit(TDMA_FLAG_BACKUP_MASTER, &tdma->flags))
--			printk("TDMA: warning, no primary master detected!\n");
-+			pr_warn("no primary master detected!\n");
- 		set_bit(TDMA_FLAG_CALIBRATED, &tdma->flags);
- 		tdma->current_cycle_start = rtdm_clock_read();
- 	}
-@@ -255,9 +257,9 @@ static void copyback_calibration(struct rt_proc_call *call, void *priv_data)
- 	do_div(min, 1000);
- 	max += 500;
- 	do_div(max, 1000);
--	printk("TDMA: calibrated master-to-slave packet delay: "
--	       "%ld us (min/max: %ld/%ld us)\n",
--	       (unsigned long)average, (unsigned long)min, (unsigned long)max);
-+	pr_info("calibrated master-to-slave packet delay: "
-+		"%ld us (min/max: %ld/%ld us)\n",
-+		(unsigned long)average, (unsigned long)min, (unsigned long)max);
- }
+ 	/* save the silicon revision for later querying */
+ 	np->srr = readl((void *)(ioaddr + SiliconRev));
+ 	if (netif_msg_hw(np))
+-		rtdm_printk(KERN_INFO "%s: silicon revision %#04x.\n",
+-				dev->name, np->srr);
+-
++		pr_info("%s: silicon revision %#04x.\n", dev->name, np->srr);
  
- static void cleanup_calibration(void *priv_data)
-diff --git a/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c b/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c
-index 2269fa2d9..77ad1200b 100644
---- a/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c
-+++ b/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c
-@@ -22,6 +22,8 @@
-  *
-  */
- 
-+#define pr_fmt(fmt) "RTmac/TDMA: " fmt
-+
- #include <asm/div64.h>
- #include <linux/delay.h>
- #include <linux/init.h>
-@@ -293,8 +295,7 @@ static int __init tdma_init(void)
- {
- 	int ret;
- 
--	printk("RTmac/TDMA: init time division multiple access control "
--	       "mechanism\n");
-+	pr_info("init time division multiple access control mechanism\n");
- 
- 	ret = rtmac_disc_register(&tdma_disc);
- 	if (ret < 0)
-@@ -307,7 +308,7 @@ static void tdma_release(void)
- {
- 	rtmac_disc_deregister(&tdma_disc);
- 
--	printk("RTmac/TDMA: unloaded\n");
-+	pr_info("unloaded\n");
- }
- 
- module_init(tdma_init);
-diff --git a/kernel/drivers/net/stack/rtmac/tdma/tdma_proto.c b/kernel/drivers/net/stack/rtmac/tdma/tdma_proto.c
-index b371c6398..408f92e3a 100644
---- a/kernel/drivers/net/stack/rtmac/tdma/tdma_proto.c
-+++ b/kernel/drivers/net/stack/rtmac/tdma/tdma_proto.c
-@@ -22,6 +22,8 @@
-  *
-  */
- 
-+#define pr_fmt(fmt) "TDMA: " fmt
-+
- #include <linux/init.h>
- #include "asm/div64.h"
- 
-@@ -72,7 +74,7 @@ void tdma_xmit_sync_frame(struct tdma_priv *tdma)
- 	return;
- 
- err_out:
--	/*ERROR*/ rtdm_printk("TDMA: Failed to transmit sync frame!\n");
-+	pr_err("Failed to transmit sync frame!\n");
- 	return;
- }
- 
-@@ -120,8 +122,7 @@ int tdma_xmit_request_cal_frame(struct tdma_priv *tdma, u32 reply_cycle,
  	return 0;
  
- err_out:
--	/*ERROR*/ rtdm_printk("TDMA: Failed to transmit request calibration "
--			      "frame!\n");
-+	pr_err("Failed to transmit request calibration frame!\n");
- 	return ret;
- }
- 
-@@ -262,9 +263,7 @@ int tdma_packet_rx(struct rtskb *rtskb)
- 				sizeof(struct tdma_frm_rpl_cal) + 15,
- 			&tdma->cal_rtskb_pool);
- 		if (unlikely(!reply_rtskb)) {
--			/*ERROR*/ rtdm_printk(
--				"TDMA: Too many calibration requests "
--				"pending!\n");
-+			pr_err("Too many calibration requests pending!\n");
- 			break;
- 		}
- 
-@@ -370,8 +369,7 @@ int tdma_packet_rx(struct rtskb *rtskb)
- 		break;
- 
- 	default:
--		/*ERROR*/ rtdm_printk("TDMA: Unknown frame %d!\n",
--				      ntohs(head->id));
-+		pr_err("Unknown frame %d!\n", ntohs(head->id));
+@@ -1055,11 +1053,10 @@ static void natsemi_reset(struct rtnet_device *dev)
+ 		udelay(5);
+ 	}
+ 	if (i==NATSEMI_HW_TIMEOUT) {
+-		rtdm_printk(KERN_WARNING "%s: reset did not complete in %d usec.\n",
+-			dev->name, i*5);
++		pr_warn("%s: reset did not complete in %d usec.\n", dev->name,
++			i * 5);
+ 	} else if (netif_msg_hw(np)) {
+-		rtdm_printk(KERN_DEBUG "%s: reset completed in %d usec.\n",
+-			dev->name, i*5);
++		pr_debug("%s: reset completed in %d usec.\n", dev->name, i * 5);
  	}
  
- kfree_out:
+ 	/* restore CFG */
+@@ -1095,11 +1092,11 @@ static void natsemi_reload_eeprom(struct rtnet_device *dev)
+ 			break;
+ 	}
+ 	if (i==NATSEMI_HW_TIMEOUT) {
+-		rtdm_printk(KERN_WARNING "%s: EEPROM did not reload in %d usec.\n",
+-			dev->name, i*50);
++		pr_warn("%s: EEPROM did not reload in %d usec.\n", dev->name,
++			i * 50);
+ 	} else if (netif_msg_hw(np)) {
+-		rtdm_printk(KERN_DEBUG "%s: EEPROM reloaded in %d usec.\n",
+-			dev->name, i*50);
++		pr_debug("%s: EEPROM reloaded in %d usec.\n", dev->name,
++			 i * 50);
+ 	}
+ }
+ 
+@@ -1116,11 +1113,11 @@ static void natsemi_stop_rxtx(struct rtnet_device *dev)
+ 		udelay(5);
+ 	}
+ 	if (i==NATSEMI_HW_TIMEOUT) {
+-		rtdm_printk(KERN_WARNING "%s: Tx/Rx process did not stop in %d usec.\n",
+-			dev->name, i*5);
++		pr_warn("%s: Tx/Rx process did not stop in %d usec.\n",
++			dev->name, i * 5);
+ 	} else if (netif_msg_hw(np)) {
+-		rtdm_printk(KERN_DEBUG "%s: Tx/Rx process stopped in %d usec.\n",
+-			dev->name, i*5);
++		pr_debug("%s: Tx/Rx process stopped in %d usec.\n", dev->name,
++			 i * 5);
+ 	}
+ }
+ 
+@@ -1144,8 +1141,7 @@ static int netdev_open(struct rtnet_device *dev)
+ 	}
+ 
+ 	if (netif_msg_ifup(np))
+-		rtdm_printk(KERN_DEBUG "%s: netdev_open() irq %d.\n",
+-			dev->name, dev->irq);
++		pr_debug("%s: netdev_open() irq %d.\n", dev->name, dev->irq);
+ 	i = alloc_ring(dev);
+ 	if (i < 0) {
+ 		rtdm_irq_free(&np->irq_handle);
+@@ -1165,10 +1161,10 @@ static int netdev_open(struct rtnet_device *dev)
+ 	rtnetif_start_queue(dev); /*** RTnet ***/
+ 
+ 	if (netif_msg_ifup(np))
+-		rtdm_printk(KERN_DEBUG "%s: Done netdev_open(), status: %#08x.\n",
+-			dev->name, (int)readl((void *)(ioaddr + ChipCmd)));
++		pr_debug("%s: Done netdev_open(), status: %#08x.\n", dev->name,
++			 (int)readl((void *)(ioaddr + ChipCmd)));
+ 
+-/*** RTnet ***/
++	/*** RTnet ***/
+ 	/* Set the timer to check for link beat. */
+ /*** RTnet ***/
+ 
+@@ -1241,8 +1237,7 @@ static void check_link(struct rtnet_device *dev)
+ 	if (!(chipcfg & CfgLink)) {
+ 		if (rtnetif_carrier_ok(dev)) {
+ 			if (netif_msg_link(np))
+-				rtdm_printk(KERN_NOTICE "%s: link down.\n",
+-					dev->name);
++				pr_notice("%s: link down.\n", dev->name);
+ 			rtnetif_carrier_off(dev);
+ 			undo_cable_magic(dev);
+ 		}
+@@ -1250,7 +1245,7 @@ static void check_link(struct rtnet_device *dev)
+ 	}
+ 	if (!rtnetif_carrier_ok(dev)) {
+ 		if (netif_msg_link(np))
+-			rtdm_printk(KERN_NOTICE "%s: link up.\n", dev->name);
++			pr_notice("%s: link up.\n", dev->name);
+ 		rtnetif_carrier_on(dev);
+ 		do_cable_magic(dev);
+ 	}
+@@ -1260,10 +1255,9 @@ static void check_link(struct rtnet_device *dev)
+ 	/* if duplex is set then bit 28 must be set, too */
+ 	if (duplex ^ !!(np->rx_config & RxAcceptTx)) {
+ 		if (netif_msg_link(np))
+-			rtdm_printk(KERN_INFO
+-				"%s: Setting %s-duplex based on negotiated "
+-				"link capability.\n", dev->name,
+-				duplex ? "full" : "half");
++			pr_info("%s: Setting %s-duplex based on negotiated "
++				"link capability.\n",
++				dev->name, duplex ? "full" : "half");
+ 		if (duplex) {
+ 			np->rx_config |= RxAcceptTx;
+ 			np->tx_config |= TxCarrierIgn | TxHeartIgn;
+@@ -1288,9 +1282,8 @@ static void init_registers(struct rtnet_device *dev)
+ 		udelay(10);
+ 	}
+ 	if (i==NATSEMI_HW_TIMEOUT && netif_msg_link(np)) {
+-		rtdm_printk(KERN_INFO
+-			"%s: autonegotiation did not complete in %d usec.\n",
+-			dev->name, i*10);
++		pr_info("%s: autonegotiation did not complete in %d usec.\n",
++			dev->name, i * 10);
+ 	}
+ 
+ 	/* On page 78 of the spec, they recommend some settings for "optimum
+@@ -1354,8 +1347,8 @@ static void init_registers(struct rtnet_device *dev)
+ 	np->SavedClkRun = readl((void *)(ioaddr + ClkRun));
+ 	writel(np->SavedClkRun & ~PMEEnable, (void *)(ioaddr + ClkRun));
+ 	if (np->SavedClkRun & PMEStatus && netif_msg_wol(np)) {
+-		rtdm_printk(KERN_NOTICE "%s: Wake-up event %#08x\n",
+-			dev->name, readl((void *)(ioaddr + WOLCmd)));
++		pr_notice("%s: Wake-up event %#08x\n", dev->name,
++			  readl((void *)(ioaddr + WOLCmd)));
+ 	}
+ 
+ 	check_link(dev);
+@@ -1390,19 +1383,19 @@ static void dump_ring(struct rtnet_device *dev)
+ 
+ 	if (netif_msg_pktdata(np)) {
+ 		int i;
+-		rtdm_printk(KERN_DEBUG "  Tx ring at %p:\n", np->tx_ring);
++		pr_debug("  Tx ring at %p:\n", np->tx_ring);
+ 		for (i = 0; i < TX_RING_SIZE; i++) {
+-			rtdm_printk(KERN_DEBUG " #%d desc. %#08x %#08x %#08x.\n",
+-				i, np->tx_ring[i].next_desc,
+-				np->tx_ring[i].cmd_status,
+-				np->tx_ring[i].addr);
++			pr_debug(" #%d desc. %#08x %#08x %#08x.\n", i,
++				 np->tx_ring[i].next_desc,
++				 np->tx_ring[i].cmd_status,
++				 np->tx_ring[i].addr);
+ 		}
+-		rtdm_printk(KERN_DEBUG "  Rx ring %p:\n", np->rx_ring);
++		pr_debug("  Rx ring %p:\n", np->rx_ring);
+ 		for (i = 0; i < RX_RING_SIZE; i++) {
+-			rtdm_printk(KERN_DEBUG " #%d desc. %#08x %#08x %#08x.\n",
+-				i, np->rx_ring[i].next_desc,
+-				np->rx_ring[i].cmd_status,
+-				np->rx_ring[i].addr);
++			pr_debug(" #%d desc. %#08x %#08x %#08x.\n", i,
++				 np->rx_ring[i].next_desc,
++				 np->rx_ring[i].cmd_status,
++				 np->rx_ring[i].addr);
+ 		}
+ 	}
+ }
+@@ -1443,7 +1436,7 @@ static void refill_rx(struct rtnet_device *dev)
+ 	}
+ 	if (np->cur_rx - np->dirty_rx == RX_RING_SIZE) {
+ 		if (netif_msg_rx_err(np))
+-			rtdm_printk(KERN_WARNING "%s: going OOM.\n", dev->name);
++			pr_warn("%s: going OOM.\n", dev->name);
+ 		np->oom = 1;
+ 	}
+ }
+@@ -1586,8 +1579,8 @@ static int start_tx(struct rtskb *skb, struct rtnet_device *dev) /*** RTnet ***/
+ /*	dev->trans_start = jiffies;*/
+ 
+ 	if (netif_msg_tx_queued(np)) {
+-		rtdm_printk(KERN_DEBUG "%s: Transmit frame #%d queued in slot %d.\n",
+-			dev->name, np->cur_tx, entry);
++		pr_debug("%s: Transmit frame #%d queued in slot %d.\n",
++			 dev->name, np->cur_tx, entry);
+ 	}
+ 	return 0;
+ }
+@@ -1601,10 +1594,9 @@ static void netdev_tx_done(struct rtnet_device *dev)
+ 		if (np->tx_ring[entry].cmd_status & cpu_to_le32(DescOwn))
+ 			break;
+ 		if (netif_msg_tx_done(np))
+-			rtdm_printk(KERN_DEBUG
+-				"%s: tx frame #%d finished, status %#08x.\n",
+-					dev->name, np->dirty_tx,
+-					le32_to_cpu(np->tx_ring[entry].cmd_status));
++			pr_debug("%s: tx frame #%d finished, status %#08x.\n",
++				 dev->name, np->dirty_tx,
++				 le32_to_cpu(np->tx_ring[entry].cmd_status));
+ 		if (np->tx_ring[entry].cmd_status & cpu_to_le32(DescPktOK)) {
+ 			np->stats.tx_packets++;
+ 			np->stats.tx_bytes += np->tx_skbuff[entry]->len;
+@@ -1656,10 +1648,9 @@ static int intr_handler(rtdm_irq_t *irq_handle)
+ 		u32 intr_status = readl((void *)(ioaddr + IntrStatus));
+ 
+ 		if (netif_msg_intr(np))
+-			rtdm_printk(KERN_DEBUG
+-				"%s: Interrupt, status %#08x, mask %#08x.\n",
+-				dev->name, intr_status,
+-				readl((void *)(ioaddr + IntrMask)));
++			pr_debug("%s: Interrupt, status %#08x, mask %#08x.\n",
++				 dev->name, intr_status,
++				 readl((void *)(ioaddr + IntrMask)));
+ 
+ 		if (intr_status == 0)
+ 			break;
+@@ -1685,8 +1676,7 @@ static int intr_handler(rtdm_irq_t *irq_handle)
+ 
+ 		if (--boguscnt < 0) {
+ 			if (netif_msg_intr(np))
+-				rtdm_printk(KERN_WARNING
+-					"%s: Too much work at interrupt, "
++				pr_warn("%s: Too much work at interrupt, "
+ 					"status=%#08x.\n",
+ 					dev->name, intr_status);
+ 			break;
+@@ -1694,7 +1684,7 @@ static int intr_handler(rtdm_irq_t *irq_handle)
+ 	} while (1);
+ 
+ 	if (netif_msg_intr(np))
+-		rtdm_printk(KERN_DEBUG "%s: exiting interrupt.\n", dev->name);
++		pr_debug("%s: exiting interrupt.\n", dev->name);
+ 
+ /*** RTnet ***/
+ 	if (old_packet_cnt != np->stats.rx_packets)
+@@ -1714,20 +1704,19 @@ static void netdev_rx(struct rtnet_device *dev, nanosecs_abs_t *time_stamp)
+ 	/* If the driver owns the next entry it's a new packet. Send it up. */
+ 	while (desc_status < 0) { /* e.g. & DescOwn */
+ 		if (netif_msg_rx_status(np))
+-			rtdm_printk(KERN_DEBUG
+-				"  netdev_rx() entry %d status was %#08x.\n",
+-				entry, desc_status);
++			pr_debug("  netdev_rx() entry %d status was %#08x.\n",
++				 entry, desc_status);
+ 		if (--boguscnt < 0)
+ 			break;
+ 		if ((desc_status&(DescMore|DescPktOK|DescRxLong)) != DescPktOK){
+ 			if (desc_status & DescMore) {
+ 				if (netif_msg_rx_err(np))
+-					rtdm_printk(KERN_WARNING
+-						"%s: Oversized(?) Ethernet "
++					pr_warn("%s: Oversized(?) Ethernet "
+ 						"frame spanned multiple "
+ 						"buffers, entry %#08x "
+-						"status %#08x.\n", dev->name,
+-						np->cur_rx, desc_status);
++						"status %#08x.\n",
++						dev->name, np->cur_rx,
++						desc_status);
+ 				np->stats.rx_length_errors++;
+ 			} else {
+ 				/* There was an error. */
+@@ -1791,10 +1780,9 @@ static void netdev_error(struct rtnet_device *dev, int intr_status)
+ 		u16 lpa = mdio_read(dev, 1, MII_LPA);
+ 		if (mdio_read(dev, 1, MII_BMCR) & BMCR_ANENABLE
+ 		 && netif_msg_link(np)) {
+-			rtdm_printk(KERN_INFO
+-				"%s: Autonegotiation advertising"
+-				" %#04x  partner %#04x.\n", dev->name,
+-				adv, lpa);
++			pr_info("%s: Autonegotiation advertising"
++				" %#04x  partner %#04x.\n",
++				dev->name, adv, lpa);
+ 		}
+ 
+ 		/* read MII int status to clear the flag */
+@@ -1808,27 +1796,25 @@ static void netdev_error(struct rtnet_device *dev, int intr_status)
+ 		if ((np->tx_config & TxDrthMask) < 62)
+ 			np->tx_config += 2;
+ 		if (netif_msg_tx_err(np))
+-			rtdm_printk(KERN_NOTICE
+-				"%s: increased Tx threshold, txcfg %#08x.\n",
+-				dev->name, np->tx_config);
++			pr_notice("%s: increased Tx threshold, txcfg %#08x.\n",
++				  dev->name, np->tx_config);
+ 		writel(np->tx_config, (void *)(ioaddr + TxConfig));
+ 	}
+ 	if (intr_status & WOLPkt && netif_msg_wol(np)) {
+ 		int wol_status = readl((void *)(ioaddr + WOLCmd));
+-		rtdm_printk(KERN_NOTICE "%s: Link wake-up event %#08x\n",
+-			dev->name, wol_status);
++		pr_notice("%s: Link wake-up event %#08x\n", dev->name,
++			  wol_status);
+ 	}
+ 	if (intr_status & RxStatusFIFOOver) {
+ 		if (netif_msg_rx_err(np) && netif_msg_intr(np)) {
+-			rtdm_printk(KERN_NOTICE "%s: Rx status FIFO overrun\n",
+-				dev->name);
++			pr_notice("%s: Rx status FIFO overrun\n", dev->name);
+ 		}
+ 		np->stats.rx_fifo_errors++;
+ 	}
+ 	/* Hmmmmm, it's not clear how to recover from PCI faults. */
+ 	if (intr_status & IntrPCIErr) {
+-		rtdm_printk(KERN_NOTICE "%s: PCI error %#08x\n", dev->name,
+-			intr_status & IntrPCIErr);
++		pr_notice("%s: PCI error %#08x\n", dev->name,
++			  intr_status & IntrPCIErr);
+ 		np->stats.tx_fifo_errors++;
+ 		np->stats.rx_fifo_errors++;
+ 	}
+@@ -1869,8 +1855,7 @@ static void __set_rx_mode(struct rtnet_device *dev)
+ 
+ 	if (dev->flags & IFF_PROMISC) { /* Set promiscuous. */
+ 		/* Unconditionally log net taps. */
+-		rtdm_printk(KERN_NOTICE "%s: Promiscuous mode enabled.\n",
+-			dev->name);
++		pr_notice("%s: Promiscuous mode enabled.\n", dev->name);
+ 		rx_mode = RxFilterEnable | AcceptBroadcast
+ 			| AcceptAllMulticast | AcceptAllPhys | AcceptMyPhys;
+ 	} else if (dev->flags & IFF_ALLMULTI) {
+@@ -1910,8 +1895,7 @@ static void enable_wol_mode(struct rtnet_device *dev, int enable_intr)
+ 	struct netdev_private *np = dev->priv;
+ 
+ 	if (netif_msg_wol(np))
+-		rtdm_printk(KERN_INFO "%s: remaining active for wake-on-lan\n",
+-			dev->name);
++		pr_info("%s: remaining active for wake-on-lan\n", dev->name);
+ 
+ 	/* For WOL we must restart the rx process in silent mode.
+ 	 * Write NULL to the RxRingPtr. Only possible if
+@@ -1944,14 +1928,12 @@ static int netdev_close(struct rtnet_device *dev)
+ 	struct netdev_private *np = dev->priv;
+ 
+ 	if (netif_msg_ifdown(np))
+-		rtdm_printk(KERN_DEBUG
+-			"%s: Shutting down ethercard, status was %#04x.\n",
+-			dev->name, (int)readl((void *)(ioaddr + ChipCmd)));
++		pr_debug("%s: Shutting down ethercard, status was %#04x.\n",
++			 dev->name, (int)readl((void *)(ioaddr + ChipCmd)));
+ 	if (netif_msg_pktdata(np))
+-		rtdm_printk(KERN_DEBUG
+-			"%s: Queue pointers were Tx %d / %d,  Rx %d / %d.\n",
+-			dev->name, np->cur_tx, np->dirty_tx,
+-			np->cur_rx, np->dirty_rx);
++		pr_debug("%s: Queue pointers were Tx %d / %d,  Rx %d / %d.\n",
++			 dev->name, np->cur_tx, np->dirty_tx, np->cur_rx,
++			 np->dirty_rx);
+ 
+ 	/*
+ 	 * FIXME: what if someone tries to close a device
+@@ -2080,7 +2062,7 @@ static int __init natsemi_init_mod (void)
+ {
+ /* when a module, this is printed whether or not devices are found in probe */
+ #ifdef MODULE
+-	rtdm_printk(version);
++	pr_info("%s", version);
+ #endif
+ 
+ 	return pci_register_driver (&natsemi_driver);
 
 -- 
 2.39.2
