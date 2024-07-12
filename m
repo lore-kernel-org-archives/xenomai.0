@@ -1,35 +1,35 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66FFB15ECE3
-	for <xenomai@lists.linux.dev>; Fri, 12 Jul 2024 10:49:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9059515B0FE
+	for <xenomai@lists.linux.dev>; Fri, 12 Jul 2024 10:49:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720781345; cv=none; b=FBmHIRMrBom8PlOURUziHGh+j8dDy2bwILS+ou/X7iwSqTIX7ugeUrGz1JF8XQycjVzlP8LRk4dz8SM6mD4vcILn10VEXcxRCZ0WrP4R5imGxecyAyBEs2DPFSF/UXM4rrQFiae+IwMt/fwmZXuUc4H+WvSXn6fWKyWJ9u6gapQ=
+	t=1720781345; cv=none; b=IAuZDmxEdPH5+LnoXXzj05lPyEigICPfZM3MZy7oGxAhN8+UC+wdur2+H+f82O7lX7fH9qPxp6xyHXPNBJa/Udctexco+p1bELurUH8xdTssx+Tm6+zwJy3ucKQmel404hB1w6wNpTc01e2lQk1TbkL7AdlQbTqT9KascPCprNg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1720781345; c=relaxed/simple;
-	bh=g/+6TxVz8vWN9NQ6rjYczirn63hQZC/c6ecc9pRRQLY=;
+	bh=yWapngkO55nVqlzw8lddkEaPM22U+EWaxlzGRdxWbxk=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=cRa+c/lPO5l1lPHFRoWxTnRzuwp5XJ/U4GmjBPRMj8kGCVj8JibehIcPS0ESAjG6Y5fJHD00SzhOhwPQx3YS+Ev5pH1RMfQiwpcl2hym2gcF0s3CE0d20MjhnktTcow4MIgB7H1NzfqbsZcn7jR1tV25iTptKEiK7ztUybFLqSc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=imzOcKkI; arc=none smtp.client-ip=185.136.65.225
+	 In-Reply-To:To:Cc; b=HVj+EScyJFWZnFSKQX19uonY0Zp/fCKLOKhZ09YSddx1c/UnDeMigR0u8CoXl3fNXQM6w2C/WscUwpmz6/VmO96fCpmohDmYpBYRVDF4oGP20V5x9Ua4gzTBTyzFTRZB4SVxHeIvR3s4gxIkYrrnL6JtvEA76H86dxMIGnS+2eg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=gIjPiiq3; arc=none smtp.client-ip=185.136.65.228
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="imzOcKkI"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20240712104901d15b565294c2cea341
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="gIjPiiq3"
+Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 20240712104900dde7a7c027a0da88da
         for <xenomai@lists.linux.dev>;
-        Fri, 12 Jul 2024 12:49:01 +0200
+        Fri, 12 Jul 2024 12:49:00 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=GL/NAqtwIP92iRQpxXaRsgwTL0pZ6T5QFfY3KBbEnQw=;
- b=imzOcKkIJm8CF11X8AGSgbc2Ir6YVHMCu/xpRkcm2vVZJ711SafM3gBs3+RzeN+TXAVSHj
- zeiRlNg1Rv0++gxD2eojB7UKWNxSDnwbKXPyYGz1iQvd08L41kS34QFRf6NAZNHQFKuq6kfZ
- 9jFXPVk6O+rC6SXB4/xCXzzi0L+eI=;
+ bh=r0VLJL5YDLUHA4QpJsdLOQdhddGPIH3Z0l7BzrTBbqM=;
+ b=gIjPiiq3fjNiiRPvJ3FBCBgQDda/IrjsvqMqmN+tIu44LYsC3Wmh48hIi+hYBD0ta1WqLD
+ YO4yFLadFGBDUJeVnIv2vU/qPyWO9SVKzFGhJto9UJzQ6pkszgPEpBKpQKw4RXZ53+9/pnxv
+ b2pq8flS/N9LoRHHq6FphQaGhP4HI=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 12 Jul 2024 12:49:17 +0200
-Subject: [PATCH v2 31/33] drivers/stack: Migrate from rtdm_printk() and
- printk() to pr_*()
+Date: Fri, 12 Jul 2024 12:49:15 +0200
+Subject: [PATCH v2 29/33] drivers/stack/rtmac: Migrate from rtdm_printk()
+ and printk() to pr_*()
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -38,7 +38,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240702-flo-removal-of-rtdm_printk-v2-31-facd992606c7@siemens.com>
+Message-Id: <20240702-flo-removal-of-rtdm_printk-v2-29-facd992606c7@siemens.com>
 References: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
 In-Reply-To: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
 To: xenomai@lists.linux.dev
@@ -48,268 +48,354 @@ X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
 Some (rtdm_)printk() calls were missing log level information. The
-default log level (= warn) did not fit well for them.
+default level (= warn) did not fit well for them.
 
-The missing log level is addressed by migrating to the pr_*() API.
+The missing log level is addressed by migrating the pr_*() API.
 
 rtdm_printk() itself is just an alias for printk(). Migrating helps to
 remove this function once all drivers were updated.
 
+The print_jobs() macro was unused. Cleaning up instead of doing the
+migration.
+
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/drivers/net/stack/include/rtnet_internal.h |  2 +-
- kernel/drivers/net/stack/rtdev.c                  | 20 +++++++++++---------
- kernel/drivers/net/stack/rtnet_chrdev.c           |  4 +++-
- kernel/drivers/net/stack/rtnet_module.c           | 10 ++++++----
- kernel/drivers/net/stack/rtskb.c                  | 13 +++++++------
- kernel/drivers/net/stack/stack_mgr.c              | 10 ++++++----
- 6 files changed, 34 insertions(+), 25 deletions(-)
+ kernel/drivers/net/stack/include/rtmac/tdma/tdma.h  |  9 ---------
+ kernel/drivers/net/stack/rtmac/nomac/nomac_module.c |  6 ++++--
+ kernel/drivers/net/stack/rtmac/rtmac_disc.c         | 14 +++++++-------
+ kernel/drivers/net/stack/rtmac/rtmac_module.c       |  6 ++++--
+ kernel/drivers/net/stack/rtmac/rtmac_proc.c         |  4 +++-
+ kernel/drivers/net/stack/rtmac/rtmac_proto.c        |  9 +++++----
+ kernel/drivers/net/stack/rtmac/rtmac_vnic.c         |  4 +++-
+ kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c    | 10 ++++++----
+ kernel/drivers/net/stack/rtmac/tdma/tdma_module.c   |  7 ++++---
+ kernel/drivers/net/stack/rtmac/tdma/tdma_proto.c    | 14 ++++++--------
+ 10 files changed, 42 insertions(+), 41 deletions(-)
 
-diff --git a/kernel/drivers/net/stack/include/rtnet_internal.h b/kernel/drivers/net/stack/include/rtnet_internal.h
-index ec7e6141f..73f48c7a5 100644
---- a/kernel/drivers/net/stack/include/rtnet_internal.h
-+++ b/kernel/drivers/net/stack/include/rtnet_internal.h
-@@ -34,7 +34,7 @@
- #ifdef CONFIG_XENO_DRIVERS_NET_CHECKED
- #define RTNET_ASSERT(expr, func)                                               \
- 	if (!(expr)) {                                                         \
--		rtdm_printk("Assertion failed! %s:%s:%d %s\n", __FILE__,       \
-+		pr_err("Assertion failed! %s:%s:%d %s\n", __FILE__,            \
- 			    __FUNCTION__, __LINE__, (#expr));                  \
- 		func                                                           \
- 	}
-diff --git a/kernel/drivers/net/stack/rtdev.c b/kernel/drivers/net/stack/rtdev.c
-index 7c50a9e9e..9bf867e95 100644
---- a/kernel/drivers/net/stack/rtdev.c
-+++ b/kernel/drivers/net/stack/rtdev.c
-@@ -23,6 +23,8 @@
-  *
-  */
+diff --git a/kernel/drivers/net/stack/include/rtmac/tdma/tdma.h b/kernel/drivers/net/stack/include/rtmac/tdma/tdma.h
+index 9574c2dca..84cab716d 100644
+--- a/kernel/drivers/net/stack/include/rtmac/tdma/tdma.h
++++ b/kernel/drivers/net/stack/include/rtmac/tdma/tdma.h
+@@ -149,13 +149,4 @@ struct tdma_priv {
  
-+#define pr_fmt(fmt) "RTnet: " fmt
-+
- #include <linux/spinlock.h>
- #include <linux/if.h>
- #include <linux/if_arp.h> /* ARPHRD_ETHER */
-@@ -243,7 +245,7 @@ static int rtdev_init(struct rtnet_device *rtdev, unsigned dev_pool_size)
- 	ret = rtskb_pool_init(&rtdev->dev_pool, dev_pool_size, &rtdev_ops,
- 			      rtdev);
- 	if (ret < dev_pool_size) {
--		printk(KERN_ERR "RTnet: cannot allocate rtnet device pool\n");
-+		pr_err("cannot allocate rtnet device pool\n");
- 		rtskb_pool_release(&rtdev->dev_pool);
- 		return -ENOMEM;
- 	}
-@@ -287,7 +289,7 @@ static struct rtnet_device *rtdev_alloc(unsigned sizeof_priv,
+ extern struct rtmac_disc tdma_disc;
  
- 	rtdev = kzalloc(alloc_size, GFP_KERNEL);
- 	if (rtdev == NULL) {
--		printk(KERN_ERR "RTnet: cannot allocate rtnet device\n");
-+		pr_err("cannot allocate rtnet device\n");
- 		return NULL;
- 	}
- 
-@@ -403,7 +405,7 @@ static int rtskb_map(struct rtnet_device *rtdev, struct rtskb *skb)
- 		return -ENOMEM;
- 
- 	if (skb->buf_dma_addr != RTSKB_UNMAPPED && addr != skb->buf_dma_addr) {
--		printk("RTnet: device %s maps skb differently than others. "
-+		pr_err("device %s maps skb differently than others. "
- 		       "Different IOMMU domain?\nThis is not supported.\n",
- 		       rtdev->name);
- 		return -EACCES;
-@@ -589,7 +591,7 @@ int rt_register_rtnetdev(struct rtnet_device *rtdev)
- 	/* Default state at registration is that the device is present. */
- 	set_bit(__RTNET_LINK_STATE_PRESENT, &rtdev->link_state);
- 
--	printk("RTnet: registered %s\n", rtdev->name);
-+	pr_info("registered %s\n", rtdev->name);
- 
- 	return 0;
- 
-@@ -617,7 +619,7 @@ int rt_unregister_rtnetdev(struct rtnet_device *rtdev)
- 	rtdm_lockctx_t context;
- 
- 	RTNET_ASSERT(rtdev->ifindex != 0,
--		     printk("RTnet: device %s/%p was not registered\n",
-+		     pr_err("device %s/%p was not registered\n",
- 			    rtdev->name, rtdev);
- 		     return -ENODEV;);
- 
-@@ -649,9 +651,9 @@ int rt_unregister_rtnetdev(struct rtnet_device *rtdev)
- 	clear_bit(__RTNET_LINK_STATE_PRESENT, &rtdev->link_state);
- 
- 	RTNET_ASSERT(atomic_read(&rtdev->refcount) == 0,
--		     printk("RTnet: rtdev reference counter < 0!\n"););
-+		     pr_err("rtdev reference counter < 0!\n"););
- 
--	printk("RTnet: unregistered %s\n", rtdev->name);
-+	pr_info("unregistered %s\n", rtdev->name);
- 
- 	return 0;
- }
-@@ -868,7 +870,7 @@ int rtdev_xmit(struct rtskb *rtskb)
- 		/* on error we must free the rtskb here */
- 		kfree_rtskb(rtskb);
- 
--		rtdm_printk("hard_start_xmit returned %d\n", err);
-+		pr_err("hard_start_xmit returned %d\n", err);
- 	}
- 
- 	return err;
-@@ -901,7 +903,7 @@ int rtdev_xmit_proxy(struct rtskb *rtskb)
- 			/* on error we must free the rtskb here */
- 			kfree_rtskb(rtskb);
- 
--			rtdm_printk("hard_start_xmit returned %d\n", err);
-+			pr_err("hard_start_xmit returned %d\n", err);
- 		}
- 	}
- 
-diff --git a/kernel/drivers/net/stack/rtnet_chrdev.c b/kernel/drivers/net/stack/rtnet_chrdev.c
-index fa859c3bc..bb6e304d4 100644
---- a/kernel/drivers/net/stack/rtnet_chrdev.c
-+++ b/kernel/drivers/net/stack/rtnet_chrdev.c
+-#define print_jobs()                                                           \
+-	do {                                                                   \
+-		struct tdma_job *entry;                                        \
+-		rtdm_printk("%s:%d - ", __FUNCTION__, __LINE__);               \
+-		list_for_each_entry (entry, &tdma->first_job->entry, entry)    \
+-			rtdm_printk("%d ", entry->id);                         \
+-		rtdm_printk("\n");                                             \
+-	} while (0)
+-
+ #endif /* __TDMA_H_ */
+diff --git a/kernel/drivers/net/stack/rtmac/nomac/nomac_module.c b/kernel/drivers/net/stack/rtmac/nomac/nomac_module.c
+index 1a36e3363..3bd2b0d69 100644
+--- a/kernel/drivers/net/stack/rtmac/nomac/nomac_module.c
++++ b/kernel/drivers/net/stack/rtmac/nomac/nomac_module.c
 @@ -22,6 +22,8 @@
   *
   */
  
-+#define pr_fmt(fmt) "RTnet: " fmt
++#define pr_fmt(fmt) "RTmac/NoMAC: " fmt
 +
- #include <linux/kernel.h>
- #include <linux/errno.h>
- #include <linux/if_arp.h>
-@@ -218,7 +220,7 @@ int __init rtnet_chrdev_init(void)
+ #include <linux/init.h>
+ #include <linux/module.h>
  
- 	err = misc_register(&rtnet_chr_misc_dev);
- 	if (err) {
--		printk("RTnet: unable to register rtnet management device/class "
-+		pr_err("unable to register rtnet management device/class "
- 		       "(error %d)\n",
- 		       err);
- 		return err;
-diff --git a/kernel/drivers/net/stack/rtnet_module.c b/kernel/drivers/net/stack/rtnet_module.c
-index c245502cd..287ad1620 100644
---- a/kernel/drivers/net/stack/rtnet_module.c
-+++ b/kernel/drivers/net/stack/rtnet_module.c
-@@ -21,6 +21,8 @@
+@@ -131,7 +133,7 @@ static int __init nomac_init(void)
+ {
+ 	int ret;
+ 
+-	printk("RTmac/NoMAC: init void media access control mechanism\n");
++	pr_info("init void media access control mechanism\n");
+ 
+ 	ret = nomac_proto_init();
+ 	if (ret < 0)
+@@ -151,7 +153,7 @@ static void nomac_release(void)
+ 	rtmac_disc_deregister(&nomac_disc);
+ 	nomac_proto_cleanup();
+ 
+-	printk("RTmac/NoMAC: unloaded\n");
++	pr_info("unloaded\n");
+ }
+ 
+ module_init(nomac_init);
+diff --git a/kernel/drivers/net/stack/rtmac/rtmac_disc.c b/kernel/drivers/net/stack/rtmac/rtmac_disc.c
+index 5806db19d..d5b0a7a63 100644
+--- a/kernel/drivers/net/stack/rtmac/rtmac_disc.c
++++ b/kernel/drivers/net/stack/rtmac/rtmac_disc.c
+@@ -22,6 +22,8 @@
   *
   */
  
-+#define pr_fmt(fmt) "RTnet: " fmt
++#define pr_fmt(fmt) "RTmac: " fmt
++
+ #include <linux/module.h>
+ #include <linux/errno.h>
+ #include <linux/slab.h>
+@@ -58,8 +60,8 @@ int rtmac_disc_attach(struct rtnet_device *rtdev, struct rtmac_disc *disc)
+ 	RTNET_ASSERT(disc->attach != NULL, return -EINVAL;);
+ 
+ 	if (rtdev->mac_disc) {
+-		printk("RTmac: another discipline for rtdev '%s' active.\n",
+-		       rtdev->name);
++		pr_info("another discipline for rtdev '%s' active.\n",
++			rtdev->name);
+ 		return -EBUSY;
+ 	}
+ 
+@@ -77,7 +79,7 @@ int rtmac_disc_attach(struct rtnet_device *rtdev, struct rtmac_disc *disc)
+ 	/* alloc memory */
+ 	priv = kmalloc(sizeof(struct rtmac_priv) + disc->priv_size, GFP_KERNEL);
+ 	if (!priv) {
+-		printk("RTmac: kmalloc returned NULL for rtmac!\n");
++		pr_err("kmalloc returned NULL for rtmac!\n");
+ 		return -ENOMEM;
+ 	}
+ 	priv->orig_start_xmit = rtdev->start_xmit;
+@@ -98,8 +100,7 @@ int rtmac_disc_attach(struct rtnet_device *rtdev, struct rtmac_disc *disc)
+ 	/* create the VNIC */
+ 	ret = rtmac_vnic_add(rtdev, disc->vnic_xmit);
+ 	if (ret < 0) {
+-		printk("RTmac: Warning, VNIC creation failed for rtdev %s.\n",
+-		       rtdev->name);
++		pr_warn("VNIC creation failed for rtdev %s.\n", rtdev->name);
+ 		goto err_disc_detach;
+ 	}
+ 
+@@ -205,8 +206,7 @@ int __rtmac_disc_register(struct rtmac_disc *disc, struct module *module)
+ 	disc->owner = module;
+ 
+ 	if (rtmac_get_disc_by_name(disc->name) != NULL) {
+-		printk("RTmac: discipline '%s' already registered!\n",
+-		       disc->name);
++		pr_info("discipline '%s' already registered!\n", disc->name);
+ 		return -EBUSY;
+ 	}
+ 
+diff --git a/kernel/drivers/net/stack/rtmac/rtmac_module.c b/kernel/drivers/net/stack/rtmac/rtmac_module.c
+index 0a4e1b750..d4174dd32 100644
+--- a/kernel/drivers/net/stack/rtmac/rtmac_module.c
++++ b/kernel/drivers/net/stack/rtmac/rtmac_module.c
+@@ -19,6 +19,8 @@
+  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+  */
+ 
++#define pr_fmt(fmt) "RTmac: " fmt
 +
  #include <linux/module.h>
  #include <linux/kernel.h>
  #include <linux/init.h>
-@@ -298,7 +300,7 @@ error2:
- 	xnvfile_destroy_dir(&rtnet_proc_root);
+@@ -34,7 +36,7 @@ static int __init rtmac_init(void)
+ {
+ 	int ret = 0;
  
- error1:
--	printk("RTnet: unable to initialize /proc entries\n");
-+	pr_err("unable to initialize /proc entries\n");
- 	return err;
- }
+-	printk("RTmac: init realtime media access control\n");
++	pr_info("init realtime media access control\n");
  
-@@ -322,8 +324,8 @@ static int __init rtnet_init(void)
- 	if (!rtdm_available())
- 		return -ENOSYS;
+ #ifdef CONFIG_XENO_OPT_VFILE
+ 	ret = rtmac_proc_register();
+@@ -70,7 +72,7 @@ static void rtmac_release(void)
+ 	rtmac_proc_release();
+ #endif
  
--	printk("\n*** RTnet for Xenomai v" XENO_VERSION_STRING " ***\n\n");
--	printk("RTnet: initialising real-time networking\n");
-+	pr_info("\n*** RTnet for Xenomai v" XENO_VERSION_STRING " ***\n\n");
-+	pr_info("initialising real-time networking\n");
- 
- #if LINUX_VERSION_CODE >= KERNEL_VERSION(6,4,0)
- 	rtnet_class = class_create("rtnet");
-@@ -409,7 +411,7 @@ static void __exit rtnet_release(void)
- 
- 	class_destroy(rtnet_class);
- 
--	printk("RTnet: unloaded\n");
+-	printk("RTmac: unloaded\n");
 +	pr_info("unloaded\n");
  }
  
- module_init(rtnet_init);
-diff --git a/kernel/drivers/net/stack/rtskb.c b/kernel/drivers/net/stack/rtskb.c
-index e92cb3c64..fde421b36 100644
---- a/kernel/drivers/net/stack/rtskb.c
-+++ b/kernel/drivers/net/stack/rtskb.c
-@@ -21,6 +21,8 @@
-  *
-  */
- 
-+#define pr_fmt(fmt) "RTnet: " fmt
-+
- #include <linux/moduleparam.h>
- #include <linux/slab.h>
- #include <rtnet_checksum.h>
-@@ -125,8 +127,8 @@ EXPORT_SYMBOL_GPL(rtskb_copy_and_csum_dev);
-  */
- void rtskb_over_panic(struct rtskb *skb, int sz, void *here)
- {
--	rtdm_printk("RTnet: rtskb_put :over: %p:%d put:%d dev:%s\n", here,
--		    skb->len, sz, (skb->rtdev) ? skb->rtdev->name : "<NULL>");
-+	pr_err("rtskb_put :over: %p:%d put:%d dev:%s\n", here, skb->len, sz,
-+	       (skb->rtdev) ? skb->rtdev->name : "<NULL>");
- }
- 
- EXPORT_SYMBOL_GPL(rtskb_over_panic);
-@@ -141,8 +143,8 @@ EXPORT_SYMBOL_GPL(rtskb_over_panic);
-  */
- void rtskb_under_panic(struct rtskb *skb, int sz, void *here)
- {
--	rtdm_printk("RTnet: rtskb_push :under: %p:%d put:%d dev:%s\n", here,
--		    skb->len, sz, (skb->rtdev) ? skb->rtdev->name : "<NULL>");
-+	pr_err("rtskb_push :under: %p:%d put:%d dev:%s\n", here, skb->len, sz,
-+	       (skb->rtdev) ? skb->rtdev->name : "<NULL>");
- }
- 
- EXPORT_SYMBOL_GPL(rtskb_under_panic);
-@@ -370,8 +372,7 @@ unsigned int rtskb_pool_extend(struct rtskb_pool *pool, unsigned int add_rtskbs)
- 	for (i = 0; i < add_rtskbs; i++) {
- 		/* get rtskb from slab pool */
- 		if (!(skb = kmem_cache_alloc(rtskb_slab_pool, GFP_KERNEL))) {
--			printk(KERN_ERR
--			       "RTnet: rtskb allocation from slab pool failed\n");
-+			pr_err("rtskb allocation from slab pool failed\n");
- 			break;
- 		}
- 
-diff --git a/kernel/drivers/net/stack/stack_mgr.c b/kernel/drivers/net/stack/stack_mgr.c
-index a7e22458a..b30a74549 100644
---- a/kernel/drivers/net/stack/stack_mgr.c
-+++ b/kernel/drivers/net/stack/stack_mgr.c
+ module_init(rtmac_init);
+diff --git a/kernel/drivers/net/stack/rtmac/rtmac_proc.c b/kernel/drivers/net/stack/rtmac/rtmac_proc.c
+index 3f0c3aa4e..300a7efbd 100644
+--- a/kernel/drivers/net/stack/rtmac/rtmac_proc.c
++++ b/kernel/drivers/net/stack/rtmac/rtmac_proc.c
 @@ -22,6 +22,8 @@
   *
   */
  
-+#define pr_fmt(fmt) "RTnet: " fmt
++#define pr_fmt(fmt) "RTmac: " fmt
++
+ #include <linux/module.h>
+ 
+ #include <rtnet_internal.h>
+@@ -118,7 +120,7 @@ err2:
+ 	xnvfile_destroy_dir(&rtmac_proc_root);
+ 
+ err1:
+-	/*ERRMSG*/ printk("RTmac: unable to initialize /proc entries\n");
++	pr_err("unable to initialize /proc entries\n");
+ 	return err;
+ }
+ 
+diff --git a/kernel/drivers/net/stack/rtmac/rtmac_proto.c b/kernel/drivers/net/stack/rtmac/rtmac_proto.c
+index 5d9d834a1..45c5f179a 100644
+--- a/kernel/drivers/net/stack/rtmac/rtmac_proto.c
++++ b/kernel/drivers/net/stack/rtmac/rtmac_proto.c
+@@ -22,6 +22,8 @@
+  *
+  */
+ 
++#define pr_fmt(fmt) "RTmac: " fmt
++
+ #include <rtdm/driver.h>
+ #include <stack_mgr.h>
+ #include <rtmac/rtmac_disc.h>
+@@ -41,10 +43,9 @@ static int rtmac_proto_rx(struct rtskb *skb, struct rtpacket_type *pt)
+ 	rtskb_pull(skb, sizeof(struct rtmac_hdr));
+ 
+ 	if (hdr->ver != RTMAC_VERSION) {
+-		rtdm_printk(
+-			"RTmac: received unsupported RTmac protocol version on "
+-			"device %s.  Got 0x%x but expected 0x%x\n",
+-			skb->rtdev->name, hdr->ver, RTMAC_VERSION);
++		pr_err("received unsupported RTmac protocol version on "
++		       "device %s.  Got 0x%x but expected 0x%x\n",
++		       skb->rtdev->name, hdr->ver, RTMAC_VERSION);
+ 		goto error;
+ 	}
+ 
+diff --git a/kernel/drivers/net/stack/rtmac/rtmac_vnic.c b/kernel/drivers/net/stack/rtmac/rtmac_vnic.c
+index 4b41785db..b4464f21b 100644
+--- a/kernel/drivers/net/stack/rtmac/rtmac_vnic.c
++++ b/kernel/drivers/net/stack/rtmac/rtmac_vnic.c
+@@ -19,6 +19,8 @@
+  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+  */
+ 
++#define pr_fmt(fmt) "RTmac: " fmt
 +
  #include <linux/moduleparam.h>
+ #include <linux/netdevice.h>
+ #include <linux/etherdevice.h>
+@@ -106,7 +108,7 @@ static void rtmac_vnic_signal_handler(rtdm_nrtsig_t *nrtsig, void *arg)
  
- #include <rtdev.h>
-@@ -111,7 +113,7 @@ void rtnetif_rx(struct rtskb *skb)
- 	RTNET_ASSERT(skb->rtdev != NULL, return;);
- 
- 	if (unlikely(rtskb_fifo_insert_inirq(&rx.fifo, skb) < 0)) {
--		rtdm_printk("RTnet: dropping packet in %s()\n", __FUNCTION__);
-+		pr_warn("dropping packet in %s()\n", __FUNCTION__);
- 		kfree_rtskb(skb);
+ 			netif_rx(skb);
+ 		} else {
+-			printk("RTmac: VNIC fails to allocate linux skb\n");
++			pr_err("VNIC fails to allocate linux skb\n");
+ 			kfree_rtskb(rtskb);
+ 		}
  	}
- }
-@@ -179,9 +181,9 @@ __DELIVER_PREFIX void rt_stack_deliver(struct rtskb *rtskb)
- 	/* Don't warn if ETH_P_ALL listener were present or when running in
-        promiscuous mode (RTcap). */
- 	if (unlikely(!eth_p_all_hit && !(rtdev->flags & IFF_PROMISC)))
--		rtdm_printk("RTnet: no one cared for packet with layer 3 "
--			    "protocol type 0x%04x\n",
--			    ntohs(rtskb->protocol));
-+		pr_warn("no one cared for packet with layer 3 "
-+			"protocol type 0x%04x\n",
-+			ntohs(rtskb->protocol));
+diff --git a/kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c b/kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c
+index 02230064d..9805305b9 100644
+--- a/kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c
++++ b/kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c
+@@ -22,6 +22,8 @@
+  *
+  */
  
- 	kfree_rtskb(rtskb);
++#define pr_fmt(fmt) "TDMA: " fmt
++
+ #include <linux/module.h>
+ #include <linux/delay.h>
+ #include <linux/uaccess.h>
+@@ -108,7 +110,7 @@ static int tdma_ioctl_master(struct rtnet_device *rtdev,
+ 		tdma->sync_job.id = WAIT_ON_SYNC;
+ 	} else {
+ 		if (test_bit(TDMA_FLAG_BACKUP_MASTER, &tdma->flags))
+-			printk("TDMA: warning, no primary master detected!\n");
++			pr_warn("no primary master detected!\n");
+ 		set_bit(TDMA_FLAG_CALIBRATED, &tdma->flags);
+ 		tdma->current_cycle_start = rtdm_clock_read();
+ 	}
+@@ -255,9 +257,9 @@ static void copyback_calibration(struct rt_proc_call *call, void *priv_data)
+ 	do_div(min, 1000);
+ 	max += 500;
+ 	do_div(max, 1000);
+-	printk("TDMA: calibrated master-to-slave packet delay: "
+-	       "%ld us (min/max: %ld/%ld us)\n",
+-	       (unsigned long)average, (unsigned long)min, (unsigned long)max);
++	pr_info("calibrated master-to-slave packet delay: "
++		"%ld us (min/max: %ld/%ld us)\n",
++		(unsigned long)average, (unsigned long)min, (unsigned long)max);
  }
+ 
+ static void cleanup_calibration(void *priv_data)
+diff --git a/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c b/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c
+index 2269fa2d9..77ad1200b 100644
+--- a/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c
++++ b/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c
+@@ -22,6 +22,8 @@
+  *
+  */
+ 
++#define pr_fmt(fmt) "RTmac/TDMA: " fmt
++
+ #include <asm/div64.h>
+ #include <linux/delay.h>
+ #include <linux/init.h>
+@@ -293,8 +295,7 @@ static int __init tdma_init(void)
+ {
+ 	int ret;
+ 
+-	printk("RTmac/TDMA: init time division multiple access control "
+-	       "mechanism\n");
++	pr_info("init time division multiple access control mechanism\n");
+ 
+ 	ret = rtmac_disc_register(&tdma_disc);
+ 	if (ret < 0)
+@@ -307,7 +308,7 @@ static void tdma_release(void)
+ {
+ 	rtmac_disc_deregister(&tdma_disc);
+ 
+-	printk("RTmac/TDMA: unloaded\n");
++	pr_info("unloaded\n");
+ }
+ 
+ module_init(tdma_init);
+diff --git a/kernel/drivers/net/stack/rtmac/tdma/tdma_proto.c b/kernel/drivers/net/stack/rtmac/tdma/tdma_proto.c
+index b371c6398..408f92e3a 100644
+--- a/kernel/drivers/net/stack/rtmac/tdma/tdma_proto.c
++++ b/kernel/drivers/net/stack/rtmac/tdma/tdma_proto.c
+@@ -22,6 +22,8 @@
+  *
+  */
+ 
++#define pr_fmt(fmt) "TDMA: " fmt
++
+ #include <linux/init.h>
+ #include "asm/div64.h"
+ 
+@@ -72,7 +74,7 @@ void tdma_xmit_sync_frame(struct tdma_priv *tdma)
+ 	return;
+ 
+ err_out:
+-	/*ERROR*/ rtdm_printk("TDMA: Failed to transmit sync frame!\n");
++	pr_err("Failed to transmit sync frame!\n");
+ 	return;
+ }
+ 
+@@ -120,8 +122,7 @@ int tdma_xmit_request_cal_frame(struct tdma_priv *tdma, u32 reply_cycle,
+ 	return 0;
+ 
+ err_out:
+-	/*ERROR*/ rtdm_printk("TDMA: Failed to transmit request calibration "
+-			      "frame!\n");
++	pr_err("Failed to transmit request calibration frame!\n");
+ 	return ret;
+ }
+ 
+@@ -262,9 +263,7 @@ int tdma_packet_rx(struct rtskb *rtskb)
+ 				sizeof(struct tdma_frm_rpl_cal) + 15,
+ 			&tdma->cal_rtskb_pool);
+ 		if (unlikely(!reply_rtskb)) {
+-			/*ERROR*/ rtdm_printk(
+-				"TDMA: Too many calibration requests "
+-				"pending!\n");
++			pr_err("Too many calibration requests pending!\n");
+ 			break;
+ 		}
+ 
+@@ -370,8 +369,7 @@ int tdma_packet_rx(struct rtskb *rtskb)
+ 		break;
+ 
+ 	default:
+-		/*ERROR*/ rtdm_printk("TDMA: Unknown frame %d!\n",
+-				      ntohs(head->id));
++		pr_err("Unknown frame %d!\n", ntohs(head->id));
+ 	}
+ 
+ kfree_out:
 
 -- 
 2.39.2
