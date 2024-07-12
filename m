@@ -1,35 +1,35 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 614E414EC73
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEF1315DBAE
 	for <xenomai@lists.linux.dev>; Fri, 12 Jul 2024 10:49:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720781344; cv=none; b=UvF4LTgPN3eHynVJUOdUypXsKi9LNdgQ1f+zAT2o5Xhpey3wEu6wpCOODUGltuRohTVL3r7RMX3uO5CGbzklhrKAU6r+O5IV9XJaxs9ndGRWUNl69MG+6NYOcak9GGTqgZ1mh1ZreDEu6WuQT/581Yot4C8oG5vjDWeGLgQ5k9Q=
+	t=1720781344; cv=none; b=uEG0eTmmZvLIntxOte9Zs9wGyz57M4xPIEc5cbzRjBG6OJAitY5qTgQEApc7rtDg9f31AYEthaF8TvaOD7AZE0sIibHXhXOHpJYFyXifzIm7ahABnsoT+yYZV82KT4LXTcwSSklsuf69cpAj3WQMDrWK+OFo7cdEhDcprlucXFY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1720781344; c=relaxed/simple;
-	bh=8iyAN2NEvcOE0E/0IZxx1b/VO94xsxuzHILm9VkXhss=;
+	bh=J9uQIsbuU1xDDc5f6m/a0uEwBtVff5EooCKu9QcADZE=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ShAZE81e7rYSqKgTibpQToL2Mb0UyvIYfQSVXsC0wz1qM42I5+w76WhMG7/HmpcI0wmDDvEbi9xYRR90XDJ85pCeAHt9X2GFG0yBxRIPt6VLr3I50nu6IOs4jMrpG+znmlLxfv61eWaLzsagFl0Q1RxS7TsV3Omar5IuiHbTThQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=a/VFDdJm; arc=none smtp.client-ip=185.136.65.226
+	 In-Reply-To:To:Cc; b=OTRo8xpt5wwHfYXsxBxd/zoJZyeApt0tiferMOeKyz2xVVfihd6vPhRucQIFmrUlWmnB+nuqjOLrmlKKjlQYaxHdGljVUCd6eys0WAvoDSKFwEHQrz0DD30QbYkkDxPIcvo+tOzzOmx6WeigXeteIPr6quWF1ziSk8lLipojCkk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=EKjpfUDF; arc=none smtp.client-ip=185.136.64.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="a/VFDdJm"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 2024071210485809cb7be021be8073af
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="EKjpfUDF"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 202407121048592b6dcea0d326c5a647
         for <xenomai@lists.linux.dev>;
-        Fri, 12 Jul 2024 12:48:58 +0200
+        Fri, 12 Jul 2024 12:48:59 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=17lyHJlkq1jdCuTmBeKHYppPDdKv1QTIueEnYTcy2Cc=;
- b=a/VFDdJmXXgkOsKtQH3IFJT14QLgYtAnM3dba7WYRagolYvKa6PVVQqPW/kaBKsGhDGNR0
- MHNgP7xFhBMh36EPJDLRI0fY+IM5inEHJJOOFcsHKbQGjRbIal0yrHS886aA47ZXKcEeSu8c
- /HDRowBMBe08zLT39mi6MwjgIjwUc=;
+ bh=3tOoiPrUoTY8yJ+F866JD/xIA1lFO7KzN9hqhBlXkvI=;
+ b=EKjpfUDFs2dg4rYCnA4YST0h9K/YQjUB39WxyHVAEUI3jopSetp3Gh1yGlkTO6JRJ/hkaK
+ dv+LG8Jrceg949mOmcYRXrpdc5gjM0smmxlpx1/PGdZiyHPGwFOROUvYX6a6aH9tBN6Y5V8h
+ b9PkkEs3ca7mICCtdYK1Knn8iFrTE=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 12 Jul 2024 12:49:11 +0200
-Subject: [PATCH v2 25/33] drivers/via-rhine: Migrate from rtdm_printk() and
- printk() to pr_*()
+Date: Fri, 12 Jul 2024 12:49:13 +0200
+Subject: [PATCH v2 27/33] drivers/stack/ipv4: Migrate from rtdm_printk()
+ and printk() to pr_*()
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -38,7 +38,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240702-flo-removal-of-rtdm_printk-v2-25-facd992606c7@siemens.com>
+Message-Id: <20240702-flo-removal-of-rtdm_printk-v2-27-facd992606c7@siemens.com>
 References: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
 In-Reply-To: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
 To: xenomai@lists.linux.dev
@@ -47,8 +47,8 @@ Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-In this case only a single printk() call was missing the log level.
-Migrating to keep in sync with other drivers.
+Some (rtdm_)printk() calls were missing log level information. The
+default log level (= warn) did not fit well for them.
 
 The missing log level is addressed by migrating to the pr_*() API.
 
@@ -57,470 +57,534 @@ remove this function once all drivers were updated.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/drivers/net/drivers/via-rhine.c | 184 +++++++++++++++++----------------
- 1 file changed, 94 insertions(+), 90 deletions(-)
+ kernel/drivers/net/stack/ipv4/icmp.c           | 25 +++++------
+ kernel/drivers/net/stack/ipv4/ip_fragment.c    | 17 +++----
+ kernel/drivers/net/stack/ipv4/ip_input.c       |  4 +-
+ kernel/drivers/net/stack/ipv4/protocol.c       |  4 +-
+ kernel/drivers/net/stack/ipv4/route.c          | 21 ++++-----
+ kernel/drivers/net/stack/ipv4/tcp/tcp.c        | 62 +++++++++++++-------------
+ kernel/drivers/net/stack/ipv4/tcp/timerwheel.c |  9 ++--
+ kernel/drivers/net/stack/ipv4/udp/udp.c        |  4 +-
+ 8 files changed, 73 insertions(+), 73 deletions(-)
 
-diff --git a/kernel/drivers/net/drivers/via-rhine.c b/kernel/drivers/net/drivers/via-rhine.c
-index 8407ab54a..9b6a40188 100644
---- a/kernel/drivers/net/drivers/via-rhine.c
-+++ b/kernel/drivers/net/drivers/via-rhine.c
-@@ -122,6 +122,7 @@
- #define DRV_VERSION	"1.1.17-RTnet-0.1"
- #define DRV_RELDATE	"2003-10-05"
+diff --git a/kernel/drivers/net/stack/ipv4/icmp.c b/kernel/drivers/net/stack/ipv4/icmp.c
+index c3b80b18d..d96b4fc5d 100644
+--- a/kernel/drivers/net/stack/ipv4/icmp.c
++++ b/kernel/drivers/net/stack/ipv4/icmp.c
+@@ -24,6 +24,8 @@
+  *
+  */
  
-+#define pr_fmt(fmt) DRV_NAME ": " fmt
++#define pr_fmt(fmt) "RTnet: " fmt
++
+ #include <linux/types.h>
+ #include <linux/socket.h>
+ #include <linux/in.h>
+@@ -184,8 +186,7 @@ static void rt_icmp_send_reply(struct icmp_bxm *icmp_param, struct rtskb *skb)
  
- /* A few user-configurable values.
-    These may be modified when a driver module is loaded. */
-@@ -216,8 +217,8 @@ MODULE_PARM_DESC(cards, "array of cards to be supported (e.g. 1,0,1)");
- /*** RTnet ***/
+ 	rtdev_dereference(rt.rtdev);
  
- /* These identify the driver base version and may not be removed. */
--static char version[] =
--KERN_INFO DRV_NAME ".c:" DRV_VERSION "  " DRV_RELDATE "  Jan.Kiszka@web.de\n";
-+static char version[] = DRV_NAME ".c:" DRV_VERSION "  " DRV_RELDATE
-+				 "  Jan.Kiszka@web.de\n";
- 
- static char shortname[] = DRV_NAME;
- 
-@@ -581,8 +582,7 @@ static void wait_for_reset(struct rtnet_device *dev, int chip_id, char *name) /*
- 	IOSYNC;
- 
- 	if (readw(ioaddr + ChipCmd) & CmdReset) {
--		printk(KERN_INFO "%s: Reset not complete yet. "
--			"Trying harder.\n", name);
-+		pr_info("%s: Reset not complete yet. Trying harder.\n", name);
- 
- 		/* Rhine-II needs to be forced sometimes */
- 		if (chip_id == VT6102)
-@@ -596,7 +596,7 @@ static void wait_for_reset(struct rtnet_device *dev, int chip_id, char *name) /*
- 	}
- 
- 	if (local_debug > 1)
--		printk(KERN_INFO "%s: Reset %s.\n", name,
-+		pr_info("%s: Reset %s.\n", name,
- 			boguscnt ? "succeeded" : "failed");
+-	RTNET_ASSERT(err == 0,
+-		     rtdm_printk("RTnet: %s() error in xmit\n", __FUNCTION__););
++	RTNET_ASSERT(err == 0, pr_err("%s() error in xmit\n", __FUNCTION__););
+ 	(void)err;
  }
  
-@@ -645,7 +645,7 @@ static int via_rhine_init_one (struct pci_dev *pdev,
- #ifndef MODULE
- 	static int printed_version;
- 	if (!printed_version++)
--		printk(version);
-+		pr_info("%s", version);
- #endif
+@@ -254,11 +255,10 @@ static int rt_icmp_glue_request_bits(const void *p, unsigned char *to,
+ 	unsigned long csum;
  
- 	card_idx++;
-@@ -663,14 +663,14 @@ static int via_rhine_init_one (struct pci_dev *pdev,
+ 	/* TODO: add support for fragmented ICMP packets */
+-	RTNET_ASSERT(
+-		offset == 0,
+-		rtdm_printk("RTnet: %s() does not support fragmentation.\n",
++	RTNET_ASSERT(offset == 0,
++		     pr_err("%s() does not support fragmentation.\n",
+ 			    __FUNCTION__);
+-		return -1;);
++		     return -1;);
  
- 	/* this should always be supported */
- 	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
--		printk(KERN_ERR "32-bit PCI DMA addresses not supported by the card!?\n");
-+		pr_err("32-bit PCI DMA addresses not supported by the card!?\n");
- 		goto err_out;
+ 	csum = rtnet_csum_copy((void *)&icmp_param->head, to,
+ 			       icmp_param->head_len,
+@@ -435,23 +435,22 @@ static void rt_icmp_rcv(struct rtskb *skb)
+ 
+ 	/* check header sanity and don't accept fragmented packets */
+ 	if ((length < sizeof(struct icmphdr)) || (skb->next != NULL)) {
+-		rtdm_printk("RTnet: improper length in icmp packet\n");
++		pr_debug("improper length in icmp packet\n");
+ 		goto cleanup;
  	}
  
- 	/* sanity check */
- 	if ((pci_resource_len (pdev, 0) < io_size) ||
- 	    (pci_resource_len (pdev, 1) < io_size)) {
--		printk (KERN_ERR "Insufficient PCI resources, aborting\n");
-+		pr_err("Insufficient PCI resources, aborting\n");
- 		goto err_out;
+ 	if (ip_compute_csum((unsigned char *)icmpHdr, length)) {
+-		rtdm_printk("RTnet: invalid checksum in icmp packet %d\n",
+-			    length);
++		pr_debug("invalid checksum in icmp packet %d\n", length);
+ 		goto cleanup;
  	}
  
-@@ -684,7 +684,7 @@ static int via_rhine_init_one (struct pci_dev *pdev,
- 	dev = rt_alloc_etherdev(sizeof(struct netdev_private),
- 							RX_RING_SIZE * 2 + TX_RING_SIZE);
- 	if (dev == NULL) {
--		printk (KERN_ERR "init_ethernet failed for card #%d\n", card_idx);
-+		pr_err("init_ethernet failed for card #%d\n", card_idx);
- 		goto err_out;
- 	}
- 	rtdev_alloc_name(dev, "rteth%d");
-@@ -702,8 +702,8 @@ static int via_rhine_init_one (struct pci_dev *pdev,
- 
- 	ioaddr = ioremap (memaddr, io_size);
- 	if (!ioaddr) {
--		printk (KERN_ERR "ioremap failed for device %s, region 0x%X @ 0x%lX\n",
--				pci_name(pdev), io_size, memaddr);
-+		pr_err("ioremap failed for device %s, region 0x%X @ 0x%lX\n",
-+		       pci_name(pdev), io_size, memaddr);
- 		goto err_out_free_res;
+ 	if (!rtskb_pull(skb, sizeof(struct icmphdr))) {
+-		rtdm_printk("RTnet: pull failed %p\n", (skb->sk));
++		pr_debug("pull failed %p\n", (skb->sk));
+ 		goto cleanup;
  	}
  
-@@ -714,8 +714,8 @@ static int via_rhine_init_one (struct pci_dev *pdev,
- 		unsigned char a = inb(ioaddr0+reg);
- 		unsigned char b = readb(ioaddr+reg);
- 		if (a != b) {
--			printk (KERN_ERR "MMIO do not match PIO [%02x] (%02x != %02x)\n",
--					reg, a, b);
-+			pr_err("MMIO do not match PIO [%02x] (%02x != %02x)\n",
-+			       reg, a, b);
- 			goto err_out_unmap;
- 		}
- 	}
-@@ -760,7 +760,7 @@ static int via_rhine_init_one (struct pci_dev *pdev,
- 		dev->dev_addr[i] = readb(ioaddr + StationAddr + i);
- 
- 	if (!is_valid_ether_addr(dev->dev_addr)) {
--		printk(KERN_ERR "Invalid MAC address for card #%d\n", card_idx);
-+		pr_err("Invalid MAC address for card #%d\n", card_idx);
- 		goto err_out_unmap;
+ 	if (icmpHdr->type > NR_ICMP_TYPES) {
+-		rtdm_printk("RTnet: invalid icmp type\n");
++		pr_debug("invalid icmp type\n");
+ 		goto cleanup;
  	}
  
-@@ -828,18 +828,17 @@ static int via_rhine_init_one (struct pci_dev *pdev,
- 		np->mii_if.full_duplex = 1;
- 
- 	if (np->mii_if.full_duplex) {
--		printk(KERN_INFO "%s: Set to forced full duplex, autonegotiation"
--			   " disabled.\n", dev->name);
-+		pr_info("%s: Set to forced full duplex, autonegotiation "
-+			"disabled.\n", dev->name);
- 		np->mii_if_force_media = 1; /*** RTnet ***/
- 	}
- 
--	printk(KERN_INFO "%s: %s at 0x%lx, ",
--		   dev->name, via_rhine_chip_info[chip_id].name,
--		   (pci_flags & PCI_USES_IO) ? (long)ioaddr : memaddr);
--
--	for (i = 0; i < 5; i++)
--			printk("%2.2x:", dev->dev_addr[i]);
--	printk("%2.2x, IRQ %d.\n", dev->dev_addr[i], pdev->irq);
-+	pr_info("%s: %s at 0x%lx, %2.2x:%2.2x:%2.2x:%2.2x:%2.2x:%2.2x, IRQ %d. \n",
-+		dev->name, via_rhine_chip_info[chip_id].name,
-+		(pci_flags & PCI_USES_IO) ? (long)ioaddr : memaddr,
-+		dev->dev_addr[0], dev->dev_addr[1], dev->dev_addr[2],
-+		dev->dev_addr[3], dev->dev_addr[4], dev->dev_addr[5],
-+		pdev->irq);
- 
- 	pci_set_drvdata(pdev, dev);
- 
-@@ -851,10 +850,11 @@ static int via_rhine_init_one (struct pci_dev *pdev,
- 			if (mii_status != 0xffff  &&  mii_status != 0x0000) {
- 				np->phys[phy_idx++] = phy;
- 				np->mii_if.advertising = mdio_read(dev, phy, 4);
--				printk(KERN_INFO "%s: MII PHY found at address %d, status "
--					   "0x%4.4x advertising %4.4x Link %4.4x.\n",
--					   dev->name, phy, mii_status, np->mii_if.advertising,
--					   mdio_read(dev, phy, 5));
-+				pr_info("%s: MII PHY found at address %d, status "
-+					"0x%4.4x advertising %4.4x Link %4.4x.\n",
-+					dev->name, phy, mii_status,
-+					np->mii_if.advertising,
-+					mdio_read(dev, phy, 5));
- 
- 				/* set IFF_RUNNING */
- 				if (mii_status & BMSR_LSTATUS)
-@@ -875,9 +875,9 @@ static int via_rhine_init_one (struct pci_dev *pdev,
- 		if (np->default_port & 0x330) {
- 			/* FIXME: shouldn't someone check this variable? */
- 			/* np->medialock = 1; */
--			printk(KERN_INFO "  Forcing %dMbs %s-duplex operation.\n",
--				   (option & 0x300 ? 100 : 10),
--				   (option & 0x220 ? "full" : "half"));
-+			pr_info("  Forcing %dMbs %s-duplex operation.\n",
-+				(option & 0x300 ? 100 : 10),
-+				(option & 0x220 ? "full" : "half"));
- 			if (np->mii_cnt)
- 				mdio_write(dev, np->phys[0], MII_BMCR,
- 						   ((option & 0x300) ? 0x2000 : 0) |  /* 100mbps? */
-@@ -913,7 +913,7 @@ static int alloc_ring(struct rtnet_device* dev) /*** RTnet ***/
- 				  TX_RING_SIZE * sizeof(struct tx_desc),
- 				  &ring_dma, GFP_ATOMIC);
- 	if (!ring) {
--		printk(KERN_ERR "Could not allocate DMA memory.\n");
-+		pr_err("Could not allocate DMA memory.\n");
- 		return -ENOMEM;
- 	}
- 	if (np->drv_flags & ReqTxAlign) {
-@@ -1170,8 +1170,8 @@ static int via_rhine_open(struct rtnet_device *dev) /*** RTnet ***/
- 	}
- 
- 	if (local_debug > 1)
--		printk(KERN_DEBUG "%s: via_rhine_open() irq %d.\n",
--			   dev->name, np->pdev->irq);
-+		pr_debug("%s: via_rhine_open() irq %d.\n", dev->name,
-+			 np->pdev->irq);
- 
- 	i = alloc_ring(dev);
- 	if (i) {
-@@ -1182,10 +1182,10 @@ static int via_rhine_open(struct rtnet_device *dev) /*** RTnet ***/
- 	wait_for_reset(dev, np->chip_id, dev->name);
- 	init_registers(dev);
- 	if (local_debug > 2)
--		printk(KERN_DEBUG "%s: Done via_rhine_open(), status %4.4x "
--			   "MII status: %4.4x.\n",
--			   dev->name, readw(ioaddr + ChipCmd),
--			   mdio_read(dev, np->phys[0], MII_BMSR));
-+		pr_debug("%s: Done via_rhine_open(), status %4.4x "
-+			 "MII status: %4.4x.\n",
-+			 dev->name, readw(ioaddr + ChipCmd),
-+			 mdio_read(dev, np->phys[0], MII_BMSR));
- 
- 	rtnetif_start_queue(dev); /*** RTnet ***/
- 
-@@ -1210,9 +1210,10 @@ static void via_rhine_check_duplex(struct rtnet_device *dev) /*** RTnet ***/
- 	if (np->mii_if.full_duplex != duplex) {
- 		np->mii_if.full_duplex = duplex;
- 		if (local_debug)
--			printk(KERN_INFO "%s: Setting %s-duplex based on MII #%d link"
--				   " partner capability of %4.4x.\n", dev->name,
--				   duplex ? "full" : "half", np->phys[0], mii_lpa);
-+			pr_info("%s: Setting %s-duplex based on MII #%d link"
-+				" partner capability of %4.4x.\n",
-+				dev->name, duplex ? "full" : "half",
-+				np->phys[0], mii_lpa);
- 		if (duplex)
- 			np->chip_cmd |= CmdFDuplex;
- 		else
-@@ -1327,8 +1328,8 @@ static int via_rhine_start_tx(struct rtskb *skb, struct rtnet_device *dev) /***
- /*** RTnet ***/
- 
- 	if (local_debug > 4) {
--		rtdm_printk(KERN_DEBUG "%s: Transmit frame #%d queued in slot %d.\n", /*** RTnet ***/
--			   dev->name, np->cur_tx-1, entry);
-+		pr_debug("%s: Transmit frame #%d queued in slot %d.\n", /*** RTnet ***/
-+			 dev->name, np->cur_tx-1, entry);
- 	}
- 	return 0;
- }
-@@ -1359,8 +1360,8 @@ static int via_rhine_interrupt(rtdm_irq_t *irq_handle) /*** RTnet ***/
- 		ret = RTDM_IRQ_HANDLED;
- 
- 		if (local_debug > 4)
--			rtdm_printk(KERN_DEBUG "%s: Interrupt, status %8.8x.\n", /*** RTnet ***/
--				   dev->name, intr_status);
-+			pr_debug("%s: Interrupt, status %8.8x.\n", /*** RTnet ***/
-+				 dev->name, intr_status);
- 
- 		if (intr_status & (IntrRxDone | IntrRxErr | IntrRxDropped |
- 						   IntrRxWakeUp | IntrRxEmpty | IntrRxNoBuf))
-@@ -1369,7 +1370,7 @@ static int via_rhine_interrupt(rtdm_irq_t *irq_handle) /*** RTnet ***/
- 		if (intr_status & (IntrTxErrSummary | IntrTxDone)) {
- 			if (intr_status & IntrTxErrSummary) {
- /*** RTnet ***/
--				rtdm_printk(KERN_ERR "%s: via_rhine_interrupt(), Transmissions error\n", dev->name);
-+				pr_err("%s: via_rhine_interrupt(), Transmissions error\n", dev->name);
- /*** RTnet ***/
- 			}
- 			via_rhine_tx(dev);
-@@ -1382,16 +1383,16 @@ static int via_rhine_interrupt(rtdm_irq_t *irq_handle) /*** RTnet ***/
- 			via_rhine_error(dev, intr_status);
- 
- 		if (--boguscnt < 0) {
--			rtdm_printk(KERN_WARNING "%s: Too much work at interrupt, " /*** RTnet ***/
--				   "status=%#8.8x.\n",
--				   dev->name, intr_status);
-+			pr_warn("%s: Too much work at interrupt, " /*** RTnet ***/
-+				"status=%#8.8x.\n",
-+				dev->name, intr_status);
- 			break;
- 		}
- 	}
- 
- 	if (local_debug > 3)
--		rtdm_printk(KERN_DEBUG "%s: exiting interrupt, status=%8.8x.\n", /*** RTnet ***/
--			   dev->name, readw((void *)ioaddr + IntrStatus));
-+		pr_debug("%s: exiting interrupt, status=%8.8x.\n", /*** RTnet ***/
-+			 dev->name, readw((void *)ioaddr + IntrStatus));
- 
- /*** RTnet ***/
- 	if (old_packet_cnt != np->stats.rx_packets)
-@@ -1412,14 +1413,14 @@ static void via_rhine_tx(struct rtnet_device *dev) /*** RTnet ***/
- 	while (np->dirty_tx != np->cur_tx) {
- 		txstatus = le32_to_cpu(np->tx_ring[entry].tx_status);
- 		if (local_debug > 6)
--			rtdm_printk(KERN_DEBUG " Tx scavenge %d status %8.8x.\n", /*** RTnet ***/
--				   entry, txstatus);
-+			pr_debug(" Tx scavenge %d status %8.8x.\n", /*** RTnet ***/
-+				 entry, txstatus);
- 		if (txstatus & DescOwn)
- 			break;
- 		if (txstatus & 0x8000) {
- 			if (local_debug > 1)
--				rtdm_printk(KERN_DEBUG "%s: Transmit error, Tx status %8.8x.\n", /*** RTnet ***/
--					   dev->name, txstatus);
-+				pr_debug("%s: Transmit error, Tx status %8.8x.\n", /*** RTnet ***/
-+					 dev->name, txstatus);
- 			np->stats.tx_errors++;
- 			if (txstatus & 0x0400) np->stats.tx_carrier_errors++;
- 			if (txstatus & 0x0200) np->stats.tx_window_errors++;
-@@ -1438,9 +1439,9 @@ static void via_rhine_tx(struct rtnet_device *dev) /*** RTnet ***/
- 			else
- 				np->stats.collisions += txstatus & 0x0F;
- 			if (local_debug > 6)
--				rtdm_printk(KERN_DEBUG "collisions: %1.1x:%1.1x\n", /*** RTnet ***/
--					(txstatus >> 3) & 0xF,
--					txstatus & 0xF);
-+				pr_debug("collisions: %1.1x:%1.1x\n", /*** RTnet ***/
-+					 (txstatus >> 3) & 0xF,
-+					 txstatus & 0xF);
- 			np->stats.tx_bytes += np->tx_skbuff[entry]->len;
- 			np->stats.tx_packets++;
- 		}
-@@ -1470,8 +1471,8 @@ static void via_rhine_rx(struct rtnet_device *dev, nanosecs_abs_t *time_stamp) /
- 	int boguscnt = np->dirty_rx + RX_RING_SIZE - np->cur_rx;
- 
- 	if (local_debug > 4) {
--		rtdm_printk(KERN_DEBUG "%s: via_rhine_rx(), entry %d status %8.8x.\n", /*** RTnet ***/
--			   dev->name, entry, le32_to_cpu(np->rx_head_desc->rx_status));
-+		pr_debug("%s: via_rhine_rx(), entry %d status %8.8x.\n", /*** RTnet ***/
-+			 dev->name, entry, le32_to_cpu(np->rx_head_desc->rx_status));
- 	}
- 
- 	/* If EOP is set on the next entry, it's a new packet. Send it up. */
-@@ -1481,23 +1482,25 @@ static void via_rhine_rx(struct rtnet_device *dev, nanosecs_abs_t *time_stamp) /
- 		int data_size = desc_status >> 16;
- 
- 		if (local_debug > 4)
--			rtdm_printk(KERN_DEBUG "  via_rhine_rx() status is %8.8x.\n", /*** RTnet ***/
--				   desc_status);
-+			pr_debug("  via_rhine_rx() status is %8.8x.\n", /*** RTnet ***/
-+				 desc_status);
- 		if (--boguscnt < 0)
- 			break;
- 		if ( (desc_status & (RxWholePkt | RxErr)) !=  RxWholePkt) {
- 			if ((desc_status & RxWholePkt) !=  RxWholePkt) {
--				rtdm_printk(KERN_WARNING "%s: Oversized Ethernet frame spanned " /*** RTnet ***/
--					   "multiple buffers, entry %#x length %d status %8.8x!\n",
--					   dev->name, entry, data_size, desc_status);
--				rtdm_printk(KERN_WARNING "%s: Oversized Ethernet frame %p vs %p.\n", /*** RTnet ***/
--					   dev->name, np->rx_head_desc, &np->rx_ring[entry]);
-+				pr_warn("%s: Oversized Ethernet frame spanned " /*** RTnet ***/
-+					"multiple buffers, entry %#x length %d status %8.8x!\n",
-+					dev->name, entry, data_size,
-+					desc_status);
-+				pr_warn("%s: Oversized Ethernet frame %p vs %p.\n", /*** RTnet ***/
-+					dev->name, np->rx_head_desc,
-+					&np->rx_ring[entry]);
- 				np->stats.rx_length_errors++;
- 			} else if (desc_status & RxErr) {
- 				/* There was a error. */
- 				if (local_debug > 2)
--					rtdm_printk(KERN_DEBUG "  via_rhine_rx() Rx error was %8.8x.\n", /*** RTnet ***/
--						   desc_status);
-+					pr_debug("  via_rhine_rx() Rx error was %8.8x.\n", /*** RTnet ***/
-+						 desc_status);
- 				np->stats.rx_errors++;
- 				if (desc_status & 0x0030) np->stats.rx_length_errors++;
- 				if (desc_status & 0x0048) np->stats.rx_fifo_errors++;
-@@ -1518,8 +1521,8 @@ static void via_rhine_rx(struct rtnet_device *dev, nanosecs_abs_t *time_stamp) /
- /*** RTnet ***/
- 				skb = np->rx_skbuff[entry];
- 				if (skb == NULL) {
--					rtdm_printk(KERN_ERR "%s: Inconsistent Rx descriptor chain.\n", /*** RTnet ***/
--						   dev->name);
-+					pr_err("%s: Inconsistent Rx descriptor chain.\n", /*** RTnet ***/
-+					       dev->name);
- 					break;
- 				}
- 				np->rx_skbuff[entry] = NULL;
-@@ -1599,9 +1602,9 @@ static void via_rhine_restart_tx(struct rtnet_device *dev) { /*** RTnet ***/
- 	else {
- 		/* This should never happen */
- 		if (local_debug > 1)
--			rtdm_printk(KERN_WARNING "%s: via_rhine_restart_tx() " /*** RTnet ***/
--				   "Another error occured %8.8x.\n",
--				   dev->name, intr_status);
-+			pr_warn("%s: via_rhine_restart_tx() " /*** RTnet ***/
-+				"Another error occured %8.8x.\n",
-+				dev->name, intr_status);
- 	}
- 
- }
-@@ -1621,10 +1624,11 @@ static void via_rhine_error(struct rtnet_device *dev, int intr_status) /*** RTne
- 		} else
- 			via_rhine_check_duplex(dev);
- 		if (local_debug)
--			rtdm_printk(KERN_ERR "%s: MII status changed: Autonegotiation " /*** RTnet ***/
--				   "advertising %4.4x  partner %4.4x.\n", dev->name,
--			   mdio_read(dev, np->phys[0], MII_ADVERTISE),
--			   mdio_read(dev, np->phys[0], MII_LPA));
-+			pr_err("%s: MII status changed: Autonegotiation " /*** RTnet ***/
-+			       "advertising %4.4x  partner %4.4x.\n",
-+			       dev->name,
-+			       mdio_read(dev, np->phys[0], MII_ADVERTISE),
-+			       mdio_read(dev, np->phys[0], MII_LPA));
- 	}
- 	if (intr_status & IntrStatsMax) {
- 		np->stats.rx_crc_errors	+= readw(ioaddr + RxCRCErrs);
-@@ -1633,21 +1637,21 @@ static void via_rhine_error(struct rtnet_device *dev, int intr_status) /*** RTne
- 	}
- 	if (intr_status & IntrTxAborted) {
- 		if (local_debug > 1)
--			rtdm_printk(KERN_INFO "%s: Abort %8.8x, frame dropped.\n", /*** RTnet ***/
-+			pr_info("%s: Abort %8.8x, frame dropped.\n", /*** RTnet ***/
- 				   dev->name, intr_status);
- 	}
- 	if (intr_status & IntrTxUnderrun) {
- 		if (np->tx_thresh < 0xE0)
- 			writeb(np->tx_thresh += 0x20, ioaddr + TxConfig);
- 		if (local_debug > 1)
--			rtdm_printk(KERN_INFO "%s: Transmitter underrun, Tx " /*** RTnet ***/
--				   "threshold now %2.2x.\n",
--				   dev->name, np->tx_thresh);
-+			pr_info("%s: Transmitter underrun, Tx " /*** RTnet ***/
-+				"threshold now %2.2x.\n",
-+				dev->name, np->tx_thresh);
- 	}
- 	if (intr_status & IntrTxDescRace) {
- 		if (local_debug > 2)
--			rtdm_printk(KERN_INFO "%s: Tx descriptor write-back race.\n", /*** RTnet ***/
--				   dev->name);
-+			pr_info("%s: Tx descriptor write-back race.\n", /*** RTnet ***/
-+				dev->name);
- 	}
- 	if ((intr_status & IntrTxError) && ~( IntrTxAborted | IntrTxUnderrun |
- 		IntrTxDescRace )) {
-@@ -1655,7 +1659,7 @@ static void via_rhine_error(struct rtnet_device *dev, int intr_status) /*** RTne
- 			writeb(np->tx_thresh += 0x20, ioaddr + TxConfig);
- 		}
- 		if (local_debug > 1)
--			rtdm_printk(KERN_INFO "%s: Unspecified error. Tx " /*** RTnet ***/
-+			pr_info("%s: Unspecified error. Tx " /*** RTnet ***/
- 				"threshold now %2.2x.\n",
- 				dev->name, np->tx_thresh);
- 	}
-@@ -1667,8 +1671,8 @@ static void via_rhine_error(struct rtnet_device *dev, int intr_status) /*** RTne
- 						 IntrTxError | IntrTxAborted | IntrNormalSummary |
- 						 IntrTxDescRace )) {
- 		if (local_debug > 1)
--			rtdm_printk(KERN_ERR "%s: Something Wicked happened! %8.8x.\n", /*** RTnet ***/
--				   dev->name, intr_status);
-+			pr_err("%s: Something Wicked happened! %8.8x.\n", /*** RTnet ***/
-+			       dev->name, intr_status);
- 	}
- 
- 	rtdm_lock_put(&np->lock); /*** RTnet ***/
-@@ -1698,7 +1702,7 @@ static void via_rhine_set_rx_mode(struct rtnet_device *dev) /*** RTnet ***/
- 
- 	if (dev->flags & IFF_PROMISC) {			/* Set promiscuous. */
- 		/* Unconditionally log net taps. */
--		printk(KERN_NOTICE "%s: Promiscuous mode enabled.\n", dev->name);
-+		pr_notice("%s: Promiscuous mode enabled.\n", dev->name);
- 		rx_mode = 0x1C;
- 		writel(0xffffffff, (void *)ioaddr + MulticastFilter0);
- 		writel(0xffffffff, (void *)ioaddr + MulticastFilter1);
-@@ -1735,8 +1739,8 @@ static int via_rhine_close(struct rtnet_device *dev) /*** RTnet ***/
- 	rtnetif_stop_queue(dev); /*** RTnet ***/
- 
- 	if (local_debug > 1)
--		rtdm_printk(KERN_DEBUG "%s: Shutting down ethercard, status was %4.4x.\n", /*** RTnet ***/
--			   dev->name, readw((void *)ioaddr + ChipCmd));
-+		pr_debug("%s: Shutting down ethercard, status was %4.4x.\n", /*** RTnet ***/
-+			 dev->name, readw((void *)ioaddr + ChipCmd));
- 
- 	/* Switch to loopback mode to avoid hardware races. */
- 	writeb(np->tx_thresh | 0x02, (void *)ioaddr + TxConfig);
-@@ -1797,7 +1801,7 @@ static int __init via_rhine_init (void)
+@@ -467,7 +466,7 @@ cleanup:
+  */
+ static void rt_icmp_rcv_err(struct rtskb *skb)
  {
- /* when a module, this is printed whether or not devices are found in probe */
- #ifdef MODULE
--	printk(version);
-+	pr_info("%s", version);
- #endif
- 	return pci_register_driver (&via_rhine_driver);
+-	rtdm_printk("RTnet: rt_icmp_rcv err\n");
++	pr_err("rt_icmp_rcv err\n");
  }
+ 
+ /***
+@@ -492,7 +491,7 @@ void __init rt_icmp_init(void)
+ 				   ICMP_REPLY_POOL_SIZE);
+ 	BUG_ON(skbs < 0);
+ 	if (skbs < ICMP_REPLY_POOL_SIZE)
+-		printk("RTnet: allocated only %d icmp rtskbs\n", skbs);
++		pr_debug("allocated only %d icmp rtskbs\n", skbs);
+ 
+ 	icmp_socket->prot.inet.tos = 0;
+ 	icmp_fd->refs = 1;
+diff --git a/kernel/drivers/net/stack/ipv4/ip_fragment.c b/kernel/drivers/net/stack/ipv4/ip_fragment.c
+index 113a71238..d20cbf52b 100644
+--- a/kernel/drivers/net/stack/ipv4/ip_fragment.c
++++ b/kernel/drivers/net/stack/ipv4/ip_fragment.c
+@@ -19,6 +19,8 @@
+  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+  */
+ 
++#define pr_fmt(fmt) "RTnet: " fmt
++
+ #include <linux/module.h>
+ #include <net/checksum.h>
+ #include <net/ip.h>
+@@ -96,7 +98,7 @@ static void alloc_collector(struct rtskb *skb, struct rtsocket *sock)
+ 		rtdm_lock_put_irqrestore(&p_coll->frags.lock, context);
+ 	}
+ 
+-	rtdm_printk("RTnet: IP fragmentation - no collector available\n");
++	pr_err("IP fragmentation - no collector available\n");
+ 	kfree_rtskb(skb);
+ }
+ 
+@@ -132,10 +134,9 @@ static struct rtskb *add_to_collector(struct rtskb *skb, unsigned int offset,
+ 							 context);
+ 
+ #ifdef FRAG_DBG
+-				rtdm_printk(
+-					"RTnet: Compensation pool empty - IP fragments "
+-					"dropped (saddr:%x, daddr:%x)\n",
+-					iph->saddr, iph->daddr);
++				pr_err("Compensation pool empty - IP fragments "
++				       "dropped (saddr:%x, daddr:%x)\n",
++				       iph->saddr, iph->daddr);
+ #endif
+ 
+ 				kfree_rtskb(first_skb);
+@@ -197,9 +198,9 @@ static struct rtskb *add_to_collector(struct rtskb *skb, unsigned int offset,
+ #endif
+ 
+ #ifdef FRAG_DBG
+-	rtdm_printk("RTnet: Unordered IP fragment (saddr:%x, daddr:%x)"
+-		    " - dropped\n",
+-		    iph->saddr, iph->daddr);
++	pr_info("Unordered IP fragment (saddr:%x, daddr:%x)"
++		" - dropped\n",
++		iph->saddr, iph->daddr);
+ #endif
+ 
+ 	kfree_rtskb(skb);
+diff --git a/kernel/drivers/net/stack/ipv4/ip_input.c b/kernel/drivers/net/stack/ipv4/ip_input.c
+index 26642ef6f..933e38b56 100644
+--- a/kernel/drivers/net/stack/ipv4/ip_input.c
++++ b/kernel/drivers/net/stack/ipv4/ip_input.c
+@@ -21,6 +21,8 @@
+  *
+  */
+ 
++#define pr_fmt(fmt) "RTnet: " fmt
++
+ #include <linux/bitops.h>
+ #include <net/checksum.h>
+ #include <net/ip.h>
+@@ -102,7 +104,7 @@ static inline void rt_ip_local_deliver(struct rtskb *skb)
+ #endif /* CONFIG_XENO_DRIVERS_NET_ADDON_PROXY */
+ 	} else {
+ 		if (IS_ENABLED(CONFIG_XENO_DRIVERS_NET_RTIPV4_DEBUG))
+-			rtdm_printk("RTnet: no protocol found\n");
++			pr_err("no protocol found\n");
+ 		kfree_rtskb(skb);
+ 	}
+ }
+diff --git a/kernel/drivers/net/stack/ipv4/protocol.c b/kernel/drivers/net/stack/ipv4/protocol.c
+index f56177da8..bd74b05ba 100644
+--- a/kernel/drivers/net/stack/ipv4/protocol.c
++++ b/kernel/drivers/net/stack/ipv4/protocol.c
+@@ -23,6 +23,8 @@
+  *
+  */
+ 
++#define pr_fmt(fmt) "RTnet: " fmt
++
+ #include <linux/socket.h>
+ #include <linux/in.h>
+ 
+@@ -80,7 +82,7 @@ int rt_inet_socket(struct rtdm_fd *fd, int protocol)
+ 	if ((prot != NULL) && (prot->protocol == protocol))
+ 		return prot->init_socket(fd);
+ 	else {
+-		rtdm_printk("RTnet: protocol with id %d not found\n", protocol);
++		pr_err("protocol with id %d not found\n", protocol);
+ 
+ 		return -ENOPROTOOPT;
+ 	}
+diff --git a/kernel/drivers/net/stack/ipv4/route.c b/kernel/drivers/net/stack/ipv4/route.c
+index d9a9c8b9b..172eac3ec 100644
+--- a/kernel/drivers/net/stack/ipv4/route.c
++++ b/kernel/drivers/net/stack/ipv4/route.c
+@@ -22,6 +22,8 @@
+  *
+  */
+ 
++#define pr_fmt(fmt) "RTnet: " fmt
++
+ #include <linux/moduleparam.h>
+ #include <net/ip.h>
+ 
+@@ -479,7 +481,7 @@ err2:
+ 	xnvfile_destroy_regular(&rtnet_ipv4_route_vfile);
+ 
+ err1:
+-	printk("RTnet: unable to initialize /proc entries (route)\n");
++	pr_err("unable to initialize /proc entries (route)\n");
+ 	return err;
+ }
+ 
+@@ -588,8 +590,7 @@ int rt_ip_route_add_host(u32 addr, unsigned char *dev_addr,
+ 	} else {
+ 		rtdm_lock_put_irqrestore(&host_table_lock, context);
+ 
+-		/*ERRMSG*/ rtdm_printk(
+-			"RTnet: no more host routes available\n");
++		pr_err("no more host routes available\n");
+ 		ret = -ENOBUFS;
+ 	}
+ 
+@@ -806,8 +807,7 @@ int rt_ip_route_add_net(u32 addr, u32 mask, u32 gw_addr)
+ 	} else {
+ 		rtdm_lock_put_irqrestore(&net_table_lock, context);
+ 
+-		/*ERRMSG*/ rtdm_printk(
+-			"RTnet: no more network routes available\n");
++		pr_err("no more network routes available\n");
+ 		return -ENOBUFS;
+ 	}
+ }
+@@ -970,8 +970,7 @@ restart:
+ 	}
+ #endif /* CONFIG_XENO_DRIVERS_NET_RTIPV4_NETROUTING */
+ 
+-	/*ERRMSG*/ rtdm_printk("RTnet: host %u.%u.%u.%u unreachable\n",
+-			       NIPQUAD(daddr));
++	pr_err("host %u.%u.%u.%u unreachable\n", NIPQUAD(daddr));
+ 	return -EHOSTUNREACH;
+ }
+ 
+@@ -987,15 +986,13 @@ int rt_ip_route_forward(struct rtskb *rtskb, u32 daddr)
+ 		return 0;
+ 
+ 	if (rtskb_acquire(rtskb, &global_pool) != 0) {
+-		/*ERRMSG*/ rtdm_printk(
+-			"RTnet: router overloaded, dropping packet\n");
++		pr_err("router overloaded, dropping packet\n");
+ 		goto error;
+ 	}
+ 
+ 	if (rt_ip_route_output(&dest, daddr, INADDR_ANY) < 0) {
+-		/*ERRMSG*/ rtdm_printk(
+-			"RTnet: unable to forward packet from %u.%u.%u.%u\n",
+-			NIPQUAD(rtskb->nh.iph->saddr));
++		pr_err("unable to forward packet from %u.%u.%u.%u\n",
++		       NIPQUAD(rtskb->nh.iph->saddr));
+ 		goto error;
+ 	}
+ 
+diff --git a/kernel/drivers/net/stack/ipv4/tcp/tcp.c b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+index 8e174507c..12896f646 100644
+--- a/kernel/drivers/net/stack/ipv4/tcp/tcp.c
++++ b/kernel/drivers/net/stack/ipv4/tcp/tcp.c
+@@ -19,6 +19,8 @@
+  *
+  */
+ 
++#define pr_fmt(fmt) "rttcp: " fmt
++
+ #include <linux/moduleparam.h>
+ #include <linux/list.h>
+ #include <linux/skbuff.h>
+@@ -441,7 +443,7 @@ static void rt_tcp_retransmit_handler(void *data)
+ 	if (unlikely(rtskb_queue_empty(&ts->retransmit_queue))) {
+ 		/* handled, but retransmission queue is empty */
+ 		rtdm_lock_get_irqsave(&ts->socket_lock, context);
+-		rtdm_printk("rttcp: bug in RT TCP retransmission routine\n");
++		pr_err("bug in RT TCP retransmission routine\n");
+ 		return;
+ 	}
+ 
+@@ -464,8 +466,7 @@ static void rt_tcp_retransmit_handler(void *data)
+ 		/* BUG, window changes are not respected */
+ 		if (unlikely(rtdev_xmit(skb)) != 0) {
+ 			kfree_rtskb(skb);
+-			rtdm_printk(
+-				"rttcp: packet retransmission from timer failed\n");
++			pr_err("packet retransmission from timer failed\n");
+ 		}
+ 	} else {
+ 		ts->timer_state = max_retransmits;
+@@ -478,7 +479,7 @@ static void rt_tcp_retransmit_handler(void *data)
+ 			rt_tcp_socket_invalidate_signal(ts);
+ 
+ 		/* retransmission queue will be cleaned up in rt_tcp_socket_destruct */
+-		rtdm_printk("rttcp: connection is lost by NACK timeout\n");
++		pr_err("connection is lost by NACK timeout\n");
+ 	}
+ }
+ 
+@@ -604,7 +605,7 @@ static int rt_ip_build_frame(struct rtskb *skb, struct rtsocket *sk,
+ 	rtdev_dereference(rt->rtdev);
+ 
+ 	if (ret != rtdev->hard_header_len) {
+-		rtdm_printk("rttcp: rt_ip_build_frame: error on lower level\n");
++		pr_err("rt_ip_build_frame: error on lower level\n");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -670,8 +671,7 @@ static int rt_tcp_segment(struct dest_route *rt, struct tcp_socket *ts,
+ 	u8 *data = NULL;
+ 
+ 	if ((skb = alloc_rtskb(mtu + hh_len + 15, &sk->skb_pool)) == NULL) {
+-		rtdm_printk(
+-			"rttcp: no more elements in skb_pool for allocation\n");
++		pr_err("no more elements in skb_pool for allocation\n");
+ 		return -ENOBUFS;
+ 	}
+ 
+@@ -719,7 +719,7 @@ static int rt_tcp_segment(struct dest_route *rt, struct tcp_socket *ts,
+ 		cloned_skb = rtskb_clone(skb, &ts->sock.skb_pool);
+ 		if (!cloned_skb) {
+ 			rtdm_lock_put_irqrestore(&ts->socket_lock, context);
+-			rtdm_printk("rttcp: cann't clone skb\n");
++			pr_err("can't clone skb\n");
+ 			ret = -ENOMEM;
+ 			goto error;
+ 		}
+@@ -769,7 +769,7 @@ static int rt_tcp_send(struct tcp_socket *ts, __be32 flags)
+ 		}
+ 	}
+ 	if (ret < 0)
+-		rtdm_printk("rttcp: can't send a packet: err %d\n", -ret);
++		pr_err("can't send a packet: err %d\n", -ret);
+ 	return ret;
+ }
+ 
+@@ -833,15 +833,15 @@ static struct rtsocket *rt_tcp_dest_socket(struct rtskb *skb)
+ 
+ 	if (tcp_v4_check(skb->len, saddr, daddr,
+ 			 rtnet_csum(skb->data, skb->len, 0))) {
+-		rtdm_printk("rttcp: invalid TCP packet checksum, dropped\n");
++		pr_err("invalid TCP packet checksum, dropped\n");
+ 		return NULL; /* Invalid checksum, drop the packet */
+ 	}
+ 
+ 	/* find the destination socket */
+ 	if ((skb->sk = rt_tcp_v4_lookup(daddr, dport)) == NULL) {
+ 		/*
+-	  rtdm_printk("Not found addr:0x%08x, port: 0x%04x\n", daddr, dport);
+-	*/
++		pr_debug("Not found addr:0x%08x, port: 0x%04x\n", daddr, dport);
++		*/
+ 		if (!th->rst) {
+ 			/* No listening socket found, send RST|ACK */
+ 			rst_socket.saddr = daddr;
+@@ -984,17 +984,16 @@ static void rt_tcp_rcv(struct rtskb *skb)
+ 		    /* but reset ack from old connection */
+ 		    ts->tcp_state == TCP_ESTABLISHED) {
+ 			rtdm_lock_put_irqrestore(&ts->socket_lock, context);
+-			rtdm_printk(
+-				"rttcp: dropped unappropriate ACK packet %u\n",
+-				ts->sync.ack_seq);
++			pr_debug("dropped unappropriate ACK packet %u\n",
++				 ts->sync.ack_seq);
+ 			goto drop;
+ 		}
+ 
+ 		rtdm_lock_put_irqrestore(&ts->socket_lock, context);
+-		rtdm_printk("rttcp: sequence number is not in window, "
+-			    "dropped (failed: %u <= %u <= %u)\n",
+-			    ts->sync.ack_seq, seq,
+-			    ts->sync.ack_seq + ts->sync.window);
++		pr_debug("sequence number is not in window, "
++			 "dropped (failed: %u <= %u <= %u)\n",
++			 ts->sync.ack_seq, seq,
++			 ts->sync.ack_seq + ts->sync.window);
+ 
+ 		/* That's a forced RST for a lost connection */
+ 		rst_socket.saddr = skb->nh.iph->daddr;
+@@ -1104,7 +1103,7 @@ static void rt_tcp_rcv(struct rtskb *skb)
+ 	if (th->ack) {
+ 		/* Check ack sequence */
+ 		if (rt_tcp_before(ts->sync.seq + 1, ntohl(th->ack_seq))) {
+-			rtdm_printk("rttcp: unexpected ACK %u %u %u\n",
++			pr_debug("unexpected ACK %u %u %u\n",
+ 				    ts->sync.seq, ts->nacked_first,
+ 				    ntohl(th->ack_seq));
+ 			rtdm_lock_put_irqrestore(&ts->socket_lock, context);
+@@ -1183,7 +1182,7 @@ drop:
+  */
+ static void rt_tcp_rcv_err(struct rtskb *skb)
+ {
+-	rtdm_printk("rttcp: rt_tcp_rcv err\n");
++	pr_err("rt_tcp_rcv err\n");
+ }
+ 
+ static int rt_tcp_window_send(struct tcp_socket *ts, u32 data_len, u8 *data_ptr)
+@@ -1196,7 +1195,7 @@ static int rt_tcp_window_send(struct tcp_socket *ts, u32 data_len, u8 *data_ptr)
+ 
+ 	if ((ret = rt_tcp_segment(&ts->rt, ts, TCP_FLAG_ACK, data_len, data_ptr,
+ 				  0)) < 0) {
+-		rtdm_printk("rttcp: cann't send a packet: err %d\n", -ret);
++		pr_err("can't send a packet: err %d\n", -ret);
+ 		return ret;
+ 	}
+ 
+@@ -1219,8 +1218,8 @@ static int rt_tcp_socket_create(struct tcp_socket *ts)
+ 	sock->prot.inet.state = TCP_CLOSE;
+ 	sock->prot.inet.tos = 0;
+ 	/*
+-      rtdm_printk("rttcp: rt_tcp_socket_create 0x%p\n", ts);
+-    */
++	pr_debug("rt_tcp_socket_create 0x%p\n", ts);
++	*/
+ 	rtdm_lock_init(&ts->socket_lock);
+ 
+ 	ts->rt.rtdev = NULL;
+@@ -1325,8 +1324,8 @@ static void rt_tcp_socket_destruct(struct tcp_socket *ts)
+ 	struct rtsocket *sock = &ts->sock;
+ 
+ 	/*
+-      rtdm_printk("rttcp: rt_tcp_socket_destruct 0x%p\n", ts);
+-    */
++	pr_debug("rt_tcp_socket_destruct 0x%p\n", ts);
++	*/
+ 
+ 	rtdm_lock_get_irqsave(&tcp_socket_base_lock, context);
+ 	if (sock->prot.inet.reg_index >= 0) {
+@@ -1570,7 +1569,7 @@ static int rt_tcp_connect(struct rtdm_fd *fd, struct tcp_socket *ts,
+ 	/* Complete three-way handshake */
+ 	ret = rt_tcp_send(ts, TCP_FLAG_SYN);
+ 	if (ret < 0) {
+-		rtdm_printk("rttcp: cann't send SYN\n");
++		pr_err("can't send SYN\n");
+ 		return ret;
+ 	}
+ 
+@@ -2415,7 +2414,7 @@ static int __init rt_tcp_init(void)
+ 	skbs = rt_bare_socket_init(rst_fd, IPPROTO_TCP, RT_TCP_RST_PRIO,
+ 				   RT_TCP_RST_POOL_SIZE);
+ 	if (skbs < RT_TCP_RST_POOL_SIZE)
+-		printk("rttcp: allocated only %d RST|ACK rtskbs\n", skbs);
++		pr_debug("allocated only %d RST|ACK rtskbs\n", skbs);
+ 	rst_socket.sock.prot.inet.tos = 0;
+ 	rst_fd->refs = 1;
+ 	rtdm_lock_init(&rst_socket.socket_lock);
+@@ -2425,14 +2424,13 @@ static int __init rt_tcp_init(void)
+      */
+ 	ret = timerwheel_init(100000000ull, 23);
+ 	if (ret < 0) {
+-		rtdm_printk("rttcp: cann't initialize timerwheel task: %d\n",
+-			    -ret);
++		pr_err("can't initialize timerwheel task: %d\n", -ret);
+ 		goto out_1;
+ 	}
+ 
+ #ifdef CONFIG_XENO_OPT_VFILE
+ 	if ((ret = rt_tcp_proc_register()) < 0) {
+-		rtdm_printk("rttcp: cann't initialize proc entry: %d\n", -ret);
++		pr_err("can't initialize proc entry: %d\n", -ret);
+ 		goto out_2;
+ 	}
+ #endif /* CONFIG_XENO_OPT_VFILE */
+@@ -2441,7 +2439,7 @@ static int __init rt_tcp_init(void)
+ 
+ 	ret = rtdm_dev_register(&tcp_device);
+ 	if (ret < 0) {
+-		rtdm_printk("rttcp: cann't register RT TCP: %d\n", -ret);
++		pr_err("can't register RT TCP: %d\n", -ret);
+ 		goto out_3;
+ 	}
+ 
+diff --git a/kernel/drivers/net/stack/ipv4/tcp/timerwheel.c b/kernel/drivers/net/stack/ipv4/tcp/timerwheel.c
+index 240837dff..6c8bf7e66 100644
+--- a/kernel/drivers/net/stack/ipv4/tcp/timerwheel.c
++++ b/kernel/drivers/net/stack/ipv4/tcp/timerwheel.c
+@@ -19,6 +19,8 @@
+  *
+  */
+ 
++#define pr_fmt(fmt) "timerwheel: " fmt
++
+ #include <linux/delay.h>
+ #include <linux/slab.h>
+ 
+@@ -125,9 +127,7 @@ static void timerwheel_pivot(void *arg)
+ 	while (1) {
+ 		ret = timerwheel_sleep();
+ 		if (ret < 0) {
+-			rtdm_printk(
+-				"timerwheel: timerwheel_pivot interrupted %d\n",
+-				-ret);
++			pr_err("timerwheel_pivot interrupted %d\n", -ret);
+ 			break;
+ 		}
+ 
+@@ -205,8 +205,7 @@ int __init timerwheel_init(nanosecs_rel_t timeout, unsigned int granularity)
+ 	err = rtdm_task_init(&wheel.pivot_task, "rttcp timerwheel",
+ 			     timerwheel_pivot, NULL, 1, 0);
+ 	if (err) {
+-		printk("timerwheel: error on pivot task initialization: %d\n",
+-		       err);
++		pr_err("error on pivot task initialization: %d\n", err);
+ 		kfree(wheel.ring);
+ 	}
+ 
+diff --git a/kernel/drivers/net/stack/ipv4/udp/udp.c b/kernel/drivers/net/stack/ipv4/udp/udp.c
+index 8ace7af06..5018ba807 100644
+--- a/kernel/drivers/net/stack/ipv4/udp/udp.c
++++ b/kernel/drivers/net/stack/ipv4/udp/udp.c
+@@ -22,6 +22,8 @@
+  *
+  */
+ 
++#define pr_fmt(fmt) "RTnet: " fmt
++
+ #include <linux/moduleparam.h>
+ #include <linux/socket.h>
+ #include <linux/in.h>
+@@ -754,7 +756,7 @@ static void rt_udp_rcv(struct rtskb *skb)
+  */
+ static void rt_udp_rcv_err(struct rtskb *skb)
+ {
+-	rtdm_printk("RTnet: rt_udp_rcv err\n");
++	pr_err("rt_udp_rcv err\n");
+ }
+ 
+ /***
 
 -- 
 2.39.2
