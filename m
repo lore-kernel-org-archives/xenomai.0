@@ -1,35 +1,34 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93C8715B0FF
-	for <xenomai@lists.linux.dev>; Fri, 12 Jul 2024 10:49:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9358015CD7A
+	for <xenomai@lists.linux.dev>; Fri, 12 Jul 2024 10:49:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720781343; cv=none; b=mM3b7NW+0wBCEkhAR4lz1rcbRJ7qsCR2Sg+4CwAQFpLhuUybHPfW0DTywHJ6yTGDKye+FmTKqCrYCMj4IKQgWKfLtcAp47cN1xmeA69Ag5V56v/+zh//LOvMVaR6BVemMZJgbiAUGKxkWg7EtK65Gl5GBJS49StLlp6oA8d7W9g=
+	t=1720781343; cv=none; b=KZIl7nm2nbpVC1jHr85T/N9BBP0eHebpDiWojL5J8SkFMgHcrPavXc67Yq+t4kQkVOUtnF7DOjnX3mEunimg+QkyC7AJpiL94hiyI9sDXHZ0MnKSJxBdr6DCcDHnHIfSpc7jfrWZiWg0xDFTDml405GhEbtV5Lc9kXh5nScgW18=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1720781343; c=relaxed/simple;
-	bh=5uso+IpD2R3pW6WT7VWhiZPW2PIyp9IDuckqDL745sA=;
+	bh=9qrbsOpsd9pskNelCbjlEyD4ScX1ry1+mTJFoIiP7Vo=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=BKlE5RjNf1ITbLjj1oLeBUYKy3Wy4c/JLzHLgxJy0aJgY79Bwc7JXLmuxUb5WqgvKgSb3YxZZnd7iNuJJnvY3L6MaGF7lJh8lZHC4YekpDJAAdT5DgUSAv8GqWmJ0DZcBvXcHI9DURpIf/Oq7WJXUkPMsf4z3Xk6P6iQhOto5V4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=OHeZWP4M; arc=none smtp.client-ip=185.136.64.226
+	 In-Reply-To:To:Cc; b=eRUlzqjR2yfNSjjRlU3UGBSYGog1c/bp59PKsZkSJp8KRFXSeN0zfRaY3zce6rfFBe5cDPDYDoW0gKMOjpw6qDTgcW4SSq1+iL9lTcPAZFWlSCFWdShkOyAJBecyZ5ZMjod5AkaAjSdexapCG+izPF2TsFAStP+spKu0Dmiib7o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=LqodxD2/; arc=none smtp.client-ip=185.136.64.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="OHeZWP4M"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20240712104855403fe09c7db890de39
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="LqodxD2/"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20240712104857df0f112fba2f53c446
         for <xenomai@lists.linux.dev>;
-        Fri, 12 Jul 2024 12:48:55 +0200
+        Fri, 12 Jul 2024 12:48:57 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=vjrkYXfIqWfnXbGnUf4LratNhG1nKE2RqBZz5IU9/g0=;
- b=OHeZWP4MnQiyMskfWwESCK3RcnKMEohB7s9KGKPHNduL8Bmk5qgFQZ/Rw11MzKY1M4DMBT
- x47Xd8SSQ0DfRVtEIrkEE0clRjyjonni2C3Pv5tmU8mnrcWnyj8HcMbqNgp9xLzF7OSlYZKc
- O4qVHgpx/UiK1q4nWzVB67H9N1g0c=;
+ bh=NQvSbazX9SiXgZd+OjvfO/eVh+8pUOAMY8tjVqsdVk4=;
+ b=LqodxD2/f263wE+GHilLT5z/nLlzcPnomOG+N8q8Mf5l8l9Ydz31n6hzf7uzGaZyvOpice
+ iWMCFBUt81X0ElUcb212PuNkPQ2mVwT+JpQSRFCXFFJS5UOTvA46xJdGdUmgxy0soqY1QGBX
+ Sq+qXKaji4hizSXRtCREk3HREwphM=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 12 Jul 2024 12:49:02 +0200
-Subject: [PATCH v2 16/33] drivers/eepro100: Migrate from rtdm_printk() and
- printk() to pr_*()
+Date: Fri, 12 Jul 2024 12:49:08 +0200
+Subject: [PATCH v2 22/33] drivers/r8169: Remove DBG_PRINT() macro
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -38,7 +37,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20240702-flo-removal-of-rtdm_printk-v2-16-facd992606c7@siemens.com>
+Message-Id: <20240702-flo-removal-of-rtdm_printk-v2-22-facd992606c7@siemens.com>
 References: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
 In-Reply-To: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
 To: xenomai@lists.linux.dev
@@ -47,530 +46,216 @@ Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-A few (rtdm_)printk() calls were missing log level information. The
-default log level (= warn) did not fit well for them.
-
-The missing log level is addressed by migrating the pr_*() API.
-
-rtdm_printk() itself is just an alias for printk(). Migrating helps to
-remove this function once all drivers were updated.
-
-While at it: rt_wait_for_cmd_done() has been reformatted to match
-current coding style.
+We can turn on/off the printing of debug messages by using the kernel
+infrastructure around dynamic_debug and DEBUG. We can decouple that
+from the driver specific RTL8169_DEBUG.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/drivers/net/drivers/eepro100.c | 235 ++++++++++++++++++----------------
- 1 file changed, 123 insertions(+), 112 deletions(-)
+ kernel/drivers/net/drivers/r8169.c | 66 ++++++++++++++++++--------------------
+ 1 file changed, 32 insertions(+), 34 deletions(-)
 
-diff --git a/kernel/drivers/net/drivers/eepro100.c b/kernel/drivers/net/drivers/eepro100.c
-index 1985befe7..e88989446 100644
---- a/kernel/drivers/net/drivers/eepro100.c
-+++ b/kernel/drivers/net/drivers/eepro100.c
-@@ -29,6 +29,8 @@
- 		Ported to RTnet (RTAI version)
- */
- 
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
- static const char *version =
- "eepro100-rt.c:1.36-RTnet-0.8 2002-2006 Jan Kiszka <Jan.Kiszka@web.de>\n"
- "eepro100-rt.c: based on eepro100.c 1.36 by D. Becker, A. V. Savochkin and others\n";
-@@ -321,26 +323,27 @@ static inline void wait_for_cmd_done(long cmd_ioaddr)
- 	while(inb(cmd_ioaddr) && --wait >= 0);
- #ifdef CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_DBG
- 	if (wait < 0)
--		printk(KERN_ALERT "eepro100: wait_for_cmd_done timeout!\n");
-+		pr_alert("eepro100: wait_for_cmd_done timeout!\n");
- #endif
- }
- 
- #ifdef CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_CMDSTATS
- static inline int rt_wait_for_cmd_done(long cmd_ioaddr, const char *cmd)
- {
--    int wait = CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_CMDTIMEOUT;
--    rtmd_time_t t0, t1;
--
--    t0 = rtdm_clock_read();
--    while (inb(cmd_ioaddr) != 0) {
--	if (wait-- == 0) {
--	    rtdm_printk(KERN_ALERT "eepro100: rt_wait_for_cmd_done(%s) "
--			"timeout!\n", cmd);
--	    return 1;
-+	int wait = CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_CMDTIMEOUT;
-+	rtmd_time_t t0, t1;
-+
-+	t0 = rtdm_clock_read();
-+	while (inb(cmd_ioaddr) != 0) {
-+		if (wait-- == 0) {
-+			pr_alert(
-+				"eepro100: rt_wait_for_cmd_done(%s) timeout!\n",
-+				cmd);
-+			return 1;
-+		}
-+		rtdm_task_busy_sleep(1000);
- 	}
--	rtdm_task_busy_sleep(1000);
--    }
--    return 0;
-+	return 0;
- }
+diff --git a/kernel/drivers/net/drivers/r8169.c b/kernel/drivers/net/drivers/r8169.c
+index 22d2697b0..8f57752ad 100644
+--- a/kernel/drivers/net/drivers/r8169.c
++++ b/kernel/drivers/net/drivers/r8169.c
+@@ -102,11 +102,9 @@ RTL8169_VERSION "2.2"	<2004/08/09>
+ 	/*** RTnet / <kk>: rt_assert must be used instead of assert() within interrupt context! ***/
+ 	#define rt_assert(expr) \
+ 		if(!(expr)) { pr_err("Assertion failed! %s,%s,%s,line=%d\n", #expr,__FILE__,__FUNCTION__,__LINE__); }
+-	#define DBG_PRINT( fmt, args...)   pr_debug(fmt, ## args);
  #else
- static inline int rt_wait_for_cmd_done(long cmd_ioaddr, const char *cmd)
-@@ -580,7 +583,7 @@ static int eepro100_init_one (struct pci_dev *pdev,
+ 	#define assert(expr) do {} while (0)
+ 	#define rt_assert(expr) do {} while (0)
+-	#define DBG_PRINT( fmt, args...)   ;
+ #endif	// end of #ifdef RTL8169_DEBUG
  
- 	static int did_version /* = 0 */;		/* Already printed version info. */
- 	if (speedo_debug > 0  &&  did_version++ == 0)
--		printk(version);
-+		pr_info("%s", version);
+ /* media options */
+@@ -815,13 +813,13 @@ static int rtl8169_init_one (struct pci_dev *pdev, const struct pci_device_id *e
+ 	priv->hw_rx_pkt_len = priv->rx_pkt_len + 8;
+ //#endif //end #ifdef RTL8169_JUMBO_FRAME_SUPPORT
  
- 	// *** RTnet ***
- 	cards_found++;
-@@ -590,12 +593,12 @@ static int eepro100_init_one (struct pci_dev *pdev,
+-	DBG_PRINT("-------------------------- \n");
+-	DBG_PRINT("dev->mtu = %d \n", rtdev->mtu);
+-	DBG_PRINT("priv->curr_mtu_size = %d \n", priv->curr_mtu_size);
+-	DBG_PRINT("priv->tx_pkt_len = %d \n", priv->tx_pkt_len);
+-	DBG_PRINT("priv->rx_pkt_len = %d \n", priv->rx_pkt_len);
+-	DBG_PRINT("priv->hw_rx_pkt_len = %d \n", priv->hw_rx_pkt_len);
+-	DBG_PRINT("-------------------------- \n");
++	pr_debug("-------------------------- \n");
++	pr_debug("dev->mtu = %d \n", rtdev->mtu);
++	pr_debug("priv->curr_mtu_size = %d \n", priv->curr_mtu_size);
++	pr_debug("priv->tx_pkt_len = %d \n", priv->tx_pkt_len);
++	pr_debug("priv->rx_pkt_len = %d \n", priv->rx_pkt_len);
++	pr_debug("priv->hw_rx_pkt_len = %d \n", priv->hw_rx_pkt_len);
++	pr_debug("-------------------------- \n");
  
- 	if (!request_region(pci_resource_start(pdev, 1),
- 			pci_resource_len(pdev, 1), "eepro100")) {
--		printk (KERN_ERR "eepro100: cannot reserve I/O ports\n");
-+		pr_err("eepro100: cannot reserve I/O ports\n");
- 		goto err_out_none;
+ 	rtdm_lock_init(&priv->lock);	/*** RTnet ***/
+ 
+@@ -848,18 +846,18 @@ static int rtl8169_init_one (struct pci_dev *pdev, const struct pci_device_id *e
+ 	// Config PHY
+ 	rtl8169_hw_PHY_config(rtdev);
+ 
+-	DBG_PRINT("Set MAC Reg C+CR Offset 0x82h = 0x01h\n");
++	pr_debug("Set MAC Reg C+CR Offset 0x82h = 0x01h\n");
+ 	RTL_W8( 0x82, 0x01 );
+ 
+ 	if( priv->mcfg < MCFG_METHOD_3 ){
+-		DBG_PRINT("Set PCI Latency=0x40\n");
++		pr_debug("Set PCI Latency=0x40\n");
+ 		pci_write_config_byte(pdev, PCI_LATENCY_TIMER, 0x40);
  	}
- 	if (!request_mem_region(pci_resource_start(pdev, 0),
- 			pci_resource_len(pdev, 0), "eepro100")) {
--		printk (KERN_ERR "eepro100: cannot reserve MMIO region\n");
-+		pr_err("eepro100: cannot reserve MMIO region\n");
- 		goto err_out_free_pio_region;
+ 
+ 	if( priv->mcfg == MCFG_METHOD_2 ){
+-		DBG_PRINT("Set MAC Reg C+CR Offset 0x82h = 0x01h\n");
++		pr_debug("Set MAC Reg C+CR Offset 0x82h = 0x01h\n");
+ 		RTL_W8( 0x82, 0x01 );
+-		DBG_PRINT("Set PHY Reg 0x0bh = 0x00h\n");
++		pr_debug("Set PHY Reg 0x0bh = 0x00h\n");
+ 		RTL8169_WRITE_GMII_REG( ioaddr, 0x0b, 0x0000 );	//w 0x0b 15 0 0
  	}
  
-@@ -603,20 +606,20 @@ static int eepro100_init_one (struct pci_dev *pdev,
- #ifdef USE_IO
- 	ioaddr = pci_resource_start(pdev, 1);
- 	if (speedo_debug > 2)
--		printk("Found Intel i82557 PCI Speedo at I/O %#lx, IRQ %d.\n",
--			   ioaddr, irq);
-+		pr_info("Found Intel i82557 PCI Speedo at I/O %#lx, IRQ %d.\n",
-+			ioaddr, irq);
- #else
- 	ioaddr = (unsigned long)ioremap(pci_resource_start(pdev, 0),
- 									pci_resource_len(pdev, 0));
- 	if (!ioaddr) {
--		printk(KERN_ERR "eepro100: cannot remap MMIO region %llx @ %llx\n",
-+		pr_err("eepro100: cannot remap MMIO region %llx @ %llx\n",
- 		       (unsigned long long)pci_resource_len(pdev, 0),
- 		       (unsigned long long)pci_resource_start(pdev, 0));
- 		goto err_out_free_mmio_region;
- 	}
- 	if (speedo_debug > 2)
--		printk("Found Intel i82557 PCI Speedo, MMIO at %#llx, IRQ %d.\n",
--		       (unsigned long long)pci_resource_start(pdev, 0), irq);
-+		pr_info("Found Intel i82557 PCI Speedo, MMIO at %#llx, IRQ %d.\n",
-+			(unsigned long long)pci_resource_start(pdev, 0), irq);
- #endif
- 
- 	/* save power state b4 pci_enable_device overwrites it */
-@@ -674,7 +677,7 @@ static int speedo_found1(struct pci_dev *pdev,
- 	rtdev = rt_alloc_etherdev(sizeof(struct speedo_private),
- 				RX_RING_SIZE * 2 + TX_RING_SIZE);
- 	if (rtdev == NULL) {
--		printk(KERN_ERR "eepro100: Could not allocate ethernet device.\n");
-+		pr_err("eepro100: Could not allocate ethernet device.\n");
- 		dma_free_coherent(&pdev->dev, size, tx_ring_space, tx_ring_dma);
- 		return -1;
- 	}
-@@ -725,9 +728,9 @@ static int speedo_found1(struct pci_dev *pdev,
+@@ -957,12 +955,12 @@ static int rtl8169_init_one (struct pci_dev *pdev, const struct pci_device_id *e
+ 				priv->linkstatus = (option & FullDup) ? _10_Full : _10_Half;
  			}
  		}
- 		if (sum != 0xBABA)
--			printk(KERN_WARNING "%s: Invalid EEPROM checksum %#4.4x, "
--				   "check settings before activating this device!\n",
--				   rtdev->name, sum);
-+			pr_warn("%s: Invalid EEPROM checksum %#4.4x, "
-+				"check settings before activating this device!\n",
-+				rtdev->name, sum);
- 		/* Don't  unregister_netdev(dev);  as the EEPro may actually be
- 		   usable, especially if the MAC address is set later.
- 		   On the other hand, it may be unusable if MDI data is corrupted. */
-@@ -745,15 +748,19 @@ static int speedo_found1(struct pci_dev *pdev,
- 	else
- 		product = pci_name(pdev);
+-		DBG_PRINT("priv->linkstatus = 0x%02x\n", priv->linkstatus);
++		pr_debug("priv->linkstatus = 0x%02x\n", priv->linkstatus);
  
--	printk(KERN_INFO "%s: %s, ", rtdev->name, product);
--
--	for (i = 0; i < 5; i++)
--		printk("%2.2X:", rtdev->dev_addr[i]);
--	printk("%2.2X, ", rtdev->dev_addr[i]);
-+	pr_info(
-+#ifdef USE_IO
-+		"%s: %s, %2.2X:%2.2X:%2.2X:%2.2X:%2.2X:%2.2X, I/O at %#3lx, IRQ %d\n",
-+#else
-+		"%s: %s, %2.2X:%2.2X:%2.2X:%2.2X:%2.2X:%2.2X, IRQ %d\n",
-+#endif
-+		rtdev->name, product, rtdev->dev_addr[0], rtdev->dev_addr[1],
-+		rtdev->dev_addr[2], rtdev->dev_addr[3], rtdev->dev_addr[4],
-+		rtdev->dev_addr[5],
- #ifdef USE_IO
--	printk("I/O at %#3lx, ", ioaddr);
-+		ioaddr,
- #endif
--	printk("IRQ %d.\n", pdev->irq);
-+		pdev->irq);
+ 	}// end of TBI is not enabled
+ 	else{
+ 		udelay(100);
+-		DBG_PRINT("1000Mbps Full-duplex operation, TBI Link %s!\n",(RTL_R32(TBICSR) & TBILinkOK) ? "OK" : "Failed" );
++		pr_debug("1000Mbps Full-duplex operation, TBI Link %s!\n",(RTL_R32(TBICSR) & TBILinkOK) ? "OK" : "Failed" );
  
- 	outl(PortReset, ioaddr + SCBPort);
- 	inl(ioaddr + SCBPort);
-@@ -788,9 +795,10 @@ static int speedo_found1(struct pci_dev *pdev,
- 		sp->chip_id = 1;
+ 	}// end of TBI is not enabled
+ 
+@@ -1094,7 +1092,7 @@ static int rtl8169_open (struct rtnet_device *rtdev)
+ 
+ 	// ------------------------------------------------------
+ 
+-	//DBG_PRINT("%s: %s() alloc_rxskb_cnt = %d\n", dev->name, __FUNCTION__, alloc_rxskb_cnt );	/*** <kk> won't work anymore... ***/
++	//pr_debug("%s: %s() alloc_rxskb_cnt = %d\n", dev->name, __FUNCTION__, alloc_rxskb_cnt );	/*** <kk> won't work anymore... ***/
+ 
+ 	return 0;
+ 
+@@ -1117,7 +1115,7 @@ static void rtl8169_hw_PHY_config (struct rtnet_device *rtdev)
+ 	struct rtl8169_private *priv = rtdev->priv;
+ 	void *ioaddr = (void*)priv->ioaddr;
+ 
+-	DBG_PRINT("priv->mcfg=%d, priv->pcfg=%d\n",priv->mcfg,priv->pcfg);
++	pr_debug("priv->mcfg=%d, priv->pcfg=%d\n",priv->mcfg,priv->pcfg);
+ 
+ 	if( priv->mcfg == MCFG_METHOD_4 ){
+ 		RTL8169_WRITE_GMII_REG( (unsigned long)ioaddr, 0x1F, 0x0001 );
+@@ -1172,7 +1170,7 @@ static void rtl8169_hw_PHY_config (struct rtnet_device *rtdev)
+ 		RTL8169_WRITE_GMII_REG( (unsigned long)ioaddr, 0x0B, 0x0000 );
  	}
- 
--	if (sp->rx_bug)
--		printk(KERN_ERR "  *** Receiver lock-up bug detected ***\n"
--		       KERN_ERR "  Your device may not work reliably!\n");
-+	if (sp->rx_bug) {
-+		pr_err("  *** Receiver lock-up bug detected ***\n");
-+		pr_err("  Your device may not work reliably!\n");
-+	}
- 
- 	// *** RTnet ***
- 	/* The Speedo-specific entries in the device structure. */
-@@ -862,7 +870,7 @@ static int mdio_read(long ioaddr, int phy_id, int location)
- 	do {
- 		val = inl(ioaddr + SCBCtrlMDI);
- 		if (--boguscnt < 0) {
--			printk(KERN_ERR " mdio_read() timed out with val = %8.8x.\n", val);
-+			pr_err(" mdio_read() timed out with val = %8.8x.\n", val);
- 			break;
- 		}
- 	} while (! (val & 0x10000000));
-@@ -878,7 +886,8 @@ speedo_open(struct rtnet_device *rtdev)
- 	int retval;
- 
- 	if (speedo_debug > 1)
--		printk(KERN_DEBUG "%s: speedo_open() irq %d.\n", rtdev->name, rtdev->irq);
-+		pr_debug("%s: speedo_open() irq %d.\n", rtdev->name,
-+			 rtdev->irq);
- 
- 	pci_set_power_state(sp->pdev, 0);
- 
-@@ -927,10 +936,9 @@ speedo_open(struct rtnet_device *rtdev)
- 	else
- 		rtnetif_carrier_off(rtdev);
- 
--	if (speedo_debug > 2) {
--		printk(KERN_DEBUG "%s: Done speedo_open(), status %8.8x.\n",
--			   rtdev->name, inw(ioaddr + SCBStatus));
--	}
-+	if (speedo_debug > 2)
-+		pr_debug("%s: Done speedo_open(), status %8.8x.\n", rtdev->name,
-+			 inw(ioaddr + SCBStatus));
- 
- 	/* No need to wait for the command unit to accept here. */
- 	if ((sp->phy[0] & 0x8000) == 0)
-@@ -966,8 +974,8 @@ static void speedo_resume(struct rtnet_device *rtdev)
- 
- 	if (sp->rx_ringp[sp->cur_rx % RX_RING_SIZE] == NULL) {
- 		if (speedo_debug > 2)
--			printk(KERN_DEBUG "%s: NULL cur_rx in speedo_resume().\n",
--					rtdev->name);
-+			pr_debug("%s: NULL cur_rx in speedo_resume().\n",
-+				 rtdev->name);
- 	} else {
- 		wait_for_cmd_done(ioaddr + SCBCmd);
- 		outl(sp->rx_ring_dma[sp->cur_rx % RX_RING_SIZE],
-@@ -1009,25 +1017,26 @@ static void speedo_show_state(struct rtnet_device *rtdev)
- 
- 	/* Print a few items for debugging. */
- 	if (speedo_debug > 0) {
--		printk(KERN_DEBUG "%s: Tx ring dump,  Tx queue %u / %u:\n", rtdev->name,
--			   sp->cur_tx, sp->dirty_tx);
-+		pr_debug("%s: Tx ring dump,  Tx queue %u / %u:\n", rtdev->name,
-+			 sp->cur_tx, sp->dirty_tx);
- 		for (i = 0; i < TX_RING_SIZE; i++)
--			printk(KERN_DEBUG "%s:  %c%c%2d %8.8x.\n", rtdev->name,
--				   i == sp->dirty_tx % TX_RING_SIZE ? '*' : ' ',
--				   i == sp->cur_tx % TX_RING_SIZE ? '=' : ' ',
--				   i, sp->tx_ring[i].status);
-+			pr_debug("%s:  %c%c%2d %8.8x.\n", rtdev->name,
-+				 i == sp->dirty_tx % TX_RING_SIZE ? '*' : ' ',
-+				 i == sp->cur_tx % TX_RING_SIZE ? '=' : ' ', i,
-+				 sp->tx_ring[i].status);
+ 	else{
+-		DBG_PRINT("priv->mcfg=%d. Discard hw PHY config.\n",priv->mcfg);
++		pr_debug("priv->mcfg=%d. Discard hw PHY config.\n",priv->mcfg);
  	}
--	printk(KERN_DEBUG "%s: Printing Rx ring"
--		   " (next to receive into %u, dirty index %u).\n",
--		   rtdev->name, sp->cur_rx, sp->dirty_rx);
-+	pr_debug("%s: Printing Rx ring"
-+		 " (next to receive into %u, dirty index %u).\n",
-+		 rtdev->name, sp->cur_rx, sp->dirty_rx);
+ }
  
- 	for (i = 0; i < RX_RING_SIZE; i++)
--		printk(KERN_DEBUG "%s: %c%c%c%2d %8.8x.\n", rtdev->name,
--			   sp->rx_ringp[i] == sp->last_rxf ? 'l' : ' ',
--			   i == sp->dirty_rx % RX_RING_SIZE ? '*' : ' ',
--			   i == sp->cur_rx % RX_RING_SIZE ? '=' : ' ',
--			   i, (sp->rx_ringp[i] != NULL) ?
--					   (unsigned)sp->rx_ringp[i]->status : 0);
-+		pr_debug("%s: %c%c%c%2d %8.8x.\n", rtdev->name,
-+			 sp->rx_ringp[i] == sp->last_rxf ? 'l' : ' ',
-+			 i == sp->dirty_rx % RX_RING_SIZE ? '*' : ' ',
-+			 i == sp->cur_rx % RX_RING_SIZE ? '=' : ' ', i,
-+			 (sp->rx_ringp[i] != NULL) ?
-+				 (unsigned)sp->rx_ringp[i]->status :
-+				 0);
+@@ -1225,12 +1223,12 @@ static void rtl8169_hw_start (struct rtnet_device *rtdev)
+ 		priv->mcfg == MCFG_METHOD_3)
+ 	{
+ 		RTL_W16( CPlusCmd, (RTL_R16(CPlusCmd)|(1<<14)|(1<<3)) );
+-		DBG_PRINT("Set MAC Reg C+CR Offset 0xE0: bit-3 and bit-14\n");
++		pr_debug("Set MAC Reg C+CR Offset 0xE0: bit-3 and bit-14\n");
+ 	}
+ 	else
+ 	{
+ 		RTL_W16( CPlusCmd, (RTL_R16(CPlusCmd)|(1<<3)) );
+-		DBG_PRINT("Set MAC Reg C+CR Offset 0xE0: bit-3.\n");
++		pr_debug("Set MAC Reg C+CR Offset 0xE0: bit-3.\n");
+ 	}
  
  	{
- 		long ioaddr = rtdev->base_addr;
-@@ -1035,8 +1044,9 @@ static void speedo_show_state(struct rtnet_device *rtdev)
- 		for (i = 0; i < 16; i++) {
- 			/* FIXME: what does it mean?  --SAW */
- 			if (i == 6) i = 21;
--			printk(KERN_DEBUG "%s:  PHY index %d register %d is %4.4x.\n",
--				   rtdev->name, phy_num, i, mdio_read(ioaddr, phy_num, i));
-+			pr_debug("%s:  PHY index %d register %d is %4.4x.\n",
-+				 rtdev->name, phy_num, i,
-+				 mdio_read(ioaddr, phy_num, i));
- 		}
- 	}
- }
-@@ -1121,7 +1131,7 @@ speedo_start_xmit(struct rtskb *skb, struct rtnet_device *rtdev)
- 
- 		rtdm_lock_put_irqrestore(&sp->lock, context);
- 
--		rtdm_printk(KERN_ERR "%s: incorrect tbusy state, fixed.\n", rtdev->name);
-+		pr_err("%s: incorrect tbusy state, fixed.\n", rtdev->name);
- 		// *** RTnet ***
- 
- 		return 1;
-@@ -1194,15 +1204,16 @@ static void speedo_tx_buffer_gc(struct rtnet_device *rtdev)
- 		int status = le32_to_cpu(sp->tx_ring[entry].status);
- 
- 		if (speedo_debug > 5)
--			printk(KERN_DEBUG " scavenge candidate %d status %4.4x.\n",
--				   entry, status);
-+			pr_debug(" scavenge candidate %d status %4.4x.\n",
-+				 entry, status);
- 		if ((status & StatusComplete) == 0)
- 			break;			/* It still hasn't been processed. */
- 		if (status & TxUnderrun)
- 			if (sp->tx_threshold < 0x01e08000) {
- 				if (speedo_debug > 2)
--					printk(KERN_DEBUG "%s: TX underrun, threshold adjusted.\n",
--						   rtdev->name);
-+					pr_debug(
-+						"%s: TX underrun, threshold adjusted.\n",
-+						rtdev->name);
- 				sp->tx_threshold += 0x00040000;
+@@ -1308,7 +1306,7 @@ static void rtl8169_init_ring (struct rtnet_device *rtdev)
+ 				priv->RxDescArray[i].buf_Haddr = 0;
  			}
- 		/* Free the original skb. */
-@@ -1250,10 +1261,10 @@ static int speedo_interrupt(rtdm_irq_t *irq_handle)
- 
- #ifdef CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_DBG
- 	/* A lock to prevent simultaneous entry on SMP machines. */
--	if (test_and_set_bit(0, (void*)&sp->in_interrupt)) {
--		rtdm_printk(KERN_ERR"%s: SMP simultaneous entry of an interrupt handler.\n",
--			   rtdev->name);
--		sp->in_interrupt = 0;	/* Avoid halting machine. */
-+	if (test_and_set_bit(0, (void *)&sp->in_interrupt)) {
-+		pr_err("%s: SMP simultaneous entry of an interrupt handler.\n",
-+		       rtdev->name);
-+		sp->in_interrupt = 0; /* Avoid halting machine. */
- 		return ret;
- 	}
- #endif
-@@ -1267,8 +1278,8 @@ static int speedo_interrupt(rtdm_irq_t *irq_handle)
- 		speedo_write_flush(ioaddr);
- 
- 		if (speedo_debug > 4)
--			rtdm_printk(KERN_DEBUG "%s: interrupt  status=%#4.4x.\n",
--				   rtdev->name, status);
-+			pr_debug("%s: interrupt  status=%#4.4x.\n", rtdev->name,
-+				 status);
- 
- 		if ((status & 0xfc00) == 0)
- 			break;
-@@ -1287,39 +1298,39 @@ static int speedo_interrupt(rtdm_irq_t *irq_handle)
- 			rtdm_lock_get(&sp->lock);
- 			if ((status & 0x003c) == 0x0028) {		/* No more Rx buffers. */
- 				struct RxFD *rxf;
--				rtdm_printk(KERN_WARNING "%s: card reports no RX buffers.\n",
--						rtdev->name);
-+				pr_warn("%s: card reports no RX buffers.\n",
-+					rtdev->name);
- 				rxf = sp->rx_ringp[sp->cur_rx % RX_RING_SIZE];
- 				if (rxf == NULL) {
- 					if (speedo_debug > 2)
--						rtdm_printk(KERN_DEBUG
--								"%s: NULL cur_rx in speedo_interrupt().\n",
--								rtdev->name);
-+						pr_debug(
-+							"%s: NULL cur_rx in speedo_interrupt().\n",
-+							rtdev->name);
- 					sp->rx_ring_state |= RrNoMem|RrNoResources;
- 				} else if (rxf == sp->last_rxf) {
- 					if (speedo_debug > 2)
--						rtdm_printk(KERN_DEBUG
--								"%s: cur_rx is last in speedo_interrupt().\n",
--								rtdev->name);
-+						pr_debug(
-+							"%s: cur_rx is last in speedo_interrupt().\n",
-+							rtdev->name);
- 					sp->rx_ring_state |= RrNoMem|RrNoResources;
- 				} else
- 					outb(RxResumeNoResources, ioaddr + SCBCmd);
- 			} else if ((status & 0x003c) == 0x0008) { /* No resources. */
- 				struct RxFD *rxf;
--				rtdm_printk(KERN_WARNING "%s: card reports no resources.\n",
--						rtdev->name);
-+				pr_warn("%s: card reports no resources.\n",
-+					rtdev->name);
- 				rxf = sp->rx_ringp[sp->cur_rx % RX_RING_SIZE];
- 				if (rxf == NULL) {
- 					if (speedo_debug > 2)
--						rtdm_printk(KERN_DEBUG
--								"%s: NULL cur_rx in speedo_interrupt().\n",
--								rtdev->name);
-+						pr_debug(
-+							"%s: NULL cur_rx in speedo_interrupt().\n",
-+							rtdev->name);
- 					sp->rx_ring_state |= RrNoMem|RrNoResources;
- 				} else if (rxf == sp->last_rxf) {
- 					if (speedo_debug > 2)
--						rtdm_printk(KERN_DEBUG
--								"%s: cur_rx is last in speedo_interrupt().\n",
--								rtdev->name);
-+						pr_debug(
-+							"%s: cur_rx is last in speedo_interrupt().\n",
-+							rtdev->name);
- 					sp->rx_ring_state |= RrNoMem|RrNoResources;
- 				} else {
- 					/* Restart the receiver. */
-@@ -1333,9 +1344,8 @@ static int speedo_interrupt(rtdm_irq_t *irq_handle)
- 		}
- 
- 		if ((sp->rx_ring_state&(RrNoMem|RrNoResources)) == RrNoResources) {
--			rtdm_printk(KERN_WARNING
--					"%s: restart the receiver after a possible hang.\n",
--					rtdev->name);
-+			pr_warn("%s: restart the receiver after a possible hang.\n",
-+				rtdev->name);
- 			rtdm_lock_get(&sp->lock);
- 			/* Restart the receiver.
- 			   I'm not sure if it's always right to restart the receiver
-@@ -1362,8 +1372,8 @@ static int speedo_interrupt(rtdm_irq_t *irq_handle)
- 		}
- 
- 		if (--boguscnt < 0) {
--			rtdm_printk(KERN_ERR "%s: Too much work at interrupt, status=0x%4.4x.\n",
--				   rtdev->name, status);
-+			pr_err("%s: Too much work at interrupt, status=0x%4.4x.\n",
-+			       rtdev->name, status);
- 			/* Clear all interrupt sources. */
- 			/* Will change from 0xfc00 to 0xff00 when we start handling
- 			   FCP and ER interrupts --Dragan */
-@@ -1373,8 +1383,8 @@ static int speedo_interrupt(rtdm_irq_t *irq_handle)
- 	} while (1);
- 
- 	if (speedo_debug > 3)
--		rtdm_printk(KERN_DEBUG "%s: exiting interrupt, status=%#4.4x.\n",
--			   rtdev->name, inw(ioaddr + SCBStatus));
-+		pr_debug("%s: exiting interrupt, status=%#4.4x.\n", rtdev->name,
-+			 inw(ioaddr + SCBStatus));
- 
- 	clear_bit(0, (void*)&sp->in_interrupt);
- 	if (packets > 0)
-@@ -1436,8 +1446,8 @@ static int speedo_refill_rx_buf(struct rtnet_device *rtdev, int force)
- 			int forw_entry;
- 			if (speedo_debug > 2 || !(sp->rx_ring_state & RrOOMReported)) {
- 				// *** RTnet ***
--				rtdm_printk(KERN_WARNING "%s: can't fill rx buffer (force %d)!\n",
--						rtdev->name, force);
-+				pr_warn("%s: can't fill rx buffer (force %d)!\n",
-+					rtdev->name, force);
- 				// *** RTnet ***
- 				sp->rx_ring_state |= RrOOMReported;
+ 			else{
+-				DBG_PRINT("%s: %s() Rx_skbuff == NULL\n", rtdev->name, __FUNCTION__);
++				pr_debug("%s: %s() Rx_skbuff == NULL\n", rtdev->name, __FUNCTION__);
+ 				priv->drvinit_fail = 1;
  			}
-@@ -1483,7 +1493,7 @@ speedo_rx(struct rtnet_device *rtdev, int* packets, nanosecs_abs_t *time_stamp)
- 	int alloc_ok = 1;
- 
- 	if (speedo_debug > 4)
--		rtdm_printk(KERN_DEBUG " In speedo_rx().\n");
-+		pr_debug(" In speedo_rx().\n");
- 	/* If we own the next entry, it's a new packet. Send it up. */
- 	while (sp->rx_ringp[entry] != NULL) {
- 		int status;
-@@ -1506,25 +1516,26 @@ speedo_rx(struct rtnet_device *rtdev, int* packets, nanosecs_abs_t *time_stamp)
- 			/* Postpone the packet.  It'll be reaped at an interrupt when this
- 			   packet is no longer the last packet in the ring. */
- 			if (speedo_debug > 2)
--				rtdm_printk(KERN_DEBUG "%s: RX packet postponed!\n",
--					   rtdev->name);
-+				pr_debug("%s: RX packet postponed!\n",
-+					 rtdev->name);
- 			sp->rx_ring_state |= RrPostponed;
- 			break;
- 		}
- 
- 		if (speedo_debug > 4)
--			rtdm_printk(KERN_DEBUG "  speedo_rx() status %8.8x len %d.\n", status,
-+			pr_debug("  speedo_rx() status %8.8x len %d.\n", status,
- 				   pkt_len);
- 		if ((status & (RxErrTooBig|RxOK|0x0f90)) != RxOK) {
- 			if (status & RxErrTooBig)
--				rtdm_printk(KERN_ERR "%s: Ethernet frame overran the Rx buffer, "
--					   "status %8.8x!\n", rtdev->name, status);
-+				pr_err("%s: Ethernet frame overran the Rx buffer, "
-+				       "status %8.8x!\n",
-+				       rtdev->name, status);
- 			else if (! (status & RxOK)) {
- 				/* There was a fatal error.  This *should* be impossible. */
- 				sp->stats.rx_errors++;
--				rtdm_printk(KERN_ERR "%s: Anomalous event in speedo_rx(), "
--					   "status %8.8x.\n",
--					   rtdev->name, status);
-+				pr_err("%s: Anomalous event in speedo_rx(), "
-+				       "status %8.8x.\n",
-+				       rtdev->name, status);
+ 		}//-----------------------------------------------------------------------
+@@ -1424,7 +1422,7 @@ static int rtl8169_start_xmit (struct rtskb *skb, struct rtnet_device *rtdev)
  			}
- 		} else {
- 			struct rtskb *skb;
-@@ -1535,8 +1546,8 @@ speedo_rx(struct rtnet_device *rtdev, int* packets, nanosecs_abs_t *time_stamp)
- 				/* Pass up the already-filled skbuff. */
- 				skb = sp->rx_skbuff[entry];
- 				if (skb == NULL) {
--					rtdm_printk(KERN_ERR "%s: Inconsistent Rx descriptor chain.\n",
--						   rtdev->name);
-+					pr_err("%s: Inconsistent Rx descriptor chain.\n",
-+					       rtdev->name);
- 					break;
+ 
+ 			/* print frame informations */
+-			DBG_PRINT("%s: TX len = %d, skb->len = %d, eth_proto=%04x\n", __FUNCTION__, len, skb->len, proto);
++			pr_debug("%s: TX len = %d, skb->len = %d, eth_proto=%04x\n", __FUNCTION__, len, skb->len, proto);
+ 
+ 			break;	/* leave loop */
+ 		}
+@@ -1618,7 +1616,7 @@ static void rtl8169_rx_interrupt (struct rtnet_device *rtdev, struct rtl8169_pri
+ 					priv->Rx_skbuff[cur_rx] = n_skb;
  				}
- 				sp->rx_skbuff[entry] = NULL;
-@@ -1583,8 +1594,8 @@ speedo_close(struct rtnet_device *rtdev)
- 	rtnetif_stop_queue(rtdev);
+ 				else{
+-					DBG_PRINT("%s: Allocate n_skb failed! (priv->rx_buf_size = %d)\n",__FUNCTION__, priv->rx_buf_size );
++					pr_debug("%s: Allocate n_skb failed! (priv->rx_buf_size = %d)\n",__FUNCTION__, priv->rx_buf_size );
+ 					priv->Rx_skbuff[cur_rx] = rx_skb;
+ 				}
  
- 	if (speedo_debug > 1)
--		printk(KERN_DEBUG "%s: Shutting down ethercard, status was %4.4x.\n",
--			   rtdev->name, inw(ioaddr + SCBStatus));
-+		pr_debug("%s: Shutting down ethercard, status was %4.4x.\n",
-+			 rtdev->name, inw(ioaddr + SCBStatus));
+@@ -1638,7 +1636,7 @@ static void rtl8169_rx_interrupt (struct rtnet_device *rtdev, struct rtl8169_pri
+ 					rxdesc->buf_addr = cpu_to_le32(priv->rx_skbuff_dma_addr[cur_rx]);
+ 				}
+ 				else{
+-					DBG_PRINT("%s: %s() cur_skb == NULL\n", rtdev->name, __FUNCTION__);
++					pr_debug("%s: %s() cur_skb == NULL\n", rtdev->name, __FUNCTION__);
+ 				}
  
- 	/* Shutdown procedure according to Intel's e100 */
- 	outl(PortPartialReset, ioaddr + SCBPort);
-@@ -1672,8 +1683,8 @@ static void set_rx_mode(struct rtnet_device *rtdev)
- 		new_rx_mode = 0;
+ 			}//------------------------------------------------------------
+@@ -1652,7 +1650,7 @@ static void rtl8169_rx_interrupt (struct rtnet_device *rtdev, struct rtl8169_pri
+ 	}// end of while ( (priv->RxDescArray[cur_rx].status & 0x80000000)== 0)
  
- 	if (speedo_debug > 3)
--		printk(KERN_DEBUG "%s: set_rx_mode %d -> %d\n", rtdev->name,
--				sp->rx_mode, new_rx_mode);
-+		pr_debug("%s: set_rx_mode %d -> %d\n", rtdev->name, sp->rx_mode,
-+			 new_rx_mode);
+ 	if( rxdesc_cnt >= max_interrupt_work ){
+-		DBG_PRINT("%s: Too much work at Rx interrupt.\n", rtdev->name);
++		pr_debug("%s: Too much work at Rx interrupt.\n", rtdev->name);
+ 	}
  
- 	if ((int)(sp->cur_tx - sp->dirty_tx) > TX_RING_SIZE - TX_MULTICAST_SIZE) {
- 	    /* The Tx ring is full -- don't add anything!  Hope the mode will be
-@@ -1835,7 +1846,7 @@ static int __init eepro100_init_module(void)
- {
- #ifdef CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_DBG
- 	if (local_debug >= 0 && speedo_debug != local_debug)
--		printk(KERN_INFO "eepro100.c: Debug level is %d.\n", local_debug);
-+		pr_info("eepro100.c: Debug level is %d.\n", local_debug);
- 	if (local_debug >= 0)
- 		speedo_debug = local_debug;
- #else  /* !CONFIG_XENO_DRIVERS_NET_DRV_EEPRO100_DBG */
+ 	priv->cur_rx = cur_rx;
+@@ -1704,7 +1702,7 @@ static int rtl8169_interrupt(rtdm_irq_t *irq_handle)
+ 		}
+ 
+ 		if (unlikely(status & SYSErr)) {
+-			DBG_PRINT("PCI error...!? %i\n", __LINE__);
++			pr_debug("PCI error...!? %i\n", __LINE__);
+ 			rtl8169_pcierr_interrupt(rtdev);
+ 			break;
+ 		}
+@@ -1820,7 +1818,7 @@ static int rtl8169_close (struct rtnet_device *rtdev)
+ 		}
+ 	}//-----------------------------------------------------------------------------
+ 
+-	//DBG_PRINT("%s: %s() alloc_rxskb_cnt = %d\n", dev->name, __FUNCTION__, alloc_rxskb_cnt );	/*** <kk> won't work anymore ***/
++	//pr_debug("%s: %s() alloc_rxskb_cnt = %d\n", dev->name, __FUNCTION__, alloc_rxskb_cnt );	/*** <kk> won't work anymore ***/
+ 
+ 	return 0;
+ }
+@@ -1950,13 +1948,13 @@ static int rtl8169_change_mtu(struct net_device *dev, int new_mtu)
+ 	RTL_W16(RxMaxSize, (unsigned short)priv->hw_rx_pkt_len);
+ 	RTL_W8(Cfg9346, Cfg9346_Lock);
+ 
+-	DBG_PRINT("-------------------------- \n");
+-	DBG_PRINT("dev->mtu = %d \n", dev->mtu);
+-	DBG_PRINT("priv->curr_mtu_size = %d \n", priv->curr_mtu_size);
+-	DBG_PRINT("priv->rx_pkt_len = %d \n", priv->rx_pkt_len);
+-	DBG_PRINT("priv->tx_pkt_len = %d \n", priv->tx_pkt_len);
+-	DBG_PRINT("RTL_W16( RxMaxSize, %d )\n", priv->hw_rx_pkt_len);
+-	DBG_PRINT("-------------------------- \n");
++	pr_debug("-------------------------- \n");
++	pr_debug("dev->mtu = %d \n", dev->mtu);
++	pr_debug("priv->curr_mtu_size = %d \n", priv->curr_mtu_size);
++	pr_debug("priv->rx_pkt_len = %d \n", priv->rx_pkt_len);
++	pr_debug("priv->tx_pkt_len = %d \n", priv->tx_pkt_len);
++	pr_debug("RTL_W16( RxMaxSize, %d )\n", priv->hw_rx_pkt_len);
++	pr_debug("-------------------------- \n");
+ 
+ 	rtl8169_close(dev);
+ 	rtl8169_open(dev);
 
 -- 
 2.39.2
