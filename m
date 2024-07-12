@@ -1,35 +1,35 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E273B146D7A
-	for <xenomai@lists.linux.dev>; Fri, 12 Jul 2024 10:58:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5674152163
+	for <xenomai@lists.linux.dev>; Fri, 12 Jul 2024 10:59:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1720781944; cv=none; b=fcaGN8MJFOvNg2GBSv4htyZW8FBnROiPU0oRQu1Pb26UOHoF4nBpfp8qg2DIi9q6/6gCYPzsJooHXd3p08THEQ8fTh8Lz2mstTlqtfDI51N5M8rMfLV8WO0Ko/L2olGEgtUN2ypax6sKyndTxpob5k6Q9yBbOxDJD40AeZ001BQ=
+	t=1720781945; cv=none; b=OVq/N2d/XoAAreICddY5U59v0Dk62kjV4y+BLF9tLYdlt8qNRjAT0383RHbQBUN+nvP0UegL+2tiQkjZWOfKUEK1TLpJl3F9FL0TcT4NSoPECC5lRBtr/RDOyqcJQH87ycNdKCfXzxcgF0TfwAa/VYC4SgBIioZGwk8Wk+rnb+s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1720781944; c=relaxed/simple;
-	bh=Rz5RtCODAqRC86SU70Va5gO9HcOlyR1YzOde0aMPaAU=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=hlnx1PdAWJ/ZwmberIqIu7/46sZFX+XAH8DdNHmZWAxAII7ls5uAhJ6+KssP4vZQc4gS9vE7wTLBZm8M1Pl8Z39SKJ9R7ilm1ifSUbDAmJu/nsihZc6jg4/Dwl0NHES8WcwGxXGYCjWHYleRgddtrD1HsjB3rekuQYxHNUM+3wk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=NDxa3agf; arc=none smtp.client-ip=185.136.64.227
+	s=arc-20240116; t=1720781945; c=relaxed/simple;
+	bh=Q17GVPfrSuAtQmu5IIfQPj07HOmr2F3zTKquIdGT8Cs=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=KQWF3BCLF0ty7iQ8H5gm8Xy10VnvaHfWyuOt/2h+9sVCO3OS2xNBHJ+XUopTFZ8Mjb9n5n2v8KfKkRaLz3R33MkfCC9KEey8o0DcW0OcnTOQROU74Hwca++q6xpe3k4revoEkCfDHerdCYrFFY60DjyUbHv55ckUiqAIF/LwdNE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=vs8sP/1m; arc=none smtp.client-ip=185.136.65.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="NDxa3agf"
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202407121048482bcae8cdcd8dfcc6de
+	dkim=pass (1024-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="vs8sP/1m"
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 2024071210485340e7a5cbf09383a197
         for <xenomai@lists.linux.dev>;
-        Fri, 12 Jul 2024 12:48:49 +0200
+        Fri, 12 Jul 2024 12:48:54 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=S0DIwofqdyT6jkdjQjEIWXn0amFn2pAdJnDM8ar6noY=;
- b=NDxa3agfrO2BIJzZPBEnyXnf+EY3cj+dN4qMDziyrWy1ph2DjcEJf9EzBFp9KIXNu0KaNO
- Dt4lzsXVvFn05GR/A9JgWEw19pGKa5nTNXE9xpdq54zmcO9IqnUgebXmRYzSrtI0xyKBODyq
- XeeuUxufKpsL8WGoQQk6mGsEqH8Pg=;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=LckumQNyeZvAHrWa3c5VEG6aVczVdFwEO2psnBfkWMo=;
+ b=vs8sP/1mbiuAWSJ9YTfyJ+qaKjfQkEGzgKoOrzJAaGAUK5x/sHZ379bmpS5MD4HvSzmlJI
+ b+rQpujyFX/1PQxNOHMmttyukMsyNz6MoH5SigA80mH8h0Gybysz6W5MBHznyqLMd1FQTMR4
+ nSEFknXjRyqayJqNIb6Kx1InYZDMA=;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v2 00/33] drivers: Fix missing printk log levels, remove
- rtdm_printk()
-Date: Fri, 12 Jul 2024 12:48:46 +0200
-Message-Id: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
+Date: Fri, 12 Jul 2024 12:48:59 +0200
+Subject: [PATCH v2 13/33] drivers/freescale: Add missing log levels of
+ rtdm_printk_ratelimited()
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -38,194 +38,54 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAA4KkWYC/42OSQ7CMBAEvxL5zCDHYVE48Q8UIS9jYuElGgcLF
- OXvmLyAY9WhqxeWkRxmdmkWRlhcdilWELuG6VHGB4IzlZng4sDPXID1CQhDKtJDskCzCfeJXJy
- foI6d4FJI0Xec1QElM4IiGfVYJ+LL+yonQuveW/E2VB5dnhN9tgOl/dm/WqUFDlr3rbLWGH7qr
- tlhwJj3OgU2rOv6BauVX+fbAAAA
+Message-Id: <20240702-flo-removal-of-rtdm_printk-v2-13-facd992606c7@siemens.com>
+References: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
+In-Reply-To: <20240702-flo-removal-of-rtdm_printk-v2-0-facd992606c7@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, 
  Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi all,
-
-some background first:
-
-It happened several times now that logs produced by CI runs contained
-important warnings (or any log level above) but the actual test run was
-still marked as success.
-
-The idea is to add something like a "dmesg check" script to the CI
-infrastructure that basically fails the CI run if anything above Warning
-(or any other defined log level) is detected.
-
-That requries us to get "warn free". The problem: The default value of
-CONFIG_MESSAGE_LOGLEVEL_DEFAULT is 4, which means WARNING. So whenever 
-someone calls printk() without any log level it will generate a warning.
-
-This series revisits all of our printk() calls, making sure we use the
-correct log level. Especially printing version information is no longer
-producing warnings.
-
-As most printk() calls reside in drivers there is another point that is
-addressed now: Migrate away from rtdm_printk(). This function will be
-removed at the end. rtmd_printk() was only a wrapper for printk(). We
-can remove this wrapper and migrate to the "modern" pr_*()
-infrastructure.
-
-With that series applied we are closer to the "warn free" goal, but not
-there yet. Some remaining "warnings" have to be addressed upstream while
-others might not go away in all of our test scenarios. Some filtering
-might be necessary... We might find some inspiration at the kernel CI
-project.
-
-This series is compile tested only, no runtime tests could be performed
-on my side. I don't have the necessary hardware at hand.
-
-CC: Jan Kiszka <jan.kiszka@siemens.com>
-
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
-Changes in v2:
-- Patch descriptions: Remove the "no functional change" statements
-- Patch 3: Apply the same pattern twice (review comment from Jan)
-- Patch 27: Additionally remove ERRMSG markers (review comment Jan)
-- Patch 28: Additionally remove ERRMSG markers
-- Patch 29: Additionally remove ERRMSG markers
-- Patch 29: Additionally remove ERROR markers
-- Link to v1: https://lore.kernel.org/r/20240702-flo-removal-of-rtdm_printk-v1-0-cc91bffdd063@siemens.com
+ kernel/drivers/net/drivers/freescale/fec_main.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
----
-Florian Bezdeka (33):
-      cobalt/clock: Use xenomai specific log level
-      cobalt/x86: Add missing log level to printk()
-      drivers/analogy: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/serial: Migrate from printk() to pr_*()
-      drivers/can/peak_canfd: Migrate from rtdm_printk() to pr_*()
-      drivers/can/sja1000: Migrate from printk() to pr_*()
-      drivers/can: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/net/addons: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/net/e1000: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/net/e1000e: Migrate from printk() to pr_*()
-      drivers/experimental/e1000: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/experimental/rt2500: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/freescale: Add missing log levels of rtdm_printk_ratelimited()
-      drivers/tulip: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/8139too: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/eepro100: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/eth1394: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/natsemi: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/pcnet32: Migrate from printk() to pr_*()
-      drivers/r8169: Migrate from printk() to pr_*()
-      drivers/r8169: Remove RT_DBG_PRINT() macro
-      drivers/r8169: Remove DBG_PRINT() macro
-      drivers/r8169: Remove rt_assert() macro
-      drivers/r8169: Rework assert()
-      drivers/via-rhine: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/experimental/3c59x: Remove unused / broken driver
-      drivers/stack/ipv4: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/net/stack/rtcfg: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/stack/rtmac: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/stack/rtwlan: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/stack: Migrate from rtdm_printk() and printk() to pr_*()
-      drivers/spi: Migrate from printk() to pr_*()
-      cobalt/rtdm: Finally remove rtdm_printk()
+diff --git a/kernel/drivers/net/drivers/freescale/fec_main.c b/kernel/drivers/net/drivers/freescale/fec_main.c
+index 5abf5e822..d1b6fd166 100644
+--- a/kernel/drivers/net/drivers/freescale/fec_main.c
++++ b/kernel/drivers/net/drivers/freescale/fec_main.c
+@@ -395,7 +395,7 @@ static int fec_rt_txq_submit_skb(struct fec_enet_priv_tx_q *txq,
+ 
+ 	entries_free = fec_enet_get_free_txdesc_num(txq);
+ 	if (entries_free < MAX_SKB_FRAGS + 1) {
+-		rtdm_printk_ratelimited("%s: NOT enough BD for SG!\n",
++		rtdm_printk_ratelimited(KERN_ERR "%s: NOT enough BD for SG!\n",
+ 					dev_name(&fep->pdev->dev));
+ 		return NETDEV_TX_BUSY;
+ 	}
+@@ -431,7 +431,8 @@ static int fec_rt_txq_submit_skb(struct fec_enet_priv_tx_q *txq,
+ 	if (dma_mapping_error(&fep->pdev->dev, addr)) {
+ 		rtdm_lock_put_irqrestore(&frt->lock, c);
+ 		dev_kfree_rtskb(skb);
+-		rtdm_printk_ratelimited("%s: Tx DMA memory map failed\n",
++		rtdm_printk_ratelimited(KERN_ERR
++					"%s: Tx DMA memory map failed\n",
+ 					dev_name(&fep->pdev->dev));
+ 		return NETDEV_TX_BUSY;
+ 	}
+@@ -1018,7 +1019,8 @@ fec_rt_new_rxbdp(struct net_device *ndev, struct bufdesc *bdp, struct rtskb *skb
+ 
+ 	bdp->cbd_bufaddr = cpu_to_fec32(dma_map_single(&fep->pdev->dev, skb->data, RTSKB_SIZE - fep->rx_align, DMA_FROM_DEVICE));
+ 	if (dma_mapping_error(&fep->pdev->dev, fec32_to_cpu(bdp->cbd_bufaddr))) {
+-		rtdm_printk_ratelimited("%s: Rx DMA memory map failed\n",
++		rtdm_printk_ratelimited(KERN_ERR
++					"%s: Rx DMA memory map failed\n",
+ 					dev_name(&fep->pdev->dev));
+ 		return -ENOMEM;
+ 	}
 
- include/cobalt/kernel/rtdm/analogy/rtdm_helpers.h  |   16 +-
- include/cobalt/kernel/rtdm/driver.h                |    2 -
- kernel/cobalt/arch/x86/c1e.c                       |    4 +-
- kernel/cobalt/clock.c                              |    2 +-
- kernel/cobalt/rtdm/drvlib.c                        |   13 -
- .../analogy/national_instruments/mio_common.c      |    3 +
- kernel/drivers/analogy/national_instruments/mite.c |   67 +-
- .../drivers/analogy/national_instruments/ni_660x.c |    2 +
- .../drivers/analogy/national_instruments/ni_mio.h  |    2 +-
- .../drivers/analogy/national_instruments/ni_stc.h  |   19 +-
- .../drivers/analogy/national_instruments/pcimio.c  |   21 +-
- kernel/drivers/can/peak_canfd/rtcan_peak_canfd.c   |   41 +-
- kernel/drivers/can/rtcan_dev.c                     |   12 +-
- kernel/drivers/can/rtcan_internal.h                |   14 +-
- kernel/drivers/can/rtcan_module.c                  |   10 +-
- kernel/drivers/can/rtcan_raw.c                     |    4 +-
- kernel/drivers/can/rtcan_raw_filter.c              |    9 +-
- kernel/drivers/can/rtcan_virt.c                    |   16 +-
- kernel/drivers/can/sja1000/rtcan_adv_pci.c         |    4 +-
- kernel/drivers/can/sja1000/rtcan_esd_pci.c         |   10 +-
- kernel/drivers/can/sja1000/rtcan_isa.c             |    8 +-
- kernel/drivers/can/sja1000/rtcan_ixxat_pci.c       |   17 +-
- kernel/drivers/can/sja1000/rtcan_mem.c             |    8 +-
- kernel/drivers/can/sja1000/rtcan_peak_dng.c        |   25 +-
- kernel/drivers/can/sja1000/rtcan_peak_pci.c        |   22 +-
- kernel/drivers/can/sja1000/rtcan_sja1000.c         |   25 +-
- kernel/drivers/net/addons/cap.c                    |   22 +-
- kernel/drivers/net/addons/proxy.c                  |   10 +-
- kernel/drivers/net/doc/README.drvporting           |    3 +-
- kernel/drivers/net/drivers/8139too.c               |   50 +-
- kernel/drivers/net/drivers/e1000/e1000.h           |   16 +-
- kernel/drivers/net/drivers/e1000/e1000_main.c      |   18 +-
- kernel/drivers/net/drivers/e1000/e1000_osdep.h     |    2 +-
- kernel/drivers/net/drivers/e1000e/netdev.c         |  205 +-
- kernel/drivers/net/drivers/eepro100.c              |  235 +-
- kernel/drivers/net/drivers/eth1394.c               |   83 +-
- kernel/drivers/net/drivers/experimental/3c59x.c    | 2752 --------------------
- kernel/drivers/net/drivers/experimental/Kconfig    |    4 -
- kernel/drivers/net/drivers/experimental/Makefile   |    4 -
- .../drivers/net/drivers/experimental/e1000/e1000.h |   14 +-
- .../net/drivers/experimental/e1000/e1000_main.c    |   32 +-
- .../net/drivers/experimental/rt2500/rt2500pci.c    |    4 +-
- .../net/drivers/experimental/rt2500/rt2x00.h       |   37 +-
- .../net/drivers/experimental/rt2500/rt2x00core.c   |    7 +-
- kernel/drivers/net/drivers/freescale/fec_main.c    |    8 +-
- kernel/drivers/net/drivers/natsemi.c               |  188 +-
- kernel/drivers/net/drivers/pcnet32.c               |  136 +-
- kernel/drivers/net/drivers/r8169.c                 |  219 +-
- kernel/drivers/net/drivers/tulip/21142.c           |    6 +-
- kernel/drivers/net/drivers/tulip/eeprom.c          |   22 +-
- kernel/drivers/net/drivers/tulip/interrupt.c       |   42 +-
- kernel/drivers/net/drivers/tulip/media.c           |   38 +-
- kernel/drivers/net/drivers/tulip/pnic.c            |    4 +-
- kernel/drivers/net/drivers/tulip/pnic2.c           |   14 +-
- kernel/drivers/net/drivers/tulip/tulip_core.c      |   96 +-
- kernel/drivers/net/drivers/via-rhine.c             |  184 +-
- kernel/drivers/net/stack/include/rtcfg/rtcfg.h     |    5 +-
- kernel/drivers/net/stack/include/rtmac/tdma/tdma.h |    9 -
- kernel/drivers/net/stack/include/rtnet_internal.h  |    2 +-
- kernel/drivers/net/stack/include/rtwlan.h          |   14 -
- kernel/drivers/net/stack/ipv4/icmp.c               |   25 +-
- kernel/drivers/net/stack/ipv4/ip_fragment.c        |   17 +-
- kernel/drivers/net/stack/ipv4/ip_input.c           |    4 +-
- kernel/drivers/net/stack/ipv4/protocol.c           |    4 +-
- kernel/drivers/net/stack/ipv4/route.c              |   21 +-
- kernel/drivers/net/stack/ipv4/tcp/tcp.c            |   62 +-
- kernel/drivers/net/stack/ipv4/tcp/timerwheel.c     |    9 +-
- kernel/drivers/net/stack/ipv4/udp/udp.c            |    4 +-
- .../drivers/net/stack/rtcfg/rtcfg_client_event.c   |    5 +-
- kernel/drivers/net/stack/rtcfg/rtcfg_module.c      |    6 +-
- kernel/drivers/net/stack/rtcfg/rtcfg_proc.c        |    4 +-
- kernel/drivers/net/stack/rtdev.c                   |   20 +-
- .../drivers/net/stack/rtmac/nomac/nomac_module.c   |    6 +-
- kernel/drivers/net/stack/rtmac/rtmac_disc.c        |   14 +-
- kernel/drivers/net/stack/rtmac/rtmac_module.c      |    6 +-
- kernel/drivers/net/stack/rtmac/rtmac_proc.c        |    4 +-
- kernel/drivers/net/stack/rtmac/rtmac_proto.c       |    9 +-
- kernel/drivers/net/stack/rtmac/rtmac_vnic.c        |    4 +-
- kernel/drivers/net/stack/rtmac/tdma/tdma_ioctl.c   |   10 +-
- kernel/drivers/net/stack/rtmac/tdma/tdma_module.c  |    7 +-
- kernel/drivers/net/stack/rtmac/tdma/tdma_proto.c   |   14 +-
- kernel/drivers/net/stack/rtnet_chrdev.c            |    4 +-
- kernel/drivers/net/stack/rtnet_module.c            |   10 +-
- kernel/drivers/net/stack/rtskb.c                   |   13 +-
- kernel/drivers/net/stack/rtwlan.c                  |    6 +-
- kernel/drivers/net/stack/stack_mgr.c               |   10 +-
- kernel/drivers/serial/mpc52xx_uart.c               |    9 +-
- kernel/drivers/spi/spi-master.c                    |    2 +-
- 88 files changed, 1185 insertions(+), 3985 deletions(-)
----
-base-commit: 00454d5d127c29b93f8c0babf1336bfc35be3b98
-change-id: 20240702-flo-removal-of-rtdm_printk-b5320a2a2930
-
-Best regards,
 -- 
-Florian Bezdeka <florian.bezdeka@siemens.com>
+2.39.2
 
