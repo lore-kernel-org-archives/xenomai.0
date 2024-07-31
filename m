@@ -1,58 +1,58 @@
-Received: from redirect.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
+Received: from redirect.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5C96219E1
-	for <xenomai@lists.linux.dev>; Wed, 31 Jul 2024 20:04:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=217.70.178.230
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B73E6219E1
+	for <xenomai@lists.linux.dev>; Wed, 31 Jul 2024 20:04:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=217.70.178.232
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1722456265; cv=fail; b=iAeZHz51Wo4Qex4EyhtN/2hVyW35y6hHbeLM7BWw4OyLlRNlAvddSUxDtxWTVNb9ZJuoUdbzCZqV6LGvdtCA+yRcKOcOTecdM0SLiM4+FG2Oy1znRdhfWEd1gAgyCmbckv/KihcG1VD3sb2lX0NGre4IAhmWhGrqZM58Q9TKcBw=
+	t=1722456268; cv=fail; b=NHBeF3TdOsTFRbMMY8YxvXjBdX2VM60E9GspNmn+EKwFFQd9uCFjpVjqppaEsTcgjFdr7ikTtZ3L+V0oyx1K+3gRgKKPF3oaQXEOovHF8nmav4YV0M1awMDbxGjJS+7Na21mMsod+gvzFqYOzra4djcxbcJz2sIm5eADZbrVP5M=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1722456265; c=relaxed/simple;
-	bh=us5VbWGrJLa2N2MeJtWwQW7wuKay8wA6wb71CG21ZdI=;
+	s=arc-20240116; t=1722456268; c=relaxed/simple;
+	bh=MgWq3nX0zUyAKhiD2BiHLw+B5FEA9gU09X1HyWO7hc0=;
 	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=SR77pOKQzFTIIJVS2tun+oAfR9Tbrcy4oTQuwC35oNAB0C+J+I6e3GaEeRxcUMa2qa+dSVN7ZbXkwokbVcl+jPZrOQMM6bbgf7lBgEDCCSZiaQ61xLjuSlTKzhhfgCbOAI3jr+UpKYROs15/UU98zZk57V48scuLr0rknBmyJMM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=Lr+0AObR; arc=fail smtp.client-ip=217.70.178.230
+	 Content-Type:MIME-Version; b=luOKujvYSMEKRH7qbGclhlAgTFpASscv3FXtlsQhD3FQ12ym/jfy8CNp4Ni+myNLPd7D2Et+o5HPtZeae4g/BpWbuFwrg3WLE1u+FujA+DQXucbn9rOD2sWNd0TWV/gGisqxs1utSjoJLVNf29xJ6GnjKq4c54+R9V+x/dMbm+E=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=B6krx74w; arc=fail smtp.client-ip=217.70.178.232
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="Lr+0AObR"
-Received: from spool.mail.gandi.net (spool1.mail.gandi.net [217.70.178.210])
-	by relay10.mail.gandi.net (Postfix) with ESMTPS id B9AD5240002
-	for <xenomai@lists.linux.dev>; Wed, 31 Jul 2024 20:04:19 +0000 (UTC)
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on20616.outbound.protection.outlook.com [IPv6:2a01:111:f403:2612::616])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 024E4941B9D
-	for <xenomai@xenomai.org>; Wed, 31 Jul 2024 20:04:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="B6krx74w"
+Received: from spool.mail.gandi.net (spool5.mail.gandi.net [217.70.178.214])
+	by relay12.mail.gandi.net (Postfix) with ESMTPS id F05F3200003
+	for <xenomai@lists.linux.dev>; Wed, 31 Jul 2024 20:04:17 +0000 (UTC)
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2060b.outbound.protection.outlook.com [IPv6:2a01:111:f403:2612::60b])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 2C2B3D80047
+	for <xenomai@xenomai.org>; Wed, 31 Jul 2024 20:04:17 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Xie7NdBzWQFntjipbpTU3KGjlIm2KKBNpEraBTa/G+32HSCAK5LR6OyGIMlfF5b2XLBFY4yf2hOBc8/teqT6XVnN40tgdi9peYJOpBUfxCArdHD/7mGhiaNA5pTOSUK+1+F/6r4w77+hnh52aDD5bLTPRjlUFQ278yrULFn8rtZVBhKfLlVtMLxMG/0NYt5ZEosUOUvyo/IRRW2VytXoOLLX4s8FeH9A5bX2NR/epuTOssGu5EpTKVAZ5ZWFy1YKQpgNT2ObaIABKJhKV58S4G+ILQmeqh9+eLtCqbmWsvPUFa+R5swYWWUPULdOamLaHjHRjiuynitudUHrivBNvg==
+ b=tspAUpv2bP/qo5dZPtdnmwfk9GNSX10mybdNxDUZhvYGQAzr/6Q5dl4u22ffkkL2OEaH4mUaWh3cm9Mdi5t7O3Iz+fwmmPU0B4R1/e12uJUwhehu+6lZg+e8vLVo8YhFX3YwT8tTNNtgHEjvffZnENNy92O39rZd3ZPFvvYLDkOtIufqO0+VCAz/gyc1YbDfKoVJeIBYIQ9AIXc1FapJRJFLimCpl3cIlNWNxe8rRU067hfXGxiZV1TQOEWE0RH1QRGorjI34eKOf9et8MqyvtZQN6iAaZv+DNuaGfgsU3A4Q48dWiu8DY0LsfqaCIvRuJlUZ2nbFJfKNBz1bSXAlA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6CgHYXKliV2W/X/1CEdszt9I347C95ChLb0STaoXA8M=;
- b=DdZzPmdMz66N4TBIXBazJdrWiMC1CAHCjHHoMV+HX358NNog5HH9fMCP8wBp89KxD2UYQnsKz0Bremtn0TlR86N3NHWYb3z24JfcQVsm4crS20oRv4ZC1WKLMihg34jPpj1xyqads7/fSgSAWkDc7OTqTSE34JxL9OU3II8cOk6RExaqx5DZCxCJyPFef/61H6W0UHRTRZznvvFHunbLlMP1KiO/QGDf1hJwhczQkFtN5NRhz6b+eCfYAHd0pI9ZhGS+i7eKIIAP5STn0FDDB1yUvIYIjS/v9hdxFKEgjXcrtMdJ+P3CT50pSUdHYf+oC7z7EVJ3pK2B2b8Lkl3hig==
+ bh=jmypsb5zVAHfOjEPHmDQVAHuL+I/wiHM8Bs+N83n+qU=;
+ b=mHF75rY4z6eIb9lIsDKmHoprpxprTvdklOGHtLmZQjMw3zWjniWP/Jsl1ZS1S+dhFGTyGUmN6UNzK9oWU/zhbjTm7XmRv6O8PFz0kuFvvu2PbGj1p/Pvy5LiAQplAZuERKllpnTwe3kQ57rTUS90wfxuUjBXGQgI4CH07CLaqHO3LUif2qX0roJT33qhtdd6RnKtQtIIdqguKeMLrtwI+gaUHhgf56HXNHTAqSlTlpy9/7YQtaOPjyQPFWYtuFvhD1WdbdolcnZDHLrYOt5IMAt55TxawadIx16wjvLtpQMDWrPSo9fc2odaQZ0NPU22dFo1tE1EXc+QG9QteKasaQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6CgHYXKliV2W/X/1CEdszt9I347C95ChLb0STaoXA8M=;
- b=Lr+0AObRhwGVJpsu04bSOOuOMzIdCDUFEHq30KCTDqyHe1WLmRu1d3ehu8vF5H2BLBiOrck8+kLKWs5b8Lxp1/a3988gThfTVfgJTNVVWHz951NRPM1xUuoeD3Ph5R9vD8NqWVBIPDCiEP8EwijhR3XZ++OuffgfGbaZJoWIabJju7t+e0oUk+I/rM1hNzKqCEbDvJ1gnTwjYxALgHp7If3va39VYloyu/QZZIDTrjyyxCJug0hVjgfM43p6cGXbRl0zPNRiS535OF6FlPF57/kv7wDDgF0nW6lQs5MMgJ71A0uzN+GheTGPuIlvEWx9abGz7OjOgw42yVey0cXBbw==
+ bh=jmypsb5zVAHfOjEPHmDQVAHuL+I/wiHM8Bs+N83n+qU=;
+ b=B6krx74wTcJf40LSiqcs7JZsY8TWbVMZRv40lPTnez+IbXD7hGBgN4nIWloFNB32iYRLoCcalDdkmRh8PE883nuO+KDc0j5N3vyfbr5uQd7VfME5DlHsOpPPtZcndW6DKAJeCvwkyoqTg+Zw4fJvpntQ8NSg7sMT0LU2RprPxj+2yBY7uae+COIHsI/fiM42Azvo5f0R/LeXLNfN1U6lsmUYMeSkBCUSKq5dUG9Dw+Vz5bh3QoooTDvfbbTR92WgRVO8cYIeunivnBfLS+AZsL+GYG+iALBZJcwWaH8yC0dkeGaqhoZDnwg8iIXqlyBRmW/tcOUL+0swIjFyzBiWOQ==
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
  by PAWPR10MB8163.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:381::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7828.22; Wed, 31 Jul
- 2024 20:04:17 +0000
+ 2024 20:04:16 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408%4]) with mapi id 15.20.7828.016; Wed, 31 Jul 2024
- 20:04:17 +0000
-Message-ID: <eb114103-89ed-4ecf-ac58-8f6f61215d5b@siemens.com>
-Date: Wed, 31 Jul 2024 22:04:17 +0200
+ 20:04:16 +0000
+Message-ID: <4117fe6c-cdf5-46b5-a76f-f0af09bf64f5@siemens.com>
+Date: Wed, 31 Jul 2024 22:04:13 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: Retirement of stable 3.1.x, warning call for 3.0.x
-To: C Smith <csmithquestions@gmail.com>, Xenomai List <xenomai@xenomai.org>
-References: <32ec5e8d-c8ff-4bf0-9718-2d61340812d7@siemens.com>
- <CA+K1mPFxVYh48qJ3HnJ1gC0uGG6W2ghUTgEUkzAu0nZgwf6oKQ@mail.gmail.com>
+Subject: Re: [PATCH 1/1] kernel/drivers/net/stack/packet/af_packet.c: 32-bit
+ compat support
+To: kon <ksmola51@gmail.com>, xenomai@xenomai.org
+References: <20240725235347.115933-1-ksmola51@gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
@@ -98,9 +98,9 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <CA+K1mPFxVYh48qJ3HnJ1gC0uGG6W2ghUTgEUkzAu0nZgwf6oKQ@mail.gmail.com>
+In-Reply-To: <20240725235347.115933-1-ksmola51@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 X-ClientProxiedBy: FR4P281CA0415.DEUP281.PROD.OUTLOOK.COM
  (2603:10a6:d10:d0::12) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
@@ -112,139 +112,205 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|PAWPR10MB8163:EE_
-X-MS-Office365-Filtering-Correlation-Id: d2c3caf2-1f54-4c45-613d-08dcb19bf595
+X-MS-Office365-Filtering-Correlation-Id: e5ed191c-1324-478d-0c42-08dcb19bf47f
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?NlMyT1ZRZ215RGdSbGk3c2lBakxVMzJSekhlMDNLdENPSFhWY2RDa2psUWxC?=
- =?utf-8?B?S2YrRGtXU01acnpsL2VTR3BNaWxFcktYUlVGeDhKMzdZMThNd3I3NS9IdkVl?=
- =?utf-8?B?VkplQm5vWEo4Um1hVWQwVmtEY2w4dFJtVENXbTdwM1hjaWVwT1NyeGM3K1lq?=
- =?utf-8?B?NFZFcFFrT29MeUZ1Q0syYlNheWxsQ2ZNYmh3RHhlSGlhSFZWWExEbVdxN3M3?=
- =?utf-8?B?Z1k4WEpZd2M3d0tWTWQ5eTRDb2wyZWdoQ0RpQ1E4ZkdCL01NZXpUYi9qbzFu?=
- =?utf-8?B?RjRobk93b1ZlbXNKS1RyTXJXZmxNVk5ML3VZMFRiVEZESTRYWjJJMElJMmhE?=
- =?utf-8?B?U1daRngxakg3UXduUEl5dlR3Z1k5R1kva1ZsdE9DQ3FiZUxpNWdoaXNEaWxB?=
- =?utf-8?B?RU9CS0orbmFxRXRtSkdsemk0MERVdFZyVmZtQkVzUFZOd2szdlQ2Tmh1d3Rx?=
- =?utf-8?B?NERmbjY5alpub3J4djdCM3YwVnp5T2phUHRtK2tjOFkyaWxmUUdQUWFySU9w?=
- =?utf-8?B?OS9HOXdGU0RMTE4yTlBKU1g3N1p1SUo3U2FUTTNLbE1BWHFhWlhFN0liaGVK?=
- =?utf-8?B?U2t5dnBmY3BGREdHQVBHMkE3WHFVZDRWdGFRZzZKbUVGaWdPdEVDSVFrTXgx?=
- =?utf-8?B?UTNUUFd4eDVueEZERUM1THpZM0xPTEdWSUdJekE4Nm9POWp4cEwycnNEVTR0?=
- =?utf-8?B?SnZlb0dDQSt5c2lpQ0Vnd1EwMlljQXRPdTJhOTFhZVJoMlI0UVJ1aml1QmpQ?=
- =?utf-8?B?ZlQ3ZWg0U2hCU3poek50d2Z3b00waXh2QVJDR3N5bmYxWjA3UWpsWXNyQlpQ?=
- =?utf-8?B?S1crZlNUaHAxd1hmREVhcFl3b2grRVBzQ3VqS2FWL2F6c0FCcUw0VzkrS1FE?=
- =?utf-8?B?MVlvZDZUTURLMjNEQ3J6N1h1Smh6QlJOZTYvQW45L0VnTFE2NGlVak8zVjh1?=
- =?utf-8?B?d0JRMWs1WDkwSWpOU2ZlTE5CYVZhL3o4UlpHenFrRzlZT2IxWllpVUV3T0dG?=
- =?utf-8?B?aThXRUlWcDcrM0xFMVhWQnFtZTlaK2RtT0pOeSt0NkcrcjM0MHd1N3N5YnVz?=
- =?utf-8?B?MkV6d0NnVjdrR0tWcjYxdjJULy9BZ1gzRHhGTG0yZTlvWHlldStnajRNbGw2?=
- =?utf-8?B?eURxanFvU0dNZGJMdU5sWFdocVI0VGVNUndyVjQwWUhRM3dXQlgzVGpQWk52?=
- =?utf-8?B?bWNJamlwcllXQmRnaUppSEptUTd1Y2VrcDdCYllabGJ0bFdEUCt6L0x2b0Z1?=
- =?utf-8?B?Y2VDdnI5czR5YWNieHJ4UVBLTjNhTU5kR1psSG16dE03dkwydjFaaStpMlNM?=
- =?utf-8?B?enNhNzh1MnVscm81bTBsQ25yQTU4ZVArYkJmMU0vTXNsWXoxYytlMmRBcVpE?=
- =?utf-8?B?NTh1N0g4bS9JSEhLRmpocHhiUGNFSGxiazZVSGNwcVcyYWRVZDI0cjNMaU1J?=
- =?utf-8?B?SFJoQ2hnZitvVjBHa0laVjJwS2YzVlJWbm9BZURBZTI4Zjg2NjNLS2s2N1Nx?=
- =?utf-8?B?WStpUTk3Wlk3OUNWT3lBKzhIeExKWHJ3S3FtNXFHT1ZTTTFjc3BpRUZMbkFh?=
- =?utf-8?B?K3VZaGdBdld3ZkFPeGVLWkJhTkc2dHBVVm5uSnRRK01sb1c3QzF2am1IOEp1?=
- =?utf-8?B?VExoN2hKdCt4ZlZOWS83YlI3Qno0c200L3loV01CVXZ2ZFNjbldOT2IyR2RQ?=
- =?utf-8?B?M25CTnkvVjhUTjlFa2lHNGFoaDJ2a3dPMXQzaFFkNmpXazhmTXRnOEpJblNJ?=
- =?utf-8?B?Z2d3dHFpNnpiaWtCSTRla1VQVDU0L0xKRTJrMmE3Q3pEdkh0c0syQktPcTRr?=
- =?utf-8?B?NnlIZGxKZUp4VE5MSEZLUT09?=
+	=?utf-8?B?YjdEbjhrTDlZREVDOTNrczlOTlJObE9UVkJNcHlFYkNHdlhXWm9LQUNJZDQ5?=
+ =?utf-8?B?Rkp0TDI5RmM4SGpSeERlZy9YdElaWDkwVlZBTCtJdTlaeWhMVUNWd2VLbVho?=
+ =?utf-8?B?dWk0ME5ZZENYQWtUQUF4cVJ4d29tS2UvUU1FQUdjR3JGeVZ5TW1RR0xpVFNs?=
+ =?utf-8?B?WFhJUVhhRGk5T1VMV1RRWi9hMlF2d29NemxpNXBYT2ErWUMyYnkzaHpFZ2Jw?=
+ =?utf-8?B?SUdLNUFlQ2VvNGNCeXU0SHVKQWFyUUk2ME5paW1heU41MmNoNVZEOVVjejhn?=
+ =?utf-8?B?djRTelp3RGU2SFdyZXQ5a1ByeUpxNlNPcXhzWE9DRExLblFjUWxrdkE4TWVX?=
+ =?utf-8?B?RGtxL2dNVU1YeGtvR21Fb2lGaGNkU0xXYkdDYWhLRW90SStWSklJT2JrVEwr?=
+ =?utf-8?B?c1lneEl5TEFYV2FVZmI4Mk5tc1JpMmppbFFJYkpxWkY0dmVuQWFDUjI2eWJG?=
+ =?utf-8?B?U1Fac1ZNcmhyNzQ3TlJveWpqMVUyVnh0VERYUmxzdXEwWEUzaUdUeXpBQ2Jk?=
+ =?utf-8?B?aTBTYWVYYUFBa2tKZEc0TEdrYTMrN1g0V0x0Zy9IUUFTMW9XYm14eUhnNEJ3?=
+ =?utf-8?B?N3VpU2J1ODBJR3pYcUpPVVY2eVRubnFOQnFQdmswY2ZvSjMvd2hJdFppdmpB?=
+ =?utf-8?B?bUFrOEdhbThLYnlZZW9aMU9tSDcrSGt4TUpNcWZqNEtIbyt1YU5pM1MzL1dP?=
+ =?utf-8?B?aWM2TGR2ODBUOWVBNDhGYjVpWTdKeU1sU0MzM2lOREFHc2NFVVFCUWdUUXlt?=
+ =?utf-8?B?azNvbzFWaGZnS2hobW1hK2xZTStrSGtRWG93Tll3NjRsOHZCNjNZRkFRNTl3?=
+ =?utf-8?B?c3p2NXpKbTcxcmhtcktGSzlQdFZURk96cVNhd0gwUkk1QnVvR21XM3pLZ3Qr?=
+ =?utf-8?B?THRPRHc0VXZObWRXRCt6dGN1N1dBSHpJa3ZleVI3RGtYOU1kUE10NkNlVzVR?=
+ =?utf-8?B?WmtBbFduQzFKQTJ5UUo4dmFaeWtvczZGM282RU04dnlxUWNPdkxYazFmWVhL?=
+ =?utf-8?B?R3JPbG40S05Hb1lqTSsrOG5NaTQ1bm45Wk8vWXRSeG9jMUJaYXFMblRTaExV?=
+ =?utf-8?B?WXhrekdZN2dDSXJZeHBPSGo4MEQyNGhLVWc3L1R5S0pHV044TjIzUXlwR1Jn?=
+ =?utf-8?B?M2NLdEdROWREM3hiTnZhTmZDdkJ2c0NFY3ZBbU1rU3NMbmJoTityajN3OEtw?=
+ =?utf-8?B?dmpGd2dpOUNpRGE2OGNMSDVneXNPRkZnRkI0VWNBdHBYakhmTkRKSkRVYTRP?=
+ =?utf-8?B?Zk5CVmpHMkRTVTlhaTRXLzVUQVhxdzQxd0U1bG53YTEyeUU5enNCNzNsekU3?=
+ =?utf-8?B?b0lWT1JSbHRkRTVMVmFtZ3BoYkttWW1laVVQNEM2WE15d0M4aC9KMTljeS9S?=
+ =?utf-8?B?d0xtQXRDRVowVnIveFlwdCtidDFWSnRlbysyNEhZTU81b2FYc0xFdXptNCs1?=
+ =?utf-8?B?dGVvVFVjZXJVYm5qTHI5U2lzbzh1T3dmWlhVK3RVSUUyc3JuRTAyajN6YStY?=
+ =?utf-8?B?VjBKREVzbXIxWHJzMGtaZnhFOXJ4cnZjdVNTV0Joc1Yzck9VZWRwY0htejMy?=
+ =?utf-8?B?ZXhsZHQ1SnZoWGx2VlVRZWE4ckNneDZRTjJrOVJhVlhUd3BwWkJOTDJDd3oz?=
+ =?utf-8?B?RzQ5WjFEaHQxVk5RRlNDQS91bzRPdmdwa2pIVzFEcGJWMG4yU2ZoWXd4emg0?=
+ =?utf-8?B?Mk1TTmtJNVR2R21tVk1mOVNyUmExUStEeU53aDdSdkZNcU9BaXcxT0VhQyt6?=
+ =?utf-8?B?T2UvaFRDb2c1elZ1UVBRR0tua1pmNUlaYVM5bmZsbkFGbXp0dndycHNVcXFN?=
+ =?utf-8?B?L0tLUEkvZURaUW1MbUU3UT09?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?cHhvY2x1amZGU0RhL0RTdXQrYXRpWXBNWnN3Sm04cHREM2s2OEZKcXNoWlEw?=
- =?utf-8?B?aFdDVlNoU3dMZWpjVGpUM01mYlpRVjlYc2ltbERzMDVVNy9zYnNYRTlQeDhk?=
- =?utf-8?B?UkJFTmc2VWpDTm5ZUnVTaElucnZXbng0MG1JRVhSMFBqWFFmR0RLWUdEcm1I?=
- =?utf-8?B?YTNOMmlyVCs5cG1ack9NQzFoeUc2REJOVTAwWTBPN282NjlkdjhsYWkxaWlh?=
- =?utf-8?B?ejRZaTV6KzhYejlOeWV2SFpTR0hBVHgzU2ZUUVRHUFcxWGZ4ZFJhYWlPMkZ2?=
- =?utf-8?B?SWdYOWFPcHd1L1Q2R0YzNWN0d0g2NE5NLzVQOFJZUEZ3b1hGMXQ1NXhpUnRV?=
- =?utf-8?B?bVFvellGNWdGbWkwTUliNnZZSzk0QzNrSlRUOG0xU1p5bWU2Uzg1RWkxVm92?=
- =?utf-8?B?azNEVUtYL3hMM0ZRT0N5djI5aFpyeDk0bXVETVhlazF5bmtCOGNCZ3lRdjJ1?=
- =?utf-8?B?NUw3dHFBc0JYM1kwMWMxWmpoQnpRc2lGQy9iZzFlRFlFbmJBWnBLNkh3OTlQ?=
- =?utf-8?B?eXZpcjA5YTY2T3I4VjVPSzJFVlQ3RTBDTXd6ZzZTQ0Y0WlhTY3ZlYlFYZ0dh?=
- =?utf-8?B?Wmw0UWs1T3pYa0p6MHovUHdpWm9IQnRXL254S2NJcFIrNzh5dnB1YWI0cjhP?=
- =?utf-8?B?MDluZWFBSm9RbGlNUG1iY2lzRCtjU0wxaDVRVnBXNEFpWTgzVFBla2d1ZFVG?=
- =?utf-8?B?bTdmdjV4YVRVdUVGdnBNUzlnT2NpRHlQWnNBQTFtWGN0TlRWa2hhdDVFUitN?=
- =?utf-8?B?NkNKcHJ5VkxRTEp4azJDTDdiWUkybEZyQjdtaVFUTjRDYnFWL0NCY3Q0ZXZm?=
- =?utf-8?B?VUhCNW5OcTdJUWR6cHdSYnpBOWFyaU9IdE5rNUFnbWRmc3Z6K3BmNFE5cTlB?=
- =?utf-8?B?YWh5N1F0azhQbUJBMXA2NXBrdFNLdUFJN2JJM2xkY2JBbzhRc24wRThFU3BD?=
- =?utf-8?B?V2g2VjFJaFl4L0FteGVpN3A2dzYrZE0ydlNRK0xFRFh0UkNqTDFqNXFROVVh?=
- =?utf-8?B?ckY1Y2dNZjRjNDdqbkgwUnVrUjc3bFVNeFM5RVVESnk5djRwcE9raWNVTzlp?=
- =?utf-8?B?RVBxTXJuYVBaWGNmVjNlaEdUM0NhT2lRQlBpc1c2Z0U5eHh5ejIxT2xWaTNa?=
- =?utf-8?B?cE5uUEJhY0RrZmZrK3Vvd3ArMFBFMHJscGdPM1lmMDNMRmI1WUNNMWJ6ZzVC?=
- =?utf-8?B?UWwzbk1qVjVtUzJvYVg0Qm50d2MrWHI2TjQvWThPVFAvM1BHMFNPVEVRajFn?=
- =?utf-8?B?ZXRSbXUwTllibndCYmZ6WG4vYi9TVm1rRzNaQ3cvMHBZS2ZXajl2QmNFeVVV?=
- =?utf-8?B?ZS9OcGFScEoxRWhoUWpHYXFObDR1ZVc5MG94dVhTemVtOEtLRHc3Rlh2a08w?=
- =?utf-8?B?enlYczNHMTR0RE9yVXNQb3pPWGw3aUZwL2FOUnNGbHRDWHJpMTYyVXZDeEFJ?=
- =?utf-8?B?VzlVclliQlk3UFVmL0tDdjZsenlRODNSWkdaOWtUZEVCL1FtWXBaM1kxOG4x?=
- =?utf-8?B?RnROT2N5NVA1RUpmQ3lJcWNJaUxrOXgweWNXMmdQNE1OY0FscE5yTDJrOGNS?=
- =?utf-8?B?Wkl2K0dCU0tjMEFHWjJ2UVNnU1JYdi9LbEd4U1VMT1dLNENqYmk1bGpMbDFp?=
- =?utf-8?B?c3ppNHhWdHZMZ1JNemZSclU3S25kcFVSdmRzZVdUQ01NTW9vK0VuN0c2aUFm?=
- =?utf-8?B?Wms0RUJ4UkFYY2I5UnhmQmdzdWJQK2FOMk1rYjNCYlZsSjBCby9IbUlqWWw3?=
- =?utf-8?B?MGhyUUo0d2pySTFnWWxCNERSakk2ZEs0WHBnclp2b3VaalphSms3ZHJydVZz?=
- =?utf-8?B?R3VHaXFJN1lXL25GV2F2azdIREZEWUVDc1lvRkx4U0cvM0ZCV1YvWGdKcU9B?=
- =?utf-8?B?eTY3cEIvQjNPcmg1QWE4Wm5jODgzb2hDWlpKNDVxMWI1eTRlbkowWnMyUGl6?=
- =?utf-8?B?ajRiSzMxNHhGUG9qSFQwV09xb2daVWZOUVkwZnd2MVVNYjFGREdCMVBLZTRV?=
- =?utf-8?B?bHB3eHY5NXoxS2NTaHBIQ1FPaFBWZi9NL05aeURUdVF1KzYwcWdTaUlNNDk0?=
- =?utf-8?B?R2JHWjV0RWhTWE1Od1ZEZHNvRVNZOXhjZWdJV0Flc1Q0dzNzN0lYaExFT0Zj?=
- =?utf-8?Q?hSjs8P8t02v4Pgye680/cPeQr?=
+	=?utf-8?B?RDcxaUIxK2tWVkdQUEYxTGlvQStKQ05OMU9oTDZjRll6SkZ0UCt0T1NEU0xw?=
+ =?utf-8?B?M1hhY2twcGR4STJtZUl1S05jWHpDSWtHRU9xNlJMS1Zhb1lBVlp3QXZsU2JK?=
+ =?utf-8?B?T3VkY3NuK25kS1oyQ0pKcEYwd0cwVlVnWHFuWW9za3cydytZbVM4TzNqOSs2?=
+ =?utf-8?B?YUdKNS9mYmQ1bXlscGJCbGFpdFVrNmNSaUR6a0gvOVVxblMyRU1oUDcwT3Ay?=
+ =?utf-8?B?QTU3NVFMTUFyamptWjNGNmxZNEpxYmhCTnBTK1ZhS2VmbWhMaWlaUmRaM3pv?=
+ =?utf-8?B?d0xrWXkwSTBmMDZEMW5CRXpMQ25ZQVNtSzEzVFhLNW04MG1MUnlLekF4UVVK?=
+ =?utf-8?B?T2J1amhvb2NiK00zUnNRNXdvTHFEejYzTG9ZazdxVzkyK1hOSFE1emhxcVAy?=
+ =?utf-8?B?aStGM3FPeFNrUnBEVXdqUkwxTjFLOWZNMDhITjVQeHJjbWsvaTNGLzBnTDJE?=
+ =?utf-8?B?anBCekYyVlV6OUhKNUlhQmVmbVJGMHRlbEpjOFRxcGNTdHJsVlFKNldJSmNj?=
+ =?utf-8?B?Ym5ldXk0ZkFNbE8zUDlualVjZzdZTytqYjk3Umx1SGlVdDlIOGIzelZVQmZk?=
+ =?utf-8?B?d3lqSFBxV01wT3E3UmRaZEtxUnFBV21XYURUM2N0dzJoZXE1RWM1NUlMZTVs?=
+ =?utf-8?B?bWJFcDg0ZUJYT21rUHNGT0k0VDVFeS8vejczaGkyRnZRbWtsMkE0S0pNaUJ2?=
+ =?utf-8?B?dVkvRm1uaWNhOUx3OWdnbjBzaWlnbXdQK0h6eXJlRkdXam5ENWRubFpzUURU?=
+ =?utf-8?B?NEZhM2VETlQ2N3hEVWtQWHlmUVJKdUxMSWltWTFOVGM0TE9hRW0zS0I5cElH?=
+ =?utf-8?B?TjNVQyszOWxNTUQ2ZzFlY3ZGTk5BNlBqRnRQaTZwOWJsT0pRS1Vta0VoOHNY?=
+ =?utf-8?B?MUpHYVpnWksxQlVJcTBna3RpdTUrcUpTdjhNMXVPYmRDc21vdnhDakdlakhP?=
+ =?utf-8?B?QkZabjN5RWVNN0gvdGd2ajRuNHRGdkhmUEZzSE5YUWlqQXVyREthZHEvZ2c5?=
+ =?utf-8?B?OGRQSzVIUjJSNXAvMVdsQnlFU01MbTVrZnBIRlc4cTFEOWVZWFFFWkt4OXRw?=
+ =?utf-8?B?L2VHVlpzVEJzTEdaRlg0QXg2WGFaUGxFUCs5TTVRd1VMODhoODl0Q2lVK0Rp?=
+ =?utf-8?B?OFp3Tis0UmJrY0dPOWpodWpKaXJOcFVNcTIzdUFtbjFzaXdLK2tmUyt3QWRX?=
+ =?utf-8?B?b1VzNm9xbnBTOUp2V2pYU3BWNlZVVngzT2hhemJiRzM0dTBKdFh3ZStxeE9o?=
+ =?utf-8?B?c0NPOHRuaVVBMkpsUTF5YW1DTlJWUExhclpsNjVSNHY0WlI5NHVmL2RvcVRj?=
+ =?utf-8?B?SFozbm5mY1M0SzZiSTk0STdzRFhES21zaW0rVFlpSnlIcHBHK2dwR1M2ckRa?=
+ =?utf-8?B?Q09JT0h3YnFhVTdySEhrWXpxOGk2WWxMY2RUVlFZSTRKWno4UDg1TzZDaXNS?=
+ =?utf-8?B?QUw4TlVDTG9FdjM1ZGF4OUs2T1pUOVBKT25vZU5xR3BpUWhRbkhlZXRkT2J4?=
+ =?utf-8?B?eHpvWTY5MUxYWE1hNElTaTY4RUV3R1Z2cFQxZmx6bUhxMUo0U3hQRlJxd0VS?=
+ =?utf-8?B?RjV2YlVOSUJMMVFtRHZSeGY1cE5iNWtVN1ozWUZSY1A4OFBUcC9GUnN6SFRJ?=
+ =?utf-8?B?K3ZDZVFicVlpMGFEeU16WFZyQnhVZ2RKWURwK2p3WmdiM2YyS3V5YlFMOG1F?=
+ =?utf-8?B?UFZuQmY2cnd0cEZnejJLblZzQWVyRm5VNnBPMEN4L2ZlY3FnUGdoaGt3ajNt?=
+ =?utf-8?B?TUV5VUdnanBiVnhwaERCVVpVZlBFREw4RDBwR2IyTmlJeW9BMUZlanBSQlVk?=
+ =?utf-8?B?ZDlOaktJTERscEEwOW9DekMvUlIwL21oSUluUmlubkZOM2tKMzZnWFlaSXNL?=
+ =?utf-8?B?eklwSU1zdXpESm9BSXVxSVQ2NjVVV0k0U0RDZUZ6MDR6c2pYOEJpV1ozWnVX?=
+ =?utf-8?B?cGRleXJOeVJNcjhYcm1YcjlTNlpxVlJHaVRyRmFjWStscDdsTU5OZVNlNFdV?=
+ =?utf-8?B?THFRRU5SUDdDSnF2TW1WWGY4LzJ1cEVYU0RLS3QyN3NncGtnL2hJbDVaaWkr?=
+ =?utf-8?B?ZUpMbmNQRzZuMkFrRDZKZEwxa2M3d1dwUlBIaG04SlREL3N3dk5LSCs1WmVX?=
+ =?utf-8?Q?/MRvMQZzYl5qq17A0Sa9FlJbk?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d2c3caf2-1f54-4c45-613d-08dcb19bf595
+X-MS-Exchange-CrossTenant-Network-Message-Id: e5ed191c-1324-478d-0c42-08dcb19bf47f
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2024 20:04:17.9048
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2024 20:04:16.0886
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XHg35eWGp8CqD7LsJ81KZQGPuf4NxOwax7qbqnGSFsvaD+x6B0gKjhgl966YfBukiAh/q7DYvQ+JoYsqiNi8zA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: vPyOKEzfbP3PA3nMnLfZ9JfMgzcsN4v8mJjV/lBXg9W345LwBRwLrm4UdYPAF6b85o36O+cd4ErSKMrUCP7jYQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR10MB8163
 Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=siemens.com header.s=selector2 header.b=Lr+0AObR;
+	dkim=pass header.d=siemens.com header.s=selector2 header.b=B6krx74w;
+	spf=none (spool.mail.gandi.net: domain of jan.kiszka@siemens.com has no SPF policy when checking 2a01:111:f403:2612::60b) smtp.mailfrom=jan.kiszka@siemens.com;
 	dmarc=pass (policy=reject) header.from=siemens.com;
-	spf=none (spool.mail.gandi.net: domain of jan.kiszka@siemens.com has no SPF policy when checking 2a01:111:f403:2612::616) smtp.mailfrom=jan.kiszka@siemens.com
+	arc=pass ("microsoft.com:s=arcselector10001:i=1")
 
-On 31.07.24 07:57, C Smith wrote:
-> On Thu, Jul 4, 2024 at 11:55 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
->> Hi all,
->>
->> around the upcoming 3.3 release, I want (and need) to reduce the set of
->> actively tested stable trees. Soon I will do some final releases for
->> stable/v3.1.x and then remove it from the test CI. If you are using that
->> tree, I strongly recommend to schedule a major update.
->>
->> In case you are bound to the 4.19 kernel, by now the only supported
->> kernel with 3.1.x, a natural choice would be 3.2.x which also still
->> supports that kernel. But more recommended would be renovating the
->> kernel as well at this chance.
->>
->> The 3.0 series will remaining formally supported, actually only because
->> I have an active user on it and need to keep the test pipeline working
->> for updating the 4.4 kernel from time to time. However, once that user
->> moves forward and I hear no other voices, 3.0.x is the next to retire.
->> Be warned!
->>
->> Any concerns about this plan should be brought forward NOW, ideally
->> backed with support proposals for the aging trees and pipelines.
+On 26.07.24 01:53, kon wrote:
+> From: Konstantin Smola <ksmola51@gmail.com>
 > 
-> Our project is still using Xeno 3.1 on kernel 4.19.229 and will likely
-> be deploying that until the end of this year, at which time we could
-> start migrating to Xeno 3.2 - but I can't get our existing users off
-> of Xeno 3.1 anytime soon - that's a difficult process for them
-> logistically because it means an entire hard disk swap.
-
-Maybe time to look at some remote update pattern? Those do not need
-physical interaction with a device, even if an update should not work
-when designed carefully.
-
+> kernel/drivers/net/stack/packet/af_packet.c: 32-bit compat support
+> Signed-off-by: Konstantin Smola <ksmola51@gmail.com>
+> ---
+>  kernel/drivers/net/stack/packet/af_packet.c | 62 +++++++++++++++------
+>  1 file changed, 45 insertions(+), 17 deletions(-)
 > 
-> I'm just letting you know that long-life and stability is essential in
-> our field of work. We don't require active testing on Xeno 3.1 stable,
-> just occasional questions answered.
-> 
+> diff --git a/kernel/drivers/net/stack/packet/af_packet.c b/kernel/drivers/net/stack/packet/af_packet.c
+> index 6013ff9e7..3ac5f5f13 100644
+> --- a/kernel/drivers/net/stack/packet/af_packet.c
+> +++ b/kernel/drivers/net/stack/packet/af_packet.c
+> @@ -29,6 +29,7 @@
+>  #include <rtnet_iovec.h>
+>  #include <rtnet_socket.h>
+>  #include <stack_mgr.h>
+> +#include <rtdm/compat.h>
+>  
+>  MODULE_LICENSE("GPL");
+>  
+> @@ -107,10 +108,10 @@ static int rt_packet_bind(struct rtdm_fd *fd, struct rtsocket *sock,
+>  	int new_type;
+>  	int ret;
+>  	rtdm_lockctx_t context;
+> -
+> +#ifndef CONFIG_XENO_ARCH_SYS3264
+>  	if (addrlen < sizeof(struct sockaddr_ll))
+>  		return -EINVAL;
+> -
+> +#endif
+>  	sll = rtnet_get_arg(fd, &_sll, addr, sizeof(_sll));
+>  	if (IS_ERR(sll))
+>  		return PTR_ERR(sll);
+> @@ -266,26 +267,53 @@ static int rt_packet_ioctl(struct rtdm_fd *fd, unsigned int request,
+>  	struct _rtdm_setsockaddr_args _setaddr;
+>  	const struct _rtdm_getsockaddr_args *getaddr;
+>  	struct _rtdm_getsockaddr_args _getaddr;
+> -
+> +#ifdef CONFIG_XENO_ARCH_SYS3264
+> +	const struct compat_rtdm_setsockaddr_args *compat_setaddr;
+> +	struct compat_rtdm_setsockaddr_args _compat_setaddr;        
+> +	const struct compat_rtdm_getsockaddr_args *compat_getaddr;
+> +	struct compat_rtdm_getsockaddr_args _compat_getaddr;
+> +#endif
+>  	/* fast path for common socket IOCTLs */
+>  	if (_IOC_TYPE(request) == RTIOC_TYPE_NETWORK)
+>  		return rt_socket_common_ioctl(fd, request, arg);
+>  
+>  	switch (request) {
+> -	case _RTIOC_BIND:
+> -		setaddr = rtnet_get_arg(fd, &_setaddr, arg, sizeof(_setaddr));
+> -		if (IS_ERR(setaddr))
+> -			return PTR_ERR(setaddr);
+> -		return rt_packet_bind(fd, sock, setaddr->addr,
+> -				      setaddr->addrlen);
+> -
+> -	case _RTIOC_GETSOCKNAME:
+> -		getaddr = rtnet_get_arg(fd, &_getaddr, arg, sizeof(_getaddr));
+> -		if (IS_ERR(getaddr))
+> -			return PTR_ERR(getaddr);
+> -		return rt_packet_getsockname(fd, sock, getaddr->addr,
+> -					     getaddr->addrlen);
+> -
+> +	COMPAT_CASE(_RTIOC_BIND):
+> +#ifdef CONFIG_XENO_ARCH_SYS3264
+> +		if (rtdm_fd_is_compat(fd)) {
+> +			compat_setaddr = rtnet_get_arg(fd, &_compat_setaddr, arg, sizeof(_compat_setaddr));
+> +			if (IS_ERR(compat_setaddr))
+> +				return PTR_ERR(compat_setaddr);
+> +			return rt_packet_bind(fd, sock, (const struct sockaddr *)(uintptr_t)compat_setaddr->addr,
+> +						compat_setaddr->addrlen);
+> +		} else {
+> +#endif
+> +			setaddr = rtnet_get_arg(fd, &_setaddr, arg, sizeof(_setaddr));
+> +			if (IS_ERR(setaddr))
+> +				return PTR_ERR(setaddr);
+> +			return rt_packet_bind(fd, sock, setaddr->addr,
+> +						setaddr->addrlen);
+> +#ifdef CONFIG_XENO_ARCH_SYS3264
+> +		}
+> +#endif
+> +	COMPAT_CASE(_RTIOC_GETSOCKNAME):
+> +#ifdef CONFIG_XENO_ARCH_SYS3264
+> +		if (rtdm_fd_is_compat(fd)) {
+> +			compat_getaddr = rtnet_get_arg(fd, &_compat_getaddr, arg, sizeof(_compat_getaddr));
+> +			if (IS_ERR(compat_getaddr))
+> +				return PTR_ERR(compat_getaddr);
+> +			return rt_packet_getsockname(fd, sock, (struct sockaddr *)(uintptr_t)compat_getaddr->addr,
+> +						(socklen_t *)(uintptr_t)compat_getaddr->addrlen);
+> +		} else {
+> +#endif
+> +			getaddr = rtnet_get_arg(fd, &_getaddr, arg, sizeof(_getaddr));
+> +			if (IS_ERR(getaddr))
+> +				return PTR_ERR(getaddr);
+> +			return rt_packet_getsockname(fd, sock, getaddr->addr,
+> +						getaddr->addrlen);
+> +#ifdef CONFIG_XENO_ARCH_SYS3264
+> +		}
+> +#endif
+>  	default:
+>  		return rt_socket_if_ioctl(fd, request, arg);
+>  	}
 
-OK, that sounds feasible.
+Thanks for the patch! I will have a closer look next week.
 
 Jan
 
