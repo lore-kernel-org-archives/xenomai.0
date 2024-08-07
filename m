@@ -1,53 +1,54 @@
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2045.outbound.protection.outlook.com [40.107.22.45])
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2060.outbound.protection.outlook.com [40.107.20.60])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7419415359A
-	for <xenomai@lists.linux.dev>; Wed,  7 Aug 2024 21:29:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.22.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 446D412C53B
+	for <xenomai@lists.linux.dev>; Wed,  7 Aug 2024 21:35:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.20.60
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723066167; cv=fail; b=sxw0ifbT167xIWza7kxZKrsVzorZ/EV/hRNDmjtQj6+pDxMXPul5Gd2UsJUW3fSWIRN50CD7LMZb5YEIrvr6G/EuijWDdFBB6JeXDkgzs+Z12iFfW73vGcCYPEiBvVqCktK22NlqIdQmJSgSTqctn0YI2KSRhVXFEykT6t9gbR4=
+	t=1723066513; cv=fail; b=WLS653cOkaBsrsuDp6ipbW8vpmRe5v6kQn9658ldbvW3b7oDAT4bNiUYuIoa1CvYTWZhp4gYagrKpJOWzNsyH1Na/CCOUMKtHyYMnT5IgVSg2UEXeC3fgK4mwR59b1CxHg/AIqFrzJDK/fUK/OcVTkAwydVMOsjNNrwhHslo/Co=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723066167; c=relaxed/simple;
-	bh=iGpaV2ebYT3S4qioAFSO+cphwlFRYcsSnEFzXlX/NBI=;
-	h=Message-ID:Date:From:To:Subject:Content-Type:MIME-Version; b=L7ytnmAEA/lOEuYWYVlFk87dNy5grilICA0y+i1Sid3KMcYm8Cm6bPo46+CoK4KgG15K7JZiDqhew82cqOB3va0uoiCLloSyzICC/SWxi9RivVIruRqGFse+V2OWSN5DawVTdnDm2NrceWnYMMt/W1N7uaa/42y/vgg4uRIVCW8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=VB+oiJsz; arc=fail smtp.client-ip=40.107.22.45
+	s=arc-20240116; t=1723066513; c=relaxed/simple;
+	bh=84GAHPkjFM2WQLzhRfDIzoJbwg8+SuA5iAeHEQDUJEU=;
+	h=Message-ID:Date:Subject:From:To:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=Dj8c8ctdA23XhXErq3q56dXYHYAzd7yniPicdGjjNm5B9lqkn03VhHwCUNAViPKhCbv0PfqGsUGT/B3TJLzG3wm6eWu0F4/pWX/LXDjs89E5NE2Yrrq8c59TjDlZGXKq15GZaw/ywDBazPHI6O+p5eCa41cc41qBcKk7D4IIkWY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=ymNA7yVC; arc=fail smtp.client-ip=40.107.20.60
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="VB+oiJsz"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="ymNA7yVC"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=NhithisEoqyqVHsMvXOms4wFDxJRi5pFLnAWA2oXRzxMSfUkh2RkBXCpbkoZHfpX52Gsu1lo2UPUGxSaJ0MMSUGX5gYZE9noMwRLMMrg36GeX2E7JK6lnuQac+JKxbyZV60wwGqm2e9wnrHH08Mre/9nDuEXyWZOPJcvbfp0K4hlaoCIiU3qceNIEz2/AK1i5LDjUZ+YrYIjvawSY2Li34oqSwRUe4ymuLLCXuly+TAbD0KDQ4vqtSQCfhWBFeZ2yi12kwduA+ZvFfm6SvIDWSlSHoVL9LtZHOOHgLpNvfYOZ94ojIjwEVcWVHi7rbYN9c72gj3EaluyJkRUqpypvQ==
+ b=b0ROZuFv0ZANwfTLW1fAhUzl59cpzA2AdcqVuC1ji1cAy8uva8VUszf1UZLGwyo3aSUy5+W4WDrayfvPppeapMpDqNOGhfPfUFElaGuFQjR0I6aBfd3T38M3HcmW7uDfdcuKAyzDPh6CPcsvYHxgkuCEvT4fduQrwfRTuoY9MmfF58VBeFi5p748yFpB1Y96NGuHE2QgVgRcmp7gPfIezbJTYF1e+PAe9iMT2PGtkKCNubtEqhLotkkRir2/7JY4q4bU7pHVozZq9VyPcy/3WO+GaZLt7CKQCynTGixxMdI1HeHl9EHcwCstp3UdyX6ZNl1m++yBCbUvuxaLAuOzyw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xFbp3vZk1JDZ93WzkgjI08EnnW2z8rij1rxe4llYM+8=;
- b=u4Hrp85fdyfiS7SJQDDprYdeoq93ab2qE4WFZPaddlTvFMZ7ikij4j9Hg9TOrAIKBz8DKt6LETc+BaHPuJwiW/YdIhPJ16+cyaEfEWlR+mQEtXDlgDBhC7lBjgM4Bmj1wWUYPFOOUkNAbEyN/t0SQROfLmPbM/p9PkJQ3KLjcUivmzrJQwekN7HnB/A+OxtrQTrn8Hc7vFcUMti3dkmiEV5WPJzl2tLc6asGimdOolUIJNWKfB3cpRZ6mcKQ1BaX7KpDKfuioPmuJoxpf3vaqq1wiUGLyC4Z1lEbX5f3YKemIuGXe/kzPUlWwmamK268V3umQmslkcO4Rh8CfYxghg==
+ bh=sTmFWs+JqZGpetVpQS1icxRaEJ2nsOye3/oamXt5Rp8=;
+ b=LVF9WTSrfXQ+mCk73sB25cPG3iVpmzPvHT9SEiJ/hRbHt3tm1xLRIjOw1UEuXm/1R5zAa7xnq9n1HVVZdXtmPe5OtqTgeCYrdBG/e2YgjDlCk1O9X58GV9rEvWaust8up4fDLmU2m3IingeI43rd0oFeLBqCe8YrsdsfjVibPixRKjfY6FhnCO4EaXslO5hywL8YPklwupELhNgBwbIVt6ZyzFRIzZMrRwFjak0l1vzvRghySoo9cmjQbE03+xLE+QzrNTK7TjJBzUsgP5/fk54ffYlRlbWV3owZWQJ/a558VLbimFmubvGp/H5NFMBMVtbSpUdjAKN5PZTfkVBDEg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xFbp3vZk1JDZ93WzkgjI08EnnW2z8rij1rxe4llYM+8=;
- b=VB+oiJsz3/yPvWFzvB46izNDJtFxWCRKGkU2t0hwvelzivwCsO6FA2zLQRrHvIzKy+QjyPTuepVgnST28fGJsKctsnPzliuNTXJRsmLAFWiH7LVA+sGA0e5C2EMMrjodHxX3h+OPYYz3VyymFUNOohIO2kptUPERumSpLBA0495lWbSEQEUohoPMxnQxe4YUxY2lSH8q6flJp+3OcHwSMV1+4rHBB5suqmiEz8xKz1NGulUMeho+MH/bMVohsh268R517tWjZ0o1davD7SSVroGLFYtJYpCyvMP7oHVqZnLVOtS0XQNjX9PgtNmTNEb8A6W/qv9xh6qwdANo6/aMvw==
+ bh=sTmFWs+JqZGpetVpQS1icxRaEJ2nsOye3/oamXt5Rp8=;
+ b=ymNA7yVCxapyi5jQoa/QyuFL+QSDZhikYAiEiQb+ytOHhPAKLyxw1lGb/Qbx3o4JOm7ytBs4++YTE02xwnKB802um2MIMywQOop1aXFGj7gTBOl8Fz4tP9HrF4NEFm942Kg+UtZ39hFmDFvDXdhFCc1fB/nnO+7vbv8kgorAHyC2XxQHzP4mTvTb0YEYI/RXti55zLHwqQ8MPx8o6TG0ZNB5Mob2r2fKfBbaJFJ9gmbb6AikIe5fbif6dgYg4c+q+SbPejqIt7leY1G7aoixP0G3/bxdARwpZsjTJkYa0+Kr68BV/uFEaMgvLIf2CHPIaEnNrpqFruvjDG1Q9srOpg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
  by GVXPR10MB8084.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:110::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7849.13; Wed, 7 Aug
- 2024 21:29:21 +0000
+ 2024 21:35:08 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408%4]) with mapi id 15.20.7828.023; Wed, 7 Aug 2024
- 21:29:21 +0000
-Message-ID: <c91fe1f4-5f33-4bfd-b869-be2d9ba352a2@siemens.com>
-Date: Wed, 7 Aug 2024 23:29:19 +0200
+ 21:35:08 +0000
+Message-ID: <b0c6393c-a41a-4e01-bb4d-b69890b6f4b5@siemens.com>
+Date: Wed, 7 Aug 2024 23:35:06 +0200
 User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] ci: Don't do any kernel checkouts for userland jobs
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: Xenomai <xenomai@lists.linux.dev>
-Subject: [PATCH] drivers: Account for different platform driver remove
- callback in 6.11
+References: <284056a4-b1f9-4642-906e-1ca208d722dd@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
@@ -92,10 +93,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
+In-Reply-To: <284056a4-b1f9-4642-906e-1ca208d722dd@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0150.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:96::8) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR3P281CA0188.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a4::20) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -105,398 +107,132 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GVXPR10MB8084:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9ab973c8-c452-4f71-75ef-08dcb7280078
+X-MS-Office365-Filtering-Correlation-Id: 7d04a92e-c0c1-413d-58cd-08dcb728cf03
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?S2pHaWNreWJyMzdRQmdnYTlIdjJWMkZmWWx0WTZFTkI4djFxREFBRzZwcTVT?=
- =?utf-8?B?L3NCNnVpZGZFaHJ4S3V4SVNCLzM4dHRTTElqaThOVVpnN3RBMkI0YmFwbXBt?=
- =?utf-8?B?eVF0NGlkNmZ2clZuMVo0cnpLQVhmaEcxM3RGTTNycWNyWnJRN0t3elE5OVNn?=
- =?utf-8?B?MnpxZ242bDFPYlJhV1V1WFNZZVNrY2MyN2IvbnRTbjNHV2RTZFVCejhEYm1k?=
- =?utf-8?B?SFJkZGdDUkMwM0dQQjd3UFhJMjNJSnMybjA5b1JGUkFEMmY5VzNrY3Q1TS85?=
- =?utf-8?B?R2tsTTdORStWVDZ5czdPV2s0RnJHTXJvdzFLM3RxWjNGSkZxYzZlUnBucG9G?=
- =?utf-8?B?dm9FQ2VZalN6akRFK084eUxFV3Bvam5La1JlVktSSWR6RlFlczlJY1pxbng0?=
- =?utf-8?B?TkkvdXMrNU1RUTEwOUVDdTAyRTRXNHlWQWJoVHh3eWQya0R6eTlOY0pINGw4?=
- =?utf-8?B?Z1FtdzNkSjNjU3U4VVUyM2ZCSElUUFBrbjRXaDExaDhQZGZ0dmNRQSt1OUFL?=
- =?utf-8?B?UjQ4b2poVXkvbmszMkVPS1ZYNno0Qk1IZm9heURqck5oQmJQY3FKd05xNkRn?=
- =?utf-8?B?SExjU1pVaVhkUytOQ2lOdVV0aVJDTFNWamg3TXVaTnV3OFFkYVlGdWV4SjlP?=
- =?utf-8?B?bzFPUHVVbEI5T0NVRVFEaFdaUUFBZ0Q2ZUlpWFY5Rld5WWNPRkV5R2xLelhm?=
- =?utf-8?B?Tzc0MWNjVDJJYmhQM2RNZklDTDBoS2hiRHk2Vk52Qm1iRFlpOHZzN05kZjFM?=
- =?utf-8?B?NkxUajdveVJ0cFVUQzlTdlE3TDh6L1kySFIrYy9nUSswSldwMnlMNUNWZm9I?=
- =?utf-8?B?M0l1ZG11N2piWDN1Umo4VS9uSlFIeXp1OTBLeEFQempDUk5sZnJseTA0bXdY?=
- =?utf-8?B?Qkl2RlBCWThiaWovTUZ5dTNscklVVURINW1kUGNoTEJqc3NOVlpUbWU1MUtQ?=
- =?utf-8?B?bVhJMFRiWk00MGhVeTlseTZqRzJoWkFtb1BlaHlOZmNZV0hndUc5ZkVLSFVC?=
- =?utf-8?B?OVM5Qk93UXBrOHVtWnRMNVh6cXBsSk5SNFJtRlJXWkFCbjArSUJ4YnNZcG1i?=
- =?utf-8?B?VU9wZTd1dm05UGE1Snh1SVJyT29zYTRkWG1SU0J4R1NuZldWSHhndVl2aVg2?=
- =?utf-8?B?SVJraXJXR1RvNTRnWTlnT0I2V0lTbFNJWGczM2pNeDJ2RnlvN28vZGhNK01i?=
- =?utf-8?B?bHBianQvZmVTWHRGT1gwbSt5REs2WkdOTGdVUE1sN2VrV1E4d01KcmZudEww?=
- =?utf-8?B?eHcwc0NBeWF6RmFWbml3TVJBVzROSTM0N0lnY2RiTnB4YkpPSE1ZQ05QL1No?=
- =?utf-8?B?R0ZpL1JBS29RMmJuY2s1OXY5a1ZqTHljdW93S1pNWHpYN1hEMlRWYklFUWcr?=
- =?utf-8?B?ZTlRU3hLYWZhYWxSRTRaNHdtRlY2cGs2WTlyMnVQM05KSUpEb3lDcWtjeWF5?=
- =?utf-8?B?NUFMZVlGaThSUEhuNjVHRjZZREVTeWhYZndCRkYyNHBwVy9sREVNWjRZb0NW?=
- =?utf-8?B?QUZLK2VJK1NXTGVSVXlrV0o4RXpmV1lWekVKSDFJZ1lseTJVdHNqUFRpQ3dn?=
- =?utf-8?B?cjkzanZCNWtFUytvQUcvT2l4UTJWL3haYnYwbGZUN2xrbGpOdXEwT3NMdTh2?=
- =?utf-8?B?QXlGY2o3b1lHVTBoRnVJWTFpUFhyODVxdnkxVGdWTkxQWGxWVTN0Y3JyaXlT?=
- =?utf-8?B?V0VWWjkrWUVSUXphQXBWUW5OOER1N1hEZnpjUGxxUVpiWUMycG5zV1EvbUxr?=
- =?utf-8?B?TXM1VkcyKzhTT0FUcVVjMFlXbmM3SnBOTGU4WkhPU044bjIrb3kvcm81aHRI?=
- =?utf-8?B?M0UyQ3V0dzVlYjRwQW5Cdz09?=
+	=?utf-8?B?WVZzTWM5U0NhUW5KOXZsQ2I5b1dCVk5Ia05oMGRtTUN4MUF0aE56NWlMSElH?=
+ =?utf-8?B?RWxncDNETXg1TDN5UEhKWDltRzRCQkNlOUpKUTFLRmEwYk5Zc1NhTVF6MWIv?=
+ =?utf-8?B?Q1IwSHA4WnpXWVFraFEzYVIzMlVXUnErUyt5ZU0rS1RERzZSbkNqS3FJZWJv?=
+ =?utf-8?B?Zmp2WE1YTE5rVG5LaHpSZlRMdmE0YkVJbURyN0Ftb2hVaDRMRGQzWko2YzUr?=
+ =?utf-8?B?MzladHRvaUpiWnBvNk1ZZ0dvazIzN3RvMUNhbzlBN3k5dHhQVnczZUh5QmJu?=
+ =?utf-8?B?RW5nekhLNUZET29waU0xMGZIRnRybUh6dkNxaU9lMENTNVdBY09PODVGbHRT?=
+ =?utf-8?B?djZFZ1JBZ0pCS29DWE81dm4wenVnejk2eDdnMEthSlJTQTFjWnVETmQrdm55?=
+ =?utf-8?B?L21vMUJ1dnkya3Z6Mm43Q2UySnd0YnpVVGFxS0tFYkMxRjJPSk5LT1ZhY0E3?=
+ =?utf-8?B?SDFFQ3FzZUpubGpPeGZRb0VTY0Rxa2ZnRVdqdmRlK0RDZHBrVDgyYUY4K3hG?=
+ =?utf-8?B?UzVoWlMzWGVqeWdGemE4Tjh0NGk3cUwwTkRBTFFLLzczNFZwS2wweDRIeTQ4?=
+ =?utf-8?B?a0NLQnpXNXJmVDBCUjRJKzVTVThFVEZzS01uNUR2Y3U1dG9OZzVvanRycGY4?=
+ =?utf-8?B?NHRqNkhwamZZR3oyTGVWTnFucFFwYmtWSzVFUEZ0eklpYnkvNWlkZTBqNUtz?=
+ =?utf-8?B?QlZaZnJxL1BVaFJNOVJQRVN6dWtvazBRY3NhK2E2RHhnRGs1VDdrdDVJK2Z2?=
+ =?utf-8?B?RDVUVzY5cHNSSFBoK0p6T0YzU2xoYjI1S2d4aXdzWGRmcndJVFN5YmZEV0JD?=
+ =?utf-8?B?VGNjbFNPL2JNQ3pVY1F6c0VpeW9oRzdLMUd4aUFncFF0NEZVcmY2aFFna3dV?=
+ =?utf-8?B?RzM3aWFEYmZsb3ZjblR2Rm51SXpQVUFkU09FM3dPZm93SklPU1JzYmRSZWtE?=
+ =?utf-8?B?eDc3WHRYb2lwUlF5TTg4aVZHYlorSXNqZXlKM2E3a3FlbU02czc2TW9xcTdu?=
+ =?utf-8?B?bVJPMlBLNmhNTFowby9tVVlKRHNyczcvTHdRRUV6M25ORkltU3JIckt4Tktl?=
+ =?utf-8?B?Q2JsTjZuaGdRRlN5UUswZFdOY0JhMVNYNkdGbngrclFLVUFFbmlndzhNdWZU?=
+ =?utf-8?B?aEZXaEU4akdCS0VWdmJkbGh1RkZkZjN4OWZUbDFqYytJMWlNZVcvaUg1d3BW?=
+ =?utf-8?B?VXBQcHFFRlMwUkpWbUc0VERTbkwxdVpnZDcwOVlYSDY2a0Y3YVJUYTJPQUhE?=
+ =?utf-8?B?TEdnRUN0OVYwWWNTejlBMHJFOTlRcDFTcHpGM3lzeW5pVjZVS3U2Wmp2ZUtU?=
+ =?utf-8?B?SzJ1VWx4SmVoY1NGOFZndWgxMDk0c3NLaERYZ1lBN0ppYXJnM2ppSlZ6YW45?=
+ =?utf-8?B?M2xwKzVteUprMHNBcnlPQkV1c1lGNlAycFdSY3FUM3NtWmRJWlFUM2ZUNm1k?=
+ =?utf-8?B?TEQ5Z3VJM1VielZvUmFDVjY0c3d2MFZad1haaEtKYXpzWFR0eGU3WUZJTk55?=
+ =?utf-8?B?RHlkSUZhS0ZPZkxjNWYvdGI4UlNCTG1wSmpZcE5OdlFkblVrV1dpSEh5S0Nz?=
+ =?utf-8?B?OW5OYVRyUUZ3a0hlV2tqUjNlS2JiUU0vS0Yra2RFU0IxSk5ya3ZtMFpoQjdY?=
+ =?utf-8?B?Q3hPMk9XakRGQlM2REQvVHNjNlhhdlhPM25OMlE5alprQnpZVUtNd2VDekto?=
+ =?utf-8?B?a2hjcjRkeUplMGhiaC9wNytHSFZWdlppaCsybk42VlVkb3FicFpQdFdBT1RK?=
+ =?utf-8?B?bkVJMkx0MXVlSXFNeXMrb3J1bVVpeDBDTVAwcE10ZFgvdXJMSm84SllicnFJ?=
+ =?utf-8?B?dXR3REJ2TmszOHUwcmQyUT09?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?dzlROGNDdWZsYncyQjJUc1RtRE81NFlNZ3YxbmsybHFyNFdrTnRRWlNRK2tH?=
- =?utf-8?B?ajBmSEgwTjFyL1dzNjBoRnJicHdpeUdPVXZuaWFjOWVCV2NpbGVTYjR1OHMx?=
- =?utf-8?B?QjdTZHhVZ05zc01vZlA5YUJSVmNYQ25FUndCN1BzenNaMlIwdEgvVjIweEpM?=
- =?utf-8?B?MkVHYUdGZjRRdk5HQ3VNS2l0VWVBY21YVXRpbkY1U3B2WElvMzR6dHRab2dw?=
- =?utf-8?B?ZkdORkdNd2hsQ25PYllGQnhOb0U4S3ZqL01vZkVLYmxIT2JPTDQ0dU1yQng3?=
- =?utf-8?B?WDBCaUVlRHh1QmloYXh5WVBnMzRvS1V5VUM0R2lEZ1FNS0FTRHdPY2F3Y1lY?=
- =?utf-8?B?czdTcU1rTnVETXd5d3NHaGVERkxSL0NHcmNuWlg0Smh2UG5qRXByaGdmU1U5?=
- =?utf-8?B?RzBKR2pNbk9UUlhpdENqZFV5dW4xNkJJN1hvbDZJS1V6Mml5NlF6RUUyaEdx?=
- =?utf-8?B?OENUTmFxbUNaRTh3OHhtT0VFbmtCeHJHQnc1eURYenZ1QnYxYm5RbmRXWW05?=
- =?utf-8?B?SnVFbnYrV25sdGM2dno2eGZldU12YWVucWVZRjEwdEt1S2tKUHNtKytCMG10?=
- =?utf-8?B?K2NpNmZEd1FMM1diaUJ0dE9iTDRaSUVXbEpxVlREQnhjQ0dqQ0Yzd1Z1eTVE?=
- =?utf-8?B?dnQ1WEtxdGF2ZVhrMm1reTQ3djR1aXhOc3RJdWYrazdQRVF6bEttcEdGZExl?=
- =?utf-8?B?M2RUYkRLYXFVMmZmd29mMGRlQ1MvQWdFMFJueGtoRG9QSlVJK0lmV1Z4dUlJ?=
- =?utf-8?B?cnpXajVkT05VMDJ1WTdBNEJhUG5oSmlLZjN2Qms2VGR6TU12OUZpT1R6dmgz?=
- =?utf-8?B?eGhCYjlORmVYaXgxU0RSMkk3RkQ1aDZxZ0hJSDIwRmUyWXdPcCtvTHNCT0dI?=
- =?utf-8?B?SEV0dEpPL2dCNFU4Qy9mUmJJekMwNnlCa0RTbVFiZnlseEJyVnBrK2xuWmhY?=
- =?utf-8?B?N2Q1UVJCTWhFTVpqRmZoTCtoSURWNTJpbXVDQVl1NUF2bHZSUzdNcnVFN28z?=
- =?utf-8?B?cUdKZTNSWURneGZXWFpXRjIwM1dtdGhXTFJtaC92anBjNzI4QVB5cjRObzFN?=
- =?utf-8?B?a0ZDZkswalNER1lGUXFkU2NvbjdWYzdpRDNQQjRVbFh5OStsZVNCZDFWTW9k?=
- =?utf-8?B?UksvbmlncS9GN01uMWZOMktNcHFYT2huOXZyMTBBcFNkeGpiUEg0WnlHRU14?=
- =?utf-8?B?cS9GSUZsN24vNUVEcHc4NTFLY2o4SU1nYm9VMFMwcTEwN2pDcUN0YkE0Qm0v?=
- =?utf-8?B?QitwSXIvQzZUaW4xUmlEZHlNTysxT25RMDBva3p4enZVcm9jOVE4c0ZxVTBk?=
- =?utf-8?B?aFJUT2JxL1M3azNxdmk2Sk1uUEJPUG5ueUllTzFjT3ZZOW0rN3B3VXVtLzRG?=
- =?utf-8?B?U0IrckJCcHpDUlFka1Q1Z01Jd1RGVXMrL1c3RzRSdlNrSS9jV1NGYVVaSHVW?=
- =?utf-8?B?Y2lpemhZVC9CUUJ6ZHNEc25IUkUvQ0JoUzRsZnZpOHF0eGpyTGlpTXlIcVVj?=
- =?utf-8?B?RDRiSlBpSHhHeUhSdDIwRXZjRmhDTjRXN1YzZ1V6ZjNpK1BDZlY0dTRIM0hQ?=
- =?utf-8?B?MXRQNXJwQWZaQTdUdlJWZzR6bEhqVXFETHBPeUd0NmpxZmFscGo2MS9pNUlP?=
- =?utf-8?B?THJUQUwxK0dKUlhON1VzaXA2cTFMbnlkV1JLMjg0cjYxczlPRzhLVzR6UkE2?=
- =?utf-8?B?U1IrSU9VSkJlWDhXVFlTMHpLcThHNGUzS0NPWG5hQVJLZitKbnowSDV1a0cz?=
- =?utf-8?B?cDJUOUVnQy9pbE80TnRWdFJ6d1NrM09ZU3NjalRXdk9QUXlqMG14WmdYcHMr?=
- =?utf-8?B?ZVpDb1BSYnllQzdEcS8yby9iQ2VBLzhQVHRjSk5rK29ZcHdSVGxoNnpaQTFi?=
- =?utf-8?B?RmhJdEx6a1dpQnhrS2NtVUlKNmx5SkNJL2tJOGpRMkU4dThTWitXdXhUOHc5?=
- =?utf-8?B?elBNRnlqTlhCZ0pCemdnemhEbjhCUzlZMFNBaGpEUEYzZkUrVjRCSmtDb2V5?=
- =?utf-8?B?dGl3MnlRSGYvSTFwK0RtamxIK0l6a2NOU3hBdmZDSnU2UU9sQWEyWDJtSXRN?=
- =?utf-8?B?b050TGpVYWpweE56RkphY1hMMG9SRjI3ZFdVT0c3MHZ0SDZqYUc4RXV2NUZT?=
- =?utf-8?Q?Qs/qu5/JQ8l+owYQJMGMAD2Xq?=
+	=?utf-8?B?ckIycXRmdVJXdVRrOUluS0w2T3FyUjljcHdrcktwdTJNWjhRUy9DLzhscFdD?=
+ =?utf-8?B?ZjBzNTdjZzlRcjBjVjVVeEdpb2NiU3F6ZEJVSUdVdG5JUVJSUW1RdGY3UUlm?=
+ =?utf-8?B?YmlBTHFNOExhdVE1M0tRdHdRL2pDd3AwMUQ2ZjRwanR4S0lQamtUb0x5NTJT?=
+ =?utf-8?B?UWY2KytidHpvYXBITkdsREppelk1R3FIZmpUWlJIN2VCY0FUUWY1Ly9RbCtu?=
+ =?utf-8?B?VjFxMXZ4VGZjV00rdUlzRzZKUXNVckYxc2NwRGtaUnZwa0hGL0F6QTU2WWNZ?=
+ =?utf-8?B?UnhLdCtkQjRudHFZK05OTFVtNnVZQTdDSGNyRkNHK093Zy9YTlJwM2Jxa3VY?=
+ =?utf-8?B?bHV0TmJXZ1RpVUw2bUFCbmRGMmcrWE9XWTl5S3R0UWEzb2RkdExvSnpIWlFP?=
+ =?utf-8?B?RG5nTksxN2Z0VmFLVktPUDRqZnl3R2QzaHlSYjhwYlppVnJ5UlgzdXF1Q2px?=
+ =?utf-8?B?WlFhUldJSVN0NHcxZEtZNkU4Ull0dHQxS1FvQXNSM2dHbG8rRTF2UmphNE1D?=
+ =?utf-8?B?aXFUcVozRm5qa1k1TVZUc3E4c3NrdHMySHV0UXRKQXhhSzR2Zm5ER2RIZG9U?=
+ =?utf-8?B?U1F3QXRjWE1QSUt6M0JQNEhjUm9PRUlwTFkwL0RabkhUU0xxeW5DUlJQQkw3?=
+ =?utf-8?B?cHlDNW5tUXNPbWhJUHpQSXJOYnZJbnhXMzVWSkNOZ0Z3UGphU1N4QkZ5UlZq?=
+ =?utf-8?B?M3NGYnV4WmIxUTdhcTRsWEdNSUpEeTRvWHR4ZVRjbVJJWnFrelNkZjllUklm?=
+ =?utf-8?B?MmZBQnBtWU5mcjNOVHNRTFpTallzUkY2bTZaWHJQQ3g0K1dQRCtJclRmaDh4?=
+ =?utf-8?B?NklDUVBFR1p6R2cySTVGTGp5TmQ2WHJpVUhVajV1RDRYRy93Y3pvZnQxcHJG?=
+ =?utf-8?B?Znp2ZVlXL0tWbCtVcUFsSjNjNldFK3RJVXUrQ0NSbEt4R00wY0h0OUI4REFu?=
+ =?utf-8?B?Q25IYXhsNUlveklQYVRHZnI4TGhpOU9wU3lSdG9KdkVaWmErSHQ3N3dYNGk4?=
+ =?utf-8?B?SHZRTk1mNndNSllNcGNrRmFjQUJUa2FSWmRUZjd6WG15bUVCcDFEeEQreDE4?=
+ =?utf-8?B?LzVHeldLeDE4M2c1QmszT0lDTkd2N1VnUzNsbmlOS2duRGZOV21BWTJIK2Vy?=
+ =?utf-8?B?YTkxTG1VNWtGa0w4dnhIQkhjdEluaktUYXNBVjVHUk92SDZPNUlsTE1xUUlD?=
+ =?utf-8?B?YzE0VGtDWTlXdC9nVjlrWEc1MnY4V0lKRHBORkF3a2dEL1N4MWpuTnRucUNj?=
+ =?utf-8?B?aHYyb00rZlVkMlc0MVdReGJPZTRVZkUwUVBYdE9Jek1vdlRDV2ZkTGkyTmlr?=
+ =?utf-8?B?OEVsajNxVHFiWmY0cWVhZmJQck9LYWVSc2gzNmFRMVRuTHYreGlYQ1hUMVBy?=
+ =?utf-8?B?SkJ2Y3U3VlErWkJvMjlBbXRRaVlNLzRwd0FEaGxrVlRaeEZkT3QzaDZ2SkJu?=
+ =?utf-8?B?SlZBR0hrR05QS0U3VXIvamVDQkw3TmdhaDFDVzYrdzVrOXNGRDRmMzFzRnNO?=
+ =?utf-8?B?UUNkeHFXWjkwVUcvK2ZmS09OVjFRTE90d1dmcUZSVlhYbVR5Y1ZWZ0NLeXA1?=
+ =?utf-8?B?RE5ZY3pORFl0TGtkN29MRXd2L1pFY0kxYnV2MHhwNnhhQTU2bHdRZTkvNDRY?=
+ =?utf-8?B?U0tVcWlQQnIzeU9CVmpQZG9lYnEva0JQMjJkYklmLzBuc1V0RUJud2ZhdElw?=
+ =?utf-8?B?aTZ3UFpEeHJpbGJoaEhwQUttK2NIV2d6VzJoelF0S1VKSzZxTGpiRGdRK3Vu?=
+ =?utf-8?B?ZVIzMDUvZy8zcHdCWmhRK1h0MzhkdmRwcTlGUmxBRTlLaFpFSlk0OWJUM294?=
+ =?utf-8?B?dTljbXh6SzJyQ2lXTEs5UlFRNzN3S24wc0RCbTVDNVNoN1kwQWY1VFg4eVA3?=
+ =?utf-8?B?aU1zWTA0OEV3QjRoS29ObW5JM0Y4SFFFMmQrOFpkL1Q4TUtnUEcrSFkvQlVv?=
+ =?utf-8?B?UTdhOEhkVHFRY202YnRLajBpTHhKS3YzSmxKajY0c2o2eUVDWGJKY0hCTjZN?=
+ =?utf-8?B?QXF6RlNwTFNmeFpDK1ZTL0s4N1QyREtodUdLL01wQWI2ZmlwUjNUZlhIaklT?=
+ =?utf-8?B?ald0M2prUTRYeXJ1dGl0dnV0b2FLemNpcE1pZFNib3NOcXhmZmNJV3QxZnBa?=
+ =?utf-8?Q?zwpK2KSs0BinppMP32ojSTKYY?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9ab973c8-c452-4f71-75ef-08dcb7280078
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7d04a92e-c0c1-413d-58cd-08dcb728cf03
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Aug 2024 21:29:21.4833
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Aug 2024 21:35:08.0189
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ZiHtzxJQcU3f8/BtiGZqp6POkhhZISGdKZSVkwrygOQISoz+TQkvpM4WL0YHXsToO1/CRnrdcBie1EZHP0/u4Q==
+X-MS-Exchange-CrossTenant-UserPrincipalName: RPeQkuGyoF1Nn2ZGhyBg44J8Rel8wAy6ikJGTdCJHKr08hSL8+WpO7YiK10kvc8Boq+NfYCH8jeaVf0DzgOB5w==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR10MB8084
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 07.08.24 23:29, Jan Kiszka wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+> 
+> Testing for PIPELINE_KERNEL being non-zero used to work but became
+> broken with 2e92c3ae2e22.
+> 
+> This also fixes sporadic failures of userland jobs over the evaluations
+> for setting REV.
+> 
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>  .gitlab-ci.yml | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+> index 09702af904..975c4e573d 100644
+> --- a/.gitlab-ci.yml
+> +++ b/.gitlab-ci.yml
+> @@ -41,9 +41,9 @@ variables:
+>      - apt update
+>      - ARCH_PACKAGES="PACKAGES_${ARCH}"
+>      - apt install -y ${PACKAGES} ${!ARCH_PACKAGES}
+> -    - REV=$(git ls-remote --tags --head --refs ${PIPELINE_KERNEL} | sed -e "s/.*[[:space:]]refs\/\(tags\|heads\)\///" | grep "${PIPELINE_REV}" | sort -r -n -k 1.4 | head -1)
+> +    - test -n "${PIPELINE_REV} && REV=$(git ls-remote --tags --head --refs ${PIPELINE_KERNEL} | sed -e "s/.*[[:space:]]refs\/\(tags\|heads\)\///" | grep "${PIPELINE_REV}" | sort -r -n -k 1.4 | head -1)
 
-Unfortunately, this requires a bit of #ifdef'ery.
+Missing closing '"' - in next is now the version that has it.
 
-The fec driver was the only one actually returning non-zero as well.
-Adjust it to what upstream does.
+Jan
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- .../drivers/can/c_can/rtcan_c_can_platform.c  |  6 +++++
- kernel/drivers/can/rtcan_flexcan.c            |  6 +++++
- kernel/drivers/net/drivers/at91_ether.c       |  6 +++++
- .../drivers/net/drivers/freescale/fec_main.c  | 22 ++++++++++++++-----
- kernel/drivers/net/drivers/macb.c             |  6 +++++
- kernel/drivers/serial/mpc52xx_uart.c          |  6 +++++
- kernel/drivers/serial/rt_imx_uart.c           |  6 +++++
- kernel/drivers/spi/spi-bcm2835.c              |  6 +++++
- kernel/drivers/spi/spi-omap2-mcspi-rt.c       |  6 +++++
- kernel/drivers/spi/spi-sun6i.c                |  6 +++++
- 10 files changed, 71 insertions(+), 5 deletions(-)
+>      - test -n "${REV}" || REV="${PIPELINE_REV}"
+> -    - test -n "${PIPELINE_KERNEL}" && echo "Checking out ${REV}..." && git clone --depth 1 --branch ${REV} ${PIPELINE_KERNEL} ${KDIR}
+> +    - test -n "${REV}" && echo "Checking out ${REV}..." && git clone --depth 1 --branch ${REV} ${PIPELINE_KERNEL} ${KDIR}
+>      - case "${ARCH}" in
+>        "arm64")
+>        export CROSS_COMPILE=aarch64-linux-gnu-;
 
-diff --git a/kernel/drivers/can/c_can/rtcan_c_can_platform.c b/kernel/drivers/can/c_can/rtcan_c_can_platform.c
-index 0d29d98771..aef6f8895c 100644
---- a/kernel/drivers/can/c_can/rtcan_c_can_platform.c
-+++ b/kernel/drivers/can/c_can/rtcan_c_can_platform.c
-@@ -432,13 +432,19 @@ exit:
- 	return ret;
- }
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- static int c_can_plat_remove(struct platform_device *pdev)
-+#else
-+static void c_can_plat_remove(struct platform_device *pdev)
-+#endif
- {
- 	struct rtcan_device *dev = platform_get_drvdata(pdev);
- 
- 	rtcan_c_can_unregister(dev);
- 	rtcan_c_can_dev_free(dev);
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- 	return 0;
-+#endif
- }
- 
- static struct platform_driver c_can_plat_driver = {
-diff --git a/kernel/drivers/can/rtcan_flexcan.c b/kernel/drivers/can/rtcan_flexcan.c
-index edaaad7031..1658599232 100644
---- a/kernel/drivers/can/rtcan_flexcan.c
-+++ b/kernel/drivers/can/rtcan_flexcan.c
-@@ -1482,14 +1482,20 @@ static int flexcan_probe(struct platform_device *pdev)
- 	return err;
- }
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- static int flexcan_remove(struct platform_device *pdev)
-+#else
-+static void flexcan_remove(struct platform_device *pdev)
-+#endif
- {
- 	struct rtcan_device *dev = platform_get_drvdata(pdev);
- 
- 	unregister_flexcandev(dev);
- 	rtcan_dev_free(dev);
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- 	return 0;
-+#endif
- }
- 
- static struct platform_driver flexcan_driver = {
-diff --git a/kernel/drivers/net/drivers/at91_ether.c b/kernel/drivers/net/drivers/at91_ether.c
-index f8223b0bc5..a5ef40c579 100644
---- a/kernel/drivers/net/drivers/at91_ether.c
-+++ b/kernel/drivers/net/drivers/at91_ether.c
-@@ -421,7 +421,11 @@ err_free_dev:
- 	return res;
- }
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- static int at91ether_remove(struct platform_device *pdev)
-+#else
-+static void at91ether_remove(struct platform_device *pdev)
-+#endif
- {
- 	struct rtnet_device *dev = platform_get_drvdata(pdev);
- 	struct macb *lp = rtnetdev_priv(dev);
-@@ -440,7 +444,9 @@ static int at91ether_remove(struct platform_device *pdev)
- 	clk_disable(lp->pclk);
- 	rtdev_free(dev);
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- 	return 0;
-+#endif
- }
- 
- static struct platform_driver at91ether_driver = {
-diff --git a/kernel/drivers/net/drivers/freescale/fec_main.c b/kernel/drivers/net/drivers/freescale/fec_main.c
-index d1b6fd166f..9561fbc589 100644
---- a/kernel/drivers/net/drivers/freescale/fec_main.c
-+++ b/kernel/drivers/net/drivers/freescale/fec_main.c
-@@ -3522,8 +3522,11 @@ failed_rt_init:
- 	return ret;
- }
- 
--static int
--fec_drv_remove(struct platform_device *pdev)
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
-+static int fec_drv_remove(struct platform_device *pdev)
-+#else
-+static void fec_drv_remove(struct platform_device *pdev)
-+#endif
- {
- 	struct net_device *ndev = platform_get_drvdata(pdev);
- 	struct fec_enet_private *fep = netdev_priv(ndev);
-@@ -3532,7 +3535,9 @@ fec_drv_remove(struct platform_device *pdev)
- 
- 	ret = pm_runtime_resume_and_get(&pdev->dev);
- 	if (ret < 0)
--		return ret;
-+		dev_err(&pdev->dev,
-+			"Failed to resume device in remove callback (%pe)\n",
-+			ERR_PTR(ret));
- 
- 	cancel_work_sync(&fep->tx_timeout_work);
- 	fec_ptp_stop(pdev);
-@@ -3547,13 +3552,20 @@ fec_drv_remove(struct platform_device *pdev)
- 		of_phy_deregister_fixed_link(np);
- 	of_node_put(fep->phy_node);
- 
--	clk_disable_unprepare(fep->clk_ahb);
--	clk_disable_unprepare(fep->clk_ipg);
-+        /* After pm_runtime_get_sync() failed, the clks are still off, so skip
-+         * disabling them again.
-+         */
-+	if (ret >= 0) {
-+		clk_disable_unprepare(fep->clk_ahb);
-+		clk_disable_unprepare(fep->clk_ipg);
-+	}
- 	pm_runtime_put_noidle(&pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
- 
- 	free_netdev(ndev);
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- 	return 0;
-+#endif
- }
- 
- static int __maybe_unused fec_suspend(struct device *dev)
-diff --git a/kernel/drivers/net/drivers/macb.c b/kernel/drivers/net/drivers/macb.c
-index 77957d9062..6da5761479 100644
---- a/kernel/drivers/net/drivers/macb.c
-+++ b/kernel/drivers/net/drivers/macb.c
-@@ -1769,7 +1769,11 @@ err_out:
- 	return err;
- }
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- static int __exit macb_remove(struct platform_device *pdev)
-+#else
-+static void __exit macb_remove(struct platform_device *pdev)
-+#endif
- {
- 	struct rtnet_device *dev;
- 	struct macb *bp;
-@@ -1795,7 +1799,9 @@ static int __exit macb_remove(struct platform_device *pdev)
- 		rtdev_free(dev);
- 	}
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- 	return 0;
-+#endif
- }
- 
- static struct platform_driver macb_driver = {
-diff --git a/kernel/drivers/serial/mpc52xx_uart.c b/kernel/drivers/serial/mpc52xx_uart.c
-index 68d1a4cbda..1347ac0b38 100644
---- a/kernel/drivers/serial/mpc52xx_uart.c
-+++ b/kernel/drivers/serial/mpc52xx_uart.c
-@@ -1360,7 +1360,11 @@ out_kfree_port:
- 	return ret;
- }
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- static int rt_mpc52xx_uart_of_remove(struct platform_device *op)
-+#else
-+static void rt_mpc52xx_uart_of_remove(struct platform_device *op)
-+#endif
- {
- 	struct rtdm_device *dev = dev_get_drvdata(&op->dev);
- 	struct rt_mpc52xx_uart_port *port = dev->device_data;
-@@ -1376,7 +1380,9 @@ static int rt_mpc52xx_uart_of_remove(struct platform_device *op)
- 	kfree(port);
- 	kfree(dev);
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- 	return 0;
-+#endif
- }
- 
- static struct of_device_id rt_mpc52xx_uart_of_match[] = {
-diff --git a/kernel/drivers/serial/rt_imx_uart.c b/kernel/drivers/serial/rt_imx_uart.c
-index 2b2dbeeb72..bc5f4a8ed7 100644
---- a/kernel/drivers/serial/rt_imx_uart.c
-+++ b/kernel/drivers/serial/rt_imx_uart.c
-@@ -1597,7 +1597,11 @@ static int rt_imx_uart_probe(struct platform_device *pdev)
- 	return 0;
- }
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- static int rt_imx_uart_remove(struct platform_device *pdev)
-+#else
-+static void rt_imx_uart_remove(struct platform_device *pdev)
-+#endif
- {
- 	struct imxuart_platform_data *pdata;
- 	struct rt_imx_uart_port *port = platform_get_drvdata(pdev);
-@@ -1610,7 +1614,9 @@ static int rt_imx_uart_remove(struct platform_device *pdev)
- 	clk_disable_unprepare(port->clk_per);
- 	rtdm_dev_unregister(dev);
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- 	return 0;
-+#endif
- }
- 
- static struct platform_driver rt_imx_uart_driver = {
-diff --git a/kernel/drivers/spi/spi-bcm2835.c b/kernel/drivers/spi/spi-bcm2835.c
-index fabfd4a59c..4a1a6f201c 100644
---- a/kernel/drivers/spi/spi-bcm2835.c
-+++ b/kernel/drivers/spi/spi-bcm2835.c
-@@ -670,7 +670,11 @@ fail:
- 	return ret;
- }
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- static int bcm2835_spi_remove(struct platform_device *pdev)
-+#else
-+static void bcm2835_spi_remove(struct platform_device *pdev)
-+#endif
- {
- 	struct rtdm_spi_master *master = platform_get_drvdata(pdev);
- 	struct spi_master_bcm2835 *spim;
-@@ -689,7 +693,9 @@ static int bcm2835_spi_remove(struct platform_device *pdev)
- 
- 	rtdm_spi_remove_master(master);
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- 	return 0;
-+#endif
- }
- 
- static const struct of_device_id bcm2835_spi_match[] = {
-diff --git a/kernel/drivers/spi/spi-omap2-mcspi-rt.c b/kernel/drivers/spi/spi-omap2-mcspi-rt.c
-index 976d28dc5d..6b5c11b71d 100644
---- a/kernel/drivers/spi/spi-omap2-mcspi-rt.c
-+++ b/kernel/drivers/spi/spi-omap2-mcspi-rt.c
-@@ -993,7 +993,11 @@ fail:
- 	return ret;
- }
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- static int omap2_mcspi_remove(struct platform_device *pdev)
-+#else
-+static void omap2_mcspi_remove(struct platform_device *pdev)
-+#endif
- {
- 	struct rtdm_spi_master *master = platform_get_drvdata(pdev);
- 	struct spi_master_omap2_mcspi *spim;
-@@ -1010,7 +1014,9 @@ static int omap2_mcspi_remove(struct platform_device *pdev)
- 
- 	rtdm_spi_remove_master(master);
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- 	return 0;
-+#endif
- }
- 
- static struct platform_driver omap2_mcspi_spi_driver = {
-diff --git a/kernel/drivers/spi/spi-sun6i.c b/kernel/drivers/spi/spi-sun6i.c
-index 72a4abd0d7..13dd325c91 100644
---- a/kernel/drivers/spi/spi-sun6i.c
-+++ b/kernel/drivers/spi/spi-sun6i.c
-@@ -629,7 +629,11 @@ fail:
- 	return ret;
- }
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- static int sun6i_spi_remove(struct platform_device *pdev)
-+#else
-+static void sun6i_spi_remove(struct platform_device *pdev)
-+#endif
- {
- 	struct rtdm_spi_master *master = platform_get_drvdata(pdev);
- 	struct spi_master_sun6i *spim;
-@@ -645,7 +649,9 @@ static int sun6i_spi_remove(struct platform_device *pdev)
- 
- 	rtdm_spi_remove_master(master);
- 
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,11,0)
- 	return 0;
-+#endif
- }
- 
- static const struct of_device_id sun6i_spi_match[] = {
 -- 
-2.43.0
+Siemens AG, Technology
+Linux Expert Center
+
