@@ -1,55 +1,55 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50BF115AD86
-	for <xenomai@lists.linux.dev>; Fri,  9 Aug 2024 12:51:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C0CE1946BA
+	for <xenomai@lists.linux.dev>; Fri,  9 Aug 2024 14:09:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723207873; cv=none; b=lZw1tTUxcMBf66F/SeLDlAeKI+uvbTxN3+iQNyqMneYARRu9f1WtEBSmlLoeqaFymNC0LuzVW2bit4k54LKPi/hk9MZgMXU1pniOMgPfogQ/EBDx8m84Weq/3Zbd8oLWdr/c/iNgn0nRuzDUASaySsfVWl9a3ZvdJnqTAkE1S24=
+	t=1723212543; cv=none; b=O1mLT6DHor9oebwY2EjxSM9BKixHcSDgbD4IQ/LKYJYMVthbaW2D7fV7Ec3HjgMYMnFeHg28IxGU3/aEW40c3e1r8BYnxiFTeipd2TKxSRTuS9y3AtheZvqHLKTkbfCsGFwEf65dNmIYdfIemtTz1VKwv45qp77P3HSPjMrBOYk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723207873; c=relaxed/simple;
-	bh=4Zyf67PFkiDqM7iHp2jZNhURf1E3L5wUstnc4fWDx0c=;
+	s=arc-20240116; t=1723212543; c=relaxed/simple;
+	bh=CNCecEHCOuYpAyVXUQdkDmEGg5Eq85lUU5EniUEtTMQ=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=CS/p8Jkh/yX+wBxo8b7LhaWWB9KJjPvX0wfa9RssNCtkxNRrNZxmldRnaeqS3inKQoVv0U6qMBI1V/7wF7MMxe92uq11uHp9EpCKpoD9Rmxi8x6N9r9yhHEjV0TNxhsBL/gf/NuWhd9YXwMjtsree7k055zPxajaUPtQensLDT8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YE2OaG3s; arc=none smtp.client-ip=209.85.214.171
+	 To:Cc:Content-Type; b=oOYJjEPbD3CuaVQTrN2OdCcpglda2Wpnd2cndrtGlzbxp5yrJiji0by96IaSRRX1AJPEzRsjDBUUUPofjgKbWq3SAOhQeMvtoo3/Vi0GrKX2Ch8joTiaz/kjzYfOb6Gj5pQPauTdvCGWPjaXHGAR5i5e1+dKhF1TmVKEGlKVUmc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=B9KDcI0Y; arc=none smtp.client-ip=209.85.216.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YE2OaG3s"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-1fd90c2fc68so17784875ad.1
-        for <xenomai@lists.linux.dev>; Fri, 09 Aug 2024 05:51:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B9KDcI0Y"
+Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-2cf93dc11c6so1697650a91.1
+        for <xenomai@lists.linux.dev>; Fri, 09 Aug 2024 07:09:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1723207871; x=1723812671; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1723212541; x=1723817341; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ZPFivsOAPh9VDSf3Y3t213XBNzz0k2vIS5vb+u0U6zY=;
-        b=YE2OaG3sINhii9Dyi9NtDzmDmVe1/VnUqgY8Q5tX0FWcCMyerGzqPVXVHSwacn/gPZ
-         YgIf5LxbyF6M3ohCrunCFlZl2VH9PgTKkky9Ni6C8mZa8A3dvg/8jeQS9tMiLU6VoH2Q
-         mv9HdUN99Nt8LXZVKOo5vwcylCYcmM/KNqYfxTO0ECTAe0DFruppHNc+BpKeGdZdhMEy
-         ZWntJxcDRTp7O1wtLK4be/1gP5KJKLR2i2vyVYIhxykSKKkrZiA9o4saVXbT5PMyAA0I
-         C6NpoXhFP0URMrPUkr3rxffHm+e2xr215RMRhXdPhU+zAWKA08c7mJe8PxTinX9Z5VrB
-         ZGXA==
+        bh=YvOL8/VDOyxr+vxXvsoZBfGNVTsKVaJORxKoFHykzSY=;
+        b=B9KDcI0YYSQDvYxFIJo1Nxnlkr4yNDH/uN9N2KfNWVoE2zwZUdjBmKaSThuzleOsaw
+         85zttVa6e24LFf1tD6c8G9iSBRbVL5VusQ3jqAtsSU6ZR9DyXME6Q8abmrf4Hc0/PmsN
+         yTrs5XkD6NpbBhsxgZMOcZ9buE/ixIB5YP5ORNT3zvYbOOjYKzjeNoblgWOrw/mtHPDg
+         MSr3TdhSpL1ppztnlXehokE/NYsMVeF3zuNc9L+WDXeUar56aTzchG1VcPxS+LsrDiu+
+         gqcn5q2BQ1wPnB2bZUWPYrIocJBOBFR84EnpF5/Qmc1mEiO5H7RTxn/g/VMfYuDH3RxC
+         3a/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723207871; x=1723812671;
+        d=1e100.net; s=20230601; t=1723212541; x=1723817341;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=ZPFivsOAPh9VDSf3Y3t213XBNzz0k2vIS5vb+u0U6zY=;
-        b=A0aWwpCLbKLUk2hg5j2GG84xWL0KqXIeL7gYgg2VNyGf0eqDc6+kDGWXDPe2WYlu+E
-         FRhvJvMuTSZvv28esjlOzwBHgtpaR/W5YAumJlnnpcsehgVobyYeklQbBg/HQgvfHUR+
-         9ZDEPCUScgHFpnLm81A7fw1PkjF/BJJxExjFjmXaTPsCTppz0sbxKHxsj0NU8FWxnPER
-         IMwsiOTzaQVCPVHhDmlWtLs3H92ez2OSaN6lekjbwoedcFDKxE/XdpWgk8AWm2uOaQbQ
-         BUx4bbvi4IOywBoxloG0XDG0+YgwgNcFX/6ETx78UFmVGK/Egjpj3us3h3ZYZNfK40To
-         jdcA==
-X-Forwarded-Encrypted: i=1; AJvYcCU0fTOMDn9iMQU9xYvqq8sM9WAwvm+cijGPxVAb75FEjqFYPQDNdERYGgsIBFGIm76FfSPG1l3dxucwkrFiuRCZ/zbmAkIELQ==
-X-Gm-Message-State: AOJu0Yx/jJ08htinchOFnVONXkHxlY0zxnfn/i0LGkdB5MvRscLYbmTe
-	B3xiLBw7wAPiyMXjwgx83U8am+tMsGl/ID9m8d18HCAi9+ZoFoyLhSzNFi6U2L+ecG+Pn++UEB8
-	FluT3ubpa5AFNK9Hgrz7s5wnaCQ4=
-X-Google-Smtp-Source: AGHT+IHh2UyacuNvqTCdLhm5lAIF9qlY1BhbwlNPPLVS/kLaOztcJ4UR6/xu9MS0b+YXMycf2YDn8kzLfu+3skYF3rw=
-X-Received: by 2002:a17:902:e809:b0:1fb:9e80:b501 with SMTP id
- d9443c01a7336-200ae4ba83amr13738295ad.2.1723207871453; Fri, 09 Aug 2024
- 05:51:11 -0700 (PDT)
+        bh=YvOL8/VDOyxr+vxXvsoZBfGNVTsKVaJORxKoFHykzSY=;
+        b=axUwxATmucnfNloxlL1Elti0ZbArkY4H64IchAQ7xFtmGKvvJYG/bPljIRJ1p/xm1I
+         0hlwRucy1eC2gCFYOZ7mmLBxMHIJaJr0ifEV/nPdF7abZMFUbz+XsVVrXnLfUv6M8Upo
+         5pAy1anBnVuP4RGXCcpQNi0z/sXGHhKwuVrOGI+9u/cSzOsji7w1eM+sLTL/qXPS4cHH
+         NJ0YLKArcmqGBPQY1XpzFY/wFNBgM2ea4lhlk7nqLsT5+Hz+6e+MGDLKPslg6IWKpYL4
+         rtFyt3XB9ETMrA9dMZIEZO5382Vd1LGwmSLiJ8vJzVL59Ii7EH9ny18QB2o/7jRnAGnF
+         ViLA==
+X-Forwarded-Encrypted: i=1; AJvYcCX+m5GGX04IRB+bJJceURHBicBTFbAXXiHpSZKXkBGgJq0inVhDkX/hg7hFB4H+uNiMJ2OpmMUDp010/d2R3vvuUMsRKRM7xw==
+X-Gm-Message-State: AOJu0Yzx9UcG9JQOE61WPHp5Ut4YQepfnviuBB0gWTHk2MUnpkI+kvBU
+	v88TcVl354uPMNdZq5BDbOE4yJ7Z+RrJdbs0AZlsOWrKQf3G2Bh694uhHohFCS7Fe6dm9RHw/Om
+	21g+bbMTOtEjIAYuhATD7xXs/8U8=
+X-Google-Smtp-Source: AGHT+IFRgur2w/1/JV6GWzHgFGFo6hBzGFvVNniGye0b6l2V84lCd/wcPr+p1azre4XSXhDTpvwFBt0IB0sss+6Pg3I=
+X-Received: by 2002:a17:90a:2e83:b0:2c2:f6a2:a5f7 with SMTP id
+ 98e67ed59e1d1-2d1e7fc6bd8mr1899966a91.13.1723212541547; Fri, 09 Aug 2024
+ 07:09:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -58,31 +58,30 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 References: <CAFLxGvwDaDC-TY7qfhQrfTWPUu=4sYoT5j=U0iY3hQB43=PKDg@mail.gmail.com>
  <e4baa33a-fe36-4623-aa10-c66f88627856@siemens.com> <CA+K1mPH=JAwPY2PSGX8Wcn7hqVuJ-t9zdEStQ4FZdeHFy57YWA@mail.gmail.com>
- <d3c212fa-154b-4f5b-b568-2816f585f311@siemens.com>
-In-Reply-To: <d3c212fa-154b-4f5b-b568-2816f585f311@siemens.com>
+ <d3c212fa-154b-4f5b-b568-2816f585f311@siemens.com> <CAFLxGvxpYZxV6qQre_uQjmF=nAa_Wea5EEWpH1kjreuRAi8CWQ@mail.gmail.com>
+In-Reply-To: <CAFLxGvxpYZxV6qQre_uQjmF=nAa_Wea5EEWpH1kjreuRAi8CWQ@mail.gmail.com>
 From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Fri, 9 Aug 2024 14:50:58 +0200
-Message-ID: <CAFLxGvxpYZxV6qQre_uQjmF=nAa_Wea5EEWpH1kjreuRAi8CWQ@mail.gmail.com>
+Date: Fri, 9 Aug 2024 16:08:48 +0200
+Message-ID: <CAFLxGvytCz=B5M3dhvuBDcg5=mJK0E+-TUOESbkM2oSkz-qDPg@mail.gmail.com>
 Subject: Re: Thread stuck in IDDP sendto()
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: C Smith <csmithquestions@gmail.com>, Xenomai <xenomai@lists.linux.dev>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 7, 2024 at 9:24=E2=80=AFPM Jan Kiszka <jan.kiszka@siemens.com> =
-wrote:
-> > The second app (the one which did not stall) is truly killed and thus
-> > disconnected from the socket of the primary (stalled) RT app, if
-> > that's what you're asking. How can I verify that
-> > rtdm_waitqueue_destroy() was called?
->
-> It is likely not because the one side is not getting its own socket
-> closed just because the other is terminated.
+On Fri, Aug 9, 2024 at 2:50=E2=80=AFPM Richard Weinberger
+<richard.weinberger@gmail.com> wrote:
+> This confuses me.  So, if a thread dies without calling close() on the
+> IDDP socket,
+> RTDM will *not* run proto_ops->close() implicitly?
+> (The source indicates this).
 
-This confuses me.  So, if a thread dies without calling close() on the
-IDDP socket,
-RTDM will *not* run proto_ops->close() implicitly?
-(The source indicates this).
+Well, I has to be like that, of course. It's all within the very same
+process. :-S
+
+As soon one side of the IDDP socket vanishes without closing his side
+of the socket,
+the other side will block in sendmsg() when the buffer is full.
 
 --=20
 Thanks,
