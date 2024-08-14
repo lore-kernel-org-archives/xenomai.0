@@ -1,251 +1,167 @@
-Received: from sonic312-25.consmr.mail.ir2.yahoo.com (sonic312-25.consmr.mail.ir2.yahoo.com [77.238.178.96])
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77D4E19B3ED
-	for <xenomai@lists.linux.dev>; Tue, 13 Aug 2024 14:16:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.238.178.96
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81C8244C93
+	for <xenomai@lists.linux.dev>; Wed, 14 Aug 2024 20:15:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723558619; cv=none; b=PHYo9Z2/lzZRSXptqmnpyiZh/mPnFrKRH/+LkqAVOjiWP+9q1L/4E+Lwic/+Qv6hNZ7xsWzGcyhW8Ne0CMi1GYjqqqYELvdqvIF2htuNSebi9JcBUdzxtZ3WXI2Ro6Lp6IGDEJFT9wYlKwdyLim9KEqST+Fw/TGW/6Wo3jxFpz4=
+	t=1723666523; cv=none; b=oVtXvnN2AjCdS8eyUMwpqpXYZoUdJ/s3byZroOfpa0OrlQx8MU3CcpDcamPP+vdkTzNc6mDIdbJpXR6E1KlcMRvCBk6P8TLhfltIfky/B+wUZC2mwbb5bQ+aYjgcNIxpjRMYxIETTzwr8MoUs9zZ82f8RuBjHD9Al5nC3UZyp4o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723558619; c=relaxed/simple;
-	bh=KKH688j5XNwoYD4yV/OpfQFWe4K+kxBQKRszlRPk0YU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:Cc:
-	 In-Reply-To:Content-Type; b=nml4WoU6KvRMy6hJyZ6NhMKZEBTsCZd9bjLDcS9IvVVY+Mlv5oXmvTw5/MChbz8L0qktvRJkCqlsYYwDRcOEkxBUOTOGmQRtBvs1MmZpcIkjE7g7PHNIOx5cPbI+TmoTDzzxtey56LaLEhLjKmWhc2GTMoFnXNccEbsg/OJYLt4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com; spf=pass smtp.mailfrom=yahoo.com; dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b=Cs2iQ6qa; arc=none smtp.client-ip=77.238.178.96
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yahoo.com
+	s=arc-20240116; t=1723666523; c=relaxed/simple;
+	bh=Vf2VNNje9NZ9fdkP/hKHduclAd3fvN1D9NxZNdXurwI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=EmD1/AH8HNfWcaL46/GFC1gudeymv5WSHm9ftGIrB05BZHBoPnJp/vjT24ByV8ZIQnWpGK66GXSTHUjNnmZaczy+7qP4cfUY+GJXrfe8sdmcQjNth1HzjJYFCYKRtwWyj7mp6+4epaNSZ46n3olHWjvNnb9nqRILF0Cl/rRNbog=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QpQfU5h+; arc=none smtp.client-ip=209.85.208.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b="Cs2iQ6qa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1723558609; bh=nNy4o9zvMAQSTwKtVs8z5agi1h00AKoMhr3FuiQFUnY=; h=Date:Subject:To:References:From:Cc:In-Reply-To:From:Subject:Reply-To; b=Cs2iQ6qak3hlExL8j6/+Sc2l3UJPKa0z462CJmsZ5tc6knHGUa1Y4tF8GKV6/Ug0JWijaca4BmSr1fbm0BFx9NQuPI06VjmtdqG8Bfw5WzBkqJMFPKqtQJCp4Uh+WhZwknmb4EGzHKlyTl6ekuUHXsXrR6IgK/rlsPfjQYe2hQ+Ayx6hzz9nF0hlacziB7ttZvh5dOp6PX7peqXTneVHCw/j1O5oFsjeGmjJmFZmojpP6uCxkNHycGzoyB6fP8PAcRdo6LMT+M17ZtLDxQDsfoaWdJGzu+ZrilxcS/OM+6NaT6aMY58syJygWvMaG90biZiXXPJfPkPvzGWgP7ZVwg==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1723558609; bh=11rFr1TxuKNEnk/m9vJPX6TTD2WQzB+3PyZJ4OmYpmj=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=BmjLX2WclloXD6wsEJxPC977JtugG3TPDoCbxbEXic0cAwNSbn2QZdAAFgI7z+6xeYkILR8TPAIVFfmsvnZfUE7wQmKBnfZWaNJ03MOXV6Sxg3cXePy6sszXp6n1JoOZQcqcabtIRvwyTGGAlPZdnO5wn2OkIJGgQsCg3FKibskeZIuXJZVaZuf/thz+n0YEa4MCxhHiTLGY0NzygEYB9ZE2zmjBsQTswa/rNleC2Ngykb7jb35i99UQelD7dqWpRt8znJRJmQJrVCX2Dcjb3/5X2WZflWRX7Xc341uL+ev7xuRaItrm8EMJvY4Vypcg8zEZixwJX4YTA69bjDvMHw==
-X-YMail-OSG: g3szRwsVM1lySuOQmy73si_8LEIH0sRJn8eko_6nUUwX38buE.R5uF41CsV3vDL
- 2FIPGz_MzCLMS74BVP_CaH8TD6Zlnfu0IVtXfAb.vYRX0hxj7jY3FDCRyKPs2IkVMlWfMKUdLkt4
- NoGvC52mZhFELqzJo4lwDnbqdOS_cAerdi.MS8C1ABcrygw80VbFjbP1PCdm4cTUrjfBGEVGCf7V
- c.4YeajfvNpT1wE7zbR5EzJi5Q8QYIcijWxI4yTXNb9vXyQxszAQLq63f7LmVT0ayHGVFF84ikJV
- XGQWF2vEosTxZhmlRNN4I1zcJFqZRX2YjxLfT67n_zDYAdY_9JmBlHNjfd4VtspGK2qSKF5T8owt
- Kr3rXYgvgoGBkRNoemBNwI16nGPTnIqSevzW1ybhAFWRae3DswICV5FaSSrqBVEQsl27baCx0eGA
- hjALBheFFOq9OZr0tMH08MVhRuLK6BYDbEVLeLSRBglrTYYS76StO5z77QUVn_kjiEYGgVV3AvVa
- NeTLOktMrYjCbILjF_fFdT6SW0AyFT_moBBA7he7.PZYCruhWdfy19LBKwo6Qs6CqodXt_ENPjuR
- UbugIUBikJuTeWGaovPrgQP8oaCANf8TOr6kFXZnPluno_O_laOYVPTo3LY1QVhEpAe141mFx1l.
- dQhhNbbCKB7fDfnY60w90yhkseqhRD9SmmwtTH5dyTHAxqbDcLp4XE19s.ZCz4SQkvwDk9miqaY3
- PCY2.4K0ZT3V7RKmywqcNdFR7_phKYkMhhy5DxOJJ5spdlaDYVOs77xDDTRU1zg4jW.KDMEM4r0J
- AG2qfg9zZr5RAw0TAtPm2FcqthGO8uJVyIvJ2cItChr2MpJMv8t0TAI_cOcns_PgHxPCSuV67l3d
- by_QeMYpj2hKnUPCAk.PMzazt5li_Mi6Tag8QtqmW2yJzbpwQ5xKg1tXQBalMbegzGB8Rfh6fgBJ
- IbXl4KptaPkwDqZxDE0hmxzOP0K7rapcYZ4Ep5lNpJVi2icTguusj9b3HwKQIyav7P6C2pbgjBUE
- JuCF5M1z7LVXEaoJWVh0Uz.VdbR3fvpazzOMM9_uZK6bierDC5mx1gAUh8tiPwaAeCEREGOPNJEN
- byNr4WSkdMRlw2Ba8gSoCdSgg5jzNQjejSWCtAkkNOD5MlXafVM_4Z9sAyPqDzp7Wn8LiAQaSW1q
- PPLHVclsSX9JKdPsQNTiubAP8fLn0lKoSkYKn284JxzCyPDJDGk9q8hRUWfVAM_CMwaxsK9i2xIH
- EBS1vG03td_Lp_O4XPORSds9QVP4Kv9zRgEuvGqw2zRGeen7Diw2Gv_G__dCwDdxll8m__fCemQI
- DjU73_wntn1kGB4a4WexJSRatAvZjh6IL6GFIsiZpMCtbm8hQXAvYNY2AeP8Fdv_d9j797JTSMXs
- oEOCaI1Xbtnp2pLOreg2PdF7cLwEkf35AnyMkpSBR4DVO.QxNPkc3bJ4TdY50PsW0HvQ8J3aD6rx
- CLipPVuTNpJz8NaYAMHehgzGhMm4LAhJNC1E_upMOhoJKuWoOZd5NuPj36HEtZhHEELKut0PGMdi
- _xhCBUOQr6l4nqomRaRbuGyLtSRRusTpFmHMtlPW1QR.w4B8dy2YGvmmccd9ekXjLUK0TidCqQ2H
- 3xe9sAqnYVY3gVMdCq0I3.ZcauLbCS_JMLusWs2HcOjRK.10JmQt3sYoX5YSO.SQsuMhIA.oj92O
- TXehPUdSPYcCv.m0L3NTU1hgnM5wn8LRVV9OZm9nJA_GQ.436wUdV3ICxZ_l6kqBJ6FyijcV4J_n
- 0YNaEehtB4EpQp1aurxOE64FsmpqRj7FpZHK4uXbJI5SME5X0mi3M1c3tUV5ZITTofvcVpU9cH73
- gEfo7j3s2xUVGZGjHsTqX38eMSJOhXMpAws.A3oIZP6Kfldh3WazUuHG3nlUhrGQai3tnNQqFFht
- DXoen4J5yGHa10Hz7YyC0tm_ZFEK7J.zbGlufaxz6.pPaTBqmwRUEtuz3O8gobgh7IPogyoF7F_A
- T6EE8rC9CUoxar8RJEkJTRb.AvfQrQHfgaIxbqcOl2C_7Gpmf1JjI7R5JIQK6vYa49lWL9D0nbNB
- GxBsMBFl.1tH7jbuEuHwrsd9MrcGqHU6kU.H1nJzGYWNvFQb6ja.WGEz4E7Yf6X3Ge75wYUvSkcK
- naRgbb7B.0yrefdn9KJEGwopv7n__JgwaFW5AMmnDMRzqd3KjzXx7O1UmiNb9M4dTDC.Y1lWaqkN
- 7nJt6ucAjFOHL6Lp3lJCjpVAMgS5Sjp_ysw--
-X-Sonic-MF: <mau.salvi@yahoo.com>
-X-Sonic-ID: ba62e976-02d4-4cc1-b4cb-3d83f93eb709
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic312.consmr.mail.ir2.yahoo.com with HTTP; Tue, 13 Aug 2024 14:16:49 +0000
-Received: by hermes--production-ir2-6664f499fc-fnmws (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 4e74d0fd74a293089a52c248040f0e27;
-          Tue, 13 Aug 2024 14:06:39 +0000 (UTC)
-Message-ID: <0363a40f-ac3a-4024-a9bb-e37841625cb8@yahoo.com>
-Date: Tue, 13 Aug 2024 16:06:37 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QpQfU5h+"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-5af6a1afa7bso438369a12.1
+        for <xenomai@lists.linux.dev>; Wed, 14 Aug 2024 13:15:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1723666520; x=1724271320; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PnGt3OTivKgBzgQDAeOs3YcuiBsXLcL+0p0xcAInEC0=;
+        b=QpQfU5h+j0mNuewaTUoqhjx6aXECkgb0TweK3xpIPpQG+KRTGKZvvYzzPDW6RAxnb/
+         KxY6UMvxrHFAyPzPCM1i7NLEuGQlqRspsOFyoV/RKE9dBtClDmIiOkej9m6RG58isdtg
+         jGvdICcmWjvrCASC/PQ7c53WS83feM4ifgDaJdlVkjFYz9eDbp4KSa78zQPW01LLiwa4
+         p0/eW5J3dLHYdBZ/ZZm6BSXcG13OTRZvi/KL5jrML+48epMGUWEFKpo7OCwZ4ZOVg7kN
+         D5zkAY+ebz8LKiiS3EdGBQ/sreAsLr6V4fqvdTPz14DbZsRWqnKfYpJO5txDSbaNbJVM
+         aTrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1723666520; x=1724271320;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=PnGt3OTivKgBzgQDAeOs3YcuiBsXLcL+0p0xcAInEC0=;
+        b=dKh45e0SQQlOU0rVODYqXoGgmlADmNTzeWyvc0F3q2SMuUJPYWLAYOwEBpO5Qi4eRx
+         TZpoI52uA9djiut+Gw86DbNM4OyWCWtw8/Oe0fUGG8/YnfP60+a2utb/VKdlSXp2nuUF
+         diDqWqi5t71VOikCS294IxYWw5TLM9wnCxZXUtjS+9Gkh+dhd/81W9TxY3O4ZjzxU1FH
+         K1zoahP7r0knspBXsu7QHmr4c+OXlAhJJYmE1eourEZHwbITtMKjAf0Dhl/5clfQQzc6
+         lVZyj8yCYokCM93Uoh3/Mtix73RTYv6nv++UAXjNzbAlLXU4/d5SZ0VSfmikpRe6h5Zv
+         DO8w==
+X-Forwarded-Encrypted: i=1; AJvYcCV5fNmcMisnWsA8cKZXtlIdYtFtFL39rvSAJsi+b7GJrgvRLeeLu0Elxge9VSSjAPw1LQC5L6mLDjM2XWZMBJ3Z3gYeeKX+vg==
+X-Gm-Message-State: AOJu0Yy48n1JRxZcrVSSfmQgVefO8G0JMEaNNfzASTbv/78MAli8kBfy
+	RhSUVA+5C2ZOtRXqH9WKN3jgzO8Tj/XHPbzu16dLrrq4YqaWvOdrN+dFeak97VglUYCph7CZX7M
+	dhI7G5UM7dr6+1uE8rR34wk/55LWduh9S
+X-Google-Smtp-Source: AGHT+IFFeyy996RT+nG8e0ak6D4yeaYXpFsX07HXR7hwwzrkPGlG3v/0Sr63ARoFyg7QpBzjUYwqHM9t8jZ4qhCdpnE=
+X-Received: by 2002:a17:907:e268:b0:a80:f7d5:addd with SMTP id
+ a640c23a62f3a-a8366bfc2d1mr287566066b.13.1723666519384; Wed, 14 Aug 2024
+ 13:15:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Process stuck in cobalt_monitor_enter
-To: Xenomai <xenomai@lists.linux.dev>
-References: <9d5bb262-0646-451e-a5af-82c0473a3003.ref@yahoo.com>
- <4572a391-4c06-4aa9-b92e-66e9da6c23ed@yahoo.com>
- <44ffbd9c-fc28-40fd-849f-a77fee15866b@siemens.com>
- <CADBp9x=310edtayP3nEeDSc2D318E=qA1a=5ceG0krd3r2VN8w@mail.gmail.com>
- <87e3bc23-4eba-43c4-bb5e-ffce9139c075@siemens.com>
- <CADBp9xnL46vC0KiYt2MSv+XxYcgb675S5X6geQWSv8KsKG9+xg@mail.gmail.com>
- <CADBp9xn_Gcu9TCaiZHZvo3hwT4JzzTxE4ueMH3dt81KJWF8qOA@mail.gmail.com>
- <67ce5b0a-1013-4ab2-9617-0723c0dc0809@siemens.com>
- <d1b99e9a-5bc6-414c-9f5d-972134f60c31@yahoo.com>
- <bea3518e-5d72-4a86-a5b9-ac71a59c235b@siemens.com>
- <e5efbf9d-9054-46d3-8deb-aa321146068e@yahoo.com>
- <1b8ec985-8ae2-4bd2-8964-23f97cac7ba4@siemens.com>
- <CADBp9xn4OGi99e57phnv58NtCbxzO62bhrkJhSns-FUbbt4_pg@mail.gmail.com>
- <6fb4564d-3d39-4be1-838c-423a865638b9@siemens.com>
- <2d41fc43-db7d-4070-a769-bb37083cb414@siemens.com>
- <2e779a4e-ce60-4487-9dbd-7d40726b2d9e@yahoo.com>
- <0d9b6cd5-4b95-4b28-bf06-9e98d7d6310d@yahoo.com>
- <46a1ceb0-0684-4bb8-bcd3-5f71456c2d10@siemens.com>
-Content-Language: en-US, it
-From: "Mauro S." <mau.salvi@yahoo.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
-In-Reply-To: <46a1ceb0-0684-4bb8-bcd3-5f71456c2d10@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Mailer: WebService/1.1.22544 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+References: <CADYdroMJCeW_UNvc6K1p_2dc2-hCDWyATXcDq6iHL5pVSrFknA@mail.gmail.com>
+ <207f29ba1fe51a1656c5f72cb719ba0fab5b2e6d.camel@siemens.com>
+ <5f546c94-440f-4641-9549-f6c27652caf7@siemens.com> <CADYdroPpqtYYwvAgmpH=E4a3u0-C4chaBqwioe658kN8Tx5BFQ@mail.gmail.com>
+ <b54d8394-da9d-40a9-9320-3bab5ced2da0@siemens.com>
+In-Reply-To: <b54d8394-da9d-40a9-9320-3bab5ced2da0@siemens.com>
+From: Steve Rosenbluth <stever8@gmail.com>
+Date: Wed, 14 Aug 2024 13:15:08 -0700
+Message-ID: <CAExw09CJA3ydfAti47czAi4QM7xvtqPQzrvR48JVhWcVGUEj5w@mail.gmail.com>
+Subject: Re: Dowload URL for ipipe patches?
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Norbert Lange <nolange79@gmail.com>, Florian Bezdeka <florian.bezdeka@siemens.com>, 
+	xenomai@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 12/08/24 15:59, Jan Kiszka wrote:
-> On 12.08.24 15:41, Mauro S. wrote:
->> On 06/08/24 09:33, Mauro S. wrote:
->>> On 05/08/24 23:41, Jan Kiszka wrote:
->>>> On 05.08.24 16:40, Jan Kiszka wrote:
->>>>> On 05.08.24 16:28, Mauro Salvini wrote:
->>>>>> Il giorno lun 5 ago 2024 alle ore 14:10 Jan Kiszka
->>>>>> <jan.kiszka@siemens.com> ha scritto:
->>>>>>>
->>>>>>> On 14.03.24 15:22, Mauro S. wrote:
->>>>>>>> Hi Jan,
->>>>>>>>
->>>>>>>> finally I managed to have a piece of code that makes the issue
->>>>>>>> reproducible. It's not exactly small, but not too big either.
->>>>>>>> I hope that this makes the issue reproducible also on your test
->>>>>>>> system.
->>>>>>>>
->>>>>>>> The zip contains:
->>>>>>>> - a little main program (test.c)
->>>>>>>> - a little library (in mylib dir). Some pieces of code are never
->>>>>>>> reached, but leaved to avoid potential compiler optimizations
->>>>>>>> that could
->>>>>>>> remove other relevant parts (maybe cycles?)
->>>>>>>> - a script (build.sh) to build the two components above
->>>>>>>> - a script to launch the test (start-test.sh)
->>>>>>>> - the configuration of the kernel in use
->>>>>>>>
->>>>>>>> After building the program and the library with build.sh, you can
->>>>>>>> copy
->>>>>>>> on the target:
->>>>>>>> - the start-test.sh script
->>>>>>>> - the built program xeno-test-session-hang-on-exit
->>>>>>>> - the built library libmylib.so.2.0.0
->>>>>>>> and create the library link /usr/lib/libmylib.so.2
->>>>>>>>
->>>>>>>> Start the test with "./start-test.sh &" and follow what happening
->>>>>>>> with
->>>>>>>> "tail -f log.txt": after a time that varies from a couple of
->>>>>>>> minutes to
->>>>>>>> 25-30 minutes, the log should stop on "~~~~~~ RECEIVED SIGINT
->>>>>>>> ~~~~~~"
->>>>>>>> line: the hang is happened.
->>>>>>>>
->>>>>>>> A small recap:
->>>>>>>> Atom x5-E8000 CPU, Linux 5.4.255 with Ipipe 15, Xenomai 3.2.3.
->>>>>>>> GCC compiler used: 9.5.0 from Yocto Dunfell 3.1.22
->>>>>>>
->>>>>>> Can you only reproduce with this setup, specifically with this
->>>>>>> compiler
->>>>>>> version and only on real hardware? If you rather use
->>>>>>> xenomai-images and
->>>>>>> qemu/kvm target but still the same kernel and xenomai version, the
->>>>>>> issue
->>>>>>> does not occur?
->>>>>>>
->>>>>>> I'm trying in kvm right now, also with different compiler. Iit
->>>>>>> would be
->>>>>>> good to align / rule out variables if my first setup turns out to be
->>>>>>> unhelpful.
->>>>>>>
->>>>>>
->>>>>> Hi Jan,
->>>>>>
->>>>>> Sorry, I never tried on an emulated system like qemu, I did the tests
->>>>>
->>>>> qemu/kvm - that is CPU-wise not emulated, virtualized. It generally
->>>>> gives similar execution patterns as on real hardware.
->>>>>
->>>>>> only on real hardware (using different samples of the same hardware,
->>>>>> just to exclude hardware problems).
->>>>>> I can do a test with Xenomai images on real hardware if it would be
->>>>>> useful.
->>>>>
->>>>> That would already be useful to rule out the toolchain as contributor,
->>>>> yes. When at it, testing in qemu-kvm would also be nice.
->>>>>
->>>>
->>>> FWIW, I've pushed ipipe-core-5.4.281-x86-16. It's not that I expect
->>>> positive impact on your issue, but you never know (until you understood
->>>> the actual root cause).
->>>>
->>>> Jan
->>>
->>> Hi Jan,
->>>
->>> I've seen, thank you.
->>>
->>> I will try xenomai images on real hardware and I will back to you with
->>> results.
->>>
->>> Thanks again, regards
->>>
->>
->> Hi,
->>
->> first results after some tests on real hardware:
->>
->> - xenomai-image does not show the problem
->> - xenomai-image started with my custom kernel instead of the
->> xenomai-image one does not show the problem
-> 
-> How did you build that custom kernel? Is it the same binary that failed
-> before?
-> 
+On Fri, May 31, 2024 at 7:04=E2=80=AFAM Jan Kiszka <jan.kiszka@siemens.com>=
+ wrote:
+>
+> On 31.05.24 15:53, Norbert Lange wrote:
+> > Am Fr., 31. Mai 2024 um 15:00 Uhr schrieb Jan Kiszka <jan.kiszka@siemen=
+s.com>:
+> >>
+> >> On 31.05.24 09:11, Florian Bezdeka wrote:
+> >>> Hi Norbert,
+> >>>
+> >>> On Thu, 2024-05-23 at 09:32 +0200, Norbert Lange wrote:
+> >>>> Hello,
+> >>>>
+> >>>> the older URL's dont work, and I did not find any reference to the
+> >>>> replacement, even rather recent releases have non-working URLs [0].
+> >>>> So the links dont work, and the gitlab repository doesnt offer them
+> >>>> either, eg  [1].
+> >>>>
+> >>>> Whats the plan going forward?
+> >>>
+> >>> the main point is: I-Pipe is "dead" / in maintenance only mode. The
+> >>> last supported Linux version was 5.4. We have dovetail for modern
+> >>> kernels, so the way forward is "use dovetail".
+> >>>
+> >>> That said, we have a downloads archive [2] here. That might help to
+> >>> some degree, "newer" I-Pipe versions are available through the
+> >>> architecture specific ipipe git repositories, so no "ready for
+> >>> download" patches anymore (as far as I know). For x86 it's [3].
+> >>>
+> >>
+> >> Right, we are no longer having infrastructure in place to format those
+> >> individual patches and push them somewhere on a static page. None of
+> >> that is technically impossible, but given the current demand for
+> >> restoring this (you are the first to ask for it, TBH), we were not ver=
+y
+> >> motivated to do the required work (likely more than some hour on a rai=
+ny
+> >> Friday afternoon).
+> >
+> > My  main point being that *all the docs* still refer to the old URL,
+> > and the method
+> > of using an upstream-kernel + i-pipe patch.
+> > I don't have a problem using git repos but I would like to use the
+> > correct infrastructure.
+>
+> We may need a friendly janitor to update the docs in this regard...
+>
+> >
+> > As far being the first to ask, first we have all we need stored
+> > locally, so we can still
+> > build our past versions. 5.4 LTS should have still a year+ of support a=
+head.
+> > Changing to dovetail is not really an option without RT-capable
+> > network drivers, and would
+> > be anything but a simple change. Is there even a plan how to support
+> > for ex. reading PTP Clocks
+> > from realtime?
+> >
+> > FWIW, given how thin the RT-driver support is with Dovetail I dont get
+> > the point of using a hard RT
+> > OS without getting your IO in hard RT. I get that someone has to do
+> > the work, I get that the old ipipe was hard to maintain,
+> > but this replaced a much more "complete" framework.
+>
+> First, I-pipe support is not completely dead yet, 3.2.x still has it,
+> and we are updating 4.19 and 5.4 in principle (needs a kick, though).
+> Second, dovetail does not imply moving to Xenomai 4 / EVL. You can
+> continue to use Xenomai 3 with the driver supported there.
+>
+> PTP clock access is an interesting topic, though. You get it "for free"
+> if you sync the system clock against one PTP clock with all dovetail
+> kernels. Precision should not be affected by the fact that Linux
+> organizes the sync. However, there are no plans to provide other kind of
+> accesses so far, specifically if there are multiples clock or if there
+> is no synchronization to the host.
+>
+> Jan
 
-Yes, exactly the same: I took the binary from my image and copied into 
-xenomai-image bootfs, changing the grub.cfg (because I use a bzImage 
-instead of vmlinuz).
-On my custom image the problem shows up, on xenomai-image with my custom 
-kernel no. My custom kernel is built by Yocto.
+We definitely support xeno3.2 ipipe patches being published on the
+web, though I understand Xenomai's roadmap.
+Most industrial "long term" programs are 10 years, it seems a shame to
+take down small static files from FTP after just a few years. Such a
+file requires little storage space.
 
->> - I didn't manage to run the xenomai-image kernel with my rootfs yet (it
->> does not start, but at the moment I have a headless system and I'm not
->> able to debug it)
-> 
-> The kernel we build in xenomai-images may lack some config switches
-> needed for you rootfs.
+I found this latest patch
+ipipe-core-5.4.253-x86-14.patch
+at https://ftp.denx.de/pub/xenomai/ipipe/v5.x/x86/
+But I only found up to the 5.4.239 patch at
+https://source.denx.de/Xenomai/download-archive/-/tree/main/ipipe/v5.x/x86
 
-Yes, I have to discover which ones.
+I am currently building the ipipe patch for kernel 5.4.281 from a
+clone of the ipipe-x86 git repo. Thank you for that!
 
-> 
->>
->> While waiting the verification with xenomai-image kernel with my rootfs,
->> could we conclude that the problem lies in userspace then? Could be the
->> Xenomai config flags? Or the compiler version? Do you have suggestions
->> about other tests to run?
-> 
-> Until we understood the reason, we do not know where the problem lies.
-> Your userspace may trigger something that the Debian image we build does
-> not.
-> 
-
-Ok, understood.
-
->>
->> Note that the test binary is always the same in all scenarios, built
->> with my toolchain (that is built by Yocto), and my rootfs and
->> xenomai-image have both Xenomai v3.2.3.
->>
->> Side note: xenomai-image still has 5.4.228 kernel, maybe you didn't push
->> the upgrade patch to 5.4.281? Anyway, it seems that does not matter.
-> 
-> Only the next branch of xenomai-images contains the update of the
-> released versions so far. But when you build "head of tree" kernel, you
-> should also get that latest version.
-> 
- > Jan
- >
-
-Ok, I used the master branch to build the image.
-
-I will keep on doing my tests, reporting further results.
-
-Thanks
-
--- 
-Mauro S.
-
+-Steve
