@@ -1,55 +1,55 @@
-Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
+Received: from mail-pg1-f179.google.com (mail-pg1-f179.google.com [209.85.215.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03EFF1AD9CE
-	for <xenomai@lists.linux.dev>; Thu, 15 Aug 2024 15:58:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFC478063C
+	for <xenomai@lists.linux.dev>; Fri, 16 Aug 2024 19:43:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723737540; cv=none; b=t/d3wZdLmjsxFbnshEhbj1My+hrxQGODV2AYNAWLSmosP82K0GvFWCtyW5unJ7yFeqOcI1N8nqbTvQybfvziTc6eapUuQ49VdcLHcpcpn4VMZ6VUVk6npulZhDobxZtA2p9muDX6WQ6iCJH2URNYAh3HDadG83YtPk704IYq0Gw=
+	t=1723837416; cv=none; b=dip3pBx4ybd6t8xqgPtaENSVwJ99/y69/EUEz4wR6hxP6vRp8vzxzQLxgRBL50r1R1m5QGHwAIN8m87pkPPLQGltH4q8K1NnxyJR54StoPqBHjFn70h20MowXrVFpPBOt+y54tUv7PyEgrCA42aZjvkX/BZLJxdmg7zAb4rjSOE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723737540; c=relaxed/simple;
-	bh=x+ZTIWFozHMpsBqN6d75k+OOLmsU/vDojR6BNarmkGw=;
+	s=arc-20240116; t=1723837416; c=relaxed/simple;
+	bh=OfxFgS+Bj5znf3zk/uNhZO3eaf/wjZbpeXsyF6D7bWY=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=oJal9quVu+HR+bOBNHeFgNT0+Qd/809dFkFuO2EH+kOZAfnkST6+6Y2oNOzX7HjvTgyE5NpJSCZ0ESCMHnlJ+ZCwAnJKiN8lSgmGlq8Pko+F0JQWzmQrvO019Lg/vX6OBNXWtHW3x8Ftlu4OxcCrIhRYB82B9d30mOwFAxYBgvk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jAf+kCh1; arc=none smtp.client-ip=209.85.216.51
+	 To:Cc:Content-Type; b=XPSHTXKlwvwLZdJWu519ozUXab7jj3WB+NSPM3UrxZUojmlNuFl9r+Og+cmtTgnzGv4x7XOb0GQTZl4mWeH8D5jpxIM015FxAKjNWhU3tyAvZ52IIMRiYOQwLzfi/bXKA/plflTk/rmlvemZafaXKlJAiDr06EDIRxNd+4OKKIg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HXHUnjdV; arc=none smtp.client-ip=209.85.215.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jAf+kCh1"
-Received: by mail-pj1-f51.google.com with SMTP id 98e67ed59e1d1-2d3b5f2f621so795778a91.1
-        for <xenomai@lists.linux.dev>; Thu, 15 Aug 2024 08:58:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HXHUnjdV"
+Received: by mail-pg1-f179.google.com with SMTP id 41be03b00d2f7-7b0c9bbddb4so1600276a12.3
+        for <xenomai@lists.linux.dev>; Fri, 16 Aug 2024 12:43:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1723737538; x=1724342338; darn=lists.linux.dev;
+        d=gmail.com; s=20230601; t=1723837414; x=1724442214; darn=lists.linux.dev;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=x+ZTIWFozHMpsBqN6d75k+OOLmsU/vDojR6BNarmkGw=;
-        b=jAf+kCh1V/nt0b4fMb6/iUTNxLWdA9j/t1N6CiPt2f8DRx1XnkQku0lFKe06s2fCLP
-         LV7Z3aKT5v3OazpniRO4UCwHo1iwgabmGSFMyAksiB/n1gTM5C2noCJegHxe1baEI0Ya
-         9nQP67GYT6ZWJICs8HUPHwB2l+WBujFY9h19+T+FjeTbuPXTyDfiBUdQBRHQdL30sMPo
-         YKLasLkY1v5h6lJ1U+7YB2IPO3fmJnC4oxDhCUj5u2wo2r/s6JIA6aJ/XpOsg3TaL8QH
-         Ivs+ODsLEQQJyPBQR4rR7kRB8hY3PH88icmzx/mxsfylmyZAkRAl+6jstkAzliVBRjit
-         b7sg==
+        bh=OfxFgS+Bj5znf3zk/uNhZO3eaf/wjZbpeXsyF6D7bWY=;
+        b=HXHUnjdV27cpfzxwlGSTurgB2tg2sjNPbykRhoYYtXedL2TkE2qBSl7L8+Wl/SifiA
+         WmajO88a+w3ln9HGRp8QSqyVfg+N9+9jCe/BwvN5vDi2akZOVL/FpehYRpu8XWlB/7WT
+         SzEmLew2vqNZDTVk6gYmgQ8TXR55j/CKF0/sY09JyqRgnAGEJ+ASA/cF6GOI2rqAi6oz
+         cpNLXDEiJ3uKSz7sfpBqKJYdVOwiQUWZvZT73Djmng8O3+i4k9PHHHgTUSdtwMphqQlH
+         xZDPQoncIx/dRpu8F/iSr8R7oe7NpD0w26+OpN8pW8l7+5tcMvy9UGS3qMNEAb5avo0b
+         gi2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723737538; x=1724342338;
+        d=1e100.net; s=20230601; t=1723837414; x=1724442214;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=x+ZTIWFozHMpsBqN6d75k+OOLmsU/vDojR6BNarmkGw=;
-        b=dBJIWb5cMTzBRJB6UYIIq+Eh5BnB1wswm/g7NaKou3IrLXxlcADGnJu22jmjDc4Rus
-         xSwEKxJFk5Vkv5MlEnXzkdrvowk49HTFlWwUaFttoikrW1tdeU1gjuuBjyG+vQu3Yt2P
-         V38VlRWRr4883gRmrqrA76SO01Kf+LasNDr3DZuNVUpPn5QogSFxBH1PRrtbIFoSKvsd
-         5QjBTT1Z+TOMde+bdxdYaqLxjdMTDTpBrG8n4hpOX+liQMru8HGZYeQnaoCzCffp8SR1
-         SKC2QFJjMwVaHJk842xt45gNkNumbEWewGJliI7Af8rs3jh5iQMOK/wnaX2sMXiYQqzy
-         4/VA==
-X-Forwarded-Encrypted: i=1; AJvYcCXP0msxg5JNxtGFubYbtRZdLPZUJNhun16zU9wWsICpBq1YSSF+mfTNMQcqw0zpDSVmxstSk/YZ@lists.linux.dev
-X-Gm-Message-State: AOJu0YxibgsxSgYnG7T4fRt3Paaogkj/Eql5ykRszI++nWvavR/e8VC5
-	9eWRdJwjTFDfPGJsSM2YuGA9cjHukctGR4PZ56Dd6dg0IoK3k/p5NGyWkEg0iji4aw4H3s82f9M
-	3+VB8jO9DH0daHL2o7xVhPzeIwV0=
-X-Google-Smtp-Source: AGHT+IEPTS1psWe8ISIYiMJd0pRqjtVGtgKoi7IIxYMZlMJ5AdGWoSUCsSbc5gfrW9DHH8bVLRAZCQEdslGamvQtOOI=
-X-Received: by 2002:a17:90a:ea15:b0:2d3:d7b9:2c7f with SMTP id
- 98e67ed59e1d1-2d3e03ffc16mr61947a91.35.1723737538194; Thu, 15 Aug 2024
- 08:58:58 -0700 (PDT)
+        bh=OfxFgS+Bj5znf3zk/uNhZO3eaf/wjZbpeXsyF6D7bWY=;
+        b=koNuctz/4PgQT65rYW6FprgHUDl7VlOpv6p4ydR3NaJDG0uWAN9a1IxxACX7WNt36H
+         byJl9rkiQ88QgIzJd8VkYwWgjyeiXHgDVUfFzYRGa4K78HQz+IXf0pgyLdQdjLoW6QEa
+         biFxf7/jiOaPcy75eei3WL9XcJpgR3x3ldPP+eBOI3JmZpm1z/q5uRvDLD8Vw8R+J/RG
+         UWouJJvdrJSIhtGxhbhQj0tbsgSAaiPIAukbViKmzPOi4N8N833kFvsnP9a44rDnoezY
+         IpL5kcJWobooxzL1VWFl86FBB9jwYKlVXYcR7LUe4qGs/EdH1MJNg0h1VXsBtUFgqAxC
+         IhQw==
+X-Forwarded-Encrypted: i=1; AJvYcCU3kEPnRyG3kWO/iWGU6zUqpW7VqDZwqqYiMo+4YU8s0nxVjbW45zN7ti+nQKRwG+3rVWET78SH1Tr3R/zYJ0ghvmVf0wEUxA==
+X-Gm-Message-State: AOJu0YyS/KZXtHZqFxnHeWQtA2b7ZMqd+G2i5IDctFpUIyH3YPdA68oi
+	STr3zLTpWVA4aEW3DNXryukZSC30/DC246ytvmz86BTiZVPN30QpqjzDV51bvg2mNS+IA/Nw701
+	e/B5z1b6x+hNFNtV+Ugj8Dv5zO6g=
+X-Google-Smtp-Source: AGHT+IHZwJXUcJr40vNZSokGuWBbdusqTn+mOp11q2EMNQEgkK/znWWynGQlZHZbwprziVbhhrsg1QW2RI6ISI+ntUQ=
+X-Received: by 2002:a05:6a20:c90a:b0:1c1:a25c:745e with SMTP id
+ adf61e73a8af0-1caa360c469mr944858637.17.1723837413917; Fri, 16 Aug 2024
+ 12:43:33 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -62,24 +62,47 @@ References: <CAFLxGvwDaDC-TY7qfhQrfTWPUu=4sYoT5j=U0iY3hQB43=PKDg@mail.gmail.com>
  <CAFLxGvytCz=B5M3dhvuBDcg5=mJK0E+-TUOESbkM2oSkz-qDPg@mail.gmail.com>
  <0e2f567d-06e1-446d-b34f-02b9b9fc3165@siemens.com> <CAFLxGvwm3qCk4e2d-Mf7bZGgcnfX8Eyd2yvEGpMf_tydw2H0-A@mail.gmail.com>
  <CA+K1mPF9w=QuXFpAsgZQqRj8OjyHNzw9znmpUGNSAcRFgs9hgQ@mail.gmail.com>
- <CAFLxGvwQpf8kWckq_t6K4iKt=GMqP9awDc8gUbhYgFK_SVogCQ@mail.gmail.com> <351a2c7d-4fe2-43a4-ae87-045b194f1919@siemens.com>
-In-Reply-To: <351a2c7d-4fe2-43a4-ae87-045b194f1919@siemens.com>
+ <CAFLxGvwQpf8kWckq_t6K4iKt=GMqP9awDc8gUbhYgFK_SVogCQ@mail.gmail.com>
+ <351a2c7d-4fe2-43a4-ae87-045b194f1919@siemens.com> <CAFLxGvy0Z3TPYN8psZBXSB-idpJbSr+TQ69JguqiGNYaWM3KRw@mail.gmail.com>
+In-Reply-To: <CAFLxGvy0Z3TPYN8psZBXSB-idpJbSr+TQ69JguqiGNYaWM3KRw@mail.gmail.com>
 From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Thu, 15 Aug 2024 17:58:45 +0200
-Message-ID: <CAFLxGvy0Z3TPYN8psZBXSB-idpJbSr+TQ69JguqiGNYaWM3KRw@mail.gmail.com>
+Date: Fri, 16 Aug 2024 21:43:20 +0200
+Message-ID: <CAFLxGvw_m1ChknHFRYHSGVjG4vDYOZahfS205OCv7LwRiOSPPA@mail.gmail.com>
 Subject: Re: Thread stuck in IDDP sendto()
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: C Smith <csmithquestions@gmail.com>, Xenomai <xenomai@lists.linux.dev>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Aug 15, 2024 at 3:30=E2=80=AFPM Jan Kiszka <jan.kiszka@siemens.com>=
- wrote:
-> Thread termination has nothing to do with socket closing. It is still
-> the process that owns an file descriptor, not a thread.
+On Thu, Aug 15, 2024 at 5:58=E2=80=AFPM Richard Weinberger
+<richard.weinberger@gmail.com> wrote:
+> On Thu, Aug 15, 2024 at 3:30=E2=80=AFPM Jan Kiszka <jan.kiszka@siemens.co=
+m> wrote:
+> > Thread termination has nothing to do with socket closing. It is still
+> > the process that owns an file descriptor, not a thread.
 
-My idea was closing the listening socket in a thread shutdown handler.
-e.g. using a deconstructor of a pthread key.
+After playing with demo/posix/cobalt/iddp-sendrecv.c and modifying it
+to work across
+two processes I'm sure we have a little problem in IDDP.
+
+The setup is:
+Two processes(!): process A is the IDDP server, process B the client.
+So, A does recvfrom() and B sendto(A).
+
+If process A terminates, iddp_close() is called and a subsequent
+sendto(A) from B will
+fail with -ECONNRESET, all good and expected.
+
+The problem arises when A stops consuming from the socket, the buffer
+fills and A terminates
+while sendto(A) in process B is active in __iddp_alloc_mbuf().
+At this point B has a reference to A's socket, so when A terminates,
+iddp_close() is *not* being called.
+And as a consequence ret =3D rtdm_timedwait_locked(sk->poolwaitq,
+timeout, &timeout_seq) will not
+return with -EIDRM.
+Since the default tx_timeout is RTDM_TIMEOUT_INFINITE, B will block forever=
+.
 
 --=20
 Thanks,
