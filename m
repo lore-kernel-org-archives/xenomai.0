@@ -1,94 +1,340 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69BDB155337
-	for <xenomai@lists.linux.dev>; Sat, 17 Aug 2024 20:41:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3A9817C98
+	for <xenomai@lists.linux.dev>; Sun, 18 Aug 2024 11:20:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.201.40.130
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723927285; cv=none; b=VME0KTBgUMysYHJFyQNVfy3OkPxOri96Ghi2H/kUhg57776TGmsDlklKCYWM2iq1zfK3Nn6A4GxnxNpTcGovFv8W+1wQgGC6CUsualQnX+au/SlBQeWvbStZu1T5CR40NmttuEnOBt0PMlizPC64qqMQZbHCjdcGZtV37L3fTmk=
+	t=1723980022; cv=none; b=U05JRq1oYZw1JKmRHFoRbatznFQIlyhbRrV+YoxTaoQSKhwR7o6Uj6JQwANdZYVGbaQum0xxMAYROsll+qtyEOW1geg4NF/vqfWoG3nmTI7LEiZKZQKe67SKczonho9L7XwzlgM6RHCYpvKno4/h9jcfV/5JaEFjbZxLINwnmGY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723927285; c=relaxed/simple;
-	bh=MN56B/p3094r8eqBl2DR8+bb3uDFVmobZiceB1KLSo0=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=sNttDrdCiID0clyiJRVwS+2s0g5bzH3ffIF9SV+zBvHZ1U6kx3zWGmWfxlRaxjdReDpKgep2dZgDzQJe+v1hxTw89RyOIlP5ShgisEuq9Wi1aPXGkcYVLougVqMvv9ebpTrOJ7bud8aCJUX4mmEYgtAcOrnmyF0/cgnPwyLsw5M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-428178fc07eso21734515e9.3
-        for <xenomai@lists.linux.dev>; Sat, 17 Aug 2024 13:41:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1723927282; x=1724532082;
-        h=content-transfer-encoding:mime-version:message-id:date:user-agent
-         :references:in-reply-to:subject:cc:to:from:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=MN56B/p3094r8eqBl2DR8+bb3uDFVmobZiceB1KLSo0=;
-        b=k/4AlXx84Fq1uDq30P135ZEcpkrVw5f2z6ydXA9/j7AU0r3GzhcAHqU+S1lbOQAMvf
-         hcw1lmXdcYTT4aUGQDXuevpXXMcsfwT4ybeErUoOmrmprYzi5HwigYBf3UEnr48sZ4Sw
-         ICfsBVjGOuwowSRJr36dpY1tP+arYexcxZ8J2nyKbrNuQQXCyT5JaxPzuIUIQOrx7R9h
-         1SHJB83N5MjZcbIj0e876laElsybnvUhUvmo4/KTqA4fBSyWkzP/gdoPM/TU0vYD9upx
-         9gKZ1kWSYWQCsDjG4RBvBDnGgfXen553xvWUFbOA9kj/KE+1q2z0AxJVALyyZfeup161
-         OVSQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVKPHITpmFD57AJ8KIXfs1HRL3m3WfH3Xw4LtzrYTcn/Kfuj13arRmciGsXbeFqmXrS6mLmXjsK@lists.linux.dev
-X-Gm-Message-State: AOJu0Yyo+d2SGl9YNnBuwGKwrAqXsDp4IwD2lmlaM/NIkvLl8yNC3eCn
-	01c+eMhaoCCQiARZtlWsEq4FmokXzuJj4G2zFkvMPSnORwBZXv/kAM9R+Lvf
-X-Google-Smtp-Source: AGHT+IEROHsa51w0oFw9FGTWAWLoOpKmG2lFKdrtgiG5HruuHHMXgWlvVMT2UYsaaRLieHBdc7dTzQ==
-X-Received: by 2002:a05:600c:1d06:b0:428:52a:3580 with SMTP id 5b1f17b1804b1-429ed7a5f68mr42027335e9.3.1723927281484;
-        Sat, 17 Aug 2024 13:41:21 -0700 (PDT)
-Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-429ed785708sm57592375e9.37.2024.08.17.13.41.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Aug 2024 13:41:21 -0700 (PDT)
-From: Philippe Gerum <rpm@xenomai.org>
-To: Richard Weinberger <richard.weinberger@gmail.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>,  Florian Bezdeka
- <florian.bezdeka@siemens.com>,  Xenomai <xenomai@lists.linux.dev>
-Subject: Re: Xenomai Meetup at OSS Vienna in September
-In-Reply-To: <CAFLxGvw35sdp9EKh2-puaqNXW0hTaBAJ+vL1owv+o3-PJNj67A@mail.gmail.com>
-	(Richard Weinberger's message of "Sat, 17 Aug 2024 21:14:39 +0200")
-References: <CAFLxGvzFcqXintq5U6tCZaSp=8quTpB03hsgkmteonnvX8Bpkw@mail.gmail.com>
-	<5cca17c1513b8e978e17f2bd5a9812dd5c08baae.camel@siemens.com>
-	<5e35103a-afc1-41de-9103-791380ce21b1@siemens.com>
-	<CAFLxGvw35sdp9EKh2-puaqNXW0hTaBAJ+vL1owv+o3-PJNj67A@mail.gmail.com>
-User-Agent: mu4e 1.12.1; emacs 29.4
-Date: Sat, 17 Aug 2024 22:41:20 +0200
-Message-ID: <87o75q51cf.fsf@xenomai.org>
+	s=arc-20240116; t=1723980022; c=relaxed/simple;
+	bh=Fz6VlYQfFnj91i2Xno6JtoPdvHtFrbS6Q81kvENBk00=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=a4G/mMVOCkvujpqyPyIL3zoYBCr8z3qS9rceeWOisigCg45jAyI77xoVF6aNMXSrN8qKvwR3Qdg3GqNpmv+c+Be4gj/DmFQpPd5fF7Q20x70X+XUCMtk3GsShFY/RVDbAYesHJcCGPvCOueJArrk4aKAaH1mUcYsWWc1psgia0g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at; spf=fail smtp.mailfrom=nod.at; arc=none smtp.client-ip=195.201.40.130
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
+Received: from localhost (localhost [127.0.0.1])
+	by lithops.sigma-star.at (Postfix) with ESMTP id 8A43E62A866A;
+	Sun, 18 Aug 2024 13:12:23 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+	with ESMTP id wWbkWPN2-cpG; Sun, 18 Aug 2024 13:12:23 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by lithops.sigma-star.at (Postfix) with ESMTP id EA7B362A869A;
+	Sun, 18 Aug 2024 13:12:22 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id JAPOvI_QtFv0; Sun, 18 Aug 2024 13:12:22 +0200 (CEST)
+Received: from foxxylove.corp.sigma-star.at (unknown [82.150.214.1])
+	by lithops.sigma-star.at (Postfix) with ESMTPSA id BFC9262A866A;
+	Sun, 18 Aug 2024 13:12:22 +0200 (CEST)
+From: Richard Weinberger <richard@nod.at>
+To: xenomai@lists.linux.dev
+Cc: upstream+xenomai@sigma-star.at,
+	Richard Weinberger <richard@nod.at>
+Subject: [PATCH] iddp-sendrecv: Make it configurable
+Date: Sun, 18 Aug 2024 13:12:08 +0200
+Message-Id: <20240818111208.19026-1-richard@nod.at>
+X-Mailer: git-send-email 2.35.3
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-Richard Weinberger <richard.weinberger@gmail.com> writes:
+By making it configurable, iddp-sendrecv can act as a powerful
+tool to debug IDDP related issues in Xenomai.
 
-> On Thu, Aug 15, 2024 at 3:36=E2=80=AFPM Jan Kiszka <jan.kiszka@siemens.co=
-m> wrote:
->>
->> On 15.08.24 12:08, Florian Bezdeka wrote:
->> > Hi Richard,
->> >
->> > On Thu, 2024-08-15 at 10:46 +0200, Richard Weinberger wrote:
->> >> I expect that some members of the Xenomai community will be attending
->> >> the upcoming Open Source Summit in Vienna. If there's enough interest,
->> >> we could arrange an in-person community meeting at a local beer
->> >> garden?
->> >
->> > Nice idea! I will be there and yes, there is interest to meet.
->> >
->> > I can already tell that Jan and me can not join on Thursday of the
->> > conference week, 19th of September. Every other day should work on my
->> > end (- can't speak for Jan though).
->> >
->>
->> Hehe, just realized that I have a double-appointment on that Thursday
->> now (RT and CIP). Definitely no space for Xenomai.
->
-> I'm also blocked on Thursday (RT party).
->
+Signed-off-by: Richard Weinberger <richard@nod.at>
+---
+ demo/posix/cobalt/iddp-sendrecv.c | 193 +++++++++++++++++++++++++-----
+ 1 file changed, 164 insertions(+), 29 deletions(-)
 
-It looks like everyone is going to be at the RT party. Same here.
-
+diff --git a/demo/posix/cobalt/iddp-sendrecv.c b/demo/posix/cobalt/iddp-s=
+endrecv.c
+index 6cec083a4..e2ee9ce15 100644
+--- a/demo/posix/cobalt/iddp-sendrecv.c
++++ b/demo/posix/cobalt/iddp-sendrecv.c
+@@ -26,6 +26,7 @@
+  * optional.
+  */
+=20
++#include <argp.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <unistd.h>
+@@ -37,7 +38,15 @@
+ #include <rtdm/ipc.h>
+ #include <boilerplate/ancillaries.h>
+=20
+-pthread_t svtid, cltid;
++#define MODE_SERVER 0x1
++#define MODE_CLIENT 0x2
++
++static pthread_t svtid, cltid;
++static int mode;
++static int send_delay_ms;
++static int send_timeout_ms;
++static int max_messages;
++static size_t poolsz =3D SIZE_MAX;
+=20
+ #define IDDP_SVPORT 12
+ #define IDDP_CLPORT 13
+@@ -71,24 +80,26 @@ static void *server(void *arg)
+ {
+ 	struct sockaddr_ipc saddr, claddr;
+ 	socklen_t addrlen;
++	unsigned int i;
+ 	char buf[128];
+-	size_t poolsz;
+ 	int ret, s;
+=20
+ 	s =3D socket(AF_RTIPC, SOCK_DGRAM, IPCPROTO_IDDP);
+ 	if (s < 0)
+ 		fail("socket");
+=20
+-	/*
+-	 * Set a local 32k pool for the server endpoint. Memory needed
+-	 * to convey datagrams will be pulled from this pool, instead
+-	 * of Xenomai's system pool.
+-	 */
+-	poolsz =3D 32768; /* bytes */
+-	ret =3D setsockopt(s, SOL_IDDP, IDDP_POOLSZ,
+-			 &poolsz, sizeof(poolsz));
+-	if (ret)
+-		fail("setsockopt");
++	if (poolsz) {
++		/*
++		 * Set a local pool for the server endpoint. Memory needed
++		 * to convey datagrams will be pulled from this pool, instead
++		 * of Xenomai's system pool.
++		 */
++		poolsz *=3D 1024; /* bytes */
++		ret =3D setsockopt(s, SOL_IDDP, IDDP_POOLSZ,
++				 &poolsz, sizeof(poolsz));
++		if (ret)
++			fail("setsockopt");
++	}
+=20
+ 	saddr.sipc_family =3D AF_RTIPC;
+ 	saddr.sipc_port =3D IDDP_SVPORT;
+@@ -96,7 +107,7 @@ static void *server(void *arg)
+ 	if (ret)
+ 		fail("bind");
+=20
+-	for (;;) {
++	for (i =3D 0;;) {
+ 		addrlen =3D sizeof(saddr);
+ 		ret =3D recvfrom(s, buf, sizeof(buf), 0,
+ 			       (struct sockaddr *)&claddr, &addrlen);
+@@ -106,8 +117,15 @@ static void *server(void *arg)
+ 		}
+ 		printf("%s: received %d bytes, \"%.*s\" from port %d\n",
+ 		       __FUNCTION__, ret, ret, buf, claddr.sipc_port);
++
++		if (max_messages && ++i >=3D max_messages) {
++			printf("%s: stop receiving after %u messages\n",
++			__FUNCTION__, i);
++			goto out;
++		}
+ 	}
+=20
++out:
+ 	return NULL;
+ }
+=20
+@@ -121,6 +139,16 @@ static void *client(void *arg)
+ 	if (s < 0)
+ 		fail("socket");
+=20
++	if (send_timeout_ms) {
++		struct timeval tv;
++
++		tv.tv_sec =3D send_timeout_ms / 1000;
++		tv.tv_usec =3D (send_timeout_ms % 1000) * 1000;
++		ret =3D setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
++		if (ret)
++			fail("setsockopt");
++	}
++
+ 	clsaddr.sipc_family =3D AF_RTIPC;
+ 	clsaddr.sipc_port =3D IDDP_CLPORT;
+ 	ret =3D bind(s, (struct sockaddr *)&clsaddr, sizeof(clsaddr));
+@@ -146,26 +174,19 @@ static void *client(void *arg)
+ 		 * iterations.
+ 		 */
+ 		ts.tv_sec =3D 0;
+-		ts.tv_nsec =3D 500000000; /* 500 ms */
++		if (!send_delay_ms)
++			send_delay_ms =3D 500;
++		ts.tv_nsec =3D send_delay_ms * 1000000UL;
+ 		clock_nanosleep(CLOCK_REALTIME, 0, &ts, NULL);
+ 	}
+=20
+ 	return NULL;
+ }
+=20
+-int main(int argc, char **argv)
++static void run_server(void)
+ {
+ 	struct sched_param svparam =3D {.sched_priority =3D 71 };
+-	struct sched_param clparam =3D {.sched_priority =3D 70 };
+-	pthread_attr_t svattr, clattr;
+-	sigset_t set;
+-	int sig;
+-
+-	sigemptyset(&set);
+-	sigaddset(&set, SIGINT);
+-	sigaddset(&set, SIGTERM);
+-	sigaddset(&set, SIGHUP);
+-	pthread_sigmask(SIG_BLOCK, &set, NULL);
++	pthread_attr_t svattr;
+=20
+ 	pthread_attr_init(&svattr);
+ 	pthread_attr_setdetachstate(&svattr, PTHREAD_CREATE_JOINABLE);
+@@ -176,6 +197,12 @@ int main(int argc, char **argv)
+ 	errno =3D pthread_create(&svtid, &svattr, &server, NULL);
+ 	if (errno)
+ 		fail("pthread_create");
++}
++
++static void run_client(void)
++{
++	struct sched_param clparam =3D {.sched_priority =3D 70 };
++	pthread_attr_t clattr;
+=20
+ 	pthread_attr_init(&clattr);
+ 	pthread_attr_setdetachstate(&clattr, PTHREAD_CREATE_JOINABLE);
+@@ -186,12 +213,120 @@ int main(int argc, char **argv)
+ 	errno =3D pthread_create(&cltid, &clattr, &client, NULL);
+ 	if (errno)
+ 		fail("pthread_create");
++}
++
++static error_t parse_opt (int key, char *arg, struct argp_state *state)
++{
++	switch (key) {
++	case 's':
++		mode |=3D MODE_SERVER;
++		break;
++	case 'c':
++		mode |=3D MODE_CLIENT;
++		break;
++	case 'd':
++		send_delay_ms =3D atoi(arg);
++		if (send_delay_ms < 0)
++			argp_usage(state);
++		break;
++	case 't':
++		send_timeout_ms =3D atoi(arg);
++		if (send_timeout_ms < 0)
++			argp_usage(state);
++		break;
++	case 'm':
++		max_messages =3D atoi(arg);
++		if (max_messages < 0)
++			argp_usage(state);
++		break;
++	case 'z':
++		poolsz =3D atoi(arg);
++		if ((int)poolsz < 0)
++			argp_usage(state);
++		break;
++	default:
++		return ARGP_ERR_UNKNOWN;
++	}
++
++	return 0;
++}
++
++static struct argp_option options[] =3D {
++	{"server", 	's',	0,	0,	"Start an IDDP server" },
++	{"client",	'c',	0,	0,	"Start an IDDP client" },
++	{"send-delay", 	'd',	"DLY",	0,	"Delay in ms between messages sent by th=
+e client" },
++	{"send-timeout",'t',	"STO",	0,	"Send timeout in ms in client" },
++	{"max-msg", 	'm',	"MAX",	0,	"Maximum number of messages consumed by the=
+ server" },
++	{"pool-size", 	'z',	"PSZ",	0,	"Size of receive pool in KiB, specify 0 t=
+o use system pool" },
++	{ 0 }
++};
++
++static struct argp argp =3D {
++	options,
++	parse_opt,
++	NULL,
++	NULL,
++};
++
++int main(int argc, char *argv[])
++{
++	sigset_t set;
++	int sig, ret;
++
++	ret =3D argp_parse(&argp, argc, argv, 0, 0, NULL);
++	if (ret) {
++		return 1;
++	}
++
++	if (!mode)
++		mode =3D MODE_SERVER | MODE_CLIENT;
++
++	if (send_delay_ms && !(mode & MODE_CLIENT)) {
++		fprintf(stderr, "--send-delay works only with --client\n");
++		return 1;
++	}
++
++	if (send_timeout_ms && !(mode & MODE_CLIENT)) {
++		fprintf(stderr, "--send-timeout works only with --client\n");
++		return 1;
++	}
++
++	if (max_messages && !(mode & MODE_SERVER)) {
++		fprintf(stderr, "--max-msg works only with --server\n");
++		return 1;
++	}
++
++	if (poolsz !=3D SIZE_MAX) {
++		if (!(mode & MODE_SERVER)) {
++			fprintf(stderr, "--pool-size works only with --server\n");
++			return 1;
++		}
++	} else {
++		poolsz =3D 32; /* 32KiB default */
++	}
++
++	sigemptyset(&set);
++	sigaddset(&set, SIGINT);
++	sigaddset(&set, SIGTERM);
++	sigaddset(&set, SIGHUP);
++	pthread_sigmask(SIG_BLOCK, &set, NULL);
++
++	if (mode & MODE_SERVER)
++		run_server();
++	if (mode & MODE_CLIENT)
++		run_client();
+=20
+ 	__STD(sigwait(&set, &sig));
+-	pthread_cancel(svtid);
+-	pthread_cancel(cltid);
+-	pthread_join(svtid, NULL);
+-	pthread_join(cltid, NULL);
++
++	if (mode & MODE_SERVER) {
++		pthread_cancel(svtid);
++		pthread_join(svtid, NULL);
++	}
++
++	if (mode & MODE_CLIENT) {
++		pthread_cancel(cltid);
++		pthread_join(cltid, NULL);
++	}
+=20
+ 	return 0;
+ }
 --=20
-Philippe.
+2.39.2
+
