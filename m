@@ -1,340 +1,243 @@
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2044.outbound.protection.outlook.com [40.107.241.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3A9817C98
-	for <xenomai@lists.linux.dev>; Sun, 18 Aug 2024 11:20:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=195.201.40.130
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1723980022; cv=none; b=U05JRq1oYZw1JKmRHFoRbatznFQIlyhbRrV+YoxTaoQSKhwR7o6Uj6JQwANdZYVGbaQum0xxMAYROsll+qtyEOW1geg4NF/vqfWoG3nmTI7LEiZKZQKe67SKczonho9L7XwzlgM6RHCYpvKno4/h9jcfV/5JaEFjbZxLINwnmGY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1723980022; c=relaxed/simple;
-	bh=Fz6VlYQfFnj91i2Xno6JtoPdvHtFrbS6Q81kvENBk00=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=a4G/mMVOCkvujpqyPyIL3zoYBCr8z3qS9rceeWOisigCg45jAyI77xoVF6aNMXSrN8qKvwR3Qdg3GqNpmv+c+Be4gj/DmFQpPd5fF7Q20x70X+XUCMtk3GsShFY/RVDbAYesHJcCGPvCOueJArrk4aKAaH1mUcYsWWc1psgia0g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at; spf=fail smtp.mailfrom=nod.at; arc=none smtp.client-ip=195.201.40.130
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 8A43E62A866A;
-	Sun, 18 Aug 2024 13:12:23 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-	with ESMTP id wWbkWPN2-cpG; Sun, 18 Aug 2024 13:12:23 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id EA7B362A869A;
-	Sun, 18 Aug 2024 13:12:22 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id JAPOvI_QtFv0; Sun, 18 Aug 2024 13:12:22 +0200 (CEST)
-Received: from foxxylove.corp.sigma-star.at (unknown [82.150.214.1])
-	by lithops.sigma-star.at (Postfix) with ESMTPSA id BFC9262A866A;
-	Sun, 18 Aug 2024 13:12:22 +0200 (CEST)
-From: Richard Weinberger <richard@nod.at>
-To: xenomai@lists.linux.dev
-Cc: upstream+xenomai@sigma-star.at,
-	Richard Weinberger <richard@nod.at>
-Subject: [PATCH] iddp-sendrecv: Make it configurable
-Date: Sun, 18 Aug 2024 13:12:08 +0200
-Message-Id: <20240818111208.19026-1-richard@nod.at>
-X-Mailer: git-send-email 2.35.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D171311CA0
+	for <xenomai@lists.linux.dev>; Mon, 19 Aug 2024 06:09:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.241.44
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724047781; cv=fail; b=dCG8rge0gS0UQyI+z+xq+0D42YicKEP5g1yAJP1Efgb08d0pUy6DfLxX+9nL1pKvxjIEQzEuvz0HX+9d36NIe0ld02R3mUmzGpF27hNkJQunzqeD6jxaRni5wmIlApaoH1Pk8Rf85vSgT1I4zMihXFIWwPAUtP0+PJXiMRnJu8c=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724047781; c=relaxed/simple;
+	bh=JADC2js5lfblYa9sbQdcbAs9Skr4MplIbBb+OZwwv18=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=JuUfmDB+nijEev5OeJjIWWwsYUVWlRN2Xb328LV+BDNxkNjijzPZGRBGYEaZcIEzXY+juNtVLdH6f2Iw4RX5ukHkXWNBo2ebqAP+SjXcbm6UdQME+DawX4n5P0We+rRM/yHeqq2EyWDvG3rslHElNbikf4lYPiH4Xp6lxUJ5j7U=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=tsfK3oIC; arc=fail smtp.client-ip=40.107.241.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="tsfK3oIC"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=HcpeTJWdK0Q9Kf8rX9Z0SNd2kGgo2/+WZYNnC0Ra9WKShl85VtNu/ntG0eFrQVyfa3cyLsjsYfmNvercpt25SCK7XW83R1sVZuvlzasW7g+3C8q3d+BOvqDV0Ap/XzsrQh/hBVAWp+2tPZQyGjkFmzI6QtPHXMPOucqudm05sutmm3XfwRTtqxkHp6HGCA/tOYmTJUGQhfOi6KOPgt3kzCZAq2e6iT5I0j+Y0QB3yeF+gHcK/ln6e84D8YmlVTi/hD5KVRHfB/ioslyFjTAn7MZm0h0fnzvWgFE+jkT9Yzm9HcDknYMuCOMtFkCv/0OtyNuQNXhw3sXkyGXLHcy8Bw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HGhq0D/SzMPwuXAuvoDWm84Dg9PXBq0Qp+nhKLVIv/I=;
+ b=JPawKpfJHdRPyG1wofBveYdkIoiI9S2eHcxAWHG7G6mRFlOdbXMWa/ZsRjhDzOui5/h5P93MTc6lE1pd88J4grdf4BbCk8NsJp01LbfTaTtiUE/+WUqDH78FjXnwITLbUljHs9rw2dFKRVirgLizoDLrruYsHeJeajDKSfYaTr4Q+SVs8Q1fKa47Q5EI0CWqKqdvRe2kELTWpRsvgWKUxqLNt6nJA8K6Ghk80GvhkCPqPiByzeHy1nabX8AzkjUfyud7BcPJGFDE2+UFy5bqcRQ4sfCLTgFibMYcJm5kaEW4D334IovkOiEMrxAWZf0KuMxm/gR4OLP/1hQjL2a72A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HGhq0D/SzMPwuXAuvoDWm84Dg9PXBq0Qp+nhKLVIv/I=;
+ b=tsfK3oIC7kUN9Jqk4EvLzM/v6otOPw2wdvEl6iyqku0wnv0v+VPTG03xLUE2B7nksCU0QoRI11g+VcEy512qMOXJuPaqbEhR+pBeOSfGo52gFZ25P5Lpu6FmmgIWco5Pk+fwyrpi2EjpgEGjOvIz7eb56jEZ6xsMQaSWr+P/WwiMFSBzj0TgUG0SqetAE0Ib9gMgye+ENqytkkBMMIP1vkPoG6u0ZN5xDyjsuWeETWeCU4bDcXL0f2tasMZGO94Dft54uRzJpbcD7Dru1ih9gdiOQMd5LrnnYKTR/8EUbMw6CXulJ/JdAFdgxkWpTHpw0z2eGTewA+mhVVO9ZSGFRg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by PAWPR10MB6758.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:332::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7875.19; Mon, 19 Aug
+ 2024 06:09:34 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408%4]) with mapi id 15.20.7875.019; Mon, 19 Aug 2024
+ 06:09:34 +0000
+Message-ID: <20a24332-f53e-4b98-a3ed-fff30d711fb1@siemens.com>
+Date: Mon, 19 Aug 2024 08:09:32 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: Xenomai Meetup at OSS Vienna in September
+To: Richard Weinberger <richard.weinberger@gmail.com>
+Cc: Florian Bezdeka <florian.bezdeka@siemens.com>,
+ Xenomai <xenomai@lists.linux.dev>
+References: <CAFLxGvzFcqXintq5U6tCZaSp=8quTpB03hsgkmteonnvX8Bpkw@mail.gmail.com>
+ <5cca17c1513b8e978e17f2bd5a9812dd5c08baae.camel@siemens.com>
+ <5e35103a-afc1-41de-9103-791380ce21b1@siemens.com>
+ <CAFLxGvw35sdp9EKh2-puaqNXW0hTaBAJ+vL1owv+o3-PJNj67A@mail.gmail.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Content-Language: en-US
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ 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
+In-Reply-To: <CAFLxGvw35sdp9EKh2-puaqNXW0hTaBAJ+vL1owv+o3-PJNj67A@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR4P281CA0021.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:c9::12) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|PAWPR10MB6758:EE_
+X-MS-Office365-Filtering-Correlation-Id: 15ac56af-0959-4f46-d20b-08dcc0157f55
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?M1JheVJISVlaQXNOL2RnTVJ1Z2RwL1NWRmRxRmRkUE9QV25GUHQrNEE5ZFFt?=
+ =?utf-8?B?em5UR25DbGpqdUV6RGJWbkN1d3lPM1NnZkdCUzdzNGhWMFpJQmRLdkNVU2tE?=
+ =?utf-8?B?S2lZenVtdUZFNVQzbGFhV3ptY3ZRQ1ZNWmhWWmJUSGM0M20wazBML2Z5RGRq?=
+ =?utf-8?B?MXFvNHdXR2RPWHdnbkhCNTlYY2hJY2Nzc0JwQUtEa3lIYXpUQnFmaW9yNXZt?=
+ =?utf-8?B?Vk9HRk8yeU45ZmlsUzRRMDNIYVlrK0hSUVJqZ2JKUHQ4UHFrV1NlWEREeDFU?=
+ =?utf-8?B?S0dJeExSc0k2bjBDaWFsNlRhM2VlekhlUEZnUktaTlZuNHFFWHFsTEVWNTg0?=
+ =?utf-8?B?ZHJrbWx3cThtQ0hzSHlST3FYU2xJSUg1a3ZFOXhwL25tM1dDczgzTWc5cDBR?=
+ =?utf-8?B?Nmk3R2RYRnBrcmhwbHV1S3o0ZWpiUGJvb2hpS1owQklNcktJTGZCd29UYkRn?=
+ =?utf-8?B?Nk1lb3YrUzdTYVJYRGF2WGsyeExvbWVWNENsbDBkZThWQ1hPSG50U1NpNGxt?=
+ =?utf-8?B?M3R4bDNOQjd5T3BTRlhTZUhxeTh0RTVWM0R5OWpweHBwQWRoeWVqaWZvYjdS?=
+ =?utf-8?B?eVJEYVFtaSs2ZndSN3NsOWZOMnZuOHAvWjJ0VWRXaWFFUFFjUE8xTjdCWGFq?=
+ =?utf-8?B?aHkrUTl2aldmT1pnNitXam83R0o3R2NUVDFyYVVzRmpWY2gxL01sZ0pMWHJ5?=
+ =?utf-8?B?QjRVT1ZubWx3QldIZDRuWk9KUkV3UkptSUNmVkNjN3FMSGlTcTM2OEkyZ05I?=
+ =?utf-8?B?UzJkY2lTdzFyWk9SUE1pZVd4VmwxRGlXNWJ3aGJoZEhObkNnZCttM3F5Ry9m?=
+ =?utf-8?B?MmxkUDRldWtGcHVLM2tpNU1lY2VuWVAwa3lLVG1DRDZLRlU1THJsNFpvTHVY?=
+ =?utf-8?B?SHc1T1dxNTJwTmxxQUUvQnVTdUhwVzZSN2xjMmd0cmJkUm5MMGFJdGxGNEVJ?=
+ =?utf-8?B?NU5qZEVmRHowczVDWko2YW5zUEpURFROWHpXMUduQzhBcXlsa2Y2M0lTaStj?=
+ =?utf-8?B?OU1YaXdIUzJJZkQvRlc0aFhlTXBEdkMyTFdPWFNuTk1zeVBuS1hkeUw1NnR5?=
+ =?utf-8?B?Ly9qQnhUL3FGVFk4QVduMlVkclo3d1hPQVhiblFBTk9maDdkT0kxanVjL0dF?=
+ =?utf-8?B?VXUwemVNYjBrc1RxUWVCR1F4SFdWa2U0QmgyZklMNStuOU9zdTBDL1VvU2RO?=
+ =?utf-8?B?aWpMN29GbElEWU15ajE5UVdzM0FGL3RNQk5zeURObXdzOVdXUUFVN0xyZWJN?=
+ =?utf-8?B?dVhSV0hhYytKbWN5bE5HL2tPbHlUL3NiS2ZlQkQ0T1FNNXhvU0Zrb3Fvd3dO?=
+ =?utf-8?B?NWFSOWtOZVhoMENSV2xQblpUMXFDall2aXVkQklncVl2ajZwUFJQbkk2aGFa?=
+ =?utf-8?B?OVF2K2lBcmpvUE5vN2tpMTZVeFBYY2FZYWRqYlhMc3k5YjZidTVQdzRtODZl?=
+ =?utf-8?B?MDczd3hLQlZQdHRML2VHNHJyVzE5WC9sZ3BvamZYOXIyTHE5a1RrZzRWZEhi?=
+ =?utf-8?B?YzRSUXVoSWJiSjhINHlualV5eDNjYThIVEE0akdkTDZLS1ZBVW1YV3VxZnoz?=
+ =?utf-8?B?bWQ5ai9NV2lHTGdZMWNESXFCaTZLTHZNSzBoeWhmc05lQlNjTXJCUU55bTJp?=
+ =?utf-8?B?ZUpkVkhmSHZvTVM2UWEwRm5jRDJBelJyOEJQRWt4Vzh1djhrRStUbis0NHJt?=
+ =?utf-8?B?VnhEdlBORkRQOCtoWDVBMEZxL0J4aTlwK0hPdmgyT1NMRTUwR3RLV0daUmxU?=
+ =?utf-8?Q?M523JJVJBGlWNZRrAA=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?ZStWUnl6Q0FvQWRNVU85V3liNTRXVkRFck4weDFEN05kbWtHanZEZ3FvL1hE?=
+ =?utf-8?B?Z3daWTRoZlhDYnNOY2VxbDFIQnJzUmtnMlNJNlZUc0RrNkh5SEkxU243eUlO?=
+ =?utf-8?B?RXlUR3VaNCtTTjZydkFRU1U4ZTNJOGtocm0wWUh3alJaWG1wQ3BOODB6WHF5?=
+ =?utf-8?B?VWtXSlUrRXBnaUxNMXQ3MXIybjd3aGx2dlR2Q1JkWndoWEpEV2M3MG1rZTBh?=
+ =?utf-8?B?akd3WEZJdjZlN2VxVEV0UG45VlA2L3JOREZSK3JtdWJ5QUoxYUdGR2dmdFNX?=
+ =?utf-8?B?L1BobEJ0d1J4SlBFSS9BeTNiN0s4UEtiNEovbmsvNERqc1VmVjJQcGthUDYy?=
+ =?utf-8?B?ZGdndGN6YkdpNnJyRjdPUk1VVGVCRGthZndFa3FPbEMwdlk1cytLTkV5djJX?=
+ =?utf-8?B?czhGR0wxZ2Q0ZU5TNmMxcktGYVJWK3FXdHJzcWEvYkU4bEFVK25Dbm5zNVlP?=
+ =?utf-8?B?QU9KK3NBbzlIRlkxOXZaVG05c3U5Z3Zpdk02RlpLNy9hS2Jnbm0zSkRXalV5?=
+ =?utf-8?B?aCtJU3J3YW44ZUFCazdVUlVxbjJXb0ZBSUo3QzNsdm9FYktjQUFPbWs2dXFQ?=
+ =?utf-8?B?WUl6Q3htTDl3Zjc0bVZtR1M3RXlMSkRGVTA2QWRMQ0ZmRmphaWJsRDNZdkRH?=
+ =?utf-8?B?TitCSWZ1OUtlUjN5YnUvbm9tS3BoVzBSRDRySXdXaHJXQk1jVmRyekFiL0d3?=
+ =?utf-8?B?a0ZxV3pERlBLb25DRE1nQmpnajg1TklLNFBkUkU3ZVZTQTRRRVZwcjJ1T1lR?=
+ =?utf-8?B?YVF5S3AxV2dIdWJqQTNmd1RZc3pvTzJOUUJqU2hxbW1jVTdaVDJnTjdXT25n?=
+ =?utf-8?B?V3MrNkZBRDlpcjFURncwejIzdU8xZk1xRnloeVNNVzI1OEFpUnVlbVFUcFYv?=
+ =?utf-8?B?RmlRS2lpQVVPMXlia0ZPaHgrdW1CbTlySXlrOTNsUFRPWWJUMVIwWG82TVNu?=
+ =?utf-8?B?ZERjSGljSnVyU3RiZGVIVVNwYTZhTXVKT3NJTDFDS3pDVTlQTjNrMkhsVWJ4?=
+ =?utf-8?B?Tmk4ZzBYcTBPYVhvaW85Wk5HeXBkOFpMZERwMTU1MkhGbFRZK09DaUdvbStk?=
+ =?utf-8?B?RXpPOXczY2ZGblA3eThiZzNPMWlqSnkzeXhvWDlVVURBVkRWblpBQlJjVDdB?=
+ =?utf-8?B?ZzJobFVqbC9ldklDOGpkUVZiNmxUUWo2bnJpWFVCcDJRQW9XTDNsNGpSb2hL?=
+ =?utf-8?B?dkN4bTZIL3ZhWndUZVZhczM4dEN0Z0dicVNQQjF1S24vU2l1L1V4T1NhWGVw?=
+ =?utf-8?B?LzJSSFVpSXM4aHFiekcxQjN4TjREL0lLWDhrcEZWMFAyeXNLM2FnVEhhYTF4?=
+ =?utf-8?B?Q1Z1YVdkK0pSL0FHVFl0NDdOTEhlQlJyZlJRN081MXo3TUh4Zkc3K1BUajk2?=
+ =?utf-8?B?RnNDVXVZU0pJSk9WNUl1bW1DSTNSbklseTBnQmI4VXZkNFFJVVBRTWQwVDFT?=
+ =?utf-8?B?UnBLZzFpOHNyWmhTam5waTJhSnRQZGJEWEZkQTRrcG9QdVVickxQUzhrd1ZX?=
+ =?utf-8?B?RjFUUnh4S2RCMk5PWTNKMUVzNzUrU1padkZ5S3lsTkFNQUJtVTdvRFgyM2hq?=
+ =?utf-8?B?NE4zZWVvRGxRTDB3V1ZDQ204ek9CNjVFTjc0cEdkdXlxb0FzZzYrVGZyQ1la?=
+ =?utf-8?B?dERwc20wbjczM2lUWGJjMnBROE9hdGs0Zm9YVXFDOUJvUE03UW13MWFCREdP?=
+ =?utf-8?B?WFhWdVhUcW1aaWRrelJoSUZ0RC81SXgwKzNpQkZVK3k2MG90TlB2YmlsN0x5?=
+ =?utf-8?B?OGd5YytGa0FyYjlRMWJQS3JaTE1IV1lFbDFwM0Z2WXZVaDkyZW1ZT21wUjV4?=
+ =?utf-8?B?M3p3N2puYk5ocWpEYkFzdzN1TitxeG0xVTNERElnTjRCMDEwbDdIbnZUK0Ri?=
+ =?utf-8?B?TlpOcjZSZml3dVkzd1JvaS9zNktnVmNSKzhtR2pwN3F4M28wTTN0SENSZU1H?=
+ =?utf-8?B?YWh6Y0ZPdC9LbE9TUGl5QkF1b0V6U3VkN2NIVURqbHI1UjRNOXdVK3Fkb2M1?=
+ =?utf-8?B?b3NLeXcwYktlc0hHSUd0N2orZjFjMDErSE5uZi96TFU5MHVlOE44WFVuZGwx?=
+ =?utf-8?B?cVBuL0VUZ1gzNWxDZ3E0MnEyeFZMVkpHOHlDTk1lbmZ1ZDl4S0JzWkM1UTMy?=
+ =?utf-8?Q?6oezn57IUMlfntCMZ5e1VoVqY?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 15ac56af-0959-4f46-d20b-08dcc0157f55
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Aug 2024 06:09:34.4716
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sGcc5uQY0yP6UThZMl2hylkdNVlwh07QyACBI5tRW7qw6qmjNPkFfmyS+P39VfLKyH39yR7iAmYoBX44swNTuA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR10MB6758
 
-By making it configurable, iddp-sendrecv can act as a powerful
-tool to debug IDDP related issues in Xenomai.
+On 17.08.24 21:14, Richard Weinberger wrote:
+> On Thu, Aug 15, 2024 at 3:36 PM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>>
+>> On 15.08.24 12:08, Florian Bezdeka wrote:
+>>> Hi Richard,
+>>>
+>>> On Thu, 2024-08-15 at 10:46 +0200, Richard Weinberger wrote:
+>>>> I expect that some members of the Xenomai community will be attending
+>>>> the upcoming Open Source Summit in Vienna. If there's enough interest,
+>>>> we could arrange an in-person community meeting at a local beer
+>>>> garden?
+>>>
+>>> Nice idea! I will be there and yes, there is interest to meet.
+>>>
+>>> I can already tell that Jan and me can not join on Thursday of the
+>>> conference week, 19th of September. Every other day should work on my
+>>> end (- can't speak for Jan though).
+>>>
+>>
+>> Hehe, just realized that I have a double-appointment on that Thursday
+>> now (RT and CIP). Definitely no space for Xenomai.
+> 
+> I'm also blocked on Thursday (RT party).
+> 
+>> Wednesday might be an option.
+> 
+> Do you know when the OSS related events will be? (Speaker party, etc..)
+> Maybe Monday is safe...
+> 
 
-Signed-off-by: Richard Weinberger <richard@nod.at>
----
- demo/posix/cobalt/iddp-sendrecv.c | 193 +++++++++++++++++++++++++-----
- 1 file changed, 164 insertions(+), 29 deletions(-)
+VIP reception is dropped a whole ago (cost savings, IIUC).
 
-diff --git a/demo/posix/cobalt/iddp-sendrecv.c b/demo/posix/cobalt/iddp-s=
-endrecv.c
-index 6cec083a4..e2ee9ce15 100644
---- a/demo/posix/cobalt/iddp-sendrecv.c
-+++ b/demo/posix/cobalt/iddp-sendrecv.c
-@@ -26,6 +26,7 @@
-  * optional.
-  */
-=20
-+#include <argp.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <unistd.h>
-@@ -37,7 +38,15 @@
- #include <rtdm/ipc.h>
- #include <boilerplate/ancillaries.h>
-=20
--pthread_t svtid, cltid;
-+#define MODE_SERVER 0x1
-+#define MODE_CLIENT 0x2
-+
-+static pthread_t svtid, cltid;
-+static int mode;
-+static int send_delay_ms;
-+static int send_timeout_ms;
-+static int max_messages;
-+static size_t poolsz =3D SIZE_MAX;
-=20
- #define IDDP_SVPORT 12
- #define IDDP_CLPORT 13
-@@ -71,24 +80,26 @@ static void *server(void *arg)
- {
- 	struct sockaddr_ipc saddr, claddr;
- 	socklen_t addrlen;
-+	unsigned int i;
- 	char buf[128];
--	size_t poolsz;
- 	int ret, s;
-=20
- 	s =3D socket(AF_RTIPC, SOCK_DGRAM, IPCPROTO_IDDP);
- 	if (s < 0)
- 		fail("socket");
-=20
--	/*
--	 * Set a local 32k pool for the server endpoint. Memory needed
--	 * to convey datagrams will be pulled from this pool, instead
--	 * of Xenomai's system pool.
--	 */
--	poolsz =3D 32768; /* bytes */
--	ret =3D setsockopt(s, SOL_IDDP, IDDP_POOLSZ,
--			 &poolsz, sizeof(poolsz));
--	if (ret)
--		fail("setsockopt");
-+	if (poolsz) {
-+		/*
-+		 * Set a local pool for the server endpoint. Memory needed
-+		 * to convey datagrams will be pulled from this pool, instead
-+		 * of Xenomai's system pool.
-+		 */
-+		poolsz *=3D 1024; /* bytes */
-+		ret =3D setsockopt(s, SOL_IDDP, IDDP_POOLSZ,
-+				 &poolsz, sizeof(poolsz));
-+		if (ret)
-+			fail("setsockopt");
-+	}
-=20
- 	saddr.sipc_family =3D AF_RTIPC;
- 	saddr.sipc_port =3D IDDP_SVPORT;
-@@ -96,7 +107,7 @@ static void *server(void *arg)
- 	if (ret)
- 		fail("bind");
-=20
--	for (;;) {
-+	for (i =3D 0;;) {
- 		addrlen =3D sizeof(saddr);
- 		ret =3D recvfrom(s, buf, sizeof(buf), 0,
- 			       (struct sockaddr *)&claddr, &addrlen);
-@@ -106,8 +117,15 @@ static void *server(void *arg)
- 		}
- 		printf("%s: received %d bytes, \"%.*s\" from port %d\n",
- 		       __FUNCTION__, ret, ret, buf, claddr.sipc_port);
-+
-+		if (max_messages && ++i >=3D max_messages) {
-+			printf("%s: stop receiving after %u messages\n",
-+			__FUNCTION__, i);
-+			goto out;
-+		}
- 	}
-=20
-+out:
- 	return NULL;
- }
-=20
-@@ -121,6 +139,16 @@ static void *client(void *arg)
- 	if (s < 0)
- 		fail("socket");
-=20
-+	if (send_timeout_ms) {
-+		struct timeval tv;
-+
-+		tv.tv_sec =3D send_timeout_ms / 1000;
-+		tv.tv_usec =3D (send_timeout_ms % 1000) * 1000;
-+		ret =3D setsockopt(s, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(tv));
-+		if (ret)
-+			fail("setsockopt");
-+	}
-+
- 	clsaddr.sipc_family =3D AF_RTIPC;
- 	clsaddr.sipc_port =3D IDDP_CLPORT;
- 	ret =3D bind(s, (struct sockaddr *)&clsaddr, sizeof(clsaddr));
-@@ -146,26 +174,19 @@ static void *client(void *arg)
- 		 * iterations.
- 		 */
- 		ts.tv_sec =3D 0;
--		ts.tv_nsec =3D 500000000; /* 500 ms */
-+		if (!send_delay_ms)
-+			send_delay_ms =3D 500;
-+		ts.tv_nsec =3D send_delay_ms * 1000000UL;
- 		clock_nanosleep(CLOCK_REALTIME, 0, &ts, NULL);
- 	}
-=20
- 	return NULL;
- }
-=20
--int main(int argc, char **argv)
-+static void run_server(void)
- {
- 	struct sched_param svparam =3D {.sched_priority =3D 71 };
--	struct sched_param clparam =3D {.sched_priority =3D 70 };
--	pthread_attr_t svattr, clattr;
--	sigset_t set;
--	int sig;
--
--	sigemptyset(&set);
--	sigaddset(&set, SIGINT);
--	sigaddset(&set, SIGTERM);
--	sigaddset(&set, SIGHUP);
--	pthread_sigmask(SIG_BLOCK, &set, NULL);
-+	pthread_attr_t svattr;
-=20
- 	pthread_attr_init(&svattr);
- 	pthread_attr_setdetachstate(&svattr, PTHREAD_CREATE_JOINABLE);
-@@ -176,6 +197,12 @@ int main(int argc, char **argv)
- 	errno =3D pthread_create(&svtid, &svattr, &server, NULL);
- 	if (errno)
- 		fail("pthread_create");
-+}
-+
-+static void run_client(void)
-+{
-+	struct sched_param clparam =3D {.sched_priority =3D 70 };
-+	pthread_attr_t clattr;
-=20
- 	pthread_attr_init(&clattr);
- 	pthread_attr_setdetachstate(&clattr, PTHREAD_CREATE_JOINABLE);
-@@ -186,12 +213,120 @@ int main(int argc, char **argv)
- 	errno =3D pthread_create(&cltid, &clattr, &client, NULL);
- 	if (errno)
- 		fail("pthread_create");
-+}
-+
-+static error_t parse_opt (int key, char *arg, struct argp_state *state)
-+{
-+	switch (key) {
-+	case 's':
-+		mode |=3D MODE_SERVER;
-+		break;
-+	case 'c':
-+		mode |=3D MODE_CLIENT;
-+		break;
-+	case 'd':
-+		send_delay_ms =3D atoi(arg);
-+		if (send_delay_ms < 0)
-+			argp_usage(state);
-+		break;
-+	case 't':
-+		send_timeout_ms =3D atoi(arg);
-+		if (send_timeout_ms < 0)
-+			argp_usage(state);
-+		break;
-+	case 'm':
-+		max_messages =3D atoi(arg);
-+		if (max_messages < 0)
-+			argp_usage(state);
-+		break;
-+	case 'z':
-+		poolsz =3D atoi(arg);
-+		if ((int)poolsz < 0)
-+			argp_usage(state);
-+		break;
-+	default:
-+		return ARGP_ERR_UNKNOWN;
-+	}
-+
-+	return 0;
-+}
-+
-+static struct argp_option options[] =3D {
-+	{"server", 	's',	0,	0,	"Start an IDDP server" },
-+	{"client",	'c',	0,	0,	"Start an IDDP client" },
-+	{"send-delay", 	'd',	"DLY",	0,	"Delay in ms between messages sent by th=
-e client" },
-+	{"send-timeout",'t',	"STO",	0,	"Send timeout in ms in client" },
-+	{"max-msg", 	'm',	"MAX",	0,	"Maximum number of messages consumed by the=
- server" },
-+	{"pool-size", 	'z',	"PSZ",	0,	"Size of receive pool in KiB, specify 0 t=
-o use system pool" },
-+	{ 0 }
-+};
-+
-+static struct argp argp =3D {
-+	options,
-+	parse_opt,
-+	NULL,
-+	NULL,
-+};
-+
-+int main(int argc, char *argv[])
-+{
-+	sigset_t set;
-+	int sig, ret;
-+
-+	ret =3D argp_parse(&argp, argc, argv, 0, 0, NULL);
-+	if (ret) {
-+		return 1;
-+	}
-+
-+	if (!mode)
-+		mode =3D MODE_SERVER | MODE_CLIENT;
-+
-+	if (send_delay_ms && !(mode & MODE_CLIENT)) {
-+		fprintf(stderr, "--send-delay works only with --client\n");
-+		return 1;
-+	}
-+
-+	if (send_timeout_ms && !(mode & MODE_CLIENT)) {
-+		fprintf(stderr, "--send-timeout works only with --client\n");
-+		return 1;
-+	}
-+
-+	if (max_messages && !(mode & MODE_SERVER)) {
-+		fprintf(stderr, "--max-msg works only with --server\n");
-+		return 1;
-+	}
-+
-+	if (poolsz !=3D SIZE_MAX) {
-+		if (!(mode & MODE_SERVER)) {
-+			fprintf(stderr, "--pool-size works only with --server\n");
-+			return 1;
-+		}
-+	} else {
-+		poolsz =3D 32; /* 32KiB default */
-+	}
-+
-+	sigemptyset(&set);
-+	sigaddset(&set, SIGINT);
-+	sigaddset(&set, SIGTERM);
-+	sigaddset(&set, SIGHUP);
-+	pthread_sigmask(SIG_BLOCK, &set, NULL);
-+
-+	if (mode & MODE_SERVER)
-+		run_server();
-+	if (mode & MODE_CLIENT)
-+		run_client();
-=20
- 	__STD(sigwait(&set, &sig));
--	pthread_cancel(svtid);
--	pthread_cancel(cltid);
--	pthread_join(svtid, NULL);
--	pthread_join(cltid, NULL);
-+
-+	if (mode & MODE_SERVER) {
-+		pthread_cancel(svtid);
-+		pthread_join(svtid, NULL);
-+	}
-+
-+	if (mode & MODE_CLIENT) {
-+		pthread_cancel(cltid);
-+		pthread_join(cltid, NULL);
-+	}
-=20
- 	return 0;
- }
---=20
-2.39.2
+Monday is reception at the sponsors (https://sched.co/1eYej), but only
+till 18:30. Tuesday is all-attendee reception.
+
+Jan
+
+-- 
+Siemens AG, Technology
+Linux Expert Center
 
