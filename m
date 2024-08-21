@@ -1,279 +1,185 @@
-Received: from sonic312-25.consmr.mail.ir2.yahoo.com (sonic312-25.consmr.mail.ir2.yahoo.com [77.238.178.96])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C0EF210957
-	for <xenomai@lists.linux.dev>; Wed, 21 Aug 2024 10:11:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.238.178.96
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4066A19ABB1
+	for <xenomai@lists.linux.dev>; Wed, 21 Aug 2024 13:35:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724235092; cv=none; b=QSpRzvqnK1H50nUQ3NW2PnJLhhwNIQIo0RvDW+FTx3P/l3MXtK+RyDZNyuVAqQ4zRLBskJt5BZO31B58AKC+8AHc+NMbasoQ9/aXEi2THAmrjGi9IVhuCnoDxAAZejYiIk6pAfxVC3o5+6klcIqYmVdmx7Ty+cyKiVFDZA3sBWM=
+	t=1724247353; cv=none; b=opsF/ad1ilnmw56pfvpMT9oZScRwopP/+HqI4Exa17nFvt2jNedPApNeXJF2D5LD/soOHQ37KEDmR5pJHFLuYYTBIzar/lerNfrEpgGq2S2Ab55tUSdVh5S9/8uV8kX8Ssrj7TzlGh5s7qG3amdxIj9Y2M3/sQ7NStKb3JEFFLU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724235092; c=relaxed/simple;
-	bh=0lbpuRmHA3eKE3slyKqWMVDRc9RHhkg+rfxAcUGySlA=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=EWulpebGbaqG1DB3L4n4seCCroOMxwXzNAx270UImP8EKiYrfNj25baGE90MyXL0pjBi5FRXbPu7xkaOO8YFvGgXFY642V41TAy8RYra68WwEBfHukdNhOJIiVRSOtOZNlLXDzc+YcQaEsKlbcBpuUEaD7s3/+Lx44ujnFP9H+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com; spf=pass smtp.mailfrom=yahoo.com; dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b=f9b7/wHi; arc=none smtp.client-ip=77.238.178.96
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yahoo.com
+	s=arc-20240116; t=1724247353; c=relaxed/simple;
+	bh=WkOEezhWHzFlBEDsEW/Q2F9GkK4N5oCXiLl5XDX/yAE=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=osi/5SDx8DbX5xIYmvgdSfsDuekA6BhiYiIJcRF8DAQDLtbo260BTQkUnJTkD0b37n10kpRkTT1/8apZdwRtMrSxB7hX2newwliGwTM9Wr8hwEats/rmxSKD0rHBIAiNBn//lEB1Ibrp7xxqgpeazVNVNwY3JXT/OpCcnUYSy6E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=eZg5dMYM; arc=none smtp.client-ip=185.136.65.225
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b="f9b7/wHi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1724235082; bh=LaQz20FhS+PJf0MI8k3IGCmeHQc+0y9SvhXr+/Cr+BU=; h=Date:Subject:From:To:Cc:References:In-Reply-To:From:Subject:Reply-To; b=f9b7/wHi+bLw4bdHAJ2JcshA27rzSd5FaBJXFCC/4hgjpzM3mie9BHjH3yJA4EHB8tgNblc1hXODWxHkDAXPnG/vNri5PugwyrVNVOWxDEjO0CEIa6t+Qpgg836D24jIxmjMwUUSWoNXKg0R7dYEQ0yt8gvql/Ac/zqVG2lB2Cs5RIRYyFSXD25fQsB1+Y6tTkzOB25vQUQpV3yttFmqDCAho+LPG1lCL5o8p7o+3A9/IKHCHRGwvpPyFwvmN2Z39FW9Xxa1C00X4uhJUebvMUrM21SPpZERAqoNBRE7oY45S+FoROyK52d3/GukJ+7aBq4BmzQak3ExuaInwB8SAA==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1724235082; bh=h2aTZ6h/Ii+iJQx909KRYC/WS76gm+su92z80HT0kQ3=; h=X-Sonic-MF:Date:Subject:From:To:From:Subject; b=ZqyXWAo86MEfJ0hZVZ8ahflgB3ReQjNo0GWvHbpG+vFxQYXEIgE8vYQFt+jTiwqpcrUcBWb3Gydbn2ps1OcxSg4XQtKodN8tM422mg08czoZLcwIDjJzTKmGOQ31ZJUySUENobPselDdmpB3Lyb6s3p0uTAcMmP+tO1vteWz21YZEG1NPOnsWeQqz3HaV9WUQanofnl1FRBtxj75wXc3Jpdy46M1Z9BgX4UbIkzRRFH3NeNcuQGwkRUXu8emfdCVZQmJTvlgc3tFQaP51pnT/8juTDpJHe/OI9mLaDPZ8yF3fgiBFnGW4SEqwZa96CrHmRDxqZsXfZrPTGlTuN3UIw==
-X-YMail-OSG: iDUdgI4VM1mqbGYmcuErCBW0kqNtohN_aF.1gfnPDeh8.2_CyG4nVBRfcOJqKT3
- ptJQQdIeCK1bI9V4vCcMqyTkZ3jjYecz9sMOBL3ylOVe6SqVmQN1PuyHgQAj8BAeKSTCYo6i0pTV
- FlYF3XKp97NZ89OvMd_d1qCqCP6fekpPGsheMww9mapYfCE0KSaUXWhnsoAHbcW7xnBNvf_uDPGU
- Qq7NC_VJIywQiEx3B2.If5DVDaOtzokr9cVMb7mLPhTvCNHioqDBUR0agYdHM5ylaPWmVPoa7yz0
- hj7jqPtP0Jlbo9pXVBcJkjctRfbYmrXYyS6YFF1j8GIjCc1rnjberJgb.FAXus4AYu8FYZKpMhT9
- zlfRsZ3EBkYYynaLKwp9IdTa6kVlyrf5cqR5aQ8s0bM4wE4yK9fFuCgxayG19TfUvJ_9MrQj7XMx
- KdA3Jw8TqqWg5_AhWXOfgSDS1FHW9fYi8dk.Vzj2GlzYrcqv0ppBQAavaxqSqx3xmEBIs4K8R.XL
- .1iUIASwOeDy7HI.iABN507c6idmK57o3zxqnNS7WEgINGSJ4ploS2QAEkIezDtZlQj4HfdGl5fR
- XoRtP9faOCtGUIBcvjlTwiYKvGONDylGbIDFToe7hMQ07V93fXluu.cCDzzA_0yyKUNGApUKn7Ni
- D5Ty7pfa_4jGk_rYP5ic.xcZLHBY3igQiwvlOj61XwhlrX01d8INSEN_EhNwEfxkDv_BoJLHK7lJ
- htLryMqQWUzWC6OHuJGP6nZgU2WNcTQv2hvEwSeZa3ELM7uOlropa7yjwQAhCP0ohNbhJd7yBuDD
- 7Kl1J9nM5dODZyTg_TKuszxlP1RnkqCFzencaJ954ikDIIVCo2JSPdkfTrEFui_s5q0evKayfw84
- ZgRuKlfcTrDS3n0KhmVBvmDxptdyBgJyfz7xYYYODyI3aR8_2weDo9nGoNxBwqsMYPSSBxy2aAQT
- kUqWID6gQ1FCqxP0rNbP56g7XhtFWT_0bco4S6Nt3uSau8K9q_RQE0UoQF6mwhS0RSuIHmTEH2Gj
- 7mzdU.8Yxi9ekx2keMUCzG2eHDtg.ajd4q_l7mp7EvJaqCvmIX5TaHf2fSRxqi7JcEiFl8M5YdDV
- OBsEkS2WU_DapiaSiDfkXvJBYzUYvO5_iGxn88P5PAuPDELYdOw_woTFq8iya3AobpSIBfcwWoUU
- scDHpXCqof1nOd2rJLFLP6uuYYIhgva_nooveGyGLi6d_2RTaNV.vzMAnphet_MyScczzKRVWCXc
- Bv.eP0kSHAISUkuifnnEefbLZQkzoJTHcHaZrBvf50PPIatPOjLWXPHHGX14c7cQrjnHm5TfwIdQ
- 2s9YPUHUG3sGBU5qjJn2DeFZU1lDt6H969lzULdYyXoONOoQrT9zt5PCJGVCunyB.TnY37sWomrg
- cLNTFHt.5fT4oqoi4PFNucXN0hJSavmUFkedjrN5zMrPa_.5qoz9g3Mhkm664Hr14Kq81qjENC2L
- P1HooCkvdUJdcoqhDGF_LfvrfzlpMX.j3hQ0r28jjsXBgqZ0BJLkmsXfIAtgVxy_jfYvdeBEeZwh
- 9LkVFVrz5UCfEqMJH9aQdaerQWoLaNQbPNcz29mUkgsM1ZELhNxnH9JO3zIdkBdu_w1eOMf5WwQz
- mtC4eunTPuOqt1amzOLyfc7xOl.KYmy.F4cWNopzzUCVnXfEojxXaxXHgfpdVzgO_wk_SOblCIHL
- x1ktoSraVXeYJl2CZ_0YMsAB7mhoGaUdzQJ6zXXNm.054LTHDJ_ElL3fFMwVo6fc0ok8qRdyLpzy
- PXhvAyYBcYUMfX3CyLS1QQwH2GSaNbYdcB4QOGgzd6T6lT1uVuTNSCuoapnef7tM8zIUnFOSaMVR
- jonlvuIbP5kXjE8uL7jt7Ico3orf941mhPlX_irK5eA6z2rSSrcBSoGfm1b9Fy.MIDLkqY3KDl9o
- RMpWt9k1HeIpBDCb4BirT37Cb50OKmKf.wv1xysj6ve7D_HNWjpd5ppvFENKEcutT_wtoCJEgmC3
- Hz_Fi8FKj5qE3Fz3w51Ei1c_b2Htm7XcxIPwg8V8GdirCZH4c9Uplgz4xsxJ_Y9_hagCTnRm9VsJ
- sT3OJluVoL9XB0ilBj7aXFgpPK7kiQVeKltirde3T3eXaMUzelubxBBgXiqiDd1a0wVtdKcdZTD7
- 7etGE__.SF.qEjkL7BUeKcM9VYGDdUExV7owV_C4vrlroCeRgVgy1OHiFfG8OnsalnrkDHEO5o3_
- ggHVNEy1t7rulyFySYMtHwTg3xw--
-X-Sonic-MF: <mau.salvi@yahoo.com>
-X-Sonic-ID: 37db0df3-85b1-4103-8246-ba703445572f
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic312.consmr.mail.ir2.yahoo.com with HTTP; Wed, 21 Aug 2024 10:11:22 +0000
-Received: by hermes--production-ir2-6664f499fc-l95lq (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 38974ea76db340e2a0c01d74c3b74912;
-          Wed, 21 Aug 2024 09:40:58 +0000 (UTC)
-Message-ID: <7707fef0-b164-4a79-913d-6ddcce6600d5@yahoo.com>
-Date: Wed, 21 Aug 2024 11:40:56 +0200
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="eZg5dMYM"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20240821133537e78b54114a586011ac
+        for <xenomai@lists.linux.dev>;
+        Wed, 21 Aug 2024 15:35:37 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=LpJYXGduPk6Aw9aS8WvF9mYbnWRm0MbX0/ytBbrtkLM=;
+ b=eZg5dMYM6IDZzn2M5Vs9RDTag/WM6FibDL0A60mwyj0kRXx3rXsIPpZdPulYU79lt85HgW
+ E/ALKZZ/iYrcK/LUBCzsZKKSCAwHPHwbMoLOvS8UGIJXwpH7e/hitmZEvrepL9/9UpxeWF/O
+ rcJKk8i8NRDdZKtGIbboqN1zQde7lSBrqec2DQp3kS+mQ8WFTOEV0uIYOqH25BZm8Vo8Oa7l
+ l5oC5/dEG+rDTLYlP1CbqHTHFLkz2BjTdwz/nfg5u6rczLaQn2BCL9zhBK6Tq6JZZO+hmTGZ
+ 5xIh7ZHJncKAtGpdJc6uZKeKECu0y8P7yY/OiaeMvWOFCjXafyAJmzdQ==;
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Date: Wed, 21 Aug 2024 15:35:24 +0200
+Subject: [PATCH RFC dovetail 6.11,6.10] x86: dovetail: Allow
+ CONFIG_ACRN_GUEST and CONFIG_KVM_GUEST at the same time
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Process stuck in cobalt_monitor_enter
-From: "Mauro S." <mau.salvi@yahoo.com>
-To: Xenomai <xenomai@lists.linux.dev>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
-References: <9d5bb262-0646-451e-a5af-82c0473a3003.ref@yahoo.com>
- <44ffbd9c-fc28-40fd-849f-a77fee15866b@siemens.com>
- <CADBp9x=310edtayP3nEeDSc2D318E=qA1a=5ceG0krd3r2VN8w@mail.gmail.com>
- <87e3bc23-4eba-43c4-bb5e-ffce9139c075@siemens.com>
- <CADBp9xnL46vC0KiYt2MSv+XxYcgb675S5X6geQWSv8KsKG9+xg@mail.gmail.com>
- <CADBp9xn_Gcu9TCaiZHZvo3hwT4JzzTxE4ueMH3dt81KJWF8qOA@mail.gmail.com>
- <67ce5b0a-1013-4ab2-9617-0723c0dc0809@siemens.com>
- <d1b99e9a-5bc6-414c-9f5d-972134f60c31@yahoo.com>
- <bea3518e-5d72-4a86-a5b9-ac71a59c235b@siemens.com>
- <e5efbf9d-9054-46d3-8deb-aa321146068e@yahoo.com>
- <1b8ec985-8ae2-4bd2-8964-23f97cac7ba4@siemens.com>
- <CADBp9xn4OGi99e57phnv58NtCbxzO62bhrkJhSns-FUbbt4_pg@mail.gmail.com>
- <6fb4564d-3d39-4be1-838c-423a865638b9@siemens.com>
- <2d41fc43-db7d-4070-a769-bb37083cb414@siemens.com>
- <2e779a4e-ce60-4487-9dbd-7d40726b2d9e@yahoo.com>
- <0d9b6cd5-4b95-4b28-bf06-9e98d7d6310d@yahoo.com>
- <46a1ceb0-0684-4bb8-bcd3-5f71456c2d10@siemens.com>
- <0363a40f-ac3a-4024-a9bb-e37841625cb8@yahoo.com>
-Content-Language: en-US, it
-In-Reply-To: <0363a40f-ac3a-4024-a9bb-e37841625cb8@yahoo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Mailer: WebService/1.1.22544 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+Message-Id: <20240821-flo-6-10-fix-kvm-acrn-both-active-v1-1-7473ea13b638@siemens.com>
+X-B4-Tracking: v=1; b=H4sIABvtxWYC/x2NwQrCMBBEf6XsuStJjKV6FfwAr+IhSbc2GBNJa
+ hBK/92tl2FmGN4sUCh7KnBqFshUffEpcpBtA24y8UHoB86ghNKiVxLHkLBDKXD0X3zWFxqXI9o
+ 0T+xmXwmF1b0e3f6o3QGYY00htNlENzEpfkLg8p2JAf/jG1wv5204pEqz8WHz3U7KlkXAfV1/h
+ HPkY6YAAAA=
+To: xenomai@lists.linux.dev
+Cc: Philippe Gerum <rpm@xenomai.org>, 
+ Ionut Nechita <ionut.nechita@intel.com>, 
+ Florian Bezdeka <florian.bezdeka@siemens.com>
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On 13/08/24 16:06, Mauro S. wrote:
-> On 12/08/24 15:59, Jan Kiszka wrote:
->> On 12.08.24 15:41, Mauro S. wrote:
->>> On 06/08/24 09:33, Mauro S. wrote:
->>>> On 05/08/24 23:41, Jan Kiszka wrote:
->>>>> On 05.08.24 16:40, Jan Kiszka wrote:
->>>>>> On 05.08.24 16:28, Mauro Salvini wrote:
->>>>>>> Il giorno lun 5 ago 2024 alle ore 14:10 Jan Kiszka
->>>>>>> <jan.kiszka@siemens.com> ha scritto:
->>>>>>>>
->>>>>>>> On 14.03.24 15:22, Mauro S. wrote:
->>>>>>>>> Hi Jan,
->>>>>>>>>
->>>>>>>>> finally I managed to have a piece of code that makes the issue
->>>>>>>>> reproducible. It's not exactly small, but not too big either.
->>>>>>>>> I hope that this makes the issue reproducible also on your test
->>>>>>>>> system.
->>>>>>>>>
->>>>>>>>> The zip contains:
->>>>>>>>> - a little main program (test.c)
->>>>>>>>> - a little library (in mylib dir). Some pieces of code are never
->>>>>>>>> reached, but leaved to avoid potential compiler optimizations
->>>>>>>>> that could
->>>>>>>>> remove other relevant parts (maybe cycles?)
->>>>>>>>> - a script (build.sh) to build the two components above
->>>>>>>>> - a script to launch the test (start-test.sh)
->>>>>>>>> - the configuration of the kernel in use
->>>>>>>>>
->>>>>>>>> After building the program and the library with build.sh, you can
->>>>>>>>> copy
->>>>>>>>> on the target:
->>>>>>>>> - the start-test.sh script
->>>>>>>>> - the built program xeno-test-session-hang-on-exit
->>>>>>>>> - the built library libmylib.so.2.0.0
->>>>>>>>> and create the library link /usr/lib/libmylib.so.2
->>>>>>>>>
->>>>>>>>> Start the test with "./start-test.sh &" and follow what happening
->>>>>>>>> with
->>>>>>>>> "tail -f log.txt": after a time that varies from a couple of
->>>>>>>>> minutes to
->>>>>>>>> 25-30 minutes, the log should stop on "~~~~~~ RECEIVED SIGINT
->>>>>>>>> ~~~~~~"
->>>>>>>>> line: the hang is happened.
->>>>>>>>>
->>>>>>>>> A small recap:
->>>>>>>>> Atom x5-E8000 CPU, Linux 5.4.255 with Ipipe 15, Xenomai 3.2.3.
->>>>>>>>> GCC compiler used: 9.5.0 from Yocto Dunfell 3.1.22
->>>>>>>>
->>>>>>>> Can you only reproduce with this setup, specifically with this
->>>>>>>> compiler
->>>>>>>> version and only on real hardware? If you rather use
->>>>>>>> xenomai-images and
->>>>>>>> qemu/kvm target but still the same kernel and xenomai version, the
->>>>>>>> issue
->>>>>>>> does not occur?
->>>>>>>>
->>>>>>>> I'm trying in kvm right now, also with different compiler. Iit
->>>>>>>> would be
->>>>>>>> good to align / rule out variables if my first setup turns out 
->>>>>>>> to be
->>>>>>>> unhelpful.
->>>>>>>>
->>>>>>>
->>>>>>> Hi Jan,
->>>>>>>
->>>>>>> Sorry, I never tried on an emulated system like qemu, I did the 
->>>>>>> tests
->>>>>>
->>>>>> qemu/kvm - that is CPU-wise not emulated, virtualized. It generally
->>>>>> gives similar execution patterns as on real hardware.
->>>>>>
->>>>>>> only on real hardware (using different samples of the same hardware,
->>>>>>> just to exclude hardware problems).
->>>>>>> I can do a test with Xenomai images on real hardware if it would be
->>>>>>> useful.
->>>>>>
->>>>>> That would already be useful to rule out the toolchain as 
->>>>>> contributor,
->>>>>> yes. When at it, testing in qemu-kvm would also be nice.
->>>>>>
->>>>>
->>>>> FWIW, I've pushed ipipe-core-5.4.281-x86-16. It's not that I expect
->>>>> positive impact on your issue, but you never know (until you 
->>>>> understood
->>>>> the actual root cause).
->>>>>
->>>>> Jan
->>>>
->>>> Hi Jan,
->>>>
->>>> I've seen, thank you.
->>>>
->>>> I will try xenomai images on real hardware and I will back to you with
->>>> results.
->>>>
->>>> Thanks again, regards
->>>>
->>>
->>> Hi,
->>>
->>> first results after some tests on real hardware:
->>>
->>> - xenomai-image does not show the problem
->>> - xenomai-image started with my custom kernel instead of the
->>> xenomai-image one does not show the problem
->>
->> How did you build that custom kernel? Is it the same binary that failed
->> before?
->>
-> 
-> Yes, exactly the same: I took the binary from my image and copied into 
-> xenomai-image bootfs, changing the grub.cfg (because I use a bzImage 
-> instead of vmlinuz).
-> On my custom image the problem shows up, on xenomai-image with my custom 
-> kernel no. My custom kernel is built by Yocto.
-> 
->>> - I didn't manage to run the xenomai-image kernel with my rootfs yet (it
->>> does not start, but at the moment I have a headless system and I'm not
->>> able to debug it)
->>
->> The kernel we build in xenomai-images may lack some config switches
->> needed for you rootfs.
-> 
-> Yes, I have to discover which ones.
-> 
->>
->>>
->>> While waiting the verification with xenomai-image kernel with my rootfs,
->>> could we conclude that the problem lies in userspace then? Could be the
->>> Xenomai config flags? Or the compiler version? Do you have suggestions
->>> about other tests to run?
->>
->> Until we understood the reason, we do not know where the problem lies.
->> Your userspace may trigger something that the Debian image we build does
->> not.
->>
-> 
-> Ok, understood.
-> 
->>>
->>> Note that the test binary is always the same in all scenarios, built
->>> with my toolchain (that is built by Yocto), and my rootfs and
->>> xenomai-image have both Xenomai v3.2.3.
->>>
->>> Side note: xenomai-image still has 5.4.228 kernel, maybe you didn't push
->>> the upgrade patch to 5.4.281? Anyway, it seems that does not matter.
->>
->> Only the next branch of xenomai-images contains the update of the
->> released versions so far. But when you build "head of tree" kernel, you
->> should also get that latest version.
->>
->  > Jan
->  >
-> 
-> Ok, I used the master branch to build the image.
-> 
-> I will keep on doing my tests, reporting further results.
-> 
-> Thanks
-> 
+do_sysvec_inband() assumed that only one of CONFIG_ACRN_GUEST and
+CONFIG_KVM_GUEST is active at the same time. If both were enabled we
+run into a compile issue:
 
-Hi,
+arch/x86/kernel/irq_pipeline.c: In function 'do_sysvec_inband':
+arch/x86/kernel/irq_pipeline.c:160:9: error: duplicate case value
+   160 |         case HYPERVISOR_CALLBACK_VECTOR:
+       |         ^~~~
+arch/x86/kernel/irq_pipeline.c:154:9: note: previously used here
+   154 |         case HYPERVISOR_CALLBACK_VECTOR:
+       |         ^~~~
 
-I played a bit with QEMU and my image vs. Xenomai image, here the results:
+As only one hypervisor (HV) can be active at the same time, but support
+for more than one can be compiled in, we have to migrate from a build
+time decision to a runtime based one.
 
-- xenomai-image does not show the problem, both with 5.4.228 and 5.4.281 
-kernel (as already seen on real hardware)
-- xenomai-image started with my own kernel does not show the problem (as 
-already seen on real hardware)
-- my image started with xenomai image kernel and initrd does not show 
-the problem, both with 5.4.228 and 5.4.281 kernel (on real hardware this 
-kind of image does not boot, I'm waiting for a board that allows me to 
-debug why)
-- my image shows the problem: the only difference with real hardware is 
-that sometimes it takes a bit more to show up (up to 1h instead of 30 
-minutes max). I also observed that having some load on the host PC seems 
-to delay the problem.
+We hook into the sysvec_install() macro and call a dovetail specific
+pipelined_sysvec_install(). This way we get informed about the init
+phase of HV guest code and handle all hypervisors the same way.
 
-I can share with you my rootfs and my kernel, and the QEMU startup args 
-if it would help.
+The trampoline function (pipeline_hv_callback()) is needed to statisfy
+type checks done by run_sysvec_on_irqstack_cond().
 
-Thanks in advance, regards
+Link: https://lore.kernel.org/xenomai/PH0PR11MB59498BE915597AEF0B5BBB30F4B42@PH0PR11MB5949.namprd11.prod.outlook.com/
+Reported-by: Ionut Nechita <ionut.nechita@intel.com>
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+Hi all,
 
+this is my first try to fix the build error shown in patch 1 that
+appears when both CONFIG_ACRN_GUEST and CONFIG_KVM_GUEST are active.
+
+This patch (series) applies to recent dovetail versions only. I tested 6.11,
+6.10 and 6.9. LTS versions (like 6.6, 6.1 and below) would require a
+backport. The FRED support added in recent version makes a difference
+here.
+
+Feedback welcome...
+---
+ arch/x86/include/asm/idtentry.h |  9 +++++++++
+ arch/x86/kernel/irq_pipeline.c  | 19 +++++++++----------
+ 2 files changed, 18 insertions(+), 10 deletions(-)
+
+diff --git a/arch/x86/include/asm/idtentry.h b/arch/x86/include/asm/idtentry.h
+index 524cb93afc34..3107f2cbf7f8 100644
+--- a/arch/x86/include/asm/idtentry.h
++++ b/arch/x86/include/asm/idtentry.h
+@@ -235,6 +235,12 @@ __visible __noreturn void __##func(struct pt_regs *regs)
+ #define DEFINE_IDTENTRY_SYSVEC_SIMPLE_PIPELINED(vector, func)		\
+ 	DEFINE_IDTENTRY_SYSVEC_PIPELINED(vector, func)
+ 
++extern void (*pipelined_hv_callback_fn)(struct pt_regs *regs);
++static inline void pipelined_sysvec_install(int vector, const void *function)
++{
++	if (vector == HYPERVISOR_CALLBACK_VECTOR)
++		pipelined_hv_callback_fn = function;
++}
+ #else  /* !CONFIG_IRQ_PIPELINE */
+ 
+ #define DECLARE_IDTENTRY_SYSVEC_PIPELINED(vector, func)		DECLARE_IDTENTRY_SYSVEC(vector, func)
+@@ -274,6 +280,8 @@ __visible noinstr void func(struct pt_regs *regs,			\
+ 									\
+ static noinline void __##func(struct pt_regs *regs, u32 vector)
+ 
++#define pipelined_sysvec_install(vector, function)
++
+ #endif	/* !CONFIG_IRQ_PIPELINE */
+ 
+ /**
+@@ -523,6 +531,7 @@ static inline void fred_install_sysvec(unsigned int vector, const idtentry_t fun
+ #endif
+ 
+ #define sysvec_install(vector, function) {				\
++        pipelined_sysvec_install(vector, __##function);			\
+ 	if (cpu_feature_enabled(X86_FEATURE_FRED))			\
+ 		fred_install_sysvec(vector, function);			\
+ 	else								\
+diff --git a/arch/x86/kernel/irq_pipeline.c b/arch/x86/kernel/irq_pipeline.c
+index 73e97fba55e7..21e40eafd9d5 100644
+--- a/arch/x86/kernel/irq_pipeline.c
++++ b/arch/x86/kernel/irq_pipeline.c
+@@ -14,6 +14,8 @@
+ #include <asm/mshyperv.h>
+ #include <asm/idtentry.h>
+ 
++void (*pipelined_hv_callback_fn)(struct pt_regs *regs) = NULL;
++
+ static struct irq_domain *sipic_domain;
+ 
+ static void sipic_irq_noop(struct irq_data *data) { }
+@@ -76,6 +78,12 @@ static void pipeline_exit_rcu(irqentry_state_t state)
+ 		ct_irq_exit();
+ }
+ 
++static void pipeline_hv_callback(struct pt_regs *regs)
++{
++	if (pipelined_hv_callback_fn)
++		pipelined_hv_callback_fn(regs);
++}
++
+ static void do_sysvec_inband(struct irq_desc *desc, struct pt_regs *regs)
+ {
+ 	unsigned int irq = irq_desc_get_irq(desc);
+@@ -150,18 +158,9 @@ static void do_sysvec_inband(struct irq_desc *desc, struct pt_regs *regs)
+ 					regs);
+ 		break;
+ #endif
+-#ifdef CONFIG_ACRN_GUEST
+ 	case HYPERVISOR_CALLBACK_VECTOR:
+-		run_sysvec_on_irqstack_cond(__sysvec_acrn_hv_callback,
+-					regs);
++		run_sysvec_on_irqstack_cond(pipeline_hv_callback, regs);
+ 		break;
+-#endif
+-#ifdef CONFIG_KVM_GUEST
+-	case HYPERVISOR_CALLBACK_VECTOR:
+-		run_sysvec_on_irqstack_cond(__sysvec_kvm_asyncpf_interrupt,
+-					    regs);
+-		break;
+-#endif
+ 	case LOCAL_TIMER_VECTOR:
+ 		run_sysvec_on_irqstack_cond(__sysvec_apic_timer_interrupt,
+ 					regs);
+
+---
+base-commit: 107c7caba1cea149373d22247c5b77f18eede354
+change-id: 20240821-flo-6-10-fix-kvm-acrn-both-active-0b484fc394c5
+
+Best regards,
 -- 
-Mauro S.
+Florian Bezdeka <florian.bezdeka@siemens.com>
 
