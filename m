@@ -1,91 +1,252 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 431E2146D7D
-	for <xenomai@lists.linux.dev>; Thu, 22 Aug 2024 09:31:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14AE814A0B8
+	for <xenomai@lists.linux.dev>; Thu, 22 Aug 2024 10:31:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724319080; cv=none; b=HsMnuFfu+2k0Kdq7XEn6BADpniu4gHWF2WFrDemMAB/GZE24IejzzOB2Cs3xEBo+9EU/cC2GhJzqn/rb8sewYzGiqsMCGTbkoAyqkPi/iqFDv3J/MQXJQpXi30THg9nZsKKB2YyK9+z2Wn04Z5evgxekndh2zZBLW1WlhGy93K0=
+	t=1724322703; cv=none; b=fT4mLtJHNO7QAWFyZPx1PsiBcGfWLKR/1Qv2xpNpMNh8HZ31dOBF9ULSR3PFkG0UIziLL99HcaIYm6vDifUk7g71IOwfXMI78/PIICpNjikJZEk6l3UHzlCSkqhv8+HKHuJeT/48GYswYhS/C2DrtsuuDlBsvoKgYC+68Rrv1MM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724319080; c=relaxed/simple;
-	bh=Hd3xdZj+COS7X77ef+S2pPATvjovbjh65JA7nN2R/zA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gn32MHkD7DKmOaoohFI2NhKQTaIUUcmQBW0ffPQvCjQbvd2j8pZ2b0n8rH/n/quXXPWSA0UQ/X/spBQ/951F7TsL+vfa/S76wU5CVNhM81DLs72l/tcL3wdQB50J7qgwWtNvTXIDJ1rIAlmyCsRJVUstWgyWzWA6ubm9co8LV0I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at; spf=pass smtp.mailfrom=sigma-star.at; dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b=pQbB44zL; arc=none smtp.client-ip=209.85.208.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sigma-star.at
+	s=arc-20240116; t=1724322703; c=relaxed/simple;
+	bh=F2MIfoZoi1odbHgVMxY2THlXt58+id3UqFWxlCfyXg8=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=iKcyV4m/mXF4SG9oNUy97i0/MMAaR9q9ZCecnyem0ys46ci4c1tIRoC9+8ZuhR4v5A5fpQgmwJaJ+4xMAHy+PTY29L8b7Y93T5V6hClxqBRBfal7AMFAskFRplybGPR2GBnEUxTO273qqHG1IwvmiOxa5qdU1arARN9oxTbcd7c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=gqmN8qg8; arc=none smtp.client-ip=185.136.64.225
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b="pQbB44zL"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-5bede548f7cso909413a12.2
-        for <xenomai@lists.linux.dev>; Thu, 22 Aug 2024 02:31:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sigma-star.at; s=google; t=1724319075; x=1724923875; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Hd3xdZj+COS7X77ef+S2pPATvjovbjh65JA7nN2R/zA=;
-        b=pQbB44zLkKrpLwu+7HCZwMbvaiKFeyPfULrxQ3PrNlUkqBMXj3dOa+N8+B689GgX/k
-         MvawMsQBLUTKQn9NuBaECzLNdDlbNyjwjrxARhuEfA4TLc6g36dgrv4yOEUN4wAPlOqf
-         jbFF3AGaRn+J5WiaqJAHpgfUGFAmxjnsHzPJiDfZGSTxpGttbUONSMQCTDyHPu8IKYAE
-         tGyyT7npt1NxlGksoBgVD0kBhSylkMNxhXguFvuWe3J8v/VRCs6iXZH78ObXiImrVn4Z
-         QUC/U7R2HxJC8VCj/WVDvq4dm8jKer8WjiTk+DuHtWZdbNWuXcUu9jH7yeUkp98lntHC
-         pIxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724319075; x=1724923875;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=Hd3xdZj+COS7X77ef+S2pPATvjovbjh65JA7nN2R/zA=;
-        b=osVVB7opzcpmBkx75kv4ujQG1sfTrfbvr+oyR3d1ogVPD6j92ZFbA8jHlblo3XBsVf
-         qudkGIT0XEVqYUQ+7EyXE7dCjhxo3d1It1nEbz+8FAklJ18D7/8T70SF00X9TfALyj1z
-         5WZeh1M0OGqzPcwI0q4R4+R79pZwbPWn0EUsuL/NsfDV24YVLrywiA5pB3bwQJOkU69D
-         TY+QnqccVlZmCYL/0EF7GUIacr0Qt+F6Z5/1ArMmgHWjhej1SuTyyveLBuSZPZk2eZLy
-         a8xZYedzOerG90ZWFe0yu6roWQcBGdTCMQ0QN7xv0T9HqGr5g7on5wQavUzL58lfhX0H
-         fsAw==
-X-Gm-Message-State: AOJu0Yxs+KsZktJHiKxmCJyRG55uVl4CvVYiFCFFdmYil1hyXMepGsjw
-	walajqCb7PsvhWoHMclWfk142E+itimqNo8IU16uKU+a9pBrFQCl9feus4BIiSxYEzduZb+KXcM
-	d
-X-Google-Smtp-Source: AGHT+IH/jPEWW7+ngZBEv1A/+4plhU+SoN0FqCBMoTPLX+EiJwhnKsM4AQ0oRBa3pqHR1pYiB0uPbQ==
-X-Received: by 2002:a05:6402:3493:b0:5bb:9ae0:4a41 with SMTP id 4fb4d7f45d1cf-5bf1f238dcbmr3112154a12.28.1724319075119;
-        Thu, 22 Aug 2024 02:31:15 -0700 (PDT)
-Received: from blindfold.localnet (84-115-238-31.cable.dynamic.surfer.at. [84.115.238.31])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-5c04a3cb0bdsm684864a12.37.2024.08.22.02.31.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Aug 2024 02:31:14 -0700 (PDT)
-From: Richard Weinberger <richard@sigma-star.at>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@lists.linux.dev, upstream+xenomai@sigma-star.at
-Subject: Re: [PATCH] iddp-sendrecv: Make it configurable
-Date: Thu, 22 Aug 2024 11:31:14 +0200
-Message-ID: <3094962.xgJ6IN8ObU@somecomputer>
-In-Reply-To: <6dc0eaa3-c7cd-43ab-aedd-ba65cf17e536@siemens.com>
-References: <20240818111208.19026-1-richard@nod.at> <6dc0eaa3-c7cd-43ab-aedd-ba65cf17e536@siemens.com>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="gqmN8qg8"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20240822102124b75de164f9ed50a8f6
+        for <xenomai@lists.linux.dev>;
+        Thu, 22 Aug 2024 12:21:24 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=Z+OVV3sYVe7evRIfI9m+C7CN25jQWVZHfKK3iAJHYFs=;
+ b=gqmN8qg8s5xVx9juifkd7xOFDsiidN0sIpwmdY0u7og/2LUJElSGINucIz8+2UdVN2nrkE
+ PPgXK8sYSPVadWB6HFVctMySxU3LtumA6H3TKNVglqRNjaujOSs5VwEDIh2T678sFcX5jm2u
+ 724kYRF56aooQxjio18lEKDuOqjQN/jkrvqt82OAv8OUlDlP929JgT01iKRAn9Zn6GR/HCLQ
+ asEQInZ/t3WZSuGp4wGj6fbzJdfI8rZntDMzV2aX4VMbuHPocMgthVnt3LYr+vIVmSP9FLS0
+ TXBQ9CzCJ3gHCge2vYhhrSGUQSEm+qu32RE/Ap9HlRLbOJelA9S3u9/w==;
+Message-ID: <2805d4c66a1de448385c6effd06116ff4f06a559.camel@siemens.com>
+Subject: Re: [PATCH RFC dovetail 6.11,6.10] x86: dovetail: Allow
+ CONFIG_ACRN_GUEST and CONFIG_KVM_GUEST at the same time
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev, Ionut Nechita <ionut.nechita@intel.com>
+Date: Thu, 22 Aug 2024 12:21:19 +0200
+In-Reply-To: <87h6bdnej1.fsf@xenomai.org>
+References: 
+	<20240821-flo-6-10-fix-kvm-acrn-both-active-v1-1-7473ea13b638@siemens.com>
+	 <87y14qgc8n.fsf@xenomai.org>
+	 <294f5d0740a0cd729ed855f46588c17a31b5e025.camel@siemens.com>
+	 <87h6bdnej1.fsf@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Am Donnerstag, 22. August 2024, 11:22:01 CEST schrieb 'Jan Kiszka' via upst=
-ream:
-> On 18.08.24 13:12, Richard Weinberger wrote:
-> Thanks for the proposal - but it looks like this tool and
-> testsuite/smokey/iddp/iddp.c become more similar now. I wonder if they
-> could be even united so that smokey calls this in specific configuration
-> for running the tests.
+On Thu, 2024-08-22 at 10:32 +0200, Philippe Gerum wrote:
+> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+>=20
+> > On Wed, 2024-08-21 at 16:51 +0200, Philippe Gerum wrote:
+> > > Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+> > >=20
+> > > > do_sysvec_inband() assumed that only one of CONFIG_ACRN_GUEST and
+> > > > CONFIG_KVM_GUEST is active at the same time. If both were enabled w=
+e
+> > > > run into a compile issue:
+> > > >=20
+> > > > arch/x86/kernel/irq_pipeline.c: In function 'do_sysvec_inband':
+> > > > arch/x86/kernel/irq_pipeline.c:160:9: error: duplicate case value
+> > > >    160 |         case HYPERVISOR_CALLBACK_VECTOR:
+> > > >        |         ^~~~
+> > > > arch/x86/kernel/irq_pipeline.c:154:9: note: previously used here
+> > > >    154 |         case HYPERVISOR_CALLBACK_VECTOR:
+> > > >        |         ^~~~
+> > > >=20
+> > > > As only one hypervisor (HV) can be active at the same time, but sup=
+port
+> > > > for more than one can be compiled in, we have to migrate from a bui=
+ld
+> > > > time decision to a runtime based one.
+> > > >=20
+> > > > We hook into the sysvec_install() macro and call a dovetail specifi=
+c
+> > > > pipelined_sysvec_install(). This way we get informed about the init
+> > > > phase of HV guest code and handle all hypervisors the same way.
+> > > >=20
+> > > > The trampoline function (pipeline_hv_callback()) is needed to stati=
+sfy
+> > > > type checks done by run_sysvec_on_irqstack_cond().
+> > > >=20
+> > > > Link: https://lore.kernel.org/xenomai/PH0PR11MB59498BE915597AEF0B5B=
+BB30F4B42@PH0PR11MB5949.namprd11.prod.outlook.com/
+> > > > Reported-by: Ionut Nechita <ionut.nechita@intel.com>
+> > > > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> > > > ---
+> > > > Hi all,
+> > > >=20
+> > > > this is my first try to fix the build error shown in patch 1 that
+> > > > appears when both CONFIG_ACRN_GUEST and CONFIG_KVM_GUEST are active=
+.
+> > > >=20
+> > > > This patch (series) applies to recent dovetail versions only. I tes=
+ted 6.11,
+> > > > 6.10 and 6.9. LTS versions (like 6.6, 6.1 and below) would require =
+a
+> > > > backport. The FRED support added in recent version makes a differen=
+ce
+> > > > here.
+> > >=20
+> > > Dovetail does not support the FRED extension (ATM at least).
+> >=20
+> > Yep, but Linux got support for it, so the code path for recent kernels
+> > is a bit different and this patch does no longer apply. That was what I
+> > tried to express.
+> >=20
+>=20
+> Ok.
+>=20
+> > >=20
+> > > >=20
+> > > > Feedback welcome...
+> > >=20
+> > > The logic looks fine to me, some nitpicking below:
+> >=20
+> > Thanks for the input!
+> >=20
+> > >=20
+> > > > ---
+> > > >  arch/x86/include/asm/idtentry.h |  9 +++++++++
+> > > >  arch/x86/kernel/irq_pipeline.c  | 19 +++++++++----------
+> > > >  2 files changed, 18 insertions(+), 10 deletions(-)
+> > > >=20
+> > > > diff --git a/arch/x86/include/asm/idtentry.h b/arch/x86/include/asm=
+/idtentry.h
+> > > > index 524cb93afc34..3107f2cbf7f8 100644
+> > > > --- a/arch/x86/include/asm/idtentry.h
+> > > > +++ b/arch/x86/include/asm/idtentry.h
+> > > > @@ -235,6 +235,12 @@ __visible __noreturn void __##func(struct pt_r=
+egs *regs)
+> > > >  #define DEFINE_IDTENTRY_SYSVEC_SIMPLE_PIPELINED(vector, func)		\
+> > > >  	DEFINE_IDTENTRY_SYSVEC_PIPELINED(vector, func)
+> > > > =20
+> > > > +extern void (*pipelined_hv_callback_fn)(struct pt_regs *regs);
+> > > > +static inline void pipelined_sysvec_install(int vector, const void
+> > > > *function)
+> > >=20
+> > > s/pipelined_sysvec_install/pipelined_install_sysvec/
+> > >=20
+> > > to align with what seems to be the common naming (e.g. fred_install_s=
+ysvec).
+> > >=20
+> >=20
+> > Will do in v2. We hook into sysvec_install() so I took that pattern,
+> > but I agree with your suggestion.
+> >=20
+> > > > +{
+> > > > +	if (vector =3D=3D HYPERVISOR_CALLBACK_VECTOR)
+> > > > +		pipelined_hv_callback_fn =3D function;
+> > > > +}
+> > > >  #else  /* !CONFIG_IRQ_PIPELINE */
+> > > > =20
+> > > >  #define DECLARE_IDTENTRY_SYSVEC_PIPELINED(vector, func)		DECLARE_I=
+DTENTRY_SYSVEC(vector, func)
+> > > > @@ -274,6 +280,8 @@ __visible noinstr void func(struct pt_regs *reg=
+s,			\
+> > > >  									\
+> > > >  static noinline void __##func(struct pt_regs *regs, u32 vector)
+> > > > =20
+> > > > +#define pipelined_sysvec_install(vector, function)
+> > > > +
+> > > >  #endif	/* !CONFIG_IRQ_PIPELINE */
+> > > > =20
+> > > >  /**
+> > > > @@ -523,6 +531,7 @@ static inline void fred_install_sysvec(unsigned=
+ int vector, const idtentry_t fun
+> > > >  #endif
+> > > > =20
+> > > >  #define sysvec_install(vector, function) {				\
+> > > > +        pipelined_sysvec_install(vector, __##function);			\
+> > > >  	if (cpu_feature_enabled(X86_FEATURE_FRED))			\
+> > > >  		fred_install_sysvec(vector, function);			\
+> > > >  	else								\
+> > > > diff --git a/arch/x86/kernel/irq_pipeline.c b/arch/x86/kernel/irq_p=
+ipeline.c
+> > > > index 73e97fba55e7..21e40eafd9d5 100644
+> > > > --- a/arch/x86/kernel/irq_pipeline.c
+> > > > +++ b/arch/x86/kernel/irq_pipeline.c
+> > > > @@ -14,6 +14,8 @@
+> > > >  #include <asm/mshyperv.h>
+> > > >  #include <asm/idtentry.h>
+> > > > =20
+> > > > +void (*pipelined_hv_callback_fn)(struct pt_regs *regs) =3D NULL;
+> > > > +
+> > > >  static struct irq_domain *sipic_domain;
+> > > > =20
+> > > >  static void sipic_irq_noop(struct irq_data *data) { }
+> > > > @@ -76,6 +78,12 @@ static void pipeline_exit_rcu(irqentry_state_t s=
+tate)
+> > > >  		ct_irq_exit();
+> > > >  }
+> > > > =20
+> > > > +static void pipeline_hv_callback(struct pt_regs *regs)
+> > > > +{
+> > > > +	if (pipelined_hv_callback_fn)
+> > >=20
+> > > Is there any way we could have no callback set there? We are interpos=
+ing
+> > > at the earliest possible code spot already, i.e. where vectors are
+> > > installed. So either we do have a vector set when receiving
+> > > HYPERVISOR_CALLBACK_VECTOR, or the arch code did not install any hand=
+ler
+> > > for that vector in the first place, and we should never receive such
+> > > trap. At any rate, ignoring the event looks wrong.
+> >=20
+> > I was not sure about spurious interrupts. To my understanding they
+> > would reach this point as well. To catch that I just made sure that at
+> > least one HV guest code registered the vector, otherwise we would crash
+> > with a NULL pointer reference.
+> >=20
+> > Do you still want me to remove the check?
+> >=20
+> > But yeah, beside that it's "impossible" that we receive this vector
+> > without a registration.
+>=20
+> I agree, I can't see how we could receive an async page fault event as a
+> result of configuring some MSR without the hypervisor code setting that
+> MSR also trapping HYPERVISOR_CALLBACK_VECTOR as appropriate. With the
+> APIC, all spurious irqs from the xPIC logic standpoint would be notified
+> via the dedicated vector (0xff) IIRC. So I believe we are safe removing
+> that check (which looks a bit odd and confusing). One might want to turn
+> it into a debug assertion in order to panic, well, in a controlled
+> manner when dovetail_debug() is enabled, at least the code would convey
+> the idea that such situation is weird and unexpected.
 
-Hm, sounds sane.
-I can think of a --test option for this.
+Ok, I will remove the check.
 
-Thanks,
-//richard
+Just realized that this approach of hooking into the vector / gate
+machinery will not work for older versions, so backporting gets tricky.
 
-=2D-=20
-=E2=80=8B=E2=80=8B=E2=80=8B=E2=80=8B=E2=80=8Bsigma star gmbh | Eduard-Bodem=
-=2DGasse 6, 6020 Innsbruck, AUT
-UID/VAT Nr: ATU 66964118 | FN: 374287y
+Before the FRED introduction kvm/acrn guest code directly calls
+alloc_intr_gate() with the asm_ variant - the low level entry point -
+as argument. No way for dovetail to steer that to the C entry point.
 
+Should I migrate older releases to a non FRED variant of
+sysvec_install() which has to be introduced first?
+
+Older - non FRED variant:
+https://source.denx.de/Xenomai/linux-dovetail/-/blob/v5.10.y-dovetail/arch/=
+x86/kernel/kvm.c?ref_type=3Dheads#L743
+
+Newer variant:
+https://source.denx.de/Xenomai/linux-dovetail/-/blob/v6.10-dovetail-rebase/=
+arch/x86/kernel/kvm.c?ref_type=3Dheads#L844
 
