@@ -1,44 +1,41 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A74FA43165
-	for <xenomai@lists.linux.dev>; Fri, 23 Aug 2024 09:29:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 277B528EA
+	for <xenomai@lists.linux.dev>; Fri, 23 Aug 2024 09:29:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724405386; cv=none; b=eiTLM5+tCVbVxJBAtadnv5WryIOlLFo9IS7W7g+vERX9Vu3dt6ee+KB/ckgVs64os8zjiSHjcl+H/gqczvV+H/yRWf/GGEPx8LGcsChYIL+ZWa12YZqrlim7z/vNmfMb5+sLAOu5pZaYem+FUgGYi3ZfPXv7yuzcF5u9XqjmSIU=
+	t=1724405390; cv=none; b=ZVb/ogpi4CJx2LivKbLA1R1Z0bexMV+OOdzFKlsMMczgrDCPi23OOQbKn42ffnobpRZ8Ll40KuhE1gtk7AoJuCDYln22bHFBDw6cjyGTmJ6b5G4eOlxEKJPLhFJyX/+9C9ZK0aiR1at1yo66dIL9e+62o96fcWzalZiCu2rDlRc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724405386; c=relaxed/simple;
-	bh=N5A6IWpYFpNmS+mppR2RRsE8orGOUhwjrQaUn9Afrh8=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=sQ25Ozbw0a8J+EPc9g89OIpIkt7HwPVRaA3EgReeueugwnmZ7BRZd9IT5vre+Z7fmVPwJT7GjQNnHf7z3r25MsPPAPZZ4fDfwPOab0bAwtpvpz79R8doGm3+2gLcwZmHwiRUskSl4Bt/Y9N/mgeoODy6NysxJ5qYbX6kEEKB8lY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=PfWXRAY3; arc=none smtp.client-ip=185.136.64.227
+	s=arc-20240116; t=1724405390; c=relaxed/simple;
+	bh=pCG/4kLci03Co0+hW4pp1e3YOxI8gjZCZplYhpMVzAQ=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Nny1xXOhA+jwTP3yHE0E5qgxZANGowNaoiaBW5ASRFad4E0njXitpGY1nb+n7hQVMQO116YRo/3TC4zSKvXYgyYrcuoC1mwrJmMFTF+JZSibpuUJzpqV71YkdZCEH284a6kiTTBx70ZNXRacLTCVLqkVJEytXsPcG/G/EHrNS1Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Fru73lBK; arc=none smtp.client-ip=185.136.64.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="PfWXRAY3"
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 2024082309193136600216c12480949f
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Fru73lBK"
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202408230919300ff2dafd25f4e0bb3d
         for <xenomai@lists.linux.dev>;
-        Fri, 23 Aug 2024 11:19:31 +0200
+        Fri, 23 Aug 2024 11:19:30 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=Z0j1BChvqT4uZA0HxDtreK/PA9jK3Fc0LLT4B8jLQbs=;
- b=PfWXRAY3wRUaevbjr8kLOcIvhYAiY7e3b3ad72NWViKC9Yg0XX2U+Vtoj+9R9JqqbmbquR
- 8ti1hnIc/FnvikU3FpIxnjYKHK/snUS5wyEwR3kLwj3sM2grc6pXylXs2aDwYtdKHB0HkZuw
- 0JJsFP32/vzatVXPRF9L0cpFLd8eN/kt492V02iGbNL639Asy5POJuJPrhubzEIscQ7Sfuxx
- 7Moeix1dzadHElk4GTH+HsuTo7SfeJqCdxA8jMMDPmCLfWnUuMv03Scs0LkKJThfCcpVIqeZ
- 8kgLVk/10f32DhX4CxQSyHSB1/UDchwEbWUGvViuWhfp/PE3ds+xa6OQ==;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=Dzs7MWSVWvtH2PP27RLxtazE6IlZ9UMxQX1aCbOt53s=;
+ b=Fru73lBKXfmUrXMiwwywQUANtA/8zmRr0CUkKasRbwqeIhtURGuvNgd2HWZE0s0I1wB540
+ IMZ6C1lkjkqonoQbn/saS9IN4eps3nzDFn2pu5PxSDl+tGuZzG6zPYw3U6EL1Fz/d82AHEor
+ iuqpvLNqwJJOmIgGywJDexz2wuF7Su6vW296raRyQbB9i2S7YBTpsB3XScYBcqvt06ro+1Qv
+ QgHlAwihzg/Hj5BTbArU3z4guo4kT3EsTtphkfw1lhjhAFMXeWp2cmFsGfd5OPX4YWQsmTVa
+ 9svDFtiL4dxSKKmhz+z24oLXyHwPVZ1fJ0QNc2jNnpA8LwoLzBnthb/w==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: Philippe Gerum <rpm@xenomai.org>,
 	Jan Kiszka <jan.kiszka@siemens.com>,
 	Ionut Nechita <ionut.nechita@intel.com>,
 	Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH dovetail 6.1] x86: dovetail: Allow multiple HV guest extensions to be enabled
-Date: Fri, 23 Aug 2024 11:18:56 +0200
-Message-Id: <20240823091858.3355791-3-florian.bezdeka@siemens.com>
-In-Reply-To: <20240823091858.3355791-1-florian.bezdeka@siemens.com>
-References: <20240823091858.3355791-1-florian.bezdeka@siemens.com>
+Subject: [PATCH dovetail 6.10] x86: dovetail: Allow multiple HV guest extensions to be enabled
+Date: Fri, 23 Aug 2024 11:18:54 +0200
+Message-Id: <20240823091858.3355791-1-florian.bezdeka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -79,22 +76,35 @@ type checks done by run_sysvec_on_irqstack_cond().
 
 Reported-by: Ionut Nechita <ionut.nechita@intel.com>
 Closes: https://lore.kernel.org/xenomai/PH0PR11MB59498BE915597AEF0B5BBB30F4B42@PH0PR11MB5949.namprd11.prod.outlook.com/
-
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- arch/x86/include/asm/idtentry.h  | 15 +++++++++++++++
- arch/x86/kernel/cpu/acrn.c       |  2 +-
- arch/x86/kernel/cpu/mshyperv.c   |  2 +-
- arch/x86/kernel/irq_pipeline.c   | 18 ++++++++----------
- arch/x86/kernel/kvm.c            |  2 +-
- drivers/xen/events/events_base.c |  2 +-
- 6 files changed, 27 insertions(+), 14 deletions(-)
+
+Hi all,
+
+changes compared to the RFC:
+- Changed title
+- Some renamings, mainly taking care of the feedback provided by
+  Philippe
+- Added backports for all dovetail/Linux LTS versions
+
+All patches are build tested and runtime tested for KVM guests. I have
+no other HV / VMM at hand.
+
+Ionut, it would be very nice if you could test at least one version for
+ACRN. Thanks!
+
+Best regards,
+Florian
+
+ arch/x86/include/asm/idtentry.h | 10 ++++++++++
+ arch/x86/kernel/irq_pipeline.c  | 18 ++++++++----------
+ 2 files changed, 18 insertions(+), 10 deletions(-)
 
 diff --git a/arch/x86/include/asm/idtentry.h b/arch/x86/include/asm/idtentry.h
-index 61984b960a9f..c176e541fd1d 100644
+index 524cb93afc34..e7d434e2ace0 100644
 --- a/arch/x86/include/asm/idtentry.h
 +++ b/arch/x86/include/asm/idtentry.h
-@@ -220,6 +220,13 @@ __visible __noreturn void __##func(struct pt_regs *regs)
+@@ -235,6 +235,13 @@ __visible __noreturn void __##func(struct pt_regs *regs)
  #define DEFINE_IDTENTRY_SYSVEC_SIMPLE_PIPELINED(vector, func)		\
  	DEFINE_IDTENTRY_SYSVEC_PIPELINED(vector, func)
  
@@ -108,7 +118,7 @@ index 61984b960a9f..c176e541fd1d 100644
  #else  /* !CONFIG_IRQ_PIPELINE */
  
  #define DECLARE_IDTENTRY_SYSVEC_PIPELINED(vector, func)		DECLARE_IDTENTRY_SYSVEC(vector, func)
-@@ -259,6 +266,8 @@ __visible noinstr void func(struct pt_regs *regs,			\
+@@ -274,6 +281,8 @@ __visible noinstr void func(struct pt_regs *regs,			\
  									\
  static noinline void __##func(struct pt_regs *regs, u32 vector)
  
@@ -117,47 +127,16 @@ index 61984b960a9f..c176e541fd1d 100644
  #endif	/* !CONFIG_IRQ_PIPELINE */
  
  /**
-@@ -476,6 +485,12 @@ __visible noinstr void func(struct pt_regs *regs,			\
- #define DEFINE_IDTENTRY_DEBUG_USER	DEFINE_IDTENTRY_NOIST
+@@ -523,6 +532,7 @@ static inline void fred_install_sysvec(unsigned int vector, const idtentry_t fun
  #endif
  
-+#define sysvec_install(vector, function)                       \
-+	{                                                      \
-+		pipeline_install_sysvec(vector, __##function); \
-+		alloc_intr_gate(vector, asm_##function);       \
-+	}
-+
- #else /* !__ASSEMBLY__ */
- 
- /*
-diff --git a/arch/x86/kernel/cpu/acrn.c b/arch/x86/kernel/cpu/acrn.c
-index 8fa6c605b579..8fb5f4945325 100644
---- a/arch/x86/kernel/cpu/acrn.c
-+++ b/arch/x86/kernel/cpu/acrn.c
-@@ -27,7 +27,7 @@ static u32 __init acrn_detect(void)
- static void __init acrn_init_platform(void)
- {
- 	/* Setup the IDT for ACRN hypervisor callback */
--	alloc_intr_gate(HYPERVISOR_CALLBACK_VECTOR, asm_sysvec_acrn_hv_callback);
-+	sysvec_install(HYPERVISOR_CALLBACK_VECTOR, sysvec_acrn_hv_callback);
- 
- 	x86_platform.calibrate_tsc = acrn_get_tsc_khz;
- 	x86_platform.calibrate_cpu = acrn_get_tsc_khz;
-diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
-index 54d8436ee56a..db92a583c126 100644
---- a/arch/x86/kernel/cpu/mshyperv.c
-+++ b/arch/x86/kernel/cpu/mshyperv.c
-@@ -422,7 +422,7 @@ static void __init ms_hyperv_init_platform(void)
- 	x86_platform.apic_post_init = hyperv_init;
- 	hyperv_setup_mmu_ops();
- 	/* Setup the IDT for hypervisor callback */
--	alloc_intr_gate(HYPERVISOR_CALLBACK_VECTOR, asm_sysvec_hyperv_callback);
-+	sysvec_install(HYPERVISOR_CALLBACK_VECTOR, sysvec_hyperv_callback);
- 
- 	/* Setup the IDT for reenlightenment notifications */
- 	if (ms_hyperv.features & HV_ACCESS_REENLIGHTENMENT) {
+ #define sysvec_install(vector, function) {				\
++	pipeline_install_sysvec(vector, __##function);			\
+ 	if (cpu_feature_enabled(X86_FEATURE_FRED))			\
+ 		fred_install_sysvec(vector, function);			\
+ 	else								\
 diff --git a/arch/x86/kernel/irq_pipeline.c b/arch/x86/kernel/irq_pipeline.c
-index 8a71a61327d5..d48440081f83 100644
+index 73e97fba55e7..7a64af5dab73 100644
 --- a/arch/x86/kernel/irq_pipeline.c
 +++ b/arch/x86/kernel/irq_pipeline.c
 @@ -14,6 +14,8 @@
@@ -201,32 +180,6 @@ index 8a71a61327d5..d48440081f83 100644
  	case LOCAL_TIMER_VECTOR:
  		run_sysvec_on_irqstack_cond(__sysvec_apic_timer_interrupt,
  					regs);
-diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
-index 9dde33d59efe..6af49d30816c 100644
---- a/arch/x86/kernel/kvm.c
-+++ b/arch/x86/kernel/kvm.c
-@@ -845,7 +845,7 @@ static void __init kvm_guest_init(void)
- 
- 	if (kvm_para_has_feature(KVM_FEATURE_ASYNC_PF_INT) && kvmapf) {
- 		static_branch_enable(&kvm_async_pf_enabled);
--		alloc_intr_gate(HYPERVISOR_CALLBACK_VECTOR, asm_sysvec_kvm_asyncpf_interrupt);
-+		sysvec_install(HYPERVISOR_CALLBACK_VECTOR, sysvec_kvm_asyncpf_interrupt);
- 	}
- 
- #ifdef CONFIG_SMP
-diff --git a/drivers/xen/events/events_base.c b/drivers/xen/events/events_base.c
-index 96b96516c980..867ead24d93a 100644
---- a/drivers/xen/events/events_base.c
-+++ b/drivers/xen/events/events_base.c
-@@ -2238,7 +2238,7 @@ static __init void xen_alloc_callback_vector(void)
- 		return;
- 
- 	pr_info("Xen HVM callback vector for event delivery is enabled\n");
--	alloc_intr_gate(HYPERVISOR_CALLBACK_VECTOR, asm_sysvec_xen_hvm_callback);
-+	sysvec_install(HYPERVISOR_CALLBACK_VECTOR, sysvec_xen_hvm_callback);
- }
- #else
- void xen_setup_callback_vector(void) {}
 -- 
 2.39.2
 
