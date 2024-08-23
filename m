@@ -1,90 +1,107 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 064E11BF3A
-	for <xenomai@lists.linux.dev>; Fri, 23 Aug 2024 09:46:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C36E376F5
+	for <xenomai@lists.linux.dev>; Fri, 23 Aug 2024 09:55:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724406396; cv=none; b=ghH6Iij2Gs/KuWnM1kHXnx7PhTegjfFZypWTbB6Vssa1M499Ft4I+rDNlovbx60JrKzcL+u8I6cNgRCmi83o974Hwz1O3blq42ObmJR7bymQFdxhCYHhjQb9lsDDnp0N+JCegMSeLIfg2Z0QJL9gRgdspgc4gcNXXG8lqRGtw4I=
+	t=1724406930; cv=none; b=Qbvkzey/ONdp0Y3Mg4YIvKFCwuY7E6VRkX7h+vbpwyS13tf2uSlQqcnlwnzmUZeGgCyyUyYld4rn/N/bR1od6tya/uktZVJWiAhM6LW0Oa9FGRGRPXWrMOnpUDOx/TROk36LUW2n03d+UoLw8ddTG6dbV7ktE8KkpXpSB9CxEbE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724406396; c=relaxed/simple;
-	bh=TkLeNsRQXeGoMPeQuEUkB05EEx52bMOVk5458YY7K/s=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=rj1wXlQKFC5Hd9mG3ZJvc4DZlCM861QoJKzOyPePOSgYLa6BJBM5d75GOM+qZPfrorJyWjmgYzlkh8Z3fFUFdKAEDwvN4Gri6TpUGfPjVUAUI+7T8dT6eXGW13PbYHPLf8HLpz0fp44NQARJmsZwzRSyn6vekvAJKZJvO3abBRw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=ewlDBBUK; arc=none smtp.client-ip=185.136.64.226
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1724406930; c=relaxed/simple;
+	bh=SKDAFigau/oKtVFzQsG24psmNUpC6caPQqV9/fJBmuo=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=qSZFOpA2WSmGuwFYSc/kTxjyUOJHF725c7588O+uxz78To7Iwxv/VBkwysFDzDELCO/+Pms2jrfzBX6zPmWuZvMIF/Dmj38hFI7pPVJ+hnENyJWE0f+KD5JOBfjEjV2H9A39BiA2UbwYStiBHsbaEc0LbLXasqSLhRucsBtGtSQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at; spf=pass smtp.mailfrom=sigma-star.at; dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b=c53gmBGh; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sigma-star.at
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="ewlDBBUK"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20240823094626762180596c3763f20e
-        for <xenomai@lists.linux.dev>;
-        Fri, 23 Aug 2024 11:46:27 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=nbh772SMt5r6fZv4ryjgJFxDU/C2INC4hPBDGUxdSiI=;
- b=ewlDBBUKodXETdNZVZbd3SbSZ3Ix3EeYY8yQQOJyQj28gBZZCUAXWCMFyxh7rCcM+FbuSK
- WjYuuFahaVMYkL0dHB1f6/gfCHgLhnux+xm3yJArkxa29kVAYcy7SqmZ+30YBU4bcrQw4ou4
- URBdBSxg1987Kk6Sski+6JoWOk3sayB7EtPyIsBVZKXcmPCKFiy0T4+hqyulynrDvoKR264w
- 6s3qYx3rKTZKLhKCsc2No/8R1QefrLyOW8FRHHI6fUd1sxTDo7DE9y0peDgoSLG3VD+FjMW8
- qoW5dTHw7fbpB/orTxq63086y9J71omcmzMAalw0IL4mTTTn4a8BSW6A==;
-Message-ID: <de2281e483ce9403c6637e3ee485b6c75450e70d.camel@siemens.com>
-Subject: Re: [PATCH dovetail 6.10] x86: dovetail: Allow multiple HV guest
- extensions to be enabled
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@lists.linux.dev
-Date: Fri, 23 Aug 2024 11:46:25 +0200
-In-Reply-To: <20240823091858.3355791-1-florian.bezdeka@siemens.com>
-References: <20240823091858.3355791-1-florian.bezdeka@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b="c53gmBGh"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-42ab99fb45dso17867855e9.1
+        for <xenomai@lists.linux.dev>; Fri, 23 Aug 2024 02:55:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sigma-star.at; s=google; t=1724406925; x=1725011725; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=dXBOxrWC5jAFaf2LBDrbHu99gXUkTe5yn5AOs4ESptc=;
+        b=c53gmBGhgjF43QKeGiB3oKVZev6o6rtmwVlMrPAcx4KkyVQLhCwGG9xKplYmuGWgmM
+         Gmlr9/qsmYi9EwF7UFkQpQSHO5lnxXN3j4Gbq84jUcPf48b4XTfSBAAKlyUeNR0M/L3W
+         VRGpnhT4N9Fom47JmrkWKpEB9An4vHUCxU1XxcKWA+vEY5tpLOigCtbqHZd1mNw+7KKS
+         Qqqrqh9VDXunIKNoWT18lv/CYMPkv6bQtKuIuOvCSKpNsXFMN53oTUhhtODsJ6adDbCH
+         sD6xTnzRbdAwBVsvebp4q/c5Vnxcz/gOHzZEBMAr9I4yKEsyqhQB+h7PktBq5bBNe073
+         kOzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724406925; x=1725011725;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=dXBOxrWC5jAFaf2LBDrbHu99gXUkTe5yn5AOs4ESptc=;
+        b=O63fNOpCZ4IlVReAYe1Xd1eTSH2OvYMgCCR7+nXxXo96W4InBgDlCQqVjg2PZozeRL
+         exZ1HbSAwMFyhiq3LhbuqIzYv73BNPmQr15ji0cyv6cpRIrEvg/H4uHvQca3HXef4IVa
+         OmBrGvYkAQXyutuRYieJ2bsWISpgCPBRip3G32mHvReVTuRp40EUWGtzK8hhPzXN1jtL
+         lG39AI5oaG+gIUvugkZGj+VEiC3VaUwamajlG2qcJoHH6L8Aq9/DweMQuzc9pV464voT
+         ZGzVENDZV3ik+U7i9OGpoa6Jm0P5AMy9++iwejCwxlFrKRRAFaSzKM1/GGsX6FC04etW
+         VUVA==
+X-Forwarded-Encrypted: i=1; AJvYcCXSslitoWJgOfnb1P3Y/yqfaq5msHsTeMK66VXNYDWunWhosvyrbzeKO+DAeMfwGR025D3GZqkI@lists.linux.dev
+X-Gm-Message-State: AOJu0YwFYWCZtRb40+L9X7YjpABfVyEFH/Pav2u3de6R5B5BD36BnB55
+	II1Mdodk02JHhSzjYwYds1Cu9C6ToGcHD6xOe3K3uZZMxUGmcV3AvzP5QHpkx15jKEIBrxXbJl6
+	8ato=
+X-Google-Smtp-Source: AGHT+IF8Hdvn2KUhhhZYU4Xh/8EMg8MqM4jVi3LrU0kAHOVJmq5QCgDlyuY2u9s5hyt+9Ghi3KyfNw==
+X-Received: by 2002:a05:600c:4e8d:b0:426:593c:9359 with SMTP id 5b1f17b1804b1-42acd5e69d6mr13075255e9.32.1724406924672;
+        Fri, 23 Aug 2024 02:55:24 -0700 (PDT)
+Received: from [172.16.0.149] ([144.208.200.160])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42abefc6285sm92840395e9.36.2024.08.23.02.55.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 23 Aug 2024 02:55:24 -0700 (PDT)
+Message-ID: <5fcdcbc1-8d26-418a-b3a9-29a4e8f9c784@sigma-star.at>
+Date: Fri, 23 Aug 2024 11:55:23 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/2] doc: Fix typos and grammar
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
+Cc: upstream+xenomai@sigma-star.at
+References: <20240823065247.4884-1-simon.graber@sigma-star.at>
+ <a6a3373b-fb88-4d49-8296-ba9d02008ab3@siemens.com>
+Content-Language: en-US
+From: Simon <simon.graber@sigma-star.at>
+In-Reply-To: <a6a3373b-fb88-4d49-8296-ba9d02008ab3@siemens.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, 2024-08-23 at 11:18 +0200, Florian Bezdeka wrote:
-> do_sysvec_inband() assumed that only one of CONFIG_ACRN_GUEST and
-> CONFIG_KVM_GUEST is active at the same time. If both were enabled we
-> run into a compile issue:
->=20
-> arch/x86/kernel/irq_pipeline.c: In function 'do_sysvec_inband':
-> arch/x86/kernel/irq_pipeline.c:160:9: error: duplicate case value
->    160 |         case HYPERVISOR_CALLBACK_VECTOR:
->        |         ^~~~
-> arch/x86/kernel/irq_pipeline.c:154:9: note: previously used here
->    154 |         case HYPERVISOR_CALLBACK_VECTOR:
->        |         ^~~~
->=20
-> As only one hypervisor (HV) can be active at the same time, but support
-> for more than one can be compiled in, we have to migrate from a build
-> time decision to a runtime based one.
->=20
-> We introduce sysvec_install() macro - like modern kernels already do -
-> and call a dovetail specific pipelined_sysvec_install() before
-> registering the IDT gate.
+On 8/23/24 11:27, Jan Kiszka wrote:
+> On 23.08.24 08:52, Simon Graber wrote:
+>> Hello,
+>>
+>> this patch set fixes mistakes I found by running hunspell etc.
+>> on the doc/ directory.
+>>
+> Thanks, highly appreciated! Applied to next.
+>
+> Do you think it would make sense to install that tool in our pipeline?
+> Or does it require too much human interaction?
+>
+> Jan
 
-@Philippe: Feel free to drop this ^^ paragraph for the 6.10 version. It
-only applies to the backport versions (6.6 and below). Sorry for
-that...
+Well, the problem with automating spellchecking on technical projects is 
+false-positives.
 
->=20
-> All HYPERVISOR_CALLBACK_VECTOR related callsites of alloc_intr_gate()
-> have been migrated to sysvec_install(). sysvec_install() is able to
-> distinguish between the low level entry point (asm_ variant) and the
-> higher entry point (__ variant).
->=20
-> The trampoline function (pipeline_hv_callback()) is needed to statisfy
-> type checks done by run_sysvec_on_irqstack_cond().
->=20
-> Reported-by: Ionut Nechita <ionut.nechita@intel.com>
-> Closes: https://lore.kernel.org/xenomai/PH0PR11MB59498BE915597AEF0B5BBB30=
-F4B42@PH0PR11MB5949.namprd11.prod.outlook.com/
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
+We have lots of nonstandard vocabulary (e.g. gpio, includedir, builddir, 
+popen, printf etc.), so we'd need to maintain a very large dictionary of 
+false-positives.
+
+There are public dictionaries for natural languages, academic language, 
+etc. but AFAIK none for programming vocabulary.
+
+There exist spellcheckers designed for source code (e.g. cspell) and 
+they can be integrated into a ci-pipeline. Other examples are aspell, 
+neuspell.
+
+But even then, there's some human interaction involved (at least 
+initially), to save false-positive(-patterns).
+
 
