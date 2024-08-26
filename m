@@ -1,133 +1,226 @@
-Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2070.outbound.protection.outlook.com [40.107.21.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FBEC4A2C
-	for <xenomai@lists.linux.dev>; Sun, 25 Aug 2024 19:44:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.182
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724615041; cv=none; b=MOo8HV0l1uGQcm4VA8c8bWiDRht5fb5ldcuGj27yGwj4CniMMTGIAqd/0sqKWZWOmiTw3CrapRQeJWWk/S16jsBcY59dLYqeVDNVhk5A0D5z9sGaoVSkEyWY9mXyqfrctfJbQhq+yGsIAGZz91f9aiHXCCZ2GJ4nDYhVe9TfkPg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724615041; c=relaxed/simple;
-	bh=tKnht20BPTocZMs7wPX420EwEGLSvbvXdBy41SWPAlc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NMIdipUiaZcnC6fLgA1IJDr1ayb4kI/Y/94f/mIcdahZykZ6qQEwgIN8PT5ODrL4VZJa9A3yyiAkv92p8//wwXpBDPfUmf7ML1UyHgNOX/MwPZB9PrJhkptf8yZrT785cVLNa/ImInvQpe7lacoHcAQPDMOHN+08iUJVuU1Sbe0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XWx6UYGk; arc=none smtp.client-ip=209.85.215.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6CFB126F0A
+	for <xenomai@lists.linux.dev>; Mon, 26 Aug 2024 06:31:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.21.70
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724653917; cv=fail; b=cswp4Ub/lEAagd8jrbrHiyn9Gqa01FmYy4zxztAqxEWHOSRarkudZhEPr78CwvTQdLlFpbSgKlHsMnen+GFzsGKzKvsR4TRmv4p+doWA4o1pNiLYpcZOo3paewp03pUlNMf/Ps6YOQCYltgJXIEMGpLgQXe2KaacxhnwwK0prZM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724653917; c=relaxed/simple;
+	bh=pn2gR/KQr9Ja6l7H5E+O7yn+55JYJOIgcxIYcbHhQTM=;
+	h=Message-ID:Date:From:Subject:To:Content-Type:MIME-Version; b=jIAHFSrBh/fmI1anNQtKq7Cubhuu/BYReVpjgbud2idOG08c1ZqGI48Jvq0e+7NnYzhAfcXAqH7PapGskLIl/llaegu2EMaHf4Yll/eCvkxxxno3Mh+KmlKMzxFVKBaiw0hyNcRKOr8So+XzUCJimqI4oFL6iksbdu5tRu66Z/A=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=dcTNH05k; arc=fail smtp.client-ip=40.107.21.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XWx6UYGk"
-Received: by mail-pg1-f182.google.com with SMTP id 41be03b00d2f7-7c6aee8e8daso2587672a12.0
-        for <xenomai@lists.linux.dev>; Sun, 25 Aug 2024 12:44:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1724615040; x=1725219840; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=tKnht20BPTocZMs7wPX420EwEGLSvbvXdBy41SWPAlc=;
-        b=XWx6UYGk9/5+VTDjYBM8aO2P0MxaqKB1/s0OrE1UEWp4Ro+w0AxmM+lC9QUL4mxLpK
-         wzMoiBs1qvcVo329RcbYF0HvNytbtEQQspjJOnscHCyi3QtpH5fc+1IX6rWeBSX3palG
-         78Gp4qby8Jdr8XZlPo8PJBnlnkIw1rDe1CoCcs8WWP85I47rTAoPWE4xD+AqV6UwaSL0
-         YQX5MeinlUNjJSjy5eMwXtzVi11GqJ4uAxgB7ipIkhUMu5S0brh7uBnf6KJUdCTvaOMo
-         wob1UwrfP77fIlgDNwd9weQZUTnASEVVB/E/0O7Gk6sgI5zZjmkGiv9CM7Qz5Rm1x8Fd
-         o6aw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724615040; x=1725219840;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=tKnht20BPTocZMs7wPX420EwEGLSvbvXdBy41SWPAlc=;
-        b=mbPTaw4jLwNtSGuq07ieGaPMIrVTbHRPEILmPvhhMka6HVGHIHP9MXxhJg/XsbYzz4
-         5tL3tD0CNz711oNMF56R09CIpNjmAz39G0DyWzQ8i5fzPDgs1f1tY6JfJH/X5ZtEVEzJ
-         +qNqEK33zkjDFnIQHZhhddyM54Y440W7SPkE69mnfPcc3toFSgbNz83x/5FWhI1EtlMO
-         FZR/L5CynSOTjuKXz+3XqIc31MgPAR0YT+U78U4iiHEAAB9B0l0HcjdjeHI2MC5MaCU2
-         vVR5l9vJ0/vU+2jirxNVkVapaw/bheyYjnK3JGiMIFvJ1lVNdmYmm52hLT2Ny2KVua/0
-         A+Sw==
-X-Forwarded-Encrypted: i=1; AJvYcCW7IC7CjspvIW5Igq9WIph93hWSskhz9cBlZAns/gla7qbqW4AQHSOnG4n1znEgc9NyD18Viymd@lists.linux.dev
-X-Gm-Message-State: AOJu0YxWNdm9AD0camg0redgRrXBd6DFiTAceyjLVd1iQZyWp2AlDDUh
-	KhN7UxfMbuiWXJFz893unnF7U7Hbj6vCLUvBCyG9BJeZqWF1J8aiLVSEx9wcXe3mqqrZ3R+x3tw
-	7eCH4MF+Cu8sTPVA4sdGsRkQ13O8=
-X-Google-Smtp-Source: AGHT+IEw996z88GB+gHRM+9NKuCQ0iMx0lbH0uMVx837q/uPMhx999pShrN0XDxYJlqzqwVaij/u/6antdcP9rVW40I=
-X-Received: by 2002:a17:90b:1b52:b0:2ca:7636:2214 with SMTP id
- 98e67ed59e1d1-2d646b93e57mr8750392a91.4.1724615039621; Sun, 25 Aug 2024
- 12:43:59 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="dcTNH05k"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=K6gfj1pTc/80AedhZmvmgY/XRNRhFxe6ow7d6Up5t8cYbzz5GXtJXDxlsfF6MIy1rEGSsI6ExeRl09vg20Kq2ZRf5HHO+M4Dv6KfFsK26PUMwISzJEoBeAErmX6v04T1vhLRdrj0qQJxea5Q3HnYq4J7qjRpKUmki3+JQXfHX6LfpritIvTP9R65wt224qKAwLuO+ArbDjvI1N+pWwVlqH1JJFRVrTPbImTEwbr5dvvVdw+1H2T14kFptTJN1sheFLHhMw79Uk3wQELeGfmQr2TpvEAQEwQkGGzs/gOrOYkj/pQ/8VXu9pwpxzxImyzGDQlQIX/a4SuFFGXkRejmOg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=UlrBzN628NogfQ7UYTTbBUBoewi7/beA8xO6+ucDrQI=;
+ b=Tdo2n2LwuNrIF1UWzNDkdbgawzwBm2QJ0bC3L1Jf3BEmv7ibWl2/TZHHaySHOP7uCh4mJYLjr96i6F8KDUVVne35u8CCQFW/NA5b+YBHisFW7cv9jJnS7C55IrdVCQFrmIPGaaiCBRwDdS8TNOHlDGyLp0gre4rkWO7UDPNLBokwSEk+Q+slHVQuY5D21l8j/M2phf6aMLo/TokR/Gn9E5FzQzuVGzQiNsOeWcGil7L2jBUSa5ReejbtA/PGywmx9bzs2hnaCHLvEIef7FuqhCw6zg3mWzrwNvm7uAR0AH8jgkdMGouKeMeZvnUSKNS2etO0IJKx7YogjSJP49XGGQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UlrBzN628NogfQ7UYTTbBUBoewi7/beA8xO6+ucDrQI=;
+ b=dcTNH05kdrVvtYVV0La42LWakErQePi2nu47HVHl6wF7gpxC6Kys7mCRR81kpOXmuyJgJo1o7YoLthOvvFiIcz2GOYCOFQMd2nc1z+skwFbUAJv4YNzn51TGlpW2ZVw5G1ISFkSy9o0BxiocbPI+gzfLpffXWQCPPClo0irCyw9vLoar4fRc+1/9Hu/4i2utfZ8TGCZ7U3ZK+oIxrWBlORS8TMjQghImDUsEx9kImUc4F8MQLzgNVe3ylIPX8dm9n0gMjIGs1+GB8tU57/5+5TcNkw9UMBBO3Yh6R+pCiHJmZAr7aeA7x12JKnDxXCZUxRPXfF+hYcGLWNX5WOffpA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by AM7PR10MB3842.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:14d::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.24; Mon, 26 Aug
+ 2024 06:31:50 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408%4]) with mapi id 15.20.7897.021; Mon, 26 Aug 2024
+ 06:31:50 +0000
+Message-ID: <24868b62-2aa9-4f06-a20a-c1c0dc2ba164@siemens.com>
+Date: Mon, 26 Aug 2024 08:31:49 +0200
+User-Agent: Mozilla Thunderbird
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] dovetail: Account for invalid syscall number
+Content-Language: en-US
+To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@lists.linux.dev>
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
+ uNUqthIkgLGWzKugodvkcCK8Wbyw+1vxcl4Lw56WezLsOTfu7oi7Z0vp1XkrLcM0tofTbClW
+ xMA964mgUlBT2m/J/ybZd945D0wU57k/smGzDAxkpJgHBrYE/iJWcu46jkGZaLjK4xcMoBWB
+ I6hW9Njxx3Ek0fpLO3876bszc8KjcHOulKreK+ezyJ01Hvbx85s68XWN6N2ulLGtk7E/sXlb
+ 79hylHy5QuU9mZdsRjjRGJb0H9Buzfuz0XrcwOTMJq7e7fbN0QakjivAXsmXim+s5dlKlZjr
+ L3ILWte4ah7cGgqc06nFb5jOhnGnZwnKJlpuod3pc/BFaFGtVHvyoRgxJ9tmDZnjzMfu8YrA
+ +MVv6muwbHnEAeh/f8e9O+oeouqTBzgcaWTq81IyS56/UD6U5GHet9Pz1MB15nnzVcyZXIoC
+ roIhgCUkcl+5m2Z9G56bkiUcFq0IcACzjcRPWvwA09ZbRHXAK/ao/+vPAIMnU6OTx3ejsbHn
+ oh6VpHD3tucIt+xA4/l3LlkZMt5FZjFdkZUuAVU6kBAwElNBCYcrrLYZBRkSGPGDGYZmXAW/
+ VkNUVTJkRg6MGIeqZmpeoaV2xaIGHBSTDX8+b0c0hT/Bgzjv8QARAQABzSNKYW4gS2lzemth
+ IDxqYW4ua2lzemthQHNpZW1lbnMuY29tPsLBlAQTAQoAPhYhBABMZH11cs99cr20+2mdhQqf
+ QXvYBQJmWPvXAhsDBQkFo5qABQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJEGmdhQqfQXvY
+ zPAP/jGiVJ2VgPcRWt2P8FbByfrJJAPCsos+SZpncRi7tl9yTEpS+t57h7myEKPdB3L+kxzg
+ K3dt1UhYp4FeIHA3jpJYaFvD7kNZJZ1cU55QXrJI3xu/xfB6VhCs+VAUlt7XhOsOmTQqCpH7
+ pRcZ5juxZCOxXG2fTQTQo0gfF5+PQwQYUp0NdTbVox5PTx5RK3KfPqmAJsBKdwEaIkuY9FbM
+ 9lGg8XBNzD2R/13cCd4hRrZDtyegrtocpBAruVqOZhsMb/h7Wd0TGoJ/zJr3w3WnDM08c+RA
+ 5LHMbiA29MXq1KxlnsYDfWB8ts3HIJ3ROBvagA20mbOm26ddeFjLdGcBTrzbHbzCReEtN++s
+ gZneKsYiueFDTxXjUOJgp8JDdVPM+++axSMo2js8TwVefTfCYt0oWMEqlQqSqgQwIuzpRO6I
+ ik7HAFq8fssy2cY8Imofbj77uKz0BNZC/1nGG1OI9cU2jHrqsn1i95KaS6fPu4EN6XP/Gi/O
+ 0DxND+HEyzVqhUJkvXUhTsOzgzWAvW9BlkKRiVizKM6PLsVm/XmeapGs4ir/U8OzKI+SM3R8
+ VMW8eovWgXNUQ9F2vS1dHO8eRn2UqDKBZSo+qCRWLRtsqNzmU4N0zuGqZSaDCvkMwF6kIRkD
+ ZkDjjYQtoftPGchLBTUzeUa2gfOr1T4xSQUHhPL8zsFNBGZY+hkBEADb5quW4M0eaWPIjqY6
+ aC/vHCmpELmS/HMa5zlA0dWlxCPEjkchN8W4PB+NMOXFEJuKLLFs6+s5/KlNok/kGKg4fITf
+ Vcd+BQd/YRks3qFifckU+kxoXpTc2bksTtLuiPkcyFmjBph/BGms35mvOA0OaEO6fQbauiHa
+ QnYrgUQM+YD4uFoQOLnWTPmBjccoPuiJDafzLxwj4r+JH4fA/4zzDa5OFbfVq3ieYGqiBrtj
+ tBFv5epVvGK1zoQ+Rc+h5+dCWPwC2i3cXTUVf0woepF8mUXFcNhY+Eh8vvh1lxfD35z2CJeY
+ txMcA44Lp06kArpWDjGJddd+OTmUkFWeYtAdaCpj/GItuJcQZkaaTeiHqPPrbvXM361rtvaw
+ XFUzUlvoW1Sb7/SeE/BtWoxkeZOgsqouXPTjlFLapvLu5g9MPNimjkYqukASq/+e8MMKP+EE
+ v3BAFVFGvNE3UlNRh+ppBqBUZiqkzg4q2hfeTjnivgChzXlvfTx9M6BJmuDnYAho4BA6vRh4
+ Dr7LYTLIwGjguIuuQcP2ENN+l32nidy154zCEp5/Rv4K8SYdVegrQ7rWiULgDz9VQWo2zAjo
+ TgFKg3AE3ujDy4V2VndtkMRYpwwuilCDQ+Bpb5ixfbFyZ4oVGs6F3jhtWN5Uu43FhHSCqUv8
+ FCzl44AyGulVYU7hTQARAQABwsF8BBgBCgAmFiEEAExkfXVyz31yvbT7aZ2FCp9Be9gFAmZY
+ +hkCGwwFCQWjmoAACgkQaZ2FCp9Be9hN3g/8CdNqlOfBZGCFNZ8Kf4tpRpeN3TGmekGRpohU
+ bBMvHYiWW8SvmCgEuBokS+Lx3pyPJQCYZDXLCq47gsLdnhVcQ2ZKNCrr9yhrj6kHxe1Sqv1S
+ MhxD8dBqW6CFe/mbiK9wEMDIqys7L0Xy/lgCFxZswlBW3eU2Zacdo0fDzLiJm9I0C9iPZzkJ
+ gITjoqsiIi/5c3eCY2s2OENL9VPXiH1GPQfHZ23ouiMf+ojVZ7kycLjz+nFr5A14w/B7uHjz
+ uL6tnA+AtGCredDne66LSK3HD0vC7569sZ/j8kGKjlUtC+zm0j03iPI6gi8YeCn9b4F8sLpB
+ lBdlqo9BB+uqoM6F8zMfIfDsqjB0r/q7WeJaI8NKfFwNOGPuo93N+WUyBi2yYCXMOgBUifm0
+ T6Hbf3SHQpbA56wcKPWJqAC2iFaxNDowcJij9LtEqOlToCMtDBekDwchRvqrWN1mDXLg+av8
+ qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
+ 8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
+ ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR3P281CA0156.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a2::17) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAFLxGvwDaDC-TY7qfhQrfTWPUu=4sYoT5j=U0iY3hQB43=PKDg@mail.gmail.com>
- <e4baa33a-fe36-4623-aa10-c66f88627856@siemens.com> <CA+K1mPH=JAwPY2PSGX8Wcn7hqVuJ-t9zdEStQ4FZdeHFy57YWA@mail.gmail.com>
- <d3c212fa-154b-4f5b-b568-2816f585f311@siemens.com> <CAFLxGvxpYZxV6qQre_uQjmF=nAa_Wea5EEWpH1kjreuRAi8CWQ@mail.gmail.com>
- <CAFLxGvytCz=B5M3dhvuBDcg5=mJK0E+-TUOESbkM2oSkz-qDPg@mail.gmail.com>
- <0e2f567d-06e1-446d-b34f-02b9b9fc3165@siemens.com> <CAFLxGvwm3qCk4e2d-Mf7bZGgcnfX8Eyd2yvEGpMf_tydw2H0-A@mail.gmail.com>
- <CA+K1mPF9w=QuXFpAsgZQqRj8OjyHNzw9znmpUGNSAcRFgs9hgQ@mail.gmail.com>
- <CAFLxGvwQpf8kWckq_t6K4iKt=GMqP9awDc8gUbhYgFK_SVogCQ@mail.gmail.com>
- <351a2c7d-4fe2-43a4-ae87-045b194f1919@siemens.com> <CAFLxGvy0Z3TPYN8psZBXSB-idpJbSr+TQ69JguqiGNYaWM3KRw@mail.gmail.com>
- <CAFLxGvw_m1ChknHFRYHSGVjG4vDYOZahfS205OCv7LwRiOSPPA@mail.gmail.com> <CA+K1mPH_6SBO2YJt1eta7HFMmsYeoia+qNvFd1mpUUG+ZqqkAw@mail.gmail.com>
-In-Reply-To: <CA+K1mPH_6SBO2YJt1eta7HFMmsYeoia+qNvFd1mpUUG+ZqqkAw@mail.gmail.com>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Sun, 25 Aug 2024 21:43:46 +0200
-Message-ID: <CAFLxGvxqpNLnNo-DpZSjVossKb3zOOdk+dWLocGj8gSUwi2o2A@mail.gmail.com>
-Subject: Re: Thread stuck in IDDP sendto()
-To: C Smith <csmithquestions@gmail.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AM7PR10MB3842:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7f2da556-9e86-49b1-2886-08dcc598c4b5
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?QXVPK3o0aWVuYkdJSDlUdnRVWWpPaGR0ZWdLZTFWSHVVckR0dWJoT2RTczRs?=
+ =?utf-8?B?aWpJelF1VnQ2Ty8wOVp3YUtLRjZQYVlhS1J0UWhDREJNc29wT0RoZ2g0M2pa?=
+ =?utf-8?B?a252ZmtuUjFJNjdDOGg0WmlKQ0RDTlhNUEFOZkhrQlNVRmF5MGM4QVJXVHRE?=
+ =?utf-8?B?K08wcU94UDg1dzAyZEpMbmJWV1hHM3QwYy9vSDBrN2VUZXdzNTh1VFFEcDRr?=
+ =?utf-8?B?ZndIL0pjUnA1d0N5U3RIUWF6ZEJQUDFlbUdQUWsyTFhaNlpjVWU3WG9leHV6?=
+ =?utf-8?B?UVBQN0ZsR3BsbHlHclNibUlNSC9jTTNkMlFqU1NUcXQvUG4xOW1zbGRjUzZ1?=
+ =?utf-8?B?d1VrTVdSYUQrZGhNMG43eVBMN1JzK2V1cnUzTzQ3SnU3dURrbWdqTmoyQTBm?=
+ =?utf-8?B?WVBFd2hmd291VDBHdldkSkl0TmloeitsemZEdmlRQnp1WENwM3hDclpmTFVH?=
+ =?utf-8?B?SG5jTzBNMVNzQkNBd2hFNFAzWFlRUGEzOFZ2S1pFVVEvMDdESUMvbXdBOThn?=
+ =?utf-8?B?TXQ4eU5DeVVqTzVIc2hIUzZKWkxvZTdmbmd3NnhRVXl6SU40ZW1SWXc3cXdn?=
+ =?utf-8?B?VDlkQk5UUGlRMkJZMDV6S1NEeUM1bkpyRG9rUjd1dUd1RjBuMWtvWHFSMmht?=
+ =?utf-8?B?RHg2bDYvUWEzOWpaZm1NdW5oeWtFU0hsVnYrUFZQTkM1UEpvZXlpQzc3UWty?=
+ =?utf-8?B?OWFReUpqTmdvTkFRY2xGRmhQV2JTdVdhZDlnNWU4ZDltQ2UvSmRoUFdMUERw?=
+ =?utf-8?B?aC83cE1CdXVGUHU1RUNsd2hFeUxlbUtrUWhpN1JGViswTUpjVGdHaEwxeFcr?=
+ =?utf-8?B?dnFpWnhiVmRFQkx1bkZtSGZUL0tLKzBpSEgwLzhFL01GVjU4dkZZVHMzeGly?=
+ =?utf-8?B?VllGZVJLRkd3MkN1ZXMxV05BTW9GLzkrdS9lQlphY1pHSkNRK2pqYjIveXh2?=
+ =?utf-8?B?emo4WlJ0czRma0VncHZ1dGlFZE84RWlBZXV5ME9qcDUvNzMwUmxHUzl3QmdE?=
+ =?utf-8?B?Q2NxTDJOVmNBa2dRQWIyWHVxc3FadGxpTkhOWk4wNTMrOUc3aFpTU1RRcHZW?=
+ =?utf-8?B?QTNHZXl4cWxZVFZsQU1FZUxac2ZZVVpBS05SNGVjdEUzUE9lUmxOK0RXOThG?=
+ =?utf-8?B?cGJ4aHcva214V1RZNGU5QktHenBkd3I3WTRHT0NZcEFOaGcwVWxUU1RmLy9G?=
+ =?utf-8?B?Q01UV0JZa0MzajVGOE1YSzJwUG1kaDVlSWJsaGNQT0lTc0hJR29UM3JKTnFB?=
+ =?utf-8?B?aWI1c3NTZm11bGxUZjJVSXQ0SVpldGJhZjdGenZtb2I3VWFmVDNJcHV5WmNj?=
+ =?utf-8?B?dWx5am9uNnZoaW5XVTFabmMxUFpEREMxaW0rQlRNcmRkZUlSeVVudTFYN0cw?=
+ =?utf-8?B?aGxwcDNidVVlTmhLSk5BM1M4Nk5EZ3BYMEp4RTNrMGtTMlUyWGVLT2FHaGMz?=
+ =?utf-8?B?dkszeStRa3FCNWxuMlRQTEMrdW51YUk3Q2ZOQ0hhc0F2NFNmeG1UYUorRUgw?=
+ =?utf-8?B?c0pxczZldkRicHF3ZUFBUWdzWEZWN0lWRlJWN2NkTTAya3BPaitNZ0VjWnhp?=
+ =?utf-8?B?ZUZRVTAyM1k1eUpHMzYvZ1I2VzBiOFFWbnhMK2xxNmlYZHQ5RERYNi9ZNlox?=
+ =?utf-8?B?a3JQcFZ0SW1lNHhURDljdEt6d05MUm1mbUVQRFhRZjRCK1BaRzZPdUUzTi9V?=
+ =?utf-8?B?UmpYRUJ4RDIwTk95UFFkemxnZlZ1Z3g1enhUQi9NMWFmWkYzN3kwZnl5TlUw?=
+ =?utf-8?B?dE5DY2JHajZYZXlvakRxdkIwbTF1WnBjM2ZyTi80TWJUUlNoc3grRmZUd2pn?=
+ =?utf-8?B?cXlrbXlwbWJycEJRcTVOZz09?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?bFZIUnB3ZUNiVHpkS2hlc2U1MGFhR0Nxa2tjdTlWY1BtTGc5djAwRitsOFp5?=
+ =?utf-8?B?UC9xSE9ON1hORi9PTmZhZ1cvTFNmc08wY0hhZ0V6N2JTU0NqY3loL3N3ei9C?=
+ =?utf-8?B?cmo2TWZXY25ySDNpTVRCODhleTUvdE50Q1VvRVo5QTJJRWo0bHF3NG9YVHU0?=
+ =?utf-8?B?cmgwclZYdEFPR0FTN0tFRDNhUzA4VjNzYzZoUUwzVHZZR3IwMGZDRVA3UG5m?=
+ =?utf-8?B?dDliMUFRSXFjZEx0dmNmQmZ1ZTZrUkVpdlJBUFVvV1NVTlcwZWN4L293TzJq?=
+ =?utf-8?B?NmtQYVRxVi9sdU0ybXlZQTdiaXgxYWZUbldLMUxUTFZSWG9oWnBnVGtBb0Nk?=
+ =?utf-8?B?REZPcE1zQXhHMC9rcXVZcktpSnJHbkszbFcyWGpNUmRnc3A0ZVFQVWc3eEVl?=
+ =?utf-8?B?eWovdHdDZExCRU1zdWdMZU91bWhhdSt5V2wyUkhyejgzU2RmYjlrM296bG9l?=
+ =?utf-8?B?RFMvOHpWRnI4ZmRza3V4OXNkUUF6NkJ3YXNXMXQzYTdqcTNPalUwSXZ3dW85?=
+ =?utf-8?B?aXpVTHlUSFgrYVFQQWJyODREVFgyT2lpNlFiT1FVUUxRaXVveWtyNytWUjVL?=
+ =?utf-8?B?OXd1dGZjYnhjK01XbWthRkdKWnRtcGtzeTkvbFFYZGNWUkpSODd3WFVFTC9u?=
+ =?utf-8?B?V0l1eW5jVVZEbHJXSXdFd1JSOTg3V1k0cFJvS285MmJKZFVJSTI2NGFHampa?=
+ =?utf-8?B?Y3JDcHpEeFFCeXZtM2VLcEVMVzQvMll6NTEzUjdFNE1IYlpjL216em0rbXdh?=
+ =?utf-8?B?Y2RmcHg0Yng5d0xQSk5NbnZyZU1UakZrNDdlbEZFMEErVDQvSVgrZVdOVGRK?=
+ =?utf-8?B?aEFiWU9TSHZDemRsdVhQcGoxMUR0Zkd3THp1dG5JL2Z1QWI4dzZuV1U4ZGNl?=
+ =?utf-8?B?WE91RjJhRHlFUWVTZkgrM2loejZCeFpXUWJrdE1XYStPRGtneWx1SWhlWTRv?=
+ =?utf-8?B?UUMrSmZlZGNxRWNFYTloY0phRmZMVHBqb3E4V2I5V0tjd01XNWVvMmNRd0Zn?=
+ =?utf-8?B?NWNtcGtVb3ZCL3kyOUNIbTF4TEJHQ0oxajAwS3REN1JGTWlwdmNsc00zQnBG?=
+ =?utf-8?B?MGQ5VzRWS0pWMDFrKy9wa0dsRC9PTmFuWEpxaG82dzkyT0tCejdVTUFRelNi?=
+ =?utf-8?B?YnBMMzRBMnd1Y25RZjZPdGl5M09aU3JMR1VQL0NxVndBb0w3b1RIeE02TGpv?=
+ =?utf-8?B?dGZSRDNkNDBoeGxyeEt1TkUwRWEyWTdYRnJxdUFQOEpQeFVqWXNOZTNjSTJX?=
+ =?utf-8?B?WmpQNWpLWGFuL005cmh4RnZnT25yeVRldHBhUXNFVUpzQmRIaDUveGRwUVh2?=
+ =?utf-8?B?OTJpY05vZmlsVUsvUHMzbno1b21IWFd1a2p5dUlyeVN0YUdxV24zaHF0Um1u?=
+ =?utf-8?B?VWE4QU8zb05jQnRwZW9XNXhuQW5hS3lGM1NPNWIzd1RBbU12dUMwdHVrOUVT?=
+ =?utf-8?B?ajNKWWdjMlhxZWl0TWFkR2ViWmgyS1lkM0FtQnUvd1Q2aXg3bmRUaEtrcGRS?=
+ =?utf-8?B?RkR2dEpZNzRvcTM2SFdDQUx2T29lcnU5ekFSTnhZME11enROU0xYSVZYcXVo?=
+ =?utf-8?B?ajh3eU9GMDZEb1F2QWtsZTNvMFVSZ1ZmdkdTSlpkMkVkMEQ3WVkrbWdIazQx?=
+ =?utf-8?B?VVZxWDR6VzFGcFBXWlFITnVyWXlPM05OT05sOVpJZ0RLOVY3b09GdDJldUpt?=
+ =?utf-8?B?THNLRzNYVVA2ZHhBK09lNzQ1VHBTNU0wUkRzU1FuN2Y2VU03MHFHYUJPNDdH?=
+ =?utf-8?B?RHBhSU9UMHNzaFhoK2VQbVU2dmYxN2FueW9DOFY4WkVUN3N0dG1pb255VlBs?=
+ =?utf-8?B?RHNaSTBTQkNXcnF6bHBXdTE3VGNUR0FHWThRMzQyU1VzaXZXUlNGK1BYYk14?=
+ =?utf-8?B?NlhmR1hVVmVud0ZpV3pXUWZVbkE3djcwTmJHbjVKaGN0RE13WXlKQllJS3B1?=
+ =?utf-8?B?d2FyUFhvY2FvclVuV01WS3Z3SlVlVTJoZTFRQnNFOGgxOExjZ0hyQUNveCtV?=
+ =?utf-8?B?RCtUYkpxdWo1Z1pvUzg4Wm5ENnFkUG84MHcwYnlQNGNPN1grUjl0dnpmTDI0?=
+ =?utf-8?B?SnBxR2NLYTJZeE9PR3dZV256bytTUmFNWW9scGF0a2hxM2JGN2UwZ2JVTHpk?=
+ =?utf-8?Q?vjoYzssGuLhuysPdk3u5vcwen?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7f2da556-9e86-49b1-2886-08dcc598c4b5
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Aug 2024 06:31:50.6438
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MY23D2uAfA2JxPxWs4Uhi7i648IlFqHY6NMzeRUWUZMdxD1KhxKOAv4zrAoDDagUhFiV3hRIjW8o3bn+BA7taw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3842
 
-On Sun, Aug 25, 2024 at 2:33=E2=80=AFAM C Smith <csmithquestions@gmail.com>=
- wrote:
-> > After playing with demo/posix/cobalt/iddp-sendrecv.c and modifying it
-> > to work across
-> > two processes I'm sure we have a little problem in IDDP.
-> >
-> > The setup is:
-> > Two processes(!): process A is the IDDP server, process B the client.
-> > So, A does recvfrom() and B sendto(A).
-> >
-> > If process A terminates, iddp_close() is called and a subsequent
-> > sendto(A) from B will
-> > fail with -ECONNRESET, all good and expected.
-> >
-> > The problem arises when A stops consuming from the socket, the buffer
-> > fills and A terminates
-> > while sendto(A) in process B is active in __iddp_alloc_mbuf().
-> > At this point B has a reference to A's socket, so when A terminates,
-> > iddp_close() is *not* being called.
-> > And as a consequence ret =3D rtdm_timedwait_locked(sk->poolwaitq,
-> > timeout, &timeout_seq) will not
-> > return with -EIDRM.
-> > Since the default tx_timeout is RTDM_TIMEOUT_INFINITE, B will block for=
-ever.
-> > --
-> > Thanks,
-> > //richard
->
-> To clarify: the test case was originally two independent Xenomai RT
-> userspace processes, not two threads launched by the same original
-> process.
-> Also note that an explicit close() of the IDDP socket in process A
-> (before exit()) did not help, process B still blocks forever.
->
-> Using a patch from Richard, I was able to work around the original
-> problem of blocking infinitely. Essentially the patched iddp.c returns
-> -ENOBUFS when sendto() experiences the transmit buffer full. Process B
-> sendto() then does not block at all (I verified this on an
-> oscilloscope). This is the desired behavior.
->
-> It seems to me that at present the IDDP sockets do not exhibit the
-> correct POSIX behavior in the above respect. This is the case in
-> xenomai-3.2-stable.
->
-> Shall we submit a patch to correct this?
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-During the community call I had a brief discussion with Jan about this.
-Returning -ENOBUFS will introduce a behavior change and existing Xenmai
-applications might get broken in subtle ways.
-Before we can do this, I have to do more research where the current behavio=
-r
-comes from and who relies on it.
+At least on x86, the kernel may have decided to invalidate the syscall
+number while processing it. Avoid that we process this -1 as legacy
+syscall.
 
---=20
-Thanks,
-//richard
+This was a long-pending issue in the whole dovetail series, now revealed
+by running auditd on one of the test systems. Syscall auditing was
+eventually catching an unbalanced tracing, caused by a premature syscall
+exit due to this bug.
+
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ kernel/dovetail.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/dovetail.c b/kernel/dovetail.c
+index 08c649d6e9d9..bcd49183f8eb 100644
+--- a/kernel/dovetail.c
++++ b/kernel/dovetail.c
+@@ -119,7 +119,7 @@ static bool __in_oob_syscall(struct task_struct *tsk,
+ 	 * a PR_OOB_SYSCALL command (new/current call form).
+ 	 */
+ 	if (IS_ENABLED(CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE)) {
+-		if (nr & __OOB_SYSCALL_BIT)
++		if (nr != -1 && nr & __OOB_SYSCALL_BIT)
+ 			return true;
+ 	}
+ 
+-- 
+2.43.0
