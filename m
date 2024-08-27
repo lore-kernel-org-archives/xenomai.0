@@ -1,105 +1,83 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDA6F19D06D
-	for <xenomai@lists.linux.dev>; Tue, 27 Aug 2024 09:15:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A26C1CD31
+	for <xenomai@lists.linux.dev>; Tue, 27 Aug 2024 12:01:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724750139; cv=none; b=Hd57A6ZuVlBr37KtuTCIeeyJmGY5cHJrNvtputeVZZy2Sjc9yAQ0xY6SiwsDiK61a+G5d1keG1aFVYc463s+9EmWZN25AGrCFWHmCkpUF2wEenm+QQbcQhCDKS0UIbKrQClmtQMWQrr3TlbdTzGGuG1SKTRMA4VWl2WhSTMY2iw=
+	t=1724760076; cv=none; b=M5FC6m2c31V20whKwxV3hdCZejVOnERnZnS5NUPKftK5LaZyYkDJfzP4QPyQum+wjIky6OB5/Oh0muuUi+tIZqY8NXKAa27OA52sCPUKK+sjpVcbx7mdo/Kxtl3ykwcVyZqOBEDpMTf8M3qv4zULI/LlIUXGh83J6+YdnvgSk4g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724750139; c=relaxed/simple;
-	bh=gQsimr+PAnsEiUPzhpJ3dak77uhB1JW7cLc+o+sQnIc=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=CsgYbhYIwGL6irrR8l0zkq63tUihPdyqd8cCefX08lRoN2JTN6Z/GcsocqaKRPxEaFF+kioSBF0OiuAr3HCRvdRhrlAObv5ChChMfIpZOPP7aaezxjWAcqGsZyC+JEflR8bPKpHuXIiiOyzjEeRHzCImNPCmnsXQaimCI1nRgno=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=YLVP9+DB; arc=none smtp.client-ip=185.136.65.225
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1724760076; c=relaxed/simple;
+	bh=7r4UntrwBiuxi8DvZr6KYJ9sYSFTNErxkzNyKLMVFEM=;
+	h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type; b=DgTppVJMeP7v9mW5+9Mz+SsW+t00Sc4Pg+z0/I6FUsSZa+0hYuOA1kWAbT4bYY3kjwxjPI6fmXQn4Z4oHDfcQ1nJNzymse1SOnGBfJZG/atPl+yA3qeHRuxpU17z2w6Ytby8251lVk7J7CPGHJ+GG3Tj/sIkri5BCCbkQ9QgYcg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at; spf=pass smtp.mailfrom=sigma-star.at; dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b=fMq36C9a; arc=none smtp.client-ip=209.85.221.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sigma-star.at
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="YLVP9+DB"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202408270915308755bffe079cda1901
-        for <xenomai@lists.linux.dev>;
-        Tue, 27 Aug 2024 11:15:31 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=mCdaLYuB3PyeZ1rR1VEz71MmlIO/JtBVfzQSgq+N0L0=;
- b=YLVP9+DBdQGVmf7ut8IiArGG6Hm+bQsfWcttlekvJ5vQSUR6UuowBpVpkC1xqht9OJh5GX
- wFirCe0w5oUEHKf9OuDItrCUVxR+2Y2r2Kkp7kEcfoGEoQpkEQpeYDsGBQQ0uF/XwkV9eWHQ
- LHvW0o72AEIIJLOWwYX2KPcpcUk85xuL8oYsxKle5VQr22SqLyDfdbKsYOjjGwGKUPrpK3da
- 4QFKd+lE2Y37M4e/gS63U4zO11W4RdrJJx0pDP9cm36jyL+DRsJcbCESkax3TFOt1e5/f9T8
- K0KaAv0apjksyw0kFkmxjzyB4L9GIM1CgTO+Pgc+/SaEMImDOeaTydSQ==;
-Message-ID: <616b40879c0563a56bc8119efd8b10f66562f0bd.camel@siemens.com>
-Subject: Re: [PATCH v2 3/4] alchemytests: Set cpu-affinity by env var
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Simon Graber <simon.graber@sigma-star.at>, xenomai@lists.linux.dev
-Cc: upstream+xenomai@sigma-star.at
-Date: Tue, 27 Aug 2024 11:15:29 +0200
-In-Reply-To: <20240827084521.13547-4-simon.graber@sigma-star.at>
-References: <20240827084521.13547-1-simon.graber@sigma-star.at>
-	 <20240827084521.13547-4-simon.graber@sigma-star.at>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b="fMq36C9a"
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-367990aaef3so2536372f8f.0
+        for <xenomai@lists.linux.dev>; Tue, 27 Aug 2024 05:01:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sigma-star.at; s=google; t=1724760071; x=1725364871; darn=lists.linux.dev;
+        h=content-transfer-encoding:subject:from:content-language:to
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ABt3Pgm+lBvzonLHKbU0paDK3YbpLZbE/3e6RVwEK0s=;
+        b=fMq36C9a2SkQBA+5GVVaJ0WCAHWQx4hgZW92vMdJXBuLYtpp1AuMGHuZ3Zap8h/gbg
+         w6/KcVnqfvHyhbrz+3bFTpnlN5NavpZY9SDrqzM0OXuUoDZBwrRU67jNhVuzGyicZwlm
+         4KmzOt+Th88S84PIgUoAFSxQyQ6CdKhDCmDG34T9yIuA8NOHgxKkl+DuP/OhZ/iYDQhQ
+         6iSK8Aw1EtvVh2zFCgP90aYse+WlhrimIiIkKjUzEHYSLyIFm6wqjfTcOqNPgLetzZIP
+         Gtxas1kspXrMA1M/a1U7sFqVlFpfeiYWNSUhSjPLvR27N88SBduWh6iUQxyCgxwqLvFU
+         GqHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1724760071; x=1725364871;
+        h=content-transfer-encoding:subject:from:content-language:to
+         :user-agent:mime-version:date:message-id:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=ABt3Pgm+lBvzonLHKbU0paDK3YbpLZbE/3e6RVwEK0s=;
+        b=lAgfKbeYIkqkvmLEok+WDf0JC/aOWLDxVJm/W4jG4sMMvFx8U4lemA+XhhM9hGw4tF
+         v/0ATVOaOj0aOKsfJ6m7v0BChE5PqRSGzTCqCZqs1Vs/cc3ZQy5T7t75zCSWnBLuWGTO
+         immFc+8/we6mZe+ZLpCrsPMd9gY/ZNKKvraT3cvSP5UtGZn71+6IxpYueuHeAmZB5fYo
+         WJi/W6mBqkC0yrs2h2JKT6TqLSUKFJWjGXhv1LEDZ9w973tLlTFcZm6GXogpHncODIQM
+         IMFh+8fyz6vLVuDpIaJQM8meT/jhxgvnOkBDWAqt1e1M4tulrlfb06SxGqsIISbqKcdb
+         M3VA==
+X-Gm-Message-State: AOJu0YwHpOaezNPxPbjpdwPecZH500nmVA9yoSIn3Uc8XqLxrEfKg0Ji
+	IRmWh+nOPNyD2SO0LMnyXQ9AGJvGN1BFMOiHyaqn2/IVwBw02awq6K8ihbcqBilgxp2kh3h8T8V
+	31zk=
+X-Google-Smtp-Source: AGHT+IFTJrsbGyVQvE4sKCS49on1Jb5Z180jjYFMCfsJTzDBzZL+XMn/ySsuo1i9aAevv6eQtXBb6w==
+X-Received: by 2002:adf:e44b:0:b0:360:7c4b:58c3 with SMTP id ffacd0b85a97d-3748c835e08mr1861109f8f.54.1724760071121;
+        Tue, 27 Aug 2024 05:01:11 -0700 (PDT)
+Received: from [10.115.255.182] ([82.150.214.1])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42abed8b666sm221439495e9.1.2024.08.27.05.01.10
+        for <xenomai@lists.linux.dev>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Aug 2024 05:01:10 -0700 (PDT)
+Message-ID: <17376680-65b0-4f71-a002-046d18221b7c@sigma-star.at>
+Date: Tue, 27 Aug 2024 14:01:10 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+User-Agent: Mozilla Thunderbird
+To: xenomai@lists.linux.dev
+Content-Language: en-US
+From: Simon <simon.graber@sigma-star.at>
+Subject: Re: [PATCH v2 3/4] alchemytests: Set cpu-affinity by env var
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 
-On Tue, 2024-08-27 at 10:45 +0200, Simon Graber wrote:
-> The alchemy test runner can now make use of
-> the XENO_CPU_AFFINITY environment variable by setting it before
-> dispatching to the inidvidual test programs.
->=20
-> Signed-off-by: Simon Graber <simon.graber@sigma-star.at>
-> ---
->  testsuite/smokey/alchemytests/alchemytests.c | 10 +++++++++-
->  1 file changed, 9 insertions(+), 1 deletion(-)
->=20
-> diff --git a/testsuite/smokey/alchemytests/alchemytests.c b/testsuite/smo=
-key/alchemytests/alchemytests.c
-> index cf9f970f1..edbafe6e7 100644
-> --- a/testsuite/smokey/alchemytests/alchemytests.c
-> +++ b/testsuite/smokey/alchemytests/alchemytests.c
-> @@ -1,5 +1,6 @@
->  // SPDX-License-Identifier: GPL-2.0
->  #include <string.h>
-> +#include <stdlib.h>
->  #include <smokey/smokey.h>
-> =20
->  static const char * const tests[] =3D {
-> @@ -31,12 +32,19 @@ static const char * const tests[] =3D {
-> =20
->  static int run_alchemytests(struct smokey_test *t, int argc, char *const=
- argv[])
->  {
-> -	const char *args =3D "--vm --cpu-affinity=3D0";
->  	const char *const mod =3D "xeno_rtipc";
-> +	const char *args =3D "--vm";
->  	int test_ret =3D 0;
->  	int ret =3D 0;
->  	int tmp;
-> =20
-> +	ret =3D setenv("XENO_CPU_AFFINITY", "0", 0);
-> +	if (ret !=3D 0) {
-> +		fprintf(stderr, "%s failed to set XENO_CPU_AFFINITY: %m\n",
-> +			__func__);
-> +		return ret;
-> +	}
-> +
-
-Is there any side-effect that I don't see here? The result seems the
+On 8/27/24 11:15, Florian Bezdeka wrote:
+> On Tue, 2024-08-27 at 10:45 +0200, Simon Graber wrote:  >> -    const char *args = "--vm --cpu-affinity=0"; >>       const 
+char *const mod = "xeno_rtipc"; >> +    const char *args = "--vm"; > Is 
+there any side-effect that I don't see here? The result seems the > 
 same... My question is: Can't we drop this patch?
+The plan is to get rid of the "--vm" too, in a later patch. To stop 
+using strcmp on argv further down.
 
-Btw: If we set something, we normally have to clean it up / unset it
-again. Can we safely skip unsetenv() here?
+> Btw: If we set something, we normally have to clean it up / unset it  > again. Can we safely skip unsetenv() here?
+The env is gone once the alchemytests have finished.
 
->  	/* Try loading the xeno_rtipc module as the pipe test depends on it */
->  	tmp =3D smokey_modprobe(mod, true);
->  	if (tmp)
-> --=20
-> 2.46.0
->=20
+Can't change the env once threads have been started anyways.
 
