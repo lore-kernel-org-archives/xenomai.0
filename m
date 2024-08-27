@@ -1,64 +1,64 @@
-Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE6B9136E0E
-	for <xenomai@lists.linux.dev>; Tue, 27 Aug 2024 08:45:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B746D1591ED
+	for <xenomai@lists.linux.dev>; Tue, 27 Aug 2024 08:45:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724748330; cv=none; b=Bwwqhi/78qu1MHyfsV6IjUw1YyqhYpa0T5WoOvuonALvBZnlViIpKxY9VuRnpIE6vFiGMWixr7JbqjZeFyzJKB+42lIll7T8MfzVwuAx5MqT0t0qr9FzVDXs7Ik89J3zbvnt04gsU5NWL/wVdqamdU8MJEf/CQeH3KcZ3+uedt0=
+	t=1724748331; cv=none; b=QElO4EpRILwYYmjM4XuK9pj7vRAdmmtgZT938aGeBZ12DJCBou3Mr+paRwez7kBRI6AUDaHBYChQAsWnL6lypRemolDYNE7Wd8rQmm3OzNBvPbEENKptkQZKyao+FjJTYbi70uUixjpRH/noD7r5FAB9MYGPnq3+p+lcevBaTZA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724748330; c=relaxed/simple;
-	bh=mRnctUkmMAvgtwJPlMwtryXxP9Ya9hA//xxH72mYafI=;
+	s=arc-20240116; t=1724748331; c=relaxed/simple;
+	bh=1YZyC5QOq5NrcNk7Qj/bnioLuXI7IbqeB7dlB2Ncv3U=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=r+WkfVcLsYafv/7Jb3ZGPuckSKNPkxVTGmKfz0BO3ErYgeSm2Gd3CxndOv27E/hnE/P24E4m9tjlrR7NfWGfzf1BtosshxYLs8mZMTi0F6zQQNBbOOYlxs/xuNDj1UhdBVBiCzYBZm7/tW9bTfXTrmbYBLjdcSnJAvQfUoWHyew=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at; spf=pass smtp.mailfrom=sigma-star.at; dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b=OujyyCzs; arc=none smtp.client-ip=209.85.167.44
+	 MIME-Version; b=AKtvKcfumy045xyoQXIruAGd5xnWVW+3bIpfIP7D5USuP3f9ii7md8hpOdvM35xGvkhFXQJWkTpNbJN03xG10keHh3JRtrylHPyLRBuv4Yf5rbbbdxw9tA5L98QI7mUddA/SOzjIRX+sb2+aa2bjKDmnPGEbVXX9E7p398jwUFE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at; spf=pass smtp.mailfrom=sigma-star.at; dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b=rIB5Y2+D; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sigma-star.at
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b="OujyyCzs"
-Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-53346132365so6086198e87.1
-        for <xenomai@lists.linux.dev>; Tue, 27 Aug 2024 01:45:27 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b="rIB5Y2+D"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-42ab99fb45dso57808225e9.1
+        for <xenomai@lists.linux.dev>; Tue, 27 Aug 2024 01:45:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sigma-star.at; s=google; t=1724748325; x=1725353125; darn=lists.linux.dev;
+        d=sigma-star.at; s=google; t=1724748327; x=1725353127; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=BDTV1yeEYhtQzDS7DzzPUceuXthqxBYh8UTl7PRtBns=;
-        b=OujyyCzsXidIbqGGn7zpdpAg+n4Y/M1i3NCzf9JmhQPs3FjMGaHdHKtuD+Z+AOOi+3
-         hLfeP5LeV2j67/qqqJ3nF/KLm7zSjyPNAW1vz7sCcCPOBfNkqsVyxHIr8zN8uRyB1ecB
-         wWQRVW+ieEFAs3oppB+fsR3SqN4vjpQ+/PS2Ty0Lo7289BkLgNQhH/VsjgZ5IDiX0FuJ
-         CiZ40JZOUpDEgy2OUDhbMxf1hioV7ZqRYmv0M9TElpCrvMv3T8zN71t2xsFFKfw1SnlX
-         R7M6ubtyngYo4mBacb8escJ7K+O6ZOW24gnygfHxNJsdoqF4tfalUxaRRaPvuvpNZy4n
-         uUDg==
+        bh=SYC0wkHrlKstCsHNzZtMFCMAmAD6DMJkd2VlfVZZGiQ=;
+        b=rIB5Y2+DZtxVKMTn2kx56fuKoKfvuUs1hNF+BR/+//389718Vn9Ey1q/DARg3qk1km
+         OplkhxexZOHvoR0pqkYgHgSmRWxjzykmq4YBjGyMRCZAq72nGifIY9hwsK1WcuuM/WEx
+         0s4cLeVDDwldtBgnzTkBd6v5M2CDbeWWT3wGF3qH+ikCdn1dHZ7ZvWfjg3fovrPTee4B
+         suND/gWFAnfTOgaODXw8m66/E+m66Tec2c/4X9oExfb0RGxD7OeyiKvweJHrDC0SfUwl
+         zyUo+8b9N5l7HFDw/2mxXDTynYISBIYaHzkcv4FLdsDz3zCuxuWoHe2Lu70GzHw6L4sA
+         EG6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1724748325; x=1725353125;
+        d=1e100.net; s=20230601; t=1724748327; x=1725353127;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=BDTV1yeEYhtQzDS7DzzPUceuXthqxBYh8UTl7PRtBns=;
-        b=Odvriqo7rtSI/Q2H5oXW0BbddYn9lOrcDz5QFPZPX0TmHU5nc+M9RtLlDAjL+oJglx
-         7zjpmW/vLMnPFQJyPzqQH9voPAJI0NW/6wpbG/0svyJKi+cFTQcWhgwDeb3kfdLG+gLk
-         +rIIGx3ApkU5Ipxej4D6Uiar4V9yZvIVB0XTZ/Mn4xAy8M6rRq6/4+G9TMBZg8KZzjEj
-         758GLPuxwHtafvmDtRBWq4p3wZ0JtHQ8F49BvpmcwI+HYbAEPtH59d9PGSgFuGfcVOPk
-         ouCBnl2r6/A8xh7DQ/UwuhRb2/wjsWKZD839HPVdhCEe/eKH4MhdXyKLzAUVpP5mdK/e
-         ShhA==
-X-Gm-Message-State: AOJu0Ywf3dKLPwhzGcQ/yO4J+SUUqk32KXmZSntGk23Kh08SED8l8Nay
-	whBOpgTQ8YWIQokuQu/WTwmQZLzZAx/LtusDbrUrX/OiRYxDZLHK7UPXKkrkiMBRqqhIxCmjYie
-	+KFw=
-X-Google-Smtp-Source: AGHT+IFZ/3ngYcTDgZcrwUvJyNvU8KeYi/S/ms4bP9HS0HynsRt23+rntye+HVCwt7e8oPFM8uK+UQ==
-X-Received: by 2002:a05:6512:3d24:b0:533:7ce:20e0 with SMTP id 2adb3069b0e04-5344e3bc071mr1321133e87.8.1724748325262;
-        Tue, 27 Aug 2024 01:45:25 -0700 (PDT)
+        bh=SYC0wkHrlKstCsHNzZtMFCMAmAD6DMJkd2VlfVZZGiQ=;
+        b=KrNs6Oo3XPhx9cide+KEJh6gYXxvUSo+U+PHTRM8uDKkGKDdeeWQ2G/X6DHeknWPJ6
+         vrsy+6LZCH6SOQQ3ltYs+wqXw53TXoKzmEhrB2vzp7cNNSfsHOL5/ujA0fYuclO1LDLL
+         cHMBrJJHIAdDvPN8Izh9A4ndo4rgiWIa1G7f0TcJ/hy0R4oirb1vbsVu1F0iOavph1bh
+         soV43J/rPIl9NjprFCCq8ilbHDruuNpm0WqS4cC3iOgEY48pwtV4Wlmy0FhnCQO73bnx
+         c9GMJYIQ6pgVznzGjWDlPpBQwR5CLebryHvk2OBMrL3MoZXQIoGPrdwWunrf+Qw3BEqu
+         LbrA==
+X-Gm-Message-State: AOJu0YzM11rZls+SCodCSi07WhusrSN3+0H4rwKHy7zJLs7ZP6rGScCm
+	2ueUMzJ0lgH4hmpZ0aTpTOJqfp4KXcJJ810lAsvQArNvKWa8/SseUJCpkNdT7v1thu7n3H3hig2
+	qWoc=
+X-Google-Smtp-Source: AGHT+IG+ifa1c16B5IpsKgghhN3qIMUTnoXU95GksTsF8TD045pwWR2ttAQa32kXzGODUOqqdb97CQ==
+X-Received: by 2002:a5d:67cc:0:b0:371:8283:94c1 with SMTP id ffacd0b85a97d-373117be78bmr9972139f8f.0.1724748326725;
+        Tue, 27 Aug 2024 01:45:26 -0700 (PDT)
 Received: from probook-s.corp.sigma-star.at ([82.150.214.1])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42abee86da6sm211779435e9.17.2024.08.27.01.45.24
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42abee86da6sm211779435e9.17.2024.08.27.01.45.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 27 Aug 2024 01:45:24 -0700 (PDT)
+        Tue, 27 Aug 2024 01:45:26 -0700 (PDT)
 From: Simon Graber <simon.graber@sigma-star.at>
 To: xenomai@lists.linux.dev
 Cc: upstream+xenomai@sigma-star.at,
 	Simon Graber <simon.graber@sigma-star.at>
-Subject: [PATCH v2 1/4] lib/copperplate: Get session name from env var
-Date: Tue, 27 Aug 2024 10:45:18 +0200
-Message-ID: <20240827084521.13547-2-simon.graber@sigma-star.at>
+Subject: [PATCH v2 3/4] alchemytests: Set cpu-affinity by env var
+Date: Tue, 27 Aug 2024 10:45:20 +0200
+Message-ID: <20240827084521.13547-4-simon.graber@sigma-star.at>
 X-Mailer: git-send-email 2.46.0
 In-Reply-To: <20240827084521.13547-1-simon.graber@sigma-star.at>
 References: <20240827084521.13547-1-simon.graber@sigma-star.at>
@@ -70,57 +70,47 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-At present, for two Xenomai processes to share resources, they must
-be started with identical --session= parameters.
-This is cumbersome for extensive projects involving numerous helper
-processes. This commit allows the specification of the session name
-via a global environment variable, namely XENO_SESSION_NAME.
-The --session= parameter overrules the environment variable.
+The alchemy test runner can now make use of
+the XENO_CPU_AFFINITY environment variable by setting it before
+dispatching to the inidvidual test programs.
 
 Signed-off-by: Simon Graber <simon.graber@sigma-star.at>
 ---
- lib/copperplate/init.c | 21 +++++++++++++++------
- 1 file changed, 15 insertions(+), 6 deletions(-)
+ testsuite/smokey/alchemytests/alchemytests.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/lib/copperplate/init.c b/lib/copperplate/init.c
-index 16fc59f7a..01969cfea 100644
---- a/lib/copperplate/init.c
-+++ b/lib/copperplate/init.c
-@@ -114,6 +114,7 @@ static int get_session_root(int *regflags_r)
+diff --git a/testsuite/smokey/alchemytests/alchemytests.c b/testsuite/smokey/alchemytests/alchemytests.c
+index cf9f970f1..edbafe6e7 100644
+--- a/testsuite/smokey/alchemytests/alchemytests.c
++++ b/testsuite/smokey/alchemytests/alchemytests.c
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #include <string.h>
++#include <stdlib.h>
+ #include <smokey/smokey.h>
+ 
+ static const char * const tests[] = {
+@@ -31,12 +32,19 @@ static const char * const tests[] = {
+ 
+ static int run_alchemytests(struct smokey_test *t, int argc, char *const argv[])
  {
- 	char *sessdir, *session;
- 	struct passwd *pw;
-+	char *sn_env;
- 	int ret;
+-	const char *args = "--vm --cpu-affinity=0";
+ 	const char *const mod = "xeno_rtipc";
++	const char *args = "--vm";
+ 	int test_ret = 0;
+ 	int ret = 0;
+ 	int tmp;
  
- 	pw = getpwuid(geteuid());
-@@ -121,12 +122,20 @@ static int get_session_root(int *regflags_r)
- 		return -errno;
- 
- 	if (__copperplate_setup_data.session_label == NULL) {
--		ret = asprintf(&session, "anon@%d", __node_id);
--		if (ret < 0)
--			return -ENOMEM;
--		__copperplate_setup_data.session_label = session;
--		*regflags_r |= REGISTRY_ANON;
--	} else if (strchr(__copperplate_setup_data.session_label, '/')) {
-+		sn_env = getenv("XENO_SESSION_NAME");
-+		if (sn_env) {
-+			__copperplate_setup_data.session_label = strdup(sn_env);
-+			if (__copperplate_setup_data.session_label == NULL)
-+				return -ENOMEM;
-+		} else {
-+			ret = asprintf(&session, "anon@%d", __node_id);
-+			if (ret < 0)
-+				return -ENOMEM;
-+			__copperplate_setup_data.session_label = session;
-+			*regflags_r |= REGISTRY_ANON;
-+		}
++	ret = setenv("XENO_CPU_AFFINITY", "0", 0);
++	if (ret != 0) {
++		fprintf(stderr, "%s failed to set XENO_CPU_AFFINITY: %m\n",
++			__func__);
++		return ret;
 +	}
-+	if (strchr(__copperplate_setup_data.session_label, '/')) {
- 		warning("session name may not contain slashes");
- 		return -EINVAL;
- 	}
++
+ 	/* Try loading the xeno_rtipc module as the pipe test depends on it */
+ 	tmp = smokey_modprobe(mod, true);
+ 	if (tmp)
 -- 
 2.46.0
 
