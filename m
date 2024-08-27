@@ -1,42 +1,42 @@
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE8ED198E92
-	for <xenomai@lists.linux.dev>; Tue, 27 Aug 2024 09:10:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDA6F19D06D
+	for <xenomai@lists.linux.dev>; Tue, 27 Aug 2024 09:15:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724749853; cv=none; b=eWW63R8XnILnlXRjTIm3xGD4aAAR1MaIBQaVsNTOosBKfbaskQF0zPJwxzlaD56/SY8CpsINQDUptAXitf9GQZXeox2F3u48xmrAakvjGRzHyp04GTPjKh39DRzBVCDbpj2erTPqGLc22l/5bk9dqnj5PrTnfpwaz131nwh00x8=
+	t=1724750139; cv=none; b=Hd57A6ZuVlBr37KtuTCIeeyJmGY5cHJrNvtputeVZZy2Sjc9yAQ0xY6SiwsDiK61a+G5d1keG1aFVYc463s+9EmWZN25AGrCFWHmCkpUF2wEenm+QQbcQhCDKS0UIbKrQClmtQMWQrr3TlbdTzGGuG1SKTRMA4VWl2WhSTMY2iw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724749853; c=relaxed/simple;
-	bh=XtoiaXiwAxoq9WpRZxK25CmjEIQqAqVhfJDs2UVcYdk=;
+	s=arc-20240116; t=1724750139; c=relaxed/simple;
+	bh=gQsimr+PAnsEiUPzhpJ3dak77uhB1JW7cLc+o+sQnIc=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=VIzAvJeRXftf7SSL0NgnNyk6f9Eg0VxvjT8ZeUocwvSkYcVR5vfSft5vxStBAV38AARmdHhMwWdqKUH71gOBODUfdJAQfNtsTIvbgJQBHob/0MvQ2U1bKSZj1uYUueW6xuZwyOzIK5TJB2WM6oL8D8jighw8mS+IWxiYpfUBabA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=PYPGpDqD; arc=none smtp.client-ip=185.136.64.228
+	 Content-Type:MIME-Version; b=CsgYbhYIwGL6irrR8l0zkq63tUihPdyqd8cCefX08lRoN2JTN6Z/GcsocqaKRPxEaFF+kioSBF0OiuAr3HCRvdRhrlAObv5ChChMfIpZOPP7aaezxjWAcqGsZyC+JEflR8bPKpHuXIiiOyzjEeRHzCImNPCmnsXQaimCI1nRgno=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=YLVP9+DB; arc=none smtp.client-ip=185.136.65.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="PYPGpDqD"
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 2024082709104209d7bf72bcfe93621d
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="YLVP9+DB"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202408270915308755bffe079cda1901
         for <xenomai@lists.linux.dev>;
-        Tue, 27 Aug 2024 11:10:42 +0200
+        Tue, 27 Aug 2024 11:15:31 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=OvR37TX+uLURBxBUPjkKjN+/UA2Xt6yCE4bjdk8wxro=;
- b=PYPGpDqDpsXY9tACOAga07yV2qznlnq19b7wPDFt+S2kiv2L9qlhrdwmYB8+eOehWfgPfQ
- usANLfuYF5Pg4gK9Z0l8Lq3jeQP7T6FdVYgftxSNbuT4XAYeaWgumzcSRlmLf/VnYLgWp0Zz
- BzbFZfc6VRKUPVeCXkB287jul314KQTh7h5RQXlimpAnoTEQEm/K8f3I6dZeR3jqZ4JoNrfZ
- Rpqm6hne1y/GL27xnhhkvmKxAuZv7JeuMOtqHiOIHOI3A7+p82xGOn+vhZAuyqIkBqJtyayU
- T+IqEIfKMcZ4nNH1fjXtPpnhunGxUq9Mmc+ImTtBYcH8jIU+rMgAqVLA==;
-Message-ID: <2de6209339b990f2c3a7bd16415d3e38b4a3eb65.camel@siemens.com>
-Subject: Re: [PATCH v2 2/4] lib/boilerplate: Get cpu-affinity from env var
+ bh=mCdaLYuB3PyeZ1rR1VEz71MmlIO/JtBVfzQSgq+N0L0=;
+ b=YLVP9+DBdQGVmf7ut8IiArGG6Hm+bQsfWcttlekvJ5vQSUR6UuowBpVpkC1xqht9OJh5GX
+ wFirCe0w5oUEHKf9OuDItrCUVxR+2Y2r2Kkp7kEcfoGEoQpkEQpeYDsGBQQ0uF/XwkV9eWHQ
+ LHvW0o72AEIIJLOWwYX2KPcpcUk85xuL8oYsxKle5VQr22SqLyDfdbKsYOjjGwGKUPrpK3da
+ 4QFKd+lE2Y37M4e/gS63U4zO11W4RdrJJx0pDP9cm36jyL+DRsJcbCESkax3TFOt1e5/f9T8
+ K0KaAv0apjksyw0kFkmxjzyB4L9GIM1CgTO+Pgc+/SaEMImDOeaTydSQ==;
+Message-ID: <616b40879c0563a56bc8119efd8b10f66562f0bd.camel@siemens.com>
+Subject: Re: [PATCH v2 3/4] alchemytests: Set cpu-affinity by env var
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: Simon Graber <simon.graber@sigma-star.at>, xenomai@lists.linux.dev
 Cc: upstream+xenomai@sigma-star.at
-Date: Tue, 27 Aug 2024 11:10:40 +0200
-In-Reply-To: <20240827084521.13547-3-simon.graber@sigma-star.at>
+Date: Tue, 27 Aug 2024 11:15:29 +0200
+In-Reply-To: <20240827084521.13547-4-simon.graber@sigma-star.at>
 References: <20240827084521.13547-1-simon.graber@sigma-star.at>
-	 <20240827084521.13547-3-simon.graber@sigma-star.at>
+	 <20240827084521.13547-4-simon.graber@sigma-star.at>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -49,70 +49,56 @@ X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
 On Tue, 2024-08-27 at 10:45 +0200, Simon Graber wrote:
-> It might be helpful to specify the cpu-affinity via an env var,
-> XENO_CPU_AFFINITY.
-> This commit adds a helper function, called in __xenomai_init.
-> The --cpu-affinity=3D parameter overrules the environment variable.
+> The alchemy test runner can now make use of
+> the XENO_CPU_AFFINITY environment variable by setting it before
+> dispatching to the inidvidual test programs.
 >=20
 > Signed-off-by: Simon Graber <simon.graber@sigma-star.at>
 > ---
->  lib/boilerplate/setup.c | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
+>  testsuite/smokey/alchemytests/alchemytests.c | 10 +++++++++-
+>  1 file changed, 9 insertions(+), 1 deletion(-)
 >=20
-> diff --git a/lib/boilerplate/setup.c b/lib/boilerplate/setup.c
-> index 26c8c4cf5..4249cd230 100644
-> --- a/lib/boilerplate/setup.c
-> +++ b/lib/boilerplate/setup.c
-> @@ -383,6 +383,19 @@ void xenomai_usage(void)
->          fprintf(stderr, "--help				display help\n");
->  }
+> diff --git a/testsuite/smokey/alchemytests/alchemytests.c b/testsuite/smo=
+key/alchemytests/alchemytests.c
+> index cf9f970f1..edbafe6e7 100644
+> --- a/testsuite/smokey/alchemytests/alchemytests.c
+> +++ b/testsuite/smokey/alchemytests/alchemytests.c
+> @@ -1,5 +1,6 @@
+>  // SPDX-License-Identifier: GPL-2.0
+>  #include <string.h>
+> +#include <stdlib.h>
+>  #include <smokey/smokey.h>
 > =20
-> +static int get_affinity_env(void)
-> +{
-> +	char *affinity_env;
-> +
-> +	int ret =3D 0;
-> +
-> +	affinity_env =3D getenv("XENO_CPU_AFFINITY");
-> +	if (affinity_env) {
-> +		ret =3D collect_cpu_affinity(affinity_env);
+>  static const char * const tests[] =3D {
+> @@ -31,12 +32,19 @@ static const char * const tests[] =3D {
+> =20
+>  static int run_alchemytests(struct smokey_test *t, int argc, char *const=
+ argv[])
+>  {
+> -	const char *args =3D "--vm --cpu-affinity=3D0";
+>  	const char *const mod =3D "xeno_rtipc";
+> +	const char *args =3D "--vm";
+>  	int test_ret =3D 0;
+>  	int ret =3D 0;
+>  	int tmp;
+> =20
+> +	ret =3D setenv("XENO_CPU_AFFINITY", "0", 0);
+> +	if (ret !=3D 0) {
+> +		fprintf(stderr, "%s failed to set XENO_CPU_AFFINITY: %m\n",
+> +			__func__);
+> +		return ret;
 > +	}
-> +	return ret;
-> +}
 > +
 
-I'm confused here.=20
+Is there any side-effect that I don't see here? The result seems the
+same... My question is: Can't we drop this patch?
 
-First: Naming. get_affinity_env(), I would expect that I get back the
-value of XENO_CPU_AFFINITY, but that's not the case. I get some error
-code from collect_cpu_affinity().
+Btw: If we set something, we normally have to clean it up / unset it
+again. Can we safely skip unsetenv() here?
 
-It seems the function does something very different. It sets the
-affinity, based on the env variable content.
-
-Btw: Code style. No newline inside the variable declarations at the
-beginning. No Brackets around single line if blocks. Newline before
-return.
-
->  static int parse_base_options(int *argcp, char **uargv,
->  			      const struct option *options,
->  			      int base_opt_start)
-> @@ -560,6 +573,9 @@ static void __xenomai_init(int *argcp, char *const **=
-argvp, const char *me)
->  	/* Retrieve the default CPU affinity. */
->  	retrieve_default_cpu_affinity();
-> =20
-> +	/* Environment variables can be overruled by arguments */
-> +	get_affinity_env();
-> +
-
-Second: Error handling.
-Single usage of get_affinity_env(), if we ignore errors why is
-get_affinity_env() returning something?
-
->  	/*
->  	 * Parse the base options first, to bootstrap the core with
->  	 * the right config values.
+>  	/* Try loading the xeno_rtipc module as the pipe test depends on it */
+>  	tmp =3D smokey_modprobe(mod, true);
+>  	if (tmp)
 > --=20
 > 2.46.0
 >=20
