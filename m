@@ -1,74 +1,53 @@
-Received: from sonic312-25.consmr.mail.ir2.yahoo.com (sonic312-25.consmr.mail.ir2.yahoo.com [77.238.178.96])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2061.outbound.protection.outlook.com [40.107.241.61])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7B3615FCE6
-	for <xenomai@lists.linux.dev>; Wed, 28 Aug 2024 13:05:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.238.178.96
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724850355; cv=none; b=AUh15fJnhUAzM1HcLJXsobxHmOTJekoSoRz1VujQZZvGCv0mi9eUPIzY3/DkdHgNDiBbN02TEZ20GiTgfLa4ZzE+pirUqLA+zQIX9EFxAk/10ba6QPoIqdNhTiwluZBjgmA9sMg55ZZKuFzH79tdgCCj9Tsb90q8T8dDjA3+0IE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724850355; c=relaxed/simple;
-	bh=3AQvwicpbYkTWZYKMDeP9fPSKmcesgZKEh3VfEPXkTY=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=mA2d5eQee6GjuchopBdYNBVqxlXbssv663VjDrWTkfNNZ/dh8m8dRmi2e0/I5GMSgId79RQ4m2vkpQiCPNXy5xt+BLCY1aQWAn70bJRREZdVF2UV5DIKEll3m+7/Im8h3naf4zcX2CVXHIqeKFB8mHQWv4mq/6zAmlUTONRs+8c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com; spf=pass smtp.mailfrom=yahoo.com; dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b=Xi0yx2PS; arc=none smtp.client-ip=77.238.178.96
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yahoo.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0C49156227
+	for <xenomai@lists.linux.dev>; Wed, 28 Aug 2024 13:40:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.241.61
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1724852429; cv=fail; b=KSHTf+bVovBjA/X1f2mXqpse1Ek1yPD4NyYWo5GZrkC9s6etNdb9sUwDrEZRgrVvLDAXYtB+GodPQVCfqDg4fhMEyiFpR5WaNjli9r5KIwVQvPXcD2wYgIIRUq3SXrvLBxNsesc3yf2Oh8R5+UQCldCxsFoL7i/XzXScKxaJLjQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1724852429; c=relaxed/simple;
+	bh=2AuG0hK/cEtsLQblauhKVeW6yWJTdDeexEaSHzr4Rs0=;
+	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=P+mc3gWDoW0aUL6LwPpXtp/gzhE37QwPZ5vkURUtY0+yXtR1+jBcXI2AAE7AXV5BsqLhh7wPaHq08FIXfZuZ4Dw7ie1wmJxdADI03REhBxrlmXhG+wiP3jwjiIeZDGRN+AQE/5ST9vshyWFme21xBlWy2+eyqbTHL4moCqB0HOo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=JDg5aSM0; arc=fail smtp.client-ip=40.107.241.61
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b="Xi0yx2PS"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1724850345; bh=J3SzUah7QjvAeV8KMnFdS+/WJCPeJFjZLP5zjBEwQM4=; h=Date:From:Subject:To:Cc:References:In-Reply-To:From:Subject:Reply-To; b=Xi0yx2PSNMzK6hzIh7W7ys4zkbcbRKxygXPLL11WkzWzbOQZDgVUh8RXzM+YBM/yrHkR3o7CsxImdO/U2XoRV/vtStOMAXNf3Yi4h7fj21xqdnh6qiCFg2unN8sNCdwT8yxt8K+zimytaUUIwpRq53LPQOrNc66Dx5ZRzjixLFg1vBx3z0hByaJjyIgwKtqMgdtffLygfsS+kHfed0YeGYXRUE6pYrvX39dD8mP9G+JrVp6/8tyVAVF2BrkGOw1zcyzHIZBRr5DSDS9uQaspIdWV/C7W/jSJNfWUnbSMSIOLrgLG/bl+aOrZ1gVhShYsFrseWvPC9ADYuD+9hA0i2Q==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1724850345; bh=dDzOCCZzdFfwSUIbl4kNjVtgTc4b+7+Wq6l2MBFQZih=; h=X-Sonic-MF:Date:From:Subject:To:From:Subject; b=JzufO93XgEjrGQahvyLqKCt7StRgKQnqSh0RasqZA6JmDaQAaN4gcbt9vYjIAdqSlcep5O8TxCHsEIfWPvosOW/40YguT1lBDxxrqSF6t9lQtI5NP9rpTD7OfOupgyNqWvk8D1MUgCSuiWVvIEWShI/EQrEJ+4JiDbFiQeNnvsuMSVSIbH3iNCXr1JBz/utey7QBt8x+8So3EuuszSPXp5b6T9KEBgjxMdg73TxUoYl9kirvbLdrZG+KTkvfto9ngiCDovec7iy0euVGwiuen25Cb3l6D0NxfjVuDGkdAmgKsJDsnWaQKI4DWwAX+miRTS5+4hP6aw7Cb3KnMzwg1w==
-X-YMail-OSG: EnFSGqMVM1lKqz9zJoMxqyBHzGDFmdnJWhv8JWgHJp4QeL303bwU1Qh.JnJ4ZDo
- aWLHvKkno61jqLeFZcNdgd5niv4qeOjYQtHLwOFegW9PEZzMyKs91dyIRPbZNOs8H2zy2HPwYL.V
- sMK_gMqX0o93XaXwy8gNdWwX5MG4egQIA5PeAgVJGMFL5r_x8BXAqQ0KFfLEmpB0uPxcFUNMVsJF
- K9dIoFVmW0ejD57b0jxohUj_FoDBfOGsEDSsYviaSvOcHebOTbXRY5_14p2A2t8dbNa96rftLunI
- mPfC9SMZjaSro.Vc_3W0l2635nUQky_IHHfAeTc_f_L56r6gwnH74pe6mYM.YmSj0PWb9526uNwe
- zQOcyR4RTDa3CJMk5Qooa9w8fRW95so.tbGHIfakewgDYIDSPt2D7lTRC4Jra_NAAlFRuhVzYcJ_
- tU.yzl0AREps0Hw2lfUcBof54M_LZ0rkdHOueiS4MWpR4Wr_sZqhdyKJbKcUMUJDe2LIOIw2yXGl
- zH7C2FB774Yg_HCmpVXMx5qS6XW9FMeBv2waUSRVwnAEH2CDkaHC1Yaa9nEizHGv1640bVJy2X6_
- 4ODr_Z0DKHQzBoGmVZkEnpnQGyK72wd.IShpL5dV7Zdr1bzsbMKo9zAMyRWGch3ZmlocnLIB6.d5
- SfHNXG_ygiEZuwStVwpSpavNAJk4pn1XgcrLfM7Amo0bLfqQPU0OUeeJaa6JqOmFTy8c5df87dAr
- lH6098f6lY0C5bqxYYQDK2vBlMaWdp1Swjw_nP2__eBe0AK1m5GiXU0tlUSulFFVflIClmn.o3PZ
- SWIIb9p8ZpHQwDTUWn_ullh9kgy4sOAbG6OlbtDay.vOHru6uLVyTslTOEGvA2sFg4FmhFMHYBH.
- fJUYHPddj3U8VARh_ChaXitJZ0zHETWM3MCzm8aU1ANfr_OdIIbUcGgCSwd9jJofqOPzyNEChmGL
- .wEVwNrPAT9rXmWPXj2_a0Q1Qstljaswng6YcCXVcqoHwa3hS1EJtxPn9hT79ihlkiFauzeuZco7
- Cq4.v1b00dLh6.iqrT1ZiGw03WeYevSsglgfDGkAR5LZvM4Mf_3K.fq0ETtG0US2_Ikm3LQdOVxI
- c6_30u_NrjK1xKORy2iZwQT6iDLc5R5u7KoNHhvAdgJyQNM.6mn555dMptunOYMJJNy9NyyEdGTj
- y5WjnpR3pW9K9NsCzTjuGKX6ddAdaGrOWAz9aLQsQBiK4m7JI7fbI70qpVhaPdJqyPfjWslEDUZH
- QCZ6cW7aiBb3fiVUayjKXmW2cyVrDbm.vgStLf5cCB2VYrsYK_sSXFzPQCvomMRmnUmf6hsEzVzb
- 35bo9a6sVG7WbV4hVdhhQXFqqz5ZQ5URxqfW.O0bXjEWkNKj6HoSzhXgtK9ItItzwd4k19ZEGjJu
- jve8KjJbC6XqOTH67Sgn7ZeJVTRHEIZn0rsuLBHCostZT24GiusJgvzrr.Afyro1I05vbczjX10W
- QFLgrwhoBIYSzu4SxO1VHRd8Dfkjv_.Grmv93jzWosHIgy83QOlvCBGPYG2nzMcS6FTpW1A1Swk7
- WgoQL2SsISSb4BHjDzttYsY24m9PgzIvnoppm33dwrF7._Lf51Npb.Y20Ypf66gnRSAEYSvDDXBL
- qC7kMDG1nJHkHrq2iENQR3PwYgxCyKTGb_xPgwSjAktfc8_x8AjQ78THpiEt_2yr5SOHMU4vu3Q_
- BFfK_MuU5ApIp5yH5iPnSGginbVke8IKWTaP4PDhFfgrTd9mDGxikLMB7IDyaaepXH0yPxt_6K7q
- t7DLrQIns7TMhSyxdYbrs5d6BPAwdzDSghR9hsb4QAkLWiFrp_JbD19RVuwwytLoi2rPzNddjT_E
- YtsBaQ5RScG5dRIaD2eDaAPad4iFbBWl.CaqbMhowjRiFK3G6gFneoWI54O8OKiiM1UQdq27jcye
- qprKo_.qDleqKnyoSg8vTGv9WD2V3GO6wtkF1OiZSwxkVJ.d_NIZqaAr.YqYYhor8BMLHniuxT6a
- N22nFb8oO87KsbYq6j2QB2VMFHm2usnuCrqCv27rKjJCuUD1VmG7NSdQE.R9IAQHAnDr4dWgL.Ke
- 7xBh4M6n9orAuUe5brMOny02b9ALQigPP1l80zxqQLbJMj.vfC4_RoAT.WOhpjG3W5hU5y227UvA
- WkEVZyO7aZnmvRnvQAl23viboMVs58KVz7ztfryjv7peFIrApDxXBrcoy02j9i.9a2k24hkxosqy
- PajUOLWGE4GpowYY.x5lc
-X-Sonic-MF: <mau.salvi@yahoo.com>
-X-Sonic-ID: 1dea323e-8e85-4a78-a678-0fe74bb567c7
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic312.consmr.mail.ir2.yahoo.com with HTTP; Wed, 28 Aug 2024 13:05:45 +0000
-Received: by hermes--production-ir2-6664f499fc-l95lq (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID bfc74013aa7f2c75f64187f0202f12dd;
-          Wed, 28 Aug 2024 13:05:44 +0000 (UTC)
-Message-ID: <4e5fe5f2-44cb-4578-b47a-89980173eac9@yahoo.com>
-Date: Wed, 28 Aug 2024 15:05:43 +0200
-Precedence: bulk
-X-Mailing-List: xenomai@lists.linux.dev
-List-Id: <xenomai.lists.linux.dev>
-List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
-List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="JDg5aSM0"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=TS4mew+YowPqtmxnKqg8V+0xeEe7gph3dLAvfYQ/XPXA39/d8lvLC05famoA7uezKSF81THAizLZMTRV1wZz4mKDxQ4ohG6Q9QW2tHQ8lyWCpXfXGdX1hudcLbBqfSTMN+YOxMaszWvP5NFiterch7ZnBvkfDya5BQYwHTvy/larHhgTYzJChfWNr5dZEBrIIizk6CLhvgHY+bL9LDt92HtRaICkrjyvo7bFWzyvQa2qUmVdBcBQuA30FV4bFkOWBrerPg7A9PTDPKjZNcFjf+N2zh8eTOsuproLQjZL+E9YIH8BCz/cd6hWwAt80Q+QizY8yoZz+8gvVpzKIiTGlw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xJ1TBjYUvEkOTRXAVKHdWa5geltDjTVdXphjCuiU5Jg=;
+ b=QNZxrGFn44yVyc59MnsAAFmOqqAqg4yaLn0vCAyvjndgl67adbxJEj57ErgL7bm89BTTeZQGGqsQ0NngC5LhsitEtg5R2HpWelqGhkJniKEszVKdbh0lbGhcMYeiA+lweOL5lE7Ng4nRk1/2ZCeVTXso22L/8czbuxOsc1z+Yqq/eAcOWQDkKfVPw7MSpCTZTczz9VMQt5jTGVjHkFRJvLh3D93r20A6OU9tN5rN0LkkLv4rDACsh5F0tzQAZjV7Uw4ZlNpndxFMS34FPKZ+MGrXb8GSuWHqQiftx4lgyfhv6bNkfxWwVcV0L6ENUegkqcAoaQQBcGkcUy1zh1s/Nw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xJ1TBjYUvEkOTRXAVKHdWa5geltDjTVdXphjCuiU5Jg=;
+ b=JDg5aSM0zQnQn27/M0DSQznqKNifnOm6PUgXW1CGL6IlI91g8HqZj6Z+B0R/VfTKXYcIqkPAvIm3ZSQNkLbZ2U9uqpC0OlaMNvOBqEb7sAleoPfashjGKTRm30kIjFAmKL+wb2IuCULdIV7rstXlyiDXwjSpoH2flev0ARNcQYkP51JY98puDdZGF+H4kk0xqNXE9uJpv99uVx/OV3i4ZETTCY5Tf+pde5Uoy+uNjorst2Hcb3ZIgPOXSClthsNLngHjby4RfJlJTe4GmAss7xucRHA1jJz2CyrJVft59/m5nf9iQDQXh6ureJHMBWrjwBmkc6oluvhEHRF7GmaEOA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by VE1PR10MB3917.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:800:162::23) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.25; Wed, 28 Aug
+ 2024 13:40:22 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408%4]) with mapi id 15.20.7897.021; Wed, 28 Aug 2024
+ 13:40:22 +0000
+Message-ID: <e48a247d-db37-4c78-ae35-0d1a35646aeb@siemens.com>
+Date: Wed, 28 Aug 2024 15:40:19 +0200
 User-Agent: Mozilla Thunderbird
-From: "Mauro S." <mau.salvi@yahoo.com>
 Subject: Re: Process stuck in cobalt_monitor_enter
-To: Xenomai <xenomai@lists.linux.dev>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
+To: "Mauro S." <mau.salvi@yahoo.com>, Xenomai <xenomai@lists.linux.dev>
 References: <9d5bb262-0646-451e-a5af-82c0473a3003.ref@yahoo.com>
- <CADBp9x=310edtayP3nEeDSc2D318E=qA1a=5ceG0krd3r2VN8w@mail.gmail.com>
  <87e3bc23-4eba-43c4-bb5e-ffce9139c075@siemens.com>
  <CADBp9xnL46vC0KiYt2MSv+XxYcgb675S5X6geQWSv8KsKG9+xg@mail.gmail.com>
  <CADBp9xn_Gcu9TCaiZHZvo3hwT4JzzTxE4ueMH3dt81KJWF8qOA@mail.gmail.com>
@@ -85,239 +64,212 @@ References: <9d5bb262-0646-451e-a5af-82c0473a3003.ref@yahoo.com>
  <46a1ceb0-0684-4bb8-bcd3-5f71456c2d10@siemens.com>
  <0363a40f-ac3a-4024-a9bb-e37841625cb8@yahoo.com>
  <7707fef0-b164-4a79-913d-6ddcce6600d5@yahoo.com>
-Content-Language: en-US, it
-In-Reply-To: <7707fef0-b164-4a79-913d-6ddcce6600d5@yahoo.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Mailer: WebService/1.1.22645 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+ <4e5fe5f2-44cb-4578-b47a-89980173eac9@yahoo.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Content-Language: en-US
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ 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
+In-Reply-To: <4e5fe5f2-44cb-4578-b47a-89980173eac9@yahoo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR3P281CA0209.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a5::8) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
+Precedence: bulk
+X-Mailing-List: xenomai@lists.linux.dev
+List-Id: <xenomai.lists.linux.dev>
+List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
+List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|VE1PR10MB3917:EE_
+X-MS-Office365-Filtering-Correlation-Id: b89eb183-54b5-4f78-1a40-08dcc766f70c
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?YlZBbG1ocDlIeWxJZy9vRlVPZHRLSWFFRWtUSk1hTG82TTBzQ3BpNTNIa0xN?=
+ =?utf-8?B?VHRtS1Y0ZWZYeEJSWnA5cDA0QzlJRWEzUElRMTQ1THlvRnUvRUdVWWNWZG1h?=
+ =?utf-8?B?N0Q2Ym1QQUZGUk9ub2xBcDdzKy9VdHpkZCtDWURrRVV2VkhrK2Jhd25ITUdQ?=
+ =?utf-8?B?NlJsaUVHMkROVjJOREZ0VGh0b3RGTUJTMUNUaHAzY01jcktVblByTmRzWnow?=
+ =?utf-8?B?K2lTZWhUSzJoRmp2V3cvQzY4WVNGUG8wdXRJRURkdHAzMUpibDJmcER6Zlhm?=
+ =?utf-8?B?WU1wUVZyMnZCZldyWm94RzFsRndQaU5tMEtZUG9MUWFld2xKSUJiL2Jwa1lO?=
+ =?utf-8?B?aG12TDg0Z29mOTQ5ZmcrQnhxQStCL3VnbDZPbzE3QVFidEpWMXVSK0lkK2JP?=
+ =?utf-8?B?TnRYeXJmcjF2ODgxWE04OW1MMkJUZWJiYzVQZFZJM3QwcFdNQ2FQNk8ydWNw?=
+ =?utf-8?B?RVp6emp3VmZRQmp2L0ZJMS8raFV5YkxBOXhjd25vVzYyRkxLcUlDVVcrWWpU?=
+ =?utf-8?B?L1R1YStnTGJwZis2aFJxakpqQlE1WXBwZlFzQ21sM1FLNGFWamhsWDdzMERz?=
+ =?utf-8?B?L0NreFZEazNodW1ZQW0remRQYmVweVJJYjczbTloR1pPbUtSeFVKOHpHUlhQ?=
+ =?utf-8?B?TFIwd1JkbVBsUEhmaVRzU3dCVnJaaDc2a1dUaVN3dGRzM2t4MmgxcDAyNnZw?=
+ =?utf-8?B?b1g3ODdndVY0Y3o4QitDTVRTY1pMZVlLK0xOalVkTkdVVkc4WnM5Rjd3SDRR?=
+ =?utf-8?B?OFdZS1hWK1hqbTNOR2VOemgrSFN4bXk5VVZqbHlKUnFqb3FDRkVBMURzRXNK?=
+ =?utf-8?B?ZDVIWHR3bldTelZRei9aVnFMejFDbG95NzVET3dLdGxuMUNQSzRiclRqbGox?=
+ =?utf-8?B?SXBQRnU0ay9ERW1SclFibjdZb0RUTFlnTkhWRXJJaTFQMDZNdFVyN2dyWm9H?=
+ =?utf-8?B?ZDg4cVNzYWthRExiWDJtTWhHVzl5b0twT0IvWDNDWFFvQ1I4ZHZhS2tPVnpt?=
+ =?utf-8?B?elJTdXhPTVRLNXk1OWNoU0JUdnUxT0lTNFZ6M0d0bml5Wno3K3I0bGd1dVcw?=
+ =?utf-8?B?TzZzdi9UREhyZmd0aHg5ZE5Ea0hVclY1SnhaR1RHemljektad0V2a0o1blJv?=
+ =?utf-8?B?TjJ5alVMSE9EL2lRbzR2VzVSQzJQcmZuQTVjNm1VN3NMeFNFc1R3dU5qd3pM?=
+ =?utf-8?B?a3c2UHRnR0VXUGM1VlZWbVFuL0FmM3ZFTWFVR0lkRklVK3RSbWgrZ0I0WlBx?=
+ =?utf-8?B?bnlSK2VoajZkbkE5Z010Y01RVXBFMlhyajYyamZyRkVFVUxheWMvN2lGbVZr?=
+ =?utf-8?B?RkU1OEpyUjYrSWEvVkdnMVhBdnhWaWhic3NwcGMxUmlrRXdiZlkvN3FjNHIy?=
+ =?utf-8?B?bjNzZ0lCZktIRFUxcHhZam8zUzFZM3hSM29mbnZ5dnNyNzJHSVduWkpqa0p6?=
+ =?utf-8?B?NDl5RHhkZTYraEdaY1IxalAyVDh0MUUzNnBvdVVMMVpBc1pMb2N1RWpsaWZQ?=
+ =?utf-8?B?NkJsbEJXODZTQlBVY0N0NDRPOGx5VHMyNkdReUJLdkVNWndDdFdUc2JZV3gv?=
+ =?utf-8?B?YVk0d0h6dFBxWkZKZnVRZzR5VGplR3UxR1hUOGUxK3ozWk13VHpWK21wQWg1?=
+ =?utf-8?B?cHVBUVF3N2VQbkgxNXV0K3psWGNEYnExU0VxSzBML3h1cElodnRvV2lzUmZI?=
+ =?utf-8?B?SStnc2ZGL01wSlpCQUo5blNqZml3aHlFcVBEVWl2cDJldnpIMDF3bTNtK0kw?=
+ =?utf-8?B?M1piUjFDUzl2TmRuYWRpTHVQSFp0Nmh5L1YwNXF4TVdqZTc4M3Z5TmpYL1dG?=
+ =?utf-8?B?VkNyYUVGaVZVcGtjejV0Zz09?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?akpDcitoalpyWDdpd1JEMForbHVtdm5GZlp5ckt2TXNTcWdKRGc3TjlOakZy?=
+ =?utf-8?B?ZVVHU3U0dXBxWjBkbDB4SU84WXlyYUZXc3hmZ2QyY2RHcUFNbXpLYXZtSENa?=
+ =?utf-8?B?bS9MVlBzTis3QUp3MGFrYVlkMU5JYnhnTlhJNW5VaVBJaWlVOWF6akNVcXRt?=
+ =?utf-8?B?TVRUbzh3aDBIeDBEdndJdDVQRlI2VE42SDF0OVZoUGprYkNtMThScmNiakJz?=
+ =?utf-8?B?MWl6TkNNekp4SWpFZU1XUFYzUjIxNVg2bjUrc3FnYkZyVXExdFdKc1RUY3Zp?=
+ =?utf-8?B?dlVWY3dkYWpDb21mWTYyY0tRRk1KcmV0c3ZSY3VXRUxOekdSV1lZNEl3b3Rl?=
+ =?utf-8?B?cEtYQWNhcmZaRStWTDBjQ0h5MDZDdnpVcGozaHI0aUcvcVhEd1p3TXhSNUIx?=
+ =?utf-8?B?bXplNHE0NGlsVFcwWWFkZG5EUGJ4TkpudkdDcFMvK2QreUllS2kyYWJlcG0r?=
+ =?utf-8?B?WmI0ZDlXL3ZvMEFQamNJd2J6dHdTaURBbWEyNldNL0VYT0FzK1JKa3ROaGpr?=
+ =?utf-8?B?U0t3Q2RTYTZIN004QjRVVFltQlBuY2d2ck16U2hMbkZLajdCVTRCOFdwZmN3?=
+ =?utf-8?B?dysvWHozTGVOYkxWbkJnYzZPZ0FKVW95STdQUGROaGJhMnBiVzEvK0tjYjVC?=
+ =?utf-8?B?Umo4MnNueDF2dFVTUmhVOG9raXFMTVVJckZuUEt3amM2Q0lHY2ZRcWhDN2wy?=
+ =?utf-8?B?cGpyMXA0NzJPNGtSTzl5MzhnVlIvSXZKcHBZNFBJeHdrRTUvbm5ZRS9kZkFN?=
+ =?utf-8?B?RnBZM2FzRU00U28yb2d5Q1dQbXJyeXBPN01CaEoreE93aG1sRlZZVktGVDlN?=
+ =?utf-8?B?bjY0UUNMTEkrM09KbnBBQXlEeFhFd1dCNU85RWk4SE9iazkxaWM2czBhRGpT?=
+ =?utf-8?B?NmJhSm9FK29RM3QwWXRZb0ozODY3WExRWlo4YTdCN2dOaEdTZEQrNXFJaTdL?=
+ =?utf-8?B?Tkd4d0VEbFVubDk4TS9DbG1IRktsS1ozc3ZYWThpQU0xUkVuR2pENEU1NzVo?=
+ =?utf-8?B?THhKZEFiRFE1djBnQ1F0N1pVQk5IZm9ybDlYYkhHcXpsblFDWVZEcjZRdDV3?=
+ =?utf-8?B?SHBqSEczeTl4akRueThiK3h6eW5IU0ZIVk1wcGtMRjNScGtZeGN4bjg2cHJq?=
+ =?utf-8?B?RnArTXJFYUJmcThlYmN6d1R5S1ozaWh2akgrSEYxaisrTk1rSEpMSzhlYkhx?=
+ =?utf-8?B?Q3VnTGQzQmtpTDRkQkJJY1hXS0lNNVdPdzI1cTE0dGtqTVlMeTUySWUvWlE1?=
+ =?utf-8?B?S3p2eDJhT3ZHdVVCd1VDQldrbkRYdXdsZ21xS1FjN1pmQjhZM1A0V3dSUWUx?=
+ =?utf-8?B?YmMzTTlRYU5qSHRtcHFTVWhLZTZwS0VrMlp0emI1OFVzVHMrN0xCTHllL1Bu?=
+ =?utf-8?B?cXo2YUZPd05kWm15OEpHeElJUzh3aStQL1ZSMUdJRG5xcWxSTWNrUlplRXhS?=
+ =?utf-8?B?L25wSkdoMW1FTUE0TW9Fa096aTE5T3F6T1J4YUNlUnlQNlZ6eEVRTjNzMnk5?=
+ =?utf-8?B?UGpreDFEem1URDVhdGlaL3A5ZGd6RWdqd1Y3ZkpXY29sa0V4UlgzbUdsak5a?=
+ =?utf-8?B?aWtSUGJsYzc0RGN5WlozNlpqcjV1aDVDTTN5ODhzMW9CMUYyem0yNG9maHNS?=
+ =?utf-8?B?K2d3VFh1UUZ4Q0tnQVdCbE44WFB5SnNKTFFCMjR4YUpxcWwzT1ZCUldMSGpU?=
+ =?utf-8?B?eGI0UzZJUTFRYld3UHZwK2VpNi8xNHZiY2cvOTRsclIxWnBsWFFXWjlUTnBo?=
+ =?utf-8?B?OGZYVWdCeGkwa3lVR3k2dEdPVk9JYXZDdkRXK3BybjhETFFrbGlhaXRWK29U?=
+ =?utf-8?B?ZHJ5M2VlQkkwazA4czNuQW1mUUhJSDgyTnJCTHhkRGhIWkVNamhXRGlOZytI?=
+ =?utf-8?B?L0lJS2lXWEZlcm5WZ0NERG5OQkVjNzQ5ODFBN0htV3gybTAzRnh2K1AyaVor?=
+ =?utf-8?B?eFlQK3Y3UXBOTER4UVk3ZmU2QzZsZ1NnOEgycXA3NmNuV01tMUk1TmEyRDlL?=
+ =?utf-8?B?WjU4MmFrMk13dmFHQ28xSFIwTGlPUWxzMGFPZitJeVREYzF2aURGYmJjSVBv?=
+ =?utf-8?B?a3d6Q2EweFBYWWhuZXQ1MitCa0xkSlR6QmZDbmMvRk82YWcxOGJLMzlxUUx6?=
+ =?utf-8?Q?Kp4SXFRyU/xFco3zkHzMl4MIw?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b89eb183-54b5-4f78-1a40-08dcc766f70c
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Aug 2024 13:40:22.6287
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: TDrHGQLreYfzOxhw1wuKo2euRb6i7RqeanfWjF0SGpk2tI+44IrRQOq8yhyOMOIUZBOk/tW0yVMTnwP9afGTIw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR10MB3917
 
-On 21/08/24 11:40, Mauro S. wrote:
-> On 13/08/24 16:06, Mauro S. wrote:
->> On 12/08/24 15:59, Jan Kiszka wrote:
->>> On 12.08.24 15:41, Mauro S. wrote:
->>>> On 06/08/24 09:33, Mauro S. wrote:
->>>>> On 05/08/24 23:41, Jan Kiszka wrote:
->>>>>> On 05.08.24 16:40, Jan Kiszka wrote:
->>>>>>> On 05.08.24 16:28, Mauro Salvini wrote:
->>>>>>>> Il giorno lun 5 ago 2024 alle ore 14:10 Jan Kiszka
->>>>>>>> <jan.kiszka@siemens.com> ha scritto:
->>>>>>>>>
->>>>>>>>> On 14.03.24 15:22, Mauro S. wrote:
->>>>>>>>>> Hi Jan,
->>>>>>>>>>
->>>>>>>>>> finally I managed to have a piece of code that makes the issue
->>>>>>>>>> reproducible. It's not exactly small, but not too big either.
->>>>>>>>>> I hope that this makes the issue reproducible also on your test
->>>>>>>>>> system.
->>>>>>>>>>
->>>>>>>>>> The zip contains:
->>>>>>>>>> - a little main program (test.c)
->>>>>>>>>> - a little library (in mylib dir). Some pieces of code are never
->>>>>>>>>> reached, but leaved to avoid potential compiler optimizations
->>>>>>>>>> that could
->>>>>>>>>> remove other relevant parts (maybe cycles?)
->>>>>>>>>> - a script (build.sh) to build the two components above
->>>>>>>>>> - a script to launch the test (start-test.sh)
->>>>>>>>>> - the configuration of the kernel in use
->>>>>>>>>>
->>>>>>>>>> After building the program and the library with build.sh, you can
->>>>>>>>>> copy
->>>>>>>>>> on the target:
->>>>>>>>>> - the start-test.sh script
->>>>>>>>>> - the built program xeno-test-session-hang-on-exit
->>>>>>>>>> - the built library libmylib.so.2.0.0
->>>>>>>>>> and create the library link /usr/lib/libmylib.so.2
->>>>>>>>>>
->>>>>>>>>> Start the test with "./start-test.sh &" and follow what happening
->>>>>>>>>> with
->>>>>>>>>> "tail -f log.txt": after a time that varies from a couple of
->>>>>>>>>> minutes to
->>>>>>>>>> 25-30 minutes, the log should stop on "~~~~~~ RECEIVED SIGINT
->>>>>>>>>> ~~~~~~"
->>>>>>>>>> line: the hang is happened.
->>>>>>>>>>
->>>>>>>>>> A small recap:
->>>>>>>>>> Atom x5-E8000 CPU, Linux 5.4.255 with Ipipe 15, Xenomai 3.2.3.
->>>>>>>>>> GCC compiler used: 9.5.0 from Yocto Dunfell 3.1.22
->>>>>>>>>
->>>>>>>>> Can you only reproduce with this setup, specifically with this
->>>>>>>>> compiler
->>>>>>>>> version and only on real hardware? If you rather use
->>>>>>>>> xenomai-images and
->>>>>>>>> qemu/kvm target but still the same kernel and xenomai version, the
->>>>>>>>> issue
->>>>>>>>> does not occur?
->>>>>>>>>
->>>>>>>>> I'm trying in kvm right now, also with different compiler. Iit
->>>>>>>>> would be
->>>>>>>>> good to align / rule out variables if my first setup turns out 
->>>>>>>>> to be
->>>>>>>>> unhelpful.
->>>>>>>>>
->>>>>>>>
->>>>>>>> Hi Jan,
->>>>>>>>
->>>>>>>> Sorry, I never tried on an emulated system like qemu, I did the 
->>>>>>>> tests
->>>>>>>
->>>>>>> qemu/kvm - that is CPU-wise not emulated, virtualized. It generally
->>>>>>> gives similar execution patterns as on real hardware.
->>>>>>>
->>>>>>>> only on real hardware (using different samples of the same 
->>>>>>>> hardware,
->>>>>>>> just to exclude hardware problems).
->>>>>>>> I can do a test with Xenomai images on real hardware if it would be
->>>>>>>> useful.
->>>>>>>
->>>>>>> That would already be useful to rule out the toolchain as 
->>>>>>> contributor,
->>>>>>> yes. When at it, testing in qemu-kvm would also be nice.
->>>>>>>
->>>>>>
->>>>>> FWIW, I've pushed ipipe-core-5.4.281-x86-16. It's not that I expect
->>>>>> positive impact on your issue, but you never know (until you 
->>>>>> understood
->>>>>> the actual root cause).
->>>>>>
->>>>>> Jan
->>>>>
->>>>> Hi Jan,
->>>>>
->>>>> I've seen, thank you.
->>>>>
->>>>> I will try xenomai images on real hardware and I will back to you with
->>>>> results.
->>>>>
->>>>> Thanks again, regards
->>>>>
->>>>
->>>> Hi,
->>>>
->>>> first results after some tests on real hardware:
->>>>
->>>> - xenomai-image does not show the problem
->>>> - xenomai-image started with my custom kernel instead of the
->>>> xenomai-image one does not show the problem
->>>
->>> How did you build that custom kernel? Is it the same binary that failed
->>> before?
->>>
->>
->> Yes, exactly the same: I took the binary from my image and copied into 
->> xenomai-image bootfs, changing the grub.cfg (because I use a bzImage 
->> instead of vmlinuz).
->> On my custom image the problem shows up, on xenomai-image with my 
->> custom kernel no. My custom kernel is built by Yocto.
->>
->>>> - I didn't manage to run the xenomai-image kernel with my rootfs yet 
->>>> (it
->>>> does not start, but at the moment I have a headless system and I'm not
->>>> able to debug it)
->>>
->>> The kernel we build in xenomai-images may lack some config switches
->>> needed for you rootfs.
->>
->> Yes, I have to discover which ones.
->>
->>>
->>>>
->>>> While waiting the verification with xenomai-image kernel with my 
->>>> rootfs,
->>>> could we conclude that the problem lies in userspace then? Could be the
->>>> Xenomai config flags? Or the compiler version? Do you have suggestions
->>>> about other tests to run?
->>>
->>> Until we understood the reason, we do not know where the problem lies.
->>> Your userspace may trigger something that the Debian image we build does
->>> not.
->>>
->>
->> Ok, understood.
->>
->>>>
->>>> Note that the test binary is always the same in all scenarios, built
->>>> with my toolchain (that is built by Yocto), and my rootfs and
->>>> xenomai-image have both Xenomai v3.2.3.
->>>>
->>>> Side note: xenomai-image still has 5.4.228 kernel, maybe you didn't 
->>>> push
->>>> the upgrade patch to 5.4.281? Anyway, it seems that does not matter.
->>>
->>> Only the next branch of xenomai-images contains the update of the
->>> released versions so far. But when you build "head of tree" kernel, you
->>> should also get that latest version.
->>>
->>  > Jan
->>  >
->>
->> Ok, I used the master branch to build the image.
->>
->> I will keep on doing my tests, reporting further results.
->>
->> Thanks
->>
-> 
+On 28.08.24 15:05, Mauro S. wrote:
 > Hi,
 > 
-> I played a bit with QEMU and my image vs. Xenomai image, here the results:
+> I'm back after doing more tests also on real hardware.
 > 
-> - xenomai-image does not show the problem, both with 5.4.228 and 5.4.281 
-> kernel (as already seen on real hardware)
-> - xenomai-image started with my own kernel does not show the problem (as 
-> already seen on real hardware)
-> - my image started with xenomai image kernel and initrd does not show 
-> the problem, both with 5.4.228 and 5.4.281 kernel (on real hardware this 
-> kind of image does not boot, I'm waiting for a board that allows me to 
-> debug why)
-> - my image shows the problem: the only difference with real hardware is 
-> that sometimes it takes a bit more to show up (up to 1h instead of 30 
-> minutes max). I also observed that having some load on the host PC seems 
-> to delay the problem.
+> Here is a summary:
+> - custom image: kernel 5.4.255 + xenomai 3.2.3, built by Yocto Dunfell
+> (GCC 9.5.0)
+> - xenomai-image: kernel 5.4.228 (and its initrd.img) + xenomai 3.2.4,
+> built by isar in xenomai image (GCC 12.2.0)
 > 
-> I can share with you my rootfs and my kernel, and the QEMU startup args 
-> if it would help.
+> I confirm that the problem shows only with my own kernel + rootfs, both
+> on QEMU and on real hardware.
+> Other combinations:
+> - xenomai-image kernel (and its initrd.img) + xenomai-image rootfs
+> - xenomai-image kernel (and its initrd.img) + my rootfs
+> - my kernel + xenomai-image rootfs
+> don't show the problem, both on QEMU and on real hardware.
 > 
-> Thanks in advance, regards
+> Furthermore, I compiled the xenomai-image kernel forcing the 5.4.255
+> version and using my defconfig: the kernel became identical to mine,
+> then I expected to see the problem using this kernel with my rootfs. But
+> -surprise- the problem does NOT show.
+> 
+> xenomai-image uses xenomai 3.2.4, but I don't see relevant changes
+> between 3.2.4 and 3.2.3 (mine) in code linked into kernel sources.
+> Then, could really the problem be triggered by the GCC compiler version
+> used to build the kernel OR the rootfs?
+> Actually, my kernel with the xenomai-image rootfs does not show the
+> problem, then seems that the problem shows only when using GCC 9.5.0 on
+> both sides.
+> 
+> Or is it a dormant bug that some versions of GCC hide?
 > 
 
-Hi,
+One option. Did you already try switching to a different, likely newer
+toolchain while keeping the rest?
 
-I'm back after doing more tests also on real hardware.
+But it could also be that the compiler brings in some noise to a rather
+narrow race window, widening it so that it becomes much more likely to
+be hit.
 
-Here is a summary:
-- custom image: kernel 5.4.255 + xenomai 3.2.3, built by Yocto Dunfell 
-(GCC 9.5.0)
-- xenomai-image: kernel 5.4.228 (and its initrd.img) + xenomai 3.2.4, 
-built by isar in xenomai image (GCC 12.2.0)
+> I can share with you my rootfs and my kernel and the QEMU startup args,
+> or other things that could help you, and I'm open to suggestions about
+> other tests to do.
 
-I confirm that the problem shows only with my own kernel + rootfs, both 
-on QEMU and on real hardware.
-Other combinations:
-- xenomai-image kernel (and its initrd.img) + xenomai-image rootfs
-- xenomai-image kernel (and its initrd.img) + my rootfs
-- my kernel + xenomai-image rootfs
-don't show the problem, both on QEMU and on real hardware.
+Problem may be that we will have to be able to reproduce variations of
+both in order to try out instrumentations.
 
-Furthermore, I compiled the xenomai-image kernel forcing the 5.4.255 
-version and using my defconfig: the kernel became identical to mine, 
-then I expected to see the problem using this kernel with my rootfs. But 
--surprise- the problem does NOT show.
+I'm also still puzzled that it takes both your self-built kernel and
+userland to trigger the issue. We only have similar but not identical
+code for both when it comes to xnsync_fast_*. Hmm, maybe it is worth to
+compare the disassembly of lib/cobalt/internal.o...
 
-xenomai-image uses xenomai 3.2.4, but I don't see relevant changes 
-between 3.2.4 and 3.2.3 (mine) in code linked into kernel sources.
-Then, could really the problem be triggered by the GCC compiler version 
-used to build the kernel OR the rootfs?
-Actually, my kernel with the xenomai-image rootfs does not show the 
-problem, then seems that the problem shows only when using GCC 9.5.0 on 
-both sides.
+Jan
 
-Or is it a dormant bug that some versions of GCC hide?
-
-I can share with you my rootfs and my kernel and the QEMU startup args, 
-or other things that could help you, and I'm open to suggestions about 
-other tests to do.
-
-Thanks in advance, regards
 -- 
-Mauro S.
+Siemens AG, Technology
+Linux Expert Center
 
