@@ -1,233 +1,438 @@
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2064.outbound.protection.outlook.com [40.107.21.64])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6633A1B29AB
-	for <xenomai@lists.linux.dev>; Thu, 29 Aug 2024 15:42:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.21.64
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1724946178; cv=fail; b=XuLWBfA5gyVXK3MAN/XgY4T06HLYVg0SEC/yVmtm2403V36h2JESQRdrIdfcOf1yrVeMc81KNz0fBOgvTUd5y7cZe6MDkB0YmfUWszaG4Su3w/5/Y/MXZQOqjQZFmz6DgVixsagSKvl4Q5W5da7eQaU3j2VT9ma0N9zfkZdr7rI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1724946178; c=relaxed/simple;
-	bh=8mFgzFqFxd7lx2c2sBrdhVF3YVMUkz/9SeeHv6jIzH0=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=pZZPhr5z3RWOG0YO/FujxMONuNuxTB323ouKZjjFx1AkA4B21oAjP0Nr0E67/YaWAFHlxEDyRvs8brWHmSkChX0ACtkijoAWkONBvDEaoeIZ7ANNPi5hfgIidAjWiLLqxlFZp7aQK4TAlgEnYlYz+tMMbAFwKaeXae610hpEVr4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=tSe2MCHa; arc=fail smtp.client-ip=40.107.21.64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76F0718E37B
+	for <xenomai@lists.linux.dev>; Fri, 30 Aug 2024 11:13:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725016427; cv=none; b=ebL+8euOQCmnWI975mnnfMvMagLKwaVqtc5adc5V/rk4P1gXM4PV/DV5xZKTe64jkiSIzCDGxf0MODOHuTSwVEzxu7xbdl154Mulhpc5TQjN6bFk7iewdDxoaIw3ai5urqVG0M38rPCmOjN/YxHevChl3DZxJJFrp2PoP0ScxP8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725016427; c=relaxed/simple;
+	bh=sIUybY6W2aXinnXe3sTnjFjdKEE0236iINoVUj2VDd4=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=n7e3Oza7gH3fIbDH1k1m8Lkymk2iQnlyG6plCAYlZDXWBMOpeQ+q6y8b2vYUvj0KVi7cxAbGMCKwc8KLfR9Jn5e3My5a8Q3X9okKAd+Bs5sbnScr0ZmeRFvSahE6b4tVkNPH3lnzvpTUW39T/YM3TfKRchALJWRXSr/sGVs9SjQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=Af2qNauP; arc=none smtp.client-ip=185.136.65.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="tSe2MCHa"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=TsOnnitW21VuEjCOYhhHy8lIjJ12zXp7U6fq2ZAljXOEMlvsLeVE/u2hcstJkjzypysfQaZY5vn439s9iqr9ZVcafPZsK60NTqeAXyJiel800tVg7JymFPM/O2a9mwpyqzGfsu+Mq2A/PtM9PpKaHU4ne06+s7q4wB6Snqc+qLAGc26eQy9fO7/Koehlr3OAXQquxfA7Fxp/9zm1IUc2Dydo2VgXTCN9IdXs2IW+NuGtievrfMwJdXl96UMwJoKN/LUqHat7ezoz5i5TwU8uzwEKWTdjPU2jU+U/JP1XYzOoDoeehxO/c/JbM1AYDxu1iOiETJjk7yEJdD+jM5IjMA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zOQdE5nfFLsO4gDYEwgkUZzY1Zi2CmvID08s7PZ7ziY=;
- b=fr3RjwQbuRF6APex5OKUFGNFdDu27zF9aEH/WEGrMHp7mZoioJIW0P03nhVEr4XLwkcVnUvK4akCJJA+vww6e/cYOeVfmnpMqJdrPLporMIKxNF67w8guPdBB9P2iTH7AX6kLMvaCJ7jEJptWktVpDUwLTCrBVwX/G3pQAW28gA1CLy+4nZhC5AcH57SmIW+RuqsAITYJ3/6FjhtOEEqn+bnkyae4jn96k7Xkcp8Ba47cmiF0RR+ANZoz1MkpkyBFh4l42gVj4s1oA3yNtN9q/bDVHQgz2edjrIpSkXQ33Vn1G3luFWlDapLSatFYG9ch4aGqU9lyhy+8x3HFv0V4A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zOQdE5nfFLsO4gDYEwgkUZzY1Zi2CmvID08s7PZ7ziY=;
- b=tSe2MCHaWA4z/DItUrCo1BSA/FJ7qZu6rFJpzPlMcchuxZX8RzBnmp9O5wShgJKmX1OGSUeJJQBuB1DhPDX4fM40UMSZkrLNtOwoGvhDwmUvFogfJylqCFiZj+rxk6FqVlMTUPYIUPBWRm51p+JbFRc7raLDiEIIYSBdQM0G7RZtXilXo/N8rcE/x6FnyOS56s72MFk5NDo7T9huBWWEwxLa3j0pP1Rq3zPr4Y4nysx2CwnqzS0G73D0wHk7ENrd2WO7VoM4duR6tbftwfkiNdANsc0ZhgFIAUuMcsaotih3vR94lH92hXfS2AIi0v4DyGDZiX2gTKE5faQ3Qq1/cA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:76::15)
- by GVXPR10MB5815.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:6b::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.28; Thu, 29 Aug
- 2024 15:42:52 +0000
-Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::7fc:74bb:a781:a286]) by GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::7fc:74bb:a781:a286%5]) with mapi id 15.20.7897.027; Thu, 29 Aug 2024
- 15:42:52 +0000
-Message-ID: <a8b899ec-c5e1-4263-98b0-7fc4f7760613@siemens.com>
-Date: Thu, 29 Aug 2024 17:42:45 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/4] Add env vars for session and cpu-affinity
-To: Simon Graber <simon.graber@sigma-star.at>, xenomai@lists.linux.dev
-Cc: upstream+xenomai@sigma-star.at
-References: <20240829083526.24536-1-simon.graber@sigma-star.at>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="Af2qNauP"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202408301113347b66e2b4eddaa0cf4c
+        for <xenomai@lists.linux.dev>;
+        Fri, 30 Aug 2024 13:13:34 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=jan.kiszka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=PHoy1Eqi3tPgOli9QdkFBwt0qJ4O2rbvMpnsuQHyC+8=;
+ b=Af2qNauPLy6/ALpPlaZrKq06pQn5kpgsDJsFxCIUwSxQH+TGdsmjaMcoCzoR5xxY3Vjl88
+ yI9gMU1vNrBrqyhGUJy/wke9sUPQWKBrHlL43Ro3SlAIlG6OLT/82BjT7Px4mqh6pxzD5SvS
+ ZQYdQTvSXpx6Afkk3PKooi4lpyssq0SCbcPmJ1ZiTNrWQpWhkNvK0XLDPuHxTO3wRqBz9PRD
+ +aTeFnJkg97WtAtg5FxepyrxXV18pCocNQcmrsRlrnnD/exSzGBXhC5+NA8WQ7nWgGHwoRzw
+ qrAZUR+pkXbSE+qBZJBZ109ADmvim7XvXrCUNgEIXcWNWCo7L5pQDlMg==;
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Content-Language: en-US
-Autocrypt: addr=jan.kiszka@siemens.com; keydata=
- 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
-In-Reply-To: <20240829083526.24536-1-simon.graber@sigma-star.at>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MW2PR16CA0067.namprd16.prod.outlook.com
- (2603:10b6:907:1::44) To GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:150:76::15)
+To: xenomai@lists.linux.dev
+Cc: JerryJun <jerryjun123@163.com>,
+	Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH 2/3] cobalt: Drop obsolete pipeline_inband_work abstraction
+Date: Fri, 30 Aug 2024 13:13:32 +0200
+Message-ID: <201c05b5d126b2d6193ca7b2b5125b1d16126e5c.1725016413.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1725016413.git.jan.kiszka@siemens.com>
+References: <cover.1725016413.git.jan.kiszka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: GV2PR10MB6186:EE_|GVXPR10MB5815:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8b1900cc-d347-40e4-8499-08dcc8413e06
-X-MS-Exchange-AtpMessageProperties: SA
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?YlVzWkYwb1RLVWYySFZ1aFhCL3k5MytsUzJKUkVML0g5Y0MraE5NMm9WZW1M?=
- =?utf-8?B?dUxuTjdoc3pqbHRaVW92QjJNYUllSk54eXNCb3g1bkN5emx3aTY0aUc2eWV5?=
- =?utf-8?B?REZNZlptVHorMk1RWGtmQzdsLzNFR3ZLWnIvQUlNZnhMN3hwNlRZSEtYRk5O?=
- =?utf-8?B?bll4d216UVVvR1pIKzVPRVRmTktWRWFmSDhkZ2k5WjJ6WitRRlZWdjZ0OFZm?=
- =?utf-8?B?dmZVK09UaU9lWFVDeTVHNGRKaVZtWXlhS3JEbDZUVi9vV0l4Rk40WE5DR2l3?=
- =?utf-8?B?WGU1YkUveVlJWUpweW5zdGlyNUVDZnpJT1VYallQMzYwRXFmamd5L0ZLVnFw?=
- =?utf-8?B?NnVqdG5zbEs3dTE3K1A1SXFWdXRhRXVBMHB1dE9UaXBDbE96eGNSbGRyQkZR?=
- =?utf-8?B?cUY5eEhMcGRZZnR1QlM0ajUzcWZ0NUFiQ1pXNG9nOEJvTElKeVNBcFNjU0VZ?=
- =?utf-8?B?TXEwcG9yU1J2dlpmeXgvZWpIS0JkbWh0a1dGTUJTQnR5WHdlQWIwQ0E2eUha?=
- =?utf-8?B?MmRTZ2czaWkrU2xOR1RRNDFoZm00aCtSWWtGM0Z6TG5VaWszeUVkZVdXc1oy?=
- =?utf-8?B?K3ZmOTdRaDZDaGlDM3RudEIyRkV3bXpkakhCeVZBL3BPdnFHZityOXEwV0Qr?=
- =?utf-8?B?UFlXdUppYllndFI5N2ZoclhaSlRsT0JYcld5aHJWeFpzQ0taQUQ5QVFDVkRM?=
- =?utf-8?B?SDFVRFdoeWxBdGJ6U2N4RnVsSENiSVdwdGZRL05vTXEyK292bmNRaHE0UXJC?=
- =?utf-8?B?ZVZQUm5qQUYxbVBWWnRFSnNoT3JCYmdkU0luOWZadWZvQUkybVFEcUNhU0Fn?=
- =?utf-8?B?L1NGVWg4eXRrNVFlcGdVMVExeXVPNmlxVzNpQldJaW1lWDR3R0ZSL2p5cG5F?=
- =?utf-8?B?WXdKY21vYzZvRkZ0UmpyOXdPaWEyaHo0bTZDRmc0SzJnUnZkNTJ5WXRxU2hY?=
- =?utf-8?B?MmZnaUtJMWdYRE9Ya2k1aTJzQXhJVGNNeW1wQTJYYmRObENFdGNXVVA5OUhP?=
- =?utf-8?B?TzFWeWtoelRxM1RLRUNjVVAxZHQyajZBaUpCdm9aWTVuT1ZVQ2o0R3NNakp5?=
- =?utf-8?B?Z1VaVXliT0l5V3JpODV2ZGxaaDBQTDFnWS96NHlmUEFqWHQzeHV2OWd5TVdO?=
- =?utf-8?B?Ti9XeUlwZnZBZy8vdXRvNExUOEQ4TnU5czE4MFNhZUdVc1R5U1ZubjA2QXNP?=
- =?utf-8?B?Y1AwdldIOTlwbUxFKzZ1a2c1bk1CNTZMZkluZnVPMDluaUZOZjBPeXNFaHBp?=
- =?utf-8?B?N2E0RXVERDRXdytmaUtXRGxSMHlTbWU1S0E0UlEwa0NJdmU0TWc1b0xydTFp?=
- =?utf-8?B?VjdMSHdtTExQQmpvakhXcmtEN2l2MUxBWklWZHpxN0F5R0ZlOEVaL1BMeUk3?=
- =?utf-8?B?bE5UcWJSQUlGMUJkTXkwZi9DZ0hOdUN1akxmN1F3WW1LZ1g2ZG42ZmIwbjJV?=
- =?utf-8?B?cG85UlJqZ1dRdXFzdmlhd1hmWU9nZGswT2dBcUhnYnkvOVU5bWF0UXh3WU1i?=
- =?utf-8?B?b3JqVVVxb1czTnNEN2pUUVRHNkRHdFpSQzQ5T3NJNS9zNjMrYkNWUVlMeTJm?=
- =?utf-8?B?V2VYKzJ1VUxSVmFvVFVDaVhQRlMxZVViTE5aVFdxMTFKOVdPMy9NaG8rZFcy?=
- =?utf-8?B?YzBYeFNGMkJiRGxlTXh1dW9vcWtycmM4VENwMnhUbkYwdnVNQmVzbzIxZVF6?=
- =?utf-8?B?ODQ2Z1pvNjFPeXk0eVhDRkdyMTJxdXpGdTIxSGxEWmtjeTBQUTViV3VHZUcw?=
- =?utf-8?B?aWZkMnhyYVRuTXlLc1NlRERQQmc1T2h2cG05UEhKRTMxTG4xUGpEU2huVEts?=
- =?utf-8?B?dHd3aE05TDY1TEZVN3lkdz09?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?VDQ1VXlOeG9NZmlRT2hsbmxUbElJNW9XQk1JUmdTaXE4eW5taEJsT0ZRQ2x3?=
- =?utf-8?B?TTVrOVdaWEpKRzdJUFU1Y08wbFB2b0pKZWsyY2hQSUY4bldjazA3aXBEemVP?=
- =?utf-8?B?bVE2dTFCQVNJSEQ0elBRS2ZFdEFqdGQxM3duaTEzaGtEQ1hCOGZyMjFWTjlv?=
- =?utf-8?B?enc2d1doT2hhTm1ZZXUyaytTa0U5aVpJQUxsZnM0cVE2MlpVWnZtOXBlWTZP?=
- =?utf-8?B?eHZUcVg1OUtEWDA0TDREbTFFQWpDeHovT3JQT0psVzBlOENSc09nNDRWdlhN?=
- =?utf-8?B?QVpGYWNsVFl6aTgwd1NGVWRaVmxMK0VIZFlmb1l3U2lCYXUxRk5weDcvUXZz?=
- =?utf-8?B?bjArZnYweGJmUXVDc1VIRTJqUitaemxTVVliczdodGl2RGpBaTRCY05reTRx?=
- =?utf-8?B?NW5GMklUcUNCSlU4di9KbkhFTHdXSGYrZ0VZTGlBQ0EwU2dpaUt1a0hjdE5W?=
- =?utf-8?B?SkVETm9qMEhQOVB1YTlmcnRVS1RvaHZSM1E5L3diZEI3Z24vS2g2WU1oN0o0?=
- =?utf-8?B?MkU4MHlhRGxwRzFhWWV0dGFiRzFMcDhBYkZKZWtRbjFDai9IQ2F1REZJNWRG?=
- =?utf-8?B?Zll5MWkxRWFHaHFxa3pjNWRwYU5lQm1yM09ReFYrSFQxR1pnajNEZkdhQmVq?=
- =?utf-8?B?NHBJWGcwbUwzVzBUWjZFK2lGdG8renJVNHNDWlg0aHBrM3RKQklSQVhiUFZm?=
- =?utf-8?B?eVVjNHU3YS81R1ZYbjhWb0RSVHlFSkVOaVBhdzVaNTdjVzRibFBBM2Q3M2t4?=
- =?utf-8?B?RDRHOU1IdU9qeDl6bnNFaURVaHRpNm95WHczOHgxbUJPQlVvSnJwNlB4bjlP?=
- =?utf-8?B?VmRza2tsdE9RWStVb2ZQNmNBMEVqKzhZZmc5TjRsR29ndW9LVlZqWTFjdm1I?=
- =?utf-8?B?UWRHK2NsUWtMM0dld0N3Vy8wN1hpUEJ2RXNwNkRWTlN1YkgxRUorNkg4REcr?=
- =?utf-8?B?a0NHNzJTaUpoU1duYTBjSHpqT1dlOUF0UVFUMU9VNnM0V3M2TjJ2N2NUeU1R?=
- =?utf-8?B?V2pnSHF6UHo1SDBvcW5iQnYzUmNDV3dZQW1iTVVBUkVURUtXcnVTQ2hVY3dF?=
- =?utf-8?B?QUNuUEl6Qkxqd1p4SklPVHVNbjFCTUw5WWFNdDFQUFZ2OXhQQTllMVhTeHA4?=
- =?utf-8?B?bmNvY2xWRVN0YUk5R3lUSUtNY1RtaHJrQ2J2QUNxS21qc0huWFVtbjk1TzhE?=
- =?utf-8?B?NEsza01vRys3UDhCMGh3N0VvcFVJQjFpMGgxVytqdkVIeHFPUFpLdHlEMkRH?=
- =?utf-8?B?Y1kxSjd5aFFlaXhRcGdMdUpIamUwL3FTdUtjdU54Z2xxektrUVNjbTY3TGV0?=
- =?utf-8?B?ajBoT2JOQUpDYU83NmhldmdrODFHY25TalF4b2gyMlNMYXcrbXg2M05jbnZD?=
- =?utf-8?B?V1pvOWpjVUIzZ2E3TG9rN3M4MHJXZDlLalZqNzNYVGVKN01YZG55aTRvYlc1?=
- =?utf-8?B?cllnREVlUkNtT0wva3MxdUZMc3l2Nkk3Z2srYnVWdEJzSEJCd21rMzk0UFpW?=
- =?utf-8?B?ZjJCcUZhRHdLaXl4bWZkZTEwQTJ2L0s3YTZvTnFWL2tQUDE5SHZob0lnSjJl?=
- =?utf-8?B?ZGZTL3ZHTkZSS3RpOExidmIvb1UySXF3S2NuQS84WGlDTFd2LzdyVXJuQ3ND?=
- =?utf-8?B?SlZNMTdIZHlJK3I5ajZWV003TjhFd2xZQUsvSUN1ZjA2cTY2WXZ2dVdxWlN2?=
- =?utf-8?B?RjJkRXIxOTlUVUJBRkZieGllSHZ2Uk9KRHdocDZZUkE5R1dNL09rUnhKKzZ0?=
- =?utf-8?B?eW8va1h6ZmFiUmxqNHVnYlVBNFp2M0RnREJiOFRSVGNldXFzVEZqZkk1YXpu?=
- =?utf-8?B?czJobS9XT1B0ekU0VWNhVEtSWit1VTNiUFVWcmhhek9xUStHS0xPeHdRTjFv?=
- =?utf-8?B?QVdBVnNRcm51dmVNeDBNV21ZdE52OFpiWEdReWg4ZUtTYkNYbjZPblJOQmR4?=
- =?utf-8?B?dmdHLzBONnFCMTFJcGwrR3B2QitFYWlQcCtldThxRklkYUpEYUdlWXIxYVA5?=
- =?utf-8?B?M2pyMjRjWmZtWGlFV2xMTFdhQVJhalVxWStZWlFaWVJNdU42d2FzSGs2WUhE?=
- =?utf-8?B?N0FYUmpxdTZOSThYME5CWjhLdmlXVDNJVGVMWGlhQm5rM0ZzczVROENTaGFK?=
- =?utf-8?B?UW5zZFRBV0w2cXltTk8zM1lZcEJnKytwNlZmWHVPM1l6QXdFb0E4WkVrU0hK?=
- =?utf-8?B?Nmc9PQ==?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8b1900cc-d347-40e4-8499-08dcc8413e06
-X-MS-Exchange-CrossTenant-AuthSource: GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Aug 2024 15:42:52.1297
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UYGKJu5/A74m6S7JHqK3fU23PTPNgB+U6TBC93b0MOdZ/bch/yQWq8evUVFMd3DmewsMorXqaOe32H3J7BqEIg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR10MB5815
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-294854:519-21489:flowmailer
 
-On 29.08.24 10:35, Simon Graber wrote:
-> Hello,
-> 
-> Revision 3 of this patch adds documentation for the new
-> environment variables.
-> 
-> Changes since v1:
->  * Usage of environment variables is documented
->  * lib/copperplate/init.c: Conditionally query XENO_SESSION_NAME
->  * Reformat patch 2 to adhere to code style
-> 
-> Simon Graber (4):
->   lib/copperplate: Get session name from env var
->   lib/boilerplate: Get cpu-affinity from env var
->   alchemytests: Set cpu-affinity by env var
->   Add documentation for env vars
-> 
->  doc/asciidoc/README.INSTALL.adoc             |  7 ++--
->  lib/boilerplate/setup.c                      | 39 +++++++++++++++-----
->  lib/copperplate/init.c                       | 21 ++++++++---
->  testsuite/smokey/alchemytests/alchemytests.c | 10 ++++-
->  4 files changed, 58 insertions(+), 19 deletions(-)
-> 
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Looks good in general. Maybe we can sort out my comment on patch 3
-without version 4.
+We are now dovetail-only and can use irq_work directly.
 
-Jan
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ .../kernel/dovetail/pipeline/inband_work.h    | 28 -------------------
+ include/cobalt/kernel/rtdm/driver.h           |  9 +++---
+ include/cobalt/kernel/thread.h                |  6 ++--
+ kernel/cobalt/rtdm/drvlib.c                   | 15 ++++------
+ kernel/cobalt/rtdm/fd.c                       | 13 ++++-----
+ kernel/cobalt/thread.c                        | 24 +++++++---------
+ kernel/drivers/udd/udd.c                      | 12 ++++----
+ 7 files changed, 33 insertions(+), 74 deletions(-)
+ delete mode 100644 include/cobalt/kernel/dovetail/pipeline/inband_work.h
 
+diff --git a/include/cobalt/kernel/dovetail/pipeline/inband_work.h b/include/cobalt/kernel/dovetail/pipeline/inband_work.h
+deleted file mode 100644
+index a69bf651f0..0000000000
+--- a/include/cobalt/kernel/dovetail/pipeline/inband_work.h
++++ /dev/null
+@@ -1,28 +0,0 @@
+-/*
+- * SPDX-License-Identifier: GPL-2.0
+- *
+- * Copyright (C) 2020 Philippe Gerum  <rpm@xenomai.org>
+- */
+-
+-#ifndef _COBALT_KERNEL_DOVETAIL_INBAND_WORK_H
+-#define _COBALT_KERNEL_DOVETAIL_INBAND_WORK_H
+-
+-#include <linux/irq_work.h>
+-
+-/*
+- * This field must be named inband_work and appear first in the
+- * container work struct.
+- */
+-struct pipeline_inband_work {
+-	struct irq_work work;
+-};
+-
+-#define PIPELINE_INBAND_WORK_INITIALIZER(__handler)			\
+-	{								\
+-		.work = IRQ_WORK_INIT((void (*)(struct irq_work *))__handler), \
+-	}
+-
+-#define pipeline_post_inband_work(__work)				\
+-			irq_work_queue(&(__work)->inband_work.work)
+-
+-#endif /* !_COBALT_KERNEL_DOVETAIL_INBAND_WORK_H */
+diff --git a/include/cobalt/kernel/rtdm/driver.h b/include/cobalt/kernel/rtdm/driver.h
+index 8fb326b1cf..604d54b2b7 100644
+--- a/include/cobalt/kernel/rtdm/driver.h
++++ b/include/cobalt/kernel/rtdm/driver.h
+@@ -28,13 +28,13 @@
+ 
+ #include <asm/atomic.h>
+ #include <linux/cpumask.h>
++#include <linux/irq_work.h>
+ #include <linux/list.h>
+ #include <linux/module.h>
+ #include <linux/cdev.h>
+ #include <linux/wait.h>
+ #include <linux/notifier.h>
+ #include <pipeline/lock.h>
+-#include <pipeline/inband_work.h>
+ #include <xenomai/version.h>
+ #include <cobalt/kernel/heap.h>
+ #include <cobalt/kernel/sched.h>
+@@ -909,7 +909,7 @@ typedef struct rtdm_nrtsig rtdm_nrtsig_t;
+ typedef void (*rtdm_nrtsig_handler_t)(rtdm_nrtsig_t *nrt_sig, void *arg);
+ 
+ struct rtdm_nrtsig {
+-	struct pipeline_inband_work inband_work; /* Must be first */
++	struct irq_work inband_work;
+ 	rtdm_nrtsig_handler_t handler;
+ 	void *arg;
+ };
+@@ -918,13 +918,12 @@ void rtdm_schedule_nrt_work(struct work_struct *lostage_work);
+ /** @} rtdm_nrtsignal */
+ 
+ #ifndef DOXYGEN_CPP /* Avoid static inline tags for RTDM in doxygen */
+-void __rtdm_nrtsig_execute(struct pipeline_inband_work *inband_work);
++void __rtdm_nrtsig_execute(struct irq_work *inband_work);
+ 
+ static inline void rtdm_nrtsig_init(rtdm_nrtsig_t *nrt_sig,
+ 				    rtdm_nrtsig_handler_t handler, void *arg)
+ {
+-	nrt_sig->inband_work = (struct pipeline_inband_work)
+-		PIPELINE_INBAND_WORK_INITIALIZER(__rtdm_nrtsig_execute);
++	nrt_sig->inband_work = IRQ_WORK_INIT(__rtdm_nrtsig_execute);
+ 	nrt_sig->handler = handler;
+ 	nrt_sig->arg = arg;
+ }
+diff --git a/include/cobalt/kernel/thread.h b/include/cobalt/kernel/thread.h
+index 22ed61168c..04fad0e491 100644
+--- a/include/cobalt/kernel/thread.h
++++ b/include/cobalt/kernel/thread.h
+@@ -19,11 +19,11 @@
+ #ifndef _COBALT_KERNEL_THREAD_H
+ #define _COBALT_KERNEL_THREAD_H
+ 
++#include <linux/irq_work.h>
+ #include <linux/wait.h>
+ #include <linux/sched.h>
+ #include <linux/sched/rt.h>
+ #include <pipeline/thread.h>
+-#include <pipeline/inband_work.h>
+ #include <cobalt/kernel/list.h>
+ #include <cobalt/kernel/stat.h>
+ #include <cobalt/kernel/timer.h>
+@@ -59,13 +59,13 @@ struct xnthread_personality;
+ struct completion;
+ 
+ struct lostage_signal {
+-	struct pipeline_inband_work inband_work; /* Must be first. */
++	struct irq_work inband_work;
+ 	struct task_struct *task;
+ 	int signo, sigval;
+ };
+ 
+ struct lostage_wakeup {
+-	struct pipeline_inband_work inband_work; /* Must be first. */
++	struct irq_work inband_work;
+ 	struct task_struct *task;
+ };
+ 
+diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+index e6e658c8c4..86788743fe 100644
+--- a/kernel/cobalt/rtdm/drvlib.c
++++ b/kernel/cobalt/rtdm/drvlib.c
+@@ -31,7 +31,6 @@
+ #include <linux/anon_inodes.h>
+ #include <rtdm/driver.h>
+ #include <rtdm/compat.h>
+-#include <pipeline/inband_work.h>
+ #include "internal.h"
+ #include <trace/events/cobalt-rtdm.h>
+ 
+@@ -1616,7 +1615,7 @@ int rtdm_nrtsig_init(rtdm_nrtsig_t *nrt_sig, rtdm_nrtsig_handler_t handler,
+ void rtdm_nrtsig_destroy(rtdm_nrtsig_t *nrt_sig);
+ #endif /* DOXYGEN_CPP */
+ 
+-void __rtdm_nrtsig_execute(struct pipeline_inband_work *inband_work)
++void __rtdm_nrtsig_execute(struct irq_work *inband_work)
+ {
+ 	struct rtdm_nrtsig *nrt_sig;
+ 
+@@ -1634,14 +1633,14 @@ EXPORT_SYMBOL_GPL(__rtdm_nrtsig_execute);
+  */
+ void rtdm_nrtsig_pend(rtdm_nrtsig_t *nrt_sig)
+ {
+-	pipeline_post_inband_work(nrt_sig);
++	irq_work_queue(&nrt_sig->inband_work);
+ }
+ EXPORT_SYMBOL_GPL(rtdm_nrtsig_pend);
+ 
+ static LIST_HEAD(nrt_work_list);
+ DEFINE_PRIVATE_XNLOCK(nrt_work_lock);
+ 
+-static void lostage_schedule_work(struct pipeline_inband_work *inband_work)
++static void lostage_schedule_work(struct irq_work *inband_work)
+ {
+ 	struct work_struct *lostage_work;
+ 	spl_t s;
+@@ -1663,11 +1662,7 @@ static void lostage_schedule_work(struct pipeline_inband_work *inband_work)
+ 	xnlock_put_irqrestore(&nrt_work_lock, s);
+ }
+ 
+-static struct lostage_trigger_work {
+-	struct pipeline_inband_work inband_work; /* Must be first. */
+-} nrt_work =  {
+-	.inband_work = PIPELINE_INBAND_WORK_INITIALIZER(lostage_schedule_work),
+-};
++static DEFINE_IRQ_WORK(nrt_work, lostage_schedule_work);
+ 
+ /**
+  * Put a work task in Linux non real-time global workqueue from primary mode.
+@@ -1686,7 +1681,7 @@ void rtdm_schedule_nrt_work(struct work_struct *lostage_work)
+ 	xnlock_get_irqsave(&nrt_work_lock, s);
+ 
+ 	list_add_tail(&lostage_work->entry, &nrt_work_list);
+-	pipeline_post_inband_work(&nrt_work);
++	irq_work_queue(&nrt_work);
+ 
+ 	xnlock_put_irqrestore(&nrt_work_lock, s);
+ }
+diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
+index 29555cb213..d5813a16c2 100644
+--- a/kernel/cobalt/rtdm/fd.c
++++ b/kernel/cobalt/rtdm/fd.c
+@@ -17,6 +17,8 @@
+  * along with this program; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  */
++
++#include <linux/irq_work.h>
+ #include <linux/list.h>
+ #include <linux/err.h>
+ #include <linux/slab.h>
+@@ -29,7 +31,6 @@
+ #include <cobalt/kernel/lock.h>
+ #include <cobalt/kernel/ppd.h>
+ #include <cobalt/kernel/time.h>
+-#include <pipeline/inband_work.h>
+ #include <trace/events/cobalt-rtdm.h>
+ #include <rtdm/compat.h>
+ #include <rtdm/fd.h>
+@@ -297,16 +298,12 @@ static int fd_cleanup_thread(void *data)
+ 	return 0;
+ }
+ 
+-static void lostage_trigger_close(struct pipeline_inband_work *inband_work)
++static void lostage_trigger_close(struct irq_work *inband_work)
+ {
+ 	up(&rtdm_fd_cleanup_sem);
+ }
+ 
+-static struct lostage_trigger_close {
+-	struct pipeline_inband_work inband_work; /* Must be first. */
+-} fd_closework =  {
+-	.inband_work = PIPELINE_INBAND_WORK_INITIALIZER(lostage_trigger_close),
+-};
++static DEFINE_IRQ_WORK(fd_closework, lostage_trigger_close);
+ 
+ static void __put_fd(struct rtdm_fd *fd, spl_t s)
+ {
+@@ -331,7 +328,7 @@ static void __put_fd(struct rtdm_fd *fd, spl_t s)
+ 		xnlock_put_irqrestore(&fdtree_lock, s);
+ 
+ 		if (trigger)
+-			pipeline_post_inband_work(&fd_closework);
++			irq_work_queue(&fd_closework);
+ 	}
+ }
+ 
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index 7dffb081bd..bdd0531404 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -40,7 +40,6 @@
+ #include <cobalt/kernel/lock.h>
+ #include <cobalt/kernel/thread.h>
+ #include <pipeline/kevents.h>
+-#include <pipeline/inband_work.h>
+ #include <pipeline/sched.h>
+ #include <trace/events/cobalt-core.h>
+ #include "debug.h"
+@@ -86,12 +85,12 @@ static inline void enlist_new_thread(struct xnthread *thread)
+ }
+ 
+ struct kthread_arg {
+-	struct pipeline_inband_work inband_work; /* Must be first. */
++	struct irq_work inband_work;
+ 	struct xnthread *thread;
+ 	struct completion *done;
+ };
+ 
+-static void do_parent_wakeup(struct pipeline_inband_work *inband_work)
++static void do_parent_wakeup(struct irq_work *inband_work)
+ {
+ 	struct kthread_arg *ka;
+ 
+@@ -150,9 +149,8 @@ static int map_kthread(struct xnthread *thread, struct kthread_arg *ka)
+ 
+ 	trace_cobalt_lostage_request("wakeup", current);
+ 
+-	ka->inband_work = (struct pipeline_inband_work)
+-		PIPELINE_INBAND_WORK_INITIALIZER(do_parent_wakeup);
+-	pipeline_post_inband_work(ka);
++	ka->inband_work = IRQ_WORK_INIT(do_parent_wakeup);
++	irq_work_queue(&ka->inband_work);
+ 
+ 	xnlock_get_irqsave(&nklock, s);
+ 
+@@ -1974,7 +1972,7 @@ int xnthread_harden(void)
+ }
+ EXPORT_SYMBOL_GPL(xnthread_harden);
+ 
+-static void lostage_task_wakeup(struct pipeline_inband_work *inband_work)
++static void lostage_task_wakeup(struct irq_work *inband_work)
+ {
+ 	struct lostage_wakeup *rq;
+ 	struct task_struct *p;
+@@ -2060,8 +2058,7 @@ void xnthread_relax(int notify, int reason)
+ 	 */
+ 	trace_cobalt_shadow_gorelax(reason);
+ 
+-	thread->relax_work.inband_work = (struct pipeline_inband_work)
+-		PIPELINE_INBAND_WORK_INITIALIZER(lostage_task_wakeup);
++	thread->relax_work.inband_work = IRQ_WORK_INIT(lostage_task_wakeup);
+ 	thread->relax_work.task = p;
+ 
+ 	/*
+@@ -2076,7 +2073,7 @@ void xnthread_relax(int notify, int reason)
+ 	 */
+ 	splmax();
+ 	trace_cobalt_lostage_request("wakeup", p);
+-	pipeline_post_inband_work(&thread->relax_work);
++	irq_work_queue(&thread->relax_work.inband_work);
+ 	/*
+ 	 * Grab the nklock to synchronize the Linux task state
+ 	 * manipulation with handle_sigwake_event. This lock will be
+@@ -2154,7 +2151,7 @@ void xnthread_relax(int notify, int reason)
+ }
+ EXPORT_SYMBOL_GPL(xnthread_relax);
+ 
+-static void lostage_task_signal(struct pipeline_inband_work *inband_work)
++static void lostage_task_signal(struct irq_work *inband_work)
+ {
+ 	struct lostage_signal *rq;
+ 	struct task_struct *p;
+@@ -2387,15 +2384,14 @@ void __xnthread_signal(struct xnthread *thread, int sig, int arg)
+ 	if (sigwork->task)
+ 		return;
+ 
+-	sigwork->inband_work = (struct pipeline_inband_work)
+-			PIPELINE_INBAND_WORK_INITIALIZER(lostage_task_signal);
++	sigwork->inband_work = IRQ_WORK_INIT(lostage_task_signal);
+ 	sigwork->task = xnthread_host_task(thread);
+ 	sigwork->signo = sig;
+ 	sigwork->sigval = sig == SIGDEBUG ? arg | sigdebug_marker : arg;
+ 
+ 	trace_cobalt_lostage_request("signal", sigwork->task);
+ 
+-	pipeline_post_inband_work(sigwork);
++	irq_work_queue(&sigwork->inband_work);
+ }
+ 
+ void xnthread_signal(struct xnthread *thread, int sig, int arg)
+diff --git a/kernel/drivers/udd/udd.c b/kernel/drivers/udd/udd.c
+index b1efcebd0f..c7b8f5c7bf 100644
+--- a/kernel/drivers/udd/udd.c
++++ b/kernel/drivers/udd/udd.c
+@@ -17,6 +17,8 @@
+  * along with this program; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+  */
++
++#include <linux/irq_work.h>
+ #include <linux/module.h>
+ #include <linux/init.h>
+ #include <linux/slab.h>
+@@ -24,7 +26,6 @@
+ #include <rtdm/cobalt.h>
+ #include <rtdm/driver.h>
+ #include <rtdm/udd.h>
+-#include <pipeline/inband_work.h>
+ 
+ struct udd_context {
+ 	u32 event_count;
+@@ -516,13 +517,13 @@ void udd_notify_event(struct udd_device *udd)
+ EXPORT_SYMBOL_GPL(udd_notify_event);
+ 
+ struct irqswitch_work {
+-	struct pipeline_inband_work inband_work;
++	struct irq_work inband_work;
+ 	rtdm_irq_t *irqh;
+ 	int enabled;
+ 	rtdm_event_t *done;
+ };
+ 
+-static void lostage_irqswitch_line(struct pipeline_inband_work *inband_work)
++static void lostage_irqswitch_line(struct irq_work *inband_work)
+ {
+ 	struct irqswitch_work *rq;
+ 
+@@ -550,8 +551,7 @@ static void switch_irq_line(rtdm_irq_t *irqh, int enable, rtdm_event_t *done)
+ 	if (WARN_ON(rq == NULL))
+ 		return;
+ 
+-	rq->inband_work = (struct pipeline_inband_work)
+-		PIPELINE_INBAND_WORK_INITIALIZER(lostage_irqswitch_line);
++	rq->inband_work = IRQ_WORK_INIT(lostage_irqswitch_line);
+ 	rq->irqh = irqh;
+ 	rq->enabled = enable;
+ 	rq->done = done;
+@@ -561,7 +561,7 @@ static void switch_irq_line(rtdm_irq_t *irqh, int enable, rtdm_event_t *done)
+ 	 * enabling/disabling IRQ lines from primary mode. Defer this
+ 	 * to the root context.
+ 	 */
+-	pipeline_post_inband_work(rq);
++	irq_work_queue(&rq->inband_work);
+ }
+ 
+ /**
 -- 
-Siemens AG, Technology
-Linux Expert Center
+2.43.0
 
