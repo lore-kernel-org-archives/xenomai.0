@@ -1,56 +1,55 @@
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2050.outbound.protection.outlook.com [40.107.20.50])
+Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2080.outbound.protection.outlook.com [40.107.241.80])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49B96192D69
-	for <xenomai@lists.linux.dev>; Fri, 30 Aug 2024 13:13:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.20.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06775172BD0
+	for <xenomai@lists.linux.dev>; Fri, 30 Aug 2024 13:44:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.241.80
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725023596; cv=fail; b=C2KkqqKr8UbKLek1M9dwvS6nZ28xY++F+BoUma5eMBCpwFUgfRF5tpMFkGhxoZNDlZlr87m5d8UlonqTG5Lg5oSm/T4WohgRTEvWIwu0KRgeK3F3nR3GxhVy7baqDooWj8+Xse34BHZYljmzWYwCk9ymEBvV5aAdzav1ktYbvYY=
+	t=1725025471; cv=fail; b=Lh6BkdSRji3aArDGbMbtfZLdp19/f7js1FPkCvM7yeYx4uPp8C5O/ehAhsnEe+4KSxx6veKrvPYzI2xaC4qVYznTxvK1OUGs4AR6SNhMKU0XousZNA53LsTSj4JeFbHKqtQY9Pcno04FAD3NeApYTbxYLvwCWoX5bWNxRHcd6wo=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725023596; c=relaxed/simple;
-	bh=Dw2fhxEwbogSKrQ/E/vUeHag3H5AXViKrEKjTNzxF10=;
-	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=I/KAxhO3jovy/8FURM29Y6XwNGYiAq5DtadZHPggg6CrXLd68b2hbET53+Kj3sU38dPU/bquQoSjzW/h6eNxGqPQxTCKqzJkgvYJUxxX61Gg3Nqbidzi8WSRRgkqYCr4RTIF+XnN68rIJQPjx8fUSxX7MWO/2YqHcgu8Iqd5zkQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=nCVhmTxL; arc=fail smtp.client-ip=40.107.20.50
+	s=arc-20240116; t=1725025471; c=relaxed/simple;
+	bh=vS/O80VK+JPhsBezvVDkt72VYkSfy6ouDNU/pwIofSo=;
+	h=Message-ID:Date:Subject:From:To:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=qkgOTtZiMkEy+1UvwD9McDPwv+zVX7VrUP8Bq6tCQHGllrAF72NxcWwqMlKQ9l3Q5jSRsOdOvBWR2iA04+A9RxQ8DNNo/jxztXQZhqmke/9AEzyP1J1iYb3O/LMLWAm389xE2h79Xr95XDxYuSuuMPIoOE1UFQo7Gq5IRwqsTIc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=MbF3UEPB; arc=fail smtp.client-ip=40.107.241.80
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="nCVhmTxL"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="MbF3UEPB"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=uAM+W3U7/2as21hFlP1nuSSlPBuhRTjbgUxH7CwXSRyotRU62fKjjFT1hz+MZnWN/mQpo0uS5gsU2dJoalXLHtzsgdQWCL7GOUEiTGSS+jf+rfMqKriMOVLT/JrEo3kxthE8E/2qLeVV+jmI/izhDgyq+ujGRF7cENFgd/PtYFnYnxkdDSjx45yx8+q/ZrY42TI+zS/n8EtLMlIjxCDZVsvjfEueiS8HQ8ySRAwL9hKaosjxYmCuMAdg0hua5VllCnXjKDVedw2PfRk0dwC34g1qh/gn2UNy86g2Xn1rwFBVFNwsd1+eQKMagAaoUqt5bpDzyVTChCoo/pf11GlJ9w==
+ b=FKM+5wL8S98E5UhbRND96TaAQ/y+rBubDXYePSSzZgFVSThdYdTcM6m9c7g+1/ylDiDauuwmIQjS3pJHQhKWSkMjAmw5ygi5841if4o2WT8WgoHv2Cu9ZIqSuVuWtnunYqYT5cV8CT58HIXPRgTElBXCbxppXZCdeDIsNA54mI/ATI43iHKpHP755DxMiYiYIwOCP9cHDUzzTp828TPdPdvke42YbdFhEkeP1capnblckIe4aFPYBcHExcObm0xVv/8+j7oEJUsSvMUmvtEMRK3z1ljKf+9UA5NyuWiSHQIOU9Fl8gFv/qcifvMMyGYHiu1/GKpvyI/dVehEP5qvXA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yuowcrDleeaRL5qmtjyE8r5hUhoQFOVZpYvc+ppDvR4=;
- b=J6LFORvpSoYm9oG7FTOSNdvOt//el2slqApih13NhfRtsEFCuOTHY1wyUKcm5I5Ac/HeOTKl/4T1IL4jH1iRUCvOobKdWu3HiwQd1kuA8zqPU7Amt0SEXOO+cGtQ9z/8SgqRTH8spgBeva2bGNq05YqI3Waq1GMO3Z8UnwB9NboUlBXnY2f8QzPK51SuWCtZPd0KcFj2eEAAoWmEyAW3hltc0XfssghWQ/n+54MNk3/77vTuuSZqLP4sS1mZuTD1kqRdzDoF6riNV4c7LoeVg1jGjdwQ6PKTEfDXCK1Sp34naDID7Wjvst7vA9OJUU3GjX15P0bkwmZPXZhmdLn7zw==
+ bh=ITMWxkuNjPDMJtgO3w5i9/vqOiS6cpwh+X4zkinXWNk=;
+ b=DvNybU/dcqX+4S0dw94j8HCm+9R6YMBe5BRY0FiStEI8dGeG8VGl8q3+K13R6hE+C19epFwjkc1m9YvUfRN9DosRlx8dvniTc5vqjMjQXzrwHUv5XjipMO06gv0pTyfMorcIuVvGfFgh6C6pygT3Td5eU1mJ/jILP+nHA0UsSJz5SvjNdMRsYNCGLjq0AVYNhn6pCX3LWStTI4YNTHt5w0PBTsNJrY+SglkvIA8BENb6JgOW2uAkBB0GvN/AnlZLPLes8CIv3ozOomSBYJ3mb9psE8H9ZpTYuFR918H8W4wyi4/PZuFMUczrpjRvjWylG50wwY0Xl/Df3NTOOfGzng==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yuowcrDleeaRL5qmtjyE8r5hUhoQFOVZpYvc+ppDvR4=;
- b=nCVhmTxLViWgnFtdNrbb22rV3cHNW9UAaOtUi7/nh+zotgxBlXycjihpAMHKH9qoaUzIthbT5JnXHt3RDB2756mGDEih22CEPQKUJCTJeKKv3zGK3SRwwr/8bh/x6qWa8TKuDFFE6Nu0agT2489LJXvjc4u/vUBMGfnXXSIYEOnCXps6i0nELSe0F2fjhxzJGZFB7IQARPOE/d8X+RlHVJRJNXwQ26qgRHGHD0QyBTh+JfDHWXT6cDYS96RTUougiUrnhUrOaTULQg2OCotUDOaT69pZWM8ASLT7Bb2RYMCOJOyg5+y6tZkxQCm2eImljKb3AtkG2fpbIYvLGOw/EA==
+ bh=ITMWxkuNjPDMJtgO3w5i9/vqOiS6cpwh+X4zkinXWNk=;
+ b=MbF3UEPBhLwCUcB2GrjI4d6VzMpZQk5eghplrPD1un7GWdcTSevsctfsseY2judnel4/QmNWArO0otlIZdeEU2mGcG/sf72UUH+uKHb2Q1qP4wGqMTgnJWaqj2ikykwLhH+R8QjwsiK829bpQ+Nn3hucer1kfUgoMlNywVOVtlMx4frhRGVXoV+ZgLvJQM0P44xWCelf8RqURoFBBQ3EyX7+ESC7+uTdc1bOA6mQgmBtJXSNkcyGu0H/OGfrAKS7y7YcZ8TeTzrHpEMNN9B7qFRdoTypGEEgRA5uzqVCggE7ZPfZCBbgOIZRAewQy/vntwp7JBJEplHiBpb4Bx3bvg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by GV1PR10MB6370.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:a3::19) with
+ by GV1PR10MB8317.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:1cf::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.27; Fri, 30 Aug
- 2024 13:13:09 +0000
+ 2024 13:44:25 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408%4]) with mapi id 15.20.7918.019; Fri, 30 Aug 2024
- 13:13:09 +0000
-Message-ID: <0db954e2-1217-4028-bc04-7111ddbbe68d@siemens.com>
-Date: Fri, 30 Aug 2024 15:13:07 +0200
+ 13:44:25 +0000
+Message-ID: <aae26c91-4765-48d1-a02f-3f0e5b4521b6@siemens.com>
+Date: Fri, 30 Aug 2024 15:44:23 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] testsuite/smokey/posix-mutex: Fix race-condition
-To: "Scheler, Fabian" <Fabian.Scheler@siemens.com>, xenomai@lists.linux.dev
-References: <20240830111952.26651-1-Fabian.Scheler@siemens.com>
- <4c253f1d-7a32-4113-b016-400cf1f7e045@siemens.com>
- <98e1c485-a314-46c6-bbe8-348870857a9d@siemens.com>
+Subject: Re: [xenomai-images][PATCH v2] ci: Enable sstate caching
 From: Jan Kiszka <jan.kiszka@siemens.com>
+To: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
+References: <20240723140801.1247672-1-tobias.schaffner@siemens.com>
+ <6239feef-9326-4ba9-a744-db774134b128@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
@@ -95,11 +94,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <98e1c485-a314-46c6-bbe8-348870857a9d@siemens.com>
+In-Reply-To: <6239feef-9326-4ba9-a744-db774134b128@siemens.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR3P281CA0196.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a5::14) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR5P281CA0031.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:f3::7) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -108,296 +107,236 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GV1PR10MB6370:EE_
-X-MS-Office365-Filtering-Correlation-Id: 91624a72-037d-4103-619c-08dcc8f57e51
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GV1PR10MB8317:EE_
+X-MS-Office365-Filtering-Correlation-Id: 48b7bdbf-1e1a-41f9-e449-08dcc8f9dc72
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?ZkhiSFMxN1NLbWNiRHBLeGFkZVVacDdRekhoTnpUNzJqdlN4dVRyazJLQUFy?=
- =?utf-8?B?b1p2eEdYTnkycEpxSzBPRUhmbmlpbmxhank2SVZvcmlZYkZ3TU1UR1MveS93?=
- =?utf-8?B?L3VPRm10bHp2M01MdmRhY05ZNFZRTTNSeVEyVkNRRTJHYktMRXJ4WndEYTd0?=
- =?utf-8?B?OG9CWjJ0OFAwRVZOUmFSdFl1RXhiMjNWRi8ybGwxaS9mdWxCT2pROXRzN2lj?=
- =?utf-8?B?V21WNGFVS2E1MzZ0UmQ5OVJ4bE1IbXgrSjNXS04zTTI3cXhIcTQyMHpaWHV2?=
- =?utf-8?B?bEVVL09Jb3FVUEhidTk2eFZGbENiR1Y1eUhpbHF5TG1MM2ZpTllLeTJJSGRh?=
- =?utf-8?B?UnFwTGYwT203YnczZEJ4ZUJiK09XaE4yWWlYWjRzemduVFRuVmxQK0RHZi96?=
- =?utf-8?B?QjIyS2JFeTZ0MEdTZW9GVXVPTExxVGJVTStLUVZOUHlTUTVPQmI1KzJscWw0?=
- =?utf-8?B?SXlYNWQ3RmhGNm1RZUU4OGhhYktlNDg0QUVZeWtBYnpYeXdpejFyaDN4aTlD?=
- =?utf-8?B?K2d6UXJaR25ja3FEa3c1YWd1OGlZeXJhRzArM2FVcGtpem4zNjlnQVNVZjM0?=
- =?utf-8?B?ZEE5bC9KS2VQVWRueEtycjlMNC9FM2ZWbnpSbS9yVzdaSzZHLzI3aGNReEM1?=
- =?utf-8?B?UGhEMXhOR01IQmNUS3U4RUthTjBuM3BkaUN0cjhtQVNVL2tsOUFoT3R5MGN0?=
- =?utf-8?B?OWZabnRxSVBiT1F0UFB5MDJRbjkzNjAwUlBzUlYremYzUnJjc0VtN2QyWkFH?=
- =?utf-8?B?azdZU0oxWkI1eFlpK1BPVWdtalJhampaOGRpOGpYUGtHRGNBekpoU0wzc1VH?=
- =?utf-8?B?Q0F3enowVUFiMW9tdEkvcmxiaFFqNnlVandOTzV3ckNKV1hzc3NkdEYzSFBw?=
- =?utf-8?B?S0ZHSjBrZUpIemlmdUhNSmlrV0VDcGw0TXRlWEhwSnJONEtUNEJ3M3RPODFr?=
- =?utf-8?B?Mkx3SlZMc3JsYVdBVVRCOTBWVXd3UkJhZGNoZUU5ZWg2VW1mTG9KMkJFODdE?=
- =?utf-8?B?Q25DcWFnWmIxUXNPRlF0cGhla3JhV2Y1R1AvZVVsbklGRzZWNXo0M2ZicVFH?=
- =?utf-8?B?ZHZMcElLK0Y4dXA4ZkhLMkE3VGVadDJFSnF4WU5CWG1ZalphWnRpaGdGc0h1?=
- =?utf-8?B?eTRwMWc3bjZwRUZUbHhwSmlLclorYzFRMUtWTFp6V1FVdUNhZW0zd1dHQmNY?=
- =?utf-8?B?Z0NRYTdPL2R1VlVzYUZEZjBpRGlYbTJ0T1E0QWtNSXB2aUlPYm5oek9Nd0tv?=
- =?utf-8?B?M2hIUEVxbmNjaEs0UjlwV0x5djRuUFVPb1E3ZkQrQTNDdzJVVk1jUjM1Zmx3?=
- =?utf-8?B?NkpxVlNmbEFsV1ZLZm5uQUl0MktTK2llRlY0MzVha3kraXVVTURWWlMvSy8w?=
- =?utf-8?B?aVVUYytCVTdRVlNtY3J5aDRqVVEwNzdabGRuV0g3UzgvWmo4djU2dTZTaXlH?=
- =?utf-8?B?N1RzY1UvRnFZM0c3U0RVOVhDSVhDbjdMdVBwNFc2d25kaEZnaGx1MjNYemFY?=
- =?utf-8?B?SXg2QStSVnJlT3REWTZvUWVnYld0eTdUWmU1U2IxYVZtTjVISG1ZR1JWYTFC?=
- =?utf-8?B?ZFhIYThlQngzRWNaaEY2Q1hTVVM3RjVjYkh6OENTNzloZDJwZUlhTEI5R0g0?=
- =?utf-8?B?NGM4WW1CdWFHRjRKRGY1Z2o4dHl3Y05LckI0NndEUHdJdGJkNFFtL3QwQTNP?=
- =?utf-8?B?M0VrclFJUlhSSFpyRklUUFV4eHhUeVRTQlJkR0Q3UnNXNHlzbm1ESk83ODQz?=
- =?utf-8?Q?v+pubO2nqjbE5DgRTk=3D?=
+	=?utf-8?B?MmpjMnJ2V0dYeGZIdXZjcWoxbWdIaTlvTUlIZkh3d0FIcmpWSTZja0ZwMEZQ?=
+ =?utf-8?B?ZkRSSjBSZlloQjJkOGI3SEpzN3VGSXpQbUdyTWhKbFVUOUtwTUIydDhsRXMy?=
+ =?utf-8?B?ZkNVMERMbm9RS0ZHcnNwZnEwUEczZjZqbmxmenpXL21jcmtpaUhCaVlmdzhY?=
+ =?utf-8?B?ejdvMS9HZXBmYnA5MFlFREpjUlBnVkpjRWhSTDd1OTFKNTdYdXFxZ0F0UHN2?=
+ =?utf-8?B?ZnQ0aVJnMXRIcjdBOW5PWjdCN1haWXA4NHd4Z3ZXMTlubkVBRENJd3RmU3Q0?=
+ =?utf-8?B?L2Q3U1dPT21NMHU2UmNadVdPM1BmcTVoRHJ4Y1c5UE83elQ4OWx4cVVaVjBC?=
+ =?utf-8?B?QmJYQi9oVjNpRE4zSjA5RU96cmRhRUtGV01aekc3aEpZK3dmdmZNRFBBSWhP?=
+ =?utf-8?B?RXJxK3BDaGVSSmRLZGgxN0VwcEFsbWVqeEpKVytlWkVYYVQwTFA4bnlTZlVw?=
+ =?utf-8?B?aHhuVmJldTZQMFhyYjgzODZpbnlCR2drTUsxZUdKNzN1dHpBRGwzMVhuWFJF?=
+ =?utf-8?B?cnBjMzNnK2JoNUdaWG93bVpmaE9lWVErSjlDekIycVJxU3VUMkFycitRaWxT?=
+ =?utf-8?B?NWZ1cFN6WnhPa2Y0Q1VXK3ludUREV3M5S3U1Q21KTDlyMER2UXpiL0E2eXJ6?=
+ =?utf-8?B?T0J4OERZS3l6RDRnNnFqRWNUcy91UlA5dFdFYXN4SU10UlAycGtEWkpDNnZN?=
+ =?utf-8?B?QXFXSmtpNlVYVEh5YUU4UytEVUVuS051STZzWVZ5U3JFZFduZGh1NFVrWTVI?=
+ =?utf-8?B?bnI1TDBLYVJVNFpJUGhuUGNOYUdhc25HQUdiWllJNGdLb2VuSFJGU1VuVDhj?=
+ =?utf-8?B?eVB2eXZuWWZycnlpeCtiODcxTDdxNXdFMmh3dTBCbWlQOHAwVlNKQVpLbWpy?=
+ =?utf-8?B?VzRMOXNKdk1zZFVKOUh3M3NFaFI5Wk9MclRUbDV3TWwwU3dld3JvdUxjTFdm?=
+ =?utf-8?B?cy9FU2RMRkVzNkJ1R0NLWWFWb0JXUXdUb2srblliRExnNEdXOUNRUGNRRlF0?=
+ =?utf-8?B?YStHdlBxK3BvcFpDL3c4TVFpalVoSlpSbytCbU1nbjhxRUdNQlAybXA0WlN2?=
+ =?utf-8?B?UERLOEhUZEJDZ1VrL3VrV2Fqc0VJcFh2bjV6Z3V3akEyRlpURGlFUUQ1TWtI?=
+ =?utf-8?B?SkV1cjdLM1ZMbUNrTUc2RWlxcVZUT3krWjRaTWR2ekZrMnN5am82ZUdsMUcv?=
+ =?utf-8?B?eXZ1TVVWVFpmVVBqRW9rRTBmcGtzU21xblVFcnA4T0tPdGY1YjM2OFp1Vjht?=
+ =?utf-8?B?ODhkY29vWFpwY1F2bmVZRWpqUTNJRzJrWUowV1hDakwvTjdiUkxVTXBWNFpj?=
+ =?utf-8?B?cU1yaXdVNWw0bHpmNjZiWGVaNnVQaUhUTEJMQTJMYTZ0M2Y2UGF3Y3VFM0hZ?=
+ =?utf-8?B?YVJtUkF5UDdZSFQzVnFGZjBJWmZvb1p1d21Nc0grcnMyUGJTWnhVZy8yQ3Er?=
+ =?utf-8?B?MTl2UmZLMFlzdTNRUFoyWnYyQ3lPUG5TMys4aHFJMGVvVXVTSnlocHJYZTRs?=
+ =?utf-8?B?eGliUVJwWWgvcklTcFZTUmxyR1l4RlhwZ2JsSzlaWFBSdTQxdkhMbmVtekd5?=
+ =?utf-8?B?WmVyS2FyTExaWUdiL1haeGJ4b2txelBEQTVacmpyTmpDMXNHOUVJRW44RTh0?=
+ =?utf-8?B?bTR1NGxhampacGVheEUzQnVSMi9abjhlSzNkQXVRSWRCYTRDS2lMbWd1YU5F?=
+ =?utf-8?B?WlNRU1BoR0d5TTZiK2UzZVc1eU5rTDdFVVAwdk9UWVJvRlN5MUhQYlIzbUpB?=
+ =?utf-8?Q?P4xUm/KuGjAefRO1ko=3D?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WlcrY2NBY2d4T2ZpNjJzUHZSR0cxaGE3VXl5bmZVcloyd2hETEM2SjhtTEUr?=
- =?utf-8?B?RDJjSFRBWWZuK01vZ2pjYW8zbFk2THZvdy80cHduQUNrTE5oVXRPaUtlOEIr?=
- =?utf-8?B?N3lhd2RvaU1lVnNkZ1F6Z0VTYStzVklGQWVQOW9jVTlDa1dQakN3aURxbkUr?=
- =?utf-8?B?blF5bGZYZHEwRDJqM1M0enVUZlRGZnl4REdXYmVDYzlOdmdCbEM5TjlKMkFS?=
- =?utf-8?B?eGV2c2xybDBJSXNOSU02RU96eCtBb0ptZzBZVVlNRm5pU3pScWdQZlVBdDZa?=
- =?utf-8?B?dnJzd1lyTUUxZVp1cG5VVVgwNTZHWTYxRVVLa0plako3SWpyQ0ZGRHdjVWth?=
- =?utf-8?B?cE1pbmgra3E3bUtOZHdMa1Z0ZGJScUM0RlE4Q2E2dHZhQzQybFhpdENuOU1B?=
- =?utf-8?B?NlpJSUVpbWRFMWNVYWMzcmMzeWxRU3A0cFVSNElibDRBdUoxVS9SZHZpcTZP?=
- =?utf-8?B?TTMzV1JtSFZRYkprODRVNGhDMllIdmdleVd0SHMvVVdxbENFYkNlcWQyVTMr?=
- =?utf-8?B?M3ZCK09jWnQyc2pzWm1CZ2x1RmdOY1J2ZGt3WEFBL3NGUWxnSVl4YlJ1SkNJ?=
- =?utf-8?B?WWx1aEI1MnA0TDJTUUVPNXZaMUc0OWpnUlBTQU5VQ2pGai9GbWhveU1YNHN2?=
- =?utf-8?B?VXNUVkZIU3JRNmJocjAwaW5pZzBHeVM5Z0dtdk1NQ3JubkplQWkrSExuSEVE?=
- =?utf-8?B?aDN3MWt1YWRLVHNRL0tpNFlnSUZ1NHZXTkRSK1Z4NjI0eWF2amh5UHdGS3B4?=
- =?utf-8?B?VzQwS25xSVhVMHlJemhybVk1RURMcktZUzZmaUlOQktRTDhCQXZSUXdTNnRl?=
- =?utf-8?B?VldTK0ZEMFhnajlpUkJkVGRWbk1tUk5uQ2Q5czdOOHlSSHJzNGVwdElYMEs1?=
- =?utf-8?B?UE5WNkhFV0E0VmEwM1JVOFcwRVZYeXVNR0VobUZZRWJXYVlqSVBhaEJDUXo5?=
- =?utf-8?B?MGhVRVp6Yk84bmFScy8xbTVuQnpRemZrWlVqbGMvS2o5dkZHNGEyVXZRYk16?=
- =?utf-8?B?MmJxMlN0STdTSEF5eVZlWE92TnRjOGlaQklVQ2tRWUpVbERyLy8vRTc5dloz?=
- =?utf-8?B?MHRZNktqWU1EcFBCR3RZMExRUUVzb25IdHRRY0c5NGpjNXZVSXJYWXkxTVhm?=
- =?utf-8?B?QndOdFpjR1BIT29ST3phMGViMTQ5cGNWVDk0ODVHUHpMY0dMKzF6UXZMUVVM?=
- =?utf-8?B?QmU1RXdUQVdkZTE1SzJLWHFmWVIrM1lLazVpS0FEN25LT3J1L3dhZC9kMjhC?=
- =?utf-8?B?NDJZdW9TeTVBNWUzRTBQQXo2Yy83TWFOZDRsbzFsbVlaWUVXa2I1WkRCMlAy?=
- =?utf-8?B?RUxURlRSN2xldTJlQ0VYMEd5RnR5TFc5dEs0WTRjQzZVVlhhT1pnVFJKbWNJ?=
- =?utf-8?B?VVprV20zc0YydTdPTkFxQUZIWGZtN2ZGTmNOc1czQWJtalJYbnpiRHZSSzNT?=
- =?utf-8?B?TDA4cW9BM2tZYVVlMzBnYjdYVFNxWGExMDZWZ05DWTRZVWxVZzRiRXNjSEp1?=
- =?utf-8?B?Z2pxZ2grcVVRL252eUExYmVKaytuMFVpVURJSm0wZi9nNjg3Tmg2S0dYNzF3?=
- =?utf-8?B?VUF5UFU1ZXQySTNwVjUzZFNjVW5kSlJaRnI0RTB6UnlRbFZsdVdrVmJIUUN3?=
- =?utf-8?B?Y0J5R252N0hPeDBiK1Z1dnRMYW9Scy9sVkdZYzkrRTdjM29yNDlkSUZNbStp?=
- =?utf-8?B?MWx6ZHJZSnJlSHNaNThSS0duRTd6dVpqREtnWnhNNzNFMjJmTHJoanFrVEhh?=
- =?utf-8?B?RDJ5YkpjcFQyaERGVHVYems2L2VkcHR0ZEdwUTgzcHlTQnhtWllCSXpUZFdS?=
- =?utf-8?B?VTRnMGJxdzBGdkVVRXdEMXl5NDdzdG52QW5MNGxRWlpWOFo5TUcrZk05SkJ1?=
- =?utf-8?B?MFlXS2ZtdFhBOG0zcGpkUk5pU0pvQ2d1MFZsZXRQZEpDTngycnJiNUFLUVFX?=
- =?utf-8?B?dHNzTXJEQWNyZXhqTDIyMlQzeGRubzJNVmMxN0hFTkxXYXdCZzFYMWJsemdi?=
- =?utf-8?B?KzhvRitYUElid3VGdEcvRkV1SEozRGZnQ0NwUzNHcXZxN01pN2hDODZHM1Nh?=
- =?utf-8?B?YnF1aHBKaHhobDJrTVcra0VER3NiVXZaUEdTSU9hQ2JpZ2JBbURYdjcyaVNL?=
- =?utf-8?B?T2FiZFBMbHRCb05vYVh1SjNPem12ekJFRFlnTHI4SVUxQzU3RzA0aFMwSXRH?=
- =?utf-8?B?UEE9PQ==?=
+	=?utf-8?B?dzBnVjVKVTFJbllCYXVIOTZTNUgxeVBDcUsvbGtzRWYzTTQwamJQNXo5Sndi?=
+ =?utf-8?B?NTErTFdncGpnL2FYQnIzVzYzSjZmOVROUlpjdlZKdlRPN2FxL09aMGpQRVFz?=
+ =?utf-8?B?NTdLZXZLWW1LWlZ5OU8wUzVmTWpFcjVlQlZ3Z01DdGVnUHg3WDlzZXRzR2Vx?=
+ =?utf-8?B?L1ExYTBwSFpUcjNhR1NGZ050eHd6N3V1cTZUQ3lvT1huTGNlS1NhNXN5VXhN?=
+ =?utf-8?B?bFE4TjlCWlhnYXVMM25xMy9TUldVNmhXL1NkRHRRMS9ZWlkxWTdFN0h5bGdi?=
+ =?utf-8?B?N2hISEcrS1VWZnRIcU16a2hIUHNycGZWclN6ZUhuMWJtUHJnSitkT1BHZnN5?=
+ =?utf-8?B?cndiWHBKUzVoa0dUU0FCcFVrNVdtMUtNRWZBMkd3WWpaWHFaRWhZT3orM05W?=
+ =?utf-8?B?bG9TUUtiNmh2UnFLK1VyRmZIcHE1amJxekphR2VSdi9WUHNuN0VrUk05VE54?=
+ =?utf-8?B?RmRreklFUGxuZDJ1Mlc4dk9TQ3BZMjJ5Ri9pSGlFamxuRjZWc1lmdFp5SDFX?=
+ =?utf-8?B?b0IvNXZkS0h0bTVQbFhKa093SnhkWXVtZ21KZVVacXRKVUlBbE5VaEhxR0ls?=
+ =?utf-8?B?MDJPMTR6d1FZSlZaUmVrcGRhRHZndVpHM1VuL2JLTTZycUhJZnpWK1VWelJq?=
+ =?utf-8?B?NW1jRmFtY3N5L1NWVHI2ak1ROGF4dEFQQlFXS1ZmN0hCRkJVVDVPLzdqM3o2?=
+ =?utf-8?B?bDQ5WjBNMDluNFVMeC9uVWVDcWxUTzRuWkFPN0NSSkNmVC81RXYrVlhjZE01?=
+ =?utf-8?B?YTBGUlcyajQvbGZ0UGo0U3drN0lRaXd2WmtMLzc2MjMwdy82ZGlCMXZZZnds?=
+ =?utf-8?B?UDcyY01MNjRSaVFycE9UL0o4emRJR0Y2bmR1akZCMjVWdzhnRE42MkE0WnFY?=
+ =?utf-8?B?ZEM0UWFyVHFkQWlFbzFKVXorWE05OFIxMkNEcGJvRW1BRmdlS2NTZUJCODlN?=
+ =?utf-8?B?d3BKRTQyRk92VVRmVkdiRC95b1pqMzgzMzA4SGF6a3g2MjI4VkhyUVlDY1Bu?=
+ =?utf-8?B?RUduUlVzeU5VTzc3Z3hxUEY2Ylo1cnc5aytOS1RlWE9SU25keFpaV011dWVm?=
+ =?utf-8?B?QjRDZm5iQjVFbGNwZVhKVlZwNGZVS1pzbFFMeDBhNGVSdUJ5ak01Y1JiWExl?=
+ =?utf-8?B?OVBha0hPMDNwSmI3QTltNng5Kzk5N0VWMXBVaDJ2bjdIU2lmVkVKQ01xRWJt?=
+ =?utf-8?B?VUx2cUMvclZLQ1VhT1BmWG9NMDQ3TmVCWWNxZFI1bXJreENXYTJYNnRmZHhB?=
+ =?utf-8?B?OVBKMlh2VHhaZUV1dEZTZFhaUk9tRUY1N0JudXpjanF5cWpoQlpqWFVPZVlP?=
+ =?utf-8?B?RlhnS0w1eXYzaXl0bmp2RllvbVNZTERKRUpvbE13c0JZejcrVDFlUWQ5SHBF?=
+ =?utf-8?B?aVhEakprdlY1bUc3aCtvMk5JUUJjdTBYTUxhcFlVSUtJZ3Z1Q0Z1aS9jNmdQ?=
+ =?utf-8?B?eVRnczhLeGl5YXZ3OElUVUJqd2tMZUJ2eEdiM0VaZzdNSWljYXJMc1YxS2ND?=
+ =?utf-8?B?MFE3UUp2UmRJaGFXUk1vT1BEazU1MXdGUm45UG16U1hsUEJhL3hXYmNsVUo2?=
+ =?utf-8?B?QklGbE9JWEs5b2hJcHZ0emlUVG1BM0EyYzF5c1VwTVZNZHRldGZqa0E0SkZ6?=
+ =?utf-8?B?a3B1QTJZVm93V0lGY0NjRC9XNFhicWZKc1owRHZnQUF0azlNdkYyL1B3cWYy?=
+ =?utf-8?B?aWE3ZmhaSWhPUTVhanN0TE1jRjJta290TjYwSTMxVTFHeUFiRTN1TmM1Zlo0?=
+ =?utf-8?B?bVRQVzQvYVoxZS9iWHBsNERjZU83dHJoYnR3N0NDWGt6RUdSd29vbGoydE95?=
+ =?utf-8?B?RTMvRndra1FJMXNhdnoxc3Jjb2FML3JZbUs3RFJCV0laYVp2VWN5dW05L0la?=
+ =?utf-8?B?WFBjUUZ2MGZHYTFlLy9MNk9DTTA3TEpNMTFkZVZleEx1cmVqaEozR3VtSUlp?=
+ =?utf-8?B?MTRrQ1owQUNJWDQ0dWZCNEoybVZWRGtGVUhrbVR6MlN1OUlRV0VTTGlxUlha?=
+ =?utf-8?B?M0d0M2EzK2tMdzdzdUlLNFpBakdYZ3RoTVRzc2UyM2ErRmJWUVZVWU0zREVV?=
+ =?utf-8?B?U0FVOThKNldkVTUrOHlNb2djK1gyZGY5bGVSTmhyZE0rSlNEWWgyaWRXWmI1?=
+ =?utf-8?B?MnZENGZmaFQ2QlJHMEtkK2lGTFRKL3VvamZYeFBaaUgzRkJ6Y2lRdnRkczZJ?=
+ =?utf-8?B?REE9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 91624a72-037d-4103-619c-08dcc8f57e51
+X-MS-Exchange-CrossTenant-Network-Message-Id: 48b7bdbf-1e1a-41f9-e449-08dcc8f9dc72
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2024 13:13:09.2491
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2024 13:44:25.1710
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TCWFxlniRo6CLiIsQOx2je4eRjJpqEPA2d5IkVmWtl8NTU6w3aq8r7FF/bKMfi4xgUPdGRY6XG/AVexFeLURaA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR10MB6370
+X-MS-Exchange-CrossTenant-UserPrincipalName: wvLeBcLzoYea04MOWTRacVofWFRqG6x9WBSKG3Bu37c8WOLoqc7Jz104docO0nLYR9OuT/+qsFg4tYieyPa6oQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR10MB8317
 
-On 30.08.24 15:11, Scheler, Fabian wrote:
-> Am 30.08.2024 um 13:24 schrieb Jan Kiszka:
->> On 30.08.24 13:19, Fabian.Scheler@siemens.com wrote:
->>> From: Fabian Scheler <Fabian.Scheler@siemens.com>
->>>
->>> In the testcase pi_nesting_contend_multicore the thread low may be
->>> unblocked to
->>> early preventing the thread medium from running until the end of the
->>> testcase,
->>> making the testcase fail, as the thread medium is expected to run
->>> before the
->>> thread low exits.
->>>
->>> This is fixed by ensuring that all threads are properly setup within the
->>> init-phase of the testcase, by additional instances of smokey_barrier
->>> used to
->>> signal that a particular thread has been started during the
->>> init-phase of the
->>> testcase.
->>>
->>> Signed-off-by: Fabian Scheler <Fabian.Scheler@siemens.com>
->>> ---
->>>   testsuite/smokey/posix-mutex/posix-mutex.c | 54 ++++++++++++++++++++--
->>>   1 file changed, 50 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/testsuite/smokey/posix-mutex/posix-mutex.c
->>> b/testsuite/smokey/posix-mutex/posix-mutex.c
->>> index 5cca0d2a1..249fc6c06 100644
->>> --- a/testsuite/smokey/posix-mutex/posix-mutex.c
->>> +++ b/testsuite/smokey/posix-mutex/posix-mutex.c
->>> @@ -551,17 +551,20 @@ struct multicore_low_context {
->>>       struct smokey_barrier *locker1_barrier;
->>>       struct smokey_barrier *locker2_barrier;
->>>       struct smokey_barrier *medium_barrier;
->>> +    struct smokey_barrier *ready_barrier;
->>>       int *medium_flag;
->>>   };
->>>     struct multicore_mutex_locker_context {
->>>       pthread_mutex_t *mutex;
->>>       struct smokey_barrier *barrier;
->>> +    struct smokey_barrier *ready_barrier;
->>>   };
->>>     struct multicore_medium_context {
->>>       int *flag;
->>>       struct smokey_barrier *barrier;
->>> +    struct smokey_barrier *ready_barrier;
->>>   };
->>>     static void *pi_nesting_contend_multicore_low(void *arg)
->>> @@ -570,6 +573,8 @@ static void
->>> *pi_nesting_contend_multicore_low(void *arg)
->>>           (struct multicore_low_context *)arg;
->>>       int ret;
->>>   +    smokey_barrier_release(context->ready_barrier);
->>> +
->>>       if (!__T(ret, smokey_barrier_wait(context->low_barrier)))
->>>           return (void *)(long)ret;
->>>   @@ -604,6 +609,8 @@ static void
->>> *pi_nesting_contend_multicore_mutex_locker(void *arg)
->>>           (struct multicore_mutex_locker_context *)arg;
->>>       int ret;
->>>   +    smokey_barrier_release(context->ready_barrier);
->>> +
->>>       if (!__T(ret, smokey_barrier_wait(context->barrier)))
->>>           return (void *)(long)ret;
->>>   @@ -622,6 +629,8 @@ static void
->>> *pi_nesting_contend_multicore_medium(void *arg)
->>>           (struct multicore_medium_context *)arg;
->>>       int ret;
->>>   +    smokey_barrier_release(context->ready_barrier);
->>> +
->>>       if (!__T(ret, smokey_barrier_wait(context->barrier)))
->>>           return (void *)(long)ret;
->>>   @@ -687,9 +696,11 @@ static int
->>> pi_nesting_contend_multicore_getcpu(cpu_set_t *rt_cpus,
->>>   static int pi_nesting_contend_multicore(void)
->>>   {
->>>       struct multicore_mutex_locker_context locker1_args, locker2_args;
->>> -    int cpu, num_cpus, low_medium_cpu, locker1_cpu, locker2_cpu;
->>> -    struct smokey_barrier locker1_barrier, locker2_barrier;
->>> -    struct smokey_barrier low_barrier, medium_barrier;
->>> +    int ret, cpu, num_cpus, low_medium_cpu, locker1_cpu, locker2_cpu;
->>> +    struct smokey_barrier locker1_barrier, locker1_ready_barrier;
->>> +    struct smokey_barrier locker2_barrier, locker2_ready_barrier;
->>> +    struct smokey_barrier medium_barrier, medium_ready_barrier;
->>> +    struct smokey_barrier low_barrier, low_ready_barrier;
->>>       struct multicore_medium_context medium_args;
->>>       pthread_t low, locker1, locker2, medium;
->>>       struct multicore_low_context low_args;
->>> @@ -697,7 +708,6 @@ static int pi_nesting_contend_multicore(void)
->>>       cpu_set_t rt_cpus, online_cpus;
->>>       int medium_flag = 0;
->>>       void *status;
->>> -    int ret;
->>>         /* setup test */
->>>   @@ -718,18 +728,33 @@ static int pi_nesting_contend_multicore(void)
->>>       locker2_cpu = pi_nesting_contend_multicore_getcpu(
->>>           &rt_cpus, &online_cpus, num_cpus, locker1_cpu);
->>>   +    smokey_trace("low_medium_cpu: %d, locker1_cpu: %d,
->>> locker2_cpu: %d\n",
->>> +        low_medium_cpu, locker1_cpu, locker2_cpu);
->>> +
->>>       if (!__T(ret, smokey_barrier_init(&low_barrier)))
->>>           return ret;
->>>   +    if (!__T(ret, smokey_barrier_init(&low_ready_barrier)))
->>> +        return ret;
->>> +
->>>       if (!__T(ret, smokey_barrier_init(&locker1_barrier)))
->>>           return ret;
->>>   +    if (!__T(ret, smokey_barrier_init(&locker1_ready_barrier)))
->>> +        return ret;
->>> +
->>>       if (!__T(ret, smokey_barrier_init(&locker2_barrier)))
->>>           return ret;
->>>   +    if (!__T(ret, smokey_barrier_init(&locker2_ready_barrier)))
->>> +        return ret;
->>> +
->>>       if (!__T(ret, smokey_barrier_init(&medium_barrier)))
->>>           return ret;
->>>   +    if (!__T(ret, smokey_barrier_init(&medium_ready_barrier)))
->>> +        return ret;
->>> +
->>>       ret = do_init_mutex(&mutex1, PTHREAD_MUTEX_NORMAL,
->>>                   PTHREAD_PRIO_INHERIT);
->>>       if (ret)
->>> @@ -746,40 +771,56 @@ static int pi_nesting_contend_multicore(void)
->>>       low_args.locker1_barrier = &locker1_barrier;
->>>       low_args.locker2_barrier = &locker2_barrier;
->>>       low_args.medium_barrier = &medium_barrier;
->>> +    low_args.ready_barrier = &low_ready_barrier;
->>>       low_args.medium_flag = &medium_flag;
->>>         locker1_args.mutex = &mutex1;
->>>       locker1_args.barrier = &locker1_barrier;
->>> +    locker1_args.ready_barrier = &locker1_ready_barrier;
->>>         locker2_args.mutex = &mutex2;
->>>       locker2_args.barrier = &locker2_barrier;
->>> +    locker2_args.ready_barrier = &locker2_ready_barrier;
->>>         medium_args.barrier = &medium_barrier;
->>>       medium_args.flag = &medium_flag;
->>> +    medium_args.ready_barrier = &medium_ready_barrier;
->>>         if (!__T(ret, create_thread(
->>>                     &low, SCHED_FIFO, THREAD_PRIO_LOW, low_medium_cpu,
->>>                     pi_nesting_contend_multicore_low, &low_args)))
->>>           return ret;
->>>   +    if (!__T(ret, smokey_barrier_wait(&low_ready_barrier)))
->>> +        return ret;
->>> +
->>>       if (!__T(ret, create_thread(&locker1, SCHED_FIFO,
->>> THREAD_PRIO_HIGH,
->>>                       locker1_cpu,
->>>                       pi_nesting_contend_multicore_mutex_locker,
->>>                       &locker1_args)))
->>>           return ret;
->>>   +    if (!__T(ret, smokey_barrier_wait(&locker1_ready_barrier)))
->>> +        return ret;
->>> +
->>>       if (!__T(ret, create_thread(&locker2, SCHED_FIFO,
->>> THREAD_PRIO_VERY_HIGH,
->>>                       locker2_cpu,
->>>                       pi_nesting_contend_multicore_mutex_locker,
->>>                       &locker2_args)))
->>>           return ret;
->>>   +    if (!__T(ret, smokey_barrier_wait(&locker2_ready_barrier)))
->>> +        return ret;
->>> +
->>>       if (!__T(ret, create_thread(&medium, SCHED_FIFO,
->>> THREAD_PRIO_MEDIUM,
->>>                       low_medium_cpu,
->>>                       pi_nesting_contend_multicore_medium,
->>>                       &medium_args)))
->>>           return ret;
->>>   +    if (!__T(ret, smokey_barrier_wait(&medium_ready_barrier)))
->>> +        return ret;
->>> +
->>>       /* start test */
->>>         smokey_barrier_release(&low_barrier);
->>> @@ -813,6 +854,11 @@ static int pi_nesting_contend_multicore(void)
->>>       smokey_barrier_destroy(&locker2_barrier);
->>>       smokey_barrier_destroy(&medium_barrier);
->>>   +    smokey_barrier_destroy(&low_ready_barrier);
->>> +    smokey_barrier_destroy(&locker1_ready_barrier);
->>> +    smokey_barrier_destroy(&locker2_ready_barrier);
->>> +    smokey_barrier_destroy(&medium_ready_barrier);
->>> +
->>>       if (!__T(ret, pthread_mutex_destroy(&mutex1)))
->>>           return ret;
->>>       if (!__T(ret, pthread_mutex_destroy(&mutex2)))
+On 07.08.24 23:52, Jan Kiszka wrote:
+> On 23.07.24 16:08, Tobias Schaffner wrote:
+>> Enable isar sstate caching to an aws s3 bucket by using the
+>> SSTATE_MIRRORS environment variable.
 >>
->> This was seen at least once in
->> https://source.denx.de/Xenomai/xenomai-images/-/jobs/890675
+>> The isar-sstate script is used to upload, analyze and clean the remote
+>> sstate cache on every build.
 >>
->> Were you able to enforce this issue locally (artificial delay etc) and
->> then validate the this patch?
+>> Cached artifacts will be cleaned every 14 days. This can be overwritten
+>> by setting SSTATE_MAX_AGE.
+>>
+>> Credentials have to be injected using the AWS_ACCESS_KEY_ID and
+>> AWS_SECRET_ACCESS_KEY environment variables. This is already done for
+>> download caching.
+>>
+>> Currently the size of the cache is ~20G in size but I expect this to
+>> rise to a multiple as soon as this is used in productive environment.
+>> Keep an eye on the output of isar-sstate info.
+>>
+>> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+>> ---
+>>  ci/gitlab-ci-base.yml | 47 ++++++++++++++++++++++++++++++++++++-------
+>>  opt-ci.yml            |  4 ++++
+>>  2 files changed, 44 insertions(+), 7 deletions(-)
+>>
+>> diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+>> index 1dc05a8..f5009e3 100644
+>> --- a/ci/gitlab-ci-base.yml
+>> +++ b/ci/gitlab-ci-base.yml
+>> @@ -24,12 +24,39 @@ variables:
+>>    TEST_RUNTIME_SECONDS: 300
+>>    TEST_MAXIMUM_LATENCY: 0
+>>    TEST_COMMAND: "xeno-test -k -l 'dohell -m /tmp ${TEST_RUNTIME_SECONDS}' ${ADDITIONAL_XENO_TEST_ARGS}"
+>> +  SSTATE_LOCATION: "s3://xenomai-images-artifacts/sstate"
+>> +  SSTATE_MIRRORS: "file://.* ${SSTATE_LOCATION}/PATH;downloadfilename=PATH"
+>> +  SSTATE_MAX_AGE: 14d
+>>  
+>>  default:
+>>    image: ghcr.io/siemens/kas/kas-isar:4.4
+>>  
+>> +.sstate-prepare:
+>> +  script:
+>> +    - kas checkout kas.yml
+>> +    - echo "=== Prepare for sstate at ${SSTATE_LOCATION} ==="
+>> +    - ./isar/scripts/isar-sstate clean "${SSTATE_LOCATION}" --max-age "${SSTATE_MAX_AGE}"
+>> +    - ./isar/scripts/isar-sstate info -v "${SSTATE_LOCATION}"
+>> +
+>> +.sstate-analyze:
+>> +  script:
+>> +    - echo "=== Analyze sstate differences with remote ${SSTATE_LOCATION} ==="
+>> +    - ./isar/scripts/isar-sstate analyze "build/sstate-cache" "${SSTATE_LOCATION}"
+>> +    - echo "=== Check for cacheability issues in build/sstate-cache ==="
+>> +    - ./isar/scripts/isar-sstate lint "build/sstate-cache"
+>> +          --sources-dir "${CI_PROJECT_DIR}"
+>> +          --build-dir   "${CI_PROJECT_DIR}/build"
+>> +          --pedantic
+>> +          --exit-code 0
+>> +
+>> +.sstate-upload:
+>> +  script:
+>> +    - echo "=== Upload sstate artifacts to ${SSTATE_LOCATION} ==="
+>> +    - ./isar/scripts/isar-sstate upload "build/sstate-cache" "${SSTATE_LOCATION}"
+>> +    - ./isar/scripts/isar-sstate info -v "${SSTATE_LOCATION}"
+>> +
+>>  .common-config:
+>> -  before_script:
+>> +  script:
+>>      - if [ -n "$ALT_DNS_SERVER" ]; then
+>>            sudo sh -c "echo 'nameserver $ALT_DNS_SERVER' > /etc/resolv.conf";
+>>        fi
+>> @@ -40,17 +67,22 @@ default:
+>>        fi
+>>  
+>>  .build:
+>> -  extends: .common-config
+>>    stage: build
+>> +  before_script:
+>> +    - !reference [.common-config, script]
+>> +    - !reference [.sstate-prepare, script]
+>>    script:
+>>      - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-ci.yml"
+>>      - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-ci.yml
+>> -    - du -sh build/downloads/deb build/downloads/git build/downloads
+>> +    - du -ah -d1 build/downloads
+>>      - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
+>> +  after_script:
+>> +    - !reference [.sstate-analyze, script]
+>> +    - !reference [.sstate-upload, script]
+>>    cache:
+>> -    key: downloads-${CACHE_ARCH}-${CACHE_KERNEL}
+>> -    paths:
+>> -      - build/downloads
+>> +    - key: downloads-${CACHE_ARCH}-${CACHE_KERNEL}
+>> +      paths:
+>> +        - build/downloads
 > 
-> Yes, I was able to reproduce this via qemu and was also able to validate
-> the patch via qemu.
+> Strictly spoken, this chance is not needed because we only have a single
+> cache entry. Anyway.
+> 
+>>  
+>>  .build-qemu:
+>>    extends: .build
+>> @@ -59,8 +91,9 @@ default:
+>>      - if: '$ALL_QEMU_JOBS == "true"'
+>>  
+>>  .test:
+>> -  extends: .common-config
+>>    stage: test
+>> +  before_script:
+>> +    - !reference [.common-config, script]
+>>    script:
+>>      - scripts/install-lavacli.sh
+>>      - scripts/run-lava-tests.sh ${TARGET}
+>> diff --git a/opt-ci.yml b/opt-ci.yml
+>> index 01d5c07..e1466a0 100644
+>> --- a/opt-ci.yml
+>> +++ b/opt-ci.yml
+>> @@ -23,3 +23,7 @@ local_conf_header:
+>>      IMAGE_INSTALL:remove = "sshd-regen-keys"
+>>      IMAGE_INSTALL:remove = "expand-on-first-boot"
+>>      IMAGE_FSTYPES = "${@ 'ext4.gz' if d.getVar('MACHINE', True).startswith('qemu') else 'tar.gz' }"
+>> +
+>> +env:
+>> +  AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+>> +  AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+> 
+> Thanks, applied. Let's see how it will behave.
+> 
+> Jan
 > 
 
-Perfect.
+Only saw now:
 
-Applied to next, thanks.
+2024-08-30 13:22:20 - INFO     - WARNING: xenomai-stable-3.0.x-r0 do_dpkg_build: Export of 'AWS_ACCESS_KEY_ID=[MASKED]' detected, please migrate to templates
+2024-08-30 13:22:20 - INFO     - WARNING: xenomai-stable-3.0.x-r0 do_dpkg_build: Export of 'AWS_SECRET_ACCESS_KEY=[MASKED]' detected, please migrate to templates
+
+(e.g. https://source.denx.de/Xenomai/xenomai-images/-/jobs/894592)
+
+Is that an isar issue (but we are not that old), or are we rather doing 
+something wrong here with the export?
 
 Jan
 
