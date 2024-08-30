@@ -1,42 +1,38 @@
 Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76FC3199953
-	for <xenomai@lists.linux.dev>; Fri, 30 Aug 2024 11:13:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2066A1D131D
+	for <xenomai@lists.linux.dev>; Fri, 30 Aug 2024 11:20:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725016427; cv=none; b=MxndzJpm0g4Dm3XAz5rUGrBf2/ARug8gsV8rxBcvXfl63WZ49Kd9KyylN7hHbXjfSc9/L40CaLrqrQhY3GZrK+AI0x1f5b8aEIPRAEGcU2ZDkh3pvPXGiLxkk17pxVx5XqzgSY7g1h4nCylNhQeX/3SRZ5pBAhTYCqG6yb6tEjs=
+	t=1725016824; cv=none; b=m/gpQliDVCEyRkrziBaQB6d1g9TAMRCZpXMs/BuHmO2n3Xh3ldilF+EkK0zJvIw8Lr9jKQu9Nc4hxXJ3iIpf8jv4qi6w+eLZSG09h/Oxv79eqNGO8+Q8GR38V5Rk5SBXoa1cnCIdYUYwXN6uQNQSZFUl1mMdzhe/1rc4fqwA41s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725016427; c=relaxed/simple;
-	bh=RIH7NcQZcGaz8Wo7zQh0wH1qXxOK9jSRtJm6e1LN16I=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=o3UCzGbkItxpBKjnanv3d7RTqeJxL3tEwZ2UhXKTLCfAM1OnRp9G5oih7WcX+3ZFQoHNFr08MgdfdBeGg9dupRwXye3KKTdEosFeyW8oja0WJtECMg5S0Zv7CTSOrs/uLJsbYUysvELRqW79M0cA+H3wi05ChQB0DphWYJqo7mM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=gZFn3j2m; arc=none smtp.client-ip=185.136.65.225
+	s=arc-20240116; t=1725016824; c=relaxed/simple;
+	bh=Hrdks4MsTLqJp2J+2m1LnCxxD1yskKKWR6KS2BalMB0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qROdE50LzOGEgpK/n1aI+6aw+KBpIzXvYPOkXUZ4BtNrlVAP4ZEAQm2FviEBE3Mmh9vvjYuWHI9fmfxVl/nt1oERiLu7Zyz/jgN6tyrkvVJ9tlSY6VQjOfys41WsXz1asOiu7WaT6IqnQqLpTjPmG7EchWzv54bZU6ZvsJOsDNw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=Fabian.Scheler@siemens.com header.b=NBOgl9yu; arc=none smtp.client-ip=185.136.65.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="gZFn3j2m"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202408301113343f8422c5551b179ed3
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=Fabian.Scheler@siemens.com header.b="NBOgl9yu"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20240830112016183d10c7a4bc25cf21
         for <xenomai@lists.linux.dev>;
-        Fri, 30 Aug 2024 13:13:35 +0200
+        Fri, 30 Aug 2024 13:20:16 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=jan.kiszka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=g1WwFjNw5jOtTCDEyLc4ccefWJlG8hIxBJ4AjWAVVAM=;
- b=gZFn3j2mSnnLJxZS4dlzTMJZ3c5KEexuX6O1Fr4Qy3sDE9GQG2UW0U9W7FXsgXwG299Vf0
- a88NwgzQSQ4eF/QHLAJ5/ADS10Nw6wkhna+lqLVVKDY6EjtupRhvOTyaH+6IiDk7Kk96mitx
- qN5oA+Kum/u6Pb7lIDACwte3m4bZ/PtX4xs533W8IQzeugwQN7EXAt4ppj4QnMjrrs9g31D2
- 7JFUWqOVz9O5n61k4WvuXmSp2KbJa7Tlqe0i8nk5zPrx4kQFZytjjL16MT9yja5uHBYje8ek
- qQDnu4didAY+JJ2ZWT9e5ezWyGd7s/57OJiqkOyd6/MMuYKREPbOGjCg==;
-From: Jan Kiszka <jan.kiszka@siemens.com>
+ d=siemens.com; i=Fabian.Scheler@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=yUGfYHRvSTvF/t1uod1kwKHj5BmAQegZOudai2Dpkf8=;
+ b=NBOgl9yuFccRY+F7/qzCi+YdkUZXtDEE2zPXdMRi/ua/IA89ZL+pnS5b+UlAscrMoVjVRs
+ 6g3ahvtu3u5rB1QMx9/nIWWaUQwT1uzs5jcsegTA/c/voThuAgOMH5FBEGj9LztanYoA9JCW
+ innrQ1Of5fhOFQuc0GI1I1nYC6pLnONWO1nALj3qZnH/6ZViZ35KgpkL4OpQK/LYdVJcw0pv
+ qsesmIbt/1BN4QdNraidmw7Y/ItXdcn5mM5eI6VBqfGAksjiUKGDxpeBR1wtnZC1ebO2tCKG
+ h29KaxMsTp+aR5i5q6Ah3SXl+9u8qoaRvqEJMcBLrkwhNPQSx0v9Z4IQ==;
+From: Fabian.Scheler@siemens.com
 To: xenomai@lists.linux.dev
-Cc: JerryJun <jerryjun123@163.com>,
-	Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH 3/3] cobalt/posix/process: Sync on thread-hosted irq_work items before exiting
-Date: Fri, 30 Aug 2024 13:13:33 +0200
-Message-ID: <a1029bef54ff78bc01795032aee5bdec7c86fe41.1725016413.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1725016413.git.jan.kiszka@siemens.com>
-References: <cover.1725016413.git.jan.kiszka@siemens.com>
+Cc: Fabian Scheler <Fabian.Scheler@siemens.com>
+Subject: [PATCH] testsuite/smokey/posix-mutex: Fix race-condition
+Date: Fri, 30 Aug 2024 13:19:38 +0200
+Message-ID: <20240830111952.26651-1-Fabian.Scheler@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -45,43 +41,203 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-294854:519-21489:flowmailer
+Feedback-ID: 519:519-1325281:519-21489:flowmailer
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Fabian Scheler <Fabian.Scheler@siemens.com>
 
-Better safe than sorry: Due to migrations, there could theoretically
-still be signal or relaxation work pending on different CPU. To avoid
-reaping the carpet underneath of them, sync on all per-thread work_irq
-items when a former RT thread is terminating.
+In the testcase pi_nesting_contend_multicore the thread low may be unblocked to
+early preventing the thread medium from running until the end of the testcase,
+making the testcase fail, as the thread medium is expected to run before the
+thread low exits.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+This is fixed by ensuring that all threads are properly setup within the
+init-phase of the testcase, by additional instances of smokey_barrier used to
+signal that a particular thread has been started during the init-phase of the
+testcase.
+
+Signed-off-by: Fabian Scheler <Fabian.Scheler@siemens.com>
 ---
- kernel/cobalt/posix/process.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ testsuite/smokey/posix-mutex/posix-mutex.c | 54 ++++++++++++++++++++--
+ 1 file changed, 50 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/cobalt/posix/process.c b/kernel/cobalt/posix/process.c
-index 7cfaa723e6..8b4efcab40 100644
---- a/kernel/cobalt/posix/process.c
-+++ b/kernel/cobalt/posix/process.c
-@@ -838,6 +838,7 @@ static void __handle_taskexit_event(struct task_struct *p)
- {
- 	struct cobalt_ppd *sys_ppd;
- 	struct xnthread *thread;
-+	unsigned int n;
- 	spl_t s;
+diff --git a/testsuite/smokey/posix-mutex/posix-mutex.c b/testsuite/smokey/posix-mutex/posix-mutex.c
+index 5cca0d2a1..249fc6c06 100644
+--- a/testsuite/smokey/posix-mutex/posix-mutex.c
++++ b/testsuite/smokey/posix-mutex/posix-mutex.c
+@@ -551,17 +551,20 @@ struct multicore_low_context {
+ 	struct smokey_barrier *locker1_barrier;
+ 	struct smokey_barrier *locker2_barrier;
+ 	struct smokey_barrier *medium_barrier;
++	struct smokey_barrier *ready_barrier;
+ 	int *medium_flag;
+ };
  
- 	/*
-@@ -861,6 +862,10 @@ static void __handle_taskexit_event(struct task_struct *p)
+ struct multicore_mutex_locker_context {
+ 	pthread_mutex_t *mutex;
+ 	struct smokey_barrier *barrier;
++	struct smokey_barrier *ready_barrier;
+ };
  
- 	xnthread_run_handler_stack(thread, exit_thread);
+ struct multicore_medium_context {
+ 	int *flag;
+ 	struct smokey_barrier *barrier;
++	struct smokey_barrier *ready_barrier;
+ };
  
-+	for (n = 0; n < XNTHREAD_MAX_SIGNALS; n++)
-+		irq_work_sync(&thread->sigarray[n].inband_work);
-+	irq_work_sync(&thread->relax_work.inband_work);
+ static void *pi_nesting_contend_multicore_low(void *arg)
+@@ -570,6 +573,8 @@ static void *pi_nesting_contend_multicore_low(void *arg)
+ 		(struct multicore_low_context *)arg;
+ 	int ret;
+ 
++	smokey_barrier_release(context->ready_barrier);
 +
- 	if (xnthread_test_state(thread, XNUSER)) {
- 		cobalt_umm_free(&cobalt_kernel_ppd.umm, thread->u_window);
- 		thread->u_window = NULL;
+ 	if (!__T(ret, smokey_barrier_wait(context->low_barrier)))
+ 		return (void *)(long)ret;
+ 
+@@ -604,6 +609,8 @@ static void *pi_nesting_contend_multicore_mutex_locker(void *arg)
+ 		(struct multicore_mutex_locker_context *)arg;
+ 	int ret;
+ 
++	smokey_barrier_release(context->ready_barrier);
++
+ 	if (!__T(ret, smokey_barrier_wait(context->barrier)))
+ 		return (void *)(long)ret;
+ 
+@@ -622,6 +629,8 @@ static void *pi_nesting_contend_multicore_medium(void *arg)
+ 		(struct multicore_medium_context *)arg;
+ 	int ret;
+ 
++	smokey_barrier_release(context->ready_barrier);
++
+ 	if (!__T(ret, smokey_barrier_wait(context->barrier)))
+ 		return (void *)(long)ret;
+ 
+@@ -687,9 +696,11 @@ static int pi_nesting_contend_multicore_getcpu(cpu_set_t *rt_cpus,
+ static int pi_nesting_contend_multicore(void)
+ {
+ 	struct multicore_mutex_locker_context locker1_args, locker2_args;
+-	int cpu, num_cpus, low_medium_cpu, locker1_cpu, locker2_cpu;
+-	struct smokey_barrier locker1_barrier, locker2_barrier;
+-	struct smokey_barrier low_barrier, medium_barrier;
++	int ret, cpu, num_cpus, low_medium_cpu, locker1_cpu, locker2_cpu;
++	struct smokey_barrier locker1_barrier, locker1_ready_barrier;
++	struct smokey_barrier locker2_barrier, locker2_ready_barrier;
++	struct smokey_barrier medium_barrier, medium_ready_barrier;
++	struct smokey_barrier low_barrier, low_ready_barrier;
+ 	struct multicore_medium_context medium_args;
+ 	pthread_t low, locker1, locker2, medium;
+ 	struct multicore_low_context low_args;
+@@ -697,7 +708,6 @@ static int pi_nesting_contend_multicore(void)
+ 	cpu_set_t rt_cpus, online_cpus;
+ 	int medium_flag = 0;
+ 	void *status;
+-	int ret;
+ 
+ 	/* setup test */
+ 
+@@ -718,18 +728,33 @@ static int pi_nesting_contend_multicore(void)
+ 	locker2_cpu = pi_nesting_contend_multicore_getcpu(
+ 		&rt_cpus, &online_cpus, num_cpus, locker1_cpu);
+ 
++	smokey_trace("low_medium_cpu: %d, locker1_cpu: %d, locker2_cpu: %d\n",
++		low_medium_cpu, locker1_cpu, locker2_cpu);
++
+ 	if (!__T(ret, smokey_barrier_init(&low_barrier)))
+ 		return ret;
+ 
++	if (!__T(ret, smokey_barrier_init(&low_ready_barrier)))
++		return ret;
++
+ 	if (!__T(ret, smokey_barrier_init(&locker1_barrier)))
+ 		return ret;
+ 
++	if (!__T(ret, smokey_barrier_init(&locker1_ready_barrier)))
++		return ret;
++
+ 	if (!__T(ret, smokey_barrier_init(&locker2_barrier)))
+ 		return ret;
+ 
++	if (!__T(ret, smokey_barrier_init(&locker2_ready_barrier)))
++		return ret;
++
+ 	if (!__T(ret, smokey_barrier_init(&medium_barrier)))
+ 		return ret;
+ 
++	if (!__T(ret, smokey_barrier_init(&medium_ready_barrier)))
++		return ret;
++
+ 	ret = do_init_mutex(&mutex1, PTHREAD_MUTEX_NORMAL,
+ 			    PTHREAD_PRIO_INHERIT);
+ 	if (ret)
+@@ -746,40 +771,56 @@ static int pi_nesting_contend_multicore(void)
+ 	low_args.locker1_barrier = &locker1_barrier;
+ 	low_args.locker2_barrier = &locker2_barrier;
+ 	low_args.medium_barrier = &medium_barrier;
++	low_args.ready_barrier = &low_ready_barrier;
+ 	low_args.medium_flag = &medium_flag;
+ 
+ 	locker1_args.mutex = &mutex1;
+ 	locker1_args.barrier = &locker1_barrier;
++	locker1_args.ready_barrier = &locker1_ready_barrier;
+ 
+ 	locker2_args.mutex = &mutex2;
+ 	locker2_args.barrier = &locker2_barrier;
++	locker2_args.ready_barrier = &locker2_ready_barrier;
+ 
+ 	medium_args.barrier = &medium_barrier;
+ 	medium_args.flag = &medium_flag;
++	medium_args.ready_barrier = &medium_ready_barrier;
+ 
+ 	if (!__T(ret, create_thread(
+ 			      &low, SCHED_FIFO, THREAD_PRIO_LOW, low_medium_cpu,
+ 			      pi_nesting_contend_multicore_low, &low_args)))
+ 		return ret;
+ 
++	if (!__T(ret, smokey_barrier_wait(&low_ready_barrier)))
++		return ret;
++
+ 	if (!__T(ret, create_thread(&locker1, SCHED_FIFO, THREAD_PRIO_HIGH,
+ 				    locker1_cpu,
+ 				    pi_nesting_contend_multicore_mutex_locker,
+ 				    &locker1_args)))
+ 		return ret;
+ 
++	if (!__T(ret, smokey_barrier_wait(&locker1_ready_barrier)))
++		return ret;
++
+ 	if (!__T(ret, create_thread(&locker2, SCHED_FIFO, THREAD_PRIO_VERY_HIGH,
+ 				    locker2_cpu,
+ 				    pi_nesting_contend_multicore_mutex_locker,
+ 				    &locker2_args)))
+ 		return ret;
+ 
++	if (!__T(ret, smokey_barrier_wait(&locker2_ready_barrier)))
++		return ret;
++
+ 	if (!__T(ret, create_thread(&medium, SCHED_FIFO, THREAD_PRIO_MEDIUM,
+ 				    low_medium_cpu,
+ 				    pi_nesting_contend_multicore_medium,
+ 				    &medium_args)))
+ 		return ret;
+ 
++	if (!__T(ret, smokey_barrier_wait(&medium_ready_barrier)))
++		return ret;
++
+ 	/* start test */
+ 
+ 	smokey_barrier_release(&low_barrier);
+@@ -813,6 +854,11 @@ static int pi_nesting_contend_multicore(void)
+ 	smokey_barrier_destroy(&locker2_barrier);
+ 	smokey_barrier_destroy(&medium_barrier);
+ 
++	smokey_barrier_destroy(&low_ready_barrier);
++	smokey_barrier_destroy(&locker1_ready_barrier);
++	smokey_barrier_destroy(&locker2_ready_barrier);
++	smokey_barrier_destroy(&medium_ready_barrier);
++
+ 	if (!__T(ret, pthread_mutex_destroy(&mutex1)))
+ 		return ret;
+ 	if (!__T(ret, pthread_mutex_destroy(&mutex2)))
 -- 
-2.43.0
+2.46.0
 
