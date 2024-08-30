@@ -1,55 +1,56 @@
-Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2080.outbound.protection.outlook.com [40.107.241.80])
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2071.outbound.protection.outlook.com [40.107.22.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06775172BD0
-	for <xenomai@lists.linux.dev>; Fri, 30 Aug 2024 13:44:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.241.80
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D6211758F
+	for <xenomai@lists.linux.dev>; Fri, 30 Aug 2024 13:48:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.22.71
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725025471; cv=fail; b=Lh6BkdSRji3aArDGbMbtfZLdp19/f7js1FPkCvM7yeYx4uPp8C5O/ehAhsnEe+4KSxx6veKrvPYzI2xaC4qVYznTxvK1OUGs4AR6SNhMKU0XousZNA53LsTSj4JeFbHKqtQY9Pcno04FAD3NeApYTbxYLvwCWoX5bWNxRHcd6wo=
+	t=1725025684; cv=fail; b=eP3HA3mwJU/50Vp61DwgpeSpc9BjmW6ywHx3+VsagM3Og5V7LA0psDKtCnoVx3y7iKCedwXpfgP216mfQifoglvBjBg/PGFvPHkZEK08fHNAP9npqfOnraiKG7TIRFQrtncPSQFh7tCIupsI8OTZcuXUCR0/bFiE4t98ipi3+bs=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725025471; c=relaxed/simple;
-	bh=vS/O80VK+JPhsBezvVDkt72VYkSfy6ouDNU/pwIofSo=;
+	s=arc-20240116; t=1725025684; c=relaxed/simple;
+	bh=WAXC45rYj1T84O9ahMU+MSi0xL0U8oLEPAZIhNpFk50=;
 	h=Message-ID:Date:Subject:From:To:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=qkgOTtZiMkEy+1UvwD9McDPwv+zVX7VrUP8Bq6tCQHGllrAF72NxcWwqMlKQ9l3Q5jSRsOdOvBWR2iA04+A9RxQ8DNNo/jxztXQZhqmke/9AEzyP1J1iYb3O/LMLWAm389xE2h79Xr95XDxYuSuuMPIoOE1UFQo7Gq5IRwqsTIc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=MbF3UEPB; arc=fail smtp.client-ip=40.107.241.80
+	 Content-Type:MIME-Version; b=VyFU7gJh4nxjJMmQ0g6sTGIf9KwNJhFxnsVgtDWZZqD3l7JJETrw4oeHVb8yAQgR2VJsNKNpgKv2ANIBifx4ykandIodTX9X5OsSRq3nrqH4H0YWLAQFL6Hq0d+gtGicPfjJ7Trst/b5JWNe7wLDLBbQU+uH25LBOAgDuhnjD08=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=VWF7Mez4; arc=fail smtp.client-ip=40.107.22.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="MbF3UEPB"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="VWF7Mez4"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=FKM+5wL8S98E5UhbRND96TaAQ/y+rBubDXYePSSzZgFVSThdYdTcM6m9c7g+1/ylDiDauuwmIQjS3pJHQhKWSkMjAmw5ygi5841if4o2WT8WgoHv2Cu9ZIqSuVuWtnunYqYT5cV8CT58HIXPRgTElBXCbxppXZCdeDIsNA54mI/ATI43iHKpHP755DxMiYiYIwOCP9cHDUzzTp828TPdPdvke42YbdFhEkeP1capnblckIe4aFPYBcHExcObm0xVv/8+j7oEJUsSvMUmvtEMRK3z1ljKf+9UA5NyuWiSHQIOU9Fl8gFv/qcifvMMyGYHiu1/GKpvyI/dVehEP5qvXA==
+ b=sYh1wtiuwSjTxs9I10ANI7wsv08XuszqeHM/4vQs6z9SVI77uQyfRjpKEJgMoLFqm3KGsNi+L4JjUtVak1FgoLJVwqYpiILPl4JrygjrHwelOiC60Fpf4LJkbnRqhNZ8L5PP9M1QsZeLpT4uVkiJU05By2iR7/GqgGkDAcUJQDpg9g5hP5gQgr5rhsDzhWWfPwrKkfShAzcgDrH/jVk2d7FReGsobYuRtPIMbnvD27D4ZTWkSkJosvb5s83GERHtb4+1gvsl+w3P9AB487kasX4unTFZoyOqwZ4N5j2GJRTXWVQlMygp/6FYW1aH1fL1ZsZ9kevs1La/1t16bWSVYw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ITMWxkuNjPDMJtgO3w5i9/vqOiS6cpwh+X4zkinXWNk=;
- b=DvNybU/dcqX+4S0dw94j8HCm+9R6YMBe5BRY0FiStEI8dGeG8VGl8q3+K13R6hE+C19epFwjkc1m9YvUfRN9DosRlx8dvniTc5vqjMjQXzrwHUv5XjipMO06gv0pTyfMorcIuVvGfFgh6C6pygT3Td5eU1mJ/jILP+nHA0UsSJz5SvjNdMRsYNCGLjq0AVYNhn6pCX3LWStTI4YNTHt5w0PBTsNJrY+SglkvIA8BENb6JgOW2uAkBB0GvN/AnlZLPLes8CIv3ozOomSBYJ3mb9psE8H9ZpTYuFR918H8W4wyi4/PZuFMUczrpjRvjWylG50wwY0Xl/Df3NTOOfGzng==
+ bh=1bj5QfKeB7K+MDOhgjbsAhx9MNroIe+x+p/X/g/LBd8=;
+ b=N6k1z+9QpEriz5I8YDDhxWCzbDFblyTyAJfnzFwmur1pmbe8FLfnZsL6tORcclwxJaElpqtHQRY7Z+K1MrfQCZexMny3EYhI9tJxMyEUDxj3Wz+ZWUXfDMJ22CDX65Z7u7PlCq+a8y9f8dggwoXAGGQBQ8K0ymc6KgTMiFxva9IJhP/xP15YIROIxUsteQI9PEN9FqSn8yDDFLD8wb12M0oqP+T4pUrHhxkUg1H/PJ6GTD/JOhL6vnUbQmo2aOR+6aBLo3QYp8Q4+ZkQZPYeKLkbnbObnH5Ghn3MXktjis9+kqPD/NGPD6Y7ITdLcknnu6fyZ5MOP9aC8lSREhqtcg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ITMWxkuNjPDMJtgO3w5i9/vqOiS6cpwh+X4zkinXWNk=;
- b=MbF3UEPBhLwCUcB2GrjI4d6VzMpZQk5eghplrPD1un7GWdcTSevsctfsseY2judnel4/QmNWArO0otlIZdeEU2mGcG/sf72UUH+uKHb2Q1qP4wGqMTgnJWaqj2ikykwLhH+R8QjwsiK829bpQ+Nn3hucer1kfUgoMlNywVOVtlMx4frhRGVXoV+ZgLvJQM0P44xWCelf8RqURoFBBQ3EyX7+ESC7+uTdc1bOA6mQgmBtJXSNkcyGu0H/OGfrAKS7y7YcZ8TeTzrHpEMNN9B7qFRdoTypGEEgRA5uzqVCggE7ZPfZCBbgOIZRAewQy/vntwp7JBJEplHiBpb4Bx3bvg==
+ bh=1bj5QfKeB7K+MDOhgjbsAhx9MNroIe+x+p/X/g/LBd8=;
+ b=VWF7Mez4tNKVLl/mQm1illm7MpIi1/S3KikfbbQtovk3errdN2HQWhgqL8XYSfOWbT2VW5Jm+sZjBROtLdxUuUnCWu0NvQV+WxDN6FD5Jr76UgaWjnpa523lmglumrdD+yXsdxvxT9fXz06OWTBGo9PgVAc1ZlMdwqkCyEKaicXmvxETbrPpd8n+j+plqvtiT0dxh+HYnR+BFkED3s4k6Udv80/w0rlZ66FDbGkaIwfSjfXQ9uywU3TRJk3dD9s28JzcuqVvb5FLqQvn3iZGx/JKGe4eS5O3FeqVUT07KMpyvL2wsVJbpIaazm7cZMnVGKLc14G1jU7x33PnKRMB7w==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by GV1PR10MB8317.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:1cf::16) with
+ by AS5PR10MB8054.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:654::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.27; Fri, 30 Aug
- 2024 13:44:25 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7897.28; Fri, 30 Aug
+ 2024 13:47:58 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408%4]) with mapi id 15.20.7918.019; Fri, 30 Aug 2024
- 13:44:25 +0000
-Message-ID: <aae26c91-4765-48d1-a02f-3f0e5b4521b6@siemens.com>
-Date: Fri, 30 Aug 2024 15:44:23 +0200
+ 13:47:58 +0000
+Message-ID: <006108ec-7fcd-442d-8009-5d16118d87da@siemens.com>
+Date: Fri, 30 Aug 2024 15:47:56 +0200
 User-Agent: Mozilla Thunderbird
 Subject: Re: [xenomai-images][PATCH v2] ci: Enable sstate caching
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
 References: <20240723140801.1247672-1-tobias.schaffner@siemens.com>
  <6239feef-9326-4ba9-a744-db774134b128@siemens.com>
+ <aae26c91-4765-48d1-a02f-3f0e5b4521b6@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
@@ -94,11 +95,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <6239feef-9326-4ba9-a744-db774134b128@siemens.com>
+In-Reply-To: <aae26c91-4765-48d1-a02f-3f0e5b4521b6@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR5P281CA0031.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:f3::7) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR0P281CA0256.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:b5::9) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -107,236 +108,241 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GV1PR10MB8317:EE_
-X-MS-Office365-Filtering-Correlation-Id: 48b7bdbf-1e1a-41f9-e449-08dcc8f9dc72
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS5PR10MB8054:EE_
+X-MS-Office365-Filtering-Correlation-Id: e6a1ea73-29d3-4720-38be-08dcc8fa5b92
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?MmpjMnJ2V0dYeGZIdXZjcWoxbWdIaTlvTUlIZkh3d0FIcmpWSTZja0ZwMEZQ?=
- =?utf-8?B?ZkRSSjBSZlloQjJkOGI3SEpzN3VGSXpQbUdyTWhKbFVUOUtwTUIydDhsRXMy?=
- =?utf-8?B?ZkNVMERMbm9RS0ZHcnNwZnEwUEczZjZqbmxmenpXL21jcmtpaUhCaVlmdzhY?=
- =?utf-8?B?ejdvMS9HZXBmYnA5MFlFREpjUlBnVkpjRWhSTDd1OTFKNTdYdXFxZ0F0UHN2?=
- =?utf-8?B?ZnQ0aVJnMXRIcjdBOW5PWjdCN1haWXA4NHd4Z3ZXMTlubkVBRENJd3RmU3Q0?=
- =?utf-8?B?L2Q3U1dPT21NMHU2UmNadVdPM1BmcTVoRHJ4Y1c5UE83elQ4OWx4cVVaVjBC?=
- =?utf-8?B?QmJYQi9oVjNpRE4zSjA5RU96cmRhRUtGV01aekc3aEpZK3dmdmZNRFBBSWhP?=
- =?utf-8?B?RXJxK3BDaGVSSmRLZGgxN0VwcEFsbWVqeEpKVytlWkVYYVQwTFA4bnlTZlVw?=
- =?utf-8?B?aHhuVmJldTZQMFhyYjgzODZpbnlCR2drTUsxZUdKNzN1dHpBRGwzMVhuWFJF?=
- =?utf-8?B?cnBjMzNnK2JoNUdaWG93bVpmaE9lWVErSjlDekIycVJxU3VUMkFycitRaWxT?=
- =?utf-8?B?NWZ1cFN6WnhPa2Y0Q1VXK3ludUREV3M5S3U1Q21KTDlyMER2UXpiL0E2eXJ6?=
- =?utf-8?B?T0J4OERZS3l6RDRnNnFqRWNUcy91UlA5dFdFYXN4SU10UlAycGtEWkpDNnZN?=
- =?utf-8?B?QXFXSmtpNlVYVEh5YUU4UytEVUVuS051STZzWVZ5U3JFZFduZGh1NFVrWTVI?=
- =?utf-8?B?bnI1TDBLYVJVNFpJUGhuUGNOYUdhc25HQUdiWllJNGdLb2VuSFJGU1VuVDhj?=
- =?utf-8?B?eVB2eXZuWWZycnlpeCtiODcxTDdxNXdFMmh3dTBCbWlQOHAwVlNKQVpLbWpy?=
- =?utf-8?B?VzRMOXNKdk1zZFVKOUh3M3NFaFI5Wk9MclRUbDV3TWwwU3dld3JvdUxjTFdm?=
- =?utf-8?B?cy9FU2RMRkVzNkJ1R0NLWWFWb0JXUXdUb2srblliRExnNEdXOUNRUGNRRlF0?=
- =?utf-8?B?YStHdlBxK3BvcFpDL3c4TVFpalVoSlpSbytCbU1nbjhxRUdNQlAybXA0WlN2?=
- =?utf-8?B?UERLOEhUZEJDZ1VrL3VrV2Fqc0VJcFh2bjV6Z3V3akEyRlpURGlFUUQ1TWtI?=
- =?utf-8?B?SkV1cjdLM1ZMbUNrTUc2RWlxcVZUT3krWjRaTWR2ekZrMnN5am82ZUdsMUcv?=
- =?utf-8?B?eXZ1TVVWVFpmVVBqRW9rRTBmcGtzU21xblVFcnA4T0tPdGY1YjM2OFp1Vjht?=
- =?utf-8?B?ODhkY29vWFpwY1F2bmVZRWpqUTNJRzJrWUowV1hDakwvTjdiUkxVTXBWNFpj?=
- =?utf-8?B?cU1yaXdVNWw0bHpmNjZiWGVaNnVQaUhUTEJMQTJMYTZ0M2Y2UGF3Y3VFM0hZ?=
- =?utf-8?B?YVJtUkF5UDdZSFQzVnFGZjBJWmZvb1p1d21Nc0grcnMyUGJTWnhVZy8yQ3Er?=
- =?utf-8?B?MTl2UmZLMFlzdTNRUFoyWnYyQ3lPUG5TMys4aHFJMGVvVXVTSnlocHJYZTRs?=
- =?utf-8?B?eGliUVJwWWgvcklTcFZTUmxyR1l4RlhwZ2JsSzlaWFBSdTQxdkhMbmVtekd5?=
- =?utf-8?B?WmVyS2FyTExaWUdiL1haeGJ4b2txelBEQTVacmpyTmpDMXNHOUVJRW44RTh0?=
- =?utf-8?B?bTR1NGxhampacGVheEUzQnVSMi9abjhlSzNkQXVRSWRCYTRDS2lMbWd1YU5F?=
- =?utf-8?B?WlNRU1BoR0d5TTZiK2UzZVc1eU5rTDdFVVAwdk9UWVJvRlN5MUhQYlIzbUpB?=
- =?utf-8?Q?P4xUm/KuGjAefRO1ko=3D?=
+	=?utf-8?B?RHhGNHl3bmVmc25GTjJvY054dUIvRVlwUEpIUkh2VUdBdSs2ZmR3Zk5EUXhV?=
+ =?utf-8?B?UVNwVTZ5S0xRN2hvZjdaVEdaQ2Fza0xKUnhrbFI0QkZrR2crMkQ0Qlg0eXhW?=
+ =?utf-8?B?c0ZjV0o2SUl2YWNodEIzcGlHbHVTMGROZUZJWStWcGF6WHB2aVdRKzE5Zzlt?=
+ =?utf-8?B?RFRJOGJURk4xb2N3N1ZaRjNYM3k5dVFtN1RwSmdkV1ZLZHh6MmZsTjJoUFBu?=
+ =?utf-8?B?YjZYcjBYeUdTNE5UWGt6TVJZK3pucUlKUlY4akVmTUJ0blJGU096L1JiNEhY?=
+ =?utf-8?B?bGdEWmhMV1VVT2t6ZTU1ZkxRenVwd25meFdmSy9vRGdweTh2YlowQ05RNjlm?=
+ =?utf-8?B?WVlZOUQvdHFEaS8rdjVoZ2YwZjhPVTk4WG1jVnZkQy9FZG5BY0xKRExyV0pk?=
+ =?utf-8?B?UkRWb0NUdldGSUQxTk9tdkR3SVN3a2xjTm5tVDVpVDRCdDhxSTFzSTV5UTc1?=
+ =?utf-8?B?NFpGK0MvNnRPTFNhS05KazBReW1hV1BzK2h5K0hSZXR1WVpUUlBMWHJqb3c3?=
+ =?utf-8?B?MFUrTkFzdEVpWXkvNjI4Z0ZuUldxSERhM0lOazQxaUJVakVEVWl4d1pTWmw5?=
+ =?utf-8?B?ZXJTTTlYdFp1Z1pWRmJTeEx2OTlVNnVEdU1Ec2djcnROVlRQOHlZQnJ0NnNV?=
+ =?utf-8?B?STErOHVXT3VtS1pNOWJyM252dGNtQVBqUUY0WDg4RlREU1dmaWE2RG13Vlpj?=
+ =?utf-8?B?OUZOL0psSFFqYkNHSGRrbVpzcHRIaUNBbDJpMVQrYTRKVnJSYyt4NXVUOGIv?=
+ =?utf-8?B?NU5pcGthUm9la2hTVGNwS2ZpYlR5d0x2eFdnQ1dKZklTNWlIWU5HZy9uang0?=
+ =?utf-8?B?bm94cEFnT0czbU9MK1gvU2VnVWpEUC9hRXVoOWJIYnNRVStNRVF1K0NyWDZM?=
+ =?utf-8?B?SThyMlBUZWNUamd4Q2lsWmtxeDh2aEE0ZnBLRnA4U2JTc0tFdWxoeU9mMWxI?=
+ =?utf-8?B?QzdmR1A5WXhEekttSWZnOTZENGVHcUxiRzNIZ2lJdUtYRThmSk0zL05XRDNG?=
+ =?utf-8?B?S002N0k1WTRWbDNiMCt3TkRpSHQxdFFQZ3pPVkRhankrNHZ4aSt1Tmd2YkFi?=
+ =?utf-8?B?WWZZbC9qZnlKcGp3YzM2MklWaXEzRkJ1RUVRZ3Y1MUU2NkJIQnB0VDAzc29m?=
+ =?utf-8?B?cVo2NzZhYzdwUU0wWU5ISmRGKzNHcGQ2aGVjWDJuMjNiWDNVeVdvL0RjM1E0?=
+ =?utf-8?B?UTkzUCsxa2ViZC95Ui9SK1RGdWx0YmJuMUwyY3JacHpYZWNqZ3BBSUxpNGFz?=
+ =?utf-8?B?aHhxelRVVTdma3Y2Vm9uMUdhd1YzdU1kY20yVm45bzltWGZQNkNKRms4a1Jm?=
+ =?utf-8?B?cjJCbzRPd2xKNy9Gd2krUm5jMEpMZ1ZWTUFvMHVZRWpaUHJBTWYreWFWZFpv?=
+ =?utf-8?B?eEFKRUZJTFdKK3lscmkzQ1FYY2p1YWVPZjh0bGlFY0p5WmcwVTNQdzVPV0ZU?=
+ =?utf-8?B?eVRBRGU3QUNBOEthbm1yT3VqcER6dFpBNi85TzhIekJWbWlwK2xuWlpyNVJC?=
+ =?utf-8?B?VUJiZHJYVVJlMVRNalFPckltb3J0Z0lJK3p4QXpWYVFRWVVWUXVvMW1lbllW?=
+ =?utf-8?B?UTU3UWFzbVpPMUJxM0RXS2Y3eERlR1dadEM4RHJpMkl0Z2gvc052L0w4Vi94?=
+ =?utf-8?B?UVF5aEJYZEV5L1pES0dGL2NtNHJtVkY1L1FiM3cwTFpTQyt2Vkd1V0JqNUFE?=
+ =?utf-8?B?NDJQR3NaR01PanBEb3VNb05LL3RWN0VUeTJ5R3BBeGIvT2FRWjVHTGNtbk13?=
+ =?utf-8?Q?/gY4kR99H+4kRqjZug=3D?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?dzBnVjVKVTFJbllCYXVIOTZTNUgxeVBDcUsvbGtzRWYzTTQwamJQNXo5Sndi?=
- =?utf-8?B?NTErTFdncGpnL2FYQnIzVzYzSjZmOVROUlpjdlZKdlRPN2FxL09aMGpQRVFz?=
- =?utf-8?B?NTdLZXZLWW1LWlZ5OU8wUzVmTWpFcjVlQlZ3Z01DdGVnUHg3WDlzZXRzR2Vx?=
- =?utf-8?B?L1ExYTBwSFpUcjNhR1NGZ050eHd6N3V1cTZUQ3lvT1huTGNlS1NhNXN5VXhN?=
- =?utf-8?B?bFE4TjlCWlhnYXVMM25xMy9TUldVNmhXL1NkRHRRMS9ZWlkxWTdFN0h5bGdi?=
- =?utf-8?B?N2hISEcrS1VWZnRIcU16a2hIUHNycGZWclN6ZUhuMWJtUHJnSitkT1BHZnN5?=
- =?utf-8?B?cndiWHBKUzVoa0dUU0FCcFVrNVdtMUtNRWZBMkd3WWpaWHFaRWhZT3orM05W?=
- =?utf-8?B?bG9TUUtiNmh2UnFLK1VyRmZIcHE1amJxekphR2VSdi9WUHNuN0VrUk05VE54?=
- =?utf-8?B?RmRreklFUGxuZDJ1Mlc4dk9TQ3BZMjJ5Ri9pSGlFamxuRjZWc1lmdFp5SDFX?=
- =?utf-8?B?b0IvNXZkS0h0bTVQbFhKa093SnhkWXVtZ21KZVVacXRKVUlBbE5VaEhxR0ls?=
- =?utf-8?B?MDJPMTR6d1FZSlZaUmVrcGRhRHZndVpHM1VuL2JLTTZycUhJZnpWK1VWelJq?=
- =?utf-8?B?NW1jRmFtY3N5L1NWVHI2ak1ROGF4dEFQQlFXS1ZmN0hCRkJVVDVPLzdqM3o2?=
- =?utf-8?B?bDQ5WjBNMDluNFVMeC9uVWVDcWxUTzRuWkFPN0NSSkNmVC81RXYrVlhjZE01?=
- =?utf-8?B?YTBGUlcyajQvbGZ0UGo0U3drN0lRaXd2WmtMLzc2MjMwdy82ZGlCMXZZZnds?=
- =?utf-8?B?UDcyY01MNjRSaVFycE9UL0o4emRJR0Y2bmR1akZCMjVWdzhnRE42MkE0WnFY?=
- =?utf-8?B?ZEM0UWFyVHFkQWlFbzFKVXorWE05OFIxMkNEcGJvRW1BRmdlS2NTZUJCODlN?=
- =?utf-8?B?d3BKRTQyRk92VVRmVkdiRC95b1pqMzgzMzA4SGF6a3g2MjI4VkhyUVlDY1Bu?=
- =?utf-8?B?RUduUlVzeU5VTzc3Z3hxUEY2Ylo1cnc5aytOS1RlWE9SU25keFpaV011dWVm?=
- =?utf-8?B?QjRDZm5iQjVFbGNwZVhKVlZwNGZVS1pzbFFMeDBhNGVSdUJ5ak01Y1JiWExl?=
- =?utf-8?B?OVBha0hPMDNwSmI3QTltNng5Kzk5N0VWMXBVaDJ2bjdIU2lmVkVKQ01xRWJt?=
- =?utf-8?B?VUx2cUMvclZLQ1VhT1BmWG9NMDQ3TmVCWWNxZFI1bXJreENXYTJYNnRmZHhB?=
- =?utf-8?B?OVBKMlh2VHhaZUV1dEZTZFhaUk9tRUY1N0JudXpjanF5cWpoQlpqWFVPZVlP?=
- =?utf-8?B?RlhnS0w1eXYzaXl0bmp2RllvbVNZTERKRUpvbE13c0JZejcrVDFlUWQ5SHBF?=
- =?utf-8?B?aVhEakprdlY1bUc3aCtvMk5JUUJjdTBYTUxhcFlVSUtJZ3Z1Q0Z1aS9jNmdQ?=
- =?utf-8?B?eVRnczhLeGl5YXZ3OElUVUJqd2tMZUJ2eEdiM0VaZzdNSWljYXJMc1YxS2ND?=
- =?utf-8?B?MFE3UUp2UmRJaGFXUk1vT1BEazU1MXdGUm45UG16U1hsUEJhL3hXYmNsVUo2?=
- =?utf-8?B?QklGbE9JWEs5b2hJcHZ0emlUVG1BM0EyYzF5c1VwTVZNZHRldGZqa0E0SkZ6?=
- =?utf-8?B?a3B1QTJZVm93V0lGY0NjRC9XNFhicWZKc1owRHZnQUF0azlNdkYyL1B3cWYy?=
- =?utf-8?B?aWE3ZmhaSWhPUTVhanN0TE1jRjJta290TjYwSTMxVTFHeUFiRTN1TmM1Zlo0?=
- =?utf-8?B?bVRQVzQvYVoxZS9iWHBsNERjZU83dHJoYnR3N0NDWGt6RUdSd29vbGoydE95?=
- =?utf-8?B?RTMvRndra1FJMXNhdnoxc3Jjb2FML3JZbUs3RFJCV0laYVp2VWN5dW05L0la?=
- =?utf-8?B?WFBjUUZ2MGZHYTFlLy9MNk9DTTA3TEpNMTFkZVZleEx1cmVqaEozR3VtSUlp?=
- =?utf-8?B?MTRrQ1owQUNJWDQ0dWZCNEoybVZWRGtGVUhrbVR6MlN1OUlRV0VTTGlxUlha?=
- =?utf-8?B?M0d0M2EzK2tMdzdzdUlLNFpBakdYZ3RoTVRzc2UyM2ErRmJWUVZVWU0zREVV?=
- =?utf-8?B?U0FVOThKNldkVTUrOHlNb2djK1gyZGY5bGVSTmhyZE0rSlNEWWgyaWRXWmI1?=
- =?utf-8?B?MnZENGZmaFQ2QlJHMEtkK2lGTFRKL3VvamZYeFBaaUgzRkJ6Y2lRdnRkczZJ?=
- =?utf-8?B?REE9PQ==?=
+	=?utf-8?B?NGNGdDJqZHNZeGc1TGNkZXZrN3JaRElaSGhqb0d5bGwva3ZqWDdFaVN2UHZZ?=
+ =?utf-8?B?Q2J5SlpQQWlOWUk4T1FETmxwZWdrREtXZG9KcWRjUVc4SHlyQTJMT05NK1g1?=
+ =?utf-8?B?QmdMM0hIRzd1NGVPN0JNQzRVckVsY3pRcGxDYkdyL3N4Z2NZSHdzSlNIa0s2?=
+ =?utf-8?B?Y3dINDRkb2J3VjN1RkNWaWNmbU9DUmhpVFRpMEIyMVR1N29qdUtnZkVPK21x?=
+ =?utf-8?B?cHBXSnBwcU10Y1BMbFdsaGVPREZkemVxMlpURXhZalpzdCt6VFYwWXFsRERP?=
+ =?utf-8?B?b0hwOHBVYU9qMWp3WnhLT0MwYXVYNkZadHdPUDZidkxPajFYUlFES3AwREZ6?=
+ =?utf-8?B?Uk96cFJxWUExV0FkaVdnZk9zR2pqNkgxN3dVZ3dJRTVLK0FyMDdaYXA0ZDM3?=
+ =?utf-8?B?VUs2UzhPOWVsMEIvQ0lpZk5BUSt3QlZWblZ6d1BpWkFkVURnSmI2Y1ZQTzJJ?=
+ =?utf-8?B?c2hQbGUyUlhxRnhaTEVyWE5ydWFEYXdSbVJ5MExlTk9hTURLYnFpNWVYUmIy?=
+ =?utf-8?B?MVcydjk0aEEyS1lpZ1dFTXpSSnZJMmNrMmR1TjMrQml5SE5JcWt2M0E1ZEVv?=
+ =?utf-8?B?NWFWTE5WZ3ptN0FkTW45N0p3aWdEL0FwUHZRSVlENGdNanNzT082TWlMeTdO?=
+ =?utf-8?B?dWhZL0xPUFdFMUZWQmtWdlVjTTdQRVRqNnJpcUcwcy8ycFZlS0taZFpoS3Bl?=
+ =?utf-8?B?NWlQVU9TanEwSjZXTVRQREhycjNKbWNoT0FsWkpXVnRHUXN2cU95Z1FoS0k0?=
+ =?utf-8?B?ci8rekN5TWhQckhpdlUzbVhocG1KWE93SGgxVXNGRXlGbFJsR1NEbDZtbEdL?=
+ =?utf-8?B?S3RCNWZNRnlLWFVmS2pCeE9pOWpxYWtheTZ3SDR6ZHdxZWhkYTFVK1oxNW92?=
+ =?utf-8?B?dFJXcEV2Q0JhTWhRUUpaUmkvUVpNajhrMzhNaWpvbjZjZ1B2Mi80aCtiWTV4?=
+ =?utf-8?B?TnFqeUh4QlBHS3UrbGNUa3E0NHJoMlpvSG5BZXZyaHFYRFlIQUpLRlJVOWZh?=
+ =?utf-8?B?N1ZZbUFtaWcyVHl3T3BrMFQwcC9teENrcCtKRm9LWFcwVytzd1RKRUJ2ZGQ5?=
+ =?utf-8?B?ZWFPZmNqQzN6SUE1b0xTZUVOeXZGRm5mT24wY2Joc0RVTjVuRXZuSTNjS2Yz?=
+ =?utf-8?B?Q2NWTEllV055YnBHbTVnVHdJRWNnVmdjc0cza0tERW9PQ0ZYaFc2ZGpTMXVm?=
+ =?utf-8?B?b0cvTFFONllVb0pZR2hGTXNiMjNwc1VqcmdibGRkWE1GRnJHKzNFN2crdkE2?=
+ =?utf-8?B?eDBiNTlJV0J5bzNoWjFabnE1aGNZdThiSDRaRVpHNDd4WkFBSFVPTlJZTEJq?=
+ =?utf-8?B?R2Q2dk1SQjBldmxxUzNYK0MzWmN4VndkaHcwMUQwRUdLM2V0dFJNeDZ6bGk4?=
+ =?utf-8?B?cUdKa1lxTGhRdFJVM1ZuWWFvRnRFOEFVQm9RbGozQUhrVXhwRmJHTjkrdm9J?=
+ =?utf-8?B?UmhRR3Nna2ZWUDZLMTVmSllZOFJ2RzZEZkRQd0J2WVVxeTd1Zi9TSzVsTzlY?=
+ =?utf-8?B?UjA2dS9tQXdOS1Q5TWtzVGN5WkcreFdsbXZEdkl2VlgrcnVFRVlKbUdmZ3Vv?=
+ =?utf-8?B?WEdwdmZjTWVtOWFXL3Q5V0ZHSkVDV2lxZFFEOGVwZnJyWE5aUXEwQjM0Q29k?=
+ =?utf-8?B?VmROZW5VdExLd0VXQnJtQk0vUklVVkhHYTFQMHdCR2FzQmZHKzdSUUVFREVv?=
+ =?utf-8?B?dDBEOFFNbzRXLzdSN3I0VEdqSldIY2RsS3d1TXlyeTh6cXMva09iSVVoSnVK?=
+ =?utf-8?B?bDlLRGhjMlVibEJqTkpqc2FuSmJOR09YcVB1NWpGNDBDbjRKWHVWMWR3aFpn?=
+ =?utf-8?B?bzkzWGFtOXVNd3ZKVnhHd3JqVzd3TXZDbExHRDBBRUZKWHpFNTZkOVlnc2Jw?=
+ =?utf-8?B?Q0s1WXZRcmZ6NUp1K3dVcW9JV3NNRFY3QUIxYUxJanU3QjJ0M0Q4L0tscVRJ?=
+ =?utf-8?B?UnIxc21EbWZmbXlKMys3SWsrQ0NEa05QbElvaU13Q0tXazBOOFY4ZCtrTUZY?=
+ =?utf-8?B?UGhTU1IvcGtod2w0UkpFVEdCSWJ3Nlo0VzlKYUtYaVZndzZGRzA4QzU3L1pW?=
+ =?utf-8?B?RTdvTThyS0V0eEkwSEVKVFZiazloSHRNU2JMTnNzSUU2M3Z6Yi8xWkx6R0or?=
+ =?utf-8?B?cGdLOXVDRTJkRFNEQ0k4V1FlNzBWSXZmRXNBS1RNMU1wZ2FpeXdaYzRqTVll?=
+ =?utf-8?B?U1E9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 48b7bdbf-1e1a-41f9-e449-08dcc8f9dc72
+X-MS-Exchange-CrossTenant-Network-Message-Id: e6a1ea73-29d3-4720-38be-08dcc8fa5b92
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2024 13:44:25.1710
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Aug 2024 13:47:58.4390
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: wvLeBcLzoYea04MOWTRacVofWFRqG6x9WBSKG3Bu37c8WOLoqc7Jz104docO0nLYR9OuT/+qsFg4tYieyPa6oQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR10MB8317
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2N694/zcG1bYhdj7PZgElHz/KjsXDSHiyxwif/LpxGdo7bThtKi8qZQbrcj5FPIlFEcJJ+8tTewR4MR+/1cVfg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS5PR10MB8054
 
-On 07.08.24 23:52, Jan Kiszka wrote:
-> On 23.07.24 16:08, Tobias Schaffner wrote:
->> Enable isar sstate caching to an aws s3 bucket by using the
->> SSTATE_MIRRORS environment variable.
+On 30.08.24 15:44, Jan Kiszka wrote:
+> On 07.08.24 23:52, Jan Kiszka wrote:
+>> On 23.07.24 16:08, Tobias Schaffner wrote:
+>>> Enable isar sstate caching to an aws s3 bucket by using the
+>>> SSTATE_MIRRORS environment variable.
+>>>
+>>> The isar-sstate script is used to upload, analyze and clean the remote
+>>> sstate cache on every build.
+>>>
+>>> Cached artifacts will be cleaned every 14 days. This can be overwritten
+>>> by setting SSTATE_MAX_AGE.
+>>>
+>>> Credentials have to be injected using the AWS_ACCESS_KEY_ID and
+>>> AWS_SECRET_ACCESS_KEY environment variables. This is already done for
+>>> download caching.
+>>>
+>>> Currently the size of the cache is ~20G in size but I expect this to
+>>> rise to a multiple as soon as this is used in productive environment.
+>>> Keep an eye on the output of isar-sstate info.
+>>>
+>>> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+>>> ---
+>>>  ci/gitlab-ci-base.yml | 47 ++++++++++++++++++++++++++++++++++++-------
+>>>  opt-ci.yml            |  4 ++++
+>>>  2 files changed, 44 insertions(+), 7 deletions(-)
+>>>
+>>> diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+>>> index 1dc05a8..f5009e3 100644
+>>> --- a/ci/gitlab-ci-base.yml
+>>> +++ b/ci/gitlab-ci-base.yml
+>>> @@ -24,12 +24,39 @@ variables:
+>>>    TEST_RUNTIME_SECONDS: 300
+>>>    TEST_MAXIMUM_LATENCY: 0
+>>>    TEST_COMMAND: "xeno-test -k -l 'dohell -m /tmp ${TEST_RUNTIME_SECONDS}' ${ADDITIONAL_XENO_TEST_ARGS}"
+>>> +  SSTATE_LOCATION: "s3://xenomai-images-artifacts/sstate"
+>>> +  SSTATE_MIRRORS: "file://.* ${SSTATE_LOCATION}/PATH;downloadfilename=PATH"
+>>> +  SSTATE_MAX_AGE: 14d
+>>>  
+>>>  default:
+>>>    image: ghcr.io/siemens/kas/kas-isar:4.4
+>>>  
+>>> +.sstate-prepare:
+>>> +  script:
+>>> +    - kas checkout kas.yml
+>>> +    - echo "=== Prepare for sstate at ${SSTATE_LOCATION} ==="
+>>> +    - ./isar/scripts/isar-sstate clean "${SSTATE_LOCATION}" --max-age "${SSTATE_MAX_AGE}"
+>>> +    - ./isar/scripts/isar-sstate info -v "${SSTATE_LOCATION}"
+>>> +
+>>> +.sstate-analyze:
+>>> +  script:
+>>> +    - echo "=== Analyze sstate differences with remote ${SSTATE_LOCATION} ==="
+>>> +    - ./isar/scripts/isar-sstate analyze "build/sstate-cache" "${SSTATE_LOCATION}"
+>>> +    - echo "=== Check for cacheability issues in build/sstate-cache ==="
+>>> +    - ./isar/scripts/isar-sstate lint "build/sstate-cache"
+>>> +          --sources-dir "${CI_PROJECT_DIR}"
+>>> +          --build-dir   "${CI_PROJECT_DIR}/build"
+>>> +          --pedantic
+>>> +          --exit-code 0
+>>> +
+>>> +.sstate-upload:
+>>> +  script:
+>>> +    - echo "=== Upload sstate artifacts to ${SSTATE_LOCATION} ==="
+>>> +    - ./isar/scripts/isar-sstate upload "build/sstate-cache" "${SSTATE_LOCATION}"
+>>> +    - ./isar/scripts/isar-sstate info -v "${SSTATE_LOCATION}"
+>>> +
+>>>  .common-config:
+>>> -  before_script:
+>>> +  script:
+>>>      - if [ -n "$ALT_DNS_SERVER" ]; then
+>>>            sudo sh -c "echo 'nameserver $ALT_DNS_SERVER' > /etc/resolv.conf";
+>>>        fi
+>>> @@ -40,17 +67,22 @@ default:
+>>>        fi
+>>>  
+>>>  .build:
+>>> -  extends: .common-config
+>>>    stage: build
+>>> +  before_script:
+>>> +    - !reference [.common-config, script]
+>>> +    - !reference [.sstate-prepare, script]
+>>>    script:
+>>>      - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-ci.yml"
+>>>      - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-ci.yml
+>>> -    - du -sh build/downloads/deb build/downloads/git build/downloads
+>>> +    - du -ah -d1 build/downloads
+>>>      - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
+>>> +  after_script:
+>>> +    - !reference [.sstate-analyze, script]
+>>> +    - !reference [.sstate-upload, script]
+>>>    cache:
+>>> -    key: downloads-${CACHE_ARCH}-${CACHE_KERNEL}
+>>> -    paths:
+>>> -      - build/downloads
+>>> +    - key: downloads-${CACHE_ARCH}-${CACHE_KERNEL}
+>>> +      paths:
+>>> +        - build/downloads
 >>
->> The isar-sstate script is used to upload, analyze and clean the remote
->> sstate cache on every build.
+>> Strictly spoken, this chance is not needed because we only have a single
+>> cache entry. Anyway.
 >>
->> Cached artifacts will be cleaned every 14 days. This can be overwritten
->> by setting SSTATE_MAX_AGE.
+>>>  
+>>>  .build-qemu:
+>>>    extends: .build
+>>> @@ -59,8 +91,9 @@ default:
+>>>      - if: '$ALL_QEMU_JOBS == "true"'
+>>>  
+>>>  .test:
+>>> -  extends: .common-config
+>>>    stage: test
+>>> +  before_script:
+>>> +    - !reference [.common-config, script]
+>>>    script:
+>>>      - scripts/install-lavacli.sh
+>>>      - scripts/run-lava-tests.sh ${TARGET}
+>>> diff --git a/opt-ci.yml b/opt-ci.yml
+>>> index 01d5c07..e1466a0 100644
+>>> --- a/opt-ci.yml
+>>> +++ b/opt-ci.yml
+>>> @@ -23,3 +23,7 @@ local_conf_header:
+>>>      IMAGE_INSTALL:remove = "sshd-regen-keys"
+>>>      IMAGE_INSTALL:remove = "expand-on-first-boot"
+>>>      IMAGE_FSTYPES = "${@ 'ext4.gz' if d.getVar('MACHINE', True).startswith('qemu') else 'tar.gz' }"
+>>> +
+>>> +env:
+>>> +  AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+>>> +  AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
 >>
->> Credentials have to be injected using the AWS_ACCESS_KEY_ID and
->> AWS_SECRET_ACCESS_KEY environment variables. This is already done for
->> download caching.
+>> Thanks, applied. Let's see how it will behave.
 >>
->> Currently the size of the cache is ~20G in size but I expect this to
->> rise to a multiple as soon as this is used in productive environment.
->> Keep an eye on the output of isar-sstate info.
+>> Jan
 >>
->> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
->> ---
->>  ci/gitlab-ci-base.yml | 47 ++++++++++++++++++++++++++++++++++++-------
->>  opt-ci.yml            |  4 ++++
->>  2 files changed, 44 insertions(+), 7 deletions(-)
->>
->> diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
->> index 1dc05a8..f5009e3 100644
->> --- a/ci/gitlab-ci-base.yml
->> +++ b/ci/gitlab-ci-base.yml
->> @@ -24,12 +24,39 @@ variables:
->>    TEST_RUNTIME_SECONDS: 300
->>    TEST_MAXIMUM_LATENCY: 0
->>    TEST_COMMAND: "xeno-test -k -l 'dohell -m /tmp ${TEST_RUNTIME_SECONDS}' ${ADDITIONAL_XENO_TEST_ARGS}"
->> +  SSTATE_LOCATION: "s3://xenomai-images-artifacts/sstate"
->> +  SSTATE_MIRRORS: "file://.* ${SSTATE_LOCATION}/PATH;downloadfilename=PATH"
->> +  SSTATE_MAX_AGE: 14d
->>  
->>  default:
->>    image: ghcr.io/siemens/kas/kas-isar:4.4
->>  
->> +.sstate-prepare:
->> +  script:
->> +    - kas checkout kas.yml
->> +    - echo "=== Prepare for sstate at ${SSTATE_LOCATION} ==="
->> +    - ./isar/scripts/isar-sstate clean "${SSTATE_LOCATION}" --max-age "${SSTATE_MAX_AGE}"
->> +    - ./isar/scripts/isar-sstate info -v "${SSTATE_LOCATION}"
->> +
->> +.sstate-analyze:
->> +  script:
->> +    - echo "=== Analyze sstate differences with remote ${SSTATE_LOCATION} ==="
->> +    - ./isar/scripts/isar-sstate analyze "build/sstate-cache" "${SSTATE_LOCATION}"
->> +    - echo "=== Check for cacheability issues in build/sstate-cache ==="
->> +    - ./isar/scripts/isar-sstate lint "build/sstate-cache"
->> +          --sources-dir "${CI_PROJECT_DIR}"
->> +          --build-dir   "${CI_PROJECT_DIR}/build"
->> +          --pedantic
->> +          --exit-code 0
->> +
->> +.sstate-upload:
->> +  script:
->> +    - echo "=== Upload sstate artifacts to ${SSTATE_LOCATION} ==="
->> +    - ./isar/scripts/isar-sstate upload "build/sstate-cache" "${SSTATE_LOCATION}"
->> +    - ./isar/scripts/isar-sstate info -v "${SSTATE_LOCATION}"
->> +
->>  .common-config:
->> -  before_script:
->> +  script:
->>      - if [ -n "$ALT_DNS_SERVER" ]; then
->>            sudo sh -c "echo 'nameserver $ALT_DNS_SERVER' > /etc/resolv.conf";
->>        fi
->> @@ -40,17 +67,22 @@ default:
->>        fi
->>  
->>  .build:
->> -  extends: .common-config
->>    stage: build
->> +  before_script:
->> +    - !reference [.common-config, script]
->> +    - !reference [.sstate-prepare, script]
->>    script:
->>      - echo "Building kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-ci.yml"
->>      - kas build kas.yml:board-${TARGET}.yml${XENOMAI_BUILD_OPTION}${LINUX_BUILD_OPTION}${BUILD_OPTIONS}:opt-ci.yml
->> -    - du -sh build/downloads/deb build/downloads/git build/downloads
->> +    - du -ah -d1 build/downloads
->>      - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
->> +  after_script:
->> +    - !reference [.sstate-analyze, script]
->> +    - !reference [.sstate-upload, script]
->>    cache:
->> -    key: downloads-${CACHE_ARCH}-${CACHE_KERNEL}
->> -    paths:
->> -      - build/downloads
->> +    - key: downloads-${CACHE_ARCH}-${CACHE_KERNEL}
->> +      paths:
->> +        - build/downloads
 > 
-> Strictly spoken, this chance is not needed because we only have a single
-> cache entry. Anyway.
+> Only saw now:
 > 
->>  
->>  .build-qemu:
->>    extends: .build
->> @@ -59,8 +91,9 @@ default:
->>      - if: '$ALL_QEMU_JOBS == "true"'
->>  
->>  .test:
->> -  extends: .common-config
->>    stage: test
->> +  before_script:
->> +    - !reference [.common-config, script]
->>    script:
->>      - scripts/install-lavacli.sh
->>      - scripts/run-lava-tests.sh ${TARGET}
->> diff --git a/opt-ci.yml b/opt-ci.yml
->> index 01d5c07..e1466a0 100644
->> --- a/opt-ci.yml
->> +++ b/opt-ci.yml
->> @@ -23,3 +23,7 @@ local_conf_header:
->>      IMAGE_INSTALL:remove = "sshd-regen-keys"
->>      IMAGE_INSTALL:remove = "expand-on-first-boot"
->>      IMAGE_FSTYPES = "${@ 'ext4.gz' if d.getVar('MACHINE', True).startswith('qemu') else 'tar.gz' }"
->> +
->> +env:
->> +  AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
->> +  AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+> 2024-08-30 13:22:20 - INFO     - WARNING: xenomai-stable-3.0.x-r0 do_dpkg_build: Export of 'AWS_ACCESS_KEY_ID=[MASKED]' detected, please migrate to templates
+> 2024-08-30 13:22:20 - INFO     - WARNING: xenomai-stable-3.0.x-r0 do_dpkg_build: Export of 'AWS_SECRET_ACCESS_KEY=[MASKED]' detected, please migrate to templates
 > 
-> Thanks, applied. Let's see how it will behave.
+> (e.g. https://source.denx.de/Xenomai/xenomai-images/-/jobs/894592)
 > 
-> Jan
+> Is that an isar issue (but we are not that old), or are we rather doing 
+> something wrong here with the export?
 > 
 
-Only saw now:
-
-2024-08-30 13:22:20 - INFO     - WARNING: xenomai-stable-3.0.x-r0 do_dpkg_build: Export of 'AWS_ACCESS_KEY_ID=[MASKED]' detected, please migrate to templates
-2024-08-30 13:22:20 - INFO     - WARNING: xenomai-stable-3.0.x-r0 do_dpkg_build: Export of 'AWS_SECRET_ACCESS_KEY=[MASKED]' detected, please migrate to templates
-
-(e.g. https://source.denx.de/Xenomai/xenomai-images/-/jobs/894592)
-
-Is that an isar issue (but we are not that old), or are we rather doing 
-something wrong here with the export?
+We are we exporting these into the kas env, to bitback? They are only
+relevant for the deployment script, and that runs outside of bitback.
 
 Jan
 
