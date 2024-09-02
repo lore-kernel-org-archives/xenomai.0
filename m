@@ -1,64 +1,64 @@
 Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CED0C53AC
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CED5013212A
 	for <xenomai@lists.linux.dev>; Mon,  2 Sep 2024 13:11:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725282693; cv=none; b=DlwTeUluQ5cHWOo+Yi+RH0Alg9kZ9QG5jct2rlDfw3jYqDLUA/kgf4dVyOwexeIiKJW1/R1Pg1T9e3K5m6ykJLd/eda/tZM6C1uBubCF5I05W3yKcAo+HyGxSOVM3ur47sV6cB8Xui3w/An74gIKOczAnITBog87p6HL1N6XNl0=
+	t=1725282694; cv=none; b=De5GQOu3XhsrvAgXzyYk9kOFLC1IRvskHMlNy/2wliQb+YzgpUWyUxNLnvURtoVLENSYxejPvmck9jDqf3NtLdHtksZs/+ziDPfoHDwcM0KGko3AYctpCLkt9gc28zx0ItawgMbtrNl22+pmN3d7kQ+tzm933xeyycENiz1xZ2s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725282693; c=relaxed/simple;
-	bh=QMxSlbag4dHe2jLq8UH9UWy9CLwaeKPRK+EH4btBtkI=;
+	s=arc-20240116; t=1725282694; c=relaxed/simple;
+	bh=RSMW+U51ONfwqC4xasn9UDZApXFMkF0prPQhA0aEkN0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=JEAVVNmTxtVu3KdqA0pBq5hgAr66HFBufREtgyq82CYa0PdmbEA2lZn39GN9kZ7++9FZkfcZebqDI5MfWSZbWs19ES+dwMv9f2uJx/bYIaD6DwDJ0dbn975v5J06iJSoeck0VBuzGokAlT2kZQACok3Kg5DlRSfjz3YukrsV9co=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at; spf=pass smtp.mailfrom=sigma-star.at; dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b=kYu2z/YS; arc=none smtp.client-ip=209.85.128.42
+	 MIME-Version; b=MF16u05+wpG3i14V2RLG9+EcCxsgUYg/lRIOXJiCam+dkTyfwreymeYu3PEHtu0/bolOOFG+x24wCTqQuQ2+iAWD/fIk1zgN5B+lYEYVw0P0cWU7ReH02jwJIUroQZwhgK5i9IMhjQN0ua9/QoNQGiVs5BdmHk5suCplLTnpd6Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at; spf=pass smtp.mailfrom=sigma-star.at; dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b=SrkBC5aH; arc=none smtp.client-ip=209.85.128.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sigma-star.at
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b="kYu2z/YS"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-428e1915e18so35188855e9.1
+	dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b="SrkBC5aH"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-42bbe908380so23874655e9.2
         for <xenomai@lists.linux.dev>; Mon, 02 Sep 2024 06:11:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sigma-star.at; s=google; t=1725282689; x=1725887489; darn=lists.linux.dev;
+        d=sigma-star.at; s=google; t=1725282690; x=1725887490; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=gHVLWbmp62Vj2d/a5Lz2Zs4p6BRtU77YNWRNldN5Qjg=;
-        b=kYu2z/YS0nzMxv0zxTsYvsAvZRNT4k5umC/xQRNFfFaE7HdjBjI9b6hlpzGH3cuJ+5
-         faqg95ZrgO+V+tZUysm26F0C6pTm3VFuvhf1+qWRCV571DZjPOiCa52E9HYf/3OcfLLX
-         B9UVZy/kxdCNJwZ6g30Ni5orLYnwuETssWx4yx/NKqdHuhXscengeeTz+NRsD1ESvE5a
-         InQ5awEEIeF/H3OUY/4uU8RLVH9MjbKJITpKa+KKfK4+F1wBmQceFGjMspD9DBcvGJKT
-         Cer1OZH/eZxZByQIdigyfLCGxpcX4Se/UI+RDIO4Mt9LR0b9Lh/REAwuVnyR1Tuzt86g
-         aVNA==
+        bh=k4HnNoZErGmJbjpVeYUvB7UbT0hVDPK2G2ZlkCfqZK8=;
+        b=SrkBC5aHZODbJEMagZthGw/XcZbAjar5junvrnCQfN2XRmZF/71B7MBK3tCUOcU7E+
+         H7SKf5VADDaYFaOt1r6Y+BOFfZMLkwJgHH3k1nuoYCA9WxtP0pgMGp8huIf2ieHM/bTK
+         sKESGi7PHyG2dXXEc0KnWRjKy6KtIyN6PCbfrjdZPcEIe6gVuj3fSMdBfyGFuKnujL4N
+         jP4xXcobRZ6to8WzSRjZB9XMb1kakQ6glkSGcnkO4mUSlDopAVlt/hHA7now1LLE5oQl
+         T8kV5SkpwO7Tc2ARtSYltZ+79ql8/x4LvqfJINigledaNap4IjvlPf7xD/J5ldC9Hci+
+         09Qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725282689; x=1725887489;
+        d=1e100.net; s=20230601; t=1725282690; x=1725887490;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=gHVLWbmp62Vj2d/a5Lz2Zs4p6BRtU77YNWRNldN5Qjg=;
-        b=UValp3l1jKAmZi/DUDWyoPGIAfgggCSninmOyEjgZ3ei3Ink7o5monzU9of07NHEt7
-         qmlc6ozPGo7Dn3YoDNzmLetbNJORyWF+ypW+ieaDTJcEtHBgSozlVNWgLbLjwnt8sRCG
-         t4P/4xhHeL2HZS75j7mG4mqVphcJy9VMhvd0W6IY4ddoobDEL2yTZX9AKC+fyeKHJPIx
-         2Ib1RTVQ770/lq8LWX6WGcz7aSSrgqmLY8m3XteXwgmcw9+x1iH7FL4d38Tmmpkxjr+0
-         vNw7dtXADjL1esr++DQ84E6FYS4lRoesXDxBKEj0JCvSIpx022FzRLjO3G506pGB+92m
-         sAXw==
-X-Gm-Message-State: AOJu0Yz6sUJVt/Wyz87aS6yOwX5WIUi4TGY5PuuhyK5q5p7GM+ac+CZV
-	tpjJTe1CenujhH1R7gyvEl0nZGJk5D4VCN+vqITT62TsRCFU5ae5Pyu+fgv250sA2u6f/rROcgI
-	djuk=
-X-Google-Smtp-Source: AGHT+IGvn91J9Pdd2Lp9TehR36ejplGDrn0SUyJCj8ZdxvPgWTu2Qme0xWtSwis0aO+kqXnlOdLouw==
-X-Received: by 2002:a5d:6b91:0:b0:367:991d:8b76 with SMTP id ffacd0b85a97d-374bf04f7b7mr3905018f8f.15.1725282689062;
+        bh=k4HnNoZErGmJbjpVeYUvB7UbT0hVDPK2G2ZlkCfqZK8=;
+        b=MVEdcps+JBLBSgWjmgTVoLuVeooADr9RSl53FRMtuZiZMDbt8nsNyKyYM6nq1Qi6hW
+         08gjw53RqjPkBowOtDB/wCsiMiHaiRH9rXP7sMudS/QIcfdfBeXTxXrkxYWaIW5anBFx
+         ud7jzYcpuf35n1GAhALHXlo/JiShd7G7/J1SyxW6Tm+KpoJIEQ28rSi/xY2Qa01qulIm
+         ryTUoX9s22jbRBdezz1gjIY10f4/rEwxzN7IaKJd2B5T/mEM6gl669oEZXZuWpVoke9a
+         iZ/pcO96Do9voCEy15u4LnKU/xcwrVAZBavpHtmMLDRoQTeTKr54rWtJLb8vnbPs5hCE
+         TIgw==
+X-Gm-Message-State: AOJu0Yw/F4aCYEDdUtlwOTcuLsgmG3FmzvKZbiN1U3cy62jKUjgaKErp
+	EGqbr+ioX9dhmfhez5CUHt24yUAeRQ8noOaW8+BcPB0o1enFplUP1H2khEDRiO81aki5KIpD8wx
+	yBKs=
+X-Google-Smtp-Source: AGHT+IEkmXzwjHlauyfz4Dd16SYxh7c6DrglcCC9sjdWBZp6RXt0AHqOXQ3rAJlrIiFGvvS9eyYg/A==
+X-Received: by 2002:a5d:4f91:0:b0:371:86b2:a7e4 with SMTP id ffacd0b85a97d-374bcfb8512mr5366998f8f.37.1725282689632;
         Mon, 02 Sep 2024 06:11:29 -0700 (PDT)
 Received: from probook-s.corp.sigma-star.at ([82.150.214.1])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3749ee9ba83sm11511430f8f.54.2024.09.02.06.11.28
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3749ee9ba83sm11511430f8f.54.2024.09.02.06.11.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Sep 2024 06:11:28 -0700 (PDT)
+        Mon, 02 Sep 2024 06:11:29 -0700 (PDT)
 From: Simon Graber <simon.graber@sigma-star.at>
 To: xenomai@lists.linux.dev
 Cc: upstream+xenomai@sigma-star.at,
 	Simon Graber <simon.graber@sigma-star.at>
-Subject: [PATCH v4 2/4] lib/boilerplate: Get cpu-affinity from env var
-Date: Mon,  2 Sep 2024 15:11:22 +0200
-Message-ID: <20240902131124.37844-3-simon.graber@sigma-star.at>
+Subject: [PATCH v4 3/4] alchemytests: Set cpu-affinity by env var
+Date: Mon,  2 Sep 2024 15:11:23 +0200
+Message-ID: <20240902131124.37844-4-simon.graber@sigma-star.at>
 X-Mailer: git-send-email 2.46.0
 In-Reply-To: <20240902131124.37844-1-simon.graber@sigma-star.at>
 References: <20240902131124.37844-1-simon.graber@sigma-star.at>
@@ -70,51 +70,52 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-It might be helpful to specify the cpu-affinity via an env var,
-XENO_CPU_AFFINITY.
-This commit adds a helper function, called in __xenomai_init.
-The --cpu-affinity= parameter overrules the environment variable.
+The alchemy test runner can now make use of the XENO_CPU_AFFINITY
+environment variable by setting it before dispatching to the individual
+test programs.
+
+While not changing anything user-visibly, this stresses the new
+interface in CI and allows in a later commit to pass the --vm argument
+via an env var too, removing command line injection from this test
+case.
 
 Signed-off-by: Simon Graber <simon.graber@sigma-star.at>
 ---
- lib/boilerplate/setup.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ testsuite/smokey/alchemytests/alchemytests.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/lib/boilerplate/setup.c b/lib/boilerplate/setup.c
-index 26c8c4cf5..9573a546f 100644
---- a/lib/boilerplate/setup.c
-+++ b/lib/boilerplate/setup.c
-@@ -383,6 +383,18 @@ void xenomai_usage(void)
-         fprintf(stderr, "--help				display help\n");
- }
+diff --git a/testsuite/smokey/alchemytests/alchemytests.c b/testsuite/smokey/alchemytests/alchemytests.c
+index cf9f970f1..edbafe6e7 100644
+--- a/testsuite/smokey/alchemytests/alchemytests.c
++++ b/testsuite/smokey/alchemytests/alchemytests.c
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #include <string.h>
++#include <stdlib.h>
+ #include <smokey/smokey.h>
  
-+static int set_affinity_from_env(void)
-+{
-+	char *affinity_env;
-+	int ret = 0;
-+
-+	affinity_env = getenv("XENO_CPU_AFFINITY");
-+	if (affinity_env)
-+		ret = collect_cpu_affinity(affinity_env);
-+
-+	return ret;
-+}
-+
- static int parse_base_options(int *argcp, char **uargv,
- 			      const struct option *options,
- 			      int base_opt_start)
-@@ -560,6 +572,11 @@ static void __xenomai_init(int *argcp, char *const **argvp, const char *me)
- 	/* Retrieve the default CPU affinity. */
- 	retrieve_default_cpu_affinity();
+ static const char * const tests[] = {
+@@ -31,12 +32,19 @@ static const char * const tests[] = {
  
-+	/* Environment variables can be overruled by arguments */
-+	ret = set_affinity_from_env();
-+	if (ret)
-+		goto fail;
+ static int run_alchemytests(struct smokey_test *t, int argc, char *const argv[])
+ {
+-	const char *args = "--vm --cpu-affinity=0";
+ 	const char *const mod = "xeno_rtipc";
++	const char *args = "--vm";
+ 	int test_ret = 0;
+ 	int ret = 0;
+ 	int tmp;
+ 
++	ret = setenv("XENO_CPU_AFFINITY", "0", 0);
++	if (ret != 0) {
++		fprintf(stderr, "%s failed to set XENO_CPU_AFFINITY: %m\n",
++			__func__);
++		return ret;
++	}
 +
- 	/*
- 	 * Parse the base options first, to bootstrap the core with
- 	 * the right config values.
+ 	/* Try loading the xeno_rtipc module as the pipe test depends on it */
+ 	tmp = smokey_modprobe(mod, true);
+ 	if (tmp)
 -- 
 2.46.0
 
