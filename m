@@ -1,53 +1,52 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FD04200124
-	for <xenomai@lists.linux.dev>; Tue,  3 Sep 2024 08:12:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 073201C7670
+	for <xenomai@lists.linux.dev>; Tue,  3 Sep 2024 08:55:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725351173; cv=none; b=PGG68Mn5TSZ96dH6Z5g4Cdwa/164bGh2erYpsWdGb9rPQwa6PmuMhfyFkNxjugnsRmqVzSlIeAFP8XeH9BhxsNwNLfOm0EZWXAVz8Nn9StUmp/X+FaymGdG3Xge0OVeiJEqEh7d9EgpacFw7mxamjtkK5iwzMO8Zu7p5d0lCJ58=
+	t=1725353723; cv=none; b=AdqZ1n3hyCDdv9gEqLpm9YQoNgPj/Z9hg4gj1dfK+wUmQGbuM1i6Jxe4BnsHhmzjGoC+K+6r3xXbvaqk8Yg9zmrLqXIYJtUo/3dokQ53mjzbmM+APjSh4NUZQUKA0zVpdaSoIol5CjIjmFjHnpfCa2vbGCgiBvHhVQ06RjbgVro=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725351173; c=relaxed/simple;
-	bh=ol8T0YItQ7ODqVA4SxAx7hpo4biEaVFrmHXtR8Fbbtw=;
+	s=arc-20240116; t=1725353723; c=relaxed/simple;
+	bh=2uDN1+/XHryxkYCwlebQcGzyZ3y+FhOBQ/suljjYZWk=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=jQ/YMtLeR5DniQwdwfc5crpaL8tJQo7BINbL5uiQFiO+3iaZ5GVcumd/0E6RojJsa8x73x7Lf7wBYKCW0EouiKthZE96LvPP6pYuc6qTyjUSE0up19u5WnI1ZYPpbJcgw0+9fQM8uznw0lBuBw1WrsOA6gg8BGv/we+MwihDTV8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.54
+	 MIME-Version:Content-Type; b=qSbYVL1P5Tzg/oyen8n1xctKdxz9/1lowhYeljZknpO5wpom0FE+YVjoA/pMIDwjb22X9ZInc9rU5m0YX5cZG4orQUEnXF0uQkd5PQfBrL02AzAFsjucOSfuHKu+NRxMxoFN228eHQEyaZWWUss2HO4+bobxFnWWwDSg7tCwWxw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-42c79deb7c4so22140715e9.3
-        for <xenomai@lists.linux.dev>; Tue, 03 Sep 2024 01:12:51 -0700 (PDT)
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-374c962e5adso1014236f8f.1
+        for <xenomai@lists.linux.dev>; Tue, 03 Sep 2024 01:55:20 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1725351170; x=1725955970;
+        d=1e100.net; s=20230601; t=1725353719; x=1725958519;
         h=mime-version:message-id:date:user-agent:references:in-reply-to
          :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=E+JRRLZ96LzXBN1VPD4Y2L2Shrcu5VSKP01oAtTL0do=;
-        b=ge4lDP0A/f+1wdMHp3kXGnoIW+qcRn892UVTIoL5+8GQNAlrwjle22OhGaRMJbaTM+
-         6PyGvZuqO/nErQSVSLmyG31EjhIZRMMiHPhPVNflGCqWj8YgNQ5LqPSSqLnBoo+5UVOr
-         /z4ur1tppeQn+s368XdpjEVV2osR0B/QKOgxsHbugsjV4xPKRi8GJcWgxLP3x1N1T0pn
-         cGQxjhDJY93kSCUNbdNvb2NeMHC1fzMftYGfSZ3MxWPwh/8Qc1S6x9xeHq/B76IrA0y3
-         jgKYwqX5qRfzn6Ou9RQvjW25nfh59DkyDgdi6+mZdJ9KJLsJsooQ1S/8kVdIBc2BXgqB
-         bAmA==
-X-Gm-Message-State: AOJu0Yz4yNg2oObMX+V5S4KRbKK0pHVgGYELuln151K8N6wY/akh3Oi/
-	tRHwfVL4MKiPY7fgj5BgP43Oi8GboaaYHWTUyulbKh/ZbqOS2yvY
-X-Google-Smtp-Source: AGHT+IGmKFJY4++F+tsV3x+Uo4jXKz9Hnr+4nQAsDjLHFzWL/8E80roTJDKIZeEMiszjKGXS9+L8Eg==
-X-Received: by 2002:a5d:460b:0:b0:368:5b0c:7d34 with SMTP id ffacd0b85a97d-374bf055fe2mr7335047f8f.22.1725351169618;
-        Tue, 03 Sep 2024 01:12:49 -0700 (PDT)
+        bh=IrkPxJjrc6sImgc39earaQoN3HRPCp0dzRDr44vLkps=;
+        b=L9ZVue5Kid9UD0S0X7OqKlKtvcZjAS8LhrUvf5v7lvxrKW/WAs9SaVmZjy3SThFUEt
+         jb0IYwbw1IDADjatWDWrG23mXYARRaFIIHN/LaIXvYUxL08qEJXU1+uGt18ZM1wkQ/YT
+         uIrXzS8Ad6saeERFB44Q3+DurNdwT1hI2zBp5UwAWbCoZ4vTEqYLEuQ8HxhYyDCxZ8wx
+         +P79JcVPUxn9RAyJr5R6pTr/But3FovNxqSMwNvj0iLjynFzdwDJ6qMWP8AwjmYkPe66
+         9/7048clvduUQVXxVFMlHUw//di2hgFAfTS3i0BJd0Pn35Jkm4VkVRL+89mPD7KVYbEb
+         5B8w==
+X-Gm-Message-State: AOJu0Yy8y/mUERC5BsKOBSYfGU/x4cM+UceY9x3ZTZkI+uL0pWmDh3eM
+	pkYCkEqNo19cAKxs5uwFojGAHDsJnYhUwQAzoprKCe8iaZ5cY1mAU3zamQ==
+X-Google-Smtp-Source: AGHT+IESPQ6h9NZSdBsPWdohoqW8ucm/pu3SCu25JN9GFjZBUlAfp5fZmuPVAQYuDNTw1CuCEzrD7w==
+X-Received: by 2002:a05:6000:2a08:b0:374:bf6b:1021 with SMTP id ffacd0b85a97d-374bf6b132dmr6455959f8f.27.1725353719030;
+        Tue, 03 Sep 2024 01:55:19 -0700 (PDT)
 Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-374c6479514sm6487895f8f.93.2024.09.03.01.12.49
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-374c8547c0csm6181711f8f.17.2024.09.03.01.55.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Sep 2024 01:12:49 -0700 (PDT)
+        Tue, 03 Sep 2024 01:55:18 -0700 (PDT)
 From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@lists.linux.dev,  Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: Dovetail: x86 compat syscall handling broken, missing backport
- in 6.6 and 6.1
-In-Reply-To: <f5d625d498678060902ff7362d72b8b16387fee5.camel@siemens.com>
-	(Florian Bezdeka's message of "Mon, 26 Aug 2024 09:36:47 +0200")
-References: <f5d625d498678060902ff7362d72b8b16387fee5.camel@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@lists.linux.dev>
+Subject: Re: [PATCH] dovetail: Account for invalid syscall number
+In-Reply-To: <24868b62-2aa9-4f06-a20a-c1c0dc2ba164@siemens.com> (Jan Kiszka's
+	message of "Mon, 26 Aug 2024 08:31:49 +0200")
+References: <24868b62-2aa9-4f06-a20a-c1c0dc2ba164@siemens.com>
 User-Agent: mu4e 1.12.1; emacs 29.4
-Date: Tue, 03 Sep 2024 10:12:48 +0200
-Message-ID: <87plpl9mv3.fsf@xenomai.org>
+Date: Tue, 03 Sep 2024 10:55:17 +0200
+Message-ID: <87h6ax9kwa.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -56,17 +55,41 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-> Hi Philippe,
+> From: Jan Kiszka <jan.kiszka@siemens.com>
 >
-> I think we found a missing backport in dovetail 6.6 and 6.1. Jan
-> observed the kernel splat below while testing.
+> At least on x86, the kernel may have decided to invalidate the syscall
+> number while processing it. Avoid that we process this -1 as legacy
+> syscall.
 >
-> I'm quite sure that [1] should be applied to both mentioned branches.
+> This was a long-pending issue in the whole dovetail series, now revealed
+> by running auditd on one of the test systems. Syscall auditing was
+> eventually catching an unbalanced tracing, caused by a premature syscall
+> exit due to this bug.
 >
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>  kernel/dovetail.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/kernel/dovetail.c b/kernel/dovetail.c
+> index 08c649d6e9d9..bcd49183f8eb 100644
+> --- a/kernel/dovetail.c
+> +++ b/kernel/dovetail.c
+> @@ -119,7 +119,7 @@ static bool __in_oob_syscall(struct task_struct *tsk,
+>  	 * a PR_OOB_SYSCALL command (new/current call form).
+>  	 */
+>  	if (IS_ENABLED(CONFIG_DOVETAIL_LEGACY_SYSCALL_RANGE)) {
+> -		if (nr & __OOB_SYSCALL_BIT)
+> +		if (nr != -1 && nr & __OOB_SYSCALL_BIT)
+>  			return true;
+>  	}
 
-Merged, thanks.
+Merged into v6.1.y-dovetail-rebase, v6.6.y-dovetail-rebase,
+v6.10-dovetail-rebase and the upcoming v6.11-dovetail-rebase.
+
+Thanks,
 
 -- 
 Philippe.
