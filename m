@@ -1,266 +1,389 @@
-Received: from sonic306-20.consmr.mail.ir2.yahoo.com (sonic306-20.consmr.mail.ir2.yahoo.com [77.238.176.206])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2070.outbound.protection.outlook.com [40.107.22.70])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BDE318FC92
-	for <xenomai@lists.linux.dev>; Thu,  5 Sep 2024 19:23:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.238.176.206
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1725564196; cv=none; b=lwDN7nudhf++fEzGy2Jc/1t7g8UchUYmKnFM1dcEjHoOJo1E4F9YRUnLj/tboVPkWOiNym0Xlr6pxgzlWKtKvfRYYhbvOgF4zShyymko01U9YVe330G5YuE0f1qV8o5R1KL7PQ2EFpR+pOeFtuSfEw5djJg2V7KGjsNUAls9Q2g=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1725564196; c=relaxed/simple;
-	bh=M9Dge6ynTGm3hcD0uzAgQDoXJf4UVNWFxtI0ESW8fao=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:Cc:From:
-	 In-Reply-To:Content-Type; b=PhtnK5uadOoIHrl/mOODig9G9zgh4lFNgDMnDvocyCBmeFS5+7+V6oDZVM+1ZSLTjeVDNq/b4VXcCMXxIhYwUXrmGL7fgKC6xQ5MiuztqqorrvkCuYmyU2byyfscsVj+TPqUyB9q0izWBI0wbKsNyIlALm0rnRiE9l4P4P6vRKk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com; spf=pass smtp.mailfrom=yahoo.com; dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b=kcSfDkk+; arc=none smtp.client-ip=77.238.176.206
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yahoo.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A37EF1C9ECA
+	for <xenomai@lists.linux.dev>; Fri,  6 Sep 2024 11:11:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.22.70
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1725621113; cv=fail; b=RSu2hOLvAcSDq5M83pkSHdSpk4GsySUaUN1KYI6xLp2oiqHaxjbyiLzqu//CE6pll9m/pZFMa7kH+tz1NC91MpGQisQeUPBZqfggewjhBwVHWaYYNrEWyyPUA95IYGh0YGSkV5xHbhDmKfdHFlh+VmlT6cea8t8mHV3Yf0LQ/88=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1725621113; c=relaxed/simple;
+	bh=SzW7DuNRBMpqArlZGAjBUDHQ9YDblSjbffgkUAtBOt0=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=jTU8jc79f/+4PKsHMQsP0932DJvSM6MNLesYjy0/QkElSiC5P1A+IcOL0or2IiNDf7tL2F47uCQPbOM0AWyGVcnhbbGIgjTmK2WEkU9Yks62rqzwuqYw8wWTApCCJBS52th9ymjzNpJz2qZJ7ZxmsW6ICjMuqyUaTOA/5lG7iSA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=qNCAVY4a; arc=fail smtp.client-ip=40.107.22.70
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b="kcSfDkk+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1725564187; bh=De6G4AxbysqcCySCxiMkwyKE4QJn/iVBJKhU4QISXQY=; h=Date:Subject:To:References:Cc:From:In-Reply-To:From:Subject:Reply-To; b=kcSfDkk+DJpzv+wkmnc3UXN0erAQAvAx3UYH2YqY8izoT1OX8fiM6vGOq1gPT6SMT0i2pd3+y5tohkcXOEkIaIWsrmzTFMPsRGd5pjwi1QA3YNY3ByDIDckLtOBoSN6aO+aLtsKB7jXJwLVgMajCuZ9ao9KHCevYzh9g2FH9sPcps2Bel5lV8DY93Z3ErNs7HbsHurMVYu167x9D9cQN9CskouPOj4O3urTydm+bYfWY3cgrpl2S7FF6wZWdB+Xny4LS19iq9pnK/XEqVJSE8rNvCmnhAFGr+1vd+f2UYSku9WneMSlUzKoncrRwZ+5Cz4k4j1OCwHj4KBFKC6A9ag==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1725564187; bh=lz0Hk/Enzo78ZFCFSFA91NHyB8kT3hbZs76Sdlq2Ryg=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=MvwJ+aWu/kFiDP/Wf6VjrJDvstXvxG/Yw/zs39sNZotiEVbiGSApzEXAHN1B62AM44ew/8r22JIKfWDPcLi+G1f4q16b7b/jq2NDvHO5o4ECXOAICIIguZQKlxZfJ38vfbMCZQwl3LyxmPKXeQvFbYp5r6928mdPL0WXmx9Gu9IEqME+u2wPx0HIYKED2g+PRs9jmqH5GSHhhnp14baPyaG/t/VU4bLe4VDHBP4mZnxl1IGaSm3JVpQlTT8Q1LnlFWI19vyPq7DuC6dtWD9d+iGNmcNwr/WnZ5SnstVjMYkXWkdLxVlxX3UrlIsy0oKDyee5eEBxeRGbqmzjBGD6ig==
-X-YMail-OSG: wwyXhbsVM1mkR8V9ZNXhgfINMhLdr_frDc8ra5O4fUUn1bwTY9z2aVLqnwzWRLU
- dwubGRxqOlh.dJnqijqKqWZ7UfSh9RJD36.LezKWoAfZc0RUKHqvLmciJe4yNnu67eNjWMYpAq8Z
- hoRtPizii.baLvg_1ZT3TPZvmYWJvqeqiWgoGwQAppzNs4pqKg8n7y6cgwztFqDh5_MMzuCSlMrr
- KJ3SdLRk2Xm_N5FEzR8f95Rz9RLxl_7NkbnUG83sy85dltLAFXvKjy1YWlQ9cuiPRF3UiejZa50Y
- .RQlevyloMURB5Na3P3u0_2Ht4wV.bJS4KEu3WXk_g8J6hkMuFf28ifbD1x4hXdU9L76IeA_ZAJH
- CaOknQ_48YmG3BnJ2BYUkC9xhAAOBwzROqfQf3rC8WbOBt6CngHqVKe9dH8IsJad2P3y5CyRrgZs
- EwBarPyaaqbVfXh.bJtu3e8qlf5ZLRXfC.F1GIS.1Jm2BAJpnhMNce4vQZgOKQ6D9MNOaDsX5YaD
- .SU7wmiOhykWum6.XiFGi8gHogoG0tceUe32DHFuqhE3nf0EC_avrv03We25mfBMi6buPiFSmwIe
- 6Rc1JoAl3q.ADmq_UwPgQHVaCkresSdFGtXFsJhCCUufX400gakMWYJa7_UyDubhYBfMDpCRXuEW
- 1SG.8hgDXExVkpmdS0zv5JC1tS0ff9.Llf3S0m7cmPKl5MqYmtpHSB6Fj_8GKpRiO7I0vlKtZrIL
- UFBjSFF_nPMvW2rAYPqmbofx1T6Ql1D22qnZDqmhFLGrLxW8wz7OqnSmc.eobK0IVCnoIls5juKl
- 2AeregjME7C4_mwc.K1GrIyno51RsdO8bkLgxzs8kP250ydmQKvx55xr6epfVB3TaGhicslIeBkd
- JYJk5FE7RbjzB3zc9tnBID3tOkkBKgkXiowRVtNhZhaeZeSzxWSwdwkkmoiOLHiDMevXMWUTficc
- TYjrDcsqvgZsxm7dKNnFy3q8PnHo.8KbbxJQklwwtAKxtOtI9hHB.fXZWheEkn3HW9oajc_mF9_R
- g2hp5i08SZGTW.epFq.d7msdFUg1fW3xBzob6dl1S1Vbee7UNGVQpGa1C.2Ruw6rQPy4qW0mcr1O
- RQinF_IerRFcTWb6RIXeWOEM8YwpMIaenrr6HnkKbcEUrIZwTKxRwKgH5OG7sZK5FdK7svidSfKk
- Wt0l0BdcBO_M7.d6PbVzoeTRverVTm7xKBrMKy.560jLCkKKZAA8HY0_REgPDcHllIkoUH3.fph8
- M8G7EK52Vf4DlGNJVmFQCEHGz2.83H0baX0aD.OY0YLXeaP0bPGp5VbO7NfsnfpNlTKRnaFozRZA
- aJd67kZBGF9Dlgp5ac9uYVpkKOAdA.VyqVAX1cP_sMMujkyYg7_e1JfFu9btqFRzUsihnC5PpQde
- .l8gctq9YAddVMjJRaZF_0KWZWoxH6PMQVQd6523NfD7Ib79DXO.MY.6uQ1DBeWpDL9dLosF0Lk4
- qz85g8kqaTmDbstf4DChCn2ONvxekpbpWz4L2WGDguolG2wl6K.qqFr3g_NasytfqUG_rMAGvxzy
- tCWQ3ahf6Rnet2eKzRlfQBW6LJhOYBNwi0MgoAo.f5ZTRshCuixmTbGeGlOvglJPO33cZYgOQ4DA
- 4koGwo0m5JLlZbvou8SQi4IHBxlRj4KVGASYaP.FlpIU7amXHYtJQ3IHGFOJaMiJoea3CjfwCv54
- diucDD3SpZcGyDcBRWHwfHtfwlFfC_UTNQL9EWIPT1IhU5XMWmHiXEwKEBTTyJ_unIRoP3ycRE6j
- RbNMojFhPUnhEPgesWwAwsY8rUXmJQ80TexIGTHl8adqFKloy4ktdIjaRL3tT2mhX8f2f8oHUxv8
- hJXFpmixEJNeiCOvCHkThtcfWrRPINrjt5fBmAGsyVPRovW5xmwCD5F2HGwsiqe9pO7NlcI9NwRT
- yLctznhIx2o4zvlM19qoUYi8IPSdLi7cIuQ80VxBWQSRSSdJ3bNn7lD1bwwrd5DMbGOCi0myiaK5
- MQ7xoHw.1dt69wMZ9P8hKH6CrbHC5ANg16Llr46ttgKNYz8DrNskxPyz.CRpzIdLjdiSxODK80Zr
- lEdom7GQLgwebS8vTON4TNdQIkO7FrNDFJQ79hL6KTPnSkKWEHzmJwvQ68Lyg0dy47RCm0bzYKAw
- CQJMuS61T.zwpswabX31N_JMBK2mQk3EckL9k6HthAPGzPqjbJTu50afc3ca1XTtQd4e.KAgD0Et
- xdAoXLf0x.bP.kdGlRkzxWPxr
-X-Sonic-MF: <mau.salvi@yahoo.com>
-X-Sonic-ID: 2a770d99-84e1-4dc4-9abd-477c8350a2e1
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic306.consmr.mail.ir2.yahoo.com with HTTP; Thu, 5 Sep 2024 19:23:07 +0000
-Received: by hermes--production-ir2-6664f499fc-ggmrm (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID a2ecd174fecc2f853f7d705dd4eb959f;
-          Thu, 05 Sep 2024 19:02:47 +0000 (UTC)
-Message-ID: <c4f28a37-cc51-481f-b15e-2b9272a46920@yahoo.com>
-Date: Thu, 5 Sep 2024 21:02:45 +0200
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="qNCAVY4a"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=d2hNs02JA5rlL+Yf9Ut8QUOqDvNcRu2baJsbFupDuNzhawt9S4zRIJV+d9egz4jpJJhNvZwzQNMShquc4E2QbnEdc6a/O6DhjI6i3sqt3UTYw2NfqmWgMWu1V3GA3XuewJZgldnRGUOzqmS5PAK1ec3W9S8xPpJfiJQbemPG29DbTKDSqn3BmHg7Vy9PUJwSKDC2LZiXsEnQH5N4Ocw1o/U/ZwS41HH93kmwS5FJIOBt/JcE6BOaKPqEobJ8ApPbxnzRD5WALDMjWKr0nl0inXfE/7YJ7voxKeMZyMCTGK/+5YC4Zht/ruNVyqr+WOs/cX+0ZsNo+3VNj6tEKlug+g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=CvJGyvF/ydNWv3AdFXiLW4OmdgQSe281DoXHutbW99U=;
+ b=YOGEUWhlBAa1zqqerKmki5f8SKzTAXlKGph85rPzWYzDUq3tX6GC6RoVgr248Ol95ZAcURKjCvDh63E8IAakmrDiH6RoUO5Wvi5uytsKSdFqBapqd/jyOlFF+XliyVcpDCPBZ4PCHnLBmC4y65Pi9sEClE05tzD+nk5eVuORHim8W49Hkx1Sl/wNefq1F97T39SzTtVx/MzrpGhoLTGGyYsZPyWNpBkd/1MqAQWXpfQL4FfK3qGT9pwwxO0UCEc4tNEv3e7RIBhnMETnn5MB66RhC4qeEvryhH5IGsbCAyOrWJD8Ozr1zCwc31hdoHqoiRR0isPNGxyWDlS38xU91A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CvJGyvF/ydNWv3AdFXiLW4OmdgQSe281DoXHutbW99U=;
+ b=qNCAVY4ahSlTQrpWmvYTB9Tett0zlbPNt7gpMbQB4/U1ykteOLZy2OiiW36tD48vlfmB6eF1HnJWNaeEwA2d1dCdrJ87DJcdTdyzJU+OtReERKWoWjFn/TzQ2wF560fsC68doxLmo1C83yJZnn74p5lmjtJIaGaiQ1XdzqyEJ8eGGn4RIO+rM+ZPn3eEk0kin8EHsPPRzHUToG51GyxFwzJYDo5Oz+O2jOERWYUu2kOcY1mqwaERi89eFPo7Lps0Y59JQPo39d4mpbqobvR6UyVt5wIEnfORiJs2lFNZWc/dkYWxvAWoCEPXhzXQwXyTluMsiaBKHbppolmYLqPdgQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by AM7PR10MB3841.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:17e::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7939.17; Fri, 6 Sep
+ 2024 11:11:43 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408%3]) with mapi id 15.20.7939.017; Fri, 6 Sep 2024
+ 11:11:41 +0000
+Message-ID: <4f026ecd-d732-4f9b-9cb1-a8437f983493@siemens.com>
+Date: Fri, 6 Sep 2024 13:11:39 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH dovetail 5.15] x86: dovetail: Allow multiple HV guest
+ extensions to be enabled
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
+Cc: Philippe Gerum <rpm@xenomai.org>, Ionut Nechita <ionut.nechita@intel.com>
+References: <20240823091858.3355791-1-florian.bezdeka@siemens.com>
+ <20240823091858.3355791-4-florian.bezdeka@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Content-Language: en-US
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ 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
+In-Reply-To: <20240823091858.3355791-4-florian.bezdeka@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR5P281CA0017.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:f1::9) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Process stuck in cobalt_monitor_enter
-To: Xenomai <xenomai@lists.linux.dev>
-References: <9d5bb262-0646-451e-a5af-82c0473a3003.ref@yahoo.com>
- <1b8ec985-8ae2-4bd2-8964-23f97cac7ba4@siemens.com>
- <CADBp9xn4OGi99e57phnv58NtCbxzO62bhrkJhSns-FUbbt4_pg@mail.gmail.com>
- <6fb4564d-3d39-4be1-838c-423a865638b9@siemens.com>
- <2d41fc43-db7d-4070-a769-bb37083cb414@siemens.com>
- <2e779a4e-ce60-4487-9dbd-7d40726b2d9e@yahoo.com>
- <0d9b6cd5-4b95-4b28-bf06-9e98d7d6310d@yahoo.com>
- <46a1ceb0-0684-4bb8-bcd3-5f71456c2d10@siemens.com>
- <0363a40f-ac3a-4024-a9bb-e37841625cb8@yahoo.com>
- <7707fef0-b164-4a79-913d-6ddcce6600d5@yahoo.com>
- <4e5fe5f2-44cb-4578-b47a-89980173eac9@yahoo.com>
- <e48a247d-db37-4c78-ae35-0d1a35646aeb@siemens.com>
- <f8361e27-2fed-4aa4-9348-bdc64760f7e5@yahoo.com>
- <6af7ce37-f6a5-44f1-9f48-18120baa831e@siemens.com>
- <12e3bbed-a0c8-4995-8320-cc6036efb0d0@yahoo.com>
- <f3493320-9f77-456c-9c57-1b35492ecac6@siemens.com>
- <4dbeb5b9-da91-4aa4-9cf2-06d6776effef@yahoo.com>
- <867f2e49-3621-49fa-a9d7-83a8093cb224@yahoo.com>
- <1a0e0318-95e5-49e3-812d-aad59fa4c19d@siemens.com>
-Content-Language: en-US, it
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
-From: "Mauro S." <mau.salvi@yahoo.com>
-In-Reply-To: <1a0e0318-95e5-49e3-812d-aad59fa4c19d@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Mailer: WebService/1.1.22645 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AM7PR10MB3841:EE_
+X-MS-Office365-Filtering-Correlation-Id: 46874026-56ab-4623-3f1f-08dcce64af4d
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?cEltRVF0UHRFSjVpa2dFc25nRDNhdENOYWFMNlgySlR0dlVBd3pRNVRWUGFi?=
+ =?utf-8?B?RnFHWFgrTkdleExVbVFRN0FQUCtldVp5WVBmNUExMmsxQlFrd0ZURnNKQmlx?=
+ =?utf-8?B?ZWU4bXh3SE81OGd6bUFPczd1cEt3Tkh4c1laU3dqakNYenZZdi9HSE1WWHdy?=
+ =?utf-8?B?aTRWTHBVU2hSTWIvVXVmcGtjZjROK0ZhTHFMTGhwNVF3akJaNkVOUnRzWnpQ?=
+ =?utf-8?B?RzV5M2xFWSthQi9NNnRLM28wSzVhdUQ3dmZwWm92RU1VZXJ4akk1MS9iNHFU?=
+ =?utf-8?B?SDBBeHBMZFgrb09FdUxMRDgvZ2JpWWk1WkVOWU93S0pvRnhpZXlxc0lrVlRH?=
+ =?utf-8?B?OVM4NjIxYTdXUUFJZG5IMkI5Uzd0YmFQYmxXNmVybmRsTk9yK29rM0N3UEFx?=
+ =?utf-8?B?UGk1VG5ieWs0QzZCbEZaU244a0hycG81NWJsLzZXaHFiTnlmMFlhNlY4Z2hT?=
+ =?utf-8?B?blBpaGRES2dVV3BlN2YzdXcweVY0citBdk1XZklIYUZPQk52U0ZzVkhncG1T?=
+ =?utf-8?B?RXJXY0tMVm9sOVJaVUl3c0Rua0M1TzZ6VGJVK0g0ak9zaVlrV3hIeVU3cHNw?=
+ =?utf-8?B?d3I5YnFuaHNuWkorSVZXVE5MSzREY0l3a3o1M3VCdTM0Y1EyQ29STUdXakVu?=
+ =?utf-8?B?c3dCbjBrbHM1T0tFM0hhSEltemVabURFNEpZb2xmTmIyOGl5K25OeVFrZHlU?=
+ =?utf-8?B?TDNSSDRqMHNLM0RWd1N4Rmpld3hVMmtCZmptU1JzZksvdlZLVUs3V3dDSzBQ?=
+ =?utf-8?B?eUVoSVpWNEhkaU1DWlEybXkzT0hKQlB6RHdrbXpZSFVFaXFESjFFM1NaUlRX?=
+ =?utf-8?B?cmRRY2RDa2lHdExEYlpDNGlQeDdXQW9yN3VzVjlsYW9OeDhtWUNWWkZCcnA1?=
+ =?utf-8?B?SElPTDhpYmIxMlZRMm11akpuZ3dBdWxwdFhNaU9PT1VacHd0U0IyRE9aZmhH?=
+ =?utf-8?B?YkVKM0I2d0pwTFNwMFNEMGZLdktnUHA4RVNPSE1VTERWUTJFSEdMY09GT0U2?=
+ =?utf-8?B?K1JLUUtCS3ZDci9GRGpVcHdxRW9tNVFqMW5oOUI5Vmk2eEpIbmdSUmh3MEdF?=
+ =?utf-8?B?amxOT2czZzFFL25BdjZFK25DSUYrdmVTSDU2eVhxQzJkSGRScHFnTk9wQU0r?=
+ =?utf-8?B?NDZSMHNZRGJKeEMwcTF0VUZ1RkZ1NEVndE1LTGU5Z1lqM0JIV29XaGIzNDgr?=
+ =?utf-8?B?WWdtQlloQStYVWxPbU9BUjlUdDcyZ09tbzJwWENxZ3BLcjcvOG8wWk9QdVdx?=
+ =?utf-8?B?MzViNW9KY3B4NW1qTlMxSHlhalNiY3JwSjBraEJCcldsRitUNnBDT0xBVVlz?=
+ =?utf-8?B?aE16MzFQMHYyRlAvYXB2R2pOaEV1YmthRCtuSU91WC9xQ1lGZEhuZWNWMDlQ?=
+ =?utf-8?B?ek9YVGs2M0YrN2drRHVNYjFraWpYaWZ3clhDYk9HT2p4VzhjblRPVFd3YUow?=
+ =?utf-8?B?NnlicnlqVVA0bU5HQjBtMjViWFAvR0VXTm81cFVaNEh1a2M2V1dDczFVZW1y?=
+ =?utf-8?B?aVEyaXc0LzlhSE1KcDlDQ2xMZ1RGOTVCZVIwTFJJaTZwS25JbCtoOVltKy9H?=
+ =?utf-8?B?Sit0aC9zd1UyRWgxRklMMjA1QUVmQXJRMzlsT1NpR3RBNFRMWThnbk85NmJ0?=
+ =?utf-8?B?TE5pOFc1TXNSZTROV3JCK1M5UFJsNDRGNlJzVnpOcktLM0tyUWc0VTJReGhJ?=
+ =?utf-8?B?dGlobDNDcGRkcWNBMStLMGM5SHNTQ0VubTF1OWpzcGpSM3d1a0Fhb1VpdDVr?=
+ =?utf-8?B?WUxDcGwvWE9yTFI2MGUwMXFaZFJJUzVaRm43eTVGQVZPY3NhZUlldXNkMjZW?=
+ =?utf-8?B?OHc3ZXp3U0hRaXVnMEdqdz09?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?U3FhY2hUdWQwSTd4QTJORmp4K3hIcnF6NWRqc25xeVd2TCswVlcweEtrUVhj?=
+ =?utf-8?B?SjVyeFpYYWJEQVpQV1FmeWpkTVByRE5QbjBnMkNnQmtnb3FCcE1RMzRsc3lM?=
+ =?utf-8?B?UnNzTjJLdFJYNXpZY1daandHbnllVi96QWZQYjNPQUFOQkRYaUl2OFc1N3NQ?=
+ =?utf-8?B?VUtYd05DdWE5MCtNOUpWTjVrejJDdnc5U1dKM0RHRlFUQXovUmhhOHF0UHIy?=
+ =?utf-8?B?bVM0UncwRHJPcHVEWTFPbzl1NU9nNzBQUGZsN0gyTkJ2NTRIMUJHN1ZNeEdv?=
+ =?utf-8?B?SmZkdElSd2RYenlWazYrK0c2eW9RL3VNbU40K3dpMHJ3aElYKzRsdDcraWhi?=
+ =?utf-8?B?U2NoOEpGVjFaK0hPb0QvQVR5UE8zMFA3NFl0dFBxd1FpT1VaSzNzR0NGOXFI?=
+ =?utf-8?B?eUI0eTRkWWQ5UW9xN09tYXpseVNJS0VFTS9RZ2ZGTkI0VWdDdjhNblFiRjdH?=
+ =?utf-8?B?QXVlWE1OZlVhTUFGVnptSzRHdTlZSDdaTmVxZG8xaGc2TkVqaVZ3M3k4Rjkr?=
+ =?utf-8?B?UHpZK2duSFR1eWhaOElUUEdWRlUrYm9MRnNwTnpjOFlPWGRCTEFJaVJoNTls?=
+ =?utf-8?B?eUFTSTdYYXhHS3hPcFpZQlBJUTBFOFY0aXArTXRlUW5rYTdnY09PYmJnSVl3?=
+ =?utf-8?B?REJsWjNYaTArVityWnZNNkRpVVRYeUJrT1hnRjVYN2twdjlZcGlVUmFnZlUw?=
+ =?utf-8?B?QXNDWW5XNHljbEtLYzVPaHpTUmI4a214VGgzSytyaWpMZlpkcHp3U1BCYmlF?=
+ =?utf-8?B?ZFB4d3A3TE1hZ3ZkRC9Ga05MeWNJQU5CK2s4K0p1TGNkR2JlM29ObDdoajNp?=
+ =?utf-8?B?WVdMeG10WVl3dGh4d24rRU9Bb0xjRU5rbmx3NVVRYnpXMnpwUFBEaTJzejdH?=
+ =?utf-8?B?VEx1RlRmcEVUUk9PT1JsS09mck1xVDhxN1ZWY1hXY01QenpiOWg3a2pqZG8w?=
+ =?utf-8?B?ZldRZnFYcFN1M2c0UkxyNGV1VjNGWXpWU3dWRzY4Ni9rZWlGYnU5R25hZHZE?=
+ =?utf-8?B?M0FReGJvZGoxUGtoM0pOVHFKTGRrZzQxUHYyaTZRMktXYW1mWTlQeXhHMU85?=
+ =?utf-8?B?SjQ4ZmY2aWtHQ003UTJTRStSakFvMG0vZmFidUsvR1dKSDVmNStZMlFUVHpn?=
+ =?utf-8?B?cmM5cXR3LzRvVmdLRktCTUp4N1VBRFhCRHh0R3ZoSnJrdUFIQ2Vvc0ZCM3Fq?=
+ =?utf-8?B?WHlvZHZ1SXRZTzlKSmEwcGlVYUNOMEJ5V1VPMDJweDJCTXhneUZHbjlsMDR6?=
+ =?utf-8?B?VWhnUVJsZzBzZWVxbHk0NjJLaktjVkUwNkVzYno4eVltQTlJOGVlQnlUMUlN?=
+ =?utf-8?B?djBjdWJSS2plT1ZHMVdpQWdqY3FWcXFmbXFHWnd1Z0FMQ0Ewdm9hU3RiZmxk?=
+ =?utf-8?B?a1h4OUx5eWt0aEorZUdsZGl1VnVXelYxRlBMclZ3cFRoK1BSVUp6UVY3a2dZ?=
+ =?utf-8?B?Rm96Ukg3cWQwNTdhaHJ3eVRveHlwU0ZFS3RISnZRTVYrMVVFMjY1QjVxbDNy?=
+ =?utf-8?B?WlF4aE1zQ2ZtT2pkV250aFdkejhqT00vR1RnQXlyK0IzRG1XYjNQc3lLdktM?=
+ =?utf-8?B?aGVpdmpzQW52bmxBU1Y4SmxZOHhRYXdlN2lJa1FyMGw5eU8wb0k0bkpOQUZm?=
+ =?utf-8?B?c2s4ZFBuQnpMUmZvY3dNdkVzRm9xWTJMWVJhMm43Z1QzMTRLMHdZTmJTK2xW?=
+ =?utf-8?B?cHg3MUZGRWJsaldwdHVzT2xEZEN3UG44RnFtZHZqQjI3blNIcCtxUUx4QWxo?=
+ =?utf-8?B?S1h0OUhxRzlKS214N2xMYzkyQ2R1ZGdXdlh5cVJ4R2Z0dGxNVGloZEQ3WkJQ?=
+ =?utf-8?B?clVKcDBaVWRDekU1bXBOMGUxdjNZd2IzOGJ6YlphZjgrZjRHU2pjZDcrcE4z?=
+ =?utf-8?B?NDBUMUxJUzFCODBlSG1keFMzaVcxM1VHWjA0V00vYWtGdGhKSEVZNVZtbW1p?=
+ =?utf-8?B?SXI1d1Z0azYzcVhnMktZbmkwZG5BK3VvMlNkVXh5TXgwYkVwdlJ5andZbmpu?=
+ =?utf-8?B?OHVQdVVqUzVoNGQyT1FLRk50elQ5bUM2bzhGV2VsV2YrTVdvNUIwb3BrL2ND?=
+ =?utf-8?B?eTFQNEZtSEU5NFNibTBkTzRwVVdhUFc3N2pVY2EwT0xESjBmNlRjcTFXS0tS?=
+ =?utf-8?Q?q9dEUg6ILOSs401+/03fhIS0c?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 46874026-56ab-4623-3f1f-08dcce64af4d
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Sep 2024 11:11:41.3978
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: BNfLWftHJgDNYMCoQjGpMgQU9yaoNNjcIQyz1ngqisrRJbZefi1wJiBjBmp3aROoT2NDgOxOSoC7F9tnA9R2qA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3841
 
-On 04/09/24 18:18, Jan Kiszka wrote:
-> On 04.09.24 11:55, Mauro S. wrote:
->> On 03/09/24 11:01, Mauro S. wrote:
->>> On 02/09/24 12:26, Jan Kiszka wrote:
->>>> On 02.09.24 09:08, Mauro S. wrote:
->>>>> On 30/08/24 14:00, Jan Kiszka wrote:
->>>>>> On 28.08.24 16:32, Mauro S. wrote:
->>>>>>> On 28/08/24 15:40, Jan Kiszka wrote:
->>>>>>>> On 28.08.24 15:05, Mauro S. wrote:
->>>>>>>>> Hi,
->>>>>>>>>
->>>>>>>>> I'm back after doing more tests also on real hardware.
->>>>>>>>>
->>>>>>>>> Here is a summary:
->>>>>>>>> - custom image: kernel 5.4.255 + xenomai 3.2.3, built by Yocto
->>>>>>>>> Dunfell
->>>>>>>>> (GCC 9.5.0)
->>>>>>>>> - xenomai-image: kernel 5.4.228 (and its initrd.img) + xenomai
->>>>>>>>> 3.2.4,
->>>>>>>>> built by isar in xenomai image (GCC 12.2.0)
->>>>>>>>>
->>>>>>>>> I confirm that the problem shows only with my own kernel + rootfs,
->>>>>>>>> both
->>>>>>>>> on QEMU and on real hardware.
->>>>>>>>> Other combinations:
->>>>>>>>> - xenomai-image kernel (and its initrd.img) + xenomai-image rootfs
->>>>>>>>> - xenomai-image kernel (and its initrd.img) + my rootfs
->>>>>>>>> - my kernel + xenomai-image rootfs
->>>>>>>>> don't show the problem, both on QEMU and on real hardware.
->>>>>>>>>
->>>>>>>>> Furthermore, I compiled the xenomai-image kernel forcing the
->>>>>>>>> 5.4.255
->>>>>>>>> version and using my defconfig: the kernel became identical to
->>>>>>>>> mine,
->>>>>>>>> then I expected to see the problem using this kernel with my
->>>>>>>>> rootfs. But
->>>>>>>>> -surprise- the problem does NOT show.
->>>>>>>>>
->>>>>>>>> xenomai-image uses xenomai 3.2.4, but I don't see relevant changes
->>>>>>>>> between 3.2.4 and 3.2.3 (mine) in code linked into kernel sources.
->>>>>>>>> Then, could really the problem be triggered by the GCC compiler
->>>>>>>>> version
->>>>>>>>> used to build the kernel OR the rootfs?
->>>>>>>>> Actually, my kernel with the xenomai-image rootfs does not show the
->>>>>>>>> problem, then seems that the problem shows only when using GCC
->>>>>>>>> 9.5.0 on
->>>>>>>>> both sides.
->>>>>>>>>
->>>>>>>>> Or is it a dormant bug that some versions of GCC hide?
->>>>>>>>>
->>>>>>>>
->>>>>>>> One option. Did you already try switching to a different, likely
->>>>>>>> newer
->>>>>>>> toolchain while keeping the rest?
->>>>>>>>
->>>>>>>
->>>>>>> No, for the moment: I should port the whole custom meta layer (that
->>>>>>> contains kernel and xenomai recipes) to a recent Yocto version. This
->>>>>>> means that also other userspace components will change: would that
->>>>>>> influence our testing?
->>>>>>>
->>>>>>>> But it could also be that the compiler brings in some noise to a
->>>>>>>> rather
->>>>>>>> narrow race window, widening it so that it becomes much more
->>>>>>>> likely to
->>>>>>>> be hit.
->>>>>>>>
->>>>>>>>> I can share with you my rootfs and my kernel and the QEMU startup
->>>>>>>>> args,
->>>>>>>>> or other things that could help you, and I'm open to suggestions
->>>>>>>>> about
->>>>>>>>> other tests to do.
->>>>>>>>
->>>>>>>> Problem may be that we will have to be able to reproduce
->>>>>>>> variations of
->>>>>>>> both in order to try out instrumentations.
->>>>>>>
->>>>>>> Right, I overlooked this aspect.
->>>>>>>
->>>>>>>>
->>>>>>>> I'm also still puzzled that it takes both your self-built kernel and
->>>>>>>> userland to trigger the issue. We only have similar but not
->>>>>>>> identical
->>>>>>>> code for both when it comes to xnsync_fast_*. Hmm, maybe it is
->>>>>>>> worth to
->>>>>>>> compare the disassembly of lib/cobalt/internal.o...
->>>>>>>
->>>>>>> Yes, this really puzzles me too.
->>>>>>> Attached the disassembly (obtained with objdump -dSlf) of the two
->>>>>>> libcobalt.so.2.0.0, with the two libraries too.
->>>>>>>
->>>>>>
->>>>>> There seems to be a difference between the two toolchains in the
->>>>>> selected TLS models. Could you check for both CONFIG_XENO_TLS_MODEL in
->>>>>> include/xeno_config.h?
->>>>>>
->>>>>
->>>>> Yes sure.
->>>>>
->>>>> GCC 9.5.0:
->>>>> #define CONFIG_XENO_TLS_MODEL "initial-exec"
->>>>>
->>>>> GCC 12.2.0:
->>>>> #define CONFIG_XENO_TLS_MODEL "global-dynamic"
->>>>> (I got this from build/tmp/schroot-overlay/isar-builder-.... in
->>>>> xenomai-images build)
->>>>>
->>>>> For completeness of information, in my Xenomai recipe I have the
->>>>> following configuration flags
->>>>>
->>>>>     --with-core=cobalt --enable-smp --enable-pshared
->>>>> --enable-debug=symbols
->>>>>
->>>>
->>>> OK, and does the issue disappear with your setup when you add
->>>> --enable-dlopen-libs?
->>>>
->>>
->>> I added --enable-dlopen-libs to the recipe (rebuilding the rootfs and
->>> the toolcain and recompiling the test application with the new
->>> toolchain), but the problem still happen. Maybe it takes a bit more
->>> time (about 30 minutes) but it happens.
->>>
->>>> But it still did no make it appear on my setup when I removed it. We
->>>> might be unlucky that there are multiple parameters with the right value
->>>> needed.
->>>>
->>>
->>> Yes, probably we are unlucky.
->>>
->>> Anyway, the whole config flags passed by Yocto to Xenomai lib's
->>> configure is:
->>>
->>> --build=x86_64-linux --host=x86_64-smitec2-linux
->>> --target=x86_64-smitec2-linux --prefix=/usr --exec_prefix=/usr
->>> --bindir=/usr/bin --sbindir=/usr/sbin --libexecdir=/usr/libexec
->>> --datadir=/usr/share --sysconfdir=/etc --sharedstatedir=/com
->>> --localstatedir=/var --libdir=/usr/lib
->>> --includedir=/usr/include/xenomai --oldincludedir=/usr/include
->>> --infodir=/usr/share/info --mandir=/usr/share/man
->>> --disable-silent-rules
->>> --with-libtool-sysroot=/opt/yocto/dunfell-x86_64/build-/tmp/work/corei7-64-poky-linux/xenomai/3.2.3-r1/recipe-sysroot --with-core=cobalt --enable-smp --enable-pshared --enable-debug=symbols --enable-dlopen-libs --disable-static
->>>
->>> Thanks, regards
->>>
->>
->> Hi all,
->>
->> I made a "minimal" Yocto setup that allows to build an image which in
->> Qemu shows the problem.
->>
->> Yocto image is built into a docker container, to allow the maximum
->> reproducibility. Test application is compiled by the SDK generated from
->> the same Yocto.
->>
->> If it could be useful to reproduce on your side the problem, I can share
->> the Yocto setup, and the Qemu start script to run the image.
+On 23.08.24 11:18, Florian Bezdeka wrote:
+> do_sysvec_inband() assumed that only one of CONFIG_ACRN_GUEST and
+> CONFIG_KVM_GUEST is active at the same time. If both were enabled we
+> run into a compile issue:
 > 
-> Sure - provided you used kas ;)
-> (just joking, I can translate myself)
+> arch/x86/kernel/irq_pipeline.c: In function 'do_sysvec_inband':
+> arch/x86/kernel/irq_pipeline.c:160:9: error: duplicate case value
+>    160 |         case HYPERVISOR_CALLBACK_VECTOR:
+>        |         ^~~~
+> arch/x86/kernel/irq_pipeline.c:154:9: note: previously used here
+>    154 |         case HYPERVISOR_CALLBACK_VECTOR:
+>        |         ^~~~
 > 
+> As only one hypervisor (HV) can be active at the same time, but support
+> for more than one can be compiled in, we have to migrate from a build
+> time decision to a runtime based one.
+> 
+> We introduce sysvec_install() macro - like modern kernels already do -
+> and call a dovetail specific pipelined_sysvec_install() before
+> registering the IDT gate.
+> 
+> All HYPERVISOR_CALLBACK_VECTOR related callsites of alloc_intr_gate()
+> have been migrated to sysvec_install(). sysvec_install() is able to
+> distinguish between the low level entry point (asm_ variant) and the
+> higher entry point (__ variant).
+> 
+> The trampoline function (pipeline_hv_callback()) is needed to statisfy
+> type checks done by run_sysvec_on_irqstack_cond().
+> 
+> Reported-by: Ionut Nechita <ionut.nechita@intel.com>
+> Closes: https://lore.kernel.org/xenomai/PH0PR11MB59498BE915597AEF0B5BBB30F4B42@PH0PR11MB5949.namprd11.prod.outlook.com/
+> 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  arch/x86/include/asm/idtentry.h  | 15 +++++++++++++++
+>  arch/x86/kernel/cpu/acrn.c       |  2 +-
+>  arch/x86/kernel/cpu/mshyperv.c   |  2 +-
+>  arch/x86/kernel/irq_pipeline.c   | 18 ++++++++----------
+>  arch/x86/kernel/kvm.c            |  2 +-
+>  drivers/xen/events/events_base.c |  2 +-
+>  6 files changed, 27 insertions(+), 14 deletions(-)
+> 
+> diff --git a/arch/x86/include/asm/idtentry.h b/arch/x86/include/asm/idtentry.h
+> index 1f277e852c4a..5d1140bb5acc 100644
+> --- a/arch/x86/include/asm/idtentry.h
+> +++ b/arch/x86/include/asm/idtentry.h
+> @@ -218,6 +218,13 @@ __visible __noreturn void __##func(struct pt_regs *regs)
+>  #define DEFINE_IDTENTRY_SYSVEC_SIMPLE_PIPELINED(vector, func)		\
+>  	DEFINE_IDTENTRY_SYSVEC_PIPELINED(vector, func)
+>  
+> +extern void (*pipeline_hv_callback_fn)(struct pt_regs *regs);
+> +static inline void pipeline_install_sysvec(int vector, const void *function)
+> +{
+> +	if (vector == HYPERVISOR_CALLBACK_VECTOR)
+> +		pipeline_hv_callback_fn = function;
+> +}
+> +
+>  #else  /* !CONFIG_IRQ_PIPELINE */
+>  
+>  #define DECLARE_IDTENTRY_SYSVEC_PIPELINED(vector, func)		DECLARE_IDTENTRY_SYSVEC(vector, func)
+> @@ -257,6 +264,8 @@ __visible noinstr void func(struct pt_regs *regs,			\
+>  									\
+>  static noinline void __##func(struct pt_regs *regs, u32 vector)
+>  
+> +static inline void pipeline_install_sysvec(vector, function) {}
+> +
+>  #endif	/* !CONFIG_IRQ_PIPELINE */
+>  
+>  /**
+> @@ -474,6 +483,12 @@ __visible noinstr void func(struct pt_regs *regs,			\
+>  #define DEFINE_IDTENTRY_DEBUG_USER	DEFINE_IDTENTRY_NOIST
+>  #endif
+>  
+> +#define sysvec_install(vector, function)                       \
+> +	{                                                      \
+> +		pipeline_install_sysvec(vector, __##function); \
+> +		alloc_intr_gate(vector, asm_##function);       \
+> +	}
+> +
+>  #else /* !__ASSEMBLY__ */
+>  
+>  /*
+> diff --git a/arch/x86/kernel/cpu/acrn.c b/arch/x86/kernel/cpu/acrn.c
+> index 0c9d6953f89a..3b02a4fbec97 100644
+> --- a/arch/x86/kernel/cpu/acrn.c
+> +++ b/arch/x86/kernel/cpu/acrn.c
+> @@ -27,7 +27,7 @@ static u32 __init acrn_detect(void)
+>  static void __init acrn_init_platform(void)
+>  {
+>  	/* Setup the IDT for ACRN hypervisor callback */
+> -	alloc_intr_gate(HYPERVISOR_CALLBACK_VECTOR, asm_sysvec_acrn_hv_callback);
+> +	sysvec_install(HYPERVISOR_CALLBACK_VECTOR, sysvec_acrn_hv_callback);
+>  }
+>  
+>  static bool acrn_x2apic_available(void)
+> diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
+> index 53ded40f3a48..01242d5c204a 100644
+> --- a/arch/x86/kernel/cpu/mshyperv.c
+> +++ b/arch/x86/kernel/cpu/mshyperv.c
+> @@ -406,7 +406,7 @@ static void __init ms_hyperv_init_platform(void)
+>  	x86_platform.apic_post_init = hyperv_init;
+>  	hyperv_setup_mmu_ops();
+>  	/* Setup the IDT for hypervisor callback */
+> -	alloc_intr_gate(HYPERVISOR_CALLBACK_VECTOR, asm_sysvec_hyperv_callback);
+> +	sysvec_install(HYPERVISOR_CALLBACK_VECTOR, sysvec_hyperv_callback);
+>  
+>  	/* Setup the IDT for reenlightenment notifications */
+>  	if (ms_hyperv.features & HV_ACCESS_REENLIGHTENMENT) {
+> diff --git a/arch/x86/kernel/irq_pipeline.c b/arch/x86/kernel/irq_pipeline.c
+> index 1332f328a45b..921898cbc7b3 100644
+> --- a/arch/x86/kernel/irq_pipeline.c
+> +++ b/arch/x86/kernel/irq_pipeline.c
+> @@ -14,6 +14,8 @@
+>  #include <asm/mshyperv.h>
+>  #include <asm/idtentry.h>
+>  
+> +void (*pipeline_hv_callback_fn)(struct pt_regs *regs) = NULL;
+> +
+>  static struct irq_domain *sipic_domain;
+>  
+>  static void sipic_irq_noop(struct irq_data *data) { }
+> @@ -76,6 +78,11 @@ static void pipeline_exit_rcu(irqentry_state_t state)
+>  		rcu_irq_exit();
+>  }
+>  
+> +static void pipeline_hv_callback(struct pt_regs *regs)
+> +{
+> +	pipeline_hv_callback_fn(regs);
+> +}
+> +
+>  static void do_sysvec_inband(struct irq_desc *desc, struct pt_regs *regs)
+>  {
+>  	unsigned int irq = irq_desc_get_irq(desc);
+> @@ -150,18 +157,9 @@ static void do_sysvec_inband(struct irq_desc *desc, struct pt_regs *regs)
+>  					regs);
+>  		break;
+>  #endif
+> -#ifdef CONFIG_ACRN_GUEST
+>  	case HYPERVISOR_CALLBACK_VECTOR:
+> -		run_sysvec_on_irqstack_cond(__sysvec_acrn_hv_callback,
+> -					regs);
+> +		run_sysvec_on_irqstack_cond(pipeline_hv_callback, regs);
+>  		break;
+> -#endif
+> -#ifdef CONFIG_KVM_GUEST
+> -	case HYPERVISOR_CALLBACK_VECTOR:
+> -		run_sysvec_on_irqstack_cond(__sysvec_kvm_asyncpf_interrupt,
+> -					    regs);
+> -		break;
+> -#endif
+>  	case LOCAL_TIMER_VECTOR:
+>  		run_sysvec_on_irqstack_cond(__sysvec_apic_timer_interrupt,
+>  					regs);
+> diff --git a/arch/x86/kernel/kvm.c b/arch/x86/kernel/kvm.c
+> index 9beb81d32d98..107190bd2309 100644
+> --- a/arch/x86/kernel/kvm.c
+> +++ b/arch/x86/kernel/kvm.c
+> @@ -751,7 +751,7 @@ static void __init kvm_guest_init(void)
+>  
+>  	if (kvm_para_has_feature(KVM_FEATURE_ASYNC_PF_INT) && kvmapf) {
+>  		static_branch_enable(&kvm_async_pf_enabled);
+> -		alloc_intr_gate(HYPERVISOR_CALLBACK_VECTOR, asm_sysvec_kvm_asyncpf_interrupt);
+> +		sysvec_install(HYPERVISOR_CALLBACK_VECTOR, sysvec_kvm_asyncpf_interrupt);
+>  	}
+>  
+>  #ifdef CONFIG_SMP
+> diff --git a/drivers/xen/events/events_base.c b/drivers/xen/events/events_base.c
+> index 04ff194fecf4..7d0c56f6bf90 100644
+> --- a/drivers/xen/events/events_base.c
+> +++ b/drivers/xen/events/events_base.c
+> @@ -2213,7 +2213,7 @@ static __init void xen_alloc_callback_vector(void)
+>  		return;
+>  
+>  	pr_info("Xen HVM callback vector for event delivery is enabled\n");
+> -	alloc_intr_gate(HYPERVISOR_CALLBACK_VECTOR, asm_sysvec_xen_hvm_callback);
+> +	sysvec_install(HYPERVISOR_CALLBACK_VECTOR, sysvec_xen_hvm_callback);
+>  }
+>  #else
+>  void xen_setup_callback_vector(void) {}
 
-Sorry, I was in a rush, I had no time to arrange a kas setup :-)
-But I would have liked to do it.
+Thanks, merged to 5.10 and 5.15 branches.
 
-I'm sending you all the information privately.
-
-Thank you
+Jan
 
 -- 
-Mauro S.
+Siemens AG, Technology
+Linux Expert Center
 
