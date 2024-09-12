@@ -1,195 +1,216 @@
-Received: from mailin.dlr.de (mailin.dlr.de [194.94.201.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sonic310-57.consmr.mail.ir2.yahoo.com (sonic310-57.consmr.mail.ir2.yahoo.com [77.238.177.30])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A93A71A0BC9
-	for <xenomai@lists.linux.dev>; Thu, 12 Sep 2024 11:53:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.94.201.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2C8E1ABEC3
+	for <xenomai@lists.linux.dev>; Thu, 12 Sep 2024 13:25:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.238.177.30
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726142026; cv=none; b=PCnjaDr95V8aTIPvHygmoqXOPz1TlER8atWLMlkw855FKnzFMA+qXuCflDbogyTHw8pfG76nLcSunu8bVCCBFVbpL9K6nSSHoKQbPNCvF/EyyvhTbSA/wRJ0rtzTK/fS9mrUI8F9+9iz/qBOGMT08RZNxqDGPdmYBnne69nVUKs=
+	t=1726147546; cv=none; b=cKa8oyKeKoN1gN9BgP81VlStcZZbRIxxAjV7EOMTrGHZ5pcUtyNibuvkMFd5FS36UDapb8+3hqbQfr8h+0jwg/STq6QSmQ4wJTaMH/eFA3A9Gx9w/haMW9WDGhpZreAjfwXTY/JtycRzCaDvdCWu3hwgcdxnB1SSsTSANmJaiks=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726142026; c=relaxed/simple;
-	bh=1Dz2UxXyuWZWrsyLLd1vdspwpYmR0eIfUe7PxPSqkQw=;
-	h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version; b=f6euk2uM1jd9NrlDjuXXGU/PYf3Yc+q6OJOB1kaSpRZTRDuAV0+B7NH02SFICsS45KYVoj1PN5hPxAzZtprNSAioioSzjwYzwTrDLeyMOJ0Xc0iaNz12MBg84gsS2C0yWWjoq46x04rk0iMDDVgC2OGXJV67xtTX41Urqg3FdXA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dlr.de; spf=pass smtp.mailfrom=dlr.de; dkim=pass (2048-bit key) header.d=dlr.de header.i=@dlr.de header.b=i1Y8vwL1; arc=none smtp.client-ip=194.94.201.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=dlr.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dlr.de
+	s=arc-20240116; t=1726147546; c=relaxed/simple;
+	bh=EXFrZv87zj0LcNCwfHdDtxPaFudUfUOmP+Ev554l5B0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:Cc:From:
+	 In-Reply-To:Content-Type; b=qCbLF6nDO4TxbHCBAqtrTVHc9/Zzg9n+gt48c8TGNRIAl5B5MDz+63yL17n58lNhtdmWlGNsHT7byhIydBrk7N321fXao0+u3k3mS4NRpIx4O7Hv9LrvNDfnikGPExGapjV7+A233z1SaMtE9OeI8sVBD0BfmtucKdB61eS3ke0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com; spf=pass smtp.mailfrom=yahoo.com; dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b=LTCqqOu7; arc=none smtp.client-ip=77.238.177.30
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yahoo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dlr.de header.i=@dlr.de header.b="i1Y8vwL1"
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=dlr.de; i=@dlr.de; q=dns/txt; s=052022;
-  t=1726142022; x=1757678022;
-  h=from:to:subject:date:message-id:
-   content-transfer-encoding:mime-version;
-  bh=1Dz2UxXyuWZWrsyLLd1vdspwpYmR0eIfUe7PxPSqkQw=;
-  b=i1Y8vwL1HrZqhlR6cpX90smFaEpmOqFs0plG0oNAQiA7JeSMkPWQ85Iw
-   5xunoQ+P8ED6qNOelj9n7fsdiF7V5+HR3zmjel04L7/weuas5wFLdZAuB
-   dcTHOd31EngIyOHwDzAcS3mdzx4Oamo9AFLOc8w6/LT2dlNQMxT9AGzmj
-   vA+vl4cc+bDYAdBzOyaQhY6lfKc/rzGmby/4kXT8fXhS/E7bp4PYdIwFw
-   7y87psqA5r5TU083x7cfj3oFpFk0zNkjir/piEwk1vZUAKQzh0mylwusp
-   t4kUQQYd881H5E/sVfhxWexc1PQigf55hvl2UGKdaNCjk+8vmQkOWvZiT
-   g==;
-X-CSE-ConnectionGUID: lZ3aO2ZXQBmwrzrvfpcqBg==
-X-CSE-MsgGUID: MJuhJW9tRu+lw3jFMbE53w==
-X-ThreatScanner-Verdict: Negative
-X-IPAS-Result: =?us-ascii?q?A2F6UgDp1eJm/xyKuApagQmBTwKDPQKBZB2EOYNPjh+Dd?=
- =?us-ascii?q?Y4hiiqBVhSBag8BAQEBAQEBAQEIATkLBAEBAwEDggyCLl6JZyc0CQ4BAgQBA?=
- =?us-ascii?q?QEBAwIDAQEBAQEBAQEGAQEGAQEBAQEBBgYBAoEdhS9GDUoBEAGCAIEsgSUBA?=
- =?us-ascii?q?QEBAQEBAQEBAQEBHQINgScRQBcBIgImAgQvFREBBBsTgmaCZBSsRho3eoEyg?=
- =?us-ascii?q?QGDHIFe2yOBGi6IMRoBcnqDeQGEdYJPgRWCeYR4BQESAQODeYJpBIMthD+FR?=
- =?us-ascii?q?IFPgw2CGiZSgRIMSw+BI3NCToEVWAFUfCVOUwIBAQIHAogrjzQJI4EhHANZI?=
- =?us-ascii?q?RMBDxE1ExcLCQVoiFGDKYIUhBeFJ4FnCWGJV4E+gVqDO0uFT0c/glNrTjwCD?=
- =?us-ascii?q?QI3aYFBgROCXoQAHUADCwdmPTUUGwYCATp7qguBWoJ7ehMBJwQFDzxBHhYID?=
- =?us-ascii?q?WMpEZMfgzCvHAeCN4FojBCVLi4XhAWBVosrhkaLUocnmHSLG4F2apUiKQOFK?=
- =?us-ascii?q?gIEAgQFAheBZ4EmcHGDNglJFwIPWJF2hGGBXcRZAXg7AgcBCgEBAwmHSoRfL?=
- =?us-ascii?q?oEdAQE?=
-IronPort-PHdr: A9a23:7R9y4hEL5H7ugpseICbCD51Gf1ZLhN3EVzX9CrIZgr5DOp6u447ld
- BSGo6k21BmQAt6Qt68MotGVmp6jcFRI2YyGvnEGfc4EfD4+ouJSsioeReWoMgnFFsPsdDEwB
- 89YVVVorDmROElRH9viNRWJ+iXhpTEdFQ/iOgVrO+/7BpDdj9it1+C15pbffxhEiCCybL58M
- Bm6txjdu8sYjIdtJas8ygbCr2dVdehR2W5nKlWfkgrm6Myt5pBj6SNQu/wg985ET6r3erkzQ
- KJbAjo7LW07/dXnuxbbQwSA/3cRTGoYnAdQDwfK8B/1UJHxsjDntuVmwymVIdf2TbEvVju86
- apgVQLlhz0GNz4992HXl9BwgadGqx+vuxBz34jZa5yTOfFjfK3SYMkaSHJBUMhPSiJBHo2yY
- YgOD+UdMuhXoJLwp0cVohu8GQWgGP/jxz1Oi3Tr3aM6yeMhEQTe0QEnBd0Os2/UrNXvO6YSS
- +y10rPHzTrDb/xMwjf96YjJfQo6rP6RWbJwa9DdxlQxGA7ciFibtIPqMS+P2OsXr2ib8/RvV
- fipi2M/pQx9vzahy8QshITXiY8YxFDJ+CV5zYs0JtC2R051bNqkHZVfqy2XNoR7T8c+T212p
- So3y70LtICmcSQXy5kpyBjSYOGJfYiP5xLsTueRITFgiX14Zr2/gRmz/VK9xeLiTsW7zkhKr
- i5dktnWsXAN1QLc5dSbSvdn+UehwzmP2gbO4e9HOUA5jbfXJ4I7zrItlZcevl7PEjL4lUj1l
- qOaaEYp9vC15+j7eLnqu5yROoBuhg3jPKkjmdazDfo4PwUBWWWQ5P6y26f5/ULjRbVHlvg2k
- q7Ev5/EPckbvau5AxNN0oYk9ha/Ey+q0NQGknkDK1JIYByJgY7nNV/BIP72DfCxjVernjlx2
- fzLPbLvDZTTI3TZkbfhe6p961RGxwYp0N9f44hUBqscL/3tQkPxtdrYAQElMwGs3urrFM9x2
- p4dVG+AGKOVLa3fvFyS6u4xIOSAfIoVtyz8K/gh6f7ul3g5mVoFcKaz3psXc3C4Ee5mIkmDf
- 3rjmNgBEWcQsQolTezriEeNXCVOaHa2RaIw/Cw0B5y+AYfFXY+imKaB0zujHp1KemBGDUiBH
- Wrwe4WeR/gMcD6SItNmkjEcWrmuVYkh1RartADgyrpqNe7U+iwDtZL/z9h5/enTlRA09TxpA
- MWRyXyCQH9qnm8QWjA236F/oUllx1mb3qZ3jeJWG8BP6v1PSgs6Lobcz+JiBt7qQwzPZtiHR
- E69QtW+DzE+VtIxzMEKY0Z6A9islgnN0TKlDexdq7veUIw59KXZ1nnZI8dm122A0KgnkklgT
- sZRYz6InKl6olzaBJXJmlTfia+lda0H3T/E3GuH1yyCsRcLA0ZLTazZUCVHNQPtptPj6xaaJ
- 4I=
-IronPort-Data: A9a23:H1znL6+dA0mFxBN34RNVDrUDxH+TJUtcMsCJ2f8bNWPcYEJGY0x3z
- WMfXTuHPfeJN2H9KIpzOozjpx4GvJaDzIVlGwporylEQiMRo6IpJzg4wmQcnc+2BpeeJK6yx
- 5xGMrEsFOhtEzmE4E7rauO5xZVF/fngbqLmD+LZMTxGSwZhSSMw4TpugOdRbrRA2LBVOCvT/
- 4qqyyHjEAX9gWIsYztOs/vrRC5H5ZwehhtJ5jTSWtgW5Dcyp1FNZLoDKKe4KWfPQ4U8NoZWk
- M6akdlVVkuAl/scIovNfoTTKyXmcZaOVeS6sUe6boD56vR0So3e5Y5gXBYUQR8/ZzxkBLmdw
- v0V3XC7YV9B0qEhBI3x+vSXes1zFfQuxVPJHZSwmcihlEThKUnc+t9rE1skJ5MW4u1uK24bo
- JT0KBhVBvyCr86S7J+VZMxNo/x5fOTbF8UevG16xHfVCexgTZ2rr6fivIcehWdswJkVTbCEN
- 6L1ahI2BPjESxRMIVceGdQgleioj2L+YjRwpFaP46Y6i4TW5FcsiOS8aIGJEjCMbeB3g0a6m
- TPaxXm6Bg5BNvK6wxfYqW3504cjmgu+Aur+DoaQ5vNsh1iax0QXCQYKTh2/oP+kmgiyVsw3F
- qAP0iYqoaU8+kmqS8GnDxCoqziFuAIGUpxcF/d85AzlJrfo3jt1z1MsFlZpAOHKfudvLdD2/
- jdlR+/UOAE=
-IronPort-HdrOrdr: A9a23:BiAbgKN0yx6e7sBcTvCjsMiBIKoaSvp037By7TESdfUnSL38qy
- nIpoVi6faUskdpZJhOo7C90cW7LE80lqQFmrX5X43SPzUO0VHAROoJ0WKI+VLd8ljFl9K1op
- 0PT0ERMrHN5BNB/KLHCUGDYrEdKfe8gcaVuds=
-X-Talos-CUID: 9a23:UiK1BG2kliKa5AzoUDSCXrxfHvJ+e1qH/kfpCUqnE3RzVrONQka69/Yx
-X-Talos-MUID: 9a23:krd2Fgrb2YIolQ3U0c4ezxRAKcdK3PWyMl1OlYpdueehPwEtYCjI2Q==
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-AV: E=Sophos;i="6.10,222,1719871200"; 
-   d="scan'208";a="35049034"
-From: <akshay.vaghasiya@dlr.de>
-To: <xenomai@lists.linux.dev>
-Subject: Need a help to understand xenomai 4
-Thread-Topic: Need a help to understand xenomai 4
-Thread-Index: AdsFCl8VE75FDxiYShCiPdyU/oaYrg==
-Date: Thu, 12 Sep 2024 11:53:38 +0000
-Message-ID: <994786c98a894f3d96068bb184294ff8@dlr.de>
-Accept-Language: de-DE, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b="LTCqqOu7"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1726147542; bh=W2Ql7Jak6oL2Z8dz6dMs+qEgx1fd4d/uPzJ3/4jpS6M=; h=Date:Subject:To:References:Cc:From:In-Reply-To:From:Subject:Reply-To; b=LTCqqOu7Hdxv3rMRA3WJfAZ+GwiAvZvyaCe9RgybzTotDtciBi6WDMZAh0OMxfkvsmfDW18JnaONmNWc8A9T9YTCV7inAQFvPMpiW/UobVijj5aMdM6joEhb4+3/WGzEFvkMKnhs9/la6bCDkvZiUjv9dIsDCOtySuBgm8WH7M3Zp6rh613F7pH6G6NvDgz/aAfZTFaMPnf8Lnb8aN30u32d/G2vAt46j6g7nLtIKsXwQLBNrQVzBZMaaG2jNp8dOI/qqUj+1Pc38I/FhHqQiqRuqsKK+WijyLYxcuj3pK68qZ/thOPJV+8E/PdQEbGaE/SSd1stpFzYqL3S7eJjEg==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1726147542; bh=EgPSIeO0MRq64ulKbaQbbubiP2pjFWBxxjsG/y4zoYt=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=o7j36jCBIz09MzxBCDIEdRWyEh7PDyv37nXEjHsxxdLxIdGBEipeNw/i0kGTtkGVvM+0PBpl4s4WB2PfIKz2JgPevrKsmscKfWHKYy/xiRmnrgfDuXfcYhmF5PKWA4x4R8O//8q7Tr98MHYzvyhFdBbkVSsDz7Pv3prM4hf3gp5YtwRsedariu1+t66ppWESBUI4wMP3DJSCBQ+evUgH4/u1QzcrXlxvxqEpZ19Zrs9zXLe4Xl103tByVOOTSUCeO6X/VIk9ewCh3h0dw/ZQ0l56TrINA3r7MAty0kCZW3jzNTfnLJmV+AQNI7c0+sEMkUp4RRc++CjltEX5yXAkFQ==
+X-YMail-OSG: bCwlzlcVM1lnYhGfYb8iiVOwPoCWYeAw2KXSzc8pIHEh1Re73uPzqiB4OSXJgpU
+ aGlQAx8RbXAuUHiovXuEwVEmG3Gw829zeljWzvxyjiPakGqGk3MnFEExR8.8QP8mWQJ6HTl6gMrb
+ N5IHLVEXvifY26x18fVD7qm_V9X0r1lv_nuKLCgOtLIDIErDANsd2jOftA.LhSlde25ecPJuAsYp
+ VBwX42TzYXCyUktKRLDJ9Cvltit3C5IaLGSvLu9Y_.1We17CcIJzs9kK1F0hZc21jLILyM7FULWz
+ xU7eM06ijQobsKr9laFcGk6SRkjEQmQN8dp6hWnxmh67ippMVTcdo0kITppZrG3RfG9nd4M9wfRK
+ BM3ioVV.3JmU98IzM_XpBg0mbUY5bvA0qurTEKdY9t5MnMeTLnsy59Gj8p0KSKgvZKG9DcMuzSi7
+ PrOm6U5HOMwAHjW1uH2lFQhQqlkri8AF0uwU.cg4bCTwQzjPVkrDtUSzptLEmZ10isvOFOmUZH.p
+ xS9prTWbDvyvIGPBm5MvA3hzDRCQUH2AZ7M4IAkHwbh_K6p4lx_7b_y8w.qVrtSHk4MDSfyqH4L0
+ h1PoaxnHoIsWULmXGzTeMSq5gp8gbK__k.vGx5Em4w_0pNbHt_kmtI1W5JEwHth66uHyhOKNCbyN
+ 34dBiV3wbyuvrQzUITIMn9sKokLjCsOwuUvg8NkSroT9U4GwDOREXraIakmwOTG_agY.e0T7uodw
+ 7tLWsDV54kVhgUOlGTFhHqFtKeJ1PJc30IZxI2mhu6kuvfdjzxPb30geAR2GFk7WRkk6bvp9a1DP
+ Roc_KjyaATQKl13WN1RVydULW6QwfSeYtPmzpIx4gdwe1E7igrrYJykoJFl9fr9L8agNPAeXjoxx
+ feD4pmOEfjU1LqjVb8Sqrgo938uhBdliCKEGm.6uyEi9RFCEJTXy0THC5nqLasLZUiiI1sv_SMoE
+ Wwkk71ybnFsJujH.r5BxY1fXf.YJUuSc2HqudT2hAPPkbNhDzbBhz7tl4DWhYad9yqlILdEQxM6m
+ zpVz5Fsq6vEzaEkiZodwTFFDF_rAK2w5uW7wuMwRqB9XpUhekH17tzSDQGlhadkvDBAFlmjMEOVN
+ YMCHeP5c1CJGwPZzfdfOE9khXurMENoH0Nzm5nMEUNwspGQuHiGtBgkSnzDG6bLJ.4GBEf..EEOt
+ jFz_EWe2Wm7fWpEq8VdEhjqP.wCxTzk7mVDNHtw0WPa5Bl5wo7uDceC6AOp7EU0TernsLNzlMka2
+ qwDBbjL6Rx.5WvQpNfqq4FK14efRuK.WmtLjmVg0uw6Fk4WpyOT0ePGwhqEobG20I5_aAaGsHQvF
+ 0TPAtQIpqNL0fwL_GvxHynRF4s06x2Bb5WaMdMtdEvjvZ.3guMPcJzwV9ONSFiwHJvfckwRBrp2z
+ CmoTVTCWBVD6fMa9WZRO1IiJgziqzAmFB.iRrS9n2oaQFBSl6Uw_GZ2atTPboigbO.Pl87kSItES
+ _42wVS4YG5ZJpPxCgxiXTE46uldccHV2xZtEw71yYL3.UyKt83Z4epwIQ2BdCTb6tQAeuBW1cmG2
+ 1QvKOIDY38ldXlEzK8sHMFNh7yX3ExR4mLfr3u_MXHG56K6XsU5xf0X8PzxfpJqpjMRibpztxtXM
+ 4KoUJIY3nNnOIh4ytWBBXAx1le5dbq2uNyVP.jJ.LOZB8ZL_XclBwwstUhufLggfL0pLTGFgQx5G
+ H7tcLRFTE_b_dfGOTjnldqd6b_LZKAszjjJb7wHnTQbz8rMU2FH2CSgw0jno8L0ZD4S8eaq_uGET
+ Watj_Kxr.rDt9gdBYmv.wnD5KpXpypbfLnJTIUznLbnRYuYIKhBr7YW7Eu38AyuVazNaFfQjWzCU
+ xFr4ew6gpPtmdUHxOOLLs2t7cSsA_.ogENb2raR0a_wA4bPsOgZAtZLT5wx4WYGhva0Kv524qP0j
+ nD77mmTRq9ev7pHFV8pTIMAu6IWkrMsIWfKQR509Fm4Kkskiq1at5G2gCl_7h.GCbnPfJVPxe2l8
+ 17vwt03ZrmpgaprWBvfd0HSQLMkLI2trZrA_YnENypE1UQ9G0rLRjOTbrewbxHmd9gz5d.sX0Jhf
+ NKXs9mTDJPmGv7elmfAw1.8fVJUhV2szGoNMNsRIwMyPxLjSsJRvVj03MWaXmqryWknCWD7ZdEcr
+ T_3OKzeYFNPDD6J_TmCSaT3jTO8q84vvy5uipTIkFx3xg2Qxamrpl2y2tw7Os308rSYuYikid8Xp
+ LqKL45ORtxYbB_6rF2tc-
+X-Sonic-MF: <mau.salvi@yahoo.com>
+X-Sonic-ID: bc06dd53-783a-429d-9217-3639f51157c3
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic310.consmr.mail.ir2.yahoo.com with HTTP; Thu, 12 Sep 2024 13:25:42 +0000
+Received: by hermes--production-ir2-6664f499fc-5vwr7 (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID d1d306b31e7e59fed53057e6e54e7939;
+          Thu, 12 Sep 2024 12:24:51 +0000 (UTC)
+Message-ID: <5ce29155-3b79-412c-846e-e183e3c88010@yahoo.com>
+Date: Thu, 12 Sep 2024 14:24:49 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: Need a help to understand xenomai 4
+To: akshay.vaghasiya@dlr.de
+References: <994786c98a894f3d96068bb184294ff8@dlr.de>
+Content-Language: en-US, it
+Cc: xenomai@lists.linux.dev
+From: "Mauro S." <mau.salvi@yahoo.com>
+In-Reply-To: <994786c98a894f3d96068bb184294ff8@dlr.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Mailer: WebService/1.1.22645 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 
-SGVsbG8gRGVhciBTdXBwb3J0IFRlYW0sDQoNCkkgaG9wZSB5b3UgYXJlIGRvaW5nIHdlbGwuIA0K
-IA0KSSBhbSBBa3NoYXksIGEgbWFzdGVyIHRoZXNpcyBzdHVkZW50LiBJIGdvdCB5b3VyIGVtYWls
-IGZyb20gbWFpbG1hcCBmaWxlIG9mIGRlbngoWGVub21haSA0KS4gSSBhbSBhZGRpbmcgbGludXgt
-ZXZsIHRvIG15IHJhc3BiZXJyeSBwaSA0Qi4gSSBoYXZlIGFscmVhZHkgaW5idWlsZCBrZXJuZWwg
-Ni4xKDY0IGJpdCBEZWJpYW4gR05VL0xpbnV4IDExIChidWxsc2V5ZSkpLiBJIGhhdmUgYWRkZWQg
-Ni4xMChsaW51eC1ldmwpIGFuZCBsaWItZXZsIHRvIHJ1biBzb21lIHByb2dyYW1zIGluIHhlbm9t
-YWkgNCByZWFsdGltZS4gRXZlcnl0aGluZyBpcyB3b3JraW5nIGZpbmUgYnV0IHRoZSBwcm9ibGVt
-cyBhcmUga2VybmVsIGhlYWRlcnMsIFdoZW4gSSBhZGQgbGludXgtZXZsIGltYWdlIHRvIGxpbnV4
-IGtlcm5lbCBhdCB0aGF0IHRpbWUgUmFzcGJlcnJ5IHBpIGxvc2VzIG1lbnUsIGNhbWVyYSBkb2Vz
-IG5vdCB3b3JrLCBDaHJvbWl1bSBkb2VzIG5vdCB3b3JrLiBPbmx5IEkgY2FuIHJ1biBteSBwcm9n
-cmFtcyBhbmQgY291bGQgbm90IHJ1biBvdGhlciBzb2Z0d2FyZXMgYW5kIGxpYnJhcmllcy4NCiAN
-CkkgaGF2ZSB3cml0dGVuIHdob2xlIHByb2Nlc3MgdGhhdCBIb3cgSSBjb21waWxlIG15IGxpbnV4
-LWV2bCBvbiByYXNwYmVycnkgcGkuDQpDb3VsZCBZb3UgcGxlYXNlIHN1Z2dlc3QgbWUgc29sdXRp
-b24gT3Igc3VnZ2VzdGlvbnMgd2hhdCBzaG91bGQgSSBkbyB0byBydW4gdGhpcyBwcm9wZXJseT8N
-CkFtIEkgZG9pbmcgc29tZXRoaW5nIHdyb25nPw0KUGxlYXNlIHNlZSB0aGUgZmlsZSBhbmQgcGxl
-YXNlIGhlbHAgbWUgaWYgSSBhbSBtYWtpbmcgYW55IG1pc3Rha2Ugb3IgZG9pbmcgaXQgaW4gd3Jv
-bmcgd2F5Lg0KICANCk15IGZpbmFsIGxpbnV4LWV2bCBrZXJuZWwodW5hbWUgLXIpIG91dHB1dCBs
-b29rcyBsaWtlIHRoaXMoNi4xMC4wNi4xMC4wLTAwNzM0LWc4MWVjOWJiODJhOWYpDQpBbHNvLCBs
-aW51eC1ldmwgZG9lcyBub3QgcHJvdmlkZSBvdmVybGF5cywgU28gSXMgaXQgcHJvYmxlbSBvciBk
-byB3ZSBoYXZlIHRvIGdlbmVyYXRlIGl0PyBCZWNhdXNlIGluIGludGVybmV0IHRoZXJlIGlzIG5v
-dGhpbmcgZm9yIGdlbmVyYXRpbmcgb3ZlcmxheXMgZm9yIGxpbnV4LWV2bC4NCiANClRoYW5rcyBh
-bmQgcmVnYXJkcywNCkFrc2hheSAgDQogDQpEZXV0c2NoZXMgWmVudHJ1bSBmw7xyIEx1ZnQtIHVu
-ZCBSYXVtZmFocnQgZS5WLihETFIpIEdlcm1hbiBBZXJvc3BhY2UgQ2VudGVyDQogDQpJbnN0aXR1
-dGUgb2YgU29mdHdhcmUgVGVjaG5vbG9neSB8IEZsaWdodCBTb2Z0d2FyZSB8IExpbGVudGhhbMO8
-cGxhdHogNyB8IDM4MTA4IHxCcmF1bnNjaHdlaWcgfCBHZXJtYW55DQogDQpBa3NoYXkgVmFnaGFz
-aXlhIHwgU29mdHdhcmUgRW5naW5lZXIgKE1hc3RlciBUaGVzaXMpDQoNClByb2Nlc3MgSG93IEkg
-bG9hZCB0aGUgbGludXggZXZsDQoNCkJ1aWx0IEtlcm5lbCBYZW5vbWFpIDQgb24gUmFzcGJlcnJ5
-IDQNCg0KMS4JQWRkIHBhY2thZ2VzDQotCXN1ZG8gYXB0IGluc3RhbGwgZ2l0IGJjIGJpc29uIGZs
-ZXggbGlic3NsLWRldiBtYWtlIGxpYm5jdXJzZXMtZGV2DQoNCjIuCUNsb25lIHRoZSBldmwgZ2l0
-IHByb2plY3QgZm9yIHdpdGggeGVub21haSA0DQotCWdpdCBjbG9uZSBodHRwczovL3NvdXJjZS5k
-ZW54LmRlL1hlbm9tYWkveGVub21haTQvbGludXgtZXZsDQoNCjMuCUNoZWNrIG91dCB0aGUgdGhl
-IGJhc2UgdmVyc2lvbiBhbmQgY29tcGlsZSBrZXJuZWwJCQ0KLQljZCBsaW51eC1ldmwNCjQuCQ0K
-NS4JTWFrZSBkZSBjb25maWcNCi0JbWFrZSBkZWZjb25maWcNCg0KNi4JTWFrZSBtZW51IENvbmZp
-ZyANCi0JbWFrZSBtZW51Y29uZmlnDQoNCjcuCVNlbGVjdCB0aGVzZSBvcHRpb25zIGFuZCBtYWtl
-IGNoYW5nZXMgaW4geW91ciByYXNwYmVycnkgcGkNCi0JR2VuZXJhbCBzZXR1cA0KbwlMb2NhbCB2
-ZXJzaW9uDQpvCUtlcm5lbCAuY29uZmlnIHN1cHBvcnQNCm8JRW5hYmxlIGFjY2VzcyB0byAuY29u
-ZmlnIHRocm91Z2ggL3Byb2MvY29uZmlnLmd6DQotCUtlcm5lbCBGZWF0dXJlcw0KbwlFVkwgcmVh
-bC10aW1lIGNvcmUNCu+CpwlEZWJ1ZyBzdXBwb3J0DQpvCVRpbWVyIGZyZXF1ZW5jeSAxMDAwSHoN
-Ci0JQ1BVIFBvd2VyIE1hbmFnZW1lbnQNCm8JQ1BVIEZyZXF1ZW5jeSBzY2FsaW5nDQrvgqcJRGVm
-YXVsdCBDUFVGcmVxIGdvcnZlcm5vcg0K4oCiCXBlcmZvcm1hbmNlDQoNCjguCVBsZWFzZSBzZXQg
-b3RoZXIgb3B0aW9ucyBhY2NvcmRpbmcgdG8geW91ciBuZWVkcy4gQWZ0ZXIgc2V0dGluZyB1cCwg
-eW91IGNhbiBzdGFydCBidWlsZGluZw0KLQltYWtlIC1qNCBJbWFnZSBtb2R1bGVzIGR0YnMNCihU
-aGlzIGNhbiB0YWtlIG1vcmUgdGhhbiAxLjMwIGhvdXJzKQ0KOS4JUHV0IHVwIHRoZSBidWlsZC4N
-Ci0Jc3VkbyBtYWtlIG1vZHVsZXNfaW5zdGFsbA0KLQlzdWRvIGNwIGFyY2gvYXJtNjQvYm9vdC9k
-dHMvYnJvYWRjb20vKi5kdGIgL2Jvb3QvDQotCXN1ZG8gY3AgYXJjaC9hcm02NC9ib290L0ltYWdl
-IC9ib290L25hbWVLRVJORUwuaW1nDQoNCjEwLglNb2RpZnkgL2Jvb3QvY29uZmlnLnR4dCB0byBt
-YWtlIHN1cmUgdGhlIHN5c3RlbSBib290cyBpbnRvIG91ciBrZXJuZWwoaWYgaXQgaXMgYWxyZWFk
-eSBhZGRlZCBpbiBkZWZhdWx0IHNldHRpbmcpLg0KLQkjQWRkIHRoaXMgbGluZQkNCi0Ja2VybmVs
-PWtlcm5lbDguaW1nDQoxMS4JUmVib290IHRoZSBzeXN0ZW0gYW5kIHRoZSBmaXJlIHVuYW1lIC1y
-IENvbW1hbmQsIE91dHB1dCB3aWxsIHNob3cgbmV3IGtlcm5lbCB2ZXJzaW9uLg0KLQlNeSBvdXRw
-dXQgbG9va3MgbGlrZSB0aGlzLg0KLQlwaUByYXNwYmVycnlwaTp+ICQgdW5hbWUgLXINCjYuMTAu
-MDYuMTAuMC0wMDczNC1nODFlYzliYjgyYTlmDQoxMi4JQWZ0ZXIgcmVib290aW5nLCB5b3UgY2Fu
-IHNlZSB0aGUgZm9sbG93aW5nIG1lc3NhZ2UgbGlzdGVkIGluIGRtZXNnDQotCWRtZXNnIHwgZ3Jl
-cCBFVkwNCi0JWyAgICAwLjEyMzQ4Ml0gSVJRIHBpcGVsaW5lOiBoaWdoLXByaW9yaXR5IEVWTCBz
-dGFnZSBhZGRlZC4NCi0JWyAgICAwLjEyNTY3Nl0gRVZMOiBjb3JlIHN0YXJ0ZWQgW0RFQlVHXQ0K
-KFlvdSBjYW4gc2VlIHRoYXQgdGhlIEVWTCBjb3JlIGhhcyBiZWVuIHN1Y2Nlc3NmdWxseSBvcGVu
-ZWQpDQoNCkxpYmV2bCBmb3IgcHJvY2VzcyAgKEp1c3QgZm9yIGtub3dsZWRnZSkNCjEzLglEb3du
-bG9hZCBsaWJldmwNCi0JZ2l0IGNsb25lIGh0dHBzOi8vc291cmNlLmRlbnguZGUvWGVub21haS94
-ZW5vbWFpNC9saWJldmwNCjE0LglDb21waWxlIGFuZCBpbnN0YWxsLCBoZXJlIHlvdSB3aWxsIG5l
-ZWQgdG8gdXNlIHRoZSBoZWFkZXIgb2YgbGludXgtZXZsLCBoZXJlIHBsZWFzZSBtb2RpZnkgdGhl
-IFVBUEkgcGFyYW1ldGVyIHRvIHRoZSBjb3JyZXNwb25kaW5nIGZvbGRlci4NCi0gY2QgbGliZXZs
-DQotIG1rZGlyIC9ob21lL3BpL2xpYmV2bC1idWlsZA0KLSBjZCAvaG9tZS9waS9saWJldmwtYnVp
-bGQNCiAgICAgICAgICAgICAgKFBsZWFzZSBzZXQgdXAgdGhlIHBhdGggYWNjb3JkaW5nIHRvIHlv
-dXIgcGF0aCkNCi0JbWVzb24gc2V0dXAgLURidWlsZHR5cGU9cmVsZWFzZSAtRHByZWZpeD0vdXNy
-L2xvY2FsIC1EdWFwaT0vaG9tZS9waS9saW51eC1ldmwgL2hvbWUvcGkvbGliZXZsDQotCW1lc29u
-IGNvbXBpbGUNCi0Jc3VkbyBuaW5qYSBpbnN0YWxsDQoNCjE1LglWZXJpZnkgdGhlIEluc3RhbGxh
-dGlvbg0KLQlscyAvdXNyL2xvY2FsL2xpYiB8IGdyZXAgbGliZXZsIA0KLQlscyAvdXNyL2xvY2Fs
-L2JpbiB8IGdyZXAgZXZsDQoNCllvdSBzaG91bGQgc2VlIGxpYmV2bC5zbyBpbiB0aGUgL3Vzci9s
-b2NhbC9saWIgZGlyZWN0b3J5IGFuZCBldmwgdXRpbGl0aWVzIGluIHRoZSAvdXNyL2xvY2FsL2Jp
-biBkaXJlY3RvcnkNCg0KMTYuCVRlc3RpbmcgdGhlIEluc3RhbGxhdGlvbg0KSnVzdCBvcGVuIHRo
-aXMgcGF0aCANCi91c3IvbG9jYWwvYmluDQpSdW4gdGhlc2UgdGVzdHMgdG8gc2VlIHJlc3VsdA0K
-Li9ldmwNCi4vbGF0bXVzDQoNCjE3LglOb3csIGxldHMgY2hlY2sgdGhlIGFsbCBsaWJyYXJpZXMg
-YXJlIGluc3RhbGxlZCBhbmQgd29ya3Mgc3VjY2Vzc2Z1bGx5LiAoaHR0cHM6Ly9ldmxwcm9qZWN0
-Lm9yZy9jb3JlL3Rlc3RpbmcvIHJlZmVyIHRoaXMgbGluayB0byBzZWUgdGhlIHJlc3VsdHMpDQot
-CUp1c3QgZ28gdG8gdGhlIGZvbGRlciB3aGVyZSB5b3VyIGVsdiB0ZXN0cyBhcmUgYXZhaWxhYmxl
-ICgkcHJlZml4L3Rlc3RzIGFzIHBhcnQgb2YgYnVpbGRpbmcgbGliZXZsKQ0KLQlDZCAvbGliZXZs
-L3Rlc3RzDQotCVN1ZG8gZXZsIHRlc3QNCkZpbmlzaA0KSWYgeW91IGdldCB0aGUgZXJyb3Igb2Yg
-cGVybWlzc2lvbiBvciBlcnJvciBvZiBlbXB0eSBsaWIgZGlyZWN0b3J5IHRoZW4gdGhpcyBjb3Vs
-ZCBiZSB0aGUgc29sdXRpb24uDQpBZGQgL3Vzci9sb2NhbC9saWIgdG8gdGhlIExpYnJhcnkgUGF0
-aDoNCi0JZWNobyAiL3Vzci9sb2NhbC9saWIiIHwgc3VkbyB0ZWUgL2V0Yy9sZC5zby5jb25mLmQv
-bGliZXZsLmNvbmYNCi0Jc3VkbyBsZGNvbmZpZw0KQ2hlY2sgaWYgdGhlIGxpYnJhcnkgcGF0aCBp
-cyBjb3JyZWN0bHkgc2V0IGFuZCBpZiB0aGUgc3lzdGVtIGNhbiBub3cgZmluZCBsaWJldmwuc28u
-NC4NCi0JbGRjb25maWcgLXAgfCBncmVwIGxpYmV2bA0KU2V0IHRoZSBMRF9MSUJSQVJZX1BBVEgg
-RW52aXJvbm1lbnQgVmFyaWFibGU6DQotCWV4cG9ydCBMRF9MSUJSQVJZX1BBVEg9L3Vzci9sb2Nh
-bC9saWI6JExEX0xJQlJBUllfUEFUSA0KWW91IGNhbiBhZGQgdGhpcyBsaW5lIHRvIHlvdXIgLmJh
-c2hyYyBvciAuYmFzaF9wcm9maWxlIGZpbGUgdG8gbWFrZSBpdCBwZXJzaXN0ZW50IGFjcm9zcyBz
-ZXNzaW9uczoNCi0JZWNobyAiZXhwb3J0IExEX0xJQlJBUllfUEFUSD0vdXNyL2xvY2FsL2xpYjpc
-JExEX0xJQlJBUllfUEFUSCIgPj4gfi8uYmFzaHJjDQotCXNvdXJjZSB+Ly5iYXNocmMNClJ1biB0
-aGUgVXRpbGl0aWVzIEFnYWluOg0KLQkuL2V2bCANCi0JLi9sYXRtdXMgDQoNClRvIHJ1biBvdGhl
-ciBmaWxlcywgd2UgbmVlZCBkaWZmZXJlbnQgbWVzb24gc2V0IHVwIGFuZCBpdHMgZmlsZXMuKHdp
-dGhvdXQgbWVzb24gYnVpbGQgZmlsZSkNCg0KDQo=
+On 12/09/24 13:53, akshay.vaghasiya@dlr.de wrote:
+> Hello Dear Support Team,
+> 
+> I hope you are doing well.
+>   
+> I am Akshay, a master thesis student. I got your email from mailmap file of denx(Xenomai 4). I am adding linux-evl to my raspberry pi 4B. I have already inbuild kernel 6.1(64 bit Debian GNU/Linux 11 (bullseye)). I have added 6.10(linux-evl) and lib-evl to run some programs in xenomai 4 realtime. Everything is working fine but the problems are kernel headers, When I add linux-evl image to linux kernel at that time Raspberry pi loses menu, camera does not work, Chromium does not work. Only I can run my programs and could not run other softwares and libraries.
+>   
+> I have written whole process that How I compile my linux-evl on raspberry pi.
+> Could You please suggest me solution Or suggestions what should I do to run this properly?
+> Am I doing something wrong?
+> Please see the file and please help me if I am making any mistake or doing it in wrong way.
+>    
+> My final linux-evl kernel(uname -r) output looks like this(6.10.06.10.0-00734-g81ec9bb82a9f)
+> Also, linux-evl does not provide overlays, So Is it problem or do we have to generate it? Because in internet there is nothing for generating overlays for linux-evl.
+>   
+> Thanks and regards,
+> Akshay
+>   
+> Deutsches Zentrum für Luft- und Raumfahrt e.V.(DLR) German Aerospace Center
+>   
+> Institute of Software Technology | Flight Software | Lilenthalüplatz 7 | 38108 |Braunschweig | Germany
+>   
+> Akshay Vaghasiya | Software Engineer (Master Thesis)
+> 
+> Process How I load the linux evl
+> 
+> Built Kernel Xenomai 4 on Raspberry 4
+> 
+> 1.	Add packages
+> -	sudo apt install git bc bison flex libssl-dev make libncurses-dev
+> 
+> 2.	Clone the evl git project for with xenomai 4
+> -	git clone https://source.denx.de/Xenomai/xenomai4/linux-evl
+> 
+> 3.	Check out the the base version and compile kernel		
+> -	cd linux-evl
+> 4.	
+> 5.	Make de config
+> -	make defconfig
+> 
+
+
+Hi,
+
+you should use the kernel configuration shipped with Debian kernel to 
+have all the Debian functionalities in.
+Copy it (it should be in/boot) in the sources folder and rename it as 
+.config, then proceed with the menuconfig step enabling all the Xenomai 
+related stuff.
+
+Regards
+
+-- 
+Mauro S.
+
+> 6.	Make menu Config
+> -	make menuconfig
+>  > 7.	Select these options and make changes in your raspberry pi
+> -	General setup
+> o	Local version
+> o	Kernel .config support
+> o	Enable access to .config through /proc/config.gz
+> -	Kernel Features
+> o	EVL real-time core
+> 	Debug support
+> o	Timer frequency 1000Hz
+> -	CPU Power Management
+> o	CPU Frequency scaling
+> 	Default CPUFreq gorvernor
+> •	performance
+> 
+> 8.	Please set other options according to your needs. After setting up, you can start building
+> -	make -j4 Image modules dtbs
+> (This can take more than 1.30 hours)
+> 9.	Put up the build.
+> -	sudo make modules_install
+> -	sudo cp arch/arm64/boot/dts/broadcom/*.dtb /boot/
+> -	sudo cp arch/arm64/boot/Image /boot/nameKERNEL.img
+> 
+> 10.	Modify /boot/config.txt to make sure the system boots into our kernel(if it is already added in default setting).
+> -	#Add this line	
+> -	kernel=kernel8.img
+> 11.	Reboot the system and the fire uname -r Command, Output will show new kernel version.
+> -	My output looks like this.
+> -	pi@raspberrypi:~ $ uname -r
+> 6.10.06.10.0-00734-g81ec9bb82a9f
+> 12.	After rebooting, you can see the following message listed in dmesg
+> -	dmesg | grep EVL
+> -	[    0.123482] IRQ pipeline: high-priority EVL stage added.
+> -	[    0.125676] EVL: core started [DEBUG]
+> (You can see that the EVL core has been successfully opened)
+> 
+> Libevl for process  (Just for knowledge)
+> 13.	Download libevl
+> -	git clone https://source.denx.de/Xenomai/xenomai4/libevl
+> 14.	Compile and install, here you will need to use the header of linux-evl, here please modify the UAPI parameter to the corresponding folder.
+> - cd libevl
+> - mkdir /home/pi/libevl-build
+> - cd /home/pi/libevl-build
+>                (Please set up the path according to your path)
+> -	meson setup -Dbuildtype=release -Dprefix=/usr/local -Duapi=/home/pi/linux-evl /home/pi/libevl
+> -	meson compile
+> -	sudo ninja install
+> 
+> 15.	Verify the Installation
+> -	ls /usr/local/lib | grep libevl
+> -	ls /usr/local/bin | grep evl
+> 
+> You should see libevl.so in the /usr/local/lib directory and evl utilities in the /usr/local/bin directory
+> 
+> 16.	Testing the Installation
+> Just open this path
+> /usr/local/bin
+> Run these tests to see result
+> ./evl
+> ./latmus
+> 
+> 17.	Now, lets check the all libraries are installed and works successfully. (https://evlproject.org/core/testing/ refer this link to see the results)
+> -	Just go to the folder where your elv tests are available ($prefix/tests as part of building libevl)
+> -	Cd /libevl/tests
+> -	Sudo evl test
+> Finish
+> If you get the error of permission or error of empty lib directory then this could be the solution.
+> Add /usr/local/lib to the Library Path:
+> -	echo "/usr/local/lib" | sudo tee /etc/ld.so.conf.d/libevl.conf
+> -	sudo ldconfig
+> Check if the library path is correctly set and if the system can now find libevl.so.4.
+> -	ldconfig -p | grep libevl
+> Set the LD_LIBRARY_PATH Environment Variable:
+> -	export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+> You can add this line to your .bashrc or .bash_profile file to make it persistent across sessions:
+> -	echo "export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH" >> ~/.bashrc
+> -	source ~/.bashrc
+> Run the Utilities Again:
+> -	./evl
+> -	./latmus
+> 
+> To run other files, we need different meson set up and its files.(without meson build file)
+> 
+> 
