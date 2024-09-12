@@ -1,272 +1,162 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F04921A00F4
-	for <xenomai@lists.linux.dev>; Wed, 11 Sep 2024 14:45:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A0E918BC05
+	for <xenomai@lists.linux.dev>; Thu, 12 Sep 2024 06:51:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726065904; cv=none; b=mvxIrPQwW1clIInEYxAakN/NNlJcPEh/lA/4NA1BvK1kDQVaWH9dF0qeD/g2ylmqFy1AQM0W8xDsz02CNcekIf1sIXuwMoGRW1+GiFcB5Ki/AFu7nGOns76br/P48kWsa8ZL+jhKxKedKCkhXw889dJp78we5TMBXMNX1FGnvew=
+	t=1726123924; cv=none; b=EvZbh6y4xME0s0C2GCY+Xdv5xWKfRm4gCY+Coj8nVFbpeKsejCNqEQ7IlAu2fzZfVdZToi4J6tMbCkToXZk7x4JzUPC0eOXFS/tnCGQSIsX61f3m0mirXnXNGMrb7/wpms8t7mJFUL9lxuKv63TjF/8Bxhekd+H5Pe0umIEb+4c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726065904; c=relaxed/simple;
-	bh=wBCdjO7yGMe1+A3rHzff+yON81AmNZymYDML8d3UcP4=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=MnpuwPj5ZUN6YAixmPV1ryAJKMIlIq1Nr4bbE9nC9V3LTYrF2Hjro4E4o+mTUlY47RTKC7JHmGjd8p7vRV70UObv04AaMK7/nbkC+VxPjUqUVAq6RrD10mNwp+A4MCfX+g126Y/IybUQNWDtoYPvrBZRue4vJ4M4zpxxdpUSqrM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Y21jxqEG; arc=none smtp.client-ip=185.136.65.226
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1726123924; c=relaxed/simple;
+	bh=aXAqlDYdKo3/viSQuHU6j9uo/dkE4iIsu8uVK1oeK8E=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=bC4ownNYfABbtyd4Zun40sk9HcyhAYFYMunEIs8Rv/Cguwhp507uTtuXCAWUSpwPGP9jFfFd7FaMaRM1wnOOVG9te3sqNUxKy7xKUKprSimtcgAJK+LU6lW/bls3yuy19wR9cBP6ESqsjwQbEpqjpmERC8vHNtHRvjvCTyQO+4A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=A1xQS9QC; arc=none smtp.client-ip=209.85.218.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Y21jxqEG"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202409111444546e9161678492f466d2
-        for <xenomai@lists.linux.dev>;
-        Wed, 11 Sep 2024 16:44:54 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=Nojq/yD+SNwbAKt4tSg/2mBH65vQgFpvPBe3TV3fHY0=;
- b=Y21jxqEGfwJZaOdoh7hjMTlIdQvpOSogD6SNhKxlcSMdxv4h5xYa0Vi4GRYJQ3dyMrAfGd
- 5AQBQKdUZu7ZRRCumBNNKwG0pPZC6+RMv+pAVzKHGBuw2+cgfON/n3xyxbNTOAgvkzA36yC/
- pwWxiYzdFbLKYh+OCoGk/qcKO16CJHB061a05aAjzg412mSbViyDJJgfE9DOQDKv1AlPIBhx
- DHOHDZku6pjoZELKXsLsB53ut0dnbA1VvMCXuJayGCTBnPFgZiB+PgDvedtIWf6fWfqgIWga
- WzwHlu6bBD7PWRi067s7pLLvhgTYQrt2EKATT1EWHpoAIHrBXmwfR5qw==;
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: xenomai@lists.linux.dev
-Cc: Jan Kiszka <jan.kiszka@siemens.com>,
-	Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH] y2038: testsuite/smokey: Cleanup coding style
-Date: Wed, 11 Sep 2024 16:44:52 +0200
-Message-Id: <20240911144452.182645-1-florian.bezdeka@siemens.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="A1xQS9QC"
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-a8a7903cb7dso49740866b.3
+        for <xenomai@lists.linux.dev>; Wed, 11 Sep 2024 23:51:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1726123918; x=1726728718; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=u/7PY86ZQ8tYmTyx3RaU/G2c/r/Ihlw4x2UWpLbcixc=;
+        b=A1xQS9QCn5XDj2Fk9ehr94PRDs/hizb1SdYIOWOoL5zvsjoHgrfMh4TUJpoLhKBLk1
+         qIj3eD/ZOxa1b+l1NwraTmecUhpvgWx20DWEdSG8KCqtdiJgttOhJVpfitEuQDz52r2k
+         23DVnQM15s0YQIdJFoF3aTi8SCeBs/v8W0hfKaoPbaoBVZdyvkt+c0/1z8Vx4uvqQ7QA
+         uomQ1aSZesNKOHKu2csqZNj23uHYwbrlKpUHH6wtLK7mwX8DLFXWvPMX9J02n3Pd0lZF
+         Xe6lJwyxbIVz89iQRC0uUVGRFn7XFgNjJeQjisfDq2wzgcIXpMnRKJd1tnsdxPlSaewS
+         Dacw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1726123918; x=1726728718;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=u/7PY86ZQ8tYmTyx3RaU/G2c/r/Ihlw4x2UWpLbcixc=;
+        b=O39GuoF4fmJho9K4d5k20B9Iv+aUuuiFfPkoH9qBiEA1jY2un4tglF6N1To6gn5cBB
+         DnUWiK4+SADc2k9jgf90EpQKE0QM+ZOH+k207zJDaKZuNS5a4MzVYrN06cuXv1YKXq1P
+         8BLMrEJrr9fHbK0VaRQ6kMHAqPKgoEuZOtcYoxFhMja+eRVSTsDOSCsliernpxl3b7Q1
+         R7ws1O9cBzlUOEKyIaIgiSX2Ww9RFtgJ30baxvcgyRZndtW1G2xqtfkKbwTJs9a88EW4
+         8Wd9a2bBTAF9DOZnsZZPcCk+XAbQr2NQkTiBryqVTBgivlVRus5ZVhaL/pjQVkpPJmem
+         BhZA==
+X-Forwarded-Encrypted: i=1; AJvYcCUMl+8kfLnJNDEhmBKZ/zg/W228Cng8i1FL7gSnj6MvOrVNUjoqZuIPUQIeA73xidv8ydHnNZK6@lists.linux.dev
+X-Gm-Message-State: AOJu0YwD6uDkbCfCw6WqHiHfiCFIHzY4nVkqzDi1Ygt7j/woJ/GzU3Te
+	hjr/2Tg2vHW8ZEU2WlxSr4WyE80j6bdETLAe6trhxkxgdWNPpxIMY1ksnUYiymWW7KA0m3Omibd
+	7SF3E9Imx/O3eQvb0dHLm+eEpEFywr3YH
+X-Google-Smtp-Source: AGHT+IHM9hAHq3D56/mofq66EuQhZ3Ikje3Uxz79V7vpX6aFc8hwh41LVyoKQaBM4sZr0qej83J3BAmuh0CZoiUy09g=
+X-Received: by 2002:a05:6402:4308:b0:5c2:70a2:9418 with SMTP id
+ 4fb4d7f45d1cf-5c413e05887mr1704591a12.6.1726123916866; Wed, 11 Sep 2024
+ 23:51:56 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+References: <AM6PR05MB6024420AB2F1754C19B5612EAD992@AM6PR05MB6024.eurprd05.prod.outlook.com>
+ <fc38f3af6fa7b993fdbc81deecd7134ad6a39af4.camel@siemens.com>
+ <AM6PR05MB60248E3F1360E8FDFFFADCD4AD992@AM6PR05MB6024.eurprd05.prod.outlook.com>
+ <f8bdb69f-b500-4a5d-9739-90cb1a1a88d8@siemens.com> <AM6PR05MB60248187776E0975A0D64FBBAD9A2@AM6PR05MB6024.eurprd05.prod.outlook.com>
+ <e45dc61e-bcae-4d45-aeb8-d195528428f7@siemens.com>
+In-Reply-To: <e45dc61e-bcae-4d45-aeb8-d195528428f7@siemens.com>
+From: C Smith <csmithquestions@gmail.com>
+Date: Wed, 11 Sep 2024 23:51:45 -0700
+Message-ID: <CA+K1mPEmN1_GEJY9QQ=yJ1fiCT6MfozAQBJJmUnUVWyc+6Ud6A@mail.gmail.com>
+Subject: Re: Compilation error kernel Xenomai3 for x86 32 bits
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: LE-DOUARAIN Marc <m.ledouarain@fareco.fayat.com>, 
+	Florian Bezdeka <florian.bezdeka@siemens.com>, 
+	"xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Seems that we didn't follow the kernel coding style strictly in the
-early days of the y2038 implementation. At least we partially ignored
-the "reverse christmas tree" style for variable declarations.
+On Tue, Sep 10, 2024 at 6:32=E2=80=AFAM Jan Kiszka <jan.kiszka@siemens.com>=
+ wrote:
+>
+> On 10.09.24 14:46, LE-DOUARAIN Marc wrote:
+> >
+> >>>
+> >>>>> I=E2=80=99ve tried to compile linux-dovetail-v5.10.214-dovetail1 gi=
+thub
+> >>>>> repository for Xenomai 3.2.5 (from a Debian12.6 i386), and it faile=
+d on theses errors :
+> >>>>> (the same with Xenomai 3.2.4)
+> >>>
+> >>>> I think the main point here is that we do no longer support 32 bit k=
+ernels. We still support the compat case, so 32 bit applications running on=
+ a 64 bit kernel. Might that be an option for you?
+> >>>> Should work as long as your board supports is 64 bit.
+> >>>
+> >>> We are working step by step to update OS with an old base hardware (I=
+SA bus) as transitional for now, and will use a 32 bits CPU "Vortex86DX3".
+> >>>
+> >>>>>
+> >>>>> I=E2=80=99ve used the command =C2=AB /prepare-kernel.sh --linux=3D#=
+#######/linux-dovetail-v5.10.214-dovetail1 --arch=3Di386 =C2=BB before conf=
+iguring kernel.
+> >>>>> Not better with linux-dovetail-v6.6.23-dovetail2.
+> >>>
+> >>>> Haven't touched the prepare-kernel script for a while. Seems we shou=
+ld bail out and complain loudly when trying to use --arch=3Di386.
+> >>>
+> >>> If I can understand that for the =E2=80=9Cnew=E2=80=9D Xenomai 4, 32 =
+bits is excluded,
+> >>> it's perhaps a pity that Xenomai 3 can't continue to be used, especia=
+lly if there's not much to be done to fix it and make it work on 32 bits.
+> >>
+> >> 32-bit x86 kernels are practically history since almost a decade, inde=
+pendent of Xenomai. 32-bit applications on 64-bit kernels are still support=
+ed (even with Intel upcoming cuts), but only few people were testing 32-bit=
+-only x86 kernels that long ago. Probably almost no one is doing it in this=
+ decade anymore. Distros have dropped 32-bit, and CPUs that lack 64-bit sup=
+port can be counted with one hand - if not even a single finger.
+> > Although rare these days, some distros 32 bits are still available, lik=
+e the classic Debian ! =F0=9F=98=89
+> >
+>
+> Right, but nothing I would dare to deploy into anything mission critical.
+>
+> >>> Is the error, on Xenomai side, or moreover kernel patched ?
+> >>> Which kernel / Xenomai latest versions were running on 32 bits for su=
+re, or at what time ?
+> >
+> >> I would not say that Xenomai 3 is definitely dead on i386 but no one l=
+ooked at it in a very long while. It could theoretically still work with ip=
+ipe-4.4.y-cip, but anything newer dropped it. While we are still carrying i=
+386 in that kernel, we didn't test it for many years now. Also note that th=
+is kernel is now getting closer to its EOL.
+> >
+> > I could effectively go back to ipipe for this transition stage on our c=
+urrent hardware.
+> > The latest ipipe kernels seems to be available here : https://source.de=
+nx.de/Xenomai/
+> > but what is the difference between repositories ipipe and ipipe-x86 ?
+> > What was the last known Xenomai version 3.x really used and tested with=
+ ipipe?
+>
+> Here is our full test pipeline:
+>
+> https://source.denx.de/Xenomai/xenomai-images/-/pipelines/22174
+>
+> 3.2 and older are still (or only) supporting I-pipe.
+>
+> Jan
+>
+> --
+> Siemens AG, Technology
+> Linux Expert Center
 
-No functional changes.
+Hi Marc,
 
-A redundant GPLv2 hint has been removed as this file already has a
-correct SPDX tag.
+I still use 32 bit Xenomai 2.6.5 with ipipe patch on kernel 3.18.20,
+on a Fedora 21 distro. It is very stable.  I have to use this version
+because we have a legacy 32-bit AMD Geode LX800 CPU (X86) on one of
+our embedded PCs. I don't know how well your Vortex CPU would work.
+The Xenomai project is not actively supporting Xenomai 2.x but it is
+well documented, and you can search the mailing list for prior
+messages.
 
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- testsuite/smokey/y2038/syscall-tests.c | 58 +++++++++++++-------------
- 1 file changed, 28 insertions(+), 30 deletions(-)
-
-diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
-index 91ef5258e..0817d2004 100644
---- a/testsuite/smokey/y2038/syscall-tests.c
-+++ b/testsuite/smokey/y2038/syscall-tests.c
-@@ -2,12 +2,10 @@
- /*
-  * y2038 tests
-  *
-- * Copyright (c) Siemens AG 2021
-+ * Copyright (c) Siemens AG 2021-2024
-  *
-  * Authors:
-  *  Florian Bezdeka <florian.bezdeka@siemens.com>
-- *
-- * Released under the terms of GPLv2.
-  */
- #include <asm/xenomai/syscall.h>
- #include <smokey/smokey.h>
-@@ -161,11 +159,11 @@ static int run_thread(void *(*thread)(void *), void *arg, int exp_result)
- 
- static int test_sc_cobalt_sem_timedwait64(void)
- {
--	int ret;
--	sem_t sem;
- 	int sc_nr = sc_cobalt_sem_timedwait64;
- 	struct xn_timespec64 ts64, ts_wu;
- 	struct timespec ts_nat;
-+	sem_t sem;
-+	int ret;
- 
- 	sem_init(&sem, 0, 0);
- 
-@@ -245,9 +243,9 @@ static int test_sc_cobalt_sem_timedwait64(void)
- 
- static int test_sc_cobalt_clock_gettime64(void)
- {
--	int ret;
- 	int sc_nr = sc_cobalt_clock_gettime64;
- 	struct xn_timespec64 ts64 = {0};
-+	int ret;
- 
- 	/* Make sure we don't crash because of NULL pointers */
- 	ret = XENOMAI_SYSCALL2(sc_nr, NULL, NULL);
-@@ -276,8 +274,8 @@ static int test_sc_cobalt_clock_gettime64(void)
- 
- static int test_sc_cobalt_clock_settime64(void)
- {
--	int ret;
- 	int sc_nr = sc_cobalt_clock_settime64;
-+	int ret;
- 
- 	/* Make sure we don't crash because of NULL pointers */
- 	ret = XENOMAI_SYSCALL2(sc_nr, NULL, NULL);
-@@ -294,11 +292,11 @@ static int test_sc_cobalt_clock_settime64(void)
- 
- static int test_sc_cobalt_clock_nanosleep64(void)
- {
--	int ret;
- 	int sc_nr = sc_cobalt_clock_nanosleep64;
- 	struct xn_timespec64 next, rmt;
- 	struct timespec ts1, ts2, delta;
- 	long interval = 1;
-+	int ret;
- 
- 	/* Make sure we don't crash because of NULL pointers */
- 	ret = XENOMAI_SYSCALL4(sc_nr, NULL, NULL, NULL, NULL);
-@@ -358,9 +356,9 @@ static int test_sc_cobalt_clock_nanosleep64(void)
- 
- static int test_sc_cobalt_clock_getres64(void)
- {
--	int ret;
- 	int sc_nr = sc_cobalt_clock_getres64;
- 	struct xn_timespec64 ts64;
-+	int ret;
- 
- 	/* Make sure we don't crash because of NULL pointers */
- 	ret = XENOMAI_SYSCALL2(sc_nr, NULL, NULL);
-@@ -389,9 +387,9 @@ static int test_sc_cobalt_clock_getres64(void)
- 
- static int test_sc_cobalt_clock_adjtime64(void)
- {
--	int ret;
- 	int sc_nr = sc_cobalt_clock_adjtime64;
- 	struct xn_timex64 tx64 = {};
-+	int ret;
- 
- 	/* Make sure we don't crash because of NULL pointers */
- 	ret = XENOMAI_SYSCALL2(sc_nr, NULL, NULL);
-@@ -461,11 +459,11 @@ static void *timedlock64_thread(void *arg)
- 
- static int test_sc_cobalt_mutex_timedlock64(void)
- {
--	int ret;
--	pthread_mutex_t mutex;
- 	int sc_nr = sc_cobalt_mutex_timedlock64;
--	struct xn_timespec64 ts64;
- 	struct thread_context ctx = {0};
-+	struct xn_timespec64 ts64;
-+	pthread_mutex_t mutex;
-+	int ret;
- 
- 	if (!__T(ret, pthread_mutex_init(&mutex, NULL)))
- 		return ret;
-@@ -567,10 +565,10 @@ static int test_sc_cobalt_mutex_timedlock64(void)
- 
- static int test_sc_cobalt_mq_timedsend64(void)
- {
--	int ret;
- 	int sc_nr = sc_cobalt_mq_timedsend64;
- 	struct xn_timespec64 t1, t2;
- 	struct timespec ts_nat;
-+	int ret;
- 
- 	mqd_t mq;
- 	struct mq_attr qa;
-@@ -650,10 +648,10 @@ static int test_sc_cobalt_mq_timedsend64(void)
- 
- static int test_sc_cobalt_mq_timedreceive64(void)
- {
--	int ret;
- 	int sc_nr = sc_cobalt_mq_timedreceive64;
- 	struct xn_timespec64 t1, t2;
- 	struct timespec ts_nat;
-+	int ret;
- 
- 	mqd_t mq;
- 	struct mq_attr qa;
-@@ -746,11 +744,11 @@ static int test_sc_cobalt_mq_timedreceive64(void)
- 
- static int test_sc_cobalt_sigtimedwait64(void)
- {
--	int ret;
- 	int sc_nr = sc_cobalt_sigtimedwait64;
- 	struct xn_timespec64 t1, t2;
- 	struct timespec ts_nat;
- 	sigset_t set;
-+	int ret;
- 
- 	sigaddset(&set, SIGINT);
- 
-@@ -821,11 +819,11 @@ static int test_sc_cobalt_sigtimedwait64(void)
- 
- static int test_sc_cobalt_monitor_wait64(void)
- {
--	int ret, opret;
- 	int sc_nr = sc_cobalt_monitor_wait64;
-+	struct cobalt_monitor_shadow mon;
- 	struct xn_timespec64 t1, t2, to;
- 	struct timespec ts_nat;
--	struct cobalt_monitor_shadow mon;
-+	int ret, opret;
- 
- 	ret = cobalt_monitor_init(&mon, CLOCK_REALTIME, 0);
- 	if (ret)
-@@ -893,12 +891,12 @@ static int test_sc_cobalt_monitor_wait64(void)
- 
- static int test_sc_cobalt_event_wait64(void)
- {
--	int ret;
- 	int sc_nr = sc_cobalt_event_wait64;
-+	struct cobalt_event_shadow evt;
- 	struct xn_timespec64 t1, t2;
- 	struct timespec ts_nat;
--	struct cobalt_event_shadow evt;
- 	unsigned int flags;
-+	int ret;
- 
- 	ret = cobalt_event_init(&evt, 0, COBALT_EVENT_FIFO);
- 	if (ret)
-@@ -972,14 +970,14 @@ static int test_sc_cobalt_event_wait64(void)
- 
- static int test_sc_cobalt_recvmmsg64(void)
- {
--	int ret = 0;
--	int sock;
- 	int sc_nr = sc_cobalt_recvmmsg64;
--	long data;
--	struct xn_timespec64 t1, t2;
--	struct timespec ts_nat;
- 	struct rtipc_port_label plabel;
-+	struct xn_timespec64 t1, t2;
- 	struct sockaddr_ipc saddr;
-+	struct timespec ts_nat;
-+	int ret = 0;
-+	long data;
-+	int sock;
- 
- 	struct iovec iov = {
- 		.iov_base = &data,
-@@ -1097,14 +1095,14 @@ out:
- 
- static int test_sc_cobalt_cond_wait_prologue64(void)
- {
--	int ret = 0;
--	int err = 0;
- 	int sc_nr = sc_cobalt_cond_wait_prologue64;
--	pthread_mutex_t m;
--	pthread_cond_t c;
--	pthread_condattr_t attr;
- 	struct xn_timespec64 t1, t2;
-+	pthread_condattr_t attr;
- 	struct timespec ts_nat;
-+	pthread_mutex_t m;
-+	pthread_cond_t c;
-+	int ret = 0;
-+	int err = 0;
- 
- 	if (!__T(ret, pthread_mutex_init(&m, NULL)))
- 		return ret;
--- 
-2.39.2
-
+-C Smith
