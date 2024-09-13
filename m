@@ -1,216 +1,431 @@
-Received: from sonic310-57.consmr.mail.ir2.yahoo.com (sonic310-57.consmr.mail.ir2.yahoo.com [77.238.177.30])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2069.outbound.protection.outlook.com [40.107.20.69])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2C8E1ABEC3
-	for <xenomai@lists.linux.dev>; Thu, 12 Sep 2024 13:25:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.238.177.30
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1726147546; cv=none; b=cKa8oyKeKoN1gN9BgP81VlStcZZbRIxxAjV7EOMTrGHZ5pcUtyNibuvkMFd5FS36UDapb8+3hqbQfr8h+0jwg/STq6QSmQ4wJTaMH/eFA3A9Gx9w/haMW9WDGhpZreAjfwXTY/JtycRzCaDvdCWu3hwgcdxnB1SSsTSANmJaiks=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1726147546; c=relaxed/simple;
-	bh=EXFrZv87zj0LcNCwfHdDtxPaFudUfUOmP+Ev554l5B0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:Cc:From:
-	 In-Reply-To:Content-Type; b=qCbLF6nDO4TxbHCBAqtrTVHc9/Zzg9n+gt48c8TGNRIAl5B5MDz+63yL17n58lNhtdmWlGNsHT7byhIydBrk7N321fXao0+u3k3mS4NRpIx4O7Hv9LrvNDfnikGPExGapjV7+A233z1SaMtE9OeI8sVBD0BfmtucKdB61eS3ke0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com; spf=pass smtp.mailfrom=yahoo.com; dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b=LTCqqOu7; arc=none smtp.client-ip=77.238.177.30
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yahoo.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 954031BC068
+	for <xenomai@lists.linux.dev>; Fri, 13 Sep 2024 07:23:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.20.69
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1726212197; cv=fail; b=i1nne9EWGI/EiOs7jFN2DPkzTHOHoHkr53gfSPdqIf9DkleQiqac2qj7pq0qRXPUBDIwzMgAGKi7K4F/aqtt3lbauoh5G0JjAZDbhWFEDWk4lzjRQPMV1vTlLsnQY7xvpeOl9bY/lssLMPC7WSquTihlGPxuu4kLjww6w9AyPds=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1726212197; c=relaxed/simple;
+	bh=ybAAK74JC6XLE5vUOeJLAdxRWK1I7KC7CegBVh7LWeg=;
+	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=CDZixSlE0Xxe+ZkJd1Vj8KCoxCMz63hQwU0JxVlP+nx5he7Eor+4hMqEGb85ogaKHl/GdULzDQCPp0UR4EHrIW/GrUXpvDyb5T41EVHXZ55om84WC7TuQGhs4cVGyeFjeKrwiGq+2ynH+5qQte+qjlV0TPKS16BXla17dAPTKR0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=x4kwolZ5; arc=fail smtp.client-ip=40.107.20.69
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b="LTCqqOu7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1726147542; bh=W2Ql7Jak6oL2Z8dz6dMs+qEgx1fd4d/uPzJ3/4jpS6M=; h=Date:Subject:To:References:Cc:From:In-Reply-To:From:Subject:Reply-To; b=LTCqqOu7Hdxv3rMRA3WJfAZ+GwiAvZvyaCe9RgybzTotDtciBi6WDMZAh0OMxfkvsmfDW18JnaONmNWc8A9T9YTCV7inAQFvPMpiW/UobVijj5aMdM6joEhb4+3/WGzEFvkMKnhs9/la6bCDkvZiUjv9dIsDCOtySuBgm8WH7M3Zp6rh613F7pH6G6NvDgz/aAfZTFaMPnf8Lnb8aN30u32d/G2vAt46j6g7nLtIKsXwQLBNrQVzBZMaaG2jNp8dOI/qqUj+1Pc38I/FhHqQiqRuqsKK+WijyLYxcuj3pK68qZ/thOPJV+8E/PdQEbGaE/SSd1stpFzYqL3S7eJjEg==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1726147542; bh=EgPSIeO0MRq64ulKbaQbbubiP2pjFWBxxjsG/y4zoYt=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=o7j36jCBIz09MzxBCDIEdRWyEh7PDyv37nXEjHsxxdLxIdGBEipeNw/i0kGTtkGVvM+0PBpl4s4WB2PfIKz2JgPevrKsmscKfWHKYy/xiRmnrgfDuXfcYhmF5PKWA4x4R8O//8q7Tr98MHYzvyhFdBbkVSsDz7Pv3prM4hf3gp5YtwRsedariu1+t66ppWESBUI4wMP3DJSCBQ+evUgH4/u1QzcrXlxvxqEpZ19Zrs9zXLe4Xl103tByVOOTSUCeO6X/VIk9ewCh3h0dw/ZQ0l56TrINA3r7MAty0kCZW3jzNTfnLJmV+AQNI7c0+sEMkUp4RRc++CjltEX5yXAkFQ==
-X-YMail-OSG: bCwlzlcVM1lnYhGfYb8iiVOwPoCWYeAw2KXSzc8pIHEh1Re73uPzqiB4OSXJgpU
- aGlQAx8RbXAuUHiovXuEwVEmG3Gw829zeljWzvxyjiPakGqGk3MnFEExR8.8QP8mWQJ6HTl6gMrb
- N5IHLVEXvifY26x18fVD7qm_V9X0r1lv_nuKLCgOtLIDIErDANsd2jOftA.LhSlde25ecPJuAsYp
- VBwX42TzYXCyUktKRLDJ9Cvltit3C5IaLGSvLu9Y_.1We17CcIJzs9kK1F0hZc21jLILyM7FULWz
- xU7eM06ijQobsKr9laFcGk6SRkjEQmQN8dp6hWnxmh67ippMVTcdo0kITppZrG3RfG9nd4M9wfRK
- BM3ioVV.3JmU98IzM_XpBg0mbUY5bvA0qurTEKdY9t5MnMeTLnsy59Gj8p0KSKgvZKG9DcMuzSi7
- PrOm6U5HOMwAHjW1uH2lFQhQqlkri8AF0uwU.cg4bCTwQzjPVkrDtUSzptLEmZ10isvOFOmUZH.p
- xS9prTWbDvyvIGPBm5MvA3hzDRCQUH2AZ7M4IAkHwbh_K6p4lx_7b_y8w.qVrtSHk4MDSfyqH4L0
- h1PoaxnHoIsWULmXGzTeMSq5gp8gbK__k.vGx5Em4w_0pNbHt_kmtI1W5JEwHth66uHyhOKNCbyN
- 34dBiV3wbyuvrQzUITIMn9sKokLjCsOwuUvg8NkSroT9U4GwDOREXraIakmwOTG_agY.e0T7uodw
- 7tLWsDV54kVhgUOlGTFhHqFtKeJ1PJc30IZxI2mhu6kuvfdjzxPb30geAR2GFk7WRkk6bvp9a1DP
- Roc_KjyaATQKl13WN1RVydULW6QwfSeYtPmzpIx4gdwe1E7igrrYJykoJFl9fr9L8agNPAeXjoxx
- feD4pmOEfjU1LqjVb8Sqrgo938uhBdliCKEGm.6uyEi9RFCEJTXy0THC5nqLasLZUiiI1sv_SMoE
- Wwkk71ybnFsJujH.r5BxY1fXf.YJUuSc2HqudT2hAPPkbNhDzbBhz7tl4DWhYad9yqlILdEQxM6m
- zpVz5Fsq6vEzaEkiZodwTFFDF_rAK2w5uW7wuMwRqB9XpUhekH17tzSDQGlhadkvDBAFlmjMEOVN
- YMCHeP5c1CJGwPZzfdfOE9khXurMENoH0Nzm5nMEUNwspGQuHiGtBgkSnzDG6bLJ.4GBEf..EEOt
- jFz_EWe2Wm7fWpEq8VdEhjqP.wCxTzk7mVDNHtw0WPa5Bl5wo7uDceC6AOp7EU0TernsLNzlMka2
- qwDBbjL6Rx.5WvQpNfqq4FK14efRuK.WmtLjmVg0uw6Fk4WpyOT0ePGwhqEobG20I5_aAaGsHQvF
- 0TPAtQIpqNL0fwL_GvxHynRF4s06x2Bb5WaMdMtdEvjvZ.3guMPcJzwV9ONSFiwHJvfckwRBrp2z
- CmoTVTCWBVD6fMa9WZRO1IiJgziqzAmFB.iRrS9n2oaQFBSl6Uw_GZ2atTPboigbO.Pl87kSItES
- _42wVS4YG5ZJpPxCgxiXTE46uldccHV2xZtEw71yYL3.UyKt83Z4epwIQ2BdCTb6tQAeuBW1cmG2
- 1QvKOIDY38ldXlEzK8sHMFNh7yX3ExR4mLfr3u_MXHG56K6XsU5xf0X8PzxfpJqpjMRibpztxtXM
- 4KoUJIY3nNnOIh4ytWBBXAx1le5dbq2uNyVP.jJ.LOZB8ZL_XclBwwstUhufLggfL0pLTGFgQx5G
- H7tcLRFTE_b_dfGOTjnldqd6b_LZKAszjjJb7wHnTQbz8rMU2FH2CSgw0jno8L0ZD4S8eaq_uGET
- Watj_Kxr.rDt9gdBYmv.wnD5KpXpypbfLnJTIUznLbnRYuYIKhBr7YW7Eu38AyuVazNaFfQjWzCU
- xFr4ew6gpPtmdUHxOOLLs2t7cSsA_.ogENb2raR0a_wA4bPsOgZAtZLT5wx4WYGhva0Kv524qP0j
- nD77mmTRq9ev7pHFV8pTIMAu6IWkrMsIWfKQR509Fm4Kkskiq1at5G2gCl_7h.GCbnPfJVPxe2l8
- 17vwt03ZrmpgaprWBvfd0HSQLMkLI2trZrA_YnENypE1UQ9G0rLRjOTbrewbxHmd9gz5d.sX0Jhf
- NKXs9mTDJPmGv7elmfAw1.8fVJUhV2szGoNMNsRIwMyPxLjSsJRvVj03MWaXmqryWknCWD7ZdEcr
- T_3OKzeYFNPDD6J_TmCSaT3jTO8q84vvy5uipTIkFx3xg2Qxamrpl2y2tw7Os308rSYuYikid8Xp
- LqKL45ORtxYbB_6rF2tc-
-X-Sonic-MF: <mau.salvi@yahoo.com>
-X-Sonic-ID: bc06dd53-783a-429d-9217-3639f51157c3
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic310.consmr.mail.ir2.yahoo.com with HTTP; Thu, 12 Sep 2024 13:25:42 +0000
-Received: by hermes--production-ir2-6664f499fc-5vwr7 (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID d1d306b31e7e59fed53057e6e54e7939;
-          Thu, 12 Sep 2024 12:24:51 +0000 (UTC)
-Message-ID: <5ce29155-3b79-412c-846e-e183e3c88010@yahoo.com>
-Date: Thu, 12 Sep 2024 14:24:49 +0200
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="x4kwolZ5"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=KiMt6JfB4YqdOCjJX9JBRvFWxeeLFIAxMW73NWkGatgOFFIZ5cGLKiCKKVGJ/6ePdsBJtlaJyjWkt9RICn90ycfC72HggDyLQEbht51yc1KJEuY4ydzD9uZGXWQ+tgkmNi6eaI7RQcfFkTcfDHQ9LstiyGQnhe0Yk6SN1bEQnJVktfo0FG8H6+R7m3RrX0B4hlYRui1cyoaTrOqis716uaOyz7v3Q5WbMp6zBzMSVzwWIWYqq+qywuB+5wc6c8m/DwizvNUWJgjdZsgLQ1rsAuf9uHNuZdCYR4kBLJ+IhqT7BLv/YhOnsS/nRnWG3jRNw17unn3XcQqU6a/FNs3PrA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=/USIBqUI5URkBQadULyp269+eI1PyoKyuJ2mBZdMNSw=;
+ b=rEA1DA4CDSYmasV1xY5ntyZ/vZuftVM+3DSSOovRUtYIvPAlqVH+QpuRVyDDIqSYt1H8idxt3yk30WWYmuuWEujt4e2lduxQQ1LZieX/HJ5whzQEr7j+EqLNGHq7WbbsctSXe4rm3o+gMVGDbvFgW0/JpwgtgNUtWtoD7fnLz7mxOM8Qa7+cxWl5eu3zcIkR9T6TAqWwQIV+57J/DRZVIDkSvcboFH8qvOgKVB8b9O4p2cBVRgB/1fmiwurmkFwAjkCBJhajXr5tS31zFb94lQaMTYA3BjU0n1M3U66VM+puzvqev9kLeXNwIfXoM/iD5hITRhX2ucTC/FgiezL8gg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/USIBqUI5URkBQadULyp269+eI1PyoKyuJ2mBZdMNSw=;
+ b=x4kwolZ5g+vfhEOpaRXmoi+n3U3TDsIpMFSL6reA1vS4ucXIL/UsZpYr5uEGUH4j+vWstSg68UNGrMTz6QuC1kfRKBErDaSMosqgkfAtc/0lDun4I03WyRXZFKqbrWI4yqHw6Z85XoIq0xzi4yP3M0h69yVU7AJckj+mCaaFAd1l4oUGZOlZDUMk+SV5uQVI7GleVExQ0aFlb5V6ig/RFCKGbtdAdLIlSgumdoNG5MYm6R+lQ/affqOvRA1R4xNL2oW16nGCewUOdp0BB52Lp0jcHelgIoLGtCfogwiCryfJg6GdQap9uaGQ3nr+Y4TOT5O8p0hk0tzvz5mQNeKPHA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by PA1PR10MB8969.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:447::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.7962.17; Fri, 13 Sep
+ 2024 07:23:11 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408%3]) with mapi id 15.20.7962.016; Fri, 13 Sep 2024
+ 07:23:11 +0000
+Message-ID: <bdc43e8c-7cce-4a94-a0aa-cdf2086c7ea0@siemens.com>
+Date: Fri, 13 Sep 2024 09:23:10 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] y2038: testsuite/smokey: Cleanup coding style
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
+References: <20240911144452.182645-1-florian.bezdeka@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Content-Language: en-US
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ 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
+In-Reply-To: <20240911144452.182645-1-florian.bezdeka@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR3P281CA0138.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:95::17) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: Need a help to understand xenomai 4
-To: akshay.vaghasiya@dlr.de
-References: <994786c98a894f3d96068bb184294ff8@dlr.de>
-Content-Language: en-US, it
-Cc: xenomai@lists.linux.dev
-From: "Mauro S." <mau.salvi@yahoo.com>
-In-Reply-To: <994786c98a894f3d96068bb184294ff8@dlr.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Mailer: WebService/1.1.22645 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|PA1PR10MB8969:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9d7b30f9-6dcc-44a2-ccd4-08dcd3c4ec95
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?VEFVV1UyTjJNK3lpalZFYm9NQm13OTlwUmN4bkY1YjlLcEJTMExHdHZrelMy?=
+ =?utf-8?B?cjJ6SWRxM1hmTFpxNVY0WnRHb0dxK2xPMCtRV3E5eGo1cVFaMmZGQU1SbGdS?=
+ =?utf-8?B?Ymszb3dMa1BaUEZ6Wkt3aURKcHE1REhqOEZIZk5nOGFUc1FpdDd3YVplNFNm?=
+ =?utf-8?B?dTNsNi9XYzJKSUZ1QUxRRG9ETXVuU2t3ZXhxVGNONDBVWWk4NTNxR2NUaXB1?=
+ =?utf-8?B?aVE4UEM5akdJdEFITCsvMHFySS9pMWY1SmQ3RVh2Qlg2dmNmUEFXNVJEK1dB?=
+ =?utf-8?B?VTRmd1JlSDRjU2E4aTJSdnJoWGVjQS9mOUxuQWh1TUk1WVRJdzdkMit5RDBs?=
+ =?utf-8?B?Tm1qN3RsZVRha2hPZlpJeE9HbWgwcWUvdXhiV2gwL0w5eG9OeDQ5OVlFamJh?=
+ =?utf-8?B?S29ERDgrVFZVdTlicG03L21rOGpWaVRXVno5alFSbnVIanRVTkdNTGp2bllz?=
+ =?utf-8?B?QmY4bzkwQ2FsVU1jUzJxWm1DbmZDQVJQSkY5bFlUY0ExTlVoY1F4WXh2bW1r?=
+ =?utf-8?B?S0JDdUtFTXhyT0xjR2RQWXVPZkpuYXovOUhUcjU0blk2VFVpZVFaaGxKbDIw?=
+ =?utf-8?B?dTJSWllPK3VtSHJUQlVZRmtDL1YzUGVaVWtXSmxOR2l5ZTNMY2xZektwUHQx?=
+ =?utf-8?B?b1dsWEtJbUhPUWdMVjJEbmdxdmtrM2oyUEhjcE1HZ0N2VXY5TGd5R3ZYS3Fu?=
+ =?utf-8?B?d0dhM21VNlkwOTJRK3FMZGk2UC9zR2FZdU9Fdk13WisvTWNHVHpRN04rRGJQ?=
+ =?utf-8?B?MlZTSGU5dlkwTzNHaUJ3Y0xsdEhNZ285TXVHaDBzZEl5TnZiNU5NNDU4dUxq?=
+ =?utf-8?B?WWttN1NEdHI0Y0tUNDFjOURndGpOaVhLSnp4eTJmZDNWMVJWZnE1Rk5zRUxr?=
+ =?utf-8?B?TVZYTEcwZmFsRUZZenNSTG9jK2MyMHdlamVjOUlnTUdLRDA4N2tKNjV4ZlQz?=
+ =?utf-8?B?ZVhwVW9iZXV1WHhiTlQ1UitmVVJRQ3QxaXZCaUhSRnF3eCttRXQ4UlZJM2VZ?=
+ =?utf-8?B?Z1Q5aHBoNUYrTXZUamxQc09sYzBBZDVjMndTaXlMN2ZqK3FNc1FrbDBtanBq?=
+ =?utf-8?B?REFhRGJEdWo0VXg2YzFSbjFMc296UU1oNGJtTnNzSVl4SVNQczVBbDQ5WGlN?=
+ =?utf-8?B?bDlYTjVWQkFYRG1xeGc3bjlMQUJaU25ub25NMDNKUmdtMWxtdkZJNkcvbVJK?=
+ =?utf-8?B?aHBJeDVHYlQ5TlBQeE9Sd2JTcXFFVXlWdUZkWExGeXBGQnNINzk5U3dsMjE0?=
+ =?utf-8?B?TWtDemdnRVVFNGM3T2RtWTFTdEdoVEljdGNCQ2lQcjBGTm1RdTlZeDlkT0wv?=
+ =?utf-8?B?ZDB3c0FkZy9xM3pTZzV0dUJxekR3ZUtraEhORUU4U3dRamJkQkpWdDh5T2Zi?=
+ =?utf-8?B?UTZMbjQ3YWo3WURSN2RrWkhLS0pYb1IrNUZQMUJvWW92VEJDWEhpRjl3WlZZ?=
+ =?utf-8?B?RUNrdmU3VE93NTZJL1VuUUgxQkNySlJRUS9Jc0J1N3ZCVDEwdXVNRkI4QTF0?=
+ =?utf-8?B?RDNYOWNNM2cxMzZ3Vm9ETTcxTXJNaXVGM2lCbnRNbS9Kbm1BMVNOa01LMkhW?=
+ =?utf-8?B?Z1F2d0g0QnVYTkpZemxPaWk3Q3phYmFaTDArdjhaT2ZKbWRuQUFldHlLdlRE?=
+ =?utf-8?B?NndUZE00VEhrS1hTRlZwdUVqQ1pyWk93YldLb2hsTzV4MWo2Z3QweWJPa2Rx?=
+ =?utf-8?B?TkQ3VENqaU9IVHVKU0MwbjZWV3hDT3IxNWVHMlEvMXF6ODRZR295cHNTRFBv?=
+ =?utf-8?B?eXp6UEdNTzI0eXNTQU43RjlnQnRZNWxtdERZZ3hub05mRHVEQUg5TFZ2bENL?=
+ =?utf-8?B?NWJRS1ROSkMvQVhmRG4vdz09?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?aGQxcFBPUm9PYXFHZ2dJRjFzR2ZyZVpCYVh4Qm1hQnUrc0xTU0t0K294STQ0?=
+ =?utf-8?B?OHpBd3N3K3VMUW5IQ1Z2TzNLeCtBeDNOcWhKYXdCSXdybS9xZGlxb0Q1Nk5D?=
+ =?utf-8?B?dEUwSDNzcVlzMVduZUZNSEc4bE9PVkNxQkF1ajREQkNWWURXRklRZDJuaHpr?=
+ =?utf-8?B?NlBQazY5K0hBeWNyRVVLbW1TKzloSThVOHp2bHpGcm4zQmNBVFpHMDFmaU83?=
+ =?utf-8?B?a0V1U0t2R2tSNnI1alBtYkkyeUx4K055WE9abFhVY0svVDZtZVRRVHM1R0pI?=
+ =?utf-8?B?TnhHZmpaSWZKays0Zmw2RTFpV3p5d25YMTBtRG9VN0FDSnRxT1AvTmQvZWQr?=
+ =?utf-8?B?ZHFsS2Z6a1JyNUxsS0ZKVDAxMnFxTXBvWFoyZEZwVFRxTEkvQUlhMjczTzkw?=
+ =?utf-8?B?S3J1aWRDVDBFZmFzbEU4cE83cUtwWGhUT3BnMWQxbWU2NDJPOTMxUVQ0UW1M?=
+ =?utf-8?B?YmJDenlwMC9XUE5SVG00VmxSdFBJUGowZUZYZTNCMjk2dGVVcURRdlY5YzQ2?=
+ =?utf-8?B?dFBNeGVVeTZxeGQvcHR4Y1VJKzF2WmdBN2RTNHVLRjRFMWVGbVh3eitPUEhW?=
+ =?utf-8?B?cE1sZFZtNkVIZHBoVzhxcWtVSFdldGdEc0hEWXVyWjhkOUFWQ0dxS01hNTlT?=
+ =?utf-8?B?WWI1VTNUU0NrOFV3NFdhOFBFdm43ays0V3hpWXNCYmdoQ3VrYmJLTE8vdFJL?=
+ =?utf-8?B?WnQvS0N1Q053b05rRHNjTy9lc3VHRWFMUXVkREtkSDZTampNSzQ0R01vUnE1?=
+ =?utf-8?B?QkJoL0hsUXU4d1BOZUVQYktJZFJsN0FlY0Z0RGQ4bHNqV3FqZTNMMlgwd1Fz?=
+ =?utf-8?B?RGNTcDU4MmljclJMVlBvS3E5NFpTVXZLWlp2cXhLK0RnTUxYL0FQcGR6ZytG?=
+ =?utf-8?B?cmVZM2ZwVkxIOXpSdlpyVE00d241VnhNdmgyOUxvMG5WVGpoQTBibVExR04z?=
+ =?utf-8?B?SjZiMDBrN3VPcXRmQmJWQTJNSnhxUlZnc2tGNmpzRS9zOUdOUmZzeDFRYWxL?=
+ =?utf-8?B?TGNDeGR1OWo0eTBRbGYyZHlDR1NqeFpwL3UvWGhubnJ5ZFB3dVFhcjVFNnI5?=
+ =?utf-8?B?WnppTWNPMTVCWWd3TXd1RzFyUzR0aUN4NFIwbm9wMHpCNmF2ejBWL0RCaHhF?=
+ =?utf-8?B?NUtjb1RaeU1Ic0xDTGhlM1l5dEFQemNQOW93bjhyN25qdE9HS3UvL0JGemZH?=
+ =?utf-8?B?YkRqUEJmYm4xOC9jQjVMeTdLV3N0ZnNseTBOcnF1YS9NRndrZmRjbkdOaFZQ?=
+ =?utf-8?B?emVHSHJ1QWcvdldwVWFhbFVZdGI1MGRlUGlkUmhlOWp3cm4rSXZKMkJPK0NR?=
+ =?utf-8?B?c094V2pRU3k3V0lTWndMeWZQRHZzdnZ1V1IvNmV3VHhSc1dVZExQSHR6NXJy?=
+ =?utf-8?B?WHJwT2I3WTRSNXN2MXRJQWlhYy8rNGF4QkVxVFBRNlZ1d09WRlV2eGVNeGRQ?=
+ =?utf-8?B?SEg5SDg4TUtqSmU4azFnS3NiUlZhMFNldDR5VHkvNEhBZ20yb0tMMXljTith?=
+ =?utf-8?B?Sktid1BJaVIxR2xqK3M1TGovcDJ5bjdIbVE4bGpMcUNsTGZ3WTNaM1N2VVhL?=
+ =?utf-8?B?ZDQ4MVJqVmNSUkNmajZZZmFaZU1FOTAvV0F3czFaMnhjNjJRd0Z2aGR3L3FD?=
+ =?utf-8?B?V0NKYkdsYzFwVERVRkgwSHM3VzVEdlpKQmoySzNmTlhqZjZLbWNlYkw3MmV5?=
+ =?utf-8?B?VGNpNi9WZXI5MzkyYXFLeFZDTnJkdkh1UzhSWWJXUlVmQ0VCdDZLOWRiRm9I?=
+ =?utf-8?B?c2c0MEI2S0RPbGlyc2lQbUZLYnJqT0pXKzZmUWZTTXQ1ZDVTUndVMHdUQjlz?=
+ =?utf-8?B?dkhHQkxMaGxzNm9rRGxYd2s5NUlpZkxia2UwdGZjNGtSMEJrTDZMWTV4TXdV?=
+ =?utf-8?B?TXB5c05ocnhGOFJQWnUrUmtCMTc1bmpwYURwSVhsZDdkQ004K2RGRXNNMkYv?=
+ =?utf-8?B?ZGFoMGswREpJWlpNQlp0U2JiTlNnazYxd0I5QnlvQU8yUURwYzlFOTZOc1pT?=
+ =?utf-8?B?RWJvZmQ2QmZRWHZ1OHE0OHJSK05ReWliVlFIMWtnMmU1TkZvVExVNjFPU1du?=
+ =?utf-8?B?aTNIRlorRlhBMzJrekY1WVdiUlJ3a1EveGpxYjdQa3FlOEFTV2RFVEFaS3pw?=
+ =?utf-8?Q?ut2grJjrB+emarj2cqcY48NJc?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9d7b30f9-6dcc-44a2-ccd4-08dcd3c4ec95
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Sep 2024 07:23:11.7246
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qT7RrzJgr0XvGTcYe0GMemrtoJClowERlCkBb0R1wuAR2mX69UNzD12ny7RlhzgK1uMkREqJMs308o85xt4M0Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA1PR10MB8969
 
-On 12/09/24 13:53, akshay.vaghasiya@dlr.de wrote:
-> Hello Dear Support Team,
+On 11.09.24 16:44, Florian Bezdeka wrote:
+> Seems that we didn't follow the kernel coding style strictly in the
+> early days of the y2038 implementation. At least we partially ignored
+> the "reverse christmas tree" style for variable declarations.
 > 
-> I hope you are doing well.
->   
-> I am Akshay, a master thesis student. I got your email from mailmap file of denx(Xenomai 4). I am adding linux-evl to my raspberry pi 4B. I have already inbuild kernel 6.1(64 bit Debian GNU/Linux 11 (bullseye)). I have added 6.10(linux-evl) and lib-evl to run some programs in xenomai 4 realtime. Everything is working fine but the problems are kernel headers, When I add linux-evl image to linux kernel at that time Raspberry pi loses menu, camera does not work, Chromium does not work. Only I can run my programs and could not run other softwares and libraries.
->   
-> I have written whole process that How I compile my linux-evl on raspberry pi.
-> Could You please suggest me solution Or suggestions what should I do to run this properly?
-> Am I doing something wrong?
-> Please see the file and please help me if I am making any mistake or doing it in wrong way.
->    
-> My final linux-evl kernel(uname -r) output looks like this(6.10.06.10.0-00734-g81ec9bb82a9f)
-> Also, linux-evl does not provide overlays, So Is it problem or do we have to generate it? Because in internet there is nothing for generating overlays for linux-evl.
->   
-> Thanks and regards,
-> Akshay
->   
-> Deutsches Zentrum für Luft- und Raumfahrt e.V.(DLR) German Aerospace Center
->   
-> Institute of Software Technology | Flight Software | Lilenthalüplatz 7 | 38108 |Braunschweig | Germany
->   
-> Akshay Vaghasiya | Software Engineer (Master Thesis)
+> No functional changes.
 > 
-> Process How I load the linux evl
+> A redundant GPLv2 hint has been removed as this file already has a
+> correct SPDX tag.
 > 
-> Built Kernel Xenomai 4 on Raspberry 4
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  testsuite/smokey/y2038/syscall-tests.c | 58 +++++++++++++-------------
+>  1 file changed, 28 insertions(+), 30 deletions(-)
 > 
-> 1.	Add packages
-> -	sudo apt install git bc bison flex libssl-dev make libncurses-dev
-> 
-> 2.	Clone the evl git project for with xenomai 4
-> -	git clone https://source.denx.de/Xenomai/xenomai4/linux-evl
-> 
-> 3.	Check out the the base version and compile kernel		
-> -	cd linux-evl
-> 4.	
-> 5.	Make de config
-> -	make defconfig
-> 
+> diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+> index 91ef5258e..0817d2004 100644
+> --- a/testsuite/smokey/y2038/syscall-tests.c
+> +++ b/testsuite/smokey/y2038/syscall-tests.c
+> @@ -2,12 +2,10 @@
+>  /*
+>   * y2038 tests
+>   *
+> - * Copyright (c) Siemens AG 2021
+> + * Copyright (c) Siemens AG 2021-2024
+>   *
+>   * Authors:
+>   *  Florian Bezdeka <florian.bezdeka@siemens.com>
+> - *
+> - * Released under the terms of GPLv2.
+>   */
+>  #include <asm/xenomai/syscall.h>
+>  #include <smokey/smokey.h>
+> @@ -161,11 +159,11 @@ static int run_thread(void *(*thread)(void *), void *arg, int exp_result)
+>  
+>  static int test_sc_cobalt_sem_timedwait64(void)
+>  {
+> -	int ret;
+> -	sem_t sem;
+>  	int sc_nr = sc_cobalt_sem_timedwait64;
+>  	struct xn_timespec64 ts64, ts_wu;
+>  	struct timespec ts_nat;
+> +	sem_t sem;
+> +	int ret;
+>  
+>  	sem_init(&sem, 0, 0);
+>  
+> @@ -245,9 +243,9 @@ static int test_sc_cobalt_sem_timedwait64(void)
+>  
+>  static int test_sc_cobalt_clock_gettime64(void)
+>  {
+> -	int ret;
+>  	int sc_nr = sc_cobalt_clock_gettime64;
+>  	struct xn_timespec64 ts64 = {0};
+> +	int ret;
+>  
+>  	/* Make sure we don't crash because of NULL pointers */
+>  	ret = XENOMAI_SYSCALL2(sc_nr, NULL, NULL);
+> @@ -276,8 +274,8 @@ static int test_sc_cobalt_clock_gettime64(void)
+>  
+>  static int test_sc_cobalt_clock_settime64(void)
+>  {
+> -	int ret;
+>  	int sc_nr = sc_cobalt_clock_settime64;
+> +	int ret;
+>  
+>  	/* Make sure we don't crash because of NULL pointers */
+>  	ret = XENOMAI_SYSCALL2(sc_nr, NULL, NULL);
+> @@ -294,11 +292,11 @@ static int test_sc_cobalt_clock_settime64(void)
+>  
+>  static int test_sc_cobalt_clock_nanosleep64(void)
+>  {
+> -	int ret;
+>  	int sc_nr = sc_cobalt_clock_nanosleep64;
+>  	struct xn_timespec64 next, rmt;
+>  	struct timespec ts1, ts2, delta;
+>  	long interval = 1;
+> +	int ret;
+>  
+>  	/* Make sure we don't crash because of NULL pointers */
+>  	ret = XENOMAI_SYSCALL4(sc_nr, NULL, NULL, NULL, NULL);
+> @@ -358,9 +356,9 @@ static int test_sc_cobalt_clock_nanosleep64(void)
+>  
+>  static int test_sc_cobalt_clock_getres64(void)
+>  {
+> -	int ret;
+>  	int sc_nr = sc_cobalt_clock_getres64;
+>  	struct xn_timespec64 ts64;
+> +	int ret;
+>  
+>  	/* Make sure we don't crash because of NULL pointers */
+>  	ret = XENOMAI_SYSCALL2(sc_nr, NULL, NULL);
+> @@ -389,9 +387,9 @@ static int test_sc_cobalt_clock_getres64(void)
+>  
+>  static int test_sc_cobalt_clock_adjtime64(void)
+>  {
+> -	int ret;
+>  	int sc_nr = sc_cobalt_clock_adjtime64;
+>  	struct xn_timex64 tx64 = {};
+> +	int ret;
+>  
+>  	/* Make sure we don't crash because of NULL pointers */
+>  	ret = XENOMAI_SYSCALL2(sc_nr, NULL, NULL);
+> @@ -461,11 +459,11 @@ static void *timedlock64_thread(void *arg)
+>  
+>  static int test_sc_cobalt_mutex_timedlock64(void)
+>  {
+> -	int ret;
+> -	pthread_mutex_t mutex;
+>  	int sc_nr = sc_cobalt_mutex_timedlock64;
+> -	struct xn_timespec64 ts64;
+>  	struct thread_context ctx = {0};
+> +	struct xn_timespec64 ts64;
+> +	pthread_mutex_t mutex;
+> +	int ret;
+>  
+>  	if (!__T(ret, pthread_mutex_init(&mutex, NULL)))
+>  		return ret;
+> @@ -567,10 +565,10 @@ static int test_sc_cobalt_mutex_timedlock64(void)
+>  
+>  static int test_sc_cobalt_mq_timedsend64(void)
+>  {
+> -	int ret;
+>  	int sc_nr = sc_cobalt_mq_timedsend64;
+>  	struct xn_timespec64 t1, t2;
+>  	struct timespec ts_nat;
+> +	int ret;
+>  
+>  	mqd_t mq;
+>  	struct mq_attr qa;
+> @@ -650,10 +648,10 @@ static int test_sc_cobalt_mq_timedsend64(void)
+>  
+>  static int test_sc_cobalt_mq_timedreceive64(void)
+>  {
+> -	int ret;
+>  	int sc_nr = sc_cobalt_mq_timedreceive64;
+>  	struct xn_timespec64 t1, t2;
+>  	struct timespec ts_nat;
+> +	int ret;
+>  
+>  	mqd_t mq;
+>  	struct mq_attr qa;
+> @@ -746,11 +744,11 @@ static int test_sc_cobalt_mq_timedreceive64(void)
+>  
+>  static int test_sc_cobalt_sigtimedwait64(void)
+>  {
+> -	int ret;
+>  	int sc_nr = sc_cobalt_sigtimedwait64;
+>  	struct xn_timespec64 t1, t2;
+>  	struct timespec ts_nat;
+>  	sigset_t set;
+> +	int ret;
+>  
+>  	sigaddset(&set, SIGINT);
+>  
+> @@ -821,11 +819,11 @@ static int test_sc_cobalt_sigtimedwait64(void)
+>  
+>  static int test_sc_cobalt_monitor_wait64(void)
+>  {
+> -	int ret, opret;
+>  	int sc_nr = sc_cobalt_monitor_wait64;
+> +	struct cobalt_monitor_shadow mon;
+>  	struct xn_timespec64 t1, t2, to;
+>  	struct timespec ts_nat;
+> -	struct cobalt_monitor_shadow mon;
+> +	int ret, opret;
+>  
+>  	ret = cobalt_monitor_init(&mon, CLOCK_REALTIME, 0);
+>  	if (ret)
+> @@ -893,12 +891,12 @@ static int test_sc_cobalt_monitor_wait64(void)
+>  
+>  static int test_sc_cobalt_event_wait64(void)
+>  {
+> -	int ret;
+>  	int sc_nr = sc_cobalt_event_wait64;
+> +	struct cobalt_event_shadow evt;
+>  	struct xn_timespec64 t1, t2;
+>  	struct timespec ts_nat;
+> -	struct cobalt_event_shadow evt;
+>  	unsigned int flags;
+> +	int ret;
+>  
+>  	ret = cobalt_event_init(&evt, 0, COBALT_EVENT_FIFO);
+>  	if (ret)
+> @@ -972,14 +970,14 @@ static int test_sc_cobalt_event_wait64(void)
+>  
+>  static int test_sc_cobalt_recvmmsg64(void)
+>  {
+> -	int ret = 0;
+> -	int sock;
+>  	int sc_nr = sc_cobalt_recvmmsg64;
+> -	long data;
+> -	struct xn_timespec64 t1, t2;
+> -	struct timespec ts_nat;
+>  	struct rtipc_port_label plabel;
+> +	struct xn_timespec64 t1, t2;
+>  	struct sockaddr_ipc saddr;
+> +	struct timespec ts_nat;
+> +	int ret = 0;
+> +	long data;
+> +	int sock;
+>  
+>  	struct iovec iov = {
+>  		.iov_base = &data,
+> @@ -1097,14 +1095,14 @@ out:
+>  
+>  static int test_sc_cobalt_cond_wait_prologue64(void)
+>  {
+> -	int ret = 0;
+> -	int err = 0;
+>  	int sc_nr = sc_cobalt_cond_wait_prologue64;
+> -	pthread_mutex_t m;
+> -	pthread_cond_t c;
+> -	pthread_condattr_t attr;
+>  	struct xn_timespec64 t1, t2;
+> +	pthread_condattr_t attr;
+>  	struct timespec ts_nat;
+> +	pthread_mutex_t m;
+> +	pthread_cond_t c;
+> +	int ret = 0;
+> +	int err = 0;
+>  
+>  	if (!__T(ret, pthread_mutex_init(&m, NULL)))
+>  		return ret;
 
+Thanks, applied.
 
-Hi,
-
-you should use the kernel configuration shipped with Debian kernel to 
-have all the Debian functionalities in.
-Copy it (it should be in/boot) in the sources folder and rename it as 
-.config, then proceed with the menuconfig step enabling all the Xenomai 
-related stuff.
-
-Regards
+Jan
 
 -- 
-Mauro S.
+Siemens AG, Technology
+Linux Expert Center
 
-> 6.	Make menu Config
-> -	make menuconfig
->  > 7.	Select these options and make changes in your raspberry pi
-> -	General setup
-> o	Local version
-> o	Kernel .config support
-> o	Enable access to .config through /proc/config.gz
-> -	Kernel Features
-> o	EVL real-time core
-> 	Debug support
-> o	Timer frequency 1000Hz
-> -	CPU Power Management
-> o	CPU Frequency scaling
-> 	Default CPUFreq gorvernor
-> •	performance
-> 
-> 8.	Please set other options according to your needs. After setting up, you can start building
-> -	make -j4 Image modules dtbs
-> (This can take more than 1.30 hours)
-> 9.	Put up the build.
-> -	sudo make modules_install
-> -	sudo cp arch/arm64/boot/dts/broadcom/*.dtb /boot/
-> -	sudo cp arch/arm64/boot/Image /boot/nameKERNEL.img
-> 
-> 10.	Modify /boot/config.txt to make sure the system boots into our kernel(if it is already added in default setting).
-> -	#Add this line	
-> -	kernel=kernel8.img
-> 11.	Reboot the system and the fire uname -r Command, Output will show new kernel version.
-> -	My output looks like this.
-> -	pi@raspberrypi:~ $ uname -r
-> 6.10.06.10.0-00734-g81ec9bb82a9f
-> 12.	After rebooting, you can see the following message listed in dmesg
-> -	dmesg | grep EVL
-> -	[    0.123482] IRQ pipeline: high-priority EVL stage added.
-> -	[    0.125676] EVL: core started [DEBUG]
-> (You can see that the EVL core has been successfully opened)
-> 
-> Libevl for process  (Just for knowledge)
-> 13.	Download libevl
-> -	git clone https://source.denx.de/Xenomai/xenomai4/libevl
-> 14.	Compile and install, here you will need to use the header of linux-evl, here please modify the UAPI parameter to the corresponding folder.
-> - cd libevl
-> - mkdir /home/pi/libevl-build
-> - cd /home/pi/libevl-build
->                (Please set up the path according to your path)
-> -	meson setup -Dbuildtype=release -Dprefix=/usr/local -Duapi=/home/pi/linux-evl /home/pi/libevl
-> -	meson compile
-> -	sudo ninja install
-> 
-> 15.	Verify the Installation
-> -	ls /usr/local/lib | grep libevl
-> -	ls /usr/local/bin | grep evl
-> 
-> You should see libevl.so in the /usr/local/lib directory and evl utilities in the /usr/local/bin directory
-> 
-> 16.	Testing the Installation
-> Just open this path
-> /usr/local/bin
-> Run these tests to see result
-> ./evl
-> ./latmus
-> 
-> 17.	Now, lets check the all libraries are installed and works successfully. (https://evlproject.org/core/testing/ refer this link to see the results)
-> -	Just go to the folder where your elv tests are available ($prefix/tests as part of building libevl)
-> -	Cd /libevl/tests
-> -	Sudo evl test
-> Finish
-> If you get the error of permission or error of empty lib directory then this could be the solution.
-> Add /usr/local/lib to the Library Path:
-> -	echo "/usr/local/lib" | sudo tee /etc/ld.so.conf.d/libevl.conf
-> -	sudo ldconfig
-> Check if the library path is correctly set and if the system can now find libevl.so.4.
-> -	ldconfig -p | grep libevl
-> Set the LD_LIBRARY_PATH Environment Variable:
-> -	export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-> You can add this line to your .bashrc or .bash_profile file to make it persistent across sessions:
-> -	echo "export LD_LIBRARY_PATH=/usr/local/lib:\$LD_LIBRARY_PATH" >> ~/.bashrc
-> -	source ~/.bashrc
-> Run the Utilities Again:
-> -	./evl
-> -	./latmus
-> 
-> To run other files, we need different meson set up and its files.(without meson build file)
-> 
-> 
