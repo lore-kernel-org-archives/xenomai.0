@@ -1,55 +1,61 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.2])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0C4E6170A27
-	for <xenomai@lists.linux.dev>; Fri, 27 Sep 2024 07:00:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.2
+Received: from out28-219.mail.aliyun.com (out28-219.mail.aliyun.com [115.124.28.219])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B5D8176231
+	for <xenomai@lists.linux.dev>; Fri, 27 Sep 2024 10:56:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.28.219
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1727420419; cv=none; b=oqLee4oTa1ByNNpaCcnxgcZvIBPT+2JRhBNSB72c5A2qUpR+AES5Awsb4D7xwbKjER2aR9jEHRXadNmASHNJlvkz5+lUjE4mbSJkoeMposKHYXJHusHI4AqLdtRoWLl1osTRs9QyXi6fPe87HH1Zso5Y2A0KE/LScCbG4eboN0g=
+	t=1727434601; cv=none; b=kVxQ+x8TKLmz6WwGNIPIHMP27UlkuJjxYMp2NYQBbNvFtolK8e8ZihzLkC3Ur3G3clPH4B4Fjzo27ZvMTzZau62WN+fxqJLwNJ8EOb8dHXG2bMeIzq898d8gypRBf77r4T6M92Pj4roLZk9CYE3wDB2vkhfl66nAKfvWfYpDf3M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1727420419; c=relaxed/simple;
-	bh=3ys4BdaO+xVvjfR/aGyPqX1FbVVOk4lQl6z8RmfrvOU=;
-	h=Date:From:To:Subject:Content-Type:MIME-Version:Message-ID; b=VosnwmxD8Kqb5yYjOCA2O+vQ7+tSe53p8ClavnpZ035/TrqzU8aPDSqhSC9W3dItWdtmhaGSyX+k1l7Hab4UJYwWhjwnBPwAMMqdk/BEO23pzAjff4GIFFNb9eZZVBEqtF5oDgRgL4zwhr7q/5eVaiwbvWjSZv2OvER1eIuQ04g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=IFpjJzn4 reason="signature verification failed"; arc=none smtp.client-ip=220.197.31.2
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="IFpjJzn4"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=CGf4kxkEGoMrK88H752V5PUGQWb9B4eZdNTBtclSy5s=; b=I
-	FpjJzn4CqY0IOE6VsZEZErn3cnrbmUroTs1B66FpD9myAvVxDVV5XQxCY2eGke0o
-	5fJZuGhr6hg3FMfT7Pyl0N8M4enSzoabIXgw8LfI/zTGvUxVp42jRkV57xXJV9Hr
-	zM/4JiLEoZZaCEAJ1dSyszi4/JbzJJb0yoeBLgHhi4=
-Received: from mars_liu2023$163.com ( [103.161.254.5] ) by
- ajax-webmail-wmsvr-40-102 (Coremail) ; Fri, 27 Sep 2024 15:00:07 +0800
- (CST)
-Date: Fri, 27 Sep 2024 15:00:07 +0800 (CST)
-From: mars_liu <mars_liu2023@163.com>
+	s=arc-20240116; t=1727434601; c=relaxed/simple;
+	bh=eWAtuVAOHCvVtTpZF7OZlGBcd3qvDfCcudEnSmr8gdI=;
+	h=Date:From:To:Subject:Mime-Version:Message-ID:Content-Type; b=V2lMpI6qH6Pe9p7aQljCCdCJpHpohwglL+DQCri6/fYZJKUgeyO4+LcMs7DI2eqezM7sUckiC+q/m/bVuToOFYCVKEP0YmLB+FeIIqCsVq69Zq2W5xhmr2RyqN6HbFKe6nAV2M7/EBqxFlYugYkl6zh1gBFaDGQg6vaMYHr/dhA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sinsegye.com.cn; spf=none smtp.mailfrom=sinsegye.com.cn; arc=none smtp.client-ip=115.124.28.219
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sinsegye.com.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=sinsegye.com.cn
+Received: from Liu(mailfrom:liuyang@sinsegye.com.cn fp:SMTPD_---.ZUZiWVA_1727434586)
+          by smtp.aliyun-inc.com;
+          Fri, 27 Sep 2024 18:56:27 +0800
+Date: Fri, 27 Sep 2024 18:56:27 +0800
+From: "liuyang@sinsegye.com.cn" <liuyang@sinsegye.com.cn>
 To: xenomai <xenomai@lists.linux.dev>
-Subject: how to add cpu load in testing latency
+Subject: f81601 rtcan driver issue
 X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20240801(9da12a7b)
- Copyright (c) 2002-2024 www.mailtech.cn 163com
-X-NTES-SC: AL_Qu2ZBfiZv0wr4SWRY+kWmEsQju45WMW0uPwu3YZTOJs0tCTz3ioDbW9aAVXJ+s6XAhqhoAiXcxFR6OV2VrR5VY6wN6T72zR973GKvxxZ0jau
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+X-Has-Attach: no
+X-Mailer: Foxmail 7.2.25.301[cn]
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Message-ID: <3c07ae1c.6c55.19232479f35.Coremail.mars_liu2023@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:ZigvCgDXj773V_ZmCOACAA--.27244W
-X-CM-SenderInfo: 5pdu2sholxjiist6il2tof0z/1tbiqRhlD2bz5cCYDwAKs2
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Mime-Version: 1.0
+Message-ID: <2024092718562729740211@sinsegye.com.cn>
+Content-Type: text/plain;
+	charset="GB2312"
+Content-Transfer-Encoding: base64
 
-CgpoaSB4ZW5vbWFpLAoKaSdtIHRyeWluZyB0byB0ZXN0IGxhdGVuY3kgd2l0aCBmdWxsIGNwdSBs
-b2FkIC4KCml0IGhhcyA0IGNwdSBjb3JlcyxhbmQgdGhlcmUgYXJlIHR3byBtb2RlIGNhdXNlIGZ1
-bGwgY3B1IGxvYWQgOgoxLiAKZm9yIG51bSBpbiBgc2VxIDRgIApkbwpkZCBpZj0vZGV2L3plcm8g
-b2Y9L2Rldi9udWxsIGJzPTE2TQpkb25lIAoyLgpzdHJlc3MgLS1jcHUgNCAKCmxhdGVuY3kgdGVz
-dCBjb21tYW5kIGlzICcvdXNyL2xpYi94ZW5vbWFpL3Rlc3RzdWl0ZS9sYXRlbmN5IC1QIDkwIC1w
-IDEwMCAtYyAyIC1UIDQzMjAwJy4KCnRoZSB0ZXN0IHJlc3VsdHMgc2hvdyB0aGF0ICBsYXRlbmN5
-IG9mIG1vZGUgMiBpcyBtdWNoIGJldHRlciB0aGFuIG1vZGUgMSAuCgpteSBxdWVzdGlvbiBpcyB3
-aGljaCBtb2RlIG9mICBmdWxsIGNwdSBsb2FkIGlzIHN1aXRhYmxlLiAKClJlZ2FyZHMsIG1hcnNf
-bGl1
+SGkgeGVub21haToKICAgIEkgdXNlIHRoZSB4ZW5vbWFpIDMuMi4zIHdpdGggdGhlIGludGVsIEo2
+NDEyIHBsYXRmb3JtLHRoZSBrZXJuZWwgdmVyc2lvbiBpcyA1LjE1LjUxoaMKICAgIHdoZW4gaSBw
+b3J0ZWQgdGhlIGY4MTYwMSBjYW4gZHJpdmVyIGludCBSVERNIGZyYW1ld29ya6GjIEkgdXNlIGJs
+b3cgY29tbWFuZCB0ZXN0IHRoZSBjYW4uCiAgICAjcnRjYW5jb25maWcgcnRjYW4wIC0tYmF1ZHJh
+dGU9NTAwMDAwIHN0YXJ0CiAgICAjcnRjYW5zZW5kIHJ0Y2FuMCAtLXZlcmJvc2UgLS10aW1lb3V0
+PTEwIC0taWRlbnRpZmllcj0weDEyMyAweDEgMHgyIDB4MyAweDQgMHg1IDB4NiAweDcgMHg4CiAg
+ICB0aGVuIGkgc2VuZCB0aGUgb3NjaWxsb3Njb3BlLCBObyB3YXZlZm9ybS4gYW5kIHRoZSBpbnRl
+cnJ1cHQgc3RhdHVzIHJlZ2lzdGVyIEVycm9yIFdhcm5pbmcgSW50ZXJydXB0LCBFcnJvciBQYXNz
+aXZlIEludGVycnVwdCBFbmFibGUgYW5kIEJ1cyBFcnJvciBJbnRlcnJ1cHQgRW5hYmxlLgogICAg
+dGhlbiBJIGNoYW5nZSB0aGUgcnRjYW5fc2phMTAwMC5jIGNoaXBfaW5pdCBjb2RlLCB0aGlzIGlz
+c3VlIGlzIHNvbHZlZC4gQmxvdyBpcyB0aGUgY2hhbmdlZCBjb2RlLgoKICAgIGRpZmYgLS1naXQg
+YS9rZXJuZWwvZHJpdmVycy9jYW4vc2phMTAwMC9ydGNhbl9zamExMDAwLmMgYi9rZXJuZWwvZHJp
+dmVycy9jYW4vc2phMTAwMC9ydGNhbl9zamExMDAwLmMKICAgIGluZGV4IDA3M2EzNDMyNS4uOTBm
+NmIzMDY2IDEwMDY0NAogICAgLS0tIGEva2VybmVsL2RyaXZlcnMvY2FuL3NqYTEwMDAvcnRjYW5f
+c2phMTAwMC5jCiAgICArKysgYi9rZXJuZWwvZHJpdmVycy9jYW4vc2phMTAwMC9ydGNhbl9zamEx
+MDAwLmMKICAgIEBAIC03MzcsNyArNzM3LDcgQEAgc3RhdGljIHZvaWQgc2phMTAwMF9jaGlwX2Nv
+bmZpZyhzdHJ1Y3QgcnRjYW5fZGV2aWNlICpkZXYpCiAgICAgc3RydWN0IHJ0Y2FuX3NqYTEwMDAg
+KmNoaXAgPSAoc3RydWN0IHJ0Y2FuX3NqYTEwMDAqIClkZXYtPnByaXY7CgogICAgIGNoaXAtPndy
+aXRlX3JlZyhkZXYsIFNKQV9DRFIsIGNoaXAtPmNkcik7CiAtICAgIGNoaXAtPndyaXRlX3JlZyhk
+ZXYsIFNKQV9PQ1IsIGNoaXAtPm9jcik7CisgICAgY2hpcC0+d3JpdGVfcmVnKGRldiwgU0pBX09D
+UiwgY2hpcC0+b2NyIHwgU0pBX09DUl9NT0RFX05PUk1BTCk7CgogICAgIGNoaXAtPndyaXRlX3Jl
+ZyhkZXYsIFNKQV9BTVIwLCAweEZGKTsKICAgICBjaGlwLT53cml0ZV9yZWcoZGV2LCBTSkFfQU1S
+MSwgMHhGRik7CgoKCgoKCi0tLS0tLS0tLS0tLS0tCgoKCmxpdXlhbmdAc2luc2VneWUuY29tLmNu
+CgoK
+
