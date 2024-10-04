@@ -1,107 +1,120 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4C55146A93
-	for <xenomai@lists.linux.dev>; Fri,  4 Oct 2024 09:36:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B7DB1DAC8D
+	for <xenomai@lists.linux.dev>; Fri,  4 Oct 2024 17:37:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728034607; cv=none; b=W1rnjjRMcDQwrPjziQkLqSohViWjU2+iEpmrlMmuEyQUwtigOP5Msp7flf/1nz7lghaU9xlW/5LGMn3j5lwtGs7l/1+EdSo3myuP+8EU32BDMFf5qhqYiRdRMf1zNa8HxbgE6INasJEUTOPdjpqzUU6526asb4FLoX4EhqcucME=
+	t=1728063464; cv=none; b=oof6tEwU6R5Mk4kre0q9eNqnDE5xAfZnKgPFVSGlFrLXtDqg+J98hkOGR3ajT8Kewf0bc8ZaLjhHGqtK+r1d+BxaI8oBjELBS0nHC1H1PcRcuI4tjPHIKAF1PiOBPfmbfjkJRE+/pSkrxQH6p6MedQC2jdo2DhvNjWwdssjeK1k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728034607; c=relaxed/simple;
-	bh=E8Qq/Fgy1DMlJXa6aogNOU397uqjglYDmCds+DbMf9Y=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=SvKzvcnmIbaJX/cbtI/+8lRLjoFhnAjCb59WwqppmkirJP/5253R9HOGMeR+/6tCmD6XVDrqFqFLZ7WPk073Ukvagm9HtohJsZDEbI6YUKWUOaJVUsanSL+gfI4aaLzUEws6kx9kxA9Zv//eSq3UbvwhAaZt1hlLw4jYxtocPuE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-42cb1e623d1so18924305e9.0
-        for <xenomai@lists.linux.dev>; Fri, 04 Oct 2024 02:36:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1728034604; x=1728639404;
-        h=mime-version:message-id:date:user-agent:references:in-reply-to
-         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ltHW20N3oyUDPvtF04a9x41cU6adCsRmbdJ3B3OGN88=;
-        b=YnMXvhx9SN8+p84Ycvww6189Yhlz2uj+k4m8YDbmyBMkBvp8B6iv+pqbQyUwh2DZOO
-         hLnn6fsiOgjMb4IhXORC+9KEDN611qE3EcOmcHDJFp/USpYGxyid0Ggb0Vi0wytKTMja
-         HOjTd9sxszq8H74EUxIm+c+mxtQbpkN5foCDRW7zOB+aXMF9pomG0wftDycr/345lYEk
-         WVgvUoJRjcrrsHfDBIBHndTW3722To3D8BO5sw2+ejuAUHz9jbqJYexXDSTscIupunn6
-         XHkExOorOE0PK9n3lpxEEMQJXJdj7PBCMXr4YfUpmr5UF6hOPmpSO5tPBtjYC7Ih5CUT
-         XZMg==
-X-Forwarded-Encrypted: i=1; AJvYcCWjlCpVw1R0S5uo0/JtGW5nWsP+UqhFHYTAcur6VnB20RzaprFl8qTBiNOb/ASLJXK+nFlop9w3@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzfezx2swBdt1WVlQot2WHamtEFGK9MRUL2rXkXXxzjeOVIUqAY
-	+a7Eg3RYfR62hb08wCqqqUoyxjsz635IgI9EhOILa06QAFl1n0kJx4a4Ylbj
-X-Google-Smtp-Source: AGHT+IH233Hy2DyJA5XXUoyQneCE0qyGYBEtt8Cuxf397SYIA4dpFJC5RQPyXzeHuYxYy17di3lKpw==
-X-Received: by 2002:a05:600c:3583:b0:42c:a574:6360 with SMTP id 5b1f17b1804b1-42f85aef71amr14742535e9.29.1728034604014;
-        Fri, 04 Oct 2024 02:36:44 -0700 (PDT)
-Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-42f86a201fesm11058125e9.1.2024.10.04.02.36.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Oct 2024 02:36:43 -0700 (PDT)
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Tobias Schaffner <tobias.schaffner@siemens.com>,  xenomai@lists.linux.dev
-Subject: Re: [PATCH dovetail 6.11 0/2] RISC-V: IRQ pipelining core
-In-Reply-To: <fd270dfd-f46d-4f1e-96de-41738a973c23@siemens.com> (Jan Kiszka's
-	message of "Wed, 2 Oct 2024 12:54:50 +0200")
-References: <20241002104007.991278-1-tobias.schaffner@siemens.com>
-	<fd270dfd-f46d-4f1e-96de-41738a973c23@siemens.com>
-User-Agent: mu4e 1.12.1; emacs 29.4
-Date: Fri, 04 Oct 2024 11:36:42 +0200
-Message-ID: <87a5fk5hw5.fsf@xenomai.org>
+	s=arc-20240116; t=1728063464; c=relaxed/simple;
+	bh=H92Y0ubtmsPRdVltR50kepxdR1Od97aQ0q/fVMkWCls=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=cZpQFRnOG5mDxJTxhvDBziJsYeJe79d9SY1vlXIrpq/rzfxdcehiKotKFvJJzbvtb6oGKvUk8QiMoiHSv84VfEVOasngHTgJYhgFyTWTog9I6Q/az4vq6qz8yyZ8VPLDgjkEWxbVtfv1dznVYGuox50XSk2OL4PFVtF3aK+ej9w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=IbaSwZJl; arc=none smtp.client-ip=185.136.65.225
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="IbaSwZJl"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20241004173728e9ef913a7da5f33df9
+        for <xenomai@lists.linux.dev>;
+        Fri, 04 Oct 2024 19:37:28 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=I2Foh0UyJc5z+dpZvcFi6iiLsSJczqsCiyVniecdpbw=;
+ b=IbaSwZJl+s3iWVRUH7UKh64pzskVG2ogsucWHRRGoZYho3UZLaaPcUECEAmn/7manTFSAI
+ m5q7tlHqt+8mlR7B0oJXsig6UWRWj2tQMiGi5VlZb6ubtsdnWUurvNxIs8pb63QjzDilgikS
+ VXtSc6pZLLfYxrnVm8Ij5YW8IKKtN3KAWehaaEsH4fa8J1N868g0Wn1mPKfXUqtXtQut8Bct
+ Df0EVpUyE9U5m7g1x0xKrUVWzT3TFQ7qE8XiSsMumWUfBRHawsLmgWIgr99lGALwaswaaZRp
+ bPskDvDEceE1CLYGNZXtdzTt3CylL+iG7qcbdzsN0/s4F+oWloVgWi5Q==;
+Message-ID: <f676b8a184912f87d6ee175e171b351fb210f93c.camel@siemens.com>
+Subject: Re: POSIX API for EVL
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Pierre FICHEUX <pierre.ficheux@smile.fr>, xenomai@lists.linux.dev
+Cc: Philippe Gerum <rpm@xenomai.org>
+Date: Fri, 04 Oct 2024 19:37:27 +0200
+In-Reply-To: <CAFc1U0udyU8FJMB_Vmz7zg1kB0M=9SC=Q1m+-E6hekcsYcRHXQ@mail.gmail.com>
+References: 
+	<CAFc1U0vYfF_aj5a0zz7GwpjZATgB9td4Usc6JivATCe6tmoSLQ@mail.gmail.com>
+	 <CAFc1U0udyU8FJMB_Vmz7zg1kB0M=9SC=Q1m+-E6hekcsYcRHXQ@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+Hi Pierre,
 
-> On 02.10.24 12:40, Tobias Schaffner wrote:
->> Hi all,
->> 
->> This introduces IRQ pipelining for RISC-V into Dovetail. The patches
->> are on top of v6.11-dovetail-rebase. Feel free to ask for other targets
->> if needed.
->> 
->> I thought about splitting the patch up into smaller parts, but decided
->> to stick to the structure of the analogous patches of the other
->> architectures. Maybe this will make the rebasing process easier.
->> 
->> Testing was done in QEMU with IRQ pipeline torture tests, both with and
->> without SMP enabled.
->> 
->> Looking forward to your feedback.
->> 
->
-> Cool stuff!
->
-> Already checked what is now still missing to get EVL itself running?
->
+On Fri, 2024-09-20 at 09:41 +0200, Pierre FICHEUX wrote:
+> Maybe we could talk about it during the next Xenomai community call ?
 
-I did, at first glance we may still need to provide:
+Everyone is invited to attend to the next community call and ask
+questions or bring up topics that should be discussed. So yes, that
+would be an option.
 
-- shared in-band/oob fpu support.
-- maybe a few tweaks in the arch-specific mm code to support context
-  switching from oob context while still using the regular scheduler code.
-- _maybe_ exporting the machine-specific clock source we would need via
-  the vDSO using the generic extension dovetail already provides
-  (GENERIC_CLOCKSOURCE_VDSO). This may be needed unless we only have an
-  architected timer.
-- support for the RAW_PRINTK extension the interrupt pipeline
-  introduces, helpful for debugging without depending on printk()'s
-  delays/buffering when running oob. This entails fixing up the uart
-  driver which is most commonly used to run the console.
+Up to now most attendees in the community call have/had Xenomai 3
+background. As Xenomai 4 is mainly driven by Philippe, we might have to
+ask him if he could join as well. Now in CC.
 
-This would give us the basic support to run the latency and context
-switching tests. In addition, a complete port would require tweaks in
-the DMA engine driver to enable transfers from the oob stage, some
-review of the platform-specific SPI and GPIO bits to make sure we can
-use them from the oob stage as well.
+According to my calendar the next call is scheduled for Wednesday, 16th
+of October, 9:00 AM in the central European timezone. Dail-in
+instructions can be found on the list and are normally re-shared a
+couple of minutes before the event.
 
-All in all, not that much.
+Btw: The "new" Xenomai mailing list is at xenomai@lists.linux.dev.
 
--- 
-Philippe.
+HTH,
+Florian
+
+>=20
+>=20
+> Le ven. 20 sept. 2024 =C3=A0 07:57, Pierre FICHEUX
+> <pierre.ficheux@smile.fr> a =C3=A9crit :
+> >=20
+> > Hi all,
+> >=20
+> > I've read some discussions (may 2024) about the lack of POSIX skin in
+> > EVL.  Supporting several skins just like for Xenomai 3 is not
+> > really useful but POSIX is an industrial standard and so for people
+> > willing to use Xenomai instead of PREEMPT_RT.
+> >=20
+> > In the EVL documentation
+> > (https://evlproject.org/core/user-api/thread/) I can read :
+> >=20
+> > The main kernel=E2=80=99s thread is the basic execution unit in EVL.
+> > The most common kind of EVL threads is a regular POSIX thread started
+> > by pthread_create(3) which has attached itself to the EVL core by a
+> > call to evl_attach_self().
+> >=20
+> > Don't you think a kind of POSIX "wrapper" could be useful or is that a
+> > silly question ? Did I miss anything ?
+> >=20
+> > I'm about to start a study for a big industrial company and the lack
+> > of POSIX support is a real issue.
+> >=20
+> > Regards
+> >=20
+> > --
+> >=20
+> > Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+> >                              http://www.smile.fr
+> >                              https://smile.eu/fr/offres/embarque-iot
+> > I would love to change the world, but they won't give me the source cod=
+e
+>=20
+>=20
+>=20
+> --
+>=20
+> Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+>                              http://www.smile.fr
+>                              https://smile.eu/fr/offres/embarque-iot
+> I would love to change the world, but they won't give me the source code
+>=20
+
