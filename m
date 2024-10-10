@@ -1,63 +1,97 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.4])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1B3FD1E1A16
-	for <xenomai@lists.linux.dev>; Thu, 10 Oct 2024 07:21:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.4
+Received: from redirect.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DD621DA5E
+	for <xenomai@lists.linux.dev>; Thu, 10 Oct 2024 14:01:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.231
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728544898; cv=none; b=aHm/S34TcHvQj+ZQz9cQMEZhrS76IrSDuQn3fPYiPVkXaUBXrvLeAO3WOOF2nZhBIjR5L5/EGfiz4B3REswueoY3FFhWlOsi0Bn4au67HCt1rqtnrrNPMFkaks5kZ9cO2gWJ6JWqn1sPMreP5UYa4Kf1s7R3oK9BHtxZm7TNe8I=
+	t=1728568874; cv=none; b=cv6CDR+aXx6L3hwOME7mPDynUx9K+GpIID8zKrv0c6B5ZOQJKCdO+JkdZQrczzTsZvR6mxe1sDVZKwA6ooRHehSbvYXyk8zEj32Fb0/MZEg7PwYwi+lQETU8q6VX+v1lGaJ7IsHP19YdXLWofq3bU2CQPHdFDFlwrFt0AoTPK1I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728544898; c=relaxed/simple;
-	bh=DJcduXSB6aY5rLKZNM45LWHuuIPSTyRp9vMZQpafBak=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=u80aQ3wq5rWinUeA5/AoYLpcEr1vQrZFy2sKDKNk+d7Lm+JppjbdYQUQ13fPHy50Ni5RkZdRaaDqV0klabmLnlKReLixE/mSSHoHS8pTvGDdTPbYuRxyQxh700VwyAdlu6G0adCTmpcyL71k0gP/KqH5R2qJfsOsOKgf2ucadbQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=EpDrJu53 reason="signature verification failed"; arc=none smtp.client-ip=117.135.210.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1728568874; c=relaxed/simple;
+	bh=nG/WQiS4lYcy7d3p8AGh8+Vf8q14moIYTbsEQm/iOP8=;
+	h=From:To:CC:Subject:Date:Message-ID:Content-Type:MIME-Version; b=i/zUX58kda5Pf4p9hdpnWX3U3pgZp7dfkFE+Whr3u4KNy8b5IubGVueFOniZEDv5qq79cyDQSjuBQzrvswe74qhucBmNpPjIQurnRWF3zgJ6L1zuJfsatTihnEVfIM/DTQ1pWxdjL//vGDtLNp+Kyr7WCBUu4gE9BRoKmWloRko=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DX9dZn9F; arc=none smtp.client-ip=217.70.178.231
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="EpDrJu53"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=5HFzriVwtreg4/f5e5O5GT+kEeXwt2AEmS4kycqCD38=; b=E
-	pDrJu53fmgCb5wPzFn9T3GxN6soct4AZqHE8g7mrwHrcQmik7C0gIQ9ycT1R2Cja
-	ozy2nzbRGWCVjG1yC6m6Us+A/fiJ0K6b8nzw573EKTobSUyExZZELbHohvrGqHOr
-	FS8iOwH//KpM8EFnbDrMGVQvJjP0hjGsLU2h90v7SU=
-Received: from mars_liu2023$163.com ( [103.161.254.5] ) by
- ajax-webmail-wmsvr-40-149 (Coremail) ; Thu, 10 Oct 2024 15:21:32 +0800
- (CST)
-Date: Thu, 10 Oct 2024 15:21:32 +0800 (CST)
-From: mars_liu  <mars_liu2023@163.com>
-To: "Jan Kiszka" <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@lists.linux.dev>
-Subject: Re:Re: how to add cpu load in testing latency
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20240801(9da12a7b)
- Copyright (c) 2002-2024 www.mailtech.cn 163com
-In-Reply-To: <d3b53281-610b-42d3-8e56-02f5e64838cc@siemens.com>
-References: <3c07ae1c.6c55.19232479f35.Coremail.mars_liu2023@163.com>
- <d3b53281-610b-42d3-8e56-02f5e64838cc@siemens.com>
-X-NTES-SC: AL_Qu2ZCvmfu0Ai5CmaZ+kWmEsQju45WMW0uPwu3YZTOJs0uibW8R4FenhTAFDf4c+NLRy8tx+0QjJ0+tZbWIR5eaShy0fkgbn1NcCSzhdVNEXW
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DX9dZn9F"
+Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
+	by relay11.mail.gandi.net (Postfix) with ESMTPS id 89E70100002
+	for <xenomai@lists.linux.dev>; Thu, 10 Oct 2024 14:01:03 +0000 (UTC)
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 889E1740040
+	for <xenomai@xenomai.org>; Thu, 10 Oct 2024 14:01:02 +0000 (UTC)
+Received: by mail-pl1-x62d.google.com with SMTP id d9443c01a7336-20b78ee6298so5415905ad.2
+        for <xenomai@xenomai.org>; Thu, 10 Oct 2024 07:01:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1728568861; x=1729173661; darn=xenomai.org;
+        h=mime-version:content-transfer-encoding:msip_labels:content-language
+         :accept-language:message-id:date:thread-index:thread-topic:subject
+         :cc:to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=nG/WQiS4lYcy7d3p8AGh8+Vf8q14moIYTbsEQm/iOP8=;
+        b=DX9dZn9FVlTIqKZvLDz0/ahYpNIP97LnrHW2r+Gc2rBtFJBspxoe6lzQt8yhyoTZ2d
+         cRbvpurezydHBayLtV14exfxodfsnwAPquztkBdZD+y3DrV/9mf0J1JfoQZ/V2+9u4BV
+         BuyNoXdgQ+E3I3jcxhr8HHGGNPv7CB8zX+FbqZwn2UrFEexivsmKJ/JO1303/JDnxJn9
+         ZypiQS2nDz4kBmm7m9nKZ/IoC57KnGG9SiB/RpVtL2zqpjOEvK2Qn1KqwAVqqotklnRF
+         WW4HWUDQWenYVooUeCts4hBDfMuBsFXwxQO5hHMAwyuEiEmIUi17pS73DqbHbCu5Pjtg
+         AI5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1728568861; x=1729173661;
+        h=mime-version:content-transfer-encoding:msip_labels:content-language
+         :accept-language:message-id:date:thread-index:thread-topic:subject
+         :cc:to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=nG/WQiS4lYcy7d3p8AGh8+Vf8q14moIYTbsEQm/iOP8=;
+        b=KrbNjkad8lpoJOTBdxUMJMk5/wamxuIJ4j/bhQQ3w/j5ad/Awlz+nDRtzHLFI+PKTf
+         zBie8MPoKhAodVJvUVZowJpOIm+i2N0nc//opGuioP6nl9FHAJMy/iGogcyLKLbLeUBJ
+         mzkGHN/8o7Zj+HslvHSdPd5zFg00otz1OiZ98sQArnxeEZEy/I45XR27lVwDn1AII56t
+         WQRzyNRJDHlY+IZGm+pRfipveqftGgi1eRMrrF56fisaxyKy6pdNCDEfF6l9AeZiPY4X
+         SzHFA0iV1BHhBF/D8oiRIqjku5KhMi/Dcl5E4Lz75PZ+IplWbAGVqLM2JNkg26jv1nsa
+         RTgg==
+X-Gm-Message-State: AOJu0YxfZu2ryUuKjUXQF79sclH+dbDYjhk+hTVVnh2FIFeo/wPkiqy6
+	c1Ec24wMsr76GIYh/2ZDbfITHqOSesjKPERQyeMDi3E0JF+V0yg9bAtn1p/Y/og=
+X-Google-Smtp-Source: AGHT+IHu0/FG4+H8m/ycYIciBepQHBIDjm5B+pyl89w8CkZw2kwO4IDcMx2T2dSrhhMlQfCq3RT81A==
+X-Received: by 2002:a17:903:32c7:b0:20b:6f04:486a with SMTP id d9443c01a7336-20c63747072mr86589785ad.35.1728568859942;
+        Thu, 10 Oct 2024 07:00:59 -0700 (PDT)
+Received: from TYZPR04MB6425.apcprd04.prod.outlook.com ([2603:1046:c09:198f::5])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-20c8c0e75f0sm9805545ad.180.2024.10.10.07.00.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Oct 2024 07:00:59 -0700 (PDT)
+From: Sam Chiu <ruiqurm@gmail.com>
+To: "pierre.ficheux@smile.fr" <pierre.ficheux@smile.fr>
+CC: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Subject: Re: POSIX API for EVL
+Thread-Topic: POSIX API for EVL
+Thread-Index: AQHbGxpBTqu5yAsLaUmrMg/HUd/roA==
+X-MS-Exchange-MessageSentRepresentingType: 1
+Date: Thu, 10 Oct 2024 14:00:52 +0000
+Message-ID:
+	<TYZPR04MB64250B7A13A16179B0044F4DAA782@TYZPR04MB6425.apcprd04.prod.outlook.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach:
+X-MS-Exchange-Organization-SCL: -1
+X-MS-TNEF-Correlator:
+X-MS-Exchange-Organization-RecordReviewCfmType: 0
+msip_labels:
+Content-Type: text/plain; charset="gb2312"
 Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <75e938ae.7216.192754de7fe.Coremail.mars_liu2023@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:lSgvCgDX32J9gAdnezIKAA--.19089W
-X-CM-SenderInfo: 5pdu2sholxjiist6il2tof0z/xtbB0g50D2cHaLqMNAAHsq
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Authentication-Results: spool.mail.gandi.net;
+	dmarc=pass (policy=none) header.from=gmail.com;
+	spf=pass (spool.mail.gandi.net: domain of ruiqurm@gmail.com designates 2607:f8b0:4864:20::62d as permitted sender) smtp.mailfrom=ruiqurm@gmail.com
 
-CgoKCkF0IDIwMjQtMDktMjcgMjE6NDE6MDEsICJKYW4gS2lzemthIiA8amFuLmtpc3prYUBzaWVt
-ZW5zLmNvbT4gd3JvdGU6Cj5PbiAyNy4wOS4yNCAwOTowMCwgbWFyc19saXUgd3JvdGU6Cj4+IAo+
-PiAKPj4gaGkgeGVub21haSwKPj4gCj4+IGknbSB0cnlpbmcgdG8gdGVzdCBsYXRlbmN5IHdpdGgg
-ZnVsbCBjcHUgbG9hZCAuCj4+IAo+PiBpdCBoYXMgNCBjcHUgY29yZXMsYW5kIHRoZXJlIGFyZSB0
-d28gbW9kZSBjYXVzZSBmdWxsIGNwdSBsb2FkIDoKPj4gMS4gCj4+IGZvciBudW0gaW4gYHNlcSA0
-YCAKPj4gZG8KPj4gZGQgaWY9L2Rldi96ZXJvIG9mPS9kZXYvbnVsbCBicz0xNk0KPj4gZG9uZSAK
-Pj4gMi4KPj4gc3RyZXNzIC0tY3B1IDQgCj4+IAoKSSBtYXkgaGF2ZSBtaXhlZCB1cCB0aGUgd29y
-ZCAnbW9kZScgYWJvdmUuCgp0aGUgYXJndW1lbnQgZm9yICdsYXRlbmN5IC10JyBpcyBhbHdheXMg
-MChkZWZhdWx0KSBpbiB0aGlzIHRlc3QgLgoKdGhlICdtb2RlJyBpIG1lYW4gYSBtZXRob2QgYWJv
-dmUgdGhhdCBnZW5lcmF0ZSBjcHUgbG9hZCAuCgpzaG91bGQgaSB1c2UgJ3N0cmVzcyAtLWNwdScg
-b3IgJ2RkIGlmIC4uLi4uLicgdG8gZ2VuZXJhdGUgY3B1IGxvYWQgZm9yICdsYXRlbmN5IC10IDAn
-ID8gCgpSZWdhcmRzCgo=
+SGkuIEmhr20gYWxzbyBpbnRlcmVzdGVkIGluIHRoZSBQT1NJWCB3cmFwcGVyIGZvciB0aGUgRVZM
+IEFQSS4gQSBmZXcgbW9udGhzIGFnbywgSSB3b3JrZWQgb24gYSByZWxhdGVkIHByb2plY3QgYW5k
+IGRldmVsb3BlZCBhIHNpbXBsZSBkZW1vIHByb2dyYW0uIFlvdSBjYW4gZmluZCBpdCBoZXJlOiBo
+dHRwczovL2dpdGh1Yi5jb20vQlVQVC1PUy9saWJldmwvdHJlZS9wb3NpeC4gSG93ZXZlciwgaXSh
+r3Mgc3RpbGwganVzdCBhIHRveSBwcm9qZWN0LCBvbmx5IGluY2x1ZGluZyB0aHJlYWQgY3JlYXRp
+b24gYW5kIGxvY2tpbmcgZnVuY3Rpb25hbGl0eSwgYW5kIGl0IGhhc26hr3QgdW5kZXJnb25lIHJp
+Z29yb3VzIHRlc3RpbmcuIEmhr20gZ2xhZCB0byBzZWUgdGhhdCBzb21lb25lIGZpbmRzIHRoZSBm
+ZWF0dXJlcyB1c2VmdWwsIGFuZCBJoa9sbCBjb250aW51ZSB3b3JraW5nIG9uIHRoaXMgcHJvamVj
+dCBtb3ZpbmcgZm9yd2FyZC4=
