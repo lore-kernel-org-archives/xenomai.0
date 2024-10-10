@@ -1,37 +1,37 @@
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC0671C172A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C711F1BDA84
 	for <xenomai@lists.linux.dev>; Thu, 10 Oct 2024 22:30:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728599452; cv=none; b=ne8FBcQc9QzW/VUb1Uq7f3IMNGpaY1qMVs9LQBIeCIZw/h4VFtFFbgNtx2TG5J9WHROxUPbv/L1VKa3p3YsOR9O11kEcQT9JxQ6ZsvYiq3li8V0mc/1Ntv2rRT3vJExDgoCG96mKFsk1w1P1vOyadsYW/gS31Z8YjFylKTYahe4=
+	t=1728599452; cv=none; b=efEWc/Ck6IJQhzUCqkEY5YxUrIDGJ7XZyaVOGX0jaSCfGw+rXvWdIi6F6/CqsN5I0qLIyVwTCvL9bsokz6eIcTEW5i3jdJ0NIK0uRHV5T1uah4uc0OdKdc9iApVwQgb7BbrirXbBzqhlXtmoXO4UmcJ41TiJv2y7ylRWR7ifC3c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1728599452; c=relaxed/simple;
-	bh=18b4DPWMOdAkICUFSN4eR230R5O0L5KrTGhEHTx4Coc=;
+	bh=IZ6kXXN7ete1lIVDV4grJNbETK+j7IBIwI/87Zkak/g=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=l+uEOKDK6Ei8zXAPLxBPiUTx/1PYrXyzHsDFBAI2rOL9XXWP7tbh1aEKlHWCmAlfFdwqD+kaO0PBm0YWshdPQgAPBQDKpw8pe1pL8J7EyiegwH903vT3gnZMUOOI4y12lq0mWM6OA5rVoAPKIZvKkV5yYiqz+G8bQ/eUurkgXug=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=MfioZHe1; arc=none smtp.client-ip=185.136.64.225
+	 In-Reply-To:To:Cc; b=WNBUGs+8M1etQxazWCrKJ7e5eGBmNpBMtykqmkiNDwhDEXys4/sLRuQbrUaCXBMJKHkp9jqelb5b+6f6M0Stwev02PPzhuGm61TK2Gk7sjBdrvc8kPKFWuXa04aQNe3XsUhyT26u7L0rrRH/zj8G2tOHSkouUYP19Q3ZoEHneD4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=IU7uxOIC; arc=none smtp.client-ip=185.136.65.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="MfioZHe1"
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 202410102230467b907aedf5162fe30a
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="IU7uxOIC"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20241010223045e1e558c9b6df76868e
         for <xenomai@lists.linux.dev>;
-        Fri, 11 Oct 2024 00:30:46 +0200
+        Fri, 11 Oct 2024 00:30:45 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=vb1Cem8qGsYbr32AngMK5ysQDiBO7nGMNHo8AKw8PdU=;
- b=MfioZHe1iFhRqsvzcbZ7rnYTNnDi12O9wO0N2MOx6W0IHyrVz7vvr1S/gmQY+3CZ3fjwFa
- lEq/mVeAYFPqbwcCwjOgeYjl5F//WLbxrt1oDzDPlKvayYuoZkpzCzxeVyAJqQO72LYO0mNo
- JqHOvS8yNyIqS0ZnjHa4hly3kAmWo0NzbxYUgTZpT/TbUBAD/lO9FzdMxte9mueKZcBb5P/w
- NE0RhxRQVXtO3iGF3MNxgBlOAVqCBdfJxca8KjnjHq3sLcU+NKpf+wXqvpOXEstnWAzruzCP
- 3+ofXPx8ELakJ77y87qgS+N64u2Cl6sXk/5zGXsZN7Y2fjO+1JrjBUSg==;
+ bh=11NlSVTFlRIqt1mmuykTTufxvi2npXV9q4h739z5elQ=;
+ b=IU7uxOICPEFdRVFfdl0ANASmx5UDuEt9GZPB/bKBOiUzqpINuKUxwHNprG1FNQPLvqivoS
+ lv0QqEu4Z04cbkSEod9yJsNAL5vVilSp4IuEC9cYSh4AeTIwf42zJHn1euojWZ1/y17sB+fJ
+ mYU4L8dlXa2vvBgT4EsGCWwMCRd+q8MeTGACKWmBb/L6fD1vn6q4GOvoC5O+iXGOpECRnal2
+ kIGfBLa3jjrHFzeI15tbDru901Jxa/MJS/4Fu2fHGWavRDDvXPs/WAcKW8pNfPlpWNzLq4RD
+ 2PCW1MW6nBWbAcfcvRlbv5xxMBnoWLHsobVIUGJviK0TuvQb9LfkzhIg==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 11 Oct 2024 00:30:47 +0200
-Subject: [PATCH v2 3/4] y2038: lib/cobalt: vdso: Fix runtime error detected
- on Debian 13
+Date: Fri, 11 Oct 2024 00:30:45 +0200
+Subject: [PATCH v2 1/4] y2038: lib/cobalt: select: Fix compile failure
+ observed on Debian 13
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -39,8 +39,8 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20241011-flo-cleanup-y2038-v2-3-0ef0d52cf9c1@siemens.com>
+Content-Transfer-Encoding: 8bit
+Message-Id: <20241011-flo-cleanup-y2038-v2-1-0ef0d52cf9c1@siemens.com>
 References: <20241011-flo-cleanup-y2038-v2-0-0ef0d52cf9c1@siemens.com>
 In-Reply-To: <20241011-flo-cleanup-y2038-v2-0-0ef0d52cf9c1@siemens.com>
 To: xenomai@lists.linux.dev
@@ -49,30 +49,97 @@ Cc: Jan Kisza <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Runtime error on a 64 bit application:
-testsuite/smokey/.libs/smokey: __vdso_clock_gettime64 not found in vDSO: No such file or directory
+The following build failure was detected on Debian sid/trixie:
 
-Reason: Due to the changed __USE_TIME_BITS64 behavior the vDSO init
-fails. __vdso_clock_gettime64 is only defined for compat applications.
+select.c: In function ‘do_select’:
+select.c:55:23: error: implicit declaration of function ‘__real___select64’; did you mean ‘__real_select’? [-Wimplicit-function-declaration]
+   55 |                 err = __STD(__select64(__nfds, __readfds, __writefds,
+      |                       ^~~~~
+
+The problem here is now the changed behavior of the __USE_TIME_BITS64
+macro. Up to glibc 2.39 this was only set/defined when building a
+compat application. So when time_t was "upgraded" from 4 to 8 bytes.
+
+From glibc 2.40 onwards this macro will always be defined when time_t
+is 8 bytes. So we basically run into the different code paths when
+building 64 bit applications.
+
+__select64() is only provided by glibc for 32 bit targets. 64 bit
+variants don't have this function/symbol. We need to check upfront
+if the symbol exists. If so use it, otherwise fall back to select().
+This is the fix for the time64_t world.
+
+For the compat case we were missing the proper prototype produced
+by COBALT_DECL_TIME64. The macro has been updated to address this
+issue.
+
+Nice side effect: Should increase the support of libc implementations
+where time_t is always 8 bytes, like musl.
+
+The glibc commit that changed the behavior can be found at [1].
+
+[1] https://sourceware.org/git/?p=glibc.git;a=commitdiff;h=a4ed0471d71739928a0d0fa3258b3ff3b158e9b9;hp=a0698a5e92ceeed3409d28623b1d599da6bc887d
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- lib/cobalt/arch/x86/include/asm/xenomai/time.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ configure.ac              | 3 ++-
+ include/cobalt/wrappers.h | 1 +
+ lib/cobalt/select.c       | 7 ++++++-
+ 3 files changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/lib/cobalt/arch/x86/include/asm/xenomai/time.h b/lib/cobalt/arch/x86/include/asm/xenomai/time.h
-index 18eb76697..36e027329 100644
---- a/lib/cobalt/arch/x86/include/asm/xenomai/time.h
-+++ b/lib/cobalt/arch/x86/include/asm/xenomai/time.h
-@@ -12,7 +12,7 @@
+diff --git a/configure.ac b/configure.ac
+index aa3794a5f..2a9d49973 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -570,7 +570,8 @@ AC_CHECK_FUNCS([pthread_mutexattr_setprotocol	\
+ 		clock_nanosleep			\
+ 		shm_open			\
+ 		shm_unlink			\
+-		backtrace])
++		backtrace			\
++		__select64])
+ LIBS="$save_LIBS"
  
- #define COBALT_VDSO_VERSION	"LINUX_2.6"
- 
--#ifdef __USE_TIME_BITS64
-+#if __USE_TIME_BITS64 && __TIMESIZE == 32
- #define COBALT_VDSO_GETTIME	"__vdso_clock_gettime64"
+ save_CPPFLAGS="$CPPFLAGS"
+diff --git a/include/cobalt/wrappers.h b/include/cobalt/wrappers.h
+index 4fcb1c3b9..b6416ce63 100644
+--- a/include/cobalt/wrappers.h
++++ b/include/cobalt/wrappers.h
+@@ -38,6 +38,7 @@
+ 		__attribute__((alias("__cobalt_" __stringify(FN)), weak));     \
+ 	COBALT_IMPL(T, FN, I)
+ #define COBALT_DECL_TIME64(T, FN, A, I)                                        \
++	__typeof__(T) __STD(A) I;                                              \
+ 	extern T __REDIRECT_NTH(__STD(FN), I, __real_##A);                     \
+ 	COBALT_DECL(T, FN, I)
  #else
- #define COBALT_VDSO_GETTIME	"__vdso_clock_gettime"
+diff --git a/lib/cobalt/select.c b/lib/cobalt/select.c
+index 9577fa256..ca81bd36f 100644
+--- a/lib/cobalt/select.c
++++ b/lib/cobalt/select.c
+@@ -27,6 +27,7 @@
+  * There is no y2038 safe syscall for select() itself, but we have pselect()
+  * without signal support.
+  */
++
+ static inline int do_select(int __nfds, fd_set *__restrict __readfds,
+ 			      fd_set *__restrict __writefds,
+ 			      fd_set *__restrict __exceptfds,
+@@ -52,9 +53,13 @@ static inline int do_select(int __nfds, fd_set *__restrict __readfds,
+ 	pthread_setcanceltype(oldtype, NULL);
+ 
+ 	if (err == -EADV || err == -EPERM || err == -ENOSYS)
++#ifdef HAVE___SELECT64
+ 		err = __STD(__select64(__nfds, __readfds, __writefds,
+ 				       __exceptfds, __timeout));
+-
++#else
++		err = __STD(select(__nfds, __readfds, __writefds, __exceptfds,
++				   __timeout));
++#endif
+ 	if (err >= 0)
+ 		return err;
+ 
 
 -- 
 2.39.5
