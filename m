@@ -1,36 +1,37 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E482628E7
-	for <xenomai@lists.linux.dev>; Fri, 11 Oct 2024 13:37:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C5AA2185B1
+	for <xenomai@lists.linux.dev>; Fri, 11 Oct 2024 13:37:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728653877; cv=none; b=odi8wz0rjIc7nvzfLBK/A5XpSCAZ1pdlt5zCgz6TwiYOXh0OokMCS3aP0WcRwLZ2ueZJYw6t8M0Aqha/ohJHLG/C7I/UgpKIGFStfI87FNWHjEHS0zlkwKLLgtRKluAaOj4bCOfZKhb9+oz6+3sgUbIHqz5go9axNGMVvYUt6hU=
+	t=1728653877; cv=none; b=sEXyqvjut6x7ij6UFpU3bUc3doh8F//njPB306jupVc9pcY876tiD+2b42pLf+jm9DOsrNtUxt6rt7TEyYYG3JehIePuVEENO4YtY1kuFZShjfi1PcdlQyjqIo1i6cggtcTt746UgbPlFTcvWQekbIFEB2YtCwXJ/FI6DdXYfuE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1728653877; c=relaxed/simple;
-	bh=xIhCGx1pRsxAn5ZAGaekj9WrVy5ITkUV/t4PVq1ZNJ4=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=rE6057rubfLjYS5HSZqvQsXyAX4PyNmhA76jOb8/PqZhgD5ehLCqRhUgNN9aMWQ8x7HtmzccPqPQuP/jB+51xNSgojYOyHCgvHE24ky0QBwP5wwHKFtMIlBfUpdrVF0rWSlPPTXwVhuQNe3RVUyP0mMa/YAyvUOlA6MMMjc4wmA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=YiS852XH; arc=none smtp.client-ip=185.136.65.225
+	bh=MN4UCH4c/bjbBobJNGQfhfptc1tyyZqMz7db5Ooggtg=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=ULjzCf89n6p/T6IW8C0Frkm106bXZi0zLR+qP5PLRSRRiG45hp5WXBTgha+z1A8DjQl0SclsIerjcPdTO13x/kQMyvwrZ49YZ6Lq3bWDGjkJZ+QbVBWAWs2P2KfjqI2irZz7/y9cy6ENHGPJTbw1uYt8rpBmBU7K5dr5d+rf29A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=M0an1iaX; arc=none smtp.client-ip=185.136.64.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="YiS852XH"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20241011133749901e676c828def7c91
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="M0an1iaX"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20241011133751f70078cf3749b0bb2a
         for <xenomai@lists.linux.dev>;
-        Fri, 11 Oct 2024 15:37:50 +0200
+        Fri, 11 Oct 2024 15:37:51 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=2A/9CGMB5bphwiVGxehQt3r9JvVtcgZgNZpbbfq7Jpk=;
- b=YiS852XH7eu2Xw73FYpSr0hMZpos4bETfn4ak1VGlE9S4JRoz8h3aMJrMO5+we5VV60szo
- L08bWhYrwkpys3shfVdj0DSRZawkRusBhOfDmnURJJWFFGY1XKxbJZsg2KLLsdEuy7Sq5glQ
- 69vreibX7bX9vJLKEG0662fSukyz0XjerKgIjlUR57BhpAqinK39OypTGmQzPJ+EW86bIS8G
- 7dIG51Ltuxc6YFcGBA7QwxnB3uNsUOmJw/dkb83mET5KStmzQ21UTfAjEnT4VjL6+FZM5y15
- H41dO/y/2x932gXejndCy9tvDU4yWBn166cKStct64uk9v1x9KElJHug==;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=lla19PsMixOhkr3IvFoYZnpEp/krSoKiyqx4rNEtdcU=;
+ b=M0an1iaXMitAH1tbAdW2KIUhwFkxQ5SYpodLa/HgTdPaZntKCcr/otN6mLwPZOdoVE+wD1
+ 2tD2dF1hVZ7CbEClms5Ndn3HzjDqc3ITpFKjDvaIEnlkG5F+yDlzUCfTrIJrXZZ7szYIpAF0
+ 94u2H574ku/HTVCMSP5CDNWsVKs5rmSAmOxtmD1mCqfelz5CCl0/GXRDrNQYt1S6VOgpKHlj
+ tKbjC91XZk8OSydhTYWr2wg5HX04lPzy7fsH0si8nlvMYsjGuKuW8yFWjZE/yrwXmiq7cYiI
+ y6zZq/AHbbS1roD0oDaYON1AvMCfXMms6r7gJSun/4hezQD+hVIcU8Aw==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v4 0/4] Preparations for Debian 13 / Trixie
-Date: Fri, 11 Oct 2024 15:37:48 +0200
-Message-Id: <20241011-flo-cleanup-y2038-v4-0-788b3a4bf3cc@siemens.com>
+Date: Fri, 11 Oct 2024 15:37:52 +0200
+Subject: [PATCH v4 4/4] y2038: testsuite/clocktest: Fix link compile error
+ observed on Debian 13
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -38,72 +39,62 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIACwqCWcC/4WNyw6CMBBFf4V0bc205aUr/8O4KGUqTaCQVoiE8
- O8O7IyJLM9N7jkLixgcRnZNFhZwctH1niA9Jcw02j+Ru5qYSZCpACG4bXtuWtR+HPgsQZU8R6V
- sYXQOuWb0q3REXgXtTUNPP7YtjUNA69576P4gblx89WHeu5PY1n+JSXDgaZVVAEVpqXSLDjv08
- Wz6jm2+SR46JDkALdSZNPZixK9DHToUOWSeFUqB1bW4fDvWdf0AeE1kelEBAAA=
+Content-Transfer-Encoding: 8bit
+Message-Id: <20241011-flo-cleanup-y2038-v4-4-788b3a4bf3cc@siemens.com>
+References: <20241011-flo-cleanup-y2038-v4-0-788b3a4bf3cc@siemens.com>
+In-Reply-To: <20241011-flo-cleanup-y2038-v4-0-788b3a4bf3cc@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: Jan Kisza <jan.kiszka@siemens.com>, 
  Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi all,
+The following build failure was detected on Debian sid/trixie:
 
-as we are already in the preparation phase for a new release I took the
-task to clarify that the upcoming release is in a good shape regarding
-the upcoming Debian 13 next year.
+clocktest.c: In function ‘read_reference_clock’:
+clocktest.c:90:17: error: ‘SYS_clock_gettime64’ undeclared (first use in this function); did you mean ‘SYS_clock_gettime’?
+   90 |         syscall(SYS_clock_gettime64, CLOCK_REALTIME, &ts);
+      |                 ^~~~~~~~~~~~~~~~~~~
+      |                 SYS_clock_gettime
 
-As it turned out a couple of minor issues had to be addressed to make
-the upcoming release ready for glibc and compilers shipped by Debian 13.
+The problem here is once again the changed behavior of the
+__USE_TIME_BITS64 macro. Up to glibc 2.39 this was only set/defined when
+building a compat application. So when time_t was "upgraded" from 4 to 8
+bytes.
 
-The y2038 implementation needs a couple of fixes due to changes made in
-glibc. For some reason they decided to change __USE_TIME_BITS64 macro.
-The commit that introduced the change is linked in the following
-patches.
+From glibc 2.40 onwards this macro will always be defined when time_t
+is 8 bytes. So we basically run into the different code paths when
+building 64 bit applications.
 
-Testing on Debian 13 was done manually so far, Debian 12 was covered by
-internal CI runs.
+The reason for the compile error is that SYS_clock_gettime64() are only
+provided by glibc when building compat applications.
 
-Best regards,
-Florian
+Nice side effect: Should increase the support of libc implementations
+where time_t is always 8 bytes, like musl.
 
-Cc: Jan Kisza <jan.kiszka@siemens.com>
+The glibc commit that changed the behavior can be found at [1].
+
+[1] https://sourceware.org/git/?p=glibc.git;a=commitdiff;h=a4ed0471d71739928a0d0fa3258b3ff3b158e9b9;hp=a0698a5e92ceeed3409d28623b1d599da6bc887d
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
-Changes in v4:
-- Slightly adjusted patch descriptions
-- Removed probing for __select() in Patch 1, replaced by proper libc
-  macro usage.
-- Link to v3: https://lore.kernel.org/r/20241011-flo-cleanup-y2038-v3-0-2657330fad19@siemens.com
+ testsuite/clocktest/clocktest.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Changes in v3:
-- Integrated review comments, harmonized libc macro usage
-- Link to v2: https://lore.kernel.org/r/20241011-flo-cleanup-y2038-v2-0-0ef0d52cf9c1@siemens.com
+diff --git a/testsuite/clocktest/clocktest.c b/testsuite/clocktest/clocktest.c
+index a611ee889..4d87ee700 100644
+--- a/testsuite/clocktest/clocktest.c
++++ b/testsuite/clocktest/clocktest.c
+@@ -86,7 +86,7 @@ static inline uint64_t read_reference_clock(void)
+ 	 * Make sure we do not pick the vsyscall variant. It won't
+ 	 * switch us into secondary mode and can easily deadlock.
+ 	 */
+-#if __USE_TIME_BITS64
++#if __USE_TIME_BITS64 && __TIMESIZE == 32
+ 	syscall(SYS_clock_gettime64, CLOCK_REALTIME, &ts);
+ #else
+ 	syscall(SYS_clock_gettime, CLOCK_REALTIME, &ts);
 
-Changes in v2:
-- Seems it's too late for configuring b4 correctly... Lost one patch...
-- Link to v1: https://lore.kernel.org/r/20241011-flo-cleanup-y2038-v1-0-4b5b0078fa60@siemens.com
-
----
-Florian Bezdeka (4):
-      y2038: lib/cobalt: select: Fix compile failure observed on Debian 13
-      y2038: lib/cobalt: Fix link failure observed on Debian 13
-      y2038: lib/cobalt: vdso: Fix runtime error detected on Debian 13
-      y2038: testsuite/clocktest: Fix link compile error observed on Debian 13
-
- include/cobalt/wrappers.h                      | 3 ++-
- lib/cobalt/arch/x86/include/asm/xenomai/time.h | 2 +-
- lib/cobalt/select.c                            | 2 +-
- testsuite/clocktest/clocktest.c                | 2 +-
- 4 files changed, 5 insertions(+), 4 deletions(-)
----
-base-commit: 86c4592bee073d6bcd21b16dbd13b0d60af202dc
-change-id: 20241011-flo-cleanup-y2038-6e33f7ca606a
-
-Best regards,
 -- 
-Florian Bezdeka <florian.bezdeka@siemens.com>
+2.39.5
 
