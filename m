@@ -1,37 +1,37 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F5A315443C
-	for <xenomai@lists.linux.dev>; Sat, 12 Oct 2024 10:26:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C270154434
+	for <xenomai@lists.linux.dev>; Sat, 12 Oct 2024 10:26:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728728817; cv=none; b=Cb40jPhBJUyfzvSDXWe2n63hRvHcm3IPY1rmDjeqHfuVEY53UEYTSTk0VRKlGkhrRYbcjUJxwxUgE4tor21ypYjbRFQruvwJ9dO9PygY2yNkqUkQExR2ja2tjQgqNnHIhZHg/BFzL5HkwdOH9asSxVUaW9rtgKtHWvz5E4uN/NM=
+	t=1728728817; cv=none; b=U6dHXHNn4DjiAOAiIrktTy/oBn3H7vu5NPeKEHnta7R5NZ+AMnmzpgejOoCvY8+Z0REAKIOAxjvIrqXwhPPBRXLIKtw4LMQYp7G8IlwdVWFVBxRdqj9ApuAua+gzhtyUkTF+oFM7VxFl+eLLyNKlMFA5YSxdEFqg6TjnbYhLUBw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1728728817; c=relaxed/simple;
-	bh=mJST6nmvc9qP2A4+dNuHMsVnOQZNyGqLX4ovxJPmEz0=;
+	bh=lRpN8WUBwd1YX1Ro3cdooh4wKiVIuPpjDSHSOzvjO+0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=GlX6DKmk+JVUC7lWw7dzuV1Z8JLKtYz+1j1jw40+lB40H4+wbgduMoiuFwwLKL8e8zJUVvVs68j5/W8a9akZPJnLrlJFqXQvNSnMlLGUh4MiEr6SsiTdte/ZiHKMdt9Y4wRI1gks9gN6m37KB7qcAk4ljBQcsY/xUuJwLybOIRA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=F5ozx5jQ; arc=none smtp.client-ip=185.136.64.227
+	 In-Reply-To:To:Cc; b=G3QjK6jqtPHEj3loLY4yCDUiN0beM4ztKGx7WJvYdN4uCvKITZH6ZdLtBj564AeJLQhOhV/eiDNofjViUcGwe8aQfpvr7ie4rLaTGXq2d9Yz+9c/jIm1i6ATs2tSBnk8L+lQPG4pCEDghROXZC6Kt9X59Qk3LvXYvZ9MKQFFnGg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=AfXly7Vw; arc=none smtp.client-ip=185.136.64.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="F5ozx5jQ"
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20241012102645d9dd805f35d50e9207
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="AfXly7Vw"
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20241012102645bb166f9a1fcd5c9f0d
         for <xenomai@lists.linux.dev>;
         Sat, 12 Oct 2024 12:26:45 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=xtdbBR286hXFsspbA+hrzwkTHgk7LluGF2oCjXqMD9I=;
- b=F5ozx5jQ3Td7A5Cbojb9pBzX2SRIoEFULO3kAF0wxlXCcPRIqjdtO5Essmvno78W5xPgsh
- 4dOajMVhp1pbeid6BpHffOk1Z+vSxS6/bmIgmd6zNTY6R87Y38aCBEkTyp1e++g59WX3Mysi
- 8eoBjoD1M0vBlKeMPJFymvy0BgIa/wWDBq6HOjmgGRFNcVSGIV//P1/eTzibCB35hYdMWSvA
- cXMmEsxsnjJlUIdkbD1z5LwlpcMyF6njNq7oKrd0+FBVi+WeH+4QGdmxpArJguwaq/JPrFsJ
- EprAVUE/HEXWkXd95Bw9vblNVOEEilLyKHsIFN3uGdeaeJCnnBQ9ZCaw==;
+ bh=gAQAlGJn8Q6q4OayZ3ywo+bHvayijxD6fOr+A5AbYbs=;
+ b=AfXly7VwUr8LRLm9lgAkIFMX5JRiosn5oriQRqhqvW84TgFr/KG4qZsGSg5xXswDLcNOwX
+ A2qQ52zZ7pFJviCc1FxkCZnY+Dlbra3aNj6z+gm2FC1BDePIiNcCrDOQTebnTDCj2cstbq8s
+ z7hdOIIXx1b9cyClnLq1IVM9ud9SqGwyNffuqgkpjjrg2Az8TFIffJsPUW+SHgH/ciKXhy1Q
+ EhmAWQefpyXdL1clvOSR/iTe8ZR/QDYORR8gy6iCbPw7BRajUmIBEZRz6nRyaXotgMTdyFx1
+ oThFDscx9mNGF2rYF+OGlJcDpq+kSEc6xZ7vS2CaUBA5ayRsTUZMKd9A==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Sat, 12 Oct 2024 12:26:46 +0200
-Subject: [PATCH 7/7] cobalt: syscall API: Remove architecture specific
- parts
+Date: Sat, 12 Oct 2024 12:26:45 +0200
+Subject: [PATCH 6/7] cobalt: sycall API: Reformat all XENOMAI_SYSCALLx call
+ sites
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20241012-flo-cleanup-before-release-v1-7-df05bfa0ac80@siemens.com>
+Message-Id: <20241012-flo-cleanup-before-release-v1-6-df05bfa0ac80@siemens.com>
 References: <20241012-flo-cleanup-before-release-v1-0-df05bfa0ac80@siemens.com>
 In-Reply-To: <20241012-flo-cleanup-before-release-v1-0-df05bfa0ac80@siemens.com>
 To: xenomai@lists.linux.dev
@@ -50,793 +50,389 @@ Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-As all supported architectures follow the Linux syscall API now we can
-remove most of the architecture specific syscall bits and migrate to
-Linux APIs for fetching syscall number and syscall arguments.
-
-The same applies to the other direction. Writing the syscall result
-into architecture specific registers is now handled by the Linux APIs
-as well.
-
-The architecture specific API is now limited to one function, namely
-arch_is_valid_linux_sycall(). armhf needs additional checking here.
-
-With that refactoring and cleanup applied the transition to a prctl()
-based syscall API should be easy.
+Reformatting to clang-format rules only. No functional change.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- .../kernel/dovetail/pipeline/vdso_fallback.h       | 19 +++---
- include/cobalt/kernel/rtdm/fd.h                    |  1 -
- include/cobalt/uapi/asm-generic/syscall.h          |  1 -
- .../cobalt/arch/arm/include/asm/xenomai/syscall.h  | 51 ++--------------
- .../arch/arm/include/asm/xenomai/uapi/syscall.h    | 28 ---------
- .../arch/arm64/include/asm/xenomai/syscall.h       | 47 ++-------------
- .../arch/arm64/include/asm/xenomai/uapi/syscall.h  | 28 ---------
- .../cobalt/arch/x86/include/asm/xenomai/syscall.h  | 53 ++--------------
- .../arch/x86/include/asm/xenomai/uapi/syscall.h    | 23 -------
- kernel/cobalt/dovetail/syscall.c                   | 34 +++++++++--
- .../cobalt/include/asm-generic/xenomai/syscall.h   | 26 ++++++++
- .../cobalt/include/asm-generic/xenomai/syscall32.h | 20 ++-----
- kernel/cobalt/posix/syscall.c                      | 70 +++++++++++-----------
- kernel/cobalt/posix/syscall.h                      |  7 ++-
- kernel/cobalt/rtdm/fd.c                            |  7 ++-
- 15 files changed, 122 insertions(+), 293 deletions(-)
+ lib/cobalt/clock.c                     |  8 ++++----
+ lib/cobalt/cond.c                      |  8 ++++----
+ lib/cobalt/internal.c                  | 18 +++++++++---------
+ lib/cobalt/rtdm.c                      | 17 +++++++++--------
+ lib/cobalt/sched.c                     | 21 ++++++++++-----------
+ lib/cobalt/select.c                    |  4 ++--
+ lib/cobalt/semaphore.c                 | 11 +++++------
+ lib/cobalt/thread.c                    | 21 ++++++++++-----------
+ lib/cobalt/timer.c                     |  2 +-
+ lib/cobalt/trace.c                     |  4 ++--
+ testsuite/smokey/y2038/syscall-tests.c |  4 ++--
+ 11 files changed, 58 insertions(+), 60 deletions(-)
 
-diff --git a/include/cobalt/kernel/dovetail/pipeline/vdso_fallback.h b/include/cobalt/kernel/dovetail/pipeline/vdso_fallback.h
-index 07de643e4..9e2a02b22 100644
---- a/include/cobalt/kernel/dovetail/pipeline/vdso_fallback.h
-+++ b/include/cobalt/kernel/dovetail/pipeline/vdso_fallback.h
-@@ -20,25 +20,21 @@
- #define is_clock_gettime64(__nr)	((__nr) == __NR_clock_gettime64)
+diff --git a/lib/cobalt/clock.c b/lib/cobalt/clock.c
+index 297249d22..ca30cde56 100644
+--- a/lib/cobalt/clock.c
++++ b/lib/cobalt/clock.c
+@@ -288,11 +288,11 @@ COBALT_IMPL_TIME64(int, clock_nanosleep, __clock_nanosleep_time64,
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+ 
+ #ifdef __USE_TIME_BITS64
+-	ret = -XENOMAI_SYSCALL4(sc_cobalt_clock_nanosleep64,
+-				clock_id, flags, rqtp, rmtp);
++	ret = -XENOMAI_SYSCALL4(sc_cobalt_clock_nanosleep64, clock_id, flags,
++				rqtp, rmtp);
+ #else
+-	ret = -XENOMAI_SYSCALL4(sc_cobalt_clock_nanosleep,
+-				clock_id, flags, rqtp, rmtp);
++	ret = -XENOMAI_SYSCALL4(sc_cobalt_clock_nanosleep, clock_id, flags,
++				rqtp, rmtp);
  #endif
  
--static __always_inline bool 
--pipeline_handle_vdso_fallback(int nr, struct pt_regs *regs)
-+static __always_inline bool pipeline_handle_vdso_fallback(struct pt_regs *regs,
-+							  unsigned int nr,
-+							  unsigned long *args)
+ 	pthread_setcanceltype(oldtype, NULL);
+diff --git a/lib/cobalt/cond.c b/lib/cobalt/cond.c
+index a48395e71..265ac7fbc 100644
+--- a/lib/cobalt/cond.c
++++ b/lib/cobalt/cond.c
+@@ -138,7 +138,7 @@ COBALT_IMPL(int, pthread_cond_init, (pthread_cond_t *cond,
+ 		return err;
+ 	kcattr.clock = tmp;
+ 
+-	err = -XENOMAI_SYSCALL2( sc_cobalt_cond_init, _cnd, &kcattr);
++	err = -XENOMAI_SYSCALL2(sc_cobalt_cond_init, _cnd, &kcattr);
+ 	if (err)
+ 		return err;
+ 
+@@ -206,7 +206,7 @@ COBALT_IMPL(int, pthread_cond_destroy, (pthread_cond_t *cond))
+ 	if (_cond->magic != COBALT_COND_MAGIC)
+ 		return (cobalt_cond_autoinit_type(cond) < 0) ? EINVAL : 0;
+ 
+-	return -XENOMAI_SYSCALL1( sc_cobalt_cond_destroy, _cond);
++	return -XENOMAI_SYSCALL1(sc_cobalt_cond_destroy, _cond);
+ }
+ 
+ struct cobalt_cond_cleanup_t {
+@@ -222,8 +222,8 @@ static void __pthread_cond_cleanup(void *data)
+ 	int err;
+ 
+ 	do {
+-		err = XENOMAI_SYSCALL2(sc_cobalt_cond_wait_epilogue,
+-				       c->cond, c->mutex);
++		err = XENOMAI_SYSCALL2(sc_cobalt_cond_wait_epilogue, c->cond,
++				       c->mutex);
+ 	} while (err == -EINTR);
+ 
+ 	c->mutex->lockcnt = c->count;
+diff --git a/lib/cobalt/internal.c b/lib/cobalt/internal.c
+index 5858c2bf6..f6519d966 100644
+--- a/lib/cobalt/internal.c
++++ b/lib/cobalt/internal.c
+@@ -482,11 +482,11 @@ int cobalt_event_wait(cobalt_event_t *event,
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+ 
+ #ifdef __USE_TIME_BITS64
+-	ret = XENOMAI_SYSCALL5(sc_cobalt_event_wait64,
+-			       event, bits, bits_r, mode, timeout);
++	ret = XENOMAI_SYSCALL5(sc_cobalt_event_wait64, event, bits, bits_r,
++			       mode, timeout);
+ #else
+-	ret = XENOMAI_SYSCALL5(sc_cobalt_event_wait,
+-			       event, bits, bits_r, mode, timeout);
++	ret = XENOMAI_SYSCALL5(sc_cobalt_event_wait, event, bits, bits_r, mode,
++			       timeout);
+ #endif
+ 
+ 	pthread_setcanceltype(oldtype, NULL);
+@@ -506,17 +506,17 @@ int cobalt_event_inquire(cobalt_event_t *event,
+ 			 struct cobalt_event_info *info,
+ 			 pid_t *waitlist, size_t waitsz)
  {
- 	struct __kernel_old_timespec __user *u_old_ts;
- 	struct __kernel_timespec uts, __user *u_uts;
- 	struct __kernel_old_timespec old_ts;
- 	struct timespec64 ts64;
--	int clock_id, ret = 0;
--	unsigned long args[6];
-+	int clock_id;
-+	int error;
-+	int ret = 0;
- 
- 	if (!is_clock_gettime(nr) && !is_clock_gettime64(nr))
- 		return false;
- 
--	/*
--	 * We need to fetch the args again because not all archs use the same
--	 * calling convention for Linux and Xenomai syscalls.
--	 */
--	syscall_get_arguments(current, regs, args);
--
- 	clock_id = (int)args[0];
- 	switch (clock_id) {
- 	case CLOCK_MONOTONIC:
-@@ -65,7 +61,8 @@ pipeline_handle_vdso_fallback(int nr, struct pt_regs *regs)
- 			ret = -EFAULT;
- 	}
- 
--	__xn_status_return(regs, ret);
-+	error = IS_ERR_VALUE((long)ret) ? ret : 0;
-+	syscall_set_return_value(current, regs, error, ret);
- 
- 	return true;
+-	return XENOMAI_SYSCALL4(sc_cobalt_event_inquire, event,
+-				info, waitlist, waitsz);
++	return XENOMAI_SYSCALL4(sc_cobalt_event_inquire, event, info, waitlist,
++				waitsz);
  }
-diff --git a/include/cobalt/kernel/rtdm/fd.h b/include/cobalt/kernel/rtdm/fd.h
-index 176c67e22..80f07627b 100644
---- a/include/cobalt/kernel/rtdm/fd.h
-+++ b/include/cobalt/kernel/rtdm/fd.h
-@@ -24,7 +24,6 @@
- #include <linux/socket.h>
- #include <linux/file.h>
- #include <cobalt/kernel/tree.h>
--#include <asm-generic/xenomai/syscall.h>
  
- struct vm_area_struct;
- struct rtdm_fd;
-diff --git a/include/cobalt/uapi/asm-generic/syscall.h b/include/cobalt/uapi/asm-generic/syscall.h
-index b38b241ec..0af24f125 100644
---- a/include/cobalt/uapi/asm-generic/syscall.h
-+++ b/include/cobalt/uapi/asm-generic/syscall.h
-@@ -20,7 +20,6 @@
- 
- #include <linux/types.h>
- #include <asm/xenomai/uapi/features.h>
--#include <asm/xenomai/uapi/syscall.h>
- 
- #define __COBALT_SYSCALL_BIT	0x10000000
- 
-diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm/include/asm/xenomai/syscall.h
-index 0cd59380d..9f8b2a181 100644
---- a/kernel/cobalt/arch/arm/include/asm/xenomai/syscall.h
-+++ b/kernel/cobalt/arch/arm/include/asm/xenomai/syscall.h
-@@ -22,57 +22,14 @@
- #ifndef _COBALT_ARM_SYSCALL_H
- #define _COBALT_ARM_SYSCALL_H
- 
--#include <linux/errno.h>
--#include <linux/uaccess.h>
-+#include <asm/syscall.h>
- #include <asm/unistd.h>
--#include <asm/ptrace.h>
- #include <asm-generic/xenomai/syscall.h>
-+#include <linux/types.h>
- 
--/*
-- * Cobalt syscall and Linux syscall numbers can be fetched directly from
-- * ARM_r7. Since we have to work with Dovetail whilst remaining binary
-- * compatible with applications built for the I-pipe, the syscall signature
-- * is possibly ORed with __COBALT_SYSCALL_BIT by Dovetail (IPIPE_COMPAT
-- * mode).
-- *
-- * FIXME: We also have __COBALT_SYSCALL_BIT (equal to
-- * __OOB_SYSCALL_BIT) present in the actual syscall number in r0,
-- * which is pretty much useless. Oh, well...  When support for the
-- * I-pipe is dropped, we may switch back to the regular convention
-- * Dovetail abides by, with the actual syscall number into r7 ORed
-- * with __OOB_SYSCALL_BIT, freeing r0 for passing a call argument.
-- */
--#define __xn_reg_sys(__regs)	((__regs)->ARM_r7)
--#define __xn_syscall_p(__regs)	((__regs)->ARM_r7 & __COBALT_SYSCALL_BIT)
--#define __xn_syscall(__regs)	(__xn_reg_sys(__regs) & ~__COBALT_SYSCALL_BIT)
--
--/*
-- * Root syscall number with predicate (valid only if
-- * !__xn_syscall_p(__regs)).
-- */
--#define __xn_rootcall_p(__regs, __code)					\
--	({								\
--		*(__code) = (__regs)->ARM_r7;				\
--		*(__code) < NR_syscalls || *(__code) >= __ARM_NR_BASE;	\
--	})
--
--#define __xn_reg_rval(__regs)	((__regs)->ARM_r0)
--#define __xn_reg_pc(__regs)	((__regs)->ARM_ip)
--#define __xn_reg_sp(__regs)	((__regs)->ARM_sp)
--
--static inline void __xn_error_return(struct pt_regs *regs, int v)
--{
--	__xn_reg_rval(regs) = v;
--}
--
--static inline void __xn_status_return(struct pt_regs *regs, long v)
--{
--	__xn_reg_rval(regs) = v;
--}
--
--static inline int __xn_interrupted_p(struct pt_regs *regs)
-+static inline bool arch_is_valid_linux_syscall(unsigned int nr)
+ int cobalt_sem_inquire(sem_t *sem, struct cobalt_sem_info *info,
+ 		       pid_t *waitlist, size_t waitsz)
  {
--	return __xn_reg_rval(regs) == -EINTR;
-+	return nr < NR_syscalls || nr >= __ARM_NR_BASE;
+ 	struct cobalt_sem_shadow *_sem = &((union cobalt_sem_union *)sem)->shadow_sem;
+-	
+-	return XENOMAI_SYSCALL4(sc_cobalt_sem_inquire, _sem,
+-				info, waitlist, waitsz);
++
++	return XENOMAI_SYSCALL4(sc_cobalt_sem_inquire, _sem, info, waitlist,
++				waitsz);
  }
  
- #endif /* !_COBALT_ARM_SYSCALL_H */
-diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/syscall.h b/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/syscall.h
-deleted file mode 100644
-index c9561e030..000000000
---- a/kernel/cobalt/arch/arm/include/asm/xenomai/uapi/syscall.h
-+++ /dev/null
-@@ -1,28 +0,0 @@
--/*
-- * Copyright (C) 2001,2002,2003,2004 Philippe Gerum <rpm@xenomai.org>.
-- *
-- * ARM port
-- *   Copyright (C) 2005 Stelian Pop
-- *
-- * This library is free software; you can redistribute it and/or
-- * modify it under the terms of the GNU Lesser General Public
-- * License as published by the Free Software Foundation; either
-- * version 2 of the License, or (at your option) any later version.
-- *
-- * This library is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-- * Lesser General Public License for more details.
-- *
-- * You should have received a copy of the GNU Lesser General Public
-- * License along with this library; if not, write to the Free Software
-- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-- */
--#ifndef _COBALT_ARM_ASM_UAPI_SYSCALL_H
--#define _COBALT_ARM_ASM_UAPI_SYSCALL_H
--
--#define __xn_syscode(__nr)	(__COBALT_SYSCALL_BIT | (__nr))
--
--#define XENOMAI_SYSARCH_TSCINFO      4
--
--#endif /* !_COBALT_ARM_ASM_UAPI_SYSCALL_H */
-diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h
-index 42057e986..6db6dbe45 100644
---- a/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h
-+++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/syscall.h
-@@ -8,51 +8,12 @@
- #ifndef _COBALT_ARM64_SYSCALL_H
- #define _COBALT_ARM64_SYSCALL_H
- 
--#include <linux/errno.h>
--#include <asm/ptrace.h>
-+#include <asm/unistd.h>
- #include <asm-generic/xenomai/syscall.h>
-+#include <linux/types.h>
- 
--/*
-- * Cobalt and Linux syscall numbers can be fetched from syscallno,
-- * masking out the __COBALT_SYSCALL_BIT marker.
-- */
--#define __xn_reg_sys(__regs)	((unsigned long)(__regs)->syscallno)
--#define __xn_syscall_p(regs)	((__xn_reg_sys(regs) & __COBALT_SYSCALL_BIT) != 0)
--
--#ifdef CONFIG_XENO_ARCH_SYS3264
--#define __xn_syscall(__regs)    __COBALT_SYSNR32emu(__xn_reg_sys(__regs)	\
--				    & ~__COBALT_SYSCALL_BIT)
--#else
--#define __xn_syscall(__regs)	((unsigned long)(__xn_reg_sys(__regs) & ~__COBALT_SYSCALL_BIT))
--#endif
--
--#define __xn_reg_rval(__regs)	((__regs)->regs[0])
--#define __xn_reg_pc(__regs)	((__regs)->pc)
--#define __xn_reg_sp(__regs)	((__regs)->sp)
--
--/*
-- * Root syscall number with predicate (valid only if
-- * !__xn_syscall_p(__regs)).
-- */
--#define __xn_rootcall_p(__regs, __code)			\
--	({						\
--		*(__code) = __xn_reg_sys(__regs);	\
--		*(__code) < NR_syscalls;		\
--	})
--
--static inline void __xn_error_return(struct pt_regs *regs, int v)
-+static inline bool arch_is_valid_linux_syscall(unsigned int nr)
- {
--	__xn_reg_rval(regs) = v;
-+	return nr < NR_syscalls;
- }
--
--static inline void __xn_status_return(struct pt_regs *regs, long v)
--{
--	__xn_reg_rval(regs) = v;
--}
--
--static inline int __xn_interrupted_p(struct pt_regs *regs)
--{
--	return __xn_reg_rval(regs) == -EINTR;
--}
--
- #endif /* !_COBALT_ARM64_SYSCALL_H */
-diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/syscall.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/syscall.h
-deleted file mode 100644
-index 5b319d6a0..000000000
---- a/kernel/cobalt/arch/arm64/include/asm/xenomai/uapi/syscall.h
-+++ /dev/null
-@@ -1,28 +0,0 @@
--/*
-- * Copyright (C) 2001,2002,2003,2004 Philippe Gerum <rpm@xenomai.org>.
-- *
-- * ARM port
-- *   Copyright (C) 2005 Stelian Pop
-- *
-- * This library is free software; you can redistribute it and/or
-- * modify it under the terms of the GNU Lesser General Public
-- * License as published by the Free Software Foundation; either
-- * version 2 of the License, or (at your option) any later version.
-- *
-- * This library is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-- * Lesser General Public License for more details.
-- *
-- * You should have received a copy of the GNU Lesser General Public
-- * License along with this library; if not, write to the Free Software
-- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-- */
--#ifndef _COBALT_ARM64_ASM_UAPI_SYSCALL_H
--#define _COBALT_ARM64_ASM_UAPI_SYSCALL_H
--
--#define __xn_syscode(__nr)	(__COBALT_SYSCALL_BIT | (__nr))
--
--#define XENOMAI_SYSARCH_TSCINFO		0
--
--#endif /* !_COBALT_ARM64_ASM_UAPI_SYSCALL_H */
-diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall.h b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall.h
-index f60aed013..c2666e978 100644
---- a/kernel/cobalt/arch/x86/include/asm/xenomai/syscall.h
-+++ b/kernel/cobalt/arch/x86/include/asm/xenomai/syscall.h
-@@ -19,59 +19,14 @@
- #ifndef _COBALT_X86_ASM_SYSCALL_H
- #define _COBALT_X86_ASM_SYSCALL_H
- 
--#include <linux/errno.h>
--#include <asm/ptrace.h>
-+#include <asm/unistd.h>
- #include <asm-generic/xenomai/syscall.h>
-+#include <linux/types.h>
- 
--/*
-- * Cobalt and Linux syscall numbers can be fetched from ORIG_AX,
-- * masking out the __COBALT_SYSCALL_BIT marker.
-- */
--#define __xn_reg_sys(regs)    ((regs)->orig_ax)
--#define __xn_reg_rval(regs)   ((regs)->ax)
--#define __xn_reg_pc(regs)     ((regs)->ip)
--#define __xn_reg_sp(regs)     ((regs)->sp)
--
--#define __xn_syscall_p(regs)  (__xn_reg_sys(regs) & __COBALT_SYSCALL_BIT)
--#ifdef CONFIG_XENO_ARCH_SYS3264
--#define __xn_syscall(regs)    __COBALT_CALL32_SYSNR(__xn_reg_sys(regs)	\
--				    & ~__COBALT_SYSCALL_BIT)
--#else
--#define __xn_syscall(regs)    (__xn_reg_sys(regs) & ~__COBALT_SYSCALL_BIT)
--#endif
--
--#ifdef CONFIG_IA32_EMULATION
--#define __xn_nr_root_syscalls						\
--	({								\
--		struct thread_info *__ti = current_thread_info();	\
--		__ti->status & TS_COMPAT ? IA32_NR_syscalls : NR_syscalls; \
--	})
--#else
--#define __xn_nr_root_syscalls	NR_syscalls
--#endif
--/*
-- * Root syscall number with predicate (valid only if
-- * !__xn_syscall_p(__regs)).
-- */
--#define __xn_rootcall_p(__regs, __code)			\
--	({						\
--		*(__code) = __xn_reg_sys(__regs);	\
--		*(__code) < __xn_nr_root_syscalls;	\
--	})
--
--static inline void __xn_error_return(struct pt_regs *regs, int v)
--{
--	__xn_reg_rval(regs) = v;
--}
--
--static inline void __xn_status_return(struct pt_regs *regs, long v)
-+static inline bool arch_is_valid_linux_syscall(unsigned int nr)
- {
--	__xn_reg_rval(regs) = v;
-+	return nr < NR_syscalls;
- }
- 
--static inline int __xn_interrupted_p(struct pt_regs *regs)
--{
--	return __xn_reg_rval(regs) == -EINTR;
--}
- 
- #endif /* !_COBALT_X86_ASM_SYSCALL_H */
-diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h b/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h
-deleted file mode 100644
-index 500d16936..000000000
---- a/kernel/cobalt/arch/x86/include/asm/xenomai/uapi/syscall.h
-+++ /dev/null
-@@ -1,23 +0,0 @@
--/*
-- * Copyright (C) 2001-2014 Philippe Gerum <rpm@xenomai.org>.
-- *
-- * This library is free software; you can redistribute it and/or
-- * modify it under the terms of the GNU Lesser General Public
-- * License as published by the Free Software Foundation; either
-- * version 2 of the License, or (at your option) any later version.
-- *
-- * This library is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-- * Lesser General Public License for more details.
-- *
-- * You should have received a copy of the GNU Lesser General Public
-- * License along with this library; if not, write to the Free Software
-- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-- */
--#ifndef _COBALT_X86_ASM_UAPI_SYSCALL_H
--#define _COBALT_X86_ASM_UAPI_SYSCALL_H
--
--#define __xn_syscode(__nr)	(__COBALT_SYSCALL_BIT | __nr)
--
--#endif /* !_COBALT_X86_ASM_UAPI_SYSCALL_H */
-diff --git a/kernel/cobalt/dovetail/syscall.c b/kernel/cobalt/dovetail/syscall.c
-index 7d92ccd3a..ede39cae6 100644
---- a/kernel/cobalt/dovetail/syscall.c
-+++ b/kernel/cobalt/dovetail/syscall.c
-@@ -8,19 +8,43 @@
- #include <linux/dovetail.h>
- #include <linux/irqstage.h>
- #include <pipeline/pipeline.h>
--#include <pipeline/kevents.h>
--#include <cobalt/kernel/assert.h>
- #include <xenomai/posix/syscall.h>
- 
-+static unsigned int collect_syscall_args(struct pt_regs *regs,
-+					 unsigned long *args)
-+{
-+	struct task_struct *tsk = current;
-+	unsigned int nr;
-+
-+	nr = syscall_get_nr(tsk, regs);
-+
-+	syscall_get_arguments(tsk, regs, args);
-+
-+	if (!(cobalt_syscall_is_valid(nr)))
-+		return nr; // Linux syscall
-+
-+	return nr;
-+}
-+
- int handle_pipelined_syscall(struct irq_stage *stage, struct pt_regs *regs)
- {
-+	unsigned long args[6];
-+	unsigned int nr;
-+
-+	nr = collect_syscall_args(regs, args);
-+
- 	if (unlikely(running_inband()))
--		return handle_root_syscall(regs);
-+		return handle_root_syscall(regs, nr, args);
- 
--	return handle_head_syscall(stage == &inband_stage, regs);
-+	return handle_head_syscall(stage == &inband_stage, regs, nr, args);
- }
- 
- int handle_oob_syscall(struct pt_regs *regs)
- {
--	return handle_head_syscall(false, regs);
-+	unsigned long args[6];
-+	unsigned int nr;
-+
-+	nr = collect_syscall_args(regs, args);
-+
-+	return handle_head_syscall(false, regs, nr, args);
- }
-diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-index facc60bcc..9766644da 100644
---- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-+++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
-@@ -19,6 +19,7 @@
- #ifndef _COBALT_ASM_GENERIC_SYSCALL_H
- #define _COBALT_ASM_GENERIC_SYSCALL_H
- 
-+#include <linux/compat.h>
- #include <linux/types.h>
- #include <linux/version.h>
- #include <linux/uaccess.h>
-@@ -28,6 +29,8 @@
- #include <cobalt/uapi/asm-generic/syscall.h>
- #include <cobalt/uapi/kernel/types.h>
- 
-+#include "syscall32.h"
-+
- #define __xn_copy_from_user(dstP, srcP, n)	raw_copy_from_user(dstP, srcP, n)
- #define __xn_copy_to_user(dstP, srcP, n)	raw_copy_to_user(dstP, srcP, n)
- #define __xn_put_user(src, dstP)		__put_user(src, dstP)
-@@ -161,6 +164,29 @@ cobalt_timespec64_to_timeval(const struct timespec64 *src)
- 	return tv;
- }
- 
-+static inline unsigned int cobalt_syscall_get_offset(unsigned int nr)
-+{
-+	if (in_compat_syscall())
-+		nr += __COBALT_COMPAT32_BASE;
-+
-+	return nr;
-+}
-+
-+static inline unsigned int cobalt_syscall_get_nr(unsigned int nr)
-+{
-+	return nr & ~__COBALT_SYSCALL_BIT;
-+}
-+
-+static inline bool cobalt_syscall_is_valid(unsigned int nr)
-+{
-+	return nr & __COBALT_SYSCALL_BIT;
-+}
-+
-+static inline int cobalt_syscall_get_compat_flag(unsigned int nr)
-+{
-+	return in_compat_syscall() ? __COBALT_SYSCALL_BIT : 0;
-+}
-+
- /* 32bit syscall emulation */
- #define __COBALT_COMPAT_BIT	0x1
- /* 32bit syscall emulation - extended form */
-diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall32.h b/kernel/cobalt/include/asm-generic/xenomai/syscall32.h
-index 3e1fcab8f..0c2cc7ef2 100644
---- a/kernel/cobalt/include/asm-generic/xenomai/syscall32.h
-+++ b/kernel/cobalt/include/asm-generic/xenomai/syscall32.h
-@@ -21,18 +21,9 @@
- 
- #ifdef CONFIG_XENO_ARCH_SYS3264
- 
--#define __COBALT_COMPAT32_BASE		256 /* Power of two. */
--
--#define __COBALT_SYSNR32emu(__reg)					\
--	({								\
--		long __nr = __reg;					\
--		if (in_compat_syscall())				\
--			__nr += __COBALT_COMPAT32_BASE;			\
--		__nr;							\
--	})
-+#include <cobalt/uapi/syscall.h>
- 
--#define __COBALT_COMPAT32emu(__reg)					\
--	(in_compat_syscall() ? __COBALT_COMPAT_BIT : 0)
-+#define __COBALT_COMPAT32_BASE		256 /* Power of two. */
- 
- #if __NR_COBALT_SYSCALLS > __COBALT_COMPAT32_BASE
- #error "__NR_COBALT_SYSCALLS > __COBALT_COMPAT32_BASE"
-@@ -67,6 +58,8 @@
- 
- /* compat support disabled. */
- 
-+#define __COBALT_COMPAT32_BASE		0
-+
- #define __COBALT_SYSNR32emu(__reg)	(__reg)
- 
- #define __COBALT_COMPAT32emu(__reg)	0
-@@ -92,9 +85,4 @@
- #define __COBALT_CALL32_INITMODE(__mode)	\
- 	__COBALT_CALL32emu_INITMODE(__mode)
- 
--/* Already checked for __COBALT_SYSCALL_BIT */
--#define __COBALT_CALL32_SYSNR(__reg)	__COBALT_SYSNR32emu(__reg)
--
--#define __COBALT_CALL_COMPAT(__reg)	__COBALT_COMPAT32emu(__reg)
--
- #endif /* !_COBALT_ASM_GENERIC_SYSCALL32_H */
-diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
-index a26da154c..a6590c830 100644
---- a/kernel/cobalt/posix/syscall.c
-+++ b/kernel/cobalt/posix/syscall.c
-@@ -93,9 +93,9 @@ static void prepare_for_signal(struct task_struct *p,
- 
- 	if (xnthread_test_info(thread, XNKICKED)) {
- 		if (signal_pending(p)) {
--			__xn_error_return(regs,
-+			syscall_set_return_value(p, regs,
- 					  (sysflags & __xn_exec_norestart) ?
--					  -EINTR : -ERESTARTSYS);
-+					  -EINTR : -ERESTARTSYS, 0);
- 			notify = !xnthread_test_state(thread, XNSSTEP);
- 			xnthread_clear_info(thread, XNBREAK);
- 		}
-@@ -470,28 +470,29 @@ static inline int allowed_syscall(struct cobalt_process *process,
- 	return cap_raised(current_cap(), CAP_SYS_NICE);
- }
- 
--int handle_head_syscall(bool caller_is_relaxed, struct pt_regs *regs)
-+int handle_head_syscall(bool caller_is_relaxed, struct pt_regs *regs,
-+			unsigned int nr, unsigned long *args)
- {
- 	struct cobalt_process *process;
- 	int switched, sigs, sysflags;
- 	struct xnthread *thread;
- 	cobalt_syshand handler;
- 	struct task_struct *p;
--	unsigned long args[6];
--	unsigned int nr, code;
-+	unsigned int offset;
- 	long ret;
- 
--	if (!__xn_syscall_p(regs))
-+	if (!cobalt_syscall_is_valid(nr))
- 		goto linux_syscall;
- 
- 	thread = xnthread_current();
--	code = __xn_syscall(regs);
--	if (code >= ARRAY_SIZE(cobalt_syscalls))
--		goto bad_syscall;
- 
--	nr = code & (__NR_COBALT_SYSCALLS - 1);
-+	nr = cobalt_syscall_get_nr(nr);
-+	offset = cobalt_syscall_get_offset(nr);
-+
-+	if (nr >= ARRAY_SIZE(cobalt_syscalls))
-+		goto bad_syscall;
- 
--	trace_cobalt_head_sysentry(code);
-+	trace_cobalt_head_sysentry(nr);
- 
- 	process = cobalt_current_process();
- 	if (process == NULL) {
-@@ -499,7 +500,8 @@ int handle_head_syscall(bool caller_is_relaxed, struct pt_regs *regs)
- 		cobalt_set_process(process);
- 	}
- 
--	handler = cobalt_syscalls[code];
-+	p = current;
-+	handler = cobalt_syscalls[offset];
- 	sysflags = cobalt_sysmodes[nr];
- 
- 	/*
-@@ -515,7 +517,7 @@ int handle_head_syscall(bool caller_is_relaxed, struct pt_regs *regs)
- 			printk(XENO_WARNING
- 			       "syscall <%d> denied to %s[%d]\n",
- 			       nr, current->comm, task_pid_nr(current));
--		__xn_error_return(regs, -EPERM);
-+		syscall_set_return_value(p, regs, -EPERM, 0);
- 		goto ret_handled;
- 	}
- 
-@@ -584,9 +586,6 @@ restart:
- 	 * handler (lostage ones), or rejected by allowed_syscall().
+ int cobalt_sched_weighted_prio(int policy,
+diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
+index ba0c84823..06c915895 100644
+--- a/lib/cobalt/rtdm.c
++++ b/lib/cobalt/rtdm.c
+@@ -53,7 +53,7 @@ static int do_open(const char *path, int oflag, mode_t mode)
+ 	 * the kernel service.
  	 */
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+-	fd = XENOMAI_SYSCALL2( sc_cobalt_open, path, oflag);
++	fd = XENOMAI_SYSCALL2(sc_cobalt_open, path, oflag);
+ 	pthread_setcanceltype(oldtype, NULL);
+ 	if (fd < 0) {
+ 		if (fd != -EADV && fd != -ENOSYS)
+@@ -128,8 +128,8 @@ COBALT_IMPL(int, socket, (int protocol_family, int socket_type, int protocol))
+ {
+ 	int s;
  
--	p = current;
--	syscall_get_arguments(p, regs, args);
--
- 	ret = handler(args[0], args[1], args[2], args[3], args[4]);
- 	if (ret == -ENOSYS && (sysflags & __xn_exec_adaptive)) {
- 		if (switched) {
-@@ -603,7 +602,7 @@ restart:
- 		goto restart;
+-	s = XENOMAI_SYSCALL3(sc_cobalt_socket, protocol_family,
+-			     socket_type, protocol);
++	s = XENOMAI_SYSCALL3(sc_cobalt_socket, protocol_family, socket_type,
++			     protocol);
+ 	if (s < 0) {
+ 		if (s != -EAFNOSUPPORT &&
+ 		    s != -EPROTONOSUPPORT &&
+@@ -165,7 +165,7 @@ static int do_ioctl(int fd, unsigned int request, void *arg)
+ 
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+ 
+-	ret = XENOMAI_SYSCALL3(sc_cobalt_ioctl,	fd, request, arg);
++	ret = XENOMAI_SYSCALL3(sc_cobalt_ioctl, fd, request, arg);
+ 
+ 	pthread_setcanceltype(oldtype, NULL);
+ 
+@@ -230,7 +230,7 @@ COBALT_IMPL(ssize_t, write, (int fd, const void *buf, size_t nbyte))
+ 
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+ 
+-	ret = XENOMAI_SYSCALL3(sc_cobalt_write,	fd, buf, nbyte);
++	ret = XENOMAI_SYSCALL3(sc_cobalt_write, fd, buf, nbyte);
+ 
+ 	pthread_setcanceltype(oldtype, NULL);
+ 
+@@ -273,10 +273,11 @@ COBALT_IMPL_TIME64(int, recvmmsg, __recvmmsg64,
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+ 
+ #ifdef __USE_TIME_BITS64
+-	ret = XENOMAI_SYSCALL5(sc_cobalt_recvmmsg64, fd, msgvec,
+-				vlen, flags, timeout);
++	ret = XENOMAI_SYSCALL5(sc_cobalt_recvmmsg64, fd, msgvec, vlen, flags,
++			       timeout);
+ #else
+-	ret = XENOMAI_SYSCALL5(sc_cobalt_recvmmsg, fd, msgvec, vlen, flags, timeout);
++	ret = XENOMAI_SYSCALL5(sc_cobalt_recvmmsg, fd, msgvec, vlen, flags,
++			       timeout);
+ #endif
+ 
+ 	pthread_setcanceltype(oldtype, NULL);
+diff --git a/lib/cobalt/sched.c b/lib/cobalt/sched.c
+index 42662d382..f8f080a5f 100644
+--- a/lib/cobalt/sched.c
++++ b/lib/cobalt/sched.c
+@@ -300,9 +300,8 @@ int sched_setscheduler_ex(pid_t pid,
+ 			return errno;
  	}
- done:
--	__xn_status_return(regs, ret);
-+	syscall_set_return_value(p, regs, ret, 0);
- 	sigs = 0;
- 	if (!xnsched_root_p()) {
- 		if (signal_pending(p) ||
-@@ -630,7 +629,7 @@ ret_handled:
- 		xnthread_sync_window(thread);
- 	}
  
--	trace_cobalt_head_sysexit(__xn_reg_rval(regs));
-+	trace_cobalt_head_sysexit(syscall_get_return_value(p, regs));
- 
- 	return KEVENT_STOP;
- 
-@@ -644,10 +643,10 @@ linux_syscall:
- 		 */
- 		return KEVENT_PROPAGATE;
- 
--	if (!__xn_rootcall_p(regs, &code))
-+	if (!arch_is_valid_linux_syscall(nr))
- 		goto bad_syscall;
- 
--	if (pipeline_handle_vdso_fallback(code, regs))
-+	if (pipeline_handle_vdso_fallback(regs, nr, args))
- 		return KEVENT_STOP;
+-	ret = -XENOMAI_SYSCALL5(sc_cobalt_sched_setscheduler_ex,
+-				pid, policy, param_ex,
+-				&u_winoff, &promoted);
++	ret = -XENOMAI_SYSCALL5(sc_cobalt_sched_setscheduler_ex, pid, policy,
++				param_ex, &u_winoff, &promoted);
  
  	/*
-@@ -661,21 +660,21 @@ linux_syscall:
- 	return KEVENT_PROPAGATE;
+ 	 * If the kernel has no reference to the target thread, let glibc
+@@ -356,8 +355,8 @@ COBALT_IMPL(int, sched_getscheduler, (pid_t pid))
+ 		return -1;
+ 	}
  
- bad_syscall:
--	printk(XENO_WARNING "bad syscall <%#x>\n", code);
-+	printk(XENO_WARNING "bad syscall <%u>\n", nr);
+-	ret = XENOMAI_SYSCALL3(sc_cobalt_sched_getscheduler_ex,
+-			       pid, &policy, &param_ex);
++	ret = XENOMAI_SYSCALL3(sc_cobalt_sched_getscheduler_ex, pid, &policy,
++			       &param_ex);
+ 	if (ret == -ESRCH)
+ 		return __STD(sched_getscheduler(pid));
  
--	__xn_error_return(regs, -ENOSYS);
-+	syscall_set_return_value(p, regs, -ENOSYS, 0);
+@@ -402,8 +401,8 @@ int sched_getscheduler_ex(pid_t pid, int *policy_r,
+ 	if (pid < 0 || param_ex == NULL)
+ 		return EINVAL;
  
- 	return KEVENT_STOP;
+-	return -XENOMAI_SYSCALL3(sc_cobalt_sched_getscheduler_ex,
+-				 pid, policy_r, param_ex);
++	return -XENOMAI_SYSCALL3(sc_cobalt_sched_getscheduler_ex, pid, policy_r,
++				 param_ex);
  }
  
--int handle_root_syscall(struct pt_regs *regs)
-+int handle_root_syscall(struct pt_regs *regs, unsigned int nr,
-+			unsigned long *args)
+ /**
+@@ -558,8 +557,8 @@ int sched_get_priority_max_ex(int policy)
+ int sched_setconfig_np(int cpu, int policy,
+ 		       const union sched_config *config, size_t len)
  {
- 	int sysflags, switched, sigs;
- 	struct xnthread *thread;
- 	cobalt_syshand handler;
- 	struct task_struct *p;
--	unsigned long args[6];
--	unsigned int nr, code;
-+	unsigned int offset;
- 	long ret;
+-	return -XENOMAI_SYSCALL4(sc_cobalt_sched_setconfig_np,
+-				 cpu, policy, config, len);
++	return -XENOMAI_SYSCALL4(sc_cobalt_sched_setconfig_np, cpu, policy,
++				 config, len);
+ }
  
- 	/*
-@@ -686,20 +685,20 @@ int handle_root_syscall(struct pt_regs *regs)
+ /**
+@@ -617,8 +616,8 @@ ssize_t sched_getconfig_np(int cpu, int policy,
+ {
+ 	ssize_t ret;
+ 
+-	ret = XENOMAI_SYSCALL4(sc_cobalt_sched_getconfig_np,
+-			       cpu, policy, config, *len_r);
++	ret = XENOMAI_SYSCALL4(sc_cobalt_sched_getconfig_np, cpu, policy,
++			       config, *len_r);
+ 	if (ret < 0)
+ 		return -ret;
+ 
+diff --git a/lib/cobalt/select.c b/lib/cobalt/select.c
+index 997977d27..7a4aa52a2 100644
+--- a/lib/cobalt/select.c
++++ b/lib/cobalt/select.c
+@@ -71,8 +71,8 @@ static inline int do_select(int __nfds, fd_set *__restrict __readfds,
+ 
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+ 
+-	err = XENOMAI_SYSCALL5(sc_cobalt_select, __nfds,
+-			       __readfds, __writefds, __exceptfds, __timeout);
++	err = XENOMAI_SYSCALL(sc_cobalt_select, __nfds, __readfds, __writefds,
++			      __exceptfds, __timeout);
+ 
+ 	pthread_setcanceltype(oldtype, NULL);
+ 
+diff --git a/lib/cobalt/semaphore.c b/lib/cobalt/semaphore.c
+index e148f5579..c76967019 100644
+--- a/lib/cobalt/semaphore.c
++++ b/lib/cobalt/semaphore.c
+@@ -89,8 +89,8 @@ COBALT_IMPL(int, sem_init, (sem_t *sem, int pshared, unsigned int value))
+ 	struct cobalt_sem_shadow *_sem = &((union cobalt_sem_union *)sem)->shadow_sem;
+ 	int ret;
+ 
+-	ret = XENOMAI_SYSCALL3(sc_cobalt_sem_init,
+-			       _sem, pshared ? SEM_PSHARED : 0, value);
++	ret = XENOMAI_SYSCALL3(sc_cobalt_sem_init, _sem,
++			       pshared ? SEM_PSHARED : 0, value);
+ 	if (ret) {
+ 		errno = -ret;
+ 		return -1;
+@@ -375,8 +375,7 @@ COBALT_IMPL_TIME64(int, sem_timedwait, __sem_timedwait64,
+ 	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
+ 
+ #ifdef __USE_TIME_BITS64
+-	ret = XENOMAI_SYSCALL2(sc_cobalt_sem_timedwait64, _sem,
+-			       abs_timeout);
++	ret = XENOMAI_SYSCALL2(sc_cobalt_sem_timedwait64, _sem, abs_timeout);
+ #else
+ 	ret = XENOMAI_SYSCALL2(sc_cobalt_sem_timedwait, _sem, abs_timeout);
+ #endif
+@@ -509,8 +508,8 @@ COBALT_IMPL(sem_t *, sem_open, (const char *name, int oflags, ...))
+ 		goto error;
+ 	}
+ 
+-	err = XENOMAI_SYSCALL5(sc_cobalt_sem_open,
+-			       &rsem, name, oflags, mode, value);
++	err = XENOMAI_SYSCALL5(sc_cobalt_sem_open, &rsem, name, oflags, mode,
++			       value);
+ 	if (err == 0) {
+ 		if (rsem != sem)
+ 			free(sem);
+diff --git a/lib/cobalt/thread.c b/lib/cobalt/thread.c
+index 41227ba33..9a168bcb7 100644
+--- a/lib/cobalt/thread.c
++++ b/lib/cobalt/thread.c
+@@ -92,8 +92,8 @@ static void *cobalt_thread_trampoline(void *p)
+ 	 * Do _not_ inline the call to pthread_self() in the syscall
+ 	 * macro: this trashes the syscall regs on some archs.
  	 */
- 	xnthread_test_cancel();
+-	ret = -XENOMAI_SYSCALL5(sc_cobalt_thread_create, ptid,
+-				policy, &param_ex, personality, &u_winoff);
++	ret = -XENOMAI_SYSCALL5(sc_cobalt_thread_create, ptid, policy,
++				&param_ex, personality, &u_winoff);
+ 	if (ret == 0)
+ 		cobalt_set_tsd(u_winoff);
  
--	if (!__xn_syscall_p(regs))
-+	if (!cobalt_syscall_is_valid(nr))
- 		/* Fall back to Linux syscall handling. */
- 		return KEVENT_PROPAGATE;
- 
- 	thread = xnthread_current();
--	/* code has already been checked in the head domain handler. */
--	code = __xn_syscall(regs);
--	nr = code & (__NR_COBALT_SYSCALLS - 1);
- 
--	trace_cobalt_root_sysentry(code);
-+	/* nr has already been checked in the head domain handler. */
-+	nr = cobalt_syscall_get_nr(nr);
-+	offset = cobalt_syscall_get_offset(nr);
- 
--	/* Processing a Xenomai syscall. */
-+	trace_cobalt_root_sysentry(nr);
- 
--	handler = cobalt_syscalls[code];
-+	/* Processing a Xenomai syscall. */
-+	handler = cobalt_syscalls[offset];
- 	sysflags = cobalt_sysmodes[nr];
- 
- 	if (thread && (sysflags & __xn_exec_conforming))
-@@ -719,7 +718,7 @@ restart:
- 		 */
- 		ret = xnthread_harden();
- 		if (ret) {
--			__xn_error_return(regs, ret);
-+			syscall_set_return_value(p, regs, ret, 0);
- 			goto ret_handled;
- 		}
- 		switched = 1;
-@@ -734,7 +733,6 @@ restart:
- 	}
- 
- 	p = current;
--	syscall_get_arguments(p, regs, args);
- 
- 	ret = handler(args[0], args[1], args[2], args[3], args[4]);
- 	if (ret == -ENOSYS && (sysflags & __xn_exec_adaptive)) {
-@@ -748,7 +746,7 @@ restart:
- 		goto restart;
- 	}
- 
--	__xn_status_return(regs, ret);
-+	syscall_set_return_value(p, regs, ret, 0);
- 
- 	sigs = 0;
- 	if (!xnsched_root_p()) {
-@@ -776,7 +774,7 @@ ret_handled:
- 		xnthread_sync_window(thread);
- 	}
- 
--	trace_cobalt_root_sysexit(__xn_reg_rval(regs));
-+	trace_cobalt_root_sysexit(syscall_get_return_value(p, regs));
- 
- 	return KEVENT_STOP;
- }
-diff --git a/kernel/cobalt/posix/syscall.h b/kernel/cobalt/posix/syscall.h
-index e43f8d991..4cc3fbbc0 100644
---- a/kernel/cobalt/posix/syscall.h
-+++ b/kernel/cobalt/posix/syscall.h
-@@ -32,9 +32,10 @@ struct pt_regs;
- 
- #include <asm-generic/xenomai/syscall32.h>
- 
--int handle_head_syscall(bool caller_is_relaxed,
--			struct pt_regs *regs);
-+int handle_head_syscall(bool caller_is_relaxed, struct pt_regs *regs,
-+			unsigned int nr, unsigned long *args);
- 
--int handle_root_syscall(struct pt_regs *regs);
-+int handle_root_syscall(struct pt_regs *regs, unsigned int nr,
-+			unsigned long *args);
- 
- #endif /* !_COBALT_POSIX_SYSCALL_H */
-diff --git a/kernel/cobalt/rtdm/fd.c b/kernel/cobalt/rtdm/fd.c
-index d5813a16c..c9a9e8059 100644
---- a/kernel/cobalt/rtdm/fd.c
-+++ b/kernel/cobalt/rtdm/fd.c
-@@ -133,13 +133,16 @@ static struct rtdm_fd *fetch_fd(struct cobalt_ppd *p, int ufd)
- static inline void set_compat_bit(struct rtdm_fd *fd)
+@@ -379,8 +379,8 @@ COBALT_IMPL(int, pthread_create, (pthread_t *ptid_r,
+  */
+ int pthread_setmode_np(int clrmask, int setmask, int *mode_r)
  {
- 	struct pt_regs *regs;
-+	int nr;
- 
- 	if (cobalt_ppd_get(0) == &cobalt_kernel_ppd)
- 		fd->compat = 0;
- 	else {
- 		regs = task_pt_regs(current);
--		XENO_BUG_ON(COBALT, !__xn_syscall_p(regs));
--		fd->compat = __COBALT_CALL_COMPAT(__xn_reg_sys(regs));
-+		nr = syscall_get_nr(current, regs);
-+
-+		XENO_BUG_ON(COBALT, !cobalt_syscall_is_valid(nr));
-+		fd->compat = cobalt_syscall_get_compat_flag(nr);
- 	}
+-	return -XENOMAI_SYSCALL3(sc_cobalt_thread_setmode,
+-				 clrmask, setmask, mode_r);
++	return -XENOMAI_SYSCALL3(sc_cobalt_thread_setmode, clrmask, setmask,
++				 mode_r);
  }
+ 
+ /**
+@@ -639,9 +639,8 @@ int pthread_setschedparam_ex(pthread_t thread,
+ 	/* only request promotion when this targets the current thread */
+ 	u_winoff_ptr = thread == pthread_self() ? &u_winoff : NULL;
+ 
+-	ret = -XENOMAI_SYSCALL5(sc_cobalt_thread_setschedparam_ex,
+-				thread, policy, param_ex,
+-				u_winoff_ptr, &promoted);
++	ret = -XENOMAI_SYSCALL5(sc_cobalt_thread_setschedparam_ex, thread,
++				policy, param_ex, u_winoff_ptr, &promoted);
+ 
+ 	/*
+ 	 * If the kernel has no reference to the target thread. let glibc
+@@ -678,8 +677,8 @@ COBALT_IMPL(int, pthread_setschedprio, (pthread_t thread, int prio))
+ 	/* only request promotion when this targets the current thread */
+ 	u_winoff_ptr = thread == pthread_self() ? &u_winoff : NULL;
+ 
+-	ret = -XENOMAI_SYSCALL4(sc_cobalt_thread_setschedprio,
+-				thread, prio, u_winoff_ptr, &promoted);
++	ret = -XENOMAI_SYSCALL4(sc_cobalt_thread_setschedprio, thread, prio,
++				u_winoff_ptr, &promoted);
+ 
+ 	/*
+ 	 * If the kernel has no reference to the target thread. let glibc
+@@ -773,8 +772,8 @@ int pthread_getschedparam_ex(pthread_t thread,
+ 	struct sched_param short_param;
+ 	int ret;
+ 
+-	ret = -XENOMAI_SYSCALL3(sc_cobalt_thread_getschedparam_ex,
+-				thread, policy_r, param_ex);
++	ret = -XENOMAI_SYSCALL3(sc_cobalt_thread_getschedparam_ex, thread,
++				policy_r, param_ex);
+ 	if (ret == ESRCH) {
+ 		ret = __STD(pthread_getschedparam(thread, policy_r, &short_param));
+ 		if (ret == 0)
+diff --git a/lib/cobalt/timer.c b/lib/cobalt/timer.c
+index a7e315264..b90a1f148 100644
+--- a/lib/cobalt/timer.c
++++ b/lib/cobalt/timer.c
+@@ -77,7 +77,7 @@ COBALT_IMPL(int, timer_create, (clockid_t clockid,
+ {
+ 	int ret;
+ 
+-	ret = -XENOMAI_SYSCALL3(sc_cobalt_timer_create,	clockid, evp, timerid);
++	ret = -XENOMAI_SYSCALL3(sc_cobalt_timer_create, clockid, evp, timerid);
+ 	if (ret == 0)
+ 		return 0;
+ 
+diff --git a/lib/cobalt/trace.c b/lib/cobalt/trace.c
+index ae3933f75..70a4af665 100644
+--- a/lib/cobalt/trace.c
++++ b/lib/cobalt/trace.c
+@@ -49,8 +49,8 @@ int xntrace_user_stop(unsigned long v)
+ 
+ int xntrace_user_freeze(unsigned long v, int once)
+ {
+-	return XENOMAI_SYSCALL3(sc_cobalt_trace, __xntrace_op_user_freeze,
+-				v, once);
++	return XENOMAI_SYSCALL3(sc_cobalt_trace, __xntrace_op_user_freeze, v,
++				once);
+ }
+ 
+ void xntrace_latpeak_freeze(int delay)
+diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+index 506e9b52f..592723816 100644
+--- a/testsuite/smokey/y2038/syscall-tests.c
++++ b/testsuite/smokey/y2038/syscall-tests.c
+@@ -322,8 +322,8 @@ static int test_sc_cobalt_clock_nanosleep64(void)
+ 	next.tv_sec  = ts1.tv_sec + interval;
+ 	next.tv_nsec = ts1.tv_nsec;
+ 
+-	ret = XENOMAI_SYSCALL4(sc_nr, CLOCK_MONOTONIC, TIMER_ABSTIME,
+-			       &next, (void *)0xdeadbeefUL);
++	ret = XENOMAI_SYSCALL4(sc_nr, CLOCK_MONOTONIC, TIMER_ABSTIME, &next,
++			       (void *)0xdeadbeefUL);
+ 	if (!smokey_assert(!ret))
+ 		return ret;
  
 
 -- 
