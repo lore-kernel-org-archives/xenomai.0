@@ -1,55 +1,53 @@
-Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2082.outbound.protection.outlook.com [40.107.241.82])
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2076.outbound.protection.outlook.com [40.107.22.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04C311CDFAF
-	for <xenomai@lists.linux.dev>; Mon, 14 Oct 2024 22:39:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.241.82
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42ABC148826
+	for <xenomai@lists.linux.dev>; Mon, 14 Oct 2024 23:02:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.22.76
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728945557; cv=fail; b=Kyu3rlNWQv/6btvf+Vb2Z1VjwfmuxKR63Cupfrwljbl0swSqdLzqwL2eC+qGo1QOtRj3mJ17rOCR/3X+RKKmbGtThADZWCNogHmJXGBXYYYm852MGU68kqY3lwirCPOh/Ldb+kqbzco+dlCISn2z1hGOHQJfUNcJOWgR4l+ehdw=
+	t=1728946927; cv=fail; b=ULsatEJy19eA64goDwxITHit2rNjVDb2sX9xI6lzLKpcZe25izTLm+EmHwzIKpepwe97ufxqmWV8OAz4PVWyQuxJb0J3gjS49PqkVh/aLYAZ3cEdcYSN8ZAFHC0sUAiPYWeiEksPnwcY2fD6fLcIFyJ2ZbWxGK5tVekbACM45Ws=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728945557; c=relaxed/simple;
-	bh=c2F2ajBafNAyQ5b2UvXFJn5svzUpv5GlCO3b5IoREFU=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=chSes+yCjB6+8uf/wbG04Qhbfw/fdTWt3RU5X11egWqL5mjClQi6vDFj++Djy/A6mKhlMnH1/X6jzdRYcSeRb2AZZrUsWexdlXHn7ZUMRZ80yGHXiBl3vIHXJTgmy5V2vCbYuJue4aUWnAoafkmi5PNfckN6CGC1Oj3088wWFhQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=WwOgnyow; arc=fail smtp.client-ip=40.107.241.82
+	s=arc-20240116; t=1728946927; c=relaxed/simple;
+	bh=j5BfbZAT4fOxN13nGOqOOqTL9krdFd0HP1oBl6AFDWo=;
+	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=jzmeR804HfJ4SXKVIK3L5yUIAs8Mw2aYo+HyNS3xfE+DnFt0KK8ghFI0McuNedU1AAaqt4YUO6nqGxYsItyefPdmZV9kgnvmbN9/4rSS6fVvyqp05Z8B7Pbkz8lBIpbDWqW3GTq1XkOwKMhvxvUSw9tTUbc49FgwkV+mqovi7T4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=xNOTW4Tg; arc=fail smtp.client-ip=40.107.22.76
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="WwOgnyow"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="xNOTW4Tg"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=nBe0TIbyevbwx4Cjl3Zh5SRebB4GMO7jqW7K1MxYsRFPA5JCWBUMEG7pAcJGJfgsBS5x4iXcypssrFnsJ5kys2OFbKFGfVciNeeY0V3XjWeDQWz3iEAp0UUoZO8LOwx8OdMRn++AOIO4zUN07OxXzl1061od7+YLOddqDdIMph6sYpiPAEL5uJWTrLqGytzTXAbKB0WYbHzEIqmqixIsSCTSQo4XNibIoSacvUykDpVXD7vYYw8jmFuYLqnPApyqIgibq6huPPSqOXEeJWU9M5lmS+V9vCgVU5ZjgnFGLB76Pmtk35EppYkXZOyAwXPy5bGm5Ljq4AEfsOuZxr6E9A==
+ b=fk9lu+mAaMr+Rf5q+UqDfbgoTKOMqSyOB9k6SELXa97f9kusgkUgDQxkM9R/eMy4IZ8PC6copCDUOHRc3lZx3Ho0u3pRNjTTr8rsknFf5E+/bAFcXp4s59wnOTZClx+kUgrQAqhAHMkWqsdSr+G/KNFsWDky/KVoMVPS8fyKE6rsUBmT8d/Va2QUYK8xjAn25JW2y6SqQqIvwzNAjUaja7uI5nBmEFh1r6RWMw9YAiVzxJdNCD0h0iy0zHjtRxBEY8hXVGfGgg/jeNXb3hEAX4y+cD6Ltt29r2T5L8uzqhQhlsqHbRylK1OZLXrVjdcnwdraeuzz0yxOrqcIto8A/g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6tGyZWUJiRI1Dy9r/3owjrCVvkWQLjzd11GhPbNm88c=;
- b=lxRL3KobIQGk81wufOaFD3SdKnuWImKZx2q3lXVRz0rlCn3YLLTnLjqdrLeazwaNkcJx+6zu6XMmO3WLg+xrTaTCO7mB01HX2V6KqU2ieXmpP8jPLLt4omBJKQUZmvII1FV6s3bQN2vWMy2vCZU9KJ5x9LJ+r6XInkizV2huT0VaU0mmfxlS0b/6tat68aDUPa7orQhBDg90OSpe1hs8C4l5myzxQsYHCBHSMcakxZA1XXXo6NrLh606jHJYxWDUnALs5F4PmhbCiDJFdRGJfg5GWQH5K4w36m5dqmoW3MXUBpMdUBpiZPYzqaUacnhpXYPquDayIhYFEm5NrzlAug==
+ bh=rEOiLHbmBn0/nh6IpXnQqaBdoWajBcXEDNNe5OBQ90g=;
+ b=w4ppxDyAPR66GHv5g340xScW6TnZKUhsZlqrex3qFae6g8t/Qef2h/kv+PB7VDT9iz2cWzw1jGOGKbMJ3bACOfVqw87Kk4+YAnAFq784B6qxhy7ZS/0DgIaRrnLDzsooqA7m+J9qw0DHLOJw9z++Q/j3w5LqQkirYRjytPzVVpOHNNsG43gZDGQn7jv6I3qH3JJ4GrW4A2fcK2hVlLrbVzIs6ZDIoyEcAIyksYzzOSn6ceS4/Tfo285SLPQYWEf42R0eTUYKGGSfrIXKHXnQLdZcqngoi/nPhzwtazclohf4BgK2KxbZJeNrLFGI2al8O1xevAmEJb49I3r3YERVZA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6tGyZWUJiRI1Dy9r/3owjrCVvkWQLjzd11GhPbNm88c=;
- b=WwOgnyow8shC/WaUTwCZEphi1B4Dg2N5dLt5UfZY1COMecgiBgKjThf6+ZvFjF+6n7LUGo/WvT6tgHjIdXTJswm9g6D34JH8EjXCtCk3YT8KvUwawgtLgS7wIbxokGblpt8TFs5Mzo1x7GC8cNebv12SxN695E+P2XRzCjpZGlYTX0M7/hT0+B8FEPu2Hh6QFQhqggBTqyjgFWkiTCjYaJzAxjYs6E0dx0V+bjvocmbOxVPXMUwoWzOKoMmQE9BoAWCxSWmWp8LzKjaQSSfqtqvMJYA7R8O5M2MuA/w4/AViQ96ZCmU1iPzKqGrEOtvcbe02qKrQ2+hgfrb322QJoA==
+ bh=rEOiLHbmBn0/nh6IpXnQqaBdoWajBcXEDNNe5OBQ90g=;
+ b=xNOTW4Tg99ndWeptcpKKcPC+kDwZ8wmFp6HCrmDPPcUzfFQLWmOdWDi+Dh67tf+f6MrpIONKhUWLbevjy8CqgIn2nWEn0+B6373OoTuDMRWAKlY77spQ1qAbGdnLY65GUl0tr7N4KibQbzmHA3gfiZ0RtNZeonMnyoRi1h4/pGDKV9aEDYf9uFVXWkICYb6vg2CxRCFZF5ghA1Gh5ULbf4N3Yh2I4xlCl617W4ld67ksqf7/uT+jHZ1wWNYLA1Fs7hQjvLIc6PEnJJ1upNyk96dJ6ZRzU+ZDWZkisNIYBQMAm2HTiiPBG/V7F/6jaHvNzlQSTV7bGAFvM0/NvVyE6Q==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by AS8PR10MB6867.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:5b6::22) with
+ by DB8PR10MB3339.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:119::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.16; Mon, 14 Oct
- 2024 22:39:11 +0000
+ 2024 23:02:01 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408%3]) with mapi id 15.20.8069.009; Mon, 14 Oct 2024
- 22:39:11 +0000
-Message-ID: <aef60503-252b-4a9e-8ee3-e50d86c3c71d@siemens.com>
-Date: Tue, 15 Oct 2024 00:39:10 +0200
+ 23:02:00 +0000
+Message-ID: <421826f0-0523-4ba0-861b-067a87301278@siemens.com>
+Date: Tue, 15 Oct 2024 01:02:00 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/7] Dumping my refactoring cleanup queue before the
- upcoming release
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
-Cc: Clara Kowalsky <clara.kowalsky@siemens.com>
-References: <20241012-flo-cleanup-before-release-v1-0-df05bfa0ac80@siemens.com>
+Subject: Re: [PATCH] add f81601 support
+To: liuyang <liuyang@sinsegye.com.cn>, xenomai@lists.linux.dev
+References: <20241014015648.883157-1-liuyang@sinsegye.com.cn>
 From: Jan Kiszka <jan.kiszka@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
@@ -95,11 +93,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <20241012-flo-cleanup-before-release-v1-0-df05bfa0ac80@siemens.com>
+In-Reply-To: <20241014015648.883157-1-liuyang@sinsegye.com.cn>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR4P281CA0325.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:eb::20) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR4P281CA0443.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:c6::17) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -108,244 +106,411 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS8PR10MB6867:EE_
-X-MS-Office365-Filtering-Correlation-Id: 58825a1b-aa4c-45fa-f1e7-08dceca1060a
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DB8PR10MB3339:EE_
+X-MS-Office365-Filtering-Correlation-Id: 2c6a63ed-f003-42e9-00fd-08dceca4363d
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?VjBzN0txOFI1UFpDS0lqaHJIMThzTHowdUN3QzBWdTdCS0dBRGkrYlNNZXVB?=
- =?utf-8?B?b25KbkRYa0x3TnU2Q1hSU2ZpMVNuYWRGSDJ4YkNBRjNUU2FWSHN1cUhpUWpC?=
- =?utf-8?B?OHpUNyt0SVNCSUN0UlE0UnNTbks4dSt6eHg1MGhXZUQwd2tJcXR0dWdFNkkw?=
- =?utf-8?B?TEJOZDlRNkg4bWhtZG5JTHdNZDEzdEJzcG1pNFVZMFJmOEh5b1NPUWs4U1JQ?=
- =?utf-8?B?cnVuZ1gwejhsSUlIWFVnNlNlWlFNKzhmZlBZdGpVc3dkc3dZNkhCTmNUcjhW?=
- =?utf-8?B?U0FIaG5ySzJYcWtHRCtYSk5YOEZDYUVPVUFoWVVxbVFLUk9ZQmFPU1NxL3VD?=
- =?utf-8?B?bzByYXhNVFJqTFp0REs0SkZBNk5wRjQ3NndMQnRyK2M5c0RvUVh2aXRPQklp?=
- =?utf-8?B?MlZ4SkFwbG01bHdNbUl3ZFhwczArU0ova1Z6MHNiUE5HdHNVQ3Z4WmdHZWoz?=
- =?utf-8?B?ay90NzZEMmUzek8vWGJESWkxVUpib2FwZG9yTDA5QW9xdmhwSTlHQjV0MEJy?=
- =?utf-8?B?VnhrM0ZiUkMwUEVRbWdmT25Wb0RJM2RtZ2diR1UyZVEveUlNbnhKY3Z1UDd4?=
- =?utf-8?B?NmpJdExkeGlrNU9IMlNiQW80bnJ4RVNOL0duZThFWmRuQUpKNDBIV3RaWTJh?=
- =?utf-8?B?S0xnZzNEcWMrTDBhNTRsQnJucEdEQkNzbjNPUkNVcC9nSENNK2FxMjV5c0Er?=
- =?utf-8?B?OHRtbHZWd3ZWYWl1dTVvbzY5Z2gzZThBM1hjSnFVRW9VRDA4cmFuQmNJNW9l?=
- =?utf-8?B?UWcrNGVEVXI0UDFkMTlxQVZGTzhoNDBLRjVTUTdxK2xJcm5BaDZ5THRKYTNa?=
- =?utf-8?B?MFBUY0ZCeHpaSG5ReUZvUm9UamljVWMrNDJqSFovZWlrSzRnM1kvYy9GMk9M?=
- =?utf-8?B?eWRoaFlJbm4yT25tUDgxaVlzTHZjSTBGV09rVVVIQXpnVHlXZFpmU0tqNHFr?=
- =?utf-8?B?b01wbXQySXZMZ3paRC9BVk1rSy91YzdaQXpkRUZUcWcyUWRPbEhtbzRweHNZ?=
- =?utf-8?B?ek1IeklVWUpiTW9OdzFBVW5EZGZFQ0E2VE9SNXgwZzZiVjVBM04yaGlXTnBq?=
- =?utf-8?B?d1JVM0RZUjg0QzBWbUY5d2ZYK2Q0ZXBIcnQreG1OeW9MaU5sRy9NNFZ4SmdL?=
- =?utf-8?B?Z1FnRUE4SHVrNkJDcTM1b21iemRnaFV2YWRrR1VHbXVvRmx0WitpaFpNK3FS?=
- =?utf-8?B?TUxoVmwwaW9NcFdvTXd4TWFPKzNlY1JzbE5oZTB5SGh6OFJjTUNibEZBcmFp?=
- =?utf-8?B?eEkyM2ZNUlYyR1FKKzkzcURTR01jTXJJSVFTWWRUZDJjcngrMWc0bVQ4Q3Vh?=
- =?utf-8?B?bnJzYmJDWHNieVNqd3JXYVR5bFp0MHpaNHdmQ0I3S0Irc2lxMWwyalRjUHJI?=
- =?utf-8?B?azludWNkVWlMZGlaL0pOMkh1QURVZkdabFg1ZXlaL1NKa0FNbmVRYWdGQmNU?=
- =?utf-8?B?K2lmY0liRjBCTEpKV3pBNit4Q2tzMFk4TW5HZi9OajdveXQ3QmM1Tm9XcHpW?=
- =?utf-8?B?L2plUVNQT2liZVREM3ZpTFpNVE5PYTB3MmQ4OVFzeCtra3JMVGNpNG1HUklx?=
- =?utf-8?B?YmdZdkhCZHR2S2N3ZWxoT2swNWQycHVpb0ZRNklpb0hyVzJucHFMdS8yeWIx?=
- =?utf-8?B?Qk5UTjhBeWs5NUg0SFJQcU1sQXFjODZYYU5LWkhqRzQzcGF1eHp0K04yTzNx?=
- =?utf-8?B?ZlNxU2luMXBzQUNlNUlxbXM2cDM0UFNkUUl2Qi9JMENqeWIwaHhrSE53PT0=?=
+	=?utf-8?B?aktVRmVHV1VYNGljWHNaUDZZeGsxaktZR3g4cEltOURJNmlpNUEvWGFhYUs2?=
+ =?utf-8?B?dy81WThqZnZ4aUdaWEQ5K2c1aHUzUHBKUkwrbXUrK3lDSEJHbDRTL1BvSkxR?=
+ =?utf-8?B?U2t0amgzS0hicjhPSDJNSEczR2FOWmdoRDVMenRKYlJjUFhSeWd0S3VFZ3Ji?=
+ =?utf-8?B?ZlEwa1Y5V240akMyVjZudnVSM0NBUk1LTEtuOW90UmNFLzFvNmowOXRKb0pO?=
+ =?utf-8?B?TWdWVGNvOEZpeUZvWGszeUhhYVBKdnZ6eG95UE5yVzczNjdtNzI0UEZhWmZx?=
+ =?utf-8?B?eVc2MHIzWHBySXZZcnZ1MnRYcDB6eGtkZDBzWUg5bTVkRmhGbHZZNTU4STdx?=
+ =?utf-8?B?SzYxOCtoQWNnNnlqUlVaYUlhUkhpU3U3c1lMVEh5ZjByUWgzdTM0R3RhaUhV?=
+ =?utf-8?B?bVpLaGVabG9sZW5abnV5UkZhYjhNWEwzWkV3dmtuSkNnQjZtdmtiMzV4d1ZM?=
+ =?utf-8?B?TExhQW14RnlTL2tyK1hOdW94ZlhJSWpGSlNVbFRNcEhaTXpubjlGUlowSVQ5?=
+ =?utf-8?B?WWw0ZVZRcDZQcjJZRWtINkZNM204NEhCZHBhcHBEdUg2N0lsM2IreUhOcEwz?=
+ =?utf-8?B?UCtCVkZWYURwTTBsRkpoWTF0aGhwcVgyRHZoWnhiVU5WOEt5SVMwYldybXp6?=
+ =?utf-8?B?RlJmakZack9jL3R0alFjV2tLME1PY2ptTkRieEZ5Q2RrRGVpM0dnQ1dQVk1Q?=
+ =?utf-8?B?TEoxc0VPak9uRWpCRTNNMm1qbE1jV2I3dDlmOXcvOEhPYUhLbmdtRnhSczMz?=
+ =?utf-8?B?YkRhUlczKy9RaTFJUmlDQkJDdkJKWTdodllmbzF2Wll5TDhJSTNCUWZBSm5U?=
+ =?utf-8?B?eExSWVJTWUUreGhsbzlsZ3lPNFhXUjBCNGo0QnovcnNwUjNpMEx5bm1IdzY3?=
+ =?utf-8?B?RWRicEFJeEVTbDh3OGswL2pxVk10TzJjUWM5aVBvY0hSWXhBQXJUZjVkcFRn?=
+ =?utf-8?B?SSsyWEZST1ZndHo5OEdwUVlJWXRoTGRyYy9lV0R6OHAwQlRxTFM5YTF0ZnZ1?=
+ =?utf-8?B?em83a21VT3Y5RnNXaWs1WnhYTENFVmNIelBsZHVMMjZXaitaKzgyWUpWNVlY?=
+ =?utf-8?B?U2ZUWkdtV0VZTXNodWt1ZVhHQ3AzZEVlZzhNdUd0WWE4b0VMNFVpUWE5VTZH?=
+ =?utf-8?B?bFgwcDRFeTVENnhUd21qM2trOFpRamE4M2xhWXBycHAyTmtHeW1iNnZkdXFG?=
+ =?utf-8?B?THdUZEtoeFJTOWQ5QTcyV05YN2FHU3Bxa2k3RHd4LzlEcWNRRDZuMGptVnJS?=
+ =?utf-8?B?MzFhci9PdERvd1QxVXNrb3NHSVJXMCtUTXJiaDVmUndvMVA0cE1zZ2p6R0Ry?=
+ =?utf-8?B?ZlBQN3hsQ0hNcGRidEZuN2ZibUwwck5SQXRNaS9RdlQ1czIyT3BoVjFHVGF2?=
+ =?utf-8?B?d0RZZzl0bFVxK1BWeVVLdUtsa3lSRTNtNkVHOUZ6NDFUVlhUZzltbERkcFFm?=
+ =?utf-8?B?KzlUWk1BZWEvYnhBOTI3RWNSVGh1UFBMaktxbGV5T2podW55bWpseW1ER3V5?=
+ =?utf-8?B?REFDWlNROGY3VnFkN3ZZNE1NZE1tUm5hZlVoTUhjQjJvY25IRHVDNk1JZ0tq?=
+ =?utf-8?B?U2lsNjZvSFBnanRYVFlIakZmZGxHNlE3ZGljMnMveFd5cmFzb01vMXNob0NQ?=
+ =?utf-8?B?SzdvZEJocnU2cXBUZUt3M0hzNzVoUWc9PQ==?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?M0J2NE5RY09OUjRDeUlCYmlBQ2ErZ3FnUCs3UEw2TjFEbGNTeEFUV1FiZXM0?=
- =?utf-8?B?Y1gwODZZU0JNYjZsdmZ5T1NyQzVCWnltZnNzcjUrcVBxMm9aL2hvdEJNOU92?=
- =?utf-8?B?U3FpR3Zna3FwajM5Y2w0VTc4VWhNZ2I1VnUyMjM3cmRGMldyOUNHY21mVFBp?=
- =?utf-8?B?MU5yek5tYnBKcTNhczN6Q1JGc2J5VStZVkVCQm96WUU0WlQ0YkxmanlYRnho?=
- =?utf-8?B?RE1FclJwdTl6a2hRazlIVEVod3IvcU44SGh1eFp4RXBCdmgvS3ZDSjBxZ2tN?=
- =?utf-8?B?bDArdUJoSVNTbmN4NWIrMTZrbEt1TlBVN04yU1NnOW9ZVjdobW11UkQ2aURJ?=
- =?utf-8?B?eXE3QnZRODlkZ2d5Z3ZuZU1CMkI2aE92QVF2Tld3TFFWc0hEWnFwOFVYczRi?=
- =?utf-8?B?cEVpb0pLY1I1SGRnbzJNMnF1cW5pZVlrZUMyKzk1eTlIWkJJa2tVbm4ya1Ra?=
- =?utf-8?B?V2xpR2xkMjJqSzRRc3JsRUtwRzNWdVN3aUk4U0NVbEZuQzU2MUNKQ0lSbnYz?=
- =?utf-8?B?QWcxaUhNaEdhS1FQbXYrVVo1NzRhc25ubnNoclhRNW9GcDBYaDNPdHhFWm5j?=
- =?utf-8?B?VVZRYmlVbWpvYmZ0SVBJQ2s4Y3lvSGUrNDY0N2RaeG5vVzNtdTBqSXZPQXQz?=
- =?utf-8?B?QXlTcEpBaldjV0J3enhwSlN6ZWUxQXA1djdBZmZ5RDNCTGJFN21NRHpHeitm?=
- =?utf-8?B?Yzc2WmNmZTNSUnR4dlVmeGtwaWxwRmZoRUZrYVR6QXNXWjJJZjNZbUViMmNo?=
- =?utf-8?B?a1Y5NnJqemZpMTNHRkRjbFQwNk9qVnVNdkNWd2piSjZha2JoUUlqN2Q2MzFj?=
- =?utf-8?B?eGNvVmFTM2Q2ZmpPWGVXWXNOVkxYNlVHbVdqODM3d3EyZjYrYkNYUVFMK2tL?=
- =?utf-8?B?am9hQ3JMandMMy9qOTNONzkvTEc5ZmpJZzljQWxKQmcwYVBxdnVoZTlRc0xl?=
- =?utf-8?B?dVFGSDhOc09KTWpIdXN4RXJ5WUFwcStnenMraEpyZzl2V294MDE2SGI4NGdr?=
- =?utf-8?B?bi85aTlRZHVxUE8weVZQejBNRXlHbjFyakhuVjFLSi9JbTA0eHlwNWNTc1FB?=
- =?utf-8?B?Z2dPT1JhUDN5YXFXeEhFZlFTb3VoZVZ5ZU5Mdmw3dGEvdDJCM1EzczZ5RzU5?=
- =?utf-8?B?NU1EaTVXOFlOV2JXcVczOVY0bllQVHpIa3hTNlJTV0NTZGFTblBLQnlpcWpx?=
- =?utf-8?B?S0RBYzBEaXpXWHNLV1RJZkhxUFpzRENxd3BXeDdwM3ViN29ha1prY0JsRnhs?=
- =?utf-8?B?dFE4TkFHdjZKVzBlODFTUm80NjNLdmdmN1o2enVwTXhhbDlaaVN6VElwZUNz?=
- =?utf-8?B?Zk05VUFzUVcySGRwN0t6bUQ4NlVwTnliUVgvb3JPbHlxQmpzUDVZTk1TcFJW?=
- =?utf-8?B?aE9QeExMNW5aMlNNVHEzS2lncWE3SGhiR0JSRFkxbll1TXRBcnZBU1B0Tk5m?=
- =?utf-8?B?RTlLRGM1d3NlSzI4OWgvVVg1ZWdaZnFKd1B6WktRakY2TVhLM1d2eXZwSjdL?=
- =?utf-8?B?Vi82YkNqVll0TU5FRjlEYmhkYm9BbjZyVlk2ZWRhb2U5SmlSQ1Urck1VSkVT?=
- =?utf-8?B?c21LWStYQlRBM250ZkxEN0p1aytRN0RhcUdPb08rL21XUTNPUjlJd3MzYW5o?=
- =?utf-8?B?SytZOGZqa3pIakE0NWoydHQ5WE42azVoVmZ5QUpCK1hib3V5VTR6K0NmNlhZ?=
- =?utf-8?B?aUJxaXg5VFFDLzZkaTc1RERCdUN5bm1GdkdDYmpTZi95TW1KVlV5aEhwTm5J?=
- =?utf-8?B?azdSWWtYOVJVUjZleVphbEM5NkNNTllodmF3TGZvSWNwSzBFS2NLTnZLbVBU?=
- =?utf-8?B?bWZIaW1RcDZueTl5L3VUUG5NR3dEdWtaU2ZsYTNpRThZMng4RmUwL2x1eFBn?=
- =?utf-8?B?eDU4YVJWUG04ZWxuTm5halFGTTAyUmNHbk01c1BENTFvZHRtakZDWTQ4dU1S?=
- =?utf-8?B?b1Jickt1TmJIdFNVbElDN1hHTUtwWHFTQzdCUWtKemNPa1N2cVVnQmhSd2lC?=
- =?utf-8?B?MnNpQ0NKK2xPa0RPUS9pUXloZGQ1a3B4SUxlYkJ3VEZIRlQzT0YrQkM1RHFC?=
- =?utf-8?B?N1JwdlJuRDhPWnpBeWtWaVEwMWlQUzZQMVMvR0xjbW9NVitRVDhJc0dnOFB3?=
- =?utf-8?Q?+tSdmjXomP+vWeERUzwPLGc4m?=
+	=?utf-8?B?ZlpPM1JGcDdkRE0rTmMxdFFwM0Q2Q1MweTBlWEFQaVRVZG5ITVluemV5ZEYr?=
+ =?utf-8?B?MHdLL0tHbTZlc1lQVVFMb1BScmdvdEFveEZZVTZIN1lSRTFzNkY0Z2VhT1hY?=
+ =?utf-8?B?bkVxZ2pMWHdrK1UveGJOUXpsc3lPYXcxb3FydnhjdHdwNjQrWWVZaGJicGtj?=
+ =?utf-8?B?Q2tKaGl4c3hha05xTmkzS01FbERTRkJiZWpscGVIcXJGRWR3RWR1NGJVUHI4?=
+ =?utf-8?B?WmVydEw5NlF6U2tQZ25wMG1UL2NXVUVISGZiQVVYc3p3K1BYM0Y1Ymxtd3Zi?=
+ =?utf-8?B?ditNODZDRi9LaE1mQm0xUUVhaDJSVjM1WXd3TW5NRXNTcE5oRm9lb0FKWDVk?=
+ =?utf-8?B?eXlWZXgxN1krWjRYUUhJSHZqemcrYkw2TlJrOFJ6b1dTVmpZQkpZZkNnYk1h?=
+ =?utf-8?B?T1VZUGE2dmVOd2tna1pNVUNsZS8rZ3VsYlUvUjU4YWY1bHk1NFZnOU4wNWtY?=
+ =?utf-8?B?aWozZXBkVHRvNmN3V0RpNnFseXJqTHA1ZFRTbGFlK1pob0xVVGNGTHM0djgv?=
+ =?utf-8?B?TU1PRkplaHlYSTljbGZTS1p2TlBua3BYNEJoS1FJbmpQQlhtRWlZK3Fyd3JD?=
+ =?utf-8?B?eVVPM1daZGIyS0N6akZCRjYxT2V4REVjTHdYbERMRFJqdWFpMWtRY1JvUW9j?=
+ =?utf-8?B?QUg2OHdTNXNWU2U1c3l5bWpHNXFrK0RGRk9pcmZrd0NRQ2FPbVFZdnhmQXQ1?=
+ =?utf-8?B?MS93Z0Z4cFdiMk9rRmRvYTBIVmh5UDU0R1YyUkVIdEZ1V203RnhlT3ZtUVlv?=
+ =?utf-8?B?cDFTNGR1VzRZVzJOZm9qWlBSU0J1T0x0bkFYcWxFanZ6V2ZvQ3VERStwNmMr?=
+ =?utf-8?B?dHJCK204RXA0SDZYTlpadCtuMXZ1UnFvYVFRdTRtM1p3a2ZmSmM0bUhvZm9R?=
+ =?utf-8?B?VFFiNE5ybXlIWjZWVDViaERPeU9zOTljN0NXTlRtUnV5VFJ0bG5jWEZva054?=
+ =?utf-8?B?NGt2L2pPRy84N2J5cUlBQTQ1RE11T3pHOW9jek5laXpXN0xldTBMZzk5Y290?=
+ =?utf-8?B?SWxhRUVhcDBLZUZGZHdGcUZLbUpNYlFlQkM2WFN3RjVDNTZUUERTQkNVY3V0?=
+ =?utf-8?B?V1ZDTURXMHRZRGwrUmduUGF6YU9wYVhEdXBIUGxPT2gzY1d3dGlrNElRNFJQ?=
+ =?utf-8?B?a0FIZmNFVGxXNnZSZVY0Ti9WaGZwQVBKYUJtV3NlVlNORGNiL0hjQnJPb0JU?=
+ =?utf-8?B?a0EvZHFXajZMQ2VHaHgxRllydzNQZXgzWnM3alpIclhsQ2U4ZmhQN2VCQm90?=
+ =?utf-8?B?K2ZTZEdxdit1V2hRQ0F6d0JLZWoxSXZqd1l0NEFaTStlcmkwWnovaDh5VDFK?=
+ =?utf-8?B?V0dCYWJGd3JTcCsyck1mc0syTUM1dVBUaXBjWi9scG9pWG55YmNSL25wSndM?=
+ =?utf-8?B?VE9KNTgxZGs1RVVoalRPR1ZCT2JpTWtxZ05XczJIeXZ0eXJxU2pLWERqa1M4?=
+ =?utf-8?B?YS9CUTVob1o3ZEtEblIzM0lDUmcvY0pQcS84ZmIvTkFkZk1Lek1aSW1Tekpj?=
+ =?utf-8?B?T090SkJ0MWhIaXFIMHUwcWJ3ek5EdjN4VWdvbnRoT1V6aC9vdmREOXhPYmJK?=
+ =?utf-8?B?S0haektUajBoMHAzNDBrQWR1QTNwM2tncERKZWx2elNxTEdiMzQ0S0Q4WjA5?=
+ =?utf-8?B?ZWZ6SHlhL2MvT0NhTzROQ1FOUEFPMXlUZU1QSFpwKzA4UEhudjlWY0FPUkFq?=
+ =?utf-8?B?U01ObmljNmpSeUxHM0E2dTBFcFJoc3V4RVJpV0IvRDBIMldndktmbCtrY214?=
+ =?utf-8?B?UXVMbHBQRU4vSnEzWkIvOVM5ZXFvVSt5N1B5OHIvM0FoZmgwUzZVSkhLWVpy?=
+ =?utf-8?B?UC9GSWJTR3E5VmtLQml2eWlHZ1FaaUVLYUtGYmgrbldKZnQyekFBVnQ3Wm1M?=
+ =?utf-8?B?ZndGYktzUE91dlcyeDh2VjFTcUpscDNjOEcxSTZsK3FyNnhvSjN3TW1rakJ3?=
+ =?utf-8?B?N0VYTUJPVWZuVVlNQk1FazlHR1F6d1g0VzhRMFNqSVczRVJYeEJZc01TWWU2?=
+ =?utf-8?B?VFBFYklnd2dNbkFRMkVwS0doSjFsZFpLKzhqMFZ2UXFscFhlWGVXc0JiSFlI?=
+ =?utf-8?B?L2tGZ01jcWhNRFA4czMwSFR0OTVPU2hCUnptZlBMVk9KNTRPWFExbnV4b0Fy?=
+ =?utf-8?Q?dtLZdbyLxPdreNYHDaNh9L08J?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 58825a1b-aa4c-45fa-f1e7-08dceca1060a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2c6a63ed-f003-42e9-00fd-08dceca4363d
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2024 22:39:11.6055
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2024 23:02:00.9552
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: fg+QIVWIHGgkPwKtFzv7sdB+6UWck8toD6z/VkY5B5pyK5IiYz0GiuOP405eI3esaQInzTNrYSsYxzerbhJwuA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB6867
+X-MS-Exchange-CrossTenant-UserPrincipalName: w5ygFGsX4iMWEgQsfPLfBgAagDDS5njPD5AhO0I9LzyLd+Z/a59eyN1CMzAj6BL3YOfE7fU/pWYtQHQurJkeQw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR10MB3339
 
-On 12.10.24 12:26, Florian Bezdeka wrote:
-> Hi all,
-> 
-> this is a summary of cleanups waiting in different feature branches. I
-> thought it might make sense to dump that to the list to see if there is
-> interest to get that into the upcoming release.
-> 
-> The header cleanups are just housekeeping. Helping to speed up the build
-> a bit. More or less drive-by fixes.
-> 
-> The second part of the series might need some more testing / discussion.
-> This is a cleanup that is now possible after the armv8 compat
-> implementation done by Clara. All architecutres are now following the
-> Linux syscall ABI, so that we can clean up a lot of our own SYSCALL_
-> stuff and switch to syscall() provided by libc.
-> 
-> The next step, definitely out of scope for this release, is moving on to
-> a prctl() based infrastructure. I have that ready already, but that is
-> future work.
-> 
-> As the cleanup got possible during 3.3 development I thought it might
-> make sense to include the cleanup as well. Might help to make
-> backporting of fixes easier.
-> 
-> Let's see, happy reviewing.
-> 
-> Best regards,
-> Florian
-> 
-> Cc: Jan Kiszka <jan.kiszka@siemens.com>
-> Cc: Clara Kowalsky <clara.kowalsky@siemens.com>
-> 
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
-> Florian Bezdeka (7):
->       testsuite/smokey: Cleanup of unused includes
->       testsuite: Cleanup of unused includes
->       libcobalt: arm: Cleanup unused includes
->       libcobalt: arm64: Cleanup unused includes
->       cobalt: sycall API: Remove architecture specific implementations
->       cobalt: sycall API: Reformat all XENOMAI_SYSCALLx call sites
->       cobalt: syscall API: Remove architecture specific parts
-> 
->  include/cobalt/Makefile.am                         |   3 +-
->  .../kernel/dovetail/pipeline/vdso_fallback.h       |  19 +-
->  include/cobalt/kernel/rtdm/fd.h                    |   1 -
->  include/cobalt/syscall.h                           |  56 ++++++
->  include/cobalt/uapi/asm-generic/syscall.h          |   1 -
->  .../cobalt/arch/arm/include/asm/xenomai/syscall.h  |  51 +----
->  .../arch/arm/include/asm/xenomai/uapi/syscall.h    |  28 ---
->  .../arch/arm64/include/asm/xenomai/syscall.h       |  47 +----
->  .../arch/arm64/include/asm/xenomai/uapi/syscall.h  |  28 ---
->  .../cobalt/arch/x86/include/asm/xenomai/syscall.h  |  53 +----
->  .../arch/x86/include/asm/xenomai/uapi/syscall.h    |  23 ---
->  kernel/cobalt/dovetail/syscall.c                   |  34 +++-
->  .../cobalt/include/asm-generic/xenomai/syscall.h   |  26 +++
->  .../cobalt/include/asm-generic/xenomai/syscall32.h |  20 +-
->  kernel/cobalt/posix/syscall.c                      |  70 ++++---
->  kernel/cobalt/posix/syscall.h                      |   7 +-
->  kernel/cobalt/rtdm/fd.c                            |   7 +-
->  lib/cobalt/arch/arm/features.c                     |  17 +-
->  .../arch/arm/include/asm/xenomai/Makefile.am       |   3 +-
->  lib/cobalt/arch/arm/include/asm/xenomai/syscall.h  | 122 ------------
->  lib/cobalt/arch/arm64/features.c                   |  17 +-
->  .../arch/arm64/include/asm/xenomai/Makefile.am     |   3 +-
->  .../arch/arm64/include/asm/xenomai/syscall.h       | 104 ----------
->  .../arch/x86/include/asm/xenomai/Makefile.am       |   3 +-
->  lib/cobalt/arch/x86/include/asm/xenomai/syscall.h  | 216 ---------------------
->  lib/cobalt/clock.c                                 |  11 +-
->  lib/cobalt/cond.c                                  |  11 +-
->  lib/cobalt/current.c                               |   3 +-
->  lib/cobalt/init.c                                  |   5 +-
->  lib/cobalt/internal.c                              |  23 +--
->  lib/cobalt/mq.c                                    |   2 +-
->  lib/cobalt/mutex.c                                 |   3 +-
->  lib/cobalt/rtdm.c                                  |  20 +-
->  lib/cobalt/sched.c                                 |  24 +--
->  lib/cobalt/select.c                                |   6 +-
->  lib/cobalt/semaphore.c                             |  14 +-
->  lib/cobalt/signal.c                                |   2 +-
->  lib/cobalt/sigshadow.c                             |   3 +-
->  lib/cobalt/thread.c                                |  24 +--
->  lib/cobalt/timer.c                                 |   5 +-
->  lib/cobalt/timerfd.c                               |   3 +-
->  lib/cobalt/trace.c                                 |  10 +-
->  testsuite/clocktest/clocktest.c                    |   2 +-
->  testsuite/gpiobench/gpiobench.c                    |   8 +-
->  testsuite/gpiotest/gpiotest.c                      |   2 +-
->  testsuite/latency/latency.c                        |   1 +
->  testsuite/smokey/alchemytests/sem-2.c              |   1 +
->  testsuite/smokey/alchemytests/task-11.c            |   1 -
->  testsuite/smokey/arith/arith-noinline.c            |   2 -
->  testsuite/smokey/bufp/bufp.c                       |   2 +-
->  testsuite/smokey/cpu-affinity/cpu-affinity.c       |   3 +-
->  testsuite/smokey/dlopen/dlopen.c                   |   6 +-
->  testsuite/smokey/dlopen/dlopentest.c               |   3 +-
->  testsuite/smokey/dlopen/libalchemy-test.c          |   3 +-
->  testsuite/smokey/dlopen/libposix-test.c            |   2 +-
->  testsuite/smokey/gdb/gdb.c                         |   2 +-
->  testsuite/smokey/iddp/iddp.c                       |   2 +-
->  testsuite/smokey/leaks/leaks.c                     |   4 +-
->  testsuite/smokey/main.c                            |   3 +-
->  testsuite/smokey/memcheck/memcheck.c               |   2 +-
->  testsuite/smokey/memory-coreheap/coreheap.c        |   1 +
->  testsuite/smokey/memory-heapmem/heapmem.c          |   1 +
->  testsuite/smokey/memory-pshared/pshared.c          |   1 +
->  testsuite/smokey/memory-tlsf/tlsf.c                |   1 +
->  testsuite/smokey/net_common/server.c               |   4 -
->  testsuite/smokey/net_common/smokey_net_server.c    |   3 -
->  testsuite/smokey/net_packet_dgram/packet_dgram.c   |   3 -
->  testsuite/smokey/net_packet_raw/packet_raw.c       |   1 -
->  testsuite/smokey/posix-clock/posix-clock.c         |   4 +-
->  testsuite/smokey/posix-cond/posix-cond.c           |   4 +-
->  testsuite/smokey/posix-fork/posix-fork.c           |   4 +-
->  testsuite/smokey/posix-mutex/posix-mutex.c         |   3 +-
->  testsuite/smokey/posix-select/posix-select.c       |   5 +-
->  testsuite/smokey/psostests/pt-1.c                  |   1 -
->  testsuite/smokey/psostests/rn-1.c                  |   1 -
->  testsuite/smokey/rtdm/rtdm.c                       |   1 +
->  testsuite/smokey/sched-quota/sched-quota.c         |   3 +-
->  testsuite/smokey/sched-tp/sched-tp.c               |   6 +-
->  testsuite/smokey/setsched/setsched.c               |   2 +-
->  testsuite/smokey/sigdebug/Makefile.am              |   2 +-
->  testsuite/smokey/timerfd/timerfd.c                 |   2 +-
->  testsuite/smokey/tsc/tsc.c                         |   5 -
->  testsuite/smokey/vxworkstests/lst-1.c              |   1 -
->  testsuite/smokey/vxworkstests/msgQ-1.c             |   1 -
->  testsuite/smokey/vxworkstests/msgQ-2.c             |   1 -
->  testsuite/smokey/vxworkstests/msgQ-3.c             |   1 -
->  testsuite/smokey/vxworkstests/rng-1.c              |   2 -
->  testsuite/smokey/vxworkstests/sem-1.c              |   1 -
->  testsuite/smokey/vxworkstests/sem-2.c              |   1 -
->  testsuite/smokey/vxworkstests/sem-3.c              |   1 -
->  testsuite/smokey/vxworkstests/task-1.c             |   1 -
->  testsuite/smokey/vxworkstests/task-2.c             |   2 -
->  testsuite/smokey/vxworkstests/wd-1.c               |   1 -
->  testsuite/smokey/x86io/x86io.c                     |   2 +-
->  testsuite/smokey/xddp/xddp.c                       |   2 +-
->  testsuite/smokey/y2038/syscall-tests.c             |   7 +-
->  testsuite/spitest/spitest.c                        |   3 +-
->  testsuite/switchtest/switchtest.c                  |   3 +-
->  98 files changed, 321 insertions(+), 944 deletions(-)
-> ---
-> base-commit: db203dc68964235b1c6b549bfaa2c3b88f736814
-> change-id: 20241012-flo-cleanup-before-release-a90d9df08d07
-> 
-> Best regards,
+Some sentense(s) about the hardware that this driver targets would be
+good here.
 
-Thanks, I've applied 1-4. At least 5 is material for the next-but-one
-release, and the other patches depend on it.
+And the subject should carry some tags, e.g.
+"drivers: can: sja1000: add f81601 support"
+
+On 14.10.24 03:56, liuyang wrote:
+> Signed-off-by: liuyang <liuyang@sinsegye.com.cn>
+> ---
+>  .gitlab-ci.yml                                |   1 +
+>  kernel/drivers/can/sja1000/Kconfig            |  11 +
+>  kernel/drivers/can/sja1000/Makefile           |   2 +
+>  kernel/drivers/can/sja1000/rtcan_f81601_pci.c | 226 ++++++++++++++++++
+>  4 files changed, 240 insertions(+)
+>  create mode 100644 kernel/drivers/can/sja1000/rtcan_f81601_pci.c
+> 
+> diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+> index ad6f37d1c..892c20b9c 100644
+> --- a/.gitlab-ci.yml
+> +++ b/.gitlab-ci.yml
+> @@ -113,6 +113,7 @@ variables:
+>      - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_EMS_PCI
+>      - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_ESD_PCI
+>      - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_PEAK_DNG
+> +    - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_F81601
+>      - ./scripts/config -e XENO_DRIVERS_CAN_PEAK_CANFD
+>      - ./scripts/config -e XENO_DRIVERS_CAN_C_CAN
+>      - ./scripts/config -e XENO_DRIVERS_CAN_C_CAN_PLATFORM
+> diff --git a/kernel/drivers/can/sja1000/Kconfig b/kernel/drivers/can/sja1000/Kconfig
+> index 9fab4a475..043f7aac1 100644
+> --- a/kernel/drivers/can/sja1000/Kconfig
+> +++ b/kernel/drivers/can/sja1000/Kconfig
+> @@ -98,3 +98,14 @@ config XENO_DRIVERS_CAN_SJA1000_PEAK_DNG
+>  	to disable parallel port support in the kernel (CONFIG_PARPORT) for
+>  	proper operation. The interface type (sp or epp), I/O port and
+>  	interrupt number should be defined via module parameters.
+> +
+> +config XENO_DRIVERS_CAN_SJA1000_F81601
+> +    depends on XENO_DRIVERS_CAN_SJA1000 && PCI
+> +    tristate "Fintek F81601 PCIE to 2 CAN Controller"
+
+Do you mean "... with 2 CAN Controllers"?
+
+> +    help
+> +      This driver adds support for Fintek F81601 PCIE to 2 CAN
+> +      Controller.
+
+Same here
+
+> It had internal 24MHz clock source, but it can
+
+"Is has and internal 24 MHz clocks source"
+
+> +      be changed by manufacturer. Use modinfo to get usage for
+> +      parameters. Visit http://www.fintek.com.tw to get more
+> +      information.
+> +
+
+Extra newline at end of file - please avoid.
+
+> diff --git a/kernel/drivers/can/sja1000/Makefile b/kernel/drivers/can/sja1000/Makefile
+> index ff6715513..2d344c37b 100644
+> --- a/kernel/drivers/can/sja1000/Makefile
+> +++ b/kernel/drivers/can/sja1000/Makefile
+> @@ -10,6 +10,7 @@ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_EMS_PCI) += xeno_can_ems_pci.o
+>  obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_ESD_PCI) += xeno_can_esd_pci.o
+>  obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_ISA) += xeno_can_isa.o
+>  obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM) += xeno_can_mem.o
+> +obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_F81601) += xeno_can_f81601.o
+>  
+>  xeno_can_sja1000-y := rtcan_sja1000.o
+>  xeno_can_sja1000-$(CONFIG_FS_PROCFS) += rtcan_sja1000_proc.o
+> @@ -22,3 +23,4 @@ xeno_can_ems_pci-y := rtcan_ems_pci.o
+>  xeno_can_esd_pci-y := rtcan_esd_pci.o
+>  xeno_can_isa-y := rtcan_isa.o
+>  xeno_can_mem-y := rtcan_mem.o
+> +xeno_can_f81601-y := rtcan_f81601_pci.o
+> diff --git a/kernel/drivers/can/sja1000/rtcan_f81601_pci.c b/kernel/drivers/can/sja1000/rtcan_f81601_pci.c
+> new file mode 100644
+> index 000000000..0e577ce5f
+> --- /dev/null
+> +++ b/kernel/drivers/can/sja1000/rtcan_f81601_pci.c
+> @@ -0,0 +1,226 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Fintek F81601 PCIE to 2 CAN controller driver, ported to Xenomai RTDM
+> + * only use CAN controller 0
+> + * Copyright (C) 2024 Liu Yang <liuyang@sinsegye.com.cn>
+> + *
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/delay.h>
+> +#include <linux/pci.h>
+> +#include <linux/io.h>
+> +
+> +#include <rtdm/driver.h>
+> +
+> +/* CAN device profile */
+> +#include <rtdm/can.h>
+> +#include <rtcan_dev.h>
+> +#include <rtcan_raw.h>
+> +#include <rtcan_internal.h>
+> +#include <rtcan_sja1000.h>
+> +#include <rtcan_sja1000_regs.h>
+> +
+> +static char *f81601_pci_board_name = "F81601-PCI";
+> +#define RTCAN_DRV_NAME "rt_sja1000_f81601_pci"
+> +#define RTCAN_DEV_NAME "rtcan%d"
+> +
+> +#define F81601_PCI_MAX_CHAN		1
+
+The help above talks about 2 controllers, but here you only allow one.
+Is this constant wrong or the description?
+
+> +
+> +#define F81601_DECODE_REG		0x209
+> +#define F81601_IO_MODE			BIT(7)
+> +#define F81601_MEM_MODE			BIT(6)
+> +#define F81601_CFG_MODE			BIT(5)
+> +#define F81601_CAN2_INTERNAL_CLK	BIT(3)
+> +#define F81601_CAN1_INTERNAL_CLK	BIT(2)
+> +#define F81601_CAN2_EN			BIT(1)
+> +#define F81601_CAN1_EN			BIT(0)
+> +
+> +#define F81601_TRAP_REG			0x20a
+> +#define F81601_CAN2_HAS_EN		BIT(4)
+> +
+> +struct f81601_pci_card {
+> +	void __iomem *addr;
+> +	struct pci_dev *dev;
+> +	struct rtcan_device *rtcan_dev[F81601_PCI_MAX_CHAN];
+> +};
+> +
+> +static const struct pci_device_id f81601_pci_tbl[] = {
+> +	{ PCI_DEVICE(0x1c29, 0x1703) },
+> +	{ /* sentinel */ },
+> +};
+> +
+> +MODULE_DEVICE_TABLE(pci, f81601_pci_tbl);
+> +
+> +static bool internal_clk = true;
+> +module_param(internal_clk, bool, 0444);
+> +MODULE_PARM_DESC(internal_clk, "Use internal clock, default true (24MHz)");
+> +
+> +static unsigned int external_clk;
+> +module_param(external_clk, uint, 0444);
+> +MODULE_PARM_DESC(external_clk, "External clock when internal_clk disabled");
+> +
+> +static u8 f81601_pci_read_reg(struct rtcan_device *dev, int port)
+> +{
+> +	return readb((void * __iomem)dev->base_addr + port);
+> +}
+> +
+> +static void f81601_pci_write_reg(struct rtcan_device *dev, int port,
+> +				 u8 val)
+> +{
+> +	writeb(val, (void * __iomem)dev->base_addr + port);
+> +	readb((void * __iomem)dev->base_addr);
+> +}
+> +
+> +static void f81601_pci_remove(struct pci_dev *pdev)
+> +{
+> +	struct f81601_pci_card *card = pci_get_drvdata(pdev);
+> +	struct rtcan_device *dev;
+> +	int i;
+> +
+> +	for (i = 0; i < ARRAY_SIZE(card->rtcan_dev); i++) {
+> +		dev = card->rtcan_dev[i];
+> +		if (!dev)
+> +			continue;
+> +
+> +		dev_info(&pdev->dev, "%s: Removing %s\n", __func__, dev->name);
+> +
+> +		rtcan_sja1000_unregister(dev);
+> +		if (card->addr)
+> +			pci_iounmap(pdev, card->addr);
+> +		rtcan_dev_free(dev);
+> +	}
+> +
+> +	kfree(card);
+> +}
+> +
+> +/* Probe F81601 based device for the SJA1000 chips and register each
+> + * available CAN channel to SJA1000 Socket-CAN subsystem.
+> + */
+> +static int f81601_pci_probe(struct pci_dev *pdev,
+> +			    const struct pci_device_id *ent)
+> +{
+> +	struct rtcan_sja1000 *chip;
+> +	struct f81601_pci_card *card;
+> +	struct rtcan_device *dev;
+> +
+> +	int err, i, count;
+> +	u8 tmp;
+> +
+> +	if (!rtdm_available())
+> +		return -ENODEV;
+> +
+> +	/* Enabling PCI device */
+> +	if (pci_enable_device(pdev) < 0) {
+> +		dev_err(&pdev->dev, "Enabling PCI device failed\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	/* Allocating card structures to hold addresses, ... */
+> +	card = kzalloc(sizeof(*card), GFP_KERNEL);
+> +	if (card == NULL) {
+> +		pci_disable_device(pdev);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	card->dev = pdev;
+> +
+> +	pci_set_drvdata(pdev, card);
+> +
+> +	tmp = F81601_IO_MODE | F81601_MEM_MODE | F81601_CFG_MODE |
+> +		F81601_CAN2_EN | F81601_CAN1_EN;
+> +
+> +	if (internal_clk) {
+> +		tmp |= F81601_CAN2_INTERNAL_CLK | F81601_CAN1_INTERNAL_CLK;
+> +
+> +		dev_info(&pdev->dev,
+> +			 "F81601 running with internal clock: 24Mhz\n");
+> +	} else {
+> +		dev_info(&pdev->dev,
+> +			 "F81601 running with external clock: %dMhz\n",
+> +			 external_clk / 1000000);
+> +	}
+> +
+> +	pci_write_config_byte(pdev, F81601_DECODE_REG, tmp);
+> +
+> +	card->addr = pci_iomap(pdev, 0, pci_resource_len(pdev, 0));
+> +
+> +	if (!card->addr) {
+> +		err = -ENOMEM;
+> +		dev_err(&pdev->dev, "%s: Failed to remap BAR\n", __func__);
+> +		goto failure_cleanup;
+> +	}
+> +
+> +	/* read CAN2_HW_EN strap pin to detect how many CANBUS do we have */
+> +	count = ARRAY_SIZE(card->rtcan_dev);
+> +	pci_read_config_byte(pdev, F81601_TRAP_REG, &tmp);
+> +	if (!(tmp & F81601_CAN2_HAS_EN))
+> +		count = 1;
+> +
+> +	for (i = 0; i < count; i++) {
+> +		dev = rtcan_dev_alloc(sizeof(struct rtcan_sja1000), 0);
+> +		if (!dev) {
+> +			err = -ENOMEM;
+> +			goto failure_cleanup;
+> +		}
+> +
+
+From here on, indention is wrong. This can be highly confusing for readers.
+
+> +	/* set rtcan_device struct */
+> +	dev->base_addr  = (unsigned long)card->addr + 0x80 * i;
+> +	dev->board_name = f81601_pci_board_name;
+> +	strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
+> +
+> +	if (internal_clk)
+> +		dev->can_sys_clock = 24000000 / 2;
+> +	else
+> +		dev->can_sys_clock = external_clk / 2;
+> +
+> +	/* get rtcan_sja1000 struct */
+> +	card->rtcan_dev[i] = dev;
+> +	chip = card->rtcan_dev[i]->priv;
+> +
+> +	/* set rtcan_sja1000 struct */
+> +	chip->irq_flags = RTDM_IRQTYPE_SHARED;
+> +	chip->irq_num   = pdev->irq;
+> +	chip->read_reg  = f81601_pci_read_reg;
+> +	chip->write_reg = f81601_pci_write_reg;
+> +	chip->ocr = SJA_OCR_TX0_PUSHPULL | SJA_OCR_TX1_PUSHPULL | SJA_OCR_MODE_NORMAL;
+> +	/* Clock divider register */
+> +	chip->cdr = SJA_CDR_CBP;
+> +
+> +	/* Register SJA1000 device */
+> +	err = rtcan_sja1000_register(dev);
+> +	if (err) {
+> +		dev_err(&pdev->dev,
+> +			"%s: Registering device failed: %x\n", __func__,
+> +			err);
+> +		goto failure_cleanup;
+> +	}
+> +
+> +	dev_info(&pdev->dev, "Channel #%d at 0x%p, irq %d registered as %s\n", i,
+> +		(void * __iomem)dev->base_addr, chip->irq_num, dev->name);
+> +	}
+> +
+> +	/* force into reset mode */
+> +	chip->write_reg(dev, SJA_MOD, SJA_MOD_RM);
+> +
+> +	return 0;
+> +
+> + failure_cleanup:
+> +	dev_err(&pdev->dev, "%s: failed: %d. Cleaning Up.\n", __func__, err);
+> +	f81601_pci_remove(pdev);
+> +
+> +	return err;
+> +}
+> +
+> +static struct pci_driver f81601_pci_driver = {
+> +	.name =	RTCAN_DRV_NAME,
+> +	.id_table = f81601_pci_tbl,
+> +	.probe = f81601_pci_probe,
+> +	.remove = f81601_pci_remove,
+> +};
+> +
+> +MODULE_DESCRIPTION("Fintek F81601 PCIE to 2 CANBUS adaptor driver");
+> +MODULE_AUTHOR("Liu Yang <liuyang@sinsegye.com.cn>");
+> +MODULE_LICENSE("GPL v2");
+> +
+> +module_pci_driver(f81601_pci_driver);
+> +
+
+Another extra newline at end of file.
 
 Jan
 
