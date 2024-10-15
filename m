@@ -1,325 +1,215 @@
-Received: from out28-147.mail.aliyun.com (out28-147.mail.aliyun.com [115.124.28.147])
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2088.outbound.protection.outlook.com [40.107.22.88])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3AB7136E3F
-	for <xenomai@lists.linux.dev>; Tue, 15 Oct 2024 01:36:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.28.147
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1728956204; cv=none; b=VWqa72hZ5sHVKrhOIRcIboJSZWh5sqz0AEfyT5+KxRMouqC/7uJSOGhwSYPMteXzUwFhklDC2b8PGoZt8X4e0wad9TVlFDffPMvDGsDWfN9MkfyVo9vXBSnPSk6yJiFuZAtS9pvBEUta5OQxkEMnza5AnzU72pxs35BPruZ64qQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1728956204; c=relaxed/simple;
-	bh=fxN71CkZpSJ9RI6zJq9Rh2WeozEyJvHF7xwPchxQOKg=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=BFdL5b6qdeMY0zDH6sm5BTmkhdEsqfQpNzYTfxc6nwEgVhqD0G3KMi/hMYMTWmj2i5RfBfD49subjsON0vaFccbVrDGWa4zSrF4dsN26KrEKBQA/fsHCzRDwQb3rDo+8NV6MeKu2eln71XUHpSU9z7oKILa9pN1D/PTvGGXAolA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sinsegye.com.cn; spf=none smtp.mailfrom=sinsegye.com.cn; arc=none smtp.client-ip=115.124.28.147
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sinsegye.com.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=sinsegye.com.cn
-Received: from sinsegye..(mailfrom:liuyang@sinsegye.com.cn fp:SMTPD_---.ZiGqD79_1728956189 cluster:ay29)
-          by smtp.aliyun-inc.com;
-          Tue, 15 Oct 2024 09:36:30 +0800
-From: liuyang <liuyang@sinsegye.com.cn>
-To: xenomai@lists.linux.dev
-Cc: liuyang <liuyang@sinsegye.com.cn>
-Subject: [v1] support F81601 PCIe CAN bus 2 ports controllers
-Date: Tue, 15 Oct 2024 09:36:27 +0800
-Message-Id: <20241015013627.891619-1-liuyang@sinsegye.com.cn>
-X-Mailer: git-send-email 2.34.1
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22F8638DE9
+	for <xenomai@lists.linux.dev>; Tue, 15 Oct 2024 07:30:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.22.88
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1728977424; cv=fail; b=KnLhCIb88BvM5NWaSeT4mb3rWS822OoC9NBTfGv8idUPEsufMAZLU5zrV5Xb63RQx1pP860T5xXiNygTZRIjJI6Nj6V0YJR95rxAG/lHx8mqDqOzSd0CliaIasZRujd1dkL0zPluXqTRXFircbWuQcO5YxtKskqn4mKFVjyDk6g=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1728977424; c=relaxed/simple;
+	bh=IwmA+RRsBmbPo8mzcYhDepiWXp+SvcPbjTt+c7rLzOI=;
+	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Jrw+C5rzDOdSsWGYjE9eFziz/ddrRqOkyCPm0U7DVDGcjKZCgpRR1avcnyKBDP/7WA6Uznvwfujqaa0AWehVOazEH334BGwEBHBAlHE6k5RZIIb2v+0S+ExlwwUQ/LxbfFdKYY4j93g6BGFAl7nw8/CEgbVXD1im6VjLRgAE8dM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=mh7L703M; arc=fail smtp.client-ip=40.107.22.88
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="mh7L703M"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=KxXkEsMnSzostMlPXw4wN+O2OnYRhKOYaj0UyGC/Jyib3/wNlK/0S7GlVbY8pdZ65pADH7dE/mIY9LAIg/qgvt3xcz3MpoYJ6NAtAoV5S5utbFTLEdTSVTisw8Opc8r68aSHyyRobIL1Ffrq0TY1Qm+WbH9xrKIratOj923AhVuusVgiybhzK9A+bc6n4ls6MN2i4aOVxJQYRfiffqs1G+G0qk5KbYbbD5o13PgxOzdhPlZtXXpxsPpFHMNEff8q3YYwUwK4cR0ORQdI8xoRQK27wa/p/zwyxD3LhEvvsg7DfitcH8eubupRQTfzaslKPkpyXEco7Sj1C2q8ytUO1w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=0kA4xRnR7NBwzGXNm1YyVFog11XkFrZmMKTsUsYjEXc=;
+ b=J+F2IYn51TvF3VCje7ALflBpzOIVBubd/ktzr6qfXOx89Zn+zn8ElRbFoPDfdP1Y6F77DCLP14Ixl8Vnx6SZaClJSNXKieUIMjPEKK+uPIIQUkY+//zY8MmkgSY2sLKgB0HpiZ/XVa5RTHLLot9EuDN+NAfad1cB9fq9KzZkO1UMWSFnbQUaUTHaP/Co1kulXlBA9mk1v2ph56drqcUBP2IOBEqQSXLv+G5woQVBaXJOE8IUVvB1B0/zceZWzrUEXhDpiUlSktyn6r5GezovF2vcHdZ8UPcWq+/l33Hrnw1VUPcHtTUBSToE6e0IcDNiK50Jxy4u4x5zQ4kN08u9pQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0kA4xRnR7NBwzGXNm1YyVFog11XkFrZmMKTsUsYjEXc=;
+ b=mh7L703ML8IogzBWiHe/BNIbZNkOujxlwjqm54Tl1WO3ZNXN2kp2HVFtZNGD0Eg9mHHiST6u0T4ItGIuVzwPAR7TC9HSxOWkDQJFrRN9gsbn1LrfVeacgmYF3E936jO0kTOvICwFEpL3SZSkhjAFp4SOZHcZQlnUUF6q43Bso7o5qoph+QG6jxRSsOileH0CRu3yAXHcP86SjlH9HNX8ZcsSXvytjpbL6JqUW5EXuYHG2TW+Mq0uYEGcy+O8rd5CjE4HpARYBoQ9g/EFzf3xJLVoZNhX7w0rqYsCjKIibQOPzvAFELij7Aty40zL+XTerVsNjbWdRPbOdnDl2Jr7SA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by AS2PR10MB7503.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:591::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8069.13; Tue, 15 Oct
+ 2024 07:30:16 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408%3]) with mapi id 15.20.8069.009; Tue, 15 Oct 2024
+ 07:30:14 +0000
+Message-ID: <d338be91-40bd-4415-8969-9e8bbb9f9d4b@siemens.com>
+Date: Tue, 15 Oct 2024 09:30:13 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [v1] support F81601 PCIe CAN bus 2 ports controllers
+To: liuyang <liuyang@sinsegye.com.cn>, xenomai@lists.linux.dev
+References: <20241015013627.891619-1-liuyang@sinsegye.com.cn>
+Content-Language: en-US
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ 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
+In-Reply-To: <20241015013627.891619-1-liuyang@sinsegye.com.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR4P281CA0255.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:f5::18) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS2PR10MB7503:EE_
+X-MS-Office365-Filtering-Correlation-Id: f31ce669-c4e8-4b0b-1586-08dceceb35c2
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?YlhMWUdKTFhDVWxSdDhRS3pYT3lLamlGU1pSb0ZHZTRvd1huU095WUQ1RCtY?=
+ =?utf-8?B?eloxNnFtTzVhRDdiTXhJQktsR0RZUzJLTU5hYmRHbnZrZkwxa09LY0dNVnls?=
+ =?utf-8?B?Z1NCNWhXNnFXMTBOVUxNNDR3NmZuczI2OUdJNUFJUE5xNjRvUm5IcDQ0T0pq?=
+ =?utf-8?B?OVdYUkJaYXNUcHVnczByTkxGNENjV1cybFV1eFRUNFBoa1ZENHQ5U2pPSlpQ?=
+ =?utf-8?B?bGVicFJHVXNVcmJ6Rkt2WE1xVW9USTRSS3o4alYwczc1L29UTXFYcHA0SHZL?=
+ =?utf-8?B?dU1rZFZ2VDU3OHlkVHE0c3JqdEY0ZE5WZmdUeTVsbThvQ1M1anUyWklsT04r?=
+ =?utf-8?B?emFsbmljd2ZPWXZjTWlFbkUzZDM4SVVwNHZ2SUthMlJPSXlIaVhjelVjWDBl?=
+ =?utf-8?B?akpQMzIwb3VJK2gzRVV3d0R0cjhhVmxuK21hN0k5MXQ3WHJHdlpJWkhnVXE2?=
+ =?utf-8?B?SmJxUU1nNWhvcjNrMk5Kd2IyYUlKUUhBRU1BUkRTbjJpRXhydm1sMjJxSmdm?=
+ =?utf-8?B?bHNIMVpLa2hGS29NL1hTY2RjZXVoZTN5cFVkNE5Jdms3VHI2V1BGY1dVZG5p?=
+ =?utf-8?B?cnFrV2RFYTQ3a0tJUUd2Zm5xM08vanA0Q1gyWlVTbXZJem5LSjBpTUtIRTVH?=
+ =?utf-8?B?ODFSOUk3Nml3YlM5bHdna1BmR0NYSjE2TUgxTCtqT2NncHUzYlM5cnl5V3cz?=
+ =?utf-8?B?b0JqSEpRRkkyUXdTTHVFT3A3Y2l2VDBRdWxoS0p6MEdoTm9kKzVTWkVWVjhB?=
+ =?utf-8?B?Y0tvZ2xQNXArUlVNekZNamI5TkxsaDc2MnV1RG9xZkV3VENXQlkzNUtVTHBY?=
+ =?utf-8?B?OUpqcHNvYTRGVng1QVZzcGZXZWRNMTdJZ01NOTFGQTlhdjdQNVNLN2hpWDhu?=
+ =?utf-8?B?NFFZeWkwT2VKZ0NzNDZyOXp4VzR5VGtkME0wSlhpeHRGcDlvL05OSVFEbEdU?=
+ =?utf-8?B?SHhEU0RRQzUzNW5yRGRWM2pUdmdQays3TE4rQkVxMUNsR2xlbHc0QWt0ODQ4?=
+ =?utf-8?B?NVpQb0xqWVRxY0krbXh5bmxnZjF3R3Jrd0hEaXFHK3lXRnltOEg2ZUdlbHBU?=
+ =?utf-8?B?dlRMakJnK2ZzMFl4aURzM2plSElmOSthd1RiQmxCTi9UYjJrSnRBYjJpRUlF?=
+ =?utf-8?B?c0tmek4vWFk4V290QTNBWW94aURtc0ZDeGx5U1doaGNDZmJVTnRXNzFTMXR3?=
+ =?utf-8?B?Y3JObnJrUXNqUDBEdnhFM0JXMU9VR2tyUWFhQ2JXRThKR2ZYeDdZSG01dnBl?=
+ =?utf-8?B?UEZBcW9vblUxT0VweHo2ZnBnTStKcWcrUTdTZVhCbjFOQ29iR0FibUYwQkNs?=
+ =?utf-8?B?NTZvY0JPUXlyanBnMEdoSFlUcldnQTdMSERKei9MU1hkbVJtSEwzVVNSTXcr?=
+ =?utf-8?B?MXk2OVJDa3E2NnVhZTlkSEZPZTVZd1lIbTlrLzM3UUZRaThuV0tmZzRlRXps?=
+ =?utf-8?B?WjRpcnBHRDVOdUo0aHRoQkp2Y2h3SnlNMU1rNml6YWZwOE5HRTlOMFFYUWZY?=
+ =?utf-8?B?WGJMRWpPbWlvaEw4THhWTEFuY2tVNXp0RGFiaHhzd2J1OXpEd2V2SWNhMUhT?=
+ =?utf-8?B?TjdYY1dGVFIvS055MWlpVXZ1VUV6UnNoNGV6TVhPdXp0cnlic25MUXAyR3dX?=
+ =?utf-8?B?Y1l0N1FGbUxwc2txWFNIVmw1eG5ZWFF4eG51ZEp0TGt3Vi9FR0NzaExzSkhk?=
+ =?utf-8?B?NjZUb2F6OGV0QW9BVis5RmFFSGo1M3BaVmMvVXhTQiszMzRWSGxlbDhRPT0=?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?bnBpOEdoNDVoZGNhbHBCWU5EQkZBZ1YrQkFxTWFMS3V0d2trTmFRYjNTMnQ0?=
+ =?utf-8?B?aFVyTGt2dkU3VE5GY1YvRi8zbWxMdW9WY2FGRHBUK0h6ZkJkVkJmeXFrWUNO?=
+ =?utf-8?B?OXFGS0R0RDArOHVwMXRLUjlBR0FvWVo1eE5MZS9oWlV6eVpNS2lveHhlOWpt?=
+ =?utf-8?B?Rk5tR285ZlpnbmtVaStKRW5qSlZqbC9WS1JFUWlpVStiN3p5cGJtV1RTa3dm?=
+ =?utf-8?B?bC9Ba2dOYTArRWl6N1lFcmZ6b2NCV0VrN2JETDVCYWt1aVlWbGl3Z1lmVVVO?=
+ =?utf-8?B?U01SMm5mbk1uVWVEZVNOTm92M1F4RW85RENhM3Fzc2NWUWoxbFhTSjA0dDMw?=
+ =?utf-8?B?WEhQN1VJU0FaNTZzUlp5aFFCc25zTTl2dDlXVHBEektTdVFHK0g2TTdIeGVa?=
+ =?utf-8?B?TlFWVEFNandKRmVURzlLWkNzUVVqaXNKWkU3dnRvdTRHdU9zMUFLa1JSa3Uy?=
+ =?utf-8?B?Z0JpclhaQlpTaDk4QmhyMDJPZWV6RWtJRnZ6N2JXZHM5VkNTQkNvd01xekRo?=
+ =?utf-8?B?WGFJbFZXcVhZTENubnZoQ05Peit6WGtOY3k2WXdZZks3S0lNNnFzNks3N0g2?=
+ =?utf-8?B?MmUvSk5SdGFCcytBbTEwaGJ0QzFzdFJXOS9sOW1QN0pZeWFQN01Rbm41Znpp?=
+ =?utf-8?B?bmFaWkhMempIYVgxMEZrT3ZMcmxQSTdkTmdiQk10d2UwYnVTRHc0SEpmK2lO?=
+ =?utf-8?B?eUhkbkp0emw2bVZ3dlZJR1daaVhOaGFLTDJRUmNnWitEbzVKSVJSU3JxT3pJ?=
+ =?utf-8?B?b3NMYVZlRkFTdnZpUXhoYzh4c0pKclU1SFR5cERJZEZKcUEwR20waGhGdEVP?=
+ =?utf-8?B?SzVISVY3c0pGcWJ3VXlGTGRxMzBMOUp3bmZrbzhnZ3N0Y1llS0RFbnp5Wkhs?=
+ =?utf-8?B?WU9JdkZLRXNONEY1aDZOZ3NaT0xCbmtDek5qMjFiaUJMR0VJUzF6clliclN4?=
+ =?utf-8?B?Ym52Y2tnUGxKVHcrN2RaUFZQcVBsVGJxL2pZTVo0QzBRa0pTa0kydVBQeEVp?=
+ =?utf-8?B?Ujl5cDNJS2Z3elk2anA5dkNzMXdURTZRNTlTWkNjOEMyaDBkb0ZxazJwOEEr?=
+ =?utf-8?B?a1k3bjUvUVNnM21sV2hGRnp4RUJ0WERHK1ZzenlIYVZoTUpKREYvMXVwZDZD?=
+ =?utf-8?B?d0JnMDVTNTZCZ1ltSDJQMmRxVjJMQ0sweWxvMkpxSEs4bFpQc1B6ZnRMYnhC?=
+ =?utf-8?B?amNOS3V1RklZYW1ZT2diNXl0by9UMEcwWXBKdjNQVUhhTHZoL2ZPMjZRRkh2?=
+ =?utf-8?B?ZnBLRzdwaFJqRkFCcnRoKzZzZkJ4UllLaGRjaEJ1ZTRHOVE5M3JESkdoM1hT?=
+ =?utf-8?B?SmlHK3NJNGN2TTRKaWIvZFZmUndndCt6SG5lRDUyMmhvT2F1L2Nxbis4Mmk2?=
+ =?utf-8?B?NEgzN0JRYnBkNTVleDVtOEZxcEdMQndQWm5vYi9kb0xxUGpnS3hjb1FOaHpw?=
+ =?utf-8?B?aU1TVW9ocXZ1dmMxamEyNzkwdEVjV2crdmFReWxuNE5EazBCQmtrU1pHTk4x?=
+ =?utf-8?B?OW9aYnFYUEVEYVp0QmpMQWFjSmtPMzdpRUFmR21uc2RsS2laOGNJcVIvenJL?=
+ =?utf-8?B?LzUrRzJaTUtyNVJjSzNZTzNiQlRQSUZTVUxTRkJEUnE3UlN6Yyt3aFdwdWps?=
+ =?utf-8?B?bFlSR2wvQlhyZTNiZi9IdXVGcy9HcmM3UTczSDhCbmhJVUFPaTJreXcraTFm?=
+ =?utf-8?B?SW52OFg3U3dscmcxa21rWEtDaEY0RjdJNGU1ZTZla01aZVp3MmtJSDcrYmhF?=
+ =?utf-8?B?bXN4NjE2ZWlMRU41MXNoTGQ1aWwreXdHeTZQZ1Y0eXVGdEF1MXBYZ0VmV3Zu?=
+ =?utf-8?B?UjdaUjk3MnFIbWlRekIwekFZNUVXa1JNcjN6c0V6dUVqUFNSSGQ0eHg1MnB4?=
+ =?utf-8?B?RDZMeHhwaUFrSkM3QmpiOURGWHRZS0FWRmxLTDVWUVZ4Q0MxSGZFVHdiaFNS?=
+ =?utf-8?B?cjNDUERZZ29TTm55MFVvUlVGOHplempYeTBXdWdsWlVlY29kQU1OdTd3Sjk1?=
+ =?utf-8?B?WUUvUHlJMG9EMlZzektkR2tCcExFUXA4R0JYOGZVK0V3KzRvak5PTmNaRlV0?=
+ =?utf-8?B?QmRXb0t4R0NaTEdWakpTWG54emJGMDZFUExZOGpMUDJzcjdiOEwvekQxS0ZH?=
+ =?utf-8?Q?c4ZG2+goG4S8nDfhx3afOTO+S?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f31ce669-c4e8-4b0b-1586-08dceceb35c2
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Oct 2024 07:30:14.4328
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: jU2e1hFrPT2gRirlnciUqaL027Q8F+2HINtwJVr6z0reCPOElKkCNhidLIP7tZQnO6XWv/y3PF18p6FaEJJmkg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS2PR10MB7503
 
-Signed-off-by: liuyang <liuyang@sinsegye.com.cn>
----
- .gitlab-ci.yml                                |   1 +
- kernel/drivers/can/sja1000/Kconfig            |  11 +
- kernel/drivers/can/sja1000/Makefile           |   2 +
- kernel/drivers/can/sja1000/rtcan_f81601_pci.c | 226 ++++++++++++++++++
- 4 files changed, 240 insertions(+)
- create mode 100644 kernel/drivers/can/sja1000/rtcan_f81601_pci.c
+On 15.10.24 03:36, liuyang wrote:
+> Signed-off-by: liuyang <liuyang@sinsegye.com.cn>
+> ---
+>  .gitlab-ci.yml                                |   1 +
+>  kernel/drivers/can/sja1000/Kconfig            |  11 +
+>  kernel/drivers/can/sja1000/Makefile           |   2 +
+>  kernel/drivers/can/sja1000/rtcan_f81601_pci.c | 226 ++++++++++++++++++
+>  4 files changed, 240 insertions(+)
+>  create mode 100644 kernel/drivers/can/sja1000/rtcan_f81601_pci.c
+> 
 
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index ad6f37d1c..892c20b9c 100644
---- a/.gitlab-ci.yml
-+++ b/.gitlab-ci.yml
-@@ -113,6 +113,7 @@ variables:
-     - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_EMS_PCI
-     - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_ESD_PCI
-     - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_PEAK_DNG
-+    - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_F81601
-     - ./scripts/config -e XENO_DRIVERS_CAN_PEAK_CANFD
-     - ./scripts/config -e XENO_DRIVERS_CAN_C_CAN
-     - ./scripts/config -e XENO_DRIVERS_CAN_C_CAN_PLATFORM
-diff --git a/kernel/drivers/can/sja1000/Kconfig b/kernel/drivers/can/sja1000/Kconfig
-index 9fab4a475..043f7aac1 100644
---- a/kernel/drivers/can/sja1000/Kconfig
-+++ b/kernel/drivers/can/sja1000/Kconfig
-@@ -98,3 +98,14 @@ config XENO_DRIVERS_CAN_SJA1000_PEAK_DNG
- 	to disable parallel port support in the kernel (CONFIG_PARPORT) for
- 	proper operation. The interface type (sp or epp), I/O port and
- 	interrupt number should be defined via module parameters.
-+
-+config XENO_DRIVERS_CAN_SJA1000_F81601
-+    depends on XENO_DRIVERS_CAN_SJA1000 && PCI
-+    tristate "Fintek F81601 PCIE to 2 CAN Controller"
-+    help
-+      This driver adds support for Fintek F81601 PCIE to 2 CAN
-+      Controller. It had internal 24MHz clock source, but it can
-+      be changed by manufacturer. Use modinfo to get usage for
-+      parameters. Visit http://www.fintek.com.tw to get more
-+      information.
-+
-diff --git a/kernel/drivers/can/sja1000/Makefile b/kernel/drivers/can/sja1000/Makefile
-index ff6715513..2d344c37b 100644
---- a/kernel/drivers/can/sja1000/Makefile
-+++ b/kernel/drivers/can/sja1000/Makefile
-@@ -10,6 +10,7 @@ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_EMS_PCI) += xeno_can_ems_pci.o
- obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_ESD_PCI) += xeno_can_esd_pci.o
- obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_ISA) += xeno_can_isa.o
- obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM) += xeno_can_mem.o
-+obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_F81601) += xeno_can_f81601.o
- 
- xeno_can_sja1000-y := rtcan_sja1000.o
- xeno_can_sja1000-$(CONFIG_FS_PROCFS) += rtcan_sja1000_proc.o
-@@ -22,3 +23,4 @@ xeno_can_ems_pci-y := rtcan_ems_pci.o
- xeno_can_esd_pci-y := rtcan_esd_pci.o
- xeno_can_isa-y := rtcan_isa.o
- xeno_can_mem-y := rtcan_mem.o
-+xeno_can_f81601-y := rtcan_f81601_pci.o
-diff --git a/kernel/drivers/can/sja1000/rtcan_f81601_pci.c b/kernel/drivers/can/sja1000/rtcan_f81601_pci.c
-new file mode 100644
-index 000000000..0e577ce5f
---- /dev/null
-+++ b/kernel/drivers/can/sja1000/rtcan_f81601_pci.c
-@@ -0,0 +1,226 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Fintek F81601 PCIE to 2 CAN controller driver, ported to Xenomai RTDM
-+ * only use CAN controller 0
-+ * Copyright (C) 2024 Liu Yang <liuyang@sinsegye.com.cn>
-+ *
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/delay.h>
-+#include <linux/pci.h>
-+#include <linux/io.h>
-+
-+#include <rtdm/driver.h>
-+
-+/* CAN device profile */
-+#include <rtdm/can.h>
-+#include <rtcan_dev.h>
-+#include <rtcan_raw.h>
-+#include <rtcan_internal.h>
-+#include <rtcan_sja1000.h>
-+#include <rtcan_sja1000_regs.h>
-+
-+static char *f81601_pci_board_name = "F81601-PCI";
-+#define RTCAN_DRV_NAME "rt_sja1000_f81601_pci"
-+#define RTCAN_DEV_NAME "rtcan%d"
-+
-+#define F81601_PCI_MAX_CHAN		1
-+
-+#define F81601_DECODE_REG		0x209
-+#define F81601_IO_MODE			BIT(7)
-+#define F81601_MEM_MODE			BIT(6)
-+#define F81601_CFG_MODE			BIT(5)
-+#define F81601_CAN2_INTERNAL_CLK	BIT(3)
-+#define F81601_CAN1_INTERNAL_CLK	BIT(2)
-+#define F81601_CAN2_EN			BIT(1)
-+#define F81601_CAN1_EN			BIT(0)
-+
-+#define F81601_TRAP_REG			0x20a
-+#define F81601_CAN2_HAS_EN		BIT(4)
-+
-+struct f81601_pci_card {
-+	void __iomem *addr;
-+	struct pci_dev *dev;
-+	struct rtcan_device *rtcan_dev[F81601_PCI_MAX_CHAN];
-+};
-+
-+static const struct pci_device_id f81601_pci_tbl[] = {
-+	{ PCI_DEVICE(0x1c29, 0x1703) },
-+	{ /* sentinel */ },
-+};
-+
-+MODULE_DEVICE_TABLE(pci, f81601_pci_tbl);
-+
-+static bool internal_clk = true;
-+module_param(internal_clk, bool, 0444);
-+MODULE_PARM_DESC(internal_clk, "Use internal clock, default true (24MHz)");
-+
-+static unsigned int external_clk;
-+module_param(external_clk, uint, 0444);
-+MODULE_PARM_DESC(external_clk, "External clock when internal_clk disabled");
-+
-+static u8 f81601_pci_read_reg(struct rtcan_device *dev, int port)
-+{
-+	return readb((void * __iomem)dev->base_addr + port);
-+}
-+
-+static void f81601_pci_write_reg(struct rtcan_device *dev, int port,
-+				 u8 val)
-+{
-+	writeb(val, (void * __iomem)dev->base_addr + port);
-+	readb((void * __iomem)dev->base_addr);
-+}
-+
-+static void f81601_pci_remove(struct pci_dev *pdev)
-+{
-+	struct f81601_pci_card *card = pci_get_drvdata(pdev);
-+	struct rtcan_device *dev;
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(card->rtcan_dev); i++) {
-+		dev = card->rtcan_dev[i];
-+		if (!dev)
-+			continue;
-+
-+		dev_info(&pdev->dev, "%s: Removing %s\n", __func__, dev->name);
-+
-+		rtcan_sja1000_unregister(dev);
-+		if (card->addr)
-+			pci_iounmap(pdev, card->addr);
-+		rtcan_dev_free(dev);
-+	}
-+
-+	kfree(card);
-+}
-+
-+/* Probe F81601 based device for the SJA1000 chips and register each
-+ * available CAN channel to SJA1000 Socket-CAN subsystem.
-+ */
-+static int f81601_pci_probe(struct pci_dev *pdev,
-+			    const struct pci_device_id *ent)
-+{
-+	struct rtcan_sja1000 *chip;
-+	struct f81601_pci_card *card;
-+	struct rtcan_device *dev;
-+
-+	int err, i, count;
-+	u8 tmp;
-+
-+	if (!rtdm_available())
-+		return -ENODEV;
-+
-+	/* Enabling PCI device */
-+	if (pci_enable_device(pdev) < 0) {
-+		dev_err(&pdev->dev, "Enabling PCI device failed\n");
-+		return -ENODEV;
-+	}
-+
-+	/* Allocating card structures to hold addresses, ... */
-+	card = kzalloc(sizeof(*card), GFP_KERNEL);
-+	if (card == NULL) {
-+		pci_disable_device(pdev);
-+		return -ENOMEM;
-+	}
-+
-+	card->dev = pdev;
-+
-+	pci_set_drvdata(pdev, card);
-+
-+	tmp = F81601_IO_MODE | F81601_MEM_MODE | F81601_CFG_MODE |
-+		F81601_CAN2_EN | F81601_CAN1_EN;
-+
-+	if (internal_clk) {
-+		tmp |= F81601_CAN2_INTERNAL_CLK | F81601_CAN1_INTERNAL_CLK;
-+
-+		dev_info(&pdev->dev,
-+			 "F81601 running with internal clock: 24Mhz\n");
-+	} else {
-+		dev_info(&pdev->dev,
-+			 "F81601 running with external clock: %dMhz\n",
-+			 external_clk / 1000000);
-+	}
-+
-+	pci_write_config_byte(pdev, F81601_DECODE_REG, tmp);
-+
-+	card->addr = pci_iomap(pdev, 0, pci_resource_len(pdev, 0));
-+
-+	if (!card->addr) {
-+		err = -ENOMEM;
-+		dev_err(&pdev->dev, "%s: Failed to remap BAR\n", __func__);
-+		goto failure_cleanup;
-+	}
-+
-+	/* read CAN2_HW_EN strap pin to detect how many CANBUS do we have */
-+	count = ARRAY_SIZE(card->rtcan_dev);
-+	pci_read_config_byte(pdev, F81601_TRAP_REG, &tmp);
-+	if (!(tmp & F81601_CAN2_HAS_EN))
-+		count = 1;
-+
-+	for (i = 0; i < count; i++) {
-+		dev = rtcan_dev_alloc(sizeof(struct rtcan_sja1000), 0);
-+		if (!dev) {
-+			err = -ENOMEM;
-+			goto failure_cleanup;
-+		}
-+
-+	/* set rtcan_device struct */
-+	dev->base_addr  = (unsigned long)card->addr + 0x80 * i;
-+	dev->board_name = f81601_pci_board_name;
-+	strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
-+
-+	if (internal_clk)
-+		dev->can_sys_clock = 24000000 / 2;
-+	else
-+		dev->can_sys_clock = external_clk / 2;
-+
-+	/* get rtcan_sja1000 struct */
-+	card->rtcan_dev[i] = dev;
-+	chip = card->rtcan_dev[i]->priv;
-+
-+	/* set rtcan_sja1000 struct */
-+	chip->irq_flags = RTDM_IRQTYPE_SHARED;
-+	chip->irq_num   = pdev->irq;
-+	chip->read_reg  = f81601_pci_read_reg;
-+	chip->write_reg = f81601_pci_write_reg;
-+	chip->ocr = SJA_OCR_TX0_PUSHPULL | SJA_OCR_TX1_PUSHPULL | SJA_OCR_MODE_NORMAL;
-+	/* Clock divider register */
-+	chip->cdr = SJA_CDR_CBP;
-+
-+	/* Register SJA1000 device */
-+	err = rtcan_sja1000_register(dev);
-+	if (err) {
-+		dev_err(&pdev->dev,
-+			"%s: Registering device failed: %x\n", __func__,
-+			err);
-+		goto failure_cleanup;
-+	}
-+
-+	dev_info(&pdev->dev, "Channel #%d at 0x%p, irq %d registered as %s\n", i,
-+		(void * __iomem)dev->base_addr, chip->irq_num, dev->name);
-+	}
-+
-+	/* force into reset mode */
-+	chip->write_reg(dev, SJA_MOD, SJA_MOD_RM);
-+
-+	return 0;
-+
-+ failure_cleanup:
-+	dev_err(&pdev->dev, "%s: failed: %d. Cleaning Up.\n", __func__, err);
-+	f81601_pci_remove(pdev);
-+
-+	return err;
-+}
-+
-+static struct pci_driver f81601_pci_driver = {
-+	.name =	RTCAN_DRV_NAME,
-+	.id_table = f81601_pci_tbl,
-+	.probe = f81601_pci_probe,
-+	.remove = f81601_pci_remove,
-+};
-+
-+MODULE_DESCRIPTION("Fintek F81601 PCIE to 2 CANBUS adaptor driver");
-+MODULE_AUTHOR("Liu Yang <liuyang@sinsegye.com.cn>");
-+MODULE_LICENSE("GPL v2");
-+
-+module_pci_driver(f81601_pci_driver);
-+
+Looks like you accidentally resent an older version of the patch - my
+review comments are not addressed in this one.
+
+Jan
+
 -- 
-2.34.1
-
+Siemens AG, Technology
+Linux Expert Center
