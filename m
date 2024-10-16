@@ -1,339 +1,212 @@
-Received: from out28-74.mail.aliyun.com (out28-74.mail.aliyun.com [115.124.28.74])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 986811DD872
-	for <xenomai@lists.linux.dev>; Wed, 16 Oct 2024 08:30:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.28.74
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.2])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id E7A3E1CBA1B
+	for <xenomai@lists.linux.dev>; Wed, 16 Oct 2024 08:59:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.2
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1729067446; cv=none; b=ONr8YSyikveBy4Y42MIKrmwqY4c41P5dZt+QkHt5cwnGTV++fME/CuSRlmioPHZcgLwO7xeSf+iiB7VY9H6gglx4Gh2mMIvdfQtwvnZReQdUoGGisXugi7vM6BsDE/dRYBoOpQsF3oQsBzONN/XIPX8io98968xWBZpYP8sgPjQ=
+	t=1729069188; cv=none; b=XT3hqCXfpYBXF2A9rnC2UFgyMxK+TqIBs4oQCv7HDw3HHsoSnTCzbMApgCj4g3onPP43iZwQjAIvYsgV7+2VdFA9A1oLNcBn1IDGvmeeqHdWOAj8KXqRJ0u0kH19jNwoN/8WG00UZRdkx0uo6biUGyvDC4U7lZvSMg84kkuTO1E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1729067446; c=relaxed/simple;
-	bh=O11jRDWNrM5Lm+VXJ+y8jVxx+yoQrRUlh946Hr78dBE=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=c/ub5Sf5k7mnOsXBEyWfx0leGf8RXQwDZUHEhAcYmIvhxwpZcc9qZWBjgR1Mo24NloAPDpNRTuueQm528QtZshRDISSqCCRgD24VsZYRgCLSC01gPOf83TGzilsidPLuH4V+WFDsdNDXfqeujJZ21zdqO/WCUPaWTZ7Al87ZUJo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sinsegye.com.cn; spf=none smtp.mailfrom=sinsegye.com.cn; arc=none smtp.client-ip=115.124.28.74
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sinsegye.com.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=sinsegye.com.cn
-Received: from sinsegye..(mailfrom:liuyang@sinsegye.com.cn fp:SMTPD_---.ZjrC2-N_1729066475 cluster:ay29)
-          by smtp.aliyun-inc.com;
-          Wed, 16 Oct 2024 16:15:01 +0800
-From: liuyang <liuyang@sinsegye.com.cn>
-To: xenomai@lists.linux.dev
-Cc: liuyang <liuyang@sinsegye.com.cn>
-Subject: [PATCH] support F81601 PCIe CAN bus 2 ports controllers
-Date: Wed, 16 Oct 2024 16:14:33 +0800
-Message-Id: <20241016081433.917945-2-liuyang@sinsegye.com.cn>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20241016081433.917945-1-liuyang@sinsegye.com.cn>
-References: <20241016081433.917945-1-liuyang@sinsegye.com.cn>
+	s=arc-20240116; t=1729069188; c=relaxed/simple;
+	bh=S1AyPMlLiLe+Q6TGdh5LWfcKnk+FJuDEt88pEgsbml8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 MIME-Version:Message-ID; b=s2WGYe0SkxvZ9hAKQc2JoTIkkEeTNBt+0NTyOBr6Vw/V+FoeCV5A9+zkghxmaa+YDvOuWmoK5tXPDxLu1/2K5jINTMlGYOO2MBSApdqZ6KQAAyoRCoyJRgPlCNwJa1edjMz28STjgot6kHvPX/htjQkwbQ4wp5bcXVJB+Ws2s5c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=YYceMwdf reason="signature verification failed"; arc=none smtp.client-ip=117.135.210.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="YYceMwdf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=tBxXrPGe8eW4IHEAR0e8oZ2F7Zzf4FPHZhsiPyOEBpY=; b=Y
+	YceMwdfMwl1OoQljrgL/beiWA/gJALcEdXsPEwymt5BP2gzx8pVzHhcT9BbUVrAT
+	Appyb9g3rXJzuK6i6RB2AkGiKQPoAnV0jXc/g/EMjraMMPKlZ6lt/pJCygirubEJ
+	j1O2ywABX19lqU0JJr1WV3Cjrp6UqRlntVTtKpUMkI=
+Received: from jerryjun123$163.com ( [103.161.254.5] ) by
+ ajax-webmail-wmsvr-40-118 (Coremail) ; Wed, 16 Oct 2024 16:59:38 +0800
+ (CST)
+Date: Wed, 16 Oct 2024 16:59:38 +0800 (CST)
+From: JerryJun  <jerryjun123@163.com>
+To: "Jan Kiszka" <jan.kiszka@siemens.com>
+Cc: xenomai@lists.linux.dev, "Florian Bezdeka" <florian.bezdeka@siemens.com>
+Subject: Re:Re: [PATCH 1/3] cobalt: Move relax related lostage_wakeup work
+ from stack to thread
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20240801(9da12a7b)
+ Copyright (c) 2002-2024 www.mailtech.cn 163com
+In-Reply-To: <46532234-69a4-448b-9fc5-a04ac47fba0c@siemens.com>
+References: <cover.1725016413.git.jan.kiszka@siemens.com>
+ <95ccd795ec5db6c2d4d867b0f29fae964cffcf82.1725016413.git.jan.kiszka@siemens.com>
+ <cd1d4b2.302.1920cbd5314.Coremail.jerryjun123@163.com>
+ <46532234-69a4-448b-9fc5-a04ac47fba0c@siemens.com>
+X-NTES-SC: AL_Qu2ZC/ydtkks7iSeYukfmkoVh+c5WMK2vfUm3YBfP5F4jDDpyD4DUm5SMlbt/ce0KgegmgmGegFQxfpmZoV4WI06ltOAyKImCnZxVcspvyEk0A==
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <afecd73.90c9.192948dde67.Coremail.jerryjun123@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:digvCgD3n+h6gA9nmn8PAA--.26750W
+X-CM-SenderInfo: xmhu25pmxqijqt6rljoofrz/1tbiLht6LGcPfRM64gACs-
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-Signed-off-by: liuyang <liuyang@sinsegye.com.cn>
----
- .gitlab-ci.yml                                |   1 +
- kernel/drivers/can/sja1000/Kconfig            |  11 +
- kernel/drivers/can/sja1000/Makefile           |   2 +
- kernel/drivers/can/sja1000/rtcan_f81601_pci.c | 237 ++++++++++++++++++
- 4 files changed, 251 insertions(+)
- create mode 100644 kernel/drivers/can/sja1000/rtcan_f81601_pci.c
-
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index ad6f37d1c..892c20b9c 100644
---- a/.gitlab-ci.yml
-+++ b/.gitlab-ci.yml
-@@ -113,6 +113,7 @@ variables:
-     - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_EMS_PCI
-     - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_ESD_PCI
-     - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_PEAK_DNG
-+    - ./scripts/config -e XENO_DRIVERS_CAN_SJA1000_F81601
-     - ./scripts/config -e XENO_DRIVERS_CAN_PEAK_CANFD
-     - ./scripts/config -e XENO_DRIVERS_CAN_C_CAN
-     - ./scripts/config -e XENO_DRIVERS_CAN_C_CAN_PLATFORM
-diff --git a/kernel/drivers/can/sja1000/Kconfig b/kernel/drivers/can/sja1000/Kconfig
-index 9fab4a475..043f7aac1 100644
---- a/kernel/drivers/can/sja1000/Kconfig
-+++ b/kernel/drivers/can/sja1000/Kconfig
-@@ -98,3 +98,14 @@ config XENO_DRIVERS_CAN_SJA1000_PEAK_DNG
- 	to disable parallel port support in the kernel (CONFIG_PARPORT) for
- 	proper operation. The interface type (sp or epp), I/O port and
- 	interrupt number should be defined via module parameters.
-+
-+config XENO_DRIVERS_CAN_SJA1000_F81601
-+    depends on XENO_DRIVERS_CAN_SJA1000 && PCI
-+    tristate "Fintek F81601 PCIE to 2 CAN Controller"
-+    help
-+      This driver adds support for Fintek F81601 PCIE to 2 CAN
-+      Controller. It had internal 24MHz clock source, but it can
-+      be changed by manufacturer. Use modinfo to get usage for
-+      parameters. Visit http://www.fintek.com.tw to get more
-+      information.
-+
-diff --git a/kernel/drivers/can/sja1000/Makefile b/kernel/drivers/can/sja1000/Makefile
-index ff6715513..2d344c37b 100644
---- a/kernel/drivers/can/sja1000/Makefile
-+++ b/kernel/drivers/can/sja1000/Makefile
-@@ -10,6 +10,7 @@ obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_EMS_PCI) += xeno_can_ems_pci.o
- obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_ESD_PCI) += xeno_can_esd_pci.o
- obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_ISA) += xeno_can_isa.o
- obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_MEM) += xeno_can_mem.o
-+obj-$(CONFIG_XENO_DRIVERS_CAN_SJA1000_F81601) += xeno_can_f81601.o
- 
- xeno_can_sja1000-y := rtcan_sja1000.o
- xeno_can_sja1000-$(CONFIG_FS_PROCFS) += rtcan_sja1000_proc.o
-@@ -22,3 +23,4 @@ xeno_can_ems_pci-y := rtcan_ems_pci.o
- xeno_can_esd_pci-y := rtcan_esd_pci.o
- xeno_can_isa-y := rtcan_isa.o
- xeno_can_mem-y := rtcan_mem.o
-+xeno_can_f81601-y := rtcan_f81601_pci.o
-diff --git a/kernel/drivers/can/sja1000/rtcan_f81601_pci.c b/kernel/drivers/can/sja1000/rtcan_f81601_pci.c
-new file mode 100644
-index 000000000..b9089eda2
---- /dev/null
-+++ b/kernel/drivers/can/sja1000/rtcan_f81601_pci.c
-@@ -0,0 +1,237 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Fintek F81601 PCIE to 2 CAN controller driver, ported to Xenomai RTDM
-+ * only use CAN controller 0
-+ * Copyright (C) 2024 Liu Yang <liuyang@sinsegye.com.cn>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the version 2 of the GNU General Public License
-+ * as published by the Free Software Foundation
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, see <http://www.gnu.org/licenses/>.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/delay.h>
-+#include <linux/pci.h>
-+#include <linux/io.h>
-+
-+#include <rtdm/driver.h>
-+
-+/* CAN device profile */
-+#include <rtdm/can.h>
-+#include <rtcan_dev.h>
-+#include <rtcan_raw.h>
-+#include <rtcan_internal.h>
-+#include <rtcan_sja1000.h>
-+#include <rtcan_sja1000_regs.h>
-+
-+static char *f81601_pci_board_name = "F81601-PCI";
-+#define RTCAN_DRV_NAME "rt_sja1000_f81601_pci"
-+#define RTCAN_DEV_NAME "rtcan%d"
-+
-+#define F81601_PCI_MAX_CHAN		1
-+
-+#define F81601_DECODE_REG		0x209
-+#define F81601_IO_MODE			BIT(7)
-+#define F81601_MEM_MODE			BIT(6)
-+#define F81601_CFG_MODE			BIT(5)
-+#define F81601_CAN2_INTERNAL_CLK	BIT(3)
-+#define F81601_CAN1_INTERNAL_CLK	BIT(2)
-+#define F81601_CAN2_EN			BIT(1)
-+#define F81601_CAN1_EN			BIT(0)
-+
-+#define F81601_TRAP_REG			0x20a
-+#define F81601_CAN2_HAS_EN		BIT(4)
-+
-+struct f81601_pci_card {
-+	void __iomem *addr;
-+	struct pci_dev *dev;
-+	struct rtcan_device *rtcan_dev[F81601_PCI_MAX_CHAN];
-+};
-+
-+static const struct pci_device_id f81601_pci_tbl[] = {
-+	{ PCI_DEVICE(0x1c29, 0x1703) },
-+	{ /* sentinel */ },
-+};
-+
-+MODULE_DEVICE_TABLE(pci, f81601_pci_tbl);
-+
-+static bool internal_clk = true;
-+module_param(internal_clk, bool, 0444);
-+MODULE_PARM_DESC(internal_clk, "Use internal clock, default true (24MHz)");
-+
-+static unsigned int external_clk;
-+module_param(external_clk, uint, 0444);
-+MODULE_PARM_DESC(external_clk, "External clock when internal_clk disabled");
-+
-+static u8 f81601_pci_read_reg(struct rtcan_device *dev, int port)
-+{
-+	return readb((void * __iomem)dev->base_addr + port);
-+}
-+
-+static void f81601_pci_write_reg(struct rtcan_device *dev, int port,
-+				 u8 val)
-+{
-+	writeb(val, (void * __iomem)dev->base_addr + port);
-+	readb((void * __iomem)dev->base_addr);
-+}
-+
-+static void f81601_pci_remove(struct pci_dev *pdev)
-+{
-+	struct f81601_pci_card *card = pci_get_drvdata(pdev);
-+	struct rtcan_device *dev;
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(card->rtcan_dev); i++) {
-+		dev = card->rtcan_dev[i];
-+		if (!dev)
-+			continue;
-+
-+		dev_info(&pdev->dev, "%s: Removing %s\n", __func__, dev->name);
-+
-+		rtcan_sja1000_unregister(dev);
-+		if (card->addr)
-+			pci_iounmap(pdev, card->addr);
-+		rtcan_dev_free(dev);
-+	}
-+
-+	kfree(card);
-+}
-+
-+/* Probe F81601 based device for the SJA1000 chips and register each
-+ * available CAN channel to SJA1000 Socket-CAN subsystem.
-+ */
-+static int f81601_pci_probe(struct pci_dev *pdev,
-+			    const struct pci_device_id *ent)
-+{
-+	struct rtcan_sja1000 *chip;
-+	struct f81601_pci_card *card;
-+	struct rtcan_device *dev;
-+
-+	int err, i, count;
-+	u8 tmp;
-+
-+	if (!rtdm_available())
-+		return -ENODEV;
-+
-+	/* Enabling PCI device */
-+	if (pci_enable_device(pdev) < 0) {
-+		dev_err(&pdev->dev, "Enabling PCI device failed\n");
-+		return -ENODEV;
-+	}
-+
-+	/* Allocating card structures to hold addresses, ... */
-+	card = kzalloc(sizeof(*card), GFP_KERNEL);
-+	if (card == NULL) {
-+		pci_disable_device(pdev);
-+		return -ENOMEM;
-+	}
-+
-+	card->dev = pdev;
-+
-+	pci_set_drvdata(pdev, card);
-+
-+	tmp = F81601_IO_MODE | F81601_MEM_MODE | F81601_CFG_MODE |
-+		F81601_CAN2_EN | F81601_CAN1_EN;
-+
-+	if (internal_clk) {
-+		tmp |= F81601_CAN2_INTERNAL_CLK | F81601_CAN1_INTERNAL_CLK;
-+
-+		dev_info(&pdev->dev,
-+			 "F81601 running with internal clock: 24Mhz\n");
-+	} else {
-+		dev_info(&pdev->dev,
-+			 "F81601 running with external clock: %dMhz\n",
-+			 external_clk / 1000000);
-+	}
-+
-+	pci_write_config_byte(pdev, F81601_DECODE_REG, tmp);
-+
-+	card->addr = pci_iomap(pdev, 0, pci_resource_len(pdev, 0));
-+
-+	if (!card->addr) {
-+		err = -ENOMEM;
-+		dev_err(&pdev->dev, "%s: Failed to remap BAR\n", __func__);
-+		goto failure_cleanup;
-+	}
-+
-+	/* read CAN2_HW_EN strap pin to detect how many CANBUS do we have */
-+	count = ARRAY_SIZE(card->rtcan_dev);
-+	pci_read_config_byte(pdev, F81601_TRAP_REG, &tmp);
-+	if (!(tmp & F81601_CAN2_HAS_EN))
-+		count = 1;
-+
-+	for (i = 0; i < count; i++) {
-+		dev = rtcan_dev_alloc(sizeof(struct rtcan_sja1000), 0);
-+		if (!dev) {
-+			err = -ENOMEM;
-+			goto failure_cleanup;
-+		}
-+
-+	/* set rtcan_device struct */
-+	dev->base_addr  = (unsigned long)card->addr + 0x80 * i;
-+	dev->board_name = f81601_pci_board_name;
-+	strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
-+
-+	if (internal_clk)
-+		dev->can_sys_clock = 24000000 / 2;
-+	else
-+		dev->can_sys_clock = external_clk / 2;
-+
-+	/* get rtcan_sja1000 struct */
-+	card->rtcan_dev[i] = dev;
-+	chip = card->rtcan_dev[i]->priv;
-+
-+	/* set rtcan_sja1000 struct */
-+	chip->irq_flags = RTDM_IRQTYPE_SHARED;
-+	chip->irq_num   = pdev->irq;
-+	chip->read_reg  = f81601_pci_read_reg;
-+	chip->write_reg = f81601_pci_write_reg;
-+	chip->ocr = SJA_OCR_TX0_PUSHPULL | SJA_OCR_TX1_PUSHPULL | SJA_OCR_MODE_NORMAL;
-+	/* Clock divider register */
-+	chip->cdr = SJA_CDR_CBP;
-+
-+	/* Register SJA1000 device */
-+	err = rtcan_sja1000_register(dev);
-+	if (err) {
-+		dev_err(&pdev->dev,
-+			"%s: Registering device failed: %x\n", __func__,
-+			err);
-+		goto failure_cleanup;
-+	}
-+
-+	dev_info(&pdev->dev, "Channel #%d at 0x%p, irq %d registered as %s\n", i,
-+		(void * __iomem)dev->base_addr, chip->irq_num, dev->name);
-+	}
-+
-+	/* force into reset mode */
-+	chip->write_reg(dev, SJA_MOD, SJA_MOD_RM);
-+
-+	return 0;
-+
-+ failure_cleanup:
-+	dev_err(&pdev->dev, "%s: failed: %d. Cleaning Up.\n", __func__, err);
-+	f81601_pci_remove(pdev);
-+
-+	return err;
-+}
-+
-+static struct pci_driver f81601_pci_driver = {
-+	.name =	RTCAN_DRV_NAME,
-+	.id_table = f81601_pci_tbl,
-+	.probe = f81601_pci_probe,
-+	.remove = f81601_pci_remove,
-+};
-+
-+MODULE_DESCRIPTION("Fintek F81601 PCIE to 2 CANBUS adaptor driver");
-+MODULE_AUTHOR("Liu Yang <liuyang@sinsegye.com.cn>");
-+MODULE_LICENSE("GPL v2");
-+
-+module_pci_driver(f81601_pci_driver);
-+
--- 
-2.34.1
-
+CgpoaSBqYW4sIGluIHRoaXMgcGF0Y2ggeW91IG1lbnRpb25lZCAiQXMgdGhlIGxvc3RhZ2Vfd2Fr
+ZXVwIHdvcmsgaXMgY3VycmVudGx5IG9uIHRoZSBzdGFjaywKwqBpdCBjYW4gYmVjb21lIGNvcnJ1
+cHQgd2hlbiB4bnRocmVhZF9yZWxheCBsZWF2ZXMgZWFybGllciBvbiB0aGUgbmV3IENQVSB0aGFu
+IHRoZSB3b3JrIHdhcyBwcm9jZXNzZWQgb24gdGhlIG9sZCBvbmUgIiwKd2h5IGl04oCYcyBub3Qg
+dHJpZ2dlcmVkIGl0IGluIHRoZSBzd2l0Y2h0ZXN0IGJlbmNobWFyayB3aGljaCBpbnZvbHZlcyAi
+eG50aHJlYWRfcmVsYXgiIGR1ZSB0byBsaW51eCBzeXNjYWxsID8KbWF5IGJlIHlvdSBwcm9iYWJs
+eSBkZXNjcmliZSB0aGUgdHJpZ2dlcmVkIHNjZW5lIGRldGFpbGVkPyBPciBob3cgY2FuIEkgdHJp
+Z2dlciBpdCBpbiBzd2l0Y2h0ZXN0wqAKwqBieSB1c2luZyB4bnRocmVhZF9yZWxheCBsZWF2ZXMg
+ZWFybGllciBvbiB0aGUgbmV3IENQVSB0aGFuIHRoZSB3b3JrIHdhcyBwcm9jZXNzZWQgb24gdGhl
+IG9sZCBvbmU/ICB0aGFua3MKCgpBdCAyMDI0LTA5LTIwIDE1OjU4OjQ5LCAiSmFuIEtpc3prYSIg
+PGphbi5raXN6a2FAc2llbWVucy5jb20+IHdyb3RlOgo+T24gMjAuMDkuMjQgMDI6MDMsIEplcnJ5
+SnVuIHdyb3RlOgo+PiAKPj4gwqAgaGkgSmFu77yMIHRoZSBpc3N1ZSByZXBvcnRlZCBpbiBbMV0g
+aGFzIHNlZW1seSBub3QgYmVlbiBzb2x2ZWQgaW4gaXBpcGUuwqAgV2lsbCB0aGlzIGlzc3VlIHN0
+aWxsIGJlIG1haW50YWluZWQgb24gaXBpcGU/IAo+PiDCoMKgIMKgdGhlIHRlc3QgY2FzZSBpcyBh
+dmFpbGFibGUgZnJvbSBGbG9yaWFuIEJlemRla2EgKFstLSBBdHRhY2htZW50ICMyOiB4ZW5vbWFp
+LWFsY2hlbXktYXBwLnRhci5neiAtLV0pLgo+PiDCoMKgIMKgbGludXgga2VybmVsOiA0LjE5Ljg5
+Cj4+IMKgwqAgwqB4ZW5vbWFpOiAzLjIuNCArIHBhdGNoWzEvM10gCj4+IMKgwqAgwqAKPj4gwqDC
+oCDCoFsxXSBodHRwczovL2xvcmUua2VybmVsLm9yZy94ZW5vbWFpLzc3MGIxZTRiYzQyY2ZhMWJh
+NWY0ZjM3Y2M4NTQ5NTZmM2U3OGJiNjAuY2FtZWxAc2llbWVucy5jb20vVC8jdAo+PiDCoMKgIMKg
+Cj4KPlNvcnJ5LCB0aGF0IGZpeCBpcyBzdGlsbCBvbmx5IG9uIG1hc3RlciAodXBjb21pbmcgMy4z
+KSwgbm90IHlldCBpbgo+c3RhYmxlIHRyZWVzLiBJdCdzIHN0aWxsIG5vdCBleHBlY3RlZCB0byBi
+ZSBJLXBpcGUvZG92ZXRhaWwtZGVwZW5kZW50Lgo+Cj5MZXQgbWUgcmVjb3ZlciBhIGJpdCBtb3Jl
+IGZyb20geWVzdGVyZGF5J3MgUHJlZW1wdCBSVCBtZXJnZSBwYXJ0eSwgdGhlbgo+SSB3aWxsIGNs
+b3NlIHRoYXQgZ2FwLgo+Cj5KYW4KPgo+PiBbwqDCoCA5OC4xODI0MzNdIGdlbmVyYWwgcHJvdGVj
+dGlvbiBmYXVsdDogMDAwMCBbIzFdIFBSRUVNUFQgU01QIE5PUFRJCj4+IFvCoMKgIDk4LjE4MjQ1
+M10gQ1BVOiAxIFBJRDogNjkxMzEgQ29tbTogcnQtdGFzay0yMCBLZHVtcDogbG9hZGVkIE5vdCB0
+YWludGVkIDQuMTkuODktaXBpcGUtOS14ZW5vbWFpLTMuMi40LXByb2MtMjAyNDA5MDkgIzEyCj4+
+IFvCoMKgIDk4LjE4MjQ3NV0gSGFyZHdhcmUgbmFtZTogVk13YXJlLCBJbmMuIFZNd2FyZSBWaXJ0
+dWFsIFBsYXRmb3JtLzQ0MEJYIERlc2t0b3AgUmVmZXJlbmNlIFBsYXRmb3JtLCBCSU9TIDYuMDAg
+MDcvMjkvMjAxOQo+PiBbwqDCoCA5OC4xODI0OTZdIEktcGlwZSBkb21haW46IExpbnV4Cj4+IFvC
+oMKgIDk4LjE4MjUwN10gUklQOiAwMDEwOnhuc3luY2hfc2xlZXBfb24rMHgxNWQvMHgyNTAKPj4g
+W8KgwqAgOTguMTgyNTE3XSBDb2RlOiAzMCAxMiAwMCAwMCAzYiA3OCBlOCA3ZiAwNyBlYiA0YSAz
+OSA3OCBlOCA3ZCA0NSA0OCA4YiA4NiA1MCAxMiAwMCAwMCA0OCA4ZCBiMCBiOCBlZCBmZiBmZiA0
+OCAzOSBjOCA3NSBlOCA0OCA4YiA4NiA0OCAxMiAwMCAwMCA8NGM+IDg5IDQwIDA4IDQ5IDg5IDg2
+IDQ4IDEyIDAwIDAwIDQ5IDg5IDhlIDUwIDEyIDAwIDAwIDRjIDg5IDg2IDQ4Cj4+IFvCoMKgIDk4
+LjE4MjU1Ml0gUlNQOiAwMDE4OmZmZmZjOTAwMDYzMjdlMzAgRUZMQUdTOiAwMDAxMDA0Ngo+PiBb
+wqDCoCA5OC4xODI1NjRdIFJBWDogZGVhZDAwMDAwMDAwMDEwMCBSQlg6IDAwMDAwMDAwMDAwNWYz
+ZTAgUkNYOiBmZmZmYzkwMDAxMmQyYTg4Cj4+IFvCoMKgIDk4LjE4MjU3N10gUkRYOiAwMDAwMDAw
+MDAwMDAwMDAwIFJTSTogZmZmZmM5MDAwMTJkMTg0MCBSREk6IDAwMDAwMDAwMDAwMDEwMzIKPj4g
+W8KgwqAgOTguMTgyNTkxXSBSQlA6IDAwMDAwMDAwMDAwMDAwMDEgUjA4OiBmZmZmYzkwMDAxMmQy
+YTg4IFIwOTogZmZmZmM5MDAwMTJkMmE3OAo+PiBbwqDCoCA5OC4xODI2MDVdIFIxMDogMDAwMDAw
+MDAwMDAwMDAwMCBSMTE6IDAwMDAwMDAwMDAwMDAwMDAgUjEyOiBmZmZmYzkwMDAxMmQzNzA4Cj4+
+IFvCoMKgIDk4LjE4MjYyMF0gUjEzOiAwMDAwMDAwMDAwMDAwMDAzIFIxNDogZmZmZmM5MDAwMTJk
+MTg0MCBSMTU6IDAwMDAwMDAwMDAwMDAwMDAKPj4gW8KgwqAgOTguMTgyNjM0XSBGUzrCoCAwMDAw
+N2Y4ODhjM2JiNzAwKDAwMDApIEdTOmZmZmY4ODgxMzNkMDAwMDAoMDAwMCkga25sR1M6MDAwMDAw
+MDAwMDAwMDAwMAo+PiBbwqDCoCA5OC4xODI2NTBdIENTOsKgIDAwMTAgRFM6IDAwMDAgRVM6IDAw
+MDAgQ1IwOiAwMDAwMDAwMDgwMDUwMDMzCj4+IFvCoMKgIDk4LjE4MjY2MV0gQ1IyOiAwMDAwNTU3
+MzhmYWNjMDAwIENSMzogMDAwMDAwMDEyYWQ0NDAwNSBDUjQ6IDAwMDAwMDAwMDAxNjA2ZTAKPj4g
+W8KgwqAgOTguMTgyNjk4XSBDYWxsIFRyYWNlOgo+PiBbwqDCoCA5OC4xODI3MDhdwqAgX19jb2Jh
+bHRfY29uZF93YWl0X3Byb2xvZ3VlKzB4MjZkLzB4ODUwCj4+IFvCoMKgIDk4LjE4MjcyMF3CoCA/
+IGhhbmRsZV9yb290X3N5c2NhbGwrMHhkMy8weDMxMAo+PiBbwqDCoCA5OC4xODI3MzBdwqAgPyBf
+X2NvYmFsdF9jb25kX3dhaXRfcHJvbG9ndWUrMHg4NTAvMHg4NTAKPj4gW8KgwqAgOTguMTgyNzQx
+XcKgIENvQmFMdF9jb25kX3dhaXRfcHJvbG9ndWUrMHgxZC8weDIwCj4+IFvCoMKgIDk4LjE4Mjc1
+MV3CoCBoYW5kbGVfaGVhZF9zeXNjYWxsKzB4MTA2LzB4M2IwCj4+IFvCoMKgIDk4LjE4Mjc2Ml3C
+oCBpcGlwZV9oYW5kbGVfc3lzY2FsbCsweDY2LzB4YzAKPj4gW8KgwqAgOTguMTgyNzcyXcKgIGRv
+X3N5c2NhbGxfNjQrMHgyMi8weDE3MAo+PiBbwqDCoCA5OC4xODI3ODJdwqAgZW50cnlfU1lTQ0FM
+TF82NF9hZnRlcl9od2ZyYW1lKzB4NDQvMHhhOQo+PiBbwqDCoCA5OC4xODI3OTNdIFJJUDogMDAz
+MzoweDdmODg4ZDI5NTc1Ygo+PiBbwqDCoCA5OC4xODI4MDFdIENvZGU6IDhiIDczIDA0IDQ5IDg5
+IGRjIGU4IDU0IGYwIGZmIGZmIDQ4IDhiIDZjIDI0IDEwIGI5IDIzIDAwIDAwIDEwIDQ4IDhkIDU0
+IDI0IDQ0IDQ1IDMxIGMwIDQ1IDMxIGQyIDQ4IDg5IGRlIDg5IGM4IDQ4IDg5IGVmIDBmIDA1IDw4
+Yj4gN2MgMjQgMmMgMzEgZjYgNDkgODkgYzUgODkgYzMgZTggMjUgZjAgZmYgZmYgNGMgODkgZmYg
+ZTggN2QgZTkKPj4gW8KgwqAgOTguMTgyODM3XSBSU1A6IDAwMmI6MDAwMDdmODg4YzNiYWI2MCBF
+RkxBR1M6IDAwMDAwMjQ2IE9SSUdfUkFYOiAwMDAwMDAwMDEwMDAwMDIzCj4+IFvCoMKgIDk4LjE4
+Mjg1Ml0gUkFYOiBmZmZmZmZmZmZmZmZmZmRhIFJCWDogMDAwMDdmODg4YzU2ZTZlMCBSQ1g6IDAw
+MDA3Zjg4OGQyOTU3NWIKPj4gW8KgwqAgOTguMTgzMTk1XSBSRFg6IDAwMDA3Zjg4OGMzYmFiYTQg
+UlNJOiAwMDAwN2Y4ODhjNTZlNmUwIFJESTogMDAwMDdmODg4YzU2ZTdmOAo+PiBbwqDCoCA5OC4x
+ODM1MzBdIFJCUDogMDAwMDdmODg4YzU2ZTdmOCBSMDg6IDAwMDAwMDAwMDAwMDAwMDAgUjA5OiAw
+MDAwN2Y4ODhjNTZlNmQwCj4+IFvCoMKgIDk4LjE4Mzg1NF0gUjEwOiAwMDAwMDAwMDAwMDAwMDAw
+IFIxMTogMDAwMDAwMDAwMDAwMDI0NiBSMTI6IDAwMDA3Zjg4OGM1NmU2ZTAKPj4gW8KgwqAgOTgu
+MTg0MTgyXSBSMTM6IDAwMDA3Zjg4OGMzYmFkODAgUjE0OiAwMDAwMDAwMDAwMDAwMDAxIFIxNTog
+MDAwMDdmODg4YzNiYWJiMAo+PiBbwqDCoCA5OC4xODQ1MDBdIE1vZHVsZXMgbGlua2VkIGluOiBm
+dXNlIG5mX2Nvbm50cmFja19uZXRiaW9zX25zIG5mX2Nvbm50cmFja19icm9hZGNhc3QgeHRfQ1Qg
+eHRfdGNwdWRwIGlwNnRfcnBmaWx0ZXIgaXA2dF9SRUpFQ1QgbmZfcmVqZWN0X2lwdjYgaXB0X1JF
+SkVDVCBuZl9yZWplY3RfaXB2NCB4dF9jb25udHJhY2sgaXA2dGFibGVfbmF0IG5mX25hdF9pcHY2
+IGlwNnRhYmxlX21hbmdsZSBpcDZ0YWJsZV9yYXcgaXA2dGFibGVfc2VjdXJpdHkgaXB0YWJsZV9u
+YXQgbmZfbmF0X2lwdjQgbmZfbmF0IGlwdGFibGVfbWFuZ2xlIGlwdGFibGVfcmF3IGlwdGFibGVf
+c2VjdXJpdHkgbmZfY29ubnRyYWNrIG5mX2RlZnJhZ19pcHY2IG5mX2RlZnJhZ19pcHY0IGxpYmNy
+YzMyYyBhcmM0IGVjYiBtZDQgc2hhNTEyX3Nzc2UzIHNoYTUxMl9nZW5lcmljIGNtYWMgbmxzX3V0
+ZjggY2lmcyBjY20gZG5zX3Jlc29sdmVyIGZzY2FjaGUgaXBfc2V0IG5mX3RhYmxlcyBuZm5ldGxp
+bmsgaXA2dGFibGVfZmlsdGVyIGlwNl90YWJsZXMgaXB0YWJsZV9maWx0ZXIgdm13Z2Z4IHNnIHR0
+bSBkcm1fa21zX2hlbHBlciBkcm0gZmJfc3lzX2ZvcHMgc3lzY29weWFyZWEgc3lzZmlsbHJlY3Qg
+c3lzaW1nYmx0IHNlcmlvX3JhdyBzbmRfcGNzcCBzbmRfcGNtIHNuZF90aW1lciBzbmQgY3JjdDEw
+ZGlmX3BjbG11bCBjcmMzMl9wY2xtdWwgZ2hhc2hfY2xtdWxuaV9pbnRlbCBwY2JjIGV2ZGV2IGFl
+c25pX2ludGVsIGFlc194ODZfNjQgY3J5cHRvX3NpbWQgY3J5cHRkIGdsdWVfaGVscGVyIHNvdW5k
+Y29yZSBhYyBidXR0b24gYmluZm10X21pc2Mgc3VucnBjCj4+IFvCoMKgIDk4LjE4NzQ0Nl3CoCBp
+cF90YWJsZXMgeF90YWJsZXMgYXV0b2ZzNCBleHQ0IGNyYzMyY19nZW5lcmljIGNyYzE2IG1iY2Fj
+aGUgamJkMiBmc2NyeXB0byBzZF9tb2QgYXRhX2dlbmVyaWMgYXRhX3BpaXggY3JjMzJjX2ludGVs
+IG1wdHNwaSBtcHRzY3NpaCBtcHRiYXNlIHNjc2lfdHJhbnNwb3J0X3NwaSBsaWJhdGEgc2NzaV9t
+b2QgZTEwMDAgcHNtb3VzZSBpMmNfcGlpeDQKPj4gCj4+IAo+PiAKPj4gQXQgMjAyNC0wOC0zMCAx
+OToxMzozMSwgIkphbiBLaXN6a2EiIDxqYW4ua2lzemthQHNpZW1lbnMuY29tPiB3cm90ZToKPj4+
+IEZyb206IEphbiBLaXN6a2EgPGphbi5raXN6a2FAc2llbWVucy5jb20+Cj4+Pgo+Pj4gV2UgY2Fu
+bm90IHJlbHkgb24gdGhlIGxvc3RhZ2Vfd2FrZXVwIHdvcmsgYmVpbmcgc2NoZWR1bGVkIG9ubHkK
+Pj4+IHN5bmNocm9ub3VzbHkgb3ZlciB0aGUgQ1BVIG9mIHRoZSByZWxheGluZyB0aHJlYWQuIEl0
+IHRocmVhZCBtaWdodCBoYXZlCj4+PiBhIENQVSBtaWdyYXRpb24gYW5kIG90aGVyIHdha2V1cCBl
+dmVudHMgcGVuZGluZyBhbmQgcmVzdW1lIG9uIGRpZmZlcmVudAo+Pj4gQ1BVLiBBcyB0aGUgbG9z
+dGFnZV93YWtldXAgd29yayBpcyBjdXJyZW50bHkgb24gdGhlIHN0YWNrLCBpdCBjYW4gYmVjb21l
+Cj4+PiBjb3JydXB0IHdoZW4geG50aHJlYWRfcmVsYXggbGVhdmVzIGVhcmxpZXIgb24gdGhlIG5l
+dyBDUFUgdGhhbiB0aGUgd29yawo+Pj4gd2FzIHByb2Nlc3NlZCBvbiB0aGUgb2xkIG9uZSAtIHVn
+bHkgY3Jhc2hlcyBhaGVhZCBhcyBzZWVuIGluIFsxXS4KPj4+Cj4+PiBBbmFsb2dvdXNseSB0byB0
+aGUgc2lnbmFsIHdha2V1cHMsIG1vdmUgdGhlIHJlbGF4IHdvcmsgaW50byB0aGUgeG50aHJlYWQK
+Pj4+IHN0cnVjdHVyZSB0byBhdm9pZCBzdWNoIGNvcnJ1cHRpb25zLiBXZSBpbnRlbnRpb25hbGx5
+IHJlZnJhaW4gZnJvbQo+Pj4gdXNpbmcgaXJxX3dvcmtfc3luYyBpbiB0aGUgcmVsYXhhdGlvbiBl
+eGl0IHBhdGggdG8gYXZvaWQgc3RhcnRpbmcgdG8KPj4+IHdhaXQgYSBDUFUgdGhhdCBpcyBhbHJl
+YWR5IGJ1c3kgYWdhaW4gd2l0aCBhIGxlbmd0aHkgUlQgdGFzay4KPj4+Cj4+PiBbMV0gaHR0cHM6
+Ly9sb3JlLmtlcm5lbC5vcmcveGVub21haS83NzBiMWU0YmM0MmNmYTFiYTVmNGYzN2NjODU0OTU2
+ZjNlNzhiYjYwLmNhbWVsQHNpZW1lbnMuY29tL1QvI3QKPj4+Cj4+PiBSZXBvcnRlZC1ieTogSmVy
+cnlKdW4gPGplcnJ5anVuMTIzQDE2My5jb20+Cj4+PiBTaWduZWQtb2ZmLWJ5OiBKYW4gS2lzemth
+IDxqYW4ua2lzemthQHNpZW1lbnMuY29tPgo+Pj4gLS0tCj4+PiBpbmNsdWRlL2NvYmFsdC9rZXJu
+ZWwvdGhyZWFkLmggfCAgNiArKysrKysKPj4+IGtlcm5lbC9jb2JhbHQvdGhyZWFkLmMgICAgICAg
+ICB8IDE1ICsrKysrLS0tLS0tLS0tLQo+Pj4gMiBmaWxlcyBjaGFuZ2VkLCAxMSBpbnNlcnRpb25z
+KCspLCAxMCBkZWxldGlvbnMoLSkKPj4+Cj4+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9jb2JhbHQv
+a2VybmVsL3RocmVhZC5oIGIvaW5jbHVkZS9jb2JhbHQva2VybmVsL3RocmVhZC5oCj4+PiBpbmRl
+eCA3ZjlhMzdkMjlhLi4yMmVkNjExNjhjIDEwMDY0NAo+Pj4gLS0tIGEvaW5jbHVkZS9jb2JhbHQv
+a2VybmVsL3RocmVhZC5oCj4+PiArKysgYi9pbmNsdWRlL2NvYmFsdC9rZXJuZWwvdGhyZWFkLmgK
+Pj4+IEBAIC02NCw2ICs2NCwxMSBAQCBzdHJ1Y3QgbG9zdGFnZV9zaWduYWwgewo+Pj4gCWludCBz
+aWdubywgc2lndmFsOwo+Pj4gfTsKPj4+Cj4+PiArc3RydWN0IGxvc3RhZ2Vfd2FrZXVwIHsKPj4+
+ICsJc3RydWN0IHBpcGVsaW5lX2luYmFuZF93b3JrIGluYmFuZF93b3JrOyAvKiBNdXN0IGJlIGZp
+cnN0LiAqLwo+Pj4gKwlzdHJ1Y3QgdGFza19zdHJ1Y3QgKnRhc2s7Cj4+PiArfTsKPj4+ICsKPj4+
+IHN0cnVjdCB4bnRocmVhZF9pbml0X2F0dHIgewo+Pj4gCXN0cnVjdCB4bnRocmVhZF9wZXJzb25h
+bGl0eSAqcGVyc29uYWxpdHk7Cj4+PiAJY3B1bWFza190IGFmZmluaXR5Owo+Pj4gQEAgLTIxNCw2
+ICsyMTksNyBAQCBzdHJ1Y3QgeG50aHJlYWQgewo+Pj4gCXUzMiBwcm9naGFzaDsJCS8qIEhhc2gg
+dmFsdWUgZm9yIGV4ZV9wYXRoICovCj4+PiAjZW5kaWYKPj4+IAlzdHJ1Y3QgbG9zdGFnZV9zaWdu
+YWwgc2lnYXJyYXlbWE5USFJFQURfTUFYX1NJR05BTFNdOwo+Pj4gKwlzdHJ1Y3QgbG9zdGFnZV93
+YWtldXAgcmVsYXhfd29yazsKPj4+IH07Cj4+Pgo+Pj4gc3RhdGljIGlubGluZSBpbnQgeG50aHJl
+YWRfZ2V0X3N0YXRlKGNvbnN0IHN0cnVjdCB4bnRocmVhZCAqdGhyZWFkKQo+Pj4gZGlmZiAtLWdp
+dCBhL2tlcm5lbC9jb2JhbHQvdGhyZWFkLmMgYi9rZXJuZWwvY29iYWx0L3RocmVhZC5jCj4+PiBp
+bmRleCA4NzM4ZmFkZmNlLi43ZGZmYjA4MWJkIDEwMDY0NAo+Pj4gLS0tIGEva2VybmVsL2NvYmFs
+dC90aHJlYWQuYwo+Pj4gKysrIGIva2VybmVsL2NvYmFsdC90aHJlYWQuYwo+Pj4gQEAgLTE5NzQs
+MTEgKzE5NzQsNiBAQCBpbnQgeG50aHJlYWRfaGFyZGVuKHZvaWQpCj4+PiB9Cj4+PiBFWFBPUlRf
+U1lNQk9MX0dQTCh4bnRocmVhZF9oYXJkZW4pOwo+Pj4KPj4+IC1zdHJ1Y3QgbG9zdGFnZV93YWtl
+dXAgewo+Pj4gLQlzdHJ1Y3QgcGlwZWxpbmVfaW5iYW5kX3dvcmsgaW5iYW5kX3dvcms7IC8qIE11
+c3QgYmUgZmlyc3QuICovCj4+PiAtCXN0cnVjdCB0YXNrX3N0cnVjdCAqdGFzazsKPj4+IC19Owo+
+Pj4gLQo+Pj4gc3RhdGljIHZvaWQgbG9zdGFnZV90YXNrX3dha2V1cChzdHJ1Y3QgcGlwZWxpbmVf
+aW5iYW5kX3dvcmsgKmluYmFuZF93b3JrKQo+Pj4gewo+Pj4gCXN0cnVjdCBsb3N0YWdlX3dha2V1
+cCAqcnE7Cj4+PiBAQCAtMjA1MiwxMCArMjA0Nyw2IEBAIHZvaWQgX194bnRocmVhZF9wcm9wYWdh
+dGVfc2NoZWRwYXJhbShzdHJ1Y3QgeG50aHJlYWQgKmN1cnIpCj4+PiB2b2lkIHhudGhyZWFkX3Jl
+bGF4KGludCBub3RpZnksIGludCByZWFzb24pCj4+PiB7Cj4+PiAJc3RydWN0IHRhc2tfc3RydWN0
+ICpwID0gY3VycmVudDsKPj4+IC0Jc3RydWN0IGxvc3RhZ2Vfd2FrZXVwIHdha2V3b3JrID0gewo+
+Pj4gLQkJLmluYmFuZF93b3JrID0gUElQRUxJTkVfSU5CQU5EX1dPUktfSU5JVElBTElaRVIobG9z
+dGFnZV90YXNrX3dha2V1cCksCj4+PiAtCQkudGFzayA9IHAsCj4+PiAtCX07Cj4+PiAJc3RydWN0
+IHhudGhyZWFkICp0aHJlYWQgPSB4bnRocmVhZF9jdXJyZW50KCk7Cj4+PiAJaW50IGNwdSBfX21h
+eWJlX3VudXNlZCwgc3VzcGVuc2lvbjsKPj4+IAlrZXJuZWxfc2lnaW5mb190IHNpOwo+Pj4gQEAg
+LTIwNjksNiArMjA2MCwxMCBAQCB2b2lkIHhudGhyZWFkX3JlbGF4KGludCBub3RpZnksIGludCBy
+ZWFzb24pCj4+PiAJICovCj4+PiAJdHJhY2VfY29iYWx0X3NoYWRvd19nb3JlbGF4KHJlYXNvbik7
+Cj4+Pgo+Pj4gKwl0aHJlYWQtPnJlbGF4X3dvcmsuaW5iYW5kX3dvcmsgPSAoc3RydWN0IHBpcGVs
+aW5lX2luYmFuZF93b3JrKQo+Pj4gKwkJUElQRUxJTkVfSU5CQU5EX1dPUktfSU5JVElBTElaRVIo
+bG9zdGFnZV90YXNrX3dha2V1cCk7Cj4+PiArCXRocmVhZC0+cmVsYXhfd29yay50YXNrID0gcDsK
+Pj4+ICsKPj4+IAkvKgo+Pj4gCSAqIElmIHlvdSBpbnRlbmQgdG8gY2hhbmdlIHRoZSBmb2xsb3dp
+bmcgaW50ZXJydXB0LWZyZWUKPj4+IAkgKiBzZXF1ZW5jZSwgL2ZpcnN0LyBtYWtlIHN1cmUgdG8g
+Y2hlY2sgdGhlIHNwZWNpYWwgaGFuZGxpbmcKPj4+IEBAIC0yMDgxLDcgKzIwNzYsNyBAQCB2b2lk
+IHhudGhyZWFkX3JlbGF4KGludCBub3RpZnksIGludCByZWFzb24pCj4+PiAJICovCj4+PiAJc3Bs
+bWF4KCk7Cj4+PiAJdHJhY2VfY29iYWx0X2xvc3RhZ2VfcmVxdWVzdCgid2FrZXVwIiwgcCk7Cj4+
+PiAtCXBpcGVsaW5lX3Bvc3RfaW5iYW5kX3dvcmsoJndha2V3b3JrKTsKPj4+ICsJcGlwZWxpbmVf
+cG9zdF9pbmJhbmRfd29yaygmdGhyZWFkLT5yZWxheF93b3JrKTsKPj4+IAkvKgo+Pj4gCSAqIEdy
+YWIgdGhlIG5rbG9jayB0byBzeW5jaHJvbml6ZSB0aGUgTGludXggdGFzayBzdGF0ZQo+Pj4gCSAq
+IG1hbmlwdWxhdGlvbiB3aXRoIGhhbmRsZV9zaWd3YWtlX2V2ZW50LiBUaGlzIGxvY2sgd2lsbCBi
+ZQo+Pj4gLS0gCj4+PiAyLjQzLjAKPgo+LS0gCj5TaWVtZW5zIEFHLCBUZWNobm9sb2d5Cj5MaW51
+eCBFeHBlcnQgQ2VudGVyCg==
