@@ -1,40 +1,37 @@
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EEE31DD53E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C02C1DD865
 	for <xenomai@lists.linux.dev>; Mon, 28 Oct 2024 13:44:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730123092; cv=none; b=mWnDssKOo/SMgvN0USv5CguiilnRI79MalTFYeUE0IR6n41HIh5yTytXINne2IF9pGflLK8JKHtcm+3rrwNVoSoeuizjOnjTwi6eThiaJc+UHzcU85SIKsYI3qX9PK7SbgvHhgPuL92uOjq60JONIv/eSfxU++QjIXYQy1Q/0pw=
+	t=1730123092; cv=none; b=tVWGhlt3cXjH0jeBQAqw2ve6xqwQxIzOm5m2A75e6YHVoUT6ZfqQKnvajFgVRDA0P/1La6zqEflph/nWU+UWOG+JDyXyftywVc9eOw6i9EVks0RC1/dl02j9ahcFgR/nUgluGi2PJZh/RIA/tgPBYITWP8VmP4FOnTfWfJkiLdc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1730123092; c=relaxed/simple;
-	bh=Xsl1nKRpHkiTpdOr/t2JflQzftaNLDP0wpuxxZPNKi8=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=iNHtsulU6QprY3NW23sQn/PqDZ6+ijniOnAk5Qm92PRhI/EXe+WyKtgKQtxQio75qQrlRR/kCPykZOfN5yxGV3QfV/SdnNfdf5DrqYjABBJ6i+6QY/kMxfyn0629ITTuCduJfGoUvDHwC3vc5VJH8K9tV38LDyf6cV3N5Bw9oRE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=Zx3re4ka; arc=none smtp.client-ip=185.136.64.225
+	bh=bVJqhuqR5USWNgEVS4yOGsDafcp/AWsqrpQCLFSlyoY=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version; b=rZGVqjLMc5Y/XflhKNhrQJdnNwoeTrsXS2fs3t2hUpL6vlWcz//SCF4COjjZjqNCZ29Tbx+AWCNBs6QIrPnyAxd1KvQnJqkub1bp8JYw62Baqe0K33DOaFpOZa/TxPo4xQagVX+XvaQ6dRjJAZNcN6c4I9xGjvTOE201HB/nPuw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=eCDnmDMt; arc=none smtp.client-ip=185.136.64.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="Zx3re4ka"
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20241028134446bfaaefc17766aeab0b
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="eCDnmDMt"
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20241028134445549eea5076b216aa60
         for <xenomai@lists.linux.dev>;
-        Mon, 28 Oct 2024 14:44:46 +0100
+        Mon, 28 Oct 2024 14:44:45 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=wDYdobcxHhcI8RKus2ZTft3ZCL4eaom5E6DjsTydBMQ=;
- b=Zx3re4kaUPpalFcsgwjoFxKu0h8Sus2zngHiefM2q7tDoqcuqwZDgbHILkZh+xtvTN8hkh
- ztcpM7Pkg2716RIlVB+zp6YRxz9V1ddj8lOOodm6bgFsvwRcHyddzf4Ysog3uzkLSVM3g+gx
- eg0wwY0F7bGNt3cfTHfkbUHkncbIenw9d0f44yxfl0JPHQFlM0IXRQ6HPBlFkdyrwyonHjoO
- H99M37s4cVWR3+X2phDghAlAwRt05/xaCzjEv9FTvGPIt1MF3nsA7g6+S4sdNIuHS2tWEy4O
- Hk2fItLq9NBZh3Y86JeT76NgvIg018hrsGLdRDaloT/0AFktBHg8YANA==;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding;
+ bh=X0j3QX5peFLsc73xSg7TsywSYBP/cvQb9tdtLRn7x6w=;
+ b=eCDnmDMtKHdff9srWz802eFxPAifAEHdj5fsmV/dOuo0o2LHu049YN6VV2J/f2ik5WLCsI
+ HiENskwQy1dxZphiqi0HRbVhp+DhW7BWmHuyM7Qe5yi3o/r9HRqzBQptPsFHB6OsG2vlFHHy
+ +oCP8ozVW8IDxqyCHxtjRDRAqkqssWKX5LcOTb6sNamJ4GM54f76zORxjiBNBwHFZ+6nKtkS
+ Kea6XCIJuG1lvOnr2WOClf+wrXGnvyW8IQmMm/sjDDBFfTo/SmJJlarctJKexyS8x1Ew6V2L
+ wWSXZ4ts8p/RufmELeF+tE7Os3O5Voc5RIoFhBgc6mNezM2Qg2MNG5vw==;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [xenomai-images][PATCH 6/6] Add Xenomai 3.3 support
-Date: Mon, 28 Oct 2024 14:44:44 +0100
-Message-ID: <d57ca880bf1f5abc5b92b8033fa3109eaadb7176.1730123084.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1730123084.git.jan.kiszka@siemens.com>
-References: <cover.1730123084.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 0/6] Various houskeeping changes
+Date: Mon, 28 Oct 2024 14:44:38 +0100
+Message-ID: <cover.1730123084.git.jan.kiszka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -45,139 +42,38 @@ Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-294854:519-21489:flowmailer
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+See patches for details.
 
-Add the latest major version, also as new default. It does not come with
-an own stable branch yet, thus focus on the release for now.
+Jan
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- Kconfig                                | 25 ++++++++++++++-----------
- conf/distro/xenomai-demo.conf          |  4 ++--
- recipes-xenomai/xenomai/xenomai_3.3.bb | 17 +++++++++++++++++
- 3 files changed, 33 insertions(+), 13 deletions(-)
- create mode 100644 recipes-xenomai/xenomai/xenomai_3.3.bb
+Jan Kiszka (6):
+  layer.conf: Fix sstate cachability issue
+  Update to kas 4.5
+  Update isar revision
+  xenomai: Pull common definition of S into shared include
+  xenomai: Update stable releases
+  Add Xenomai 3.3 support
 
-diff --git a/Kconfig b/Kconfig
-index 13699bf..2336e66 100644
---- a/Kconfig
-+++ b/Kconfig
-@@ -77,11 +77,14 @@ if XENOMAI3
- 
- choice
- 	prompt "Xenomai 3 subversion"
--	default XENOMAI_3_2
-+	default XENOMAI_3_3
- 
- config XENOMAI_LATEST
- 	bool "Head of next branch"
- 
-+config XENOMAI_3_3
-+	bool "Latest 3.3.x release"
-+
- config XENOMAI_3_2_LATEST
- 	bool "Head of stable/v3.2.x branch"
- 
-@@ -107,7 +110,7 @@ config KAS_INCLUDE_XENOMAI
- 
- choice
- 	prompt "Kernel version"
--	default KERNEL_6_1
-+	default KERNEL_6_6
- 
- config KERNEL_LATEST
- 	bool "Head of latest Dovetail branch"
-@@ -115,35 +118,35 @@ config KERNEL_LATEST
- 
- config KERNEL_6_6_LATEST
- 	bool "Head of 6.6 Dovetail branch"
--	depends on XENOMAI_LATEST
-+	depends on XENOMAI_LATEST || XENOMAI_3_3
- 
- config KERNEL_6_6
- 	bool "Latest 6.6 Dovetail release"
--	depends on XENOMAI_LATEST
-+	depends on XENOMAI_LATEST || XENOMAI_3_3
- 
- config KERNEL_6_1_LATEST
- 	bool "Head of 6.1 Dovetail branch"
--	depends on XENOMAI_LATEST || XENOMAI_3_2_LATEST || XENOMAI_3_2
-+	depends on XENOMAI_LATEST || XENOMAI_3_3 || XENOMAI_3_2_LATEST || XENOMAI_3_2
- 
- config KERNEL_6_1
- 	bool "Latest 6.1 Dovetail release"
--	depends on XENOMAI_LATEST || XENOMAI_3_2_LATEST || XENOMAI_3_2
-+	depends on XENOMAI_LATEST || XENOMAI_3_3 || XENOMAI_3_2_LATEST || XENOMAI_3_2
- 
- config KERNEL_5_15_LATEST
- 	bool "Head of 5.15 Dovetail branch"
--	depends on XENOMAI_LATEST || XENOMAI_3_2_LATEST || XENOMAI_3_2
-+	depends on XENOMAI_LATEST || XENOMAI_3_3 || XENOMAI_3_2_LATEST || XENOMAI_3_2
- 
- config KERNEL_5_15
- 	bool "Latest 5.15 Dovetail release"
--	depends on XENOMAI_LATEST || XENOMAI_3_2_LATEST || XENOMAI_3_2
-+	depends on XENOMAI_LATEST || XENOMAI_3_3 || XENOMAI_3_2_LATEST || XENOMAI_3_2
- 
- config KERNEL_5_10_LATEST
- 	bool "Head of 5.10 Dovetail branch"
--	depends on XENOMAI_LATEST || XENOMAI_3_2_LATEST || XENOMAI_3_2
-+	depends on XENOMAI_LATEST || XENOMAI_3_3 || XENOMAI_3_2_LATEST || XENOMAI_3_2
- 
- config KERNEL_5_10
- 	bool "Latest 5.10 Dovetail release"
--	depends on XENOMAI_LATEST || XENOMAI_3_2_LATEST || XENOMAI_3_2
-+	depends on XENOMAI_LATEST || XENOMAI_3_3 || XENOMAI_3_2_LATEST || XENOMAI_3_2
- 
- config KERNEL_5_4_LATEST
- 	bool "Head of 5.4 I-pipe branch"
-@@ -208,7 +211,7 @@ config KAS_INCLUDE_DEBUG
- 
- config COMPAT
- 	bool "Build 32 bit Xenomai userspace"
--	depends on XENOMAI_LATEST && ARCH_X86
-+	depends on (XENOMAI_LATEST || XENOMAI_3_3) && ARCH_X86
- 
- config KAS_INCLUDE_COMPAT
- 	string
-diff --git a/conf/distro/xenomai-demo.conf b/conf/distro/xenomai-demo.conf
-index 222e077..d1b24b7 100644
---- a/conf/distro/xenomai-demo.conf
-+++ b/conf/distro/xenomai-demo.conf
-@@ -15,8 +15,8 @@ XENOMAI_MAJOR_VERSION ?= "3"
- 
- OVERRIDES .= ":xenomai${XENOMAI_MAJOR_VERSION}"
- 
--PREFERRED_VERSION_xenomai ?= "3.2%"
--PREFERRED_VERSION_xenomai-compat ?= "3.2%"
-+PREFERRED_VERSION_xenomai ?= "3.3%"
-+PREFERRED_VERSION_xenomai-compat ?= "3.3%"
- include conf/distro/include/xenomai-version.inc
- 
- PREFERRED_VERSION_libevl ?= "4%"
-diff --git a/recipes-xenomai/xenomai/xenomai_3.3.bb b/recipes-xenomai/xenomai/xenomai_3.3.bb
-new file mode 100644
-index 0000000..c2babdb
---- /dev/null
-+++ b/recipes-xenomai/xenomai/xenomai_3.3.bb
-@@ -0,0 +1,17 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2024
-+#
-+# Authors:
-+#  Jan Kiszka <jan.kiszka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+require xenomai.inc
-+
-+# Note: When updating PV, also update conf/distro/include/xenomai-version.inc!
-+
-+SRC_URI = " \
-+    git://github.com/xenomai-ci/xenomai.git;protocol=https;branch=master;tag=v${PV}"
+ Kconfig                                       | 25 +++++++++++--------
+ ci/gitlab-ci-base.yml                         |  2 +-
+ conf/distro/include/xenomai-version.inc       |  8 +++---
+ conf/distro/xenomai-demo.conf                 |  4 +--
+ conf/layer.conf                               |  3 ++-
+ kas-container                                 | 25 +++++++++++++------
+ kas.yml                                       |  4 +--
+ recipes-xenomai/xenomai/xenomai.inc           |  2 ++
+ .../{xenomai_3.0.14.bb => xenomai_3.0.15.bb}  |  1 -
+ .../{xenomai_3.1.4.bb => xenomai_3.1.5.bb}    |  2 --
+ .../{xenomai_3.2.4.bb => xenomai_3.2.6.bb}    |  2 --
+ .../{xenomai_3.1.4.bb => xenomai_3.3.bb}      |  6 ++---
+ recipes-xenomai/xenomai/xenomai_master.bb     |  2 --
+ .../xenomai/xenomai_stable-3.0.x.bb           |  2 --
+ 14 files changed, 47 insertions(+), 41 deletions(-)
+ rename recipes-xenomai/xenomai/{xenomai_3.0.14.bb => xenomai_3.0.15.bb} (94%)
+ copy recipes-xenomai/xenomai/{xenomai_3.1.4.bb => xenomai_3.1.5.bb} (94%)
+ rename recipes-xenomai/xenomai/{xenomai_3.2.4.bb => xenomai_3.2.6.bb} (94%)
+ rename recipes-xenomai/xenomai/{xenomai_3.1.4.bb => xenomai_3.3.bb} (77%)
+
 -- 
 2.43.0
 
