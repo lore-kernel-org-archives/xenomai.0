@@ -1,38 +1,38 @@
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C94E1D63DF
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6606C1D88B1
 	for <xenomai@lists.linux.dev>; Mon, 28 Oct 2024 13:54:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730123701; cv=none; b=dJsdZs05W3GdA0/8TGbJurxFGvGWTaMwnRQBO3dB7Ec3tJJ/KAAs7/hGldo747b4bR2AE6nyD+Qzwl1znDniWfWt4cEVbpyADWHRAzVPnknT4icFmc+VVx8TjRrBggJgCYkJrf1OM88VqXN3LnhJRfgarkG/gb9g+tHX0B7nRoQ=
+	t=1730123701; cv=none; b=UaaNMj395UBNl5N8eEWQbWZxPlplSiF0q25U/1hvUWePQpFm1zL3FUbSW3n7E/2//tZnoVAR06ma3bgi6RtnXXo1awCBwWvzH2ZaEUH93o0hAkIYjGQI+WOvtbNKa8qXyBqDTCXtAt7fpTsHcBVh9DxFGrXxZISyft6x6TG1Vig=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1730123701; c=relaxed/simple;
-	bh=wJBa0cE/mpuLtGmcTa3p4kNc3PA8Qn7AP21J4+tQt9U=;
+	bh=IbFnLTH8DmPddEffyCKpyPlBtIbk/r7DRaJlH3ipQjw=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Ac9UFFFvo+drFPqAldti3BEDL51nSpfZdI0RfBrxAQtm7+xeomJ8D1mf713ey1p90kqXjcUhAirPJ337Okibw7rT7LgEkkWh3MCM0ARDUGBeD7hOEQHbDXpBWMF13lduE5aOAVTjTM3n62hyHsoObBhSmoPaNg/uR06qJT15QH0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=breqSKDb; arc=none smtp.client-ip=185.136.64.228
+	 MIME-Version; b=XduusMOzFbpIjC2b4stOrOn8sGN4Q6BY1l05xaOBP4o/sE7F/E1wBVLTnnXdthmMfyyQ8psLKPj8cjI9G7RlRvbiCY4/bRXtRdWeA3NiN3/xzWdpoKZFfXihdY8w3aDec9txq+5nmDTdWfXe5TPhLkiSvoYEXKhz8nN3NCCzuLw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=bI20MWlf; arc=none smtp.client-ip=185.136.65.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="breqSKDb"
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 202410281344458b4ccac7c530c64611
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="bI20MWlf"
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20241028134446790750fd189f78ec95
         for <xenomai@lists.linux.dev>;
         Mon, 28 Oct 2024 14:44:46 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=+K4EXOX7j72CMbGwF/ZPUbspZyQk+ZmUt7uq+mAlO/E=;
- b=breqSKDbwzvqwXop/mDQowRxqOidPD3Iqo51aD7lpjvtumbE7AFVU2IBtgUBq2sVwjpErw
- x0xGNYhsU3rMCBXduBKtEjoUwZlWH2c3v5kYC4y+2eVjKtPJ7Bnue3DtFrANXCuZxxn0hmd3
- zt7rU0+30EMmmoYrIOkUKvXDU1xiLSaQmbt+NwKsU9vhU2Zm1UoQGGCRHYN5z0t+17QLROi4
- U+yTpDMY5uFRFRxtczZKTLVZjDtiPRP0644RqQ3IXwTVdtcH75k0gDWD40pwK0KNY0ghc4W3
- CiNKtstH3GcFAJCauBO8N85YwvtMYNh0hR/X95LAl7VD9gIRey3SWtyw==;
+ bh=CJUv7V3ioPpFWYFWIeUjgpQAbYAxm4dpPiQi1G6XNgE=;
+ b=bI20MWlfsbchwSBdHOacMcLuUFY3aWqpstTR0rZWzNRYHpT/UyqD+Zagd3AGHSAfkm9xwt
+ dAwmPj3z1tH/ZjyzeY5nKfxgMfJFjYaxyMbOEvedghKEFqXEAGuIXg2VKOlgOyLalSbOyGI3
+ NgJYhS88uzeG+oTOSKkRR7n5ZzmYVRMB+in7ej+QL9Gp/JgbgugNsm8NMQSjSawArNw41bdI
+ jrJBxlfsvdwktYOOM5mwz55WmaVCF7rCr48v7W6T2fOI+GG/Q9g+XZv0lz7kMGp8OzyoiqYj
+ xqQ2LuHk/gzSOECRV01/w/vJla2KOTQaYN45erIpr8Y/+axVdySW7bLw==;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [xenomai-images][PATCH 3/6] Update isar revision
-Date: Mon, 28 Oct 2024 14:44:41 +0100
-Message-ID: <bdc63965229676c2fa97f2bc75c72b254bc46f27.1730123084.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 5/6] xenomai: Update stable releases
+Date: Mon, 28 Oct 2024 14:44:43 +0100
+Message-ID: <3c7ea6c34e9801969dc4ed4bbffb1f4db4f5383b.1730123084.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1730123084.git.jan.kiszka@siemens.com>
 References: <cover.1730123084.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -47,36 +47,59 @@ Feedback-ID: 519:519-294854:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Resolves some false-positive variable export warnings in CI, otherwise
-just housekeeping.
-
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- kas.yml | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ conf/distro/include/xenomai-version.inc                   | 8 ++++----
+ .../xenomai/{xenomai_3.0.14.bb => xenomai_3.0.15.bb}      | 0
+ .../xenomai/{xenomai_3.1.4.bb => xenomai_3.1.5.bb}        | 0
+ .../xenomai/{xenomai_3.2.4.bb => xenomai_3.2.6.bb}        | 0
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+ rename recipes-xenomai/xenomai/{xenomai_3.0.14.bb => xenomai_3.0.15.bb} (100%)
+ rename recipes-xenomai/xenomai/{xenomai_3.1.4.bb => xenomai_3.1.5.bb} (100%)
+ rename recipes-xenomai/xenomai/{xenomai_3.2.4.bb => xenomai_3.2.6.bb} (100%)
 
-diff --git a/kas.yml b/kas.yml
-index c0cce41..d2554d3 100644
---- a/kas.yml
-+++ b/kas.yml
+diff --git a/conf/distro/include/xenomai-version.inc b/conf/distro/include/xenomai-version.inc
+index bed78e8..e036c39 100644
+--- a/conf/distro/include/xenomai-version.inc
++++ b/conf/distro/include/xenomai-version.inc
 @@ -1,7 +1,7 @@
  #
  # Xenomai Real-Time System
  #
--# Copyright (c) Siemens AG, 2018-2023
-+# Copyright (c) Siemens AG, 2018-2024
+-# Copyright (c) Siemens AG, 2019-2023
++# Copyright (c) Siemens AG, 2019-2024
  #
  # Authors:
- #  Jan Kiszka <jan.kiszka@siemens.com>
-@@ -22,7 +22,7 @@ repos:
+ #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
+@@ -11,13 +11,13 @@
  
-   isar:
-     url: https://github.com/ilbers/isar.git
--    commit: 1372f428223aea046e8efaa04202093d0d73c52e
-+    commit: 2480baaa18b097c39d6e68b2ac7d6fabd6ff8ab9
-     layers:
-       meta:
+ XENOMAI_DEFAULT_KERNEL_VERSION = "6.1%"
  
+-XENOMAI_3_0_VERSION_LIST = "3.0 3.0% 3.0.% 3.0.14 stable-3.0.x"
++XENOMAI_3_0_VERSION_LIST = "3.0 3.0% 3.0.% 3.0.15 stable-3.0.x"
+ XENOMAI_3_0_KERNEL_VERSION = "4.4%"
+ 
+-XENOMAI_3_1_VERSION_LIST = "3.1 3.1% 3.1.% 3.1.4 stable-3.1.x"
++XENOMAI_3_1_VERSION_LIST = "3.1 3.1% 3.1.% 3.1.5 stable-3.1.x"
+ XENOMAI_3_1_KERNEL_VERSION = "5.4%"
+ 
+-XENOMAI_3_2_VERSION_LIST = "3.2 3.2% 3.2.% 3.2.4 stable-3.2.x"
++XENOMAI_3_2_VERSION_LIST = "3.2 3.2% 3.2.% 3.2.6 stable-3.2.x"
+ XENOMAI_3_2_KERNEL_VERSION = "6.1%"
+ 
+ # If PREFERRED_VERSION_xenomai contains any item from XENOMAI_3_0_VERSION_LIST use
+diff --git a/recipes-xenomai/xenomai/xenomai_3.0.14.bb b/recipes-xenomai/xenomai/xenomai_3.0.15.bb
+similarity index 100%
+rename from recipes-xenomai/xenomai/xenomai_3.0.14.bb
+rename to recipes-xenomai/xenomai/xenomai_3.0.15.bb
+diff --git a/recipes-xenomai/xenomai/xenomai_3.1.4.bb b/recipes-xenomai/xenomai/xenomai_3.1.5.bb
+similarity index 100%
+rename from recipes-xenomai/xenomai/xenomai_3.1.4.bb
+rename to recipes-xenomai/xenomai/xenomai_3.1.5.bb
+diff --git a/recipes-xenomai/xenomai/xenomai_3.2.4.bb b/recipes-xenomai/xenomai/xenomai_3.2.6.bb
+similarity index 100%
+rename from recipes-xenomai/xenomai/xenomai_3.2.4.bb
+rename to recipes-xenomai/xenomai/xenomai_3.2.6.bb
 -- 
 2.43.0
 
