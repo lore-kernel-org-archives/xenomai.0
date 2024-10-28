@@ -1,38 +1,38 @@
 Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 871E61DD544
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 872461DD54E
 	for <xenomai@lists.linux.dev>; Mon, 28 Oct 2024 13:44:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730123091; cv=none; b=f+yHvzgGmfkvj3ftKpcde00RK/2dBLZNujQEUMA54X8V1j682iiPV/DQSiaIDmh5OQmBDIORZyAwjb/D4KOw/4O51SL61P9MWRw9EVjN3lnfJ3bfWn9OoIy67rM/3+eqcae/sl2Ce8WCa/s5bI8k/xj7j8YvdvI7eqzsCj2IuAw=
+	t=1730123092; cv=none; b=dpjKL0vqcREdESw0nN1Jw0sO1VR88QPM2KEYpCDb+KtWQBk2BGxhpDOGZCTFEs9xtJ3BAYTuc9Fq8/GG5OdlmvF8iFijXGvaFC/c3Dwap3cdd7dyj1y/aUDagIJsFvV+3dj7X+QCbycZmyPbFbxjfLFJ/hpL8hkdG9ucfYXrfOY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730123091; c=relaxed/simple;
-	bh=i0PIVrRTyPPLNaqmgyN/7ErEYpslGSWFxOPd7kJkNHQ=;
+	s=arc-20240116; t=1730123092; c=relaxed/simple;
+	bh=97hgzuJgFCq2obh38XDNLQXtwPLohdAerUEdOPQhHAw=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=IraLYYPsAfxadfEH4e35+SOL40iklOD7MzqBojy0AATN2LhEmwHLnAknNIoLslpJDKGUbOsDp4AKRpDyrmdkk+ETUlu4VMhiXg6hJsM2vfohbTTGZQCEFuv326jHnonaPG1NWlWXZGdUHcO/3F1NGYZZ0PRFNuES/EJ+9TFXsLY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=QbxPsEPl; arc=none smtp.client-ip=185.136.64.228
+	 MIME-Version; b=HIab8b4J5cPy5D/kxYNmnX90zUw4rdZjt/o+vvxjBneVIeUW5N21nd2496VD6Rw/MR92Bgida8lYENVzZuSAeeyEPNySJT3WFRKUS4np7Cs1NswTaSHzfu56DOfQ3qFh9sNsMgqtZGLcfuLVE/PJrpC7/xc0zEJff5HFRseGUYc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=KTcfR0SB; arc=none smtp.client-ip=185.136.64.228
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="QbxPsEPl"
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20241028134446583c10feeeff1e1d0d
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="KTcfR0SB"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20241028134445679f950db558802d6a
         for <xenomai@lists.linux.dev>;
-        Mon, 28 Oct 2024 14:44:46 +0100
+        Mon, 28 Oct 2024 14:44:45 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=iTctn31iWxL5uOR58bKHzgwrhBQwkbrIZx2cO07Uq2Q=;
- b=QbxPsEPlKod8deLUwx7Aac49oRMVctWjH+0W8Tp9HYpiwRxpxzt3yyZxfcJw28PBUWUZh3
- HSC0cw8/N43z6v8rsnIvxP2CTc/o2TgoSdiLl0irVg1fiXftn5R3lf7gMWRg3kIZzzuq+su+
- HaVOshx7ztqoK2k9s0ApaTGPQADNhz7ARZUxtFqdO75zG6Tw0oAIZH0kcgcgL3rEIxa6Rfe+
- myIuxy3lPHM+WevwBU7pJJg8a5H7b4CvThY7gTkFX76t3e5azHLZZWXOIQkW3WYaDgtIwvl/
- 7pR32Jmspwbp1rTywUn36XhATy0w+GdfndViYoc6ozPULHNF9dSGRjhQ==;
+ bh=NHrnNroQS07HN+b6ZSBP8KwZCsm25UfDbZ3Zp92M0EI=;
+ b=KTcfR0SBDCBQc1vgnLobqn9VmHNxJKjhiws8brwChUI0rccr3CJw9OCq8XRtdjRN82gb3c
+ e0pazF14ZRm9rdPb5Ba6XLpwoNJCtGZld3HrC8a6/l1bPJoRgActTNaSKK67kZjiZjALs5zo
+ 5HjlERQx/5ZicMKQs+unhkg3so5gInr2BRajwSgcDHFW5oyykTunohZ7H4P4Yr0HnaMkq683
+ orFuL7tTR4V0wPR2WduvQ+74EBcZTBMjUshA5q5DNGYIcgUMhGxTY8mE+nhyDFnGvA74NjYm
+ 2IsO2YVqY5jmiFMrGY4bhciUFPJFlewmQYLSAZCNWUuCYHajsq/uoP4w==;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [xenomai-images][PATCH 4/6] xenomai: Pull common definition of S into shared include
-Date: Mon, 28 Oct 2024 14:44:42 +0100
-Message-ID: <3c105e3e7043983e2ea5847187434b0ca3f65f15.1730123084.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 2/6] Update to kas 4.5
+Date: Mon, 28 Oct 2024 14:44:40 +0100
+Message-ID: <88056bcbbcaf9d1482aa42f9fdb4386c7becaedb.1730123084.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1730123084.git.jan.kiszka@siemens.com>
 References: <cover.1730123084.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -47,78 +47,87 @@ Feedback-ID: 519:519-294854:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
+Just housekeeping.
+
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- recipes-xenomai/xenomai/xenomai.inc             | 2 ++
- recipes-xenomai/xenomai/xenomai_3.0.14.bb       | 1 -
- recipes-xenomai/xenomai/xenomai_3.1.4.bb        | 2 --
- recipes-xenomai/xenomai/xenomai_3.2.4.bb        | 2 --
- recipes-xenomai/xenomai/xenomai_master.bb       | 2 --
- recipes-xenomai/xenomai/xenomai_stable-3.0.x.bb | 2 --
- 6 files changed, 2 insertions(+), 9 deletions(-)
+ ci/gitlab-ci-base.yml |  2 +-
+ kas-container         | 25 ++++++++++++++++++-------
+ 2 files changed, 19 insertions(+), 8 deletions(-)
 
-diff --git a/recipes-xenomai/xenomai/xenomai.inc b/recipes-xenomai/xenomai/xenomai.inc
-index efb92ad..6366b6f 100644
---- a/recipes-xenomai/xenomai/xenomai.inc
-+++ b/recipes-xenomai/xenomai/xenomai.inc
-@@ -21,6 +21,8 @@ PROVIDES += "libxenomai1"
- PROVIDES += "libxenomai-dev"
- PROVIDES += "libxenomai1-dbgsym"
+diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+index ea66b06..a40dbcb 100644
+--- a/ci/gitlab-ci-base.yml
++++ b/ci/gitlab-ci-base.yml
+@@ -30,7 +30,7 @@ variables:
+   SSTATE_MAX_AGE: 14d
  
-+S = "${WORKDIR}/git"
+ default:
+-  image: ghcr.io/siemens/kas/kas-isar:4.4
++  image: ghcr.io/siemens/kas/kas-isar:4.5
+ 
+ .sstate-prepare:
+   script:
+diff --git a/kas-container b/kas-container
+index 169ea1b..6b2131c 100755
+--- a/kas-container
++++ b/kas-container
+@@ -27,7 +27,7 @@
+ 
+ set -e
+ 
+-KAS_IMAGE_VERSION_DEFAULT="4.4"
++KAS_IMAGE_VERSION_DEFAULT="4.5"
+ KAS_CONTAINER_IMAGE_PATH_DEFAULT="ghcr.io/siemens/kas"
+ KAS_CONTAINER_IMAGE_NAME_DEFAULT="kas"
+ KAS_CONTAINER_SELF_NAME="$(basename "$0")"
+@@ -354,10 +354,21 @@ while [ $# -gt 0 ] && [ $KAS_EXTRA_BITBAKE_ARGS -eq 0 ]; do
+ 		shift 1
+ 		;;
+ 	*)
++		ARG="$1"
++		shift 1
++		if [ "$KAS_CMD" = "for-all-repos" ]; then
++			if [ $# -gt 0 ]; then
++				KAS_REPO_CMD="$1"
++				shift 1
++			else
++				KAS_REPO_CMD="$ARG"
++				unset ARG
++			fi
++		fi
+ 		KAS_FILES=
+ 		# SC2086: Double quote to prevent globbing and word splitting.
+ 		# shellcheck disable=2086
+-		for FILE in $(IFS=':'; echo $1); do
++		for FILE in $(IFS=':'; echo $ARG); do
+ 			if ! KAS_REAL_FILE="$(realpath -qe "$FILE")"; then
+ 				fatal_error "configuration file '${FILE}' not found"
+ 			fi
+@@ -368,11 +379,6 @@ while [ $# -gt 0 ] && [ $KAS_EXTRA_BITBAKE_ARGS -eq 0 ]; do
+ 				KAS_FILES="${KAS_FILES}:${KAS_REAL_FILE}"
+ 			fi
+ 		done
+-		shift 1
+-		if [ "$KAS_CMD" = "for-all-repos" ]; then
+-			KAS_REPO_CMD="$1"
+-			shift 1
+-		fi
+ 		;;
+ 	esac
+ done
+@@ -512,6 +518,11 @@ if [ -f "${GITCONFIG_FILE}" ]; then
+ 		-e GITCONFIG_FILE="/var/kas/userdata/.gitconfig"
+ fi
+ 
++if [ -f "${REGISTRY_AUTH_FILE}" ]; then
++	set -- "$@" -v "$(readlink -fv "${REGISTRY_AUTH_FILE}")":/var/kas/userdata/.docker/config.json:ro \
++		-e REGISTRY_AUTH_FILE="/var/kas/userdata/.docker/config.json"
++fi
 +
- do_prepare_build() {
-     # Xenomai currently does not maintain its changelog, plus we want the
-     # actual package version in there.
-diff --git a/recipes-xenomai/xenomai/xenomai_3.0.14.bb b/recipes-xenomai/xenomai/xenomai_3.0.14.bb
-index afc1920..2c0debd 100644
---- a/recipes-xenomai/xenomai/xenomai_3.0.14.bb
-+++ b/recipes-xenomai/xenomai/xenomai_3.0.14.bb
-@@ -16,4 +16,3 @@ require xenomai.inc
- SRC_URI = " \
-     git://github.com/xenomai-ci/xenomai.git;protocol=https;branch=stable/v3.0.x;tag=v${PV} \
-     "
--S = "${WORKDIR}/git"
-diff --git a/recipes-xenomai/xenomai/xenomai_3.1.4.bb b/recipes-xenomai/xenomai/xenomai_3.1.4.bb
-index e501e41..8cfe184 100644
---- a/recipes-xenomai/xenomai/xenomai_3.1.4.bb
-+++ b/recipes-xenomai/xenomai/xenomai_3.1.4.bb
-@@ -15,5 +15,3 @@ require xenomai.inc
- 
- SRC_URI = " \
-     git://github.com/xenomai-ci/xenomai.git;protocol=https;branch=stable/v3.1.x;tag=v${PV}"
--
--S = "${WORKDIR}/git"
-diff --git a/recipes-xenomai/xenomai/xenomai_3.2.4.bb b/recipes-xenomai/xenomai/xenomai_3.2.4.bb
-index 0cd1cd9..0bd7007 100644
---- a/recipes-xenomai/xenomai/xenomai_3.2.4.bb
-+++ b/recipes-xenomai/xenomai/xenomai_3.2.4.bb
-@@ -15,5 +15,3 @@ require xenomai.inc
- 
- SRC_URI = " \
-     git://github.com/xenomai-ci/xenomai.git;protocol=https;branch=stable/v3.2.x;tag=v${PV}"
--
--S = "${WORKDIR}/git"
-diff --git a/recipes-xenomai/xenomai/xenomai_master.bb b/recipes-xenomai/xenomai/xenomai_master.bb
-index a2e8802..708ddb3 100644
---- a/recipes-xenomai/xenomai/xenomai_master.bb
-+++ b/recipes-xenomai/xenomai/xenomai_master.bb
-@@ -17,5 +17,3 @@ CHANGELOG_V = "9999-${PV}"
- SRC_URI = " \
-     git://github.com/xenomai-ci/xenomai.git;protocol=https;branch=${PV}"
- SRCREV = "${AUTOREV}"
--
--S = "${WORKDIR}/git"
-diff --git a/recipes-xenomai/xenomai/xenomai_stable-3.0.x.bb b/recipes-xenomai/xenomai/xenomai_stable-3.0.x.bb
-index 6231e9e..bca3eb2 100644
---- a/recipes-xenomai/xenomai/xenomai_stable-3.0.x.bb
-+++ b/recipes-xenomai/xenomai/xenomai_stable-3.0.x.bb
-@@ -18,5 +18,3 @@ CHANGELOG_V = "${XENOMAI_VERSION}-head"
- SRC_URI = " \
-     git://github.com/xenomai-ci/xenomai.git;protocol=https;branch=stable/v${XENOMAI_VERSION}"
- SRCREV = "${AUTOREV}"
--
--S = "${WORKDIR}/git"
+ if [ -t 1 ]; then
+ 	set -- "$@" -t -i
+ fi
 -- 
 2.43.0
 
