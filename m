@@ -1,138 +1,76 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from out28-108.mail.aliyun.com (out28-108.mail.aliyun.com [115.124.28.108])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C96811ABEDC
-	for <xenomai@lists.linux.dev>; Mon,  4 Nov 2024 09:54:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B8371D31BE
+	for <xenomai@lists.linux.dev>; Wed,  6 Nov 2024 08:28:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.28.108
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730714061; cv=none; b=KRmpbxmJcK6sxfrs8Vgs10wUBD2zXXlkiPPiBPDNboeBLvXX8XaEvIZ2724loQ1cCjMrOtuTAqmP8zR5NuTApAogjPZE3YDrmTdGn4wTsn1Gyc+mziur7+TtzTJxiiVv8eGzZtAkfSDOmG+fGkKoaBY+06hSyhL0zEaL6zczFaY=
+	t=1730881738; cv=none; b=Lp3gGW83FPd/1M1TqUWKeKM44OW5sa1ud+GEA26Tvr/jQj7Vqa1SXX4QkNyZcGZh1btSU5Z/glrDWfn1aaA45AWeNtG8sg9wFUHJhU3ePhg2BESkInV9X/Q/zqdJglX9DgAh7Okcz5ULq/6HTTjVG5h1SPcRyrJf96k1ajww0dE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730714061; c=relaxed/simple;
-	bh=lXHkJLp0nt8X32Jl8lOvtk4XojM0Y8eFc2kFzaRTIkU=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=u8a5aTcL0IL8wqYZtZj7zsP36giHDapGe+YVtDLYl5/e4yM0GwxlVTC6dqk1STbewcdCqSA7SmMH0qxDnditER+Oa1rbK2uLGZeAurR1/CFUaDr8MaWneeyBEnK7R38pZ/m7KGCg46vqlkllgAHlaN87Vo4TwIm77lDAL4RW7U0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-37d473c4bb6so3696437f8f.3
-        for <xenomai@lists.linux.dev>; Mon, 04 Nov 2024 01:54:19 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1730714058; x=1731318858;
-        h=mime-version:message-id:date:user-agent:references:in-reply-to
-         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XogQ2UIXjPn7lOYGh+/d06SYAY/1ZzL3ZNAY5yvdZ58=;
-        b=lmJBTtFvc6D+9TdHGMWBq+d7v6bcu+FUQkJhmURC5ieFh1bbtx/Aw/HWKHvwr5nASC
-         CS0y5NvchycC3B8pq8ISNyODPHqK00m20jcxrmhk8xkWTN2mCknA9r1a7l8noj51gyeK
-         NNEALpKAjTvLpI+Lvme8ryi0uR/A1/AYYpyhKt/jp7r9ulof2E2dzinTJLHVhE65+HQI
-         lKOcX9nLQvzjJTUdDR+G6VkaoqfrLvyRDxAy0l7YCVBTkGFNptxp+QlM5kjDXWTkW9V2
-         2t3U9kNGQKKe/A64W1Adnilu6UL2CESSojws8W46MkpYccUVUnAsZK9vb7apgKoknh2S
-         FiZg==
-X-Gm-Message-State: AOJu0YyG+OqgiR9MoEqgKLIWk7smWEVvQYkuN2TzI0fBMTUDguE4PJou
-	0vDvsUcmYPMBPY1Kd9dQpDcj3tWqNq0S4RHos3lqMM8C8bC0ibiX
-X-Google-Smtp-Source: AGHT+IGhmYyKFj8bEtRV2eO4D3Ulx/LsWvPnT1xUfeFaoah05v++vpSyS2+nNOCe7AZys7b1ba2eFw==
-X-Received: by 2002:a5d:6dab:0:b0:37e:d2b8:883a with SMTP id ffacd0b85a97d-381c7a464c6mr12642803f8f.12.1730714056429;
-        Mon, 04 Nov 2024 01:54:16 -0800 (PST)
-Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-381c10e74casm12687115f8f.65.2024.11.04.01.54.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 04 Nov 2024 01:54:15 -0800 (PST)
-From: Philippe Gerum <rpm@xenomai.org>
-To: Tobias Schaffner <tobias.schaffner@siemens.com>
-Cc: xenomai@lists.linux.dev,  jan.kiszka@siemens.com, shanmu
- <shanmu1901@gmail.com>
-Subject: Re: [PATCH dovetail 6.11 v2 0/3] RISC-V: IRQ pipelining core
-In-Reply-To: <20241004190633.1814057-1-tobias.schaffner@siemens.com> (Tobias
-	Schaffner's message of "Fri, 4 Oct 2024 21:06:30 +0200")
-References: <20241004190633.1814057-1-tobias.schaffner@siemens.com>
-User-Agent: mu4e 1.12.1; emacs 29.4
-Date: Mon, 04 Nov 2024 10:54:04 +0100
-Message-ID: <87plnbwchv.fsf@xenomai.org>
+	s=arc-20240116; t=1730881738; c=relaxed/simple;
+	bh=CQZVBQILFO9UFTqLpiNGtgWNstycxtNkBmnEjZ5TulM=;
+	h=Date:From:To:Cc:Message-ID:Subject:MIME-Version:Content-Type; b=KgiRpJCX1FR4rj73fheHe3esUvY+sX4TEcHR0OXwiWybDa6/OM5VzgDsu20A6AOFAhFCAaTrsG5WT+gsZcgynzi630Un0Lxc5n2FC/z9f6FVPHdSHqMKydY93/JftPzKPsKdJ4OrAbqnTVd8nZ17AysoX1Lgc9qWitQJ2kn8BYY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sinsegye.com.cn; spf=none smtp.mailfrom=sinsegye.com.cn; arc=none smtp.client-ip=115.124.28.108
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sinsegye.com.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=sinsegye.com.cn
+X-Alimail-AntiSpam:AC=CONTINUE;BC=0.4281027|-1;BR=01201311R151S30rulernew998_84748_2000303;CH=blue;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0981571-0.101512-0.800331;FP=12059016867819271329|0|0|0|0|-1|-1|-1;HT=maildocker-contentspam033045207070;MF=anan@sinsegye.com.cn;NM=1;PH=DW;RN=6;RT=6;SR=0;TI=W4_0.2.3_v5ForWebDing_210E10A6_1730881442221_o7001c22i;
+Received: from WS-web (anan@sinsegye.com.cn[W4_0.2.3_v5ForWebDing_210E10A6_1730881442221_o7001c22i] cluster:ay29) at Wed, 06 Nov 2024 16:28:45 +0800
+Date: Wed, 06 Nov 2024 16:28:45 +0800
+From: "=?UTF-8?B?5a6J5a6J?=" <anan@sinsegye.com.cn>
+To: "xenomai" <xenomai@lists.linux.dev>
+Cc: "jan.kiszka" <jan.kiszka@siemens.com>,
+  "=?UTF-8?B?Q2hlbiwgSG9uZ3poYW4=?=" <hongzhan.chen@intel.com>,
+  "=?UTF-8?B?5YiY5p2o?=" <liuyang@sinsegye.com.cn>,
+  "=?UTF-8?B?5a6L5YGl546u?=" <songjianwei@sinsegye.com.cn>,
+  "=?UTF-8?B?5p2O6IOk6aKJ?=" <liyinjie@sinsegye.com.cn>
+Reply-To: "=?UTF-8?B?5a6J5a6J?=" <anan@sinsegye.com.cn>
+Message-ID: <c2b78c66-a2a5-474e-91bf-5c4832763055.anan@sinsegye.com.cn>
+Subject: =?UTF-8?B?WGVub21haSBDb21tdW5pdHkgTWVldC1VcCBpbiBCZWlqaW5nIDExLzI2?=
+X-Mailer: [Alimail-Mailagent][W4_0.2.3][v5ForWebDing][Unknown]
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+x-aliyun-im-through: {"version":"v1.0"}
+x-aliyun-mail-creator: W4_0.2.3_v5ForWebDing_NjATW96aWxsYS81LjAgKGlQaG9uZTsgQ1BVIGlQaG9uZSBPUyAxN181XzEgbGlrZSBNYWMgT1MgWCkgQXBwbGVXZWJLaXQvNjA1LjEuMTUgKEtIVE1MLCBsaWtlIEdlY2tvKSBWZXJzaW9uLzE3LjUgTW9iaWxlLzE1RTE0OCBTYWZhcmkvNjA0LjE=XQ
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 
-
-Hi,
-
-I started a Dovetail branch [1] for the RISC-V port, forward porting
-your series (since it's SMP-enabled already) to 6.12-rc6. The code was
-split in few more patches, including a couple of fixes we need as
-well. The latter may be folded into the core pipeline support later
-on. From that point, we could then pick the upper layer of the Dovetail
-code already ported by Shanmu in order to enable EVL on top.
-
-I recommend enabling the following switches when working on this port,
-so that we can detect any issue with the virtual interrupt state:
-
-CONFIG_PROVE_LOCKING
-CONFIG_PREEMPT_RT
-CONFIG_DEBUG_PREEMPT
-CONFIG_RISCV_ISA_V_PREEMPTIVE
-
-Here we go, so far:
-
-root@homelab-qemu-riscv64:~# uname -a
-Linux homelab-qemu-riscv64 6.12.0-rc6-00145-gb4167b69ed0e #20 SMP PREEMPT_RT IRQ_PIPELINE Mon Nov  4 10:26:04 CET 2024 riscv64 GNU/Linux
-
-PS: I switched from RISC-V: to riscv: in the shortlogs to follow the
-(most) common scheme used so far, which is likely to reuse the name of
-the architecture folder.
-
-[1] https://source.denx.de/Xenomai/linux-dovetail/-/tree/wip/dovetail-riscv?ref_type=heads
-
-Tobias Schaffner <tobias.schaffner@siemens.com> writes:
-
-> Hi all,
->
-> This introduces IRQ pipelining for RISC-V into Dovetail. The patches
-> are on top of v6.11-dovetail-rebase. Feel free to ask for other targets
-> if needed.
->
-> I thought about splitting the patch up into smaller parts, but decided
-> to stick to the structure of the analogous patches of the other
-> architectures. Maybe this will make the rebasing process easier.
->
-> Testing was done in QEMU with IRQ pipeline torture tests, both with and
-> without SMP enabled.
->
-> Changes since v1:
-> * Removed some dovetail specific changes. These will be readded in a
->   later dovetail patch series. Thanks for the kind review @rpm!
-> * Added a patch that guards _TIF_RETUSER with an CONFIG_DOVETAIL ifdef
->   to allow building with IRQ pipelining but without dovetail being
->   implemented.
-> * Fix unneeded reordering in riscv irqflags.h to make the diff nicer.
->
-> Tobias Schaffner (3):
->   dovetail: Guard _TIF_RETUSER with CONFIG_DOVETAIL
->   clocksource/timer-riscv: irq_pipeline: enable pipelined clock events
->   RISC-V: irq_pipeline: add IRQ pipelining core
->
->  arch/riscv/Kconfig                         |   1 +
->  arch/riscv/include/asm/irq_pipeline.h      | 143 +++++++++++++++++++++
->  arch/riscv/include/asm/irqflags.h          |  25 ++--
->  arch/riscv/include/asm/thread_info.h       |   8 ++
->  arch/riscv/kernel/Makefile                 |   1 +
->  arch/riscv/kernel/irq_pipeline.c           |  26 ++++
->  arch/riscv/kernel/smp.c                    |  93 +++++++++++++-
->  arch/riscv/kernel/smpboot.c                |   2 +-
->  arch/riscv/kernel/traps.c                  |  51 +++++++-
->  arch/riscv/mm/fault.c                      |  83 ++++++++++--
->  drivers/clocksource/timer-riscv.c          |  11 +-
->  drivers/irqchip/irq-riscv-aplic-direct.c   |   3 +-
->  drivers/irqchip/irq-riscv-aplic-msi.c      |   3 +-
->  drivers/irqchip/irq-riscv-imsic-platform.c |   3 +-
->  drivers/irqchip/irq-riscv-intc.c           |   2 +
->  drivers/irqchip/irq-sifive-plic.c          |   3 +-
->  include/linux/entry-common.h               |   4 +-
->  17 files changed, 420 insertions(+), 42 deletions(-)
->  create mode 100644 arch/riscv/include/asm/irq_pipeline.h
->  create mode 100644 arch/riscv/kernel/irq_pipeline.c
-
--- 
-Philippe.
+VGhlIFhlbm9tYWkgY29tbXVuaXR5IGlzIHBsYW5uaW5nIHRvIGhvbGQgYW4gaW4tcGVyc29uIG1l
+ZXQtdXAsIGdhdGhlcmluZyB3aXRoIHNwZWVjaGVzIGFuZCBsaXZlIGRpc2N1c3Npb25zLkl0IGlz
+IHNjaGVkdWxlZCB0byBiZSBoZWxkIGF0IHRoZSBJbnN0aXR1dGUgb2YgQ29tcHV0aW5nIFRlY2hu
+b2xvZ3ksIENoaW5lc2UgQWNhZGVteSBvZiBTY2llbmNlcyBpbiBCZWlqaW5nLCBDaGluYSBvbiBO
+b3ZlbWJlciAyNiwgMjAyNC5FdmVyeW9uZSBjYW4gYXR0ZW5kIGZvciBmcmVlIGJ5IHNpbXBseSBy
+ZWdpc3RlcmluZy4gTW9yZSBkZXRhaWxzIHdpbGwgYmUgZm9sbG93ZWQuCgoKWGVub21haeekvuWM
+uuato+iuoeWIkuS4vuihjOS4gOasoemdouWvuemdoueahOiBmuS8mua8lOiusuWSjOeOsOWcuuiu
+qOiuuu+8jArorqHliJLkuo4yMDI05bm0MTHmnIgyNuaXpeWcqOS4reWbveWMl+S6rOS4reenkemZ
+ouiuoeeul+aJgOS4vuihjOOAggrmr4/kuKrkurrlj6rpnIDms6jlhozljbPlj6/lhY3otLnlj4Ll
+iqDvvIzmm7TlpJrnu4boioLlsIbpmo/lkI7lhazluIPjgIIKCgpUaGUgbWVldGluZyB3aWxsIGhh
+dmUgb24tc2l0ZSB0cmFuc2xhdGlvbiBhbmQgcmVjb3JkaW5nIGZvciBzaGFyaW5nIGxhdGVyLgpY
+ZW5vbWFpIG1haW50YWluZXJzIHdpbGwgcHJvdmlkaW5nIHRoZSBsYXRlc3QgbmV3cyBhbmQgcGxh
+bnMgYW5kIGFsc28gd2lsbCBoYXZlIFEmQSBhbmQgb3BlbiBkaXNjdXNzaW9uIHNlc3Npb25zIGFm
+dGVyd2FyZHMuCkluIGFkZGl0aW9uLCB3ZSBhcmUgYWxzbyBsb29raW5nIGZvciBzcGVlY2hlcyBm
+cm9tIHRoZSBjb21tdW5pdHksIGluIGVpdGhlciBFbmdsaXNoIG9yIENoaW5lc2U6Ci1Ib3cgZG8g
+eW91IHVzZSBYZW5vbWFpPwotQXJlIHlvdSBkb2luZyB0cmFuc3BsYW50YXRpb24gb3IgZXh0ZW5z
+aW9uPwotQXJlIHRoZXJlIGFueSBiZXN0IHByYWN0aWNlcyB0byBzaGFyZT8KLVdoYXQgYXJlIHlv
+dXIgZXhwZWN0YXRpb25zIGZvciB0aGUgZnV0dXJlIG9mIFhlbm9tYWk/CgoK5Lya6K6u5bCG6L+b
+6KGM546w5Zy657+76K+R5ZKM5b2V6Z+z77yM5Lul5L6/5LmL5ZCO5YiG5Lqr44CCCuWFtuS4reS4
+gOmhueaXpeeoi+WwhueUsVhlbm9tYWnnu7TmiqTogIXmj5Dkvpvpobnnm67nmoTmnIDmlrDmtojm
+ga/lkozorqHliJLjgIIK5LmL5ZCO6L+Y5Lya5o+Q5L6b6Zeu562U5ZKM5YWs5byA6K6o6K66546v
+6IqC44CCCumZpOatpOS5i+Wklu+8jOaIkeS7rOS5n+WcqOWvu+aJvuadpeiHquekvuWMuueahOa8
+lOiusu+8jOWGheWuueS4reiLseWdh+WPrzoKLSDkvaDmmK/lpoLkvZXkvb/nlKhYZW5vbWFp55qE
+PwotIOS9oOS7rOWcqOWBmuenu+akjeaIluiAheaJqeWxleWQlz8KLSDmnInmnIDkvbPlrp7ot7Xl
+j6/ku6XliIbkuqvlkJc/Ci0g5L2g5a+5WGVub21haeacquadpeacieS7gOS5iOacn+W+hT8KCgpQ
+bGVhc2Ugc2VuZCB5b3VyIHByb3Bvc2FsLCBpbmNsdWRpbmcgdGhlIHRpdGxlIGFuZCBhIGJyaWVm
+IHN1bW1hcnkgdG8KamFuLmtpc3prYUBzaWVtZW5zLmNvbSBhbmQgYW5hbkBzaW5zZWd5ZS5jb20u
+Y24KCgror7flsIbmgqjnmoTmj5DmoYjvvIzljIXmi6zmoIfpopjlkoznroDnn63mkZjopoHlj5Hp
+gIHliLAKamFuLmtpc3prYUBzaWVtZW5zLmNvbSDlkowgYW5hbkBzaW5zZWd5ZS5jb20uY24KCgoK
+SW1wb3J0YW50IGRhdGVzOgotIENGUCBjbG9zZXM6IEZyaWRheSwgTm92ZW1iZXIgOCwgMjAyNAot
+IENGUCBub3RpZmljYXRpb25zOiBXZWRuZXNkYXksIE5vdmVtYmVyIDEzLCAyMDI0Ci0gU2NoZWR1
+bGUgYW5ub3VuY2VtZW50OiBOb3ZlbWJlciAxNCwgMjAyNAotIEV2ZW50OiBOb3ZlbWJlciAyNiwg
+MjAyNAoKCumHjeimgeaXpeacnzoKLSDmj5DmoYjlvoHpm4bmiKrmraLvvJoyMDI05bm0MTHmnIg4
+5pel5pif5pyf5LqUCi0g5o+Q5qGI57uT5p6c6YCa55+l77yaMjAyNOW5tDEx5pyIMTPml6XmmJ/m
+nJ/kuIkKLSDml6XnqIvlhazlkYo6IDIwMjTlubQxMeaciDE05pel5pif5pyf5ZubCi0g5rS75Yqo
+OiAyMDI05bm0MTHmnIgyNuaXpe+8jOaYn+acn+S6jAo=
