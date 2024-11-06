@@ -1,76 +1,151 @@
-Received: from out28-108.mail.aliyun.com (out28-108.mail.aliyun.com [115.124.28.108])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B8371D31BE
-	for <xenomai@lists.linux.dev>; Wed,  6 Nov 2024 08:28:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.28.108
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5932A1DC747
+	for <xenomai@lists.linux.dev>; Wed,  6 Nov 2024 10:16:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1730881738; cv=none; b=Lp3gGW83FPd/1M1TqUWKeKM44OW5sa1ud+GEA26Tvr/jQj7Vqa1SXX4QkNyZcGZh1btSU5Z/glrDWfn1aaA45AWeNtG8sg9wFUHJhU3ePhg2BESkInV9X/Q/zqdJglX9DgAh7Okcz5ULq/6HTTjVG5h1SPcRyrJf96k1ajww0dE=
+	t=1730888169; cv=none; b=qLxHABg/cJcald6fIUmsOM8DA3HXsPuEOFl0H49/7ieXKAdmCszws19HX1gsHVRr4JLvE7ozIdnOFh7Gp0C0EkYRQlL4FO3EBWswIe+b6f6A9QBmgoZeVd3EKplHd09y3J2JEUr1ixOeIB5960omWGBoyxnuC5eppx6Cm7OKEiU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1730881738; c=relaxed/simple;
-	bh=CQZVBQILFO9UFTqLpiNGtgWNstycxtNkBmnEjZ5TulM=;
-	h=Date:From:To:Cc:Message-ID:Subject:MIME-Version:Content-Type; b=KgiRpJCX1FR4rj73fheHe3esUvY+sX4TEcHR0OXwiWybDa6/OM5VzgDsu20A6AOFAhFCAaTrsG5WT+gsZcgynzi630Un0Lxc5n2FC/z9f6FVPHdSHqMKydY93/JftPzKPsKdJ4OrAbqnTVd8nZ17AysoX1Lgc9qWitQJ2kn8BYY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sinsegye.com.cn; spf=none smtp.mailfrom=sinsegye.com.cn; arc=none smtp.client-ip=115.124.28.108
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sinsegye.com.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=sinsegye.com.cn
-X-Alimail-AntiSpam:AC=CONTINUE;BC=0.4281027|-1;BR=01201311R151S30rulernew998_84748_2000303;CH=blue;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0981571-0.101512-0.800331;FP=12059016867819271329|0|0|0|0|-1|-1|-1;HT=maildocker-contentspam033045207070;MF=anan@sinsegye.com.cn;NM=1;PH=DW;RN=6;RT=6;SR=0;TI=W4_0.2.3_v5ForWebDing_210E10A6_1730881442221_o7001c22i;
-Received: from WS-web (anan@sinsegye.com.cn[W4_0.2.3_v5ForWebDing_210E10A6_1730881442221_o7001c22i] cluster:ay29) at Wed, 06 Nov 2024 16:28:45 +0800
-Date: Wed, 06 Nov 2024 16:28:45 +0800
-From: "=?UTF-8?B?5a6J5a6J?=" <anan@sinsegye.com.cn>
-To: "xenomai" <xenomai@lists.linux.dev>
-Cc: "jan.kiszka" <jan.kiszka@siemens.com>,
-  "=?UTF-8?B?Q2hlbiwgSG9uZ3poYW4=?=" <hongzhan.chen@intel.com>,
-  "=?UTF-8?B?5YiY5p2o?=" <liuyang@sinsegye.com.cn>,
-  "=?UTF-8?B?5a6L5YGl546u?=" <songjianwei@sinsegye.com.cn>,
-  "=?UTF-8?B?5p2O6IOk6aKJ?=" <liyinjie@sinsegye.com.cn>
-Reply-To: "=?UTF-8?B?5a6J5a6J?=" <anan@sinsegye.com.cn>
-Message-ID: <c2b78c66-a2a5-474e-91bf-5c4832763055.anan@sinsegye.com.cn>
-Subject: =?UTF-8?B?WGVub21haSBDb21tdW5pdHkgTWVldC1VcCBpbiBCZWlqaW5nIDExLzI2?=
-X-Mailer: [Alimail-Mailagent][W4_0.2.3][v5ForWebDing][Unknown]
+	s=arc-20240116; t=1730888169; c=relaxed/simple;
+	bh=JRUOAMKEVPoiQAk5vl5aw+G47qENAMBxaeoKeDsX8FY=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=kE33eL1DFjuURJ5Ib9ZmeJBICshRIyhdnsTaVZ+fJtCA5agxbrn7M3ee292p8K/4vSr9KliD3jL12sUwEyox83MRwgjWuP80FldXnv/UBh4rGHQKXmiP7CsTTQHHQnCPybPdODU+Mc8OyajNA8M+ouWodCpAP27d82lOuRT4qwo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=RT7oXdnd; arc=none smtp.client-ip=185.136.65.227
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="RT7oXdnd"
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20241106083537b2eb6168d70c81ad3a
+        for <xenomai@lists.linux.dev>;
+        Wed, 06 Nov 2024 09:35:37 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=JRUOAMKEVPoiQAk5vl5aw+G47qENAMBxaeoKeDsX8FY=;
+ b=RT7oXdnd2mgQfTdBVutrgzyAbxGjLhVQ3xr0btb4OJw6v+Kozrj257pC5KdyfVFpU98Gac
+ f169gI54+DgtzZAWUKihuZf6h46D+2IlrtK47zbZd4GaFW5eZ55hjJUaYNN9PVG22HY9Jfu+
+ JThgcsYmzbNn+Q8JO02R2FTLHv2AQGI610jd5p6oamKWur82gIKQrqYmZ1rkRDJ0UxOsV6h+
+ ntCN2gGvpn/0bOhrHvv1NhahrQagtThB4hdg7QJRdilDBpAVHHo3rodAyvraO/3XS/SaWm8l
+ 0U+GR/mdYZ+PFF63G10fClRQtZGuKQm0JzJ9scMMjosbgFwWNsetWkJQ==;
+Message-ID: <a4a2b13bf019e1c2b2d1fa8633f984b5e3068161.camel@siemens.com>
+Subject: Re: Re: hand up when boot
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: =?UTF-8?Q?=E5=AD=99=E6=B6=9B?= <suntaoworks@163.com>
+Cc: xenomai@lists.linux.dev
+Date: Wed, 06 Nov 2024 09:35:36 +0100
+In-Reply-To: <73c9882b.5464.193000a0606.Coremail.suntaoworks@163.com>
+References: <10a77915.2e93.192e07bd1d7.Coremail.suntaoworks@163.com>
+	 <71139a9c193d776b890f11ebb01ae7a3e9dbd7bb.camel@siemens.com>
+	 <73c9882b.5464.193000a0606.Coremail.suntaoworks@163.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-x-aliyun-im-through: {"version":"v1.0"}
-x-aliyun-mail-creator: W4_0.2.3_v5ForWebDing_NjATW96aWxsYS81LjAgKGlQaG9uZTsgQ1BVIGlQaG9uZSBPUyAxN181XzEgbGlrZSBNYWMgT1MgWCkgQXBwbGVXZWJLaXQvNjA1LjEuMTUgKEtIVE1MLCBsaWtlIEdlY2tvKSBWZXJzaW9uLzE3LjUgTW9iaWxlLzE1RTE0OCBTYWZhcmkvNjA0LjE=XQ
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-VGhlIFhlbm9tYWkgY29tbXVuaXR5IGlzIHBsYW5uaW5nIHRvIGhvbGQgYW4gaW4tcGVyc29uIG1l
-ZXQtdXAsIGdhdGhlcmluZyB3aXRoIHNwZWVjaGVzIGFuZCBsaXZlIGRpc2N1c3Npb25zLkl0IGlz
-IHNjaGVkdWxlZCB0byBiZSBoZWxkIGF0IHRoZSBJbnN0aXR1dGUgb2YgQ29tcHV0aW5nIFRlY2hu
-b2xvZ3ksIENoaW5lc2UgQWNhZGVteSBvZiBTY2llbmNlcyBpbiBCZWlqaW5nLCBDaGluYSBvbiBO
-b3ZlbWJlciAyNiwgMjAyNC5FdmVyeW9uZSBjYW4gYXR0ZW5kIGZvciBmcmVlIGJ5IHNpbXBseSBy
-ZWdpc3RlcmluZy4gTW9yZSBkZXRhaWxzIHdpbGwgYmUgZm9sbG93ZWQuCgoKWGVub21haeekvuWM
-uuato+iuoeWIkuS4vuihjOS4gOasoemdouWvuemdoueahOiBmuS8mua8lOiusuWSjOeOsOWcuuiu
-qOiuuu+8jArorqHliJLkuo4yMDI05bm0MTHmnIgyNuaXpeWcqOS4reWbveWMl+S6rOS4reenkemZ
-ouiuoeeul+aJgOS4vuihjOOAggrmr4/kuKrkurrlj6rpnIDms6jlhozljbPlj6/lhY3otLnlj4Ll
-iqDvvIzmm7TlpJrnu4boioLlsIbpmo/lkI7lhazluIPjgIIKCgpUaGUgbWVldGluZyB3aWxsIGhh
-dmUgb24tc2l0ZSB0cmFuc2xhdGlvbiBhbmQgcmVjb3JkaW5nIGZvciBzaGFyaW5nIGxhdGVyLgpY
-ZW5vbWFpIG1haW50YWluZXJzIHdpbGwgcHJvdmlkaW5nIHRoZSBsYXRlc3QgbmV3cyBhbmQgcGxh
-bnMgYW5kIGFsc28gd2lsbCBoYXZlIFEmQSBhbmQgb3BlbiBkaXNjdXNzaW9uIHNlc3Npb25zIGFm
-dGVyd2FyZHMuCkluIGFkZGl0aW9uLCB3ZSBhcmUgYWxzbyBsb29raW5nIGZvciBzcGVlY2hlcyBm
-cm9tIHRoZSBjb21tdW5pdHksIGluIGVpdGhlciBFbmdsaXNoIG9yIENoaW5lc2U6Ci1Ib3cgZG8g
-eW91IHVzZSBYZW5vbWFpPwotQXJlIHlvdSBkb2luZyB0cmFuc3BsYW50YXRpb24gb3IgZXh0ZW5z
-aW9uPwotQXJlIHRoZXJlIGFueSBiZXN0IHByYWN0aWNlcyB0byBzaGFyZT8KLVdoYXQgYXJlIHlv
-dXIgZXhwZWN0YXRpb25zIGZvciB0aGUgZnV0dXJlIG9mIFhlbm9tYWk/CgoK5Lya6K6u5bCG6L+b
-6KGM546w5Zy657+76K+R5ZKM5b2V6Z+z77yM5Lul5L6/5LmL5ZCO5YiG5Lqr44CCCuWFtuS4reS4
-gOmhueaXpeeoi+WwhueUsVhlbm9tYWnnu7TmiqTogIXmj5Dkvpvpobnnm67nmoTmnIDmlrDmtojm
-ga/lkozorqHliJLjgIIK5LmL5ZCO6L+Y5Lya5o+Q5L6b6Zeu562U5ZKM5YWs5byA6K6o6K66546v
-6IqC44CCCumZpOatpOS5i+Wklu+8jOaIkeS7rOS5n+WcqOWvu+aJvuadpeiHquekvuWMuueahOa8
-lOiusu+8jOWGheWuueS4reiLseWdh+WPrzoKLSDkvaDmmK/lpoLkvZXkvb/nlKhYZW5vbWFp55qE
-PwotIOS9oOS7rOWcqOWBmuenu+akjeaIluiAheaJqeWxleWQlz8KLSDmnInmnIDkvbPlrp7ot7Xl
-j6/ku6XliIbkuqvlkJc/Ci0g5L2g5a+5WGVub21haeacquadpeacieS7gOS5iOacn+W+hT8KCgpQ
-bGVhc2Ugc2VuZCB5b3VyIHByb3Bvc2FsLCBpbmNsdWRpbmcgdGhlIHRpdGxlIGFuZCBhIGJyaWVm
-IHN1bW1hcnkgdG8KamFuLmtpc3prYUBzaWVtZW5zLmNvbSBhbmQgYW5hbkBzaW5zZWd5ZS5jb20u
-Y24KCgror7flsIbmgqjnmoTmj5DmoYjvvIzljIXmi6zmoIfpopjlkoznroDnn63mkZjopoHlj5Hp
-gIHliLAKamFuLmtpc3prYUBzaWVtZW5zLmNvbSDlkowgYW5hbkBzaW5zZWd5ZS5jb20uY24KCgoK
-SW1wb3J0YW50IGRhdGVzOgotIENGUCBjbG9zZXM6IEZyaWRheSwgTm92ZW1iZXIgOCwgMjAyNAot
-IENGUCBub3RpZmljYXRpb25zOiBXZWRuZXNkYXksIE5vdmVtYmVyIDEzLCAyMDI0Ci0gU2NoZWR1
-bGUgYW5ub3VuY2VtZW50OiBOb3ZlbWJlciAxNCwgMjAyNAotIEV2ZW50OiBOb3ZlbWJlciAyNiwg
-MjAyNAoKCumHjeimgeaXpeacnzoKLSDmj5DmoYjlvoHpm4bmiKrmraLvvJoyMDI05bm0MTHmnIg4
-5pel5pif5pyf5LqUCi0g5o+Q5qGI57uT5p6c6YCa55+l77yaMjAyNOW5tDEx5pyIMTPml6XmmJ/m
-nJ/kuIkKLSDml6XnqIvlhazlkYo6IDIwMjTlubQxMeaciDE05pel5pif5pyf5ZubCi0g5rS75Yqo
-OiAyMDI05bm0MTHmnIgyNuaXpe+8jOaYn+acn+S6jAo=
+On Wed, 2024-11-06 at 13:54 +0800, =E5=AD=99=E6=B6=9B wrote:
+>=20
+> Thanks for your reply. I am sorry for making you confused. English is not=
+ my mother language.I will try my best to make this question clear. The lin=
+ux kernel is supplying by xilinx instead of standard. the source code site =
+is : https://github.com/Xilinx/linux-xlnx .The kernel config is also supply=
+ing by xilinx.there is no log in console,just like hangs up.I think maybe s=
+ome kernel config disabled by mistake=C2=A0
+>=20
+
+[Adding back the Xenomai List in CC]
+
+Taken from the attachment:
+
+#
+# Serial drivers
+#
+# CONFIG_XENO_DRIVERS_16550A is not set
+# end of Serial drivers
+
+There is no serial driver enabled. That explains why there is nothing
+on the serial console.
+
+As I don't know that board I can not really help here. Suggestion: Try
+to boot up Linux (as provided by the vendor) with serial console
+enabled. If that works - and you can follow the boot process on the
+console - try enabling Dovetail/Xenomai on top. Step by step.
+
+- Linux
+- Linux with Dovetail enabled
+- Linux, Dovetail, Xenomai as co-kernel
+
+I'm not sure if patching Dovetail into this vendor kernel will work
+out. Let's see...
+
+Best regards,
+Florian
+
+>=20
+>=20
+>=20
+>=20
+> At 2024-10-31 19:18:55, "Florian Bezdeka" <florian.bezdeka@siemens.com> w=
+rote:
+> > On Thu, 2024-10-31 at 10:51 +0800, =E5=AD=99=E6=B6=9B wrote:
+> > > dear all,I use linux kernel 5.15.36, xenomai 3.2.4, dovetail 5.15.9
+> > > for zynq 7020 developing. when I open config_smp, it hands up when=C2=
+=A0
+> > > kernel boot.It's ok when i close config_smp or close=C2=A0
+> > > config_xenomai.zynq 7020 uses arm A9 core,so i patch by=C2=A0
+> > > --arch=3Darm.I can't find how to solve it,please help me.Thanks.
+> >=20
+> > Hi,
+> >=20
+> > was this mail/text translated with some online tool? I'm not sure if
+> > I'm able to parse / understand it correctly.
+> >=20
+> > Here comes a try:
+> >=20
+> > Let's start with versions:
+> > - Xenomai 3.2.4
+> > - Dovetail 5.15.9
+> > - Linux 5.15.36
+> >=20
+> > What are you trying to boot up? Linux or Dovetail?
+> >=20
+> > > It's OK when I close config_smp
+> >=20
+> > "close" doesn't make sense here, maybe you mean "disable"? I also
+> > assume that you are referring to the kernel configuration option
+> > CONFIG_SMP.
+> >=20
+> > > or config_xenomai
+> >=20
+> > Another guess: You mean kernel configuration option CONFIG_XENOMAI.
+> >=20
+> > > zynq 7020 uses arm A9 core
+> >=20
+> > Seems to be an ARMv7, so 32 bit processor.
+> >=20
+> >=20
+> > Summary:
+> > You have problems booting up (Linux and/or Dovetail, still unclear)
+> > with CONFIG_SMP and CONFIG_XENOMAI enabled at the same time while all
+> > other combinations (especially CONFIG_SMP and !CONFIG_XENOMAI) work?
+> >=20
+> > We are regularly testing the armv7 support on two machines
+> > =C2=A0- The beagle-bone-black (non SMP)
+> > =C2=A0- qemu (SMP)
+> > so I'm quite sure that the SMP combination works. You might have to
+> > find out if there is any difference in your setup / hardware.
+> >=20
+> > Do you have any additional information available? A boot log taken from
+> > a serial console might help to identify problems.
+> >=20
+> > Best regards,
+> > Florian
+> >=20
+> >=20
+
