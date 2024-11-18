@@ -1,83 +1,93 @@
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+Received: from redirect.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB1D9197A88
-	for <xenomai@lists.linux.dev>; Mon, 18 Nov 2024 10:18:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F02719340E
+	for <xenomai@lists.linux.dev>; Mon, 18 Nov 2024 10:21:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.231
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731925140; cv=none; b=LBSc250uV6Gmkhpt4oq+kx+Hbt1WZ6sgsyTpJfXLghjMHf06wUZBGSMWVQT4tG4sP4piyURMaTdV8a7ML88omIZCtmEEEDuUDiSuOf7RCF5nCr/+pZx8Z+uBWgXKkawlwHW0jAUrkykTiq986BrLg/D1juosYHmLszBsetIKzqM=
+	t=1731925308; cv=none; b=ZlY4vo1weexy1ML+OuLm6fKFHPLOpyVuMqWsHJgqAqgEiXe1NglTiAYikOPBri0KcIscmS6FWJ80Nt1429PNKO7O/g9PxVG4yaLTOaelDkywoZmBFgMrQOpnzR2qCxgpFj4M6hSbBwt0x/aHQaK2oY05v21PQl8i9R0vthzu/7g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731925140; c=relaxed/simple;
-	bh=eZ/wxABG2q2GPYBei2BjrK4jg4RkpcwW63Zv/ZDfntY=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=aElbYEuyVKOJ1UQNRa592B/SfHupIKU95pxUosgug/IfUib2F365v0oumKUiArRka21VabuiDCuJLIKBRVyabQbHayUHvSxa9W9/xRDP505Jvyz65iEFjkaJu86DCe2NwfZI+NzN08I6OYnZsEHsKFLE41eDBiXaYcKw1o0k3Q0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=a7tJrNSx; arc=none smtp.client-ip=185.136.64.228
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1731925308; c=relaxed/simple;
+	bh=EF3kvmiEw0eQboYbu1/2LuH2yAsC3AtrT1inKwHKLMw=;
+	h=From:In-Reply-To:Content-Type:Date:Cc:To:MIME-Version:Message-ID:
+	 Subject; b=PRfus+19ewDVfPRc3EVsNv6AT0hQj4mg59rJ9fDzUsFX4LBKUK1Lnnntk63t9kupWfxUZOLJ4AP3SLaUj7YWMPbBNWEGinKrfbTabKKiSNuRppSCUdd11Bl6FkVtzuNifRsEYAYakmY56L4XVzmZSE76rDUtLgw+VkTs26LMuys=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thom.fr.eu.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=permerror (0-bit key) header.d=thom.fr.eu.org header.i=@thom.fr.eu.org header.b=o4WVRptH; arc=none smtp.client-ip=217.70.178.231
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thom.fr.eu.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="a7tJrNSx"
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 2024111810184636dfa06882fead199b
-        for <xenomai@lists.linux.dev>;
-        Mon, 18 Nov 2024 11:18:46 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=KpWoo0vG3hSX3Zb1XSPBkoWkz//eHOVsp1W1BLNqDhY=;
- b=a7tJrNSx13eX3Egx1pbxdUFN4YeIaM2kbsS1qT5QyS+ESr4PCBO4yfwq7JkMoFGbkTQpN6
- 00AgIErwVgzWdwvjT8tI+gI6OOAKZOm+kdzpM0KxujVdA+1my04pujTYWe0PlAymNaEVtlPZ
- 9IemIq1Z+FKPdt6k3lPlGvx5ioCCYP82yoJRWCiVFZRDQb1vdCF/+vqK1AKiFYA0LnRo4Tr2
- y9bYIaEibrVvbvDSWWikQni+PMu+RuSzWD3h62Lh+7tbOdCxbgH+TqRkneIiJ7aiiUGDKYZS
- WA/hK6zh8RDju1ZO6A8DhYJ7Ri5E566bSMAIGR1Yfc7vHDWdS1vxAQsA==;
-Message-ID: <91f3bdfa29efa0929ede19ec9e2464151f7e5f7e.camel@siemens.com>
-Subject: Re: [xenomai-images][PATCH] libevl: Add build dependencies for r50
- and above
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@lists.linux.dev>
-Cc: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Mon, 18 Nov 2024 11:18:45 +0100
-In-Reply-To: <a0d95b09-b050-48a3-a9fb-68af212ab1ba@siemens.com>
-References: <a0d95b09-b050-48a3-a9fb-68af212ab1ba@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=permerror (0-bit key) header.d=thom.fr.eu.org header.i=@thom.fr.eu.org header.b="o4WVRptH"
+Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
+	by relay11.mail.gandi.net (Postfix) with ESMTPS id B6CE110000A
+	for <xenomai@lists.linux.dev>; Mon, 18 Nov 2024 10:21:35 +0000 (UTC)
+Received: from smtp5-g21.free.fr (smtp5-g21.free.fr [IPv6:2a01:e0c:1:1599::14])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 9123974004E
+	for <xenomai@xenomai.org>; Mon, 18 Nov 2024 10:21:33 +0000 (UTC)
+Received: from mail.thom.fr.eu.org (unknown [82.64.149.25])
+	by smtp5-g21.free.fr (Postfix) with ESMTPS id 531AF5FFB7;
+	Mon, 18 Nov 2024 11:21:33 +0100 (CET)
+Received: from localhost ([127.0.0.1])
+	by mail.thom.fr.eu.org (8.15.2/8.15.2/Debian-22+deb11u3) with ESMTP id 4AIALN8e2717334;
+	Mon, 18 Nov 2024 11:21:27 +0100
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/simple; d=thom.fr.eu.org;
+	s=default; t=1731925292;
+	bh=EF3kvmiEw0eQboYbu1/2LuH2yAsC3AtrT1inKwHKLMw=;
+	h=From:In-Reply-To:Date:Cc:To:Subject;
+	b=o4WVRptHp16Oeh8RMz8iufdn6wfwAfyxyQB8KHJxsM3OL/yatxZv7f9Hp37+FsR9o
+	 AaZyf+jwRf9zbVqaEkJSVbKOx3JrG//bGIOjlKoj6yFkYa6Cr/2l00KEXqqLRcd5VA
+	 /CO4bjd8rTMo+2S1Crq62WafKVUz3jynQL7YQe3WFe+S9T0W5v2KDdfzT0Kp3zyV9z
+	 Y7V/9isfLaS8gWtAz6VrbccMT3U2bS+t0LJr0w/VOOvn1xGjLg6YLEtNPpyG17GUiX
+	 4yMDTIRuJaRIExeYZ8jddPF4XWQQurMienzTKBbAHRHKUPKos7mQuw2neMPh+bO0cI
+	 L8wSrcA9DH22g==
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+In-Reply-To: <95cf1a42-58f9-4319-b2a6-45400bad4c15@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+X-Forward: 217.109.173.233, 194.9.100.101
+Date: Mon, 18 Nov 2024 11:21:23 +0100
+Cc: xenomai@xenomai.org
+To: "Jan Kiszka" <jan.kiszka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Message-ID: <1017-673b1500-29-2c5d8800@223319941>
+Subject: =?utf-8?q?Re=3A?= Switching from xenomai 3.2 IPIPE to xenomai 3.3 Dovetail
+User-Agent: SOGoMail 5.0.1
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.10 at tls-srv-03
+X-Virus-Status: Clean
+Authentication-Results: spool.mail.gandi.net;
+	dkim=fail ("headers rsa verify failed") header.d=thom.fr.eu.org header.s=default header.b=o4WVRptH;
+	dmarc=none;
+	spf=pass (spool.mail.gandi.net: domain of devel@thom.fr.eu.org designates 2a01:e0c:1:1599::14 as permitted sender) smtp.mailfrom=devel@thom.fr.eu.org
 
-On Mon, 2024-11-18 at 09:02 +0100, Jan Kiszka wrote:
-> From: Jan Kiszka <jan.kiszka@siemens.com>
->=20
-> libbpf is needed now to support the networking stack, and that is found
-> via pkg-config my meson.
-                 ^^=20
-Typo?
+Le Lundi, Novembre 18, 2024 10:01 CET, Jan Kiszka <jan.kiszka@siemens.c=
+om> a =C3=A9crit: 
+ 
+> On 18.11.24 09:50, Fran=C3=A7ois Legal wrote:
+> > Hello,
+> > 
+> > running on an Arm v7 cortex A9 platform, I'm trying to switch from =
+xenomai 3.2 (linux 5.4 IPIPE) to xenomai 3.3 (linux 5.15 Dovetail).
+> > 
+> > I can successfully boot my system with linux 5.15 + CONFIG=5FDOVETA=
+IL, but as soon as I enable Xenomai (CONFIG=5FXENOMAI), I got stuck at =
+boot in a do=5Fidle loop. Did I miss anything ?
+> > 
+> > Attached is my config.
+> 
+> Can you factor out from it what the SoC is, if you patched the kernel=
 
->=20
-> Reported-by: Pierre FICHEUX <pierre.ficheux@smile.fr>
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  recipes-xenomai/libevl/libevl.inc | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/recipes-xenomai/libevl/libevl.inc b/recipes-xenomai/libevl/l=
-ibevl.inc
-> index 405be8b..fb82d09 100644
-> --- a/recipes-xenomai/libevl/libevl.inc
-> +++ b/recipes-xenomai/libevl/libevl.inc
-> @@ -17,7 +17,7 @@ DESCRIPTION ?=3D "libevl libraries and tools"
->  SRC_URI +=3D "file://debian"
-> =20
->  DEPENDS =3D "linux-xenomai-4"
-> -DEBIAN_BUILD_DEPENDS ?=3D "debhelper (>=3D 10), meson"
-> +DEBIAN_BUILD_DEPENDS ?=3D "debhelper (>=3D 10), meson, pkg-config, libbp=
-f-dev"
-> =20
->  TEMPLATE_FILES =3D "debian/control.tmpl"
->  TEMPLATE_VARS +=3D "DEBIAN_BUILD_DEPENDS"
-> --=20
-> 2.43.0
+> for it (in the past and now), if you had to adopt Dovetail etc.?
+> 
+> Jan
+
+The SoC is Xilinx zynq 7000. I have custom patches for custom FPGA peri=
+pherals (which most of them have been successfully ported to 5.15).
+
+> 
+> -- 
+> Siemens AG, Technology
+> Linux Expert Center
 
