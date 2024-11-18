@@ -1,114 +1,178 @@
-Received: from redirect.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D933E18E25
-	for <xenomai@lists.linux.dev>; Mon, 18 Nov 2024 08:11:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.231
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B66217BEA2
+	for <xenomai@lists.linux.dev>; Mon, 18 Nov 2024 08:27:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1731917485; cv=none; b=AfhmrJQOvKL3INDnRwZ2V6Tk7ZzMPiHN7tP3WzkXBhqscKXIatjb65EFU9XZxWPZlsKIpCdwXioHSsn3Hpd8+g6d0IhOl3nLC2MkgNRYEpELq5vrcGpKr9ce3jLQieP0DgZY+M/AVIDoZSrYtHtBSjySCXZFuFTNzj03nLc5TH8=
+	t=1731918424; cv=none; b=fafPWHgOjSq6OGMCp0TUQMAhZEMZHqQ/DgqmGWAAHCeZMFC3J1+CRE86LsI1q7UDuqPzR/86zfpAcYEMMinJGGrF8LucV20IQnH+M0aVblcQkiuAUHKglbYhfd9INOHsEJsSlLa0wifE/8JSCN+zlo2R16Azs/HpI3Yk8imANBI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1731917485; c=relaxed/simple;
-	bh=0nvN34kOx/J1HIyqdx4X0kzFLoc3JV4OmZ/NdMTClts=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=KqrhjrTrerBkWgj4bCvAaQwqcf4r2VN6OD+CKq1AdGDSeD1OUiDJcj8dmIZQBuWOZxeOlEIn1l9ZAAP8w3lPjhWCuWQkHQt4v6N+6MTusu7wVMRRRWKauP0aiZDQORWlnndQKDGmW+U+M7h9msQKov1f9sRyINpr4praiRZfA84=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b=J/KuCnMJ; arc=none smtp.client-ip=217.70.178.231
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b="J/KuCnMJ"
-Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
-	by relay11.mail.gandi.net (Postfix) with ESMTPS id 0DDF0100006
-	for <xenomai@lists.linux.dev>; Mon, 18 Nov 2024 08:11:21 +0000 (UTC)
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 385EA74003D
-	for <xenomai@xenomai.org>; Mon, 18 Nov 2024 08:11:20 +0000 (UTC)
-Received: by mail-lf1-x133.google.com with SMTP id 2adb3069b0e04-539f1292a9bso4474210e87.2
-        for <xenomai@xenomai.org>; Mon, 18 Nov 2024 00:11:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile.fr; s=google; t=1731917479; x=1732522279; darn=xenomai.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=khGb3iY5e7qgIubzJlQ+Vl3xOdt6P84x+DjQlk/6K+w=;
-        b=J/KuCnMJheAjMd+fFahbhjZy8JdWUMe9L7BQkhydrMJDuT4Mlu56LIJD+5lSvKOv1e
-         6T9XpFslIP80eSVM2QtCq/UdO326vv/Nfkyl+Rbz+7/bp6h0iBZHWvirSSACvGe83hKL
-         K51IZy2Z8gwRYoh4qC3FCYPHtxqBhmxk+OyMg=
+	s=arc-20240116; t=1731918424; c=relaxed/simple;
+	bh=siRwIscd6hFv9Aen4D/AggBv8Fw07yY+prXRDz4ywok=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=OhEIUM0zVdwR6h7l+jv4Su+lkqrwM5t7Oqw7krmWmCk54Qc5/2JHYAJgOY3VVUlhaYh4zCoBxg3tulL4VyrajbHe2/XE6dchzcLnlecIdWI9BUOMDvOrfDzsfIhLR1DzmEhjD6NcFjT/mpSRvpUYcgxxPktSbd0RQfyAta3IJgE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.167.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-539f8490856so2831767e87.2
+        for <xenomai@lists.linux.dev>; Mon, 18 Nov 2024 00:27:02 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1731917479; x=1732522279;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=khGb3iY5e7qgIubzJlQ+Vl3xOdt6P84x+DjQlk/6K+w=;
-        b=BRfpHVXdu3QIN+EQVByXVaf751NXa3yrO1/MxgLXoJiBab2/6MIDc3Q44aHk5tTIo3
-         enwJvdO+X0e1iAMRTl1dtT/sKkaZyD0Z/ILc2YIw4gSI9oW4DxIykYhBCVrbrjC3QdWs
-         1haPOr9hWGCz2vC6qGSb2jXQ6xe3JT1xETXORZuV+y2/3+PKAip/nzxyW+R7JQXPC+zn
-         WzQEkpA1iRA6B/aBVcMhwGsCiUWdNdJrdMZmN7c4xMFSJ9u0moCfXbs0q36mVoYleuwE
-         SW3S+z1abJivTJlqz5vnydZJG1HYcRZei6VgsEkDqs/dmqNoEN0qJzN30FkCrfdRAQeB
-         4KxA==
-X-Gm-Message-State: AOJu0YyZREbCRt+qGUdMhpXCFFLkiNBINmtg9bDmOuF6tGkIkiYZGgoI
-	73OLn4UI1DOvMCu2W64ojUu1MZmn2r/38QU7afke7Wo75xnojou/aoYQBSKcIZIkMHA9lUeTo/+
-	8U84FZSTVBS8TvlRq91ltZLvgRCAxE1Xwz842djwnYX6EfyesmzzoNQ==
-X-Google-Smtp-Source: AGHT+IGcbuvqFC3WdUxHIT9eWG9hvWP1WwDFbO1xbaQAiS/dSFp3ifvqiMkITZaMo5Q0hEaHFzDR7TFznN5CWiPt+7I=
-X-Received: by 2002:a05:651c:88a:b0:2fe:fec7:8adf with SMTP id
- 38308e7fff4ca-2ff609be35fmr44413151fa.38.1731917479264; Mon, 18 Nov 2024
- 00:11:19 -0800 (PST)
+        d=1e100.net; s=20230601; t=1731918421; x=1732523221;
+        h=mime-version:message-id:date:user-agent:references:in-reply-to
+         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=b00XpXF1E85S2pSTBvTy3oDEp39+7bqdDvI8RLWKQ6Q=;
+        b=VdJ/tDeRxsIv9KGqONDi1Z6NrfXM6GH3KlPS7mlftCtKcbk5v706pifI2BQHfIORUu
+         9eJOTodpUMF0856zAYESBiYnURPy72Eeou53hhVWdfMMQSoPeSkI5OQqf5kBs7S/79Xh
+         arR9L6xcPEY6ELJOHwCVy0xkvvGCHb+e7VA1dySwq3UbTkY6f1W9jvE4nnO23LciPzax
+         1+tDBeUWOiU6NPXOcnOP4C0+l8LCLosy1AvLDbzLWnP20PR29cmUCiDrSaLS0wbdtL/u
+         YCVHehZ9EocUHGyqzzfnNcoAgCGjoDFQOiBjSAcEhlgGVXvcUg37DA/dVEhkInlp2o7v
+         hxrQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWQWH0d5wSp9OZ9eY5elCB2CoVlBQ3gilcsRpcodHsRvq9C2vfOGJGYU7sdGEtjL6Q1BWx0Lnba@lists.linux.dev
+X-Gm-Message-State: AOJu0YzGKoIa/sRyvvsl8XwULEWePjtQksXC2jVH2wfmNxks8+6HdpHE
+	c6ZiMLuGtcGvHKnnm3NVm9VbGX7+RyzBtK+KI0ulYc5eYuruvcAI4ayMpK8g
+X-Google-Smtp-Source: AGHT+IGDQkItLjVjZV4lM0gJN1HeubM2qzmrvTxaSU6/zK1YuqcTXW/iFKpJoUlHd4Cw9gxppC145A==
+X-Received: by 2002:a05:6512:2316:b0:539:e9f8:d45d with SMTP id 2adb3069b0e04-53dab3bfbbamr4333005e87.52.1731918420307;
+        Mon, 18 Nov 2024 00:27:00 -0800 (PST)
+Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-432dab721b7sm146516255e9.8.2024.11.18.00.26.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Nov 2024 00:26:59 -0800 (PST)
+From: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: "Jorge Ramirez-Ortiz, Gmail" <jorge.ramirez.ortiz@gmail.com>,  Tobias
+ Schaffner <tobias.schaffner@siemens.com>,  xenomai@lists.linux.dev
+Subject: Re: [libevl][PATCH 3/4] evl-test: Start evl-test with load by default
+In-Reply-To: <49554ca1-4f91-4d9d-8b40-7561eca99908@siemens.com> (Jan Kiszka's
+	message of "Mon, 18 Nov 2024 08:48:31 +0100")
+References: <20240613134557.4013044-1-tobias.schaffner@siemens.com>
+	<20240613134557.4013044-4-tobias.schaffner@siemens.com>
+	<87jzisrkfo.fsf@xenomai.org>
+	<dbe94d71-1fdf-41d5-bc84-76923a66bc2a@siemens.com>
+	<ZyUJFhSxPyAcfSHI@trex>
+	<49554ca1-4f91-4d9d-8b40-7561eca99908@siemens.com>
+User-Agent: mu4e 1.12.1; emacs 29.4
+Date: Mon, 18 Nov 2024 09:26:55 +0100
+Message-ID: <87zflxj6b4.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <giN3vearN1y6Zs5xQuBxzIuE9sPhO-y12RSvKKFYPIZnLJJW7dN1vmlmEpLBDuSVKuk8qYA3O_I--946KsBwJRceRx2BKlYxkHLaAJic_Ww=@protonmail.com>
-In-Reply-To: <giN3vearN1y6Zs5xQuBxzIuE9sPhO-y12RSvKKFYPIZnLJJW7dN1vmlmEpLBDuSVKuk8qYA3O_I--946KsBwJRceRx2BKlYxkHLaAJic_Ww=@protonmail.com>
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Mon, 18 Nov 2024 09:11:08 +0100
-Message-ID: <CAFc1U0v1O97JkW6oP_CvsT0ZxuPP2s7XEHdXsTu7eQpwab5M8w@mail.gmail.com>
-Subject: Re: Using Xenomai in Medical Devices
-To: Andrew <andrew.penner@protonmail.com>
-Cc: "xenomai@xenomai.org" <xenomai@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Authentication-Results: spool.mail.gandi.net;
-	dmarc=pass (policy=reject) header.from=smile.fr;
-	spf=pass (spool.mail.gandi.net: domain of pierre.ficheux@smile.fr designates 2a00:1450:4864:20::133 as permitted sender) smtp.mailfrom=pierre.ficheux@smile.fr
+Content-Type: text/plain
 
-Hi,
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-A long time ago I did a Xenomai training for GE as they wanted to
-switch from VxWorks to Xenomai (we used the VxWorks skin).
-
-I don't know what happened but they were interested. Some other
-companies use PREEMPT_RT.
-
-Google is your friend, try "xenomai medical device"
-
-https://indjst.org/download-article.php?Article_Unique_Id=3DINDJST9768&Full=
-_Text_Pdf_Download=3DTrue
-
-Regards
-
-
-Le lun. 18 nov. 2024 =C3=A0 08:46, Andrew <andrew.penner@protonmail.com> a =
-=C3=A9crit :
+> [sorry, missed your reply]
 >
-> Hi,
+> On 01.11.24 18:00, Jorge Ramirez-Ortiz, Gmail wrote:
+>> On 13/06/24 17:30:51, Jan Kiszka wrote:
+>>> On 13.06.24 16:16, Philippe Gerum wrote:
+>>>>
+>>>> Tobias Schaffner <tobias.schaffner@siemens.com> writes:
+>>>>
+>>>>> Stress evl with a load command while running the tests. The load command
+>>>>> may be set to an empty string to run tests without stressing the system.
+>>>>>
+>>>>> To align with xeno-test the -l command line argument was used for the load
+>>>>> command. Listing of the unittests can now be done with --list and --List.
+>>>>>
+>>>>
+>>>> Nak. Compat with xeno-test is definitely not a requirement if this means
+>>>> breaking the existing evl command line usage. Besides, --List looks
+>>>> strange as an option. Let's pick a different option for the load command
+>>>> instead.
+>>>>
+>>>>> The load command is moved to its own process group to allow a clean
+>>>>> teardown of the load process with all its subprocesses.
+>>>>>
+>>>>> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+>>>>> ---
+>>>>>  utils/evl-test | 71 +++++++++++++++++++++++++++++++++++++++++++-------
+>>>>>  1 file changed, 61 insertions(+), 10 deletions(-)
+>>>>>
+>>>>> diff --git a/utils/evl-test b/utils/evl-test
+>>>>> index 5c1c3da..fb85f69 100644
+>>>>> --- a/utils/evl-test
+>>>>> +++ b/utils/evl-test
+>>>>> @@ -6,33 +6,79 @@ if test \! -d $EVL_TESTDIR; then
+>>>>>     exit 2
+>>>>>  fi
+>>>>>  
+>>>>> -usage() {
+>>>>> -   echo >&2 "usage: $(basename $1) [-l][-L][-k][-h][-u] [test-list]"
+>>>>> -}
+>>>>> -
+>>>>>  keep_going=false
+>>>>>  do_list=false
+>>>>>  full_path=false
+>>>>>  unittests_only=false
+>>>>> +load_cmd="dohell 900"
+>>>>> +load_cmd_pgid_file="/tmp/evl_test_load_cmd_$$"
+>>>>> +
+>>>>> +usage() {
+>>>>> +   cat >&2 <<EOF
+>>>>> +evl test -h
+>>>>> +
+>>>>> +This help text.
+>>>>> +
+>>>>> +evl test [ -l "load command" ] [ -k ] [ -u ] [ --list ] [ --List ]
+>>>>> +
+>>>>> +Run a basic test/benchmark of evl on your platform, by first starting a
+>>>>> +few unit tests, then running the latency test under the load generated by
+>>>>> +"load-command".
+>>>>> +
+>>>>> +By default, the load command is "dohell 900", which will generate load during
+>>>>> +15 minutes. To generate a more realistic load see dohell help.
+>>>>> +
+>>>>> +This script accepts the -k option to tell the unit test loop to keep
+>>>>> +going upon a failing test. Otherwise evl test stops immediately.
+>>>>> +
+>>>>
+>>>> To be fixed wrt the comment on the previous patch.
+>>>>
+>>>>> +Use -u if you want to skip the latency test and only run the unittests.
+>>>>> +
+>>>>> +Use --list to output all the tests available. --List will print all the tests
+>>>>> +with their full path.
+>>>>> +
+>>>>> +Example:
+>>>>> +evl test -l "dohell -s 192.168.0.5 -m /mnt -l /ltp"
+>>>>> +
+>>>>> +Will generate load including network load using the server at IP address
+>>>>> +192.168.0.5, some I/O under the moint point /mnt, and the LTP testsuite
+>>>>> +installed under the /ltp directory, and use the latency test by measuring the
+>>>>> +timer irq latency.
+>>>>
+>>>> We should use stress-ng or something alike, instead of the obsolete
+>>>> dohell script.
+>>>
+>>> Fact is that dohell does better than stress-ng, at least in the configs
+>>> of the latter that I've seen before.
+>> 
+>> just "dohell -s 192.168.0.5 -m /mnt -l /ltp" ? do you know after how
+>> long (ie, did it take a few hours or just minutes?)
+>> 
 >
-> I am looking into RTOS for medical devices. Since I am fond of the Xenoma=
-i project, I thought I would check if there are any know use cases where it=
- has been used in existing medical devices (name of the device along with t=
-he 'yes, absolutely' would help me convince others.)
+> Yes, I ran what Xenomai 3 also runs, for better comparison. That was for
+> some hours (don't recall exactly anymore). Not just 10 min but also not
+> for a day or longer.
 >
-> Thanks in advance,
->
-> Andrew
->
-> Sent from Proton Mail Android
+> My theory on this: With RT Preempt, it's more effective to stress the
+> common code (and locking) paths like stress-ng is triggering. For the
+> more decoupled co-kernel architecture with way less common locking, and
+> that rather short and not nested, cache load is more effective.
 >
 
+Same conclusion here, this is where the vm stressors may come into
+play. They tend to pound the hardware pretty aggressively, in addition
+with stressors causing a high rate of context switches (L1 flush +
+mandatory hard irqs off section on mmswitch). If we could generate such
+load by using the proper stress-ng stressors, we would only depend on a
+broadly available tool suite which implements state-of-the-art testing
+techniques (Gilles wrote xeno-test 14y ago based on my testing habits
+since 2006 or so, which clearly does not qualify anymore).
 
---=20
-
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source code
+-- 
+Philippe.
