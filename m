@@ -1,145 +1,161 @@
-Received: from redirect.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
+Received: from redirect.mail.gandi.net (relay14.mail.gandi.net [217.70.178.234])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8892B1CCEC6
-	for <xenomai@lists.linux.dev>; Tue, 19 Nov 2024 14:36:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.230
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A7A91CF5E3
+	for <xenomai@lists.linux.dev>; Tue, 19 Nov 2024 14:55:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.234
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732026976; cv=none; b=MS0/lXqodtx3m7UKsJQpQCd0A/lUzBWNeq2yzphzPP4qe9fgR2Qbj2s81RSU8LZ+ft35B9sSbbh/FwDvac4PiQhBhDizsFQ7aEpootG0LWsaHTtnx0tneSkURaoSRQ+AMPorH/2bkumb54D+VKy6PpFoqtn8xJORWbj/lkmKCq4=
+	t=1732028162; cv=none; b=R4O+eJP2GgZThoeRF3xVipNhy6awKecrJM/qBEvT1LSi28ns4jlWS6NTBAfKcztVDFgQXEGh1D8MkpLw+u3KMnoEGqnnGgkVvWx6+eiQxExEJfWEedP2npMenpSzyxB/r0NUQPcFJDzizX3pT0MsXRszgjI3dW1TfMT7g++XT6o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732026976; c=relaxed/simple;
-	bh=F58PlJ+adskaaXr+pYTCISvyZFqvyk4aMqA+knLvDtA=;
-	h=From:In-Reply-To:Content-Type:Date:Cc:To:MIME-Version:Message-ID:
-	 Subject; b=g46mOaGGntjUvBMjVtDVyTzm8KTXOJHeXQ8QshWg9+SiBV73K6cKDItHnCTuSFskF73PrvHNl/Cp3/xDofdg0/xqWVpRmZ6kQ1qqqEcTkhwixWRw0LSHetkkTfdJjdTy2SVGLl2gvRUVPG8ZwHqfGEgL63tAUhBPFdsuchaNhz0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thom.fr.eu.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=permerror (0-bit key) header.d=thom.fr.eu.org header.i=@thom.fr.eu.org header.b=ueNmqUjP; arc=none smtp.client-ip=217.70.178.230
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thom.fr.eu.org
+	s=arc-20240116; t=1732028162; c=relaxed/simple;
+	bh=bfCzCmy+IgvywUcA6SGZRSQnAAgsuAoRKPnWR2sHxn0=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=XnehaNRAyZpmiqIQu9Li50VhpSbyQU4Q7WVxpiu7JR+sa9Qc/FoljBecFkdOnOkHQKLSDzdNu7ReQY/SHfxmK5d+/2M6FbX4k0x1JrmeaZWF63mTqq0psYpXxEYxjAhaWzXMLAfOSGCV0hv8k6Nrwllcj6g10UrmBXvmjDnNHdE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net; arc=none smtp.client-ip=217.70.178.234
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=permerror (0-bit key) header.d=thom.fr.eu.org header.i=@thom.fr.eu.org header.b="ueNmqUjP"
-Received: from spool.mail.gandi.net (spool1.mail.gandi.net [217.70.178.210])
-	by relay10.mail.gandi.net (Postfix) with ESMTPS id 9B38B240003;
-	Tue, 19 Nov 2024 14:36:09 +0000 (UTC)
-Received: from smtp5-g21.free.fr (smtp5-g21.free.fr [212.27.42.5])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 89D61941B36;
-	Tue, 19 Nov 2024 14:36:07 +0000 (UTC)
-Received: from mail.thom.fr.eu.org (unknown [82.64.149.25])
-	by smtp5-g21.free.fr (Postfix) with ESMTPS id 6399260146;
-	Tue, 19 Nov 2024 15:36:07 +0100 (CET)
-Received: from localhost ([127.0.0.1])
-	by mail.thom.fr.eu.org (8.15.2/8.15.2/Debian-22+deb11u3) with ESMTP id 4AJEa4SG2774918;
-	Tue, 19 Nov 2024 15:36:04 +0100
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/simple; d=thom.fr.eu.org;
-	s=default; t=1732026964;
-	bh=F58PlJ+adskaaXr+pYTCISvyZFqvyk4aMqA+knLvDtA=;
-	h=From:In-Reply-To:Date:Cc:To:Subject;
-	b=ueNmqUjPulMe371TdXIrr3wT/6ia+wDi55Anl5CiAwZ6EN+432l86bShwFHsKEKQ7
-	 otumvQXRCHaW9qI/W7zLPx494yR2njUAAnZfZOP4LSImiPNnOonTf4t7+gkh71BLB0
-	 vDDVbCA+MRYCOHSgUWGgKnz/LDxId2BWaBZvh/Gx+GwWdPhHOGHSVy5l4R/k92/Ak8
-	 y8TPRpe5BU+VAvY7BjWVijd4jpJqroCV3AHDteLjn10u6xi94D6xQtFNT2btfc8AHY
-	 qWfrS2UyBVfoa0Hd3qX6b4HnKxwRB+pLFpShSouCm3NKAvu/D4CVWyC+9wM8D0UmLZ
-	 sxIRLmPZR4Oyw==
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-In-Reply-To: <87v7wjed3w.fsf@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-X-Forward: 217.109.173.233, 194.9.98.110
-Date: Tue, 19 Nov 2024 15:36:04 +0100
-Cc: "Julien Aube" <julien.aube@smile.fr>, xenomai@xenomai.org
-To: "Philippe Gerum" <rpm@xenomai.org>
+Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
+	by relay14.mail.gandi.net (Postfix) with ESMTPS id A236D1A000B
+	for <xenomai@lists.linux.dev>; Tue, 19 Nov 2024 14:55:57 +0000 (UTC)
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id DBAE274003A
+	for <xenomai@xenomai.org>; Tue, 19 Nov 2024 14:55:56 +0000 (UTC)
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4314b316495so37253595e9.2
+        for <xenomai@xenomai.org>; Tue, 19 Nov 2024 06:55:56 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1732028156; x=1732632956;
+        h=content-transfer-encoding:mime-version:message-id:date:user-agent
+         :references:in-reply-to:subject:cc:to:from:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=bkP0pLK2CfVkgFX8CftQ1BU7kUynSiIl6Gy9qgjShgQ=;
+        b=wpMW7vhp0WcAAWian9Y9vANlzxNV/pODyGTPuZ+xQshTRdI8hlm5JSSjBdVcOzujz+
+         ox1zWt4eA8PSCvSqlFgHP8IY7ngC1rShjBkPHkUe8M5idG9ltVH7VqtG4oSIHph4b9YN
+         3S16XoNJrymNahTdo8pIBxjltICod0CJHjH2eeUT3W6wypmKPmA6yx0c026RChHm5Eud
+         4VTqZ9/Q1T1PIP89UnTVTNErF9oPiule7gSeBjXWi3eV6hAsn6Cgfq2C3LFJMZx6xgbv
+         BepCXcqw0BvH+uR+WBqmw8kFQ4SZ4ZT9xS8F3W5KsKObxo+PyUWmyOnM/o4jgKou8Jbr
+         Onxg==
+X-Forwarded-Encrypted: i=1; AJvYcCWqAsSmeor4Sltexj3NPeqalt6vVMm6vzZYMK+qF+O3La7MDyJWTYOxDiOdk1/dKl+oTcIC4bkB@xenomai.org
+X-Gm-Message-State: AOJu0Yxvyl3YMYvosEPKmkZrnlIgJssP13KDalt551EQUTopmnqCR1Lf
+	ifLqzo7AIBqh91Z4T0NCxppML97JdHorZA69/n+S7m/1g8OMrXATJ0eCpKav
+X-Google-Smtp-Source: AGHT+IFSf/wNvTUFvqw9QngDE02PfZoDhsVJMGg3HhRyCY9sE1sxeqVVEJO7cWVTKOX6HSNaQ3A09g==
+X-Received: by 2002:a5d:64c8:0:b0:381:f604:3d55 with SMTP id ffacd0b85a97d-38225aaf59cmr13461987f8f.52.1732028156289;
+        Tue, 19 Nov 2024 06:55:56 -0800 (PST)
+Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3822e65cbdasm12523907f8f.7.2024.11.19.06.55.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Nov 2024 06:55:55 -0800 (PST)
+From: Philippe Gerum <rpm@xenomai.org>
+To: =?utf-8?Q?Fran=C3=A7ois?= Legal <devel@thom.fr.eu.org>
+Cc: "Julien Aube" <julien.aube@smile.fr>,  xenomai@xenomai.org
+Subject: Re: Switching from xenomai 3.2 IPIPE to xenomai 3.3 Dovetail
+In-Reply-To: <101a-673ca280-17-7629bb00@147965553> (=?utf-8?Q?=22Fran?=
+ =?utf-8?Q?=C3=A7ois?= Legal"'s message
+	of "Tue, 19 Nov 2024 15:36:04 +0100")
+References: <101a-673ca280-17-7629bb00@147965553>
+User-Agent: mu4e 1.12.1; emacs 29.4
+Date: Tue, 19 Nov 2024 15:55:54 +0100
+Message-ID: <87jzcze0hx.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <101a-673ca280-17-7629bb00@147965553>
-Subject: =?utf-8?q?Re=3A?= Switching from xenomai 3.2 IPIPE to xenomai 3.3 Dovetail
-User-Agent: SOGoMail 5.0.1
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.10 at tls-srv-03
-X-Virus-Status: Clean
 Authentication-Results: spool.mail.gandi.net;
-	dkim=fail ("headers rsa verify failed") header.d=thom.fr.eu.org header.s=default header.b=ueNmqUjP;
+	dkim=none;
 	dmarc=none;
-	spf=pass (spool.mail.gandi.net: domain of devel@thom.fr.eu.org designates 212.27.42.5 as permitted sender) smtp.mailfrom=devel@thom.fr.eu.org
+	spf=pass (spool.mail.gandi.net: domain of philippegerum@gmail.com designates 209.85.128.45 as permitted sender) smtp.mailfrom=philippegerum@gmail.com
 
-Le Mardi, Novembre 19, 2024 11:23 CET, Philippe Gerum <rpm@xenomai.org>=
- a =C3=A9crit: 
- 
-> Fran=C3=A7ois Legal <francois.legal@thom.fr.eu.org> writes:
-> 
-> > Le Mardi, Novembre 19, 2024 10:26 CET, Julien Aube <julien.aube@smi=
-le.fr> a =C3=A9crit: 
-> >  
-> >> Hello,
-> >> 
-> >> Reading this exchange it reminds me of a problem I had a few month=
-s ago 
-> >> on the same platform.
-> >> 
-> >> Here is the thead :
-> >> 
-> >> https://lore.kernel.org/xenomai/6814fa90-015e-91df-6941-db643e4d42=
-29@smile.fr/#r
-> >> 
-> >> 
-> >> Conclusion was that disabling the scutimer(*) on DTS level was eno=
-ugh to 
-> >> restore the correct usage and I did not found
-> >> any bad behaviour after that. The product has passed all the rt-te=
-st 
-> >> afterward.
-> >> 
-> >> 
-> >> (*)
-> >> &scutimer {
-> >>  =C2=A0=C2=A0=C2=A0 /* scutimer is forced to disabled since it doe=
-s not work with 
-> >> Xenomai */
-> >>  =C2=A0=C2=A0=C2=A0 status =3D "disabled";
-> >> };
-> >> 
-> >> Maybe i'm completely off the subject, but maybe it's worth having =
-a look ?
-> >> 
-> >> Julien
-> >> 
-> >> 
-> >
-> > Thanks. That fixes the problem. I'll dig into that driver to try to=
- fix it and submit a patch then.
-> >
-> 
-> This may help:
-> 
-> diff --git a/arch/arm/kernel/smp=5Ftwd.c b/arch/arm/kernel/smp=5Ftwd.=
-c
-> index 8377f1d030c3a..a28f6b7f7eabc 100644
-> --- a/arch/arm/kernel/smp=5Ftwd.c
-> +++ b/arch/arm/kernel/smp=5Ftwd.c
-> @@ -181,7 +181,7 @@ static irqreturn=5Ft twd=5Fhandler(int irq, void =
-*dev=5Fid)
->  {
->  	struct clock=5Fevent=5Fdevice *evt =3D dev=5Fid;
->  
-> -	if (twd=5Ftimer=5Fack()) {
-> +	if (!clockevent=5Fis=5Foob(evt) || twd=5Ftimer=5Fack()) {
->  		clockevents=5Fhandle=5Fevent(evt);
->  		return IRQ=5FHANDLED;
->  	}
-> 
+Fran=C3=A7ois Legal <devel@thom.fr.eu.org> writes:
 
-No noticeable effect here. I tried to dig a little more into this, but =
-I can't find anything.
-What I can tell, is that the TWD interrupts triggers on both cores when=
- hung at boot. TWD registers settings seems OK in terms of prescaler an=
-d everything. By checking with JTAG debugger, I can see that xnintr=5Fc=
-ore=5Fclock=5Fhandler is being called in the TWD service routine (twd=5F=
-handler).
+> Le Mardi, Novembre 19, 2024 11:23 CET, Philippe Gerum <rpm@xenomai.org> a=
+ =C3=A9crit:=20
+>=20=20
+>> Fran=C3=A7ois Legal <francois.legal@thom.fr.eu.org> writes:
+>>=20
+>> > Le Mardi, Novembre 19, 2024 10:26 CET, Julien Aube <julien.aube@smile.=
+fr> a =C3=A9crit:=20
+>> >=20=20
+>> >> Hello,
+>> >>=20
+>> >> Reading this exchange it reminds me of a problem I had a few months a=
+go=20
+>> >> on the same platform.
+>> >>=20
+>> >> Here is the thead :
+>> >>=20
+>> >> https://lore.kernel.org/xenomai/6814fa90-015e-91df-6941-db643e4d4229@=
+smile.fr/#r
+>> >>=20
+>> >>=20
+>> >> Conclusion was that disabling the scutimer(*) on DTS level was enough=
+ to=20
+>> >> restore the correct usage and I did not found
+>> >> any bad behaviour after that. The product has passed all the rt-test=
+=20
+>> >> afterward.
+>> >>=20
+>> >>=20
+>> >> (*)
+>> >> &scutimer {
+>> >>  =C2=A0=C2=A0=C2=A0 /* scutimer is forced to disabled since it does n=
+ot work with=20
+>> >> Xenomai */
+>> >>  =C2=A0=C2=A0=C2=A0 status =3D "disabled";
+>> >> };
+>> >>=20
+>> >> Maybe i'm completely off the subject, but maybe it's worth having a l=
+ook ?
+>> >>=20
+>> >> Julien
+>> >>=20
+>> >>=20
+>> >
+>> > Thanks. That fixes the problem. I'll dig into that driver to try to fi=
+x it and submit a patch then.
+>> >
+>>=20
+>> This may help:
+>>=20
+>> diff --git a/arch/arm/kernel/smp_twd.c b/arch/arm/kernel/smp_twd.c
+>> index 8377f1d030c3a..a28f6b7f7eabc 100644
+>> --- a/arch/arm/kernel/smp_twd.c
+>> +++ b/arch/arm/kernel/smp_twd.c
+>> @@ -181,7 +181,7 @@ static irqreturn_t twd_handler(int irq, void *dev_id)
+>>  {
+>>  	struct clock_event_device *evt =3D dev_id;
+>>=20=20
+>> -	if (twd_timer_ack()) {
+>> +	if (!clockevent_is_oob(evt) || twd_timer_ack()) {
+>>  		clockevents_handle_event(evt);
+>>  		return IRQ_HANDLED;
+>>  	}
+>>=20
+>
+> No noticeable effect here. I tried to dig a little more into this, but I =
+can't find anything.
+> What I can tell, is that the TWD interrupts triggers on both cores when h=
+ung at boot. TWD registers settings seems OK in terms of prescaler and ever=
+ything. By checking with JTAG debugger, I can see that xnintr_core_clock_ha=
+ndler is being called in the TWD service routine (twd_handler).
+>
+> I'm trying a little harder, but don't really know from which angle !
 
-I'm trying a little harder, but don't really know from which angle !
+The issue is as follows:
 
-Fran=C3=A7ois
+When the proxy tick hijacks the timer to hand over its control to
+Xenomai, twd_handler() may be called either from the oob stage upon a
+real tick coming from the hardware, _and_ from the in-band stage as a
+consequence of emulating a common kernel tick, see [1] in the "Under the
+hood" section.
 
-> -- 
-> Philippe.
+The way twd_handler() operates ATM causes the hardware to be sent an ack
+on every invocation, which is wrong wrt the in-band tick emulation,
+which is most likely wrecking the logic afterwards.
 
+[1] https://v4.xenomai.org/dovetail/porting/timer/#proxy-tick-logic
+
+--=20
+Philippe.
