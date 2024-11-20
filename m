@@ -1,195 +1,160 @@
-Received: from redirect.mail.gandi.net (relay14.mail.gandi.net [217.70.178.234])
+Received: from redirect.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45F56211C
-	for <xenomai@lists.linux.dev>; Tue, 19 Nov 2024 17:04:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.234
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73E111A3BD5
+	for <xenomai@lists.linux.dev>; Wed, 20 Nov 2024 13:43:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.231
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732035853; cv=none; b=swA73IIOYpjHmqHrnBv0Aa3RUB7VQ97L6H3JYXFh2x+ng1JWZe2hDzR0vqovNoOeupVrKErTVGT+aSIRvjLfvuVcI77Lw6C5qNpBaSQ3id0s5saox5wsc0zCb+0wldsBrrpccOhdq0ibsNbh4MQGIkripV0CRGIv+3LFmhqhM9g=
+	t=1732110221; cv=none; b=B/OSrq4+uyxS8NsAJUCVbh5TwSF8R2nE9MHxoo6q+TarCtZSwRVKsIjxcDGeE0GVEv35I0IK3AUYrjU9woSKibr1HM3T+4jHJlqQGO1aKPCKS/W2y5to7FGwTyhIOy4aVEPU7dFZlIP8N23kh/lcapLX1tqG9yuSGfo6GwsehKs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732035853; c=relaxed/simple;
-	bh=H0/iIyczg8CvVNNTJ40/UOS+83nRm9MZaJXQh9d3mFk=;
-	h=From:In-Reply-To:Content-Type:Date:Cc:To:MIME-Version:Message-ID:
-	 Subject; b=PgE6I7luh7lSpcduEzaeTUFDPwL7njJ9z013Lczbnr3GTlhfAZdE78oq5nymqriyCa4pLI2Cb66mP3vL5Mw233UKwZOEg9bS80C+TYLqNAFA2SR+q42s39S2NxEXbAIZa4uPczXYYGrbi46q4ig1JcSs35i8fG9wq+6d0ll395I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thom.fr.eu.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=permerror (0-bit key) header.d=thom.fr.eu.org header.i=@thom.fr.eu.org header.b=NfyG8Qmq; arc=none smtp.client-ip=217.70.178.234
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thom.fr.eu.org
+	s=arc-20240116; t=1732110221; c=relaxed/simple;
+	bh=cHG0MV3qGiJBdcaVN6spPL3rDjmCTLBZtBUq/jrBqFw=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=DqLDBV0RzlYNx45LbL/ykyT5d7FNMC4fC0+aVQoB0sPBrpbiVHkjni9KyjiA3YHIBOV9ppMQgiuTO+uRVNzsJrnVuemtJ9p4eD57gc8tnG30DFvTeiOP/U6ILNOhrYCa66zLGdFT1wkn4QK9JPNaiNPXTPAzDqPD/LmnBaFlK1c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net; arc=none smtp.client-ip=217.70.178.231
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=permerror (0-bit key) header.d=thom.fr.eu.org header.i=@thom.fr.eu.org header.b="NfyG8Qmq"
-Received: from spool.mail.gandi.net (spool1.mail.gandi.net [217.70.178.210])
-	by relay14.mail.gandi.net (Postfix) with ESMTPS id 814301A000B;
-	Tue, 19 Nov 2024 17:04:08 +0000 (UTC)
-Received: from smtp5-g21.free.fr (smtp5-g21.free.fr [IPv6:2a01:e0c:1:1599::14])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id B2E20941BB6;
-	Tue, 19 Nov 2024 17:04:07 +0000 (UTC)
-Received: from mail.thom.fr.eu.org (unknown [82.64.149.25])
-	by smtp5-g21.free.fr (Postfix) with ESMTPS id 9313260142;
-	Tue, 19 Nov 2024 18:04:07 +0100 (CET)
-Received: from localhost ([127.0.0.1])
-	by mail.thom.fr.eu.org (8.15.2/8.15.2/Debian-22+deb11u3) with ESMTP id 4AJH41xd2780660;
-	Tue, 19 Nov 2024 18:04:06 +0100
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/simple; d=thom.fr.eu.org;
-	s=default; t=1732035846;
-	bh=H0/iIyczg8CvVNNTJ40/UOS+83nRm9MZaJXQh9d3mFk=;
-	h=From:In-Reply-To:Date:Cc:To:Subject;
-	b=NfyG8QmqDGrdYqZBuEFgEGRb1tVvhr4ikp/jEjhApUR9Ygno4Y5NvYQXQGc2Be9x0
-	 iB5dY1nzxifRtJi79IbAwzB1qllvtbT2qK5j/ApJ3SWUfsYlTLZPttLEAPjz5y9stj
-	 3hG0Ag9ZcZT1lsKW5Q92vlKLbPfGg2cpeFbzleOE4UBe+U4kP72lU8bYBT4TBLOVlj
-	 ByMqGkoJIe9ua5PiupJCP68/opf33UWvVouAdo1Wm4fwMsQRQ5AN6U1YgiwKp9NiqJ
-	 qazWm/0qcv6xnbFrFAUkliGQmB0bln4+2A/Qz3yo9T6oGKFHE2SIq7yA6UKKv6QZje
-	 IMCu8koYbl9Jg==
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
-In-Reply-To: <87ed37dx1z.fsf@xenomai.org>
-Content-Type: text/plain; charset="utf-8"
-X-Forward: 217.109.173.233, 194.9.98.110
-Date: Tue, 19 Nov 2024 18:04:01 +0100
-Cc: "Julien Aube" <julien.aube@smile.fr>, xenomai@xenomai.org
-To: "Philippe Gerum" <rpm@xenomai.org>
+Received: from spool.mail.gandi.net (spool5.mail.gandi.net [217.70.178.214])
+	by relay11.mail.gandi.net (Postfix) with ESMTPS id B605E100003
+	for <xenomai@lists.linux.dev>; Wed, 20 Nov 2024 13:43:36 +0000 (UTC)
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id F36E1D80287
+	for <xenomai@xenomai.org>; Wed, 20 Nov 2024 13:43:35 +0000 (UTC)
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-431688d5127so18163555e9.0
+        for <xenomai@xenomai.org>; Wed, 20 Nov 2024 05:43:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1732110215; x=1732715015;
+        h=mime-version:message-id:date:user-agent:references:in-reply-to
+         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=pQhxwjvWqAh2Ugm1q5owmWj9rezDjrc2wipBQVEzjbg=;
+        b=Mgj6e/GIDzaM0ilCnjlGiv7nGvN1QGkxCnEpX+Cdc7bglharsC41wSpgf+HeTDW3tt
+         Lys1Hi1V0N7xY5GpfXcEFtvlOJmScGGQRxRcYgccEpKGL8oEGTS164pt3PrJzypfmmC0
+         1agICOZc5b/YILFAnEAfXvknLOnbMEAv3l1Ezg5RGljYxdKc7+auTx8ExkaBpZHEzQtO
+         0U0uRkoEvSlYkHx6Y+PW22Qhs83TOrvRin7qOcSOEluypZrK3KNfilSQWgS/6mLCwkpt
+         7uBNVtbBmyAk3dmh6/1YwHVg2gJZep3lPZsqt4sqyFyKYHNLia7IBePxK2Jk7dg0pT78
+         iduw==
+X-Forwarded-Encrypted: i=1; AJvYcCUYGAWR9JBNzaJo2OoJaJDwOhNG2EtHQpIAkZC0sysND6Nh9dNaHOVzoUbcLVJiTmDqTekpCmhh@xenomai.org
+X-Gm-Message-State: AOJu0Yy/T0iyxQrLpT20DsblYMqzdLukCuDEWHXdv3+bDoRF/tPLdm0k
+	3yvO5le7rIs4/BwAIWvGViFjZ3dSA9JisMDYGohjVri/260CpVOm0fxFOWuR
+X-Google-Smtp-Source: AGHT+IEVuCv2r5IE6uZYR8oEqIRSQVo/AU0JUX9WRvAWPFBBx4SW5ZjVth+K6npn9SC3MeQEBrjG8A==
+X-Received: by 2002:a05:600c:4f08:b0:430:54a4:5b03 with SMTP id 5b1f17b1804b1-43348986a08mr23771825e9.6.1732110215300;
+        Wed, 20 Nov 2024 05:43:35 -0800 (PST)
+Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-433b45d17e3sm20248555e9.5.2024.11.20.05.43.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Nov 2024 05:43:34 -0800 (PST)
+From: Philippe Gerum <rpm@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
+Subject: [xenomai4] POSIX API
+In-Reply-To: <afea1670c26d61ccbd18b6a7b609498bb1dfb020.camel@siemens.com>
+	(Florian Bezdeka's message of "Wed, 20 Nov 2024 12:59:35 +0100")
+References: <87ses62bi5.fsf@xenomai.org>
+	<d28b8d0200ef0e3ff63e833b64c2ad00c554e351.camel@siemens.com>
+	<878qthiw8i.fsf@xenomai.org>
+	<afea1670c26d61ccbd18b6a7b609498bb1dfb020.camel@siemens.com>
+User-Agent: mu4e 1.12.1; emacs 29.4
+Date: Wed, 20 Nov 2024 14:43:29 +0100
+Message-ID: <8734jm3try.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <1018-673cc500-3d-5b0c8700@226930393>
-Subject: =?utf-8?q?Re=3A?= Switching from xenomai 3.2 IPIPE to xenomai 3.3 Dovetail
-User-Agent: SOGoMail 5.0.1
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.103.10 at tls-srv-03
-X-Virus-Status: Clean
+Content-Type: text/plain
 Authentication-Results: spool.mail.gandi.net;
-	dkim=fail ("headers rsa verify failed") header.d=thom.fr.eu.org header.s=default header.b=NfyG8Qmq;
-	dmarc=none;
-	spf=pass (spool.mail.gandi.net: domain of devel@thom.fr.eu.org designates 2a01:e0c:1:1599::14 as permitted sender) smtp.mailfrom=devel@thom.fr.eu.org
+	dkim=none;
+	spf=pass (spool.mail.gandi.net: domain of philippegerum@gmail.com designates 209.85.128.42 as permitted sender) smtp.mailfrom=philippegerum@gmail.com;
+	dmarc=none
 
-Le Mardi, Novembre 19, 2024 17:10 CET, Philippe Gerum <rpm@xenomai.org>=
- a =C3=A9crit: 
- 
-> Philippe Gerum <rpm@xenomai.org> writes:
-> 
-> > Fran=C3=A7ois Legal <devel@thom.fr.eu.org> writes:
-> >
-> >> Le Mardi, Novembre 19, 2024 11:23 CET, Philippe Gerum <rpm@xenomai=
-.org> a =C3=A9crit: 
-> >>  
-> >>> Fran=C3=A7ois Legal <francois.legal@thom.fr.eu.org> writes:
-> >>> 
-> >>> > Le Mardi, Novembre 19, 2024 10:26 CET, Julien Aube <julien.aube=
-@smile.fr> a =C3=A9crit: 
-> >>> >  
-> >>> >> Hello,
-> >>> >> 
-> >>> >> Reading this exchange it reminds me of a problem I had a few m=
-onths ago 
-> >>> >> on the same platform.
-> >>> >> 
-> >>> >> Here is the thead :
-> >>> >> 
-> >>> >> https://lore.kernel.org/xenomai/6814fa90-015e-91df-6941-db643e=
-4d4229@smile.fr/#r
-> >>> >> 
-> >>> >> 
-> >>> >> Conclusion was that disabling the scutimer(*) on DTS level was=
- enough to 
-> >>> >> restore the correct usage and I did not found
-> >>> >> any bad behaviour after that. The product has passed all the r=
-t-test 
-> >>> >> afterward.
-> >>> >> 
-> >>> >> 
-> >>> >> (*)
-> >>> >> &scutimer {
-> >>> >>  =C2=A0=C2=A0=C2=A0 /* scutimer is forced to disabled since it=
- does not work with 
-> >>> >> Xenomai */
-> >>> >>  =C2=A0=C2=A0=C2=A0 status =3D "disabled";
-> >>> >> };
-> >>> >> 
-> >>> >> Maybe i'm completely off the subject, but maybe it's worth hav=
-ing a look ?
-> >>> >> 
-> >>> >> Julien
-> >>> >> 
-> >>> >> 
-> >>> >
-> >>> > Thanks. That fixes the problem. I'll dig into that driver to tr=
-y to fix it and submit a patch then.
-> >>> >
-> >>> 
-> >>> This may help:
-> >>> 
-> >>> diff --git a/arch/arm/kernel/smp=5Ftwd.c b/arch/arm/kernel/smp=5F=
-twd.c
-> >>> index 8377f1d030c3a..a28f6b7f7eabc 100644
-> >>> --- a/arch/arm/kernel/smp=5Ftwd.c
-> >>> +++ b/arch/arm/kernel/smp=5Ftwd.c
-> >>> @@ -181,7 +181,7 @@ static irqreturn=5Ft twd=5Fhandler(int irq, v=
-oid *dev=5Fid)
-> >>>  {
-> >>>  	struct clock=5Fevent=5Fdevice *evt =3D dev=5Fid;
-> >>>  
-> >>> -	if (twd=5Ftimer=5Fack()) {
-> >>> +	if (!clockevent=5Fis=5Foob(evt) || twd=5Ftimer=5Fack()) {
-> >>>  		clockevents=5Fhandle=5Fevent(evt);
-> >>>  		return IRQ=5FHANDLED;
-> >>>  	}
-> >>> 
-> >>
-> >> No noticeable effect here. I tried to dig a little more into this,=
- but I can't find anything.
-> >> What I can tell, is that the TWD interrupts triggers on both cores=
- when hung at boot. TWD registers settings seems OK in terms of prescal=
-er and everything. By checking with JTAG debugger, I can see that xnint=
-r=5Fcore=5Fclock=5Fhandler is being called in the TWD service routine (=
-twd=5Fhandler).
-> >>
-> >> I'm trying a little harder, but don't really know from which angle=
- !
-> >
-> > The issue is as follows:
-> >
-> > When the proxy tick hijacks the timer to hand over its control to
-> > Xenomai, twd=5Fhandler() may be called either from the oob stage up=
-on a
-> > real tick coming from the hardware, =5Fand=5F from the in-band stag=
-e as a
-> > consequence of emulating a common kernel tick, see [1] in the "Unde=
-r the
-> > hood" section.
-> >
-> > The way twd=5Fhandler() operates ATM causes the hardware to be sent=
- an ack
-> > on every invocation, which is wrong wrt the in-band tick emulation,=
+Florian Bezdeka <florian.bezdeka@siemens.com> writes:
 
-> > which is most likely wrecking the logic afterwards.
-> >
-> > [1] https://v4.xenomai.org/dovetail/porting/timer/#proxy-tick-logic=
+CCing the list. This is a combined discussion about bringing a POSIX API
+to xenomai4 and getting rid of the --wrap linker trick for xenomai3 in
+the same move.
 
-> 
-> diff --git a/arch/arm/kernel/smp=5Ftwd.c b/arch/arm/kernel/smp=5Ftwd.=
-c
-> index 8377f1d030c3a..194d3cc7ca2c8 100644
-> --- a/arch/arm/kernel/smp=5Ftwd.c
-> +++ b/arch/arm/kernel/smp=5Ftwd.c
-> @@ -181,7 +181,7 @@ static irqreturn=5Ft twd=5Fhandler(int irq, void =
-*dev=5Fid)
->  {
->  	struct clock=5Fevent=5Fdevice *evt =3D dev=5Fid;
->  
-> -	if (twd=5Ftimer=5Fack()) {
-> +	if ((running=5Finband() && clockevent=5Fis=5Foob(evt)) || twd=5Ftim=
-er=5Fack()) {
->  		clockevents=5Fhandle=5Fevent(evt);
->  		return IRQ=5FHANDLED;
->  	}
-> 
+> On Sun, 2024-11-17 at 18:52 +0100, Philippe Gerum wrote:
+>> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+>> 
+>> > I finally managed it to "publish" a branch [1] that holds my tries to
+>> > get rid of the function wrapping in Xenomai 3.
+>> > 
+>> > smokey is already running fine, some TODOs are left. See commit
+>> > messages for details.
+>> > 
+>> > Further tests with valgrind and the gcc sanitizer will hopefully follow
+>> > soon. Seems I have to do some prctl()/syscall() refactorings first.
+>> > 
+>> > I would like to close the gap between Xenomai 3 and 4 as good as
+>> > possible so that customers can easily move forward without touching
+>> > code - ideally.
+>> > 
+>> > Best regards,
+>> > Florian
+>> > 
+>> > [1] https://gitlab.com/Xenomai/xenomai-hacker-space/-/commits/flo/refactor-wrapping?ref_type=heads
+>> 
+>> Ok, I had a look at this code. I think I understood the key aspects of
+>> it. I believe we can do without the trampoline which would make it CPU
+>> independent. At least, I managed to implement the same scheme without
+>> it [1], which eventually provides the very same support than we got with the
+>> linker trick, i.e. for any frob() service from the POSIX API, we would
+>> have:
+>
+> Yes, maybe I can remove the trampoline as well. Will try...
+>
+>> 
+>> - __real_frob() /* original from glibc */
+>> - __wrap_grob() /* a Xenomai implementation in libcobalt/libevl */
+>> - __local_frob() /* a local (user-provided) override of __wrap_frob()
+>> 
+>> __real_frob() would require explicit call via some macro trick like
+>> __STD() with libcobalt. Others would be invoked under the hood via a
+>> plain call to frob(), depending on the insertion of liboverride.so
+>> _before_ libposix.so on the linker command line.
+>
+> Yep. If we could get it flying this way it should be compatible to the
+> Xenomai 3 world. __STD() for libc calls, nothing or __RT() for
+> cobalt/evl calls.
+>
+>> 
+>> I'm unsure the local override is that useful for the average user.
+>
+> Agree, for Xenomai 4 I would like to get rid of the user override.
+> Unnecessary complexity - IMHO. 
+>
+> The situation is different for Xenomai 3. As I can't tell if someone is
+> using that already - I heavily doubt that - I probably should keep the
+> possibility to so. Backward compatibility...
+>
+>> 
+>> Now, this hack would likely be an improvement over the --wrap directive
+>> passed to ld, specifically because we'd not need wrap-link.sh to prevent
+>> POSIX symbols in system libraries from being wrapped. As a matter of
+>> fact, the technique illustrated in [1] relies on the library dependency
+>> order on the link line to hide those symbols from the interposition we
+>> would do. Only tested lightly, but this should work (see the Makefile).
+>
+> I did some tests in this direction as well. The results were promising,
+> but more testing has to prove that.
+>
+>> 
+>> BUT, this does not solve the fundamental issue I still see with these
+>> more or less transparent interposition techniques which --wrap belongs
+>> to as well: they all lack explicitness when it comes to clearly identify
+>> who will handle the call by simply reading the source code. We still
+>> need to understand the build context to figure out, which is a problem
+>> because it's really error-prone, I believe. This is the aspect I'd like
+>> to improve for libevl, if ever possible (maybe it is, I'm on something,
+>> hopefully, but this requires more thought).
+>
+> Happy to hear your thoughts.
+>
+>> 
+>> [1] git@source.denx.de:Xenomai/xenomai4/playground.git
+>> 
 
-No noticeable effect here too.
-I tried to modify the code on my side to "mimick" the behaviour of glob=
-al=5Ftimer without luck.
-
-Fran=C3=A7ois
-
-> -- 
-> Philippe.
-
+-- 
+Philippe.
