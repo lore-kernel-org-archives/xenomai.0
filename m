@@ -1,128 +1,103 @@
-Received: from redirect.mail.gandi.net (relay14.mail.gandi.net [217.70.178.234])
+Received: from redirect.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 183C023AB
-	for <xenomai@lists.linux.dev>; Fri, 22 Nov 2024 13:55:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.234
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09678134A8
+	for <xenomai@lists.linux.dev>; Fri, 22 Nov 2024 13:58:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.231
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732283732; cv=none; b=Cqrs2KeCu/716C2XM+yfJhI7yyJ8VqlBM9nAJxutPzYgODzfDpqKtD/XkLdVuEsNduad/iJEIZ2nnsMi9xKOHptzqE7g9Sf6vMyQh9e/zsr4t3WtM8bwvvY7jfhWcmJvfo8cKGbBef15YCAtcukh4oK6PEzR/Jx8EMFzCvKwcas=
+	t=1732283911; cv=none; b=QhfcNJd5Mj05TiWPzW4sRo+rwb9v0AHtGNoXceJWaEHUP0bzOqdSvksHLVa7ZJprrPkEDIpiBcafP9yhzxIWA01D92yZfYWGI7LX9P50gQ6Cek2VvWZBVipTUQyzNUEPG6z3gQLZReaACPaZQ5EO0d1+EssuiIZIwll0TE4FvGg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732283732; c=relaxed/simple;
-	bh=Me5QAdE9RIVs8T/CBQTXOvgIF/n6rXKzpRcq8JuuX30=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=YdusLSxGIql/Gv5k4dnrD2/H4l8YqBKH3AGSxZh7YusWkTzAg6KKpVoNCaSuzMNYmboonqcylH3kND15LDZPx12a2jzGbAE42jgh9gXd3zi8DV1hE2MKBBmXoGIvmZm63poTtf+7BJgODmyfBCABE0nb6rJohtENK6a8lri3CL8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b=CpBTGOQJ; arc=none smtp.client-ip=217.70.178.234
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr
+	s=arc-20240116; t=1732283911; c=relaxed/simple;
+	bh=3GaX1h1oiOg6hRPBgBBrkDWoNTFOsFInZDZSxYvQUEo=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=BW6nsQdaRGz8pKBfpkJerFbjxUcePZ61TSzCne+DN3g7vSFr4iDGL77VHIdEHpRr7HZKcFqkVilwmuyLhwSbe0v8KoGDm5P/3lhDr+0WJdDmqyP8/aGBjCmUNPQTMPikqyZpgRMIQyTmBdDQFYcaqlQh3mhBCCx2zyV1jzonz5k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net; arc=none smtp.client-ip=217.70.178.231
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b="CpBTGOQJ"
-Received: from spool.mail.gandi.net (spool5.mail.gandi.net [217.70.178.214])
-	by relay14.mail.gandi.net (Postfix) with ESMTPS id 1A4B11A0004
-	for <xenomai@lists.linux.dev>; Fri, 22 Nov 2024 13:55:27 +0000 (UTC)
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 4841ED8106C
-	for <xenomai@xenomai.org>; Fri, 22 Nov 2024 13:55:26 +0000 (UTC)
-Received: by mail-lj1-x235.google.com with SMTP id 38308e7fff4ca-2ffab850d74so2834521fa.0
-        for <xenomai@xenomai.org>; Fri, 22 Nov 2024 05:55:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile.fr; s=google; t=1732283725; x=1732888525; darn=xenomai.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=w42kHkaq3ezg28NpID/Yn0+lIzS4pkkV2WtYitRctZo=;
-        b=CpBTGOQJfRfts6XWamxrF3CaKN2mesMs916MsAKWDfPCNWieIgSrFu7cpMxFwu1/h2
-         ZIqZ18AaGiYxzwwxpTdwRFdUL7enJAS6EEdSHUzknQvTbsNd+3kH6ekdeHGdJ4STVFYw
-         U9a1misjJtKRM50rixxjKPxhLJSg77Dt0mXFM=
+Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
+	by relay11.mail.gandi.net (Postfix) with ESMTPS id 0B2C1100002
+	for <xenomai@lists.linux.dev>; Fri, 22 Nov 2024 13:58:24 +0000 (UTC)
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 541C874003D
+	for <xenomai@xenomai.org>; Fri, 22 Nov 2024 13:58:23 +0000 (UTC)
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-3823eaad37aso2075457f8f.0
+        for <xenomai@xenomai.org>; Fri, 22 Nov 2024 05:58:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1732283725; x=1732888525;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=w42kHkaq3ezg28NpID/Yn0+lIzS4pkkV2WtYitRctZo=;
-        b=KflQVMHpAmykCpdmErj7Hh6A/t+gGstsipph2oTwmNjI+k4itRUc0EJdOn7GWCG0Np
-         Tby60szV0StZKOqs5sMaaYTCzkj/TnKKeKPFf3Gz+9vqreNybC2O4RJMAaCD58UCoaN+
-         SwmNHvSpCg1m80mwK3eAKRfLKXj/VKz4O6faY7QzjziXuBABFNG4d68wUl1kzN3PdXrg
-         CrFEtq8XhNnIoU1VFEuU5/n4A0Em+ALE0ox0AM8oFQAbaVfJ6L8avb/30iwxN4iFHrE1
-         PD8A/BMA82A9cboq1RNkPidAq9iHkpMyLwjSw11Z706URMZZqJJZryyuehS2hgECoHIC
-         wkEQ==
-X-Gm-Message-State: AOJu0YywWFksml8gA4Kax5rzvwu/XFhjVkNLFLP09WkI/y7PSjKNEUpq
-	FmXLUlo8oQjviHFWQ0azPuAlMsv1jpB+KcXKwLGvqwDEKNRtlgXfS68MCgkr/0qd/32Q4fERQAI
-	3TBoNdBHxi5h/wXHNf0evmW46xzqQdEyjGKkzZF7hxHdHmltvb2Iz/A==
-X-Gm-Gg: ASbGnctvdW0bO5JuAl9w96Ck0vxi46poG/kY99Tpv7HAUAhFBASx1VU3L0qTFBQmxa9
-	Ya7Ul6JRgAgFjsuHaH9eDaXP4hFIHGZQMELbueXhMi/CFKeADOcqXiKSQEWimkLsi
-X-Google-Smtp-Source: AGHT+IEMD5MEk7KLsohWof20fEiWWcoUDIM71EnlBEZsVL6BfdRrmGzoXO1S3fb1xgQOwxJ67mhYRrmW/TsQI9QbtrI=
-X-Received: by 2002:a2e:b891:0:b0:2ff:6f2a:8417 with SMTP id
- 38308e7fff4ca-2ff96a406b9mr22650501fa.18.1732283725477; Fri, 22 Nov 2024
- 05:55:25 -0800 (PST)
+        d=1e100.net; s=20230601; t=1732283903; x=1732888703;
+        h=mime-version:message-id:date:user-agent:references:in-reply-to
+         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=f0nCHjz2N6yEQEPOI+OsrPYq/PgyZFu696Jk35aJGQg=;
+        b=pC76O5GHpRuFfuZJTjnPkeLslZeiQ5ovY67gm6AwqUGUpVCWqg4IjTFFp4/uzPp4WZ
+         nLWTSqUo2Mr8U9xQuJXIQrNyd5FkPS6FBwB8WJcL+c+LSKrkxAquXkWpToo+Fos+bKq5
+         7KbVjaV1wNHK6CZlsko9gvPp7ugDgoPZMvcbAzt0wOXRltdOfTFW3kvmyq7LwhJv90n2
+         7Zb+RuZ5dIf2cII8Ra7/46s6Su0Be4ngl1++DuJyFMIeM/TdNvqV/vAuKdPw2QY5Ok1z
+         VuFUxxo5sWHaOGLbDGtRWORpXtZ6cGWsOR0o/xv+Kf65LD93NPhtETLaPklVOGfxfEl9
+         v2fQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWntasmPxcBz3AXe74m6HJwtQv2r9E+0xX76/bN9PIb9DR4xPGsEoHNrI0JG0ErNYmkkPkxb7Iq@xenomai.org
+X-Gm-Message-State: AOJu0YxiYGdle2jzBxScgYsOdajZNQKvnGIQ+BeMHtyofZpIG4iCkb3S
+	wrSq4l8ZhtlOU1sfj18lBw5Nem9dSdcN9w4X6Niz197q9Ar9yDSbVOzUDjpm
+X-Gm-Gg: ASbGnctrrYPzud+PQu9Vt4FaVx/CynIuokpmX7DH+DfdP+u7ANmNOFEdUgSMP7aGT4+
+	7jOoabcKPxxBNz/cPRstPNH5J/xY51DJzXPRWksNAAL1HJoTGi0a8SAGv3o7Qh3LnYlDl+yQQ5s
+	VT2Dnh4bSBArRsRgnBqtHlkRMkCTZ5xpHRJwk+CTOU0amXC68cWryITRYJ/qsx9VN58FTLk7/vQ
+	KClf0ESUgofSLKgRSNczLHKSxZc3Yku4Qk=
+X-Google-Smtp-Source: AGHT+IFGhU/lwufoysjQ1bNhNH10/5AP2Lmx3WDASVraIrO7u9AFX9gfsdYyqe9o+Opr5IdV8AGPwQ==
+X-Received: by 2002:a5d:6d03:0:b0:382:22d6:988c with SMTP id ffacd0b85a97d-3826011336cmr2842435f8f.5.1732283902514;
+        Fri, 22 Nov 2024 05:58:22 -0800 (PST)
+Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3825fad627bsm2473835f8f.12.2024.11.22.05.58.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Nov 2024 05:58:22 -0800 (PST)
+From: Philippe Gerum <rpm@xenomai.org>
+To: Giulio Moro <giulio@bela.io>
+Cc: Florian Bezdeka <florian.bezdeka@siemens.com>,  Jan Kiszka
+ <jan.kiszka@siemens.com>,  xenomai@xenomai.org
+Subject: Re: [xenomai4] POSIX API
+In-Reply-To: <d276fea7-2873-6014-aea3-acced9943f7a@bela.io> (Giulio Moro's
+	message of "Wed, 20 Nov 2024 14:34:56 -0500")
+References: <87ses62bi5.fsf@xenomai.org>
+	<d28b8d0200ef0e3ff63e833b64c2ad00c554e351.camel@siemens.com>
+	<878qthiw8i.fsf@xenomai.org>
+	<afea1670c26d61ccbd18b6a7b609498bb1dfb020.camel@siemens.com>
+	<8734jm3try.fsf@xenomai.org>
+	<d276fea7-2873-6014-aea3-acced9943f7a@bela.io>
+User-Agent: mu4e 1.12.1; emacs 29.4
+Date: Fri, 22 Nov 2024 14:58:21 +0100
+Message-ID: <87jzcve5fm.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAFc1U0uhQg4UBLg=qQb7Lvc72FEg5c1hi+s98hjvqGuuS0D27Q@mail.gmail.com>
- <d22f0f7a-a55b-42f9-bdd0-3827677b57c0@siemens.com>
-In-Reply-To: <d22f0f7a-a55b-42f9-bdd0-3827677b57c0@siemens.com>
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Fri, 22 Nov 2024 14:55:14 +0100
-Message-ID: <CAFc1U0uEVVWnF95Qjsae5su2fHN6S-NGZa-8ufRA9ZS-3LEmxA@mail.gmail.com>
-Subject: Re: LS1046 support
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 Authentication-Results: spool.mail.gandi.net;
-	spf=pass (spool.mail.gandi.net: domain of pierre.ficheux@smile.fr designates 2a00:1450:4864:20::235 as permitted sender) smtp.mailfrom=pierre.ficheux@smile.fr;
-	dmarc=pass (policy=reject) header.from=smile.fr
+	dkim=none;
+	dmarc=none;
+	spf=pass (spool.mail.gandi.net: domain of philippegerum@gmail.com designates 209.85.221.48 as permitted sender) smtp.mailfrom=philippegerum@gmail.com
 
-Yes but they seem to say information can be found from xenomai.org :-)
+Giulio Moro <giulio@bela.io> writes:
 
-The guy talking about Layerscape on the list (Jerry Huang) is from
-NXP, so I will try to contact him.
-
-Regards
-
-Le ven. 22 nov. 2024 =C3=A0 14:39, Jan Kiszka <jan.kiszka@siemens.com> a =
-=C3=A9crit :
+> Thanks for sharing this with the list.
 >
-> On 22.11.24 14:16, Pierre FICHEUX wrote:
-> > Hi,
-> >
-> > According to NXP documents, the LS1046 is supported by Xenomai.
-> >
-> > https://www.nxp.com/docs/en/user-guide/OpenILUG-1.11.pdf
-> >
+>>>> __real_frob() would require explicit call via some macro trick like
+>>>> __STD() with libcobalt. Others would be invoked under the hood via a
+>>>> plain call to frob(), depending on the insertion of liboverride.so
+>>>> _before_ libposix.so on the linker command line.
 >
-> "Note: Xenomai is not supported in the current OpenIL release"
+> I am not sure I have a full grasp of the suggested approach, but I'll
+> share a request for clarification/feature. On Xenomai 3 it is
+> currently possible to avoid link-time wrapping and explicitly calling
+> the `__wrap_func()` version, while regular `func()` calls result in
+> the stock version (equivalent to `__real_func()`). I find this
+> behaviour useful and would like it to be preserved in Xenomai 4. I
+> hope this will still be possible for at least some combination of
+> build flags.
 >
-> But that PDF is from 2021.
->
-> > Xenomai features are supported for LS1021A-TSN, LS1043ARDB,
-> > LS1046ARDB, LS1028ARDB, and i.MX6Q SabreSD. More information can be
-> > found at the Xenomai official website: http://xenomai.org/.
-> >
-> > I don't see it in the official ports (3 or 4) but I've just read some
-> > discussions on the list talking about layerscape.
-> >
-> > https://lore.kernel.org/xenomai/87v8uykfew.fsf@xenomai.org/
-> >
-> > What is the current status of the layerscape boards?
-> >
->
-> You may have to ask NXP. I'm not aware of community efforts, including
-> contributions by NXP.
->
-> Jan
->
-> --
-> Siemens AG, Technology
-> Linux Expert Center
 
+Yes, this will be preserved for x4. The approach I'd like to see should
+prefer explicit over implicit when it comes to wrapping, the use case
+you described falls into this category.
 
-
---=20
-
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source code
+-- 
+Philippe.
