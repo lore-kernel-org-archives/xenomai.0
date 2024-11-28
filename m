@@ -1,43 +1,40 @@
 Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AC3C19EEB4
-	for <xenomai@lists.linux.dev>; Thu, 28 Nov 2024 13:14:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ED5951A29A
+	for <xenomai@lists.linux.dev>; Thu, 28 Nov 2024 13:44:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732799679; cv=none; b=PGM5lfqGK3ZgUbBtu43QdzpyJbA78LScl9PK28zzCmcwV60vReNKz/V43NyulkKzJubL1UFA85zN0k/RoxCMNJv1Ryq7pQFpRSRQHg6GWOQ4ILXMegSDCZVgpAsOS5b/6HXGfcgi47A7vEwBC4Nl+swZJ5+ssQsoHMbkOdkZM/8=
+	t=1732801481; cv=none; b=csccDh/rjLihxoXaWeSVZR/9LbugZcLQ+h69l7uXSEkFpcqTOORq0SNmFCLM1hMXasUDCuqTfIS9NoQ2jw4UUurzoO/iOEsSFhnkBnSfyEPk9TVM1s2PRv7IT138rYWPAoJNJg28DSsSWxEVhm8nJ7odV5ic/xj636XXjHo2VmA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732799679; c=relaxed/simple;
-	bh=xOITRJrbl6O3rdqMBjsQDHn5AZDSU7UBVl/e4bvi+Tk=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=pxz7l+Lg6a+8ITYt0vRSgAOTks6Rs0jwCPVKvxOGpFsIIE1/2b5APQ5KgsrooJXk6PttysV4e2A5CA0X7K1dt+1JBAb27n3La8f0JOScnNW9VGpqeNwTD8sC9GSMjWwH2S3xUo3Xd78VXGH4oCrQ0sEEKgtuTpUcKFfJcFc2koA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=nBCH0zEP; arc=none smtp.client-ip=185.136.65.226
+	s=arc-20240116; t=1732801481; c=relaxed/simple;
+	bh=PHMn6fkpsY25PAToj6DqkT031XRoqWoLzI3dTQLh5Rg=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=lIrnZqpfrMaYahZ5WdtkR63srtfJkbP6Ok46RtwqAKLHAVpH0jzId+Z0CuaN5idMLrlYmmOA1203lQmxG70dwXWiaPey6mcW3hOb3ZlKpKUFIF60LRuZDJBpzNnVAO16wmYEqpQagRRa0Wc1vKffA5CMsE62z5teU0Q7NiM4NTE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=TkwOXVd9; arc=none smtp.client-ip=185.136.65.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="nBCH0zEP"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20241128130416edc08dd3c80f947984
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="TkwOXVd9"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20241128130413ae09a19339a87a7b3d
         for <xenomai@lists.linux.dev>;
-        Thu, 28 Nov 2024 14:04:16 +0100
+        Thu, 28 Nov 2024 14:04:13 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=F9ZZga1pIOOAELsdFU9U0wj2eiQVKdsNuSYovAhFcdQ=;
- b=nBCH0zEPJ8PdNMWSTYRQNwMxOny1ETF/olBKVxhV6X9WSJ9tUX6u+VuVL6gOapAM/ZGuDR
- wCQwgRdRyukzjR/jef2fk2MG35IZ5ahaU88JY2aYNhicQbEFQq/oFMGMuYDcelnJiCOZTJwZ
- /tAKiu2+zj59nmi6t3VFo+1SSMo6a2YU/Vkbo2MT+AiLuj3b/QMjyHqGh4Y/3TKUqhL9cGr7
- fX0uT0c0wY3yNVpIj12WBkGOaL3wMt3seVmdHUevcldD1CWAIlOATEjf0688ElhcB0DbZBBc
- EVZ8hvRiBu2fjtEcs6eH+jeS2rBbHoHlz7sfymtkN8JcslT228VP3pAQ==;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=V+BMAmbuEF3IkSfcy2lK/x9azA103P9VwIBkJsC5J1M=;
+ b=TkwOXVd9OwL7auMuaAr8CrKxARpxQSeobQ/+vE6xpqY3YQ+URLJAlWLVqTJNBgIFtkHXoz
+ vGao3WDmuv/gQn63m15a5z2lnQT3RJxlH3WyAnrwBkhOu4w+fzE/H/6KTD8UvoKGEZnYUQMl
+ zKcOx9P5t/RM/8MX09LFlqgLL0d2p0I2GEpDpwO5NTmZZdhBUENp1hVPYi76ev7o6Bvr5Q0F
+ QfdynKHZSQAuyW39mkY4B7t4cKwczStuFHY836h7p/BKbcAay3GGm70kfnq7TicKmk3xrnsS
+ Cj2DC158JcprYqFYrjF9yXM9VGghYmJwcCYoyV79i77dY6ZdGFdDtN7A==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 	Philippe Gerum <rpm@xenomai.org>,
 	Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH Dovetail 6.1, 5.15, 5.10] x86: irq_pipeline: Raise oob IPIs only for the requested cpumask
-Date: Thu, 28 Nov 2024 14:04:08 +0100
-Message-Id: <20241128130408.3512152-2-florian.bezdeka@siemens.com>
-In-Reply-To: <20241128130408.3512152-1-florian.bezdeka@siemens.com>
-References: <20241128130408.3512152-1-florian.bezdeka@siemens.com>
+Subject: [PATCH Dovetail 6.12, 6.6] x86: irq_pipeline: Raise oob IPIs only for the requested cpumask
+Date: Thu, 28 Nov 2024 14:04:07 +0100
+Message-Id: <20241128130408.3512152-1-florian.bezdeka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -86,15 +83,15 @@ Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/smp.c b/arch/x86/kernel/smp.c
-index d8d7e37d03a8..5903a7c99c20 100644
+index 6c4fb847b4d4..1eb0b67479a2 100644
 --- a/arch/x86/kernel/smp.c
 +++ b/arch/x86/kernel/smp.c
-@@ -276,7 +276,7 @@ DEFINE_IDTENTRY_SYSVEC_PIPELINED(CALL_FUNCTION_SINGLE_VECTOR,
+@@ -280,7 +280,7 @@ DEFINE_IDTENTRY_SYSVEC_PIPELINED(CALL_FUNCTION_SINGLE_VECTOR,
  void irq_send_oob_ipi(unsigned int ipi,
  		const struct cpumask *cpumask)
  {
 -	apic_send_IPI_allbutself(apicm_irq_vector(ipi));
-+	apic->send_IPI_mask(cpumask, apicm_irq_vector(ipi));
++	__apic_send_IPI_mask(cpumask, apicm_irq_vector(ipi));
  }
  EXPORT_SYMBOL_GPL(irq_send_oob_ipi);
  
