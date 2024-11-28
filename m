@@ -1,57 +1,58 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 265BC9463
-	for <xenomai@lists.linux.dev>; Thu, 28 Nov 2024 17:14:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 333D3211C
+	for <xenomai@lists.linux.dev>; Thu, 28 Nov 2024 17:15:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1732814099; cv=none; b=h8Yym04tahUpinwkGkdnmKW7KpeCDWp2/c39kgxl2eOh2WdCxa0kAVKK/eMAfBhJuSqRi+5W7y8n8qj3zUl0sZRQHAbWYKMb7WWZ71j7Ouhn4RDQZlrBx3rCXq1difaOnNEy9Jx84Zlxdcv49i5qIYgbKfAGKtakW216P2h1YdM=
+	t=1732814122; cv=none; b=SxLa1R5AorAWpBfTvt4ffKjRxaBEfWNBu2o79syudj5c4qDGOq3+FzQlpIolby7fw1i/D210Ar/K19jkGwkx4zyOTq+WSbxoPBCAPdAgYnD8v0FJRyHvJTJuYFpG3z0hZgZ2yTv5gbAWq6SeQV2otPq64yeQ9CHzN0EJsIDFzBA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1732814099; c=relaxed/simple;
-	bh=eXkZXbVXnL7m1HgsCQ/wUfJFxHIW4vqYb1Sucz5rVN0=;
+	s=arc-20240116; t=1732814122; c=relaxed/simple;
+	bh=vzI4dOKV/QXNhXO9P86HEac9zGV1NYC8Q9Kxbc9Q1Yc=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=u0Gzu/boy6oWbA/LlQVt+5/B+9wJfiFmFLLcdunQY103Dsee8gKAqW2Uf7crzm30zXpvMbVny5qL9SxcYF9yZEy3qUCwE8lP/Az5sMLu5EgYEQ/FhA0tFLrb9xrSMMiwBKAAKUckzUrFRxnuKCiScBv1/VOXoj9JP7WR8fbkLIo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.46
+	 MIME-Version:Content-Type; b=bhKOGE0vhifBBBFejUTnA/M/oG/9KAaqudrG2YV0mpfVy75+tZ8Sev2aZCM/acqAg475f6TupvHw7SYSOWGxyGSVQMpcA4m6rlnBvpbBpUlbTaIHcKFIQCftlb8i5v57lldS+RYVV9JylDNbpRd4qeGvSXqUKdio7LzFMelL1kI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-434a10588f3so6726505e9.1
-        for <xenomai@lists.linux.dev>; Thu, 28 Nov 2024 09:14:57 -0800 (PST)
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-434a2f3bae4so9752485e9.3
+        for <xenomai@lists.linux.dev>; Thu, 28 Nov 2024 09:15:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1732814096; x=1733418896;
+        d=1e100.net; s=20230601; t=1732814118; x=1733418918;
         h=mime-version:message-id:date:user-agent:references:in-reply-to
          :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=VDmb8a1zqG558dnZMDty9UlozGVIqYJGGfGrwRvgoRg=;
-        b=dmR1HSa+Ttwl0jHlUnA35iegMO2Xq/2i8yEEjKOJ67GUoULYkOrGK1SlGadWQ9jwFj
-         B0ikhZvvPK9EMFin6VtHu2qQ1ci8y8ehSW83akikKYKyhS4k2sfFGjmLaot0WJa2gqCt
-         9Mzcqjs/iL3+oqIrXXd47/ZnwuHEdpMCUr+D5Cfeq/ETBB3ZPv61784Nib01HRq2BvnT
-         t/aUhUZfVJ3oaucUC3lXMTujXh/l9b66jDfZZE6PfZ41bUDm+j1K0A0FUv+NXEmRUErv
-         N9gQ4Ot/GRhHLLxaWmlSt4kbquRbnCU3AJsAlhHCGG10gcAbnK6bbvIOkG5Unvrj9mR1
-         3RDg==
-X-Gm-Message-State: AOJu0YwF+5ZQkI6gbivhV8/iY2qLh3yK6WsEa1Jjf933J6bzMKShO42+
-	58l4yA5Rn2fCpy231OTuuwAdjQoTMlilF7pdeg7MeVxZ6nUO5iU5keiKHg==
-X-Gm-Gg: ASbGncvhKUmK6yYF+PwttSB8K0luYzXYN0mBuoz3sqFQ0IsAaoN7CBSlptPurxC71me
-	IKZ0glaFejqguwYUc56qtoNbBWzSgyyKuYro8FqKrhW6dqZPiarGKedtQ2SipfNeXARErKCTL+G
-	hnqb6UJPYsy4yil4grlniq+7ZnFKKbowjCTDraHxV7yhwoYdRyK90GNYlzvhPVxe7bO+Fm1J2SD
-	Yh7fvuq4LFTX5X1uIoxre2JFwZ4XwWVMak=
-X-Google-Smtp-Source: AGHT+IHKAGgIfC7kEaF/AJZ4PBdKmmPPBmxZqti999pqo/SLlFb2qkv84pLu1H54HiPqRdoV7PmnZQ==
-X-Received: by 2002:a05:600c:b8b:b0:434:9e17:18e5 with SMTP id 5b1f17b1804b1-434a9d4f7famr84569195e9.0.1732814096339;
-        Thu, 28 Nov 2024 09:14:56 -0800 (PST)
+        bh=TB85CFATutznPYULukW69r4LFEquOjFWZfCMcepXbrM=;
+        b=FyEVT/h4HsGMrUwHycFE46kNucaDH2GtmEgSh8AyghUYCgt+/pO0c54jcDrCeZr+7x
+         U/i+DEnlxC+bEPQBok960Yhh/pw9QHyywNqNq+ySsWVStHanqNipOA4ATbA7jn28pUb1
+         IhQgdCNuPwSy4P8xifceLo1KZAN+efkXRGi6XVx9kCahWfB6cgTnbVVCzqok0/1gWo1x
+         2At/zwQMKQGGyiEFcMT24dsOfngFpD7TWdsrNue+d8XkkHvO35YaFRSLq96JVhEhcxLz
+         fko2tNWHt2/rbg79KaXAWZmE1hZpf0X7MnQIWeEOlCQoOIFXKingkt9K99+z0lqk2e1v
+         aBpA==
+X-Gm-Message-State: AOJu0YwYaIMiQsHwQ5MV7G4iGVTnGhT9KELq5++cZGG9SzfsgOUdRkx9
+	NjTCMGMs0Hc+wPAp/UxjQLnAkXWjs6VQuXSPpYSaoagIZGrhq7WH
+X-Gm-Gg: ASbGncuOTIm3awV4/nj11t/45fMnSqvh91q6/fQvE1s9dapjWk2kyYOxolVqE27qgF0
+	AibjDphNDMgqOdMqZAeMWH5ChUxxF2B4YmJ71rBHHj3VR21LWij/vegh2yg88PcSNyKZU4oZdZr
+	3tAI9t1jKkwS7RzwhKc8d4umEs64/nqzozftU8HOyqhd9Gn9W48qrJ/vdsn+R2dWE9Hx2nI+WbR
+	sEt2q4qC67iORn4EyCpGBBnBgvdt4jBjeE=
+X-Google-Smtp-Source: AGHT+IE+zGEhi16+uIBMqcQqWB0udlr0qImenNODfrKSBvy/N1LEkwocsx1lo3cV1PManEZ3IcVM0w==
+X-Received: by 2002:a05:600c:8718:b0:434:a9bd:e67d with SMTP id 5b1f17b1804b1-434a9dbfd6amr72839685e9.13.1732814118157;
+        Thu, 28 Nov 2024 09:15:18 -0800 (PST)
 Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-434aa763aaesm59032855e9.14.2024.11.28.09.14.55
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-434aa74edb1sm60787765e9.3.2024.11.28.09.15.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Nov 2024 09:14:55 -0800 (PST)
+        Thu, 28 Nov 2024 09:15:17 -0800 (PST)
 From: Philippe Gerum <rpm@xenomai.org>
 To: Florian Bezdeka <florian.bezdeka@siemens.com>
 Cc: xenomai@lists.linux.dev,  Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: [PATCH Dovetail 6.12, 6.6] x86: irq_pipeline: Raise oob IPIs
- only for the requested cpumask
-In-Reply-To: <20241128130408.3512152-1-florian.bezdeka@siemens.com> (Florian
-	Bezdeka's message of "Thu, 28 Nov 2024 14:04:07 +0100")
+Subject: Re: [PATCH Dovetail 6.1, 5.15, 5.10] x86: irq_pipeline: Raise oob
+ IPIs only for the requested cpumask
+In-Reply-To: <20241128130408.3512152-2-florian.bezdeka@siemens.com> (Florian
+	Bezdeka's message of "Thu, 28 Nov 2024 14:04:08 +0100")
 References: <20241128130408.3512152-1-florian.bezdeka@siemens.com>
+	<20241128130408.3512152-2-florian.bezdeka@siemens.com>
 User-Agent: mu4e 1.12.1; emacs 29.4
-Date: Thu, 28 Nov 2024 18:14:55 +0100
-Message-ID: <87a5djs2k0.fsf@xenomai.org>
+Date: Thu, 28 Nov 2024 18:15:16 +0100
+Message-ID: <874j3rs2jf.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -100,19 +101,19 @@ Florian Bezdeka <florian.bezdeka@siemens.com> writes:
 >  1 file changed, 1 insertion(+), 1 deletion(-)
 >
 > diff --git a/arch/x86/kernel/smp.c b/arch/x86/kernel/smp.c
-> index 6c4fb847b4d4..1eb0b67479a2 100644
+> index d8d7e37d03a8..5903a7c99c20 100644
 > --- a/arch/x86/kernel/smp.c
 > +++ b/arch/x86/kernel/smp.c
-> @@ -280,7 +280,7 @@ DEFINE_IDTENTRY_SYSVEC_PIPELINED(CALL_FUNCTION_SINGLE_VECTOR,
+> @@ -276,7 +276,7 @@ DEFINE_IDTENTRY_SYSVEC_PIPELINED(CALL_FUNCTION_SINGLE_VECTOR,
 >  void irq_send_oob_ipi(unsigned int ipi,
 >  		const struct cpumask *cpumask)
 >  {
 > -	apic_send_IPI_allbutself(apicm_irq_vector(ipi));
-> +	__apic_send_IPI_mask(cpumask, apicm_irq_vector(ipi));
+> +	apic->send_IPI_mask(cpumask, apicm_irq_vector(ipi));
 >  }
 >  EXPORT_SYMBOL_GPL(irq_send_oob_ipi);
 
-Merged, thanks.
+Merged into 6.1.y, thanks.
 
 -- 
 Philippe.
