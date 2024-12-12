@@ -1,131 +1,91 @@
-Received: from redirect.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CBDD20370B
-	for <xenomai@lists.linux.dev>; Wed, 11 Dec 2024 17:50:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65AB322B8C6
+	for <xenomai@lists.linux.dev>; Thu, 12 Dec 2024 16:38:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1733939435; cv=none; b=mMSBxbaduB8LPm6oJblBQARczUET6nNolcrzKzaQ3jgHC6USY+sChvUj07dbNfpfLFvcXSUmvD0LpZ+jm6Ui72QHsl5+7/oRVJyV+34CW1ipCgAH9D+YTtS7tggtwTq4XcYn+1eLQJzI/l/E1tbMglvouRK4al0Hi8HCVqpNDuQ=
+	t=1734021528; cv=none; b=Nc93y/Ub8X4BT+dt/PNMzqAlK1w4Tw6U0GUq7PTMU9zlOazTO4KP2R8wH1qYGjc2u2QYxhu5IGDN5RgEGa5mFhQaMQs7fpfj6MWvSgMePFJdWFI5My2JVc1cYf1koB2rxXyrLf8Sg1sSlLkmkV9IXx00GQ5J7MuLZl9z/wfHgck=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1733939435; c=relaxed/simple;
-	bh=R8+/yc5UAuLBYUF66aOrQw4jLKZEE9/+1PxHK0jFmfE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=duzIwkE3fSDOJ7wos6H3rKz70nPd8GYR19RkG0vHK3TGElPl00Y3KtP7EnMAhWabWb6oxLjN3pa/XpAvxY5/VPFA2JSPcQy1oWqHHgDl9pbu++znbOjf1Y2saT4xLPMCTKhOwkY5axHk162dFH8Cfp27LvosuoJCZ03fRtD6Ubk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b=djcmai+N; arc=none smtp.client-ip=217.70.178.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
+	s=arc-20240116; t=1734021528; c=relaxed/simple;
+	bh=yGbeYWlLCt/rP4yAM/4HUq014HT6U4tCVs7CYegksuA=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=jfTh/NQQE6/5z6bZ/B0TGVgeDe7tQ4fq0Z7dMV11AKtdKq7uNc9zLuQ11kc4n1Mh2Jm+QqJkNzAg8SYvZR7bm/P1HA0/9N7zMIIeHGHvi0IOER6JIK3IqcLHTlcfJtg60l8N3XW9X9ayInbjKIcx8y8SjLxmpJxmX2XqoKAzipw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DM19Mjcz; arc=none smtp.client-ip=209.85.210.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b="djcmai+N"
-Received: from spool.mail.gandi.net (spool4.mail.gandi.net [217.70.178.213])
-	by relay12.mail.gandi.net (Postfix) with ESMTPS id 0309C200008
-	for <xenomai@lists.linux.dev>; Wed, 11 Dec 2024 17:50:29 +0000 (UTC)
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 3644D7803D1
-	for <xenomai@xenomai.org>; Wed, 11 Dec 2024 17:50:28 +0000 (UTC)
-Received: by mail-lj1-x233.google.com with SMTP id 38308e7fff4ca-2ffa8df8850so70129281fa.3
-        for <xenomai@xenomai.org>; Wed, 11 Dec 2024 09:50:28 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DM19Mjcz"
+Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-728d1a2f180so668048b3a.1
+        for <xenomai@lists.linux.dev>; Thu, 12 Dec 2024 08:38:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile.fr; s=google; t=1733939427; x=1734544227; darn=xenomai.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=DrFKiLTjzmZuBgrbYAiFQaDGn8XrXNH9NjNmrsIJSdM=;
-        b=djcmai+N4+A8vN20CMqFvW8zbJdgJu3n24jKAu9HCrWtduvONRy6as7RLOMu0UEVeo
-         tlliVd8uiEPmUl3+nx0N4FJG6D7bFeHAyxcqBGwZHQgL8Kjz/HsSadCowZ9OMpkBjZaW
-         HqHUgTO+GLuB91+QqPs5L3lg+trET69rpzmJc=
+        d=gmail.com; s=20230601; t=1734021526; x=1734626326; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=TsB17zD4hddsJALy3CMvjXUqx0M463/u3nhYNHp7svg=;
+        b=DM19Mjczy9pWghatEHJYAmjUFjboKLKMPQD1UsQ8X74OW/+la3rqFdvss2OkSjtnLi
+         IPvU2G6xKbj7JPS833fWBKKlvP4RBy5RJ5KUWaImHfKsEy5nr2cQkZQqCJRS9B0/y1v9
+         hRBrFQnF7wGKb+fov7fFLu4VwqUhMLzJ5iTSMEnf9/kiLQUly9k+gq+8o4iS+Zc5oMYv
+         MvN7CAx/y7Id3Q4zFt6Kf1vRlO8yr16i+WJBIYWQxuM5Vpy6OPFnuUWQf9V9OaiMLQ8g
+         6R1qL7qIO8qlmIhEcWw18S1fAzauPku7cZN2ygZfUeD51itzs9OYKK+tMsXJJFThTogj
+         tXXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1733939427; x=1734544227;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=DrFKiLTjzmZuBgrbYAiFQaDGn8XrXNH9NjNmrsIJSdM=;
-        b=AD+7/7zhl/eprwEsc1ndLx5QWdQ4NILBsf782KyfT25Fj1kSChS8oriKPLvuGk8dE6
-         1DCHEJtUyi9FEJit+cj/LaVnmuhv1O4bueLA6lecQjCJ9UVvjeUeZVlf1v30Ktzk+M9P
-         2Gfz10SVK9SZLzI9GpmbHjqs0Uw6MjGDzQuaF067lGYfL3clhE/Gt5vdzXyaV1Df19Hl
-         qJHq0hZSGqrcp6QGJy0qBRj77o5W/Co4sJNLIifCmwWZphE7tjEwHV3uP83cyWCXh8lD
-         rKJJxr9OOJSoSYgowCrUyXXs13YDOvsvX8NxZIGhWH8xnd/CMf92BIMQdrLmgOS6rak8
-         8/LA==
-X-Gm-Message-State: AOJu0YwHI0qwIILdJvcScmalGE2Mba74JPnzAuELMra/XVZxsfYNUIHA
-	X5hnZdRs8okL3/1zCcARppxOYQcRjjznM+zx2X+4X/3mRwnmfvMmtB1lIC+aYOyrGJ9cMIiLjoC
-	Kl9S9Xr7HeTgYHY4FNlfeLxLDqCOERZk2itsu681MgTdHx37lXZY=
-X-Gm-Gg: ASbGncvwemJVBiPbqAytZt79URGAY2WBwq4dVe3dk8PCyqgJMKYBOH7MmArTNm/NAVK
-	hg0nLi8tRqJ787fPSKQEZDGT5gvVsYXSTDGjGJutFi2WEQzsiXbzo0u6+96H1nHh9KvEt
-X-Google-Smtp-Source: AGHT+IHhA6RzCWPY5Cy8FBfWo9CkXevFmEP92UMKTMCrrdnrCRR1MXGbOEwolyJuppFPnroboU8Wb7GwgnK5V0ZaZyg=
-X-Received: by 2002:a2e:bc94:0:b0:300:2a48:fb65 with SMTP id
- 38308e7fff4ca-3024a20f6a1mr793861fa.18.1733939427360; Wed, 11 Dec 2024
- 09:50:27 -0800 (PST)
+        d=1e100.net; s=20230601; t=1734021526; x=1734626326;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=TsB17zD4hddsJALy3CMvjXUqx0M463/u3nhYNHp7svg=;
+        b=nd4hyVZKfwTjX9LJkv9YGcIe7kg9IBDQNDFzKvkr12Un5qTbr1DEf8seaoMhfwV/Np
+         pLQEsS7DPdWWHKWKqfS3bP4UFotQA6zvSsSbUyqSZqthxxLGeKaDgoh9CYjaVLs565nd
+         sUYCcxwXEd6+T79a1FPpHc8A7rM1q2v7WoethBBVoOMpvidMu0wjRTKbdr2VkyErbOtm
+         luyymhzKNXIfXVk4TWtsmT7/XxrzyyOvhKm9LixvB7JxC792jPiOhy/qtHbuJtPFx/Ki
+         WfQoBo64z9LWMAYK2SlSmWjOiEp3oIkUd34J+hSa86b70ky+q2W7bZdzJV8ILb7X8ki1
+         nRqA==
+X-Gm-Message-State: AOJu0YzNTTNX1kghqXpQAHc394VtSRtUeIOZyvtCD2xmppyvElzOZvGS
+	hEB+dBl7vNIALJIO6oX0gsMCdQv0KlMVnsnhHHlvwQmFyVGGuG+bhhterQOj
+X-Gm-Gg: ASbGncuwYkV2khOUZppykEWIQcW3Zd+M5wTfZUWlRRlSgzwbkD4h9rYlftZm4Dp+1bS
+	LyBSQa6rTX1BNU0rfiAwphwqX2Y3Vsh5CY0asWjxvFwpLmpTWgbZ3+5wZxMG2c8KbB3rEj4ztkx
+	QZjeaZk04O2fSTAS6OPgb+OyKfIpzJXrCMeM225BjIRkxqZYd/c6rIPHxVfQGwtB5HkXUio25j9
+	DpLxth1QAKNgLtFFnsW9z77YAOwTju514Z4sz1in4O8IG4qOc87cAFnDId69pMEDUZdfdqOrp69
+	2WIRUJc=
+X-Google-Smtp-Source: AGHT+IGQegSvfdiWvPbQZBNZVoEpDOrS7XNZI9RQ6DAMfzwxu3VzxolWywXKa4oRXCNVQ//S1YEEBA==
+X-Received: by 2002:a05:6a00:4f92:b0:724:db17:f975 with SMTP id d2e1a72fcca58-72907e6c1fcmr1192503b3a.12.1734021525688;
+        Thu, 12 Dec 2024 08:38:45 -0800 (PST)
+Received: from 43c7c7756ed8.tail12dc50.ts.net ([223.72.120.229])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-725e7c98efbsm8294896b3a.186.2024.12.12.08.38.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Dec 2024 08:38:45 -0800 (PST)
+From: shannmu <shanmu1901@gmail.com>
+To: xenomai@lists.linux.dev
+Cc: shannmu <shanmu1901@gmail.com>
+Subject: [PATCH 0/1] *** Simplify RISC-V IPI code ***
+Date: Thu, 12 Dec 2024 16:38:36 +0000
+Message-Id: <20241212163837.326938-1-shanmu1901@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAFc1U0uhQg4UBLg=qQb7Lvc72FEg5c1hi+s98hjvqGuuS0D27Q@mail.gmail.com>
- <d22f0f7a-a55b-42f9-bdd0-3827677b57c0@siemens.com>
-In-Reply-To: <d22f0f7a-a55b-42f9-bdd0-3827677b57c0@siemens.com>
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Wed, 11 Dec 2024 18:50:15 +0100
-Message-ID: <CAFc1U0tWPyn3NS6L1JZBkhwhM9FeycVAnTB9KkR5LoHf-uki8w@mail.gmail.com>
-Subject: Re: LS1046 support
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-Authentication-Results: spool.mail.gandi.net;
-	dmarc=pass (policy=reject) header.from=smile.fr;
-	spf=pass (spool.mail.gandi.net: domain of pierre.ficheux@smile.fr designates 2a00:1450:4864:20::233 as permitted sender) smtp.mailfrom=pierre.ficheux@smile.fr
+Content-Transfer-Encoding: 8bit
 
-Hi,
+RISC-V is different from aarch64. AArch64 has SGI0-15 and use
+SGI0-7 to send IPIs, so we introduced a feature that we handle
+inband ipis multiplexed over SGI0. But RISC-V only has one register
+to inform IPI and the ipi_types are recorded in the PER_CPU variables,
+which can store `sizeof(atomic_t)` bits. So we don't need to use
+the same way to send IPIs. We can simplify the code by unifying the
+IPI handling code and sending code for oob and inband ipis.
 
-Some news about my test.
+shannmu (1):
+  riscv: irq_pipeline: simplify the send and handle operation for ipis
 
-As the LS1046ARDB is supported by the mainline kernel, it was quite
-easy to make it run with linux-dovetail :-)
+ arch/riscv/include/asm/irq_pipeline.h |  18 +++--
+ arch/riscv/kernel/sbi-ipi.c           |  10 ++-
+ arch/riscv/kernel/smp.c               | 102 ++++++++------------------
+ drivers/clocksource/timer-clint.c     |   8 ++
+ 4 files changed, 59 insertions(+), 79 deletions(-)
 
-regards
+-- 
+2.34.1
 
-
-Le ven. 22 nov. 2024 =C3=A0 14:39, Jan Kiszka <jan.kiszka@siemens.com> a =
-=C3=A9crit :
->
-> On 22.11.24 14:16, Pierre FICHEUX wrote:
-> > Hi,
-> >
-> > According to NXP documents, the LS1046 is supported by Xenomai.
-> >
-> > https://www.nxp.com/docs/en/user-guide/OpenILUG-1.11.pdf
-> >
->
-> "Note: Xenomai is not supported in the current OpenIL release"
->
-> But that PDF is from 2021.
->
-> > Xenomai features are supported for LS1021A-TSN, LS1043ARDB,
-> > LS1046ARDB, LS1028ARDB, and i.MX6Q SabreSD. More information can be
-> > found at the Xenomai official website: http://xenomai.org/.
-> >
-> > I don't see it in the official ports (3 or 4) but I've just read some
-> > discussions on the list talking about layerscape.
-> >
-> > https://lore.kernel.org/xenomai/87v8uykfew.fsf@xenomai.org/
-> >
-> > What is the current status of the layerscape boards?
-> >
->
-> You may have to ask NXP. I'm not aware of community efforts, including
-> contributions by NXP.
->
-> Jan
->
-> --
-> Siemens AG, Technology
-> Linux Expert Center
-
-
-
---=20
-
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source code
