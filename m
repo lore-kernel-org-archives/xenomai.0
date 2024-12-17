@@ -1,148 +1,148 @@
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E2BE1F543A
-	for <xenomai@lists.linux.dev>; Tue, 17 Dec 2024 14:26:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1645C1F668C
+	for <xenomai@lists.linux.dev>; Tue, 17 Dec 2024 14:40:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1734445598; cv=none; b=XbamTvHO5enjX6UerS3qdHuKejsohX1j7tnnPhbb083YASa42aJJ8nmydUQ/s7ss8NCQL9VSoNBO4YZkeFiPXwjsLRFiNmbiARg39Ct1qRHKDPv0ELcNGpVtoDaV0Jsa/a3Q9UuD55dy930cXj6ciIzw/7EsT9zk2aBnv6mJQqg=
+	t=1734446423; cv=none; b=n2EROD75u+Z1O+kt0x6tRkdjQJjV0q0OmVJiLxnGJ1RjaHxnmzjTC/MqSfgtSyH0Tag5Sx5hvFR7H6zSIwv+E6FzcfGNbsSyg06x9hlp4cKqqQpvODM0BvCCsm8Bf7jF76Gn0qfwYU4uir9xYTouYBDvnv3xR+5cv0D7YQst+L0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1734445598; c=relaxed/simple;
-	bh=QryXVE9PgvcLYhLBQ0/xAzNvp1hHCyDBtEjFe/gAPMY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=XUuM4ByNJWSmle1hbBLtpilnU98j8n6vMsTMvycSJIWHfs5q+7MuWLED7+tYGUt3KSQ9pqukiggmZNmJ1QCVCByk1Og6UQD+T1Gwpoo5lpyR50Pk7cOKH5v54Wn/wGkxI7G6jNRe9HVSxF4J9ef4lIpVM8FJHCFPbH3DGtP8UG0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=g5Lsd/Q4; arc=none smtp.client-ip=209.85.167.54
+	s=arc-20240116; t=1734446423; c=relaxed/simple;
+	bh=lmFZaaPADlt9sYmCAS8O271XQ11QPZCYstaGYpxoxE0=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=ntP19uteUI1Ic7o//xjfMxlVmL2Hti9yoD9cTvyXJneyVl3E3uTyvN4okUlH9pOdIPVjhFB1N0NKpkL5vQG951M+R6CaRSLJBJx71P/02nGmYZcbT11uXMrR0JahMy9SFgYDlNsORNURoPo4f499I1gPo6TjC0j7yh0Ke9DTLcs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DoEDqaS2; arc=none smtp.client-ip=209.85.210.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="g5Lsd/Q4"
-Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5401bd6cdb4so5596502e87.2
-        for <xenomai@lists.linux.dev>; Tue, 17 Dec 2024 06:26:36 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DoEDqaS2"
+Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-725ef0397aeso4792710b3a.2
+        for <xenomai@lists.linux.dev>; Tue, 17 Dec 2024 06:40:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1734445595; x=1735050395; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=4g0yuznATNrlHst/Ztl5TTNpUVHbyLsu4KHUhcgl8IY=;
-        b=g5Lsd/Q4ayHwfg2apnyQZKO5BMoqQf/peTf7o7YilNLI6RDhfHEX5rxm2X3Pm380hW
-         iwahlFw5PxgH/LSEXzZ7P10T6UQLEfR4gt6K+RDZUCtAUSqNhvxdaHaI37Ph953o3XM4
-         mueB54dBWvq50060ihwbwKUfZA+DAr25/rbkxl22yMHP5S7hF+49ZdRGYNmbUCVkbig+
-         rnz5Fz3JEDVFN+XeRbbZY3cKp+lY5uRUU4jR9iRITZVqiUCXY0XhhKri8WlmW172Sw13
-         fKls1d5ODEQ7d1JayVnWEoGCL4skHS2WUMgKHqVg7Gj2tys/LUJgJkSHr679L3TzM3Fg
-         I3hQ==
+        d=gmail.com; s=20230601; t=1734446421; x=1735051221; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=mZdkrCjjTTy6GU68cn5+2A4VStYJVFsv3fKn3u/mqbU=;
+        b=DoEDqaS2P0gqNGwECgvQAeJiSxSO928h/2SZ5vwGwsIlC7Vinf0+0stZ4lZULPeHe1
+         xAV6NpN64Zvi6fb4aO96kxbVc89YIvekkhV6aZ6tvR1yoABz629+y3BgFWM0VRdU93Rv
+         bhyG8mOCZPREOdRdRBcUlub2+LjHgFDP5DcJfiHgX091aMrOtsgLW1MawGJbs1ei7lEK
+         n9h3C7V1+v+gPiQN47OIycrHlhQanL4TRvf+N5G/9jFPuJmea2lYIFfdA4GXWddUgA+8
+         YW0fW4r1RAZbmg3zKry9gwqgMGgOOBj5rXnHZ6ZV1NHrlt8rGE4aPQCaz1czDrJdxqUC
+         6mhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1734445595; x=1735050395;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=4g0yuznATNrlHst/Ztl5TTNpUVHbyLsu4KHUhcgl8IY=;
-        b=wD7nW17CSxGS2pJiPGeUkj2J6WE60qEYYTdZ+g5wrDC346R1ZwgBAIqAVplVMV3kcY
-         AoXuoH/GMLFCI+bPNfjmAyHVbVda4KBm/ULmUX0boOjR6NT/PQ2JJGvr+tzOmCBsLiHD
-         Ekhuf8GO5QydpcPawE2qREkItXJgZd/Yu6fDUTh/vxPbuZ5RXnUjziy/LBGbF5XIyCaW
-         D3sy+V8abaG8f/fQV9WfHY7/tUKUtY89KaHlLqXuHhDIv+uQEGURogy0O56jH+WJhyLg
-         PHNRgoPBsPVSSdRZagJOKeumRwPXoj8Al3y7D41dB50m/uMLaQXLnrCdzQMOPL1ivhs5
-         HLcw==
-X-Gm-Message-State: AOJu0YwbCUy/umt8vkQRpFsKG049E05TPx/PxbIxdbzQg8tMUXHlYTW5
-	LNvRA4FG+SjiNOd+nfyJoEw8zBd2mdRRtoHFgu6NYEllDjX+Be7NL3WdW0b6Q1KaODcuGot5+E3
-	bnPTh/hxrYXnyc4XqYr6OK7VN1kPL8Ru9Hza63Q==
-X-Gm-Gg: ASbGncv83o7awJCyxv+GCVcGXegPUwbgoqBsdPGIi6N1WseYbXv4w1aNfe1NfqTzS10
-	sWZdoY3aIlVRXT/JKGY+XKGR5W3UF9WT+xpnd5IF7OMn648dwUGIz26H1gtkWzrXLLUeCHUw=
-X-Google-Smtp-Source: AGHT+IFWdnsNe8wECouYrk2jzWBwlsbxXvjapnSWXbKiX94GpisPnUnlysXG/Fk7bzz7/MnrTa1F9G86Q5cZpGpSJGQ=
-X-Received: by 2002:a05:6512:3a83:b0:53e:385c:e881 with SMTP id
- 2adb3069b0e04-54090560bd3mr5251278e87.30.1734445594169; Tue, 17 Dec 2024
- 06:26:34 -0800 (PST)
+        d=1e100.net; s=20230601; t=1734446421; x=1735051221;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=mZdkrCjjTTy6GU68cn5+2A4VStYJVFsv3fKn3u/mqbU=;
+        b=rPRcSOxylMsG+0YZdEZJXMqtTGk6wVxgNVqSsT1LEclxJ7tiumgJVizvEF0UAkNSbR
+         gPDTxnGBxL/jx8nXI0esaCW1fkJ7etUCeDtLovWpdK/dkzLKvxqzwdH873PdFqi/4mVV
+         OegmpT+4kL3Ljsggtk+ltK/lRZ0YK04WbHKlqnXrxspr82ze0gswmt3eg2yEiI0y9fWx
+         +9pLmIIuUFtSAwuQsVEF4TpPmCmT6CiJ4Y5Bt7RldwTyHHVHnDwIY7KmlU8lJc+v27Y+
+         qQEMnupDJfjZpR16njZgWGZ2aXoz9M49dLl8fv1p6Ltyj0krdOaHu0v+paN1dcm02qXB
+         RUwg==
+X-Gm-Message-State: AOJu0YxA//0VOGoYch0STpasVO0x+7YfT0JX8JjBOItrJKD8udbQOROH
+	sMS2xP85j4/AqrJlv8sFBdy4mhJilHoEYNYhQE1MIB/4TjROWi5et5b9uM89
+X-Gm-Gg: ASbGncsfNQZQ4ioNhtIhTUaTPqYt0LFI58LzDRF5JDMHX5h/chZq0wJ8HtCZlUoFl9g
+	IEAoGgVsfxGVhKTEo4g9RxGe0+HmLn9patDaHaDy/EGrQeUnJmZrp4cVflksuYzZMJuelmBq7H2
+	vbtv8IZe2RvTFRKs986D7tFs8x6XpiUQNQ0bEqJh2Hw5WzfH1UZk+hFtZo08CaVZFyRwQG0dh+W
+	DSkWAhNMbgQqd2zNjwq0L4RiAuocg7qWuQVtLDgnpef+DQXvfY=
+X-Google-Smtp-Source: AGHT+IF9MjCPQNf35hqPjt0z/eQIVPwvb5nPAdgYrZrkt5JdQvF/414/grktU1cFbac49n5sHlnfqg==
+X-Received: by 2002:a05:6a20:734b:b0:1e1:adfe:c43 with SMTP id adf61e73a8af0-1e1dfd61895mr27380302637.9.1734446420629;
+        Tue, 17 Dec 2024 06:40:20 -0800 (PST)
+Received: from localhost ([223.72.120.185])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-72918bce2f4sm6665862b3a.196.2024.12.17.06.40.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Dec 2024 06:40:20 -0800 (PST)
+From: Qichen Qiu <ruiqurm@gmail.com>
+To: xenomai@lists.linux.dev
+Cc: ruiqurm@gmail.com
+Subject: [PATCH] evl/memory: allow system heap inspection using GDB
+Date: Tue, 17 Dec 2024 14:40:15 +0000
+Message-Id: <20241217144015.1879213-1-ruiqurm@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <8734iwc334.fsf@xenomai.org> <20241211152730.864059-1-ruiqurm@gmail.com>
- <87ed27emid.fsf@xenomai.org>
-In-Reply-To: <87ed27emid.fsf@xenomai.org>
-From: Qichen Qiu <ruiqurm@gmail.com>
-Date: Tue, 17 Dec 2024 22:26:21 +0800
-Message-ID: <CAHR=ZXGjPQm8ksTmABjK9ms6gtQ5-N3eD_H2xThx0Upr8kx9Zw@mail.gmail.com>
-Subject: Re: [PATCH] evl: replace `remap_pfn_range` with `vm_insert_page` in control_mmap.
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-Thank you for your suggestions! I will take your feedback and send an
-updated patch to the mailing list later
+GDB was unable to inspect the evl shared heap mapping regions(i.e. 
+__current_evl_window) due to limitations imposed by the VM_IO flag when 
+ptrace accesses memory regions that were mapped using remap_pfn_range. 
+This restriction hindered effective debugging.
 
-> - Why eagerly clearing the VM_WRITE flag from the vma?
+To resolve this issue, the shared heap is now allocated using `vzalloc`, 
+and the memory is mapped with `vm_insert_page`, which work seamlessly 
+with GDB and ptrace.
 
-I initially thought this was to prevent malicious flag modifications.
-However, I later realized that the monitor might also need to use the
-mapped area for certain operations that require write permissions. As a
-result, I have removed this line in the new patch.
+Signed-off-by: Qichen Qiu <ruiqurm@gmail.com>
+---
+ kernel/evl/control.c | 15 +++++++++++++--
+ kernel/evl/memory.c  |  6 +++---
+ 2 files changed, 16 insertions(+), 5 deletions(-)
 
+diff --git a/kernel/evl/control.c b/kernel/evl/control.c
+index 2d1b44f3b0dc..32764a9fc08b 100644
+--- a/kernel/evl/control.c
++++ b/kernel/evl/control.c
+@@ -338,13 +338,24 @@ static long control_ioctl(struct file *filp, unsigned int cmd,
+ static int control_mmap(struct file *filp, struct vm_area_struct *vma)
+ {
+ 	void *p = evl_get_heap_base(&evl_shared_heap);
+-	unsigned long pfn = __pa(p) >> PAGE_SHIFT;
+ 	size_t len = vma->vm_end - vma->vm_start;
++	unsigned long addr = vma->vm_start;
++	int err;
++	struct page *page;
+ 
+ 	if (len != evl_shm_size)
+ 		return -EINVAL;
++
++	while (addr < vma->vm_end) {
++		page = vmalloc_to_page(p);
++		err = vm_insert_page(vma, addr, page);
++		if (err < 0)
++			return err;
++		addr += PAGE_SIZE;
++		p += PAGE_SIZE;
++	}
+ 
+-	return remap_pfn_range(vma, vma->vm_start, pfn, len, PAGE_SHARED);
++	return 0;
+ }
+ 
+ static const struct file_operations control_fops = {
+diff --git a/kernel/evl/memory.c b/kernel/evl/memory.c
+index 1da5be623d69..053a377396d2 100644
+--- a/kernel/evl/memory.c
++++ b/kernel/evl/memory.c
+@@ -630,13 +630,13 @@ static int init_shared_heap(void)
+ 		CONFIG_EVL_NR_MONITORS *
+ 		sizeof(struct evl_monitor_state);
+ 	size = PAGE_ALIGN(size);
+-	mem = kzalloc(size, GFP_KERNEL);
++	mem = vzalloc(size);
+ 	if (mem == NULL)
+ 		return -ENOMEM;
+ 
+ 	ret = evl_init_heap(&evl_shared_heap, mem, size);
+ 	if (ret) {
+-		kfree(mem);
++		vfree(mem);
+ 		return ret;
+ 	}
+ 
+@@ -650,7 +650,7 @@ static void cleanup_shared_heap(void)
+ 	void *membase = evl_get_heap_base(&evl_shared_heap);
+ 
+ 	evl_destroy_heap(&evl_shared_heap);
+-	kfree(membase);
++	vfree(membase);
+ }
+ 
+ static int init_system_heap(void)
+-- 
+2.34.1
 
-Philippe Gerum <rpm@xenomai.org> =E4=BA=8E2024=E5=B9=B412=E6=9C=8816=E6=97=
-=A5=E5=91=A8=E4=B8=80 22:22=E5=86=99=E9=81=93=EF=BC=9A
->
-> Qichen Qiu <ruiqurm@gmail.com> writes:
->
-> > Hi, I used vm_insert_page to map the area to user space, and it
-> > successfully resolved the issue.
-> >
->
-> Thanks for the patch. A few observations:
->
-> - for this to work, you definitely need to update the system heap
->   allocation method accordingly in the same patch, i.e. using vzalloc
->   instead of kzalloc. This patch is incomplete.
->
-> - Why eagerly clearing the VM_WRITE flag from the vma?
->
-> - the short log should refer to what is being fixed as perceived by
->   $user, not how we do that. The latter should be part of the long log
->   instead. In this case, that would be something like
->   evl/memory: allow system heap inspection using GDB
->   The long log could then give a few details about GDB, ptracing, the
->   VM_IO issue, and the reasoning behind the change of interface from
->   remap_pfn_range to vm_insert_page.
->
-> > Signed-off-by: Qichen Qiu <ruiqurm@gmail.com>
-> > ---
-> >  kernel/evl/control.c | 13 +++++++++++--
-> >  1 file changed, 11 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/kernel/evl/control.c b/kernel/evl/control.c
-> > index 2d1b44f3b0dc..eee4bcaad390 100644
-> > --- a/kernel/evl/control.c
-> > +++ b/kernel/evl/control.c
-> > @@ -338,13 +338,22 @@ static long control_ioctl(struct file *filp, unsi=
-gned int cmd,
-> >  static int control_mmap(struct file *filp, struct vm_area_struct *vma)
-> >  {
-> >       void *p =3D evl_get_heap_base(&evl_shared_heap);
-> > -     unsigned long pfn =3D __pa(p) >> PAGE_SHIFT;
-> >       size_t len =3D vma->vm_end - vma->vm_start;
-> > +     unsigned long addr =3D vma->vm_start;
-> > +     int err;
-> >
-> >       if (len !=3D evl_shm_size)
-> >               return -EINVAL;
-> > +
-> > +     vm_flags_clear(vma, VM_WRITE);
-> > +
-> > +     while (addr < vma->vm_end) {
-> > +             err =3D vm_insert_page(vma, addr, virt_to_page(p));
-> > +             if (err < 0)
-> > +                     return err;
-> > +             addr +=3D PAGE_SIZE;
-> > +             p +=3D PAGE_SIZE;
-> > +     }
-> >
-> > -     return remap_pfn_range(vma, vma->vm_start, pfn, len, PAGE_SHARED)=
-;
-> > +     return 0;
-> >  }
-> >
-> >  static const struct file_operations control_fops =3D {
->
-> --
-> Philippe.
