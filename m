@@ -1,82 +1,97 @@
-Received: from mail-yb1-f175.google.com (mail-yb1-f175.google.com [209.85.219.175])
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 304981E9B32
-	for <xenomai@lists.linux.dev>; Tue,  7 Jan 2025 13:30:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAF1E1F1913
+	for <xenomai@lists.linux.dev>; Tue,  7 Jan 2025 13:51:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736256650; cv=none; b=Mx6x5c5Jltom/xTUuzqPMAupnC2knV2b3PRGPxZd6wSYfF3tJ0pES911zzkVWfunJJbOBFsMVOVEcYMpQvJPithVgUCtdws+gPMGdlV0Qke41W1yBbh28QUhR6L4UcRyuMo0iYYhncAP4yd/8ZqExPeofzTX/b+83CsqzYlyw24=
+	t=1736257867; cv=none; b=SSIkVGGABEpW5tNPlRHljLMYI8VZ70h47KAH1V6yxag4Dv/4CuNvfDRSCaCZDZfkFZqSN+UWHYrkhEJqIe/otAfoFz12NB55mhtF5+c1Cz0hqwVJ/t8SOVGD4pa3DME5tbJ18cghLXQJaH1jVOi41KErnTu/xkYQeZqdy3hzkJQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736256650; c=relaxed/simple;
-	bh=z1w+vcwBxoYa+XmwKnNk42a0wzEQIHHFq9hAZCAxWhQ=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=cR4aAJ4bgDT2LQU9f/YztFXW6KE1hhOmKOja01z8rCXnTxKiF6FDvEA6EbUtzcyB6tHpySg7/eZBrt3W8tvxXSFk8JBzOCcG+hBDR9UnYtshU8m3bXEv0Mvs1psD/ZmW/4RH5vJlE3YCkqn6tPMAmCy1GC/xixQjktrgEXbSJzA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BeaFIVm1; arc=none smtp.client-ip=209.85.219.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	s=arc-20240116; t=1736257867; c=relaxed/simple;
+	bh=mIJecl3ScS0OdEgw+T/YRsuylIikbk+SSsFrZpfsiBw=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=LgnwX8qE6sjpNYxyRoULRwHy8GyiEOi1XgH3nxC+8Ut2+8dj8jcHtgTxVk+mo5dkcjcYxDCB+sjSuKmNqmtK5+ceGSdk7kYnD71tz+jL5mAOruIwTdZosLCv9WxCaib7alEIqMhoYfvlVC58LX80L1RMyuKm4ipq8NsqdVNrtU4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BeaFIVm1"
-Received: by mail-yb1-f175.google.com with SMTP id 3f1490d57ef6-e549be93d5eso6129292276.1
-        for <xenomai@lists.linux.dev>; Tue, 07 Jan 2025 05:30:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1736256646; x=1736861446; darn=lists.linux.dev;
-        h=content-transfer-encoding:to:subject:message-id:date:from
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=z1w+vcwBxoYa+XmwKnNk42a0wzEQIHHFq9hAZCAxWhQ=;
-        b=BeaFIVm1a0lwc2yToKczJdZFXT3siVAmySoyTHOD4lDPcGc0tAZmET8JR/SG5Lsm+L
-         JU9z5fUNNf31zUzRvWnMCmHljyEgsVmAv8l6WtWOyPY4iNFJC0+iczQLlnrdeeepQaP7
-         SSsIj+Z2SZNl46brwXwgCC58iMSuwMfyt/jjobcpeqIj5HGehRb+Ake4LNrVGBsJ0CQk
-         4sCJfWJg0sAr7RksqjG31bNaF2S2SSQHYZskoDGJq6XqiaWLzUOKASrqn+rj7wyMAEJG
-         ssTGbACoMxxl/K0cKsh8/bNJqUhyE6xVdGEoyDt2LZUrMQFnr/xIWkzpubjUC+UpKtJa
-         GbJw==
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-43626213fffso96310995e9.1
+        for <xenomai@lists.linux.dev>; Tue, 07 Jan 2025 05:51:05 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736256646; x=1736861446;
-        h=content-transfer-encoding:to:subject:message-id:date:from
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=z1w+vcwBxoYa+XmwKnNk42a0wzEQIHHFq9hAZCAxWhQ=;
-        b=f9Z9kccaNJRDVeLeG6ccZ6yb8RLG5qFdyGf9L0U8d3OFnr2M++zREDapty9DvSg+uq
-         RV6Dt0TnmSYJDUWCz+QY1B+w75iPkL7KN4pSeHlStbbEa0wdaixNzcQwTujvYOcXTOCR
-         cGn9lNfL738hzWBuRgxyfc+71Ju9jTma4RG1P12d2HPkclkb0i0JyrUiIatNu4vCvVze
-         VC05dlhlW6gc6zxXgwFwkzTJQ5fZKGiJE90HvLxYEOudQ+LhVmD+NjjXXiYtH/GQ4jTl
-         IpKbSC65VVhn4pEWeSwxQlPgkU6icI+17L7rcGuglapGU34NrTzo398nsJSHh1edMNqX
-         XDrw==
-X-Gm-Message-State: AOJu0Yy4T4MjUkuZLw0hzbhrOCuWVMVgLfwtszb4K3Yy3usXjT8+N+4V
-	Q3FC8+76vVpV04ytFFXAvDFNwcTN7rs8lNiN8E1gPqUugmdtpGjZbTHr/uxAatlQ6TJWjJL3s4p
-	2pNVpfyTgmI7h6ad6eMrpxzFux2eIYQGOBi78ag==
-X-Gm-Gg: ASbGncu9rCRaV+4CY2aem0muGz+BFUk2D0nUwxZtshIp8/1TKTSrhPbRgVaVtQCrom1
-	OXyjvIJZAl9+GdKCaz/O87OvHHkewWCbXdloe1H8=
-X-Google-Smtp-Source: AGHT+IFEFKzKChXz+7ET/Ne4vhZEpOsGFrRzrReZD/134gSk5TntfrxjO51QqX9Y01gt9ZziHLf1Zm8TZeRcHHdhHJ0=
-X-Received: by 2002:a05:690c:4983:b0:6ef:aae1:ac6f with SMTP id
- 00721157ae682-6f3f80d6257mr449648817b3.3.1736256645699; Tue, 07 Jan 2025
- 05:30:45 -0800 (PST)
+        d=1e100.net; s=20230601; t=1736257864; x=1736862664;
+        h=content-transfer-encoding:mime-version:message-id:date:user-agent
+         :references:in-reply-to:subject:cc:to:from:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=mIJecl3ScS0OdEgw+T/YRsuylIikbk+SSsFrZpfsiBw=;
+        b=nK/XrbbWDL8xHHt0gWE/dOrx6CsheAvwxX4FlWVj596o007k7eHk3xNYfW8teMKodE
+         +qnFQy4+rQMBdJZNtaPo6ymAjafsJSNVBfNz5Ap1xduVbAcKypfpH5j/NlikuGEcgbY6
+         Rd71KN9w/X7tFfFhmBZPOXUxej3ICrSa+cv8LboMmU79X0uZyApbbCDWJnfeFw8jQNLE
+         Mc6QWb1wwjyhCCEeoDbj4F0zKga1sa9xTEvygI6mbXbCOTJl4KRbob4kJiuCUnjloYSu
+         CIqfPalmGtUM/IPHes3kRb4E7pv97hfiay4TLeLgkZXENmJPs4U9B2ZlfsLaZGbF+z4i
+         Bubw==
+X-Gm-Message-State: AOJu0YzibB+SAduXwxdWpz0tda8WLUAEo25hw2yDtGq5tMk1gldruNRW
+	0eNuShV/Kjb5Jn1IfBEgbRGVZfJRjntA3mP2KqPH/bqiwEvj95kGWqw8YA==
+X-Gm-Gg: ASbGnctvGFgTqNXDzjD/k0VqtZOplqITdTifE7fh5MlvEafR6+TfyZgeIbLV9QoY+t4
+	5dpCDtMg93T3xXA5BwiChg7sIEZeDCvGndbsrZt2qNt45N1681qGRsCSvX+U/QxwVm0V5D77lnj
+	gAPUNoT8vPVSrt2ERFSqrTh/ED0WbF/R5DZbI7nd5spY1JaNfy5+8VGTloJTK+d6f/cVk6SbnKf
+	MOhrsFvndZCp7VkfoNhmExcKuJ6MkexHSWTUCK2yQ==
+X-Google-Smtp-Source: AGHT+IEkZVfHkSmevexmCsHU3YAQWNACa8c0C1pDDG2LeDhorxqfgQaQ476lF6YEwPFr5BASXmtO5w==
+X-Received: by 2002:a5d:64e2:0:b0:38a:6183:77b9 with SMTP id ffacd0b85a97d-38a7912c9cfmr2871016f8f.6.1736257863957;
+        Tue, 07 Jan 2025 05:51:03 -0800 (PST)
+Received: from pyro ([2a01:e0a:19b:3cd0:989a:5c4b:b7ff:baf])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38a67c77a90sm12379028f8f.54.2025.01.07.05.51.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jan 2025 05:51:03 -0800 (PST)
+From: Philippe Gerum <rpm@xenomai.org>
+To: shanmu <shanmu1901@gmail.com>
+Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: Re: Porting Dovetail and EVL on RISC-V
+In-Reply-To: <CALt0BK+_cLFefPng1md_Pv5UkuhF9Hz6+HXJgj0353vPv0qo8g@mail.gmail.com>
+	(shanmu's message of "Tue, 7 Jan 2025 21:30:33 +0800")
+References: <CALt0BK+_cLFefPng1md_Pv5UkuhF9Hz6+HXJgj0353vPv0qo8g@mail.gmail.com>
+User-Agent: mu4e 1.12.1; emacs 29.4
+Date: Tue, 07 Jan 2025 14:50:58 +0100
+Message-ID: <87ttaahgvx.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: shanmu <shanmu1901@gmail.com>
-Date: Tue, 7 Jan 2025 21:30:33 +0800
-X-Gm-Features: AbW1kvYGtLBOs-Bv4Am9hqYfi0VHfrvPPVCo_3RJi33rMphpwh-OHd9t5sntqmw
-Message-ID: <CALt0BK+_cLFefPng1md_Pv5UkuhF9Hz6+HXJgj0353vPv0qo8g@mail.gmail.com>
-Subject: Porting Dovetail and EVL on RISC-V
-To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-Hi, all,
+shanmu <shanmu1901@gmail.com> writes:
 
-I=E2=80=99m trying to get EVL running on RISC-V and have made some progress=
-.
-I rebased the `wip/dovetail-riscv` branch onto the
-`linux-evl/v6.12-evl-rebase` branch (though it seems more reasonable to
-rebase `linux-evl/v6.12-evl-rebase` onto `wip/dovetail-riscv`, anyway) and
-added some architecture-specific code. For `libevl`,
-I added the `vdso.h` for the RISC-V architecture.
-While running the tests of `libevl`, it encountered a
-`check_hard_irqs_disabled` WARNING in the `dovetail_context_switch` functio=
-n.
-I=E2=80=99ll address this issue as soon as possible and submit the patch.
+Hi,
 
-If anyone else is working on this, please let me know so we can
-coordinate efforts and ensure smoother progress on RISC-V support!
+> Hi, all,
+>
+> I=E2=80=99m trying to get EVL running on RISC-V and have made some progre=
+ss.
+> I rebased the `wip/dovetail-riscv` branch onto the
+> `linux-evl/v6.12-evl-rebase` branch (though it seems more reasonable to
+> rebase `linux-evl/v6.12-evl-rebase` onto `wip/dovetail-riscv`, anyway)
+> and
+
+You may want to cherry pick the patch stack starting from
+#264c0deebb4e65 to the tip of rebase/v6.12-evl on top of
+wip/dovetail-riscv, that may yield an easier merge process.
+
+> added some architecture-specific code. For `libevl`,
+> I added the `vdso.h` for the RISC-V architecture.
+> While running the tests of `libevl`, it encountered a
+> `check_hard_irqs_disabled` WARNING in the `dovetail_context_switch` funct=
+ion.
+> I=E2=80=99ll address this issue as soon as possible and submit the patch.
+>
+
+Thanks for this work.
+
+> If anyone else is working on this, please let me know so we can
+> coordinate efforts and ensure smoother progress on RISC-V support!
+
+AFAIC, not working on this (only maintaining a consolidated upstream
+tree with the contributions received for the risc-v port).
+
+--=20
+Philippe.
