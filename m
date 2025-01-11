@@ -1,132 +1,164 @@
-Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22DD581E
-	for <xenomai@lists.linux.dev>; Sat, 11 Jan 2025 05:37:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AD2B153803
+	for <xenomai@lists.linux.dev>; Sat, 11 Jan 2025 18:08:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736573878; cv=none; b=WVKFdb+CwoucR5FBUfyT8U0hgglAi6sQNF9jQQEGaKncdkk2rDOIlzwn7v4O9BAvXQ4Wy8hzlemHNf0mUw4DvM2S+iJK2Nyf1hkyzqOZqziEI1Tmc+Iv4GEVw8pAfSK1dTgNAlmXuAVdqAMdw5mfPPRMlQw4HitN4c3UfSOsQOY=
+	t=1736618883; cv=none; b=pv7wA5X0pz79rBoc9YBjhJVqmK3w3hhPh9DUMdhGmuuSV59YMbRWVMS7kf84HDEZDvTR3WzPqSGPicsZnp+mhLoo3w7p6+0iJHoJjsqCbNxfBDZLCsMmMYdSgmakzaKMgEbVlnPZCLISQl1dQscuyXUKehf6ysD9Dl+I8l4z2ZQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736573878; c=relaxed/simple;
-	bh=w73Cy4esyT29mhMY4767PU0nNLGQMhEPKcZz+Savpxg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=oAy3zkjgSwBmgeUkhBl+b6Kwh6SbQj/07PUTMlH0VK0SS8wy9DB4kjTe8xCxFvVv7+6+ww3dmuvk0bSVTrdKsaJeHayUy06n4IIJwtJyS8QrWi9m2xUBxAE6nu8fA9YZtIUpHyfJ/TcvYsTW7ZKTZ4dgY8qg9Hs+J2eFpPO+TPU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b=sTqyvSRQ; arc=none smtp.client-ip=209.85.208.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
+	s=arc-20240116; t=1736618883; c=relaxed/simple;
+	bh=pbN2MOD8ZzfgYzrRc2qHIelalRLPIdw11nAJIln1TMA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=K6GDSXEwfXW3DBRiR1IIL0ZhSCalY24jG4RJTixxbqBHdE+uWMaHzfAFT6VGGcqZT19h5RWMgvmc0BwvAqiHyRrzZNZFce2VVinoZWBa+aKQ9T2DrjHPighm6n/eXgVp3J/ai5lEu7Yfj23EQG4fOBv9JIfo9c11PJGCIGRmJHE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=pRopvSwP; arc=none smtp.client-ip=217.70.183.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b="sTqyvSRQ"
-Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-30039432861so26419541fa.2
-        for <xenomai@lists.linux.dev>; Fri, 10 Jan 2025 21:37:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile.fr; s=google; t=1736573872; x=1737178672; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=AqMaaLL+QCe2iO9GoPuOBg4KwjfTWuNGP2dQ8i8zEaU=;
-        b=sTqyvSRQb5s6r/Ee6EjiOCkZX+tVd7A5e7RM5bDeE2YEPLja7famSw/1RJY6+mXyqj
-         ovfYLH5VTeK3UR8RCnSLm76oQIGPkeN/xbiGrZ32yU75jK9FonZQ9XlpEm73+1yzx/Ka
-         kPlAiZjrRlwUwdaNFxX6gEZq6jV6PMT7qQkxI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736573872; x=1737178672;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=AqMaaLL+QCe2iO9GoPuOBg4KwjfTWuNGP2dQ8i8zEaU=;
-        b=LMeC30ORKvg/dFB3v9E/sjibM27niB0upBf6/qVVQJsM5OSCp/uP1Kcep0vR8Di4sR
-         e9zJ8Q8TIO93qgUjOiUnFR1zqYQnsWk3q6nE2odN90AiMxlcqn20WJ7vpCA6i8Bz+NxM
-         Q83jImqyRocFjVSIFRuIQUo0EC50X2IgWSz0Yz8YbteG5m+PV7f+x//lkyBu26EArLgN
-         hyg8rL2WTFSwp8C5CTxGRnpRsXe7HSCcoZlXYAHWtqs7IHEeWrb7sgREuwn3Iied/oaC
-         X6/jWrS0D00yo1aOb2Wm5JKVxwrsVKeJttTuj9ge6sZqMPddWpCTs5yicuHL/3BH7f3+
-         OBmw==
-X-Gm-Message-State: AOJu0YyiGrYbqoDIdrx5IuVYlM5911R+ZJ38xFT6ZGJWctRMF4TAu7E3
-	iOcbIlpJhSxjmF6ZCo+jO5DSZrHgpotxYA+ypNpnIcAl4gVKvPcLtgo5wSXP7HkkZgZDb2gOln1
-	yvCygiWGBDyC2ssYs9tbFb+CAamcEOuIq2YRz4Q==
-X-Gm-Gg: ASbGncsftUkvjebuTfVP9TGawGzhbTP223tArYu92Up3iylSurr/tvN/qCSnRZKPxhk
-	uXBlOWXLV+teVnpIOIYuZfHOA3sw8Ac4xS61WZxAK4J953FnsSbHrzVJp2VSVR2aU4UZXIQ==
-X-Google-Smtp-Source: AGHT+IE+0ihshUj4mJBkPGXQM8b+86RhLVx5Iv+RCRiga1EaM4JrehZDZ0SDV3HkRAVXtYbk86kOlFgIXu4iSg/MMjM=
-X-Received: by 2002:a05:651c:19ac:b0:2ff:cfbb:c893 with SMTP id
- 38308e7fff4ca-305f459ab20mr40794931fa.6.1736573872209; Fri, 10 Jan 2025
- 21:37:52 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="pRopvSwP"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 318C11C0002;
+	Sat, 11 Jan 2025 18:07:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1736618877;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=x+pZH31gKQqyqC9+bA9T/CqcFK5rCMv5eFjWPr5Oypo=;
+	b=pRopvSwPpSuvOseJq3W5VsfL3wm/eL1kOKG6mzPS2tTEUluQfIwoP+ldHPxJTmTWCWttsW
+	r+DAw5PyL9wNegHS7VFZsz1i8RbMTCBhmFVyNywu4jWRc2WN2BAFxlroCmeP9JhXIu+LZC
+	3IZ1GXmaU+Vmk1CcCg8KAPluDppWStDaqnXGbr6SWCJY06ydjQ9M9ximhOt4J0AigFNyjZ
+	o/Xccb/ZQCmAXufA7pP8DRe88aqFLF+TX9tvkJeWwTMzNEIZm2r0U7aw6C6oDoh1VyS9QD
+	2Nu64ysj+97inI/WBvg0+xlhiBLHS0w0LxAiFfh3TKfv42ImRwgLtwM5KuyAqg==
+From: Philippe Gerum <rpm@xenomai.org>
+To: "Rosenow, James" <jim.rosenow@mts.com>
+Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: Re: Relax tracing not working for me (solved)
+In-Reply-To: <MN2PR04MB6255FE69E8FA3E63FA62549EE2132@MN2PR04MB6255.namprd04.prod.outlook.com>
+	(James Rosenow's message of "Thu, 9 Jan 2025 19:48:28 +0000")
+References: <MN2PR04MB6255403DD160D9EDA3319AA5E2112@MN2PR04MB6255.namprd04.prod.outlook.com>
+	<87r05dve9r.fsf@xenomai.org>
+	<MN2PR04MB6255FE69E8FA3E63FA62549EE2132@MN2PR04MB6255.namprd04.prod.outlook.com>
+User-Agent: mu4e 1.12.1; emacs 29.4
+Date: Sat, 11 Jan 2025 19:07:51 +0100
+Message-ID: <8734hp4420.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <87ikqnuiqb.fsf@xenomai.org>
-In-Reply-To: <87ikqnuiqb.fsf@xenomai.org>
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Sat, 11 Jan 2025 06:37:41 +0100
-X-Gm-Features: AbW1kvYnCs6R0EAMikuYHqDGnYXNrTzsbZAie5-jxhHzCUgmRDw5bFpvCWIRbYg
-Message-ID: <CAFc1U0stx7k8yo2v9GNTW9fbXrBO5amDVm63h=BxO_VF6TpHuQ@mail.gmail.com>
-Subject: Re: Paolo Mantegazza is gone
-To: Philippe Gerum <philippe.gerum@gmail.com>
-Cc: xenomai@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-GND-Sasl: rpm@xenomai.org
 
-Very sad news. Another one after, Gilles, Wolfgang Denk and more
-recently Daniel Bristot de Oliveira.
+"Rosenow, James" <jim.rosenow@mts.com> writes:
 
-I still remember the time of RTAI/Fusion. Sometimes lively and
-passionate discussions with Paolo but always passion for the
-technology.
+> Thank you, Philippe.
+>
+> This helped; I have located the call source of the MSW and now I am in need some guidance on how to go about fixing it.
+>
+> The offending calls look like this:
+>
+> Userspace call:
+>
+>   int dma_move( struct ioctl_dma_req *dr_p)
+>   {
+>     return( ioctl( fd, IOCTL_DMA_MOVE, dr_p));
+>   }
+>
+> Kernel driver call:
+>
+> int 
+> ioctl_dma( struct dma_device *dev,
+> 	   unsigned int cmd,
+> 	   unsigned long arg)
+> {
+>   int retval;
+>
+>   retval = 0;
+>   switch ( cmd)
+>   {
+>     case IOCTL_DMA_MOVE:
+>     {
+>       struct ioctl_dma_req dma_req;
+>
+>       if( copy_from_user(&dma_req, (void *)arg, sizeof(dma_req)))
+>       {
+>         return( -EFAULT);
+>       }
+>       retval = dma_move( dev, &dma_req);
+>       if( retval < 0)
+>       {
+>         return( retval);
+>       }
+>       if( copy_to_user( (void *)arg, &dma_req, sizeof( dma_req)))
+>       {
+>         return -EFAULT;
+>       }
+>       break;
+>     }
+>
+> So my questions are these:
+> 1) Is the MSW occurring due to the ioctl() call from userspace?
 
-A+
+Yes.
 
-
-Le ven. 10 janv. 2025 =C3=A0 10:24, Philippe Gerum
-<philippe.gerum@gmail.com> a =C3=A9crit :
->
->
-> A month ago, Prof. Paolo Mantegazza, the founder of the RTAI project
-> passed away [1].
->
-> Paolo and I met for the first time in 2002. Back then, together we
-> went through a period of intense creativity, standing side by side in
-> the battle for a patent-free real-time Linux.  Though our paths as
-> contributors have taken different directions, we have always known
-> that our friendship would endure.
->
-> We got into the habit of sending each other pings of life, where
-> Italian and French jokes punctuated our conversations. Last December,
-> it was my turn to put on a smile in his mailbox. But Paolo didn't
-> answer me. He left before, on tiptoe, mischievous as he often was in
-> our discussions. This time I have to admit that you didn't make me
-> laugh, my friend.
->
-> Paolo used to describe himself as a simple practitioner of software
-> development, one of whose missions was to contribute a free real-time
-> system his students could use, study and improve for their research
-> work at the university, welcoming others to join. Many Linux users and
-> businesses owe him a lot, because under his leadership, the RTAI
-> project has always defended the freedom of developers to implement
-> real-time systems, particularly at times when it was threatened. His
-> fierce will for RTAI served the Xenomai project, as well as others.
->
-> Paolo was a brilliant mind driven by a great sense of humor, his
-> culture was vast, and his friendship was unwavering when he granted it
-> to you. He was often in a hurry like anyone with many ideas but no
-> time, always plain-speaking. One of those generous individuals who
-> embodied humility and that will leave us with an everlasting sense of
-> loss.
->
->
-> Ciao, Paolo.
->
->
-> [1] https://www.freelists.org/post/rtai/In-Memoriam-Prof-Paolo-Mantegazza=
-,5
->
-> --
-> Philippe.
+> 2) Or is the MSW occurring in the kernel module?
 >
 
+There can be no _implicit_ MSW from kernel space, because that one may
+only happen on crossing the user->kernel boundary when handling a system
+call, depending on the syscall type. This means that calling in-band
+code from oob context past this crossing is always unchecked, unsafe,
+and the fastest path to train wreck.
 
---=20
+> And finally,
+> 3) In this scenario, which must be somewhat common for real-time systems, i.e., a device driver is needed to facilitate some sort of real-time hardware operation, how does one 'port' this properly into Xenomai such that it does incur MSW?
+>
 
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source code
+The answer mostly depends on the device, so let's focus on DMA
+ops:
+
+a) the DMA hardware is known from - and managed by - the regular
+   'dmaengine' framework available from the kernel. IOW, this peripheral
+   may be providing data transfer services to some (inband) driver
+   already. In this case, one would have to provide oob support to the
+   corresponding DMA back-end driver which deals with the nitty-gritty
+   details of the DMA hardware. This kind of support code is currently
+   provided by Dovetail [1] for the bcm2835-dma and imx-sdma [2]
+   back-ends. So, in order to share a DMA device between inband and oob
+   activities seamlessly for (kernel-based) users (like dma_move() in
+   your driver), one has to implement the oob extension briefly
+   described in the doc I mentioned. There is no other sane option for
+   addressing this case. Actually, there is no other working option,
+   period. Also, I'm assuming a Dovetail-based setup, which provides the
+   required infrastructure for implementing such extension. Legacy
+   I-pipe is not an option in this case either.
+
+b) the DMA engine is hosted on some custom hardware of your own, which
+   is not available to common kernel users. IOW, only your driver would
+   know about it. This is the simplest case: you would implement the DMA
+   transfer ops using oob-compatible constructs (e.g. hard spinlocks for
+   serialization), according to your DMA interface specs, easy
+   peasy. That would even be compatible with concurrent inband use with
+   proper serialization. In that case, some driver of yours would
+   provide the DMA management code for that particular DMA engine, and
+   dma_move() would call that code (or implement such code, for that
+   matter).
+
+c) the two options above assume that you have real-time requirements for
+   DMA ops, since you mentioned 'real-time hardware operations'. If the
+   use case is actually more relaxed, i.e. you need to kick the DMA
+   transfer from some oob thread, but you could live with some unbounded
+   delay until the transfer completes, then there is the option for any
+   oob code to offload the DMA transfer to a routine which would run
+   inband "asap". That routine would use the regular dmaengine calls to
+   manage the transfer, no need for oob extension of the DMA back-end
+   involved then.
+
+[1] https://v4.xenomai.org/core/drivers/dma/
+[2]
+https://source.denx.de/Xenomai/linux-dovetail/-/blob/v6.1.y-cip-dovetail/drivers/dma/imx-sdma.c?ref_type=heads
+(see CONFIG_IMX_SDMA_OOB)
+
+-- 
+Philippe.
