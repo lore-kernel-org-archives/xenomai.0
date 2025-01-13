@@ -1,40 +1,37 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CBCF22A4DE
-	for <xenomai@lists.linux.dev>; Mon, 13 Jan 2025 12:49:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D0541C3BEA
+	for <xenomai@lists.linux.dev>; Mon, 13 Jan 2025 12:49:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736772563; cv=none; b=rUXDbVDJ4aJUq42fJhKE3vRLluWesQr7ltmcFoy3EfEX/8Fk51fZ9PNXxueYY6KUyCsVaexjElwgarPZoPOp86GO6kXI3Xm8mM3RXj4TkZMuE+FU8qCenpVlj8h7MEsMjNTbcqmjTTODzyb3PQQqEgXpAAGyI3hLCuCFU71wcag=
+	t=1736772563; cv=none; b=gDTBkVB4GhXzelDbHydvQO2hTwNsLEm+6MmJXZlnwr7J470NA2uLYe3M5APVH1jLotGDCcWQm1okKhAi9B8qGQLEQP3wr4V6aoCqC4oK7oqZkujNWSwsNWH9ktNzdF7jluViLEEWOWHHPWjpPFtfWegzzmnodCQ2a1Rk95uk0KM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1736772563; c=relaxed/simple;
-	bh=dwMto0qyUkR0V1ueQ8LoqZSYFP8RjYIbz04HQqJ2NyY=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Kfsf6FJIKLwB8tihjYiCbSjDbZvfCXtWafKSNEnoYPRKZJ7w+DZWwN82eqDRLicHyu4fCtnOkRVNIjfRUAQcnPhu2XLjYassNBIVVRxIRyZCWMJXPyU+AIlxdZzhwILb9r1CAu8bzVDsP8SnmiP/pIFeFl7U7GLA3zHi+9DIj4s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=sSULTNqg; arc=none smtp.client-ip=185.136.64.226
+	bh=MNJBgk+zlSmbRhrGCNxdp+qPnTM+1hW7/1KGEcN2ATs=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version; b=XyE15GT0sGIsfVy1mFOUhXxA9JbU2lXIoDiqNgneZX6UCP/zCVWVDQ+Edb8ofarQIhWSkoYbm66cPufk01R1luxrUc/0ghjEirMcU+6P52g4V4fsKk/yYWArlPWDAX0Mjn95yeFPE040ejk0o4G5raF29HiHahXDf6rC7JCaFew=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=NPmQ8rwS; arc=none smtp.client-ip=185.136.65.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="sSULTNqg"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20250113124912ed4e7e1873b7cfd81c
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="NPmQ8rwS"
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20250113124911268a18226462b5e0bc
         for <xenomai@lists.linux.dev>;
-        Mon, 13 Jan 2025 13:49:12 +0100
+        Mon, 13 Jan 2025 13:49:11 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=4b8dy+q0RX+UHBKmAGeM6j2oCOMGJ7x2BLCQA5UhiJs=;
- b=sSULTNqgsyWtRks2OXLuccfV7Vxp3HdjO1C1qsu+Np8dIdUY+23GXxv5bUJM/Fjn5WwCnJ
- o2lkYeRGhw13TxuGcrseT0TbfKHDWYaZOWtEe5lyHD1049c1t6p7H0wU5TbksTXmLeQO056g
- 7XtmA9rZCuKZ9w/X2FmbaVkCovai1tAmMuymWrHGJbGTYAGJCnAKo0fRiN8IPz3O2kwTajFm
- Tb/g/LEhAA7B3NOdMXuHHxcwYcy+BGiblziaf30F1UdFR6g4646cBKsGEznSSXX/CVWmTqpv
- 4OkZ45zSrpTKsM+pNkRdHyTH3hwX1fvXAgabBOL/U5MYi14NTZeFGp0w==;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding;
+ bh=GgL9OkOa3dXHty2VoDUGLgEZORBo3qK3pcOCYo3sELw=;
+ b=NPmQ8rwSPsaeoZ8zHgH4hEr9AatJla4qijn/8niujC00Bd6ucV+uSjutstOtrePlSy27KT
+ TF5+7NRjq3E2e9HujfI38e6ia7Y3cBWTGiRPmwP2FsTRsrBofe9y6NjCAAwCh97z/Obj+yUm
+ q2L/+LRdBM7PVrcQjGpYL+bKHD23QWo1P/SItepqJ89G3ncwnR2B5m9oTEGhCBCguaN6JPhd
+ HLn9J+5zA9gm5UUegE7qSmNTV4DeNySZmRAf9gc5EkG7/rrA8hRIls4tilatSfuay/W2CrJ6
+ WmjtW5p9bpWaE96b3x5idI1CJLomAnI3IWzmmR4I1PL5Nmlu7gQa6GAw==;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [xenomai-images][PATCH 4/6] linux-xenomai: Update to latest releases
-Date: Mon, 13 Jan 2025 13:49:06 +0100
-Message-ID: <167230e9313c5620af404fd54a81dd665fcca67a.1736772548.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1736772548.git.jan.kiszka@siemens.com>
-References: <cover.1736772548.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 0/6] Update kernel versions, kas and isar
+Date: Mon, 13 Jan 2025 13:49:02 +0100
+Message-ID: <cover.1736772548.git.jan.kiszka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -45,177 +42,56 @@ Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-294854:519-21489:flowmailer
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Most important change is probably the introduction of kernel 6.12 for
+both Xenomai streams.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- recipes-kernel/linux/linux-xenomai-3_4.19.bb | 6 +++---
- recipes-kernel/linux/linux-xenomai-3_4.4.bb  | 6 +++---
- recipes-kernel/linux/linux-xenomai-3_5.10.bb | 4 ++--
- recipes-kernel/linux/linux-xenomai-3_5.15.bb | 4 ++--
- recipes-kernel/linux/linux-xenomai-3_5.4.bb  | 6 +++---
- recipes-kernel/linux/linux-xenomai-3_6.6.bb  | 4 ++--
- recipes-kernel/linux/linux-xenomai-4_6.6.bb  | 4 ++--
- 7 files changed, 17 insertions(+), 17 deletions(-)
+Jan
 
-diff --git a/recipes-kernel/linux/linux-xenomai-3_4.19.bb b/recipes-kernel/linux/linux-xenomai-3_4.19.bb
-index 298610f..a4b6dfb 100644
---- a/recipes-kernel/linux/linux-xenomai-3_4.19.bb
-+++ b/recipes-kernel/linux/linux-xenomai-3_4.19.bb
-@@ -1,7 +1,7 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2019-2023
-+# Copyright (c) Siemens AG, 2019-2025
- #
- # Authors:
- #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-@@ -12,12 +12,12 @@
- require recipes-kernel/linux/linux-xenomai-3.inc
- 
- SRC_URI:append:amd64 = " git://github.com/xenomai-ci/ipipe-x86.git;protocol=https;nobranch=1"
--SRCREV:amd64 ?= "ipipe-core-4.19.317-cip111-x86-29"
-+SRCREV:amd64 ?= "ipipe-core-4.19.322-cip113-x86-30"
- 
- SRC_URI:append:arm64 = " git://github.com/xenomai-ci/ipipe-arm64.git;protocol=https;nobranch=1"
- SRCREV:arm64 ?= "ipipe-core-4.19.229-cip67-arm64-13"
- 
- SRC_URI:append:armhf = " git://github.com/xenomai-ci/ipipe-arm.git;protocol=https;nobranch=1"
--SRCREV:armhf ?= "ipipe-core-4.19.229-cip67-arm-18"
-+SRCREV:armhf ?= "ipipe-core-4.19.271-cip90-arm-19"
- 
- PV ?= "${@d.getVar('SRCREV').split('-')[2]}+"
-diff --git a/recipes-kernel/linux/linux-xenomai-3_4.4.bb b/recipes-kernel/linux/linux-xenomai-3_4.4.bb
-index e7a7e60..678f7f6 100644
---- a/recipes-kernel/linux/linux-xenomai-3_4.4.bb
-+++ b/recipes-kernel/linux/linux-xenomai-3_4.4.bb
-@@ -1,7 +1,7 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2018-2023
-+# Copyright (c) Siemens AG, 2018-2025
- #
- # Authors:
- #  Jan Kiszka <jan.kiszka@siemens.com>
-@@ -12,10 +12,10 @@
- require recipes-kernel/linux/linux-xenomai-3.inc
- 
- SRC_URI:append:amd64 = " git://github.com/xenomai-ci/ipipe.git;protocol=https;nobranch=1"
--SRCREV:amd64 ?= "ipipe-core-4.4.302-cip79-x86-39"
-+SRCREV:amd64 ?= "ipipe-core-4.4.302-cip91-x86-40"
- 
- SRC_URI:append:armhf = " git://github.com/xenomai-ci/ipipe.git;protocol=https;nobranch=1"
- SRC_URI:append:armhf = " ${@ 'file://bbb_4.4.cfg' if d.getVar('MACHINE') == 'beagle-bone-black' else '' }"
--SRCREV:armhf ?= "ipipe-core-4.4.302-cip79-arm-24"
-+SRCREV:armhf ?= "ipipe-core-4.4.302-cip91-arm-25"
- 
- PV ?= "${@d.getVar('SRCREV').split('-')[2]}+"
-diff --git a/recipes-kernel/linux/linux-xenomai-3_5.10.bb b/recipes-kernel/linux/linux-xenomai-3_5.10.bb
-index 9b01708..088d0d8 100644
---- a/recipes-kernel/linux/linux-xenomai-3_5.10.bb
-+++ b/recipes-kernel/linux/linux-xenomai-3_5.10.bb
-@@ -1,7 +1,7 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2021-2023
-+# Copyright (c) Siemens AG, 2021-2025
- #
- # Authors:
- #  Jan Kiszka <jan.kiszka@siemens.com>
-@@ -11,4 +11,4 @@
- 
- require recipes-kernel/linux/linux-xenomai-3-dovetail.inc
- 
--SRCREV ?= "v5.10.161-dovetail1"
-+SRCREV ?= "v5.10.229-cip54-dovetail1"
-diff --git a/recipes-kernel/linux/linux-xenomai-3_5.15.bb b/recipes-kernel/linux/linux-xenomai-3_5.15.bb
-index 9c5ba27..286c64e 100644
---- a/recipes-kernel/linux/linux-xenomai-3_5.15.bb
-+++ b/recipes-kernel/linux/linux-xenomai-3_5.15.bb
-@@ -1,7 +1,7 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2021-2023
-+# Copyright (c) Siemens AG, 2021-2025
- #
- # Authors:
- #  Jan Kiszka <jan.kiszka@siemens.com>
-@@ -11,4 +11,4 @@
- 
- require recipes-kernel/linux/linux-xenomai-3-dovetail.inc
- 
--SRCREV ?= "v5.15.85-dovetail1"
-+SRCREV ?= "v5.15.173-dovetail1"
-diff --git a/recipes-kernel/linux/linux-xenomai-3_5.4.bb b/recipes-kernel/linux/linux-xenomai-3_5.4.bb
-index 5dced1d..71e0066 100644
---- a/recipes-kernel/linux/linux-xenomai-3_5.4.bb
-+++ b/recipes-kernel/linux/linux-xenomai-3_5.4.bb
-@@ -1,7 +1,7 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2021-2023
-+# Copyright (c) Siemens AG, 2021-2025
- #
- # Authors:
- #  Jan Kiszka <jan.kiszka@siemens.com>
-@@ -12,12 +12,12 @@
- require recipes-kernel/linux/linux-xenomai-3.inc
- 
- SRC_URI:append:amd64 = " git://github.com/xenomai-ci/ipipe-x86.git;protocol=https;nobranch=1"
--SRCREV:amd64 ?= "ipipe-core-5.4.281-x86-16"
-+SRCREV:amd64 ?= "ipipe-core-5.4.284-x86-17"
- 
- SRC_URI:append:arm64 = " git://github.com/xenomai-ci/ipipe-arm64.git;protocol=https;nobranch=1"
- SRCREV:arm64 ?= "ipipe-core-5.4.180-arm64-5"
- 
- SRC_URI:append:armhf = " git://github.com/xenomai-ci/ipipe-arm.git;protocol=https;nobranch=1"
--SRCREV:armhf ?= "ipipe-core-5.4.180-arm-5"
-+SRCREV:armhf ?= "ipipe-core-5.4.231-arm-6"
- 
- PV ?= "${@d.getVar('SRCREV').split('-')[2]}+"
-diff --git a/recipes-kernel/linux/linux-xenomai-3_6.6.bb b/recipes-kernel/linux/linux-xenomai-3_6.6.bb
-index b20eb19..cc765e1 100644
---- a/recipes-kernel/linux/linux-xenomai-3_6.6.bb
-+++ b/recipes-kernel/linux/linux-xenomai-3_6.6.bb
-@@ -1,7 +1,7 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2024
-+# Copyright (c) Siemens AG, 2024-2025
- #
- # Authors:
- #  Jan Kiszka <jan.kiszka@siemens.com>
-@@ -11,4 +11,4 @@
- 
- require recipes-kernel/linux/linux-xenomai-3-dovetail.inc
- 
--SRCREV ?= "v6.6-dovetail1"
-+SRCREV ?= "v6.6.69-dovetail1"
-diff --git a/recipes-kernel/linux/linux-xenomai-4_6.6.bb b/recipes-kernel/linux/linux-xenomai-4_6.6.bb
-index f499bd0..730b0da 100644
---- a/recipes-kernel/linux/linux-xenomai-4_6.6.bb
-+++ b/recipes-kernel/linux/linux-xenomai-4_6.6.bb
-@@ -1,7 +1,7 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2023-2024
-+# Copyright (c) Siemens AG, 2023-2025
- #
- # Authors:
- #  Clara Kowalsky <clara.kowalsky@siemens.com>
-@@ -11,4 +11,4 @@
- 
- require recipes-kernel/linux/linux-xenomai-4-evl.inc
- 
--SRCREV ?= "v6.6-evl2-rebase"
-+SRCREV ?= "v6.6.69-evl1-rebase"
+Jan Kiszka (6):
+  Update kas to 4.6
+  Update isar revision
+  linux-xenomai: Switch to v6.1.y-cip branches
+  linux-xenomai: Update to latest releases
+  Add kernel 6.12 bits
+  ci: Replace kernel 6.6 with 6.12
+
+ Kconfig                                       | 10 ++++
+ ci/compat_jobs.yml                            | 14 ++---
+ ci/gitlab-ci-base.yml                         |  4 +-
+ ci/kernel_6_12.yml                            | 52 +++++++++++++++++++
+ ci/kernel_6_12_physical.yml                   | 52 +++++++++++++++++++
+ ci/kernel_6_6.yml                             | 52 -------------------
+ ci/kernel_6_6_physical.yml                    | 52 -------------------
+ ci/xenomai_3_next.yml                         |  6 +--
+ ci/xenomai_3_next_long_term.yml               |  4 +-
+ ci/xenomai_4_next.yml                         |  6 +--
+ kas-container                                 | 26 +++++-----
+ kas.yml                                       |  4 +-
+ opt-linux-6.12.yml                            | 17 ++++++
+ opt-linux-latest-6.12.yml                     | 19 +++++++
+ recipes-kernel/linux/linux-xenomai-3_4.19.bb  |  6 +--
+ recipes-kernel/linux/linux-xenomai-3_4.4.bb   |  6 +--
+ recipes-kernel/linux/linux-xenomai-3_5.10.bb  |  4 +-
+ recipes-kernel/linux/linux-xenomai-3_5.15.bb  |  4 +-
+ recipes-kernel/linux/linux-xenomai-3_5.4.bb   |  6 +--
+ recipes-kernel/linux/linux-xenomai-3_6.1.bb   |  4 +-
+ ...nomai-3_6.6.bb => linux-xenomai-3_6.12.bb} |  4 +-
+ recipes-kernel/linux/linux-xenomai-3_6.6.bb   |  4 +-
+ .../linux/linux-xenomai-3_latest.bb           | 11 ++--
+ recipes-kernel/linux/linux-xenomai-4_6.1.bb   |  4 +-
+ ...nomai-4_6.6.bb => linux-xenomai-4_6.12.bb} |  6 +--
+ recipes-kernel/linux/linux-xenomai-4_6.6.bb   |  4 +-
+ .../linux/linux-xenomai-4_latest.bb           |  5 +-
+ 27 files changed, 219 insertions(+), 167 deletions(-)
+ create mode 100644 ci/kernel_6_12.yml
+ create mode 100644 ci/kernel_6_12_physical.yml
+ delete mode 100644 ci/kernel_6_6.yml
+ delete mode 100644 ci/kernel_6_6_physical.yml
+ create mode 100644 opt-linux-6.12.yml
+ create mode 100644 opt-linux-latest-6.12.yml
+ copy recipes-kernel/linux/{linux-xenomai-3_6.6.bb => linux-xenomai-3_6.12.bb} (73%)
+ copy recipes-kernel/linux/{linux-xenomai-4_6.6.bb => linux-xenomai-4_6.12.bb} (54%)
+
 -- 
 2.43.0
 
