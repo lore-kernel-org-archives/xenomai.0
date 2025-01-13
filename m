@@ -1,418 +1,104 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF26922A4E9
-	for <xenomai@lists.linux.dev>; Mon, 13 Jan 2025 12:49:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFD7822CF31
+	for <xenomai@lists.linux.dev>; Mon, 13 Jan 2025 13:41:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736772564; cv=none; b=NCNmk+/fPw1qaedDNABgXxvGK3TDoURV+80kSuYv3GZJrS/N48V49A20BwAyz1Hw0br/RpMAtSx7nhVwhspRqQ/eK5Zq32exOgEU2jy4NefmE6x2zKq8wZ+u9ulZ2Y4zKBFstGJGkcg5Z5q/0AEHjVTay1biAAFiGYrVyW4zs6U=
+	t=1736775696; cv=none; b=AcrE23m9M6+wm2NBLbaj5DPS9i/wesxUtDvIGLOiwdQZLmanDZt0dmhJh4udiMabG6HqBNoyig7bNOpw+TryvG4RyEFHKg5Zq2Mmjt0u8oatl1I2QtfT48PPkA4SHgrSKDyycRf+SwM1avNULlgI4EdijuBfNUUxEYQwSt2orfs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736772564; c=relaxed/simple;
-	bh=sCGVYVXYI+d1Ks68Fk53DCg4k8YUavXWSdwjz3UDFCY=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ONW9Hmxd1FHdu19jRdCAxU2vu/WNu+A34deg+lqYRJhKUzMiI/UYKXS6FZG8ebCoEp9/EzfEEFoROlxL/206Xp0F3IFvQaaN26yDDScEpKJIe/gJeR2ATR6lpKfhx5I3lZOKvAk7nIzRPOHv8XizZ1TZodSauxybIAevMCUEMzI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=Os72fBDH; arc=none smtp.client-ip=185.136.65.226
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1736775696; c=relaxed/simple;
+	bh=gT5f78haOTxDIb1yFDXyojYqOiOlE659KFY8aqKeiYY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=T+0Ix65gidbsFScD84Qd1tsxhnYLIrAIeYZ3XkXSQXGNTmVRHR+ILH0u+yJJNIWuE0fHDv1BvPHSmpSDD9h5OpxT/E3U0oGzq7NXzFfpRWJRKVy0fGTwXk6e9cX8P6I0wdyJCEtgFnPGSX50gmtACud0vFcPYQ0mNH37pEIhzDQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b=xxzYagGo; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="Os72fBDH"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 2025011312491308fd07dcd6b8c188ae
-        for <xenomai@lists.linux.dev>;
-        Mon, 13 Jan 2025 13:49:13 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=jan.kiszka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=wIRQoDSLIqAKTKRpHQGtryQ+p+OLDzm6XqI3IZZZydc=;
- b=Os72fBDH6RITTXOG7eHOIk1IxxJCVx0gxKyobnTWH4PzzkGTbRXcsCaQdNAYpuid27LvUJ
- I9Suj/yeZ1sBIVc+9+5R7qNqNh5+ii2wVr7Z+k5UGlJQX29spOKEEoFel1BPNgZBHJRPYhJD
- hD9tDJa8WNbwr25qRLdx29jkptWRe0SkHKX3Gy7XyuziptxiPanaggasd21t/uH92uRGesU1
- bkybxcFooRp9wHnDrjXaa5LTmkf05BNL3nl6gTMeGAtabb+jsG9+yhXLSwTPEWlricBXY9tS
- 1S5975HwoimFZ7zOREKAuE6q6dFBs3cgK/pHG7xNmqFORalENITdtCow==;
-From: Jan Kiszka <jan.kiszka@siemens.com>
+	dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b="xxzYagGo"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-43616bf3358so5509605e9.3
+        for <xenomai@lists.linux.dev>; Mon, 13 Jan 2025 05:41:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=smile.fr; s=google; t=1736775691; x=1737380491; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=7024GsBRJyyEENABbOJKs/2vJHwmGK7WrBEUx1pe1O0=;
+        b=xxzYagGovoDj+0dX3gB3XmRfCaGfvYFR/6GdVzo//qqTOQoS8W4vo6ugQTm6txf2jB
+         47uOZg0+VVz4C4b3I20qPujY/9v/oF0TCI669BUHJfeQBgnaEKh+D+PLXbp7dnL48jlh
+         kIIuuu0fLTMa0FCp2GKIMqd2c4O5LFDwlYag0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1736775691; x=1737380491;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=7024GsBRJyyEENABbOJKs/2vJHwmGK7WrBEUx1pe1O0=;
+        b=F7pojosmWLDutJW0NOd56s+xVuSN8axQFSmqV+pr0D8DV5HtxYODPxotgr1GUmTsMJ
+         Jgiv2mURLjOl03oiPVWy4c7MjJM9SgMQcfIM54wiFG2MbVMuNpsolZE5tC1nD1250g7S
+         epNmDoDBPsV+WSTs1vXxAfBrIf5QcpynGPtmS4WdGyhF65tA5TteKhIbv0QlreXMXcSd
+         cTBulJUNMlBb4KJl2lgJ5qsZSJmiznm8Xrb06DYnep4y9RA0czvTN+fmGHk+w8EKByXj
+         4fAHYyMGZcNPzmyom8WSINqRGyT6hv6rdlS8yxJpugvzKt5You3zqwwf/JlFQhxxui51
+         8bSg==
+X-Gm-Message-State: AOJu0YxmDlieDcFXNX9NpRHHpiDg2ZpBSDck8AXg60j3K9e4p4ZaK8zL
+	JU3NztVVQC2V2+YNqo0UokXA5A6ywpT4KBi7zSmByIAIo6I7SRDqVI81WG9bUG62riGL4TXdIIy
+	N
+X-Gm-Gg: ASbGncsLMS+7//LMkdaT/Y7wvF92j0cUlQjycYfb1f8B4jB9waLwM6mwRVZuiJtsoYj
+	TtOps5v/FAtBEmSLY3JMoKb9PvMLAbPIRJPmlb0s+NJleFsUoDe06an7rb/t1OnhYUcbtF6RILg
+	mn8wHBHBu+m8g9jIojVb0tRaflH4Iu/XvDV4c1+GESPFEbrPIUXNy6abcNtzI7OQMbRxAexAPbJ
+	WpjK/E1XalgrJXNmoTFzPNpk4M4nB5cbD4bPC8lYZCctCJtw62EboIpvg3eobXsWNfjqKGHDoYz
+	fSYvUUDE8OLm1U+qx7itz8qWRqFSa+u/MRa9Xc4ewgh4dOObW7bhd5pXHVk=
+X-Google-Smtp-Source: AGHT+IFM+KsBdL+KBfDM8K7AWs1Iz1aHirxs3mI63HsmKsCTl+GV/JX1d8Gt8uSeVz8jp3iZvf0xGg==
+X-Received: by 2002:a05:600c:4455:b0:434:f9c1:a5b1 with SMTP id 5b1f17b1804b1-436e269968amr77172055e9.3.1736775690827;
+        Mon, 13 Jan 2025 05:41:30 -0800 (PST)
+Received: from P-ASN-MORITO.idf.intranet (static-css-ccs-204145.business.bouyguestelecom.com. [176.157.204.145])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-436e9d8faa5sm145836995e9.1.2025.01.13.05.41.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 13 Jan 2025 05:41:30 -0800 (PST)
+From: =?UTF-8?q?L=C3=A9o=20BRIAND?= <leo.briand@smile.fr>
 To: xenomai@lists.linux.dev
-Subject: [xenomai-images][PATCH 6/6] ci: Replace kernel 6.6 with 6.12
-Date: Mon, 13 Jan 2025 13:49:08 +0100
-Message-ID: <39a822c1a315a3fe58743029a719dfafd4dde835.1736772548.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1736772548.git.jan.kiszka@siemens.com>
-References: <cover.1736772548.git.jan.kiszka@siemens.com>
+Cc: =?UTF-8?q?L=C3=A9o=20BRIAND?= <leo.briand@smile.fr>
+Subject: [PATCH] y2038: lib/cobalt: vdso: Fix runtime error detected on arm64
+Date: Mon, 13 Jan 2025 14:41:28 +0100
+Message-Id: <20250113134128.3132911-1-leo.briand@smile.fr>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-294854:519-21489:flowmailer
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Issue:  Runtime error on arm64 application:
 
-Moving forward to the latest LTS while dropping the previous latest one
-helps keeping the test matrix size under control. In addition, 6.6 is
-likely discontinued on Xenomai 3 and 4 side soon.
+        root@ls1046ardb:~# latency
+        latency: __vdso_clock_gettime64 not found in vDSO: No such file or directory
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+Reason: Due to changed __USE_TIME_BITS64 behavior the vDSO init fails.
+
+Fix: Adjust the vDSO configuration to correctly handle the selection of
+`__vdso_clock_gettime64` or `__kernel_clock_gettime` depending on the environment.
+
+Impact: Resolves runtime errors on ARM64 platforms caused by incorrect vDSO function
+selection, ensuring compatibility with 64-bit and compatibility tasks.
+
+Signed-off-by: Léo BRIAND <leo.briand@smile.fr>
 ---
- ci/compat_jobs.yml              | 14 ++++-----
- ci/kernel_6_12.yml              | 52 +++++++++++++++++++++++++++++++++
- ci/kernel_6_12_physical.yml     | 52 +++++++++++++++++++++++++++++++++
- ci/kernel_6_6.yml               | 52 ---------------------------------
- ci/kernel_6_6_physical.yml      | 52 ---------------------------------
- ci/xenomai_3_next.yml           |  6 ++--
- ci/xenomai_3_next_long_term.yml |  4 +--
- ci/xenomai_4_next.yml           |  6 ++--
- 8 files changed, 119 insertions(+), 119 deletions(-)
- create mode 100644 ci/kernel_6_12.yml
- create mode 100644 ci/kernel_6_12_physical.yml
- delete mode 100644 ci/kernel_6_6.yml
- delete mode 100644 ci/kernel_6_6_physical.yml
+ lib/cobalt/arch/arm64/include/asm/xenomai/time.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/ci/compat_jobs.yml b/ci/compat_jobs.yml
-index 3e2d377..b5ad60a 100644
---- a/ci/compat_jobs.yml
-+++ b/ci/compat_jobs.yml
-@@ -1,7 +1,7 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2023-2024
-+# Copyright (c) Siemens AG, 2023-2025
- #
- # Authors:
- #  Florian Bezdeka <florian.bezdeka@siemens.com>
-@@ -26,23 +26,23 @@ lava-test-5.15-compat:x86-64-efi:
-   variables:
-     KERNEL_VERSION: "5.15"
+diff --git a/lib/cobalt/arch/arm64/include/asm/xenomai/time.h b/lib/cobalt/arch/arm64/include/asm/xenomai/time.h
+index 9577aa773..06992e709 100644
+--- a/lib/cobalt/arch/arm64/include/asm/xenomai/time.h
++++ b/lib/cobalt/arch/arm64/include/asm/xenomai/time.h
+@@ -12,7 +12,7 @@
  
--build-6.6-compat:rpi4:
-+build-6.12-compat:rpi4:
-   extends:
-     - .build:rpi4
-     - .compat-vars
-   rules:
-     - if: '$XENOMAI_VERSION != "3_2_x-compat"'
-   variables:
--    LINUX_BUILD_OPTION: ":opt-linux-latest-6.6.yml"
--    KERNEL_VERSION: "6.6"
-+    LINUX_BUILD_OPTION: ":opt-linux-latest-6.12.yml"
-+    KERNEL_VERSION: "6.12"
-     CACHE_KERNEL: dovetail
+ #define COBALT_VDSO_VERSION	"LINUX_2.6.39"
  
--lava-test-6.6-compat:rpi4:
--  needs: [ "build-6.6-compat:rpi4" ]
-+lava-test-6.12-compat:rpi4:
-+  needs: [ "build-6.12-compat:rpi4" ]
-   extends:
-     - .lava-test:rpi4
-     - .compat-vars
-   rules:
-     - if: '$XENOMAI_VERSION != "3_2_x-compat"'
-   variables:
--    KERNEL_VERSION: "6.6"
-+    KERNEL_VERSION: "6.12"
-diff --git a/ci/kernel_6_12.yml b/ci/kernel_6_12.yml
-new file mode 100644
-index 0000000..ebf1da0
---- /dev/null
-+++ b/ci/kernel_6_12.yml
-@@ -0,0 +1,52 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2024-2025
-+#
-+# Authors:
-+#  Jan Kiszka <jan.kiszka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+include:
-+  - local: '/ci/kernel_6_12_physical.yml'
-+
-+build-6.12:qemu-amd64:
-+  extends: .build:qemu-amd64
-+  variables:
-+    LINUX_BUILD_OPTION: ":opt-linux-latest-6.12.yml"
-+    KERNEL_VERSION: "6.12"
-+    CACHE_KERNEL: dovetail
-+
-+lava-test-6.12:qemu-amd64:
-+  needs: [ "build-6.12:qemu-amd64" ]
-+  extends: .lava-test:qemu-amd64
-+  variables:
-+    KERNEL_VERSION: "6.12"
-+
-+build-6.12:qemu-armhf:
-+  extends: .build:qemu-armhf
-+  variables:
-+    LINUX_BUILD_OPTION: ":opt-linux-latest-6.12.yml"
-+    KERNEL_VERSION: "6.12"
-+    CACHE_KERNEL: dovetail
-+
-+lava-test-6.12:qemu-armhf:
-+  needs: [ "build-6.12:qemu-armhf" ]
-+  extends: .lava-test:qemu-armhf
-+  variables:
-+    KERNEL_VERSION: "6.12"
-+
-+build-6.12:qemu-arm64:
-+  extends: .build:qemu-arm64
-+  variables:
-+    LINUX_BUILD_OPTION: ":opt-linux-latest-6.12.yml"
-+    KERNEL_VERSION: "6.12"
-+    CACHE_KERNEL: dovetail
-+
-+lava-test-6.12:qemu-arm64:
-+  needs: [ "build-6.12:qemu-arm64" ]
-+  extends: .lava-test:qemu-arm64
-+  variables:
-+    KERNEL_VERSION: "6.12"
-diff --git a/ci/kernel_6_12_physical.yml b/ci/kernel_6_12_physical.yml
-new file mode 100644
-index 0000000..17e42ad
---- /dev/null
-+++ b/ci/kernel_6_12_physical.yml
-@@ -0,0 +1,52 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2024-2025
-+#
-+# Authors:
-+#  Jan Kiszka <jan.kiszka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+build-6.12:rpi4:
-+  extends: .build:rpi4
-+  variables:
-+    LINUX_BUILD_OPTION: ":opt-linux-latest-6.12.yml"
-+    KERNEL_VERSION: "6.12"
-+    CACHE_KERNEL: dovetail
-+
-+lava-test-6.12:rpi4:
-+  needs: [ "build-6.12:rpi4" ]
-+  extends: .lava-test:rpi4
-+  variables:
-+    KERNEL_VERSION: "6.12"
-+    TEST_MAXIMUM_LATENCY: 150
-+
-+build-6.12:beagle-bone-black:
-+  extends: .build:beagle-bone-black
-+  variables:
-+    LINUX_BUILD_OPTION: ":opt-linux-latest-6.12.yml"
-+    KERNEL_VERSION: "6.12"
-+    CACHE_KERNEL: dovetail
-+
-+lava-test-6.12:beagle-bone-black:
-+  needs: [ "build-6.12:beagle-bone-black" ]
-+  extends: .lava-test:beagle-bone-black
-+  variables:
-+    KERNEL_VERSION: "6.12"
-+    TEST_MAXIMUM_LATENCY: 150
-+
-+build-6.12:x86-64-efi:
-+  extends: .build:x86-64-efi
-+  variables:
-+    LINUX_BUILD_OPTION: ":opt-linux-latest-6.12.yml"
-+    KERNEL_VERSION: "6.12"
-+    CACHE_KERNEL: dovetail
-+
-+lava-test-6.12:x86-64-efi:
-+  needs: [ "build-6.12:x86-64-efi" ]
-+  extends: .lava-test:x86-64-efi
-+  variables:
-+    KERNEL_VERSION: "6.12"
-+    TEST_MAXIMUM_LATENCY: 100
-diff --git a/ci/kernel_6_6.yml b/ci/kernel_6_6.yml
-deleted file mode 100644
-index 59e9704..0000000
---- a/ci/kernel_6_6.yml
-+++ /dev/null
-@@ -1,52 +0,0 @@
--#
--# Xenomai Real-Time System
--#
--# Copyright (c) Siemens AG, 2024
--#
--# Authors:
--#  Jan Kiszka <jan.kiszka@siemens.com>
--#
--# SPDX-License-Identifier: MIT
--#
--
--include:
--  - local: '/ci/kernel_6_6_physical.yml'
--
--build-6.6:qemu-amd64:
--  extends: .build:qemu-amd64
--  variables:
--    LINUX_BUILD_OPTION: ":opt-linux-latest-6.6.yml"
--    KERNEL_VERSION: "6.6"
--    CACHE_KERNEL: dovetail
--
--lava-test-6.6:qemu-amd64:
--  needs: [ "build-6.6:qemu-amd64" ]
--  extends: .lava-test:qemu-amd64
--  variables:
--    KERNEL_VERSION: "6.6"
--
--build-6.6:qemu-armhf:
--  extends: .build:qemu-armhf
--  variables:
--    LINUX_BUILD_OPTION: ":opt-linux-latest-6.6.yml"
--    KERNEL_VERSION: "6.6"
--    CACHE_KERNEL: dovetail
--
--lava-test-6.6:qemu-armhf:
--  needs: [ "build-6.6:qemu-armhf" ]
--  extends: .lava-test:qemu-armhf
--  variables:
--    KERNEL_VERSION: "6.6"
--
--build-6.6:qemu-arm64:
--  extends: .build:qemu-arm64
--  variables:
--    LINUX_BUILD_OPTION: ":opt-linux-latest-6.6.yml"
--    KERNEL_VERSION: "6.6"
--    CACHE_KERNEL: dovetail
--
--lava-test-6.6:qemu-arm64:
--  needs: [ "build-6.6:qemu-arm64" ]
--  extends: .lava-test:qemu-arm64
--  variables:
--    KERNEL_VERSION: "6.6"
-diff --git a/ci/kernel_6_6_physical.yml b/ci/kernel_6_6_physical.yml
-deleted file mode 100644
-index 2693907..0000000
---- a/ci/kernel_6_6_physical.yml
-+++ /dev/null
-@@ -1,52 +0,0 @@
--#
--# Xenomai Real-Time System
--#
--# Copyright (c) Siemens AG, 2024
--#
--# Authors:
--#  Jan Kiszka <jan.kiszka@siemens.com>
--#
--# SPDX-License-Identifier: MIT
--#
--
--build-6.6:rpi4:
--  extends: .build:rpi4
--  variables:
--    LINUX_BUILD_OPTION: ":opt-linux-latest-6.6.yml"
--    KERNEL_VERSION: "6.6"
--    CACHE_KERNEL: dovetail
--
--lava-test-6.6:rpi4:
--  needs: [ "build-6.6:rpi4" ]
--  extends: .lava-test:rpi4
--  variables:
--    KERNEL_VERSION: "6.6"
--    TEST_MAXIMUM_LATENCY: 150
--
--build-6.6:beagle-bone-black:
--  extends: .build:beagle-bone-black
--  variables:
--    LINUX_BUILD_OPTION: ":opt-linux-latest-6.6.yml"
--    KERNEL_VERSION: "6.6"
--    CACHE_KERNEL: dovetail
--
--lava-test-6.6:beagle-bone-black:
--  needs: [ "build-6.6:beagle-bone-black" ]
--  extends: .lava-test:beagle-bone-black
--  variables:
--    KERNEL_VERSION: "6.6"
--    TEST_MAXIMUM_LATENCY: 150
--
--build-6.6:x86-64-efi:
--  extends: .build:x86-64-efi
--  variables:
--    LINUX_BUILD_OPTION: ":opt-linux-latest-6.6.yml"
--    KERNEL_VERSION: "6.6"
--    CACHE_KERNEL: dovetail
--
--lava-test-6.6:x86-64-efi:
--  needs: [ "build-6.6:x86-64-efi" ]
--  extends: .lava-test:x86-64-efi
--  variables:
--    KERNEL_VERSION: "6.6"
--    TEST_MAXIMUM_LATENCY: 100
-diff --git a/ci/xenomai_3_next.yml b/ci/xenomai_3_next.yml
-index 1a49f6e..d05596f 100644
---- a/ci/xenomai_3_next.yml
-+++ b/ci/xenomai_3_next.yml
-@@ -1,7 +1,7 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2019 - 2024
-+# Copyright (c) Siemens AG, 2019-2025
- #
- # Authors:
- #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-@@ -14,10 +14,10 @@ include:
-   - local: '/ci/kernel_5_10.yml'
-   - local: '/ci/kernel_5_15.yml'
-   - local: '/ci/kernel_6_1.yml'
--  - local: '/ci/kernel_6_6.yml'
-+  - local: '/ci/kernel_6_12.yml'
-   - local: '/ci/xenomai_3_next_compat.yml'
- 
- variables:
-   XENOMAI_BUILD_OPTION: ":opt-xenomai-next.yml:opt-debug.yml"
-   XENOMAI_VERSION: "next"
--  LATEST_KERNEL_VERSION: "6.6"
-+  LATEST_KERNEL_VERSION: "6.12"
-diff --git a/ci/xenomai_3_next_long_term.yml b/ci/xenomai_3_next_long_term.yml
-index e3740f5..93c0e2f 100644
---- a/ci/xenomai_3_next_long_term.yml
-+++ b/ci/xenomai_3_next_long_term.yml
-@@ -11,11 +11,11 @@
- 
- include:
-   - local: '/ci/gitlab-ci-base.yml'
--  - local: '/ci/kernel_6_6_physical.yml'
-+  - local: '/ci/kernel_6_12_physical.yml'
- 
- variables:
-   XENOMAI_BUILD_OPTION: ":opt-xenomai-next.yml"
-   XENOMAI_VERSION: "next"
--  LATEST_KERNEL_VERSION: "6.6"
-+  LATEST_KERNEL_VERSION: "6.12"
-   TEST_RUNTIME_SECONDS: 3600
-   TEST_COMMAND: "xeno-test -k -l 'dohell -m /tmp ${TEST_RUNTIME_SECONDS}' ${ADDITIONAL_XENO_TEST_ARGS} -- -m ${TEST_MAXIMUM_LATENCY}"
-diff --git a/ci/xenomai_4_next.yml b/ci/xenomai_4_next.yml
-index 64657ff..36ea986 100644
---- a/ci/xenomai_4_next.yml
-+++ b/ci/xenomai_4_next.yml
-@@ -1,7 +1,7 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2023-2024
-+# Copyright (c) Siemens AG, 2023-2025
- #
- # Authors:
- #  Clara Kowalsky <clara.kowalsky@siemens.com>
-@@ -12,11 +12,11 @@
- include:
-   - local: '/ci/gitlab-ci-base.yml'
-   - local: '/ci/kernel_6_1.yml'
--  - local: '/ci/kernel_6_6.yml'
-+  - local: '/ci/kernel_6_12.yml'
- 
- variables:
-   XENOMAI_BUILD_OPTION: ":opt-libevl-next.yml:opt-debug.yml"
-   XENOMAI_VERSION: "next"
--  LATEST_KERNEL_VERSION: "6.6"
-+  LATEST_KERNEL_VERSION: "6.12"
-   BUILD_IDENTIFIER: "evl-${XENOMAI_VERSION}_kernel-${KERNEL_VERSION}"
-   CACHE_KERNEL: evl
+-#ifdef __USE_TIME_BITS64
++#if __USE_TIME_BITS64 && __TIMESIZE == 32
+ #define COBALT_VDSO_GETTIME	"__vdso_clock_gettime64"
+ #else
+ #define COBALT_VDSO_GETTIME	"__kernel_clock_gettime"
 -- 
-2.43.0
+2.34.1
 
