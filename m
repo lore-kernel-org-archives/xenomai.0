@@ -1,176 +1,277 @@
-Received: from redirect.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
+Received: from EUR03-DBA-obe.outbound.protection.outlook.com (mail-dbaeur03on2076.outbound.protection.outlook.com [40.107.104.76])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F75022CF00
-	for <xenomai@lists.linux.dev>; Mon, 13 Jan 2025 11:38:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.230
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736768302; cv=none; b=lrSrv7nNSd1AS46QfjAlpu/dtFzqZ1lskc6CC2WJVsR2leeeoe1uesHxAMWYMC/RWCXe+7rJmz4DNkNCxQEGTZv342xDposozo+TuyhXfwncn9lEAARETW7lLZRe+gvoe7+cfpyekh1+xWscRFh8K/OftoUexNp70wI1wCNkaDs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736768302; c=relaxed/simple;
-	bh=JGRujTc05aKYv4peGCeguIs1Ud2vk1iSPCNDQaQvL7k=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=hodGNLfZpyyhjDY+Zn4F5rjYhgGqcL3nsbeoaIXvy5bWkMd/YdQ2nJ3LQjhXfbfD0o1dMFRKqbfxwwtCIi3lBi6udgDVmMyv3KItEvU9hvyHgUyVpybjILEi3ZsPE63wnC0YY3m+1Qw4afLwz50q039LE/Hdk60z49H4cEdvCeU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=EBfb3d8k; arc=none smtp.client-ip=217.70.178.230
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C71F746B5
+	for <xenomai@lists.linux.dev>; Mon, 13 Jan 2025 12:16:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.104.76
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1736770584; cv=fail; b=J/iNYxe2k+7uL49GN+tThw5l8gK73ox/GKA/lXujzv1MjqyhnbgZTg6qLpRlXzvvctsf2/BMPY+Us6jBxQec3JGXXVq3p/Ho3l8z20y1zFEMRsl2gdcd6VaKjzhHJ6+6WCDlJdwBdii/+UA+6hqPp3I0Q8V0Ft8etPCplZy2veI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1736770584; c=relaxed/simple;
+	bh=uMsuyg48nx+tVLh02cYZlFqTctZw3zgIimD5GZSGXHI=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=R94d4mOTngVJ37Kx4L5XjD64pvsLNv+i6oA7T9iXHk7U1fGTrM2gmBpx1ItSpt88fXl6AIJYAx48TplwZr52PqZnKfgEJoa6ApcsKqiod2jDB8a+53c8L7jkhpyfVTvxyeMpIX8aX87JEWWi5PCKmbyGDUJS+CYvLm/6ArYSiPE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=Rf5y3eyd; arc=fail smtp.client-ip=40.107.104.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="EBfb3d8k"
-Received: from spool.mail.gandi.net (spool9.mail.gandi.net [217.70.178.218])
-	by relay10.mail.gandi.net (Postfix) with ESMTPS id E27D6240002
-	for <xenomai@lists.linux.dev>; Mon, 13 Jan 2025 11:38:10 +0000 (UTC)
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.5])
-	by spool.mail.gandi.net (Postfix) with ESMTP id BA7BB43AF3;
-	Mon, 13 Jan 2025 12:38:09 +0100 (CET)
-Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=163.com header.s=s110527 header.b=EBfb3d8k;
-	spf=pass (spool.mail.gandi.net: domain of powertree@163.com designates 117.135.210.5 as permitted sender) smtp.mailfrom=powertree@163.com;
-	dmarc=pass (policy=none) header.from=163.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Message-ID:Date:MIME-Version:Subject:From:
-	Content-Type; bh=XZdqdalSYY5QPzkjpExkH6MnZ6uhO/pWX1xSvDZSTCI=;
-	b=EBfb3d8kTU3O0FsLUmNncjhk10zACGKDYkixTm2xIiz/eYYR95w2L2RAfEHPjf
-	EXZcvFAKAFVN+DU8TQUU5UgWwATFg0cns8RbqbyvkzQNKJhsBVMgfAtQQhhXSDrR
-	Rz14iAL6x245CQEmVNtB4u52TS4jUG829yYF9XNhgvcJM=
-Received: from [10.10.80.200] (unknown [])
-	by gzga-smtp-mtada-g0-1 (Coremail) with SMTP id _____wDnv7EW+4RnQWufFg--.10445S2;
-	Mon, 13 Jan 2025 19:37:58 +0800 (CST)
-Message-ID: <34c915a8-8d4f-45f9-9f80-8703184e14bc@163.com>
-Date: Mon, 13 Jan 2025 19:37:57 +0800
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="Rf5y3eyd"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=i87PRz+zM+dxCHAsJyf+sTyJ64GTeuktbUGdsKEdOU/cpDu97dwxM1BivMqM+0L+KKtoYFkYmUo1QQhEwFWCvj5VrXLfTGMMBkdFHE7KYrBPLj471yXUG7xM/+ZSpO8G+4NpeK9uvEuMMJ0xkhIECpTI3wmXp/FC8XnNJDOE0jEKOBvIA2bKBoFIfoZgKyXRKhO1NT+jmcawdv2pqxvo1MIkrQ7Ncw2OkwLhvHV8JKe1iDaBa+3Px6URDhQy1rtbnCfklvvpVvO4CMrf5dweb1yUH8EDvCrZpYN6yfrdl8VwU/UkkdNL+Qhg3T1uGirwBgWbnKONWPxgamI3VGVLsg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=KUPWRmz4tCYTdBYlbzJigF3g5ydh60X/Fni/JXz4Yjc=;
+ b=kIddSmgo3LDCT4z1AgxrF+rchnIScI7YRiITxsmo7iFBM9haMAjsbgUkbgLhvaWQapktpJkuKvC4DJ4gs/1lQKF7tvk4Ntk+kWw9XrK+mKcHAQRHrHagnTmh/U0N7Hcfm4p1tth3JgFW2FVheGoTcaKFksIQjlY8qndOmXP5U9KdqDx34mlHidGya2B9AAfALCRcv5xWPUlQ1eGn53kmdWTqm3UKktdx0f6IooaJdLesLLOYevw/k8B6sDUrBp+PNeKRYpYfU6PsAXVL+Q0lhvjrrZTFRJMNcwVeT9zKu+db2bpfqA+mKRa7IoU0xtJMWKF3NScUdfmOlyjZCFGgag==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KUPWRmz4tCYTdBYlbzJigF3g5ydh60X/Fni/JXz4Yjc=;
+ b=Rf5y3eydtmEIpnCUdq5LmGxmbfVMpMPDVgxHYMO30C5T1+8NZFZHSz9ZZd9R+Yy0tgAWNNGOz8HqVU1Sfkaabn+V1+nIVNiroaPXQXji9STxwuy8LH7FaaZRN2aoBc8AX65LOEJlaULYU32BAnAx434MxsqIbJm+kZcQedTlFVHM43BbzbfiSFOQQEMNsrBMHoKd6vs5aIqfKR9dihozOKJC1klwd+uyT8u0ZJ3z1VfxZURJ5JuSDRKeBrAbNK6Gx9HQAIOg43tpIfasAygHlV4USw7X6qCngaG2YIQewxYKhkns/oyvl0Q6M1TwUJYekNhl5kEH6UrYG3ELhTsfVQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by PAVPR10MB6766.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:32e::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8356.9; Mon, 13 Jan
+ 2025 12:16:20 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408%4]) with mapi id 15.20.8356.009; Mon, 13 Jan 2025
+ 12:16:20 +0000
+Message-ID: <82a756ae-2320-43bd-86bb-2bb66122ada0@siemens.com>
+Date: Mon, 13 Jan 2025 13:16:17 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/3] cobalt: Add missing access_ok checks
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
+Cc: Philippe Gerum <rpm@xenomai.org>
+References: <cover.1736678909.git.jan.kiszka@siemens.com>
+ <eaa1b565f740f337b62cb18ea2217e0b8c2cb69b.1736678909.git.jan.kiszka@siemens.com>
+ <6f9ca8871d3e9e594c0620a0f59f46f64228d6ac.camel@siemens.com>
+ <85736265dfcb90e4ad1d2c70d61408f48217e9a7.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Content-Language: en-US
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ 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
+In-Reply-To: <85736265dfcb90e4ad1d2c70d61408f48217e9a7.camel@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM0PR07CA0035.eurprd07.prod.outlook.com
+ (2603:10a6:208:ac::48) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: calling __get_cpu_fpsimd_context twice in a row when
- kernel_neon_begin running
-To: Florian Bezdeka <florian.bezdeka@siemens.com>,
- Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@web.de>, "xenomai@xenomai.org"
- <xenomai@xenomai.org>
-References: <867aed54-563a-4c06-b750-4a7727e6e4c0@163.com>
- <103fdf7d-d3c8-45a9-b25d-283c9af400eb@siemens.com>
- <77c3e1fd-dab9-4b7c-b4f7-67c38dfc37bc@siemens.com>
- <79e83ee2-7406-43c1-9a71-e79cb2cbd127@163.com>
- <d799980b-fbfc-467b-87b7-5a4fbc6ddf50@web.de> <87ttmwo7by.fsf@xenomai.org>
- <8dbe101.93d4.1944a9bae5f.Coremail.powertree@163.com>
- <25336e91-c3e2-41bd-88c1-90822fea4d46@siemens.com>
- <a42668f5ef9a620cf7caebd59e3fcbcb71989c9b.camel@siemens.com>
-Content-Language: en-US
-From: powertree <powertree@163.com>
-In-Reply-To: <a42668f5ef9a620cf7caebd59e3fcbcb71989c9b.camel@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wDnv7EW+4RnQWufFg--.10445S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxXrWkKr4DWr15trWfuF45Wrg_yoWrWrWxpr
-	yUWF40yr4UAF15Z342yw4jvryFq34Utr15Xwn8Wr13Aa4qqFn2qr4IyryY9FyDur18uF1j
-	v3yjyF92q3WUtaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07Us4SrUUUUU=
-X-CM-SenderInfo: psrzv2pwuhvqqrwthudrp/1tbiqQrTlWeE18K7ngACs0
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrudehgedgfedtucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfevfhfhjggtgfhisehtkeertddtvdejnecuhfhrohhmpehpohifvghrthhrvggvuceophhofigvrhhtrhgvvgesudeifedrtghomheqnecuggftrfgrthhtvghrnhepkeekvefgjeffjeffueetieduudffkeetjedvgeevveffueevheffieekgeefkeefnecuffhomhgrihhnpeguvghngidruggvnecukfhppeduudejrddufeehrddvuddtrdehpddvudelrddugedvrddufeejrdduhedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepuddujedrudefhedrvddutddrhedphhgvlhhopehmudeirdhmrghilhdrudeifedrtghomhdpmhgrihhlfhhrohhmpehpohifvghrthhrvggvseduieefrdgtohhmpdhnsggprhgtphhtthhopedvpdhrtghpthhtoheprhhpmhesgigvnhhomhgrihdrohhrghdprhgtphhtthhopeigvghnohhmrghiseigvghnohhmrghirdhorhhg
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|PAVPR10MB6766:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7fc1ad95-4d00-42f4-d700-08dd33cc1697
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?WVl3V3hQRmxXY05mUUtoRnU5TjhKcjhiR3VUZjRod1ZPdlVXYmU3UEtHTjZB?=
+ =?utf-8?B?MDZERENjQ3Z2RXlNTFlFZFp1WFExNmZoc25JUXFMdjJVcld6SjBacDhPN1dD?=
+ =?utf-8?B?ZWk4UmdxSmw4YXVQeVhQaThDMUcwZDROcDQrYlB3SG5UWkRsbmJ1ZHM3eEdq?=
+ =?utf-8?B?aDdEdWlvU3RGUDBWZmdhazA5NTU1di9yK1NDdDlEK2RSK04rSExLaXVXVGoy?=
+ =?utf-8?B?Z1E1M3gxc1dSZFVTWWFsa0Z1M1M0NFZBdWIvbnZhT3dFYW9aUmRaRXZIRWE3?=
+ =?utf-8?B?b2ptZ0pOWnd5V2ZsTEZlakF0VWE3OTE4ZG05dDJJdWNlcGlJWmQxa1NYK2Jo?=
+ =?utf-8?B?Z2NFOEJiNE1yc1YxM0o0MVVMQlhQMkZ3a3F3SC9PR3EvbjdTcEVmbXZpWFZn?=
+ =?utf-8?B?b1oxS1c2MnJFT1cwLzg0elUxYUgyNnJMVWdnNTB6REd0VmdCd3BMYlVKZEdY?=
+ =?utf-8?B?YWFYemgwUVRkZmJNWGtaZVBGZGxBKzRmbURqaFVzRVpVbHlrQXVIU2I4bmhG?=
+ =?utf-8?B?MzFzNnVxdFduVTVCd0ZxdVpBOTI4Z0JFYXdXMWFzY0RkSjU4OEx1ZWZWazAx?=
+ =?utf-8?B?WjlKYytlQWhhQlNKM1hCbzNKamNVU3N2Z1VvdmYyY09mUzJwcDdwQlFyUGlv?=
+ =?utf-8?B?Z0lSZjRsd3V2VlA3cmJxQlF5bWg4aG54amEwalZtKzJOZHF5TzEvUkMxUzA4?=
+ =?utf-8?B?RkgwRFUzS3dlbE9vSDVpeWlNMWQ4VGtpUEFVdkxqVWdQN1RnWEVneHpldjk3?=
+ =?utf-8?B?RjdsYmpaUE1OaUN1cEc3eHZ2bDJVOXM2cnh3dEU5NHR6MlQ3WnpYemtKNURi?=
+ =?utf-8?B?UW5yeGthSTg2TjFOVllGQW4wYlJ6alB0ajFDenVGZExHOFJIZDBsSXNpdTcy?=
+ =?utf-8?B?WUo5Y2xKSXU0SVJlMEFZUHc1SFZOY0ZFdHpCQWFYNzc3U3VkRmtJQmxQMlRS?=
+ =?utf-8?B?dUp5OFlEWmhXaGw0L0w1MG9sLzRtQXV5ZjV1RysyRmN5T245RTlIY2dOOEMw?=
+ =?utf-8?B?ZE9kb0ZxRFNhSXlVZFZYZ01wV2lEbWY5UnNYYWtqTHByMFA0MGkrcHNCZWZW?=
+ =?utf-8?B?cXZSZ2ZXOVBhd24xTXBreGpra2JUOXdHTUZCWUZncGs0QlZuSDZhclZ5Nm5P?=
+ =?utf-8?B?Q1E0TE5ucFlOWGFCQWtPZlZhdStvVGxQZ09kRGNFUmtHellZRUd3Z1cydEJ5?=
+ =?utf-8?B?UHIrUyszQnQyd2hqMmlha0xpRVByNjFwWlJRNWY0aTJYMXJRcVBDTWl1Uk52?=
+ =?utf-8?B?T2VVdUN6aU9vQk80NlZ6MzU1cldiWmhucXoweGJwYXdScldpaVJPVjh4a0lH?=
+ =?utf-8?B?K3djQnlIa0Z4WkNmMUdlejFlbFN2YXVZVGlnaTJCek5lQW00elNaUkNFcVh0?=
+ =?utf-8?B?ME1zRS9JT1JUSWZDK3FRQkhVckVPM21EVWF5NzNYcE1KNVVNcFRLVVhIK0lF?=
+ =?utf-8?B?SWpnVnBMS0Z6VGQ1U3Y2ZXp2YTVnNXcrVmFKc1BjRGpoMmlsbmZzd0txd1pY?=
+ =?utf-8?B?d056ZVVGQTVrdjNiUzVmakJyNkZVYnd0WmRTa1Rjdy9rZGtFaktyeEdqenJQ?=
+ =?utf-8?B?WmRwQWRpeHBlZTl6WnJ3eTI2MXJIaEhuaDYwRDUrSlhtS1Y1Rm04WnF3VUli?=
+ =?utf-8?B?K0ErUkVxdnF2VFFKVXRkWFJDRzA1QTVpdDFYYkk2WHV1SE1jVTM5SEdLOTVs?=
+ =?utf-8?B?NVcwUytNckFDNlNGd3NIaXd3VVhsUWh3Sm0veGpzbXpVNHlQcjV6U3hMYk92?=
+ =?utf-8?B?bEFpcHdLOHdNWU9YYmdUcE5FaVFxSm5JNGZWVE1UTXFQNUlSYktyaE44ME5z?=
+ =?utf-8?B?MThvOE9wSGp0R2JzZkh5SXZ0b1h4eE9kaEh1UVFRZ0lMbC9ZQmtEdXJUZG9i?=
+ =?utf-8?Q?PZevDU7LPn7r7?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?MkhHVkxEejdueHoyYzFNL04yVkd5cEcxL3BpR1Vrd2p5dlQ4b2FiakUwZ3l2?=
+ =?utf-8?B?ZndRLzZxckJEZWF2NzJZUHpWZ3hycEN6Z0hzeHZsS2VZRXdNUk95ODRMNWk2?=
+ =?utf-8?B?eVk5Ums5NXAvdk1HeUhRdG9LOGtOdVQ1RWVYTjlZYzJrRjZ6cVZncmZiRE1O?=
+ =?utf-8?B?Njk4MzdQVzdmNkVJcDdxT0RlLzNzWm5iL1ltRUVJMUcvd3hrdzYxVzlLL0ZD?=
+ =?utf-8?B?S1V1cUZBNUlhN1c2RVdWQzFlakdnQWhqVVdjcTZEcnIwTDBNUzJhWk5oeE1Q?=
+ =?utf-8?B?TzJ4T0RpMWowelprRGRMTXJRYklTYXdPZ1B2TUtvYWdVdmtnNDE0UWRjaDha?=
+ =?utf-8?B?Vm9zSGdwbklZMmxQSzJ5a3BkVFU0MHNIM1h5WHQvRW9INVFnc0pya2RpYUhQ?=
+ =?utf-8?B?and0UVhqSWNyT3hvVS9WZ3JyZTV0a2VORTFYZksrYUltMUpmbnV2aWltclFh?=
+ =?utf-8?B?MXJyb3A1dVpvRmVPNmowbm55S1ZoUmtNV3l3NzVhK3BkRmh2L1NvUE9IOURa?=
+ =?utf-8?B?Z0VWMDJ6ZU9rMlZnbXRLRGxYQWNGM2tDeWl3Y0RJZjlSMWRvd01hWURXZkRY?=
+ =?utf-8?B?L0ZEekd5ZjBJb2E2bTVSTkkxc2VwazlRZXRIUlJhOUVyeDlkODI4YnBDWUdp?=
+ =?utf-8?B?YWQvZW1Xci8zckU1b00xeGpyZVAwVjNBdVg3T0ZwdCtGWVMvekFpcUpHQkFo?=
+ =?utf-8?B?QUQvZzI0VHhLaVVkNVlTbmY3b3JCd3Mwc1dHRWZVZlRSSlViNVYvZjZ6UHg2?=
+ =?utf-8?B?Uis0eXZ4dUhEL3NFOThCQ09ZbUVnTWNBYmNIdkoraXlnM3JtUkRMS093cDF4?=
+ =?utf-8?B?UHdvTkJRM3diU1pPdG1PTkJTSUgrVjFDM0hNTFBNV0cwWWpFWHpJNXRmOUxx?=
+ =?utf-8?B?K2pEYTFaNERrODRlZkIvbWJoWWc4MEE3Q0gyMmpGeDltVFl3R1oxOE5ZWm1w?=
+ =?utf-8?B?Y1VtYXlacXlsYkpWNzBVZ2hnZFRoT2dBbW5WT2o2aTZveXN1eS8vWjdWVnBN?=
+ =?utf-8?B?TGlNRDhQUXI4UzBTZGJid3lSdWJPT1BxM1c3OWZsWGp2MU1ucUVmYTV0c0wr?=
+ =?utf-8?B?eG9ndTdzWUxNTGRqYWJxWHlhMFlvMVc4ZW9xdXV2MWlYOUpVa3h4UkpUUGdT?=
+ =?utf-8?B?Q1hKQ3F5TjFKRWxpMVJoTVhlMVB6bjNGdUhUWElOY1VhR3d3TXlUZDVOY2pX?=
+ =?utf-8?B?a0dOWEZmalNQVm4xRWJGSEl5M0dJd2ZQTlVYMS84dkdVZk10clBEb2QzK2tM?=
+ =?utf-8?B?TGdsTVhVKytLZ2Z2LzlFMG9WVHQ5UVplZVNlVTJCUlVCTkZhaGlmQlJCeHNI?=
+ =?utf-8?B?Y0F0bVRMZnBmNHpWdTdjY3dITkd3bXMrazgwRzM5NlNEVk1rTUhPWm56b1Fu?=
+ =?utf-8?B?bHBxMkEwMWZQVDUzMlBsODVWSXJvUlFyeEhMcklrTHNacDlySzFFaDQyK1Y2?=
+ =?utf-8?B?MnIvNE8zYlVRT2pXQ1I3b0Q1UHdFUHQ0TGQ0RW9yT3ZvaWp0S2xkV0dxeFhy?=
+ =?utf-8?B?RjJpRFNhMEtUaVZ1WkR0WGxlZXZzbFNyZXhzSDZDcDhUQ0FCUnppT0R6d3lh?=
+ =?utf-8?B?cDRncDQwZEZsYjJlMXQzNkNHNlI3V1pHVFQ2WWVIN0xXOW5BVmVXUzVDbVU1?=
+ =?utf-8?B?bWxCYU1YVXRicjNYUFdZWW1FaTNmcFBmaVA5cnNITTAvTU55emdySURmWEQz?=
+ =?utf-8?B?Z1g5S2dLSDVySlBoSHVMdHJTM3p6cGNSeW9xM05sVWk0eGdBSTRRSEJPWTF4?=
+ =?utf-8?B?WDMwR0Q1cSt3VnZmaFRyajgybmVMR2hBTGhqRkZIMkZnL3BERCtYVlB5SFJz?=
+ =?utf-8?B?dEJwZ2RJcVdDeTFZNHJKL0szSFdwSTBTbDhEV0ZkTDdnSHRqOUFGMzJIZG9W?=
+ =?utf-8?B?UlRaTG5zeU1kNnVVVW8wazR1UVAyYzJUYmhURkltOGdudUFLdVNGUzdvMi9s?=
+ =?utf-8?B?NDFscmc5ZXYzWVl6STkrTnpzQzg4b09XblFxb1dROFpsVjExdHJ6aS9rNThp?=
+ =?utf-8?B?MXB0NVE0dUtiM1l4K0pOZ0FnTG9mZDVmSFNqK3dZTjlFOHg2Ui9BMlpmenpT?=
+ =?utf-8?B?Q3hqalVLVVdlcVVmdUQ5dDBFTXR2eU0xbjVyYmZRM3NwaGZuQWtnckwxUWw3?=
+ =?utf-8?B?S0FSY1d5S2ZnWGw0Q0dnZUIyQmQ1OFM1T1BweStIZFNxSVhRM0F2c2Z6T0Nn?=
+ =?utf-8?B?bXc9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7fc1ad95-4d00-42f4-d700-08dd33cc1697
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2025 12:16:20.2886
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LbXj7gPE6Q9XBaKDtOuXFYDJs/DfRBceiFB7gSOjkaoZaf5NxG4xK0tAOgZQ3ydB0CuI3VVAcVcS6xzpTyol6w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR10MB6766
 
-I don't have any plans recently to backport this patch to the lower 
-versions of the Dovetail kernel.
-When I'm free in a few months, I might backport this patch to the lower 
-versions and conduct some tests. I will keep everyone informed of the 
-results.
-Thank you for your advice, Florian Bezdeka and Jan Kiszka
-
-
-On 1/11/25 00:43, Florian Bezdeka wrote:
-> On Fri, 2025-01-10 at 17:21 +0100, Jan Kiszka wrote:
->> On 09.01.25 11:28, linz wrote:
->>> Hi,  all
->>> I think the following patch can resolve the bug,  it allows oob threads to safely preempt kernel_neon_begin() / kernel_neon_end sections.
->>> https://source.denx.de/Xenomai/linux-dovetail/-/commit/9b19700e623f96222c69ecb2adecb1a3e3664cc0
+On 13.01.25 10:31, Florian Bezdeka wrote:
+> On Mon, 2025-01-13 at 10:26 +0100, Florian Bezdeka wrote:
+>> On Sun, 2025-01-12 at 11:48 +0100, Jan Kiszka wrote:
+>>> From: Jan Kiszka <jan.kiszka@siemens.com>
 >>>
->>> But this patch has been merged into the Linux kernel version 6.8. At present, I have no plan to upgrade to version 6.8.
->>> I'm not sure if I understand correctly, but if so, is there a plan to backport this patch to a lower version, such as 5.10?
+>>> These ensure that we are not using an invalid address range, possibly
+>>> writing to kernel space.
+>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>> ---
+>>>  kernel/cobalt/posix/io.c        | 2 ++
+>>>  kernel/cobalt/posix/mqueue.c    | 3 ++-
+>>>  kernel/cobalt/posix/syscall32.c | 2 ++
+>>>  3 files changed, 6 insertions(+), 1 deletion(-)
 >>>
->> Have you tried to backport it to your kernel already to confirm that it
->> helps?
+>>> diff --git a/kernel/cobalt/posix/io.c b/kernel/cobalt/posix/io.c
+>>> index e581ec6db8..722f1ce20c 100644
+>>> --- a/kernel/cobalt/posix/io.c
+>>> +++ b/kernel/cobalt/posix/io.c
+>>> @@ -146,6 +146,8 @@ static int put_mmsglen(void __user **u_mmsg_p, const struct mmsghdr *mmsg)
+>>>  	struct mmsghdr __user **p = (struct mmsghdr **)u_mmsg_p,
+>>>  		*q __user = (*p)++;
+>>>  
+>>> +	if (!access_ok(&q->msg_len, sizeof(q->msg_len)))
+>>> +		return -EFAULT;
+>>>  	return __xn_put_user(mmsg->msg_len, &q->msg_len);
+>>>  }
+>>>  
+>>> diff --git a/kernel/cobalt/posix/mqueue.c b/kernel/cobalt/posix/mqueue.c
+>>> index 853aa6cad8..34776fe6cd 100644
+>>> --- a/kernel/cobalt/posix/mqueue.c
+>>> +++ b/kernel/cobalt/posix/mqueue.c
+>>> @@ -1031,7 +1031,8 @@ int __cobalt_mq_timedreceive(mqd_t uqd, void __user *u_buf,
+>>>  
+>>>  	cobalt_mqd_put(mqd);
+>>>  
+>>> -	if (u_prio && __xn_put_user(prio, u_prio))
+>>> +	if (u_prio && (!access_ok(u_prio, sizeof(*u_prio)) ||
+>>> +		       __xn_put_user(prio, u_prio)))
+>>>  		return -EFAULT;
+>>>  
+>>>  	return 0;
+>>> diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
+>>> index 793bde1388..484f059844 100644
+>>> --- a/kernel/cobalt/posix/syscall32.c
+>>> +++ b/kernel/cobalt/posix/syscall32.c
+>>> @@ -605,6 +605,8 @@ static int put_mmsglen32(void __user **u_mmsg_p, const struct mmsghdr *mmsg)
+>>>  	struct compat_mmsghdr __user **p = (struct compat_mmsghdr **)u_mmsg_p,
+>>>  		*q __user = (*p)++;
+>>>  
+>>> +	if (!access_ok(&q->msg_len, sizeof(q->msg_len)))
+>>> +		return -EFAULT;
+>>>  	return __xn_put_user(mmsg->msg_len, &q->msg_len);
+>>>  }
 >>
->> Unfortunately, it looks like a cleanup to upstream, so we may not get it
->> in via normal LTS. But if it help, picking it into dovetail LTS trees is
->> imaginable.
-> That patch at least depends on
->
-> 13150149 ("arm64: fpsimd: run kernel mode NEON with softirqs disabled")
->
-> There is more work to be done to have that properly backported, or
-> update to one of the recent LTS versions.
->
-> Florian
->
->> Jan
+>> That all looks OK, but I think we have two more missing access_ok()
+>> checks:
 >>
->>> At 2024-01-29 16:42:38, "Philippe Gerum" <rpm@xenomai.org> wrote:
->>>> Jan Kiszka <jan.kiszka@web.de> writes:
->>>>
->>>>> On 25.01.24 04:18, linz wrote:
->>>>>> I think my patch is not suitable after listening to your suggestions.
->>>>>> And I don't have any other good solutions.
->>>>>>
->>>>>> I think x86 is ok because there is no operation of writing global
->>>>>> variables in the critical zone.
->>>>>>
->>>>>> kernel_fpu_begin
->>>>>>      =>kernel_fpu_begin_mask
->>>>>> =>preempt_disable // enter the critical zone
->>>>>>          =>WARN_ON_FPU(!irq_fpu_usable());
->>>>>>          =>WARN_ON_FPU(this_cpu_read(in_kernel_fpu));
->>>>>>          =>flags = hard_cond_local_irq_save(); // leave the critcal zone
->>>>>>
->>>>>>
->>>>>> But in arm64, there is operation of writing global variables in the
->>>>>> critical zone, unfortunernaly.
->>>>>> efi_call_rts
->>>>>>    =>__efi_fpsimd_begin
->>>>>>      =>kernel_neon_begin
->>>>>>        =>get_cpu_fpsimd_context
->>>>>> =>hard_preempt_disable // disable interrupt, enter the critical zone
->>>>>> =>__get_cpu_fpsimd_context //  first call, modify global variable
->>>>>> fpsimd_context_busy
->>>>>> =>hard_cond_local_irq_restore // enable interrupt, leave the critcal zone
->>>>>>
->>>>>> handle_arch_irq_pipelined // Latency timer interrupt triggered
->>>>>> =>handle_irq_pipelined_finish
->>>>>>    =>irq_exit_pipeline
->>>>>>      =>xnsched_run
->>>>>>        =>__xnsched_run
->>>>>>          =>pipeline_schedule
->>>>>>            =>run_oob_call
->>>>>>              =>___xnsched_run
->>>>>>                =>pipeline_switch_to
->>>>>>                  =>dovetail_context_switch
->>>>>>                    =>__switch_to
->>>>>>                      =>fpsimd_thread_switch
->>>>>>                        =>__get_cpu_fpsimd_context // second call
->>>>>>
->>>>>> So, I think there are more todos on arm64. Do you have any other good
->>>>>> suggestions?
->>>>>>
->>>>> Philippe, some input on this issue would be helpful to know what the
->>>>> next step needs to be. It's still unclear to me how fundemental this
->>>>> issue is (false positive warning or real state corruption?).
->>>>>
->>>> This is a current limitation on arm64 which amounts to a bug
->>>> actually. x86 has the proper implementation, which allows oob threads to
->>>> safely preempt kernel_fpu_begin() / kernel_fpu_end sections.  Since
->>>> kernel_neon_begin() re-enables hard irqs before leaving, it is creating
->>>> the opportunity for a mess.
->>>>
->>>> The way to fix this is to implement the x86 logic to arm64 when it comes
->>>> to in-kernel fpu usage.
->>>>
->>>> -- 
->>>> Philippe.
->>
->> --
->> Siemens AG, Foundational Technologies
->> Linux Expert Center
+>> posix/cond.c: __cobalt_cond_wait_prologue()
+>> posix/monitor.c: __cobalt_monitor_wait()
+> 
+> Just realized that you folded that into 3/3...
+> 
+> Fine but slightly mixed, but as it touches the same code...
+> 
 
+The spots in patch 3 were missing any return code check, not just
+access_ok. Therefore the separation.
+
+Jan
+
+-- 
+Siemens AG, Foundational Technologies
+Linux Expert Center
