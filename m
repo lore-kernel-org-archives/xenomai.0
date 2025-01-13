@@ -1,125 +1,176 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from redirect.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FE5D2500D6
-	for <xenomai@lists.linux.dev>; Mon, 13 Jan 2025 09:31:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F75022CF00
+	for <xenomai@lists.linux.dev>; Mon, 13 Jan 2025 11:38:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.230
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736760686; cv=none; b=Z10z39C5rYgdtoGI39wHratld9b0M+i/6lkITCjKnc4dlpV7+mOPI+LHjbzT1XnidJfqG9X0kRZJ4lEvCqG7T5OJvsfpULFk/Csl+pm0SKydO7uwHe3zaEtE9FRusi5e/PkyjNQfoN7mY1KBuukrNVxgNi3ZG9CUcwr0Uyotppc=
+	t=1736768302; cv=none; b=lrSrv7nNSd1AS46QfjAlpu/dtFzqZ1lskc6CC2WJVsR2leeeoe1uesHxAMWYMC/RWCXe+7rJmz4DNkNCxQEGTZv342xDposozo+TuyhXfwncn9lEAARETW7lLZRe+gvoe7+cfpyekh1+xWscRFh8K/OftoUexNp70wI1wCNkaDs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736760686; c=relaxed/simple;
-	bh=1dWxxPaEhWpxHLplILAxsXnmoA0C1q2Q3Xt/IHXwUac=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=KYysvtZKR3acMxDtgcenEtM4Ku30jLKusSTUJYlziGsW49HKPesap3HszwRwiwZyZI3Kj1pq46JCMu0sDcnr25JF4BZ+iyLP713uj9w6BCXUanGEBX6cZrXOV+DuqBUYAKmHvg+UE6GFdQbtds655xMA/5NnKvrKVFky4VD07kY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=XA6UQW/y; arc=none smtp.client-ip=185.136.65.225
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1736768302; c=relaxed/simple;
+	bh=JGRujTc05aKYv4peGCeguIs1Ud2vk1iSPCNDQaQvL7k=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=hodGNLfZpyyhjDY+Zn4F5rjYhgGqcL3nsbeoaIXvy5bWkMd/YdQ2nJ3LQjhXfbfD0o1dMFRKqbfxwwtCIi3lBi6udgDVmMyv3KItEvU9hvyHgUyVpybjILEi3ZsPE63wnC0YY3m+1Qw4afLwz50q039LE/Hdk60z49H4cEdvCeU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=EBfb3d8k; arc=none smtp.client-ip=217.70.178.230
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="XA6UQW/y"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202501130931182b273a0f0cf4bb07a1
-        for <xenomai@lists.linux.dev>;
-        Mon, 13 Jan 2025 10:31:18 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=MB5hO39BTb7k3odYEWljomcEthKYZwEEKFLTapxA+/4=;
- b=XA6UQW/yhwZ0aXakzaStB7SFAN2TrjmMhTmveVxfqgyfG1N/m3cv8b+k1CxEoc4+gkylpP
- Y1QXtrWFG8DKkekI/jO9/vf4Kigzi8vjryz6N9ABa+hVA0DW1NKwxE88u5PnLE+UuKc3bGDe
- o3giqSGGmK8aLtuga/fgFSR+HPwGiVDxeAzfOz6rMKJWg5ej5+eD/HYOarhz0kVb1psDN0v5
- ZIAQa93177+TeIwPs3Iu5nxJ7Acmm4eN3N5mpOteE/XhXXefyIk7eXTO3TK7rDrv3wFpSoSo
- DLVwOEuogHK5IFI/Ig6C+q+BSBW5u4i4Kw8dVEwigtxP3F9XW7hUAf5g==;
-Message-ID: <85736265dfcb90e4ad1d2c70d61408f48217e9a7.camel@siemens.com>
-Subject: Re: [PATCH 2/3] cobalt: Add missing access_ok checks
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
-Cc: Philippe Gerum <rpm@xenomai.org>
-Date: Mon, 13 Jan 2025 10:31:18 +0100
-In-Reply-To: <6f9ca8871d3e9e594c0620a0f59f46f64228d6ac.camel@siemens.com>
-References: <cover.1736678909.git.jan.kiszka@siemens.com>
-	 <eaa1b565f740f337b62cb18ea2217e0b8c2cb69b.1736678909.git.jan.kiszka@siemens.com>
-	 <6f9ca8871d3e9e594c0620a0f59f46f64228d6ac.camel@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="EBfb3d8k"
+Received: from spool.mail.gandi.net (spool9.mail.gandi.net [217.70.178.218])
+	by relay10.mail.gandi.net (Postfix) with ESMTPS id E27D6240002
+	for <xenomai@lists.linux.dev>; Mon, 13 Jan 2025 11:38:10 +0000 (UTC)
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.5])
+	by spool.mail.gandi.net (Postfix) with ESMTP id BA7BB43AF3;
+	Mon, 13 Jan 2025 12:38:09 +0100 (CET)
+Authentication-Results: spool.mail.gandi.net;
+	dkim=pass header.d=163.com header.s=s110527 header.b=EBfb3d8k;
+	spf=pass (spool.mail.gandi.net: domain of powertree@163.com designates 117.135.210.5 as permitted sender) smtp.mailfrom=powertree@163.com;
+	dmarc=pass (policy=none) header.from=163.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Message-ID:Date:MIME-Version:Subject:From:
+	Content-Type; bh=XZdqdalSYY5QPzkjpExkH6MnZ6uhO/pWX1xSvDZSTCI=;
+	b=EBfb3d8kTU3O0FsLUmNncjhk10zACGKDYkixTm2xIiz/eYYR95w2L2RAfEHPjf
+	EXZcvFAKAFVN+DU8TQUU5UgWwATFg0cns8RbqbyvkzQNKJhsBVMgfAtQQhhXSDrR
+	Rz14iAL6x245CQEmVNtB4u52TS4jUG829yYF9XNhgvcJM=
+Received: from [10.10.80.200] (unknown [])
+	by gzga-smtp-mtada-g0-1 (Coremail) with SMTP id _____wDnv7EW+4RnQWufFg--.10445S2;
+	Mon, 13 Jan 2025 19:37:58 +0800 (CST)
+Message-ID: <34c915a8-8d4f-45f9-9f80-8703184e14bc@163.com>
+Date: Mon, 13 Jan 2025 19:37:57 +0800
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+User-Agent: Mozilla Thunderbird
+Subject: Re: calling __get_cpu_fpsimd_context twice in a row when
+ kernel_neon_begin running
+To: Florian Bezdeka <florian.bezdeka@siemens.com>,
+ Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@web.de>, "xenomai@xenomai.org"
+ <xenomai@xenomai.org>
+References: <867aed54-563a-4c06-b750-4a7727e6e4c0@163.com>
+ <103fdf7d-d3c8-45a9-b25d-283c9af400eb@siemens.com>
+ <77c3e1fd-dab9-4b7c-b4f7-67c38dfc37bc@siemens.com>
+ <79e83ee2-7406-43c1-9a71-e79cb2cbd127@163.com>
+ <d799980b-fbfc-467b-87b7-5a4fbc6ddf50@web.de> <87ttmwo7by.fsf@xenomai.org>
+ <8dbe101.93d4.1944a9bae5f.Coremail.powertree@163.com>
+ <25336e91-c3e2-41bd-88c1-90822fea4d46@siemens.com>
+ <a42668f5ef9a620cf7caebd59e3fcbcb71989c9b.camel@siemens.com>
+Content-Language: en-US
+From: powertree <powertree@163.com>
+In-Reply-To: <a42668f5ef9a620cf7caebd59e3fcbcb71989c9b.camel@siemens.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:_____wDnv7EW+4RnQWufFg--.10445S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxXrWkKr4DWr15trWfuF45Wrg_yoWrWrWxpr
+	yUWF40yr4UAF15Z342yw4jvryFq34Utr15Xwn8Wr13Aa4qqFn2qr4IyryY9FyDur18uF1j
+	v3yjyF92q3WUtaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07Us4SrUUUUU=
+X-CM-SenderInfo: psrzv2pwuhvqqrwthudrp/1tbiqQrTlWeE18K7ngACs0
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefuddrudehgedgfedtucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkffggfgfuvfevfhfhjggtgfhisehtkeertddtvdejnecuhfhrohhmpehpohifvghrthhrvggvuceophhofigvrhhtrhgvvgesudeifedrtghomheqnecuggftrfgrthhtvghrnhepkeekvefgjeffjeffueetieduudffkeetjedvgeevveffueevheffieekgeefkeefnecuffhomhgrihhnpeguvghngidruggvnecukfhppeduudejrddufeehrddvuddtrdehpddvudelrddugedvrddufeejrdduhedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepuddujedrudefhedrvddutddrhedphhgvlhhopehmudeirdhmrghilhdrudeifedrtghomhdpmhgrihhlfhhrohhmpehpohifvghrthhrvggvseduieefrdgtohhmpdhnsggprhgtphhtthhopedvpdhrtghpthhtoheprhhpmhesgigvnhhomhgrihdrohhrghdprhgtphhtthhopeigvghnohhmrghiseigvghnohhmrghirdhorhhg
 
-On Mon, 2025-01-13 at 10:26 +0100, Florian Bezdeka wrote:
-> On Sun, 2025-01-12 at 11:48 +0100, Jan Kiszka wrote:
-> > From: Jan Kiszka <jan.kiszka@siemens.com>
-> >=20
-> > These ensure that we are not using an invalid address range, possibly
-> > writing to kernel space.
-> > Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> > ---
-> >  kernel/cobalt/posix/io.c        | 2 ++
-> >  kernel/cobalt/posix/mqueue.c    | 3 ++-
-> >  kernel/cobalt/posix/syscall32.c | 2 ++
-> >  3 files changed, 6 insertions(+), 1 deletion(-)
-> >=20
-> > diff --git a/kernel/cobalt/posix/io.c b/kernel/cobalt/posix/io.c
-> > index e581ec6db8..722f1ce20c 100644
-> > --- a/kernel/cobalt/posix/io.c
-> > +++ b/kernel/cobalt/posix/io.c
-> > @@ -146,6 +146,8 @@ static int put_mmsglen(void __user **u_mmsg_p, cons=
-t struct mmsghdr *mmsg)
-> >  	struct mmsghdr __user **p =3D (struct mmsghdr **)u_mmsg_p,
-> >  		*q __user =3D (*p)++;
-> > =20
-> > +	if (!access_ok(&q->msg_len, sizeof(q->msg_len)))
-> > +		return -EFAULT;
-> >  	return __xn_put_user(mmsg->msg_len, &q->msg_len);
-> >  }
-> > =20
-> > diff --git a/kernel/cobalt/posix/mqueue.c b/kernel/cobalt/posix/mqueue.=
-c
-> > index 853aa6cad8..34776fe6cd 100644
-> > --- a/kernel/cobalt/posix/mqueue.c
-> > +++ b/kernel/cobalt/posix/mqueue.c
-> > @@ -1031,7 +1031,8 @@ int __cobalt_mq_timedreceive(mqd_t uqd, void __us=
-er *u_buf,
-> > =20
-> >  	cobalt_mqd_put(mqd);
-> > =20
-> > -	if (u_prio && __xn_put_user(prio, u_prio))
-> > +	if (u_prio && (!access_ok(u_prio, sizeof(*u_prio)) ||
-> > +		       __xn_put_user(prio, u_prio)))
-> >  		return -EFAULT;
-> > =20
-> >  	return 0;
-> > diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/sysc=
-all32.c
-> > index 793bde1388..484f059844 100644
-> > --- a/kernel/cobalt/posix/syscall32.c
-> > +++ b/kernel/cobalt/posix/syscall32.c
-> > @@ -605,6 +605,8 @@ static int put_mmsglen32(void __user **u_mmsg_p, co=
-nst struct mmsghdr *mmsg)
-> >  	struct compat_mmsghdr __user **p =3D (struct compat_mmsghdr **)u_mmsg=
-_p,
-> >  		*q __user =3D (*p)++;
-> > =20
-> > +	if (!access_ok(&q->msg_len, sizeof(q->msg_len)))
-> > +		return -EFAULT;
-> >  	return __xn_put_user(mmsg->msg_len, &q->msg_len);
-> >  }
->=20
-> That all looks OK, but I think we have two more missing access_ok()
-> checks:
->=20
-> posix/cond.c: __cobalt_cond_wait_prologue()
-> posix/monitor.c: __cobalt_monitor_wait()
+I don't have any plans recently to backport this patch to the lower 
+versions of the Dovetail kernel.
+When I'm free in a few months, I might backport this patch to the lower 
+versions and conduct some tests. I will keep everyone informed of the 
+results.
+Thank you for your advice, Florian Bezdeka and Jan Kiszka
 
-Just realized that you folded that into 3/3...
 
-Fine but slightly mixed, but as it touches the same code...
-
->=20
-> > =20
-> > --=20
-> > 2.43.0
+On 1/11/25 00:43, Florian Bezdeka wrote:
+> On Fri, 2025-01-10 at 17:21 +0100, Jan Kiszka wrote:
+>> On 09.01.25 11:28, linz wrote:
+>>> Hi,  all
+>>> I think the following patch can resolve the bug,  it allows oob threads to safely preempt kernel_neon_begin() / kernel_neon_end sections.
+>>> https://source.denx.de/Xenomai/linux-dovetail/-/commit/9b19700e623f96222c69ecb2adecb1a3e3664cc0
+>>>
+>>> But this patch has been merged into the Linux kernel version 6.8. At present, I have no plan to upgrade to version 6.8.
+>>> I'm not sure if I understand correctly, but if so, is there a plan to backport this patch to a lower version, such as 5.10?
+>>>
+>> Have you tried to backport it to your kernel already to confirm that it
+>> helps?
+>>
+>> Unfortunately, it looks like a cleanup to upstream, so we may not get it
+>> in via normal LTS. But if it help, picking it into dovetail LTS trees is
+>> imaginable.
+> That patch at least depends on
+>
+> 13150149 ("arm64: fpsimd: run kernel mode NEON with softirqs disabled")
+>
+> There is more work to be done to have that properly backported, or
+> update to one of the recent LTS versions.
+>
+> Florian
+>
+>> Jan
+>>
+>>> At 2024-01-29 16:42:38, "Philippe Gerum" <rpm@xenomai.org> wrote:
+>>>> Jan Kiszka <jan.kiszka@web.de> writes:
+>>>>
+>>>>> On 25.01.24 04:18, linz wrote:
+>>>>>> I think my patch is not suitable after listening to your suggestions.
+>>>>>> And I don't have any other good solutions.
+>>>>>>
+>>>>>> I think x86 is ok because there is no operation of writing global
+>>>>>> variables in the critical zone.
+>>>>>>
+>>>>>> kernel_fpu_begin
+>>>>>>      =>kernel_fpu_begin_mask
+>>>>>> =>preempt_disable // enter the critical zone
+>>>>>>          =>WARN_ON_FPU(!irq_fpu_usable());
+>>>>>>          =>WARN_ON_FPU(this_cpu_read(in_kernel_fpu));
+>>>>>>          =>flags = hard_cond_local_irq_save(); // leave the critcal zone
+>>>>>>
+>>>>>>
+>>>>>> But in arm64, there is operation of writing global variables in the
+>>>>>> critical zone, unfortunernaly.
+>>>>>> efi_call_rts
+>>>>>>    =>__efi_fpsimd_begin
+>>>>>>      =>kernel_neon_begin
+>>>>>>        =>get_cpu_fpsimd_context
+>>>>>> =>hard_preempt_disable // disable interrupt, enter the critical zone
+>>>>>> =>__get_cpu_fpsimd_context //  first call, modify global variable
+>>>>>> fpsimd_context_busy
+>>>>>> =>hard_cond_local_irq_restore // enable interrupt, leave the critcal zone
+>>>>>>
+>>>>>> handle_arch_irq_pipelined // Latency timer interrupt triggered
+>>>>>> =>handle_irq_pipelined_finish
+>>>>>>    =>irq_exit_pipeline
+>>>>>>      =>xnsched_run
+>>>>>>        =>__xnsched_run
+>>>>>>          =>pipeline_schedule
+>>>>>>            =>run_oob_call
+>>>>>>              =>___xnsched_run
+>>>>>>                =>pipeline_switch_to
+>>>>>>                  =>dovetail_context_switch
+>>>>>>                    =>__switch_to
+>>>>>>                      =>fpsimd_thread_switch
+>>>>>>                        =>__get_cpu_fpsimd_context // second call
+>>>>>>
+>>>>>> So, I think there are more todos on arm64. Do you have any other good
+>>>>>> suggestions?
+>>>>>>
+>>>>> Philippe, some input on this issue would be helpful to know what the
+>>>>> next step needs to be. It's still unclear to me how fundemental this
+>>>>> issue is (false positive warning or real state corruption?).
+>>>>>
+>>>> This is a current limitation on arm64 which amounts to a bug
+>>>> actually. x86 has the proper implementation, which allows oob threads to
+>>>> safely preempt kernel_fpu_begin() / kernel_fpu_end sections.  Since
+>>>> kernel_neon_begin() re-enables hard irqs before leaving, it is creating
+>>>> the opportunity for a mess.
+>>>>
+>>>> The way to fix this is to implement the x86 logic to arm64 when it comes
+>>>> to in-kernel fpu usage.
+>>>>
+>>>> -- 
+>>>> Philippe.
+>>
+>> --
+>> Siemens AG, Foundational Technologies
+>> Linux Expert Center
 
