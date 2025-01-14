@@ -1,87 +1,88 @@
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C13F3382
-	for <xenomai@lists.linux.dev>; Tue, 14 Jan 2025 14:00:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFD108615A
+	for <xenomai@lists.linux.dev>; Tue, 14 Jan 2025 14:53:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736863232; cv=none; b=Xt21ZqMpmTPqqB8wmVj5iruQ2mwvKNfIK/vUNB0e/TWPPLfbZNQZdYj+8ywqq00qh/C7bDuEMhHv+Nc3aoLLWxh4y4buZvxfcdCBCcOuHawWdMgVk7TpBTSF4gXCaE31CkkyKjZukDvaicusHP16tJBj5bIssYuQFt840akL+7U=
+	t=1736866386; cv=none; b=HUw+WtLBnBqwZ/vGSLZjAu8OPl97BDy1YngSC8e58lXqyw/w79zcTUM7TZEWthk+X43XoH165Q+tLuz8cL37cDYHQZsHisXBn0bmMUkqbYj8GZVwGzTZNW/gh1Dp72w/7JvGlJUNGR5liHFQa9GJ324Z2M7hXlrkzcy8IqGTWHo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736863232; c=relaxed/simple;
-	bh=Dl0bHmkWUHTjYKV0rk1Ms1JmCJtXVeBmWG2P9Lxewsk=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=oLz7vk/AZvmM+OssvizSVnLbsPqumFoEKtRa2mD4hH9+bgmMj5nkQO5lk1HSTUj/Twcv6liC6Pjz08bJlD5FgipHNYfCvOJT/htPJIAXiWCyM3jpqAckS9Xa9cj8tDPknwnDbLXRUMRud71fHqp7vflxNyPUbzU9W64qKEaNivs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Xmn+gLb8; arc=none smtp.client-ip=209.85.210.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1736866386; c=relaxed/simple;
+	bh=zPP2XtWLsoQFVmNNdjK/SjsL54SBZ9ggqkUIwiFQRR0=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=cVmJlPLj9fedRxC2KlC1idIW/vuvaU5XWiEht0E4MYO6G8ooKvNaunk+DvZ86nul+vtq8iMu3h+NOLtqd1PfPoTnIrKDYX56uLk07Sk67Uv85A4LzRpkqkSL7JZgMnVfWDGE08SN28FCzBk18Ualsd18b4Lk/ciMn9u7RR+F160=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=JDeT03co; arc=none smtp.client-ip=217.70.183.200
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Xmn+gLb8"
-Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-71e3eb8d224so1436579a34.2
-        for <xenomai@lists.linux.dev>; Tue, 14 Jan 2025 06:00:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1736863229; x=1737468029; darn=lists.linux.dev;
-        h=content-transfer-encoding:to:subject:message-id:date:from
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=Dl0bHmkWUHTjYKV0rk1Ms1JmCJtXVeBmWG2P9Lxewsk=;
-        b=Xmn+gLb8F5/S1WqGd6FyXALf19mu69KeYw0+owOh/RhNPazXCzwwO97nHfjOsACKqs
-         fiB66QRkdageibiOVl9u01aaHqRjEKJBpYqM78qUHCIpRG2TFeVNpbagARJNO6uJqGIZ
-         9opEdN0j035/IajWLTlkFoy02yYPn6Xasldxtc9Rw/ai9O47/LZtCEJPHXhKBFQ30vpC
-         TfMrZWCPjr8JiGxqJ8MBhu4T3z8FGwQtomlmeyNKo1wpVDCY5FrMDVOLcLqxCtTP/3Br
-         eH6LYjEm7tGA8XHThWhHayXrPjoBVe2B85jSkKI3qa9D6w+X4drzX2MhPHUf5kSA7pjD
-         1lDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1736863229; x=1737468029;
-        h=content-transfer-encoding:to:subject:message-id:date:from
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Dl0bHmkWUHTjYKV0rk1Ms1JmCJtXVeBmWG2P9Lxewsk=;
-        b=li6mLbp+xrifMZDC5gqldARC0MEOCWRQ6lMXH//HSG86IQ2buK5GL3AXqLIOfYqyxp
-         gasDVAG3pgs7DWafCmC6fQkfnTbL4HdXadfTPsH5eCuMXLxdGjXEPIxUdQIiIRVCR5Ri
-         MjsUFs1ts0yiM3B8XI0PfbcZGV53R0eeFmeMlucl5UZRL+4+tuDj3NhWhWgL+t5Zbena
-         twGYEshOHFhd8BR/+U8hediSqboTXCDl0zXlmuuwb9jaxHmxrXnyAPy8TT7pH1QGxbzi
-         TJwJF2JtHlahO+t7xKexB4zjRbg+jF2DLv7VeoMh68q+w3b+HWV6VYMExS+ldkmN/xua
-         4lPg==
-X-Gm-Message-State: AOJu0YzHHqfZRCBgZs/YcvPr4r9msJPeu4X6utfoIfxVzPpnxM1O4SiK
-	+J2dnDMweFq91ZeAK+9RNtOHxoAcXCDM74B9r2z4K8oPLUOgDDdcXg+sIuT5bCRrixrBnJ9Tqkf
-	WwBoMYnpsl0DNP7pei0bz1ixD3jjAu+zd
-X-Gm-Gg: ASbGncv6HvYRYJMaQ/1v6J2DhvMYzV8zQ2DydLWYwHmowSNOYSNkpu8pnA3BsfFkjmN
-	EL4b96taXykT1asS4ISlSe+Ki7I6zIK2HRODRgQ==
-X-Google-Smtp-Source: AGHT+IHIDCR79FrYy5pDny8UeqUiAScqiCGPqZXM94eHeh+hu46utlx5gstniFYfqIfmPAICGSKEK6ul6xvQ1dIitIY=
-X-Received: by 2002:a05:6871:a0c8:b0:29d:c6ef:cf1d with SMTP id
- 586e51a60fabf-2aa06549ec9mr12994195fac.7.1736863229404; Tue, 14 Jan 2025
- 06:00:29 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="JDeT03co"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id ED2BC20009;
+	Tue, 14 Jan 2025 14:53:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1736866382;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=zPP2XtWLsoQFVmNNdjK/SjsL54SBZ9ggqkUIwiFQRR0=;
+	b=JDeT03comvEKG4/OGjIj/TpPbMwhdfWpg8BAqtcU2lAc1BLOuStKaLIbYz1/yep2RaYTOC
+	U30yO0sKC8Fb2dJxsLnVWgt/TUplCvnHYeM5/RcyiDaSUjhRihfiGjfbFtZvlIE1xfXduv
+	tv052+eVuA9yg2XkOYt5Po6IcD2Xs4m724y9bJWYd6fyzebc8l1WHYVfde1VSoD/rA7owV
+	NkHWgoiB0Zm6qWNRO4jP/NFQtyG+wvGNrzl90//0Zwkpi2g3S5JNxz5J3JVtaU749fBr3D
+	DdQYeVXZUB05qPyeLrLD2UvHkBItp6uxK8rDG0dmG5DYjawqxR+Y/AwWyFp/Lg==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Nan Chow <morthlee@gmail.com>
+Cc: xenomai@lists.linux.dev
+Subject: Re: /sys/class/evl/net/vlans: No such file or =?utf-8?Q?directory?=
+ =?utf-8?Q?=E2=80=9D?= on rpi4b
+ using evl
+In-Reply-To: <CABnSPHZg11FCXDwap0+=Q-QwizS0MwALuQg2bR9ndy1fBVCi2A@mail.gmail.com>
+	(Nan Chow's message of "Tue, 14 Jan 2025 22:00:03 +0800")
+References: <CABnSPHZg11FCXDwap0+=Q-QwizS0MwALuQg2bR9ndy1fBVCi2A@mail.gmail.com>
+User-Agent: mu4e 1.12.1; emacs 29.4
+Date: Tue, 14 Jan 2025 15:52:57 +0100
+Message-ID: <87plkpxx9y.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Nan Chow <morthlee@gmail.com>
-Date: Tue, 14 Jan 2025 22:00:03 +0800
-X-Gm-Features: AbW1kvb11EhFZ8PZ9z2QUlwyoeJAPXwlgiDAJvTKYrdWHTNwfyhOVR8alUUogvs
-Message-ID: <CABnSPHZg11FCXDwap0+=Q-QwizS0MwALuQg2bR9ndy1fBVCi2A@mail.gmail.com>
-Subject: =?UTF-8?Q?=2Fsys=2Fclass=2Fevl=2Fnet=2Fvlans=3A_No_such_file_or_directory?=
-	=?UTF-8?Q?=E2=80=9D_on_rpi4b_using_evl?=
-To: xenomai@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
+X-GND-Sasl: rpm@xenomai.org
 
-Hi all,
+Nan Chow <morthlee@gmail.com> writes:
 
-I am developing EtherCAT master based on EVL, and my target hardware
-platform is Raspberry Pi 4b. I used the =E2=80=9Cvendor/rpi/v6.6.47=E2=80=
+> Hi all,
+>
+> I am developing EtherCAT master based on EVL, and my target hardware
+> platform is Raspberry Pi 4b. I used the =E2=80=9Cvendor/rpi/v6.6.47=E2=80=
 =9D branch
-and successfully compiled the image and dtb files with oob network
-enabled. Following the instructions in =E2=80=9CThe EVL network stack for t=
-he
-impatient=E2=80=9D, I could attach a VLAN device with tag 42 to the real
-'eth0' device, and sssign an arbitrary address to that VLAN device,
-and tell EVL that the VLAN device is an out-of-band networking port.
-But, when I did the last step, =E2=80=9Cecho 42 > /sys/class/evl/net/vlans=
-=E2=80=9D,
-there was an error =E2=80=9C/sys/class/evl/net/vlans: No such file or
-directory=E2=80=9D.
+> and successfully compiled the image and dtb files with oob network
+> enabled. Following the instructions in =E2=80=9CThe EVL network stack for=
+ the
+> impatient=E2=80=9D, I could attach a VLAN device with tag 42 to the real
+> 'eth0' device, and sssign an arbitrary address to that VLAN device,
+> and tell EVL that the VLAN device is an out-of-band networking port.
+> But, when I did the last step, =E2=80=9Cecho 42 > /sys/class/evl/net/vlan=
+s=E2=80=9D,
+> there was an error =E2=80=9C/sys/class/evl/net/vlans: No such file or
+> directory=E2=80=9D.
+>
+> My question is, does the RPi4b support OOB real-time ethernet now? And
 
-My question is, does the RPi4b support OOB real-time ethernet now? And
-if so, what may be the reason for the error?
+Only partial support, see [1].
 
-Thanks for any kind help!
+> if so, what may be the reason for the error?
+>
+> Thanks for any kind help!
+
+1) Is /sys mounted? 2) Which part of this path is not present (e.g. is
+/sys/class/evl/net present)?
+
+[1]
+https://v4.xenomai.org/dovetail/kernel-api/net/#dovetail-net-full-oob
+
+--=20
+Philippe.
