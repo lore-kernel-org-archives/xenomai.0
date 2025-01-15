@@ -1,96 +1,115 @@
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FFB74F21D
-	for <xenomai@lists.linux.dev>; Wed, 15 Jan 2025 15:41:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F4CE136E37
+	for <xenomai@lists.linux.dev>; Wed, 15 Jan 2025 16:02:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1736955704; cv=none; b=o1Rvbmi222jEzzBaCCo35PYkFwVgBRQekGttB4uqsSiPNYBDHmrE2v+p3pp71B4cASq+ZSf/byFsdCHuVnzgc92hXj+x6PH0xOaM5pTmopmR42fUm9A4B9NNePOFOO8DTOvqDmipwJmprWjpTwGLh9DCad2XZyGlz2T/Ha9rFSQ=
+	t=1736956972; cv=none; b=M6I0rTB2SzqUxUzMf/I0P/U/0a3aU0jKa9o5MX6dsS5AJeuoLTL43h8sf3xwVzIHtTSQWJrJp1zizbZD7zjNzHju7vDyaSloYXVzE7S2Z7vO238+kLF/DlNWs70b/ybnwatSaiOQRUvT5LT6vmg0M6dvIQWLdhDNHljk6J+r4dw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1736955704; c=relaxed/simple;
-	bh=s6lZFsO9kDm7VXp5C45cx5C3XFCglWvnuLXe/aDTIZM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=SGkybTSpWx2XP9Wr/P6CLx1Ln9OeqZCKhUBzAbtRAEKrSQaG4BibEu1Di7f6iZ2Pa/v7ld/dbnaEAIHgfTzOdXFnhVYhO/n0fwpFORJ5IooxVVyauLsUTWWBb4THf2fcuyZJ1lxen+GhGIPxiHAudhn9GrBGMTwqpj7wZ7EjCsM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=XjJQPlNC; arc=none smtp.client-ip=217.70.183.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1736956972; c=relaxed/simple;
+	bh=NE3AdVkR+n+YTf1ehud6KV74euMDZeHvlpqHaLeCo2I=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=TNZWgUv+TTM/7FTAJZtSu7qlb/09te8YIgUg8IAJRMAfsIyrG8CwDxOCqVJjdLx3jOqlNIjptSh4/EazqzHtRHt5SQ1AlDT59LFh5i40y3ZOgRSK8C2pMj2vDwv3o/vRD6UurqZUYyV+mYdbufWCc4FIU9Jnl2DLl9sIqZ8210c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=DtrqfYx0; arc=none smtp.client-ip=185.136.64.226
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="XjJQPlNC"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id AB94240002;
-	Wed, 15 Jan 2025 15:41:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1736955694;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-	bh=YTKhuifuEPFzEpDA0wLZkt/pgQQZnJbk52gK1tF30Yc=;
-	b=XjJQPlNCSq5Pv8HcWOjCppRqJs8jvV4BFNHVno80GiX/GB2mtam2/QWCFOQH4A401qarKD
-	dd6VyigaWFqvJ/Vd/oDtf7kyRQO8cjsHX5MQaByAXEy4J0I6yiIydAIwDeXMJYWodjOaDo
-	chFXGsm9ETS7QhMqyqQHGy2d/ZUkiEHRxKjZiGWGmfZ9jOhJplE7NfZ8h+ffpPseBMRUk5
-	FNcupUBlm5NkYRCIzShcYeSXxQONDONWg/mDrL5dUvGjPPvhb7RFr5xTCfPO7Fra0BkjFx
-	Ra5YOVL0n1t5zyzXm4hGk3EfU3CL8IUXnGD5JHsRao3/yG35UJOSySLCJ4ug4g==
-From: Philippe Gerum <rpm@xenomai.org>
-To: xenomai@lists.linux.dev
-Cc: jan.kiszka@siemens.com, florian.bezdeka@siemens.com,
- tobias.schaffner@siemens.com, shanmu1901@gmail.com
-Subject: Dovetail situation report
-User-Agent: mu4e 1.12.1; emacs 29.4
-Date: Wed, 15 Jan 2025 16:41:33 +0100
-Message-ID: <87wmew84pe.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="DtrqfYx0"
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 2025011516023744e03efcf200f6eadd
+        for <xenomai@lists.linux.dev>;
+        Wed, 15 Jan 2025 17:02:37 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=zY0Qq33rHO1JBd0qKjwjoIuyDe5sJdazJgk3oO5Mb/o=;
+ b=DtrqfYx0RTRFnepC/rPiC+r9XISjGYqmruQJpJGGOhuzvc3gd1b5qsYoZh+sW1Cp3HeJbB
+ /TY14cjLXGsr9C15Wjwn17HUDe6qR8md7TAvuZXIyHsaq3BmLnpvmv0kOsqGV2YVBo8NXKH/
+ naC52iauvx7AhrJASsXG4U3t+oTnHDPd9gqd1v5UmUFBybOiwCEKrZDfdKp2/5PWVUMYxI7h
+ tIq9LoNrUJrhqJaUOUyYvMqjLcgjnVHAHR5Dxp9UoG52g15PVTW6RCdb6UXoKhvcEJF/eXc4
+ I84SbJVeYTdIn0sef2JgA1+g6q0dpqYKV+Iyqm3NYuf3hJDCCrG5WXcw==;
+Message-ID: <7a2fe3f2e06237a32b6ec050d34b57a1a5511609.camel@siemens.com>
+Subject: Re: [PATCH] cobalt: select: Move nfds range check to caller of
+ xnselect
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@lists.linux.dev>
+Cc: Florian Ullmann <ullmann.florian@siemens.com>
+Date: Wed, 15 Jan 2025 17:02:35 +0100
+In-Reply-To: <8a0efc9c-2949-48f4-8408-264e5322c0cf@siemens.com>
+References: <8a0efc9c-2949-48f4-8408-264e5322c0cf@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
+On Wed, 2025-01-15 at 15:13 +0100, Jan Kiszka wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+>=20
+> __cobalt_select can stumble over too large nfds values as it copies file
+> descriptor sets from userspace into a statically sized kernel buffers.
+> This can lead to kernel crashes or worse things when userspace provided
+> garbage.
+>=20
+> Rather than duplicating the check, move it from xnselect to its only
+> caller __cobalt_select.
+>=20
+> Reported by: Florian Ullmann <ullmann.florian@siemens.com>
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 
-Here is some information about the current state of affairs with respect
-to the Dovetail development.
+Reviewed-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 
-1. SLTS, LTS kernels
+Nit: Would be nice to have a (smokey) test for that...
 
-   - We moved the SLTS kernel we maintain from v6.1.y to v6.1.y-cip
-     [1], which means that we are now tracking the kernel maintained
-     for the Civil Infrastructure Platform, with a projected EOL in
-     2033. The old v6.1.y[-rebase] branch is still present in the
-     linux-dovetail repository, but won't be maintained
-     anymore. Please track v6.1.y-cip[-rebase] instead.
+> ---
+>  kernel/cobalt/posix/io.c | 3 +++
+>  kernel/cobalt/select.c   | 4 ----
+>  2 files changed, 3 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/kernel/cobalt/posix/io.c b/kernel/cobalt/posix/io.c
+> index 722f1ce20c..4e20ca19d6 100644
+> --- a/kernel/cobalt/posix/io.c
+> +++ b/kernel/cobalt/posix/io.c
+> @@ -266,6 +266,9 @@ int __cobalt_select(int nfds, void __user *u_rfds, vo=
+id __user *u_wfds,
+>  		mode =3D XN_ABSOLUTE;
+>  	}
+> =20
+> +	if ((unsigned)nfds > __FD_SETSIZE)
+> +		return -EINVAL;
+> +
+>  	fds_size =3D __FDELT__(nfds + __NFDBITS__ - 1) * sizeof(long);
+> =20
+>  	for (i =3D 0; i < XNSELECT_MAX_TYPES; i++)
+> diff --git a/kernel/cobalt/select.c b/kernel/cobalt/select.c
+> index bd790affe4..70ae9a07d5 100644
+> --- a/kernel/cobalt/select.c
+> +++ b/kernel/cobalt/select.c
+> @@ -309,7 +309,6 @@ EXPORT_SYMBOL_GPL(xnselector_init);
+>   * than expected if the sleep is interrupted.
+>   * @param timeout_mode the mode of @a timeout.
+>   *
+> - * @retval -EINVAL if @a nfds is negative;
+>   * @retval -ECHRNG if some of the descriptors passed in @a in_fds have n=
+ot yet
+>   * been registered with xnselect_bind(), @a out_fds contains the set of =
+such
+>   * descriptors;
+> @@ -329,9 +328,6 @@ int xnselect(struct xnselector *selector,
+>  	int info =3D 0;
+>  	spl_t s;
+> =20
+> -	if ((unsigned) nfds > __FD_SETSIZE)
+> -		return -EINVAL;
+> -
+>  	for (i =3D 0; i < XNSELECT_MAX_TYPES; i++)
+>  		if (out_fds[i])
+>  			fd_set_zeropad(out_fds[i], nfds);
+> --=20
+> 2.43.0
 
-   - v6.12 moved to LTS status, i.e. v6.12.y[-rebase][2]. Please update
-     your git remotes accordingly.
-
-   - IMPORTANTLY, we now have three (S)LTS releases to maintain,
-     namely v6.1.y-cip, v6.6.y and v6.12.y. As things stand with
-     respect to our resources, this is one too many. For this reason,
-     we may consider dropping maintenance of the v6.6.y tree. If you
-     have any concern about this possible outcome, you may want to
-     bring us a plan for keeping this maintenance alive.
-
-2. RISC-V port
-
-   There is an ongoing port of Dovetail to the RISC-V architecture
-   which I'm willing to merge when EVL runs flawlessly on top of it.
-   Tobias <tobias.schaffner@siemens.com> and Shannmu
-   <shanmu1901@gmail.com> have been contributing the code so far, I've
-   been reviewing that code and consolidating the resulting tree
-   [3]. No ETA.
-  
-3. Maintainership
-
-   Florian <florian.bezdeka@siemens.com> is stepping up as a Dovetail
-   maintainer, along with Jan and myself. [Thanks mate, the past 22
-   years doing just that have been heaven on earth as far as I'm
-   concerned, I hope you'll enjoy too!].
-
-NOTE: everything mentioned about linux-dovetail above applies to
-linux-evl in the very terms.
-
-Thanks,
-
-[1] https://source.denx.de/Xenomai/linux-dovetail/-/tree/v6.1.y-cip-dovetail?ref_type=heads
-[2] https://source.denx.de/Xenomai/linux-dovetail/-/tree/v6.12.y-dovetail?ref_type=heads
-[3] https://source.denx.de/Xenomai/linux-dovetail/-/tree/wip/dovetail-riscv?ref_type=heads
-
--- 
-Philippe.
