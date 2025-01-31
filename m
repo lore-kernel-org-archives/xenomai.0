@@ -1,206 +1,91 @@
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A4E53B19A
-	for <xenomai@lists.linux.dev>; Thu, 30 Jan 2025 18:00:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B1651E3DD3
+	for <xenomai@lists.linux.dev>; Fri, 31 Jan 2025 15:42:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1738260027; cv=none; b=N2mR2sNA4ooVmlmynR94txDjnbAeRaoL5QP3TQ3VZUhTQhnznHf3rMgR7koTTk6sI04nAW+KU6TRWVfCSHVHcpIEQRgDPpmoqhNFTgCMjsOH46jyfedZTjAEtavDIZd2iTh24CDqXb+iZUoDPb/KxuTz3Rg5cEgTNlfss526tGM=
+	t=1738338149; cv=none; b=ZzkAySlUy6snk2nBiVCWMUXePONMlcPVD2O8J1fAJTKXwWDaZbdcuTZ2ozUQEm7l+2+U5td+wYI7/b58G70gZTEDghQCdSCHg+gq0KxGfvGqhlckuWH4RyG9KJIz/9PVdh18zzS+VIHnorkCthhm2HpmxxL9ApAK8jYy3Psuz10=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1738260027; c=relaxed/simple;
-	bh=JizsldtQI8Jf2XNVhX8SCNmLAG+VvPM836/4JX636/g=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=JwRP3DJaFIuAKivhQquMhGwtUPkA/DT+cbLPdN1+QIzGuS8198O6lJVLKKNoyO69fqEuVmfSFqTHYbkNCj+g5KHnaETlz0rpQCjUZz4Q4WCg+796+NWRIpCHbptqz9/gCxB43DuS09C6Fa8ruKzdqWuyPCk7LIGpzL++8a7jhRo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=f5zuT95E; arc=none smtp.client-ip=217.70.183.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1738338149; c=relaxed/simple;
+	bh=VUNOQBlMHmSJJR4qPh4K8d9U3X1Fb44tUEx04xK4Wj8=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=XY5cVRfnowtWVAPINWkuxAWqEWVMH9F0YxPMGjLadD9UkZT5NM6Tc6rWXnia3hLgJYVFP3DJ0QJbvGULkT70Iddt1Y+flRxZj2cOLSFauMa7hplaB/MhP7UCholg3HQcfk+Az6glrT0aaFp1NLc0lihlyAVEvBn62fQbAuG66bE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=g7687/Qe; arc=none smtp.client-ip=185.136.65.226
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="f5zuT95E"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 47F024417A;
-	Thu, 30 Jan 2025 18:00:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1738260022;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=vZcl7hZ+mnY4a1bMQBLpMZQCJayIyvY3fgN12PzL/Jw=;
-	b=f5zuT95Et5pTTrnSowJQ8XE2N/L0onxuMZXqO0n88p+jHNRz6WbsKlLcFrD8RQDx4RLq2J
-	ZTILe5inWODcAjWqql5Z/vAn+qBxAut+7C/X2lIb67EVjj/2Y1u9tfbpLFRr94AebnyVvh
-	ZAlvfL+gr++OWWlD+BUkgIs3NLwoHtKtTmUc43DAr8rrULRC5C23PfzXJc9irdpWsSLr6G
-	f905HzyrbqDK+RQDXncRqRjsW+I2eV/oSc2++dzQ7qmk4bj/Bsb9vJ9Uuff0ofXOhsWjbu
-	K8bu5L8jhzN+E14A4IjS68SkTXr74UZbB07FGdFhKq8CbbT7Qntn65h1etLoRA==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Gijs van Oort <g.vanoort@utwente.nl>
-Cc: xenomai@lists.linux.dev
-Subject: Re: SPI on Raspberry Pi (RPi) 4 + Ubuntu24.04 + EVL does not work
-In-Reply-To: <f1fd1edd-6d09-4e59-a85a-f00cf3b19727@utwente.nl> (Gijs van
-	Oort's message of "Thu, 30 Jan 2025 14:55:44 +0100")
-References: <f1fd1edd-6d09-4e59-a85a-f00cf3b19727@utwente.nl>
-User-Agent: mu4e 1.12.1; emacs 29.4
-Date: Thu, 30 Jan 2025 19:00:21 +0100
-Message-ID: <87ldusyyfe.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="g7687/Qe"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20250131154216b1c30f648ae661c736
+        for <xenomai@lists.linux.dev>;
+        Fri, 31 Jan 2025 16:42:16 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=iDtp0UW+52mXPQ4RbuFlxW7VhNn19HjL9YHLr4eh30o=;
+ b=g7687/Qeec4BXFM5WMcCR+k1ZzAA9fJ2Q2pCV0DF2BNjzMWFc45Rk6OoLTX2tdQBeqURnf
+ Dt3zdFCKQFH3tFxNxS0Wjne9Iuyi8n0ylwMcic0YZmml4EYbmRx2n0QeKESi3EtV5ftEDwu5
+ gDK9sNuMvw+fzT5SaYerpL/yS/Arh2xAXjcH7sd1xp+6ZkJRyK3CVT4nyKjAigwrKc5E3yak
+ RNbVax52G9nRgrMl03tBg2RUFp1Tw30ZU5vqrUNkfFW/Kman3nPqSPKx2zeUcN8ml/O8O8sk
+ uzEIlvfDATRi1qY8n4f1YsJw8Fpvj/aB+7doRcsGlz+O3SlCWLpocmGA==;
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: Jan Kiszka <jan.kiszka@siemens.com>,
+	Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [RFC] migrate to syscall(): Measurement results
+Date: Fri, 31 Jan 2025 16:42:00 +0100
+Message-Id: <20250131154200.1221616-2-florian.bezdeka@siemens.com>
+In-Reply-To: <20250131154200.1221616-1-florian.bezdeka@siemens.com>
+References: <68d9f583-59de-4bbf-8ea2-af8ece427495@siemens.com>
+ <20250131154200.1221616-1-florian.bezdeka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgdeigeelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtgfesthhqredttderjeenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhephfeivddttddtvdethfdvhfehveejheduuedvkeeukeefvdfgfeetteeffeelueeknecuffhomhgrihhnpeguvghngidruggvpdhpohhrthdrtggrthdpghhithhhuhgsrdgtohhmpdhkvghrnhgvlhdrohhrghenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpnhgspghrtghpthhtohepvddprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepghdrvhgrnhhoohhrthesuhhtfigvnhhtvgdrnhhl
-X-GND-Sasl: rpm@xenomai.org
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Gijs van Oort <g.vanoort@utwente.nl> writes:
+Hi all,
 
-> I am trying to get SPI working on the EVL kernel on a Raspberry Pi 4
-> with Ubuntu 24.04 Sever 64 bits. And I fail. Can anyone shine a light
-> on the problem?
->
-> Basically what I tried is the following: straightforward
-> cloning-configuring-building-installing (a little different though
-> because I compiled inside an LXC container running Ubuntu 24 on my
-> laptop since my main install is Ubuntu 22 and I don't want to mix up
-> versions):
->
-> 1. Get sources:
-> =C2=A0=C2=A0 `git clone --depth=3D1 --branch=3Dv6.6.y-evl-rebase
-> https://source.denx.de/Xenomai/xenomai4/linux-evl`
-> 2. Create .config file:
-> =C2=A0=C2=A0 `make O=3D../linux-evl-build ARCH=3Darm64
-> CROSS_COMPILE=3Daarch64-linux-gnu- defconfig`
-> 3. Update .config file to make sure EVL is on (CONFIG_EVL=3Dy) and all
-> relevant SPI modules are included as module (CONFIG_SPI=3Dy;
-> CONFIG_SPI_SPIDEV=3Dm; CONFIG_SPI_BCM2835=3Dm; CONfIG_SPI_BCM28356AUX=3Dm=
-; I
-> don't bother about SPI_OOB for the moment) with command line scripts
-> (`scripts/config --module SPI_SPIDEV`)
-> 4. Resolve dependencies in .config:
-> =C2=A0=C2=A0 `make O=3D../linux-evl-build ARCH=3Darm64
-> CROSS_COMPILE=3Daarch64-linux-gnu- olddefconfig`
-> 5. Compile:
-> =C2=A0=C2=A0 `make -j$(nproc) O=3D../linux-evl-build ARCH=3Darm64
-> CROSS_COMPILE=3Daarch64-linux-gnu- Image modules dtbs`
-> 6. Create Ubuntu24-Server-64-bits SD card for the Raspberry Pi with
-> Raspberry Pi Imager
-> 7. Install new kernel:
-> =C2=A0=C2=A0 `sudo env PATH=3D$PATH make O=3D../linux-evl-build ARCH=3Dar=
-m64
-> CROSS_COMPILE=3Daarch64-linux-gnu- INSTALL_PATH=3D$FSBOOT install`
-> =C2=A0=C2=A0 `sudo env PATH=3D$PATH make O=3D../linux-evl-build ARCH=3Dar=
-m64
-> CROSS_COMPILE=3Daarch64-linux-gnu- INSTALL_MOD_PATH=3D$FSROOT
-> modules_install`
-> 8. Copy the new device tree file and make sure that it is used:
-> =C2=A0=C2=A0 `cp
-> ../linux-evl-build/arch/arm64/boot/dts/broadcom/bcm2711-rpi-4-b.dtb
-> $FSBOOT/bcm2711-rpi-4-b-evl.dtb`
-> =C2=A0=C2=A0 `echo "device_tree=3Dbcm2711-rpi-4-b-evl.dtb" >>
-> /media/$USER/$SD_BOOT/config.txt`
-> 9. Boot the Raspberry Pi with the created Ubuntu image plus new kernel
->
-> I don't bother about evl-lib at this moment (installing that will be
-> trivial once SPI is running).
->
-> What I get is a booting and working system (`uname -a` shows that I
-> indeed run the created EVL kernel) but without working SPI. Some
-> observations (all observed in the system with the new installed
-> kernel, unless otherwise specified):
-> * When I just run a fresh Ubuntu 24 Server install on the Raspberry Pi
->   (no EVL kernel), spi works as expected (e.g., `echo "hello" >
->   /dev/spidev0.0` as root works and gives the expected signals on the
->   SPI pins).
-> * In config.txt, SPI is enabled (`dtparam=3Dspi=3Don`)
-> * No SPI-related entries in /dev (`ls -al /dev/sp* -d` gives no hits)
-> * SPI modules are loaded (`lsmod | grep spi` shows both spidev and
->   spi_bcm3835)
-> * I do see SPI related items in /proc/device_tree : `cat
->   /proc/device-tree/soc/spi@7e204000/status` yields 'okay', suggesting
->   that at least something SPI related should be enabled (also, the
->   address 7e204000 is indeed related to the default SPI port).
-> * `cat /proc/devices | grep spi` shows "153 spi", indicating that
->   there is indeed some SPI driver active with 153 as major device
->  number.
-> * All in all everything seems to be okay, except the fact that there
->   is no spi related entry in /dev. Using `sudo mknod /dev/spidev0.0 c
->   153 0` does create an entry but it is not working (`echo "hello" >
->   /dev/spidev0.0` as root gives the error message "bash:
->   /dev/spidev0.0: No such device or address").
-> * Contrary to a fresh Ubuntu24 install, the commands `dtparam` and
->   `dtoverlay` do not work. (on a fresh Ubuntu24 they do work and I am
->   able to enable and disable spi at runtime with both `dtparam
->   spi=3Don`/`dtparam spi=3Doff` and `dtoverlay spi0-2cs` as root. The spi
->   entries in /dev appear and disappear accordingly). On the version
->   with the EVL kernel I get the error message "mount:
->   /config/device-tree: mount point does not exist." when I try either
->   function. Could this be a hint that dtparam/dtoverlay could not work
->   at boot time (i.e., when parsing config.txt) either?
->
-> Other things I tried (none of them had any noticeable effect; all
-> showed the behavior listed above):
-> * Last year I had a similar struggle in getting SPI to work on an
->   Ubuntu 22.04 Server for Raspberry Pi. I ended up using the work of
->   Deniz Ugur (https://github.com/DenizUgur/RPi4-EVL-4xSPI), which gave
->   a working setup (with 4 SPI's even, if only I could borrow one of
->   those for this year...). That setup used kernel 5.15.119. Apart from
->   a small patch to tweak the bcm2711-rpi-4-b.dts device tree file, and
->   a customized .config there was nothing much to it. Unfortunately,
->   trying to do the same patches (tried both literally with `patch` and
->   conceptually by applying similar changes to the .dts file manually)
->   to the 6.6 kernel did not have any effect. Note that on this system,
->   `dtparam` and `dtoverlay` did not work either; apparently it is
->   possible to get SPI working without that having to work.
-> * Tried many different .config files. Always made sure that the SPI
->   related modules were included as module (also tried once or twice to
->   include them built-into the kernel (CONFIG_SPI_SPIDEV=3Dy etc) without
->   any positive effect). All .config files gave the same behavior
->  (SPI-wise).
-> * Kept the bcm2711-rpi-4-b.dtb file from the fresh Ubuntu 24 image
->   instead of replacing it by the newly generated .dtb file (i.e.,
->   skipped step 8). I could not spot any difference in behavior.
-> * Cloned the Raspberry Pi Linux kernel (`git clone --depth=3D1
->   https://github.com/raspberrypi/linux linux-rpi`) next to the EVL
->   kernel and copied all relevant device tree files from the Raspberry
->   Pi kernel into the EVL kernel directory; then used that for the
->   device tree generation (specifically: arch/arm*/boot/dts/broadcom,
->   arch/arm*/boot/dts/overlays, arch/arm64/configs and two .h files
->   that ar required for the dts files).
-> * Copied a (known working, for Ubuntu22-kernel 5.15.119)
->   bcm2711-rpi-r-b.dtb device tree file to the new image and used that.
-> * Tried EVL kernel 6.12.y
->
-> Now I'm officially out of ideas, so hopefully someone can help me...
->
-> Kind regards,
->
-> Gijs van Oort
-> University of Twente
-> The Netherlands
+here are the measurement results, comparing v2 of the patch series with
+Xenomai next branch.
 
-Bottom-line: enabling EVL has zero effect on the SPI driver being
-present/installed or not, it is merely extending the SPI core and
-bcm2835 driver capabilities if present, without stripping out any
-standard/pre-existing feature. EVL does not even know about config.txt
-and other RPI-specific overlays and boot config stuff.
+All measurement runs were executed for 6h on the boards mentioned
+below.
 
-EVL is based on the mainline kernel, which may not have all of the
-RPI-specific code from the Raspberry vendor tree. You may want to try
-this kernel [1] which is a port of the EVL code originally based on
-mainline on top of the RPI fork. This is 100% untested, this quick port
-was a courtesy to help a user who struggled doing this by himself due to
-code merge issues. This kernel should at least boot with EVL disabled in
-the kernel configuration, and you should see the SPI slave devices as
-expected. If so, enabling EVL would be the next step and see what
-happens from there (I'm pretty sure no SPI device would disappear if the
-Kconfig only changes for enabling CONFIG_EVL). You may want to check out
-this past discussion [2] about [1] too.
+The second line (per arch/board) shows the results of a measurement where
+only the userspace (so libcobalt) changes were applied, while the kernel
+(cobalt) modifications were missing.
 
-[1] https://source.denx.de/Xenomai/xenomai4/linux-evl/-/tree/vendor/rpi/v6.=
-6.47?ref_type=3Dheads
-[2] https://lore.kernel.org/xenomai/CABnSPHZg11FCXDwap0+=3DQ-QwizS0MwALuQg2=
-bR9ndy1fBVCi2A@mail.gmail.com/
+Versions:
+  Xenomai:
+    next: Xenomai next branch with the "measurement patch" applied
+      v2: v2 of the patch series + "measurement patch" applied
+  Kernel: all measurments with Dovtail 6.12
+     
+Boards:
+   armhf: Beagle bone black
+   arm64: Hikey 
+  x86_64: Siemens IPC 227E
 
---=20
-Philippe.
+The numbers (need more than 80 characters...):
+
+       +-- execution time of the injected syscall  --+
+       |                                             |
+ Arch      min    min     avg    avg       max     max          latency                latency
+          next     v2    next     v2      next      v2           next                    v2
+
+ armhf   2.875  3.125   5.347  6.251    16.625  34.125    17.884/ 43.247/ 98.016  18.086/ 44.097/102.018
+                3.083          6.065            37.625                            17.889/ 44.425/ 99.143
+
+ arm64   0.833  0.833   2.575  2.716    40.000  48.334     4.306/ 15.240/220.732   4.957/ 14.216/217.138
+                0.833          2.703            47.500                             4.620/ 15.515/210.081
+
+ x86_64  1.104  1.308   1.356  1.577     7.116  12.396     5.274/  8.498/ 41.115   5.654/  9.015/ 43.380
+                1.272          1.555            10.801                             5.609/  8.902/ 45.061
+
+Best regards,
+Florian
