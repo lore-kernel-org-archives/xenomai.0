@@ -1,57 +1,56 @@
-Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11013055.outbound.protection.outlook.com [40.107.162.55])
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2080.outbound.protection.outlook.com [40.107.21.80])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 927701F0E32
-	for <xenomai@lists.linux.dev>; Tue, 11 Feb 2025 15:33:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.162.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD1FA253330
+	for <xenomai@lists.linux.dev>; Tue, 11 Feb 2025 15:41:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.21.80
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739288041; cv=fail; b=tTsOcdsI4+0sWa1oymKjdiH7be/4XWGWapG3yn3AcWzmOn4TKtNkEdSUNNAXyUfl59ZHGLymfQoBB2NYJIlAnSBYK+gM05VAqdGVXIJS7TbWy7E8lXpCnxHQjPZ6SKNXy5AWGDGL8Saj5jqGFHTy8LVEVNTbVw3EWiqDKSAxGt4=
+	t=1739288482; cv=fail; b=PNKbrJlwL6sq/FzSWepGWGx2KTJ53XEVxsb3NqjllImEfnfEXTM5T4BmUlGXaPq5UxhbS1JWFyg/+l6nCGh7hSKCIPL5u4X46ALg/r46e2wp47YD8EuZ+sJLyzXpMeGGxZT2NY+Bj1mIMkl1XWDnxsqOYLHPY4OEDfsZ/OgYSkA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739288041; c=relaxed/simple;
-	bh=4J1T0iGEsJ/2oL+ITl/fF0BoN/RqRv1ehv7bVa+S/0g=;
-	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=KehsUn62nsqLQN3GNkoChj12+dEjchgVuLrGN1iFtAz7vmDbRmjLMsXH08Q9/yjgpUSb13dNx9JCA8Tv/Gj37bPk+6A2R7qn6ceMHGz51tsqCaj+GgA2zdumDbjSQLBELhmz+nUE/D8fqOav1Q2jHeI3MTGchAQoBL8kd19uXeU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=QU58/sqc; arc=fail smtp.client-ip=40.107.162.55
+	s=arc-20240116; t=1739288482; c=relaxed/simple;
+	bh=eJxPR7ALUMjLKbTdrZ8SkXdS9irgTKWwyVbtEganqjQ=;
+	h=Message-ID:Date:Subject:From:To:Cc:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=LllQRlm2Lqb7y93RTonO/Esvyjc6r6KrTxJEHUGqtlYGV8s/pn2fINi/UBEzCOxzoESuIQS7fDc0IAjQ2G86jq58O6C03O0/lzKmwS+VbdpNvGR/zynYCvPqxYUdpsTAJF3D0lf2ijsXpxGSGRx5qE7qeD5QTzJIsoKP/M5CXTQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=opXKyJMj; arc=fail smtp.client-ip=40.107.21.80
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="QU58/sqc"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="opXKyJMj"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=WwGJdArGgDC4F3D5FWnxj0DXIfaufCVfS6b0rQgcyoxqebWjV758zvW47Z2OivJm9edrWacibrvLWSKgmNt/PNWAglhNecoARfITCXQMqVAWIcI4M11n0/xLd8jEiO+9+u/tz4MyjALGsmoqNOxcxehwzr9Rxk/L6zDSlZfuGRjPcLc9ljN4MflbWcyPtgwZXJh7awkNtAUoCiRUeYe8GsFoZOQ3G7jZdiM+4IP5HUlATRfbdiJhvDEGHX+vPoL/W32/aCVlr4GltwXRqCJMysfEXdwmZIp2fzvFxdPFRgE2GM9vWKHPsEFnKbYSYZHjLC/xouzlMebVfrIRXPWW+g==
+ b=dn93pfOhHHQpv1yEOux4UXHyuc4zWDqoO/0fNZxSo7mancU8XvmQ/GVtGLs1hrrBxBGb0A0NAV5rlm9yqrFCb663T/RkFfmiNO1E4/k0BdStG5h4L4fHXjnYFs1mmW86TG9gPtJsWSCUDx8FGm5w6D6kiAQonDt7+OJjoXvVkuhzkOAqsRSCKo7Od0tY2j+nQQkT4Etq/ITOBWWmr2sB/MvUF9ehhqoy4BTtf9wyz1n1HwMK+PI4UYWpCS4StpPY7AMf2yrEDDhzxG9ENB+f9dBvQTa5+n7myudTvBjOryuB6nTPGvqkLHDrKAMAvsE6prCv2Ppo+ubUUyI8Ezu78w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yeMY3MKqkIZVHB3Fid4+T2MKR0NL4HdUcC1wbhdDtQg=;
- b=c6CzaQvIian2C9LM4RtHWg6mLc62g5NcT4Fv8cb6KkPmXey1VKmdUtr2cj89gev/2WWOlsbTZ+yqq7a7DNuVtDM10WbZJQpcr5hlnBGRNTD2KzxaMox+C9cTYhBxnGalIuyR0oiwV8tJkW+4Nbt6JZSVyHBeQvQH/uU5JlgQwdwVG96LgMtsTmmOqR4b+U4KdL4TxqFhNGcY4S8M452Q/EfxEoMqJC7n3Xuv/ptPr3ZFkvEQ/VlLOkJb53v1ZOl+2a3SR+ce9QMAkD12aWQ4tG9doaDMnVqPZepyZW6tQuCjkgkb1QomPpoJDxGGBWMIiYNUvwwMcE0ZRrPPFDmvAA==
+ bh=5+7KWdpm2VIObzdGqpu4QPaeZkreMi6BH3nEBvFgMLE=;
+ b=ruTCUN8DJIp7/O8RE2IQnL4Ird34jlYTck0mN0iz90DUX9CNcliumAJbKeNRKARNWNZCaX7CSReY8Uv3FdYJOwsh5UxmYnnsa8JUTDqtNEvtlM/toVhMAp6Pp0k9iTi0EmptRRoVozRhXfcnsVrEkq6yPazi7u70ClYcan7VUZo6vo+gTbsjUvP1t2DN67S9/+iAZfIyhUK3nFGgKxIVv/QiK3DK/FeX3G+WJ2+ayS/5Q+SVaoOu6TWqB70xd7Quv0G8hbMN5rzHK1jYktznXKANCAgyqEYqQm3ja2tOAteEmusbMxoNcsae6DekQiQCAt8x8fQNLmh23I7t3wUlgA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yeMY3MKqkIZVHB3Fid4+T2MKR0NL4HdUcC1wbhdDtQg=;
- b=QU58/sqcVo+B5uxBgTgqr2EVAe1zqE5HKhTjzcH+M5xxLR3fOyL+4ge/PsBUgWemoXQF5C9j2jyvPEvS9yBZQ0uM+UaqXGop/Fsrr9aGgAV8JcggJKcGOX4ZFUIQjSb3EuDWg8ab0t+O4zR4KUQDaZ32rt69DKB68skEdIDhv6K1Lym+a5stOkLDGorcrCd/xeTWtgYkd5Tl1SPIcNiYGH4hsPOeJgOSFSNACl1jDDhqY5IKJQVmdf9fnfzaX8U8iIjdfr4XUcc8DrLl4pOk0ggIA1KYagJssqGGQtiHFYNEMsUKhIr+eojQdBoAQDd2q5TiQjoW0iNe85EqXy4MgA==
+ bh=5+7KWdpm2VIObzdGqpu4QPaeZkreMi6BH3nEBvFgMLE=;
+ b=opXKyJMjypddEVyFm84WURUi4uraIqRq20xVu1guf9depCFpdY3K1SSUwLe0x2kP7+KWsKcIXqqUWtNJM83HYiPIqwz8YSAHkxvzQXrJ1jmYQqnMkoxt+Gk/Ld0Gukey8CemZn5J7YNI+K9MkMLcV+rKhWfO6yiLxVeY7UPu8uzNg2rOUzjMDbjGRm01xLwA1Nad+tF9dEkDY2Fb5AytmsGu67JVWu1aFDhXsA1y9hvo+hVWrk12Hp1Lt5RcRh0g+FeI6fJiah5GUpBsLCiAnHIXYEbArWIpxNeBsbHUkNmTijKFATPr8S3eOp6NxMwNvKHuF9hr31L3vdMuFDsdYw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DB9PR10MB8286.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:4c6::19) with
+ by DU0PR10MB6804.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:47b::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8445.11; Tue, 11 Feb
- 2025 15:33:55 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8445.10; Tue, 11 Feb
+ 2025 15:41:13 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408%6]) with mapi id 15.20.8445.008; Tue, 11 Feb 2025
- 15:33:55 +0000
-Message-ID: <af1ab7a1-42dc-4ba8-994b-7d5eb1238f53@siemens.com>
-Date: Tue, 11 Feb 2025 16:33:50 +0100
+ 15:41:13 +0000
+Message-ID: <de3ed98b-e52a-47d6-824c-8df84ff53608@siemens.com>
+Date: Tue, 11 Feb 2025 16:41:12 +0100
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC] migrate to syscall(): Measurement results
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev,
- Philippe Gerum <rpm@xenomai.org>
-References: <68d9f583-59de-4bbf-8ea2-af8ece427495@siemens.com>
- <20250131154200.1221616-1-florian.bezdeka@siemens.com>
- <20250131154200.1221616-2-florian.bezdeka@siemens.com>
+Subject: Re: [PATCH] doc: Fixes many broken links and some outdated
+ information
 From: Jan Kiszka <jan.kiszka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: luis@eichitek.com, Xenomai <xenomai@lists.linux.dev>
+References: <d992ccd8-b509-40cd-83f0-704c24929688@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
@@ -96,11 +95,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <20250131154200.1221616-2-florian.bezdeka@siemens.com>
+In-Reply-To: <d992ccd8-b509-40cd-83f0-704c24929688@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH0PR04CA0058.namprd04.prod.outlook.com
- (2603:10b6:610:77::33) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR0P281CA0091.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a9::11) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -109,147 +108,351 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DB9PR10MB8286:EE_
-X-MS-Office365-Filtering-Correlation-Id: 67efa35b-93d0-471b-7a93-08dd4ab17ea6
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DU0PR10MB6804:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4737c64d-3c4b-4811-4aed-08dd4ab283fc
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016|13003099007;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?U3BsSERsa3FVbndoeEJTSnhJaCttdVBabkdRWnE2OE1DQzE3S1Y1RXNmUzlv?=
- =?utf-8?B?ejNSWEpCV3k5QXdTR1FMMU14NGQ1Z0JDa3h1bmNqVU1DUU9LZTlqaGlpdThQ?=
- =?utf-8?B?SGhmalBLQmxkajJwRjVFVEU0aUhSL1RremxCRzJuR1luWHc0TGtieVBta0hE?=
- =?utf-8?B?QkxRYXRJaWtvNVpBa3ltTHlIOTBTTmVWR2Rha2RJWER6U0t2d2NZOU5GRzhz?=
- =?utf-8?B?ZUFCSEZJWi9jUmUrNkFWOUdMMGNkNzVnRG9XN0J5ZElZd3crZFRSbUliZkdV?=
- =?utf-8?B?ek53cG9jV204THdML3hINkJQV0YwbDhaRCswZVd3VjhBbUpTY1E2Q0N0SENK?=
- =?utf-8?B?VkdTMVdJR0JwaEo3ZzlySVdBOGRtNnp1QVpJWDI4bkVBaDVJaENQcGJIbmRE?=
- =?utf-8?B?T0pXVURTTit3RGVoaXV0ZFh3eEx3Nys1VW9JUTh2NEhvR1cxRDFNZmk2cURp?=
- =?utf-8?B?ZUNCZllKNW9KbW9SM1hXdjJUdkhUVFVxUHZsNmpjRWl3dVZVRHM4V1ZVMWxp?=
- =?utf-8?B?VnQrWXhyTUN6RnREUm1Ka0kvRTgycnNvdVlnN1E1UUN3NE1URHJIVW4wZ2I0?=
- =?utf-8?B?WW81M1ZURGs3Y3pWbkwyUmE1R3lxQlQ2OG9zK2VWREZsajI1T0d5SXlVWVg0?=
- =?utf-8?B?VmdVK09YSFRWUEhjZlBCWGFYbHNtK0dwZjNlelVzdnRQcHJva2hONEdpN3Vk?=
- =?utf-8?B?UVFxdUszRlpQMmdGc2w5NURFMEUwMkZkVEt6M2ZxVk1WYTJGS1d2UTY3QU5U?=
- =?utf-8?B?VVJFeURlVDZoOTVUNWdrWW1Tb0JzUy9ZUnoyeWRHbDBwQ3VHMVZDL3JIUGV0?=
- =?utf-8?B?M2dpMmltR3h2cUZ0dkpzOFg3UmkwUUUrdXBSNjF4L0R1K0hQb0toQ0JNdkxx?=
- =?utf-8?B?dXQxOG9oZmh6UEI1bnU3OHEza2FLY28rMWQ2RTVmRXE2NDNnMFNBRkdDZXFh?=
- =?utf-8?B?REpuZTFqNmFKdzZ6Zm8vRDkrVy9Db2RYSkZLZkY4M3E5ck1xT3NKLzhiY1RB?=
- =?utf-8?B?NlhXWTNTZzVUTkZ4R3VodGZTSjRPdjNYMmpDZnJBNGs0ZUN0bWVTQW5TTzNM?=
- =?utf-8?B?VThzOXQ3NUVFZEdNNjhyTWhEM1daVG91VnVrSGxpc2gzanp0QWgvVkVnanRV?=
- =?utf-8?B?Y09CanBUU29ETUVxUURiVmlYU0gvbkN2ZytGeGUyUG9EM0VoTTJUZHpOaFNP?=
- =?utf-8?B?WFVJWFBsL3NiRlZzeXBEYWxQRTMxdUpCdk11Y2lXc1RRaURwVk1FTjNBdXho?=
- =?utf-8?B?T3N6L3hhclRJSlZNbjlCWmdXY3ZVNkVpVnFDc1VNaU9QNFd3Z25XaER2R1dy?=
- =?utf-8?B?VDlCc3F6NktGRHE3eVBFZkpyblpidjQ1bm1GalhwVzJtUmQ2NHRLZmVzVWtE?=
- =?utf-8?B?T3lBTHpIMTZwSkxoVVk0RE92Y0ZObVQ5aXZIWDlzUXpiTmpEMVZmdStWZUFm?=
- =?utf-8?B?dXJVTXdPZE5MRUp6Wm9BNFJ5bldDRnloSUdiMHdNcWl1SHNKMk12aFRvMjl6?=
- =?utf-8?B?NzMycEQ4cVFuMG94b0hISVd1UVkvT2NNV2QwR0R6MzlGZ3d4NkkwS2xlTUUz?=
- =?utf-8?B?a1VIOVZocS9FOVhVellyNXpZZ2NtWFkyMEwwVWRCQWpNMWlnNVQ2d2M0Rk44?=
- =?utf-8?B?NFpQL2RhSFluelhKaStOOUxXdUtGL2d3SkxWbXowSEE4OUdxSjA0SlRhT3Fm?=
- =?utf-8?B?OVpYVkErcnlQeDdpcGJGaVNMWnNlUGVKd00xQ3hpR3JpOHJYZUNTb1lqQW1X?=
- =?utf-8?B?SlZnUG10VC9wRjdhNTRBNXJCT3JRYzRNN01XTGMzbkpIMGNoSTQreGFHMCtl?=
- =?utf-8?B?MGpXZ05qSnRQZk0yL0N4STE0NWtRQnRKNlMvb1ZQZTgvNWFBcEVtaEZyZDhQ?=
- =?utf-8?Q?Uyw8ZcUPlpiG+?=
+	=?utf-8?B?TTBkeFV6NGRYdGFPQWh5TXE2TGZCUktCVUR1dEE2cFdhbGFQaHdyQzh2V2Q5?=
+ =?utf-8?B?SHFNMm1JTGxSdmlpZlY5cTY4eHdEM1R5aUtBVGZCQm1LV2V3RFIrNFp0R1hE?=
+ =?utf-8?B?RDd0ekd4SGROck50K0E5eG5IYXc2NnRUYlo0NWU4clozcXR0YnprSm5LTzZQ?=
+ =?utf-8?B?MHFXM296RUxEVWNkNzVuU1JsRitJbDBOVjJQZ3BtRGhCSkcvYU9QcVpEcjV1?=
+ =?utf-8?B?eVFsT29jRE9KazBuazk0QTVzSTE2VHVBdHkwTVZJOXJPQzAyWEI4SWRrNERF?=
+ =?utf-8?B?VEhQRzQzeXdlYXFsQjlYUkRqT3FZTVFEd3pkamhOUTNaM2U0M01UY05kNlQw?=
+ =?utf-8?B?TFAyRVNhRjJBWW0rMjhVYk1UOXhEcDU3Zno1aWNXSndMbDdZMUFaR05JQ3Na?=
+ =?utf-8?B?dW5QTm9XNHdaTm5kRVpWb3VZWDB1ZXVidjdEeWtPRUJZb3hjMWhmUzcxMGlY?=
+ =?utf-8?B?ZERWRHJsQ0Z6UnYrbUlQNlkyZURQR2h6a1lKQS9IWlU0bUkvNzFRdU9iUXpR?=
+ =?utf-8?B?SzBYdmZ6ZHlVR1JmRnB2d1hvUzJpUitueTlVQnRSRzNybWJMaFNFOVRlWWI1?=
+ =?utf-8?B?MG5ObjhEemdXbTROZll0WXk1WEVrZ2FTS3pvWWJ0SDZVdjV1d0JYRVV4aUJ5?=
+ =?utf-8?B?a2lJaDJyZW91Z014VFR1VW96VzRmKzdYUUIzOXFKWDBqSWlLYmhqTUU3N1lY?=
+ =?utf-8?B?ajVEUW1CQmpXZ21nRmM2SHlYbUZLeDVOa29HdEc3aCtkRDNSajJzVHFZVDRv?=
+ =?utf-8?B?aWVyUjJoVzJpOEtWY2xBRjlYeWVDWjFJTlZ4VXViaTdONDhjOXExdThRVldT?=
+ =?utf-8?B?RXBvc1YxQlF2ME8yS2ZZbnNheHJhYjF6aHVCS205ZzJSeU5KWHBsOGk2NGZK?=
+ =?utf-8?B?RzlnRTkwcWhJNi9kTVhKM1NFNVpZR2liN2FjRmZxMi9iTkkvZnFxdkRNZkdz?=
+ =?utf-8?B?S2gzVWx3S1ZsMmdxaXVNbk1kMjJ1c29CT2oxdWxkNXBudkl3Z0kzR3dSWUNq?=
+ =?utf-8?B?T0Y2VXBQOHI5RC8xSzY5QjR1OHJ2N0E0TzVhY3dxZmJYQkhFb1V1QnhmTms5?=
+ =?utf-8?B?VVVlMUhzUFQ0V0VZS1hadlRSdGhCbm9VMjhOaFdGSDlubW02aHZuc1lva3RB?=
+ =?utf-8?B?VG5JL1BsajlCZ2tHNGtmV3FCU3kreHdHSXZrR0RpNVh4VXVYSDZpT3VJTWY1?=
+ =?utf-8?B?S3VkbXlmMGtrempzNFlSVE90TG5zWlNwY1E3N2Z2UE15TzJkaHFEcW43eW01?=
+ =?utf-8?B?NEIyVHRMNm4zV0c3QkQ0N29mMTVQQ2hqa0Q2ZDVDa2NTTXRIMERMM3BhU1Nk?=
+ =?utf-8?B?Rm5yTFlMRWhjOTRyZjhneXZHbHFvdUpmK0UrdGhSWDFLdVY2U2FUd3pOUFMv?=
+ =?utf-8?B?eWRQWTRLK0ZMaDFUU0NXVDNIM0tDaERNQmRzU3dJQmIxdERjZGJEeTU2eXU3?=
+ =?utf-8?B?UlNSVVptOVBORU5qUU44RHllZ2xQclUrY3NURjBaV00vRklsbVVwVUorTFEx?=
+ =?utf-8?B?SzBVcnNsWms2WVJNT2lLWUdCY203bWUyMnF6aGRuVitjNC82c21saU5sY1BM?=
+ =?utf-8?B?RGN6TExzNjBoVTJ2aE9KbzhoV3E3WGgwM3JNZTRhQ3UvM2ozR1o3UFkwVXYx?=
+ =?utf-8?B?eHYxaG9UaFh5ei9FZko5Nk95Q085cVRBNUp5TDlVQm1zQmg2THRQYUtjQ3dF?=
+ =?utf-8?B?djVKTXhYM1A3elE2TnZ4eUNpdFZoREtTOGJyTzlrOU40VU4xSE56SWZWV3Rq?=
+ =?utf-8?B?K29mTzUrUXEwR3R2dE9vaEdUUVhQb20veFlhRklsamVybVZWMlJNdmZvYkdK?=
+ =?utf-8?B?KzBwZmlBMm1BQnpBaDdDUT09?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(13003099007);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Njk2ejY3SDU2NW9HRWlQbHlWWC9CYW9JK3gyMzAramtDUVBtZDZXaTZNdS9G?=
- =?utf-8?B?K0tVR2hQTTFzNi93emRqZDNXS1A4anRrc3U4YTc5Zy9wZUVZY2U0MURkTGI0?=
- =?utf-8?B?bnRHQ0xwTXAxcGVMdmxwbCt3dEt5VThtQnZ3QzZxYy92N2JTTDN6RWhQejli?=
- =?utf-8?B?L2pOd2RyM0RWRnNQNzAyRTZESU81QmFQRHljSzVONFRvNFNFUDhybFg3Sk12?=
- =?utf-8?B?U3dsY0xlU05TcDBpQmx6cW44V3F1UXJaTjE2SXZlSE9qTmttR1lZa0h1UXZS?=
- =?utf-8?B?VVdWYXlTb3M5czkyMHdsWHJJTEFvNHJSeUpTSEJFUzkvZi9OUHM1T2pwQUtD?=
- =?utf-8?B?Zld5UkN5aTQ4alB2bUJ5OXdrRzhVSEU3Y29rbTdRa0lEUERCeFhiOGx1WUow?=
- =?utf-8?B?SFlwbE1SRk5aZm5oTzU5VWJQODRtbDJRRFVYYkVlZzZXVk1pdkR1VVVSUklD?=
- =?utf-8?B?YTlzTzJpRkk4RGhMR1FDdUg0M3hmMjh6ZDJMVXJVdUFVQUl6NEZFUnZ2bTEy?=
- =?utf-8?B?VktRNTFqQmZ6UnBydmVvN1RuWlJPYzVOWEFCOGs1OE1Gb0tPb0ZBYk5Id1Zs?=
- =?utf-8?B?UmlKcjlzYStPcHpSRUlkd3RxR1JoUzlkQUZJcDNPVHJwVkphWWRLdFdKWkpT?=
- =?utf-8?B?cmZMY3J3RUhzSFFsd3p0aVkvVkk1bktTRUk4aGNHaFFwcU1XRVM4cFdjMW1P?=
- =?utf-8?B?V3psREYvOXpOc2hXaVBxZDA0c2hjT0s3bVdqMXpaWnFnN1ZZVXVqbEtUWlYv?=
- =?utf-8?B?M1RHSlRYU3BOUXFZcHIxT3VGVjB1NERKb0lsOFNSS0Y5ZkVCaUd0TUZrc3FJ?=
- =?utf-8?B?bC9qZzFuekFFN2svcW1jd3k5Q0h6ckNKS2c5cGR6bTZBRDBNTWVnY25wUERF?=
- =?utf-8?B?QnpEeXFBZUVjTEZFT3FNTXlSMEhjZm9Hc2NJQnU3WlVTMTZBMUloREx1N3Ey?=
- =?utf-8?B?S2l4VmF0MjRHVG12QlhwRHVvczBycDRLWnVIZkJoUGszdExtRXh0VjIwVlFl?=
- =?utf-8?B?VDZrTHUxRy9sclFjRTJBOTZOTlZBVzBLOXlvQ2NZdDE4aGlwcUt2WWtMaTcw?=
- =?utf-8?B?ZEdnL1BZclB3SzZ1bEJNNmdEa0F0SWJrb01sWWpvUjJqQkwvWUxxUEk1czRF?=
- =?utf-8?B?YTZBcVo0STQzWThFRjA4RXU1VWxhQnEwUFlGOEsxRnhoanhjK240UHZzRlZp?=
- =?utf-8?B?b05uc3dZV1lvVmdYTjlDY252UzIzQ1dJZUExVUl3MHNObjloMEtmUnVoVEFr?=
- =?utf-8?B?OXhFZUdQQzh0WGZKTStBY3lDQXFVV3JBVFRBVVd6emFOWXF6eHRMb0RMMTRj?=
- =?utf-8?B?K2JrNC9qUHAvTExMVVcxWTJUNDJEa0J3U3I5clE0dmswd2V2QjdmMGhwc3Vz?=
- =?utf-8?B?elRYMzdKeSs4L2pUcWY2NGIxSEZNallTd2ZVREFLNnNOREtUbDcrR1hZenJ3?=
- =?utf-8?B?UDV3YTNRZkJGRWVUZ3lPMjVkUXdIUHVhRGdyQ0owTDhJcTFrUVArN1pxVzNW?=
- =?utf-8?B?K1NPbEgyNENBVVU1NldXMGwzcjgvdmVPbytzejgwUzN5eDZwOFEybG1oRGJl?=
- =?utf-8?B?dU1UTHJ1MFM4KytPWnY4VXp4SnZ6YmdYVEhiUUZxL3AxMTFTUnhrSGVGME5X?=
- =?utf-8?B?USs3ZDVRMXpYL3BpNEJ0STkzY3A5WkdZM2hPZmhmaktDT0VUOFRyQlQ4UHF4?=
- =?utf-8?B?RnBoQWFvekpXS1FEK1ZPMWwyMU8yMm0yRXhjMVBNcVlhdytZNkt2TEFHenFM?=
- =?utf-8?B?VEwwbTVrY0RoZVdXOG9PQmxSUzRGQTE4UGowUit0eUNnbmZMZWxBSnRlWjla?=
- =?utf-8?B?TEJDeHhCWkNpcS9kRGNtNUQ4N3N3RHRTRXNNYTlnVDdBald0WEF5b0xXWjgz?=
- =?utf-8?B?cVFvVlhhYnNUcXZYQ2t4SnZqMEJURVdmbGJMTXRXZGI0VmNTdTg1QlRsVk41?=
- =?utf-8?B?c2FVN2NlbEtDVU9ScklwdUN6bGNSa28wRnpBb0FBbkZ3V1VsN3hLR0xQakJI?=
- =?utf-8?B?MVVhaEwrNlJUZDZYb3F0dkhlKzRmcklCQ3FPWDZuQWlQMGxSRmNjSk5Da1hn?=
- =?utf-8?B?SEczcndKT0VTRHcrV3J2WUZnVy9yencvNFBHMTJZN2xaRUhVMEpmREdiV05Q?=
- =?utf-8?B?bVprRUN6RTBPa3d0WDBGZW9hRjBCK1ErOHJ2MXFRYVZPRDNjRG5mUHBVV3lK?=
- =?utf-8?B?a3c9PQ==?=
+	=?utf-8?B?bHNhT0ptVER0bHA1Z28wZDdURFJ3NEE5NzZKV1lsOFYzRFl0bVJ3am5hT3c2?=
+ =?utf-8?B?bTlENEJ1WW1XZ29kYUZWbXV5cTRUWjBGNFp2K0wxMUVxdTh1L3NYTmFhb2hC?=
+ =?utf-8?B?NmNzNWtVNzVwSk40cTBpaEEwQ3VEUWJBRFdBT1NESFVqWTU0VFVTYk0vdWlD?=
+ =?utf-8?B?UG5CSy9DZkR1MkYvZTNtRE9XMVZKTlVqVk1iQVF6OXY0UnVza2YvbmM3MjZv?=
+ =?utf-8?B?N3ZReUp3TWpWSGN1R1JSb0NTbUprWlNQTG5RQzFWT0lsdzR4N3Vha1NrVnJw?=
+ =?utf-8?B?d3JGTHU4RGloZkptdWZhUDhrQ1Vabm1UNFpsTEJzZVR4cmJWc0ZnSnRKZDJG?=
+ =?utf-8?B?RU8vV05PYU44amUwcEMvZnBsdkpqc0xEZXU5a0l5ZjVVb2pHdnhJYVZZTGFp?=
+ =?utf-8?B?ZGxiYlErSzRXRDJIaUNIQnhQQUJWVDZPK3hQbXlvamh1RVZaQ3JvYmVnTE9G?=
+ =?utf-8?B?ZWpBdmFZSUJESkFlZTE2emo5cFBsSFNndlk4TERRZjU2N2dqYmhUdzFPZzNU?=
+ =?utf-8?B?a0N3Rk83ZmZrNlVhYWVaU2tGSTFiQStYclFROHpMVmJETUt3MEhhSVlSWDFR?=
+ =?utf-8?B?WlF3ZXNlMVBWMVJTM2pYMmgyM0FIZm9QRGFDNnU1NlhHY25qMzIwMDlFeDh3?=
+ =?utf-8?B?KzkxRC95ZTNEUzZQSndJQ094ZmdTTHpOb1ZNOVNLSUl0UklOOXExRzc2eVp2?=
+ =?utf-8?B?YkphdmE1MHBQbjJMU0hrek9MMGtyUHBVRlpsTGxIdGcxbFEyRERiY0Zlay91?=
+ =?utf-8?B?Q0lKY3hxMFdOWEtHcStSYjhET3hnbUxUUkpQTE9EbTlTWHFDakFsenVUZ2Nn?=
+ =?utf-8?B?WkgwVlpIeHlXdE1PUVNyMVpqSE55STBBSnUvUHJYWEw0OW1wNmRMVWdWcGRl?=
+ =?utf-8?B?WHVmaWl4aEl5TlY5U0tYdXNtbXQvUEQrN0FHbHNUNXFwcUxQZFFNNE9hQlpt?=
+ =?utf-8?B?cXd4ZStFcjZ0RDcrSmYvNG9mUEZNeHFXTmVkc3FrOFJPbmJSbFQ3Rks4VGJ0?=
+ =?utf-8?B?bHB2OWlCZ1hRdlFKdHBvZVY2bDZWaGxqNGtEUUhMdzhCemVDaHVNRUxETE5z?=
+ =?utf-8?B?TXlqZEF3VmFrNERnUE9CcTVoUUh3b3ROa0xqQmtwNzZGV3djanN4WU5KQ05j?=
+ =?utf-8?B?NWNzMC8vZFpNTW1saGZ1N0RiWjVxcEx6VUR3Q3RhUmJXbUNlWmdkT2VHMjdU?=
+ =?utf-8?B?dVloclJ6ZzU3SndIMTZTblBWa1pWWWY4QUlPbVFPY3U3VGQ0elhCRmxFWmcr?=
+ =?utf-8?B?TWFMS2tSa3plVVpXcnd0eXh1VUFTRjlmamZYK1RKY2pBY1FnL1IvODlvLzNh?=
+ =?utf-8?B?U0cza3Z4L05aaE1oQmtEVlZLK0Y3WE0rcFgrZG10SUw5UDN1U0dweWQ1WUIw?=
+ =?utf-8?B?R1Zjd3ZLNitPZDcyVGdOZXl6YlBjQ1pzanUycFdBelRJNW1jbitZN1djeER0?=
+ =?utf-8?B?WXprZTh3VHhSeGJiZU9MdTJtekF5d3RwekFCOVRLdVREQ0h2eVBGVWh5eWE5?=
+ =?utf-8?B?b0pUTGk1UGVlZ0cyYTErOEpuOEpUamdMbW5ZRFgxT3FmU0VkM3owTHRBWHQy?=
+ =?utf-8?B?STFkekNwaTNHaWJUcEYweDhOWTJCNEtudVJkcTZya2Vxbk5nT1NBL29telZS?=
+ =?utf-8?B?anE4SUx6dkk4YVZQQ2Y2eFVZUXd6ckRqT3hrNzVVcXFENS8xaitHbktYS3JH?=
+ =?utf-8?B?MHZSVlpVem9zbnUxaXFQRmRZRFZRVENONFUzOHFncGJ6czBYdHZEbzlHSnI4?=
+ =?utf-8?B?NWJUcHpJLzU1RTQybmVVY2RkbGNkL2l4cWhCSk9acTZiL3cxbG5kdWpGdjFX?=
+ =?utf-8?B?VU4zY2htS2dOSmFsT0lmSVZnSDFaZ3dmbTE2aitFeWZ1Mmp0RlVLYW5VNXVS?=
+ =?utf-8?B?bkZjdWVDOWdoOFRsbVhITzVqb0hOSUFMeGZUNzdtWlZWV3FTTm9iUzhsL1Vx?=
+ =?utf-8?B?TWJ5cGNsVGxIOVUxSDl5OGZwNm50clBXaTZndktNK0pMYU5ZSUp2YW9BMStS?=
+ =?utf-8?B?V3lQQkcrc1ZrenQ2ekZVOUZ1QWowaDRzWk85ZGkwK3RUWUVSSCtBdkU2dERr?=
+ =?utf-8?B?VTR1eTM2NGZWM2lIV3VrczYyVS9MUk1wNFRVM0FCa0NnK2NqRXBnN1REL090?=
+ =?utf-8?B?aTJxQ1VrTDBMRFNBT3hWTWptQ3d2MmIxd1FkY0VEenBCYmdFblEzVTdUMWtV?=
+ =?utf-8?B?aFE9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 67efa35b-93d0-471b-7a93-08dd4ab17ea6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4737c64d-3c4b-4811-4aed-08dd4ab283fc
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Feb 2025 15:33:55.3512
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Feb 2025 15:41:13.6553
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MEGD3B6KVOImo9LdHwjVfID3AktdclQXIc0qd+trhhQ4s+5hlvaDOKF2irXnzZUpMplQDemQuPQpHWluNNwuLg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB8286
+X-MS-Exchange-CrossTenant-UserPrincipalName: YJfc8EkFicwGuXyj008A7huXQZKL7tnpLbHoPxg7cxRMBt+FfCgqrEN4P9yXMEGo16NeI6AQVekyKcQwcNTYPw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB6804
 
-On 31.01.25 16:42, Florian Bezdeka wrote:
-> Hi all,
+On 15.01.25 15:10, Jan Kiszka wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
 > 
-> here are the measurement results, comparing v2 of the patch series with
-> Xenomai next branch.
+> This may be incomplete. Specifically the link to the SMI document cannot
+> be recovered - if that ever existed.
 > 
-> All measurement runs were executed for 6h on the boards mentioned
-> below.
+> Besides that, this drops obsolete i386 installation instructions and
+> underlines that bootstrap needs to be done even with the tarball now.
 > 
-> The second line (per arch/board) shows the results of a measurement where
-> only the userspace (so libcobalt) changes were applied, while the kernel
-> (cobalt) modifications were missing.
+> Reported-by: Luis <luis@eichitek.com>
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
 > 
-> Versions:
->   Xenomai:
->     next: Xenomai next branch with the "measurement patch" applied
->       v2: v2 of the patch series + "measurement patch" applied
->   Kernel: all measurments with Dovtail 6.12
->      
-> Boards:
->    armhf: Beagle bone black
->    arm64: Hikey 
->   x86_64: Siemens IPC 227E
-> 
-> The numbers (need more than 80 characters...):
-> 
->        +-- execution time of the injected syscall  --+
->        |                                             |
->  Arch      min    min     avg    avg       max     max          latency                latency
->           next     v2    next     v2      next      v2           next                    v2
-> 
->  armhf   2.875  3.125   5.347  6.251    16.625  34.125    17.884/ 43.247/ 98.016  18.086/ 44.097/102.018
->                 3.083          6.065            37.625                            17.889/ 44.425/ 99.143
-> 
->  arm64   0.833  0.833   2.575  2.716    40.000  48.334     4.306/ 15.240/220.732   4.957/ 14.216/217.138
->                 0.833          2.703            47.500                             4.620/ 15.515/210.081
-> 
->  x86_64  1.104  1.308   1.356  1.577     7.116  12.396     5.274/  8.498/ 41.115   5.654/  9.015/ 43.380
->                 1.272          1.555            10.801                             5.609/  8.902/ 45.061
-> 
+> Philippe, we are missing a link to the README.APPLICATIONS on 
+> doc.xenomai.org, aren't we? And when will those changes here be picked 
+> up again? Did I have to trigger something? Problem with remembering 
+> stuff you only touch ever other year...
 
-So, there are differences, that was expected, but some are much worse
-than I would have assumed. And using the syscall Philippe proposed may
-only enlarge the relative change (by reducing the bare syscall costs).
+Gentle reminder for my questions.
 
-If we can rule out any mistakes, I would say that the syscall clean-up
-is not worth the costs it can bring.
+But I'm merging to master now - maybe magic that I forgot will just happen.
 
 Jan
+
+> 
+>  doc/asciidoc/README.APPLICATIONS.adoc |  6 +-
+>  doc/asciidoc/README.INSTALL.adoc      | 89 +++++++--------------------
+>  2 files changed, 24 insertions(+), 71 deletions(-)
+> 
+> diff --git a/doc/asciidoc/README.APPLICATIONS.adoc b/doc/asciidoc/README.APPLICATIONS.adoc
+> index 4447bc05a8..0a4f109cb3 100644
+> --- a/doc/asciidoc/README.APPLICATIONS.adoc
+> +++ b/doc/asciidoc/README.APPLICATIONS.adoc
+> @@ -5,7 +5,7 @@ Running a Xenomai 3 application
+>  -------------------------------
+>  
+>  For _Cobalt_, you will need the real-time core built into the target
+> -Linux kernel as described in link:installing-xenomai-3-x[this
+> +Linux kernel as described in link:../README.INSTALL/index.html[this
+>  document].
+>  
+>  For _Mercury_, you need no Xenomai-specific kernel support so far,
+> @@ -17,7 +17,7 @@ latencies.
+>  
+>  Any Xenomai-based application recognizes a set of standard options
+>  that may be passed on the command line, described in
+> -link:application-setup-and-init#Standard_Xenomai_command_line_options[this document].
+> +https://v3.xenomai.org/application/#x3-command-line[this document].
+>  
+>  In addition, the *Alchemy*, *pSOS (TM)* and *VxWorks (TM)* APIs running
+>  over the Xenomai core can define the clock resolution to be used,
+> @@ -36,7 +36,7 @@ i.e. +--alchemy-clock-resolution=1+.
+>  Specifying a resolution greater than 1 nanosecond requires the low
+>  resolution clock support to be available from the Xenomai libraries
+>  (see the +--enable-lores-clock+
+> -link:installing-xenomai-3-x#Generic_configuration_options_both_cores[configuration
+> +link:../README.INSTALL/index.html#_generic_configuration_options_both_cores[configuration
+>  switch]).
+>  
+>  Valgrind support
+> diff --git a/doc/asciidoc/README.INSTALL.adoc b/doc/asciidoc/README.INSTALL.adoc
+> index 31ab801a50..60f1f9149b 100644
+> --- a/doc/asciidoc/README.INSTALL.adoc
+> +++ b/doc/asciidoc/README.INSTALL.adoc
+> @@ -16,12 +16,6 @@ One of the two available real-time cores is selected at build
+>  time. The dual kernel core is codenamed _Cobalt_, the native Linux
+>  implementation is called _Mercury_.
+>  
+> -[NOTE]
+> -If you are looking for detailed information about installing a legacy
+> -Xenomai 2.x release, please refer to link:installing-xenomai-2.x[this
+> -document] instead. Please note that Xenomai 2.x is discontinued and
+> -not maintained anymore.
+> -
+>  Installation steps
+>  ------------------
+>  
+> @@ -70,8 +64,8 @@ $ scripts/prepare-kernel.sh [--linux=<linux-srctree>]
+>  
+>  `--dovetail`:: specifies the path of the interrupt pipeline (aka Dovetail)
+>      patch to apply against the kernel tree. Suitable patches are
+> -    available from the project's link:/downloads/dovetail/[download
+> -    area].  This parameter can be omitted if the Dovetail has already
+> +    available from https://source.denx.de/Xenomai/linux-dovetail[here].
+> +    This parameter can be omitted if the Dovetail has already
+>      been patched in, or the script shall suggest an appropriate
+>      one. The script will detect whether the interrupt pipeline code is
+>      already present into the kernel tree, and skip this operation if
+> @@ -106,7 +100,7 @@ Xenomai configuration options are available from the "Xenomai"
+>  toplevel Kconfig menu.
+>  
+>  There are several important kernel configuration options, documented
+> -in the link:troubleshooting-a-dual-kernel-configuration#kconf[TROUBLESHOOTING]
+> +in the link:../TROUBLESHOOTING.COBALT/index.html#kconf[TROUBLESHOOTING]
+>  guide.
+>  
+>  Once configured, the kernel can be compiled as usual.
+> @@ -143,7 +137,7 @@ is expressed in kilo-bytes. | 256
+>  |xenomai.state=<state> | Set the initial state of the Cobalt core at
+>  boot up, which may be _enabled_, _stopped_ or _disabled_. See the
+>  documentation about the
+> -link:../documentation/xenomai-3/html/man1/corectl/index.html[corectl(1)]
+> +link:../man1/corectl/index.html[corectl(1)]
+>  utility for a description of these states. | enabled
+>  
+>  |xenomai.smi=<state> | *x86-specific*: Set the state of the SMI
+> @@ -167,60 +161,25 @@ The examples in following sections use the following conventions:
+>  
+>  
+>  [[cobalt-core-x86]]
+> -Building a _Cobalt/x86_ kernel (32/64bit)
+> -^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> +Building a _Cobalt/x86_ kernel
+> +^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+>  
+> -Building _Xenomai/cobalt_ for x86 is almost the same for 32bit and 64bit
+> -platforms. You should note, however, that it is not possible to run
+> -Xenomai libraries compiled for x86_32 on a kernel compiled for x86_64,
+> -and conversely.
+> +_Xenomai/cobalt_ only supports 64-bit x86 platforms. You should note, however,
+> +that it is possible to run Xenomai libraries compiled for x86_32 on a kernel
+> +compiled for x86_64 if that kernel supports compat mode
+> +(CONFIG_IA32_EMULATION).
+>  
+> -Assuming that you want to build natively for a x86_64 system (x86_32
+> -cross-build options from x86_64 appear between brackets), you would
+> +Assuming that you want to build natively for a x86_64 system, you would
+>  typically run:
+>  
+>  ------------------------------------------------------------------------------
+>  $ cd $linux_tree
+>  $ $xenomai_root/scripts/prepare-kernel.sh --arch=x86 \
+>    --dovetail=patch-X.Y.Z-dovetail.patch
+> -$ make [ARCH=i386] xconfig/gconfig/menuconfig
+> -------------------------------------------------------------------------------
+> -...configure the kernel (see also the recommended settings
+> -link:configuring-for-x86-based-dual-kernels[here]).
+> -
+> -Enable Xenomai options, then build with:
+> -------------------------------------------------------------------------------
+> -$ make [ARCH=i386] bzImage modules
+> -------------------------------------------------------------------------------
+> -
+> -Now, let's say that you really want to build Xenomai for a
+> -Pentium-based x86 32bit platform, using the native host toolchain; the
+> -typical steps would be as follows:
+> -
+> -------------------------------------------------------------------------------
+> -$ cd $linux_tree
+> -$ $xenomai_root/scripts/prepare-kernel.sh --arch=i386 \
+> -  --dovetail=patch-X.Y.Z-dovetail.patch
+>  $ make xconfig/gconfig/menuconfig
+>  ------------------------------------------------------------------------------
+>  ...configure the kernel (see also the recommended settings
+> -link:configuring-for-x86-based-dual-kernels[here]).
+> -
+> -Enable Xenomai options, then build with:
+> -------------------------------------------------------------------------------
+> -$ make bzImage modules
+> -------------------------------------------------------------------------------
+> -
+> -Similarly, for a 64bit platform, you would use:
+> -
+> -------------------------------------------------------------------------------
+> -$ cd $linux_tree
+> -$ $xenomai_root/scripts/prepare-kernel.sh --arch=x86_64 \
+> -  --dovetail=patch-X.Y.Z-dovetail.patch
+> -$ make xconfig/gconfig/menuconfig
+> -------------------------------------------------------------------------------
+> -...configure the kernel (see also the recommended settings
+> -link:configuring-for-x86-based-dual-kernels[here]).
+> +link:../TROUBLESHOOTING.COBALT/index.html#kconf[here]).
+>  
+>  Enable Xenomai options, then build with:
+>  ------------------------------------------------------------------------------
+> @@ -293,9 +252,7 @@ although this is not mandatory if building with `--disable-tls`.
+>  
+>  - If you plan to build from the sources available from the Xenomai GIT
+>    tree (git.xenomai.org), the autoconf (>= 2.62), automake and libtool
+> -  packages must be available on your build system. This is not
+> -  required when building from a source tree extracted from a
+> -  link:/downloads/xenomai/[release tarball].
+> +  packages must be available on your build system.
+>  
+>  _Cobalt_-specific requirements
+>  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> @@ -304,7 +261,7 @@ _Cobalt_-specific requirements
+>  
+>  - An interrupt pipeline (Dovetail) patch must be available for your
+>    target kernel. You can find the official patches issued by the
+> -  Xenomai project link:/downloads/dovetail/[there].
+> +  Xenomai project https://source.denx.de/Xenomai/linux-dovetail[here].
+>  
+>  - A timestamp counter (TSC) is required from running on a x86_32
+>    hardware. Unlike with Xenomai 2.x, TSC-emulation using a PIT
+> @@ -329,10 +286,6 @@ source tree:
+>  $ ./scripts/bootstrap
+>  ---------------------
+>  
+> -If building from a link:/downloads/xenomai/[release tarball], a set of
+> -autoconf-generated file will be readily available from the extracted
+> -source tree, and therefore reconfiguring will not be required.
+> -
+>  When run, the generated `configure` script prepares for building the
+>  libraries and programs, for both the _Cobalt_ and _Mercury_ cores. The
+>  core-specific code which may be needed internally is automatically and
+> @@ -776,7 +729,7 @@ $ dmesg | grep -i xenomai
+>  
+>  If the kernel fails booting, or the log messages indicates an error
+>  status instead, see the
+> -link:troubleshooting-a-dual-kernel-configuration#Kernel_log_displays_Xenomai_or_I-pipe_error_messages[TROUBLESHOOTING]
+> +link:../TROUBLESHOOTING.COBALT/index.html#kerror[TROUBLESHOOTING]
+>  guide.
+>  
+>  
+> @@ -792,7 +745,7 @@ $ /usr/xenomai/bin/latency
+>  The latency test should display a message every second with minimum,
+>  maximum and average latency values. If this test displays an error
+>  message, hangs, or displays unexpected values, see the
+> -link:troubleshooting-a-dual-kernel-configuration#the_latency_test_shows_high_latencies[TROUBLESHOOTING]
+> +link:../TROUBLESHOOTING.COBALT/index.html#_the_em_latency_em_test_shows_high_latencies[TROUBLESHOOTING]
+>  guide.
+>  
+>  If the latency test succeeds, you should try next to run the
+> @@ -813,7 +766,7 @@ recommended to calibrate the core timer specifically for the target
+>  system.
+>  
+>  See the documentation about the
+> -link:../documentation/xenomai-3/html/man1/autotune/index.html[autotune(1)]
+> +link:../man1/autotune/index.html[autotune(1)]
+>  utility.
+>  
+>  Building and running Xenomai 3 applications
+> @@ -823,11 +776,11 @@ Once the latency test behaves as expected on your target system, it is
+>  deemed ready to run real-time applications.
+>  
+>  You may want to have a look at
+> -link:building-applications-with-xenomai-3.x/[this
+> -document] for details about the application build process.
+> +https://v3.xenomai.org/application/#x3-building-app[this
+> +page] for details about the application build process.
+>  
+>  In addition, you may refer to
+> -link:running-applications-with-xenomai-3.x/[this document] to learn
+> +https://v3.xenomai.org/application/#x3-running-app[this page] to learn
+>  about the command line options available with Xenomai 3 applications.
+>  
+>  Migrating applications to Xenomai 3
+> @@ -835,4 +788,4 @@ Migrating applications to Xenomai 3
+>  
+>  If you plan to port an existing application based on Xenomai 2.x to
+>  Xenomai 3.x, you should have a look at
+> -link:migrating-from-xenomai-2.x-to-3.x/[this migration guide].
+> +https://v3.xenomai.org/legacy/migrating-to-xenomai3/[this migration guide].
 
 -- 
 Siemens AG, Foundational Technologies
