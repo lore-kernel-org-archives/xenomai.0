@@ -1,62 +1,29 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtprelay08.ispgateway.de (smtprelay08.ispgateway.de [134.119.228.111])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA10B155756
-	for <xenomai@lists.linux.dev>; Fri, 14 Feb 2025 09:00:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 062EE263F29
+	for <xenomai@lists.linux.dev>; Fri, 14 Feb 2025 13:27:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=134.119.228.111
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739523663; cv=none; b=i0vcrtzzhb78v3hA+17YkJX/GLB1TBUik+yQ1rD5h10F46R66DA2oQjQ7Gc3Rqwewrh5pWiuN9osZpmAk08Dlhxvz82c6q5TNM+skj0fP/FUM3IOUVg2xm5MDBcqnzTmNHU36r0O5najWM0F6v4x571nz+qt7xFqiFNMcMbeK6c=
+	t=1739539641; cv=none; b=CfDWI8NsunZDSERfEBp2mpXGRTyzYNQ5KW96UkGOuNqqwh3ymBHv1/zdZZcRdV8sucoyASPAk7aA3HE3J7HyBLI5ff6vwMLp4cQAClJXQ7vXcZU2A3Lkv2QfJ1Etrw0uPERSe+vAUqoSepdyBAQzi/eR2weZYhbEAp7lgOc3RKg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739523663; c=relaxed/simple;
-	bh=W4P5toMSr6oZB+U6/+4Zo6zmOfY64PqE55SbSdYrebo=;
-	h=Message-ID:Date:MIME-Version:To:Cc:References:Subject:From:
-	 In-Reply-To:Content-Type; b=ipVCMt34TuYx2KEcpk4DoWp/UmlhKc/O0xneWCPusOIuAXenWgKSQa3vTAw5Ejwxr3cAoYy6szMwjoizfsJ+K78bW0gHzrgk/U/xDaKLGfa11Wxuxwx0KlMpTRgMyOsLP+UM/JlslP3UQvClAiVvhrQEZXa6OqLCw8ceGXiabcs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=esiee.fr; spf=pass smtp.mailfrom=esiee.fr; dkim=pass (1024-bit key) header.d=esiee.fr header.i=@esiee.fr header.b=B9hqYUBM; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=esiee.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=esiee.fr
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=esiee.fr header.i=@esiee.fr header.b="B9hqYUBM"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-436ce2ab251so12712975e9.1
-        for <xenomai@lists.linux.dev>; Fri, 14 Feb 2025 01:00:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=esiee.fr; s=google; t=1739523657; x=1740128457; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language:subject
-         :references:cc:to:user-agent:mime-version:date:message-id:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=fi6BA+6sse46rPllGtwjfp+PTu1hh/wwg6h392jsp4Q=;
-        b=B9hqYUBMaSsJoflxip+Sp3IW3INUAa90XqdnwsNYXkbvbc6SdI3ZgO/ZYCOqA/c439
-         O8m8Cm9E/n6Q9XRBH4O0BtQrgwnAMfzs8JjMq2ohHyKy+OvflWhBiswkWO/xeaaxLYPq
-         M5FLoGV2A2duUAPoof6gvc35GUPC88zWCJ6Lo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1739523657; x=1740128457;
-        h=content-transfer-encoding:in-reply-to:from:content-language:subject
-         :references:cc:to:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=fi6BA+6sse46rPllGtwjfp+PTu1hh/wwg6h392jsp4Q=;
-        b=nofG/6u+HMVYpM2tFLzdoG68+Om0L+BXRMH4yngCPxZVI7i0vUAwS362IQEQh05Mez
-         vpdEW0NsvCvBY6RS8NfVndDj3m6r5Jbv5aQ7q6B+A0zxWTShcbBqyL4JWDPcZZY2PrNh
-         c2NZ21k+S+QYE+UiTVhErhGXnUt/vzbb+QpOyEpSZiPePoQ3nPuS86V/IvEB7rcbVgiu
-         tGCq4FNStSmwoJuLjux2JHVHTOILsITjQh4TWXS4i1wGO/dELGB9r81qbXGYyKLh8q1H
-         CRn9PTXn6PqvMlZh61PO/P+JwWAtnareZH9gEIrAVjEp/zU/GAT+/LzYDKVqco0kEIQf
-         7FyA==
-X-Forwarded-Encrypted: i=1; AJvYcCXWoQY971ueMo9O25uQSV4kQ5egBcsxcsRp6ce+tEY+8lcBfBoAP2vk4UbJuDFCkcChM6wd2X2g@lists.linux.dev
-X-Gm-Message-State: AOJu0YxCICU1FU/3+f9rfsrFvgnKATkCkkeZLAOAMwSmKHONHlZBkEPx
-	JFFs8GpbIx+DlCB8eMBfEL6zl5xkLx6I1wAxwe/BUvHf6o9ekYuTB2ml9rBjhxwQ2djmvyKNDB5
-	i
-X-Gm-Gg: ASbGncsA9Ghnj7fTlSpuUWCugVXrqnW8q859bD6dFabf8hcX8JgIKVl+vrvtsc+kCXs
-	ZM9qtA0NJusSPzE090sZ/PXrQnOQaUvu5oJQwKlAqi4jxuL+Yeiy3EQU8Ij9cGxGM7KTadtmCv0
-	31CchP5u0NDB0fC4aqx8bIajEx9HfJvyzkokfOR2eG/S8+k0oXfr4golpXX7dEvQ1J8vxZ5WgX9
-	FVG7ns0H5qeuRcZzRcHuo715Kg4Cd7VBd+g70aLX+iV6yRZRn+oq2K+VXegAH7E3kLn4zaJtAMb
-	h17cEBst9fhfXRla3+E=
-X-Google-Smtp-Source: AGHT+IH9qhkhC04K+KeM5yc0J1NuNzu3gn6Jm6Ad1tlGv6t94xxOjl0UCjPkeKaqzqOYot4+eaXcNg==
-X-Received: by 2002:a5d:59ad:0:b0:38d:d9bd:18a6 with SMTP id ffacd0b85a97d-38dea2e8252mr11228611f8f.42.1739523657262;
-        Fri, 14 Feb 2025 01:00:57 -0800 (PST)
-Received: from [147.215.40.84] ([147.215.40.84])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-38f259d5d8bsm4044331f8f.70.2025.02.14.01.00.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 14 Feb 2025 01:00:56 -0800 (PST)
-Message-ID: <672f66c8-fd31-4620-8b0c-867f85a57d6e@esiee.fr>
-Date: Fri, 14 Feb 2025 10:00:56 +0100
+	s=arc-20240116; t=1739539641; c=relaxed/simple;
+	bh=mizIxKs8DWM2dCf2qE8uTgyBFDMmyLplupnWyHa8e7Y=;
+	h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type; b=bB0KHDq5BSLyyXfm+6VTgTLhH5L//onwzqV6feYtR5ZrljZMI5Qo3yvRs8MU/u/AKhO2fWaAGPWIHSIrsig7dAd6sA0SnY4inf60IeqSmDsvsjwcJz+SHzriOqLD3kUW6fGsyIQKfCO41qUmmTg3uL02zc9BkFk/qChhE9uRFVU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eltropuls.de; spf=pass smtp.mailfrom=eltropuls.de; arc=none smtp.client-ip=134.119.228.111
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eltropuls.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=eltropuls.de
+Received: from [87.79.10.98] (helo=mail.eltropuls.de)
+	by smtprelay08.ispgateway.de with esmtpa (Exim 4.98)
+	(envelope-from <marc.straemke@eltropuls.de>)
+	id 1tiu6Z-000000005Ea-1GkQ
+	for xenomai@lists.linux.dev;
+	Fri, 14 Feb 2025 12:43:35 +0100
+Received: from [172.16.0.75] (unknown [172.16.0.75])
+	by mail.eltropuls.de (Postfix) with ESMTPSA id 42C77FFB39
+	for <xenomai@lists.linux.dev>; Fri, 14 Feb 2025 12:43:34 +0100 (CET)
+Message-ID: <34ff489c-a946-4fa5-a542-89aec2d1c8f9@eltropuls.de>
+Date: Fri, 14 Feb 2025 12:43:33 +0100
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -64,21 +31,68 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-To: rpm@xenomai.org
-Cc: remy.kocik@esiee.fr, xenomai@lists.linux.dev
-References: <87frkh0vvo.fsf@xenomai.org>
-Subject: Re: [Xenomai 4] Compilation issue
-Content-Language: en-US, fr
-From: =?UTF-8?Q?KOCIK_R=C3=A9my?= <remy.kocik@esiee.fr>
-In-Reply-To: <87frkh0vvo.fsf@xenomai.org>
+To: xenomai@lists.linux.dev
+Content-Language: de-DE, en-US
+From: =?UTF-8?Q?Marc_Str=C3=A4mke?= <marc.straemke@eltropuls.de>
+Subject: Problem with moving from Ipipe to dovetail
+Autocrypt: addr=marc.straemke@eltropuls.de; keydata=
+ xsDiBEFDEMkRBAC16/4AIsW+SGfNyPYZWX2h4zk8X2M3zI8EBDBvvXjYaDso1rMb2GneP5Gr
+ Wpyw2GZXeStYInjohGDX8PHdHQHpc8+lOq/vcfH3saK17fPNuQRYf1i9W9dP4LaLoMCwXnaX
+ 0mE4jJdiDBY83qS6TJvqpjnpaarIp4IqrJRlmVj4awCg05qWgBgeLpCx3Xn2iAjRd+rnWYME
+ AIprUD9u5sjHPxnpNIWfPv00kJA2vgF57Pj1e+4M1XwdwMPCSmr/rcMudctrfwr864pr8BOl
+ g/Sh86a257U0QEZEP3XOAsim+E6q8nrXOFretWPSmm0xkscBXrxcPFShTifCFtMhgSTwIyCT
+ owgsMwvhqL4xCAxK7NsR6G3tml+BBACxEEZpjFA5u9BiNQWMeKF7N5hq9kOk/LwIo1ittCuL
+ QG6Rlst8GdfcJu4WLsi45SwofjOdVp0lumXPoD7gE3hGBsAmGsegd6sKMO2BrCv46SuIQSLT
+ rBjXTV030etX28flziqrOLOWvR2aYF2z0Z1Z6edZGh2iDKAVT/zfx4nXOM07TWFyYyBTdHLD
+ pG1rZSAoRmlybWVuYWRkcmVzc2UpIDxtYXJjLnN0cmFlbWtlQGVsdHJvcHVscy5kZT7CfgQT
+ EQgAPgIbAwYLCQgHAwIDFQIDAxYCAQIeAQIXgAIZARYhBPEY2LrNuN7QCQ7Z5mx/6fLm8tJe
+ BQJiSo3IBQkqbX5/AAoJEGx/6fLm8tJeiM8AoNEJjmUJu0CZTIQdo8eK5qUD/aixAJ9yh4Sh
+ aCKFvM412AjW8rgbmuyDl87ATQRBQxDKEAQAuLxm9Eqp0KODFKkbH2YCSCr77MCfVAqmUb+V
+ 9IacY9SjCz3yQMVMuCCabAAx1VCWOnEkG9f1b7mCe1VRyFmnEWb3xP9DyBF2zEt2i1POpq5n
+ HO255XVSm5QwQz6B4k0v6RbJaOJXpotLyn2c0YR5xSKVAed3XDldzjn6L/kyeh8AAwUEAIep
+ mwJqAIpPCAXQ5UjWAt2fwyExCkI/1YP0R7yob45shvzzRwFabGzPTANGfHIKngnXs4Wby0/p
+ 8htzTj01eThKqGCv4SWMtovkAtZyLYf3sQhSItoM7rm/EI3vlOdFmk5/Glvqwh6OYSD2PDN/
+ wv2aeXe1btDS4Mva2gNBADMFwmMEGBEIACMWIQTxGNi6zbje0AkO2eZsf+ny5vLSXgUCYkqN
+ 3AUJKm1+kgAKCRBsf+ny5vLSXsrbAKCQnWHw1QfHnQ+l+QYZfhzpcHuA9gCgr95BhmLo6Q3i
+ bwTdu/yiVf4VDHk=
+Organization: Eltropuls Anlagenbau GmbH
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Df-Sender: Y2F0Y2hhbGxfbWFpbEBlbHRyb3B1bHMuZXU=
 
-Do you mean that there is an installation issue ?
+Hello Everyone,
 
-Do I have to manually copy the .h files from 
-$KERNEL_TREE/include/uapi/evl in my /opt/evl/include/evl repertory where 
-they should be found ?
+I am trying to move from kernel 5.4.228 with an IPIPE patch to a newer 
+kernel with dovetail. The config from xenomai-images works, my config 
+does not.
 
-Rémy
+The hardware platform is X86_64 on a Beckhoff Made CX20233 industrial PC 
+(CPUINFO model name      : AMD Ryzen Embedded V1202B with Radeon Vega Gfx)
+
+I tried bisecting the kernel version and basically the problem lies in 
+the switch to dovetail as far I could find out.
+
+Then i bisected the configs between my config and the one from 
+xenomai-images and got a strange result:
+
+The config setting which triggers the diff in the kernel configs is 
+CONFIG_SLUB_DEBUG_ON=y. With debug on the kernel runs, with debug off it 
+hangs.
+
+Any ideas how this debug setting can cause this issue? How should I 
+continue Debugging? I have some mistrust in the "working" kernel because 
+I cannot really understand how the SLUB debug setting could resolve that 
+issue.
+
+How would I get more information from the frozen system? I turned up all 
+debug settings and get basically no output. The IRQ Pipe torture tests 
+run ok. The problem only appears if xenomai  is started during boot. The 
+failing kernels do boot with xenomai.state=stopped as a parameter.
+
+Kind Regards
+
+Marc Strämke
+
+-- 
+Marc Strämke
 
