@@ -1,29 +1,30 @@
-Received: from smtprelay08.ispgateway.de (smtprelay08.ispgateway.de [134.119.228.98])
+Received: from smtprelay04.ispgateway.de (smtprelay04.ispgateway.de [80.67.31.31])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 979301991A1
-	for <xenomai@lists.linux.dev>; Mon, 17 Feb 2025 07:44:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=134.119.228.98
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA1161B4155
+	for <xenomai@lists.linux.dev>; Mon, 17 Feb 2025 09:12:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.67.31.31
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1739778273; cv=none; b=fKQEEWtu8pZXXV0/UmHZRTUezM2LosOvqfLkJIrkezzKayLx44oyxj8ou4Tr2+tAz7x/IFBCpGrutUKcStEHVwQbMLncdTQzpTyPEVr5e6zcq+c/FbSAxcTuBo4ts6sItd6D0nDTOZC+j8xpVNCXUi96jbQPftu7lKzgHUUrDBk=
+	t=1739783549; cv=none; b=na3sBmdabywANdAHcY0xgqHDlVuwxMRcssgrrJlA8goFKQLKTCS/WNH96KVA+VKWhSSf1WUWlLaXO7agMa1tgzjlMk2QtmNY68sE+CDLIh+IwTvon7pI+i7LjIvSo2dVMkyuY8/DfTq3jYwIy1JVaNhcBp+hlXXIz7SzDXPjE80=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1739778273; c=relaxed/simple;
-	bh=uWueRi6tk49nfwa5RZGxgHVu4qHhRrhJ3a19YWNPNv8=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=fSo6bVgHgvhzBaXgvqsG7lIrcKJWeYsIjGYVwFikxpG14++4bVFc82yisWhC+hbtEL4hNG20yfeJ0WjQae5bZhXlrV2Znhx04wFUgYO1GKiupJwOhIFz0Li7dCuJkOuHEhxzvlZz9o/q1bdFp0GnaM+xp6gdrFPG6RHqkWEmv3c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eltropuls.de; spf=pass smtp.mailfrom=eltropuls.de; arc=none smtp.client-ip=134.119.228.98
+	s=arc-20240116; t=1739783549; c=relaxed/simple;
+	bh=nDsOhD8osTmEVArxXt0+IpSclbqeXqH9HeKP8qrjkaU=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:References:
+	 In-Reply-To:Content-Type; b=EVQRLgNFG1jwOlFJ3sZEhU+izJRjHcIXIfDhP2WomilSs1xIQmL9oQ5z3kEJbeV1XYpInfooF6ZoJ3IDHRHS8hvzmqcb7byJ9+earHV2xK7lJx9e/gkEtizS60GM4KWxmtV4WNAUQnpCD2gSQ37KyTgQC6oxZJnkwE9p+IZZius=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eltropuls.de; spf=pass smtp.mailfrom=eltropuls.de; arc=none smtp.client-ip=80.67.31.31
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eltropuls.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=eltropuls.de
 Received: from [87.79.10.98] (helo=mail.eltropuls.de)
-	by smtprelay08.ispgateway.de with esmtpa (Exim 4.98)
+	by smtprelay04.ispgateway.de with esmtpa (Exim 4.98)
 	(envelope-from <marc.straemke@eltropuls.de>)
-	id 1tjvmk-000000000z2-0rig;
-	Mon, 17 Feb 2025 08:43:22 +0100
+	id 1tjwpR-000000003Kz-2WzR
+	for xenomai@lists.linux.dev;
+	Mon, 17 Feb 2025 09:50:13 +0100
 Received: from [172.16.0.75] (unknown [172.16.0.75])
-	by mail.eltropuls.de (Postfix) with ESMTPSA id EC147FFCB3;
-	Mon, 17 Feb 2025 08:43:20 +0100 (CET)
-Message-ID: <fac0181a-eee1-4820-ad8c-ea2b88629f5f@eltropuls.de>
-Date: Mon, 17 Feb 2025 08:43:20 +0100
+	by mail.eltropuls.de (Postfix) with ESMTPSA id 878F4FFC30
+	for <xenomai@lists.linux.dev>; Mon, 17 Feb 2025 09:50:16 +0100 (CET)
+Message-ID: <108e740c-9919-4cec-afbc-0ae2f08922df@eltropuls.de>
+Date: Mon, 17 Feb 2025 09:50:16 +0100
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -31,12 +32,12 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
+From: =?UTF-8?Q?Marc_Str=C3=A4mke?= <marc.straemke@eltropuls.de>
 Subject: Re: Problem with moving from Ipipe to dovetail
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
+To: xenomai@lists.linux.dev
 References: <34ff489c-a946-4fa5-a542-89aec2d1c8f9@eltropuls.de>
  <26540366296aa067a398520f3a9cfa94caa19fe8.camel@siemens.com>
 Content-Language: de-DE
-From: =?UTF-8?Q?Marc_Str=C3=A4mke?= <marc.straemke@eltropuls.de>
 Autocrypt: addr=marc.straemke@eltropuls.de; keydata=
  xsDiBEFDEMkRBAC16/4AIsW+SGfNyPYZWX2h4zk8X2M3zI8EBDBvvXjYaDso1rMb2GneP5Gr
  Wpyw2GZXeStYInjohGDX8PHdHQHpc8+lOq/vcfH3saK17fPNuQRYf1i9W9dP4LaLoMCwXnaX
@@ -63,45 +64,15 @@ Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 X-Df-Sender: Y2F0Y2hhbGxfbWFpbEBlbHRyb3B1bHMuZXU=
 
-Hi Florian,
-
-i cannot seem to get any kernel to run in QEMU ,-) I will need some time 
-to dig in to it.
-
-Marc
+Hello Florian,
 
 On 14.02.25 16:34, Florian Bezdeka wrote:
-> Hi Marc,
->
-> On Fri, 2025-02-14 at 12:43 +0100, Marc Strämke wrote:
->> Hello Everyone,
->>
->> I am trying to move from kernel 5.4.228 with an IPIPE patch to a newer
->> kernel with dovetail. The config from xenomai-images works, my config
->> does not.
->>
->> The hardware platform is X86_64 on a Beckhoff Made CX20233 industrial PC
->> (CPUINFO model name      : AMD Ryzen Embedded V1202B with Radeon Vega Gfx)
->>
->> I tried bisecting the kernel version and basically the problem lies in
->> the switch to dovetail as far I could find out.
->>
->> Then i bisected the configs between my config and the one from
->> xenomai-images and got a strange result:
->>
->> The config setting which triggers the diff in the kernel configs is
->> CONFIG_SLUB_DEBUG_ON=y. With debug on the kernel runs, with debug off it
->> hangs.
->>
->> Any ideas how this debug setting can cause this issue? How should I
->> continue Debugging? I have some mistrust in the "working" kernel because
->> I cannot really understand how the SLUB debug setting could resolve that
->> issue.
-> Nope, no idea so far. Could be everything...
->
 > Does your problem also reproduce on qemu/kvm? That might help to
 > simplify the debugging process.
->
+
+Sadly the issue is not reproducible in QEMU Both the "bad kernel" and 
+the good kernel boot just fine.
+
 >> How would I get more information from the frozen system? I turned up all
 >> debug settings and get basically no output. The IRQ Pipe torture tests
 >> run ok. The problem only appears if xenomai  is started during boot. The
@@ -113,31 +84,10 @@ On 14.02.25 16:34, Florian Bezdeka wrote:
 > Is that a boot time failure or something that happens later?
 >
 > Florian
->
->> Kind Regards
->>
->> Marc Strämke
->>
->
--- 
-Dipl.-Ing. Marc Strämke
-Geschäftsführer / CEO
 
-ELTROPULS Anlagenbau GmbH
-Arnold-Sommerfeld-Ring 3
-52499 Baesweiler
-Germany
-
-Tel: +49 2401 - 80970
-Fax: +49 2401 - 809715
+Is there any other idea to try for debugging? There is no way to get a 
+serial port for logging on my hardware..
 
 
-Geschäftsführer: Dr.-Ing. S. Strämke, Dipl.-Ing. Marc Strämke
-USt.-IdNr. 291 812 490 / Steuer-Nr. 202/5739/1186
-Amtsgericht Aachen HRB 18539
-www.eltropuls.de
-
-Der Inhalt dieser E-Mail kann vertrauliche Informationen enthalten. Falls Sie nicht der angegebene Empfänger sind oder falls diese E-Mail irrtümlich an Sie adressiert wurde, verständigen Sie bitte sofort den Absender und löschen Sie diese E-Mail. Das unerlaubte Kopieren, sowie die unbefugte Übermittlung sind nicht gestattet.
-
-The contents of this e-mail may be confidential. If you are not the named addressee or if this transmission has been addressed to you in error, please notify the sender immediately and then delete this e-mail. Any unauthorized copying and transmission is forbidden.
+Marc
 
