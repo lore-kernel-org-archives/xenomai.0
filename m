@@ -1,64 +1,53 @@
-Received: from wp072.webpack.hosteurope.de (wp072.webpack.hosteurope.de [80.237.132.79])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FF741FBEBF
-	for <xenomai@lists.linux.dev>; Mon, 24 Feb 2025 22:13:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.237.132.79
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.2])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 0E0642571AD
+	for <xenomai@lists.linux.dev>; Mon, 24 Feb 2025 23:41:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.2
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1740435193; cv=none; b=bvu5zTdZKoWjLEyqqfExWiS/r+MDSLX01QMLPwkJREYVuVgSF3QIRWzMgh1H0hdeNNF9bMsWoDjb4ZBTpBNnf3HoAcVC7sEyRGe94OCIrjbvzAVg/tGupGrG2DXix2jX6/HVcJkNIcuAbAHlPnRa4vpHT+gyiLx7F465pb0/OPo=
+	t=1740440504; cv=none; b=eYVFrS6rZtObYolFKwvwhlbkCy/1ZxR92CCQeml5wEUGCF99G3wALVxeuijvN3cfmpQKO2j3TgCeFCqJ5WbPn83pNxn0peJONMzWjm4Lz5yORv0whtw4G80ZPcJs6s2c/70lCKhYBP/8sZ56jEL0lgHw2w/LO9892amOJKhN6Zw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1740435193; c=relaxed/simple;
-	bh=afQJ59TU9pCZkBpWNuSymQw9Tl1jRiQY83ZHaNtDmYM=;
-	h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type; b=eaUfh7YzgQfxQ90A3h7E4E4gQHL8QOY4fCpYMfjdIyUJEXe8pJlateeSW/TXHIXJAq7YaV+2idS+dEjfaA+4vV440TsiPHxu8QEK0qvaJ8Znb2/kRRSCHE1oA5JKJTASoMPyA2WJbfTIn1uf3P/t0iiXxHrPyhHchb+faQR58ZM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=fam-obermayr.at; spf=pass smtp.mailfrom=fam-obermayr.at; dkim=pass (2048-bit key) header.d=fam-obermayr.at header.i=@fam-obermayr.at header.b=Yab+6Z0F; arc=none smtp.client-ip=80.237.132.79
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=fam-obermayr.at
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fam-obermayr.at
+	s=arc-20240116; t=1740440504; c=relaxed/simple;
+	bh=Azo31p8oYb53333sFLb5ZVt61h2QiT6V3zOSOzUIyEQ=;
+	h=Date:From:To:Subject:Content-Type:MIME-Version:Message-ID; b=CSgFEfCupcjiRBj+k95NrTSCGDm5AACzC0n2qDZOfyy3pJsJ+/k/GazLdWd8pl5nVlEgc8WdxV7uKYEnr7od7UGQN+f8qbgci6Na3XhPSYOkL5QjgtTcSxg8vUBzvTNfQbc9BneS2DEKfALNxU83VxsvZJitmION801ahuexdvg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=hEbY+wZc reason="signature verification failed"; arc=none smtp.client-ip=220.197.31.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fam-obermayr.at header.i=@fam-obermayr.at header.b="Yab+6Z0F"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=fam-obermayr.at; s=he109608; h=Content-Transfer-Encoding:Content-Type:
-	Subject:From:To:MIME-Version:Date:Message-ID:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:In-Reply-To:References;
-	bh=fj7PiMG21/l+8nKsUVDydcXJLoQisjcg9F9ZQmgFC+M=; t=1740435191; x=1740867191; 
-	b=Yab+6Z0F94JAy8YRDYc4vv+dFNlaRs3J6E5++SSdTB+j7rgNUvJbOkd9U88vpLjPOYSkdwFZpdh
-	USoJFF+yzCqU2Gg7DZYZQYblnUwIZOpaHDB8S4eScTW/gobYf8ZcOfT2LHHTHz1QM4kQ558Z2zroa
-	BJzQ6ppYhP0ezC/FmOP0CDoDpcp6zgf1gMtja6qFz8n8TrsSA3SNPeIxsES0UtqAvDJhI8aj9v71l
-	Cw2aA5NugnDm2Pf0/KWb5G9OBVfKeYPJ/cjWShnjtITAozwyDVlhuqdzk8EEU4UoGORjUDW2kJrcj
-	nwx6DgE248j5fA3BzZ68AeONipBEOlex3xWg==;
-Received: from 83-215-235-230.stat.cablelink.at ([83.215.235.230] helo=[10.30.248.78]); authenticated
-	by wp072.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128)
-	id 1tmgF3-00F2HB-3D;
-	Mon, 24 Feb 2025 22:43:58 +0100
-Message-ID: <6aca85a3-49a5-484b-9546-840fb92e86b4@fam-obermayr.at>
-Date: Mon, 24 Feb 2025 22:43:57 +0100
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="hEbY+wZc"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=LgjiNtWLyv94ItfYcbNkKODkhtok3m2hfd3VYJt1hM0=; b=h
+	EbY+wZc2A6sNRUhOfFvs9HTJq4rDwyQPQbLXIQVmvMApCnj/Umi/GDdoR85xHBqQ
+	TWVWeE1A3pZv0xqxu7SF5usjd3CgW/yh2KnCvvPdvRE9Gx3ZzFhpqLu1yCySb2so
+	Ta+Iz+8ayd1Ycl7iuYibcW5ciwn7JX1zmpWLKZyXho=
+Received: from jerryjun123$163.com ( [116.30.125.175] ) by
+ ajax-webmail-wmsvr-40-136 (Coremail) ; Tue, 25 Feb 2025 07:41:36 +0800
+ (CST)
+Date: Tue, 25 Feb 2025 07:41:36 +0800 (CST)
+From: JerryJun <jerryjun123@163.com>
+To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: CXP -- migrating from alchemy to evl
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20240801(9da12a7b)
+ Copyright (c) 2002-2025 www.mailtech.cn 163com
+X-NTES-SC: AL_Qu2fAvifv0wi4COQZ+kfm0gag+05XMa3vf4v2Y9XP598jCnr3Acxb0FMBljazt+OFT6rrheYdxVr991bRphpZ7oNcwSRTJ/iVrN35+QghuLNdg==
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: xenomai@lists.linux.dev
-Content-Language: en-GB
-From: Johann Obermayr <johann@fam-obermayr.at>
-Subject: xenomai 3.2.5 16550A driver with irq sharing
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-bounce-key: webpack.hosteurope.de;johann@fam-obermayr.at;1740435191;09efb833;
-X-HE-SMSGID: 1tmgF3-00F2HB-3D
+Message-ID: <228ce6ee.15f.1953a566904.Coremail.jerryjun123@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:iCgvCgB3fqiwA71nyDZwAA--.41670W
+X-CM-SenderInfo: xmhu25pmxqijqt6rljoofrz/1tbiUgT9LGe8+5zFqAABsX
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-Hi,
-
-is this correct, that xeno_16550A driver does not support IRQ sharing ?
-
-i load xeno_16550A with parameter io=0x3f8,0x2f8,0x3e8,0x2e8,0x2f0,0x2e0 
-irq=4,4,4,4,4,4
-this work, but after open a rtserX, I get
-2022-01-01 01:27:41 kern.info kernel:[   93.857347][  T579] genirq: 
-Flags mismatch irq 4. 00210000 (rtser5) vs. 00210000 (rtser0)
-
-irq 4 is only used by xenomai.
-
-Regards
-   Johann
+CmhpIHhlbm9tYWk6CldlIGhhdmUgcmVjZW50bHkgYmVlbiBkb25lIHRlc3RzIG9uIEVWTChYZW5v
+bWFpIDQpIGFuZCBoYXZlIHJlY2VudGx5IGxlYXJuZWQgYWJvdXQgdGhlIENYUCAoQ29tbW9uIFhl
+bm9tYWkgcGxhdGZvcm0pLgphcmUgdGhlcmUgYW55IHNwZWNpZmljIHBsYW5zIHJlZ2FyZGluZyB0
+aGUgQ1hQPwpXZSB3b3VsZCBsaWtlIHRvIGtub3cgaWYgdGhlcmUgaXMgYSBzbW9vdGggbWlncmF0
+aW9uIGRvY3VtZW50wqBmb3IgbWlncmF0aW5nIHRoZSBuYXRpdmUgWGVub21haSBpbnRlcmZhY2Us
+CnRoZSBBbGNoZW15IEFQSSwgdG8gWGVub21haSA0LiBGb3IgZXhhbXBsZSwgc29tZXRoaW5nIHNp
+bWlsYXIgdG8gIk1pZ3JhdGluZyBmcm9tIFhlbm9tYWkgMi54IHRvIDMueC4iwqA=
