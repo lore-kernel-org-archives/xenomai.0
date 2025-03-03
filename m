@@ -1,97 +1,97 @@
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB9641FAC4D
-	for <xenomai@lists.linux.dev>; Mon,  3 Mar 2025 14:44:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 519AF1F3BA3
+	for <xenomai@lists.linux.dev>; Mon,  3 Mar 2025 14:48:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.199
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1741013051; cv=none; b=gpP1O3TBnTHkV28NSKxgJ7OI3Zv080sM25t2tOXXUBSJ6whNylGbNlzHXO7nz9fGfKXGSUBMjWg+HHaBZnX+F2FxavS+HTHNb/rqMCa+pZ+VAf654/PAU7x/lzWg9d1RKl9QyKIqwOk2aDpgDwXzAWc8pnzwSNP9ZGJmDfjHsS4=
+	t=1741013326; cv=none; b=eermR2I2xqjFXIrA+9t5H42rtXgeIbk+dPEt1MlQKaGOxx9T3b3uFKzx5Tagh6ob5ttYNLEcpydvyXwGMdEkPOqcShOjmnVnISZO3UNSllQPt/EFfmKOIOXw2rqztIV3o/estkHola+eDZxF8zYj/DGjlbCrBfTVUvMDq+3kG9k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1741013051; c=relaxed/simple;
-	bh=fAPySB6mHpV0FOqUqANmA58KLGiYI2v69MPLjINYogQ=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=IPk+pSfFiNQTpAbuHwaohU3KQUZIVHpRRbUxirY/nQcU511ohaUmlwoa7EwbiiKET9i/gBqKiMjGZvQq18grvMQJeiaUOLOTwflhORD8t1+u+diN0A9gkuY0fOlnut660P9yAq8emuvH+3xAphDldagTtFEcdpkyhiWuQQVe9wU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=ZCP3a6Ie; arc=none smtp.client-ip=185.136.64.228
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1741013326; c=relaxed/simple;
+	bh=eBhW7DMPyi2OOfb1CPtT0nTqcAhKCCdGMFWjUFaBFbs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=m74M+F2/kgv67dSQsGiSWopWcHEHfFfNtwbouJkxqp2AB0i90JuFQXd+pC5C4nu84i1G0BAzBjDouBOJN2XcZ9sdgNdNdWaQaJuOvM6EwmmKGg/iJKKziCWTvmaR3YaGNBSiIJpNQOjz6Bf/ussJIr3mK+eS/WWOgRWyDH00Vc8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=BP+Y8s7m; arc=none smtp.client-ip=217.70.183.199
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="ZCP3a6Ie"
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20250303144403344c1fa87b529f4eac
-        for <xenomai@lists.linux.dev>;
-        Mon, 03 Mar 2025 15:44:04 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=TZ5MGXvF03j75Ytar6cXHXK0GLz8ym2QZ4xp8wmEZ18=;
- b=ZCP3a6Ie/V7aHpyzps4BHrec7IZw6TNUj+uzWqhzyei13DMKycZZZIxgHdgJFKwJnenhdZ
- bOl59rWdXR/0Qemrav2iHWOSyHog0KE+wUWBsrcxm98eRFKXMiLx9PoOjHgt9g79dL40lsek
- bz/SlGtuWJXOCocZFW11be30ek3e3iUxpzZZ3MvlZDMU2XTkE0SwU3NwUZGEIZeDE+K9mYs/
- rmAWFkrYTezcTq9LtVKKOvZ1e9xJ48BknOOF8iYiaq2l6ZOtDTkqL6+zfNcCDlbr6mrFzr3m
- kFDypBShkPcMSaWyyBSFarsixCbOTUgwomAHhCPrFsKzdbBhqEzZUC7g==;
-Message-ID: <e748f601bc89d5040995809850c8a8f00c82defa.camel@siemens.com>
-Subject: Re: [Dovetail] v6.14: fix up to oob page pool
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Philippe Gerum <rpm@xenomai.org>
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="BP+Y8s7m"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 119CD442A8;
+	Mon,  3 Mar 2025 14:48:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1741013314;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+	bh=H9qTTCAK+geaRjWNbgMSdFGeMWTHWhc3aaqUeW64Yww=;
+	b=BP+Y8s7mZkmbUKO26RaF7DSaMQAMdovuVhSMlLUerBWAzKpa5Y/sGhP6xdVsIxjMqRjtxM
+	u+pnav5v7KCOxfrXwkjVUebr7PYufcMyCJPqduRaAN7QmJCAzIkVfkoDS7FFdb3WnKAAAP
+	YPQ5/xVFzBD2obI+7DsoL9za7mqdNnLOnl9iGERv4+Re88Qycu9/rn2ljPxAiq918epDwP
+	1+orzjEzBbEqe4Jmmx0FrGqdb9FKHkoLcdwsdEEf1Oze74OKqUzE0oaNK8ldpR0MUq26t9
+	eTh/rbo3t7vC7q756pmrjOnIb1yERvWgUar3exSy3Cnp84j/7cF0uJD3zCjURw==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
 Cc: Xenomai <xenomai@lists.linux.dev>
-Date: Mon, 03 Mar 2025 15:44:03 +0100
-In-Reply-To: <87frju2nu5.fsf@xenomai.org>
-References: <87ldtm2ogz.fsf@xenomai.org>
-		<3f7587adac06cf5384e763c364baa55733d3ced4.camel@siemens.com>
-	 <87frju2nu5.fsf@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: [Dovetail] v6.14: fix hardirq context detection
+User-Agent: mu4e 1.12.8; emacs 29.4
+Date: Mon, 03 Mar 2025 15:48:33 +0100
+Message-ID: <877c562mri.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Content-Type: text/plain
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgdelleegudcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefufgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhephfegudfhteetheetudefieetvdefieffhfetfeefudegkeehteegveduudeuvdefnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopedvpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehflhhorhhirghnrdgsvgiiuggvkhgrsehsihgvmhgvnhhsrdgtohhm
+X-GND-Sasl: rpm@xenomai.org
 
-On Mon, 2025-03-03 at 15:25 +0100, Philippe Gerum wrote:
-> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
->=20
-> > On Mon, 2025-03-03 at 15:11 +0100, Philippe Gerum wrote:
-> > > Hi Florian,
-> > >=20
-> > > For some reason, the hunk below disappeared from the Dovetail v6.13 c=
-ode
-> > > when rebasing on v6.14-rc, this causes a crash at boot when
-> > > CONFIG_PAGE_POOL_OOB is turned on. This fix up should be merged to:
-> > >=20
-> > > e4ecbcc40e7e6 net: dovetail: add infrastructure for oob device I/O
-> > >=20
-> > > diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-> > > index 7860c3a88c5d2..07ad13dd5ed2e 100644
-> > > --- a/net/core/page_pool.c
-> > > +++ b/net/core/page_pool.c
-> > > @@ -563,7 +563,7 @@ static noinline netmem_ref __page_pool_alloc_page=
-s_slow(struct page_pool *pool,
-> > >  		return pool->alloc.cache[--pool->alloc.count];
-> > > =20
-> > >  	/* Mark empty alloc.cache slots "empty" for alloc_pages_bulk */
-> > > -	memset(&pool->alloc.cache, 0, sizeof(void *) * bulk);
-> > > +	memset(pool->alloc.cache, 0, sizeof(void *) * bulk);
-> > > =20
-> > >  	nr_pages =3D alloc_pages_bulk_node(gfp, pool->p.nid, bulk,
-> > >  					 (struct page **)pool->alloc.cache);
-> > >=20
-> >=20
-> > I will take care of that. I'm currently rebasing on top of 6.14-rc5.
->=20
-> Ok. Meanwhile, I'm preparing a patch to fix the hard irq context
-> detection (inverted test of IRQS_DEFERRED). We need to have that one as
-> a separate patch for backporting.
->=20
 
-wip/v6.14-dovetail-rebase is now up to date. Tests have been triggered.
+Hi Florian,
 
-Short changelog:
-- rebased on top of 6.14-rc5
-- Fixed a missing Signed-off for the arm64 fpsimd patch
-- Fixed the issue above (net/core/page_pool.c)
-- Squashed the IRQS_DEFERRED fix into the introducing commit
+As we discussed, this should help with the IRQ denial you spotted on
+v6.14.  I'll take care of backporting this patch to v6.1.y-cip and
+v6.12.y.
 
-Best regards,
-Florian
+---
+
+From: Philippe Gerum <rpm@xenomai.org>
+Subject: [PATCH] genirq: irq_pipeline: fix hardirq context detection (irqctx)
+
+Each incoming IRQ passed to handle_irq_desc() is checked for calling
+context correctness, in order to detect invalid calls from
+non-interrupt context for interrupts marked as
+IRQD_HANDLE_ENFORCE_IRQCTX.
+
+When pipelining is enabled, the IRQ context spans from the early
+handling from the pipeline entry (i.e. in_pipeline()) up to the
+completion point of the full interrupt path, which includes the
+oob->in-band deferral path.
+
+The test checking for the latter was mistakenly inverted, causing the
+interrupt to be dismissed if bearing the IRQD_HANDLE_ENFORCE_IRQCTX
+flag.
+
+Signed-off-by: Philippe Gerum <rpm@xenomai.org>
+---
+ kernel/irq/irqdesc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/irq/irqdesc.c b/kernel/irq/irqdesc.c
+index 151ed61a88ae3..110ceb75d0f4b 100644
+--- a/kernel/irq/irqdesc.c
++++ b/kernel/irq/irqdesc.c
+@@ -706,7 +706,7 @@ static inline bool is_hardirq(struct irq_desc *desc)
+ 	if (!irqs_pipelined())
+ 		return in_hardirq();
+ 
+-	if (in_pipeline() || !(desc->istate & IRQS_DEFERRED))
++	if (in_pipeline() || (desc->istate & IRQS_DEFERRED))
+ 		return true;
+ 
+ 	return false;
+-- 
+2.48.1
+
+-- 
+Philippe.
