@@ -1,40 +1,40 @@
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DABF119A298
-	for <xenomai@lists.linux.dev>; Wed, 26 Mar 2025 12:13:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFF884C6C
+	for <xenomai@lists.linux.dev>; Wed, 26 Mar 2025 12:14:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1742991209; cv=none; b=DM8KCtRNvpVzchIHlXl30kDrmKv0PBiShjdQIA7Tri6oS3b0OnIzwsI8zUzS02Nq2aVtlOqWJKNhSAp/mTbZ7gwQgaoCzoxss8+xSpFLHbQAGMSrh9ZVfy4eVmxf2i1aYFG/lxDbap4qygL8vbkKs8btGUs9wXSu42upn5hyDys=
+	t=1742991261; cv=none; b=XvsGKIQm6wRwVwua4wsjskg/QME/T/BdAPRqtfHgmnU+C61tlP++kIVEM3aT6UP8mTD4aQCaDpM66da+OIRsAP9VOlIwgn+Hy/ONiSSfPglW90LDSO381xdANemslHafPX9PIW5yQ3f9zen5a/Bj6yENUr7zWc2Ef17UOXHuRXw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1742991209; c=relaxed/simple;
-	bh=yRr47G5lA28QMbInCbOFt0Yc7hMTMJgo0QnWwRVCMe8=;
+	s=arc-20240116; t=1742991261; c=relaxed/simple;
+	bh=DxHhdGgORl9LSaGJ/hLQ2+GQmrC+Hj48L6SKSXzSUTA=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=hp7NNzo9s7ekAk4u26kLDuM5aoVTj6HHeEx2Kap+1WYYuuNb1mGKhuN8+A8CkKKzAkxNiosie6WOy1/+hdnRF4H21gkWQ60ANHfOAkj9BFuYyek0/DUkLTfV1g5Iie5gwR8XvXeo6H4IL0lid4fhiVbAwKH4RrFNwpNFZptk4qU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=f/QNe4/I; arc=none smtp.client-ip=185.136.65.227
+	 Content-Type:MIME-Version; b=Kv5j+a5SSZP5YYVtY834GODtF67wyyOQRGOsX4SVFqQJcR4Y5MzTUVD+QAwl5/t/LNPBLbPQHDmd1OSfn+sQ/1WZx6eJSFYFXgyGCF5zSQQo774Yi8Ml1LLvRchPFC2CMxiOtOUW2G6mln4K5L9ZvgHiJdADeVncpMSX4kQ1s18=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Bt0MiRuc; arc=none smtp.client-ip=185.136.65.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="f/QNe4/I"
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 2025032612132169d1dade761c9dda8c
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Bt0MiRuc"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20250326121412a7529a2f0759cec783
         for <xenomai@lists.linux.dev>;
-        Wed, 26 Mar 2025 13:13:21 +0100
+        Wed, 26 Mar 2025 13:14:12 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=/OvIl6UvZKx40Uu7H6zijR0ARpSS9DW08L1P1KZ+ajQ=;
- b=f/QNe4/IM4A3Hnrdi8UF31rTXAWA7MlK1mu9jq1zyJJS9S25D8s6oE0B3AblK6v14QR9O2
- eOIFs6jXvUebK+x7s3vQiyenTYNZeJcslt5taJygg+dJPXqSArOjphRBWXLnjDivdH72m1Ht
- HrKV0Tx2a82lyHCVe21/71suIywkaPG/1DF+atDncBs6lIHLdq9ZeWBwmUYEn022xWW1RT58
- TdaR7L6mPuYb31PSAHkdEnGbC4RQvXBcTqiF/KOGHXxEMeoBO4r+nWP+WpSL1weakrbEM8kg
- OqRZ5LkbbQEwSetcAle2l61kRM0HVaGUN3EX1QDiYdptuwXw9c4PVbfA==;
-Message-ID: <104dae3bc6f1696c24c5dd89ecea5ae0931c8038.camel@siemens.com>
+ bh=xzeyxYRrtodF1Yoo4vnle8E64zOQH7oO0+SrkTwrl5k=;
+ b=Bt0MiRucwjW4EJxUl4nutHUcp+CWTOKoheTRVNsuh096a5U+3EuBbGj+fKzOcAj8weY6cl
+ 99VXHzRyKm3F8UFS7gkYyhszmbUO220FOLyaQXCaZnkuWCGfowPiWVjtboNyw47hN1FBzvH1
+ rYoqHKbFrrClR/a5iGn+OS0OwkEllqXF6zncMZ4cj5LQA0J9/q7pspOCtFE0g3Ad6X3EB98x
+ XC9KU0YjvA6nXTwyuVW6G018ThCaHu97D3dOll83wGfGVIz18P+bAc2cp2RqajNlqMLueR08
+ +3LJKeOlDIoy0saGFWgMdrXVLvY1lDt9hN+mlVUWzxBF8tjY4DSAtWSA==;
+Message-ID: <ba24a21ef53181c0c7e576d5f1dab2402a72d2d5.camel@siemens.com>
 Subject: Re: [PATCH] x86: dovetail: Fix inverted debug check in
  lock_vector_lock
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: Philippe Gerum <rpm@xenomai.org>
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@lists.linux.dev>
-Date: Wed, 26 Mar 2025 13:13:15 +0100
+Date: Wed, 26 Mar 2025 13:14:11 +0100
 In-Reply-To: <87ldst30cn.fsf@xenomai.org>
 References: <e9a4daa3-7a28-45b3-89cb-76c6484a44af@siemens.com>
 		<199b7a20107bf6756f3579debb7313ff96e33e7d.camel@siemens.com>
@@ -192,8 +192,9 @@ nid)
                 finish_arch_post_lock_switch();
                 mmdrop_lazy_tlb(mm);
 
-That should propably squashed into=20
+That should probably be squashed into=20
 8646b1d5622f ("x86: dovetail: enable alternate scheduling")
+for the 6.14 branch (only).
 
 Agreed?
 
