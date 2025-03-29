@@ -1,122 +1,135 @@
-Received: from buffalo.birch.relay.mailchannels.net (buffalo.birch.relay.mailchannels.net [23.83.209.24])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6D0121516D
-	for <xenomai@lists.linux.dev>; Fri, 28 Mar 2025 12:01:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.209.24
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743163318; cv=pass; b=QkvHnlQ+eFGc537LXKdNYsR5kX7LVbAguq9MN0geCUMTyxDok3JCTCo6qc3OHv4oQDP9J35ht3XkCm+FHvbzZPlyJQsto5WI8dUL3hiTV7wrTN6IIZgTIo1M5+hqxTtll8FemdaFxe/5TR8nHw8qHazzBJaRzI9/+HrCaXmPxq8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743163318; c=relaxed/simple;
-	bh=eJv6KNkUgr6/vsciYpRZY7ypeEcj3bEcEmihS+YrakM=;
-	h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
-	 In-Reply-To:Content-Type; b=mymCp5SEgtdxS4elHm2t1alas22HFy6pJVJAGKPcWUPUk7CApB8nPsA0EYcOi/18zeDF7bvym849dKmJ7DxdoNPyTDIAsNrYpkqXLfYe/qiwcWViA7UBWqp+sXDzuqlKmzCCGRv2iK7K/Tu6r6tAdngPul7CfGULpEDY35GDB+s=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bela.io; spf=pass smtp.mailfrom=bela.io; dkim=pass (2048-bit key) header.d=bela.io header.i=@bela.io header.b=d0DUNZ8r; arc=pass smtp.client-ip=23.83.209.24
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bela.io
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bela.io
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.2])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B8A07149C55
+	for <xenomai@lists.linux.dev>; Sat, 29 Mar 2025 16:06:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.2
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1743264421; cv=none; b=TQjhomxYQwqBxwQ9Xr32WVx4o9/6bkzJ6tajanSxpGu18wz+6RRU3Dp1yU2FbpJJZoDk6QmG0Nddk7DBbfpMvg/lGChMHehlC0wi0wEKG1FRZHPevZRaffeCjcfTw1LXna3GidQ6Z2DYZL+ObovFBi0j0Y1XkJA21yaxkaSI/l4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1743264421; c=relaxed/simple;
+	bh=ms3JsM9BZ7WbvYYl7/s9mRPSIHy5MogDbYsXhJMEo+A=;
+	h=From:To:Cc:Subject:Date:Message-Id; b=LmlWV5JObf+o3TQZiE7kdf2TbaL77ID2Qvsr5SBpvQG0ibZpUanIaqO/e8m3n0h8QMKkzUHDK5GRzOHtXuRJ2tgvyCjDTEr+a9talkUZhD0ipY01w8NAKG2MVaOiVKD9BNxDC7/oseJ4786k+v6IcGHiKGEmvJtsjPwYTy5F/Jg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=jDS6lWe8; arc=none smtp.client-ip=220.197.31.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bela.io header.i=@bela.io header.b="d0DUNZ8r"
-X-Sender-Id: dreamhost|x-authsender|giulio@bela.io
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-	by relay.mailchannels.net (Postfix) with ESMTP id 7A83E239FB;
-	Fri, 28 Mar 2025 12:01:50 +0000 (UTC)
-Received: from pdx1-sub0-mail-a309.dreamhost.com (100-99-235-2.trex-nlb.outbound.svc.cluster.local [100.99.235.2])
-	(Authenticated sender: dreamhost)
-	by relay.mailchannels.net (Postfix) with ESMTPA id E82B725325;
-	Fri, 28 Mar 2025 12:01:49 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1743163309; a=rsa-sha256;
-	cv=none;
-	b=hv3+OIMk0QVihe900BG1C9RsYD2OEn4+pwJ8YycQX8QiN0B206fw6IkOwK1gUISKW83Eg5
-	FeWjGIHlH+DX19ieE1rpNYRPVlKZchYGN7ZYxOcMeeUQiOpum1QNA4yKkuKUut2Ki+Mkks
-	LORzHq9cMl4W9V6IM8nJVmFNuiY+FZ1s8JHJfX1NqWSWsarxKQm8N//tWCZXT74Jp2AZZc
-	MDql4sZcaY4s1MmJH8i9EoqE1B85xv53t5bV9kriHV08VIukbrJ4f9S0bv1x+9iizPdifg
-	DYmDTncTft2meCsBQ2+xDU6wvaJ4ntrJECVRtLs17Y19+BWZEaz/MiyatfYYQw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-	s=arc-2022; t=1743163309;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:dkim-signature;
-	bh=EtPh68S7/1rqAFuNaq80kjFqIwkoCp1muonYcPqRyqI=;
-	b=rhhAgIDoI1dx/p0Oo1wIGAhqmJkX2Y8N2rfyvn7Oomd23qKBTjLyUaFqc4ehNQ9EcOqMB7
-	RI+g8nz1cvhwJwy7jXmR8pI3HdMM8OvLveMRo082c+UkpeVnzzVbMQoIPstrcfA+uIJPlq
-	arxrFA7kKf6CtaJJyDBJpEAv7ePhPkIsviN2U50nnQL/sonKopD7txvdrYJBcydiA+bfec
-	o9TUZY3aHzC+v4uqGmsewoQUW+viZowTrSGsAL+A/1v0Bf6iW3PcfgD6/Z/8e+w1tRxbx8
-	iHg0HdxEy8eoB+OuKAd/62ysMhP3NlmLz3mMVo2SpX5AhYOHzhnEnnn9Bubb+g==
-ARC-Authentication-Results: i=1;
-	rspamd-c6dd9f947-k5btx;
-	auth=pass smtp.auth=dreamhost smtp.mailfrom=giulio@bela.io
-X-Sender-Id: dreamhost|x-authsender|giulio@bela.io
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: dreamhost|x-authsender|giulio@bela.io
-X-MailChannels-Auth-Id: dreamhost
-X-Wide-Eyed-Relation: 1bd49ba1684a6b5a_1743163310249_2418594371
-X-MC-Loop-Signature: 1743163310249:1768923173
-X-MC-Ingress-Time: 1743163310249
-Received: from pdx1-sub0-mail-a309.dreamhost.com (pop.dreamhost.com
- [64.90.62.162])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-	by 100.99.235.2 (trex/7.0.2);
-	Fri, 28 Mar 2025 12:01:50 +0000
-Received: from giulios-MacBook-Pro.local (unknown [186.99.134.121])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: giulio@bela.io)
-	by pdx1-sub0-mail-a309.dreamhost.com (Postfix) with ESMTPSA id 4ZPJzK2D7pzK3;
-	Fri, 28 Mar 2025 05:01:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bela.io;
-	s=dreamhost; t=1743163309;
-	bh=EtPh68S7/1rqAFuNaq80kjFqIwkoCp1muonYcPqRyqI=;
-	h=Subject:To:Cc:From:Date:Content-Type:Content-Transfer-Encoding;
-	b=d0DUNZ8rAOmCbh531tTMeIWaItqToVd6fbFJxr30dOgyn0Wl/AOYgNr+gRdSLm8kz
-	 Dw6FRPpso5PFTuPfdYiQ5BdheVKcT3qf4sSfSuEQK6L60hlQFNDDWQYQB+5cZG43JE
-	 aGEE6G+EswHyEphcBgsJvh9EoMq9W8rFF/1zQvBWCnThkwhqGIQrzYexsONJklciLV
-	 fxYYyxxzT+Yptk/tWXkmhrd1khomeuM++YTYYcpL+TWyBjcz6icng6O+SoBMytvIKV
-	 9KdajNYg2HfmmIIg+nD2bXw7K9hy2PrH/IC23xHms8pSVaiDwgjGJXkitqOO7Ff9GY
-	 LJx7rNJHvAASQ==
-Subject: 403 on pages from source.denx.de
-To: Jan Kiszka <jan.kiszka@siemens.com>,
- Pierre FICHEUX <pierre.ficheux@smile.fr>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-References: <DB9PR09MB60325FCC7AEFE1880D9698EF81A62@DB9PR09MB6032.eurprd09.prod.outlook.com>
- <DB9PR09MB6032B14E3FA653EB1FD4BDEC81A62@DB9PR09MB6032.eurprd09.prod.outlook.com>
- <582f231a-3e17-4b4a-804e-7f43ebda3c48@siemens.com>
- <CAFc1U0t8cWGpCc-ntsxCm-+obz7fu3w8jMrV1w=XtRyRCMDKqQ@mail.gmail.com>
- <CAFc1U0vf9y98v_iaWdBz1YcdRfJ+6pd_t1Hv+9F3zfmNu3+C1Q@mail.gmail.com>
- <e5426038-8819-48db-959b-e7982d2ba667@siemens.com>
-From: Giulio Moro <giulio@bela.io>
-Message-ID: <31290680-6e3d-2bd9-293b-f5a41315a8ee@bela.io>
-Date: Fri, 28 Mar 2025 07:01:47 -0500
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 14.3; rv:91.0)
- Gecko/20100101 Firefox/91.0 SeaMonkey/2.53.18
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="jDS6lWe8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:Subject:Date:Message-Id; bh=TxHSpAtrMumzHyEOaH
+	Ry2Stw3U4liL3mjesjxmWi+vg=; b=jDS6lWe8M8SlQ6jGQZWGPA10bYXlXuralm
+	CZXW024U43g5e4H3es2Hd2CBDezhSLZyOObMHjUue+80CXqxQHOmliMpiMhYVqMv
+	PwsgeNwd5s7ONhi/OSYWjMoM7cG8QR/tlz/II2EfplkZjuTSxf6XfQDaGN8hvWbF
+	HSJlrvXhk=
+Received: from firefly.. (unknown [])
+	by gzga-smtp-mtada-g0-3 (Coremail) with SMTP id _____wB3RzeYGuhn4KK9Cg--.29835S2;
+	Sun, 30 Mar 2025 00:06:48 +0800 (CST)
+From: Ethan <aspirestro@163.com>
+To: florian.bezdeka@siemens.com,
+	rpm@xenomai.org,
+	jan.kiszka@siemens.com
+Cc: xenomai@lists.linux.dev,
+	Ethan <aspirestro@163.com>
+Subject: [PATCH] lib/cobalt: Fix a deadlock when release_buffer() attempts to re-acquire buffer_lock
+Date: Sat, 29 Mar 2025 16:06:46 +0000
+Message-Id: <20250329160646.527363-1-aspirestro@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID:_____wB3RzeYGuhn4KK9Cg--.29835S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxZFy3ZF48WF18trWxKF4xXrb_yoWrGw1kpr
+	ZIgr4UGrs7Zrs2vF12y3WDXF1Fyw4vgF47GrZavw17Aan8CrsIq34UKFW29F40kr97Jrs8
+	Xr4jgF1kWF4DZF7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UvLv_UUUUU=
+X-CM-SenderInfo: pdvsx2xhvw20i6rwjhhfrp/xtbBYxkfcWfoFYdiFAAAs-
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-In-Reply-To: <e5426038-8819-48db-959b-e7982d2ba667@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
 
->> Le ven. 28 mars 2025 à 06:57, Pierre FICHEUX <pierre.ficheux@smile.fr> a écrit :
->>>
->>> Hi,
->>>
->>> The xenomai-images link seems to be "forbidden" (error 403).
->>>
->>> regards
->> On 28.03.25 07:00, Pierre FICHEUX wrote:
->> Same for "all" the links (repositories) from xenomai.org !
->>
-> Jan Kiszka wrote on 28/03/2025 01:06:
->
-> Was either a temporary hick-up or is (still) a local issue on your side.
-> Works fine here.
-> 
-> Jan
+The release_buffer() function is the destructor function for the thread-specific
+data (TSD) associated with buffer_key. If the current thread is executing
+rt_print_flush_buffers() and has already acquired buffer_lock, and is then
+requested to exit via pthread_cancel(), the release_buffer() function will be
+invoked. A deadlock can occur when release_buffer() attempts to re-acquire
+buffer_lock.
 
-FWIW, I noticed yesterday that from Colombia I get 403 on all the pages from https://source.denx.de/ when I visit from the browser. I can still access when cloning git via https, e.g.:
-`git clone https://source.denx.de/Xenomai/xenomai4/tinyalsa-evl.git` works.
+This patch changes the buffer_lock from PTHREAD_MUTEX_DEFAULT to
+PTHREAD_MUTEX_ERRORCHECK type, as it supports deadlock detection. If the lock is
+successfully acquired, it will return 0. If the same thread attempts to re-lock
+a mutex that it has already locked, it will return EDEADLK. This approach
+prevents the deadlock issue.
+
+The deadlock can be observed as gdb shown. The thread "slave" will block when
+calling pthread_mutex_lock() in release_buffer() while attempting to re-acquire
+buffer_lock again. This also causes cobalt_print to remain waiting indefinitely
+for buffer_lock.
+
+(gdb) info thread
+  Id   Target Id                                        Frame
+* 1    Thread 0x7ff7ff4010 (LWP 1654) "hello"           0x0000007ff7bb6398 in sched_yield () at ../sysdeps/unix/syscall-template.S:78
+  2    Thread 0x7ff7a7a1c0 (LWP 1657) "cobalt_printf"   __lll_lock_wait (futex=futex@entry=0x7ff7fcaed8 <buffer_lock>, private=0)
+    at lowlevellock.c:52
+  3    Thread 0x7ff72791c0 (LWP 1658) "master"          0x0000007ff7b6d314 in __GI__IO_default_xsputn (n=<optimized out>, data=<optimized out>,
+    f=<optimized out>) at genops.c:393
+  4    Thread 0x7ff72581c0 (LWP 1659) "slave" (Exiting) __lll_lock_wait (futex=futex@entry=0x7ff7fcaed8 <buffer_lock>, private=0)
+    at lowlevellock.c:52
+(gdb) thread 4
+[Switching to thread 4 (Thread 0x7ff72581c0 (LWP 1659))]
+52      lowlevellock.c: No such file or directory.
+(gdb) bt
+(gdb) p ((pthread_mutex_t*) &buffer_lock)->__data.__owner
+$4 = 1659
+(gdb) p ((pthread_mutex_t*) &buffer_lock)->__data.__lock
+$5 = 2
+
+Signed-off-by: Ethan <aspirestro@163.com>
+---
+ lib/cobalt/printf.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/lib/cobalt/printf.c b/lib/cobalt/printf.c
+index 0aa5940c6..87ed989f4 100644
+--- a/lib/cobalt/printf.c
++++ b/lib/cobalt/printf.c
+@@ -82,6 +82,7 @@ static struct timespec syncdelay;
+ static pthread_mutex_t buffer_lock;
+ static pthread_cond_t printer_wakeup;
+ static pthread_key_t buffer_key;
++static pthread_mutexattr_t attr;
+ static pthread_key_t cleanup_key;
+ static pthread_t printer_thread;
+ static atomic_long_t *pool_bitmap;
+@@ -498,6 +499,12 @@ static void release_buffer(struct print_buffer *buffer)
+ 
+ 	pthread_setspecific(buffer_key, NULL);
+ 
++	/* The type of buffer_lock is PTHREAD_MUTEX_ERRORCHECK, which supports
++	 * deadlock detection. If the lock is successfully acquired, it will return
++	 * 0; If the same thread attempts to re-lock a mutex that it has already
++	 * locked, it will return EDEADLK. This approach prevents the deadlock
++	 * issue.
++	 */
+ 	pthread_mutex_lock(&buffer_lock);
+ 
+ 	print_buffers();
+@@ -666,7 +673,7 @@ void cobalt_print_init_atfork(void)
+ 	}
+ 
+ 	/* re-init to avoid finding it locked by some parent thread */
+-	pthread_mutex_init(&buffer_lock, NULL);
++	pthread_mutex_init(&buffer_lock, &attr);
+ 
+ 	while (*pbuffer) {
+ 		if (*pbuffer == my_buffer)
+@@ -723,7 +730,9 @@ void cobalt_print_init(void)
+ 		rt_print_init_inner(buffer, __cobalt_print_bufsz);
+ 	}
+ done:
+-	pthread_mutex_init(&buffer_lock, NULL);
++	pthread_mutexattr_init(&attr);
++	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
++	pthread_mutex_init(&buffer_lock, &attr);
+ 	pthread_key_create(&buffer_key, (void (*)(void*))release_buffer);
+ 	pthread_key_create(&cleanup_key, do_cleanup);
+ 	pthread_cond_init(&printer_wakeup, NULL);
+-- 
+2.34.1
+
