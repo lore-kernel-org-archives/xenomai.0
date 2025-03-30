@@ -1,243 +1,152 @@
-Received: from mout.web.de (mout.web.de [212.227.17.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32C011ACECB
-	for <xenomai@lists.linux.dev>; Sat, 29 Mar 2025 22:48:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.11
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 569F86A33F
+	for <xenomai@lists.linux.dev>; Sun, 30 Mar 2025 06:59:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743288541; cv=none; b=XphpernEg16tHysE7Gv272yC0z4TTNllVeJCAF5YzUvuXO7X4+twq0Oohrcwx1qmHG1Rys66b7G5PhMmP2ue4pcYZPUT/7WuKtif1zny7Jbao1ckFUJJ6gNzGdEQ425QA6+UKfFiyJ+d+5EfqlVilWgLasfH0BCMu4st82CuAuQ=
+	t=1743317995; cv=none; b=SJiVgn/8BCup5mq3+cByXOyJwTLmPUFc2PoHAl6SJO/OXWVojE7rKpo8JC2mRB/kmiGiUCVWAb6/S77eZfyETj00MlER5hKiOqKYJtAbuY9IXWIgHm25lPTo+bNw3gk+6ek5bg3Is4gT1q5b5HYCLFl4jY3EPdKaUfZNAKZxhtc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743288541; c=relaxed/simple;
-	bh=H9mdcVAk+nVLAESk0SUEaBCaVWG2/iQQ7z9CKPGX17U=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=eUkbbCFuMNXzx23uAjmBgRWMfIsd27sm/tkHBzzlL1BHzl/JNJm0MYV1kHVn5KFO7fGeNQOnWp9MeuDUxAwp6zmpVqM+RxDgeiV4cFIQkzThM/ZpFsC/7J58MeNVDJaN7GaxQhFNGsrFX190mxkjaIFruDWXZJAl21W8PkqK5To=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=jan.kiszka@web.de header.b=tcXWQBBJ; arc=none smtp.client-ip=212.227.17.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
+	s=arc-20240116; t=1743317995; c=relaxed/simple;
+	bh=TKkizrdifSI7CEpgpzeQGH+f/s34vmExIo/HCUpVL3o=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 MIME-Version:Message-ID; b=l7TruhtDm0veoYVyIGHNWeBsnJ9Iw87GkmDGvaA6J9GwkBa1uLrIjEjlOR5cBviZznm2V06jLhfPloxn40QmZgHs6Y06ZsPh1n6IZwIe2S6g7ehJt2iVdIe9T0BvpbEsD7HiFewpUyUZjJUE4yci0zGUiJnmi+dORylbeoY4dgs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=BQ7SqJ20 reason="signature verification failed"; arc=none smtp.client-ip=220.197.31.4
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=web.de header.i=jan.kiszka@web.de header.b="tcXWQBBJ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
-	s=s29768273; t=1743288527; x=1743893327; i=jan.kiszka@web.de;
-	bh=Ki2nRZ2CbC2DCIHF8Nvwq3CTWcDu5nsfBvjNjsH5A3I=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:From:To:
-	 Cc:References:In-Reply-To:Content-Type:Content-Transfer-Encoding:
-	 cc:content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=tcXWQBBJWnVIUaf9MVR5UnEKcCHtwUXmMKMW6aUqetXtoAumme/Gv7JMdUveSZRm
-	 HvN/0+aB4sLjprNEaJR44NTVqmcock/Nzp++VzouGRyXf4kJVMPtFcBuinj9FuTbu
-	 nGyXemgSNDw8qwbiqmSYvjhhpczyB7sIh3BUZ/puGLnkpYdWo+JdzlsBXlvWbushB
-	 LU/KlYULv/GRyveMCzKtWmdSe/e1BzOl04L111kOslo+9wI1roW/iHi2fwE+zmEQF
-	 17m7Mxmzt101427jVaN7DUaE8sI80iB0EB/LB+Pn6VegE/F3CRfAp3ySo40B+S6PC
-	 k4RdUoTB1Qasnk+3kw==
-X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from [192.168.178.31] ([82.83.170.15]) by smtp.web.de (mrweb106
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1MUCuv-1tYzEK0OjT-00R3B6; Sat, 29
- Mar 2025 23:48:47 +0100
-Message-ID: <e435d7ee-fbde-4e7d-993d-f91c0eac4ecf@web.de>
-Date: Sat, 29 Mar 2025 23:48:46 +0100
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="BQ7SqJ20"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=GW425uSNcfpjI3IWoq//rQjGxnMhFQsfIJQi6EDcqVY=; b=B
+	Q7SqJ20uuiT1mV9qJzPrxUIj1o5AnuhfhngJ9/SDx5+VMwu3IDmCNUTHy3xLisAQ
+	FqXwM9jWvMU4wsvbB01NruZZ0mGOVZeys+GuJXjs8ZADl5BcH8zCaCRHRpw5pCtd
+	aVH8RTuu4br8hCQFoPxdBCg0/cQKV63KGkmkhwX/q0=
+Received: from aspirestro$163.com (
+ [2409:8a00:1890:70b4:e15c:af8e:711e:2235] ) by ajax-webmail-wmsvr-40-128
+ (Coremail) ; Sun, 30 Mar 2025 14:59:41 +0800 (CST)
+Date: Sun, 30 Mar 2025 14:59:41 +0800 (CST)
+From: aspirestro  <aspirestro@163.com>
+To: "Jan Kiszka" <jan.kiszka@web.de>
+Cc: florian.bezdeka@siemens.com, rpm@xenomai.org, xenomai@lists.linux.dev
+Subject: Re:Re: [PATCH] lib/cobalt: Fix a deadlock when release_buffer()
+ attempts to re-acquire buffer_lock
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20240801(9da12a7b)
+ Copyright (c) 2002-2025 www.mailtech.cn 163com
+In-Reply-To: <e435d7ee-fbde-4e7d-993d-f91c0eac4ecf@web.de>
+References: <20250329160646.527363-1-aspirestro@163.com>
+ <b2f68c9c-c677-4e31-9d4e-47a647f0a46d@web.de>
+ <e435d7ee-fbde-4e7d-993d-f91c0eac4ecf@web.de>
+X-NTES-SC: AL_Qu2fAf+auEEj5yaeZOkfmU4Vgeo2UMCzu/gk34BUO5lwjA7p1S49WXVOIn354uKICzynnBWaXj1J4PV3fq5yZ70mr8k9z8cyIr9v/5qe4pOLTw==
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] lib/cobalt: Fix a deadlock when release_buffer() attempts
- to re-acquire buffer_lock
-From: Jan Kiszka <jan.kiszka@web.de>
-To: Ethan <aspirestro@163.com>, florian.bezdeka@siemens.com, rpm@xenomai.org
-Cc: xenomai@lists.linux.dev
-References: <20250329160646.527363-1-aspirestro@163.com>
- <b2f68c9c-c677-4e31-9d4e-47a647f0a46d@web.de>
-Content-Language: en-US
-Autocrypt: addr=jan.kiszka@web.de; keydata=
- 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
-In-Reply-To: <b2f68c9c-c677-4e31-9d4e-47a647f0a46d@web.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:DEsKonocK0oi5Lhnyh1BS4BfbWpqEa+7uFXJYaUad6pp+vNriLc
- AKEJmjZZpvRmjQ57LGE8pG9Y7Mow+5hPhpQX8wHLS374b7/5B/ymZGH4dxk6+U45WppEcp5
- ifcQ3vLVrQqX9t8FKdvtULqslSsQXlmRrj6zB0r3pYzIPZWintfyusrmyfcia88kFCapHPw
- ll5HTmoq6xRRjLU1e+JnA==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:0vTnDonjTz4=;ODAfKhnC/eL76iaGn78x93G3U6g
- copmS66djEviOnYhKaUj2ecwTEf1oTZZm4au2YjgdUynn6jN3tF5iKyPg6djfH1EV8x/5aocR
- WVqiiyRr71K3AZOHAYbwS0FbP4VF6V5etGb9+6kHeRKvCf7x5CyV5NJz6qOEpTh71P3fnRvXc
- MzdstCgq3r0M/N55Rv5fheKjaag5Fr+TEsFkSc2Mj1+mZoZCsOEwIX+Jpc1KL/h3l3OSzwF/E
- 6o2dYje8afBaBuSmJdiJfE/hoXPJhhb6R8t1pEksUnGdG9JVaFQ1AFh2F1V4mdJBCMCnEp36G
- DvkhXTGnz1P/5lAwG1BsGiQrMVGnzntO6SfSowVeXvGAicNt4K25wqT1Nr1pxr45Bz98+e1ZS
- ncyN6u7e6FhSYLB4Vt4esNBc9kxHSfowcy+USpG45gA5gL+alspaKW5GR/0LvYRhd//2Atp28
- /DL8LrRTtsvF3dpLH5JWpF/1upolj/YrwA0flcOsvJj5J58zOTbh4/byfg02rtL/RSDqHY4Lp
- NCAJ98rwQ1dge8j5OH/cz/Bi1rgO9x8zXsXmosaCrBuB2rCcQDBnKJbvdXE6336jt6+11vG4c
- U0y3D27qiPUCSjY5R26YnomKDRVpyiT5app5QHBRe0C+Rt+Diz7DuhPDc3ZBTCbm047pF9moq
- JgUUcIu1ofWef1A/vBtoSSsANBiLoW6MOlOl1los2SiL7LWbUAdti8xcBXn1wixbO06FJbbaq
- QlVfpmP9K7DpwGMo22+9jqHkHnXWgGZzK+lp1aALMOghjOFhznkmarVV6A3hqqk2q+t8nCkSW
- qc6okOBBRGo37pBcZQDxLbx/1wPPoSlS0EJGajgerEhfJGRGPLDaotIpdMm57cm2M1yEB3u9S
- 7iMF652DWSHZFuunnuXL540MAj764FBVk1ix/VOQt2GLcQ/aAuXNxreNpLcTJSoCEghCdsgYF
- djkhWWZHWFl7D+VIuD5xHRPTldXQOKv2CYOp8VNhPvyP6bxsVCLPUUS5GiZJYUr726XiAtT/A
- ieJ5vcA8Z7PDAPKjLUtJ14ibqBZ349VaROc6cbNpa/EVt1Ef05boyQN9QkKrJ3IMGxqNjdz98
- 3JoRREY800YPiYXG1+qESCH8Typ9nUN8UmZR4YQ6c0mOAuSCEaDWFEMlHx3qoLB3laJ/Pk1bi
- 3GAK9fah9e/YsG8Whg7Bo7n9+1ZYCYWjtOp78XhJ4dIBtX3FXThcEp7RYIz36s4kjjm8Rkf3r
- 2jZVSP/HWxx2GF91wO1RycS7dnYr4FV/g9GeIOMgOHv2g93TVdG8FndhT8L1sUreA6jWtuU4u
- cgV31Djp7Se3xDgBnivLDNYXWrbi4Ot3lmuQSW3y6E8d9gC0XFokJhEuWR6M3l/WM6TSPXpAb
- wzMAEIe5x3WYv0kKfZhF7brKbT/inO/xKE9VtFKvHu45jNjcxy6UBD96A5Gh+h1cwpo6XNFbx
- rtlUrrCuok87VuFqWuZxWS3sJp3U=
+Message-ID: <47d51681.1282.195e5d959e0.Coremail.aspirestro@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:gCgvCgDXP3fe6+hnbhWKAA--.3620W
+X-CM-SenderInfo: pdvsx2xhvw20i6rwjhhfrp/1tbiXAYfcWfodGZErgAJsK
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-On 29.03.25 23:25, Jan Kiszka wrote:
-> On 29.03.25 17:06, Ethan wrote:
->> The release_buffer() function is the destructor function for the thread=
--specific
->> data (TSD) associated with buffer_key. If the current thread is executi=
-ng
->> rt_print_flush_buffers() and has already acquired buffer_lock, and is t=
-hen
->> requested to exit via pthread_cancel(), the release_buffer() function w=
-ill be
->> invoked. A deadlock can occur when release_buffer() attempts to re-acqu=
-ire
->> buffer_lock.
->>
->> This patch changes the buffer_lock from PTHREAD_MUTEX_DEFAULT to
->> PTHREAD_MUTEX_ERRORCHECK type, as it supports deadlock detection. If th=
-e lock is
->> successfully acquired, it will return 0. If the same thread attempts to=
- re-lock
->> a mutex that it has already locked, it will return EDEADLK. This approa=
-ch
->> prevents the deadlock issue.
->>
->> The deadlock can be observed as gdb shown. The thread "slave" will bloc=
-k when
->> calling pthread_mutex_lock() in release_buffer() while attempting to re=
--acquire
->> buffer_lock again. This also causes cobalt_print to remain waiting inde=
-finitely
->> for buffer_lock.
->>
->> (gdb) info thread
->>   Id   Target Id                                        Frame
->> * 1    Thread 0x7ff7ff4010 (LWP 1654) "hello"           0x0000007ff7bb6=
-398 in sched_yield () at ../sysdeps/unix/syscall-template.S:78
->>   2    Thread 0x7ff7a7a1c0 (LWP 1657) "cobalt_printf"   __lll_lock_wait=
- (futex=3Dfutex@entry=3D0x7ff7fcaed8 <buffer_lock>, private=3D0)
->>     at lowlevellock.c:52
->>   3    Thread 0x7ff72791c0 (LWP 1658) "master"          0x0000007ff7b6d=
-314 in __GI__IO_default_xsputn (n=3D<optimized out>, data=3D<optimized out=
->,
->>     f=3D<optimized out>) at genops.c:393
->>   4    Thread 0x7ff72581c0 (LWP 1659) "slave" (Exiting) __lll_lock_wait=
- (futex=3Dfutex@entry=3D0x7ff7fcaed8 <buffer_lock>, private=3D0)
->>     at lowlevellock.c:52
->> (gdb) thread 4
->> [Switching to thread 4 (Thread 0x7ff72581c0 (LWP 1659))]
->> 52      lowlevellock.c: No such file or directory.
->> (gdb) bt
->> (gdb) p ((pthread_mutex_t*) &buffer_lock)->__data.__owner
->> $4 =3D 1659
->> (gdb) p ((pthread_mutex_t*) &buffer_lock)->__data.__lock
->> $5 =3D 2
->>
->> Signed-off-by: Ethan <aspirestro@163.com>
->> ---
->>  lib/cobalt/printf.c | 13 +++++++++++--
->>  1 file changed, 11 insertions(+), 2 deletions(-)
->>
->> diff --git a/lib/cobalt/printf.c b/lib/cobalt/printf.c
->> index 0aa5940c6..87ed989f4 100644
->> --- a/lib/cobalt/printf.c
->> +++ b/lib/cobalt/printf.c
->> @@ -82,6 +82,7 @@ static struct timespec syncdelay;
->>  static pthread_mutex_t buffer_lock;
->>  static pthread_cond_t printer_wakeup;
->>  static pthread_key_t buffer_key;
->> +static pthread_mutexattr_t attr;
->>  static pthread_key_t cleanup_key;
->>  static pthread_t printer_thread;
->>  static atomic_long_t *pool_bitmap;
->> @@ -498,6 +499,12 @@ static void release_buffer(struct print_buffer *bu=
-ffer)
->>
->>  	pthread_setspecific(buffer_key, NULL);
->>
->> +	/* The type of buffer_lock is PTHREAD_MUTEX_ERRORCHECK, which support=
-s
->> +	 * deadlock detection. If the lock is successfully acquired, it will =
-return
->> +	 * 0; If the same thread attempts to re-lock a mutex that it has alre=
-ady
->> +	 * locked, it will return EDEADLK. This approach prevents the deadloc=
-k
->> +	 * issue.
->> +	 */
->>  	pthread_mutex_lock(&buffer_lock);
->>
->>  	print_buffers();
->> @@ -666,7 +673,7 @@ void cobalt_print_init_atfork(void)
->>  	}
->>
->>  	/* re-init to avoid finding it locked by some parent thread */
->> -	pthread_mutex_init(&buffer_lock, NULL);
->> +	pthread_mutex_init(&buffer_lock, &attr);
->>
->>  	while (*pbuffer) {
->>  		if (*pbuffer =3D=3D my_buffer)
->> @@ -723,7 +730,9 @@ void cobalt_print_init(void)
->>  		rt_print_init_inner(buffer, __cobalt_print_bufsz);
->>  	}
->>  done:
->> -	pthread_mutex_init(&buffer_lock, NULL);
->> +	pthread_mutexattr_init(&attr);
->> +	pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_ERRORCHECK);
->
-> Good catch! But why not using PTHREAD_MUTEX_RECURSIVE, rather then
-> triggering an error that is not handled and therefore happens to let the
-> caller continue?
->
-
-In fact, this would need more work because we would also have to ensure
-that we can actually re-enter the locked sections. It is therefore
-better to disable cancellation while running release_buffer.
-
-Jan
-
+CkF0IDIwMjUtMDMtMzAgMDY6NDg6NDYsICJKYW4gS2lzemthIiA8amFuLmtpc3prYUB3ZWIuZGU+
+IHdyb3RlOgo+T24gMjkuMDMuMjUgMjM6MjUsIEphbiBLaXN6a2Egd3JvdGU6Cj4+IE9uIDI5LjAz
+LjI1IDE3OjA2LCBFdGhhbiB3cm90ZToKPj4+IFRoZSByZWxlYXNlX2J1ZmZlcigpIGZ1bmN0aW9u
+IGlzIHRoZSBkZXN0cnVjdG9yIGZ1bmN0aW9uIGZvciB0aGUgdGhyZWFkLXNwZWNpZmljCj4+PiBk
+YXRhIChUU0QpIGFzc29jaWF0ZWQgd2l0aCBidWZmZXJfa2V5LiBJZiB0aGUgY3VycmVudCB0aHJl
+YWQgaXMgZXhlY3V0aW5nCj4+PiBydF9wcmludF9mbHVzaF9idWZmZXJzKCkgYW5kIGhhcyBhbHJl
+YWR5IGFjcXVpcmVkIGJ1ZmZlcl9sb2NrLCBhbmQgaXMgdGhlbgo+Pj4gcmVxdWVzdGVkIHRvIGV4
+aXQgdmlhIHB0aHJlYWRfY2FuY2VsKCksIHRoZSByZWxlYXNlX2J1ZmZlcigpIGZ1bmN0aW9uIHdp
+bGwgYmUKPj4+IGludm9rZWQuIEEgZGVhZGxvY2sgY2FuIG9jY3VyIHdoZW4gcmVsZWFzZV9idWZm
+ZXIoKSBhdHRlbXB0cyB0byByZS1hY3F1aXJlCj4+PiBidWZmZXJfbG9jay4KPj4+Cj4+PiBUaGlz
+IHBhdGNoIGNoYW5nZXMgdGhlIGJ1ZmZlcl9sb2NrIGZyb20gUFRIUkVBRF9NVVRFWF9ERUZBVUxU
+IHRvCj4+PiBQVEhSRUFEX01VVEVYX0VSUk9SQ0hFQ0sgdHlwZSwgYXMgaXQgc3VwcG9ydHMgZGVh
+ZGxvY2sgZGV0ZWN0aW9uLiBJZiB0aGUgbG9jayBpcwo+Pj4gc3VjY2Vzc2Z1bGx5IGFjcXVpcmVk
+LCBpdCB3aWxsIHJldHVybiAwLiBJZiB0aGUgc2FtZSB0aHJlYWQgYXR0ZW1wdHMgdG8gcmUtbG9j
+awo+Pj4gYSBtdXRleCB0aGF0IGl0IGhhcyBhbHJlYWR5IGxvY2tlZCwgaXQgd2lsbCByZXR1cm4g
+RURFQURMSy4gVGhpcyBhcHByb2FjaAo+Pj4gcHJldmVudHMgdGhlIGRlYWRsb2NrIGlzc3VlLgo+
+Pj4KPj4+IFRoZSBkZWFkbG9jayBjYW4gYmUgb2JzZXJ2ZWQgYXMgZ2RiIHNob3duLiBUaGUgdGhy
+ZWFkICJzbGF2ZSIgd2lsbCBibG9jayB3aGVuCj4+PiBjYWxsaW5nIHB0aHJlYWRfbXV0ZXhfbG9j
+aygpIGluIHJlbGVhc2VfYnVmZmVyKCkgd2hpbGUgYXR0ZW1wdGluZyB0byByZS1hY3F1aXJlCj4+
+PiBidWZmZXJfbG9jayBhZ2Fpbi4gVGhpcyBhbHNvIGNhdXNlcyBjb2JhbHRfcHJpbnQgdG8gcmVt
+YWluIHdhaXRpbmcgaW5kZWZpbml0ZWx5Cj4+PiBmb3IgYnVmZmVyX2xvY2suCj4+Pgo+Pj4gKGdk
+YikgaW5mbyB0aHJlYWQKPj4+ICAgSWQgICBUYXJnZXQgSWQgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgRnJhbWUKPj4+ICogMSAgICBUaHJlYWQgMHg3ZmY3ZmY0MDEwIChM
+V1AgMTY1NCkgImhlbGxvIiAgICAgICAgICAgMHgwMDAwMDA3ZmY3YmI2Mzk4IGluIHNjaGVkX3lp
+ZWxkICgpIGF0IC4uL3N5c2RlcHMvdW5peC9zeXNjYWxsLXRlbXBsYXRlLlM6NzgKPj4+ICAgMiAg
+ICBUaHJlYWQgMHg3ZmY3YTdhMWMwIChMV1AgMTY1NykgImNvYmFsdF9wcmludGYiICAgX19sbGxf
+bG9ja193YWl0IChmdXRleD1mdXRleEBlbnRyeT0weDdmZjdmY2FlZDggPGJ1ZmZlcl9sb2NrPiwg
+cHJpdmF0ZT0wKQo+Pj4gICAgIGF0IGxvd2xldmVsbG9jay5jOjUyCj4+PiAgIDMgICAgVGhyZWFk
+IDB4N2ZmNzI3OTFjMCAoTFdQIDE2NTgpICJtYXN0ZXIiICAgICAgICAgIDB4MDAwMDAwN2ZmN2I2
+ZDMxNCBpbiBfX0dJX19JT19kZWZhdWx0X3hzcHV0biAobj08b3B0aW1pemVkIG91dD4sIGRhdGE9
+PG9wdGltaXplZCBvdXQ+LAo+Pj4gICAgIGY9PG9wdGltaXplZCBvdXQ+KSBhdCBnZW5vcHMuYzoz
+OTMKPj4+ICAgNCAgICBUaHJlYWQgMHg3ZmY3MjU4MWMwIChMV1AgMTY1OSkgInNsYXZlIiAoRXhp
+dGluZykgX19sbGxfbG9ja193YWl0IChmdXRleD1mdXRleEBlbnRyeT0weDdmZjdmY2FlZDggPGJ1
+ZmZlcl9sb2NrPiwgcHJpdmF0ZT0wKQo+Pj4gICAgIGF0IGxvd2xldmVsbG9jay5jOjUyCj4+PiAo
+Z2RiKSB0aHJlYWQgNAo+Pj4gW1N3aXRjaGluZyB0byB0aHJlYWQgNCAoVGhyZWFkIDB4N2ZmNzI1
+ODFjMCAoTFdQIDE2NTkpKV0KPj4+IDUyICAgICAgbG93bGV2ZWxsb2NrLmM6IE5vIHN1Y2ggZmls
+ZSBvciBkaXJlY3RvcnkuCj4+PiAoZ2RiKSBidAo+Pj4gKGdkYikgcCAoKHB0aHJlYWRfbXV0ZXhf
+dCopICZidWZmZXJfbG9jayktPl9fZGF0YS5fX293bmVyCj4+PiAkNCA9IDE2NTkKPj4+IChnZGIp
+IHAgKChwdGhyZWFkX211dGV4X3QqKSAmYnVmZmVyX2xvY2spLT5fX2RhdGEuX19sb2NrCj4+PiAk
+NSA9IDIKPj4+Cj4+PiBTaWduZWQtb2ZmLWJ5OiBFdGhhbiA8YXNwaXJlc3Ryb0AxNjMuY29tPgo+
+Pj4gLS0tCj4+PiAgbGliL2NvYmFsdC9wcmludGYuYyB8IDEzICsrKysrKysrKysrLS0KPj4+ICAx
+IGZpbGUgY2hhbmdlZCwgMTEgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKPj4+Cj4+PiBk
+aWZmIC0tZ2l0IGEvbGliL2NvYmFsdC9wcmludGYuYyBiL2xpYi9jb2JhbHQvcHJpbnRmLmMKPj4+
+IGluZGV4IDBhYTU5NDBjNi4uODdlZDk4OWY0IDEwMDY0NAo+Pj4gLS0tIGEvbGliL2NvYmFsdC9w
+cmludGYuYwo+Pj4gKysrIGIvbGliL2NvYmFsdC9wcmludGYuYwo+Pj4gQEAgLTgyLDYgKzgyLDcg
+QEAgc3RhdGljIHN0cnVjdCB0aW1lc3BlYyBzeW5jZGVsYXk7Cj4+PiAgc3RhdGljIHB0aHJlYWRf
+bXV0ZXhfdCBidWZmZXJfbG9jazsKPj4+ICBzdGF0aWMgcHRocmVhZF9jb25kX3QgcHJpbnRlcl93
+YWtldXA7Cj4+PiAgc3RhdGljIHB0aHJlYWRfa2V5X3QgYnVmZmVyX2tleTsKPj4+ICtzdGF0aWMg
+cHRocmVhZF9tdXRleGF0dHJfdCBhdHRyOwo+Pj4gIHN0YXRpYyBwdGhyZWFkX2tleV90IGNsZWFu
+dXBfa2V5Owo+Pj4gIHN0YXRpYyBwdGhyZWFkX3QgcHJpbnRlcl90aHJlYWQ7Cj4+PiAgc3RhdGlj
+IGF0b21pY19sb25nX3QgKnBvb2xfYml0bWFwOwo+Pj4gQEAgLTQ5OCw2ICs0OTksMTIgQEAgc3Rh
+dGljIHZvaWQgcmVsZWFzZV9idWZmZXIoc3RydWN0IHByaW50X2J1ZmZlciAqYnVmZmVyKQo+Pj4K
+Pj4+ICAJcHRocmVhZF9zZXRzcGVjaWZpYyhidWZmZXJfa2V5LCBOVUxMKTsKPj4+Cj4+PiArCS8q
+IFRoZSB0eXBlIG9mIGJ1ZmZlcl9sb2NrIGlzIFBUSFJFQURfTVVURVhfRVJST1JDSEVDSywgd2hp
+Y2ggc3VwcG9ydHMKPj4+ICsJICogZGVhZGxvY2sgZGV0ZWN0aW9uLiBJZiB0aGUgbG9jayBpcyBz
+dWNjZXNzZnVsbHkgYWNxdWlyZWQsIGl0IHdpbGwgcmV0dXJuCj4+PiArCSAqIDA7IElmIHRoZSBz
+YW1lIHRocmVhZCBhdHRlbXB0cyB0byByZS1sb2NrIGEgbXV0ZXggdGhhdCBpdCBoYXMgYWxyZWFk
+eQo+Pj4gKwkgKiBsb2NrZWQsIGl0IHdpbGwgcmV0dXJuIEVERUFETEsuIFRoaXMgYXBwcm9hY2gg
+cHJldmVudHMgdGhlIGRlYWRsb2NrCj4+PiArCSAqIGlzc3VlLgo+Pj4gKwkgKi8KPj4+ICAJcHRo
+cmVhZF9tdXRleF9sb2NrKCZidWZmZXJfbG9jayk7Cj4+Pgo+Pj4gIAlwcmludF9idWZmZXJzKCk7
+Cj4+PiBAQCAtNjY2LDcgKzY3Myw3IEBAIHZvaWQgY29iYWx0X3ByaW50X2luaXRfYXRmb3JrKHZv
+aWQpCj4+PiAgCX0KPj4+Cj4+PiAgCS8qIHJlLWluaXQgdG8gYXZvaWQgZmluZGluZyBpdCBsb2Nr
+ZWQgYnkgc29tZSBwYXJlbnQgdGhyZWFkICovCj4+PiAtCXB0aHJlYWRfbXV0ZXhfaW5pdCgmYnVm
+ZmVyX2xvY2ssIE5VTEwpOwo+Pj4gKwlwdGhyZWFkX211dGV4X2luaXQoJmJ1ZmZlcl9sb2NrLCAm
+YXR0cik7Cj4+Pgo+Pj4gIAl3aGlsZSAoKnBidWZmZXIpIHsKPj4+ICAJCWlmICgqcGJ1ZmZlciA9
+PSBteV9idWZmZXIpCj4+PiBAQCAtNzIzLDcgKzczMCw5IEBAIHZvaWQgY29iYWx0X3ByaW50X2lu
+aXQodm9pZCkKPj4+ICAJCXJ0X3ByaW50X2luaXRfaW5uZXIoYnVmZmVyLCBfX2NvYmFsdF9wcmlu
+dF9idWZzeik7Cj4+PiAgCX0KPj4+ICBkb25lOgo+Pj4gLQlwdGhyZWFkX211dGV4X2luaXQoJmJ1
+ZmZlcl9sb2NrLCBOVUxMKTsKPj4+ICsJcHRocmVhZF9tdXRleGF0dHJfaW5pdCgmYXR0cik7Cj4+
+PiArCXB0aHJlYWRfbXV0ZXhhdHRyX3NldHR5cGUoJmF0dHIsIFBUSFJFQURfTVVURVhfRVJST1JD
+SEVDSyk7Cj4+Cj4+IEdvb2QgY2F0Y2ghIEJ1dCB3aHkgbm90IHVzaW5nIFBUSFJFQURfTVVURVhf
+UkVDVVJTSVZFLCByYXRoZXIgdGhlbgo+PiB0cmlnZ2VyaW5nIGFuIGVycm9yIHRoYXQgaXMgbm90
+IGhhbmRsZWQgYW5kIHRoZXJlZm9yZSBoYXBwZW5zIHRvIGxldCB0aGUKPj4gY2FsbGVyIGNvbnRp
+bnVlPwo+Pgo+Cj5JbiBmYWN0LCB0aGlzIHdvdWxkIG5lZWQgbW9yZSB3b3JrIGJlY2F1c2Ugd2Ug
+d291bGQgYWxzbyBoYXZlIHRvIGVuc3VyZQo+dGhhdCB3ZSBjYW4gYWN0dWFsbHkgcmUtZW50ZXIg
+dGhlIGxvY2tlZCBzZWN0aW9ucy4gSXQgaXMgdGhlcmVmb3JlCj5iZXR0ZXIgdG8gZGlzYWJsZSBj
+YW5jZWxsYXRpb24gd2hpbGUgcnVubmluZyByZWxlYXNlX2J1ZmZlci4KPgo+SmFuCgoxLiBQVEhS
+RUFEX01VVEVYX1JFQ1VSU0lWRQpJdCBpcyBkaWZmaWN1bHQgdG8gZGV0ZWN0IGhvdyBtYW55IHRp
+bWVzIGEgUFRIUkVBRF9NVVRFWF9SRUNVUlNJVkUgbG9jayBoYXMKYmVlbiBsb2NrZWQuIFRodXMs
+IGl0IGlzIGltcG9zc2libGUgdG8gZGV0ZXJtaW5lIGhvdyBtYW55IHRpbWVzIHRvIGNhbGwKcHRo
+cmVhZF9tdXRleF91bmxvY2sgdG8gcmVsZWFzZSBpdC4KCjIuIFBUSFJFQURfTVVURVhfRVJST1JD
+SEVDSwpJIHdhcyB0aGlua2luZyB0aGF0IFBUSFJFQURfTVVURVhfRVJST1JDSEVDSyBjYW4gaW5o
+ZXJlbnRseSBkZXRlY3Qgd2hldGhlcgp0aGUgbG9jayBoYXMgYWxyZWFkeSBiZWVuIGFjcXVpcmVk
+IGJ5IHRoZSBzYW1lIHRocmVhZC4gVGhpcyBpcyBhbiBleGlzdGluZwpmZWF0dXJlIHRoYXQsIHRv
+IHNvbWUgZXh0ZW50LCBpcyB2ZXJ5IHN1aXRhYmxlIGZvciBwcmV2ZW50aW5nIGRlYWRsb2NrcyBj
+YXVzZWQKYnkgYSB0aHJlYWQgYXR0ZW1wdGluZyB0byBhY3F1aXJlIHRoZSBzYW1lIG11dGV4IG11
+bHRpcGxlIHRpbWVzLgoKMy4gVG8gZGlzYWJsZSBjYW5jZWxsYXRpb26jrGhvdyBhYm91dCB0aGlz
+IHdheToKCmRpZmYgLS1naXQgYS9saWIvY29iYWx0L3ByaW50Zi5jIGIvbGliL2NvYmFsdC9wcmlu
+dGYuYwppbmRleCA4N2VkOTg5ZjQuLjQwMzgyOWEyZiAxMDA2NDQKLS0tIGEvbGliL2NvYmFsdC9w
+cmludGYuYworKysgYi9saWIvY29iYWx0L3ByaW50Zi5jCkBAIC00ODQsOSArNDg0LDExIEBAIGNv
+bnN0IGNoYXIgKnJ0X3ByaW50X2J1ZmZlcl9uYW1lKHZvaWQpCiB2b2lkIHJ0X3ByaW50X2ZsdXNo
+X2J1ZmZlcnModm9pZCkKIHsKICAgICAgICBjb2JhbHRfdGhyZWFkX3JlbGF4KCk7CisgICAgICAg
+cHRocmVhZF9zZXRjYW5jZWxzdGF0ZShQVEhSRUFEX0NBTkNFTF9ESVNBQkxFLCBOVUxMKaO7CiAg
+ICAgICAgcHRocmVhZF9tdXRleF9sb2NrKCZidWZmZXJfbG9jayk7CiAgICAgICAgcHJpbnRfYnVm
+ZmVycygpOwogICAgICAgIHB0aHJlYWRfbXV0ZXhfdW5sb2NrKCZidWZmZXJfbG9jayk7CisgICAg
+ICAgcHRocmVhZF9zZXRjYW5jZWxzdGF0ZShQVEhSRUFEX0NBTkNFTF9FTkFCTEUsIE5VTEwpOwog
+fQoKIHN0YXRpYyB2b2lkIHJlbGVhc2VfYnVmZmVyKHN0cnVjdCBwcmludF9idWZmZXIgKmJ1ZmZl
+cikKCkkgaGF2bid0IHZlcmlmaWVkIGlmIFBUSFJFQURfQ0FOQ0VMX0RJU0FCTEUgY291bGQgZml4
+IHRoaXMgaXNzdWUuCkkgbmVlZCBtb3JlIHRpbWUuCgpFdGhhbg==
