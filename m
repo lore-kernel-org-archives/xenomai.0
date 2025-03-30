@@ -1,152 +1,77 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 569F86A33F
-	for <xenomai@lists.linux.dev>; Sun, 30 Mar 2025 06:59:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
+Received: from mail-lf1-f50.google.com (mail-lf1-f50.google.com [209.85.167.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C24B18836
+	for <xenomai@lists.linux.dev>; Sun, 30 Mar 2025 07:21:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743317995; cv=none; b=SJiVgn/8BCup5mq3+cByXOyJwTLmPUFc2PoHAl6SJO/OXWVojE7rKpo8JC2mRB/kmiGiUCVWAb6/S77eZfyETj00MlER5hKiOqKYJtAbuY9IXWIgHm25lPTo+bNw3gk+6ek5bg3Is4gT1q5b5HYCLFl4jY3EPdKaUfZNAKZxhtc=
+	t=1743319267; cv=none; b=E/lQc7Sdx+KYrgn7S0328sw5bfsZY4PgcSqYu21x51sBF9mIK6mpyYip79PzPZFumssOcRELbMsf30h/hKYkcBx3g9Hgn4elIAw4hgKO67uuB+XcZ/M1y1mElgfw5kdkVCRFoNhThYXgok2qeTjbQofNKzirr0R2mMsOzlRzr10=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743317995; c=relaxed/simple;
-	bh=TKkizrdifSI7CEpgpzeQGH+f/s34vmExIo/HCUpVL3o=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=l7TruhtDm0veoYVyIGHNWeBsnJ9Iw87GkmDGvaA6J9GwkBa1uLrIjEjlOR5cBviZznm2V06jLhfPloxn40QmZgHs6Y06ZsPh1n6IZwIe2S6g7ehJt2iVdIe9T0BvpbEsD7HiFewpUyUZjJUE4yci0zGUiJnmi+dORylbeoY4dgs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=BQ7SqJ20 reason="signature verification failed"; arc=none smtp.client-ip=220.197.31.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1743319267; c=relaxed/simple;
+	bh=60MIE3ZlhQnas0kP+glU0/wHtYn5NAIR6B1fB+uC5Vo=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=YSDaNtnduZwkXTTYweluxOqgdzGdPsaKZ0KruWcBgZV+6yal+23yns1zHphRW5YJqPUhYNC4lnC0FnCUm2ghS6qJksZ46dzy9LRxArAbIvPURwv/qA+31kuDXA4nMexeUruFOyWd1aUpE3wIoqBPXvYF5WQIC0hZ0H3IuBoW07M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b=THqEh81H; arc=none smtp.client-ip=209.85.167.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="BQ7SqJ20"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=GW425uSNcfpjI3IWoq//rQjGxnMhFQsfIJQi6EDcqVY=; b=B
-	Q7SqJ20uuiT1mV9qJzPrxUIj1o5AnuhfhngJ9/SDx5+VMwu3IDmCNUTHy3xLisAQ
-	FqXwM9jWvMU4wsvbB01NruZZ0mGOVZeys+GuJXjs8ZADl5BcH8zCaCRHRpw5pCtd
-	aVH8RTuu4br8hCQFoPxdBCg0/cQKV63KGkmkhwX/q0=
-Received: from aspirestro$163.com (
- [2409:8a00:1890:70b4:e15c:af8e:711e:2235] ) by ajax-webmail-wmsvr-40-128
- (Coremail) ; Sun, 30 Mar 2025 14:59:41 +0800 (CST)
-Date: Sun, 30 Mar 2025 14:59:41 +0800 (CST)
-From: aspirestro  <aspirestro@163.com>
-To: "Jan Kiszka" <jan.kiszka@web.de>
-Cc: florian.bezdeka@siemens.com, rpm@xenomai.org, xenomai@lists.linux.dev
-Subject: Re:Re: [PATCH] lib/cobalt: Fix a deadlock when release_buffer()
- attempts to re-acquire buffer_lock
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20240801(9da12a7b)
- Copyright (c) 2002-2025 www.mailtech.cn 163com
-In-Reply-To: <e435d7ee-fbde-4e7d-993d-f91c0eac4ecf@web.de>
-References: <20250329160646.527363-1-aspirestro@163.com>
- <b2f68c9c-c677-4e31-9d4e-47a647f0a46d@web.de>
- <e435d7ee-fbde-4e7d-993d-f91c0eac4ecf@web.de>
-X-NTES-SC: AL_Qu2fAf+auEEj5yaeZOkfmU4Vgeo2UMCzu/gk34BUO5lwjA7p1S49WXVOIn354uKICzynnBWaXj1J4PV3fq5yZ70mr8k9z8cyIr9v/5qe4pOLTw==
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=GBK
+	dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b="THqEh81H"
+Received: by mail-lf1-f50.google.com with SMTP id 2adb3069b0e04-549963b5551so3526583e87.2
+        for <xenomai@lists.linux.dev>; Sun, 30 Mar 2025 00:21:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=smile.fr; s=google; t=1743319261; x=1743924061; darn=lists.linux.dev;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=/AyZ5WMpp1zzE+ISUO0eXD+JMa3JJ02Qi2c4mTf3tNU=;
+        b=THqEh81HcFPNJrhkjKw78Vhp3zlsC2EQqXQ2iHhHdJJtw3A6oupDmKJ2h+x0X2ikAT
+         J+rWYvMKBj71tB9DzNOCo+EuDRLh+YhlWN2ne4NizugRwxSyJT9X53XD3SIn34uNwPEG
+         dADHIzNZHXenrqzVt1ia+e1TB3lryEkwn8USY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1743319261; x=1743924061;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=/AyZ5WMpp1zzE+ISUO0eXD+JMa3JJ02Qi2c4mTf3tNU=;
+        b=qvR3yWb8Kpsblow0UGYbker2ILpzWcO2f5KN+++4moY+NA/0SSNpx9enZUNgoGclgQ
+         q2n0TfO9CXp2fwrkzgtKewKbPaRhTN39y6KSwT4ZpJ+Zy7cyrSEHWWoytipX17r4P0Qi
+         Fzlc2+MTxhBmfLQOEi4TFK5PCR1cQVfvRuqO4CZpXr827ElrzCWkHSCYYhFuKWMpr+Db
+         sZEwaahGPVxOOY+3dLvGWqxk5m/Vr6nmNQcWIunAa7nNPWO+eICqOEsGQ5TIg9xBkBrw
+         sz0uTxHNUyPMs4EzpA/HRXYBv/s8P4gROFsAK+jYROCvr0Xcmo3RxtocPGR0JBq8APfm
+         XM9g==
+X-Gm-Message-State: AOJu0YyNcEY+yizeJfOfyQu20Pyb5yXsa2En6tY7BNFgEN0Lo4CHswA7
+	tJ4ULArh1OPAOSG9YZX1QwLox4jjNEizqwX7GGAa8nVEPiLVPw4KDEPXk3+AY8JKH7SxPSbT/bl
+	bfYWG34ICKcHPEJ4pQniJph0Aq++pSUQlL0MVo6gjmERthlox
+X-Gm-Gg: ASbGncsXNYJydaUCNA8PtXbo2JV6AjurZfQPbfBq8Lv+zGmRDVpYxHIuhcJjxEe8M8/
+	O42IUQLE5lWz4Zwl4wAnUth+hKI5KXgMkUq85mxIvYOSK1dWMSLZFL47WsBxa4SukvgvHHYmtJP
+	BliMScvWgWW59yn/XFl2PvusEZKpYdvVHARI6CC/CkibQZwerL6HgE/80NXw==
+X-Google-Smtp-Source: AGHT+IHCF+Xg3a7TThysYgXatVgLpkCsWQTJC9BXGSHSrVe05Q8EgLBAt10gG8CFuw7Pos/oREcPSb/4lpkrh/SffsM=
+X-Received: by 2002:a05:6512:a92:b0:549:91d3:4f0f with SMTP id
+ 2adb3069b0e04-54b10da72b8mr1374707e87.11.1743319261424; Sun, 30 Mar 2025
+ 00:21:01 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <47d51681.1282.195e5d959e0.Coremail.aspirestro@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:gCgvCgDXP3fe6+hnbhWKAA--.3620W
-X-CM-SenderInfo: pdvsx2xhvw20i6rwjhhfrp/1tbiXAYfcWfodGZErgAJsK
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+From: Pierre FICHEUX <pierre.ficheux@smile.fr>
+Date: Sun, 30 Mar 2025 09:20:47 +0200
+X-Gm-Features: AQ5f1JpNzVF9UWHIS8s9qQsPJDx6sc4a2AdW2pz4qD2498BrtEn8V2u8LEGZYiQ
+Message-ID: <CAFc1U0scz6GaCTgaoXFzq_KEtNw-GAeJNbQnMR5qeSw2Y0fOHg@mail.gmail.com>
+Subject: Building SDK in xenomai-images
+To: Xenomai <xenomai@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 
-CkF0IDIwMjUtMDMtMzAgMDY6NDg6NDYsICJKYW4gS2lzemthIiA8amFuLmtpc3prYUB3ZWIuZGU+
-IHdyb3RlOgo+T24gMjkuMDMuMjUgMjM6MjUsIEphbiBLaXN6a2Egd3JvdGU6Cj4+IE9uIDI5LjAz
-LjI1IDE3OjA2LCBFdGhhbiB3cm90ZToKPj4+IFRoZSByZWxlYXNlX2J1ZmZlcigpIGZ1bmN0aW9u
-IGlzIHRoZSBkZXN0cnVjdG9yIGZ1bmN0aW9uIGZvciB0aGUgdGhyZWFkLXNwZWNpZmljCj4+PiBk
-YXRhIChUU0QpIGFzc29jaWF0ZWQgd2l0aCBidWZmZXJfa2V5LiBJZiB0aGUgY3VycmVudCB0aHJl
-YWQgaXMgZXhlY3V0aW5nCj4+PiBydF9wcmludF9mbHVzaF9idWZmZXJzKCkgYW5kIGhhcyBhbHJl
-YWR5IGFjcXVpcmVkIGJ1ZmZlcl9sb2NrLCBhbmQgaXMgdGhlbgo+Pj4gcmVxdWVzdGVkIHRvIGV4
-aXQgdmlhIHB0aHJlYWRfY2FuY2VsKCksIHRoZSByZWxlYXNlX2J1ZmZlcigpIGZ1bmN0aW9uIHdp
-bGwgYmUKPj4+IGludm9rZWQuIEEgZGVhZGxvY2sgY2FuIG9jY3VyIHdoZW4gcmVsZWFzZV9idWZm
-ZXIoKSBhdHRlbXB0cyB0byByZS1hY3F1aXJlCj4+PiBidWZmZXJfbG9jay4KPj4+Cj4+PiBUaGlz
-IHBhdGNoIGNoYW5nZXMgdGhlIGJ1ZmZlcl9sb2NrIGZyb20gUFRIUkVBRF9NVVRFWF9ERUZBVUxU
-IHRvCj4+PiBQVEhSRUFEX01VVEVYX0VSUk9SQ0hFQ0sgdHlwZSwgYXMgaXQgc3VwcG9ydHMgZGVh
-ZGxvY2sgZGV0ZWN0aW9uLiBJZiB0aGUgbG9jayBpcwo+Pj4gc3VjY2Vzc2Z1bGx5IGFjcXVpcmVk
-LCBpdCB3aWxsIHJldHVybiAwLiBJZiB0aGUgc2FtZSB0aHJlYWQgYXR0ZW1wdHMgdG8gcmUtbG9j
-awo+Pj4gYSBtdXRleCB0aGF0IGl0IGhhcyBhbHJlYWR5IGxvY2tlZCwgaXQgd2lsbCByZXR1cm4g
-RURFQURMSy4gVGhpcyBhcHByb2FjaAo+Pj4gcHJldmVudHMgdGhlIGRlYWRsb2NrIGlzc3VlLgo+
-Pj4KPj4+IFRoZSBkZWFkbG9jayBjYW4gYmUgb2JzZXJ2ZWQgYXMgZ2RiIHNob3duLiBUaGUgdGhy
-ZWFkICJzbGF2ZSIgd2lsbCBibG9jayB3aGVuCj4+PiBjYWxsaW5nIHB0aHJlYWRfbXV0ZXhfbG9j
-aygpIGluIHJlbGVhc2VfYnVmZmVyKCkgd2hpbGUgYXR0ZW1wdGluZyB0byByZS1hY3F1aXJlCj4+
-PiBidWZmZXJfbG9jayBhZ2Fpbi4gVGhpcyBhbHNvIGNhdXNlcyBjb2JhbHRfcHJpbnQgdG8gcmVt
-YWluIHdhaXRpbmcgaW5kZWZpbml0ZWx5Cj4+PiBmb3IgYnVmZmVyX2xvY2suCj4+Pgo+Pj4gKGdk
-YikgaW5mbyB0aHJlYWQKPj4+ICAgSWQgICBUYXJnZXQgSWQgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgRnJhbWUKPj4+ICogMSAgICBUaHJlYWQgMHg3ZmY3ZmY0MDEwIChM
-V1AgMTY1NCkgImhlbGxvIiAgICAgICAgICAgMHgwMDAwMDA3ZmY3YmI2Mzk4IGluIHNjaGVkX3lp
-ZWxkICgpIGF0IC4uL3N5c2RlcHMvdW5peC9zeXNjYWxsLXRlbXBsYXRlLlM6NzgKPj4+ICAgMiAg
-ICBUaHJlYWQgMHg3ZmY3YTdhMWMwIChMV1AgMTY1NykgImNvYmFsdF9wcmludGYiICAgX19sbGxf
-bG9ja193YWl0IChmdXRleD1mdXRleEBlbnRyeT0weDdmZjdmY2FlZDggPGJ1ZmZlcl9sb2NrPiwg
-cHJpdmF0ZT0wKQo+Pj4gICAgIGF0IGxvd2xldmVsbG9jay5jOjUyCj4+PiAgIDMgICAgVGhyZWFk
-IDB4N2ZmNzI3OTFjMCAoTFdQIDE2NTgpICJtYXN0ZXIiICAgICAgICAgIDB4MDAwMDAwN2ZmN2I2
-ZDMxNCBpbiBfX0dJX19JT19kZWZhdWx0X3hzcHV0biAobj08b3B0aW1pemVkIG91dD4sIGRhdGE9
-PG9wdGltaXplZCBvdXQ+LAo+Pj4gICAgIGY9PG9wdGltaXplZCBvdXQ+KSBhdCBnZW5vcHMuYzoz
-OTMKPj4+ICAgNCAgICBUaHJlYWQgMHg3ZmY3MjU4MWMwIChMV1AgMTY1OSkgInNsYXZlIiAoRXhp
-dGluZykgX19sbGxfbG9ja193YWl0IChmdXRleD1mdXRleEBlbnRyeT0weDdmZjdmY2FlZDggPGJ1
-ZmZlcl9sb2NrPiwgcHJpdmF0ZT0wKQo+Pj4gICAgIGF0IGxvd2xldmVsbG9jay5jOjUyCj4+PiAo
-Z2RiKSB0aHJlYWQgNAo+Pj4gW1N3aXRjaGluZyB0byB0aHJlYWQgNCAoVGhyZWFkIDB4N2ZmNzI1
-ODFjMCAoTFdQIDE2NTkpKV0KPj4+IDUyICAgICAgbG93bGV2ZWxsb2NrLmM6IE5vIHN1Y2ggZmls
-ZSBvciBkaXJlY3RvcnkuCj4+PiAoZ2RiKSBidAo+Pj4gKGdkYikgcCAoKHB0aHJlYWRfbXV0ZXhf
-dCopICZidWZmZXJfbG9jayktPl9fZGF0YS5fX293bmVyCj4+PiAkNCA9IDE2NTkKPj4+IChnZGIp
-IHAgKChwdGhyZWFkX211dGV4X3QqKSAmYnVmZmVyX2xvY2spLT5fX2RhdGEuX19sb2NrCj4+PiAk
-NSA9IDIKPj4+Cj4+PiBTaWduZWQtb2ZmLWJ5OiBFdGhhbiA8YXNwaXJlc3Ryb0AxNjMuY29tPgo+
-Pj4gLS0tCj4+PiAgbGliL2NvYmFsdC9wcmludGYuYyB8IDEzICsrKysrKysrKysrLS0KPj4+ICAx
-IGZpbGUgY2hhbmdlZCwgMTEgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlvbnMoLSkKPj4+Cj4+PiBk
-aWZmIC0tZ2l0IGEvbGliL2NvYmFsdC9wcmludGYuYyBiL2xpYi9jb2JhbHQvcHJpbnRmLmMKPj4+
-IGluZGV4IDBhYTU5NDBjNi4uODdlZDk4OWY0IDEwMDY0NAo+Pj4gLS0tIGEvbGliL2NvYmFsdC9w
-cmludGYuYwo+Pj4gKysrIGIvbGliL2NvYmFsdC9wcmludGYuYwo+Pj4gQEAgLTgyLDYgKzgyLDcg
-QEAgc3RhdGljIHN0cnVjdCB0aW1lc3BlYyBzeW5jZGVsYXk7Cj4+PiAgc3RhdGljIHB0aHJlYWRf
-bXV0ZXhfdCBidWZmZXJfbG9jazsKPj4+ICBzdGF0aWMgcHRocmVhZF9jb25kX3QgcHJpbnRlcl93
-YWtldXA7Cj4+PiAgc3RhdGljIHB0aHJlYWRfa2V5X3QgYnVmZmVyX2tleTsKPj4+ICtzdGF0aWMg
-cHRocmVhZF9tdXRleGF0dHJfdCBhdHRyOwo+Pj4gIHN0YXRpYyBwdGhyZWFkX2tleV90IGNsZWFu
-dXBfa2V5Owo+Pj4gIHN0YXRpYyBwdGhyZWFkX3QgcHJpbnRlcl90aHJlYWQ7Cj4+PiAgc3RhdGlj
-IGF0b21pY19sb25nX3QgKnBvb2xfYml0bWFwOwo+Pj4gQEAgLTQ5OCw2ICs0OTksMTIgQEAgc3Rh
-dGljIHZvaWQgcmVsZWFzZV9idWZmZXIoc3RydWN0IHByaW50X2J1ZmZlciAqYnVmZmVyKQo+Pj4K
-Pj4+ICAJcHRocmVhZF9zZXRzcGVjaWZpYyhidWZmZXJfa2V5LCBOVUxMKTsKPj4+Cj4+PiArCS8q
-IFRoZSB0eXBlIG9mIGJ1ZmZlcl9sb2NrIGlzIFBUSFJFQURfTVVURVhfRVJST1JDSEVDSywgd2hp
-Y2ggc3VwcG9ydHMKPj4+ICsJICogZGVhZGxvY2sgZGV0ZWN0aW9uLiBJZiB0aGUgbG9jayBpcyBz
-dWNjZXNzZnVsbHkgYWNxdWlyZWQsIGl0IHdpbGwgcmV0dXJuCj4+PiArCSAqIDA7IElmIHRoZSBz
-YW1lIHRocmVhZCBhdHRlbXB0cyB0byByZS1sb2NrIGEgbXV0ZXggdGhhdCBpdCBoYXMgYWxyZWFk
-eQo+Pj4gKwkgKiBsb2NrZWQsIGl0IHdpbGwgcmV0dXJuIEVERUFETEsuIFRoaXMgYXBwcm9hY2gg
-cHJldmVudHMgdGhlIGRlYWRsb2NrCj4+PiArCSAqIGlzc3VlLgo+Pj4gKwkgKi8KPj4+ICAJcHRo
-cmVhZF9tdXRleF9sb2NrKCZidWZmZXJfbG9jayk7Cj4+Pgo+Pj4gIAlwcmludF9idWZmZXJzKCk7
-Cj4+PiBAQCAtNjY2LDcgKzY3Myw3IEBAIHZvaWQgY29iYWx0X3ByaW50X2luaXRfYXRmb3JrKHZv
-aWQpCj4+PiAgCX0KPj4+Cj4+PiAgCS8qIHJlLWluaXQgdG8gYXZvaWQgZmluZGluZyBpdCBsb2Nr
-ZWQgYnkgc29tZSBwYXJlbnQgdGhyZWFkICovCj4+PiAtCXB0aHJlYWRfbXV0ZXhfaW5pdCgmYnVm
-ZmVyX2xvY2ssIE5VTEwpOwo+Pj4gKwlwdGhyZWFkX211dGV4X2luaXQoJmJ1ZmZlcl9sb2NrLCAm
-YXR0cik7Cj4+Pgo+Pj4gIAl3aGlsZSAoKnBidWZmZXIpIHsKPj4+ICAJCWlmICgqcGJ1ZmZlciA9
-PSBteV9idWZmZXIpCj4+PiBAQCAtNzIzLDcgKzczMCw5IEBAIHZvaWQgY29iYWx0X3ByaW50X2lu
-aXQodm9pZCkKPj4+ICAJCXJ0X3ByaW50X2luaXRfaW5uZXIoYnVmZmVyLCBfX2NvYmFsdF9wcmlu
-dF9idWZzeik7Cj4+PiAgCX0KPj4+ICBkb25lOgo+Pj4gLQlwdGhyZWFkX211dGV4X2luaXQoJmJ1
-ZmZlcl9sb2NrLCBOVUxMKTsKPj4+ICsJcHRocmVhZF9tdXRleGF0dHJfaW5pdCgmYXR0cik7Cj4+
-PiArCXB0aHJlYWRfbXV0ZXhhdHRyX3NldHR5cGUoJmF0dHIsIFBUSFJFQURfTVVURVhfRVJST1JD
-SEVDSyk7Cj4+Cj4+IEdvb2QgY2F0Y2ghIEJ1dCB3aHkgbm90IHVzaW5nIFBUSFJFQURfTVVURVhf
-UkVDVVJTSVZFLCByYXRoZXIgdGhlbgo+PiB0cmlnZ2VyaW5nIGFuIGVycm9yIHRoYXQgaXMgbm90
-IGhhbmRsZWQgYW5kIHRoZXJlZm9yZSBoYXBwZW5zIHRvIGxldCB0aGUKPj4gY2FsbGVyIGNvbnRp
-bnVlPwo+Pgo+Cj5JbiBmYWN0LCB0aGlzIHdvdWxkIG5lZWQgbW9yZSB3b3JrIGJlY2F1c2Ugd2Ug
-d291bGQgYWxzbyBoYXZlIHRvIGVuc3VyZQo+dGhhdCB3ZSBjYW4gYWN0dWFsbHkgcmUtZW50ZXIg
-dGhlIGxvY2tlZCBzZWN0aW9ucy4gSXQgaXMgdGhlcmVmb3JlCj5iZXR0ZXIgdG8gZGlzYWJsZSBj
-YW5jZWxsYXRpb24gd2hpbGUgcnVubmluZyByZWxlYXNlX2J1ZmZlci4KPgo+SmFuCgoxLiBQVEhS
-RUFEX01VVEVYX1JFQ1VSU0lWRQpJdCBpcyBkaWZmaWN1bHQgdG8gZGV0ZWN0IGhvdyBtYW55IHRp
-bWVzIGEgUFRIUkVBRF9NVVRFWF9SRUNVUlNJVkUgbG9jayBoYXMKYmVlbiBsb2NrZWQuIFRodXMs
-IGl0IGlzIGltcG9zc2libGUgdG8gZGV0ZXJtaW5lIGhvdyBtYW55IHRpbWVzIHRvIGNhbGwKcHRo
-cmVhZF9tdXRleF91bmxvY2sgdG8gcmVsZWFzZSBpdC4KCjIuIFBUSFJFQURfTVVURVhfRVJST1JD
-SEVDSwpJIHdhcyB0aGlua2luZyB0aGF0IFBUSFJFQURfTVVURVhfRVJST1JDSEVDSyBjYW4gaW5o
-ZXJlbnRseSBkZXRlY3Qgd2hldGhlcgp0aGUgbG9jayBoYXMgYWxyZWFkeSBiZWVuIGFjcXVpcmVk
-IGJ5IHRoZSBzYW1lIHRocmVhZC4gVGhpcyBpcyBhbiBleGlzdGluZwpmZWF0dXJlIHRoYXQsIHRv
-IHNvbWUgZXh0ZW50LCBpcyB2ZXJ5IHN1aXRhYmxlIGZvciBwcmV2ZW50aW5nIGRlYWRsb2NrcyBj
-YXVzZWQKYnkgYSB0aHJlYWQgYXR0ZW1wdGluZyB0byBhY3F1aXJlIHRoZSBzYW1lIG11dGV4IG11
-bHRpcGxlIHRpbWVzLgoKMy4gVG8gZGlzYWJsZSBjYW5jZWxsYXRpb26jrGhvdyBhYm91dCB0aGlz
-IHdheToKCmRpZmYgLS1naXQgYS9saWIvY29iYWx0L3ByaW50Zi5jIGIvbGliL2NvYmFsdC9wcmlu
-dGYuYwppbmRleCA4N2VkOTg5ZjQuLjQwMzgyOWEyZiAxMDA2NDQKLS0tIGEvbGliL2NvYmFsdC9w
-cmludGYuYworKysgYi9saWIvY29iYWx0L3ByaW50Zi5jCkBAIC00ODQsOSArNDg0LDExIEBAIGNv
-bnN0IGNoYXIgKnJ0X3ByaW50X2J1ZmZlcl9uYW1lKHZvaWQpCiB2b2lkIHJ0X3ByaW50X2ZsdXNo
-X2J1ZmZlcnModm9pZCkKIHsKICAgICAgICBjb2JhbHRfdGhyZWFkX3JlbGF4KCk7CisgICAgICAg
-cHRocmVhZF9zZXRjYW5jZWxzdGF0ZShQVEhSRUFEX0NBTkNFTF9ESVNBQkxFLCBOVUxMKaO7CiAg
-ICAgICAgcHRocmVhZF9tdXRleF9sb2NrKCZidWZmZXJfbG9jayk7CiAgICAgICAgcHJpbnRfYnVm
-ZmVycygpOwogICAgICAgIHB0aHJlYWRfbXV0ZXhfdW5sb2NrKCZidWZmZXJfbG9jayk7CisgICAg
-ICAgcHRocmVhZF9zZXRjYW5jZWxzdGF0ZShQVEhSRUFEX0NBTkNFTF9FTkFCTEUsIE5VTEwpOwog
-fQoKIHN0YXRpYyB2b2lkIHJlbGVhc2VfYnVmZmVyKHN0cnVjdCBwcmludF9idWZmZXIgKmJ1ZmZl
-cikKCkkgaGF2bid0IHZlcmlmaWVkIGlmIFBUSFJFQURfQ0FOQ0VMX0RJU0FCTEUgY291bGQgZml4
-IHRoaXMgaXNzdWUuCkkgbmVlZCBtb3JlIHRpbWUuCgpFdGhhbg==
+Hi,
+
+Is there a way to build a SDK for the target selected in
+xenomai-images? Such as the following command in Yocto :
+
+$ bitbake -c populate_sdk <image-recipe>
+
+Thx by advance
+
+-- 
+
+Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+                             http://www.smile.fr
+                             https://smile.eu/fr/offres/embarque-iot
+I would love to change the world, but they won't give me the source code
