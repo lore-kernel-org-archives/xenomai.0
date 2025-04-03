@@ -1,212 +1,231 @@
-Received: from EUR02-AM0-obe.outbound.protection.outlook.com (mail-am0eur02on2124.outbound.protection.outlook.com [40.107.247.124])
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E10B13D279
-	for <xenomai@lists.linux.dev>; Wed,  2 Apr 2025 16:33:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.247.124
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1743611629; cv=fail; b=F6DoKm1GHlpIKJ2UU+Dw6jqZYj9d6yR6f9baFX6mM2B1vOVG7lJML/MTpoLmAFjIsY7exJrLW77z9uFqgizpC9Mpsqur25y7RkkmzQGDQpFRvmddNbObpz6c9Bci9JHE5cTOKvukFla+hrQJxd/g26fN3YYeZ8O4hMvdWooaAwg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1743611629; c=relaxed/simple;
-	bh=cdCcB2H8XxAw2ieunU0nJHYVC5cETImavt8bwokJVP8=;
-	h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version; b=iaitnDguSwm3THo2QUyNO0IL3afGs3q5yEOUVsqnXv3go2+JWSjQrFLhLrE4cwjEOWfdSSdFV+cd0zkXBQfMRF0qT1wzXryDgSMzGMihixgHdFkC0JC+NpypFWjBdl/HlLT1BMP6xFBSfnqwYeoi4cOsQdW6MRRPFCXhtC7mA2s=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=aradex.com; spf=none smtp.mailfrom=aradex.com; dkim=pass (1024-bit key) header.d=xedara.onmicrosoft.com header.i=@xedara.onmicrosoft.com header.b=lwIcOroE; arc=fail smtp.client-ip=40.107.247.124
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=aradex.com
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=aradex.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C527B241CB0
+	for <xenomai@lists.linux.dev>; Thu,  3 Apr 2025 08:25:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1743668731; cv=none; b=UjE9bwNk1/ikY1NAUjpKoDMMhyNYjJquCBj+WMOkj9m3ii4a7feg1dPwV3Uzj//d+Y0KQzP8Wo8+uYa7X4AcQ4CwrW6vE/fY1RNXs7dmWYDHzC0QdzqRxe9jjXQ6m9EwDBvISzlG5ff8NcW3yQKSCDeO9du9LWoWnNy7VZqTu2g=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1743668731; c=relaxed/simple;
+	bh=9dZqxe9xwR2FAGl3HqxQ7ICEkohWfLx5r3fIlF12lCQ=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=pMzZt3joqz4zQ2ez4MVObs35NzsCR5uFkPaOubcfxUWsW41YzZFKtJQDLPsGqy1BQEDOz7+ObDFJXPOKS6cSGASpCNKTELTefKk16kRPAD+drHMvNVdpxmBb1ZY4ZXQ1XlbmE9a54XWlWixYYjR2TIHR1SEwiheUvGS/fmX5HzY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=AC0UUbLq; arc=none smtp.client-ip=217.70.183.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=xedara.onmicrosoft.com header.i=@xedara.onmicrosoft.com header.b="lwIcOroE"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=QPYR912Hs3ppu5MMwUY4wU+mlN0y4mujxWf3fvYl8o6SgUQsJXM1PHmVnQxIaREPobKMngSMNcwEywrx4GabslIVGfKgqoI3nk/5hbwj0cpB8zG1u7TBr4rcfCqw5Ttdnix3WlsgFkdmYem7UmmPQJgWUDXmRA5TDdAXRjY50yiKM9Nj9pdbjYvBHlWtvppI25M+DpIk9LOSNgJ5nDVK78hsXB/cASUSfSP3+hrj/OC+ra0ykoZAWHuj08gfu48q4sTnFXnAChoFP2RaeslNj8AtK/rN+OyQoaXhg9E2GDS6FMryUhJa3KQ9KpzFf3Vg3zN5o/KcTRPDmhFug9dyMg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cdCcB2H8XxAw2ieunU0nJHYVC5cETImavt8bwokJVP8=;
- b=x7qQsQ0BR3S8CJOf8EynpzcC5lR2PYKkkJeMvdZX1QEimksZM/ozGLFgbMPbFkA1+ADuJqPNORuVvEzKUXjLA4l41Oj46fO4SpCL5vGmXy/fTSxVxh37pIF/J2P6bj50KiiGBuE6VTDTC9f9zi1ej2W+66cBEKjT+UiQzYoPsz8wBLYq4vnHtB591VHtjKcXNBTzN5g8xgA4ruAqW8Gudz1XaMmzLOeKnkR7FFPVcRfFlxnhJt3oq7aZIeTe0rz3pLYTD4Jfk3N0vWBWoPEEhwAbU5UDn7mD5Tg1/nPg7gLGodB7g242l8+L8bPJawiIEP3XPVTjVO29Ouek29fqAA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=aradex.com; dmarc=pass action=none header.from=aradex.com;
- dkim=pass header.d=aradex.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xedara.onmicrosoft.com; s=selector1-xedara-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cdCcB2H8XxAw2ieunU0nJHYVC5cETImavt8bwokJVP8=;
- b=lwIcOroEx0h1w2IrozuDh4zVyZwK4gRswCwczF4rrSazyskBwgSg+Svn02eQRQF6zW/CMhHVx0Nk0dvSal8EAqUCny4Yr5bDjg3+cBrxZVkfJkjij2s0jgmltB2IqAmfPP3UrHySdeqpJsBbTiKO81yibOyiSSxCMqq7OLThmAI=
-Received: from PAVPR02MB9722.eurprd02.prod.outlook.com (2603:10a6:102:318::19)
- by DB9PR02MB10017.eurprd02.prod.outlook.com (2603:10a6:10:45c::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8534.54; Wed, 2 Apr
- 2025 16:33:42 +0000
-Received: from PAVPR02MB9722.eurprd02.prod.outlook.com
- ([fe80::8add:536:c66a:ff46]) by PAVPR02MB9722.eurprd02.prod.outlook.com
- ([fe80::8add:536:c66a:ff46%5]) with mapi id 15.20.8534.043; Wed, 2 Apr 2025
- 16:33:42 +0000
-From: =?utf-8?B?TWFya3VzIFdlacOf?= <mweiss@aradex.com>
-To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: RTAI -> Xenomai4
-Thread-Topic: RTAI -> Xenomai4
-Thread-Index: Aduj4fkW/83WlgpyTgeAqOze8Iw+PQ==
-Date: Wed, 2 Apr 2025 16:33:42 +0000
-Message-ID:
- <PAVPR02MB9722E8F8B700A3E97C5C45D9A8AF2@PAVPR02MB9722.eurprd02.prod.outlook.com>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=aradex.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PAVPR02MB9722:EE_|DB9PR02MB10017:EE_
-x-ms-office365-filtering-correlation-id: 2c06e09b-2e43-4c1a-c2bf-08dd72042164
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|366016|1800799024|376014|10070799003|38070700018;
-x-microsoft-antispam-message-info:
- =?utf-8?B?WCtQVnJ3MHRrZUxHdjNUb2YwMGh5MHo5MDZ1NjJPSzlHUmpxUkNnMFVuaTEx?=
- =?utf-8?B?TnlHTEJqMzc5NituaVB6OTA1djRHQjB5ZUYrN3JaV0dwMkEvaXRsdHh5Yjhm?=
- =?utf-8?B?WjhGWkZEeTBRQzdxQ29kaDhMQXIyaytuM2szVXRmSE1UWFQ5bWJKU0E5VWtu?=
- =?utf-8?B?RDZJNGp1dWxhSjFkVzM2bTZVMWNKSGtRNmJUZzRxYXNMMDg1cmhET1hmSTNF?=
- =?utf-8?B?RGR2aDJJTVg1eCtSZWtoY284K29SQUhaZ1NiaWlOc3hzR0pva1AxUVFoc0pN?=
- =?utf-8?B?NW1BYzhtUHlOUUpsc3JnRTJMZklCY3k2OG4zcFlCb202Skl0OERDbXdpSlVP?=
- =?utf-8?B?ZndaODhwcGJPRDhxamlzVStpL2tXcG1vcWFSYWZrZGthS0JiSFpaeG84STNX?=
- =?utf-8?B?TmxJMlIvcUFCRjdwRnNTemdaR0JlbW13Ky9XdWJnMWwxaCtGSDlRWDdERnlw?=
- =?utf-8?B?T1ovU2JxMFBlZHpuQmdsL2pKbzdYQ1VwV1JaWXdTMGhRM3NwQXBjU2FHYmc1?=
- =?utf-8?B?MTBadWhIQXk5dzN3Q1dyRUVHN05HaHE0ZWJQMWRHRHdYWllyczJlS1pOWlJt?=
- =?utf-8?B?cDIwL3BvYkcvcTd2SHZGUit0YVdueUJjUHVrZHJlSmRZQ0pKTHZ4T24yUjEw?=
- =?utf-8?B?VmplOWRaZ0VKQk9OVFBhQlRCK3k2Tkc0SmlyU0ZZV0o1eTZid1RvUHMzZjN6?=
- =?utf-8?B?T0U2VW5pMXVucFhST1N3bThuditvak9HWFJLcEpyTmp6dy9oUFU3ZXJYWFU3?=
- =?utf-8?B?NnBmS1NOa1VQc2xuWTh1enFGdmRiMHVaMjdIbTlVYVBVSTB1UmhldEp3eUxn?=
- =?utf-8?B?dEFVZ21PVEt2MHpWNmd4Ym80d1BjdDF2N2J1TWRKNWw2NjRVcTNBNUxCTjI1?=
- =?utf-8?B?SmMrSUM5bmc3YVozb3J3Z2hNcjJnTW5MdXR4UnRBSWVQRjMrQWRWY2F6eGg2?=
- =?utf-8?B?MVpDcnB2ZG5tY1oxaHZKU3ZaYU4weDlPRnRtTHBnRi95MXlaSnNndi90ZTlG?=
- =?utf-8?B?YjByRU9BeVNvd2lTRXFoWFlIenFyNGNSc0M0Q09VTWs3b1JQUmxjdFNSaEtp?=
- =?utf-8?B?V0ZKNVpqUkJUWnQ3SVlQajA2UWNIWWNCTTJIZGZWcWFLNG9LN3JsUjVKVXg0?=
- =?utf-8?B?NzNHVGJkKzlBeDJTWVo1MXlhQjVrMW5ZTnJNT09uK3A3bTVwWmJoWkwwelpU?=
- =?utf-8?B?enZVMGVadmtyZ2d3cjNCck50bWJ3OGQ4NW5VbEFTeGV6RFhXOXh5TnN6QWs4?=
- =?utf-8?B?OUFUR1krTVd2UmRyeEM1VmxwUGkvR2wyWmY1bHdtazRIemJxTTlKc2pYMmIy?=
- =?utf-8?B?K01FSFVwbThDdGsyWGtIb3l6a2JwcGRVaEFETFZHWUw5TzZUUlZUZFJCUlU1?=
- =?utf-8?B?dk5WUndvV2NDUUozWWMrM0RoRjdDaHJtbmhHYVBockFQYnppSkZiY3JwSit3?=
- =?utf-8?B?OEROcDNFMStjd3RZVVc5cFVSaEs3ZllEcDdGR0NHL3ExcmxiL2RtSjU4OXpY?=
- =?utf-8?B?L2UySktneUZ5cVJadEtZekJQcWFLTlZteDROeTBmeW5HUzBvb2s2Y0JtMTBi?=
- =?utf-8?B?anlFaVNyOFhLMUg1REJtNzUwc3hSb09GQXFodE9Ga1kzYnpzMVVEVzhlWlV6?=
- =?utf-8?B?V21sY0NUTy9PTkFxK2RjMVhPSTIwNTdFY3NuY0drNEdDNzlaaVVRTTI1QU5L?=
- =?utf-8?B?eHkzaFB1WGZEZXdYdW43bnNaWHJ1M0pVZlFITU52d1RqZWlFQzlqbng0WEJs?=
- =?utf-8?B?ZDZPTjdrY2xXWTNnbEFUZzBKUkQ1VTF6K0svZmpKRWFoYmY4YlFpTmUweW5L?=
- =?utf-8?B?U1k2RGVzZEM5V1BUZ3o2RnoxNWFhQnlzUkc2NUUwNnphZFRlVGprY1lENFAv?=
- =?utf-8?B?bmZpWnRkeEx5ZkVLWldwWkF1SjdneU1TbXBGV0VnMnRkQ0YrZnBscGNORUZl?=
- =?utf-8?Q?nxLTvCJLVHE=3D?=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAVPR02MB9722.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(10070799003)(38070700018);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?Sm9PbWVaY0VIRXd6eFdyTjZUaGxlWXlJd1pET2h6dGhzdmU2TlkvSzl3VjZs?=
- =?utf-8?B?YzZVWUlCeGNyWnd0QWYzb0E0enRJMU5OWTdwRHNOWk1yK0gzbmkzOW9PVklw?=
- =?utf-8?B?YTRIenhBSzBob1RGb0U5ZWRXenF2R29qVGNXMWFiYlZRMUFrUVpBK21LZmNj?=
- =?utf-8?B?RUs0YzNpMVFUMUxGUU1Za01zdlJXTDk1ckYrbzEyRzg4MHdCNzZzVkJVNHRQ?=
- =?utf-8?B?c2dzZHRCSk9oRFJud2Y0by8yTWxRbU5KbjMzM2s3ZldHWXREdWV0OStpT1Fx?=
- =?utf-8?B?dkgvZGF6L3R5ZjNDVnhKOG4zS0dua210TGhseTN2NzV5SS9DUS92Mng1YlNO?=
- =?utf-8?B?SlZNRldlZWdXM0l0UEZkK2N6aWZoL29YbWgvbnVvUzkwL0loV0NkR1dnVjI0?=
- =?utf-8?B?ZDNrcEZHMkZNUnBRR3VHcDVXZm12NUJiVlNJT2I3Qy9KZk90ejhTUVRIUnE4?=
- =?utf-8?B?Ym1ZZlRocXp0RVpXOXRLalpzK2p4TnlicGZwMllMaEhXLzJhaVVLTkU5VlhV?=
- =?utf-8?B?MjFSYjNObnBpam5uQkFBNTFZTk5RVmtvNld1Q1Nuc2dHSnJYWVZoc3dzcWxZ?=
- =?utf-8?B?aGRpcWcyMEVLR0x4RTBHc0dNdG5LRmpLWVlvS3NZZFExbnNCcXVOWGUxelZ3?=
- =?utf-8?B?T3RsdWIzWnNSVFZsQ3IxcHA0eDdMRDhzUzFlN2lQeWJkQmdYY2EvVVpXN1dp?=
- =?utf-8?B?OFYzNlRISFZ6SllhVEFsMU5vZWpUNnZzYlhidWhXZEJGV1pnY3Y0NzVtNE1I?=
- =?utf-8?B?ZXdoeG0zT1Z0aGx3cmpzY1p5cUg5TkhvY1Q5S1UvTDZwclU5eURVem53Y253?=
- =?utf-8?B?RkQ5b0Z5dlBKNlRqcklQRmxVNTRTMVBDc0FtSDNCL1FNRElUNk95U0djaWt1?=
- =?utf-8?B?amxsaU5aU0xUSHZUWlJ4QjVSNkwraVN2R2prdTM4TUtTbmlHaURVQXh1TUZm?=
- =?utf-8?B?T09qcWVXSVEwRVNqSzBoMzdhd1dxRDE3cnV0a0JQRm5uUGJJM0pPZzFzUzJP?=
- =?utf-8?B?YTlVQ1FmdzdCK0c4bGhCRWwxNlU0M2lOaU9KMG5ucU5SM3lJRjRtUmh1QUdU?=
- =?utf-8?B?R1J2YW9HMGFHeC82WG5aMzk4eVo1Y2ZFelBiWTgvdmhrT1MxZmhaQTNQVG5u?=
- =?utf-8?B?TTgyNFJVM3poMXdOc3lnMlFCZkU1TG4vbEFkTXlnSG1ieTNCeXJGSVRZeUdj?=
- =?utf-8?B?M2hUN1lQaUFaRlQ4ekZOL1QycmdLb3pnRWNtV2tWZWxNOFUvVGV6a0xuVG5r?=
- =?utf-8?B?OTBydGpmVFVaMmRDc1ptdExJQzBsM01GOXRlSE5tOGZtVktBSnRmNGtmUjM2?=
- =?utf-8?B?VDJMYUx1QW4zMmh1bmVVR2pUZ0MwK3FMZUZ5bmFUNnZiWnBuSWtKbFd0ek5K?=
- =?utf-8?B?REN1NUhrVzFPUUdiT0pLQmEvYVYyc0dOdlFUU3AxOXBBOXFSd1BlRmp6K1lL?=
- =?utf-8?B?T09UUkpsVm03bXBPc0hQWjFURnl2cnRtR0Q4RGNzbWM5YWFza2RKVjhhQ1pZ?=
- =?utf-8?B?SHhzYURYaXBGSTgyeHFhZFNRNkR1dEc3cHFXcXg2TlNzL0VqSDZrQmNTdXZP?=
- =?utf-8?B?aTYrb3RoMFA5bTA0ZkVjb3hjeXhVYTRHOVdqbGxWdHNNZ1M1bE1FdG9rUFJ1?=
- =?utf-8?B?MnFOcHg3Uk9xMkhmaDdKZzEyUXdMQ2NxVWc0SFgxcEJtd0tXYUgrd2JCZjZw?=
- =?utf-8?B?NTdJWk1mbUlPMjVDd2hPQVJuUktCQ1g3OHlIMDdhU0pRN1E0NU1hOVpRRUxm?=
- =?utf-8?B?Sldtd3F4YWtYRXJCclgycVcyYnNoVlFMYytNTnRZdlozUWRQNUF2MGh1UmVZ?=
- =?utf-8?B?U3BEdytGUWdodWI2aWN2R1AzOVNZeUdsc1dIdGlnOHpTS1pMTW9Pb1V3ZSs3?=
- =?utf-8?B?V0V4N3JsODhPc3JpRTVkQk1aZ01EaHFiQWtCZWZ0bGdVUEpLR3RZSWhnWW9m?=
- =?utf-8?B?RzBQcVdzRnpHUHBZZE5HYlNlaVJSVXkzMjRLMDNrR0FXUlBnRmVCUkNxTmdm?=
- =?utf-8?B?R0FqZEFvYnRndTNvVTFZeWZJK2NzQ1JPQlZtNU01K0RNMUc5dC85NlJvcnNy?=
- =?utf-8?B?bUlIYWNnSVVSTEQrejhXQXVTaUMzTjN6ZkpzdjRCZUcvM0RDQVhxVnpLT3JW?=
- =?utf-8?B?VzhIWHdrTFk3UmkzMEdoTzIrc2tOU1oweUFsZXJIcUl1U052M0RhR0s3T3BM?=
- =?utf-8?Q?uN3sZ0RhGUFKEYJTnfEM1JI=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="AC0UUbLq"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id A2C3342FF4;
+	Thu,  3 Apr 2025 08:25:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1743668720;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=sNFfwjPa16bzmqoC/fT+f8ynz2RL4SkW/1Sty3dCI9Y=;
+	b=AC0UUbLqFjj3NZTg5GrpQogHYEHfnGw8NkvPqVT/hveJApGkp6slR9/Dfw2R94QITklb5v
+	aaK0Iu99X7EOPssbd3wOc54zcl5bNy3ckVwyd4XhDcK43nXXXCWxd0MXw1vpZVd0KfElOi
+	Pjf1RuJrSc2+iptQyqClzlSNYtJcqE2HfS4RLn412tSXnP6E56JYvrL91THjw8pFhLvVMC
+	oGc/HFlJwbk7I278ms2Ix4FNfPotM+XYg8iD6J7ckV4dUP1lQFeFm+Ylqb91kcaRp3GBB1
+	yV263/WNjPdGOmF99+kfCxiQYQRZ/bqYIrUnHN3mvmcqsIsAk7xBgzdxUFghcg==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Markus =?utf-8?Q?Wei=C3=9F?= <mweiss@aradex.com>
+Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: Re: RTAI -> Xenomai4
+In-Reply-To: <PAVPR02MB9722E8F8B700A3E97C5C45D9A8AF2@PAVPR02MB9722.eurprd02.prod.outlook.com>
+	("Markus =?utf-8?Q?Wei=C3=9F=22's?= message of "Wed, 2 Apr 2025 16:33:42
+ +0000")
+References: <PAVPR02MB9722E8F8B700A3E97C5C45D9A8AF2@PAVPR02MB9722.eurprd02.prod.outlook.com>
+User-Agent: mu4e 1.12.8; emacs 29.4
+Date: Thu, 03 Apr 2025 10:25:20 +0200
+Message-ID: <87ldshhcsv.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: aradex.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PAVPR02MB9722.eurprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2c06e09b-2e43-4c1a-c2bf-08dd72042164
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Apr 2025 16:33:42.1802
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3e76e219-d340-4c18-a5f1-2dacf99e6e8f
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Y31WUzwYIKPMAW21dS8cDzbTaAAmbCDbPy9elhTm1XcXo35W0OrTsyhDKkWu8+Umi4Ch3mNKBvPX3SfM9HnoNw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR02MB10017
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-GND-State: clean
+X-GND-Score: 0
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddukeektdekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecunecujfgurhephffvvefujghffgffkfggtgfgsehtqhertddtreejnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpeelkeeuffeiffefkedvjedtteeludeigeffvedtvdejheevfeejiefhleeihedvveenucffohhmrghinhepvghvlhhprhhojhgvtghtrdhorhhgpdguvghngidruggvpdigvghnohhmrghirdhorhhgnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopedvpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehmfigvihhsshesrghrrgguvgigrdgtohhm
+X-GND-Sasl: rpm@xenomai.org
 
-SGVsbG8gWGVub21haSBMaXN0LA0KDQpzb3JyeSBpZiB0aGlzIGlzIG5vdCB0aGUgcmlnaHQgcGxh
-Y2UgdG8gYXNrIHRoZXNlIGtpbmQgb2YgcXVlc3Rpb25zLiBNYXliZSBzb21lYm9keSBjb3VsZCBw
-b2ludCBtZSBpbiB0aGUgcmlnaHQgZGlyZWN0aW9uIHRoZW4uDQoNCldlIGFyZSBjdXJyZW50bHkg
-Y29uc2lkZXJpbmcgWGVub21haTQgYXMgYSByZXBsYWNlbWVudCBmb3IgYW4gb2xkZXIgUlRBSSBy
-ZWFsIHRpbWUgcHJvamVjdCB0aGF0IHdlIGhhdmUgdG8gcmV2aXZlIGZvciBhIGNsaWVudC4NClNv
-bWUgYWR2aXNvcnkgY29tbWVudHMgdG8gdGhlIGZvbGxvd2luZyBzZWN0aW9ucyB3aWxsIGJlIGdy
-ZWF0bHkgYXBwcmVjaWF0ZWQuDQoNCk9uZSBvZiB0aGUgbWFqb3IgcmVxdWlyZW1lbnRzIGlzIHRv
-IHN3aXRjaCBmcm9tIGhhcmQgcmVhbCB0aW1lIGluIGtlcm5lbCBtb2RlLCB3ZSBoYWQgYSBrZXJu
-ZWwgbW9kdWxlIGZvciB0aGF0LCB0byBoYXJkIHJlYWwgdGltZQ0KaW4gdXNlciBtb2RlLiBXZSB3
-aWxsIG5vdyBoYXZlIGEgdXNlciBtb2RlIHByb2Nlc3MgdGhhdCBzaGFsbCBkbyBtb3N0IG9mIHRo
-ZSB3b3JrIG9mIHRoZSBmb3JtZXIga2VybmVsIG1vZHVsZS4gV2UgZGlkIHNvbWUNCnByb3RvdHlw
-aW5nIG9uIGN1cnJlbnQgUlRBSSB2ZXJzaW9ucyBmb3IgWDg2XzY0IGFuZCB0aGluZ3MgbG9va2Vk
-IG5pY2Ugd2hlbiB3ZSBmb3VuZCB0aGF0IG91ciBSVEFJIHN5c3RlbSBjYW4gYmVjb21lIHVuc3Rh
-YmxlDQp3aGVuIHB1dCB1bmRlciBzdHJlc3MgZXZlbiB3aXRob3V0IG91ciBwcm90b3R5cGUgc29m
-dHdhcmUgcnVubmluZyBhdCBhbGwgb24gdG9wIG9mIGl0LiBCdXQgb25seSB3aXRoIFJUQUlzIG93
-biB0ZXN0IHByb2dyYW1zLg0KDQpJJ20gY3VycmVudGx5IGNoZWNraW5nIHRoZSBYZW5vbWFpNCBB
-UEkgYW5kIGZvdW5kIHRoYXQgdGhyZWFkIGNyZWF0aW9uIGFuZCBhdHRhY2hpbmcgdG8gdGhlIEVW
-TCBjb3JlIGlzIHByZXR0eSBzaW1pbGFyIHRvIFJUQUkuDQoNClVzaW5nIHRoZSBjbG9jayBhbmQg
-dGltZXIgQVBJIGl0IHNob3VsZCBiZSBwb3NzaWJsZSB0byBzZXR1cCBhIG9uZSBzaG90IHRpbWVy
-IHdoaWNoIHdlIHdpbGwgYWxzbyBuZWVkLg0KDQpXZSBhbHNvIHVzZWQgUlRBSXMgc2hhcmVkIG1l
-bW9yeSBmZWF0dXJlIGZvciBzb21lIGtpbmQgb2YgY29tbXVuaWNhdGlvbiBiZXR3ZWVuIGtlcm5l
-bCBtb2RlIGFuZCB1c2VyIG1vZGUuIEl0IHNlZW1zIGFzIGlmDQp0aGUgRmlsZSBwcm94eSBBUEkg
-dG9nZXRoZXIgd2l0aCBtbWFwKCkgY2FuIGJlIHVzZWQgdG8gYWNoaWV2ZSB3aGF0IHdlIG5lZWQu
-DQoNCkFkZGl0aW9uYWxseSB3ZSB1c2VkIGxpbnV4IGlvdGNsKCkgdG8gbWFrZSBjYWxscyB0byBv
-dXIga2VybmVsIG1vZHVsZSB0byBjb25maWd1cmUgYW5kIHJ1biB0aGUgYXBwbGljYXRpb24sIGRv
-IG1vbml0b3JpbmcgYW5kIHdoYXQgbm90Lg0KDQpUaGUgcHJvdG90eXBlIHVzZWQgUlRBSXMgcnRf
-cnBjeCgpLCBydF9ldmRycHgoKSwgcnRfcmVjZWl2ZXgoKSwgcnRfcmV0dXJueCgpIGFuZCBhbHNv
-IFJUQUlzIGdsb2JhbCBoZWFwIGZvciBkeW5hbWljYWxseSBjcmVhdGVkDQpuYW1lZCBzaGFyZWQg
-bWVtb3J5IHRvIGltcGxlbWVudCBhbiBpb2N0bCgpLWxpa2UgY29tbXVuaWNhdGlvbiBiZXR3ZWVu
-IHNldmVyYWwgcHJvY2Vzc2VzIGFuZCBvdXIga2VybmVsIG1vZHVsZSByZXBsYWNlbWVudA0KaW4g
-dXNlciBtb2RlLiBXaGVyZSBuZWVkZWQgY29tbXVuaWNhdGlvbiBiZXR3ZWVuIGlvY3RsKCkgdGhy
-ZWFkcyBpbiBrZXJuZWwgc3BhY2Ugd2hlcmUgc3luY2hyb25pemVkIHdpdGggdGhlIHJlYWwgdGlt
-ZSB0aHJlYWQuDQpTbyBmcm9tIGEgY2xpZW50IHBlcnNwZWN0aXZlIG91ciBpb2N0bCgpIHJlcGxh
-Y2VtZW50IGRvZXMgbm90IG5lZWQgdG8gY29tbXVuaWNhdGUgd2l0aCB0aGUgcmVhbCB0aW1lIHRo
-cmVhZCBkaXJlY3RseS4NClRoaXMgd29ya3MgbmljZWx5IGV4Y2VwdCBmb3IgdGhlIG1pc3Npbmcg
-cmUtZW50cmFuY3kgb2YgaW9jdGwoKSBjYWxscyBpbnRvIGEgZHJpdmVyIHdoaWNoIGNvdWxkIGJl
-IHNvbHZlZCBieSB1c2luZyB0aHJlYWRzIGF0IHRoZSByaWdodA0KcGxhY2UuIEkgbG9va2VkIGF0
-IHRoZSBDcm9zcy1idWZmZXIgQVBJIGJ1dCBvdXIgaW9jdGwoKSBpbnRlcmZhY2UgaXMgcXVpdGUg
-c29waGlzdGljYXRlZCBhbmQgSSBhbSB2ZXJ5IHVuc3VyZSBpZiB0aGUgQ3Jvc3MtYnVmZmVyIEFQ
-SXMNCmludGVuZGVkIHVzZSBjYXNlcyBtYXRjaCB0aGUgcmVxdWlyZW1lbnRzIHdlIGhhdmUgaW4g
-dGhpcyBhcmVhLiBBcmUgdGhlcmUgcGFydHMgaW4gdGhlIFhlbm9tYWk0IEFQSSB3aGljaCBjb3Vs
-ZCBiZSBvZiBoZWxwIGhlcmU/DQpNYXliZSBzdGFuZGFyZCBJUEMgbWVjaGFuaXNtcyBhcmUgYmV0
-dGVyIHN1aXRlZCBoZXJlLCBzb21ldGhpbmcgbGlrZSBhIGxvY2FsIHNvY2tldCBpbnRlcmZhY2Vz
-LiBUaG91Z2gsIEkgZG8gbm90IGhhdmUgbXVjaA0KZXhwZXJpZW5jZSBpbiB0aGUgbmV0d29ya2lu
-ZyBkb21haW4uDQoNCk1pdCBmcmV1bmRsaWNoZW4gR3LDvMOfZW4gSSBXaXRoIGJlc3QgcmVnYXJk
-cyBJIOelneWlvSENCg0KTWFya3VzIFdlacOfDQoNClNvZnR3YXJlZW50d2lja2x1bmcg4oCTIFNv
-ZnR3YXJlIERldmVsb3BtZW50DQoNCkFSQURFWCBBRw0KWmllZ2Vsd2FsZHN0cmFzc2UgMw0KNzM1
-NDcgTG9yY2gsIEdlcm1hbnkNClBob25lICs0OSA3MTcyIDkxIDgxIDANCkZheCArNDkgNzE3MiA5
-MSA4MSA5MQ0KDQpSZWdpc3RlcmdlcmljaHQgLyBDb21wYW55IHJlZ2lzdGVyOiBVbG0gSFJCIDcw
-MTgyOA0KVm9yc3TDpG5kZSAvIGV4ZWN1dGl2ZSBtYW5hZ2VtZW50OiBEci4gU3RlZmFuIEhlbGxm
-ZWxkIChWb3JzaXR6ZW5kZXIgLyBDaGFpcm1hbiksIEppIFpoYW5nDQpBdWZzaWNodHNyYXRzdm9y
-c2l0eiAvIENoYWlybWFuIG9mIHRoZSBTdXBlcnZpc29yeSBCb2FyZDogWWluZ2JvIFdhbg0Kd3d3
-LmFyYWRleC5kZcKgIHzCoCBpbmZvQGFyYWRleC5jb23CoCB8wqAgaHR0cHM6Ly93d3cubGlua2Vk
-aW4uY29tL2NvbXBhbnkvYXJhZGV4LWFnwqAgfCBodHRwczovL3d3dy5hcmFkZXguZGUvZGF0ZW5z
-Y2h1dHplcmtsYWVydW5nLw0KDQo=
+Markus Wei=C3=9F <mweiss@aradex.com> writes:
+
+> Hello Xenomai List,
+>
+> sorry if this is not the right place to ask these kind of questions. Mayb=
+e somebody could point me in the right direction then.
+>
+> We are currently considering Xenomai4 as a replacement for an older RTAI =
+real time project that we have to revive for a client.
+> Some advisory comments to the following sections will be greatly apprecia=
+ted.
+>
+> One of the major requirements is to switch from hard real time in kernel =
+mode, we had a kernel module for that, to hard real time
+> in user mode. We will now have a user mode process that shall do most of =
+the work of the former kernel module. We did some
+> prototyping on current RTAI versions for X86_64 and things looked nice wh=
+en we found that our RTAI system can become unstable
+> when put under stress even without our prototype software running at all =
+on top of it. But only with RTAIs own test programs.
+>
+> I'm currently checking the Xenomai4 API and found that thread creation an=
+d attaching to the EVL core is pretty similar to RTAI.
+>
+> Using the clock and timer API it should be possible to setup a one shot t=
+imer which we will also need.
+>
+> We also used RTAIs shared memory feature for some kind of communication b=
+etween kernel mode and user mode. It seems as if
+> the File proxy API together with mmap() can be used to achieve what we ne=
+ed.
+>
+
+Correct. Actually, you could even use plain regular posix shared memory
+segments via shm_open() between processes in your case, I believe. The
+mapping redirection implemented by the evl file proxy is helpful for
+exporting private mappings obtained via memfd for instance, or hiding
+the real source of a mapping (with some driver originally creating it
+via its implementation of the ->mmap file operation) under a public
+name.
+
+> Additionally we used linux iotcl() to make calls to our kernel module to =
+configure and run the application, do monitoring and what not.
+>
+> The prototype used RTAIs rt_rpcx(), rt_evdrpx(), rt_receivex(), rt_return=
+x() and also RTAIs global heap for dynamically created
+> named shared memory to implement an ioctl()-like communication between se=
+veral processes and our kernel module replacement
+> in user mode. Where needed communication between ioctl() threads in kerne=
+l space where synchronized with the real time thread.
+> So from a client perspective our ioctl() replacement does not need to com=
+municate with the real time thread directly.
+> This works nicely except for the missing re-entrancy of ioctl() calls int=
+o a driver which could be solved by using threads at the right
+> place. I looked at the Cross-buffer API but our ioctl() interface is quit=
+e sophisticated and I am very unsure if the Cross-buffer APIs
+
+Indeed, the cross-buffer API is not what you are looking for. This is
+merely a data channel between real-time and non real-time peers. RTAI
+would use FIFOs for this IIRC.
+
+> intended use cases match the requirements we have in this area. Are there=
+ parts in the Xenomai4 API which could be of help here?
+> Maybe standard IPC mechanisms are better suited here, something like a lo=
+cal socket interfaces. Though, I do not have much
+> experience in the networking domain.
+>
+> Mit freundlichen Gr=C3=BC=C3=9Fen I With best regards I =E7=A5=9D=E5=A5=
+=BD!
+>
+> Markus Wei=C3=9F
+>
+> Softwareentwicklung =E2=80=93 Software Development
+>
+
+My RTAI knowledge is a bit rusty these days, but I seem to remember that
+Paolo implemented the rpc_* calls you mentioned in reminiscence of QNX's
+RPC API, so unless I'm off base, this should be basically a
+message-passing interface, with a synchronous mode for the sender to
+wait for a reply.
+
+There is no such interface in libevl/xenomai4, but it would be fairly
+straightforward for you to implement one using its building blocks, I
+believe. A common approach with xenomai4 is to leverage the
+everything-is-a-file mantra (lib)evl implements, allowing multiple
+processes to share evl resources/objects, such as IPCs, using the
+EVL_CLONE_PUBLIC visibility attribute [1].
+
+For the messaging system, you would need a way to organize some shared
+memory as one or more message queues. For this, you could build on the
+implementation of the Nikolaev ring available from libevl [2]. Combined
+with a shared evl sema4 to get a blocking read side, the peer processes
+could exchange datagrams living in shared memory. In fact, fixed size
+envelopes referring to messages would be conveyed in those queues, the
+actual message payload would live elsewhere in shared memory as well. If
+that makes sense in your use case, you could even implement a zero-copy
+messaging system with multicast/broadcast capabilities based on a simple
+reference counting. All this could be done in userland, no additional
+kernel support would be required.
+
+Next is the issue of waiting for replies to messages. There is more than
+one way to do this, depending on the application requirements. One of
+them is based on the evl 'observable' element [4]. It goes like this,
+based on the following set of assumptions:
+
+- each (message) sender is a known thread attached to the evl core.
+- each sender is visible from the receiver via the /dev/evl/ interface
+  (i.e. has public visibility [1]). Another way would be to share every
+  file descriptor obtained from evl_attach_thread() by receivers with
+  the sender (using AF_UNIX socket control messages or the pidfd_getfd
+  syscall) but that involves a bit more convoluted code to implement.
+- each sender thread is given a global unique identity/index/number
+  among all processes which belong to the application.
+- each sender is also an observable element evl-wise, i.e. has
+  EVL_CLONE_OBSERVABLE set in its attachment flags.
+
+1. at init, the receiver opens the pseudo-device file under
+   /dev/evl/threads/* for every possible sender to the message queues it
+   monitors, to get a file descriptor referring to each of them. Each fd
+   is mapped to the matching thread index/number in some table.
+
+2. on TX, the sender queues an envelope referring to some payload to
+   some message queue, with its global index/number stored in the
+   envelope, posts the per-queue semaphore signaling a new message to
+   the receiver thread, then waits for a reply via evl_read_observable()
+   [5]. A Nikolaev ring can store those envelopes in FIFO order, this is
+   a lock-free data structure.
+
+3. on RX, the receiver waits for a new message to dequeue by waiting on
+   the input semaphore associated to some queue it monitors. It then
+   dequeues the next envelope from the ring, processes its message, and
+   eventually posts a reply to the sender if needed. To do that, the
+   receiver retrieves the (local) file descriptor mapped to the global
+   thread index/number received in the envelope, for replying to the
+   sender [6]. The sender will unblock from evl_read_observable() on
+   receipt. The receiver can monitor multiple queues for input in
+   parallel by using the evl_poll() [3] service, since semaphores are
+   pollable in evl.
+
+Since the real-time thread could poll for multiple sema4s indicating
+incoming message presence from multiple queues at once [3], you may not
+need any indirection/multiplexing via the former ioctl threads to feed
+the real-time thread in this model actually.
+
+Another - radically different - option would be to implement a so-called
+out-of-band network protocol in a driver using the evl core/kernel
+interface, which would be accessed via plain sockets from userland. IOW,
+you would have PF_FOO implementing your specific message passing
+protocol, creating sockets in the AF_OOB domain with protocol PF_FOO to
+connect endpoints, then exchanging messages via these sockets using the
+oob_sendmsg() and oob_recvmsg() calls.
+
+Or, you could implement an ad hoc kernel driver also using the evl
+kernel interface providing those messaging services, exporting a cdev
+interface to applications based on (oob_)ioctl/read/write calls. This
+said, going for a kernel-based option may be a bit extreme with respect
+to the issue at hand, not to speak of the fact that copying memory
+between kernel and userland to pass messages back and forth would be
+less efficient than a zero-copy approach fully in userland.
+
+HTH,
+
+[1] https://evlproject.org/core/user-api/#multi-process-apps
+[2] https://source.denx.de/Xenomai/xenomai4/libevl/-/blob/master/include/ev=
+l/ring_ptr.h?ref_type=3Dheads
+[3] https://v4.xenomai.org/core/user-api/semaphore/#sema4-poll-events
+[4] https://v4.xenomai.org/core/user-api/observable/
+[5] https://v4.xenomai.org/core/user-api/observable/index.html#evl_read_obs=
+ervable
+[6]
+https://v4.xenomai.org/core/user-api/observable/index.html#evl_update_obser=
+vable
+
+--=20
+Philippe.
