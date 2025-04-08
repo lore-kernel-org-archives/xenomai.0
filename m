@@ -1,62 +1,58 @@
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2114.outbound.protection.outlook.com [40.107.21.114])
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2112.outbound.protection.outlook.com [40.107.20.112])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E06D269D17
-	for <xenomai@lists.linux.dev>; Tue,  8 Apr 2025 12:28:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.21.114
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16ABA270EC7
+	for <xenomai@lists.linux.dev>; Tue,  8 Apr 2025 12:34:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.20.112
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744115323; cv=fail; b=o5ONz0jPezbZwTHFvvbOfQo20e2FHlOZzJ13SRM9GMUCBO82F6UNtljO+nubVzXSZU57119HKgDCYR1b2yIyhC+2K4Mf8GUTilQ88L+9a7hgBClcK8JDUiMPDzOZMyvNZ/iDy95HOU9CoYoFgJV7wLgIt2/de9h/uFw+PUy6/+o=
+	t=1744115681; cv=fail; b=YicOw+LSpRYQ0q4wMacwFkQF33B66MkmE5XxmZcTki4AzL6Vns42eVR3giXjqVz1QFgC1L4Djftp5C6HyWI9rzr2v3S4PR0qZPCmyjOPZGQ5yPzaqGv1eDo5nVSXyKVKiQ3GFWsfb2GeL5dEVl4XbZPVZIeDTp45sCLgU1SY93w=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744115323; c=relaxed/simple;
-	bh=O3ocLOYD8uXLWMfBxYQhWPF874ia4hX2k1pLeFS0J1o=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=VXaF3rxlePa7kYqhfjqnN3TenzLPt34CgBB5MJc/D+D40xZK41GwRxcDxCRJoHiMdn0nfFXUS+kFR+tZ6C6cG6EyltB3BKqk7Fx0yRsmB6aREeb1sKR/0H6kyOgZbb0xV8YNvzPdAWSL47zAIsDAsLTWJT1rvIjQbCbIm0KAJfk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sigmatek.at; spf=pass smtp.mailfrom=sigmatek.at; dkim=pass (1024-bit key) header.d=sigmatek.at header.i=@sigmatek.at header.b=dgsdn8YB; arc=fail smtp.client-ip=40.107.21.114
+	s=arc-20240116; t=1744115681; c=relaxed/simple;
+	bh=vrnTsHkobybxTFQpec2uwBcfYkow8qZDBsuSAEDp1Us=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=UrkU6QJQMQFYsNjoepg2f4KcDbIpIOGfT3aUnISLqVRWYGRDcUxvsZ6LmQxzRT+ZVPUrT2VAuToV3Rx+A5yFAG8EoClO4oRIr3jmwTAN4FpC8xYsbVecNPh33OGqYNvHoHMSbKLE6i17d83GSjwUoMY2wMYI5USCGPxUIRlfiIo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sigmatek.at; spf=pass smtp.mailfrom=sigmatek.at; dkim=pass (1024-bit key) header.d=sigmatek.at header.i=@sigmatek.at header.b=SNrLYzhQ; arc=fail smtp.client-ip=40.107.20.112
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sigmatek.at
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sigmatek.at
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=sigmatek.at header.i=@sigmatek.at header.b="dgsdn8YB"
+	dkim=pass (1024-bit key) header.d=sigmatek.at header.i=@sigmatek.at header.b="SNrLYzhQ"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=KwiLLbxvqiKVS/PKH0zbFlHTstty6allcQ76ficBn8lrZCQczKuwjlLZ1nwRtXRMYTKGYdVpzyF9v7lM2hKHOYKvVq/NRUThBQy2wxiExTVSzGnSsm51LOF4Tmoo8ThU6UIDp7S35FuzsRD97aq8DrqHUfIFnGuxYLgXOlrH36NJKnugBMPxv5z7ccWFig6e60do2nz7TXLXHsnGOMc7mGvG8dcphlhWqo2PYvR1UySsAs61Lnty6Lec5FBbqBHQixV6qh1D+HiqFn2+gfAtxehoDiwX/DbZ7ctLRpe1DqKmqR1QNCSwf9LpmbQXYSPOsGd+VoISRSrVaw5S3v2eIw==
+ b=umKtxgQdMvDqFMmxM3OMkyEUp07zJXxa1kwau/+RhJpzFhyDevajONwlZBIj4sceORJD9xPMeaAakTIFSjXp748PI9oY5csOUag361VLURUjmH5MlzjZs7Rl6XM5RCUlnUfzlUX5viVCnGNg7eWgU4PZvdRpJZSx0NtHKKEa2laIMWl7bUjzFCNhv5l7MXJV7NbdwhBmjTtpbcW3uNy9YzB9rorS3jx4J2nTyvpvRG5XA6d4fX4C6tGWG8P3nhJknWSdzpdeDn/QzWNKqXkY7xlnBSx/UXbhoHw+4I3UBbJdtg0U2QQ42EJdx+9Ote3f7b2JkWo6PPc7DGvq6uGyRw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0EgFTrwZgmOpTZ2e8vy1CdMJD9OB+HN5T2fGMyPe8Uc=;
- b=ku16D8RDWtWBbDPoifYG5rL2x6HnZoTrgjidHPWCISvwDrUJ93VaL+v08u9nU324YSAHR35MkAE8BbLAKmMIai6evy3jDKnQeU7fHYUFSl1HY0BRl/ITBR+1kq//6tSRo5IcgipK9xgw2GYKmEeID9kxnlW3WNrnwz3ME+djJlCaVQqIwqile4qEeNtFd7XPG+hqsBR+PJUuFQ0umqXDFp7Q5P7e8Rc2Cs9l72+Bshv4/QiKBXWdg/4IDI7o8KP5k63umumN574kyIiA2HOlH0EtOEX7zW0CSt8Png2rKRJVLNGYBhcbhqKGzwA3vVwAqC2qDIGYi/l8XIBV6Ck2Sg==
+ bh=oScPvrghC8fyPOGb6uc5oEEbSPmYHNpfbsS9dKv8Vac=;
+ b=boVbVvoWMTBMrpUJMSWhfL47cD9rANtEGWUlZQXCQKZt67kMOc7EfvRgwE8qZOmakV+sWXs9jNqYAVJFb2ZtZbVkChOp+PcRi6SVi8RDqOqDTcAsiZ7RjSIbG6JXdi6Q/n4zRuTIwLSqHR/D+wNcBBpxi4WsYVmuqHbjkmaBPX4Y0XEafKAsEqy3ox7LOWj/d+OXBfLHMiNDKaYBAGSPTmdjSnZDikPsdFNTCkS2BztbEYQdHJ4+SHhVdut+C87HN5qy3nGMMBcwby+8s5Iue/PehKY7GZ4q5l2G3wXwqNrtjk7DNcnBwBSw2ToPaCjAP8bP3DaK6/afh7gwylqZCg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=sigmatek.at; dmarc=pass action=none header.from=sigmatek.at;
  dkim=pass header.d=sigmatek.at; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sigmatek.at;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0EgFTrwZgmOpTZ2e8vy1CdMJD9OB+HN5T2fGMyPe8Uc=;
- b=dgsdn8YBKWfx0ihRLMDH4aJ8IRbC0z2RHedDKXG5nh/50GMUnelsfD1Rq3gMY6+w00sAh8fnpzGCMc1E1hCpnbEc71BGALEJcqma9aV97AWcIaNV/MxytyH/eNseyJ8ZjEXomiaPg/ihiotmx61BEn+aKm8y8wgO903dd81FkI8=
+ bh=oScPvrghC8fyPOGb6uc5oEEbSPmYHNpfbsS9dKv8Vac=;
+ b=SNrLYzhQNyp+fCsyEb+lwYYrdKYr8v7pig5SWwWfJQobhgxWbulrUd2QAMGZEiD4H2rqPeXPiP7bm3U2/jmjvGasrVzppjMi9fB7WHLEC5/u5cxRFsQM+i2jIHFA3p+bYc39WpNFpy/hXLzQdcbqlNYBKflJxXtF1GaofjiR8AQ=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=sigmatek.at;
 Received: from PAVPR08MB9037.eurprd08.prod.outlook.com (2603:10a6:102:325::13)
- by AS8PR08MB6424.eurprd08.prod.outlook.com (2603:10a6:20b:33e::13) with
+ by DU0PR08MB9026.eurprd08.prod.outlook.com (2603:10a6:10:47a::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8606.28; Tue, 8 Apr
- 2025 12:28:27 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8583.43; Tue, 8 Apr
+ 2025 12:34:36 +0000
 Received: from PAVPR08MB9037.eurprd08.prod.outlook.com
  ([fe80::3d5f:e34f:e1a7:59d8]) by PAVPR08MB9037.eurprd08.prod.outlook.com
  ([fe80::3d5f:e34f:e1a7:59d8%6]) with mapi id 15.20.8606.033; Tue, 8 Apr 2025
- 12:28:26 +0000
+ 12:34:36 +0000
 From: Nikolaus Funk <nikolaus.funk@sigmatek.at>
 To: xenomai@lists.linux.dev
 Cc: richard@sigma-star.at,
-	Lorenz Kofler <lorenz@sigma-star.at>,
-	Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
-Subject: [PATCH 6/6] utils: Add rt_signal_hist
-Date: Tue,  8 Apr 2025 14:28:17 +0200
-Message-ID: <20250408122817.626897-7-nikolaus.funk@sigmatek.at>
+	Richard Weinberger <richard@nod.at>
+Subject: [RFC PATCH 0/5] Dovetail: Real-time Exception Handling
+Date: Tue,  8 Apr 2025 14:34:18 +0200
+Message-ID: <20250408123423.627477-1-nikolaus.funk@sigmatek.at>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250408122817.626897-1-nikolaus.funk@sigmatek.at>
-References: <20250408122817.626897-1-nikolaus.funk@sigmatek.at>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: FR0P281CA0185.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:ab::10) To PAVPR08MB9037.eurprd08.prod.outlook.com
+X-ClientProxiedBy: FR5P281CA0023.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:f1::15) To PAVPR08MB9037.eurprd08.prod.outlook.com
  (2603:10a6:102:325::13)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -65,540 +61,119 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PAVPR08MB9037:EE_|AS8PR08MB6424:EE_
-X-MS-Office365-Filtering-Correlation-Id: fe74a891-ac73-4e86-fe31-08dd7698dccb
+X-MS-TrafficTypeDiagnostic: PAVPR08MB9037:EE_|DU0PR08MB9026:EE_
+X-MS-Office365-Filtering-Correlation-Id: be59ba91-c168-4008-b2bc-08dd7699b88d
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|52116014|366016|1800799024|38350700014;
+	BCL:0;ARA:13230040|366016|376014|52116014|1800799024|38350700014;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?edG34Hj+dcgoG+C3ChbQN6VOi+cbrtkaLPZI/ZNKQhfs9s8Q8YRjN7hAhvDk?=
- =?us-ascii?Q?owW1EX3K+Yvqf58LxbL1eklD89FsfM2e4ewq2F5wxKTpUdKgJg5LhlRzgr8R?=
- =?us-ascii?Q?fIZlEurKfGzWLRY6o2OWegECxDwC0hqq/Li0lDh+C0hEZSkOy4zCH6qRRdHz?=
- =?us-ascii?Q?48BSPRhx56331Sjrp42SzqxlYkIFvC+4nbPSeKd8IUhhUdDylYNZw5kuhkmL?=
- =?us-ascii?Q?3m41QGZ8v5968Ey0o/1d7d1oEaJDad1t02Myhm+yA/qt3juyk0nWvF0FM6mG?=
- =?us-ascii?Q?ts3lvSvLsz6gO8nVi+QUKLSB6qh+3NJA2eV2bAtVYGaZrNKEZfQZDnIPFsRW?=
- =?us-ascii?Q?mtHUeTgJOF1eCnXqwKnz7tBZjHvTPn0yNy2AXivdIjS4UU+2X77Y7OfWfvMI?=
- =?us-ascii?Q?xnmckDcHeHI74D7JYHKEO8G4WZRiK63ZFJHDYNjy0YtdpZChCD0phNcuLw8v?=
- =?us-ascii?Q?9Wqzn2T/Z3qxDU4ZMSD7BDfZolS3eQfh1bNUQmHHsXESRj/MD4KuTrDIS7du?=
- =?us-ascii?Q?EiwNGELvhsV+0jlF0FawDW0JNEMab7eqAMwPX/26Bgu79Oj0N/YrmH2pWm5s?=
- =?us-ascii?Q?DgI3brOk9h/wXmZL+kHCChFY3dURVssd6koDzAzRpgmzJWMrsdeW3wpqtgNe?=
- =?us-ascii?Q?3cmvEELRdDwz/6e/8yifORfqJFZASTDL7noY1rIWjaQnDq82jGpJQAjaQT6H?=
- =?us-ascii?Q?88HpNMgnvA65aJOJLEVY6ZbQtzHDsfBtOOhI/A+iogBD9T6i2xL1BmrMpUuW?=
- =?us-ascii?Q?v9/GEY+J7HIgGkY1xT6vfHMjw9IeAUzKXdhILE7fGISvb5lV1QJzAxNtb3Xt?=
- =?us-ascii?Q?XxnSHB3v3qZir/JrMTqBHk0xm0crj9ZkdAQyyNaqZGwGPHNixC+kFQgVgcRT?=
- =?us-ascii?Q?nSa+eNKKB1YMFqZKObHwmiMYcv+hdnoh7eraFEJodoEyL/MlS2zlp1AXKzoL?=
- =?us-ascii?Q?DNFoPticql39yuktgvS5dA4GThzFdPJ/bq0arv0cwKugLsJ0t4/oM+MFBEJm?=
- =?us-ascii?Q?L5T+cu/6ldeCvR0XqXG38yYXYHop3EHHhrav+C77ifi0olxkH/vgBS2PHRLf?=
- =?us-ascii?Q?mFUNnKrjy752fA/4vUUefroGcdSTxcO9Wyb+mRehCGpJcq2/WhHVqAVRZzNZ?=
- =?us-ascii?Q?zMss927JkGNXNnbvXHpOZSG6mfWK8KtI/ZDF75wVosazSV6J5LkdjIlqfjmh?=
- =?us-ascii?Q?zNBe5aIhv6em8bm4S1DAZRmCoJsR0/YAwHvo+23bDMVsIs7MQw9tHWkZEhKX?=
- =?us-ascii?Q?7jopycMAJecRz0+H8jAV3ZOZWw6xuHWkLiFr/HHbYy6jFyp4Z5ka2OFSp32r?=
- =?us-ascii?Q?DD/3raB8B5JvDntNlbn+BX7m3c9YfRHt2ujKwbhn1OWiOkW6Mt1lNBbghZbs?=
- =?us-ascii?Q?WCVtchv+ObDXznXGZD5t6XpqzpWr03UwSQ5TTZVN/hSKMVVb8zTiOGlHaDaM?=
- =?us-ascii?Q?SyirvCSwtOwafd6DkZ9zDKxAkN2nA25f?=
+	=?us-ascii?Q?2FMMXALZW68Q6ygY47HdpGUVJk3LMTTBwfpYwoIdFdm+htqLqr5dNi1cUVao?=
+ =?us-ascii?Q?ZWAplR6g84gVXqxqXB3CauABLVyzpr2trxZCjyHGERd3Ge9ivkk/jJnlJPoR?=
+ =?us-ascii?Q?wwj7+07bdTb9IoMns1QSsrGBPVb0WS0bV8GhZQ/rvmek5tWkjtjZjIEHtOij?=
+ =?us-ascii?Q?AxM/KgSuZn2SkQI87ron95Oq0if0Idycdh/qgLSZFlgIT4fv7g0Fq7pmUH40?=
+ =?us-ascii?Q?BMfXZAxV8p+NshPY9wIKHstZYShBrD+DuIcSzIjdWO6qf//sk5wyORM9QbKt?=
+ =?us-ascii?Q?rHiVEJIFMvm6CmqVtZy5zBTWRPxgHXhjQ8emLrhAbR4UBSLMcr3P0bfFJ7r8?=
+ =?us-ascii?Q?wJiqZV37/HEl8JLo3FTmAdLERnux/orsQQvG5+rTi8iDHGagA08hVt82fQwU?=
+ =?us-ascii?Q?5BrbPKl9sKzyf/ycMcPCx+5jXOiEWR9SgYLWNTpT96stCNvpqimjX7+UEL0u?=
+ =?us-ascii?Q?rwDxdKkl4r7bCPXs3aWD5O1RRCeg8Y1ajF36efd/QC9bpwX+lcA5c9HdfMXC?=
+ =?us-ascii?Q?0hKw08Rsh93hs05BZUhzZn0xa/kSIgRjAdfYaJp0u0iVN2Gjdd6jvsUPAf03?=
+ =?us-ascii?Q?MvBPbh8dYhcVzm00Nyj0oOtll14CXCDKam0oOBxtgTrd4w8QX4bqGhPjzERY?=
+ =?us-ascii?Q?7+vPaZTCw/n8ok7YmLhG6Bi6AXTNJdfG2Jm7KImN5cObGuZVXuYiUDOZnMX8?=
+ =?us-ascii?Q?kFJ/zzwRz7mHtoGDXHjoh91eFdbXgZRIc0VuFH27xWgKQuBcg16CxyanjYG7?=
+ =?us-ascii?Q?ee0eadKEjL9jZTqofGV5Nh9CvpTIvpmBhTZuSWNr+EOnNlgj1BNHDmZUlEmE?=
+ =?us-ascii?Q?xPDC8ognThUgdsG0FggkwfthRBKETBf5ViPmgls/DJXiEcO4FcVv8KYxeHF+?=
+ =?us-ascii?Q?9Jmmm5lMw1HZ3d0P0yafStmtGAOFHxjrpHCtjHH3l7UDDS4ce86DPDmolylg?=
+ =?us-ascii?Q?AeDFvDvmaJPEzRgL3aY+ufVg3Cf7JtLBksJJnDlEvdEoBCiM7e3VmFvx6JIm?=
+ =?us-ascii?Q?WxERHAMINvtN0krM1nx0WBz1VqlQlI4Ldy/XaLV361nCZE4FlcMPrW6S1Tlx?=
+ =?us-ascii?Q?V5Pfc40rkRXjkW+p67a55bqi9+s3rlmUzY216LSfq7M8ohRI3dIqlwlXgvYR?=
+ =?us-ascii?Q?zUvk65j8pF0cK1kjDY6B02to40kzIrrRxWERH5ekZgiMxy66/h4bv2eB4ZII?=
+ =?us-ascii?Q?MNFBVPS9H8P3/sgNpP62/czOAzcFWg6JHlBsOfO/tYEp6kIRXzeOT16miRkY?=
+ =?us-ascii?Q?7LIWSwxooTPMIgS84xfcdRrsdhZy0zQcbNWITK9EkqODknBhEkv/SVNSagn2?=
+ =?us-ascii?Q?VaDQfy8/mAZuvSOZ0hrlM+Pjj8l3JzDo8pz0kGch20OC0lGnL/OjdgFh50a5?=
+ =?us-ascii?Q?qIwV63UHV1uEdCxhdm8OtsfmGfUxbialhe3KLzbVRbiGDbyLAGea8q20Kmep?=
+ =?us-ascii?Q?M+ekGgOSuus=3D?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAVPR08MB9037.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(52116014)(366016)(1800799024)(38350700014);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAVPR08MB9037.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(52116014)(1800799024)(38350700014);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?g8mY2wAu3Rx6mtvDHPSjwuZxuKlxwdPBewT1qA3Zt2Xf39M5GhqoScorT8bK?=
- =?us-ascii?Q?A677htQgI00iQtC4zwvRKArICMlvI5007bTIvsL/k04t7Hek5d9zQD+N4t6h?=
- =?us-ascii?Q?/OxGBXOUg1+2cBYdR766QifR+1L6YdJJ5zl5l385QTFq8pxBrMFP6q+fICH4?=
- =?us-ascii?Q?Jww1USeLqCnoBoo/dBGXAXb9yxPjA0e+in24K68SDF6XZJcRU7xVW11zuY8T?=
- =?us-ascii?Q?KqzzyzMEyk11uqRlIC46kTlQvw1ZBzMwke/YNUVLuJ9LyzvTWtBnFEJsCKN2?=
- =?us-ascii?Q?9u7Vo96I9F27bUNA2PnHMnZsAaAXXC16eQM5OkVp4IBZ94A/NjgchXJGJ07q?=
- =?us-ascii?Q?OX/FxXAI4ObyBoynNfDi1+nBH19RgZ/k9bWXhCen8XixRgPllLtXBV89t0Gg?=
- =?us-ascii?Q?NFU2yX4jV956TurNs7vz7ytSVAUiMJ4af+BDsSP6HM3VFcgBNXi3YuaDpG/O?=
- =?us-ascii?Q?dEUPGvuGgLlhr7OPp+n2+IFCoYEktx7tz3UdQPA69Vvwbnr2nRZ+r+WAEEwr?=
- =?us-ascii?Q?uXDzxQD3psTTWJNZy7hylhLcEM+gvV9rwhT2kJ4WMc+RFP51JEQ4MJW9/dvd?=
- =?us-ascii?Q?lxu90zT89zn0WMXrqS+AhaVLfwfu/9qXFIaZFl82m8f7a5qoThVEBtC+JSyJ?=
- =?us-ascii?Q?lM6UdcH6N75grPBbxSC/YhSz6urG3UR/hc364GTsV0O78qtwVDbDKS0wTjqf?=
- =?us-ascii?Q?1/R1zMJ/b6qcNNsYsMdAvM8XvzM0t75r972VozXCpwlyw+S3wqhz/P2D5tj8?=
- =?us-ascii?Q?N4pnGZrEVjEMAv7zharMn2qSQkN5y+uwGhdzK5dzEnOV1tBjGzvOO2vl8mPs?=
- =?us-ascii?Q?poBG7/UKZG4mlXYKDDXylJrlQXOIR3f9QS052FhHJK/9jfxctxsnTBkeRdI3?=
- =?us-ascii?Q?yfC2WTE3uriH9YAX32Aw54Wj9Y9rCmcv9oDuvEgCpSnE0Jdx6E/DctrO0D39?=
- =?us-ascii?Q?3E3HMlQqe2LpgJScsqLmSowwivHmUnJz7qlblJ9fVgWwbnrGxmhhXDhlNX2l?=
- =?us-ascii?Q?mkH8iiFNSZko/ng/8vtxKaPnOFhxe5zM8GoQzqsj1oSCTuQz1c8o9c+1zDzq?=
- =?us-ascii?Q?qDOdPVn3KgmFda39XLrxKFEslRa/3UNkC9GD/8oXq7wuu7Tk/wMnAwrqUXf9?=
- =?us-ascii?Q?oU0+XB0tPPzK7xWA4rB3AO+5FNptgPH3TmoSKUoTXk4tjYAwI57PVFO2/6/c?=
- =?us-ascii?Q?Px/pz+zrJQVMh+l/0E9wx9Uib5f2pZoJNhNrL0hqrWJeyjvgLm9NKU/7J6LH?=
- =?us-ascii?Q?mpAj3BgL7Q6t0uqdNTiA1DV2EqTwPd1Q/nYJyP19yWgKeQub9jjLVuwjSZHV?=
- =?us-ascii?Q?ha9cEhdZE8KmzgkUq221gOJgQNNbFN1kkAH7HWBaNHekZ0sORgpJr8HGCgb3?=
- =?us-ascii?Q?BO9JGKRbQYCY2tgDjNnxGwqUWfmPm9Og/CUWINsjz5PeAE/dk3LmrOexNXHs?=
- =?us-ascii?Q?BtStqws0vcxIbxbkwZXn2VVEeqy3Qu5djoeTFb1Umt6ZrKfUvqOWkUaFh57d?=
- =?us-ascii?Q?A6aBg6R/xsyVWGr6tTtLevjto9Kwt/UaIowyeZqpn+uXpjejckGysSTARoJh?=
- =?us-ascii?Q?9M8Kty8QSXQyHB0inhbtNRo2O81h65D0SpPji5a5DqZ+uIFD7Ja/xZm0l8Uk?=
- =?us-ascii?Q?YA=3D=3D?=
+	=?us-ascii?Q?ML8AWtZ/QxcM6UbNaRONCQi6lF++X8cgHeUpMIeO1p9XQjO6sKqrFyddkNIL?=
+ =?us-ascii?Q?NNOIYGEkClIlJIHPJVQiaJd4QN+qPHvJdxc9j/NP1j4V1n4ro7+swXJuGuxD?=
+ =?us-ascii?Q?QVlPOLqRfE+/Je+/7G9ognZoQ2FSPn8rUUHh+9NJcCA5S3c5AnNX9Fz3O8IS?=
+ =?us-ascii?Q?o6AVvsq0Ncdv+PE/gpp8zR9hbdyqbqQqDstxnnUirBB2RhBdMxTAbyX7EvzZ?=
+ =?us-ascii?Q?EGYMzv41b79MV10vpIqjCPSVN1QjZdTWc3bQul0hSgrxJRyvLT2phyHc+Nk6?=
+ =?us-ascii?Q?nokrUQbKzz8lL7PlOfHqpQSqqWSpAfm7wgnl7fjlgyBHiQaZ2OvPcAlDdHgL?=
+ =?us-ascii?Q?kiQMW4dV6YvMQlya71D1x/uEC4RSLc81YVIS1utbYngkGHxgo5dKZ1bN7Akx?=
+ =?us-ascii?Q?7VPFc8vwdwJjWGlSWaxUzt74kfHUhUKPVjjFuah5Q4B71+EHlhv8zGZGDJfH?=
+ =?us-ascii?Q?/eaqQTlbExsq2j75qIjQBSV3lb9cQfIJSlAbhyFA9uHs+G/yg5qfRRFy47Eo?=
+ =?us-ascii?Q?xjxgfQrzSK7hmR8efbOxeX6h6TXUoYKTn43bC5SLZL8WQs+QqdBUdWXZxEUH?=
+ =?us-ascii?Q?cYjgFTP7IB8h8gpk7dsL1282FnIVqomRt7Pr2ncjKrY3d33wBsBNOEhwkOmJ?=
+ =?us-ascii?Q?jfNj906Sy7Zgwa2RV3ThpOSCASVZAuPvTrDLHxQS1j9RK5pyqQeiVV8Qj2yn?=
+ =?us-ascii?Q?/Un6z3sr3JOeFSlHKFZfd2YdYgQGnEd6ys1IjOBE7GE6xHeuhZ9ceyxBucHc?=
+ =?us-ascii?Q?O4uQRlref5c1Frub9lxNPaZdENG4m2aL0/enwprpUsLdYHM1ampKT0G2jzGJ?=
+ =?us-ascii?Q?sKX9W89iUo62Vjb69O/xb33EDPzA97Z//k7dti2t8cL9axO0S2GH9KNqbSgj?=
+ =?us-ascii?Q?2OLemLYq77vV7KAjkZDOmqJUkmXes1KXz83492xXWRPDyVPDboGkf6wct6pl?=
+ =?us-ascii?Q?I6fi62AJUUoUzGmrq+7xu3FuR3POJ3ooxfmlf1YqHuJz0f/H4y/rvKo1Px8w?=
+ =?us-ascii?Q?lJKlwqSggAtfmrqhXHV8YztiT4OaZEVlPkFoDAmLKAU80yx4mHD323CpC8Jn?=
+ =?us-ascii?Q?WFv189YAHqZwkCRk14wx3k87vDofo9M7/DO9DZMtCzyXr2K7ZV6OT0RD9E65?=
+ =?us-ascii?Q?I+qo45F/346wXQEoLzEU6YiTk3gjm1D1yE4PJQI+2V4EbvZsiCSvs+8Alhf+?=
+ =?us-ascii?Q?F+p8DpwJCRTUW181bhg+5Eu+g7V7ApvVYWH/x+LBnnJEnySz5J/97JpKrtA5?=
+ =?us-ascii?Q?8ExvlRj2KZKY9Fy0YbzR/GI5/vSjPYnY3qF2nIcERa3pY2FZu0FyoDPdSiRe?=
+ =?us-ascii?Q?wEHCQr22dhAtJkXP5YQh5sWT41EdxK99UvS/fuaqmIlHSoxlp2UPKMkpbh43?=
+ =?us-ascii?Q?Od+2gy7QXtSKrKvji+zspLccjFf7gJlTuDI46g3O3ebUaUZWWfdsVRT+oyvk?=
+ =?us-ascii?Q?fsyUAI71AWqgGISFhgTShDQTswfmPHMGVkncOvwl5L1ttd8vV0t0yPAjtvc0?=
+ =?us-ascii?Q?CljwuLD3I+NWJr7xyeiecVaUcSOyg5lkiSZ4rUFejwyhf/kHNHsYKtGhs6ql?=
+ =?us-ascii?Q?oTeNGaUlCDZZ/giAAX895o3vFg7Mx2YOq1vs4ZDTEcQUvpMW639g2RIh39KW?=
+ =?us-ascii?Q?VA=3D=3D?=
 X-OriginatorOrg: sigmatek.at
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe74a891-ac73-4e86-fe31-08dd7698dccb
+X-MS-Exchange-CrossTenant-Network-Message-Id: be59ba91-c168-4008-b2bc-08dd7699b88d
 X-MS-Exchange-CrossTenant-AuthSource: PAVPR08MB9037.eurprd08.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2025 12:28:26.9240
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2025 12:34:35.6452
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bcb1d87a-d2bc-486e-a62b-9ac9c746bc1b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RLV9FJbltWgh3ubYpe59EeBBWlHAWw5rbz9WPvfI57Lfz7XPI/lbK4lpgg5XJZbKvuYpxAkgDZaAXyQnyU7VC60PAfzzLVAn60laIglb4XM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR08MB6424
+X-MS-Exchange-CrossTenant-UserPrincipalName: UE5UzzeM7c0lSTfJ62TwvYestmfwfcYyyG4GRI5C68aYJU8MgZ66K8EkFKAG5+XRcvFtgK4zs8sBl9k10HmHIJnqON6VtV2t1gJl0Lyq1iI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR08MB9026
 
-From: Lorenz Kofler <lorenz@sigma-star.at>
+From: Richard Weinberger <richard@nod.at>
 
-Useful to create a histogram to evaluate RT signal handling performance.
-The program will output a file called hist.txt in the format:
+This is the Dovetail side of the real-time exception handling
+(aka real-time signal) feature.
 
-	TIME in Nanoseconds, Frequency
+In its current form, it's a bit larger than expected because it also
+includes the signal frame helper functions. It's debatable whether
+these should be part of Dovetail or Xenomai.
 
-Co-developed-by: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
-Signed-off-by: Lorenz Kofler <lorenz@sigma-star.at>
----
- configure.ac                          |   1 +
- utils/Makefile.am                     |   2 +-
- utils/rt_signal_hist/Makefile.am      |  22 +++
- utils/rt_signal_hist/error.h          |  15 ++
- utils/rt_signal_hist/histo.c          |  47 +++++
- utils/rt_signal_hist/histo.h          |  14 ++
- utils/rt_signal_hist/result.c         |  17 ++
- utils/rt_signal_hist/result.h         |  13 ++
- utils/rt_signal_hist/rt_signal_hist.c | 237 ++++++++++++++++++++++++++
- 9 files changed, 367 insertions(+), 1 deletion(-)
- create mode 100644 utils/rt_signal_hist/Makefile.am
- create mode 100644 utils/rt_signal_hist/error.h
- create mode 100644 utils/rt_signal_hist/histo.c
- create mode 100644 utils/rt_signal_hist/histo.h
- create mode 100644 utils/rt_signal_hist/result.c
- create mode 100644 utils/rt_signal_hist/result.h
- create mode 100644 utils/rt_signal_hist/rt_signal_hist.c
+The smaller, but much more important changes are for ARM32 and
+ARM64. These allow fast return from exception handling so that
+Xenomai can decide whether an exception should be propagated
+to Linux or not.
 
-diff --git a/configure.ac b/configure.ac
-index 678e8ef1e..325946a2c 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1114,6 +1114,7 @@ AC_CONFIG_FILES([ \
- 	utils/slackspot/Makefile \
- 	utils/corectl/Makefile \
- 	utils/autotune/Makefile \
-+	utils/rt_signal_hist/Makefile \
- 	utils/net/rtnet \
- 	utils/net/rtnet.conf \
- 	utils/net/Makefile \
-diff --git a/utils/Makefile.am b/utils/Makefile.am
-index 4de6434a9..79c39ac90 100644
---- a/utils/Makefile.am
-+++ b/utils/Makefile.am
-@@ -1,5 +1,5 @@
- SUBDIRS = hdb
- if XENO_COBALT
--SUBDIRS += analogy autotune can net ps slackspot corectl
-+SUBDIRS += analogy autotune can net ps slackspot corectl rt_signal_hist
- endif
- SUBDIRS += chkkconf
-diff --git a/utils/rt_signal_hist/Makefile.am b/utils/rt_signal_hist/Makefile.am
-new file mode 100644
-index 000000000..810a63bba
---- /dev/null
-+++ b/utils/rt_signal_hist/Makefile.am
-@@ -0,0 +1,22 @@
-+testdir = @XENO_TEST_DIR@
-+
-+CCLD = $(top_srcdir)/scripts/wrap-link.sh $(CC)
-+
-+test_PROGRAMS = rt_signal_hist
-+
-+alchemycppflags =              			 \
-+	$(XENO_USER_CFLAGS)    			 \
-+	-I$(top_srcdir)/include
-+
-+alchemyldadd =					\
-+	@XENO_AUTOINIT_LDFLAGS@			\
-+	$(XENO_POSIX_WRAPPERS)			\
-+	../../lib/alchemy/libalchemy.la		\
-+	../../lib/copperplate/libcopperplate.la	\
-+	@XENO_CORE_LDADD@			\
-+	@XENO_USER_LDADD@			\
-+	-lrt -lpthread -lm
-+
-+rt_signal_hist_SOURCES = rt_signal_hist.c histo.c result.c
-+rt_signal_hist_CPPFLAGS = $(alchemycppflags)
-+rt_signal_hist_LDADD = $(alchemyldadd)
-diff --git a/utils/rt_signal_hist/error.h b/utils/rt_signal_hist/error.h
-new file mode 100644
-index 000000000..811ee642c
---- /dev/null
-+++ b/utils/rt_signal_hist/error.h
-@@ -0,0 +1,15 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef ERROR_EXIT_H
-+#define ERROR_EXIT_H
-+
-+#include <stdio.h>
-+#include <stdlib.h>
-+
-+static int error(char *reason, int ret)
-+{
-+	printf("%s: err= %d\n", reason, ret);
-+	exit(1);
-+}
-+
-+#endif
-+
-diff --git a/utils/rt_signal_hist/histo.c b/utils/rt_signal_hist/histo.c
-new file mode 100644
-index 000000000..5667e62f3
---- /dev/null
-+++ b/utils/rt_signal_hist/histo.c
-@@ -0,0 +1,47 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <errno.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+
-+#include "histo.h"
-+#include "error.h"
-+
-+void initHisto(struct histo **histo, unsigned long max_entry)
-+{
-+	unsigned long i = 0;
-+	*histo = malloc(sizeof(struct histo) + max_entry * sizeof(unsigned long));
-+	if (!histo)
-+		return;
-+
-+	for (i = 0; i < max_entry; ++i)
-+		(*histo)->data[i] = 0;
-+
-+	(*histo)->max_index = 0;
-+	(*histo)->max_entry = max_entry;
-+}
-+
-+void writeHisto(struct histo *histo)
-+{
-+	unsigned long i;
-+	FILE *f = fopen("hist.txt", "w");
-+
-+	if (!f)
-+		error("can't open \"hist.txt\"\n", errno);
-+
-+	for (i = 0; i <= histo->max_index; ++i) {
-+		if (histo->data[i] > 0)
-+			fprintf(f, "%lu %lu\n", i, histo->data[i]);
-+	}
-+	fclose(f);
-+}
-+
-+void updateHisto(struct histo *histo, unsigned long curr)
-+{
-+	unsigned long index;
-+
-+	index = curr;
-+	index = index >= histo->max_entry ? histo->max_entry - 1 : index;
-+	histo->max_index = histo->max_index >= index ? histo->max_index : index;
-+	histo->data[index]++;
-+}
-+
-diff --git a/utils/rt_signal_hist/histo.h b/utils/rt_signal_hist/histo.h
-new file mode 100644
-index 000000000..8ff92fce4
---- /dev/null
-+++ b/utils/rt_signal_hist/histo.h
-@@ -0,0 +1,14 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef HISTO_H
-+#define HISTO_H
-+
-+struct histo {
-+	unsigned long max_entry;
-+	unsigned long max_index;
-+	unsigned long data[];
-+};
-+
-+void initHisto(struct histo **histo, unsigned long n);
-+void writeHisto(struct histo *histo);
-+void updateHisto(struct histo *histo, unsigned long curr);
-+#endif
-diff --git a/utils/rt_signal_hist/result.c b/utils/rt_signal_hist/result.c
-new file mode 100644
-index 000000000..db8c99beb
---- /dev/null
-+++ b/utils/rt_signal_hist/result.c
-@@ -0,0 +1,17 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include "result.h"
-+
-+void initResult(struct result *resu)
-+{
-+	resu->min = (unsigned long)-1l;
-+	resu->max = 0ul;
-+	resu->avr = 0ul;
-+}
-+
-+void updateResult(struct result *resu, unsigned long curr, unsigned long ith_entry)
-+{
-+	resu->min = curr < resu->min ? curr : resu->min;
-+	resu->max = curr > resu->max ? curr : resu->max;
-+	resu->avr = (resu->avr * (ith_entry - 1) + curr) / ith_entry;
-+}
-+
-diff --git a/utils/rt_signal_hist/result.h b/utils/rt_signal_hist/result.h
-new file mode 100644
-index 000000000..5c164fa66
---- /dev/null
-+++ b/utils/rt_signal_hist/result.h
-@@ -0,0 +1,13 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef RESULT_H
-+#define RESULT_H
-+
-+struct result {
-+	unsigned long min;
-+	unsigned long max;
-+	unsigned long avr;
-+};
-+
-+void initResult(struct result *resu);
-+void updateResult(struct result *resu, unsigned long curr, unsigned long ith_entry);
-+#endif
-diff --git a/utils/rt_signal_hist/rt_signal_hist.c b/utils/rt_signal_hist/rt_signal_hist.c
-new file mode 100644
-index 000000000..bfc8947aa
---- /dev/null
-+++ b/utils/rt_signal_hist/rt_signal_hist.c
-@@ -0,0 +1,237 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <stdio.h>
-+#include <signal.h>
-+#include <stdint.h>
-+#include <stdlib.h>
-+#include <errno.h>
-+
-+#include <ucontext.h>
-+
-+#include <alchemy/task.h>
-+#include <cobalt/signal.h>
-+#include <copperplate/clockobj.h>
-+
-+#include "histo.h"
-+#include "result.h"
-+#include "error.h"
-+
-+#define USE_GETTIME 0 // TODO: when is this needed?
-+#define MAX_TIME 10000000
-+
-+static RT_TASK task;
-+static const char *task_name = "signal_test_task";
-+static const int prio = 80;
-+static int TEST_SIGNAL = SIGILL;
-+
-+typedef struct {
-+	const char *name;
-+	int value;
-+} SignalMapping;
-+
-+static const SignalMapping signals[] = {
-+	{"SIGILL", SIGILL},
-+	{"SIGTRAP", SIGTRAP},
-+	{"SIGFPE", SIGFPE},
-+	{"SIGSEGV", SIGSEGV},
-+	{NULL, 0}
-+};
-+
-+static int get_signal_value(const char *signal_name)
-+{
-+	for (int i = 0; signals[i].name != NULL; i++) {
-+		if (strcmp(signals[i].name, signal_name) == 0)
-+			return signals[i].value;
-+	}
-+	return -1;
-+}
-+
-+static const char *get_signal_name(int signal_value)
-+{
-+	for (int i = 0; signals[i].name != NULL; i++) {
-+		if (signals[i].value == signal_value)
-+			return signals[i].name;
-+	}
-+	return "UNKNOWN_SIGNAL";
-+}
-+
-+static int get_step(void)
-+{
-+#if defined(__i386__) || defined(__x86_64__)
-+	// do_fpe: `idivl %ecx` is 2 bytes long
-+	// do_ill: `ud2` is 2 bytes long
-+	return 2;
-+#else
-+	// do_ill: `udf #0xdead` is 4 bytes long
-+	return 4;
-+#endif
-+}
-+
-+static void do_cleanup(void *context)
-+{
-+	int step = 0;
-+	ucontext_t *uc = context;
-+
-+	step = get_step();
-+
-+#if defined(__i386__)
-+	uc->uc_mcontext.gregs[REG_EIP] += step;
-+#elif defined(__x86_64__)
-+	uc->uc_mcontext.gregs[REG_RIP] += step;
-+#elif defined(__aarch64__)
-+	uc->uc_mcontext.pc += step;
-+#elif defined(__arm__)
-+	uc->uc_mcontext.arm_pc += step;
-+#else
-+	#error "Unknown Architecture"
-+#endif
-+}
-+
-+static void sigdebug_handler(int sig, siginfo_t *info, void *context)
-+{
-+	printf("%s called, this should not happen\n", __func__);
-+	exit(EXIT_FAILURE);
-+}
-+
-+static void sighandler(int sig, siginfo_t *info, void *data)
-+{
-+	do_cleanup(data);
-+}
-+
-+static void do_ill(void)
-+{
-+#if defined(__i386__) || defined(__x86_64__)
-+	__asm__("ud2");
-+#else
-+	__asm__("udf #0xdead");
-+#endif
-+}
-+
-+static void do_fpe(void)
-+{
-+#if defined(__i386__) || defined(__x86_64__)
-+	__asm__("xorl %%eax, %%eax\n\t"
-+		"movl %%eax, %%ecx\n\t"
-+		"cltd\n\t"
-+		"idivl %%ecx"
-+		: : : "eax", "ecx");
-+#endif
-+}
-+
-+static void printPreRunInfo(void)
-+{
-+	if (USE_GETTIME) {
-+		struct timespec time;
-+
-+		clock_getres(CLOCK_MONOTONIC_RAW, &time);
-+		printf("Using CLOCK_MONOTONIC_RAW: res_sec = %lld res_nsec = %ld\n",
-+			(long long)time.tv_sec, time.tv_nsec);
-+		return;
-+	}
-+
-+	printf("USING Xenomai rt_timer: res_nsec = %lld\n", rt_timer_ticks2ns(1));
-+}
-+
-+static inline unsigned long ns_now(void)
-+{
-+	if (USE_GETTIME) {
-+		struct timespec time;
-+
-+		clock_gettime(CLOCK_MONOTONIC_RAW, &time);
-+		return time.tv_nsec;
-+	}
-+
-+	ticks_t ticks;
-+
-+	ticks = clockobj_get_ns();
-+	return rt_timer_ticks2ns(ticks);
-+}
-+
-+static void task_func(void *cookie)
-+{
-+	struct histo *histogram = (struct histo *)cookie;
-+	struct result resu;
-+
-+	unsigned long start_time, end_time, diff_time;
-+	int i, j, ret;
-+	char error_message[80];
-+
-+	printPreRunInfo();
-+
-+	ret = cobalt_rt_signal(TEST_SIGNAL, sighandler);
-+	if (ret) {
-+		snprintf(error_message, sizeof(error_message),
-+			"Failed to register rtsignal signal handler for signal %s",
-+			get_signal_name(TEST_SIGNAL));
-+		error(error_message, ret);
-+	}
-+
-+	initResult(&resu);
-+
-+	for (j = 0; j < 10000; ++j) {
-+		for (i = 0; i < 1000; ++i) {
-+
-+			start_time = ns_now();
-+			if (TEST_SIGNAL == SIGILL)
-+				do_ill();
-+			else if (TEST_SIGNAL == SIGFPE)
-+				do_fpe();
-+			else
-+				error("Unsupported signal encountered", TEST_SIGNAL);
-+
-+			end_time = ns_now();
-+
-+			if (end_time <= start_time) { // dismiss on counter overrun
-+				continue;
-+			}
-+
-+			diff_time = end_time - start_time;
-+			//+1 as we add with index i the (i+1)th entry
-+			updateResult(&resu, diff_time, i+1);
-+			updateHisto(histogram, diff_time);
-+		}
-+
-+		printf("%d: min = %lu max = %lu avr = %lu\n", j, resu.min, resu.max, resu.avr);
-+		rt_task_sleep(1000000);
-+	}
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	int ret;
-+	struct histo *histogram;
-+	struct sigaction sa;
-+
-+	if (argc != 2) {
-+		fprintf(stderr, "Usage: %s <signal>\n", argv[0]);
-+		exit(1);
-+	}
-+
-+	TEST_SIGNAL = get_signal_value(argv[1]);
-+	if (TEST_SIGNAL < 0)
-+		error("Signal not supported", TEST_SIGNAL);
-+
-+	memset(&sa, 0, sizeof(sa));
-+	sa.sa_sigaction = sigdebug_handler;
-+	sa.sa_flags = SA_SIGINFO | SA_NODEFER;
-+	sigaction(SIGDEBUG, &sa, NULL);
-+
-+	initHisto(&histogram, MAX_TIME);
-+	if (!histogram)
-+		error("initHisto failed", -ENOMEM);
-+
-+	ret = rt_task_create(&task, task_name, 0, prio, T_JOINABLE | T_WARNSW);
-+	if (ret)
-+		error("rt_task_create failed", ret);
-+
-+	ret = rt_task_start(&task, task_func, histogram);
-+	if (ret)
-+		error("rt_start_task failed", ret);
-+
-+	rt_task_join(&task);
-+	rt_task_delete(&task);
-+
-+	writeHisto(histogram);
-+
-+	return 0;
-+}
-+
+Lorenz Kofler (1):
+  x86: dovetail: Helper functions for signal frame setup and restore
+
+Richard Weinberger (4):
+  arm: dovetail: Fix user mode UND exception handling
+  arm64: dovetail: Allow early return from traps
+  arm64: dovetail: Helper functions for signal frame setup and restore
+  arm: dovetail: Helper functions for signal frame setup and restore
+
+ arch/arm/kernel/signal.c           | 50 ++++++++++++++++++
+ arch/arm/kernel/traps.c            |  6 +++
+ arch/arm64/include/asm/signal32.h  |  3 ++
+ arch/arm64/kernel/signal.c         | 85 ++++++++++++++++++++++++++++++
+ arch/arm64/kernel/signal32.c       |  2 +-
+ arch/arm64/kernel/traps.c          | 18 ++++---
+ arch/arm64/mm/fault.c              | 15 ++++--
+ arch/x86/include/asm/sighandling.h |  3 ++
+ arch/x86/kernel/signal.c           | 80 ++++++++++++++++++++++++++++
+ arch/x86/kernel/signal_32.c        |  2 +-
+ arch/x86/kernel/signal_64.c        |  2 +-
+ include/linux/dovetail.h           |  4 ++
+ 12 files changed, 254 insertions(+), 16 deletions(-)
+
 -- 
 2.48.1
 
