@@ -1,43 +1,43 @@
 Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2114.outbound.protection.outlook.com [40.107.21.114])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB9E4269AFB
-	for <xenomai@lists.linux.dev>; Tue,  8 Apr 2025 12:28:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E06D269D17
+	for <xenomai@lists.linux.dev>; Tue,  8 Apr 2025 12:28:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.21.114
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744115321; cv=fail; b=DzgKzgoUIf2Uj1QWy6GhKxpSlr/8YOmN/HHGx4qig5Hj39BfZStecpkvuZWz481JDquaJ9doTjJG+/hEEKb41WD32HDlL+kdrnYhFUqJTdo44vj5X1y0PgUyG+HfcOGjnK4V63Cv30puhEOLUoHpZiDcEA1LhU/4tlgtiLNo7Lo=
+	t=1744115323; cv=fail; b=o5ONz0jPezbZwTHFvvbOfQo20e2FHlOZzJ13SRM9GMUCBO82F6UNtljO+nubVzXSZU57119HKgDCYR1b2yIyhC+2K4Mf8GUTilQ88L+9a7hgBClcK8JDUiMPDzOZMyvNZ/iDy95HOU9CoYoFgJV7wLgIt2/de9h/uFw+PUy6/+o=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744115321; c=relaxed/simple;
-	bh=JNXaxCgU3WNDBi4+jgqUv7tIGIeiXO9qXEafdgXXJ6E=;
+	s=arc-20240116; t=1744115323; c=relaxed/simple;
+	bh=O3ocLOYD8uXLWMfBxYQhWPF874ia4hX2k1pLeFS0J1o=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=r6CJjcwH5Rm+6gQWZCtaqZiNY6xIrPIngd8L7XN6teN0GHvD+NjObbjsbaoJ8xjlNbWh7Bw9o8gOda18miT1WM0oK50Frzbcj7B21MJ4LAt2YdUO1Xcb42q0+j13V4Dbwsh2tG5+MEP17TRpVL1R8ocuqIRc6tUzKUV5a+/KaGA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sigmatek.at; spf=pass smtp.mailfrom=sigmatek.at; dkim=pass (1024-bit key) header.d=sigmatek.at header.i=@sigmatek.at header.b=MPho0y9l; arc=fail smtp.client-ip=40.107.21.114
+	 Content-Type:MIME-Version; b=VXaF3rxlePa7kYqhfjqnN3TenzLPt34CgBB5MJc/D+D40xZK41GwRxcDxCRJoHiMdn0nfFXUS+kFR+tZ6C6cG6EyltB3BKqk7Fx0yRsmB6aREeb1sKR/0H6kyOgZbb0xV8YNvzPdAWSL47zAIsDAsLTWJT1rvIjQbCbIm0KAJfk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sigmatek.at; spf=pass smtp.mailfrom=sigmatek.at; dkim=pass (1024-bit key) header.d=sigmatek.at header.i=@sigmatek.at header.b=dgsdn8YB; arc=fail smtp.client-ip=40.107.21.114
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sigmatek.at
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sigmatek.at
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=sigmatek.at header.i=@sigmatek.at header.b="MPho0y9l"
+	dkim=pass (1024-bit key) header.d=sigmatek.at header.i=@sigmatek.at header.b="dgsdn8YB"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=tpVS8Viz+iumifeejIc5sG4T3teBg8M1y+RUrBIHkrMrJM80FAHa+KUEzq7FmrQL/BU2GnPzZa3SHZEfkH2mFBH7NtW8DME3aZJWu2oep3sb4rtiMhfZC8p4uXJCykex0YQSyl9Ok8T8c3XgsTCAfNrSgURXyPGsZee4syhnHTuCvEss6QnIOHaFmFSPbKF7PgrvKOHkJqyHcWVbvKWj9d7xDksZE0AsUwb1aLBFcas1Q4nNDRLC9439CjojkQBVD76EiyZ+NPrTYDo+4Y5y9jmm5lJUmnSXoNNpROc+T4AhTYCrGXdlPuQdWAgZxKDcexJSCh1Ev2N7Cm9Csm8aJQ==
+ b=KwiLLbxvqiKVS/PKH0zbFlHTstty6allcQ76ficBn8lrZCQczKuwjlLZ1nwRtXRMYTKGYdVpzyF9v7lM2hKHOYKvVq/NRUThBQy2wxiExTVSzGnSsm51LOF4Tmoo8ThU6UIDp7S35FuzsRD97aq8DrqHUfIFnGuxYLgXOlrH36NJKnugBMPxv5z7ccWFig6e60do2nz7TXLXHsnGOMc7mGvG8dcphlhWqo2PYvR1UySsAs61Lnty6Lec5FBbqBHQixV6qh1D+HiqFn2+gfAtxehoDiwX/DbZ7ctLRpe1DqKmqR1QNCSwf9LpmbQXYSPOsGd+VoISRSrVaw5S3v2eIw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=fsYn9p8VdFIVp5MECQWe3A59fcJJYqc2YfCEu9L+u2o=;
- b=G4obw+WprLupsAtdvp2pXMtoytDFcYrFsCfrqKb3ibkHw1gTJXQfpAXDjilQIjiQ29xg2lvxF3kRjrd/m5E91ScTc3nde57aQfIPwUQcKRrJ6WaWhdSt9XL/xu/+K9YKhdylfmt4k4yGXKUCPVZSmNb/NsbI4D0ZTr1X2pih4+3lrfrvrr8he4ol2N6/GJTXGan4TkMAQKZb6wDZw2b0dfiJ7BQHKpCgNP83xkPeSHDL6Zu291sueL54NwQgahw1h+AIaR+Q28Cuh6DuHPrSeNHresYqcPe0LR+MQaHcuP6Vua1Xs55QMK46rNb+gW7gLVQ4nSQnwKRjeekY3AjMsg==
+ bh=0EgFTrwZgmOpTZ2e8vy1CdMJD9OB+HN5T2fGMyPe8Uc=;
+ b=ku16D8RDWtWBbDPoifYG5rL2x6HnZoTrgjidHPWCISvwDrUJ93VaL+v08u9nU324YSAHR35MkAE8BbLAKmMIai6evy3jDKnQeU7fHYUFSl1HY0BRl/ITBR+1kq//6tSRo5IcgipK9xgw2GYKmEeID9kxnlW3WNrnwz3ME+djJlCaVQqIwqile4qEeNtFd7XPG+hqsBR+PJUuFQ0umqXDFp7Q5P7e8Rc2Cs9l72+Bshv4/QiKBXWdg/4IDI7o8KP5k63umumN574kyIiA2HOlH0EtOEX7zW0CSt8Png2rKRJVLNGYBhcbhqKGzwA3vVwAqC2qDIGYi/l8XIBV6Ck2Sg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=sigmatek.at; dmarc=pass action=none header.from=sigmatek.at;
  dkim=pass header.d=sigmatek.at; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sigmatek.at;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fsYn9p8VdFIVp5MECQWe3A59fcJJYqc2YfCEu9L+u2o=;
- b=MPho0y9lqZMME69wu3rJ2Hz297Jfk0W2BRVTJPxJ+oFMUDmQTp8tMqckbzO8HOrfJp52jmjcwHP+nXKWqTSiB3Kww3RCrajaKHBTt7xx+tjasaB53fow3Vn7tj+BYZcTjRZZUpIcLCqQiwg2XHKgWyLSfb+t/Fh9Ya+SG8KL4YE=
+ bh=0EgFTrwZgmOpTZ2e8vy1CdMJD9OB+HN5T2fGMyPe8Uc=;
+ b=dgsdn8YBKWfx0ihRLMDH4aJ8IRbC0z2RHedDKXG5nh/50GMUnelsfD1Rq3gMY6+w00sAh8fnpzGCMc1E1hCpnbEc71BGALEJcqma9aV97AWcIaNV/MxytyH/eNseyJ8ZjEXomiaPg/ihiotmx61BEn+aKm8y8wgO903dd81FkI8=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=sigmatek.at;
 Received: from PAVPR08MB9037.eurprd08.prod.outlook.com (2603:10a6:102:325::13)
  by AS8PR08MB6424.eurprd08.prod.outlook.com (2603:10a6:20b:33e::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8606.28; Tue, 8 Apr
- 2025 12:28:26 +0000
+ 2025 12:28:27 +0000
 Received: from PAVPR08MB9037.eurprd08.prod.outlook.com
  ([fe80::3d5f:e34f:e1a7:59d8]) by PAVPR08MB9037.eurprd08.prod.outlook.com
  ([fe80::3d5f:e34f:e1a7:59d8%6]) with mapi id 15.20.8606.033; Tue, 8 Apr 2025
@@ -47,9 +47,9 @@ To: xenomai@lists.linux.dev
 Cc: richard@sigma-star.at,
 	Lorenz Kofler <lorenz@sigma-star.at>,
 	Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
-Subject: [PATCH 5/6] testsuite: smokey: Add testcases for signals
-Date: Tue,  8 Apr 2025 14:28:16 +0200
-Message-ID: <20250408122817.626897-6-nikolaus.funk@sigmatek.at>
+Subject: [PATCH 6/6] utils: Add rt_signal_hist
+Date: Tue,  8 Apr 2025 14:28:17 +0200
+Message-ID: <20250408122817.626897-7-nikolaus.funk@sigmatek.at>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250408122817.626897-1-nikolaus.funk@sigmatek.at>
 References: <20250408122817.626897-1-nikolaus.funk@sigmatek.at>
@@ -66,473 +66,402 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PAVPR08MB9037:EE_|AS8PR08MB6424:EE_
-X-MS-Office365-Filtering-Correlation-Id: fb7bcadd-c8dd-4028-9364-08dd7698dc92
+X-MS-Office365-Filtering-Correlation-Id: fe74a891-ac73-4e86-fe31-08dd7698dccb
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
 	BCL:0;ARA:13230040|376014|52116014|366016|1800799024|38350700014;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?f3QBuQy06png6m5xd+Perjnbe9NsleJBxdWOAGbZSzWq9KWX/ICzGRv1nM/u?=
- =?us-ascii?Q?1N7qMgFKtl37tT45FbtlkB/p4wVxr/SY4ZhZsMDOeU/9tvbolZZrkuyb2TtE?=
- =?us-ascii?Q?mT6HNnNzDkiFOc4ND7+Gw5A/8kjYZrbeaDmQyKSCzX26IFvR3bH8Wl5Rb0Zm?=
- =?us-ascii?Q?I9vcDs3zsQQJ2upmlcNXFTymULpiWPlHd4Vo2fJH8MxNQodOkgjTzA+VMOFV?=
- =?us-ascii?Q?hID5i/L904ZuUwBpjWAk5mlt0WDrwah4ARvMVByWo7vv3e01d4e/2Xhq0/9S?=
- =?us-ascii?Q?3uwecNu581qKxYt7FDNzJ66/OrWvWjT/OZmK4nmhf0UNNdjNQ82+1E4ck49d?=
- =?us-ascii?Q?C4E2OQrP1zMIJlvGnrs5yNgjPAmqbSPCTEAyYt2UsZwdhk3pJWuzZwvLsp+O?=
- =?us-ascii?Q?zBUKgmttecEzIKF8wkSMdQHpBOx0Us1659n6lEOQ+ioTc1ewD57wAYzq180o?=
- =?us-ascii?Q?xLJwkspKUJC0r/Q/SQvNzZjXzxCBPxN+JQG9T/LX3uGO9/OOJFF9fcv6u1Ay?=
- =?us-ascii?Q?IFRT6RMwXOfHDuCUvIZ9sHzXC2ZZ/1SItb+8owW+va48VtQcOpKhsB0fwGK2?=
- =?us-ascii?Q?gqOH7CvDISTE5ChCcKYtKzBw0Dzb/CrlMpQLpwSa0RjButwTSau/24K+jKwl?=
- =?us-ascii?Q?Em3V5p9oJb7qAFRYEoNLRSxb30EMfcyPCW4D6RQQdNT9k6AnHTWFT/h/r8X2?=
- =?us-ascii?Q?vsJelFmNdfIhA0yEnlRZs/Qm/PtFuVLwjPM7MqZdr22ooU5SfQdhP/igyK7z?=
- =?us-ascii?Q?o3e+PMFE2vKE7LQLRcjv2qP41hJRYbmkKQ4DXKJrQwEJUCe+TCkTZ1LvnYyK?=
- =?us-ascii?Q?zOFvNQsdvgKT56xF8P/AkI831zcAtZoeD+PbgF2YJ202h7pfjTwvq/GYFoNs?=
- =?us-ascii?Q?TMLrnzOIUegLY34miRl805hQSXQMtUY3ob0/tgQ3AXP8hN0rp3kRlr1klIe9?=
- =?us-ascii?Q?CNtuRT2yGY6WA2NSF3RsGJwNVXelgVS3BpS3IuR7SrTInK1//Jicb6uRh8M4?=
- =?us-ascii?Q?5j4kcydzcXpjqhAKPozl4J4Tui+ju0FEjVjk1OdpdwjVFwYNoC6NNhByVW8X?=
- =?us-ascii?Q?gJKaiYgHh0xFrASl0dYK+tSgEb7LonNfGS43M6URQ5xa3Tly79yRN3EmFpIB?=
- =?us-ascii?Q?Mcs+8wNcunmcyYXmmhNl0Q3uj/AAyxIJWcIVtWBqsBc7eQGFyezYN5ItCstY?=
- =?us-ascii?Q?SzQDhUHwQGa4Df8k+uKA+1yx5SymncKlE4fFvsze5PnzX/9RXAOYAfhdI1tu?=
- =?us-ascii?Q?BnMi4sSdxaSyFVwfrwfcsXTW1spEqs2Xx25klDjGCnW258hhcuJ+L2XcP8K5?=
- =?us-ascii?Q?vixMxnOwys1QeBKw75EF9w2ruXDn9U7h9RItRzE+pyDm5VxAIYE+fUZE8gs6?=
- =?us-ascii?Q?LQnADOjD5IzvFOSUH6gxY3unBQKy1aoZkReZCWCKV43TctdRVLVwb9ngtLxu?=
- =?us-ascii?Q?449lNOtWAtTjxTdoXgUj3PYAmZWD1qOf?=
+	=?us-ascii?Q?edG34Hj+dcgoG+C3ChbQN6VOi+cbrtkaLPZI/ZNKQhfs9s8Q8YRjN7hAhvDk?=
+ =?us-ascii?Q?owW1EX3K+Yvqf58LxbL1eklD89FsfM2e4ewq2F5wxKTpUdKgJg5LhlRzgr8R?=
+ =?us-ascii?Q?fIZlEurKfGzWLRY6o2OWegECxDwC0hqq/Li0lDh+C0hEZSkOy4zCH6qRRdHz?=
+ =?us-ascii?Q?48BSPRhx56331Sjrp42SzqxlYkIFvC+4nbPSeKd8IUhhUdDylYNZw5kuhkmL?=
+ =?us-ascii?Q?3m41QGZ8v5968Ey0o/1d7d1oEaJDad1t02Myhm+yA/qt3juyk0nWvF0FM6mG?=
+ =?us-ascii?Q?ts3lvSvLsz6gO8nVi+QUKLSB6qh+3NJA2eV2bAtVYGaZrNKEZfQZDnIPFsRW?=
+ =?us-ascii?Q?mtHUeTgJOF1eCnXqwKnz7tBZjHvTPn0yNy2AXivdIjS4UU+2X77Y7OfWfvMI?=
+ =?us-ascii?Q?xnmckDcHeHI74D7JYHKEO8G4WZRiK63ZFJHDYNjy0YtdpZChCD0phNcuLw8v?=
+ =?us-ascii?Q?9Wqzn2T/Z3qxDU4ZMSD7BDfZolS3eQfh1bNUQmHHsXESRj/MD4KuTrDIS7du?=
+ =?us-ascii?Q?EiwNGELvhsV+0jlF0FawDW0JNEMab7eqAMwPX/26Bgu79Oj0N/YrmH2pWm5s?=
+ =?us-ascii?Q?DgI3brOk9h/wXmZL+kHCChFY3dURVssd6koDzAzRpgmzJWMrsdeW3wpqtgNe?=
+ =?us-ascii?Q?3cmvEELRdDwz/6e/8yifORfqJFZASTDL7noY1rIWjaQnDq82jGpJQAjaQT6H?=
+ =?us-ascii?Q?88HpNMgnvA65aJOJLEVY6ZbQtzHDsfBtOOhI/A+iogBD9T6i2xL1BmrMpUuW?=
+ =?us-ascii?Q?v9/GEY+J7HIgGkY1xT6vfHMjw9IeAUzKXdhILE7fGISvb5lV1QJzAxNtb3Xt?=
+ =?us-ascii?Q?XxnSHB3v3qZir/JrMTqBHk0xm0crj9ZkdAQyyNaqZGwGPHNixC+kFQgVgcRT?=
+ =?us-ascii?Q?nSa+eNKKB1YMFqZKObHwmiMYcv+hdnoh7eraFEJodoEyL/MlS2zlp1AXKzoL?=
+ =?us-ascii?Q?DNFoPticql39yuktgvS5dA4GThzFdPJ/bq0arv0cwKugLsJ0t4/oM+MFBEJm?=
+ =?us-ascii?Q?L5T+cu/6ldeCvR0XqXG38yYXYHop3EHHhrav+C77ifi0olxkH/vgBS2PHRLf?=
+ =?us-ascii?Q?mFUNnKrjy752fA/4vUUefroGcdSTxcO9Wyb+mRehCGpJcq2/WhHVqAVRZzNZ?=
+ =?us-ascii?Q?zMss927JkGNXNnbvXHpOZSG6mfWK8KtI/ZDF75wVosazSV6J5LkdjIlqfjmh?=
+ =?us-ascii?Q?zNBe5aIhv6em8bm4S1DAZRmCoJsR0/YAwHvo+23bDMVsIs7MQw9tHWkZEhKX?=
+ =?us-ascii?Q?7jopycMAJecRz0+H8jAV3ZOZWw6xuHWkLiFr/HHbYy6jFyp4Z5ka2OFSp32r?=
+ =?us-ascii?Q?DD/3raB8B5JvDntNlbn+BX7m3c9YfRHt2ujKwbhn1OWiOkW6Mt1lNBbghZbs?=
+ =?us-ascii?Q?WCVtchv+ObDXznXGZD5t6XpqzpWr03UwSQ5TTZVN/hSKMVVb8zTiOGlHaDaM?=
+ =?us-ascii?Q?SyirvCSwtOwafd6DkZ9zDKxAkN2nA25f?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAVPR08MB9037.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(52116014)(366016)(1800799024)(38350700014);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?Z4eSwfHFAypC0BHiWBnj+KIxx8TlbcmZ/NjzB/IDtagcY7W/0UZX8V+o/CMd?=
- =?us-ascii?Q?rXj6ro7mV4jVcL+emVMv3j3E6LAJZojr9/upubkitTWCHks96EJMzfSflaNz?=
- =?us-ascii?Q?qO5KHxa8BvQvV3CaXvS0Y/Gj98+sz1LsAc7YXS+D8+s9+aEe60wWh4LxnUYz?=
- =?us-ascii?Q?KwGTUR3JTJLOjSI6PLMe9Zx5Wv4cwHHY7E+xwNbcK4bwwQAZnsdZSbBMMEC7?=
- =?us-ascii?Q?3aRC4SalHN7w4w0lnZuvuttxjSgmweNgY5IE/lbUHKwck5+WzLYxZ8XNJ6t2?=
- =?us-ascii?Q?oVpozPRfaieUKWbaF3MN+MyUAnS2LLh7ep/doMjwwAxNetDY4cGBHbnEQlQO?=
- =?us-ascii?Q?+hJ+JFQC69GcwN54l6kwhS7o9+Ry4DTsUrrmK00P8mEdTdqaRbcQPh5mpVb4?=
- =?us-ascii?Q?/cAzYE9UPAKmxze5sYjXKi/RRQnxgpiPYxGY0VBIMkE2wTu/ep26lIhEjIaG?=
- =?us-ascii?Q?l/vmXEfxCWaT5tLnI/VXasYhYy4Qli83vXdpHB/hj46B6H3yEh1wXPG1v1aG?=
- =?us-ascii?Q?FqYEqAe607AqYkAyxyTnGh/VipjOU8TOTkIc/gXB3bblHa3t0rVsoNKvBi0p?=
- =?us-ascii?Q?a3tTMYuqTNb2KD7a9uvPezoG9SZlZK9Nk5w3P2iBhkmb8uhFXSNxgFXn8AFK?=
- =?us-ascii?Q?wAFuFMLS7LkypRImgpPdvhqsIaeqHddlkFKYo2aEUdbEhzkCEcZYZfQ6AsU9?=
- =?us-ascii?Q?K8PoIKR36yD6O1QlGnrMwMdNylDKJdyW9cnG4h9XzUX7wUI+Bpp//w/7Q1Fp?=
- =?us-ascii?Q?w9Mf5rE0lMnbgmVqkdIi9fcpNDMji5iSqTG8sLdlD91MGuY8d/QdK0wnmsuG?=
- =?us-ascii?Q?nmRO/5H3QTMaq6AIfmfqYyRfIcTkAEHXwNP8gRQ78XWHLQ8fcC2IOftTMfiq?=
- =?us-ascii?Q?crcX+lUiW2xK+g6bRT++/JoHLYYHfIjmleMbez0qqtDqLncsU2mDjNryEfBU?=
- =?us-ascii?Q?gCXSdJRoWzoB1vSWSv6SmX3Ha/hfOKWr6D+klLnQLwyH7fsT1+x+81v5JqDN?=
- =?us-ascii?Q?UcOR90PabX0ZJx8jzLoRgkVfmCQczoXBg8NdfuVRTGdmkUwlo7IIL3iMpSko?=
- =?us-ascii?Q?Y7mEkiB+vru+UUmbKYXmVtABgchifGfsJL4hxiqG97cJZv4BuGgnYohOMDFJ?=
- =?us-ascii?Q?th7PBkxE0tTAErC++eO7GdI3ri2rYlfYkjF14NzRo4lIcLuto6uTuRsMyt/r?=
- =?us-ascii?Q?rA+kn0vjDeyM6UeyehTBHX9BULc5j5NNb0cNlRx4fqqSvR7DcBwkIlMJLEeN?=
- =?us-ascii?Q?x4ubJ7htMP01pK+atO4LGV8i858Vn4doyxdXNvmDKJE3qPjsMqB06Sud6/Uv?=
- =?us-ascii?Q?dHMoQNMtvniByKYnDODhznpS4u8+ovbpb409mGewVUDltnd/he1So/K3vuwI?=
- =?us-ascii?Q?stFJ6s0mT0ladrZG2/8Vi3BgscJjslRIerFAr2kbzhIlPXrRVQuPRN+sWY0s?=
- =?us-ascii?Q?v4xV5GsEDU1man9qkMpzsz0Wm4xwzIHIr/I9Z8b1K1s0EsPunWvG5CX2TEMB?=
- =?us-ascii?Q?rTi5xkNepIyfARhdQqJBIDXrgEUIN9fY/0PyFqfZNX4r5Pr7UvvhqDDOdq6a?=
- =?us-ascii?Q?lyv8kHxbaro4nk3v8SC4YncaB3T0YsXlO6U9y3o/ve65ycLB9YcvKQPQV1q2?=
- =?us-ascii?Q?3g=3D=3D?=
+	=?us-ascii?Q?g8mY2wAu3Rx6mtvDHPSjwuZxuKlxwdPBewT1qA3Zt2Xf39M5GhqoScorT8bK?=
+ =?us-ascii?Q?A677htQgI00iQtC4zwvRKArICMlvI5007bTIvsL/k04t7Hek5d9zQD+N4t6h?=
+ =?us-ascii?Q?/OxGBXOUg1+2cBYdR766QifR+1L6YdJJ5zl5l385QTFq8pxBrMFP6q+fICH4?=
+ =?us-ascii?Q?Jww1USeLqCnoBoo/dBGXAXb9yxPjA0e+in24K68SDF6XZJcRU7xVW11zuY8T?=
+ =?us-ascii?Q?KqzzyzMEyk11uqRlIC46kTlQvw1ZBzMwke/YNUVLuJ9LyzvTWtBnFEJsCKN2?=
+ =?us-ascii?Q?9u7Vo96I9F27bUNA2PnHMnZsAaAXXC16eQM5OkVp4IBZ94A/NjgchXJGJ07q?=
+ =?us-ascii?Q?OX/FxXAI4ObyBoynNfDi1+nBH19RgZ/k9bWXhCen8XixRgPllLtXBV89t0Gg?=
+ =?us-ascii?Q?NFU2yX4jV956TurNs7vz7ytSVAUiMJ4af+BDsSP6HM3VFcgBNXi3YuaDpG/O?=
+ =?us-ascii?Q?dEUPGvuGgLlhr7OPp+n2+IFCoYEktx7tz3UdQPA69Vvwbnr2nRZ+r+WAEEwr?=
+ =?us-ascii?Q?uXDzxQD3psTTWJNZy7hylhLcEM+gvV9rwhT2kJ4WMc+RFP51JEQ4MJW9/dvd?=
+ =?us-ascii?Q?lxu90zT89zn0WMXrqS+AhaVLfwfu/9qXFIaZFl82m8f7a5qoThVEBtC+JSyJ?=
+ =?us-ascii?Q?lM6UdcH6N75grPBbxSC/YhSz6urG3UR/hc364GTsV0O78qtwVDbDKS0wTjqf?=
+ =?us-ascii?Q?1/R1zMJ/b6qcNNsYsMdAvM8XvzM0t75r972VozXCpwlyw+S3wqhz/P2D5tj8?=
+ =?us-ascii?Q?N4pnGZrEVjEMAv7zharMn2qSQkN5y+uwGhdzK5dzEnOV1tBjGzvOO2vl8mPs?=
+ =?us-ascii?Q?poBG7/UKZG4mlXYKDDXylJrlQXOIR3f9QS052FhHJK/9jfxctxsnTBkeRdI3?=
+ =?us-ascii?Q?yfC2WTE3uriH9YAX32Aw54Wj9Y9rCmcv9oDuvEgCpSnE0Jdx6E/DctrO0D39?=
+ =?us-ascii?Q?3E3HMlQqe2LpgJScsqLmSowwivHmUnJz7qlblJ9fVgWwbnrGxmhhXDhlNX2l?=
+ =?us-ascii?Q?mkH8iiFNSZko/ng/8vtxKaPnOFhxe5zM8GoQzqsj1oSCTuQz1c8o9c+1zDzq?=
+ =?us-ascii?Q?qDOdPVn3KgmFda39XLrxKFEslRa/3UNkC9GD/8oXq7wuu7Tk/wMnAwrqUXf9?=
+ =?us-ascii?Q?oU0+XB0tPPzK7xWA4rB3AO+5FNptgPH3TmoSKUoTXk4tjYAwI57PVFO2/6/c?=
+ =?us-ascii?Q?Px/pz+zrJQVMh+l/0E9wx9Uib5f2pZoJNhNrL0hqrWJeyjvgLm9NKU/7J6LH?=
+ =?us-ascii?Q?mpAj3BgL7Q6t0uqdNTiA1DV2EqTwPd1Q/nYJyP19yWgKeQub9jjLVuwjSZHV?=
+ =?us-ascii?Q?ha9cEhdZE8KmzgkUq221gOJgQNNbFN1kkAH7HWBaNHekZ0sORgpJr8HGCgb3?=
+ =?us-ascii?Q?BO9JGKRbQYCY2tgDjNnxGwqUWfmPm9Og/CUWINsjz5PeAE/dk3LmrOexNXHs?=
+ =?us-ascii?Q?BtStqws0vcxIbxbkwZXn2VVEeqy3Qu5djoeTFb1Umt6ZrKfUvqOWkUaFh57d?=
+ =?us-ascii?Q?A6aBg6R/xsyVWGr6tTtLevjto9Kwt/UaIowyeZqpn+uXpjejckGysSTARoJh?=
+ =?us-ascii?Q?9M8Kty8QSXQyHB0inhbtNRo2O81h65D0SpPji5a5DqZ+uIFD7Ja/xZm0l8Uk?=
+ =?us-ascii?Q?YA=3D=3D?=
 X-OriginatorOrg: sigmatek.at
-X-MS-Exchange-CrossTenant-Network-Message-Id: fb7bcadd-c8dd-4028-9364-08dd7698dc92
+X-MS-Exchange-CrossTenant-Network-Message-Id: fe74a891-ac73-4e86-fe31-08dd7698dccb
 X-MS-Exchange-CrossTenant-AuthSource: PAVPR08MB9037.eurprd08.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2025 12:28:26.5603
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2025 12:28:26.9240
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bcb1d87a-d2bc-486e-a62b-9ac9c746bc1b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OMRjZt9tnxCXWDBEBsJNs9IyNAXjiREfIo3SLy/p5FFUiaij78eNs2qY+CjpRPBcYpovZtOQePZM0uPGNnJDZPB9dPsSM6n0Gy5svLtO6mg=
+X-MS-Exchange-CrossTenant-UserPrincipalName: RLV9FJbltWgh3ubYpe59EeBBWlHAWw5rbz9WPvfI57Lfz7XPI/lbK4lpgg5XJZbKvuYpxAkgDZaAXyQnyU7VC60PAfzzLVAn60laIglb4XM=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR08MB6424
 
 From: Lorenz Kofler <lorenz@sigma-star.at>
 
-Adding multiple testcases to the smokey testsuite to ensure signal
-handling works properly.
+Useful to create a histogram to evaluate RT signal handling performance.
+The program will output a file called hist.txt in the format:
 
-Test scenarios:
-- Default: Ensure SIGILL handling works.
-- TEST_FPE: Ensure SIGFPE handling works.
-- TEST_NESTING_SAME_SIGNAL: Ensure nested signals of the same type are
-  not allowed.
-- TEST_NESTING_DIFFERENT SIGNALS: Ensure nested signals of different
-  types are allowed and are handled successfully.
-- TEST_MULTIPLE_ILLS: Ensure multiple SIGILLs after each other are
-  handled successfully.
-- TEST_UNSUPPORTED_SIGNAL: Ensure registering of an unsupported signal
-  fails.
-
-All test can be executed with: smokey --run=rtsignals.
+	TIME in Nanoseconds, Frequency
 
 Co-developed-by: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
 Signed-off-by: Lorenz Kofler <lorenz@sigma-star.at>
 ---
- configure.ac                                |   2 +
- testsuite/smokey/Makefile.am                |   2 +
- testsuite/smokey/rtsignals/Makefile.am      |  57 +++
- testsuite/smokey/rtsignals/rtsignals.c      |  35 ++
- testsuite/smokey/rtsignals/rtsignals_test.c | 370 ++++++++++++++++++++
- 5 files changed, 466 insertions(+)
- create mode 100644 testsuite/smokey/rtsignals/Makefile.am
- create mode 100644 testsuite/smokey/rtsignals/rtsignals.c
- create mode 100644 testsuite/smokey/rtsignals/rtsignals_test.c
+ configure.ac                          |   1 +
+ utils/Makefile.am                     |   2 +-
+ utils/rt_signal_hist/Makefile.am      |  22 +++
+ utils/rt_signal_hist/error.h          |  15 ++
+ utils/rt_signal_hist/histo.c          |  47 +++++
+ utils/rt_signal_hist/histo.h          |  14 ++
+ utils/rt_signal_hist/result.c         |  17 ++
+ utils/rt_signal_hist/result.h         |  13 ++
+ utils/rt_signal_hist/rt_signal_hist.c | 237 ++++++++++++++++++++++++++
+ 9 files changed, 367 insertions(+), 1 deletion(-)
+ create mode 100644 utils/rt_signal_hist/Makefile.am
+ create mode 100644 utils/rt_signal_hist/error.h
+ create mode 100644 utils/rt_signal_hist/histo.c
+ create mode 100644 utils/rt_signal_hist/histo.h
+ create mode 100644 utils/rt_signal_hist/result.c
+ create mode 100644 utils/rt_signal_hist/result.h
+ create mode 100644 utils/rt_signal_hist/rt_signal_hist.c
 
 diff --git a/configure.ac b/configure.ac
-index aa3794a5f..678e8ef1e 100644
+index 678e8ef1e..325946a2c 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -174,6 +174,7 @@ esac
- AC_MSG_RESULT([$target_cpu_arch])
- XENO_TARGET_ARCH=$target_cpu_arch
- AM_CONDITIONAL(XENO_X86,[test x$target_cpu_arch = xx86])
-+AM_CONDITIONAL(XENO_ARM, [test x$target_cpu_arch = xarm64 || test x$target_cpu_arch = xarm])
- AC_ENABLE_SHARED
- AC_PROG_LIBTOOL
- 
-@@ -1102,6 +1103,7 @@ AC_CONFIG_FILES([ \
- 	testsuite/smokey/alchemytests/Makefile \
- 	testsuite/smokey/psostests/Makefile \
- 	testsuite/smokey/vxworkstests/Makefile \
-+	testsuite/smokey/rtsignals/Makefile \
- 	testsuite/clocktest/Makefile \
- 	testsuite/xeno-test/Makefile \
- 	utils/Makefile \
-diff --git a/testsuite/smokey/Makefile.am b/testsuite/smokey/Makefile.am
-index c49a5d77f..5bfe10491 100644
---- a/testsuite/smokey/Makefile.am
-+++ b/testsuite/smokey/Makefile.am
-@@ -41,6 +41,7 @@ COBALT_SUBDIRS = 	\
- 	xddp		\
- 	y2038		\
- 	alchemytests	\
-+	rtsignals	\
- 	vxworkstests	\
- 	psostests
- 
-@@ -86,6 +87,7 @@ DIST_SUBDIRS = 		\
- 	xddp		\
- 	y2038		\
- 	alchemytests	\
-+	rtsignals	\
- 	vxworkstests	\
- 	psostests
- 
-diff --git a/testsuite/smokey/rtsignals/Makefile.am b/testsuite/smokey/rtsignals/Makefile.am
+@@ -1114,6 +1114,7 @@ AC_CONFIG_FILES([ \
+ 	utils/slackspot/Makefile \
+ 	utils/corectl/Makefile \
+ 	utils/autotune/Makefile \
++	utils/rt_signal_hist/Makefile \
+ 	utils/net/rtnet \
+ 	utils/net/rtnet.conf \
+ 	utils/net/Makefile \
+diff --git a/utils/Makefile.am b/utils/Makefile.am
+index 4de6434a9..79c39ac90 100644
+--- a/utils/Makefile.am
++++ b/utils/Makefile.am
+@@ -1,5 +1,5 @@
+ SUBDIRS = hdb
+ if XENO_COBALT
+-SUBDIRS += analogy autotune can net ps slackspot corectl
++SUBDIRS += analogy autotune can net ps slackspot corectl rt_signal_hist
+ endif
+ SUBDIRS += chkkconf
+diff --git a/utils/rt_signal_hist/Makefile.am b/utils/rt_signal_hist/Makefile.am
 new file mode 100644
-index 000000000..8d2d6908c
+index 000000000..810a63bba
 --- /dev/null
-+++ b/testsuite/smokey/rtsignals/Makefile.am
-@@ -0,0 +1,57 @@
++++ b/utils/rt_signal_hist/Makefile.am
+@@ -0,0 +1,22 @@
 +testdir = @XENO_TEST_DIR@
-+noinst_LIBRARIES = librtsignals.a
-+
-+librtsignals_a_SOURCES = rtsignals.c
-+librtsignals_a_CPPFLAGS = 		 		\
-+		$(XENO_USER_CFLAGS)    			\
-+		-I$(top_srcdir)/include			\
-+		-DXENO_TEST_DIR='"$(XENO_TEST_DIR)"'
 +
 +CCLD = $(top_srcdir)/scripts/wrap-link.sh $(CC)
 +
-+test_PROGRAMS = rtsignals_signesting_same_signal rtsignals_multiple_ills rtsignals_unsupported_signal rtsignals_sigill
-+if XENO_X86
-+   test_PROGRAMS += rtsignals_sigfpe rtsignals_signesting_different_signals
-+endif
++test_PROGRAMS = rt_signal_hist
 +
 +alchemycppflags =              			 \
 +	$(XENO_USER_CFLAGS)    			 \
 +	-I$(top_srcdir)/include
 +
-+alchemyldadd =						\
-+	$(XENO_POSIX_WRAPPERS)				\
-+	../../../lib/alchemy/libalchemy.la		\
-+	../../../lib/copperplate/libcopperplate.la	\
-+	@XENO_CORE_LDADD@				\
-+	@XENO_USER_LDADD@				\
++alchemyldadd =					\
++	@XENO_AUTOINIT_LDFLAGS@			\
++	$(XENO_POSIX_WRAPPERS)			\
++	../../lib/alchemy/libalchemy.la		\
++	../../lib/copperplate/libcopperplate.la	\
++	@XENO_CORE_LDADD@			\
++	@XENO_USER_LDADD@			\
 +	-lrt -lpthread -lm
 +
-+rtsignals_sigill_SOURCES = rtsignals_test.c
-+rtsignals_sigill_CPPFLAGS = $(alchemycppflags)
-+rtsignals_sigill_LDADD = $(alchemyldadd)
-+rtsignals_sigill_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+
-+rtsignals_sigfpe_SOURCES = rtsignals_test.c
-+rtsignals_sigfpe_CPPFLAGS = $(alchemycppflags) -DTEST_FPE=1
-+rtsignals_sigfpe_LDADD = $(alchemyldadd)
-+rtsignals_sigfpe_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+
-+rtsignals_signesting_same_signal_SOURCES = rtsignals_test.c
-+rtsignals_signesting_same_signal_CPPFLAGS = $(alchemycppflags) -DTEST_NESTING_SAME_SIGNAL=1
-+rtsignals_signesting_same_signal_LDADD = $(alchemyldadd)
-+rtsignals_signesting_same_signal_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+
-+rtsignals_signesting_different_signals_SOURCES = rtsignals_test.c
-+rtsignals_signesting_different_signals_CPPFLAGS = $(alchemycppflags) -DTEST_NESTING_DIFFERENT_SIGNALS=1
-+rtsignals_signesting_different_signals_LDADD = $(alchemyldadd)
-+rtsignals_signesting_different_signals_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+
-+rtsignals_multiple_ills_SOURCES = rtsignals_test.c
-+rtsignals_multiple_ills_CPPFLAGS = $(alchemycppflags) -DTEST_MULTIPLE_ILLS=1
-+rtsignals_multiple_ills_LDADD = $(alchemyldadd)
-+rtsignals_multiple_ills_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-+
-+rtsignals_unsupported_signal_SOURCES = rtsignals_test.c
-+rtsignals_unsupported_signal_CPPFLAGS = $(alchemycppflags) -DTEST_UNSUPPORTED_SIGNAL=1
-+rtsignals_unsupported_signal_LDADD = $(alchemyldadd)
-+rtsignals_unsupported_signal_LDFLAGS = @XENO_AUTOINIT_LDFLAGS@
-diff --git a/testsuite/smokey/rtsignals/rtsignals.c b/testsuite/smokey/rtsignals/rtsignals.c
++rt_signal_hist_SOURCES = rt_signal_hist.c histo.c result.c
++rt_signal_hist_CPPFLAGS = $(alchemycppflags)
++rt_signal_hist_LDADD = $(alchemyldadd)
+diff --git a/utils/rt_signal_hist/error.h b/utils/rt_signal_hist/error.h
 new file mode 100644
-index 000000000..8d797861f
+index 000000000..811ee642c
 --- /dev/null
-+++ b/testsuite/smokey/rtsignals/rtsignals.c
-@@ -0,0 +1,35 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <string.h>
-+#include <smokey/smokey.h>
++++ b/utils/rt_signal_hist/error.h
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef ERROR_EXIT_H
++#define ERROR_EXIT_H
 +
-+static const char * const tests[] = {
-+	"rtsignals_multiple_ills",
-+	"rtsignals_unsupported_signal",
-+	"rtsignals_sigill",
-+	"rtsignals_signesting_same_signal",
-+#if defined(__i386__) || defined(__x86_64__)
-+	"rtsignals_signesting_different_signals",
-+	"rtsignals_sigfpe",
-+#elif defined(__arm__) || defined(__aarch64__)
-+#endif
-+};
-+
-+static int run_rtsignals(struct smokey_test *t, int argc, char *const argv[])
-+{
-+	int test_ret = 0;
-+	int ret = 0;
-+	int tmp;
-+
-+	for (size_t i = 0; i < ARRAY_SIZE(tests); i++) {
-+		tmp = smokey_run_extprog(XENO_TEST_DIR, tests[i],
-+					 "--cpu-affinity=0", &test_ret);
-+		if (test_ret)
-+			ret = test_ret; /* Return the last failed test result */
-+		if (tmp)
-+			break;
-+	}
-+
-+	return ret;
-+}
-+smokey_test_plugin(rtsignals, SMOKEY_NOARGS, "Run external rtsignalstest");
-+
-diff --git a/testsuite/smokey/rtsignals/rtsignals_test.c b/testsuite/smokey/rtsignals/rtsignals_test.c
-new file mode 100644
-index 000000000..1140ce8e3
---- /dev/null
-+++ b/testsuite/smokey/rtsignals/rtsignals_test.c
-@@ -0,0 +1,370 @@
-+// SPDX-License-Identifier: GPL-2.0
 +#include <stdio.h>
 +#include <stdlib.h>
-+#include <unistd.h>
-+#include <sys/types.h>
-+#include <ucontext.h>
-+#include <copperplate/traceobj.h>
-+#include <alchemy/task.h>
-+#include <assert.h>
-+#include <setjmp.h>
-+#include <stdatomic.h>
 +
-+#include <execinfo.h>
++static int error(char *reason, int ret)
++{
++	printf("%s: err= %d\n", reason, ret);
++	exit(1);
++}
++
++#endif
++
+diff --git a/utils/rt_signal_hist/histo.c b/utils/rt_signal_hist/histo.c
+new file mode 100644
+index 000000000..5667e62f3
+--- /dev/null
++++ b/utils/rt_signal_hist/histo.c
+@@ -0,0 +1,47 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <errno.h>
++#include <stdio.h>
++#include <stdlib.h>
++
++#include "histo.h"
++#include "error.h"
++
++void initHisto(struct histo **histo, unsigned long max_entry)
++{
++	unsigned long i = 0;
++	*histo = malloc(sizeof(struct histo) + max_entry * sizeof(unsigned long));
++	if (!histo)
++		return;
++
++	for (i = 0; i < max_entry; ++i)
++		(*histo)->data[i] = 0;
++
++	(*histo)->max_index = 0;
++	(*histo)->max_entry = max_entry;
++}
++
++void writeHisto(struct histo *histo)
++{
++	unsigned long i;
++	FILE *f = fopen("hist.txt", "w");
++
++	if (!f)
++		error("can't open \"hist.txt\"\n", errno);
++
++	for (i = 0; i <= histo->max_index; ++i) {
++		if (histo->data[i] > 0)
++			fprintf(f, "%lu %lu\n", i, histo->data[i]);
++	}
++	fclose(f);
++}
++
++void updateHisto(struct histo *histo, unsigned long curr)
++{
++	unsigned long index;
++
++	index = curr;
++	index = index >= histo->max_entry ? histo->max_entry - 1 : index;
++	histo->max_index = histo->max_index >= index ? histo->max_index : index;
++	histo->data[index]++;
++}
++
+diff --git a/utils/rt_signal_hist/histo.h b/utils/rt_signal_hist/histo.h
+new file mode 100644
+index 000000000..8ff92fce4
+--- /dev/null
++++ b/utils/rt_signal_hist/histo.h
+@@ -0,0 +1,14 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef HISTO_H
++#define HISTO_H
++
++struct histo {
++	unsigned long max_entry;
++	unsigned long max_index;
++	unsigned long data[];
++};
++
++void initHisto(struct histo **histo, unsigned long n);
++void writeHisto(struct histo *histo);
++void updateHisto(struct histo *histo, unsigned long curr);
++#endif
+diff --git a/utils/rt_signal_hist/result.c b/utils/rt_signal_hist/result.c
+new file mode 100644
+index 000000000..db8c99beb
+--- /dev/null
++++ b/utils/rt_signal_hist/result.c
+@@ -0,0 +1,17 @@
++// SPDX-License-Identifier: GPL-2.0
++#include "result.h"
++
++void initResult(struct result *resu)
++{
++	resu->min = (unsigned long)-1l;
++	resu->max = 0ul;
++	resu->avr = 0ul;
++}
++
++void updateResult(struct result *resu, unsigned long curr, unsigned long ith_entry)
++{
++	resu->min = curr < resu->min ? curr : resu->min;
++	resu->max = curr > resu->max ? curr : resu->max;
++	resu->avr = (resu->avr * (ith_entry - 1) + curr) / ith_entry;
++}
++
+diff --git a/utils/rt_signal_hist/result.h b/utils/rt_signal_hist/result.h
+new file mode 100644
+index 000000000..5c164fa66
+--- /dev/null
++++ b/utils/rt_signal_hist/result.h
+@@ -0,0 +1,13 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef RESULT_H
++#define RESULT_H
++
++struct result {
++	unsigned long min;
++	unsigned long max;
++	unsigned long avr;
++};
++
++void initResult(struct result *resu);
++void updateResult(struct result *resu, unsigned long curr, unsigned long ith_entry);
++#endif
+diff --git a/utils/rt_signal_hist/rt_signal_hist.c b/utils/rt_signal_hist/rt_signal_hist.c
+new file mode 100644
+index 000000000..bfc8947aa
+--- /dev/null
++++ b/utils/rt_signal_hist/rt_signal_hist.c
+@@ -0,0 +1,237 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <stdio.h>
 +#include <signal.h>
-+#include <pthread.h>
++#include <stdint.h>
++#include <stdlib.h>
++#include <errno.h>
 +
-+static void sigdebug_handler(int sig, siginfo_t *info, void *context);
-+static void linux_handler(int sig, siginfo_t *info, void *context);
-+static void rt_test_handler(int sig, siginfo_t *info, void *context);
-+static void basic_rt_handler(int sig, siginfo_t *info, void *context);
++#include <ucontext.h>
 +
-+//#define DEBUG
-+#define MULTIPLE_SIGILL 100
-+#define CHECK_BIT(bit) check_bit(bit, #bit)
++#include <alchemy/task.h>
++#include <cobalt/signal.h>
++#include <copperplate/clockobj.h>
 +
-+// expected status bits:
-+#define BIT_RT_HANDLER_ENTERED		(1<<0)
-+#define BIT_RT_HANDLER_FINISHED		(1<<1)
-+#define BIT_RT_HANDLER_WRONG_TASK	(1<<2)
-+#define BIT_RT_HANDLER_WRONG_SIGNAL	(1<<3)
-+#define BIT_DOMAIN_SWITCH		(1<<4)
-+#define BIT_LINUX_HANDLER_FINISHED	(1<<5)
-+#define BIT_RT_TASK_FINSIHED		(1<<6)
-+#define BIT_BASIC_RT_HANDLER_FINISHED	(1<<7)
++#include "histo.h"
++#include "result.h"
++#include "error.h"
++
++#define USE_GETTIME 0 // TODO: when is this needed?
++#define MAX_TIME 10000000
 +
 +static RT_TASK task;
-+static sig_atomic_t status;
-+static sig_atomic_t cause;
++static const char *task_name = "signal_test_task";
++static const int prio = 80;
++static int TEST_SIGNAL = SIGILL;
 +
-+struct sig_handler {
-+    int signal;
-+    void (*handler)(int, siginfo_t *, void *);
++typedef struct {
++	const char *name;
++	int value;
++} SignalMapping;
++
++static const SignalMapping signals[] = {
++	{"SIGILL", SIGILL},
++	{"SIGTRAP", SIGTRAP},
++	{"SIGFPE", SIGFPE},
++	{"SIGSEGV", SIGSEGV},
++	{NULL, 0}
 +};
 +
-+/*
-+ * Test scenarios:
-+ * - Default:			Ensure SIGILL handling works.
-+ * - TEST_FPE:			Ensure SIGFPE handling works.
-+ * - TEST_NESTING_SAME_SIGNAL	Ensure nested signals of the same type are not
-+ *				allowed.
-+ * - TEST_NESTING_DIFFERENT SIGNALS:
-+ *				Ensure nested signals of different types are allowed
-+ *				and are handled successfully.
-+ * - TEST_MULTIPLE_ILLS		Ensure multiple SIGILLs after each other are handled
-+ *				successfully.
-+ * - TEST_UNSUPPORTED_SIGNAL	Ensure registering of an unsupported signal fails.
-+ */
-+#if defined(TEST_NESTING_SAME_SIGNAL)
-+#define TEST_SIGNAL SIGILL
-+#define TEST_SIGNAL_NESTED SIGILL
-+static const struct sig_handler linux_handlers[] = {
-+    {SIGDEBUG, sigdebug_handler},
-+    {SIGILL,   linux_handler},
-+};
-+static const struct sig_handler rt_handlers[] = {
-+    {SIGILL,   rt_test_handler},
-+};
-+static int expected_status = BIT_RT_HANDLER_ENTERED
-+				| BIT_RT_HANDLER_FINISHED
-+				| BIT_DOMAIN_SWITCH
-+				| BIT_LINUX_HANDLER_FINISHED
-+				| BIT_RT_TASK_FINSIHED;
-+
-+#elif defined(TEST_UNSUPPORTED_SIGNAL)
-+#define TEST_SIGNAL SIGSEGV
-+static const struct sig_handler linux_handlers[] = {
-+    {SIGDEBUG, sigdebug_handler},
-+    {SIGILL,   linux_handler},
-+};
-+static const struct sig_handler rt_handlers[] = {
-+    {SIGSEGV,   rt_test_handler},
-+};
-+static int expected_status = 0;
-+
-+#elif defined(TEST_NESTING_DIFFERENT_SIGNALS)
-+#define TEST_SIGNAL SIGFPE
-+#define TEST_SIGNAL_NESTED SIGILL
-+static int expected_status = BIT_RT_HANDLER_ENTERED
-+				| BIT_RT_HANDLER_FINISHED
-+				| BIT_RT_TASK_FINSIHED
-+				| BIT_BASIC_RT_HANDLER_FINISHED;
-+static const struct sig_handler linux_handlers[] = {
-+    {SIGDEBUG, sigdebug_handler},
-+    {SIGILL,   linux_handler},
-+    {SIGFPE,   linux_handler},
-+};
-+static const struct sig_handler rt_handlers[] = {
-+    {SIGFPE,   rt_test_handler},
-+    {SIGILL,   basic_rt_handler},
-+};
-+
-+#elif defined(TEST_MULTIPLE_ILLS)
-+#define TEST_SIGNAL SIGILL
-+static const struct sig_handler linux_handlers[] = {
-+    {SIGDEBUG, sigdebug_handler},
-+    {SIGILL,   linux_handler},
-+};
-+static const struct sig_handler rt_handlers[] = {
-+    {SIGILL,   rt_test_handler},
-+};
-+static int expected_status = BIT_RT_HANDLER_ENTERED 
-+				| BIT_RT_HANDLER_FINISHED 
-+				| BIT_RT_TASK_FINSIHED;
-+
-+#elif defined(TEST_FPE)
-+#define TEST_SIGNAL SIGFPE
-+static const struct sig_handler linux_handlers[] = {
-+    {SIGDEBUG, sigdebug_handler},
-+    {SIGFPE,   linux_handler},
-+};
-+static const struct sig_handler rt_handlers[] = {
-+    {SIGFPE,   rt_test_handler},
-+};
-+static int expected_status = BIT_RT_HANDLER_ENTERED 
-+				| BIT_RT_HANDLER_FINISHED 
-+				| BIT_RT_TASK_FINSIHED;
-+
-+#else /* Default Test */
-+#define TEST_SIGNAL SIGILL
-+static const struct sig_handler linux_handlers[] = {
-+    {SIGDEBUG, sigdebug_handler},
-+    {SIGILL,   linux_handler},
-+};
-+static const struct sig_handler rt_handlers[] = {
-+    {SIGILL,   rt_test_handler},
-+};
-+static int expected_status = BIT_RT_HANDLER_ENTERED 
-+				| BIT_RT_HANDLER_FINISHED 
-+				| BIT_RT_TASK_FINSIHED;
-+
-+#endif
-+
-+#define NUM_LINUX_HANDLERS (sizeof(linux_handlers) / sizeof(linux_handlers[0]))
-+#define NUM_RT_HANDLERS (sizeof(rt_handlers) / sizeof(rt_handlers[0]))
-+
-+static void debug_log(const char *format, ...) {
-+#ifdef DEBUG
-+    va_list args;
-+    va_start(args, format);
-+    vfprintf(stderr, format, args);
-+    va_end(args);
-+#endif
-+}
-+
-+static bool __maybe_unused check_bit(int bit, const char *bit_name){
-+	if ((status & bit) == (expected_status & bit))
-+		return true;
-+
-+	fprintf(stderr, "%s not as expected.\n", bit_name);
-+	return false;
-+}
-+
-+static int test_successful(void)
++static int get_signal_value(const char *signal_name)
 +{
-+	if (status == expected_status) {
-+		debug_log("Test passed\n", stderr);
-+		return 1;
++	for (int i = 0; signals[i].name != NULL; i++) {
++		if (strcmp(signals[i].name, signal_name) == 0)
++			return signals[i].value;
 +	}
-+	debug_log("Test not passed\n", stderr);
-+#ifdef DEBUG
-+	static const char * const sigdebug_msg[] = {
-+		[SIGDEBUG_UNDEFINED] = "latency: received SIGXCPU for unknown reason",
-+		[SIGDEBUG_MIGRATE_SIGNAL] = "received signal",
-+		[SIGDEBUG_MIGRATE_SYSCALL] = "invoked syscall",
-+		[SIGDEBUG_MIGRATE_FAULT] = "triggered fault",
-+		[SIGDEBUG_MIGRATE_PRIOINV] = "affected by priority inversion",
-+		[SIGDEBUG_NOMLOCK] = "Xenomai: process memory not locked (missing mlockall?)",
-+		[SIGDEBUG_WATCHDOG] = "Xenomai: watchdog triggered (period too short?)",
-+	};
++	return -1;
++}
 +
-+	CHECK_BIT(BIT_RT_HANDLER_ENTERED);
-+	CHECK_BIT(BIT_RT_HANDLER_FINISHED);
-+	CHECK_BIT(BIT_RT_HANDLER_WRONG_TASK);
-+	CHECK_BIT(BIT_RT_HANDLER_WRONG_SIGNAL);
-+	if (!CHECK_BIT(BIT_DOMAIN_SWITCH)){
-+		if (expected_status & BIT_DOMAIN_SWITCH)
-+			debug_log("- Cause: Domain switch should have happend.\n");
-+		else
-+			debug_log("- Caused by: %s\n", sigdebug_msg[cause]);
++static const char *get_signal_name(int signal_value)
++{
++	for (int i = 0; signals[i].name != NULL; i++) {
++		if (signals[i].value == signal_value)
++			return signals[i].name;
 +	}
-+	CHECK_BIT(BIT_LINUX_HANDLER_FINISHED);
-+	CHECK_BIT(BIT_RT_TASK_FINSIHED);
-+	CHECK_BIT(BIT_BASIC_RT_HANDLER_FINISHED);
++	return "UNKNOWN_SIGNAL";
++}
++
++static int get_step(void)
++{
++#if defined(__i386__) || defined(__x86_64__)
++	// do_fpe: `idivl %ecx` is 2 bytes long
++	// do_ill: `ud2` is 2 bytes long
++	return 2;
++#else
++	// do_ill: `udf #0xdead` is 4 bytes long
++	return 4;
 +#endif
-+
-+	return 0;
 +}
 +
-+static void register_signal_handler(int signal, void (*handler)(int, siginfo_t *, void *)) {
-+    struct sigaction sa;
++static void do_cleanup(void *context)
++{
++	int step = 0;
++	ucontext_t *uc = context;
 +
-+    memset(&sa, 0, sizeof(sa));
-+    sa.sa_sigaction = handler;
-+    sa.sa_flags = SA_SIGINFO;
-+    if (sigaction(signal, &sa, NULL) == -1) {
-+        perror("Failed to register Linux handler");
-+    }
++	step = get_step();
++
++#if defined(__i386__)
++	uc->uc_mcontext.gregs[REG_EIP] += step;
++#elif defined(__x86_64__)
++	uc->uc_mcontext.gregs[REG_RIP] += step;
++#elif defined(__aarch64__)
++	uc->uc_mcontext.pc += step;
++#elif defined(__arm__)
++	uc->uc_mcontext.arm_pc += step;
++#else
++	#error "Unknown Architecture"
++#endif
 +}
 +
-+inline static void do_ill(void)
++static void sigdebug_handler(int sig, siginfo_t *info, void *context)
++{
++	printf("%s called, this should not happen\n", __func__);
++	exit(EXIT_FAILURE);
++}
++
++static void sighandler(int sig, siginfo_t *info, void *data)
++{
++	do_cleanup(data);
++}
++
++static void do_ill(void)
 +{
 +#if defined(__i386__) || defined(__x86_64__)
 +	__asm__("ud2");
@@ -552,147 +481,124 @@ index 000000000..1140ce8e3
 +#endif
 +}
 +
-+static void do_cleanup(void *context)
++static void printPreRunInfo(void)
 +{
-+	int step = 0;
-+	ucontext_t *uc = context;
++	if (USE_GETTIME) {
++		struct timespec time;
 +
-+#if defined(__i386__) || defined(__x86_64__)
-+	/*
-+	* do_fpe(): idivl %ecx		2 bytes long
-+	* do_ill(): ud2			2 bytes long
-+	*/
-+	step = 2;
-+#else
-+	// do_ill(): udf #0xdead	4 bytes long
-+	step = 4;
-+#endif
-+
-+#if defined(__i386__)
-+	uc->uc_mcontext.gregs[REG_EIP] += step;
-+#elif defined(__x86_64__)
-+	uc->uc_mcontext.gregs[REG_RIP] += step;
-+#elif defined(__aarch64__)
-+	uc->uc_mcontext.pc += step;
-+#elif defined(__arm__)
-+	uc->uc_mcontext.arm_pc += step;
-+#endif
-+}
-+
-+static void __maybe_unused linux_handler(int sig, siginfo_t *info, void *context)
-+{
-+	do_cleanup(context);
-+	status |= BIT_LINUX_HANDLER_FINISHED;
-+}
-+
-+static void __maybe_unused basic_rt_handler(int sig, siginfo_t *info, void *context)
-+{
-+	do_cleanup(context);
-+	status |= BIT_BASIC_RT_HANDLER_FINISHED;
-+}
-+
-+static void __maybe_unused sigdebug_handler(int sig, siginfo_t *info, void *context)
-+{
-+	cause = sigdebug_reason(info);
-+	if (cause > SIGDEBUG_WATCHDOG)
-+		cause = SIGDEBUG_UNDEFINED;
-+
-+	status |= BIT_DOMAIN_SWITCH;
-+}
-+
-+static void __maybe_unused rt_test_handler(int sig, siginfo_t *info, void *context)
-+{
-+	RT_TASK *self;
-+	(void)context;
-+
-+	status |= BIT_RT_HANDLER_ENTERED;
-+	if (sig != TEST_SIGNAL) {
-+		status |= BIT_RT_HANDLER_WRONG_SIGNAL;
++		clock_getres(CLOCK_MONOTONIC_RAW, &time);
++		printf("Using CLOCK_MONOTONIC_RAW: res_sec = %lld res_nsec = %ld\n",
++			(long long)time.tv_sec, time.tv_nsec);
 +		return;
 +	}
-+	atomic_signal_fence(memory_order_seq_cst);
 +
-+#ifdef TEST_SIGNAL_NESTED
-+	switch (TEST_SIGNAL_NESTED) {
-+		case SIGILL:
-+			do_ill();
-+			break;
-+		default:
-+			break;
-+	}
-+#endif
-+
-+	atomic_signal_fence(memory_order_seq_cst);
-+
-+	self = rt_task_self();
-+	if (self == NULL || !rt_task_same(self, &task))
-+		status |= BIT_RT_HANDLER_WRONG_TASK;
-+	else
-+		status |= BIT_RT_HANDLER_FINISHED;
-+
-+	do_cleanup(context);
++	printf("USING Xenomai rt_timer: res_nsec = %lld\n", rt_timer_ticks2ns(1));
 +}
 +
++static inline unsigned long ns_now(void)
++{
++	if (USE_GETTIME) {
++		struct timespec time;
 +
-+static void task_proc(void *arg)
++		clock_gettime(CLOCK_MONOTONIC_RAW, &time);
++		return time.tv_nsec;
++	}
++
++	ticks_t ticks;
++
++	ticks = clockobj_get_ns();
++	return rt_timer_ticks2ns(ticks);
++}
++
++static void task_func(void *cookie)
++{
++	struct histo *histogram = (struct histo *)cookie;
++	struct result resu;
++
++	unsigned long start_time, end_time, diff_time;
++	int i, j, ret;
++	char error_message[80];
++
++	printPreRunInfo();
++
++	ret = cobalt_rt_signal(TEST_SIGNAL, sighandler);
++	if (ret) {
++		snprintf(error_message, sizeof(error_message),
++			"Failed to register rtsignal signal handler for signal %s",
++			get_signal_name(TEST_SIGNAL));
++		error(error_message, ret);
++	}
++
++	initResult(&resu);
++
++	for (j = 0; j < 10000; ++j) {
++		for (i = 0; i < 1000; ++i) {
++
++			start_time = ns_now();
++			if (TEST_SIGNAL == SIGILL)
++				do_ill();
++			else if (TEST_SIGNAL == SIGFPE)
++				do_fpe();
++			else
++				error("Unsupported signal encountered", TEST_SIGNAL);
++
++			end_time = ns_now();
++
++			if (end_time <= start_time) { // dismiss on counter overrun
++				continue;
++			}
++
++			diff_time = end_time - start_time;
++			//+1 as we add with index i the (i+1)th entry
++			updateResult(&resu, diff_time, i+1);
++			updateHisto(histogram, diff_time);
++		}
++
++		printf("%d: min = %lu max = %lu avr = %lu\n", j, resu.min, resu.max, resu.avr);
++		rt_task_sleep(1000000);
++	}
++}
++
++int main(int argc, char **argv)
 +{
 +	int ret;
++	struct histo *histogram;
++	struct sigaction sa;
 +
-+	// Register rt-signal handlers
-+	for (size_t i = 0; i < NUM_RT_HANDLERS; i++) {
-+		ret = cobalt_rt_signal(rt_handlers[i].signal, rt_handlers[i].handler);
-+		if (ret != 0)
-+			return;
++	if (argc != 2) {
++		fprintf(stderr, "Usage: %s <signal>\n", argv[0]);
++		exit(1);
 +	}
 +
-+	// trigger fault
-+	switch(TEST_SIGNAL) {
-+		case SIGILL:
-+			do_ill();
-+			break;
-+		case MULTIPLE_SIGILL:
-+			do_ill();
-+			do_ill();
-+			do_ill();
-+			break;
-+		case SIGFPE:
-+			do_fpe();
-+			break;
-+		default:
-+			break;
-+	}
++	TEST_SIGNAL = get_signal_value(argv[1]);
++	if (TEST_SIGNAL < 0)
++		error("Signal not supported", TEST_SIGNAL);
 +
-+	atomic_signal_fence(memory_order_seq_cst);
++	memset(&sa, 0, sizeof(sa));
++	sa.sa_sigaction = sigdebug_handler;
++	sa.sa_flags = SA_SIGINFO | SA_NODEFER;
++	sigaction(SIGDEBUG, &sa, NULL);
 +
-+	// clear T_WARNSW so that rt_task_delete() does not send SIGDEBUG
-+	rt_task_set_mode(T_WARNSW, 0, 0);
++	initHisto(&histogram, MAX_TIME);
++	if (!histogram)
++		error("initHisto failed", -ENOMEM);
 +
-+	status |= BIT_RT_TASK_FINSIHED;
++	ret = rt_task_create(&task, task_name, 0, prio, T_JOINABLE | T_WARNSW);
++	if (ret)
++		error("rt_task_create failed", ret);
++
++	ret = rt_task_start(&task, task_func, histogram);
++	if (ret)
++		error("rt_start_task failed", ret);
++
++	rt_task_join(&task);
++	rt_task_delete(&task);
++
++	writeHisto(histogram);
++
++	return 0;
 +}
 +
-+int main(void)
-+{
-+	int ret;
-+
-+	// Setup Linux handlers
-+	for (size_t i = 0; i < NUM_LINUX_HANDLERS; i++) {
-+		register_signal_handler(linux_handlers[i].signal, linux_handlers[i].handler);
-+	}
-+
-+	// Run RT Task
-+	ret = rt_task_create(&task, "rt-task", 0, 20, T_JOINABLE | T_WARNSW);
-+	assert(ret == 0);
-+
-+	ret = rt_task_start(&task, task_proc, NULL);
-+	assert(ret == 0);
-+
-+	ret = rt_task_join(&task);
-+	assert(ret == 0);
-+
-+	(void)ret;
-+
-+	return test_successful() ? EXIT_SUCCESS : EXIT_FAILURE;
-+}
 -- 
 2.48.1
 
