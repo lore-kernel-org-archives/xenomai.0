@@ -1,57 +1,54 @@
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2114.outbound.protection.outlook.com [40.107.21.114])
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2126.outbound.protection.outlook.com [40.107.22.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F369626156E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13451267B96
 	for <xenomai@lists.linux.dev>; Tue,  8 Apr 2025 12:28:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.21.114
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.22.126
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744115315; cv=fail; b=tce428/8xz9anIkZDJ2OnwEsDzH2+amW8jdviDopnSKHPU078Rs61yoXZx2z1vg+44STGmM9OaahHaeD8M98sMv0yOzrLSLj/FcHWE7J4AWXfzPgQPzhuoCsK0Rk+PvVTE77zUEqpl4sL1PRWPJqIslwzACZtYjnW+WzbS2FOrk=
+	t=1744115317; cv=fail; b=EqSFsD+y+LCM7Hvq5nhoy1uGh3KA5NsJAAv10EdwoWKF8bouKsE25B5/kW+6EvxnjaEh/3MerWzgMM0CR6GRnlSU3/enpvS/vlI4Vdqzl/WCqMpCQQ6i7PXPdxjiqRt81jJ1ZnihE6NFz1Q7ORXzkMeLmbmb+wZ4lqOTvz8d44g=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744115315; c=relaxed/simple;
-	bh=IByier2J31lSpd3MwR2+OZZx2TxRB7ip90P61DXyUMA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=uLUWnqAB77FKHIEw7D4doZEOTjrPJZIZMgaKzzXvSwAk7GsYZa9ZZoPCj/8DdFpQwqGq+YPXoJtWl/ki2T+itAmEO3EMRwsQedp4MMKTThVQxbPVvFkhlPB493zoodrUbEc9Zc9pLrIwFuyM0wnshImTvcXoOHYxYbpYiLi6gOg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sigmatek.at; spf=pass smtp.mailfrom=sigmatek.at; dkim=pass (1024-bit key) header.d=sigmatek.at header.i=@sigmatek.at header.b=v/TXDARX; arc=fail smtp.client-ip=40.107.21.114
+	s=arc-20240116; t=1744115317; c=relaxed/simple;
+	bh=cbI/TJTx5gdfKZRx3efCKwA5XuyFC1c/2rerEoMwuyY=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=AJl8J1biKUijlDSBkGA5caIJqsdTUcPMhhe4sEQ3Qmo1+f+4UG/V/sqGT1ummfQ15A8ks+OEbcu2pZbXCKmyuvK2apF3wXH7RwD4xhlWFEfLHiOdqoQIDUSXuYqqP5U31k3BrBOkfR9L9fDuTutMRu3yC3cj6RB/tPzS1z5+LFc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sigmatek.at; spf=pass smtp.mailfrom=sigmatek.at; dkim=pass (1024-bit key) header.d=sigmatek.at header.i=@sigmatek.at header.b=gXcUq0qO; arc=fail smtp.client-ip=40.107.22.126
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sigmatek.at
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sigmatek.at
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=sigmatek.at header.i=@sigmatek.at header.b="v/TXDARX"
+	dkim=pass (1024-bit key) header.d=sigmatek.at header.i=@sigmatek.at header.b="gXcUq0qO"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=yWyBV5clAXC0h9On58hN9/5KNop5EWFIinDhVZEgPPTPLSx0Wc+EtaPfzJAh4IN6+bgIvgTiUs28K9nCQZ59nqG0UQgxYn+4wXecd0ICutb4DNSO8Mbgi6yaEKW0JV09Couk8zBElvzfFzeQBYLMR1P/eJ3tXrRG0IMwzSBPGmv6+wyNOLRAfmcv3TSy9BVFTWFVmCNYoynEeXOaviOylgoAboHX/UkpTLXhj7zQNX2j30D+h8t+ioEFDueM3NVxFVg2ZjB4U7oAwlZBI4B/NSZmS2LTuFRXQJAVuIVO0i5Mc6TNx6UJrYtkaKMa2nsx9+EBks6xHxV/Rn0h/vFEaw==
+ b=uxJKjehfXldovetzjx/ODcsBQLWpUZbV2dplmWkTe2iQI2Ykus5j8Pe2MwSWvkayVz4QNHWSNu6L2Qi+KhmAQNR4B3fsTLByRiIz/mwxbdAmApmgLvWayooyJbJHcpFDr3g0Qr3bnCyNvYRfnwLxHmGR01YSV40X9CSt23zPJGpDF99q+qCBexU+dnWxFhsX7BUFG/b/kUAAkL0HcV6qTiB/H3BrCuB9T4g+JMYuoel/O7k3tRqhLtVlPwVe7v4dZ9E9oAr7LEH3w5KHNELZ/m79lWSNnbPF3Pvr2Mdj5rprgztLmj9CGnmfwKPKqojLBB/xcveg7di13yu/KBd1Zw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Q7f4Nw+XgcFf3skwwfVZIwfhjzyo5qnZ/B4JSPzTSfc=;
- b=lWhEhbmWAOAI3qF02z5PUG+8Sd8jBjfj/cx1GUx6o5Wv2lxmyr6UjoxAWxYSYEcMTPFz/+JJV0HjTCswj6LjJKgsCZAdjFDSmDb0I4/XohUkECNhVA9aoutiOFum38DqfDItHkfVJNJzE3Gw8bpCYNu07k4EMMLOHMzWnkS7f9XD9lBrwF++koJCpi0l6+jOr7scxnWVrmmvflytE3QVmJsaoPHYObqeLpejou8itC6vBBjc7jGBxMxWpsxnI9zbAm1Uic2Sr7T1Ihx9tRmbA8XIsyUOmuCYpLvJsSTANaAQXD7o0vy6Mmw3J7vIOvTCAFjOvWSQgQ2X2X7y+dwbBg==
+ bh=DvzYpTdqgR/uzxZ9wpJTc5PilJJbQ0kTllJUaR8MZvY=;
+ b=wKGBbvqFUjpM7nczZ14Za/moG3StwBfUOJzA60eyHuYuK0lRW5cefR3PyfWJ+18+POEt6NQ5LsWRMB2VC/t+0ixVOaC9F163lUWYJF/Y24UEPndqT2rWVM2g51BsvNCDYNECddFLc4icoAqhPLtPg/lfsawycTBUXyI2cnx9bMGMA5j+XOMh/kgetEYQgj1hV1zUvvCSmRn8BlxQm+8HsS7meIA4WE4EdiTOANJK1QhbVEFcQcJ/kipIJhlDazrpekh+Y+QdNwGd4xyj8xxmBdRfs5qz+UKLZV/f0tRQxDcjwr7+kEHFimaEwTtj0gvtKo8OkPnRlMN5lc+uok2cRw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=sigmatek.at; dmarc=pass action=none header.from=sigmatek.at;
  dkim=pass header.d=sigmatek.at; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sigmatek.at;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Q7f4Nw+XgcFf3skwwfVZIwfhjzyo5qnZ/B4JSPzTSfc=;
- b=v/TXDARX7+ZmkIiTE50fNbKQDFPlBkZNm/l+zsZsuJ6lQcE7kFIDl69l6e1gwqL+4uUIGrv+XjdzLXKUvw3v9NBzSmVYOi5oUdYHtrZ+BD8zwMry8hRMBtr0Qm9qYVRFMTWoupnUxI+2LKUPHnZ7dxtkUm8Pg9vrnbtrhFJudMU=
+ bh=DvzYpTdqgR/uzxZ9wpJTc5PilJJbQ0kTllJUaR8MZvY=;
+ b=gXcUq0qOr0SIB5owfD3YrubFA9sfPHUNUW1e5042WOk/S2cyq9M2aXB2EAZwXnNP0n2S3kfpekFPJa9E6ieNMAjYJuFL3eMxr+zdn+bYel+cOK5657kXUhANbeGc+w2CcH1iMD8zgIdFlLjoFs+K4xDbsgBpauc1Or1+JY5M7zg=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=sigmatek.at;
 Received: from PAVPR08MB9037.eurprd08.prod.outlook.com (2603:10a6:102:325::13)
  by AS8PR08MB6424.eurprd08.prod.outlook.com (2603:10a6:20b:33e::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8606.28; Tue, 8 Apr
- 2025 12:28:25 +0000
+ 2025 12:28:24 +0000
 Received: from PAVPR08MB9037.eurprd08.prod.outlook.com
  ([fe80::3d5f:e34f:e1a7:59d8]) by PAVPR08MB9037.eurprd08.prod.outlook.com
  ([fe80::3d5f:e34f:e1a7:59d8%6]) with mapi id 15.20.8606.033; Tue, 8 Apr 2025
- 12:28:25 +0000
+ 12:28:24 +0000
 From: Nikolaus Funk <nikolaus.funk@sigmatek.at>
 To: xenomai@lists.linux.dev
 Cc: richard@sigma-star.at,
 	Richard Weinberger <richard@nod.at>
-Subject: [PATCH 3/6] cobalt/arm: Add architecture specific signal code
-Date: Tue,  8 Apr 2025 14:28:14 +0200
-Message-ID: <20250408122817.626897-4-nikolaus.funk@sigmatek.at>
+Subject: [RFC PATCH 0/6] Xenomai: Real-time Exception Handling
+Date: Tue,  8 Apr 2025 14:28:11 +0200
+Message-ID: <20250408122817.626897-1-nikolaus.funk@sigmatek.at>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250408122817.626897-1-nikolaus.funk@sigmatek.at>
-References: <20250408122817.626897-1-nikolaus.funk@sigmatek.at>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: FR0P281CA0185.DEUP281.PROD.OUTLOOK.COM
@@ -65,139 +62,173 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PAVPR08MB9037:EE_|AS8PR08MB6424:EE_
-X-MS-Office365-Filtering-Correlation-Id: bb654b7a-904b-48f3-a674-08dd7698dc0f
+X-MS-Office365-Filtering-Correlation-Id: be44787d-6fc8-428c-0ea9-08dd7698db77
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
 	BCL:0;ARA:13230040|376014|52116014|366016|1800799024|38350700014;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?WKtBHfCrCIyFFmzar0uvdnSk5Pg72NsXOHcp9KHLbZpStCI5c0cqx4LKsGs8?=
- =?us-ascii?Q?UuR15uLDvCniSlLi3TzsDWLyo6j0l/D8JsBb/kHrZqIyPu6FWMlSWvVas4xq?=
- =?us-ascii?Q?+RPbikaRoOVCA5iBjOyi2aXiq1SWgulsJehgvJfl/2nTM3GyYkTmhjocOjmI?=
- =?us-ascii?Q?Xz0x2GLieLPtVbItfcw1mLvkMpl1nfZ0sxOyJgkTRpcul3azsRgNKfuCRDm5?=
- =?us-ascii?Q?gqUs0JAYdjD4Da5ZJqSp5ba78krYyEfN83R3Y8Jk+hAZVEfxQ5lenlj72qpa?=
- =?us-ascii?Q?Fzv+zbjdQv9Y/ZVGMinCW7gYWIeRzHZH0QurGqV95vCiqvcDofsyznGXmVAV?=
- =?us-ascii?Q?Sf0EJcRXzK3g0IG9Tyw+6pTN8aI5UZQKv1tNhJiy7y186kwq9z58lluqqqeG?=
- =?us-ascii?Q?T4/PaaNjBX7OQotDwNuV3ija/H7fc0So2Yyd8mA0is906+t76UvRSysDDFCY?=
- =?us-ascii?Q?IBcNlxjqLTLQ2zzhXKckEn6PpuGzRY+9l89C2OcrzbhIwnMVXLCjdxuG8DLG?=
- =?us-ascii?Q?8a4iE4VavdAM6eVo2bf41/vcx4AKJHhmTuLs4e7HYF54Gdomcp63RNJh29TU?=
- =?us-ascii?Q?ReobyK9L853xaEY0ulBSIvEw76r6sVglDlGRSTd5mCx7tjJAQqtW5NZVIpA+?=
- =?us-ascii?Q?P0Khwtmk3CFUUP22Y/3pW01rbhHt31jW2tOl6CQ+Wxr65nB0WyemWkFO/Rm4?=
- =?us-ascii?Q?49uBrA9SBvEalQ+FN7RMRrCSeeyPcJQAHzJIMeVCFU7LR0Pt1+GGJLTAb/Ru?=
- =?us-ascii?Q?yW/G4qUAFoY942FgHEriyqwEV2qcd7SSf4neLdWaeToXDYuvDiyIIyGtuEZl?=
- =?us-ascii?Q?z1bxVupmx1L1R2yFY07+Z9dxBknXj6+/vxBEgzJ8Tr0C5NneA4zi3FXsUyJa?=
- =?us-ascii?Q?9gInZHbeVX04ag+jfS0q8L88QRNrA5/J9MUzRSHcoX1uSkp1Yix68Kz8+p84?=
- =?us-ascii?Q?bKo2Gz4DWO7nuHTgPIhB3kM1vffksXIXTjMIjq1AgV88KBqxcIBink+hvt1t?=
- =?us-ascii?Q?jo8Qge6cNvizCXU5fx9jls9gAMj1X08+QrqSffWOo6O+42ye44CB2V3dewzS?=
- =?us-ascii?Q?P3ydbv03EUfY7HunjVSS99IUgddKFGfP4jnyDHM0HUiafrWhfV0hmsrua491?=
- =?us-ascii?Q?M/v7kJTqxlyYz0FPPmDElXiSxTfMluXW73upweXDWGAYrDztkyIBngVS7NvB?=
- =?us-ascii?Q?5BQJRgD8UlzIMiEksouYg24kUfBB2BablMOpL7ILqp2/ml5PN+7Bm1DjyO6w?=
- =?us-ascii?Q?vQFDWmc+h0p4Ezq2trppI5ZXvnhwY2dHK7CtDgo+J3dkAY7cFxeEEcageBZH?=
- =?us-ascii?Q?MAhgO1CjFTp/UeabqTZyXArgij+eee0+c170X+SbatWP/FjLSF99dkS+B+Rw?=
- =?us-ascii?Q?aEPyY+wcpF6nFNOyUa9apIzqUVlvcZ4D0mv4k/7qmUqJ1qZ4Pq11azBuOLtg?=
- =?us-ascii?Q?GuOMAHqU4Dms05z0FIFknVn7Q+LK9SoT?=
+	=?us-ascii?Q?HfID+1+Zm5aZ70Zc/2jHxd+uFHvQayds/Z9KHNp9X+g/BwZcWgkCvSmuVzlA?=
+ =?us-ascii?Q?yVUCvrYLcUXOQCG5b5aCawHfMJIRKJ56U/7DNTd66fbC/16AVZFS4ezVCnxp?=
+ =?us-ascii?Q?YMQsHx8qXRlJgbu5srJud2Qyd9NISv63OWxY8Gi/+m+SOdap86amOc1GVDnX?=
+ =?us-ascii?Q?FKw62sLXVDvj7JOqLdZhtmM1Ce630Io/2tfhaJFhGyRpZhLqT89lXAMnaWjs?=
+ =?us-ascii?Q?5zseuhF0m/Pe2yYmAQzlB/vSkOPqRPzKrbQNC80q93phkuPiVtQUMSzmcmNb?=
+ =?us-ascii?Q?n0A5lEz81nn08npmVfK0a9RVpEIskaIN7mKedXKzHNDUU0TypbKVntZWTJGp?=
+ =?us-ascii?Q?o89+i/y3m3W5RRcuX+aaB7eoKuTb9CvtrUs6g4pdPKCO/v7NYztisfDkqzIw?=
+ =?us-ascii?Q?cTZlcUzMO10GXZwxTVsSqmDTriJrUJ9P1htZgyCXXi6wHbEeI40lBpTDdnaI?=
+ =?us-ascii?Q?hASQcbSohgaijUoKk8tri1JX0wLgasqhBgHzW9/9S1siXH2CO++WFDcKAwOQ?=
+ =?us-ascii?Q?sxd1EsqJvMiQCqvtg2QR19+wTMCETkAhWLIezltbRDsjrSF2yjblj0Q9Q0Ms?=
+ =?us-ascii?Q?CE489BeQmUpvXGiQPoWyJi7gjlZFIck9BKbQpmuvejzQTgA+/nl0lzt34BjU?=
+ =?us-ascii?Q?gIAkEp3igW1kO3HrPB7nrYRf/1mrzdTxvB9ao0ajKnpABZqJy+C/KvdL81Pw?=
+ =?us-ascii?Q?CwqrFxxSYqbdjQ3NLhnQWk69jQ6z5LNLxNY+4MJrmhJ7X8Oe5VtY3bDF3Iiz?=
+ =?us-ascii?Q?Am92V4ywDpC1fyzFjegHj6iEEnqomXUmflT3BpH1QHclrjZxcp8STPlcdx9L?=
+ =?us-ascii?Q?eKKO4mmwQbv2NRn2xwUDI05u+XVQgLH8BaOTVVwLyauLVLscueAUsMjbbDwY?=
+ =?us-ascii?Q?u+/nqIIumDJnJyxn6B4PRyABRhdim7sG4vKVnDKZpIeqDNEwcix4SAjIN6pm?=
+ =?us-ascii?Q?dtvYWRdrnzksufQlXLf/B1cDqOVX7kS11utzj1h9Ssp4nLnUK5kP5fuMKpl/?=
+ =?us-ascii?Q?9q8IIwCddGojswhb464qhenzsaTRx252HAyJfB+mJBdTKAg3cu4P1EWejr8y?=
+ =?us-ascii?Q?WSrF61yVYBIlIRMX8+oZqT8EcoaTVi9vv8GjoQ21lvG4KtQYtz/OKILSQ3wZ?=
+ =?us-ascii?Q?xEAWPMeVUiWeFDrQhkNstW9QwBX4QTdxeX9Vglh5DtEYk8wORWjro96RUeg8?=
+ =?us-ascii?Q?dxlYxHCKnru6XYlEw9M2rC0a/iEo/sSCvPQoyxPjp0vlhuHxCv/R3/lEPiJj?=
+ =?us-ascii?Q?GmCVhHxcXefgHO7H0i080CUZ7ZirOV4QaWbszwGpLDmChmAvh7NUTAx6ujCT?=
+ =?us-ascii?Q?RnQ7soryfAivrPwhC4hA+DSx3FfDH8IqIYt5t1no+9nA8Wl3JFWoOHDlToYC?=
+ =?us-ascii?Q?Wyy2xzCBlxAI8wVEUagj7RoicAkIphk+Hezs3kpjXRb0PFGz+a5NQAg7ru2e?=
+ =?us-ascii?Q?hvl8X16gtrkUK1TpdCWFiLCIq9nTEAvv?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAVPR08MB9037.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(52116014)(366016)(1800799024)(38350700014);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?N36ILAy1d7m4wW2fnQz08TZiFLCHH8XDOew6xA+PqP0GP7XEZxbTPak3N/NL?=
- =?us-ascii?Q?RbqtqXS2rqjtd9lFWuYiBphQi5dmaS4xQVStOjVEvwWRx4l6YCCX+VU+SbU9?=
- =?us-ascii?Q?S9RzVOdhf/vqICebPx8HUzLJHxcn7pnbQ/Wl0OnD0ln9/XubTqSzKAbjB6NA?=
- =?us-ascii?Q?47k6nZCqIEdbdsD9jlaW+AZ91YJ/2wVPoLVIlhse9n4xt/Bx8rEAIkrIBM6e?=
- =?us-ascii?Q?p3pTjFI/udtyyAMM0LLzwtzHavSFMDbnvWH9X/gE6BmAs4DtW+VzfKpyGRu8?=
- =?us-ascii?Q?68sESI7qHHUspfx1RJituQTgriFNh498klBgdHXGZU37nERw2PtTpLyo3Qit?=
- =?us-ascii?Q?lvc5Wkgx/5Ph+5IkSEhFoBIAF6axpbFAX0L29rjPGAyrMEaHmcbpTdvGif7r?=
- =?us-ascii?Q?wBqvcGwTnQh7A9R3sR80/IHIyTfolqYKGVsIm/gclBkJRU3r5QdFpyL9kUcn?=
- =?us-ascii?Q?1fs9zPZbgZ5EC1xE8PBfS1E8URKhT4zGrCslEpYeTbkOTEXuEExIZLu/LWuL?=
- =?us-ascii?Q?VMwTtOsCryRXCQhy9yL+u+kQXBFa3bujMdL2ZG9f8kVITe9Xwna72LCECJD7?=
- =?us-ascii?Q?ki208rHq+VUeyJHvhsbk8e04Hy7lilY61m9fOOSYopy3sPPpwLR8eryLDuFV?=
- =?us-ascii?Q?P4cKtuGhYtPADno82T7efs+Kcj4bnI07OJAAueoiArMvDwBrQpJPfrVFDT1n?=
- =?us-ascii?Q?GfhFOqI2Mzezf9y7Z18qeIQ2gt+klFMKzzWYGiG8Al/lqxXT0r92filzBqg7?=
- =?us-ascii?Q?+ft1b5d0FyMu40x3nEgq/2zHnI/N7m5VUMpP+uLk5pj6B4CpoVHLC+T6NdyR?=
- =?us-ascii?Q?PSa8qFxHXyPH2bN1WaBs89jL7mkuRkJLbGA9qA8czVME/whbDJQx+flKhed1?=
- =?us-ascii?Q?5/yVurH7S+DeKuYIim4Id0ki7jb2eGo0CLxfgfpG9Y00F2jTH7596d5OqADK?=
- =?us-ascii?Q?TcULlWRUeH6Ip7piugxHhHqgEQp74+sdf/g21J8uhcKsOYaBW7aLtEDcFiTU?=
- =?us-ascii?Q?BB4lbc1EFGzA8lWoLNuGgj1rOBLeJ3BRGWIcTA9sV8zr+t/AzHOt3PHVHa1K?=
- =?us-ascii?Q?Da0uBpYzBkYj5oYWMSDGm/NaloTZ6Y06k7ZoOWxx5qaZ2JH9wx95F8BAz7Z+?=
- =?us-ascii?Q?hraETK3UF9x6yeJAq3A4uUR0n5XYw/KMbxy9uERpEaZXFZtr+u64SPTP2lL1?=
- =?us-ascii?Q?S/Vn64FP+FfvaIt4kBwjoimnllIEHOQqra4nJOwbB8Y6gJ8hI+xikbCn3S0d?=
- =?us-ascii?Q?XcxbV6RbExn6zKGpT8YpCgvFF+iSWTiHKMHtFxOxq2baQIf9QUJg+iLGHdE2?=
- =?us-ascii?Q?g9w1yJSK4eERWt3v47y6q79/Qxgw825ugLnNGmGZyhX6BaM1Zw23mbYjinbC?=
- =?us-ascii?Q?nT930dfYdmG6QRNSDr3ooZm4rCpvII4dU/MTQq2gI5Whpxe7k1mRtpcVMVK5?=
- =?us-ascii?Q?p0G0t0iZogMB2UeXFpMEddwHD1eTD8ypnWmV99JqQyg1/oiRn04QWevjVTBj?=
- =?us-ascii?Q?/6maqR9StDqyVgcoMdd8+k3++b3TMQ4+0bppBhc8yFfrQJ7/Qj2v/7uU5K5A?=
- =?us-ascii?Q?yaTxLfgrZs6Lijeoh3Itw2gW2ydt68A54Q6iPecm2uShmSflQ/bXid1xU8dJ?=
- =?us-ascii?Q?IQ=3D=3D?=
+	=?us-ascii?Q?qA9x0o+CfA1woCm89OpqgBN5g8/JZo/9q/8XwHw5G0p6TQvQJeqhj5gNY7cN?=
+ =?us-ascii?Q?CbGdbU7mKDQtZf2peL5JOsR1MhO0LiaZTkKzx5IFSB1WjhQNwFpLZ+xpwouM?=
+ =?us-ascii?Q?JYQujNMHpcUFTt3pwMlMhT5ns+lzs/ldL4HAaft6xt81k0VgNCT6hdM2cdJo?=
+ =?us-ascii?Q?sN/OUiIURF4k42pXv5eyhEtgVyt3g4mrYSyzWe6su1KE8ueRo6x4hyFFkcCj?=
+ =?us-ascii?Q?l9sDV/t8hVojkaTK0FFWB2aY3hAvqJcJ65RsY5q2Qtpb0aHtlQk28xTvxjYA?=
+ =?us-ascii?Q?botgjpbzIqb3VXbuJnI8nDkf/h0Ez4sj6tFOjD1xcAgAM3LW9+y33AkaLauP?=
+ =?us-ascii?Q?XgUXuH5lZCRbibj6bVotjtjEOxxpLAw7lhEQuc5AcGoCAEU6L01BzIFyxjUj?=
+ =?us-ascii?Q?9tAL6xa7CX0Dk7cyUzH5bwklCBGiOmn7wLuqZ3hGoTXpcYERURHhiP8VdwuM?=
+ =?us-ascii?Q?AkB/g7P55wUBTFKj1lDBQ8RfrqV8lJAjh0p/FBJ7HaJx75NEppFwhNEWSOUb?=
+ =?us-ascii?Q?R9k9nLsNAiKto6vN50Bif9B0GFFrBQNk47WYJumVS3Iw4UmgJi25Gj6egPtA?=
+ =?us-ascii?Q?WgMUmTziqbxgSbp5vASSPt1NizRNwNc+BQmcTp/KBwiDWLSzkz8Ifs8ClNno?=
+ =?us-ascii?Q?ZRpOE+LVBCL215cGsZjoAsIOCKBQQRegxbnBEK2/OkWhrZ1Su6yR1ESXxW5t?=
+ =?us-ascii?Q?QnAxOqnl/o7wGF/amCAGi1wOYr/dzOdGL9NvmXbJ3LDF5cII+NCaqVH3ytVs?=
+ =?us-ascii?Q?wfiq7cp40xyEJaNGRO3beYpnnTwKk8EOmnlvcvPzC0li2PSFen7CuZ32epvf?=
+ =?us-ascii?Q?DcTiD53YYCHqbS16HZHfrDeWS+jnFVDWeZAQyTlr9ibSTK30MO8J7vu8rSOh?=
+ =?us-ascii?Q?L30nEbhSC2zWWnROCG2y/BhcR1ZpoWaKh4vwJX2bRLkOIyhV2QEq211K2jsZ?=
+ =?us-ascii?Q?aiq6r4IRvTAVeBrihEj7JaNQgF81iBltvz54xeFs1Ul6aOaZSyEVdeWY6XS2?=
+ =?us-ascii?Q?vRynSkWlnM6PxaQLsJnLfgyuR6jGYHWy15ymNQjepCYPNM4OEn/3IEfizkT5?=
+ =?us-ascii?Q?aYPWZtbArgjRtxWUxcA927GL5mjmFnQlP7fQFXmUJ5y5ZDfbjZcAGbNhT2j4?=
+ =?us-ascii?Q?AJg2WyFSQ1UKfkwoiRJGQoOItQMtvn0bPra6YFCzuuVhv2pcCv6DLFou04n5?=
+ =?us-ascii?Q?yHaeSzJNdmdb2vm7U/5R5FHmpVvsLkI/kcgORxL0z/IDgg3DbcKH9S7xJQE3?=
+ =?us-ascii?Q?hHPAmzbUMrejMZYhF5FiB0Jc57Zb76uaTlbqHw+UbSMW8WkUSFRqhb3QJ9jM?=
+ =?us-ascii?Q?Fi8oPNYI2hajjKMfvuZqMQXp5ZDfJO8PEOCFmq03/EW++8slnveIWCbJivKz?=
+ =?us-ascii?Q?66C+0hMGBxdmKh6Ffdqt9lVGzYPliryVvDF/HeWBXGJoyNBMX7d38nM+8wi3?=
+ =?us-ascii?Q?/YKweZiHwdhvjbwitSIk/GAJ27/4ml9A4q0dDYxc1t4crLl6xq3bFdRzzUFS?=
+ =?us-ascii?Q?6SSMAnqu1APgSTzyiFM5TY580viL4Lf6/1OBim78LfaI0FeoF/6C9BuzI+Ca?=
+ =?us-ascii?Q?aM1SHbKxky2U1EOXzJc1V7XjS5jtcmc/83dAd4t+547w7xArP/gB2zT/5vRw?=
+ =?us-ascii?Q?PQ=3D=3D?=
 X-OriginatorOrg: sigmatek.at
-X-MS-Exchange-CrossTenant-Network-Message-Id: bb654b7a-904b-48f3-a674-08dd7698dc0f
+X-MS-Exchange-CrossTenant-Network-Message-Id: be44787d-6fc8-428c-0ea9-08dd7698db77
 X-MS-Exchange-CrossTenant-AuthSource: PAVPR08MB9037.eurprd08.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2025 12:28:25.7550
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2025 12:28:24.6517
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: bcb1d87a-d2bc-486e-a62b-9ac9c746bc1b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5vjrMowzgg9jgFCnHXDGT+sUF+ZWvMZJ15gE4EPCCg9xVnfRfbi/Xd6vqRzdqtUVa9XJnd9vr69jFngabjJBLBtG00Zbs9N93+rL+AAMiLo=
+X-MS-Exchange-CrossTenant-UserPrincipalName: WUfQz5sOtyQv/E0P1Mc+jiwD0QunbKZwY4JbQUM5FPQRsaqlAFSdSF20PjiYhmakwco9KUpALClW9CIiOCVa/6a+jtQXAnQexxQCekwHqx4=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR08MB6424
 
 From: Richard Weinberger <richard@nod.at>
 
-Add code for the ARM32 side.
+Currently, any exception that occurs in primary mode triggers a switch
+to secondary mode, and Linux posts a signal.
+This change allows certain exceptions to be handled directly in the
+affected thread while remaining in primary mode.
 
-The only supported signal so far is SIGILL, it is built from
-the UND exception.
+At present, only SIGILL (for x86, arm32 and arm64) and SIGFPE (for x86)
+are supported.
+Adding support for additional exceptions is possible but requires
+careful consideration, as not all exception types can be analyzed in
+real-time.  A notable example is a page fault, determining whether
+SIGSEGV is appropriate requires deep traversal into the memory
+management code.
 
-Signed-off-by: Richard Weinberger <richard@nod.at>
----
- kernel/cobalt/arch/arm/Makefile |  2 +-
- kernel/cobalt/arch/arm/signal.c | 27 +++++++++++++++++++++++++++
- 2 files changed, 28 insertions(+), 1 deletion(-)
+Patches 1, 2, 3, and 4 implement the Xenomai-side changes for this
+feature.  Dovetail will receive a separate patch set. Patches 5 and 6
+introduce tests.
+
+It is important to note that this is not a fully-fledged signal
+implementation.  The only supported use case is delivering exceptions
+as signals to the affected thread.
+There is no support for sending signals or handling block/ignore masks.
+The only user visible API so far is cobalt_rt_signal().
+It takes a signal number (SIGILL or SIGFPE so far) and a handler
+function with the signature fn(int, siginfo_t *, void *).
+
+TODO:
+- Better naming, IMHO "signal" is the wrong term and will confuse users.
+  Especially since POSIX real-time signals are something different.
+  Maybe "umex" for "user mode exception handling"?
+- Document new APIs
+- Improve tests
+- Carefully select more exceptions
+
+Lorenz Kofler (5):
+  cobalt/x86: Add architecture specific signal code
+  cobalt/arm64: Add architecture specific signal code
+  cobalt: Add signal core code
+  testsuite: smokey: Add testcases for signals
+  utils: Add rt_signal_hist
+
+Richard Weinberger (1):
+  cobalt/arm: Add architecture specific signal code
+
+ configure.ac                                  |   3 +
+ include/cobalt/kernel/ppd.h                   |   3 +
+ include/cobalt/kernel/thread.h                |   8 +
+ include/cobalt/signal.h                       |   2 +
+ include/cobalt/uapi/syscall.h                 |   2 +
+ kernel/cobalt/arch/arm/Makefile               |   2 +-
+ kernel/cobalt/arch/arm/signal.c               |  27 ++
+ kernel/cobalt/arch/arm64/Makefile             |   2 +-
+ kernel/cobalt/arch/arm64/signal.c             |  28 ++
+ kernel/cobalt/arch/x86/Makefile               |   2 +-
+ kernel/cobalt/arch/x86/signal.c               |  51 +++
+ kernel/cobalt/dovetail/kevents.c              |   5 +
+ .../include/asm-generic/xenomai/thread.h      |   3 +
+ kernel/cobalt/posix/syscall.c                 |  41 ++
+ kernel/cobalt/thread.c                        |  59 +++
+ kernel/cobalt/trace/cobalt-posix.h            |   4 +-
+ .../arch/arm/include/asm/xenomai/syscall.h    |   9 +
+ .../arch/arm64/include/asm/xenomai/syscall.h  |   9 +
+ .../arch/x86/include/asm/xenomai/syscall.h    |  15 +
+ lib/cobalt/signal.c                           |  19 +
+ testsuite/smokey/Makefile.am                  |   2 +
+ testsuite/smokey/rtsignals/Makefile.am        |  57 +++
+ testsuite/smokey/rtsignals/rtsignals.c        |  35 ++
+ testsuite/smokey/rtsignals/rtsignals_test.c   | 370 ++++++++++++++++++
+ utils/Makefile.am                             |   2 +-
+ utils/rt_signal_hist/Makefile.am              |  22 ++
+ utils/rt_signal_hist/error.h                  |  15 +
+ utils/rt_signal_hist/histo.c                  |  47 +++
+ utils/rt_signal_hist/histo.h                  |  14 +
+ utils/rt_signal_hist/result.c                 |  17 +
+ utils/rt_signal_hist/result.h                 |  13 +
+ utils/rt_signal_hist/rt_signal_hist.c         | 237 +++++++++++
+ 32 files changed, 1120 insertions(+), 5 deletions(-)
  create mode 100644 kernel/cobalt/arch/arm/signal.c
+ create mode 100644 kernel/cobalt/arch/arm64/signal.c
+ create mode 100644 kernel/cobalt/arch/x86/signal.c
+ create mode 100644 testsuite/smokey/rtsignals/Makefile.am
+ create mode 100644 testsuite/smokey/rtsignals/rtsignals.c
+ create mode 100644 testsuite/smokey/rtsignals/rtsignals_test.c
+ create mode 100644 utils/rt_signal_hist/Makefile.am
+ create mode 100644 utils/rt_signal_hist/error.h
+ create mode 100644 utils/rt_signal_hist/histo.c
+ create mode 100644 utils/rt_signal_hist/histo.h
+ create mode 100644 utils/rt_signal_hist/result.c
+ create mode 100644 utils/rt_signal_hist/result.h
+ create mode 100644 utils/rt_signal_hist/rt_signal_hist.c
 
-diff --git a/kernel/cobalt/arch/arm/Makefile b/kernel/cobalt/arch/arm/Makefile
-index 13cbf84a9..d06d3d425 100644
---- a/kernel/cobalt/arch/arm/Makefile
-+++ b/kernel/cobalt/arch/arm/Makefile
-@@ -1,5 +1,5 @@
- 
- obj-$(CONFIG_XENOMAI) += xenomai.o
--xenomai-y := machine.o
-+xenomai-y := machine.o signal.o
- 
- ccflags-y := -I$(srctree)/arch/arm/xenomai/include -I$(srctree)/include/xenomai
-diff --git a/kernel/cobalt/arch/arm/signal.c b/kernel/cobalt/arch/arm/signal.c
-new file mode 100644
-index 000000000..703230229
---- /dev/null
-+++ b/kernel/cobalt/arch/arm/signal.c
-@@ -0,0 +1,27 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <cobalt/kernel/thread.h>
-+
-+int xnarch_setup_trap_info(unsigned int vector, struct pt_regs *regs,
-+			   int *sig, struct kernel_siginfo *info)
-+{
-+	switch (vector) {
-+	case ARM_TRAP_UNDEFINSTR:
-+		*sig = SIGILL;
-+		info->si_errno = 0;
-+		info->si_code = ILL_ILLOPC;
-+		info->si_addr = (void __user *)xnarch_fault_pc(regs);
-+		break;
-+	default:
-+		return -ENOSYS;
-+	}
-+
-+	info->si_signo = *sig;
-+
-+	return 0;
-+}
-+
-+bool xnarch_is_supported_signal(int sig)
-+{
-+       return sig == SIGILL;
-+}
 -- 
 2.48.1
 
