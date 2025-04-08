@@ -1,102 +1,63 @@
-Received: from EUR02-VI1-obe.outbound.protection.outlook.com (mail-vi1eur02on2085.outbound.protection.outlook.com [40.107.241.85])
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2114.outbound.protection.outlook.com [40.107.21.114])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 543F826280A
-	for <xenomai@lists.linux.dev>; Tue,  8 Apr 2025 07:29:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.241.85
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82DD1268685
+	for <xenomai@lists.linux.dev>; Tue,  8 Apr 2025 12:28:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.21.114
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744097368; cv=fail; b=Bf9YlGtwfmPhTt0QreCLphzdCITFbFFe1GJJKyTRuk6etK+K3NtaR52wTwzWMmDLV6nQJW01cZcWI3CqbnUcLXUq+0HC6hg92KI/wdr/I8My6j71VKmzemQHX2pl9xvlrGqsw48Nl1ealjNW6aVlRO6KXH4LxGKeZLBrSgMLSXE=
+	t=1744115312; cv=fail; b=Rak5MmyG0GnRX/a6FiRY/f2fPPkaEbnDfEAQjYL9HE41MaMs3RouAausCOZQi1LeiSO62Y7+3ObB2xzMrVOnxs5oewiNkt8s/bt2xh/nJudMO0ZIvMnJ/BpehvKZK9dQ+nWDBCcVuLPCrrcWK/+h3fT8DFyhdBrT+CrmWnKqXBg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744097368; c=relaxed/simple;
-	bh=49wUX6fRNM1IJCI9BtZMIpe2lih1psQ+R/h6bJr0D6g=;
-	h=Message-ID:Date:From:To:Subject:Cc:Content-Type:MIME-Version; b=BaDPDwC6gU6nv/IFsXlRKegqgHk1DUkoyQyQ/vRlWV5YqTBlRvlwWtOenu+JAr6ZBLM4yfGfNJIJF8BSMd4J6Yqd/9bdAwHPKSU6tbGodlRP7KWKzfuLk9lNxUG0214bAmYRAuvuJ6y0Vv0Jl/TxnSNd5rXoW32DQWtu2Yq8RC8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=uiRp3lhx; arc=fail smtp.client-ip=40.107.241.85
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+	s=arc-20240116; t=1744115312; c=relaxed/simple;
+	bh=Lrl0j4X8TeiNXRYD+jzP/uJISa3tyRj7Fk7f1q99unU=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=CbYmlTjziWiI3mpbHDwxEZewzNDwlx5tmRdiruhX9RhZgGzaFVwey291hK5eSvP19z9kd4g5ukAEr1rWcMLw7JJ3VKgf+0Z/1H6GZDa6aw+xsm9O+KQ76skOjtFWTSA+BfdO0CgYtcoZukd97WuEF0uFihcyRh7e569Z3B0KYL4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sigmatek.at; spf=pass smtp.mailfrom=sigmatek.at; dkim=pass (1024-bit key) header.d=sigmatek.at header.i=@sigmatek.at header.b=w43dtsNl; arc=fail smtp.client-ip=40.107.21.114
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=sigmatek.at
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sigmatek.at
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="uiRp3lhx"
+	dkim=pass (1024-bit key) header.d=sigmatek.at header.i=@sigmatek.at header.b="w43dtsNl"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=XLh4gEuLTjYV+obLina6pzoBgWOAmJ7XG4MbP9Q9D5Z5SPH5fq+VmftfOn8WhMuMyOyA9mNlmCaXblHN+l9rdzN+LXcmU01M8iBbdXaop7OUO+7qs/47MsSNpjWD0HWDScj25ckx7Kx/9as1a2x07VAk62h0/AcjfjhvSJGOm7vtvZ0AmVyTjEoxUYI+O9PD+H8WEJV6cl7HfbsWRy7ra5bxinni6n1Khv+pvMAv5O9WcjX202xO7r7gxXMwhRZ9DXCn7+JOIK3FVWxlTsnfb9+wer/Tfrw/E6M6oPkRIBSZId3y/Us3Kuf6Jaxuh+TKBQYZQvQb078i8fSYDqKvaQ==
+ b=n8cQvGMHNvxX8rmZ2WacIUERZFTtQo39LY3EIqeSgoEigaC7CDYSNKqmn3QereoCXFmmDL0EsOh8vXrpx7cCE6n21r6yfc/kvrckgIkOyS5Guv7zbHiJrpOQR08FACC/iMxtEj+5tcuQWpdOzYbyW2bUxTA3+1OXbbetsG2lAen+g23wJnQm4rgBVX6iJHaFGXgdTqIVgDWVy2Ge0rfTdlYjwpvd+b2oX3FswpOixZkU3i3cLgb8Fp9XcMvoL4fz1yB+iXdOMnfhzyqtjRfSUv96d32tc7aBX83rsm56LJYF9bY5fUmfG9/QVCltNqMeS+h7z5s4ef82DcPgTfuAyg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=g8kobIfA5noVPTuB5ZRRyCtZ6Y5FGvdyLhCnvAFYerQ=;
- b=hic2CPfT7M9l6iuh02WIEj8oOerGOFnfTHOd+2g0QM+OvqqBr1LO37DSnGDlcNtlJ8Y1DX6WCQEHq/vLmKHsXQ5EDOODBLLH2MX2XRbE++wdZzisjLFjOm8XajUrgm2KGRJw49wwK4Ya2Dm23ZFIBlgctz13UbQCl9pelgML/cTjXSoQJkPgI2GqU91bHga/wTr+2sfyZmGGzgR0vbv7V6O34CvnGOJICgtxwKCM9Rtg889bGDEziR0sU1jA60Z3PEyRVMgVZpKwKWw3zUUMxdzNWw3dE3UkULpdg3J/QFCmqeSEYMAEpirQEdqz+p5MOlOREt31g9mJFJps7orl9w==
+ bh=pqRFBlJTcyy22CdAgUG1HR0U5K3Z7yAf4wPR7mSDRQ4=;
+ b=O/hmV7JWJns7wK798locmEQQHae53Ag1iCJHidnfvDk85fvzBrks5zvHnB9khY3FvNveA+v2YAG1gjA5i1sOYKLaeMM7KuczrmXkdjONxITLG2iiYCNlWUhNekkx5now5D27VnR+rS3XrHejS+uSVfSq4Cdq1wGnqVnK7Rbc8iMGip+A2KVQ8BjDM/oZ2h2SHtxkZ8mcdVy1kK+pi5CGyaqXkzdwgHninMx9A72CeVCk1wr+FAYNjFH0JcQ9dNVE5VqnskxZ6RBwek2htT8yu22mgAxKO3XwPkxlt4kQTZzcU7fAHhgC091DnR/+Z15nM5tRT2Ns+JAHHe1/f4JZ9A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ smtp.mailfrom=sigmatek.at; dmarc=pass action=none header.from=sigmatek.at;
+ dkim=pass header.d=sigmatek.at; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sigmatek.at;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=g8kobIfA5noVPTuB5ZRRyCtZ6Y5FGvdyLhCnvAFYerQ=;
- b=uiRp3lhxJLlOYex+zeeQXvD+B9dBlLjhXzTzctao1/4fJFpwN/zAeEzn7uVPH4ZQkl10hi+8by0PO9r1zkMqByqUplcpdunUsHsSUg0Ej3/pfELGNrPKO192BN+Jvq6Ymx2nFZD4nH9vfYfC3mJqMMPp91zScUPsyZLdeXh51VurRByU+JHJrdAEdHOotJ6O/cl2O5Czn+kFq8H+kfqTFSyWErv9PNO/qRUT+o/yrAjR5sGHuVOOsVkpKP7KZbECja0rYDGyms8+9k6mZHeHV+/Qj/bJOKOMHfOhZ1c8a6sTerZHlUMryK0KgWxFyG7o4B34CcT3Sm5jR2DATkdMbQ==
+ bh=pqRFBlJTcyy22CdAgUG1HR0U5K3Z7yAf4wPR7mSDRQ4=;
+ b=w43dtsNlEkQrBmPbCdgTtYRmDWt12voaliOIuixlOgFklGFonmuxAlbP7s0POD9RsvFBpea4iXD1FnFYA7cHcVizp3L/lsv+a0FuWDiiHdD4duQtUeOqYxrpYmEB2ZBUZnXezvS+54ydUsTnqqX2Kj5pHaW/pi5oNGP+EB0eAgU=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by AS1PR10MB5165.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:4ad::10) with
+ header.d=none;dmarc=none action=none header.from=sigmatek.at;
+Received: from PAVPR08MB9037.eurprd08.prod.outlook.com (2603:10a6:102:325::13)
+ by AS8PR08MB6424.eurprd08.prod.outlook.com (2603:10a6:20b:33e::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8606.28; Tue, 8 Apr
- 2025 07:29:23 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8fe1:7e71:cf4a:7408%4]) with mapi id 15.20.8606.029; Tue, 8 Apr 2025
- 07:29:23 +0000
-Message-ID: <d553c05f-d3f9-47ef-8dc1-f59c8dbcde4d@siemens.com>
-Date: Tue, 8 Apr 2025 09:29:21 +0200
-User-Agent: Mozilla Thunderbird
-From: Jan Kiszka <jan.kiszka@siemens.com>
-To: Xenomai <xenomai@lists.linux.dev>
-Subject: [xenomai-images][PATCH] Add SDK support
-Content-Language: en-US
-Cc: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Autocrypt: addr=jan.kiszka@siemens.com; keydata=
- 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
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR4P281CA0255.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:f5::18) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+ 2025 12:28:25 +0000
+Received: from PAVPR08MB9037.eurprd08.prod.outlook.com
+ ([fe80::3d5f:e34f:e1a7:59d8]) by PAVPR08MB9037.eurprd08.prod.outlook.com
+ ([fe80::3d5f:e34f:e1a7:59d8%6]) with mapi id 15.20.8606.033; Tue, 8 Apr 2025
+ 12:28:25 +0000
+From: Nikolaus Funk <nikolaus.funk@sigmatek.at>
+To: xenomai@lists.linux.dev
+Cc: richard@sigma-star.at,
+	Lorenz Kofler <lorenz@sigma-star.at>,
+	Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
+Subject: [PATCH 2/6] cobalt/arm64: Add architecture specific signal code
+Date: Tue,  8 Apr 2025 14:28:13 +0200
+Message-ID: <20250408122817.626897-3-nikolaus.funk@sigmatek.at>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20250408122817.626897-1-nikolaus.funk@sigmatek.at>
+References: <20250408122817.626897-1-nikolaus.funk@sigmatek.at>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: FR0P281CA0185.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:ab::10) To PAVPR08MB9037.eurprd08.prod.outlook.com
+ (2603:10a6:102:325::13)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -104,141 +65,195 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS1PR10MB5165:EE_
-X-MS-Office365-Filtering-Correlation-Id: 102ea6d1-1943-4ba7-404f-08dd766f1548
-X-MS-Exchange-AtpMessageProperties: SA
+X-MS-TrafficTypeDiagnostic: PAVPR08MB9037:EE_|AS8PR08MB6424:EE_
+X-MS-Office365-Filtering-Correlation-Id: 716df4b6-176c-4214-7e50-08dd7698dbdd
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|52116014|366016|1800799024|38350700014;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?WXJTcjRCUjdNaXZUR3BhMnkrOHFPWk5QYzArTDhqRnltTjdQdVpoZmI2S3da?=
- =?utf-8?B?WWJERGgvbEl1dHRZMmhnRCt4OWk1Y1lWSlJTOGx0ZTdpejdtNVBiTVZuWDZm?=
- =?utf-8?B?bDdzRVVvVzNpaHNnRnp6RjM0OEhzMTNyL1dWWlhjbnVJZUUzbXRCWUdYWEpz?=
- =?utf-8?B?dzhRVm5UbHZPMTd6SEZzZm5sUEpQV0VGTzh3bGZ4NWRhMC83NWt4QUVxMW1N?=
- =?utf-8?B?RzRYazZ5RW9sQk9hajNENnk5amowWm5rN3E2ZkYyM25SREQ5enk2RmhFdndK?=
- =?utf-8?B?Z2twZ0VxUnpaNmQ1czYxT2sxSnVXV1RyS1krbGdqSDdzT3RmajhiSjF2U3FN?=
- =?utf-8?B?dGJlTkhDUTl4YTJldCtua2pVbG9IdEJ6UVFTVjYrb2VzVDY0TDFITDZNVjdK?=
- =?utf-8?B?ZjNQdnVoU1hoV25HVDVZZHVKem1GSUVGdW1vU2xLc21LZ3gzaXB5SFV2UGFN?=
- =?utf-8?B?OGY1V3ZiYzA4OG5GbjhiQVE2SVpSdWJRQ0pPUkFWUTExY3Era0NqY01aT0lD?=
- =?utf-8?B?OGZrTXdMaXdhUWRGbHpXUDJMRDhMYWdPdTNnQUU4TFgybmhtVS9JSmR4RklO?=
- =?utf-8?B?WTBEZU5Odk01OE9ydk5pV200ZVp1Q3lRUGN2Q3I1bVRmeCtQdDFsT1ZxVEg4?=
- =?utf-8?B?K0NJWEd4elhtRHVyYk4yNWQ2QzViazBrWjd6Q3FLb1AvUnd0TmdCZVRYQmJG?=
- =?utf-8?B?aGFnVlQwMDVqUmRDZmUveTduTlJ6M3M2VWJCNEx4QnVXVGlFNW93VlI4R1BJ?=
- =?utf-8?B?Z3JkaS9WSnRWTHFtNjNOdzNZSS9XVkt0MEJoQ0xkUjltYXVKVlAzalB0Ymcw?=
- =?utf-8?B?WEtJeVdLZVJVMTBFNG5jOUg3MjkvQ3lBU2trb2o5ZE9ZWEpUQ0FXUlM3UmVK?=
- =?utf-8?B?TzZPNVYzRDZiSnRSRHV4NW1wOU1SeTA5Y1JkZWI3RTR5UDF0TmFUNzlSUGFr?=
- =?utf-8?B?ZUdsNHZvZW5qcFZPc2ZScXB6ZVdpcGNyMloveUlJeHBQN3kvSjRtWGhVbzVu?=
- =?utf-8?B?VGRRak8yNDQ4VnJTMnlkQTNIcURvS3B1MUR5dG9BWTVmbFNQcnJIM3d3K2tj?=
- =?utf-8?B?bU5LdkJRMmVhOEFzUm5rTEFKM1FpUzFhOHpTcG1BL1FtTHhoSzFNNWdEdk9Y?=
- =?utf-8?B?eVVSZnUvMmMxWE1zSk9xak5peHpaaFlCSTBNblN3WXNXV3pZVEJwVnQrdkJQ?=
- =?utf-8?B?d1hXTnpIVEpndE1nL08rU1NlTG43NEF1QWZMYmh6bnFOMW4zYVY0VG1jTlAz?=
- =?utf-8?B?OE5ieFZaeUJ0ZVFYWDhWemtNYk1GbXFGcWdZOUNRTC9ST0V3YW1aWDc3eGRX?=
- =?utf-8?B?SUpwZXlyZHh6WEhBdHlYc1oralh4UURwWjFmYkhNa285eXRBWFJDUEROMXI0?=
- =?utf-8?B?eVlsWktpeFlpWnJLOVp6TGJ2MEpkRk5EVXlHanR5eUZ0eGtDR1lvb3psdDRw?=
- =?utf-8?B?V3F1TFNvL1RaOXQ5bSt6NTlLdDIraURyOTlSeXVER3k0dlp1SEVCM1ErT0dI?=
- =?utf-8?B?U3JjTFlUNXFSc0doUzB5NEg2K0h3b0FGRGZCTGJObkZob2NiVHBSMDB4bnBp?=
- =?utf-8?B?QUdGaXEyM2hHTXVBY25TenRBbDdGODNCZDk5ZEtGTHZETWNKMGZHQlByTzNC?=
- =?utf-8?B?aVI3SndYVEtsWWl6K1dLVit4eUcvTXRkSVZiNlpMUEVxSFNUMmFmeFRxTUtm?=
- =?utf-8?B?ZitmL0h0bFFwNE1QdTR1d2hvUU1VdmR1NjZ6bDJLam96M1g3OHMzaG5zN25T?=
- =?utf-8?B?YXRyTDNFeWpHbDZSaEtRQTdWUXJZWW5qQnRPckRic0xCOTYzM2tCNUhzVFlX?=
- =?utf-8?B?cmNqZFBjbXBCM1FPNnpJa0ZwRURXVjJJZFlYS0U4TVQySUUrcmhibUkyeGRY?=
- =?utf-8?B?Q0Y3SWpOcVRiTHp1d3ZxSmxVRTVKcXp0VkpqZzRnejNMVmVoMHRJUkZjVzBE?=
- =?utf-8?Q?AWnfUwgElIY=3D?=
+	=?us-ascii?Q?A/bXZBCkZDl4qwUpRVzpFw8A/UhgpEOAH/vKND2bZ5UAT92PJX8FnxC0Snsx?=
+ =?us-ascii?Q?SEaZ7FGwC+i1tDVS1X3Dbhk+UrTiirvXXqoHyUOf9fXsHgZUKs2qXlVZKI7J?=
+ =?us-ascii?Q?i2PExAAjChcwOf1ZiI660EfNE0dszZUZZJNooR9iJ5WUVwjq9HBKXhLctbro?=
+ =?us-ascii?Q?+rZtyC95l8E32UqHsss13UNtaBuynlZ0khW86XOceRNWiic/8ewKSUw/8yTf?=
+ =?us-ascii?Q?DsBz5VnY5FiTYixHppEvwpuG02Zx77Q4a9CEzxAlx2M2dJaJ3abFKK0fp9T2?=
+ =?us-ascii?Q?ZkTtUm5j+TwEpwgbe0x4K3zb+i1uVg/n8vMb1C3Pt8trUSrcq9nPgZ9UyBPD?=
+ =?us-ascii?Q?UDpIwkQ4Dz7jI/A6Etw1aIrFTyiZ+jZxjg4EZed6wf1+9+W3jfuq0jvnPmqJ?=
+ =?us-ascii?Q?o+J3FbT1NUyU1A4hkVwW6NTfOeUcvg+bR4g+gKcSDm4FfqDJUoA81b3qUc4x?=
+ =?us-ascii?Q?el+Vjn/mKovcJpQMeNB7b1tEtgxbXn4zDgtYG1XzE9IdYHCrQgw0pawV9LpO?=
+ =?us-ascii?Q?Ik1lHckidKTbTA58fjvGTG7P2pcu3yVGsOENep66xgenK2P4+gFqIQFVRJ0Y?=
+ =?us-ascii?Q?/udiF/RZMn0bXGCDwF2RcEP6H9F3iPnflMGk9nzVtZ27VLS0K3awYJ/OeApF?=
+ =?us-ascii?Q?ydskHxede4LiF13ukXKM+iqriv9t/NNwgvgIQBLiOHs97culeiPb5bkpG1P1?=
+ =?us-ascii?Q?lPmV9+s8IbLL5O5+m28bzJD8si+o7n88+6vK8CIOtt4j7rgwkMs7s2eWdKuB?=
+ =?us-ascii?Q?jLcClLnydsE3tuG6ViAve38F2DFAGOAOByUMVtu6MHfYGHW4+B2dWxb8NFw3?=
+ =?us-ascii?Q?tn1R2N42taJ42yYlR2UENFeMqd2fJWJO1IYzNYpBBTQG/gbxWDLX6/Rw7sKQ?=
+ =?us-ascii?Q?bjoq5pTTjN2L2ZPch1OHQZnBJx29pFlwV0+jRPUD4VYkTjlJbxuqploDmxGI?=
+ =?us-ascii?Q?Ll4uBV0i23zvCxgA2Ti4PLNG4y4d07aMAqOFvn2oMausjLk65frYrI3b2tn2?=
+ =?us-ascii?Q?xPB05oMsoO6aawszZRrbL4Kn9e8GPd+xrqlKFgfct7FwvZCg3Mxlgc+s1GJf?=
+ =?us-ascii?Q?LKN3o0juU24Q8aubrofLtgTV7AjHfpyHPjOuDpbd4PJE6Qz9E45zgRyrb0o5?=
+ =?us-ascii?Q?gBdL1D3PSwHciy25jiUNh7Hq6SXMHN3ZyZCR+aOnKd8nDuRu4WKxqOcuSqpE?=
+ =?us-ascii?Q?RpuTZsYNErkNYW2GVkSKii5p6QfaD5MW4LIqfKuJgnpOSlhbx+0/5pCr7qYM?=
+ =?us-ascii?Q?ond9RGYpSNtXG6Qfghpqepk1D76aPc+0d35PS+SUWBL+sf2Z6kgxgVaUwfgn?=
+ =?us-ascii?Q?8x04Ts42LVXEPDd7gkwP9iWv/vsrU60iDSTvHyj+BCZBHAHxJNG9VtTSECs4?=
+ =?us-ascii?Q?KgK/deP/9dXaKtYWjLvdIqglM9lW8szhr8JUqRTaL32nkUaTiau3kazEUmNr?=
+ =?us-ascii?Q?fdldLiY9odsPuKYcseC4gENmE1ZGVhyy?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PAVPR08MB9037.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(52116014)(366016)(1800799024)(38350700014);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ek5JbUtNM1RmTmxOK2tZTDY0TGU1UXJDTWZ4N0NzMUZQcjFkOWI1RGpQUWp0?=
- =?utf-8?B?S1c5UFc1dGl5SXk2dlN4OHhvNFZWQURsY240YndiY1FFV3pCZEJobjlHZHFO?=
- =?utf-8?B?OFBwRkEzdkY0bUVlN25xOWl1QmVCSWM5dlNPeldrZDl1eFk2ZFFwWnh6V2dr?=
- =?utf-8?B?amk1VUsrQTJiVVhQRlQ5OGNWMDRuTFl2SXZLb2I0T29SQXlVNE54MkQzM0lZ?=
- =?utf-8?B?b0IyZHQ1WDBNYVc5c1hKTTF1UmxRcXBpYXRPaERPT3gwZFVDVE4rWHNydkVF?=
- =?utf-8?B?QUtXcHFsMVE5RXAyYWk4ZnlSM0dYT0VJU0xna3VuNUd4VVFhaXV3RWV5RitZ?=
- =?utf-8?B?WmR0SFpVd1lxY1N6bHp0WWR6QzJ1bmpYZzlkbElYQnNUMnFkT1pFUXBac1JD?=
- =?utf-8?B?QkQxeTJ3azQvSWY1bmdZUllTYy84UWhxR3hBSWVOQXNQWW0vQkxtUUtxWGQ5?=
- =?utf-8?B?QTZYODJsdkRDVU5TTlNIbzRjWVVnMTRhRU9WRWZvaEk2TStTdXozMkNQT2ZP?=
- =?utf-8?B?K3FoeVdTOGdJcDJHMkVIQTVveERrZkF4dDJxSHpMc1RvbllFWkV2Y015NWta?=
- =?utf-8?B?ZFhXUG0wZDJQNkY5RGJIcnMzU3UrQlFQS2tnRUZhWFZ6dUFqdnNuTVJwaVE4?=
- =?utf-8?B?ZWxabG0weGZpcVVrMTlkdGpvUlBzMDEyaitueEVmQTZXVkZUdkl2aFFSWE5y?=
- =?utf-8?B?anMyWDF5T3R1UTJlVWlPVmVuNVR2eGw0RE4ycE1XSGNHVGlFVHNJY2VtWlVP?=
- =?utf-8?B?QnN5QTUvUldtbGNuQ1p6c2FGOGEzNm9ocndmUlFLb01pWmhqSkFXeEtBTWkx?=
- =?utf-8?B?dGU4RFpEUENtK2E4OUlZeGg0WWIvRUVFeFVxTFpiMFE5WlcxTVNVZ3d1SjN3?=
- =?utf-8?B?T1lzalRwWjNjd29kYnVmcktKTVVMdFYwWS9TVVk4bkhacDhGb2hiVVdXNm1j?=
- =?utf-8?B?SWlLVEFYb2NBZUpjc3kyamVXMmlzaG9mRzAvaG8yZ1ZiZ2FDTnE3bHVYZkps?=
- =?utf-8?B?cDk4WE00dlRXQkg5N3pUcmNCRytaTVZTQXluNHl5MzVxa0JqejU2ODBzZGwz?=
- =?utf-8?B?endZNGZTaEZiT1BUa2wwUkw4V1NrM0RaMS85NWZMSERyTURQeWhva0NTMkt4?=
- =?utf-8?B?amllVjF4THcwK25vUmkxbERVWFA3bjlmaklkWVNVODVJTE9LbDE4dTdCWXVK?=
- =?utf-8?B?YUJtS09SakxYenJYUGRES05TM0VuWVZjNUphUmloZGVQUjBqc2YrdkVBMGFE?=
- =?utf-8?B?REM0cTRPUkdvZS9CMGU0a01hRHp6bVJwbUQydnFJdzB6K1VtRTBPRUFkYm5S?=
- =?utf-8?B?QUZsUHBQZHorb1haenlCbm1hREZrRjErUndPYXV4TUZVMnJzMjc5VGhHOG9O?=
- =?utf-8?B?ZEx2cEZXMnR0QkZGcHFMUlNkVFZLelgrU1owdEtQM1kyTytQdG92R0dCbFls?=
- =?utf-8?B?SDgyeU5DbW1Ob2JJU1pqVVlRYWNoUy81U2toZHVGdnBUamVhR0ZQai9aSzRw?=
- =?utf-8?B?L0xuWVNiSWVzZURDRDZLcGNRTTlhem1WVTZNZlFvM0lJamdNU1BVS1dMOUNr?=
- =?utf-8?B?SzN2R3lNN2haR0dmZktXOE9vNElpNlZvTHVKREhraHJIay9UeTZGR2kzN08v?=
- =?utf-8?B?K1F6TWNwc1NkSGxRVzI3Mkx6ekkyRUZoalBlWVlLbmNCZmR6eEU4VVgvdGxl?=
- =?utf-8?B?c2xiaXl1RHZ3WWRtU2VmdmRGSlRpS055SVZ5T0E5UTZVRnZHUUJzWGE3NDNs?=
- =?utf-8?B?RURJZk92Skoxd3FOdXMxdnRpeDFOOXIzaWZZbDMraVMwbkNUZ05aSHhvWnEv?=
- =?utf-8?B?bGdyV2FYN2tRUVh6VmM4RkE1bHorUlMzYS9PMVBPYmpESnNLNUhVWldMVFNp?=
- =?utf-8?B?TDdvZjVHdEd5eXZSRFVNbWhqajVLaUFlRWl0T0dyUmt6RUtzYjBNT1F6KzRW?=
- =?utf-8?B?WVQ4NEF6Tk1waW42L2FDYVRhWUVsOFR1b3RXcElUMExWOGdkMDRPUHlEVGtF?=
- =?utf-8?B?eUlscXFVUEVPUjlwTlM0STV5LzlqSk5QSjIxbUV1MkZBZXdvRmV4dGJhMUtV?=
- =?utf-8?B?bkZmc3I1VUZxa2x4d2Ric09XSjdRRmt6T2I2R3U2dnR5ZkJMMU8vcE1pRXp3?=
- =?utf-8?B?M09jS0Z6MTBFWHYybTRvb21mb3NTdTh4TDNLU0FqL1NkL1ZzRHQxS0VSY3Fs?=
- =?utf-8?B?Z0E9PQ==?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 102ea6d1-1943-4ba7-404f-08dd766f1548
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+	=?us-ascii?Q?S/qKV/p+4RdwqUx2IQErKylDIytdTakFkNYiwa/BwTi83h6uYfsmAzc97faS?=
+ =?us-ascii?Q?idgGsWL2sEen5EKNRC4ngDWe0Jj+ohl/i/Vditrv57+k6BFEWC2AuU1PlHNa?=
+ =?us-ascii?Q?jA4AB1sRq49GWtc5ab/Ri9Cz/UWeKiCzKtmLHWf7kszUMj8iGaGITk8dDYUP?=
+ =?us-ascii?Q?41UdDHbIvsmzl6nQwo7EimYjlHszL3RuSjDEQqN250nMZAVF8uJKKHZHYSuY?=
+ =?us-ascii?Q?tXCr8Lhld9Rj1CQO+/EYNt7lIqMkXXZI775amPg03CoWF/hrlIWAYUW+FvmN?=
+ =?us-ascii?Q?XrF2fJgD9HzsIhGLmPrlA4L3WxYd4BwMRmycEU/ARzQzjHssVGrVnQcLbbZZ?=
+ =?us-ascii?Q?yGhIvrDBKEDOmKdyc9+ZIM/koiM/RaZRb/rC1K1RZ/9SB6x1Rpy3bRFmNWTe?=
+ =?us-ascii?Q?TqiZJ3FySOQXKDSBcg7VnS9lZYtyIiiT/s8H8kPRmwXc75iID8BUJDQBOCyu?=
+ =?us-ascii?Q?cuCVuY6UTExWD1WrWRlM4/x5UUdSe4ny6HRc9XO+MXpPPqtxXDg8LcvAiySx?=
+ =?us-ascii?Q?NNm05AIVDtQhXEqKtDbVCz87ZKRZ/g3yxNeT4iJERqNSevJ0z6WR93GUUVVa?=
+ =?us-ascii?Q?heRPjKUdtmIktoxANmo5KDOICAp55p9EESx5WRgJVUSOnp+9n3tHHS7MDAhA?=
+ =?us-ascii?Q?lqndWSnRXfAy7izpBJ3DMqBjH9wt0xlufv7cieVFlbkchNJS9ykkHT554SoS?=
+ =?us-ascii?Q?ksWj8FP5bqd+Xno7BeghPKrW5e1Xxps1DNDcqgl1KoFao6SK/pnSItX1l3yI?=
+ =?us-ascii?Q?M2L5YRwlYSaSVvBSVHQcy5eeZCgg2YA0w2wzd2X6elSw89vyRQiojhAnnbzv?=
+ =?us-ascii?Q?CeEozk++7w1L7WV3XQbwGH9J922Q/BghnliSzuzoPb/Eva86mvcBC+5LdPaM?=
+ =?us-ascii?Q?hDJ8Dvehp1rEcegXwZu+WYSpTMsz+TGcV1CgYrYT23OEthbA2Tcj9/RoWR9C?=
+ =?us-ascii?Q?A5WCCXgMipneW68+6+a0eDMDfjskwfy4CWEdQkhs7q17Cca57TELK4auC5UH?=
+ =?us-ascii?Q?kzHObb/176OQE/VFBh+Pa8b390qgoIg+CpdmlStO4Wl5ExoCbzqoveUp72Ql?=
+ =?us-ascii?Q?jwvzdHTxJkSzzFt3M3NjOyKNdqEI9HDYU6pfr0RSKfDSSHNtavpYWmUk0WtB?=
+ =?us-ascii?Q?y3YliwUy25ttpZcAz/ac/kvU2cPZFSBGoa26v1jXsbu7Wzx61+MN3B3YOGnf?=
+ =?us-ascii?Q?Fdhx17i3btk/N0eiP/LeOpMkd1daKqx7OchOEQl5OCPrr/enHdFy/rJZ1K6o?=
+ =?us-ascii?Q?5QtDj5dg1sNWZBksCD0SsSkPDU1bp2jOlnmUY0F41mnjYeQlxpjPK2k/Y7q0?=
+ =?us-ascii?Q?94WU2g39ZUgjf7yBH6bWpkW6E2GK3f7TuBRNNlztNvcfUvsKR5KgM9dcmg+H?=
+ =?us-ascii?Q?oaFMxlPd7Qsr6n25hHz1tGqxVOSgp500hHvJwOh63Y+kp5o3hDapKOGLj84X?=
+ =?us-ascii?Q?0OTb6fSzKxVdIvgHhS1jjs8WFeaVIYR/x2oR6Q79yNzynVB5YJmqp4OxEJDX?=
+ =?us-ascii?Q?uqvWjDfgyJ5qaB2MQCjMYmTg6HfugOhwsU48XxOdRdO5UonUn4tdBJsCDziO?=
+ =?us-ascii?Q?qO/N1LMXKEiyl0Kh6IxdJmGLSSLENfhsmaRATV2O8edrcq+vqegfaL+HcS+5?=
+ =?us-ascii?Q?Jg=3D=3D?=
+X-OriginatorOrg: sigmatek.at
+X-MS-Exchange-CrossTenant-Network-Message-Id: 716df4b6-176c-4214-7e50-08dd7698dbdd
+X-MS-Exchange-CrossTenant-AuthSource: PAVPR08MB9037.eurprd08.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2025 07:29:22.9344
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2025 12:28:25.3530
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-Id: bcb1d87a-d2bc-486e-a62b-9ac9c746bc1b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nMfLH3FzKzWuDAfD9XvCmHa/EomsKBVT1jkoTQ4ffYDIBqNbHOu7+aEqNFU8eja19OcuxQ4hqPwo8iTZur98HQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR10MB5165
+X-MS-Exchange-CrossTenant-UserPrincipalName: yXdbwpdFcTKC7z/LZd+zGA0EIA9JdVr4Og7tcAbPjTRfpHQId4KTy/hIWPFe3RFj+nRRtRd894f+fYT0LNcHyHhtBdDJAbXuJbmiCCbFhis=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR08MB6424
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Lorenz Kofler <lorenz@sigma-star.at>
 
-Not much to do for it, just make sure our devel packages are included.
+Add code for the ARM64 side including ARM32 compat mode.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+The only supported signal so far is SIGILL, it is built from
+BTI and UNDI exceptions.
+
+Co-developed-by: Johannes Kirchmair <johannes.kirchmair@sigmatek.at>
+Co-developed-by: Richard Weinberger <richard@sigma-star.at>
+Signed-off-by: Lorenz Kofler <lorenz@sigma-star.at>
 ---
- README.md                     | 8 ++++++++
- conf/distro/xenomai-demo.conf | 3 +++
- 2 files changed, 11 insertions(+)
+ kernel/cobalt/arch/arm64/Makefile             |  2 +-
+ kernel/cobalt/arch/arm64/signal.c             | 28 +++++++++++++++++++
+ .../arch/arm/include/asm/xenomai/syscall.h    |  9 ++++++
+ .../arch/arm64/include/asm/xenomai/syscall.h  |  9 ++++++
+ 4 files changed, 47 insertions(+), 1 deletion(-)
+ create mode 100644 kernel/cobalt/arch/arm64/signal.c
 
-diff --git a/README.md b/README.md
-index 7c9869b..1ebef5c 100644
---- a/README.md
-+++ b/README.md
-@@ -38,6 +38,14 @@ Each physical target will generate ready-to-boot images under
-     dd if=build/tmp/deploy/images/hikey/demo-image-xenomai-demo-hikey.wic \
-        of=/dev/<medium-device> bs=1M status=progress
+diff --git a/kernel/cobalt/arch/arm64/Makefile b/kernel/cobalt/arch/arm64/Makefile
+index 6c872fdb2..125b4cc56 100644
+--- a/kernel/cobalt/arch/arm64/Makefile
++++ b/kernel/cobalt/arch/arm64/Makefile
+@@ -1,5 +1,5 @@
+ obj-$(CONFIG_XENOMAI) += xenomai.o
  
-+### SDK generation
+-xenomai-y := machine.o
++xenomai-y := machine.o signal.o
+ 
+ ccflags-y := -I$(srctree)/arch/arm64/xenomai/include -I$(srctree)/include/xenomai
+diff --git a/kernel/cobalt/arch/arm64/signal.c b/kernel/cobalt/arch/arm64/signal.c
+new file mode 100644
+index 000000000..2e586aaa6
+--- /dev/null
++++ b/kernel/cobalt/arch/arm64/signal.c
+@@ -0,0 +1,28 @@
++// SPDX-License-Identifier: GPL-2.0
 +
-+To generate an SDK corresponding to the selected target image, append
-+`-c populate_sdk` to the build command. The SDK tarball can be found next to
-+the image, e.g. as
-+`build/tmp/deploy/images/hikey/demo-image-sdk-xenomai-demo-hikey.tar.xz`.
-+Unpack it and follow its `README.sdk`.
++#include <cobalt/kernel/thread.h>
 +
- ## CI Build
- 
- The CI build can be executed locally by
-diff --git a/conf/distro/xenomai-demo.conf b/conf/distro/xenomai-demo.conf
-index d1b24b7..a113a54 100644
---- a/conf/distro/xenomai-demo.conf
-+++ b/conf/distro/xenomai-demo.conf
-@@ -23,6 +23,9 @@ PREFERRED_VERSION_libevl ?= "4%"
- 
- KERNEL_NAME = "xenomai-${XENOMAI_MAJOR_VERSION}"
- 
-+SDK_INSTALL += "linux-headers-${KERNEL_NAME}"
-+SDK_INSTALL += "${@'libevl' if d.getVar('XENOMAI_MAJOR_VERSION') == '4' else 'libxenomai-dev'}"
++int xnarch_setup_trap_info(unsigned int vector, struct pt_regs *regs,
++			   int *sig, struct kernel_siginfo *info)
++{
++	switch (vector) {
++	case ARM64_TRAP_UNDI:
++	case ARM64_TRAP_BTI:
++		*sig = SIGILL;
++		info->si_errno = 0;
++		info->si_code = ILL_ILLOPC;
++		info->si_addr = (void __user *)xnarch_fault_pc(regs);
++		break;
++	default:
++		return -ENOSYS;
++	}
 +
- WKS_FILE = "${MACHINE}.wks"
++	info->si_signo = *sig;
++
++	return 0;
++}
++
++bool xnarch_is_supported_signal(int sig)
++{
++       return sig == SIGILL;
++}
+diff --git a/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h b/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
+index 105bf9faf..da1cf4a21 100644
+--- a/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
++++ b/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
+@@ -24,6 +24,7 @@
+ #include <xeno_config.h>
+ #include <errno.h>
+ #include <cobalt/uapi/syscall.h>
++#include <boilerplate/compiler.h>
  
- USERS += "root"
+ #ifndef __ARM_EABI__
+ #error "ARM OABI support has been removed with Xenomai 3.3.x"
+@@ -119,4 +120,12 @@
+ #define XENOMAI_SYSBIND(breq)			\
+ 	XENOMAI_DO_SYSCALL(1,sc_cobalt_bind,breq)
+ 
++#define XENOMAI_BUILD_SIGRETURN()					\
++	__asm__ (							\
++		".text\n\t"						\
++		"__cobalt_sigreturn:\n\t"				\
++		"mov %r7,$" __stringify(sc_cobalt_sigreturn) "\n\t"	\
++		"orr %r7,%r7,$" __stringify(__COBALT_SYSCALL_BIT) "\n\t"\
++		"swi 0\n\t");
++
+ #endif /* !_LIB_COBALT_ARM_SYSCALL_H */
+diff --git a/lib/cobalt/arch/arm64/include/asm/xenomai/syscall.h b/lib/cobalt/arch/arm64/include/asm/xenomai/syscall.h
+index d89697712..bbfb9c172 100644
+--- a/lib/cobalt/arch/arm64/include/asm/xenomai/syscall.h
++++ b/lib/cobalt/arch/arm64/include/asm/xenomai/syscall.h
+@@ -22,6 +22,7 @@
+ #include <xeno_config.h>
+ #include <errno.h>
+ #include <cobalt/uapi/syscall.h>
++#include <boilerplate/compiler.h>
+ 
+ #define __xn_syscall_args0
+ #define __xn_syscall_args1 , unsigned long __a1
+@@ -101,4 +102,12 @@ DEFINE_XENOMAI_SYSCALL(5)
+ 	__xenomai_do_syscall1(sc_cobalt_bind,			\
+ 			      (unsigned long)__breq)
+ 
++#define XENOMAI_BUILD_SIGRETURN()					\
++	__asm__ (							\
++		".text\n\t"						\
++		"__cobalt_sigreturn:\n\t"				\
++		"mov w8,#" __stringify(sc_cobalt_sigreturn) "\n\t"	\
++		"orr w8,w8,#" __stringify(__COBALT_SYSCALL_BIT) "\n\t"	\
++		"svc 0\n\t");
++
+ #endif /* !_LIB_COBALT_ARM64_SYSCALL_H */
 -- 
-2.43.0
+2.48.1
+
