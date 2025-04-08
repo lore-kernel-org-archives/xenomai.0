@@ -1,76 +1,77 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15B811E4B2
-	for <xenomai@lists.linux.dev>; Tue,  8 Apr 2025 13:18:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF41E320F
+	for <xenomai@lists.linux.dev>; Tue,  8 Apr 2025 13:24:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744118312; cv=none; b=Ymtn6EWdcN79yScYuin6JyVLO1OniQw9tU17QcD2jYdlcjQzjcdHvehBC+A7c80ur3qyr3D3SsfDmUGIhCK4NFPQt8H8HBWIQXppDhpLeiz0UmSQSbj+WBFcJI2yNfKnosnZDesKSQ5vLriHB3qF1lJvjOup3IUFxbUOQhaP+30=
+	t=1744118691; cv=none; b=O2ocF5s0/aN6ZhlaMTAcFcJIO7Qb+1bukG6bxx/mA+xIjlj772naoVsiDrszp5JsYphwxS2Tvq+PIj+8fSlCHg9Cnrp8KsSZ+6jyVDT5u9d/ABqv6ARR4FHnOF8CWL+0f95AYjr4KImRgrh0zOW/jeQrJ5mNxpehNPgKwOr69kU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744118312; c=relaxed/simple;
-	bh=zzC854hfAKDR0YZmkhshANXjo5JYbSwwQ3+HIrSD6Yg=;
+	s=arc-20240116; t=1744118691; c=relaxed/simple;
+	bh=lHLPRXGTCzXZXwZ9KZPLAeyX+XWnG3iErGhqb1pjNGQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZdHSM8SeV54l6n9XQHFn2g7p4LTAv91+4BnnV3KDS5NTSAsiKGTC33IHlbs97sVTnxuF4C1y7vEr/1fuzJafMkVeXaHm+HSR4/YIjZE40YW1T1CrFKuMCm1zcYdgCDhDVgWOrCCd3mu3jvbXcYSRCPlVqwUmmI2RfQlEs8ukjDE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at; spf=pass smtp.mailfrom=sigma-star.at; dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b=MujRJiMH; arc=none smtp.client-ip=209.85.128.53
+	 MIME-Version:Content-Type; b=hR+sstg7zGyn36WTMB0gQtdiD5tx1qX0/Pk7/q5DNRZN1/oeQnohKQb+9TfB1OtvFqzw1FxUehRa9S4NoxctnVSPUVmhgOH+Pj7oF7OXGvIU0tGk7zz+6Cq8R1QjQOZhd/nUDhNnvsKdugb4awm2wfcdS6y52UeWMMzLkmjKauM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at; spf=pass smtp.mailfrom=sigma-star.at; dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b=pgK8kDA3; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sigma-star.at
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b="MujRJiMH"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-43cfb6e9031so50467855e9.0
-        for <xenomai@lists.linux.dev>; Tue, 08 Apr 2025 06:18:29 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b="pgK8kDA3"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-43d04dc73b7so60329305e9.3
+        for <xenomai@lists.linux.dev>; Tue, 08 Apr 2025 06:24:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sigma-star.at; s=google; t=1744118308; x=1744723108; darn=lists.linux.dev;
+        d=sigma-star.at; s=google; t=1744118688; x=1744723488; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=sr7pyx6G7DaZ2TXOgO8rmZY0iAjqKjLc8516dk2lMDI=;
-        b=MujRJiMHLzZ3i9dafCHMLfhxzQ3hjuXAXHfrspucm5vUX5kSpe0bMvUw4GoJoMzBuN
-         quXAFOl91zakpBEvhmBsPbTONExxIv+9rydlqeW6moqQZxNLHcMoyx/oYOi4pNbIQP18
-         07TTXNbeIjaSUZAAP2m1FyjeopJuyEp/1xDkkvGa0t2XF5ztAQtpiL+U7rLNpwaityd8
-         09joPsXIOHfFPD+I1AmSZBqYubSzV1Z3AwMHrXvOLS/0/f4IzGCRIuh2IWxzWc6Bi1dq
-         9zxcTRGHKIhzZj8sRvIEQmddx3w9Phm2aER4XxOo5fvLQZlUvQXB4qH2p6AGdFyUJ6n9
-         dQSw==
+        bh=A2ssOewxHE3RnB8U93uEVmxtPWugpg/pgs/OmRrqDqc=;
+        b=pgK8kDA3QP9s6o6eDfM6sd1sQAOwa1NnblMAsF20dPZ5tTKBLhkIFu9fRzTr+V0Gxa
+         Zcu5OdMwV4Rfs8T6545/7EUq0yXltAgyHfNEVJQ3Br4ZgvDGUBUxZrBjkiloFz4wSNd+
+         qhzxg52SjC+Ug1I8dmseXZvbR1+Aj2FAWZdMIFiR4tYBUP4ztilisyZ5YtMLOrSXWr/d
+         k83SNFnZOXvu1Z4BOx+k/BVtOwLGRPa7MsoK4cOf8rWQWLUHi5eciFQESAnYzdJ4O8rL
+         YpLPYKMKV1xKTFpQvcB5Fe3GqhvgAg23Y5a5lTPpoHElcnfuF7tiYnmBJao5dQB9pf37
+         OXkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744118308; x=1744723108;
+        d=1e100.net; s=20230601; t=1744118688; x=1744723488;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=sr7pyx6G7DaZ2TXOgO8rmZY0iAjqKjLc8516dk2lMDI=;
-        b=hj6dOwhmR7KFxuljXojlQAkU0gNbg5pHNYiXT8YXQdHcPWXZGFDVeZ6GSR2LOrKLL7
-         nOCBbNdySdfAmifcmfvgipVPL/cyRru+gq4c/DXUjnLb7uUAGsAyQFEfz2a9OqVYwNjD
-         UdPdu9IosXhUiywQj3kX8EWkOFT0VCc2kpLW91K4HCmq+aJKEUVyr4Y7vFOCqFdkmN7+
-         IMaOL+BmdrYTvbmzuLVRJK5wI8YKvt8Lk6Z7dja3HkYil2PtygKCvYLndzD44LXl2BMw
-         YMIDXAGXVr68+sTPahFYAvXYRudovXOjw/cgyLhZ6/y72qNP+yR0c6/Dgz7ltmLXGeFy
-         Dd9A==
-X-Forwarded-Encrypted: i=1; AJvYcCXUps/Xz5Cgn6NLEOZW/CVIx7OVtKhf5AuVyp1rflqGjFL4+hxcp7N60kKcSYvun6tawwS20y5W@lists.linux.dev
-X-Gm-Message-State: AOJu0YwCSmpL9Awe7VOedcnPM2GzAEKygnui979FPY5XjzMiqT1/tbQ2
-	0G/xDYi2kGSHz3lzW0sjnNeV9yf5HUDK7NreRdjEMXDygSrEuNix0vCcEgH4LXU=
-X-Gm-Gg: ASbGnctoTf6bnI6qbRxg/EQyWO5uM++YdS2KwExGvGvdAjzw3x8YFBUhTBXJOCI+Qsr
-	TTGh6ccoPmSVvRff5zAR+2vl0QwV1iKeBv1XLaXO2fa8wFICxbSNUBT3LYAPHZnqGIWtI8Cq4gY
-	vhb+xXJsMLgcY00NrC71m2/HZPvS4oxxGQtT1TU/ETiw+dNa4PDv3Za7M8h5Q6mFuyaV3Hzxpe3
-	ot7TbbI94ooC3PKV1zaWF4qtbhg+zL8qLj2HpJJyunQ8PtrLeuPEpS53bjeKTA/PAfI1wZa63DJ
-	hdlMkQJDCx0djBK9j3/BbQX0jYe3eeQSgSKbIkiar4cs477BVXPaS2Xo
-X-Google-Smtp-Source: AGHT+IE1RDhne2p1HFMYzwbE0xhwxWK01VW16Y2FjBaJapPt63TlgSjOtJDftqAc4RZfGDnrVPZBAw==
-X-Received: by 2002:a05:600c:45cc:b0:43d:fa59:be39 with SMTP id 5b1f17b1804b1-43ecfa19d6bmr117388575e9.33.1744118307855;
-        Tue, 08 Apr 2025 06:18:27 -0700 (PDT)
+        bh=A2ssOewxHE3RnB8U93uEVmxtPWugpg/pgs/OmRrqDqc=;
+        b=MhcNRbWY39CyGL9gyS2Mw8hnGlIdaOb41pdyKITH+nhd3XuidnGSCK/xwgEQdu3ASH
+         BMVwUIW5UK7CF1IFbKPlHEMJ5devZe2T/B870gXGzI4SofuMu4BwwZUCX8f30aBNIuq3
+         WmFiadrv2rhyrEWY5tx74VA5CgDhHVGymDrOPxZibrzD0vrTOU+8mPE+cRCFs00petxa
+         ttDMCZkHvJA2I6fXRU+rMdKpoRdUnzIB/Es0FZzERnnOxPxDa0iKh0iVBMyWzFmHq87n
+         BlyXhI63pqsJEZNDAN8tag/8wX/wnC/4vPplbsEWBqapfqqaQtZrVBF7hL7QryYGVTFD
+         q+0A==
+X-Forwarded-Encrypted: i=1; AJvYcCWwethPWnWdeb0KbIhNBO5OG65bpnTGKd1OnXcYyTMENrRgA4gvYOpl+mtfF8FqdcmQPE3Llp75@lists.linux.dev
+X-Gm-Message-State: AOJu0YxzaK6kCAh0mgTpAAJALxohvg8w5QjnwoPtbJLlCtgErXw6EAgy
+	9addzn1Mcm1PM/kVHzumrrjMcw6YNRPtBA+bQ2y+rmtIMo3r5GQ4vVKJRJtbdsyxq6StysEvzCy
+	K
+X-Gm-Gg: ASbGnctEee6BTV/wSWb0ESCuRsKO84+vRO5LEKzXCDFOs++uYN7FkLCU8UCparLxB+b
+	q1xNFSxpkNKQPzKoHfi+Fj5g+Sl1s0UUPJ0AyjppITPhNJ0HIdyWvgd1ZljjMryic3RKPIXIa+b
+	4h8ra1Jj7rG4tbBnsfYBUyEPOJrBBPY7aAgV479qg2Olds/Jf+BhBAp9Pj2Icb5mt0AoC+RCLI4
+	BBS69Eh8O7+5C+c2Haoz75/oEx5A0i+d2O0qdErzEdLQVRQCoPe4mzeGrQjrdHEvJwmzxbM6+XI
+	0uU2Zdon+v9u7/cMbLh6HurLNP++7LNkLMPoGxm2vUtE7QmEOtmzctfH
+X-Google-Smtp-Source: AGHT+IHJrQRhnwD73qM1b662gk93KpItYHm2ZUTfR4o0W7bcJ0YWWSqyriRc9O5yNaZ1vGUMJvmF2w==
+X-Received: by 2002:a05:6000:4012:b0:391:2d61:4561 with SMTP id ffacd0b85a97d-39d07ad4ce7mr12716046f8f.6.1744118687987;
+        Tue, 08 Apr 2025 06:24:47 -0700 (PDT)
 Received: from somecomputer ([82.150.214.1])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43ec34a8952sm160538085e9.10.2025.04.08.06.18.27
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-43ec1794efesm165326225e9.28.2025.04.08.06.24.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Apr 2025 06:18:27 -0700 (PDT)
+        Tue, 08 Apr 2025 06:24:47 -0700 (PDT)
 From: Richard Weinberger <richard@sigma-star.at>
 To: Nikolaus Funk <nikolaus.funk@sigmatek.at>, xenomai@lists.linux.dev,
  Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: Richard Weinberger <richard@nod.at>
-Subject:
- Re: [PATCH 5/5] arm: dovetail: Helper functions for signal frame setup and
- restore
-Date: Tue, 08 Apr 2025 15:18:26 +0200
-Message-ID: <17455452.87JKscXggJ@anvil>
-In-Reply-To: <609d917110db9ea8549a6cf37115554c712e44a8.camel@siemens.com>
+Cc: Richard Weinberger <richard@nod.at>,
+ Johannes Kirchmair <johannes.kirchmair@sigmatek.at>,
+ Jan Kiszka <jan.kiszka@siemens.com>, Lorenz Kofler <lorenz@sigma-star.at>
+Subject: Re: [PATCH 3/5] arm64: dovetail: Allow early return from traps
+Date: Tue, 08 Apr 2025 15:24:46 +0200
+Message-ID: <4088969.M3a2QDmDih@anvil>
+In-Reply-To: <b7a88e1a195a47892cb40e29ced523cda043d533.camel@siemens.com>
 References:
  <20250408123423.627477-1-nikolaus.funk@sigmatek.at>
- <20250408123423.627477-6-nikolaus.funk@sigmatek.at>
- <609d917110db9ea8549a6cf37115554c712e44a8.camel@siemens.com>
+ <20250408123423.627477-4-nikolaus.funk@sigmatek.at>
+ <b7a88e1a195a47892cb40e29ced523cda043d533.camel@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -80,34 +81,23 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset="utf-8"
 
-On Dienstag, 8. April 2025 15:12 Florian Bezdeka wrote:
-> The different code style here (and below) is by intention?
-
-Too many different persons have worked on this and things got
-copy&pasted.
-
-> >=20
-> > +
-> > +	frame =3D (struct rt_sigframe __user *)regs->ARM_sp;
-> > +
-> > +	pagefault_disable();
-> > +
-> > +	if (!access_ok(frame, sizeof (*frame))) {
-> > +		goto out_pfe;
-> > +	}
-> > +
-> > +	if (restore_sigframe(regs, &frame->sig)) {
-> > +		goto out_pfe;
-> > +	}
-> > +
-> > +	if (copy_from_user(&sig, &frame->info.si_signo, sizeof(sig)))
-> > +		goto out_pfe;
+On Dienstag, 8. April 2025 14:58 Florian Bezdeka wrote:
+> On Tue, 2025-04-08 at 14:34 +0200, Nikolaus Funk wrote:
+> >  void do_sp_pc_abort(unsigned long addr, unsigned long esr, struct pt_r=
+egs *regs)
+> >  {
+> > -	mark_trap_entry(ARM64_TRAP_ALIGN, regs);
+> > +	if (!mark_cond_trap_entry(ARM64_TRAP_ACCESS, regs))
+> > +		return;
+> > =20
+> >  	arm64_notify_die("SP/PC alignment exception", regs, SIGBUS, BUS_ADRAL=
+N,
+> >  			 addr, esr);
 >=20
-> Hm... Switched the style again... I assume checkpatch would have
-> complained... No?
+> This hunk looks odd: ARM64_TRAP_ALIGN vs. ARM64_TRAP_ACCESS?
 
-checkpatch issues a warning, so it is a matter of taste.
-But I agree, we should be consistent. :-S
+Hmm, yes. Looks like a copy&paste error.
+Should be ARM64_TRAP_ALIGN to pair with mark_trap_exit().
 
 Thanks,
 //richard
