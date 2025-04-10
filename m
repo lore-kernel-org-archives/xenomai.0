@@ -1,38 +1,38 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFD0D28136F
-	for <xenomai@lists.linux.dev>; Thu, 10 Apr 2025 14:16:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0002828CF49
+	for <xenomai@lists.linux.dev>; Thu, 10 Apr 2025 14:16:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744294603; cv=none; b=pY+j4d3RTkPvice6SVLwJasJ5I/UXmP3X3NHQtPS3cWaBDRcjKumSzPQCNGaIsTDF0witrPDRWAusyAV0xCrBBBKMw8a+27Igyv45Pf1IzZBSEJqblioSGn4qlCyePJ3sgy1J7sAlX/kA95z0cnzG9fC2i7UXVP9oq4iUH4+AZA=
+	t=1744294603; cv=none; b=ZviKJUmcmJaFZjXUedrJ78hyoXGBD2b4ootpZsYp2XNf21FS6i+YBII3jPJqwaEheUM6vno9IwYs+h4BwlxbYzJOoqTkZSrTBfyMp5lQ0MP4GuXSH3TNXdjMkEZpJVoAO1mYQvxg9MB6b9xBHxoDqOFb1Lrs/ef5bTrngc9KHOc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1744294603; c=relaxed/simple;
-	bh=yTHATNwTIOvHnMqaFxMRFgdbzCdcmKFK7hBpa6Zbs3c=;
+	bh=k7okshfhlrQbV1GZER97f0IRQ8u6SANdcGtZRgCoKIc=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=C1R/IOgzyy79Y9k5iY4MtZ1nGVhgqK9X20xdf0Rukl6tPRl9g1e9fYp/QOPCWA5EFz5l/+sKW3VPTxH202nG/HIxQLVpFhgklLdBJDZyFzPmxXxUyA7ehnvGr7PyBQGkrcTTgXkkS+SnKfPVVXsgLDdbUtmtAqcEtEWTI7+G1+g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=Z1/ye0xz; arc=none smtp.client-ip=185.136.65.226
+	 MIME-Version; b=MXZNLuFcWzFZWzJni+WyyQY9fgqmCUgkoaqKNBNS1YI1orDWe8QW1KN7ZN90qoeyTqbV2N2yuBjzZj9d4FCYxwHLzB8nufs49qWruaB3w2gJm/rGdzQ0mun9iv4gjqIq0SPEX8BvPc/yxo8rthHGtrrwGYJr47LE1m9BRkmFvxs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=Q2G373bG; arc=none smtp.client-ip=185.136.65.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="Z1/ye0xz"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 2025041014163186037d3b5866f242a6
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="Q2G373bG"
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20250410141631e28245467e5844529b
         for <xenomai@lists.linux.dev>;
         Thu, 10 Apr 2025 16:16:31 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=+I/Mw4tvrimLCONYxpuRt+R8OsQ504rLpnnEZFBx0qw=;
- b=Z1/ye0xz1kisroNrsRIn/qsGxkIbD80acDkvGebzFDkfwnBywAM56AX4o0QVNJa2VFgpI6
- Ob/x+wx0qL/AVfQcoI+w08xcA8sk1TImxS0OkthRWeLuJrmFIN4j+xamQVSBTVp6kjQkj/Zb
- vs897mSaorL3r67Ju4K3TqA+G9rA5kfIPJb3GTpRV8u7INvLvioX3g3FtWi5HwyS8L4OsjOG
- VVwvN2tJ3NGEyQwdUOZ56jMFA0cuEulQ11nR3n439BPLc5rMEdOjJ3Uhj+b85LsrpW+GzRPJ
- trHyKMX7eCY1aphx4JUEItVLOT3RbGluwnTSbTUcVBRdui6AghK8wmlA==;
+ bh=/NwUOe8WZVhLaUcBjRgjMQPhax8IoO79KbQHOLzSfJY=;
+ b=Q2G373bGrWBA6Eu3BEtoMSth5d5r+GsyqAFKovo2x6eTpmxkXNZY8nifwUZTlZOKmZyYdo
+ kZamEKa2D+qwTxXgzOtIT6jyhN3o22ms2GBYR9mYGR5JyUF17Ng2Zc6mgifRg5Ppn00Aetny
+ 9k9o0OjsPRGhzE77oXzFuKaVSfueivsmbPG/c0IdnHWH6uXKkmy33yi8vqW2bK6VzAz3nktM
+ 8+5uyyDoEGNV/rW9iDDm5p7YT4LeecM6FSgExjiGvIRa993aCMB7b+WvGJ11JUQVAd0FsG6c
+ OjvimmXwuoUSKY+1eoa+6EWaejThHohwdo6d/gKuWsVoyrgP6d0/0iUg==;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [xenomai-images][PATCH 1/7] Add stable 3.3 branch with kernel 6.12 as default
-Date: Thu, 10 Apr 2025 16:16:24 +0200
-Message-ID: <a6631e43663afc8511fa151c07daddeb1c740a3e.1744294590.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 6/7] linux-xenomai4: Enable selection of latest releases
+Date: Thu, 10 Apr 2025 16:16:29 +0200
+Message-ID: <74937736504393ccff1968defdd5d2cafd0c0ba2.1744294590.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1744294590.git.jan.kiszka@siemens.com>
 References: <cover.1744294590.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -47,113 +47,43 @@ Feedback-ID: 519:519-294854:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
+Analogously to linux-xenomai-3, we need to set the preferred versions
+for linux-xenomai-4 in order to allow their selection via kas.
+
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- Kconfig                                        |  4 ++++
- conf/distro/include/xenomai-version.inc        | 12 +++++++++---
- opt-xenomai-3.3.x.yml                          | 18 ++++++++++++++++++
- .../xenomai/xenomai_stable-3.3.x.bb            |  1 +
- 4 files changed, 32 insertions(+), 3 deletions(-)
- create mode 100644 opt-xenomai-3.3.x.yml
- create mode 120000 recipes-xenomai/xenomai/xenomai_stable-3.3.x.bb
+ opt-linux-6.1.yml  | 1 +
+ opt-linux-6.12.yml | 1 +
+ opt-linux-6.6.yml  | 1 +
+ 3 files changed, 3 insertions(+)
 
-diff --git a/Kconfig b/Kconfig
-index 5aa06bd..f7ac3c8 100644
---- a/Kconfig
-+++ b/Kconfig
-@@ -82,6 +82,9 @@ choice
- config XENOMAI_LATEST
- 	bool "Head of next branch"
- 
-+config XENOMAI_3_3_LATEST
-+	bool "Head of stable/v3.3.x branch"
-+
- config XENOMAI_3_3
- 	bool "Latest 3.3.x release"
- 
-@@ -104,6 +107,7 @@ endchoice
- config KAS_INCLUDE_XENOMAI
- 	string
- 	default "opt-xenomai-next.yml" if XENOMAI_LATEST
-+	default "opt-xenomai-3.3.x.yml" if XENOMAI_3_3_LATEST
- 	default "opt-xenomai-3.2.x.yml" if XENOMAI_3_2_LATEST
- 	default "opt-xenomai-3.1.x.yml" if XENOMAI_3_1_LATEST
- 	default "opt-xenomai-3.0.x.yml" if XENOMAI_3_0_LATEST
-diff --git a/conf/distro/include/xenomai-version.inc b/conf/distro/include/xenomai-version.inc
-index e036c39..81c61ac 100644
---- a/conf/distro/include/xenomai-version.inc
-+++ b/conf/distro/include/xenomai-version.inc
-@@ -1,7 +1,7 @@
- #
- # Xenomai Real-Time System
- #
--# Copyright (c) Siemens AG, 2019-2024
-+# Copyright (c) Siemens AG, 2019-2025
- #
- # Authors:
- #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-@@ -9,7 +9,7 @@
- # SPDX-License-Identifier: MIT
- #
- 
--XENOMAI_DEFAULT_KERNEL_VERSION = "6.1%"
-+XENOMAI_DEFAULT_KERNEL_VERSION = "6.12%"
- 
- XENOMAI_3_0_VERSION_LIST = "3.0 3.0% 3.0.% 3.0.15 stable-3.0.x"
- XENOMAI_3_0_KERNEL_VERSION = "4.4%"
-@@ -20,6 +20,9 @@ XENOMAI_3_1_KERNEL_VERSION = "5.4%"
- XENOMAI_3_2_VERSION_LIST = "3.2 3.2% 3.2.% 3.2.6 stable-3.2.x"
- XENOMAI_3_2_KERNEL_VERSION = "6.1%"
- 
-+XENOMAI_3_3_VERSION_LIST = "3.3 3.3% 3.3.% stable-3.2.x"
-+XENOMAI_3_3_KERNEL_VERSION = "6.12%"
-+
- # If PREFERRED_VERSION_xenomai contains any item from XENOMAI_3_0_VERSION_LIST use
- # XENOMAI_3_0_KERNEL_VERSION. Same for the other XENOMAI_*_VERSION_LIST.
- PREFERRED_VERSION_linux-xenomai-3 ?= \
-@@ -29,6 +32,9 @@ PREFERRED_VERSION_linux-xenomai-3 ?= \
-             '${XENOMAI_3_1_VERSION_LIST}', '${XENOMAI_3_1_KERNEL_VERSION}', \
-             bb.utils.contains_any('PREFERRED_VERSION_xenomai', \
-                 '${XENOMAI_3_2_VERSION_LIST}', '${XENOMAI_3_2_KERNEL_VERSION}', \
--                '${XENOMAI_DEFAULT_KERNEL_VERSION}', d), \
-+                bb.utils.contains_any('PREFERRED_VERSION_xenomai', \
-+                    '${XENOMAI_3_3_VERSION_LIST}', '${XENOMAI_3_3_KERNEL_VERSION}', \
-+                    '${XENOMAI_DEFAULT_KERNEL_VERSION}', d), \
-+                d), \
-             d), \
-         d)}"
-diff --git a/opt-xenomai-3.3.x.yml b/opt-xenomai-3.3.x.yml
-new file mode 100644
-index 0000000..cd7b477
---- /dev/null
-+++ b/opt-xenomai-3.3.x.yml
-@@ -0,0 +1,18 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens, 2025
-+#
-+# Authors:
-+#  Jan Kiszka <jan.kiszka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+header:
-+  version: 14
-+
-+local_conf_header:
-+  xenomai-3-3-x: |
-+    PREFERRED_VERSION_xenomai = "stable-3.3.x"
-+    PREFERRED_VERSION_xenomai-compat = "stable-3.3.x"
-diff --git a/recipes-xenomai/xenomai/xenomai_stable-3.3.x.bb b/recipes-xenomai/xenomai/xenomai_stable-3.3.x.bb
-new file mode 120000
-index 0000000..0914c52
---- /dev/null
-+++ b/recipes-xenomai/xenomai/xenomai_stable-3.3.x.bb
-@@ -0,0 +1 @@
-+xenomai_stable-3.0.x.bb
-\ No newline at end of file
+diff --git a/opt-linux-6.1.yml b/opt-linux-6.1.yml
+index 76c2a8b..b1073c0 100644
+--- a/opt-linux-6.1.yml
++++ b/opt-linux-6.1.yml
+@@ -15,3 +15,4 @@ header:
+ local_conf_header:
+   linux-xenomai-version: |
+     PREFERRED_VERSION_linux-xenomai-3 = "6.1%"
++    PREFERRED_VERSION_linux-xenomai-4 = "6.1%"
+diff --git a/opt-linux-6.12.yml b/opt-linux-6.12.yml
+index 8132364..b026467 100644
+--- a/opt-linux-6.12.yml
++++ b/opt-linux-6.12.yml
+@@ -15,3 +15,4 @@ header:
+ local_conf_header:
+   linux-xenomai-version: |
+     PREFERRED_VERSION_linux-xenomai-3 = "6.12%"
++    PREFERRED_VERSION_linux-xenomai-4 = "6.12%"
+diff --git a/opt-linux-6.6.yml b/opt-linux-6.6.yml
+index 1b0bbb4..0de37f8 100644
+--- a/opt-linux-6.6.yml
++++ b/opt-linux-6.6.yml
+@@ -15,3 +15,4 @@ header:
+ local_conf_header:
+   linux-xenomai-version: |
+     PREFERRED_VERSION_linux-xenomai-3 = "6.6%"
++    PREFERRED_VERSION_linux-xenomai-4 = "6.6%"
 -- 
 2.43.0
 
