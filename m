@@ -1,78 +1,119 @@
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FD371DB128
-	for <xenomai@lists.linux.dev>; Mon, 14 Apr 2025 21:27:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id B8FFF2DFA3B
+	for <xenomai@lists.linux.dev>; Tue, 15 Apr 2025 02:00:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744666034; cv=none; b=cG5ZrSq6oO7CuFp6LFIajsRdtIGCOxIJyq6bMb4+ljJPCnU2kM2NuKr/X6uFwOpwXgJrvNuXyTH8aEUUHSTUAc2eIVD6xDJBNO2zKPWOhV4DZc/AZgN9P1iczpanpGMj1SrWuEKRwsFAdmxeIO51XnCwpx1ODMF3RtpmBuPo2XU=
+	t=1744682444; cv=none; b=R0n3Yj9XNY1Lf6f94o2504Z54BXEVq96MHqxtgFn/MomA9gjo4BtJEM1v6fiYS4FTQR4bkXZfVcMZj+R6yqjVg2K+BUKdmMNhHS2sPKZLNMDPb5z5BRe4VSwvke1MWfcP+pQZuJOiT4FoevHCGGlL3JvZgnRWSw8ioNgZn8z72g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744666034; c=relaxed/simple;
-	bh=p62kPdbMXYFgbqopenYuAiy89EC0eGX9ncyfqZyLk/I=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=IQ7DtY2JeySHmX1AgekRa7OUOCG2vvBo/8VsIT9mBLJsuta0tDIVxvbgBNCQUU6aVVoJFPaRUMujxX5xciyiixC7V7sIL0GPieh9k1js3K4GpHEkURVStEnzsiuFoxoo873KN1sFEgTpaHnW+YEm4uHDuDdhryWz/QZ159fVDwM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Mbojt4wF; arc=none smtp.client-ip=185.136.64.228
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1744682444; c=relaxed/simple;
+	bh=9c0a9w0l41hBI1KV0X/phPDi8rj5qR0N1eqcCYtfE50=;
+	h=Date:From:To:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CYg3A4pDijNnNhvlCTCfo0cWPSKhuITmKtzJf/mtHyK0lxkItiReAAndO1+HUeqxHiUuzwIdWnN1xsWiLDFNghSC4sEcv4Zz6Netw2II4H5eHLcwEzH8lTY3iF46c+yadwSbCi+/eVWqVnmRayqG+hG6sRCwQ16AaZJ/YMDHD9s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=iMTHOLM9; arc=none smtp.client-ip=220.197.31.4
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Mbojt4wF"
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20250414212706725eb9952fbff54cc6
-        for <xenomai@lists.linux.dev>;
-        Mon, 14 Apr 2025 23:27:06 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=p62kPdbMXYFgbqopenYuAiy89EC0eGX9ncyfqZyLk/I=;
- b=Mbojt4wFJGOp0hdBEwJafiHQq91UZRgEMRvODOET6z8XOJNU+ACVn4DU6FCDXJaG0StsYk
- BeYpE1GtjD6xE7cq7XuFJr4BBeQZIxZ9M15FqwOoNSIGzZbSlYCihe5fJiUpE64uWqUU17rk
- 1uS3JXroaicAAZy675Ymgwipoe/1j8iJZ43kyDTRLu9FYlXoFuBURbSSB3vAP4JN3mGcsVeV
- kuIaaT5AL2Dy6ydBxaE/nTbdl3jPnkay+TKY4l8UDYdB7/88nRAR2LwZwvXqlsk76GtANu2H
- j31+s7I8I01VSi5Z42ZNMBiaBV244o74rlQCasySnanQ0tBmb+BiyU3A==;
-Message-ID: <30c3e78254942075c7811336c90a4fbe9e12d5e0.camel@siemens.com>
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="iMTHOLM9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Date:From:Subject:Message-ID:MIME-Version:
+	Content-Type; bh=nWjR6wHetKgPBRBPZbPrt5qo20qRkAsq+b/VTIC7JC4=;
+	b=iMTHOLM9icfKheFFEjJFJeby8aZHcD4mMtED6En0rBOlJxYH+vDXYKc5H9Kmqw
+	IiRvMSwOKcr6+kzEsJD74wzIP7a996lrdSx9LjxioDLzWZ8w9TwueWtIvMfkkSyk
+	kilyKkw31g5Ce06icAcHsMBuJgM9FrQXjvK2Nd2F9GCj0=
+Received: from u2204 (unknown [])
+	by gzga-smtp-mtada-g1-2 (Coremail) with SMTP id _____wD3n4TBvf1nj7i7Gg--.46970S2;
+	Tue, 15 Apr 2025 10:00:36 +0800 (CST)
+Date: Tue, 15 Apr 2025 10:00:33 +0800
+From: Haiyang He <aspirestro@163.com>
+To: xenomai@lists.linux.dev
 Subject: Re: [PATCH v2] prepare-kernel.sh: expand tilde in --outpatch path
  parameter
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Richard Weinberger <richard.weinberger@gmail.com>
-Cc: Haiyang He <aspirestro@163.com>, jan.kiszka@siemens.com, richard@nod.at,
- 	xenomai@lists.linux.dev
-Date: Mon, 14 Apr 2025 23:27:06 +0200
-In-Reply-To: <CAFLxGvw+YK=4pW6+jcVt-_=ZjpikiQpc1m_XwiG5Lkxj--Q4zw@mail.gmail.com>
+Message-ID: <2xbsqkxq3vc5lej4rrffz3zyizb2xp3v5xg5uznnxqdozz7nvz@veuog2pynh7p>
+Mail-Followup-To: xenomai@lists.linux.dev
 References: <20250414153817.1829100-1-aspirestro@163.com>
-	 <89584308d4044af665ec7ed2ce71258edc237ca9.camel@siemens.com>
-	 <3e4268139f9fb21608367b46d939b8d1c93e1f88.camel@siemens.com>
-	 <CAFLxGvxC+TZKfQ90Q29fh1kQxjqLruUWezdHtjD-OKw=fJBVjg@mail.gmail.com>
-	 <cc0b3c1d50ccb79828cfa12058265119b663b1f7.camel@siemens.com>
-	 <CAFLxGvw+YK=4pW6+jcVt-_=ZjpikiQpc1m_XwiG5Lkxj--Q4zw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+ <89584308d4044af665ec7ed2ce71258edc237ca9.camel@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <89584308d4044af665ec7ed2ce71258edc237ca9.camel@siemens.com>
+X-CM-TRANSID:_____wD3n4TBvf1nj7i7Gg--.46970S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7trWktry5Xw1fAw1UGr45ZFb_yoW8tF13pa
+	y8ta1YvrW8J3Z5XwsrWr48Za4Ut34YyF909rn8XFy8Ary5Kr4IyF4Sgr15urnxJ3WFkw4S
+	gFs0qa4kA34xCrUanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07Uv2NZUUUUU=
+X-CM-SenderInfo: pdvsx2xhvw20i6rwjhhfrp/1tbiXBQvcWf9exZDyQABsq
 
-On Mon, 2025-04-14 at 23:13 +0200, Richard Weinberger wrote:
-> On Mon, Apr 14, 2025 at 11:02=E2=80=AFPM Florian Bezdeka
-> <florian.bezdeka@siemens.com> wrote:
-> > > We are already in this hell.
-> > > Both --linux and --dovetail use eval.
-> > > AFAIK, this is the only way to fully support tilde expansion.
-> >=20
-> > Ouch... With that said, I think v2 can be merged.
->=20
-> I'm not sure. v1 does exactly what we do already for --linux and --doveta=
-il.
-> No realpath needed.
-> We should provide the very same semantics for --linux, --dovetail and
-> --outpatch.
+On Mon, Apr 14, 2025 at 05:53:43PM +0200, Florian Bezdeka wrote:
+> On Mon, 2025-04-14 at 23:38 +0800, Haiyang He wrote:
+> > Ensure shell expands tilde (~) in the --outpatch parameter path.
+> > This fixes "cd: can't cd to ~" errors when using home directory
+> > shortcuts in output path.
+> > 
+> > The issue occurred because the ~ character in paths was not expanded
+> > before directory operations.
+> > 
+> > $ ./scripts/prepare-kernel.sh \
+> > --linux=~/xenomai/linux-dovetail \
+> > --arch=arm64 \
+> > --outpatch=~/xenomai.patch
+> > ./scripts/prepare-kernel.sh: 1: cd: can't cd to ~
+> 
+> Where is this "cd" command that fails? Which line of the script?
+It fails on line 210 of scripts/prepare-kernel.sh
+209         patchdir=`dirname $output_patch`
+210         patchdir=`cd $patchdir && pwd`
 
-Yes, v1 is more consistent in that regard.
+> 
+> > 
+> > Signed-off-by: Haiyang He <aspirestro@163.com>
+> > ---
+> > 
+> > Patch v2:
+> > Change `eval "echo $output_patch"` to $(eval "realpath $output_patch")
+> > 
+> >  scripts/prepare-kernel.sh | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/scripts/prepare-kernel.sh b/scripts/prepare-kernel.sh
+> > index ecc830fd2..ea7892b21 100755
+> > --- a/scripts/prepare-kernel.sh
+> > +++ b/scripts/prepare-kernel.sh
+> > @@ -139,6 +139,7 @@ while test $# -gt 0; do
+> >  		;;
+> >  	--outpatch=*)
+> >  		output_patch=`echo $1|sed -e 's,^--outpatch=\\(.*\\)$,\\1,g'`
+> > +		output_patch=$(eval "realpath $output_patch")
+> 
+> I think you got me wrong:
+> Should read: output_patch=$(realpath "${output_patch}")
+I had tried but it did not work and got error msg:
+realpath: '~/xenomai.patch': No such file or directory
+> 
+> But: Where exactly are we failing? Just tried to reproduce but failed
+> so far... Would help to know where exactly the "cd" operation is that
+> fails.
+> 
+> We operate on output_patch with basename, dirname, ... which all should
+> support ~.
+> 
+> Maybe it helps the script with "bash -x ./scripts/prepare-kernel.sh" to
+> enable some debugging.
 
->=20
-> --=20
-> Thanks,
-> //richard
+Here are outputs of line 209~210 when do "bash -x ./scripts/prepare-kernel.sh"
++ dirname ~/xenomai.patch
++ patchdir=~
++ cd ~
+./scripts/prepare-kernel.sh: 1: cd: can't cd to ~
+
+> 
+> >  		;;
+> >  	--filterkvers=*)
+> >  		echo "$me: warning: --filterkvers= is deprecated and now a no-op" >&2
+> > -- 
+> > 2.34.1
 
