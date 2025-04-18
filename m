@@ -1,156 +1,99 @@
-Received: from mail-lj1-f179.google.com (mail-lj1-f179.google.com [209.85.208.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DBDE171D2
-	for <xenomai@lists.linux.dev>; Fri, 18 Apr 2025 07:56:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F6151DFFD
+	for <xenomai@lists.linux.dev>; Fri, 18 Apr 2025 09:13:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1744962984; cv=none; b=D4F5XtfyF1uCz6ReyIAstjGpr116Wk8RfQn8RpeB11/tnmlkZNFP89jGZJ8NWiQwzejy2fyxP+K/M7tf8uuTTHmZWue74Ahgl0fOSdEI0YyGiiLDhH5CfOzX53rf6Nryxhi3abR+UWwymIo2uDyFoP0t4k+5KflTyCni78KTFdw=
+	t=1744967589; cv=none; b=nPuYw/VSLZdkKiWyN9eCM0ZD3ARQ7JOaotVDzv7xcZjUeeNWgV79OIjKIi4dSxmGEelcIVUTZ7UAe+48MitV7ObGDMb4XXSmj12CxkdJSM/ODSpWkdOZDTD2BEdYcvmmZR/LyYsiOHXPAHCwyyGLsb0XYJtPbGTA00L3ep0BhYE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1744962984; c=relaxed/simple;
-	bh=1QbhQ+i0VaBBaFeLFXeUqwxPa1VtK3G+gpKPAXbmLJU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=qahDN2r7ckzbgh6Sg3wld5LVQHfTr2KmBTJ81xv/+TIOy7IPQyF+U9+56Vl6iIf7jbZkqzIv44eaFsXVjnPSULpIl+oh5SxBY/3+raCV0THIw+yUjQb84obsKCTnTEqkDeIeNYoFFM1+CwSm5pJtWTkbSQ0qXa2C38JYHP4dQSk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b=df2XxlAF; arc=none smtp.client-ip=209.85.208.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
+	s=arc-20240116; t=1744967589; c=relaxed/simple;
+	bh=BhKDuut4Se2IVbVOLwBYV7pTBHlHQaxeZfh2khZ4VKU=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=nMwM28NmtqaKVWZnHa40Xd6LbPET+3QSxXp1Ng40cwQL3Bz3RKTUHgpfLTtwtwWHa87sxpZHNhXMe1VL55eJ6KmTUoFV4AQPgY+zESgiUeJRlpTrubdi6t2rEzIHNPtk8AqJGLH462L/0g6emTI6rei8Q+lF9DOoB95bjEG9R2w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=G4kBwEx+; arc=none smtp.client-ip=217.70.183.197
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b="df2XxlAF"
-Received: by mail-lj1-f179.google.com with SMTP id 38308e7fff4ca-30effbfaf61so18826961fa.0
-        for <xenomai@lists.linux.dev>; Fri, 18 Apr 2025 00:56:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile.fr; s=google; t=1744962979; x=1745567779; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kVgeW+jzTgcbjw2/Owe8UVLKjsCow2SRXCId4DOM3pI=;
-        b=df2XxlAFLLVhdZkiM8VK6cLOf/n+etqMEQP3jUm/WnXTfVXeU70lfvGhZEmBYGZWpW
-         8fk+ALEbxxYEZeD0NLjTN7UQEqDDmMc9l1Y1ATOn8KfP37cqdyUxoBDviO1gHbz7rpsh
-         WGY7poUieafBL8/nnI+mbvv2/Dc40gtZxFnxQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1744962979; x=1745567779;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=kVgeW+jzTgcbjw2/Owe8UVLKjsCow2SRXCId4DOM3pI=;
-        b=s/zXaSSik/Iu4vvCduIFnhqoJw8QFmQks2x7SrAFPuw0CCgAgX2Bv+nSz+1HRMA/RA
-         njU1vyhTk9hM1lY8biFywe36pwU/uKLWHPeFfl1wvh4TFjU5k1NMpVISMYdkP6MsVHQY
-         HkH/xsoc9FqES5C+jF3b+Dd1ioyUDqjfZvL4PW5YQ/g5z2EcEzLn4UnGmTxxNNUk9cE5
-         G26WH29hzLJghL9u3pxbFYT+fchJiOIsodRU+jTb6S9O36NaWWhXGMwIrGxSH3u0M6ST
-         E7FBB7qAlhAJRe57qYieyqgvBqqIBv1REXwcggUvvEQ2IEkIqfSZgfQk5U2yKwWKTOJO
-         UBXA==
-X-Forwarded-Encrypted: i=1; AJvYcCVLEER/UqOXnfFHUi6VRSirWXsB/y+Uple8n2lBbjXDztPCFiHyKRJEtvExZPhcgF45Klds0X+M@lists.linux.dev
-X-Gm-Message-State: AOJu0Yzj033qIBn0s3+lgxqCU8HxgZ6LdsGI6+7kbeur0UdKlNV4wCbI
-	3Y/sbsDlTX5k0h8Nde3eeQIRNhEyUvO12gjfZ6wx9j2nkDlHGHRfR/T/2EjmrE1GwG0G2bu28Ei
-	/CqMZjYBaAxF2XIrumMg2rsr5Owzd4suqOho+ug==
-X-Gm-Gg: ASbGncs53qQRAFqfs7HqKP26Kx1s4U7Ff3KOTqXEwpnE+ui48ZLg5nXtxADQ9JOdYad
-	mL0uL8Tz9op5EJ1xxId/O6LEOwzH0irD26OlqgYNLIhztKxE1JLkW/KqZ/Cz+zpbFN+Pc71fBEB
-	I01amr1GMGmFKG/7nZW0KvgeGKp1BRtQKHbaulS49TYd+KSa/KBLc0
-X-Google-Smtp-Source: AGHT+IFYrqDC3dg6jw3u0xuYyN8Pq13WeeO62J9wXfITDjSrmXGgUM5aL9GAfxDdv3/PRt2giu/5idWSoTho6Vj00OA=
-X-Received: by 2002:a2e:a54a:0:b0:30b:f2d7:1e7c with SMTP id
- 38308e7fff4ca-31090df4571mr4698171fa.5.1744962979079; Fri, 18 Apr 2025
- 00:56:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="G4kBwEx+"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id C3F8A432F5;
+	Fri, 18 Apr 2025 09:13:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1744967584;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=xH0gFAw+V6l9yJzjpvg7ohwOEtpwznX6GJ3A5h66oRE=;
+	b=G4kBwEx+c+N4QgHCL/NFCFZ1qJX4E5hsmP6oNSLuKoozvao2MThM10lGTFpWHxC/rogD0C
+	mFinx+LAUc8DNMp5TCoWAC9y3fPTCUUV9rSeUwHz/BWLsFYfZBt+IqyGbWZK0zzvzGkkJA
+	5V9iTLC/1KLnKV5CtWBFpdpPjJ8Li4zC+JVW11qUbxZawKu4fcp81Y/2Pap/UYwr91QSC2
+	IsluFU/WGeof2h93Flxp5QQ9fGA+nFDUvXkn2zdraw8Nn5ShuFCWRsp8N8yAkL3+EImsJ8
+	cxC9F/U1ogtmk3PPjEtkKuektynONCkVItnXBrZxqA94upK+3pANqbuVwx001g==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Pierre FICHEUX <pierre.ficheux@smile.fr>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>,  Zoran KRIVOKUCA
+ <zoran.krivokuca@smile.fr>,  xenomai@lists.linux.dev
+Subject: Re: [EVL_XENOMAI-4] Consistent Latency Spike at 4s on Isolated CPU
+ with EVL (Raspberry Pi 4)
+In-Reply-To: <CAFc1U0s_6A0JKMQ+kWL+hCKGG5GcfS9C721u83Kc_qbxbTXMuw@mail.gmail.com>
+	(Pierre FICHEUX's message of "Fri, 18 Apr 2025 09:56:07 +0200")
+References: <CADjXCUdi2vswJNN8n2BWtPgtXu_ZXDrAD5qTcNNh=ovBmw=-yg@mail.gmail.com>
+	<8bc51145-3e99-4b78-87d2-7859f9c35a4b@siemens.com>
+	<CAFc1U0s64TakhZUG=ym-oANAnkNsj-L=L2T3pYAtzgEwROtHkg@mail.gmail.com>
+	<CAFc1U0s_6A0JKMQ+kWL+hCKGG5GcfS9C721u83Kc_qbxbTXMuw@mail.gmail.com>
+User-Agent: mu4e 1.12.8; emacs 29.4
+Date: Fri, 18 Apr 2025 11:12:59 +0200
+Message-ID: <87jz7hj0is.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CADjXCUdi2vswJNN8n2BWtPgtXu_ZXDrAD5qTcNNh=ovBmw=-yg@mail.gmail.com>
- <8bc51145-3e99-4b78-87d2-7859f9c35a4b@siemens.com> <CAFc1U0s64TakhZUG=ym-oANAnkNsj-L=L2T3pYAtzgEwROtHkg@mail.gmail.com>
-In-Reply-To: <CAFc1U0s64TakhZUG=ym-oANAnkNsj-L=L2T3pYAtzgEwROtHkg@mail.gmail.com>
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Fri, 18 Apr 2025 09:56:07 +0200
-X-Gm-Features: ATxdqUEETGUzXZtMiXYI-gVR6WnE_pO4hWKfWZhN-6_ydR2xuGq30UfF5JoADsQ
-Message-ID: <CAFc1U0s_6A0JKMQ+kWL+hCKGG5GcfS9C721u83Kc_qbxbTXMuw@mail.gmail.com>
-Subject: Re: [EVL_XENOMAI-4] Consistent Latency Spike at 4s on Isolated CPU
- with EVL (Raspberry Pi 4)
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Zoran KRIVOKUCA <zoran.krivokuca@smile.fr>, xenomai@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvfedujeehucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpefgtdeffffgteejjeefueelveekjeehkefggeetueeljeeggeevgfejtedvieekkeenucffohhmrghinhepvghvlhhprhhojhgvtghtrdhorhhgnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopeegpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopeiiohhrrghnrdhkrhhivhhokhhutggrsehsmhhilhgvrdhfrhdprhgtphhtthhopehjrghnrdhkihhsiihkrgesshhivghmvghnshdrtghomhdprhgtphhtthhopehpihgvrhhrv
+ gdrfhhitghhvghugiesshhmihhlvgdrfhhr
+X-GND-Sasl: rpm@xenomai.org
 
-Hi again,
+Pierre FICHEUX <pierre.ficheux@smile.fr> writes:
 
-To be honest, I don't really  understand the answer.
-On xenomai 3 we create a thread in the Xenomai domain and we must not
-use Linux syscalls in order to avoid "migrations".
-Is that so different on Xenomai 4 / EVL ?
+> Hi again,
+>
+> To be honest, I don't really  understand the answer.
+> On xenomai 3 we create a thread in the Xenomai domain and we must not
+> use Linux syscalls in order to avoid "migrations".
+> Is that so different on Xenomai 4 / EVL ?
+>
 
-regards
+Absolutely zero difference between both. As Jan mentioned already, the
+4s delay before the issue is observed is a clear hint that the evl
+watchdog triggered, at which point the faulty thread was forcibly bumped
+out oob mode to keep the system in a sane state, i.e. avoid complete
+lockup.
 
-Le ven. 18 avr. 2025 =C3=A0 08:30, Pierre FICHEUX <pierre.ficheux@smile.fr>=
- a =C3=A9crit :
->
-> Hi,
->
-> Thx for your answer.
->
-> Do you know if there is a "migration guide from v3 to v4" as there is
-> such a document for v2 to v3 ?
->
-> https://doc.xenomai.org/v3/pdf/MIGRATION.pdf
->
-> regards
->
-> Le mer. 16 avr. 2025 =C3=A0 15:33, Jan Kiszka <jan.kiszka@siemens.com> a =
-=C3=A9crit :
-> >
-> > On 16.04.25 14:38, Zoran KRIVOKUCA wrote:
-> > > Hello,
-> > >
-> > > I=E2=80=99m working on a real-time application using EVL (Xenomai 4) =
-on a
-> > > Raspberry Pi 4. My application consists of a single EVL thread that
-> > > toggles a GPIO pin periodically using an EVL timer (evl_new_timer) an=
-d
-> > > logs jitter values. I'm using mmap() for direct GPIO access and
-> > > evl_read_clock() to measure timing.
-> > >
-> > > The thread is configured with SCHED_FIFO at priority 99, locked in
-> > > memory via mlockall(), and pinned to CPU 3 using sched_setaffinity().
-> > >
-> > > Overall, the jitter is low and consistent, which is great. However,
-> > > I=E2=80=99m observing a recurring and reproducible latency spike exac=
-tly
-> > > around 4 seconds after starting the test. This spike only happens onc=
-e
-> > > and does not repeat afterward. Once past that point, jitter returns t=
-o
-> > > normal and remains stable.
-> > >
-> > > Could this be related to a misuse or oversight in my application, or
-> > > perhaps some in-band task that is scheduled to run at that moment
-> > > despite CPU isolation?
-> > >
-> >
-> > 4 seconds... you have been kicked out of RT by the EVL watchdog. And
-> > that means you are trying to create a 100%-RT task which will starve th=
-e
-> > Linux on your system to death. Will not work this way. Schedule your
-> > work based on time or external events and make sure it completes
-> > eventually. 4 s is already way longer than what a task should take.
-> >
-> > Jan
-> >
-> > --
-> > Siemens AG, Foundational Technologies
-> > Linux Expert Center
-> >
->
->
-> --
->
-> Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
->                              http://www.smile.fr
->                              https://smile.eu/fr/offres/embarque-iot
-> I would love to change the world, but they won't give me the source code
+The watchdog triggers when a rt thread keeps a CPU busy in oob mode
+without relinquishing control to the inband kernel for more than 4s (by
+default), e.g. sleeping in some way, waiting for a resource to be
+available, whatever may cause it to block for a while. This is
+transitive: if T1, T2 and T3 are evl/rt threads operating in oob mode,
+switching between them on the same CPU without any intervening switch to
+the inband mode would cause the watchdog to trigger the same way.  You
+may want to confirm that you are indeed facing a watchdog issue by
+changing the 4s (default) delay to, e.g. 3s by setting
+CONFIG_EVL_WATCHDOG_TIMEOUT to a different value. You may also use
+health monitoring capabilities of threads with evl, see the different
+ways of catching the EVL_HMDIAG_WATCHDOG event at [1] (i.e. POSIX signal
+like x3, or observability which is x4-specific via
+evl_set_thread_mode()).
 
+IOW, you need to check your rt loop code for the presence of a
+blocking/sleeping state which guarantees that the inband kernel is going
+to have some bandwidth to deal with its stuff. This is the normal case,
+busy polling indefinitely in rt/oob mode is not.
 
+[1] https://evlproject.org/core/user-api/thread/
 
---=20
-
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source code
+-- 
+Philippe.
