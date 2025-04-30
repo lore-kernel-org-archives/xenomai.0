@@ -1,238 +1,203 @@
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2059.outbound.protection.outlook.com [40.107.22.59])
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC36BEC2
-	for <xenomai@lists.linux.dev>; Wed, 30 Apr 2025 05:08:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.22.59
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1745989696; cv=fail; b=LHVrosAOPGOfrHPXASwIT9WpfrIbmTj6KHAEGhDf3DNUevfoWN1dkOBt8G+8oUJG6j0o045i7Sl0rIQPOzDGV9MpM8TSHCae4KRv8KP58Blf0S6w8Jt/rneNUKlaOYqvoFsrqovnnO7q9kafx3YGO3Mv6b/iEMVypyMCoUOh3TY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1745989696; c=relaxed/simple;
-	bh=htqfCG9R0UCrw1JTvGXfu4DP3uWbG0KQqC++jQj7esE=;
-	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=raN3rD7yFP3h1YGGj9ukhReaDRksgQ2HALRbVCQ34mM7HFo5vnpnoGKp3iKKhfJ8zJ/Sz0EdaD4LPQVPItGEcXfrzAVAyL3/JzPvdcDsLtTh5uPOlGJ+W9FRf9r/EGFIH9ClKJp+grvwR5qWcRBcejI06G1Cs8jE4dn48GbbViM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=neCYhsbK; arc=fail smtp.client-ip=40.107.22.59
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 279851F941
+	for <xenomai@lists.linux.dev>; Wed, 30 Apr 2025 13:47:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.193
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1746020864; cv=none; b=Fls3qQ7LTn4vHavPBULlqRBjVcnCJJN4dLo1qOJQq3iCLzkE0QTBybPohzWMO/y1VNQ7h+x1Y9tlIU/izlahqZ9N01nQJoX/0HqE1YpL8p4bf5jM9KkVN5CFuIidQz4j7vxhshgFrdLS0dE+3JZu0aiJvPIrb1doGzJwg4HUNlA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1746020864; c=relaxed/simple;
+	bh=8+qroOkKKoQVHnQ0hih7gBdEnHR+L1H23cAz39n01qg=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Ja5HY5W634Y3iC/cs8s4xQELNL3vJ2Kyrc4e3i+vT8S0UOkQdMopTlWNvXwxih8USXd91CaX+9lVJzHuuqw/MQhMQP25SldUw2uf/ezhCPRm4Dh8X9cht2Qe2xwqmIP0/OdOYtgpszgYkOkLswaJofB4eieKu1ppwpp+AnfpFm0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=ISkBYOT5; arc=none smtp.client-ip=217.70.183.193
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="neCYhsbK"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=d6dyCzwF2VvUlOw5Q/r4Rc3c/erfRPoMzEf3wM0044EbIMuyRjkl7mgWBnofsE3Ej/Xzep3ciJhMLZOfJgk9ohdWIDRtjU85SRmvtsOeF8jKQ3L/hpksH6k4hD+s7Lk8gK0e7mAb49l6b/QyH42EAfXjWRue1NLxr8nwou+6iLgec3foWqjEK0avowHgQf4WLQVd7g6tm3dahBfJL6FWxnw7nRbX4WeVT0726sPO94teE2x9iGecf3hioTAVksaEpuOGYDEkGfZEoLMOqAx/ekdVBTHglCyx1W2lfJaKN/vNPIhQ6nqXrcxDOfCMycWViEsSt98Y76oVCA7m1AA6rQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lTZg6YdAE+mPniDjKHT/0WVdmCkfRrrfI4qi7LcK9Mc=;
- b=RmZMtXUWqHX/SwcG+J/S5kTocEBHK1jTa2W0xU9/uHSIMMsZdOmCAeWHcl6oLDKDX4V0zbYQFQMcBSmgBbePoKBbru8AlD87hVUgnmA1umIAbc7lVmLax+KARqs+mbRtV4Vl8+QjljpVEY71zS0Tgv2Dd/31/U/XQFcCy1o5ODFdJAQyV8WGU/8QWSgf9+laVZYZXhQCenj1OHMUdTE/N6fdUxoCfdKiQ5VapHpFweqZUvBkyAqMIOJrLsBgWofiZaydwIuG/cvys2D4Gkj1FNgoQpeVzL21ieC4DjBygvc+dKnUvyjIoQa3KzaG9QLjx59L8QYVb4TqCmc83aaUPg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lTZg6YdAE+mPniDjKHT/0WVdmCkfRrrfI4qi7LcK9Mc=;
- b=neCYhsbKz8KECjEMX7m6/++f2cYUZWGaazvL/BcJxMdLSLo2D0sbuuVkhVR67HHh8OVkuK1BBUW0LQnWxq9+K7EAgipxqAVTJgx7aLs8i2VIUs69wbde1nIeAVD4PRIGmgtbHGaKTMkeUZGN0PSDPdsznY/eOKoDgiHEqXYGPoKqWzr6fDip3xqwi17luAPrjY8EOuYT91XD8iqZXNFJ/k09HW1LcGxJ1UjBV0rqFe2TyzXYqz6ws0+y7Cgf25+vEq1CqMOysMK6AT6A0fsyu8BsAwNhfrVQe1lmlkZzBtIQ2q/gaFeLhbmqj7O9Ctsf5PzdiTtTw64azKgl7nmWtg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by GVXPR10MB5981.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:1::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8678.31; Wed, 30 Apr
- 2025 05:08:10 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8fe1:7e71:cf4a:7408%4]) with mapi id 15.20.8678.028; Wed, 30 Apr 2025
- 05:08:10 +0000
-Message-ID: <1fe7aedd-21a2-400e-b4b8-54720308530b@siemens.com>
-Date: Wed, 30 Apr 2025 07:08:09 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: Xenomai community call on Wednesday, Apr 30 , 2025, UTC 7:30 AM
-To: "Chen, Hongzhan" <hongzhan.chen@intel.com>,
- "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-References: <PH7PR11MB7499F7DDE006A3A7291F61FAF27B2@PH7PR11MB7499.namprd11.prod.outlook.com>
- <PH7PR11MB74993258CAA8CDDA598B287DF2542@PH7PR11MB7499.namprd11.prod.outlook.com>
- <PH7PR11MB7499E32BB1968236810DF6B3F25A2@PH7PR11MB7499.namprd11.prod.outlook.com>
- <PH7PR11MB74993347DB8F72364025EFEBF2282@PH7PR11MB7499.namprd11.prod.outlook.com>
- <PH7PR11MB7499E7C229D3943554AE31B6F23E2@PH7PR11MB7499.namprd11.prod.outlook.com>
- <PH7PR11MB74997A20364527E81370A33FF2122@PH7PR11MB7499.namprd11.prod.outlook.com>
- <PH7PR11MB74998618D1F5B701C8C07330F2F72@PH7PR11MB7499.namprd11.prod.outlook.com>
- <PH7PR11MB749901F0793C63043273F166F2C52@PH7PR11MB7499.namprd11.prod.outlook.com>
- <PH7PR11MB7499534189182B1B56FDC426F2CB2@PH7PR11MB7499.namprd11.prod.outlook.com>
- <PH7PR11MB7499D5045E7CD5CC207EADB5F2D92@PH7PR11MB7499.namprd11.prod.outlook.com>
- <PH7PR11MB74997D0A2A025EBDE30826D6F2BD2@PH7PR11MB7499.namprd11.prod.outlook.com>
- <PH7PR11MB74998FCA330C96F94503AF18F2832@PH7PR11MB7499.namprd11.prod.outlook.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Content-Language: en-US
-Autocrypt: addr=jan.kiszka@siemens.com; keydata=
- xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
- uNUqthIkgLGWzKugodvkcCK8Wbyw+1vxcl4Lw56WezLsOTfu7oi7Z0vp1XkrLcM0tofTbClW
- xMA964mgUlBT2m/J/ybZd945D0wU57k/smGzDAxkpJgHBrYE/iJWcu46jkGZaLjK4xcMoBWB
- I6hW9Njxx3Ek0fpLO3876bszc8KjcHOulKreK+ezyJ01Hvbx85s68XWN6N2ulLGtk7E/sXlb
- 79hylHy5QuU9mZdsRjjRGJb0H9Buzfuz0XrcwOTMJq7e7fbN0QakjivAXsmXim+s5dlKlZjr
- L3ILWte4ah7cGgqc06nFb5jOhnGnZwnKJlpuod3pc/BFaFGtVHvyoRgxJ9tmDZnjzMfu8YrA
- +MVv6muwbHnEAeh/f8e9O+oeouqTBzgcaWTq81IyS56/UD6U5GHet9Pz1MB15nnzVcyZXIoC
- roIhgCUkcl+5m2Z9G56bkiUcFq0IcACzjcRPWvwA09ZbRHXAK/ao/+vPAIMnU6OTx3ejsbHn
- oh6VpHD3tucIt+xA4/l3LlkZMt5FZjFdkZUuAVU6kBAwElNBCYcrrLYZBRkSGPGDGYZmXAW/
- VkNUVTJkRg6MGIeqZmpeoaV2xaIGHBSTDX8+b0c0hT/Bgzjv8QARAQABzSNKYW4gS2lzemth
- IDxqYW4ua2lzemthQHNpZW1lbnMuY29tPsLBlAQTAQoAPhYhBABMZH11cs99cr20+2mdhQqf
- QXvYBQJmWPvXAhsDBQkFo5qABQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJEGmdhQqfQXvY
- zPAP/jGiVJ2VgPcRWt2P8FbByfrJJAPCsos+SZpncRi7tl9yTEpS+t57h7myEKPdB3L+kxzg
- K3dt1UhYp4FeIHA3jpJYaFvD7kNZJZ1cU55QXrJI3xu/xfB6VhCs+VAUlt7XhOsOmTQqCpH7
- pRcZ5juxZCOxXG2fTQTQo0gfF5+PQwQYUp0NdTbVox5PTx5RK3KfPqmAJsBKdwEaIkuY9FbM
- 9lGg8XBNzD2R/13cCd4hRrZDtyegrtocpBAruVqOZhsMb/h7Wd0TGoJ/zJr3w3WnDM08c+RA
- 5LHMbiA29MXq1KxlnsYDfWB8ts3HIJ3ROBvagA20mbOm26ddeFjLdGcBTrzbHbzCReEtN++s
- gZneKsYiueFDTxXjUOJgp8JDdVPM+++axSMo2js8TwVefTfCYt0oWMEqlQqSqgQwIuzpRO6I
- ik7HAFq8fssy2cY8Imofbj77uKz0BNZC/1nGG1OI9cU2jHrqsn1i95KaS6fPu4EN6XP/Gi/O
- 0DxND+HEyzVqhUJkvXUhTsOzgzWAvW9BlkKRiVizKM6PLsVm/XmeapGs4ir/U8OzKI+SM3R8
- VMW8eovWgXNUQ9F2vS1dHO8eRn2UqDKBZSo+qCRWLRtsqNzmU4N0zuGqZSaDCvkMwF6kIRkD
- ZkDjjYQtoftPGchLBTUzeUa2gfOr1T4xSQUHhPL8zsFNBGZY+hkBEADb5quW4M0eaWPIjqY6
- aC/vHCmpELmS/HMa5zlA0dWlxCPEjkchN8W4PB+NMOXFEJuKLLFs6+s5/KlNok/kGKg4fITf
- Vcd+BQd/YRks3qFifckU+kxoXpTc2bksTtLuiPkcyFmjBph/BGms35mvOA0OaEO6fQbauiHa
- QnYrgUQM+YD4uFoQOLnWTPmBjccoPuiJDafzLxwj4r+JH4fA/4zzDa5OFbfVq3ieYGqiBrtj
- tBFv5epVvGK1zoQ+Rc+h5+dCWPwC2i3cXTUVf0woepF8mUXFcNhY+Eh8vvh1lxfD35z2CJeY
- txMcA44Lp06kArpWDjGJddd+OTmUkFWeYtAdaCpj/GItuJcQZkaaTeiHqPPrbvXM361rtvaw
- XFUzUlvoW1Sb7/SeE/BtWoxkeZOgsqouXPTjlFLapvLu5g9MPNimjkYqukASq/+e8MMKP+EE
- v3BAFVFGvNE3UlNRh+ppBqBUZiqkzg4q2hfeTjnivgChzXlvfTx9M6BJmuDnYAho4BA6vRh4
- Dr7LYTLIwGjguIuuQcP2ENN+l32nidy154zCEp5/Rv4K8SYdVegrQ7rWiULgDz9VQWo2zAjo
- TgFKg3AE3ujDy4V2VndtkMRYpwwuilCDQ+Bpb5ixfbFyZ4oVGs6F3jhtWN5Uu43FhHSCqUv8
- FCzl44AyGulVYU7hTQARAQABwsF8BBgBCgAmFiEEAExkfXVyz31yvbT7aZ2FCp9Be9gFAmZY
- +hkCGwwFCQWjmoAACgkQaZ2FCp9Be9hN3g/8CdNqlOfBZGCFNZ8Kf4tpRpeN3TGmekGRpohU
- bBMvHYiWW8SvmCgEuBokS+Lx3pyPJQCYZDXLCq47gsLdnhVcQ2ZKNCrr9yhrj6kHxe1Sqv1S
- MhxD8dBqW6CFe/mbiK9wEMDIqys7L0Xy/lgCFxZswlBW3eU2Zacdo0fDzLiJm9I0C9iPZzkJ
- gITjoqsiIi/5c3eCY2s2OENL9VPXiH1GPQfHZ23ouiMf+ojVZ7kycLjz+nFr5A14w/B7uHjz
- uL6tnA+AtGCredDne66LSK3HD0vC7569sZ/j8kGKjlUtC+zm0j03iPI6gi8YeCn9b4F8sLpB
- lBdlqo9BB+uqoM6F8zMfIfDsqjB0r/q7WeJaI8NKfFwNOGPuo93N+WUyBi2yYCXMOgBUifm0
- T6Hbf3SHQpbA56wcKPWJqAC2iFaxNDowcJij9LtEqOlToCMtDBekDwchRvqrWN1mDXLg+av8
- qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
- 8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
- ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <PH7PR11MB74998FCA330C96F94503AF18F2832@PH7PR11MB7499.namprd11.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR4P281CA0298.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:e7::7) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="ISkBYOT5"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 2E6DF43A2C
+	for <xenomai@lists.linux.dev>; Wed, 30 Apr 2025 13:47:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1746020859;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:mime-version:mime-version:content-type:content-type;
+	bh=DHque2PdOK2JGe8Qc8wpqMv9aPLQSR8rCgznHHvsx8A=;
+	b=ISkBYOT5KtM18TlO6OHYUtp63ruFnZTfw5T8ss+6nbhdaDxhqpc0ffihfSnyaw9SF5FsRn
+	w6PtE4iOY5fscIVzb5VlkOusVMpATtyOP2gdA0XmJ9loQyb4KQlSFF4IV5AzqC4DEumL+W
+	LWEyt5UTPO6xDKh90+KCJsRDG2haRbjoSAXgzi5eS4i7dPPrYDoPaK8xAvBZ07zcHVJfCJ
+	URNO+9OMHSzMwGuZ1OV29YZATKyhL2VO+3w4XJCHEuMeDeqe8ZjzFjYjZePnBRRDQYkw+4
+	XLjqxILP5uwk79pTN4YIL+kjNV+ZAQn2X+eXEjRVR0oye5gVcPAJ35+WHLYtzw==
+From: Philippe Gerum <rpm@xenomai.org>
+To: xenomai@lists.linux.dev
+Subject: [PATCH][Dovetail] fix IRQ forwarding to the in-band stage
+User-Agent: mu4e 1.12.8; emacs 29.4
+Date: Wed, 30 Apr 2025 15:47:38 +0200
+Message-ID: <87plgtg3r9.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GVXPR10MB5981:EE_
-X-MS-Office365-Filtering-Correlation-Id: 24fe5318-be96-4b88-8dc0-08dd87a50042
-X-MS-Exchange-AtpMessageProperties: SA
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?ZWZ2TnlvVStRaHNOY0ZYNmtVRlgrUVplN0VkaGZkTnRHdHYwQjN3RWUzZlJk?=
- =?utf-8?B?SGRvcjgvS3ZRNDJXNnZOakRLZnF3eVV1aDRtR0xwcnZEaGx1Z1cvT3podmVp?=
- =?utf-8?B?U2N5a25oZW96dzY1dytnSlVLaHpDVlljTFJEUWd2WENQV3JzVXdjcnlBZS9y?=
- =?utf-8?B?dGtGdUFEMnVwbjd4TUI2WlMrRjZ6d01ueGVBTlNBQURPMk5tQ2Rod3JwMWU4?=
- =?utf-8?B?dmtxWlNWWDU2N1NCTFQ3eFg4dUY0amNZRFphMm0yZWNDbjVHM24vREJLRlI1?=
- =?utf-8?B?RkhFeUkvSzhneTBxM0hmZUlTMTdPd2NvODFvd2c0c0F1NTNnUjFGZ3BxeFZI?=
- =?utf-8?B?Z3ZrRG8xb1VJVTNFNjFibzM3QkFGcmtLVEZGYjNHMGlqM1ltWFZhZTNQbjVX?=
- =?utf-8?B?a3h3MFlQaVVXNHhxZEE2OUI1R2lCdzdIV0tQSk5vaTV2MlRIdjk2a2xHbXVx?=
- =?utf-8?B?UkpUcnd4SDBKTlFqdUxkeGgyR0Y5Q0lwUmlkSGxjQWRjQ0ZiZWpVbk55d3JN?=
- =?utf-8?B?blBYMEo1U3VYRFIxTkxMZUFMLzQ3enFOYU1rVzR1bzZYNTQ2Y1BMcUFKVVpE?=
- =?utf-8?B?MW92VzIrNDUyWVo3WjAyMnZ4UW9McldDT0xsUFdubUNMUHFiNDk4aWRLc0FL?=
- =?utf-8?B?aDU4cVFhZ3B4Q0lMdE9MTExaNnlYMDNjMGhMdE0vTk15TU1ObFBOWjl0Z2tm?=
- =?utf-8?B?MEFQc21lSDJoSGgwRFdJKzdITXZ5TlBjRWVkS01LbHVCWmpXeGU3UEJOSkw3?=
- =?utf-8?B?Z0JRR0ZLR0o2Zk5ucHhsU1hlZFN5TjMxeTdSNEhhbXk4dnFtMlpvOVNycno5?=
- =?utf-8?B?WGtGZ3dFSnR5aTVPMWFGWE4yWURVYndNUEFnZVFXTTVWWURUQnkwWWM0OEp1?=
- =?utf-8?B?Z1lqYzFVRlVqYmc1NFJicXYxT2ExVkVCZkRDNzJRV29lQ1pDMVFLNE05Zm1V?=
- =?utf-8?B?aW5jaVRDNjU3b1U4bmlKa0VlUlR3RkFjdWhXRkdVQ1NuYTk3MS90RnZmRk4w?=
- =?utf-8?B?bE9YczJaWjBtdmx5cDVpS0QrZGdxOXpqcE82UmVnNVVaMlRCU0FvN3pNajFa?=
- =?utf-8?B?SGg2UFZCYkY1LzRqQ3BlTlFiQ1ZoeTJqbXZzRHA0UjVnY0E3UWJ5Z3lPcERn?=
- =?utf-8?B?NHJQcDRTWmE4cXY5VkVVTTdmamI2WGs4b0xCV0tVeDJ1b1pic05hTEZQRkc5?=
- =?utf-8?B?aTlOWEV0WEVEMWl0Vm53cFNUSlhjbHpiZjBweTF4OVBUV0JVMHJrWjNwaExF?=
- =?utf-8?B?Ti9oS2xEbFAyeGQ5cFhEUFU2SDJHSm5ZMXlvNnk2THhBa0lIS00zY3R4M3lp?=
- =?utf-8?B?Rm9KOHF5L213NmNydW44VGw0UWJxWHpiSSs5azd3NkFOVmhWSDgrR21xVmNJ?=
- =?utf-8?B?cU04U2xoNVNXQWtUcWRkMko2WXVkRU1pOWhlbGZ0M1p6VkxCTkVnZE1wNDZG?=
- =?utf-8?B?bkJ0V3B3TWI3c2VyaUcyWkZqQTViNUhaZzN6NHplRjZjdU5ZWGYvSjI5V0Zw?=
- =?utf-8?B?MFBmOExNS1RNbzRUelZtZnk3OGxkbjBJTFpldmZ3ajA2SXNONXhtRVRjNGti?=
- =?utf-8?B?a0ZjcXFjUUlHeDk0MGM3MGIycWk5L1h3SjJISUNsNjBsMnVaYzhMNHMrKzEw?=
- =?utf-8?B?NFVtemJUTHhxdGxndERwekVNRFl2WUlCcGRTZkptWTI5bDVuOFJWRW9sQ1JW?=
- =?utf-8?B?emlQOC9ycmlCVUNmRUFzS2ZlZGNEUEZlUm1RQUQxTU9la1IyK3N6Y3lmK3hn?=
- =?utf-8?B?WnFPVTQvMjkrOStzazNDQVQ0a3FmRGtvSU1VMVcrYk05eWNiUzMyRjZoN2E5?=
- =?utf-8?Q?RdVLOTVnWnqOGeNVmPNqarfUtnV9zrOlbn2DY=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?RXJCbmllZE1VS3huQ3ZkS3ZVMCtvUzZxZFY5Q0QvVk1wYlJtQk42NjhBM3VW?=
- =?utf-8?B?M2dOUWhZU08yWHFBRzJqeUlXNlFWVHhCYzZiOExMR1VhMXpmU3Rmb2RyVlNm?=
- =?utf-8?B?RTB4NmQ5cmRIZXBoaXhjc09JQmtZcFVhRHdBTk95cWw1cm1jVnVLU2NaNi9N?=
- =?utf-8?B?VjI3Mk9XUkFZWExseFVuVUtCSDR0MEE0WTZaSk50R1RnNENGMlI1djk4UkVH?=
- =?utf-8?B?Y2t3U3lxOUhoTC9LbWgwL1BxbTVtWTdFZFhFSDRvd1VxLzRlalZnK2llS1pJ?=
- =?utf-8?B?TXNWakw1WjNsaW83SjJ0V242ckhZTUwwZDdaZzJXZ1N6SVIvVmR4cDZ3TUFM?=
- =?utf-8?B?di9aRzJpVVJ2cEVYejZsZHBib2Zoc3VoVTJEaSt5NUxtcVJVb1VOTElWbGlQ?=
- =?utf-8?B?dHdqOTFMWWRHL2JnNVFpQyttRFlDN0lpcEhpNjd3YzZOZDI5bTlMOEdTQ0F3?=
- =?utf-8?B?d01WK2NyV1dwNXhoamZxSUljcGNGTGczWkt3NTl5dnZxZXNSMDUyV0djYmlR?=
- =?utf-8?B?aTB1UFhSTU5KRERmRWNYTHFaNG9BREt4dlJLQUliYWlQVy91VDh2ME9QYzRw?=
- =?utf-8?B?R0J0bXRnQ09HOGN1ejNZeEJWL0QvT0JOeWpoeUxxbHhYTEtpek5KMStmeGhn?=
- =?utf-8?B?ZUZVNFBoaWgvUDNlbGF3aHQyeWFENGU0cmxmWjBMNnBpVnNSL1dZU2ZPYTFN?=
- =?utf-8?B?cThlS01vQjBzR2xIRHNyVjVRVEt3VFBJWHpJLzJNNXo1YzcxbXV0RWI4dHYx?=
- =?utf-8?B?SGxEYWpoWFY4WitsZFpaWkpTbm1YU0Zxc2JFQVFIWFJ3aFljWlIrSWRNNWs1?=
- =?utf-8?B?M3lDekMraWdKS0c2WFFxRm1LR0NPRVVNc3dUZ1Z6S09PRjB4a3JyT1oyVjVj?=
- =?utf-8?B?dVM5ZXJ4MWpYS29nVFBMNDA3czFwcXhCZ2UzYTN3QU0yTFdXVnhod2ZuRllD?=
- =?utf-8?B?MWdmd0ROd1pvQVlmQ3pFOTlPQS9TZ0t5dUtHelhUY2RFZXpaU2ZtWTEwNUsz?=
- =?utf-8?B?UXpaWWNoR3hGZ0RtUWdlN1lJZ2FrcFRCckxjby9KWGt4QTlEK1J4ZVV6OE5o?=
- =?utf-8?B?cndmZUdRdEcrZ1hxMzFGcFEvdVJxeXgvc0E1VUtxd3NQdm1VK3RTVWFRL1Ra?=
- =?utf-8?B?eitPTTVTd3B5bmZUbEZIRnlEYjN1VTVTaWdzd3F5MEswSnhwNWlqNklHdFFN?=
- =?utf-8?B?bzBVeWJGeGZqQ2cwZ2F5YnFDNDJ1dnpLVkxVSkdaNWRIbit1dVR5Yms3NG4r?=
- =?utf-8?B?QmdaNWtZY0xFZGwyYjd4ckx0SlAvTi84Nzcyb0F0NDFJKzc1MndVdVcxblFm?=
- =?utf-8?B?SWorbkZRNWZPSlI4QzcrWGdOM3JFZUd0SGo5bW1CdG9hdEdtZERHdjRFRG8r?=
- =?utf-8?B?V04yZ0pYNDVsWUtkWnpDQXlYVm9nbkg5cFYrRlVUWWpyQkhiclhVcjQ0RWlD?=
- =?utf-8?B?NFZaVDExQUhIVWdLalMvUTcvYkU3Y2xCY0drS2gzSmt6eFNPYUtRYWwxdTIy?=
- =?utf-8?B?Q0JvcndHWW15OVc4RHBLZTVJWm9UMHJjdmdpYi9OajNkTTFqVEFxYXZ0VFlk?=
- =?utf-8?B?M0JENVczU0tlRGR6VkVSNmUzbEZkck9jREtHemlaSVI5VGN1VlhHWng5LzBJ?=
- =?utf-8?B?VTYxRXduVVJreEdOWjFDdUFZbVNtUUpyK1Fnd3JubnVWTnl4akNkVUJhYzNF?=
- =?utf-8?B?SXNOM2p3dXNzQVhZcGFsOHJDQWh1ZE4vaGZEb01UcnJoUlJBaUdUemhhaW5o?=
- =?utf-8?B?bUtFY0FZbkRET2RaVmlkbldiejYwbUlMK1lkR3RqWjczQ1BjTTBQR2N1SVd6?=
- =?utf-8?B?d1RhR3FYRDZDSk5GWnRJMDdmQ1JYYjIzTGxIVmwvUmluT2RMR1creVZHa2xI?=
- =?utf-8?B?T1NJQlVGd3JCNCtrMXIvbVgyckVZMW4zTXRWaWpGbUVvbTBrZHNmTVYyVnFJ?=
- =?utf-8?B?SUphQ1FmQlRGNXVNdlFtTWE4dlRjR2hFTFAyWXM1OXJFYjZMdFJpQ2xQa1Iz?=
- =?utf-8?B?RnZ2RHVBZTVPOHBURlhZbEtKM3hSalJwcEQzRnJ3UXAxeW9qSzUza0x1MVVy?=
- =?utf-8?B?Y29tQW1kSWQ4cUYyWmtqalJFanl3YWlqTEpsdmRHNHFPMVhCbmRqZXpqVFVN?=
- =?utf-8?Q?BKUAIthzP62qZ0yaQO7UgAUH/?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 24fe5318-be96-4b88-8dc0-08dd87a50042
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Apr 2025 05:08:10.2325
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8ZWH8eqS8HAH6iEBvrZCx2W7W1hP5dBtpmPB3EoOO2CVWgTuug94AOBE6pYsqamZkFtUYuJUeKAC5js2RhMWbQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR10MB5981
+Content-Type: text/plain
+X-GND-State: clean
+X-GND-Score: 0
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefvddrtddtgddvieeikeeiucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecunecujfgurhephffvufgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpeeltdejffefieegheekhfelieekleeuveeftefhteevfedtgeduteekgfffvdehtdenucffohhmrghinhepuggvnhigrdguvgenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpnhgspghrtghpthhtohepuddprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghv
+X-GND-Sasl: rpm@xenomai.org
 
-On 30.04.25 05:00, Chen, Hongzhan wrote:
-> 
-> Topics may include but are not limited to upstream/downstream project 
-> plans, status updates, and technical discussions. It's an open online 
-> meeting that anyone can join and ask questions.
-> 
-> Time:
-> Wednesday, Apr 30, 2025, UTC 7:30 AM
-> Paris, France CEST 9:30 AM
-> China CST 3:30 PM
-> 
-> Join Zoom Meeting 
-> https://intel.zoom.us/j/91297279269?pwd=WmdwS0pDODRNMS9tQk54Y1dvbFlqUT09
-> Or
-> https://intel.zoom.us/wc/join/91297279269?wpk=wcpk52a9f96d989e7e20b628c2c36e48b68e
-> 
-> Meeting ID: 912 9727 9269
-> Passcode: 367528
-> 
 
-Sorry for the late notice: I might be a few minutes late and I won't
-have much time today - but I will try to join.
+Could some (preferably several) people check the patch below for
+non-regression specifically on x86 with stacked irqchips? I ran into
+an issue with interrupt forwarding while working on the xenomai4
+netstack which that patch addresses. So far, so good here, but we need
+more eyeballs and tests for this patch on a tricky and critical piece of
+code.
 
-Jan
+This patch is against the Dovetail tree for 6.1.y-cip, also available
+from [1].
+
+TIA,
+
+[1] https://source.denx.de/Xenomai/linux-dovetail/-/tree/urgent/v6.1.y-cip-dovetail?ref_type=heads
+
+--
+
+commit 1b67dc87eaeb0da8d719d1619735b0bba4a06da7 (HEAD -> urgent/v6.1.y-cip-dovetail, linux-dovetail/urgent/v6.1.y-cip-dovetail)
+Author: Philippe Gerum <philippe.gerum@exail.com>
+
+    genirq: irq_pipeline: fix IRQ forwarding to the in-band stage
+    
+    A forwarded interrupt event might trigger again before the in-band
+    handler had a chance to run, this confuses get_flow_step() when
+    determining the current flow state, leading to invalid calls to
+    handle_oob_irq() from the in-band stage.
+    
+    Fix get_flow_step() by considering the pipeline entry condition
+    (in_pipeline()) as a clear hint that we must be handling an event
+    delivered by the hardware, not the forwarding code (in do_oob_irq()).
+    
+    In the same move, disambiguate between forwarded IRQs and replayed
+    ones for multiple non-oob events from the same source which don't need
+    masking on receipt (e.g. edge IRQs). In this rare case, the condition
+    bit (IRQS_DEFERRED) might be cleared by the in-band handling code on
+    the first occurrence, leaving no information to handle the second one
+    appropriately.  We can figure out that a replay condition is pending
+    (instead of a forwarding) by checking the oob capability for the
+    interrupt: oob handled IRQs are never deferred (IRQS_DEFERRED), they
+    can only be forwarded (IRQS_FORWARDED).
+    
+    At this chance, drop IRQ_FLOW_PILEUP which adds no additional
+    information to the IRQ_FLOW_START state, and was therefore handled
+    exactly the same way.
+    
+    Signed-off-by: Philippe Gerum <philippe.gerum@exail.com>
+
+diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index 94ac7a5b264eb..82c67b49ef282 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -510,7 +510,6 @@ static bool irq_check_poll(struct irq_desc *desc)
+ 
+ enum {
+ 	IRQ_FLOW_START,
+-	IRQ_FLOW_PILEUP,
+ 	IRQ_FLOW_REPLAY,
+ 	IRQ_FLOW_FORWARD,
+ };
+@@ -581,7 +580,10 @@ irqreturn_t forward_irq_event(struct irq_desc *desc)
+  *   issue a forwarding request of the incoming event to the in-band
+  *   stage once done. In this case, the same IRQ action handler is
+  *   called twice, first from the oob stage then from the in-band
+- *   stage.
++ *   stage. The IRQ handling code should account for the fact that
++ *   multiple incoming events may be received on the oob stage from a
++ *   given source before the forwarding handler is eventually called
++ *   in-band only once by the pipeline core to cover all of them.
+  *
+  * When IRQ forwarding is requested by an oob action handler
+  * (IRQS_FORWARDED is set in the per-descriptor state), acknowledge
+@@ -593,44 +595,60 @@ irqreturn_t forward_irq_event(struct irq_desc *desc)
+  * stage as well. The internal per-descriptor IRQS_DEFERRED flag
+  * disambiguates between the latter context and events being replayed
+  * after deferral to the in-band stage, so that we do ack the hardware
+- * for cascaded events as expected.
++ * for cascaded events as expected. We might also receive an event
++ * while a previous one is still pending replay or forwarding.
+  *
+- * We might also receive a subsequent unmasked edge event on the same
+- * line while a deferred one is still pending replay from the in-band
+- * stage (hard irqs are on for replay). The flow state enumeration
+- * disambiguates all cases as follows:
++ * The flow state enumeration below disambiguates all cases:
+  *
+  * - IRQ_FLOW_START: we are running oob on behalf of the low-level irq
+- *   entry code, no deferred event is pending replay for the same
+- *   line, we need to send ack to the hardware.
+- *
+- * - IRQ_FLOW_PILEUP: we are running in-band for synchronizing the irq
+- *   log, one or more deferred events are already pending replay for
+- *   the same line, we need to ack the subsequent event to the
+- *   hardware too.
++ *   entry code, we need to send ack to the hardware. This includes
++ *   the case when we receive a new event on any stage while an event
++ *   of the same type is already pending replay or forwarding.
+  *
+  * - IRQ_FLOW_REPLAY: we are (re)playing a deferred event from the
+  *   in-band stage, as a result of synchronizing the irq log. A
+  *   deferred event was NOT handled from the oob stage by definition.
+  *
+- * - IRQ_FLOW_FORWARD: we are running in-band for passing a forwarded
+- *   event already handled from the oob stage to the action
+- *   handler. This mode allows for two-step subsequent handling of an
+- *   IRQ event over both stages by the same action
++ * - IRQ_FLOW_FORWARD: an event already handled from the oob stage by
++ *   an action handler is forwarded to the same handler for execution
++ *   on the in-band stage.  This mode allows for two-step handling of
++ *   an IRQ event over both stages by the same action
+  *   handler. IRQ_FLOW_FORWARD is mutually exclusive with
+  *   IRQ_FLOW_REPLAY since only the oob handler may request
+  *   forwarding.
+  */
+ static inline unsigned int get_flow_step(struct irq_desc *desc)
+ {
+-	if (!irqs_pipelined())
++	if (likely(!irqs_pipelined() || in_pipeline()))
+ 		return IRQ_FLOW_START;
+ 
+-	if (!(desc->istate & IRQS_DEFERRED))
+-		return desc->istate & IRQS_FORWARDED ?
+-			IRQ_FLOW_FORWARD : IRQ_FLOW_START;
++	/*
++	 * We must be running in-band, synchronizing the interrupt log
++	 * on the current CPU. Determine whether we are handling a
++	 * deferred or forwarded interrupt.
++	 */
++	WARN_ON(irq_pipeline_debug() && running_oob());
++
++	if (desc->istate & IRQS_FORWARDED)
++		return IRQ_FLOW_FORWARD;
++
++	if (desc->istate & IRQS_DEFERRED)
++		return IRQ_FLOW_REPLAY;
+ 
+-	return in_pipeline() ? IRQ_FLOW_PILEUP : IRQ_FLOW_REPLAY;
++	/*
++	 * Rare case: disambiguate between forwarded IRQs and replayed
++	 * ones for multiple non-oob events from the same source which
++	 * don't need masking on receipt (e.g. edge IRQs), causing the
++	 * replay condition bit to be cleared by
++	 * should_feed_pipeline() on the first occurrence, leaving no
++	 * information to handle the second one appropriately.  We can
++	 * still figure out that a replay condition is pending
++	 * nevertheless (instead of a forwarding) by checking the oob
++	 * capability for the interrupt: oob handled IRQs visible to
++	 * the in-band stage are never deferred (IRQS_DEFERRED), they
++	 * can only be forwarded (IRQS_FORWARDED).
++	 */
++	return irq_settings_is_oob(desc) ? IRQ_FLOW_FORWARD : IRQ_FLOW_REPLAY;
+ }
+ 
+ /*
 
 -- 
-Siemens AG, Foundational Technologies
-Linux Expert Center
+Philippe.
