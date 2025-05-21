@@ -1,82 +1,69 @@
-Received: from mail-pf1-f171.google.com (mail-pf1-f171.google.com [209.85.210.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF01319ABDE
-	for <xenomai@lists.linux.dev>; Wed, 21 May 2025 13:40:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.171
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.2])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id CFFC617A2F7
+	for <xenomai@lists.linux.dev>; Wed, 21 May 2025 15:01:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.2
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1747834830; cv=none; b=tIudKnq2kqUfbvsB9YKNgcAS0QLmXgZeKGUA0Xi/5+QZ5U67ak81LkkyQ6Inr7fCCX03jjyhQFI1alk1HdDT3uGwex0wcDmk5eMkImirXzEU4QD1TBNajckwNHS5W9wto/u/lyIKlEsKXwHHIN/nD0POGeRZO+CpYF9KKrKB8UE=
+	t=1747839688; cv=none; b=Q8rQljQKp2zwS5crVWekvwuHNToIhDcSX4lWsOqEeMyPFn/unpngfWp+RvmN9Hr+Xv8KqH/snBijOZiioWw2cRps+HE6L6E45j4/1j2FwrDoATaDw7G4uANFvOA39PdjzxsZrgRB2TWheWrenzJH+jj0BarvlbzqOrkBN0PdeSo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1747834830; c=relaxed/simple;
-	bh=S6bw66oSKbltKIL6uJA3stDCKFSY7+kCsQogmx96xko=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=aMlxpD4+MzMuYvXE0NBjB4wCJ+JYxb9mf80U+wMW+zNX2jbFNWqwsQXo+WPJyvPZ7Cea3mMz0olt2lGvcpfagTfa5SwmHf/pCpuGg5PLnBDAaZZOHbFK4CkfuQSZCzzHZagwH6u76qkxfIygCZ4j4iWNmPdH/KPA/u8VXcSJ4o8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HfUKFUiZ; arc=none smtp.client-ip=209.85.210.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1747839688; c=relaxed/simple;
+	bh=3+7fFSngKE8VFPQE/HVQLDSCmiecRQpwDkkvkR8dK7A=;
+	h=Date:From:To:Cc:Subject:Content-Type:MIME-Version:Message-ID; b=rKIx0V7qSqbTsVxZBW3Y5LXnZeC9mAYxbzHCioaMcJX6IKolvsOnsdZzVEpauyQfCeL/KCPKbSsEZwWHa3dp8rHN2PdrWqgB3LAGdk4TdO+Go0eisepzATH291T1ATbTedppvwnKtxwiEoPQhqosEq8NR2o0Hd4G1qbhvBc2sIE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=Memnc1aq reason="signature verification failed"; arc=none smtp.client-ip=117.135.210.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HfUKFUiZ"
-Received: by mail-pf1-f171.google.com with SMTP id d2e1a72fcca58-74068f95d9fso5976292b3a.0
-        for <xenomai@lists.linux.dev>; Wed, 21 May 2025 06:40:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1747834828; x=1748439628; darn=lists.linux.dev;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=HvzpIJD4jDQBRuphROYvz73PeGg67BBEx3icLHVkelc=;
-        b=HfUKFUiZpZ8Bl8gwLP2LmNvQv0v0tV+zyyXLFc5lZ+dqliANo83kBV5vfHvE1opdpW
-         k1OCRZKKuYDEEpN2YV3BbuKI387gdhuDEngfRAcyuLEF/oWri6CYUqR38o/o4t5cOJ5v
-         4zoN2NTykPKWASl3kW210lSibJu2C9LbJYbe3sqfJ0iTlL5uSXYmmkDt6G+UD/59zJPr
-         hdXvAvQTKiFhhhvVHkAbzOMVN4zGbaIVaJ9YiMp6E07f9phOIFfdtRTle+/d7FshNwXb
-         n6Y7WD9io8abdfdBmasEym7idPb4EPvm/J1AWHVZM7DDifz8UQdAgFXMdytcn4BQRXCI
-         DuOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1747834828; x=1748439628;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=HvzpIJD4jDQBRuphROYvz73PeGg67BBEx3icLHVkelc=;
-        b=AYCHO8TPd41w/3ABJE7Dn9Df0EsS6HsovlU27lmbB3jO/MK4E5EB3iBoA5p86ep2ep
-         SRiJzfjquNg84T99FAsdP+iexPspccPsLfvjpBezhpDfQMCT4T0buzn/wUBLMxWWVihH
-         cWYrpwKMpCirNRF61ap/0xhJgr8V5ppBo+wgrtCj1G3fghAM7nmN6sWkn/b2OvMAALqG
-         Npgs34B4SLWQIGstVQzQiQywBF9Qbe9Fn7Ud+utG1+3uOUmSlZr5HMKrPuOw73Me221S
-         6RwaPcwFQzt20zYZDTegM8CC68d8ob+wNmc7vTRdjA+ywIsbY/lIeQTXRLTxMZuhmlaQ
-         MDfg==
-X-Gm-Message-State: AOJu0YyLht1uuPjiKFIejKzldQcoyTLZNVAZdO3BQ4GhM+2EV3IUWtR5
-	bfC1viw3eQ+tLll83J5nv3vwlOBXs4dO11BQDPI43IUmEA4CdkxyNIB81LN038ZH0kAAxSv3+yZ
-	toWeJgswNg+COfgZS8Zw1eocRvr/vvlsguzWN7Zs=
-X-Gm-Gg: ASbGncvHu7rrkslHY7EQldBSa8toZxw8ov/SxFMklAaop65OpWC1hJTCTuyL7ye7M9F
-	DMvxdKGOqhBwNim49cf57mfWsP3BvX/9+ra4mQkyoQRmVOeTXEQ2ZM7IR6NrtCwcdJ6ylUx3IGS
-	EPOExRY7vx5O6KtjWFUHUYTtvXlxHckL4csQxJn+s=
-X-Google-Smtp-Source: AGHT+IE+UMrnpKWn0BSwk4uxHfaD3QGUU5V0T/jZGWBOD9f74ZRyBcaJTbGMQPpTgYZeBhRcpOBdR3xL0rtClY9deDk=
-X-Received: by 2002:a17:90b:3dc7:b0:310:8d73:d9d9 with SMTP id
- 98e67ed59e1d1-3108d73da51mr5563742a91.18.1747834828109; Wed, 21 May 2025
- 06:40:28 -0700 (PDT)
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="Memnc1aq"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=xCTgSF4jIe1iNkVNm7n/SZSwZXXAuWdrZKM/aOCl/is=; b=M
+	emnc1aqYccfGCPlBV8TuCQ/5Bzp2byn+wZCA4gbjo+YbJGBhteMb2R/xwnbNYCGE
+	8H2PY8I6Cw59LJeNkUbKh52BRqR0Kq42EoH8FHOgRj+uiG6ph19ak6YmglaKM+Q9
+	tSu8DqbOjNM5T8T/YKlFFjFU4gCmf4uMPQwkKCb7NQ=
+Received: from aspirestro$163.com (
+ [2409:8a00:1890:1854:90eb:5d35:3ae8:effb] ) by ajax-webmail-wmsvr-40-140
+ (Coremail) ; Wed, 21 May 2025 23:01:19 +0800 (CST)
+Date: Wed, 21 May 2025 23:01:19 +0800 (CST)
+From: "Haiyang He" <aspirestro@163.com>
+To: "Jan Kiszka" <jan.kiszka@web.de>
+Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: Feedback on https://v3.xenomai.org/tips/porting-posix/
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20240801(9da12a7b)
+ Copyright (c) 2002-2025 www.mailtech.cn 163com
+X-NTES-SC: AL_Qu2fBfSYtk4s7yedY+lS3DJA/oVlJbXT05dalP4Ad+4hty/Sxi8yc0BhGlXK+sONZf+cJHstoEN4KAnRb25c
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Wed, 21 May 2025 15:40:15 +0200
-X-Gm-Features: AX0GCFv4fb8jxcvXqEo7gAGFggdAeRsHIGg4YCUaqZ06N8VmqxO3lO5AE416SfY
-Message-ID: <CAFLxGvxhk27ps98JL0afZx1+iecouV2NFsDHv6Ccp=zpn-yESg@mail.gmail.com>
-Subject: schedule_work() from primary domain
-To: Xenomai <xenomai@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <a985855.ac8e.196f35cfd11.Coremail.aspirestro@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:jCgvCgD3v_vA6i1opSwKAA--.55882W
+X-CM-SenderInfo: pdvsx2xhvw20i6rwjhhfrp/xtbBYwBUcWgt0QiUxAAKsA
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-Hello,
-
-While debugging a crash, I realized that calling schedule_work() from
-the primary domain is not allowed.
-That's why we have rtdm_schedule_nrt_work(). So far, so good.
-
-However, it still puzzles me why exactly schedule_work() does not work
-from the primary domain.
-I always thought this function more or less just appends to list.
-Is it because __queue_work() makes certain assumptions about the
-interrupt state?
-Like here:
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/kernel/workqueue.c#n2242
-
--- 
-Thanks,
-//richard
+CkRlYXIgWGVub21haSBQcm9qZWN0IFRlYW0sCgpJIHJlY2VudGx5IHZpc2l0ZWQgdGlwcy9wb3J0
+aW5nLXBvc2l4IHBhZ2UgYW5kIHdhcyByZWFkaW5nIHRocm91Z2ggdGhlIGNvbnRlbnQuCgpTb21l
+IGNvbnRlbnQgb24gdGhlIHdlYnBhZ2UgbWF5IG5vdCBiZSBjb25zaXN0ZW50IHdpdGggdGhlIFhl
+bm9tYWkgc291cmNlIGNvZGVzLgoKMS4gIkZvciBtb3JlIGluZm9ybWF0aW9uIHRyeSB3cmFwLWxp
+bmsuc2ggqENoZWxwLiIKCndyYXAtbGluay5zaCBkb2VzIG5vdCBzdXBwb3J0ICItaGVscCIgYXJn
+LGFuZCByZXBvcnQ6Cgp3cmFwLWxpbmsuc2g6IDIxMjogLWhlbHA6IG5vdCBmb3VuZAoKMi4gIlhl
+bm9tYWkgY29tcGlsYXRpb24gZmxhZ3MgZGVmaW5lIGEgcHJlcHJvY2Vzc29yIG1hY3JvIChfX1hF
+Tk9fXykgd2hpY2ggYWxsb3dzIHlvdSB0byBrbm93IHdoZXRoZXIgb3Igbm90IHlvdSBhcmUgY29t
+cGlsaW5nIHRoZSBhcHBsaWNhdGlvbiBmb3IgWGVub21haS4iCgpUaGUgb3V0cHV0IG9mICJ4ZW5v
+LWNvbmZpZyAtLWNmbGFncyAtLXNraW49cG9zaXgiIGRvZXMgbm90IGNvbnRhaW4gbWFjcm8gKF9f
+WEVOT19fKS4KCiQgREVTVERJUj1gcHdkYCB1c3IveGVub21haS9iaW4veGVuby1jb25maWcgLS1j
+ZmxhZ3MgLS1za2luPXBvc2l4Ci1JL3Jvb3QveGVub21haS94ZW5vbWFpLXYzLjIuNC1pbnN0YWxs
+L3Vzci94ZW5vbWFpL2luY2x1ZGUvY29iYWx0IC1JL3Jvb3QveGVub21haS94ZW5vbWFpLXYzLjIu
+NC1pbnN0YWxsL3Vzci94ZW5vbWFpL2luY2x1ZGUgLW1hcmNoPWFybXY4LWEgLURfR05VX1NPVVJD
+RSAtRF9SRUVOVFJBTlQgLWZhc3luY2hyb25vdXMtdW53aW5kLXRhYmxlcyAtRF9fQ09CQUxUX18g
+LURfX0NPQkFMVF9XUkFQX18KCjMuICJUbyBnZXQgeW91ciBhcHBsaWNhdGlvbiB0aHJlYWRzIHRv
+IGJlIHJlYWxseSBjb25zaWRlcmVkIGFzIHJlYWwtdGltZSB0aHJlYWRzIGJ5IFhlbm9tYWkgc2No
+ZWR1bGVyLCB5b3Ugd2lsbCBoYXZlIHRvIGdldCB0aGVtIHRvIHVzZSB0aGUgcmVhbC10aW1lIHNj
+aGVkdWxpbmcgcG9saWN5IChjYWxsZWQgU0NIRURfRklGTykuICIKCkkgY2hlY2sgdGhlIGNvYmFs
+dF9zY2hlZF9wb2xpY3lfcGFyYW0oKSBmdW5jdGlvbiwgc2NoZWRfY2xhc3MgaXMgeG5zY2hlZF9j
+bGFzc19ydCBmb3IgYm90aCBTQ0hFRF9GSUZPIGFuZCBTQ0hFRF9SUi4KCgpCUiwKSGFpeWFuZyBI
+ZS4KCg==
