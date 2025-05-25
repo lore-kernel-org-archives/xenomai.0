@@ -1,90 +1,77 @@
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73AE72DCBFF
-	for <xenomai@lists.linux.dev>; Sun, 25 May 2025 09:51:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.5])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2E8891DACB1
+	for <xenomai@lists.linux.dev>; Sun, 25 May 2025 13:29:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748166706; cv=none; b=besWGsZqdoapMa0K0V+/+wbyDem+N+Zw4krM6j9RkDxihr0SZHzN0iqP/mvdfd/n8gS0cuDaA6PtwU4cEA83YQjWrIGNm5vsO4eqO3zBn/YOx/UrrfiSJ4AmujZTP+dxw5Ig0fZNX0mAKb/QccTgSGirlViNgYzSZ9mnucFykcQ=
+	t=1748179746; cv=none; b=MKHbdzHv7VxEbAqq4wgVKTzfp8Va2R5lDXbzc2CpBsnltOg+sfw/ZmgwgQC1mEBgFsVHjUhm8DWyIVplpF5oX4T1Ch0hSpJstEb3+8s4uS4PvL0e9sIngKVe5HBaPDnPKI+OsEat9kSvpX1B7Gsa7gruNRS0dP1qHhNLo8+BPdU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748166706; c=relaxed/simple;
-	bh=J1BjXvVWAT5JU/nCDqDNux3rG7FHT7Esvv0fSgXJZL4=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=FYTncvFW2gxzOLLi7J6GvAgBbuhKs5yf+j2PeKvcP2qQrQB+TbyuCnihcVBUDvHvAdSOR6vEI7GIFh0aKheqix825iMD7GZp/N9/ezXmcYy0V9kR8F7pHbClFS3DhcCryNwbuINPPyKYuBhBUkr6PHm9WaX9cc9v0UTGfhW5JMk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=D25I0a7W; arc=none smtp.client-ip=185.136.64.228
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1748179746; c=relaxed/simple;
+	bh=IpHVVstP3cXnaslolEyKrs/c54Rf6mHJ3fcvhzFmXSU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 MIME-Version:Message-ID; b=EKgSeW3oTUsAY+AImU2d0NEVXXikL1Ky+Kiq0bBpIXvXkrhw4RQLOWF4XEAacxFXTZm29MaKM+w/M85hqSZiepEdKyTeBmJWG03e0PRSxQ+UiJ2du/7Aq/Dfa/Z4Ens5ZNsh2Mg5sBicBGha46UyIHjCv5JsD7iGo4EVMXwkNSE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=XlF+wLIw; arc=none smtp.client-ip=117.135.210.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="D25I0a7W"
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 2025052509513224dae0030a112305a2
-        for <xenomai@lists.linux.dev>;
-        Sun, 25 May 2025 11:51:32 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=zCQzPV7CDdqSzhAwCyGnU1fNJS8JeZZzhiidY8pphdU=;
- b=D25I0a7W0Q4OZsr4nODX5ZSkmW7NQKpOau7sRUDIWipBDLmHjWRNxgEgCwszPjjUpBsGh2
- Wf2uDmrk+k/BJgum5vsHNWZjX7o7m/sKGHEr9FjlrE1DBqJBv+LphvjEu7GSOV0SfdB3Gmxv
- /8N8ITUqSR9zyBR0+XgwBrlvyd2xbBVaf5Dlom20Q+7iqwOX7ndAW5VnwpqtK2r09oTC9e2n
- jkaBPnOEFa4AjEeN/EhHdZWldvLdV4dO0/Isw9LFhbve4YLjAsmjf4IIst3bSGdIsIcqk/EU
- sHIDeqEoWHTm573HE9l50aPtiHePqONosnprUzI9KfPYDsEnUrFz63lA==;
-Message-ID: <12ce1549fe564a2225490b7e2f10f8151fb2f790.camel@siemens.com>
-Subject: Re: [PATCH] scripts/wrap-link.sh: Add support for -h|-help option
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Haiyang He <aspirestro@163.com>, jan.kiszka@siemens.com
-Cc: xenomai@lists.linux.dev
-Date: Sun, 25 May 2025 11:51:32 +0200
-In-Reply-To: <20250525080648.353288-1-aspirestro@163.com>
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="XlF+wLIw"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=IpHVVstP3cXnaslolEyKrs/c54Rf6mHJ3fcvhzFmXSU=; b=X
+	lF+wLIw4S1UJciGg9VQbE6aYdUA7/dY9xqSme07//8f+3bQTh4PMuBS6BrqN49rD
+	cy42SgQZ4kUKCzq/sllj51//owmFFhZ5YqaCJtR5Fi2G065lPi3gQUbavlPJYLTb
+	uFB/eHsy0t/h+b2OuKsiqt0HIbcyCR0xPlf+mpuq0E=
+Received: from aspirestro$163.com ( [120.244.221.195] ) by
+ ajax-webmail-wmsvr-40-115 (Coremail) ; Sun, 25 May 2025 21:28:55 +0800
+ (CST)
+Date: Sun, 25 May 2025 21:28:55 +0800 (CST)
+From: "Haiyang He" <aspirestro@163.com>
+To: "Florian Bezdeka" <florian.bezdeka@siemens.com>
+Cc: jan.kiszka@siemens.com, xenomai@lists.linux.dev
+Subject: Re:Re: [PATCH] scripts/wrap-link.sh: Add support for -h|-help
+ option
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20240801(9da12a7b)
+ Copyright (c) 2002-2025 www.mailtech.cn 163com
+In-Reply-To: <12ce1549fe564a2225490b7e2f10f8151fb2f790.camel@siemens.com>
 References: <20250525080648.353288-1-aspirestro@163.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+ <12ce1549fe564a2225490b7e2f10f8151fb2f790.camel@siemens.com>
+X-NTES-SC: AL_Qu2fCv2ctk8o4yKeYulS/zNL9LNGI5rF+b5VqfQ0XPw9mADC4xwnYVxHDHjP6Nz82UxiuxHDqhKz5g15qB93
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Message-ID: <991f7ec.2380.19707a1d2e6.Coremail.aspirestro@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:cygvCgD3XwUYGzNo8ogMAA--.61441W
+X-CM-SenderInfo: pdvsx2xhvw20i6rwjhhfrp/1tbiXA9YcWgy4E+NAAADsB
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-On Sun, 2025-05-25 at 16:06 +0800, Haiyang He wrote:
-> Following the porting-posix tip, add support for -h|-help option.
-
-I think the long option should be --help (instead of -help).
-
->=20
-> Tip: https://v3.xenomai.org/tips/porting-posix/
->=20
-> Signed-off-by: Haiyang He <aspirestro@163.com>
-> ---
->  scripts/wrap-link.sh | 6 ++++++
->  1 file changed, 6 insertions(+)
->=20
-> diff --git a/scripts/wrap-link.sh b/scripts/wrap-link.sh
-> index fa83bd5e2..21c6885a2 100755
-> --- a/scripts/wrap-link.sh
-> +++ b/scripts/wrap-link.sh
-> @@ -17,6 +17,7 @@ Options:
->  -q be quiet
->  -v be verbose (print each command before running it)
->  -n dry run (print all commands but don't run any)
-> +-h, -help show this help message and exit
-> =20
->  Example:
->  $1 -v gcc -o foo foo.o -Wl,@/usr/xenomai/lib/cobalt.wrappers -L/usr/xeno=
-mai/lib -lcobalt -lmodechk -lpthread -lrt
-> @@ -85,6 +86,11 @@ while test $# -gt 0; do
->  	    dryrun=3D"echo # "
->  	    ;;
-> =20
-> +	-h|-help)
-> +	    usage "$progname"
-> +	    exit 0
-> +	    ;;
-> +
->  	-*)
->  	    cc=3D"$cc $arg"
->  	    ;;
-> --=20
-> 2.34.1
+QXQgMjAyNS0wNS0yNSAxNzo1MTozMiwgIkZsb3JpYW4gQmV6ZGVrYSIgPGZsb3JpYW4uYmV6ZGVr
+YUBzaWVtZW5zLmNvbT4gd3JvdGU6Cj5PbiBTdW4sIDIwMjUtMDUtMjUgYXQgMTY6MDYgKzA4MDAs
+IEhhaXlhbmcgSGUgd3JvdGU6Cj4+IEZvbGxvd2luZyB0aGUgcG9ydGluZy1wb3NpeCB0aXAsIGFk
+ZCBzdXBwb3J0IGZvciAtaHwtaGVscCBvcHRpb24uCj4KPkkgdGhpbmsgdGhlIGxvbmcgb3B0aW9u
+IHNob3VsZCBiZSAtLWhlbHAgKGluc3RlYWQgb2YgLWhlbHApLgo+CldlbGwsIGl0IHNob3VsZCB1
+c3VhbGx5IGJlIC0taGVscC4gCkknbSBqdXN0IGtlZXBpbmcgaXQgY29uc2lzdGVudCB3aXRoIHRo
+ZSBwb3J0aW5nLXBvc2l4IHRpcCB3ZWJwYWdlLgpJZiB0aGUgY29udGVudCBvZiB3ZWJwYWdlIGNv
+dWxkIGNoYW5nZSwgSSBwcmVmZXIgdG8gb25seSBhZGQgLWggb3B0aW9uLgoKSGFpeWFuZy4KPj4g
+Cj4+IFRpcDogaHR0cHM6Ly92My54ZW5vbWFpLm9yZy90aXBzL3BvcnRpbmctcG9zaXgvCj4+IAo+
+PiBTaWduZWQtb2ZmLWJ5OiBIYWl5YW5nIEhlIDxhc3BpcmVzdHJvQDE2My5jb20+Cj4+IC0tLQo+
+PiAgc2NyaXB0cy93cmFwLWxpbmsuc2ggfCA2ICsrKysrKwo+PiAgMSBmaWxlIGNoYW5nZWQsIDYg
+aW5zZXJ0aW9ucygrKQo+PiAKPj4gZGlmZiAtLWdpdCBhL3NjcmlwdHMvd3JhcC1saW5rLnNoIGIv
+c2NyaXB0cy93cmFwLWxpbmsuc2gKPj4gaW5kZXggZmE4M2JkNWUyLi4yMWM2ODg1YTIgMTAwNzU1
+Cj4+IC0tLSBhL3NjcmlwdHMvd3JhcC1saW5rLnNoCj4+ICsrKyBiL3NjcmlwdHMvd3JhcC1saW5r
+LnNoCj4+IEBAIC0xNyw2ICsxNyw3IEBAIE9wdGlvbnM6Cj4+ICAtcSBiZSBxdWlldAo+PiAgLXYg
+YmUgdmVyYm9zZSAocHJpbnQgZWFjaCBjb21tYW5kIGJlZm9yZSBydW5uaW5nIGl0KQo+PiAgLW4g
+ZHJ5IHJ1biAocHJpbnQgYWxsIGNvbW1hbmRzIGJ1dCBkb24ndCBydW4gYW55KQo+PiArLWgsIC1o
+ZWxwIHNob3cgdGhpcyBoZWxwIG1lc3NhZ2UgYW5kIGV4aXQKPj4gIAo+PiAgRXhhbXBsZToKPj4g
+ICQxIC12IGdjYyAtbyBmb28gZm9vLm8gLVdsLEAvdXNyL3hlbm9tYWkvbGliL2NvYmFsdC53cmFw
+cGVycyAtTC91c3IveGVub21haS9saWIgLWxjb2JhbHQgLWxtb2RlY2hrIC1scHRocmVhZCAtbHJ0
+Cj4+IEBAIC04NSw2ICs4NiwxMSBAQCB3aGlsZSB0ZXN0ICQjIC1ndCAwOyBkbwo+PiAgCSAgICBk
+cnlydW49ImVjaG8gIyAiCj4+ICAJICAgIDs7Cj4+ICAKPj4gKwktaHwtaGVscCkKPj4gKwkgICAg
+dXNhZ2UgIiRwcm9nbmFtZSIKPj4gKwkgICAgZXhpdCAwCj4+ICsJICAgIDs7Cj4+ICsKPj4gIAkt
+KikKPj4gIAkgICAgY2M9IiRjYyAkYXJnIgo+PiAgCSAgICA7Owo+PiAtLSAKPj4gMi4zNC4xCj4K
 
