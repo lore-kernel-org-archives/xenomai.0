@@ -1,40 +1,42 @@
 Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CE711E2307
-	for <xenomai@lists.linux.dev>; Tue, 27 May 2025 08:07:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53ABE154457
+	for <xenomai@lists.linux.dev>; Tue, 27 May 2025 08:10:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748333250; cv=none; b=cwM33Hf8WchtYM2T8ZCaY1Ozq6trLS0V3BDr/h2n9Di59tE+z53QqRql8qDYsxNzxorVD9img1Zd5YXwqBmyI3Ho66nkNOyOeb3nssZzS5Yl/JeRGZYwrrC+M1aaC1PSrfjs5+eduMAE60vbVTezee/mE2xgUXoRcex1gVeitNU=
+	t=1748333443; cv=none; b=UjKTAiKd/6nFQLTTCXldmHC4afXBHawD56D3XcQpaIqykTurXyKbCCvQuXsYiQlwClhDu+VFs610NJtLzO1HSdXHQqj4wpEXBBtMIa9sLATbrcnxACojKBBU/EeXUOKO9M1OnLO7gVHBjud9pJxYdggofME6ueYnmV0Zsikfeco=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748333250; c=relaxed/simple;
-	bh=7+Dzqa1mtqP5UjbP2Tz0HlI5Pm3T00OYFj5eTdvbOoA=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=CaGhZZAn0cZyPKhpnHH9KaBZfcr2szwTb9pD6/z/n3PV4uzxofLb6bWV1rK10e5EnO/nI5/o7oT/kJ3FIiyj8Be4PDP/SMkFyewUaXSNWwtBnazaYE1+gvgNyxUkJ5Guehaeep95VwatL3VAf5QAUQJD74NlZmCR079cAfU+oAY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=lvb0OVb9; arc=none smtp.client-ip=185.136.64.225
+	s=arc-20240116; t=1748333443; c=relaxed/simple;
+	bh=1D0nvp3klwnqkeZdPs45DI8cfAB8KbiCI6/lG2sQ3u0=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=R4tuE6jObhlJPS8IDiTa/ALffctblNkE1mLLkUpPCIjAnzkMnIK6WkO0ehEuJBYnDyyc6pEx3yMAr9RWugbqmhFK/708ZtCVmtXzuLY2EpuYD7phABzjoTpAvPe16o3du60+p+eoiMrMlg9a7IBSga7C8Qk47UWgaVLpsnBd2go=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=mw20Hxfd; arc=none smtp.client-ip=185.136.64.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="lvb0OVb9"
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20250527080716422c387198d6a07556
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="mw20Hxfd"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2025052708002883540225433b640ff6
         for <xenomai@lists.linux.dev>;
-        Tue, 27 May 2025 10:07:16 +0200
+        Tue, 27 May 2025 10:00:29 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=aJh8lJ8f87UIdDJ9XpWFmrPmnExfEN2RV6jgHOzf360=;
- b=lvb0OVb9B8eeQRfOFmf/WHZndhEJl1+/pgISdmVA5cEzgKxDKZYUqWZcJ9B0oL8CWCIOEi
- TrxeHf+c/On3FuwSwD14IiIhreiLx3NAPBkifRetR23Z9PGAB8hqVP4atFdS1PgThxTeCKFO
- +72QJwcXzRBaIcoBXkSpG2ysF2axZtwB2+Fr0YrrzReZdTJDlX8LLN6Wpue3O1iNJM/DvX7P
- NQbGPEWkXEZUkux13JYs7Z19ucGlGFBZHi4DVOM692FpviNVS1eKCnQbeaYS1Wi8Q42PvuWv
- thV4S15ojB7ACMf53TvvkuINTK4u8rMrjQ7CUqRn6mL2TBZP3dywWUpg==;
-Message-ID: <408e8837d729b0f3ee23e707a12b5f64ee2d1cb7.camel@siemens.com>
-Subject: Re: [PATCH] debian: Install cobalt-glibc-time64.wrappers
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=T2swnCwnMliKIOMEEbUaQl/xsX0wyUz1qlM9OSzhPbE=;
+ b=mw20HxfdXCM5rrZ8Vd0tbd/vAubQYT7CRZ/Qa3R1MGtFGyVi3zWIJaNXVA8vtUemZeXej9
+ YGOXBqPT+6pXaGnAI0uKeAKFckqycYnJDm0lxbFPNOUjLBgdyF3oiQmkICeJrLx6Jqy50ghc
+ myxoj/KYan+HLBrmQA7A/ZO0Akt0XQE7k1S7ZRrKteJ1p2SOHVSGgIwMtatUcMvbMnDouOnm
+ e+fY3yedcVRrKtN1wbrF1t4usMyTaPuMONuz4eduDEEriIDGo+1cm+B8hFAEKxPez9tKXZfb
+ 5MN8CXzwd5ziirqiiMldx9zI4DtHqjf4HTcGYDapw50KGI6SP2CwonWQ==;
+Message-ID: <fde96c6e451b36e0889704d75fd420da52f3f682.camel@siemens.com>
+Subject: Re: [PATCH] cobalt/posix/clock: Allow NULL resolution on
+ clock_getres64
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@lists.linux.dev>
-Date: Tue, 27 May 2025 10:07:16 +0200
-In-Reply-To: <dd5f7483-c648-4985-928d-bb3e902e060f@siemens.com>
-References: <dd5f7483-c648-4985-928d-bb3e902e060f@siemens.com>
+Cc: chensong <chensong@tj.kylinos.cn>
+Date: Tue, 27 May 2025 10:00:28 +0200
+In-Reply-To: <8f519aa0-871a-4698-9905-4434604a7f3c@siemens.com>
+References: <8f519aa0-871a-4698-9905-4434604a7f3c@siemens.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -46,31 +48,37 @@ MIME-Version: 1.0
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On Mon, 2025-05-26 at 19:46 +0200, Jan Kiszka wrote:
+On Tue, 2025-05-27 at 09:13 +0200, Jan Kiszka wrote:
 > From: Jan Kiszka <jan.kiszka@siemens.com>
 >=20
-> This was forgotten by c2b883446b80.
+> Permitted according to POSIX spec.
 >=20
-
-Reviewed-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-
+> Fixes: 633022801750 ("y2038: cobalt/posix/clock: Adding clock_getres64")
 > Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 > ---
->  debian/libxenomai-dev.install | 1 +
->  1 file changed, 1 insertion(+)
+>  kernel/cobalt/posix/clock.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >=20
-> diff --git a/debian/libxenomai-dev.install b/debian/libxenomai-dev.instal=
-l
-> index b57231585c..9edb13269b 100644
-> --- a/debian/libxenomai-dev.install
-> +++ b/debian/libxenomai-dev.install
-> @@ -5,5 +5,6 @@ usr/lib/*.a
->  usr/lib/*.so
->  usr/lib/modechk.wrappers
->  usr/lib/cobalt.wrappers
-> +usr/lib/cobalt-glibc-time64.wrappers
->  usr/lib/dynlist.ld
->  usr/lib/xenomai/bootstrap*.o
+> diff --git a/kernel/cobalt/posix/clock.c b/kernel/cobalt/posix/clock.c
+> index 845918a4a1..e6c187ca40 100644
+> --- a/kernel/cobalt/posix/clock.c
+> +++ b/kernel/cobalt/posix/clock.c
+> @@ -103,7 +103,7 @@ COBALT_SYSCALL(clock_getres64, current,
+>  	if (ret)
+>  		return ret;
+> =20
+> -	if (cobalt_put_timespec64(&ts, u_ts))
+> +	if (u_ts && cobalt_put_timespec64(&ts, u_ts))
+>  		return -EFAULT;
+
+Correct, especially as clock_getres has that check already properly in
+place.
+
+In addition a test case should be added to cover that POSIX corner
+case.
+
+> =20
+>  	trace_cobalt_clock_getres(clock_id, &ts);
 > --=20
 > 2.43.0
 
