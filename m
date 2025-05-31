@@ -1,194 +1,244 @@
-Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from AS8PR03CU001.outbound.protection.outlook.com (mail-westeuropeazon11012018.outbound.protection.outlook.com [52.101.71.18])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC7682B9A4
-	for <xenomai@lists.linux.dev>; Sat, 31 May 2025 05:16:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.169
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748668582; cv=none; b=HcEleF3n6PNli9zgUpOAxZQg9Y8Te2h5XCM48AlbJ2lk3pr6Rex3a+Bp8fJYueokToT8mNPpPfyow8RHSYHZt3ev7mVmBL4WlAomw/tt4/2GZ0eY1KOkwtcT3iGVO0Q6slcIbvl4MmKJ10b4+lPQ0XUhQTmdzD9/VstYG77Zbh4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748668582; c=relaxed/simple;
-	bh=ZhTStVEkCqWNPsDfCN5Ax0x3/ZP3SGM+EB9IX0YqEus=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=XqjASQJ6+QYXW7WifqQSP9lZY9dERRFi62E91Nfu6LvNrbO6IPUOwBo4tKEvD3UafA1f3AbQcV5JQpzq/siyUqx5Ro+ITZtvL0og6ONHcPaACHdHeaA3FSWDGTjRySVlWeNSsYXIY2xdT3Fx1ArPOgQqACG2TdYB59ckdjLImE0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=frszHw0g; arc=none smtp.client-ip=209.85.215.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFD682907
+	for <xenomai@lists.linux.dev>; Sat, 31 May 2025 05:35:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.71.18
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1748669706; cv=fail; b=r1Cx1REHO2WS6p3yq0aPnjRESjF1XKUexMom0PwumHTeOSqBTnPI+nRV272hUgM4O3mmeLho57GsVbr59olQRKtopiUnu/B1SAlC2tVZJKiGjBYhBlpWTUqI5QOq4EmBOCaHi99YxHpTdABmX8OaektRevqihfxfV+2sTkJN9TA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1748669706; c=relaxed/simple;
+	bh=uflUGh35uPnfeqFvR2CsQZAomEcThKVb/F9K/ypYZys=;
+	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Y5S+avm/p1VilvaX/bx/dtz2xBATL1I0QRA1htHFqlvu3mY0NMDw6noKFta7sOU0Sn21JAt8aMPBu+B0hdW7HMtuzDBRjl8gwiNUqyoRbrAPRJXCLHHHEJ4J42SVpIKAuARCDd3KdGwHbzJtPb0IgztKyv6fu3EEERedkaJv3po=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=NCS5+bHk; arc=fail smtp.client-ip=52.101.71.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="frszHw0g"
-Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-b0db0b6a677so2179933a12.2
-        for <xenomai@lists.linux.dev>; Fri, 30 May 2025 22:16:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1748668580; x=1749273380; darn=lists.linux.dev;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=jqLRZQh/SKqz8TO5F2XlmUFglE5AMsnOUfMeiiYmVlU=;
-        b=frszHw0gE4jdab1QrsJ6Vs7qzW9IQZvYY6ZZunlgsKSTOFR/+4tpVR7biaS2ezf6xC
-         ThYvtQ+UFxu/1HBDFNMuTXVhgWCj9liQM523Jfc+mwImw0Zuzk8baHEJi2Y7Dd6nsy6Q
-         eL5taxODRwd0rqnrtetxODiEgZufkvKrpOy9p0c47FMwJqtfHBUqa/x2w4zO3+St5Wvp
-         KbkY+BObwF6GB5YJfww6i6hZH13KIO2Qn2cyP7JN9jp3JN3X1c3qVOBqauRaRVpqbmNc
-         I5Qvf9/g5LfrfdO2q8CAyZDM83NtbKvUOfCmYymg6O6VBrmKIonp6OBJoRRjQ34Ovowp
-         ujRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1748668580; x=1749273380;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=jqLRZQh/SKqz8TO5F2XlmUFglE5AMsnOUfMeiiYmVlU=;
-        b=uv19lgAjTaK4x4bAOd5Safk5uQPsKY3+QpRE4JVg0ZQrlKR8cnxAzfeqsf5/rhimSX
-         WfGnYqdQgzxPYuLY6TqvRB64ZAPR065Ba3MO8gNWmXw9m59ublHIZFrVJYyv4DRGqHwE
-         mIlRHjxxC1bySqjanMbly5wtC1AiDbEL1WgwPap6ir6g5WN4pC2TwYQlGmJw2j7mxNO+
-         UmTAwd7FtmEKxcpgfZ1x12iFPVgInanv8Nvaourq25zP62tgjPyBjVsAOCFKPwSUD6lE
-         n6QBx4hLIU7HZsD36tCQ/QpSPmjJDA9MMZDc+pWyjfRsiipFYI0+Mb/O3t4pTXEHb6v3
-         m5aA==
-X-Gm-Message-State: AOJu0YxW8NZnDwnlaWEqrLyZ0xcKWn9MPHDi722KrjnrlyvjuMCri4aK
-	sZB/L4bwqfXcmmYOMrALSz0NsLbxFKbAdbgSW/sNtg0BzeQVeAUMS3x4pm/qdvrEuKgoLDXlkfe
-	IOOtN5/3wS7+DhlZfvnZ0HDR4Rufwys3Y1RFW
-X-Gm-Gg: ASbGncuQA5LSFzo9ZH7f/6EP/7QsiNvAyCK1WbI0i9c2k+F/+BqmvB0bfoSDIQt48rJ
-	E+MoTPF5UQlHGoFwm27PEjJXl2yJ8YP9Yg5mE5mpKg/f4pfOm6NGHC5FT1uf1B2XAWVoli06Z8p
-	wXtCztKGM6W7vaOcZthZEANdTV3DyIzqzKzw==
-X-Google-Smtp-Source: AGHT+IG1XhhlT2/AzgXxzrCDHZT4FgC0Gz1YWkZdDqNzfE8ECe0gEkmoIvcyWqAqwcgnTgzkRrAZhI7XlduHIGjeQhA=
-X-Received: by 2002:a17:903:1d1:b0:234:8e54:2d53 with SMTP id
- d9443c01a7336-23529a114f9mr87567175ad.45.1748668579713; Fri, 30 May 2025
- 22:16:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="NCS5+bHk"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ZHsv8R/dMTxv6Mw4GkiJLo/i1su25pf0SLNamgoyZU9Q8WyxjJo1oWYpVe+vV7SVJK90aLg4wFtG+qfgqjn1zPpgN9EiQgWa56naq690/76MBA4BLAwjxIJeSGi/nc28UIHWSq5xE0S1iDXSx2u4bTLidt8Q+5/MmR1VccMag40WV2C2uWGQD05KVMub2D5ITyGtVOEe1JDsI5pDqbQ4Dlm2ILW8R4F7pjYJOL/u/vP+JH0fTpK2zWNUjcD8SGF+n01EA/uLLxcfMXY+MqLuReWWo35n5ue7Ty0Gt7bciZZ1Uh5IiMgF4aucPuxXPZgCq2aAPwImpkMuD3sAf/X3fA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+DxeDZ/Fl8u5L/cvLIof+5EyzwaPL17FJZPEWla9uOg=;
+ b=uXWxB57NZF00TtzuHa9lWKtvGbszDGs5lQZq5pPgnIMsCZ80aLPr1gNAIAJEiN63G6JwQSbLAVO2r5jmGoxScFmvLX7MzUDwlNJay1+wyH49JblOP9T83UnLLTwyxJRVORD9wyG6by5lPx5yJjPKxuqjMg/A079Zv20ggJJr+z89W/nQno9g6TueH2Rw+TFQssQ0SWoKZh1AxL0whyol3RxIpgE+nyCwxzmWTol4Bljn0Mp2Rcjahm+WnFw504xphgp2sDdgR//b6r4bn/QkjotfAn8zGs+xJRq3owlSKCeyELF4wKDJRUkclnWSEup8g72XQLdbD24Rh9ZPVqvH1g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+DxeDZ/Fl8u5L/cvLIof+5EyzwaPL17FJZPEWla9uOg=;
+ b=NCS5+bHkyqOJ++42tTA3L7YH+2dPyPffANfHwpaLA6C9CCHgvlAb8ExqmnBx+aBgFTw0U0sBN79zpVZfvFUykoYUDhj0qXK+VNIry8W6NoAwATBD/n2ugVj+54IcwGVO9eN160rtLnTSRyKeB3LIwNcmt8arZu4KS6fG+57dadMttGAIbdKgFR/CbCngsIsAqspqvbDamxSX3CUMQdfCaZeGeM0g8RfRVGE9FBLFMSJcH4iwwO6tjX+p6bPVhYKfjjvhR6/sk/+pulr0n0J5qSH1PgZxQuzbUxMydi75tMMUJsXVvsmSVp8/ho5cPg0s6s2zA1km/yjPqsgsnhrI5g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by VI1PR10MB8183.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:800:1e1::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8722.32; Sat, 31 May
+ 2025 05:35:01 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408%5]) with mapi id 15.20.8769.025; Sat, 31 May 2025
+ 05:35:01 +0000
+Message-ID: <ecaaf336-daff-4ab3-96b6-a5c7f6633c4a@siemens.com>
+Date: Sat, 31 May 2025 07:35:00 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: Port of a RTAI based code
+To: Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr>, xenomai@lists.linux.dev
+References: <1d29632f21dc51b0f1d5434b8ccd16239bb73c37.camel@lapp.in2p3.fr>
+ <5b7a4ded-2147-47c5-887b-c400694c9eec@siemens.com>
+ <d7232ade8a28894a536d697a40942416ff817550.camel@lapp.in2p3.fr>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Content-Language: en-US
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ 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
+In-Reply-To: <d7232ade8a28894a536d697a40942416ff817550.camel@lapp.in2p3.fr>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR4P281CA0130.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:b9::18) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Eigen Zhu <yinpo.zhu@gmail.com>
-Date: Sat, 31 May 2025 13:16:10 +0800
-X-Gm-Features: AX0GCFsLRBnTAnogp8j04Ud59yY-nKpjyjv3hgOHMDNnGrbndEe4E5qy1BByrIc
-Message-ID: <CAHVFwiXNua2WnMZ4qCxmG2cPfMBiv2ptTjO6tPpfSPNSjX+5Ag@mail.gmail.com>
-Subject: Inquiry about float-point calculation in RTDM task
-To: xenomai@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|VI1PR10MB8183:EE_
+X-MS-Office365-Filtering-Correlation-Id: 7ce827e2-234a-4795-9d92-08dda004e367
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016|13003099007;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?TmkxRTB0SVJzZkQ2S3d0WVA2SFB2WU9KT2xwTlc5T25zL3hCUVR3SS9jWDBE?=
+ =?utf-8?B?NVpUa1BocnI3WFZCUHo4bmxpbTk3Y0d5Z1Y0ZUtqSlRDQmtJaEQ1VjJkUmhi?=
+ =?utf-8?B?ZTFJWUtoUkgzZHVpRFhSUm5UemlhYVh1SzlwbUJIMWVXV2RVQjB5Z0YybUlE?=
+ =?utf-8?B?ekVVR1dpalFHcG1iNHlCMkRESlNIZXpXN3N1ZlRpVm1pdEFiTHRlbUpHUjVm?=
+ =?utf-8?B?SHkveWtPdkltRDliMjF5NmQybmdhanlFSVdlTzFyT0hmREp3ZVlpQnJwWm1T?=
+ =?utf-8?B?cEJCa0ltb3ZuMldPR0RvVEIveERoQmhBVVhPUXI2VjY3NVN2Mko4Wmg2M2ln?=
+ =?utf-8?B?TFM4bUFZN2JINTZjK2FPQjl3Tk5nVGNhUFNOc0tKYlJ2eW0yQ1QwNnRjbyt2?=
+ =?utf-8?B?dkFiTHlmNlBZYkFqcGtOMldBWnd4N29aUHlxeUd5TUVHYUdoSmJuSEVjZ1FD?=
+ =?utf-8?B?TVVha0tSWGZnNURBaHhtd05JTGk4QVo0UmNDNWt2SDl2K3RuMS9WTDhXbGMz?=
+ =?utf-8?B?UXNoV012YjkwalFGamZqdURlL1JKVFBEVmJ5b3BpSGtpMjJqOFp4NktRN1F4?=
+ =?utf-8?B?MzF1SUpWK3U0N2xJeGdNNXlWRFBmd3E1cnpSbGVCSFREdWpKY1FsSHFwMkFt?=
+ =?utf-8?B?a2g4UStpQWZZdTdBNXhhelo3bzZlelh1TlJmOWZTajRQL3cvMmZwUVRBc012?=
+ =?utf-8?B?ZFI4RG8rblJuWEVxRVh6SW1Ub0I5UThwSzFsQkFjSTdRMWVtdURpN2dlQUcw?=
+ =?utf-8?B?V1RlZk83dHBPME5DcllJN3R0OFNKZjdWRHJ1cDdtazhjNFJNZ1pHYzNzaDZV?=
+ =?utf-8?B?ckJkWThzZ3JqYmxkT0dqaDdnWWJCdGFhSGxncFdhZFRZQlpNRnhONy9rVHI3?=
+ =?utf-8?B?ODU2L3RFM0lMaldYSmVzTkt5M0lQNXVDTHFGQjBwTmphMWYydWp3Q05nTkZi?=
+ =?utf-8?B?NWJiODk2TWVBS0FIRzB0MnQxaEF2UUpHQWszY0NZeHlLYkloR3dTazdteVFX?=
+ =?utf-8?B?RDRHYnZIVURONUp2bXUyUnlDZXVTc2FQYU52TTFqSnZKZlZKYVQ5MC9zdzFa?=
+ =?utf-8?B?U3BUT05WQUZvL21QZVBlWXV0N2RCbUJWS1hCUWxkcldNZFRNcDVsRmEzOVVN?=
+ =?utf-8?B?aWN0WnR5YkM5S2xpMFRWUGl2RWZJSk00SlBwakVFU3EvN3Y4UDNGOURSbXdI?=
+ =?utf-8?B?cnM2bkdlRGtNaXpuRS9qdXQvOUIrUTJpYStORGZvMTNXWStSSFBVR1Q4dmxF?=
+ =?utf-8?B?dDk3SU1XTm9oQ3B3OWt5dGo4QVdGOVFNb3oreXRQL2E3dTd6QjduclBUMTFv?=
+ =?utf-8?B?UDhya1VhbHdibENON2JRbTAwTHpyb3lqMFJsZDlWMXN6NG53VmlTMEdsNmV3?=
+ =?utf-8?B?a2JmQlpUSWJ4M1N4Uno2Rm8zc05tQWpCRmk1SVBaT0NPc1FadjJaeWFqVzNZ?=
+ =?utf-8?B?SGl3ZXg0dGF3TzJpMmx6VHhGK2Jhcm4zK2ZLZ2tkeEVMUDJTc3E5VGlIaGFF?=
+ =?utf-8?B?U0pWR1p0VVFDVkxEYzA5RXd3OENQeGY4QjZ4b1JiL241UmRhaU9NR1R2WTdt?=
+ =?utf-8?B?cFFjNWlSUnJlUXg0UlZ1bjcwS0trQnJNbENLWEc4RjNRVkpuWGdIcXp5VGJI?=
+ =?utf-8?B?WnAzOFlraEZGejMxR3c3QXdKZDRFSmt6YWw0ZDNEczNYRkU5c2lRb0NWR2Z4?=
+ =?utf-8?B?eTFncUpBOWlMRGFnTHJ1YU83VVpnbTg4d3hwbnVZWENkMCtUeXBieWNBZlBY?=
+ =?utf-8?B?bVd0VE03V21zUkY1K3V3WWNzdlM3L1llUndlOFhHNGxpTS9CaFY3VThnSHl5?=
+ =?utf-8?Q?HqIfl7yOZJXAFXWFf99ZO52Mo/JDVmRlUKo1A=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(13003099007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?cVFJZHp1eGtSRzhRZ2dtNDl6cy9URlBXZlZPZ2RpTVZ2VC9rOWhWME11WFds?=
+ =?utf-8?B?Z2hoWXkzLzJEN3ZFN3o5VmNkeTlHUm94cUZlbE9UUWJ3cTF3OEhWbVlKTnNY?=
+ =?utf-8?B?VjRrS3E0YTlIdjlwQ29LTW5SYnlxbkpiTkJXR2QzckdsUDYyNjRkOWpIYitw?=
+ =?utf-8?B?ZFVHMXhMZVJUVnJxOXhnR1g3dGc4a0ptamlvSm1ZRkljUlI4eFlNdDNZNjlr?=
+ =?utf-8?B?bGwwV0tISWlKcGJjRytpMUlKQUpmQWhsTzdETThkUUJ1bzZHMlNwWEhreUNz?=
+ =?utf-8?B?NTgwZ1ZrbnQ4NlVmTW9BdWFDczRiZFhLYVg5YnJXWXNDM0ZWaFBnWGxIdDZU?=
+ =?utf-8?B?ektxMWlwZFQ0T2JVTTFlYnhLM0dtZEkwRHJ2ZkplbXpzK25TYlBwNFlRV0x6?=
+ =?utf-8?B?a1pGd1ZzTHNyR3JQdHNabC9BdDFXc1B3KzNiUnAvR1NTRTcyY1loZmUwTkFX?=
+ =?utf-8?B?VWlzQzRhMm5DMGM5clZpVjBzU1cwUiswbjMvZDJ6dWpJVUFrdllua1BlVWZX?=
+ =?utf-8?B?UGRWQWdVWVV4WE0xRXdSamRpeHBQS3FsMmU0eTJtM04rY1g0c2IrbXpJUUtF?=
+ =?utf-8?B?L05LSU1tb2E0QnN4aDFzME5zY25nL2E4Q0habnVCQlkzdUh4UFVPZjU0Nllq?=
+ =?utf-8?B?aXhJZGxlaE5sZUROUzd2MlFieFJzVE5TV0tMZHlhMnlXZWRtczFJSmVSakU1?=
+ =?utf-8?B?Z3p1T1NkYUNCSVRxNG1SajV3Qm5nZmk5R2NsY3kzd2kySDNmR0s4KzM5cnA0?=
+ =?utf-8?B?ejdINmlyVzc0cklyZHR2M2htVDc1TGtYdXdpZTlETmpRYWpXR0tDbEFSY0Vz?=
+ =?utf-8?B?aEtFdE1ZUThTbllUa1BneU9JTk5oS2dadkZxWkQ1N3V4ZzNlUit2QS8wNnZG?=
+ =?utf-8?B?Qm82Smwzb1FKUERMSW5YRVFkZ2h6bHJZQWpsOFlyYmZWMkE2UENwRFdsVjRH?=
+ =?utf-8?B?NjBpUVNXU1VXSDh5UFNoU1haNk0vOUF1OTNoS1R0MU5tOS9KUno2RjYvTnNp?=
+ =?utf-8?B?WWhHbnRzNEVPV1Q5TmdFVHdXUWdJekhrblJhL0JjSng4SkhuZWlGRVRMN09t?=
+ =?utf-8?B?em1PVFNXaDhFVjVtaXMwVW9JWjdIWk9tVVcvSEJzS1R4NmlLcnZDTVNiWFRv?=
+ =?utf-8?B?U1JqYXVTaklwSzgwdk04NUxaVytkSkNqSkk5cEsya29CanNwb0FFZmxjMGNa?=
+ =?utf-8?B?Ukt5Y0tieDJPQU9yZ3MyZC9IbENWVGpxYmNyQzdJWEF2cXMwQTQxci9DOGlB?=
+ =?utf-8?B?UVVqR01XM1dvcHk5UU83bGNreTRKdmZaajYvOWhDNm1taS9sdHExYkw0YkhH?=
+ =?utf-8?B?VHNiUm5iV0Q1RVVYcEpSN05kWG1DdzVUZCszT0tRdDFCL3phSExFL1g4eW1o?=
+ =?utf-8?B?cU5RNVEzZ3RxekJpWkhDMVRUN00vTXY1RkNIbnpKWVhmSnN6dS9uZ3NkYTVS?=
+ =?utf-8?B?VUc1WjJYSHltZW9iOVlEU1I2R1JFbmdPR3NpTk1YVDV5WFFmYW9vYTlSaERG?=
+ =?utf-8?B?Rk9rS2lrSjBSdy9MTDRLcTdJUjZmOHJqd1ZjRzJWUFFLcjdTdmY1R0VMNzRi?=
+ =?utf-8?B?VHQ5S0p5NE5zQlpBV1RjY01ZVk9tTEMrSWNFU3ZQRGJtaW52VTMyYi8wVVRr?=
+ =?utf-8?B?cGlDTGloT3VjdGZBK015aGNEMDRXbVBIMDQyem1PSjl3NVJtRFRJVUw5dWg5?=
+ =?utf-8?B?M2w5Y0VJMjdqZHl4aTd5c1RwQW9qQjVITVN3VXlPeGRUSnZNVnFUTmdXUktj?=
+ =?utf-8?B?RXM1L2hVZlRwbTl2RmQ1VUg0LzNCVXdCS0txbnJ4QXdyR1FRK1pTN0poSWtR?=
+ =?utf-8?B?S3NRVllqQlE1M1hpaFNpVmZyV0JIQUxLd1hmMjhmY2hNQ2tMd0w4VHJxZVhO?=
+ =?utf-8?B?VTRKWmtHUy9BTENhRVFaSGhTeG40WG1PWVY4VUE3V1dsNHREd0pTZ2NTazZF?=
+ =?utf-8?B?SXFieFpxRVJkTm1WS3VlbWh2UnVrR1E5dkl4cUpHajJkT1JTNFRHc2RiM2RQ?=
+ =?utf-8?B?S05kYkd5V01kMklEZmUxMEhaMUZWN0F2c29BTFJUSWM5bVpUN1NWUmg1bUZD?=
+ =?utf-8?B?MUljRzdpa3Fha244M3d4b0ZJSGMzWFhrVGNYSWF4R2NQUkxhblVSTDA3UFRu?=
+ =?utf-8?Q?/LVIB4mJuyu0wYWCJ+6MFgZZ0?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7ce827e2-234a-4795-9d92-08dda004e367
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2025 05:35:01.3683
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SCzGA/rWa140/llBsWY1lDp4PInspVLrdTlPN0s6924I2CmG1yW66pcBBCgE2ZWADV4RUVhPbTmVWNRyrvV2+Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB8183
 
-Hi support team,
+On 30.05.25 22:51, Emmanuel Pacaud wrote:
+> Hi Jan,
+> 
+> Le vendredi 30 mai 2025 à 09:55 +0200, Jan Kiszka a écrit :
+>>
+>>> Would it be possible to obtain a similar behaviour using evl ? I understood
+> the user space processes will not be scheduled during the interrupt handler
+> execution. So I suppose I have split the interrupt handler and implement the
+> process waking part in a kernel thread. But what would be the right approach to
+> wake the user space processes from the kernel space ?
 
-We encountered a problem relating to the handling of kernel FPU. The
-system is built on Linux-dovetail-v5.15.9 with Xenomai.v3.2.1, and the
-cpu is X86-64 dual core with specifications below:
-processor : 0
-vendor_id : GenuineIntel
-cpu family : 6
-model : 140
-model name : Intel(R) Celeron(R) 6305E @ 1.80GHz
-stepping : 1
-microcode : 0xac
-cpu MHz : 1800.000
-cache size : 4096 KB
-physical id : 0
-siblings : 2
-core id : 0
-cpu cores : 2
-apicid : 0
-initial apicid : 0
-fpu : yes
-fpu_exception : yes
-cpuid level : 27
-wp : yes
-flags : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov
-pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx
-pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl
-xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq
-dtes64 monitor ds_cpl vmx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid
-sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx
-f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l2
-invpcid_single cdp_l2 ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow
-vnmi flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep
-bmi2 erms invpcid rdt_a avx512f avx512dq rdseed adx smap avx512ifma
-clflushopt clwb intel_pt avx512cd sha_ni avx512bw avx512vl xsaveopt
-xsavec xgetbv1 xsaves split_lock_detect dtherm ida arat pln pts hwp
-hwp_notify hwp_act_window hwp_epp hwp_pkg_req avx512vbmi umip pku
-ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg
-avx512_vpopcntdq rdpid movdiri movdir64b fsrm avx512_vp2intersect
-md_clear flush_l1d arch_capabilities
-vmx flags : vnmi preemption_timer posted_intr invvpid ept_x_only
-ept_ad ept_1gb flexpriority apicv tsc_offset vtpr mtf vapic ept vpid
-unrestricted_guest vapic_reg vid ple pml ept_mode_based_exec
-tsc_scaling
-bugs : spectre_v1 spectre_v2 spec_store_bypass swapgs
-bogomips : 3609.60
-clflush size : 64
-cache_alignment : 64
-address sizes : 39 bits physical, 48 bits virtual
-power management:
+There is no need if you follow the proposed pattern. This is actually
+standard driver design under Linux, just lifted "out-of-band".
 
-We also did CPU isolation to improve the real-time performance of
-Xenomai threads, and the grub configuration is below:
-GRUB_DEFAULT=0
-GRUB_TIMEOUT=5
-GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`
-#GRUB_CMDLINE_LINUX_DEFAULT="quiet"
-GRUB_CMDLINE_LINUX_DEFAULT="console=tty0 console=ttyS3,9600n8  splash quiet"
-GRUB_CMDLINE_LINUX="idle=poll isolcpus=0 xenomai.supported_cpus=0x01
-nohz_full=0 rcu_nocbs=0 rcu_nocb_poll=1024
-rcupdate.rcu_cpu_stall_suppress=1 irqaffinity=1 cpufreq.off=1
-i915.enable_rc6=0 i915.enable_dc=0 i915.disable_power_well=0
-i915.enable_execlists=0 i915.powersave=0"
+>>>
+>>
+>>
+>> You will need to write an EVL kernel driver  
+>>
+> ([https://v4.xenomai.org/core/kernel-api/](https://v4.xenomai.org/core/kernel-api/)
+> ) that implement some OOB read  
+>> or ioctl which your EVL application can call. That driver will then  
+>> block the application in the kernel using an in-kernel OOB mechanism -  
+>> e.g.
+> [https://v4.xenomai.org/core/kernel-api/semaphore/](https://v4.xenomai.org/core/kernel-api/semaphore/)
+> . The driver also  
+>> implements an OOB interrupt handler that will signal that evl semaphore  
+>> (e.g.) and, thus, unblock the userspace thread.
+> 
+> Thanks for your message.
+> 
+> I don't understand the relationship between the user space semaphores and the
+> kernel space ones. How can I map a evl_ksem to a evl_sem ? Is there an example
+> code available ?
 
-Over the configuration above, we have 7 threads with different
-priorities running over the cobalt kernel, and they are created by
-using rtdm_task_init. These threads are synchronised by Semaphore.
-Note that all the threads are performing high-intensity floating-point
-calculations, and the GCC compile flag has declared -mhard-fpu.
+There is no userspace semaphore in this case. Userspace only calls the
+driver service, and that carries (in-kernel) a semaphore or something
+similar.
 
-Now the problem is when a low-priority thread was preempted by threads
-with higher priority, and then after restored from preemption, the
-float-point calculation was going wrong. The code below is a simple
-case that could reproduce the error:
-#include "rtdm/drvlib.h"
+Jan
 
-void kthread0()
-{
-    rtdm_sem_down(x); // this signal was sent by other hardware interrupts;
-    double a = 1.0;
-    double b = 1.0;
-    double c = a + b;
-}
-
-void kthread1()
-{
-    rtdm_sem_down(y); // this signal was sent by other hardware interrupts;
-    double e = 1.0;
-    double f = 1.0;
-    double g = e + f;
-    assert(g  >= 0);
-}
-
-rtdm_task_t threads[2];
-
-int main()
-{
-    rtdm_task_init(&threads[0], "thread 0", kthread0, NULL, 90, 0);
-    rtdm_task_init(&threads[1], "thread 1", kthread1, NULL, 80, 0);
-}
-
-
-
-As shown by the code, when kthread1 was activated and then preempted
-by kthread0, the assert in line 17 would fail. But if we disabled the
-preemption, like using atomic lock to protect kthread1, the problem no
-longer appeared. Thus, we doubt the issue might be related to the FPU
-registers that, when kernel threads were context-switched by Xenomai,
-the FPU registers were not properly saved/restored to memory. But we
-are unsure about this reason and did not know how to address this
-issue.
-
-We have done a lot of research on the internet, and tried multiple
-methods, like using kernel_fpu_begin/end to explicitly save the fpu
-registers, but the real code project is very complex, and it's hard to
-add kernel_fpu_begin/end to protect every float-points calculation. We
-also tried to add CPU affinities to each thread as the CPU is
-dual-core, but this could not solve the root cause relating to the
-float-points calculation. We also tried to use soft-fpu to compile the
-project, but this does not work.
-
-My inquiry is:
-Is this a legal move to put heavy float-point calculations in multiple
-RDTM real-time tasks, while higher priority tasks would preempt lower
-priority ones? If not, how could we configure the kernel or modify the
-code to support this action?
-
-Regards.
-Yinpo.
+-- 
+Siemens AG, Foundational Technologies
+Linux Expert Center
