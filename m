@@ -1,44 +1,45 @@
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9595A2C324F
-	for <xenomai@lists.linux.dev>; Mon,  2 Jun 2025 15:20:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEF9A1F5858
+	for <xenomai@lists.linux.dev>; Tue,  3 Jun 2025 06:58:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1748877622; cv=none; b=NTTrntlgnswcQV5VLZJl/lgi4nCZvAFa+WZDIzZT9X0e+xsrGxLYZo6jhmoNfgGpdEsNawqW3d9Tou5pF69OhNnRVoqPLJPFDKGQKb22pEUshZ/14naFF5MD8en9dy0LKmJIz6DkdqBtOUc+M1orFu1RvAchuRbqAMT4ZWreVMI=
+	t=1748933929; cv=none; b=ilOfWnACFVFmsYsrPi1nGyhPFWu1uzzYzqlUuAKVg18Z7s8cuJ7LtPKHDyW3oZiVH3awNKPLufIUUgLhzY5jqyT2ekoLW0qZKEzAG22oYpF7U0cILYgLWrnwGw/m7gPudLBQqBjA7uauPs3Lo5iSUDC6fVMvg2lMCPbPcV1QME4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1748877622; c=relaxed/simple;
-	bh=UMQTZOJZkeOaWgYeYXTnIiKF/QEE2DOqdQoD8fu3lGM=;
+	s=arc-20240116; t=1748933929; c=relaxed/simple;
+	bh=QBsp12q+Irb5EVkYODXwDwRSunYyGJ62CF70FTk0Wdo=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=dWafW2ChljbeAohysiRJsjPmaEpjqeXaH/wkKAkRh77P8J8CLVlLfBGiy43iQYLS3r4ak8Gvzoj9h5yMDtOO3UOuFKLdtuTomK8ZXQjzTe7WgQKJX+RYc7uFLBcn6NkP87BEyHwVylCkNOrsV2iuNRl43dTirqMper4+vt+o/z0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=Vin6OTVX; arc=none smtp.client-ip=217.70.183.195
+	 MIME-Version:Content-Type; b=LPxqJ+D45EjHo9P2fsjd1hBX4mPGAcufWDor3CgpYZVz100N69qUwnYv1N+BVY4fCCmhNp6gkp8dbyg7diFH9Sp45wc2iEhk1du2jS5abCN5pk2cEipE7Wg3fjJCffG82xXVRwpVe+bh7czVTnhwLgxgodP7/fCfdYiAvxgUEzc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=Urvj3Vgx; arc=none smtp.client-ip=217.70.183.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="Vin6OTVX"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 0DA071F4F3;
-	Mon,  2 Jun 2025 15:20:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="Urvj3Vgx"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 8503444154;
+	Tue,  3 Jun 2025 06:58:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1748877609;
+	t=1748933924;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=Zjg9PAMzNiit0pOVv4M+DBglyeCKjrEv32wcgIgQwFo=;
-	b=Vin6OTVXgYlMXRuzW6C3DSb5GXX4LsWousAw49qEAwcRG74ns7H28ahO3rnQRHfcSfngSB
-	xwS3c5CqmCUjW3dVFVZO/rSPgDt9Ema5/3d5fSGU3VgmCBExaxzEJK8jLy0LF8g0TBeRPL
-	F4dDqcJW+OnGJGale/H7XT6qUTZTjrIUTTML4y2cAjkWgGAsCAJv/qOZhg344G4Dr2gUqW
-	2B6DMnF6QM39w7Vn5SElg0nGE/j3ADsYNMBH2v8NS0WW90ompGipXx4lqf4fEdMwD6AWm+
-	ITL0yTR95aQVoq90BDAvzDEO7zZd5xrZ5U8LpoL/uxJ/GSi9aW77WFCv2D/wDA==
+	bh=naq4l5Af/LvNPwfi3eH2RHujKXMAjX4PMhi4MnyWjtY=;
+	b=Urvj3Vgxq5RlkUZYt6CjO83zJpDMKq1mAnnKlfXFfIKLgN7Ub/9ChmVUBo4TWl4GBxFACv
+	2NtzNSNi+LkqpBPuqDX2Dm6sCti6En7xA7KPMAjopdIfB6DvO67akHYIbEpyjSxkODIGVE
+	8N0baVhEaSu4+BbIIu4+F8CO1YqhysPWoCt9a+5UIS4ezqdbyri4Vy5wRiN+/+tUSqvysB
+	XhObAcR/yGEL8E4ALLY0ADwAA6T+sHVHKtdzAn/jhD0b8nRmiiQVcrpZI4tuq6s2QTA675
+	fkuIgryd9rC3quBoSybzbkZj3cnPOmVljrsSGHcYQVHzr1aMte9BCrCTa+XZaw==
 From: Philippe Gerum <rpm@xenomai.org>
 To: Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr>
 Cc: xenomai@lists.linux.dev
 Subject: Re: Port of a RTAI based code
-In-Reply-To: <1d29632f21dc51b0f1d5434b8ccd16239bb73c37.camel@lapp.in2p3.fr>
-	(Emmanuel Pacaud's message of "Wed, 28 May 2025 18:13:56 +0200")
+In-Reply-To: <87ldqakw63.fsf@xenomai.org> (Philippe Gerum's message of "Mon,
+	02 Jun 2025 17:20:04 +0200")
 References: <1d29632f21dc51b0f1d5434b8ccd16239bb73c37.camel@lapp.in2p3.fr>
+	<87ldqakw63.fsf@xenomai.org>
 User-Agent: mu4e 1.12.8; emacs 29.4
-Date: Mon, 02 Jun 2025 17:20:04 +0200
-Message-ID: <87ldqakw63.fsf@xenomai.org>
+Date: Tue, 03 Jun 2025 08:58:40 +0200
+Message-ID: <87ecw148gv.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -48,172 +49,25 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-GND-State: clean
 X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtddtgdefkedtudculddtuddrgeefvddrtddtmdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepgefhheelteeuueeghefhgeelgeeigefgffeuffetffegffeljeehleffgeevgffgnecuffhomhgrihhnpeifihhkihhpvgguihgrrdhorhhgpdigvghnohhmrghirdhorhhgnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopedvpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopegvmhhmrghnuhgvlhdrphgrtggruhgusehlrghpphdrihhnvdhpfedrfhhr
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtddtgdefleekkeculddtuddrgeefvddrtddtmdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepvdelhfdvheekudehveelgeeitdeujefgkefhieejfedvieejkeegiefgjefhkeegnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopedvpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopegvmhhmrghnuhgvlhdrphgrtggruhgusehlrghpphdrihhnvdhpfedrfhhr
 X-GND-Sasl: rpm@xenomai.org
 
-Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr> writes:
 
-> [1. text/markdown]
-> Hi,
+Philippe Gerum <rpm@xenomai.org> writes:
 >
-> A bit of context: we are happily running a bunch of control loops for the [Virgo gravitational wave detector](https://en.wikipedia.org/wiki/Virgo_interferometer) since 2008 using a realtime code based on RTAI. This realtime code runs on DELL R7x0 servers, exchanging data through optical fibers using custom PCIe boards. We are able to implement loops up to 50kHz (data reception, packet parsing, computation, data packing and data emission). Each iteration of the loop is triggered by an interruption generated by the PCIe board. Data reception/emission and packet parsing/packing is done in the interrupt handler, the computation being done in one or more user space process called from the interrupt handler. It works fine, but the latest kernel supported by RTAI being 5.4.x, we want to port the code base to Xenomai.
->
-> The way things are done currently relies on the fact RTAI schedules the user space processes as soon as we are waking them using `rt_sem_signal()`. If the process runs on the same CPU, `rt_sem_signal()` returns only when the computing task is done.
->
-> In pseudocode, the kernel code is:
->
-> ```
-> irq_handler() 
+> long oob_ioctl(..., unsigned in cmd, long arg)
 > {
->   parse_imput_DMA_buffer() /* Data packets are parsed and stored in a shared memory */
+> 	long this_task_index;
+> 	unsigned long flags;
+> 	int ret;
 >
->   foreach user_space_tasks:
->     rt_sem_signal(task_sem)
->
->   fill_output_DMA_buffer()
->   ask_PCI_board_for_DMA_transfer()
->   acknowledge_interrupt()
-> }
-> ```
->
-> In the user space process:
->
-> ```
-> task_thread()
-> {
->   while (!stop_task):
->     rt_sem_wait(task_sem)
->     do_computing()
->
-> }
-> ```
->
-> I'm currently working on the port of this code to xenomai4, trying to minimize the refactoring.
->
-> Would it be possible to obtain a similar behaviour using evl ?
+> 	switch (cmd) {
+> 	case IOC_TASK_WAIT: /* Or whatever you name it. */
+> 		this_task_index = arg;
+> 		if (this_task_index >= NR_TASKS)
 
-Definitely not. The ability for a task to preempt an IRQ handler is an
-RTAI peculiarity.
-
-> I understood the user space processes will not be scheduled during the interrupt handler execution. So I suppose I have split the interrupt handler and implement the process waking part in a kernel thread. But what would be the right approach to wake the user space processes from the kernel space ?
->
-> Emmanuel.
-
-A possible way would be to implement a token chain using an evl wait
-queue, see below. Basically, every processing task in userland would
-call some out-of-band ioctl() (i.e. "rt" mode for RTAI), passing its
-own, unique token/label/index, in order to wait for the next bulk of
-data to process after each IRQ. When the kernel observes that all user
-tasks have handled the last IRQ, the finalization work can run for the
-latter (i.e. DMA xfer).
-
-Some notes about the code below:
-
-- it is fairly defensive, in that we don't trust the hardware for not
-  sending us an IRQ in the middle of a processing sequence, i.e. until
-  we have finalized it. Maybe it's overkill, maybe not.
-
-- it has to be defensive against the user task doing silly things, such
-  as passing an invalid task token. You could also implement some sort
-  of binding operation (also using some ioctl request), which would
-  assign a unique identifier the kernel could retrieve later on - in
-  that case, you would not have to trust the user code, past the binding
-  call.
-
-- AFAIU your original code, you could use a semaphore instead of a wait
-  queue, since this code expects the wake up sequence to be perfect
-  (i.e. Each IRQ wakes up exactly one thread in turn only once, the task
-  priority seems to guarantee the execution order, tasks never
-  block/suspend while running their processing round, and no rogue IRQ
-  is expected).
-
-- proper finalization of each processing sequence depends on every user
-  task to complete its work, issuing IOC_TASK_WAIT when done. OTOH, the
-  original code expects the task not to relinquish the CPU until it is
-  done with the current processing round. In the evl implementation, you
-  could still use locks or whatever evl syscall that might block the
-  caller.
-
-- it's happily untested. Hopefully, it's correct.
-
-You may want to check drivers/evl and kernel/evl for examples using the
-evl kernel API, along with the doc at [1].
-
-HTH,
-
-[1] https://v4.xenomai.org/core/kernel-api/
-
---
-
-#include <evl/wait.h>
-
-static struct evl_wait chain_wait = EVL_WAIT_INITIALIZER(chain_wait);
-
-static long chain_map;
-
-/* Say we have four processing tasks, labelled from index #0 to #3 */
-#define NR_TASKS  4
-
-irq_handler(...)
-{
-	irqreturn_t ret = IRQ_NONE;
-	unsigned long flags;
-
-	raw_spin_lock_irqsave(&chain_wait.wchan.lock, flags);
-
-	if (WARN_ONCE_ONCE(chain_map)) /* Out of sequence? bad.. */
-		goto out;
-
-	chain_map = -1L >> (BITS_PER_LONG - NR_TASKS);
-	evl_wake_up_head(&chain_wait);
-	ret = IRQ_HANDLED;
-out:
-	raw_spin_unlock_irqrestore(&chain_wait.wchan.lock, flags);
-
-	return ret;
-}
-
-long oob_ioctl(..., unsigned in cmd, long arg)
-{
-	long this_task_index;
-	unsigned long flags;
-	int ret;
-
-	switch (cmd) {
-	case IOC_TASK_WAIT: /* Or whatever you name it. */
-		this_task_index = arg;
-		if (this_task_index >= NR_TASKS)
-			return -EINVAL;
-		ret = evl_wait_event(&chain_wait, test_bit(this_task_index, &chain_map));
-		if (ret)
-			return ret;
-		raw_spin_lock_irqsave(&chain_wait.wchan.lock, flags);
-		__clear_bit(this_task_index, &chain_map);
-		if (chain_map) {
-			evl_wake_up_head(&chain_wait);
-			raw_spin_unlock_irqrestore(&chain_wait.wchan.lock, flags);
-                        evl_schedule();
-                } else {
-			raw_spin_unlock_irqrestore(&chain_wait.wchan.lock, flags);
-			/* Finalize sequence: DMA out + ack */
-		}
-		break;
-	...
-	}
-
-	return 0;
-}
-
-
-user_task(...)
-{
-	long ret;
-
-	for (;;) {
-		ret = oob_ioctl(fd, IOC_TASK_WAIT, this_task_index);
-		...
-	}
-}
+- 		if (this_task_index >= NR_TASKS)
++ 		if ((unsigned long)this_task_index >= NR_TASKS)
 
 -- 
 Philippe.
