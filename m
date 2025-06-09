@@ -1,154 +1,129 @@
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+Received: from proofpointagent2.wolfram.com (proofpoint-proxy.wolfram.com [140.177.7.254])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7AF127A442
-	for <xenomai@lists.linux.dev>; Thu,  5 Jun 2025 17:56:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 584DB148850
+	for <xenomai@lists.linux.dev>; Mon,  9 Jun 2025 11:54:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=140.177.7.254
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749146210; cv=none; b=l136UFkit5z2voIj4WamFdWtbBQHHMYqJ832uc/J+8ShdyhlL/cMW9gAnJtCBOKi6GpsverzCYmRhaQZP1CAZfL28bdh/l+cZCt0Up6AWgBEcuk1WvktsSwX8REVT755ihFdC+qX3N1oEf5AP0PBeM2+GZp+d8Htlq3y89JoO3Q=
+	t=1749470061; cv=none; b=F6M69rsaU011gBrosrXR+YzqikXaivl5PYaeaMaoSR/LY7A5+pJvWf1KFHodMGRZAaApkPt5CKbQvonBSRdxU/eip8IqRbmOzwqPX8u48H3YeIef/++RWUanvW5LGGdB/O2dYZSa3u83G0HysInCSlpks8YAXN6gERWfUVifzTo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749146210; c=relaxed/simple;
-	bh=IVtueZTJJePkxiBpeyXUvK/H3qZNNIirKaSl/hdkxjI=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=tJJZqo+XzNrmuQNuw7LvhcllZ1FFjtS0oRoXdjliE4o97BTYmRafx+3y1GGqJ/i3tH9wRGIvJIvxyU9WrC0XtpvXaJTtHCax+u745DRsZViiRjF5itHUjoSVqFSvvqXYDwJ7cPkV104mja+qEaRyymnsocX32RbbYfEfXYqZiBg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=NW8Cezg1; arc=none smtp.client-ip=217.70.183.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1749470061; c=relaxed/simple;
+	bh=EAuzH/J3TmeDXnX+Vc61xBlI5HzKSzGz7AQ+j+OndOA=;
+	h=Date:From:To:Message-ID:Subject:MIME-Version:Content-Type; b=OwvVTauUnalYgFzNvwJbDBgQKJ2my30rkWMsGoAXmzgJvFTwoYOwiSmyEes5LCPqB/31syzIXqQOqz/vpkQ07aW2Z72YDg8X+kyUN8MoO3MtuDxM0ocXEQu/CNfjXRuBhbm/AnhfRYNUi7Nbopr5vq+8C6wCvM9uoOPEaB6VKjc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=wolfram.com; spf=pass smtp.mailfrom=wolfram.com; dkim=pass (2048-bit key) header.d=wolfram.com header.i=@wolfram.com header.b=k12T1ZEO; dkim=pass (1024-bit key) header.d=wolfram.com header.i=@wolfram.com header.b=cSk2qjbL; dkim=pass (2048-bit key) header.d=wolfram.com header.i=@wolfram.com header.b=WJzUao0H; arc=none smtp.client-ip=140.177.7.254
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=wolfram.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=wolfram.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="NW8Cezg1"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 51A031FD31;
-	Thu,  5 Jun 2025 17:56:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1749146200;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=juwDyW9udm27vNvCzFmJwql2nbkgeyCOmEd2vsJpIW0=;
-	b=NW8Cezg17VhgPs+jzHrlmk5YYveg0BYqea/I4gpknxd6mdBcJSCfvOQsnVIs9RvEmcJfO+
-	eLjcd9CV2TnWXXzz4bCA0d3kA4zdiJZ/eu9v6OniKPQzQbHyjPJoL5i15qaWOsITUNca9v
-	nYDa++/N9L5FAWPZ2b5zzACGelvcGpqcg9VvfjAqK9a+k3vXHvK3f5+cCcI5+uujAEtPjQ
-	BgQzZPuYoMtFga+wUh6hIaazqrcJMaG9VY3iNUqVXabxbwPokTAVoTUCAmNTn7rMmI9WXI
-	6eHmsTY3F4KiN4S9Kx/Aqo/zxJg8dOtxlPCq7AJMZ/0vhCklzzDxo3evHnEATA==
-From: Philippe Gerum <rpm@xenomai.org>
-To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>,  "xenomai@lists.linux.dev"
- <xenomai@lists.linux.dev>
-Subject: Re: Dovetail 6.15: x86: Invalid wait context
-In-Reply-To: <a6c0bc4c19cf73a94ae409b1cd7cd5993da5e162.camel@siemens.com>
-	(Florian Bezdeka's message of "Thu, 5 Jun 2025 16:21:52 +0000")
-References: <ee6e634d9d87ef52670dbb9ce91d7080b8640a71.camel@siemens.com>
-	<87tt4ubote.fsf@xenomai.org>
-	<997e11d95184f34a23fad2607504ef567ec07758.camel@siemens.com>
-	<a6c0bc4c19cf73a94ae409b1cd7cd5993da5e162.camel@siemens.com>
-User-Agent: mu4e 1.12.8; emacs 29.4
-Date: Thu, 05 Jun 2025 19:56:39 +0200
-Message-ID: <87ldq6ax7s.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=wolfram.com header.i=@wolfram.com header.b="k12T1ZEO";
+	dkim=pass (1024-bit key) header.d=wolfram.com header.i=@wolfram.com header.b="cSk2qjbL";
+	dkim=pass (2048-bit key) header.d=wolfram.com header.i=@wolfram.com header.b="WJzUao0H"
+Received: from pps.filterd (proofpointagent2.wolfram.com [127.0.0.1])
+	by proofpointagent2.wolfram.com (8.18.1.2/8.18.1.2) with ESMTP id 559B4Uh1030382
+	for <xenomai@lists.linux.dev>; Mon, 9 Jun 2025 06:27:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfram.com;
+ h=content-transfer-encoding : content-type : date : from : message-id :
+ mime-version : subject : to; s=proofpoint;
+ bh=0qoljM95innT4qnhr0QDDOuQbm60vBScGGnaBWRrSvI=;
+ b=k12T1ZEOXqDr3zJNgZFLalHObPuRw9Ax11oclLoaePaay2K61CsprfnAx7MGJiuV40tt
+ xlelOixolY3ONN7QYCvUyXCQAUhJ7n1lMKs6puhSW9VCfs6gGtMdGtLePvGqiE5shOFA
+ ZEtSWT0hKDXxiZk6683F7VDkygul0H1Ye6+v94dnabEIAZa72ZXQgYAEpGhoBEFTF6K3
+ nNe4cz5S0po0va0jXiz1xFgqKXKFKvonb4n+nNbgZXAtlLKQJtEasylZaW1VLdtDyMdD
+ xo09CBiIj0+BNq4B07jNnzIzBTJb5fK1McEVKCc0vxlEC917IHayDpLrEuSkCt1YMB8/ UA== 
+Received: from relay-ext.wolfram.com (relay-ext.wolfram.com [140.177.10.52])
+	by proofpointagent2.wolfram.com (PPS) with ESMTPS id 474hf1r83m-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <xenomai@lists.linux.dev>; Mon, 09 Jun 2025 06:27:31 -0500
+Received: from relay-10-128.wolfram.com (relay.wolfram.com [10.128.2.101])
+	by relay-ext.wolfram.com (Postfix) with ESMTPS id 33F30606D
+	for <xenomai@lists.linux.dev>; Mon,  9 Jun 2025 06:27:40 -0500 (CDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 relay-ext.wolfram.com 33F30606D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=wolfram.com; s=relay;
+	t=1749468460; bh=EAuzH/J3TmeDXnX+Vc61xBlI5HzKSzGz7AQ+j+OndOA=;
+	h=Date:From:To:From;
+	b=cSk2qjbLw6jTFoLXY6Li+Y9tC8lg3GgCWC161ozyCzFeTHnStiACVuKBBlkRUVH7B
+	 +S/9NofH76WdTkNAh+dJNN9Z1rEB+CJBQKdEA6EgKyT1Cyt3JLeOYklYD4xDDEXsCS
+	 5C2HpPHFa9RSBxO1SLFZw1JAqyW9q+gmcT0TZ+bY=
+Received: from wrimail03.wolfram.com (wrimail03.wolfram.com [10.128.1.208])
+	by relay-10-128.wolfram.com (Postfix) with ESMTPS id 2CD1830004E
+	for <xenomai@lists.linux.dev>; Mon,  9 Jun 2025 06:27:40 -0500 (CDT)
+Received: from wrimail03.wolfram.com (localhost [127.0.0.1])
+	by wrimail03.wolfram.com (Postfix) with ESMTPS id 29165100007
+	for <xenomai@lists.linux.dev>; Mon,  9 Jun 2025 06:27:40 -0500 (CDT)
+Received: from localhost (localhost [127.0.0.1])
+	by wrimail03.wolfram.com (Postfix) with ESMTP id 105981006B1
+	for <xenomai@lists.linux.dev>; Mon,  9 Jun 2025 06:27:40 -0500 (CDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 wrimail03.wolfram.com 105981006B1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wolfram.com;
+	s=E3ED0494-3FFA-11EB-8895-C5FFDA13CE33; t=1749468460;
+	bh=0qoljM95innT4qnhr0QDDOuQbm60vBScGGnaBWRrSvI=;
+	h=Date:From:To:Message-ID:MIME-Version;
+	b=WJzUao0HKIoWQXpfwK+Mey0ogkuzR1pLGbx8ixDGw5D1uaALzYwZr8prjibfw2BAn
+	 hh/d1jpTCauaqIXHuSJ3TKL5vJDnnQg5PrEsr4KF96WQUlK0mWfyG8eCEX+mGKywEV
+	 TzMbCSrBM19T7VVOMYKFJHgurxnRbaCekjNoYs+Fc6mj4/4gULBxkASfRFL0zwMn2Q
+	 SKOhvP+EFjERROU4TLOmLUKzSlcrYZ4L82t2eFMBIPFgt3E4fuR/9iBjqLrbhMUeZ4
+	 +sf7CH+CE0Py0iBIWxuNCsLk8MoXg5aQT//dGBdJArHqcx0YN8VvYnBeHzjm9vAKTQ
+	 jfwR5Z98bWqkg==
+Received: from wrimail03.wolfram.com ([127.0.0.1])
+ by localhost (wrimail03.wolfram.com [127.0.0.1]) (amavis, port 10026)
+ with ESMTP id ZBBUC5uK7Ls1 for <xenomai@lists.linux.dev>;
+ Mon,  9 Jun 2025 06:27:40 -0500 (CDT)
+Received: from wrimail03.wolfram.com (wrimail03.wolfram.com [10.128.1.208])
+	by wrimail03.wolfram.com (Postfix) with ESMTP id 00007100007
+	for <xenomai@lists.linux.dev>; Mon,  9 Jun 2025 06:27:39 -0500 (CDT)
+Date: Mon, 9 Jun 2025 06:27:39 -0500 (CDT)
+From: Per Oberg <pero@wolfram.com>
+To: xenomai@lists.linux.dev
+Message-ID: <1461577086.484867.1749468459969.JavaMail.zimbra@wolfram.com>
+Subject: Controlling cpu for interrupts
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtddugdefleeiucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpeffgedvfeekvdehvdeglefgvdekjeefjeelkeehgfetudffffelvddtheffheegteenucffohhmrghinhepgigvnhhomhgrihdrohhrghdpuggvnhigrdguvgenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpnhgspghrtghpthhtohepfedprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepjhgrnhdrkhhishiikhgrsehsihgvmhgvnhhsrdgtohhmpdhrtghpthhtohepfhhlohhrihgrnhdrsggviiguvghkrgesshhivghmvghnshdrtghomh
-X-GND-Sasl: rpm@xenomai.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Zimbra 9.0.0_GA_4653 (ZimbraWebClient - GC136 (Linux)/9.0.0_GA_4653)
+Thread-Index: g86pqJgTpbrf6FA+NsgcyAWZ4o6syg==
+Thread-Topic: Controlling cpu for interrupts
+X-Proofpoint-ORIG-GUID: 4SmeaTIfLJctxDOUc9kRTK46x9JCiObh
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNjA5MDA4NCBTYWx0ZWRfX1XFdkydD6iT7 iW2XUOPogyYl6z9vY4MT8wDLA/sDZ0gnylf83h8Jb2m2uChRB/Z7Ft/VHJez2JTVm0BeF4YyLGt bfF69c/hvXSg46WS41ZC2vu0YqS0cBLShquF2bYEvYGIVdXiUdtS2XPNjGgFyQePSKTE+yIP42K
+ zyN49ce1sqCg7E4XBli6ZwwWms3+THVvw92HqKW4A0tSxoguX9ZkMhHhGsw5Fud6HH783jqGrSU Z/buJ11KBHYQyxIB60A0zUdVIrxyPRTOH6YOKdu6BWSfGRC3XlpJI37JDqui24Kt6F22Yg5NDbU ssyT6ZAUDHaalOLmwVwRcdrX2nzj0YBanDCcOZFHo7Lyf4K2qSsuBJt5VeJsMQTKCSwsMzR+/13 3RUbJUMX
+X-Proofpoint-GUID: 4SmeaTIfLJctxDOUc9kRTK46x9JCiObh
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.0.736,FMLib:17.12.80.40
+ definitions=2025-06-09_04,2025-06-05_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 clxscore=1011
+ phishscore=0 adultscore=0 suspectscore=0 mlxlogscore=478 bulkscore=0
+ lowpriorityscore=0 malwarescore=0 priorityscore=1501 mlxscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2505160000 definitions=main-2506090084
 
-"Bezdeka, Florian" <florian.bezdeka@siemens.com> writes:
+Hi=20
 
-> On Thu, 2025-06-05 at 10:14 +0200, Florian Bezdeka wrote:
->> On Thu, 2025-06-05 at 10:00 +0200, Philippe Gerum wrote:
->> > Florian Bezdeka <florian.bezdeka@siemens.com> writes:
->> > 
->> > > Hi Philippe,
->> > > 
->> > > the following is taken from our CI, testing Dovetail 6.15.
->> > > On x86 we have an invalid wait context reported:
->> > > 
->> > > [  151.574032] 
->> > > [  151.574039] =============================
->> > > [  151.574043] [ BUG: Invalid wait context ]
->> > > [  151.574046] 6.15.0 #1 Not tainted
->> > > [  151.574048] -----------------------------
->> > > [  151.574048] swapper/0/0 is trying to lock:
->> > > [  151.574050] ffffffff841174c0 (&state->readq){....}-{3:3}, at: __wake_up+0x21/0x60
->> > > [  151.574063] other info that might help us debug this:
->> > > [  151.574064] context-{2:2}
->> > > [  151.574065] no locks held by swapper/0/0.
->> > > [  151.574066] stack backtrace:
->> > > [  151.574073] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 6.15.0 #1 PREEMPT(full) 
->> > > [  151.574078] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2~bpo12+1 04/01/2014
->> > > [  151.574079] IRQ stage: Linux
->> > > [  151.574083] Call Trace:
->> > > [  151.574086]  <IRQ>
->> > > [  151.574088]  dump_stack_lvl+0x79/0xe0
->> > > [  151.574095]  __lock_acquire+0x942/0xbf0
->> > > [  151.574104]  lock_acquire+0xe2/0x2f0
->> > > [  151.574107]  ? __wake_up+0x21/0x60
->> > > [  151.574111]  ? find_held_lock+0x2b/0x80
->> > > [  151.574115]  _raw_spin_lock_irqsave+0x49/0x60
->> > > [  151.574120]  ? __wake_up+0x21/0x60
->> > > [  151.574122]  __wake_up+0x21/0x60
->> > > [  151.574125]  xnpipe_wakeup_proc+0x152/0x590
->> > > [  151.574132]  handle_synthetic_irq+0xc2/0x250
->> > > [  151.574137]  arch_do_IRQ_pipelined+0xca/0x180
->> > > [  151.574141]  </IRQ>
->> > > [  151.574142]  <TASK>
->> > > [  151.574144]  sync_current_irq_stage+0xaa/0x110
->> > > [  151.574147]  inband_irq_enable+0x42/0x60
->> > > [  151.574151]  cpuidle_idle_call+0x17d/0x200
->> > > [  151.574155]  do_idle+0x89/0xd0
->> > > [  151.574158]  cpu_startup_entry+0x29/0x30
->> > > [  151.574160]  rest_init+0xf0/0x190
->> > > [  151.574164]  start_kernel+0x632/0x700
->> > > [  151.574179]  x86_64_start_reservations+0x18/0x30
->> > > [  151.574185]  x86_64_start_kernel+0x78/0x80
->> > > [  151.574188]  common_startup_64+0x13e/0x148
->> > > [  151.574198]  </TASK>
->> > > 
->> > > That seems to be triggered by the Xenomai 3 smokey testsuite.
->> > > 
->> > > Any ideas?
->> > 
->> > Does this happen when full preemption is disabled on x86?
->> 
->> Test-Log: https://lava.xenomai.org/scheduler/job/21679
->> Kernel-Config: https://source.denx.de/Xenomai/xenomai-images/-/blob/next/recipes-kernel/linux/files/amd64_defconfig?ref_type=heads
->> 
->
-> Btw: Enabling CONFIG_DEBUG_ENTRY on 6.15 delivers:
->
-> vmlinux.o: warning: objtool: do_int80_emulation+0x204: return with instrumentation enabled
-> vmlinux.o: warning: objtool: irqentry_exit+0xdc: call to synchronize_pipeline() leaves .noinstr.text section
-> vmlinux.o: warning: objtool: ct_idle_exit+0x1: call to inband_irq_save() leaves .noinstr.text section
-> vmlinux.o: warning: objtool: cpuidle_enter_state+0x1a4: return with instrumentation enabled
-> vmlinux.o: warning: objtool: default_idle+0x7: call to inband_irq_disable() leaves .noinstr.text section
-> vmlinux.o: warning: objtool: mwait_idle+0x44: call to inband_irq_disable() leaves .noinstr.text section
-> vmlinux.o: warning: objtool: acpi_processor_ffh_cstate_enter+0x9a: call to inband_irq_disable() leaves .noinstr.text section
-> vmlinux.o: warning: objtool: cpu_idle_poll.isra.0+0x60: call to inband_irq_enable() leaves .noinstr.text section
-> vmlinux.o: warning: objtool: intel_idle_irq+0x54: call to inband_irq_disable() leaves .noinstr.text section
-> vmlinux.o: warning: objtool: acpi_safe_halt+0x1a: call to inband_irq_disable() leaves .noinstr.text section
-> vmlinux.o: warning: objtool: poll_idle+0x1d: call to inband_irq_enable() leaves .noinstr.text section
->
-> Is that something we should look into?
+I have a setup with
+- Xenomai 3.1=20
+- Linux 4.14 ish
+- RT Net e1000e + igb
+- Peak PCAN
 
-Yes, we need to keep those calls within the instrumentation_begin/end
-blocks, or annotate them. There are imbalanced calls to fix as well,
-e.g.
+When I look closely on the rt-threads I can see that the IRQ from the CAN s=
+eems to be coming in on certain cores, but now always the same.=20
 
-diff --git a/arch/x86/entry/syscall_32.c b/arch/x86/entry/syscall_32.c
-index 54749f4736633..cb1b4ad38568c 100644
---- a/arch/x86/entry/syscall_32.c
-+++ b/arch/x86/entry/syscall_32.c
-@@ -173,6 +173,7 @@ __visible noinstr void do_int80_emulation(struct pt_regs *regs)
- 	if (dovetailing()) {
- 		if (nr == EXIT_SYSCALL_OOB) {
- 			hard_local_irq_disable();
-+			instrumentation_end();
- 			return;
- 		}
- 		if (nr == EXIT_SYSCALL_TAIL)
+Here is an example of my ../xenomai/irq file:
 
--- 
-Philippe.
+  IRQ         CPU0        CPU1        CPU2        CPU3
+   18:           0           0           0   130419960         pcan pcan pc=
+an pcan pcan pcan
+   19:    88638780           0           0           0         pcan pcan pc=
+an pcan
+  127:        3215           0           0           0         rteth0-TxRx-=
+0
+
+Thus, for this case it seems like IRQ19 is handled by CPU0 while IRQ18 is h=
+andled on CPU3
+
+What is the heuristics, if any, used for decing this ?
+
+Thanks
+Per =C3=96berg=20
