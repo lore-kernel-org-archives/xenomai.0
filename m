@@ -1,34 +1,34 @@
-Received: from relay15.mail.gandi.net (relay15.mail.gandi.net [217.70.178.235])
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF04B2F4317
-	for <xenomai@lists.linux.dev>; Thu, 12 Jun 2025 14:15:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.235
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC95C2750E2
+	for <xenomai@lists.linux.dev>; Thu, 12 Jun 2025 15:11:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1749737750; cv=none; b=q3tkQdOAEVwYRmVIjwMz1IEUtfyuy3NrfX6i3wjCx0kuK9xVsfH5SiwPxu0tsy1Mqa6wPXoOYFh1/pAq3yjCMxRxWecUrb6dwR3561kecI+xJOutEXojeqVhzR6ZjtAsqI3mWdGj/IusJbBdKI+vu2T5Ibb2+/T+qbBLTEYUJRA=
+	t=1749741121; cv=none; b=YAv1QJU5lf8G6UcIajFk+xx74m4EGpVeK5mzRoIQZF34eeWzQ2wiZHcOB96KTsLlRMRbci7JzlxpIV7fFyMKU1cTydi37kwWXlbbS8gt+IpzuOxSxgpwnqbl4xuJ/rxTu3yS44lE29K9nUxdiCjtQYO9W5/A3YkkODvnX88u72Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1749737750; c=relaxed/simple;
-	bh=oBriBAnK3RBCIWUCIm31hKRrV51C8r1Rrtki6r+oRCQ=;
+	s=arc-20240116; t=1749741121; c=relaxed/simple;
+	bh=6qLaa5n3b4LZgbb+9IhxLbR8OLQrZ7/WNxhq2ZPoaSE=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=i1Z3vwEOBJd30d7WUYE0iz0z9vLmaXg3U5Euwit/bQNU7PqzJ4A26+W6YDePkjGfy4Rmq/r72rqnGT62DUDY4dO1FUn0RjcuufrIoAuWgE1g5vo6AEW32APwj1vh12+SMagKQSxdlxuzFSvWwgqVWXUGZDQzFeFUZ+CUBCdyTes=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=izeJtbM4; arc=none smtp.client-ip=217.70.178.235
+	 MIME-Version:Content-Type; b=SYFNrI/qYrOAZj5FxfKnacQsGQ9/Axwkg2wXXZHlk4/4kamQrU6Cw2x4RDvrDPlwROfwsPJhTWIXsfCEWs5IWypFunD8v6ml/sA8MMXbIpgSi0WB9gJM7TmDMf2hI2r92GAzqFSpn22+sHzJU5BdyTLDjPEGsfazHFNMGqlesTI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=YIz+OYna; arc=none smtp.client-ip=217.70.183.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="izeJtbM4"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id DA03944270;
-	Thu, 12 Jun 2025 14:15:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="YIz+OYna"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id C40AE43A23;
+	Thu, 12 Jun 2025 15:11:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1749737746;
+	t=1749741111;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=u0MAYPqf/xTcHiGLZ1rHuLU8V2h/4me5BVWTQ7w1zH0=;
-	b=izeJtbM4xuYnDyQEpaIn5Ud2fuUolIExP/7SCKvBNHg2a9CWBTcGo+fiiTGeB63yAle2QO
-	cE1MN2u4qHfIA99HqE1kZURGVYzv0cRTpFWguIqv4ZCGA1KaGzK9/LXD7CV7KvWud7uZbA
-	JczTHtaFEbij+a7bERH8Uj5lOnasQsyFhzHnmpYDVs+Gy1mE4xpcDXSo2ymc0JcIWZt3ww
-	2PI8Yb1nRq3VRxm5SkDzXdk0/HZkNpFIWQiSIsspuAZ9PxKaEsZY48ZO7SXSEI1PFKr9S4
-	CM+ybEaz5Chv2grnakPUP1RrsEubxxGdzlhrzcw3GB9nnu4LfThhBdeGvVaMwA==
+	bh=BPivb8FKLhGLksb+u61+5i/Rd3uxKGDyHJLJ81w50EM=;
+	b=YIz+OYna/+nnObVo4shb8tvB51PUD4tHoSvY8jJrhfWafPBKFSuNdNlKmc9OnkRatAjkWe
+	wAMh29i3nqxxP1W8GDrfjX/4Gd3NbanPcSkyGWUYlezRkRWXJxFe12KyuY/K6U8X08H2Gp
+	Oi8FBcqr57HgVqo3MPr6qnhsGXsCHADj0qzZl6aGGnSfFuwMHx2j9Ldx7Tl1yfpwSVZ56y
+	ZH87U6oZJpcoRCxjXmK1XPsN0pZAXjnp8yFQIwvBmM3IvpC0HQ40B4iDZIMjeeb1VTdzFs
+	PR2wcX2ytyo1pQ3TdTmNO/rsu3dGOdKrlcXD4wJExRMU8UHBhZLJE39qWo4SLA==
 From: Philippe Gerum <rpm@xenomai.org>
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@lists.linux.dev>
@@ -39,8 +39,8 @@ In-Reply-To: <847f6d81-cf28-4155-b969-aeebb76e03c8@siemens.com> (Jan Kiszka's
 References: <c564966e-2ca6-48f3-ae28-dd7707856f7c@siemens.com>
 	<847f6d81-cf28-4155-b969-aeebb76e03c8@siemens.com>
 User-Agent: mu4e 1.12.8; emacs 30.1
-Date: Thu, 12 Jun 2025 16:15:41 +0200
-Message-ID: <87wm9hujua.fsf@xenomai.org>
+Date: Thu, 12 Jun 2025 17:11:50 +0200
+Message-ID: <87qzzpuh8p.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -50,7 +50,8 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-GND-State: clean
 X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtddugdduhedvkecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepgfevgfefhefhhfefhefghfeikeffkeeliefgjeefheetieduveegfffgtdelveeunecuffhomhgrihhnpeguvghngidruggvnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopedvpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehjrghnrdhkihhsiihkrgesshhivghmvghnshdrtghomh
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtddugdduheeflecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepgfevgfefhefhhfefhefghfeikeffkeeliefgjeefheetieduveegfffgtdelveeunecuffhomhgrihhnpeguvghngidruggvnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopedvpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehjrghnrdhkihhsiihkrgesshhivghmvghnshdrtghomh
+X-GND-Sasl: rpm@xenomai.org
 
 Jan Kiszka <jan.kiszka@siemens.com> writes:
 
@@ -85,11 +86,23 @@ Jan Kiszka <jan.kiszka@siemens.com> writes:
 >
 > Seems there is no way around reproducing locally. Will keep you informed.
 >
+> Jan
 
-Meanwhile, I noticed that threaded IRQs were allowed to switch to oob
-mode, which is quite wrong. This causes the oob-capable IGB driver to
-run into a serious issue when forced IRQ threading is active. I'm
-working on this problem, which is a Dovetail one.
-
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 26be743f2a6cf..67920a8a66733 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -8910,8 +8910,10 @@ static struct sk_buff *igb_build_skb(struct igb_ring *rx_ring,
+ 	if (unlikely(!skb))
+ 		return NULL;
+ 
++#ifdef CONFIG_IGB_OOB
+ 	if (igb_is_oob_page(rx_ring, rx_buffer->page))
+ 		skb_mark_for_recycle(skb);
++#endif
+ 
+ 	/* update pointers within the skb to store the data */
+ 	skb_reserve(skb, xdp->data - xdp->data_hard_start);
 -- 
+
 Philippe.
