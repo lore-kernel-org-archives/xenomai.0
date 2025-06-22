@@ -1,42 +1,46 @@
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD86A136358
-	for <xenomai@lists.linux.dev>; Mon, 16 Jun 2025 21:52:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A47F9E555
+	for <xenomai@lists.linux.dev>; Sun, 22 Jun 2025 13:06:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1750110782; cv=none; b=r6ymUHwrt0jm/vGfAa30gQ5F+JQE/eBzJuUVX/doD9KLmskhV5hwrYsf7Z4z/NT3ApRDpHt9SoEzbBcD31REsiXuWwlecG3khgpOG/XoE0ek79oUF4Mgbfm/RKydgRSPu/QrsGUYoKQiJkNEoQnoqY6/wIxuc0OjSWmuPI4IKUc=
+	t=1750597588; cv=none; b=K7/2PmIIV9hDdZYCkqbfVasAWlI22q6FUGVTCjUZ0Xv27Q1SC+3fNQzj2GMetlhuqEGsJFE18LuPdRw0RrQnxjcJ+zkCe8DJnbnmVRacL9mQPY+wxDyhWf2SGgbPGaUMajPKcQ5p5bl7OBrHT/5+WC0JIUb1Wxzq1YETEoYR6BA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1750110782; c=relaxed/simple;
-	bh=i2gD5gDQiEopNjcJTszFcP/2KosNIRtrWpzlL36tOss=;
+	s=arc-20240116; t=1750597588; c=relaxed/simple;
+	bh=k85VWqne4sVf/bjIeGINxt7s1KvE1iE/0I4Umqi4yhg=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=XuLGeSIDlp1sioz6lG3kd/qhRFQZTfg1Gwc7UaF7OrDWkckcdmZZf9ISfnMgPi5/O1fwzFE7uRcLNc+c5QfrmAKHcZRWkT7dAPxBcJ0UVdQOA6jg9TEBWmnYiHU6g2Nszn1bFQanCjf9SYpTrtV4zYmSf6fb16CTmA+WtYd13lk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=phrfXVy5; arc=none smtp.client-ip=185.136.64.228
+	 Content-Type:MIME-Version; b=kV78vGXsZ5/ooiy2YyqXkiJtpbD9Ej/T4jfCckPscRQF6ad0oz80z/SdbRwWCTUrU0mzRbCidMJM6vFHdhyxSNee6Bc7qs1udECpSOF507wtn67FpblqKgJXiAPMSUKr5UHVy7bMQwqu2p2sL9br7/6VpQbmE+IxbpZ9946rlJE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=uCMyUnhh; arc=none smtp.client-ip=185.136.65.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="phrfXVy5"
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20250616215254d7a59a92e0efc17f22
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="uCMyUnhh"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20250622130613b6da78ac0921620bf4
         for <xenomai@lists.linux.dev>;
-        Mon, 16 Jun 2025 23:52:54 +0200
+        Sun, 22 Jun 2025 15:06:13 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=i2gD5gDQiEopNjcJTszFcP/2KosNIRtrWpzlL36tOss=;
- b=phrfXVy5FjKZtDY7Ld7SSMjo31jLrz/6skktIx3pXqCjN6HYHOBTuAl6UQ/T+jmIWkxeNq
- OKDl2mOE7VO+5aKk01egIp5oHOQeO+wGwbImPymj1zamIPCu1A/e8TnrNtqZg/CWGILdYzDK
- 47RZ/v7IgU6585mQHivXZ+7Db63JWV3Qo1/sdU5oONHnoyBcwQVBVrTotIx5/dxRjv9bLnsR
- ljTlIi43c1Eyke7rfkQ6qLwzfz4qJ5+SldtrNfSwdynLN8pBflMTYhhXzQ1O69PmMR3/8NOp
- eM07jWnj38kw4Qk6ityL2wkGor6Df7JGkHlWSbWBJ7qC/HysjI2HfFRg==;
-Message-ID: <725df353f38c43368b69ffe19bdc04716f8a204c.camel@siemens.com>
-Subject: Re: Dovetail: Adding support for Hyper-v as hypervisor
+ bh=e9HKWwXI3MLj1DDDmozLWccyyNszZBlaV+PYYA+aewU=;
+ b=uCMyUnhhTgibEAGz5gmqBx6aSMzBo+2CXbEpYPrqDCkt6V5U1QX/LyGWEBYuZDRiaFcABo
+ WzIgqzfXiuO92+JXcXEK7Z6wd85sBXwT6/MjibPSSm6LY8aEByCAU3+Wf1fJC+zr8JmW1NXm
+ g/iEKG21U9wzWLyE4Cv4vOpo4/bZxIHCM4foGfYoGlKq8SvHTxvw+xjT9h+p594u446BJ5WC
+ JCnY27m8Fo3x4sAjMHHZTngqJ1Aq5GSPZzdQ/42sCSNDVPhFYcs3Ncn2dJqtx8LFR7DFRtJQ
+ sL07xWND8ovd2EW0ygoc3oqJ2b5XQkbRAeA83ZkQYqfqwoYvqSnSG10w==;
+Message-ID: <19a580b69bcbde87c2e6d30a8df8dbc11156ddff.camel@siemens.com>
+Subject: Re: Dovetail 6.15: x86: Invalid wait context
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
-Date: Mon, 16 Jun 2025 23:52:53 +0200
-In-Reply-To: <87zfembowf.fsf@xenomai.org>
-References: <954e1b69e7ccb2e1abf7f82d2bcb109e3cd1ac24.camel@siemens.com>
-	 <87zfembowf.fsf@xenomai.org>
+Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@lists.linux.dev"
+	 <xenomai@lists.linux.dev>
+Date: Sun, 22 Jun 2025 15:06:12 +0200
+In-Reply-To: <87ldq6ax7s.fsf@xenomai.org>
+References: <ee6e634d9d87ef52670dbb9ce91d7080b8640a71.camel@siemens.com>
+		<87tt4ubote.fsf@xenomai.org>
+		<997e11d95184f34a23fad2607504ef567ec07758.camel@siemens.com>
+		<a6c0bc4c19cf73a94ae409b1cd7cd5993da5e162.camel@siemens.com>
+	 <87ldq6ax7s.fsf@xenomai.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -48,50 +52,89 @@ MIME-Version: 1.0
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On Thu, 2025-06-05 at 09:58 +0200, Philippe Gerum wrote:
-> Hi,
->=20
-> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
->=20
-> > Hi Philippe,
+On Thu, 2025-06-05 at 19:56 +0200, Philippe Gerum wrote:
 > >=20
-> > I'm currently experimenting with hyper-v as Hypervisor for dovetail. So
-> > far so good, I'm able to boot the system and the system survives a
-> > inband stress test. The necessary modifications can be found at [1].
+> > Btw: Enabling CONFIG_DEBUG_ENTRY on 6.15 delivers:
 > >=20
-> > But: Running the Xenomai 3 testsuite - especially the gdb test -
-> > freezes the system immediately.
+> > vmlinux.o: warning: objtool: do_int80_emulation+0x204: return with inst=
+rumentation enabled
+> > vmlinux.o: warning: objtool: irqentry_exit+0xdc: call to synchronize_pi=
+peline() leaves .noinstr.text section
+> > vmlinux.o: warning: objtool: ct_idle_exit+0x1: call to inband_irq_save(=
+) leaves .noinstr.text section
+> > vmlinux.o: warning: objtool: cpuidle_enter_state+0x1a4: return with ins=
+trumentation enabled
+> > vmlinux.o: warning: objtool: default_idle+0x7: call to inband_irq_disab=
+le() leaves .noinstr.text section
+> > vmlinux.o: warning: objtool: mwait_idle+0x44: call to inband_irq_disabl=
+e() leaves .noinstr.text section
+> > vmlinux.o: warning: objtool: acpi_processor_ffh_cstate_enter+0x9a: call=
+ to inband_irq_disable() leaves .noinstr.text section
+> > vmlinux.o: warning: objtool: cpu_idle_poll.isra.0+0x60: call to inband_=
+irq_enable() leaves .noinstr.text section
+> > vmlinux.o: warning: objtool: intel_idle_irq+0x54: call to inband_irq_di=
+sable() leaves .noinstr.text section
+> > vmlinux.o: warning: objtool: acpi_safe_halt+0x1a: call to inband_irq_di=
+sable() leaves .noinstr.text section
+> > vmlinux.o: warning: objtool: poll_idle+0x1d: call to inband_irq_enable(=
+) leaves .noinstr.text section
 > >=20
-> > When enabling pipeline and dovetail debug options I get the following
-> > splat report. Ideas welcome...
+> > Is that something we should look into?
 >=20
-> Since the splat happens because lockdep mistakenly thinks that we are
-> running in hard irq context although we are actually running a
-> workqueue, there must be an issue with the tracking of the
-> hardirq_context variable. Could there be some imbalance with
-> lockdep_hardirq_{enter, exit}() due to some specifics in routing the
-> STIMER0 vector?
-
-I'm not sure yet, but yes, the STIMER0 vector seems to be involved
-somehow. I end up in irq_post_check(), where the hard_irqs_enabled()
-check fails.
-
-Some instrumentation tells me that this happens when the STIMER0 vector
-was the last vector handled by the CPU, somehow confused the IRQ
-pipeline and the hard IRQ check fails while handling / posting the next
-inband IRQ/vector.
-
-Is there a trick available to find the code location that enabled
-hard_irqs? Seems I need more instrumentation to get that information.
-
-
+> Yes, we need to keep those calls within the instrumentation_begin/end
+> blocks, or annotate them. There are imbalanced calls to fix as well,
+> e.g.
 >=20
-> >=20
-> >=20
-> > Have you - or someone else - ever tried running dovetail on top of
-> > hyper-v?
-> >=20
->=20
-> Nope.
->=20
+> diff --git a/arch/x86/entry/syscall_32.c b/arch/x86/entry/syscall_32.c
+> index 54749f4736633..cb1b4ad38568c 100644
+> --- a/arch/x86/entry/syscall_32.c
+> +++ b/arch/x86/entry/syscall_32.c
+> @@ -173,6 +173,7 @@ __visible noinstr void do_int80_emulation(struct pt_r=
+egs *regs)
+>  	if (dovetailing()) {
+>  		if (nr =3D=3D EXIT_SYSCALL_OOB) {
+>  			hard_local_irq_disable();
+> +			instrumentation_end();
+>  			return;
+>  		}
+>  		if (nr =3D=3D EXIT_SYSCALL_TAIL)
 
+After addressing the low hanging fruits (results parked at [1] the
+following remains:
+
+vmlinux.o: warning: objtool: ct_idle_exit+0x1: call to inband_irq_save() le=
+aves .noinstr.text section
+vmlinux.o: warning: objtool: default_idle+0x13: call to inband_irq_disable(=
+) leaves .noinstr.text section
+vmlinux.o: warning: objtool: mwait_idle+0x51: call to inband_irq_disable() =
+leaves .noinstr.text section
+vmlinux.o: warning: objtool: acpi_processor_ffh_cstate_enter+0x9a: call to =
+inband_irq_disable() leaves .noinstr.text section
+vmlinux.o: warning: objtool: cpu_idle_poll.isra.0+0x60: call to inband_irq_=
+enable() leaves .noinstr.text section
+vmlinux.o: warning: objtool: intel_idle_irq+0x54: call to inband_irq_disabl=
+e() leaves .noinstr.text section
+vmlinux.o: warning: objtool: acpi_safe_halt+0x1a: call to inband_irq_disabl=
+e() leaves .noinstr.text section
+vmlinux.o: warning: objtool: poll_idle+0x2a: call to inband_irq_enable() le=
+aves .noinstr.text section
+
+The problem / pattern is always the same: Idle implementations -
+located inside the __cpuidle section - using the raw_local_irq_*()
+interfaces.
+
+Linux has no real "call" in the affected code paths. Everything is
+inlined, so objtool is happy. inbaind_irq_*() are functions located
+outside the noinstr / cpuidle section.
+
+All functions in the affected call paths have to reside inside the
+noinstr section. That's why moving inbaind_irq_*() to this section
+seems too invasive.
+
+Any ideas?
+
+Best regards,
+Florian
+
+[1] https://gitlab.com/Xenomai/dovetail-hacker-space/-/commits/flo/add-hype=
+rv-support-for-6-15?ref_type=3Dheads
