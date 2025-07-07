@@ -1,153 +1,56 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from out198-9.us.a.mail.aliyun.com (out198-9.us.a.mail.aliyun.com [47.90.198.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 551CA140E34
-	for <xenomai@lists.linux.dev>; Sun,  6 Jul 2025 20:45:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C266525C6FA
+	for <xenomai@lists.linux.dev>; Mon,  7 Jul 2025 04:29:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=47.90.198.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751834728; cv=none; b=EYY4N3Gu7zuFTZqzx/kki02ttYuj67OAOEmBOOlmgVEJfbnMg4t4k308oiZk6u5huUy0IYtpVxpptIwwH2HGevTqW+dxYfMOob6wJT1vaGig2t7R5NDO1UTKSEbdtAFr6fyK9hDE5PtrVjpjLakjSbPGRNRnSlVlXPeunW5RXwk=
+	t=1751862547; cv=none; b=UZZsQ5fstuzX0Gl2tmAOyU6/vhqQgbuzkooMhxyMk2JYWxPfbNH7IKvXT6Zh3XEp4RHNnfhWYJ37qJBs5w2bsCGX2oBTA6aArtxhVwWlYv2GYKQ8ysnRKvg24PyUSildiEhquEdADSxmOCb10JqM7nPihbJ0xDKrCadCiqaY9Co=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751834728; c=relaxed/simple;
-	bh=XAkxcS/4a2PrSh7Brf8PByLwenZhDunVttZo8GzusFk=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=WV9th3tDamDRyCwlrmvy5gfYRdw6M8EF2o6RjLWY5Rr3BZLvyZITwkE1lIoMLrvTi7i7vqUi4lp1G/srFBqY8KTiRZWzvdgIuhG0l80JjE297Zqq3lCKiiTQP/3gd3fjz2A7agWhjUv+jjeA+Q0+j22xmfxav3D9EfYRfxhZoB4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=ZalCDGP4; arc=none smtp.client-ip=185.136.65.226
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="ZalCDGP4"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20250706203504b262a0cd6d60297f5b
-        for <xenomai@lists.linux.dev>;
-        Sun, 06 Jul 2025 22:35:06 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=UO+T/BxZl5QgP1u6gQXVSYdQra/yZb1ePSoSAy/6ahw=;
- b=ZalCDGP44oLpoVrHIY/BNYGJGDKhyWft1j2Na1RPMR7ZG7lXALzVZrifu2AJQS+cFGweBv
- KnjqUAFsGVflP6gmR8OcwFV+ToYOIlaYr7QI2jO59DeR2FsasbiS7nbM/5eEd0o6eqm+Uiui
- vMjSIxTyYWrLTVFTWr/i9fOrfd4A0e1CRFNm6TZ7/TQs+O6BaO7ZYoudelw85+mIC1O69jPc
- mbD17WhZpjMyDNfCvEPUn/GemrlpAECQHhVFyMZqhgQkYBnRKHSNPGk64My1wXVk7kM2hjsO
- fT9a5IieLVLFqWhSA5UJ36dEpy2v+5nVvylY1xXl2XiV7dSv+rGGsASg==;
-Message-ID: <61d4d7521138677983a987639ebf6dad4fe3ae72.camel@siemens.com>
-Subject: Re: [PATCH] boilerplate: Replace strncpy with snprintf in
- ancillaries.h
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Haiyang He <aspirestro@163.com>, jan.kiszka@siemens.com
-Cc: xenomai@lists.linux.dev
-Date: Sun, 06 Jul 2025 22:35:03 +0200
-In-Reply-To: <20250705135610.217774-1-aspirestro@163.com>
-References: <20250705135610.217774-1-aspirestro@163.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	s=arc-20240116; t=1751862547; c=relaxed/simple;
+	bh=BuZEHUglxv4rJCLNKzRHVky5wvSelOkaJBWxKjKGhrM=;
+	h=Date:From:To:Message-ID:Subject:MIME-Version:References:
+	 In-Reply-To:Content-Type; b=lk0SzzNU7ecnigtwE/cEO5+0MR0WO0+oRJ7B7kRuqn6+lxZM1o7NViNGdBf/U1jhYGWvk0A95eOShyyESRCxi+eBOkfJUFbebIbw8cQUKkhnI2bnNXY+V8wuHa0FqBrPJBYtw3DjI1whkAiiaGlsElLTRINNF5QebC9m93vsx8c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=apue.org; spf=pass smtp.mailfrom=apue.org; arc=none smtp.client-ip=47.90.198.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=apue.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=apue.org
+X-Alimail-AntiSpam:AC=CONTINUE;BC=0.07699277|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_alarm|0.153888-0.00204124-0.844071;FP=17003755974166478841|0|0|0|0|-1|-1|-1;HT=maildocker-contentspam033068241161;MF=luis@apue.org;NM=1;PH=DW;RN=1;RT=1;SR=0;TI=W4_0.2.3_v5ForWebDing_212508C1_1751861716019_o7001c960;
+Received: from WS-web (luis@apue.org[W4_0.2.3_v5ForWebDing_212508C1_1751861716019_o7001c960] cluster:ay29) at Mon, 07 Jul 2025 12:28:51 +0800
+Date: Mon, 07 Jul 2025 12:28:51 +0800
+From: "Luis" <luis@apue.org>
+To: "xenomai" <xenomai@lists.linux.dev>
+Reply-To: "Luis" <luis@apue.org>
+Message-ID: <e4529393-79f0-4579-a7c4-4424f348da29.luis@apue.org>
+Subject: =?UTF-8?B?WGVub21haSAzLjIueCBpbiBkZWJpYW4xMiBzdHJuY3B5IHdhcm5pbmc=?=
+X-Mailer: [Alimail-Mailagent revision 3][W4_0.2.3][v5ForWebDing][Chrome]
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+x-aliyun-im-through: {"version":"v1.0"}
+References: <e936781c-3a9a-45a9-bf62-113cc0bf43d2.luis@apue.org>,<924e7b82-8695-496c-bbe3-fea195b6c05f.luis@apue.org>,<945a6b69-8a99-4b09-87a7-195683ea3540.luis@apue.org>
+x-aliyun-mail-creator: W4_0.2.3_v5ForWebDing_M3LTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzEzOC4wLjAuMCBTYWZhcmkvNTM3LjM2vN
+In-Reply-To: <945a6b69-8a99-4b09-87a7-195683ea3540.luis@apue.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
 
-On Sat, 2025-07-05 at 21:56 +0800, Haiyang He wrote:
-> When configure with --enable-registry, it fails to build regd/fs-common.c
-> caused by strncpy. Using snprintf instead of strncpy ensures that
-> the destination buffer is always null-terminated, preventing potential
-> buffer overflow issues and compilation error.
-
-Hm... I have --registry enabled most of the time, so I'm wondering why
-I did not face the same problem yet. Some questions below:
-
->=20
-> $ ./configure \
-> --host=3Daarch64-linux-gnu \
-> --build=3Daarch64-linux-gnu \
-
-So you are building on a native aarch64 machine? That might make a
-difference. Does something change if you just remove the two lines
-above? The compiler should be selected / detected automatically.
-
-> --enable-smp \
-> --enable-pshared \
-> --enable-registry \
-> --with-core=3Dcobalt \
-> CC=3Daarch64-linux-gnu-gcc \
-> LD=3Daarch64-linux-gnu-ld \
-> CFLAGS=3D"-march=3Darmv8-a" \
-> LDFLAGS=3D"-march=3Darmv8-a"
-
-Same problem with the 4 lines above removed?
-Just wondering if we set a nasty flag somewhere that breaks the object
-size detection of your compiler.
-
->=20
-> $ cat /etc/lsb-release
-> DISTRIB_ID=3DUbuntu
-> DISTRIB_RELEASE=3D22.04
-> DISTRIB_CODENAME=3Djammy
-> DISTRIB_DESCRIPTION=3D"Ubuntu 22.04.5 LTS"
->=20
-> $ aarch64-linux-gnu-gcc --version
-> aarch64-linux-gnu-gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0
-
-I have no aarch64 machine for compile-testing at hand so I tried the
-following (cross-) combinations:
-
-x86:
-- gcc 10 (from Debian 12): already fine
-- gcc 12 (from Debian 12): already fine
-- gcc 15 (from Fedora 42): already fine
-
-aarch64:
-- gcc 10 (cross, from Debian 12): already fine
-- gcc 12 (cross, from Debian 12): already fine
-
-Result: Unable to reproduce...
-
->=20
-> The output of build error:
->=20
-> make[3]: Entering directory '/root/xenomai-next/xenomai-next-build/lib/co=
-pperplate/regd'
->   CC       regd.o
->   CC       fs-common.o
->   CC       fs-cobalt.o
-> In file included from /usr/include/string.h:535,
->                  from /root/xenomai-next/xenomai-next/include/copperplate=
-/heapobj.h:24,
->                  from /root/xenomai-next/xenomai-next/lib/copperplate/reg=
-d/fs-common.c:27:
-> In function 'strncpy',
->     inlined from 'open_heaps' at /root/xenomai-next/xenomai-next/lib/copp=
-erplate/regd/fs-common.c:248:3:
-> /usr/include/aarch64-linux-gnu/bits/string_fortified.h:95:10: error: '__b=
-uiltin_strncpy' output may be truncated copying 31 bytes from a string of l=
-ength 31 [-Werror=3Dstringop-truncation]
->    95 |   return __builtin___strncpy_chk (__dest, __src, __len,
->       |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->    96 |                                   __glibc_objsize (__dest));
->       |                                   ~~~~~~~~~~~~~~~~~~~~~~~~~
-> cc1: all warnings being treated as errors
->=20
-> Signed-off-by: Haiyang He <aspirestro@163.com>
-> ---
->  include/boilerplate/ancillaries.h | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->=20
-> diff --git a/include/boilerplate/ancillaries.h b/include/boilerplate/anci=
-llaries.h
-> index c8c209deb..8de353ce8 100644
-> --- a/include/boilerplate/ancillaries.h
-> +++ b/include/boilerplate/ancillaries.h
-> @@ -36,8 +36,7 @@ void __namecpy_requires_character_array_as_destination(=
-void);
->  	({								\
->  		if (!__builtin_types_compatible_p(typeof(__dst), char[])) \
->  			__namecpy_requires_character_array_as_destination();	\
-> -		strncpy((__dst), __src, sizeof(__dst));			\
-> -		__dst[sizeof(__dst) - 1] =3D '\0';			\
-> +		snprintf((__dst), sizeof(__dst), "%s", (__src));	\
->  		__dst;							\
->  	 })
-> =20
-> --=20
-> 2.34.1
+SGlsIGFsbCwKCgpIZXJlIGFyZSB2ZXJzaW9ucyBhZmZlY3RlZCBieSBteSB0ZXN0aW5nOgprZXJu
+ZWw6wqAKwqAgwqAgwqAgwqAgNC4xOS44OSB0byA0LjE5LjI5Miwgd2l0aCBpcGlwZQp4ZW5vbWFp
+OsKgCsKgIMKgIMKgIMKgIDMuMi4yIHRvIDMuMi42Cnhlbm9tYWkgY29uZmlndXJlIGNtZGxpbmU6
+CsKgIMKgIMKgIMKgIC0td2l0aC1jb3JlPWNvYmFsdCAtLXByZWZpeD0vWEVOT01BSV9QQVRIIC0t
+ZW5hYmxlLXBzaGFyZWQgLS1lbmFibGUtc21wCmhvc3Qgc3lzdGVtOiBkZWJpYW4gMTIuMTAgYW1k
+NjQKZ2xpYmM6IGRlYmlhbiBkZWZhdWx0IDIuMzYKZ2NjLCBnKys6IGRlYmlhbiBkZWZhdWx0IDEy
+LjIuMAoKClRoZSBlcnJvciBtc2c6CmZzLWNvbW1vbi5jOiBJbiBmdW5jdGlvbiDigJhvcGVuX2hl
+YXBz4oCZOgppbmNsdWRlL2JvaWxlcnBsYXRlL2FuY2lsbGFyaWVzLmg6Mzc6MzogZXJyb3I6IOKA
+mHN0cm5jcHnigJkgb3V0cHV0IG1heSBiZSB0cnVuY2F0ZWQgY29weWluZyAzMSBieXRlcyBmcm9t
+IGEgc3RyaW5nIG9mIGxlbmd0aCAzMSBbLVdlcnJvcj1zdHJpbmdvcC10cnVuY2F0aW9uXQogwqAg
+MzcgfCDCoCBzdHJuY3B5KChfX2RzdCksIF9fc3JjLCBzaXplb2YoX19kc3QpKTsgwqAgXArCoCDC
+oCDCoCB8IMKgIF5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+CmNjMTogYWxs
+IHdhcm5pbmdzIGJlaW5nIHRyZWF0ZWQgYXMgZXJyb3JzCgoKTXkgcGF0Y2g6Ckp1c3QgcmVwbGFj
+ZSB0aGUgJ3N0cm5jcHknIHdpdGggJ21lbWNweScsIGFzIGZvbGxvd3M6Ci0gc3RybmNweSgoX19k
+c3QpLCBfX3NyYywgc2l6ZW9mKF9fZHN0KSk7IFwKKyBtZW1jcHkoX19kc3QsIF9fc3JjLCBzaXpl
+b2YoX19kc3QpKTsgXAoKCk9yIGFueSBiZXR0ZXIgc29sdXRpb24/CgoKVGhpcyB3YXJuaW5nIGFs
+c28gZXhpc3RzIGluIHRoZSBkZWZhdWx0IGdjYyBpbiBEZWJpYW4xMSBBTUQ2NCwgd2l0aCBsaW51
+eCA0LjE5LngreGVub21haSAzLjIueAoKClJlZ2FyZHMsCkx1aXMuS29vCgoKCgoKCgo=
