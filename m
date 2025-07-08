@@ -1,148 +1,90 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.5])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 2E94E2E1745
-	for <xenomai@lists.linux.dev>; Mon,  7 Jul 2025 14:56:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.5
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEB19188006
+	for <xenomai@lists.linux.dev>; Tue,  8 Jul 2025 07:04:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1751900204; cv=none; b=jWeBsd9eHrjMnk6m8gnlIsyWcOjebG4YhJivgRVmzF7u9SDwRARmDX6AzXi5lxJHZLEai55hzCvWp1J/kfyvyEbx5cB11+Lf3t6asXOCTD6Ef1Blt1sxuccaz2p36Y64jWycKkLQje3YmLNbt1dIHWivnl3qgGo930A2AY6EIdI=
+	t=1751958252; cv=none; b=KMNVM0f6KWPPTwKu6aESnJN53DPk3rvr9TJoBkYN3MmIM8axCh59PRdOjulIloBVp/tqpQAQ3NC0iHqiE97BhW3G+jkf2uP/odQa2f8oskevy/+G4Mri9ZlF7PaPhPAk2fYWnnZBFdAFxTTN1oYzL+isbU0gk3cEKJfb1v4av/g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1751900204; c=relaxed/simple;
-	bh=UQYOgoZ8sRpxSraE/R6sGZhQq6b/l4gRsTFkWFbOle8=;
-	h=Date:From:To:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sc6j4DlhSHYb0SkuSaGUQy0AtnxNjSnxk2nl1R1Idf2QD1Up8co3yUiu80lB3HHiS2GsCPLtYR8iBofp95Lch0aV6qcucwcE3Giw8gcP4uaWP18XSF2LJZUvw2x3M1y4Qu1Hc5hjWo0xn8ZmZrqtFvGW8k/aMZvTDwygExKjhB0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=WRJFzLES; arc=none smtp.client-ip=117.135.210.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1751958252; c=relaxed/simple;
+	bh=aQVlKA8DmJO1cw5XQyfNalsfLkwn2B2jzwoV9vO7AJE=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=SxUnB10TlXnJP5PORm3mqmS4nKILy0rcGZfd2zroikbyO7r2360Ke176x2Y4pSqSX5dpInOtwMZkEQbSwXVo0iVFZLAMz2v4lP6U4KEY4BJuzJNgK11lPms+EVMJ2lDpAYVaKYsJ5esffarOab7p+FS4yWcIJ26qGS6rGy3SP2M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=ERS+t5hs; arc=none smtp.client-ip=217.70.183.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="WRJFzLES"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:To:Subject:Message-ID:MIME-Version:
-	Content-Type; bh=v1jkZEY8GXVkoFPQtBAjtAo6FA57JG//Qbvc1MNEKZA=;
-	b=WRJFzLESJRtglZE7hhfKZMlSSL1oqvESWxL4Felx8+JNeTAYF0xQif+NNLU2eB
-	I4BQKbp46CpZwS4RZmZc2Yd8vNVWiA3YF6UpaWcnYXY2F95N10gBABSbEG56GOm5
-	xSXh0DIr+jGOr4l5tetMf0pt0I4RgNEvbdpNM8wg03xzI=
-Received: from u2204 (unknown [])
-	by gzga-smtp-mtada-g1-1 (Coremail) with SMTP id _____wDnVwgg4Gto07bPDA--.59494S2;
-	Mon, 07 Jul 2025 22:56:34 +0800 (CST)
-Date: Mon, 7 Jul 2025 22:56:32 +0800
-From: Haiyang He <aspirestro@163.com>
-To: xenomai@lists.linux.dev
-Subject: Re: [PATCH] boilerplate: Replace strncpy with snprintf in
- ancillaries.h
-Message-ID: <6zsnrkpkohmsllmups4wralh6p673rzchswmymoomlulx2d5ip@f6jkk67xpmfv>
-Mail-Followup-To: xenomai@lists.linux.dev
-References: <20250705135610.217774-1-aspirestro@163.com>
- <3de47756-65c5-4eea-8304-dc56f70aa8e0@siemens.com>
- <yq6xdecuqpn4i3sf2koy72wq24dbfx2qe45v7yrqc73vyrkysa@k7c3eazthgko>
- <588405a0-91f7-49e1-9bf4-a0789caddd51@siemens.com>
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="ERS+t5hs"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 680B7442FF;
+	Tue,  8 Jul 2025 07:04:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1751958247;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=Hlr0XP9RRNJXSgnFDpAn4PuweEy+S/+/JgEdoXQu0pE=;
+	b=ERS+t5hsddfB5Vx1zqpH4vjnuLo74Gt1gsDsSpqPSIfB4eujKt+LZ9YHKNRpOIv9BsdIXg
+	l8XA9IiHiO17YcLlwPRQXpPosVPBIPZx916IIn9HGDTq0/GYalT4XC0ulWTIdNwPUKFG3f
+	r6y/Rw83NJ26ARa+t8/z9O+x4MQQM1Th8PR+k1nzdLU97O47k6TbZR405V+u4E7XPhKv+9
+	Y+fgrmW7gpCppd+u9gMqz0tcZD1VW/8Dx5708X+35Qctbfjvh2MoMwU3vj/HX31A9SthZx
+	5uCI886qlIsjvtXkQT+rmjyDLggKM2WEmybHE5xysfI6j6R4qw1X1sNRtjT7Ig==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai <xenomai@lists.linux.dev>
+Subject: Re: [PATCH] x86: dovetail: Use appropriate EOI on error interrupts
+In-Reply-To: <3cf01441-93e6-4004-a9e5-5183eb6740de@siemens.com> (Jan Kiszka's
+	message of "Wed, 25 Jun 2025 10:16:13 +0200")
+References: <3cf01441-93e6-4004-a9e5-5183eb6740de@siemens.com>
+User-Agent: mu4e 1.12.8; emacs 30.1
+Date: Tue, 08 Jul 2025 09:04:03 +0200
+Message-ID: <87h5zn5fks.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <588405a0-91f7-49e1-9bf4-a0789caddd51@siemens.com>
-X-CM-TRANSID:_____wDnVwgg4Gto07bPDA--.59494S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxur1UCw4rXw48GF1rKw45Wrg_yoWrGry3p3
-	Zxtan2y3ykJry5Kr12vFnavw15taykK343u3WUGr18JrnFyry2qFnFgr18uF97Z3y0y340
-	9FyDtas3Gr18ZaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zizBTwUUUUU=
-X-CM-SenderInfo: pdvsx2xhvw20i6rwjhhfrp/xtbBYwaDcWhrkI2WBwAEsc
+Content-Type: text/plain
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdefgedtfecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepvdelhfdvheekudehveelgeeitdeujefgkefhieejfedvieejkeegiefgjefhkeegnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopedvpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehjrghnrdhkihhsiihkrgesshhivghmvghnshdrtghomh
+X-GND-Sasl: rpm@xenomai.org
 
-On Mon, Jul 07, 2025 at 12:16:49PM +0200, Jan Kiszka wrote:
-> On 07.07.25 11:44, Haiyang He wrote:
-> > On Sun, Jul 06, 2025 at 11:34:09AM +0200, Jan Kiszka wrote:
-> >> On 05.07.25 15:56, Haiyang He wrote:
-> >>> When configure with --enable-registry, it fails to build regd/fs-common.c
-> >>> caused by strncpy. Using snprintf instead of strncpy ensures that
-> >>> the destination buffer is always null-terminated, preventing potential
-> >>> buffer overflow issues and compilation error.
-> >>
-> >> Thanks for reporting the compilation issue. But this is not an overflow
-> >> issue, just a confusion of the gcc in Ubuntu 22.04. We are properly
-> >> terminating in all cases.
-> >>
-> >>>
-> >>> $ ./configure \
-> >>> --host=aarch64-linux-gnu \
-> >>> --build=aarch64-linux-gnu \
-> >>> --enable-smp \
-> >>> --enable-pshared \
-> >>> --enable-registry \
-> >>> --with-core=cobalt \
-> >>> CC=aarch64-linux-gnu-gcc \
-> >>> LD=aarch64-linux-gnu-ld \
-> >>> CFLAGS="-march=armv8-a" \
-> >>> LDFLAGS="-march=armv8-a"
-> >>>
-> >>> $ cat /etc/lsb-release
-> >>> DISTRIB_ID=Ubuntu
-> >>> DISTRIB_RELEASE=22.04
-> >>> DISTRIB_CODENAME=jammy
-> >>> DISTRIB_DESCRIPTION="Ubuntu 22.04.5 LTS"
-> >>>
-> >>> $ aarch64-linux-gnu-gcc --version
-> >>> aarch64-linux-gnu-gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0
-> >>>
-> >>> The output of build error:
-> >>>
-> >>> make[3]: Entering directory '/root/xenomai-next/xenomai-next-build/lib/copperplate/regd'
-> >>>   CC       regd.o
-> >>>   CC       fs-common.o
-> >>>   CC       fs-cobalt.o
-> >>> In file included from /usr/include/string.h:535,
-> >>>                  from /root/xenomai-next/xenomai-next/include/copperplate/heapobj.h:24,
-> >>>                  from /root/xenomai-next/xenomai-next/lib/copperplate/regd/fs-common.c:27:
-> >>> In function 'strncpy',
-> >>>     inlined from 'open_heaps' at /root/xenomai-next/xenomai-next/lib/copperplate/regd/fs-common.c:248:3:
-> >>> /usr/include/aarch64-linux-gnu/bits/string_fortified.h:95:10: error: '__builtin_strncpy' output may be truncated copying 31 bytes from a string of length 31 [-Werror=stringop-truncation]
-> >>>    95 |   return __builtin___strncpy_chk (__dest, __src, __len,
-> >>>       |          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >>>    96 |                                   __glibc_objsize (__dest));
-> >>>       |                                   ~~~~~~~~~~~~~~~~~~~~~~~~~
-> >>> cc1: all warnings being treated as errors
-> >>>
-> >>> Signed-off-by: Haiyang He <aspirestro@163.com>
-> >>> ---
-> >>>  include/boilerplate/ancillaries.h | 3 +--
-> >>>  1 file changed, 1 insertion(+), 2 deletions(-)
-> >>>
-> >>> diff --git a/include/boilerplate/ancillaries.h b/include/boilerplate/ancillaries.h
-> >>> index c8c209deb..8de353ce8 100644
-> >>> --- a/include/boilerplate/ancillaries.h
-> >>> +++ b/include/boilerplate/ancillaries.h
-> >>> @@ -36,8 +36,7 @@ void __namecpy_requires_character_array_as_destination(void);
-> >>>  	({								\
-> >>>  		if (!__builtin_types_compatible_p(typeof(__dst), char[])) \
-> >>>  			__namecpy_requires_character_array_as_destination();	\
-> >>> -		strncpy((__dst), __src, sizeof(__dst));			\
-> >>
-> >> What if we do
-> >>
-> >> strncpy((__dst), __src, sizeof(__dst) - 1)
-> >>
-> >> ? Is the compiler silent in that case?
-> >>
-> >> BTW, we have way more places where we are using this pattern, also in
-> >> userspace (lib/boilerplate/ancillaries.c, lib/cobalt/printf.c).
-> >>
-> > I actually tried this method when I encountered this issue. But it still
-> > reported the same error message.
-> 
-> But then why here, why not in the other cases?
-> 
-> Jan
+Jan Kiszka <jan.kiszka@siemens.com> writes:
+
+> From: Jan Kiszka <jan.kiszka@siemens.com>
 >
-> -- 
-> Siemens AG, Foundational Technologies
-> Linux Expert Center
+> Just like for the non-pipelined spurious interrupt, we need to invoke
+> the non-pipelined __apic_eoi while handling error interrupts. Otherwise,
+> the local APIC will stop receiving further interrupts, and the system
+> will stall.
+>
+> Given that it takes very special conditions to actually trigger an error
+> interrupt, this issue was very likely not relevant for most deployments.
+>
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>  arch/x86/kernel/apic/apic.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
+> index 1cd5f59f7962f..278e28c5290d3 100644
+> --- a/arch/x86/kernel/apic/apic.c
+> +++ b/arch/x86/kernel/apic/apic.c
+> @@ -2217,7 +2217,7 @@ DEFINE_IDTENTRY_SYSVEC(sysvec_error_interrupt)
+>  	if (lapic_get_maxlvt() > 3)	/* Due to the Pentium erratum 3AP. */
+>  		apic_write(APIC_ESR, 0);
+>  	v = apic_read(APIC_ESR);
+> -	apic_eoi();
+> +	__apic_eoi();
+>  	atomic_inc(&irq_err_count);
+>  
+>  	apic_pr_debug("APIC error on CPU%d: %02x", smp_processor_id(), v);
 
-Not sure why here.
+Merged (v6.1.y [__ack_APIC_irq], v6.12.y, v6.15 and upcoming v6.16), thanks.
 
-I google it and find there were similar topics such as:
+(short log fixed up slightly to ease commit identification on my end)
 
-https://stackoverflow.com/questions/50198319/gcc-8-wstringop-truncation-what-is-the-good-practice
-
-Haiyang.
-
+-- 
+Philippe.
