@@ -1,205 +1,202 @@
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+Received: from redirect.mail.gandi.net (relay13.mail.gandi.net [217.70.178.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08B3DA47
-	for <xenomai@lists.linux.dev>; Fri, 11 Jul 2025 08:40:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752223219; cv=none; b=iHcDQYXYxDye9tIgaDsD071yshIlCshnkiEG3tgYp6qpZoHD4h1JfWemafsf5Y/aEveI/k4rg/8xfMQdnBlejvpvvcQS/2sLrDZHifGyevEG4jN3zX5kFzVGmTienD92QBvFIcyFXfPk/rbWZKyQ28OsV6JAk4o/Zh7qZcO3y88=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752223219; c=relaxed/simple;
-	bh=SQQctFjlq6jgBZ6g5pwjGEOeLcWLcKEJsMrlzWIZrWg=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=e/P6hHxe+9qsuEAG+ApbbyoxDG6vF2rC0et+Gub1ADvXKjxGlsXruahWYHzOP123iBhU/dWPlcm3K2pHBNAKnzvUL8SGfRBNfxKtmBD1pQ6r/nZ/hJiuT4AwjpmLEztvU7vCICJKM44NCRls8d2jMT88FTBeSNZhTh7eXLxbSR8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=Ff6N2/Fa; arc=none smtp.client-ip=217.70.183.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6BE51BC4E
+	for <xenomai@lists.linux.dev>; Mon, 14 Jul 2025 07:31:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=217.70.178.233
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1752478283; cv=fail; b=S6TADV/xMu0qPHyaKeas8yYYJigepAQnovG5U1gsyX/pYMqCPdk01GdlIgSZdmB+7gWfJ+vsU94YPSl0nb/lUPlE7h96xdQvmMqmZVf4oNlD58W52fd0NnguBho09n4J/VGxCOP6AM5014qLnYG0dZga7kGz6HsmsvSGnVHd54Q=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1752478283; c=relaxed/simple;
+	bh=+zgExty+dsVFLqgXUqg6TNYPfpSZFXWeHTVzg06uN8g=;
+	h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version; b=NqTAj3/OsWA7MGwql6Su7joxFbxIH1DMViNtBFdgzR55qQ1qHuG+7qhkxqqpG4NtiuhpfjIzzYdauncisA5YwG302eGvdYmEYhcVFBsO+6RRbdYsSaO5abYFRnFLdhuv+ZL/BxTs43o9wx0UW31Yhyg840aAnwIv9SlvyjN/siE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=doosan.com; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (1024-bit key) header.d=doosan.com header.i=@doosan.com header.b=eJtfedac; arc=fail smtp.client-ip=217.70.178.233
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=doosan.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="Ff6N2/Fa"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 33B1441C7D;
-	Fri, 11 Jul 2025 08:40:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1752223208;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=EiH6NO0pWMtxTGoSDfFmYDwK3G0+aZtoOEr0BJ7zXiw=;
-	b=Ff6N2/FatbGlUZeody2WlxDN/6au4qBwETasiqfYowk8lqgt6WPZ2v4cEkNPPRemWhnBWN
-	8zmvMPRE97qhvFMvTsgaznjyxEPKEQ2crmcG0Mts/81gDw/5yNrnwMCEPfmQAMeWsLEaf4
-	OWxl0eEvnUMcleWiBFhWSZyku4y5CKmWLm+CYp+0/H116WMUKt1H+5uMlSIRaxIIKJ1qx6
-	3DViTE3IkHPlAh4B3docBF75GJVbP+4rxIZtmHeGmynAcdDbmcxd/emps6bSTslaKUeXT7
-	dwDQC2RQh5c/8GQHfdCLZN/ko7T6ww3207yeFtLBsRxuzLsK35P5rWumnPpTqQ==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@lists.linux.dev,  Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: Dovetail 6.15: x86: Invalid wait context
-In-Reply-To: <997e11d95184f34a23fad2607504ef567ec07758.camel@siemens.com>
-	(Florian Bezdeka's message of "Thu, 05 Jun 2025 10:14:50 +0200")
-References: <ee6e634d9d87ef52670dbb9ce91d7080b8640a71.camel@siemens.com>
-	<87tt4ubote.fsf@xenomai.org>
-	<997e11d95184f34a23fad2607504ef567ec07758.camel@siemens.com>
-User-Agent: mu4e 1.12.8; emacs 30.1
-Date: Fri, 11 Jul 2025 10:40:07 +0200
-Message-ID: <87a55bw26w.fsf@xenomai.org>
+	dkim=pass (1024-bit key) header.d=doosan.com header.i=@doosan.com header.b="eJtfedac"
+Received: from spool.mail.gandi.net (spool5.mail.gandi.net [217.70.178.214])
+	by relay13.mail.gandi.net (Postfix) with ESMTPS id 4D12243CEC
+	for <xenomai@lists.linux.dev>; Mon, 14 Jul 2025 07:31:12 +0000 (UTC)
+Received: from PUWP216CU001.outbound.protection.outlook.com (mail-koreasouthazlp170100001.outbound.protection.outlook.com [IPv6:2a01:111:f403:c410::1])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 88FF2D80808
+	for <xenomai@xenomai.org>; Mon, 14 Jul 2025 07:31:11 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=RqqtBCDrKVBqYXWBZDhnccf7UFhJT0sBajhu1QvddqpT9SGrNUpfqevQfnJx7oJIlrMQahmhrU4LNsB0Vpniblzvx18CYqqk8AIW/QgSJZ06vJq7SSjjZ5jbMswO5RH7/0ErIL2ut9NRLMh2vVXSpx46vkKgFQgWs0wn80WqL9n8BR8rhlhOIkoklmiQb5uXtu4NaMAXhjWdt/AiL0QdQ8YtfqwClHEnPlVBVIKygdetPHMcLcwr19k20KaNPYoST+K2BmHyQ77K4OEFnb+7wZm8q56g8O34eV/PLeZazcSbKXjeyIoWcuU5gUuBkDV4oR9UEvc/jetHJf0nUSvu2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+zgExty+dsVFLqgXUqg6TNYPfpSZFXWeHTVzg06uN8g=;
+ b=T38WQY5MuowuD6+BLBxFtCEuiLV/mn7tR75mmyAQItVKG4M73B257Ckp90/9T3Fa3u28LMEYcUoP5vuD+5won1gB5fQXG6b9ZQidAp2VwXpNEcoZgvGLpZjYTL18nCfBEgiMCRKYl8KzByrA/wG+4Lc7HfQZBURSMR16y1Sr6zgp9x+ZWyoLFKcw4OI3CnIWD9s8iqV1kJ8VX+QTquCpccmgBB4osDiEkmYugmCiHKbEC9zXE2pjtBaee1dwPwR52dk2oz8dFLchzyqeYvVmOqUwW/iMddnPSW1XA0l918/SZoFYRDt5HR2UHQln55HKU2XRnMkPoOLifYEeOdE+dg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=doosan.com; dmarc=pass action=none header.from=doosan.com;
+ dkim=pass header.d=doosan.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=doosan.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+zgExty+dsVFLqgXUqg6TNYPfpSZFXWeHTVzg06uN8g=;
+ b=eJtfedacA9297aeR8PeLvJhq731h+0bW9pbLwRuz2ZTMbLFUQBVYnyIeMS4gaV4b1PT9Li7WTkszYiAIcoEZ02S/+YMhquxs6Z/LEU/Ak/YwaH7BiISLMjVzFx1g6RO7DBmY4CRE3GIgTbSN1EtqQhk2RcAkvJrufnHe851ZptA=
+Received: from SL2P216MB1358.KORP216.PROD.OUTLOOK.COM (2603:1096:101:12::11)
+ by PS2P216MB1252.KORP216.PROD.OUTLOOK.COM (2603:1096:301:98::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8922.32; Mon, 14 Jul
+ 2025 07:31:04 +0000
+Received: from SL2P216MB1358.KORP216.PROD.OUTLOOK.COM
+ ([fe80::de2f:c36b:e7a1:6986]) by SL2P216MB1358.KORP216.PROD.OUTLOOK.COM
+ ([fe80::de2f:c36b:e7a1:6986%4]) with mapi id 15.20.8922.023; Mon, 14 Jul 2025
+ 07:31:03 +0000
+From: =?ks_c_5601-1987?B?vcW5zsO2KE1pbmNoZW9sIFNoaW4pILyxwNMgtc676rfOurjGvb26?=
+	<mincheol1.shin@doosan.com>
+To: "xenomai@xenomai.org" <xenomai@xenomai.org>
+Subject: rt_queue IPC Error
+Thread-Topic: rt_queue IPC Error
+Thread-Index: Adv0kS/vWBEHHJwaQ1afwtJNTcrLhA==
+Date: Mon, 14 Jul 2025 07:31:03 +0000
+Message-ID:
+ <SL2P216MB1358D5259F6E62AB410BD9CBA954A@SL2P216MB1358.KORP216.PROD.OUTLOOK.COM>
+Accept-Language: ko-KR, en-US
+Content-Language: ko-KR
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: SL2P216MB1358:EE_|PS2P216MB1252:EE_
+x-ms-office365-filtering-correlation-id: 2ff10a3b-d6bc-4443-2b75-08ddc2a863b6
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;ARA:13230040|366016|1800799024|376014|38070700018;
+x-microsoft-antispam-message-info:
+ =?ks_c_5601-1987?B?eE41TGVxdGtYTzJERDMrU1IvVTlBdG9tSTBCQUV1cmw1VkhSWEdn?=
+ =?ks_c_5601-1987?B?NmNaWlB3bDZvV29oVEZwamFoaGFpWHJIaGFpb3dwNXNjbXBTcGNa?=
+ =?ks_c_5601-1987?B?RnVTT2N5N0l0bTFzV0lIRklsbjVXMC9nMU53MU9HdExTNWh2MmJM?=
+ =?ks_c_5601-1987?B?S0hyMXIyVzJhT25XV2t2QkYzVXFkcDJVeFVmTEtFUlhhVDFITUVL?=
+ =?ks_c_5601-1987?B?SXVBN1EvaG1kVWh1RERVaWl0dWlIMTJNQk1sWm9qNTJkMmFZNnVM?=
+ =?ks_c_5601-1987?B?d0QvUEg5OUJVQXNTaXp3Wmd3L08yVzAwamU3dkVaWWYyL3NmYWVv?=
+ =?ks_c_5601-1987?B?ZWJvYTRmNkw0WnNKM2hhUDB3c2kzV3N4Q0QyQ21xdVJ4UDU1NzJH?=
+ =?ks_c_5601-1987?B?OUd6dGJNZno5aUxueWpnWjNvanJaTmtoMDlPa2R3clUxS3l5MWpq?=
+ =?ks_c_5601-1987?B?b3hwNThNaFZiZjFwZ3dZY1o0OUxqSUxLODgvb0cyTWRMZURIUldF?=
+ =?ks_c_5601-1987?B?a09FY3VlV0p0emhxN1F2ZHVRVFN1TFJ6cGNoVUM1V2lCTUh0UW5h?=
+ =?ks_c_5601-1987?B?MlBaVUxYVmhyRXV5MTRzbDdjTVhHR0hmUmd2TGVMUFIvYlNLdUhi?=
+ =?ks_c_5601-1987?B?cGlqQlVkVnNVa0pWUnRmeTQ1Qng2akZmYTZYS1lQWFVMMGxzbTRL?=
+ =?ks_c_5601-1987?B?SVBmWjVibGpVQnBHZ2RuS0hlb3FoUUxzcjdHUHBiYXNZYmRaN1l0?=
+ =?ks_c_5601-1987?B?cENYT3lRN280OVRJbkdpWEZaODdmZk53UlA3QllqcHdGUnJWMDR2?=
+ =?ks_c_5601-1987?B?MDBSZE5GRjFYalZsSUdiVXBVWG1OVGlsdkFtOE5wZmFmOXhQRjVQ?=
+ =?ks_c_5601-1987?B?b0RFSlpBS1BNVWxZWmxJQjlhR3hUMHFpbUFWdTZ4R2U5S3lic0Zs?=
+ =?ks_c_5601-1987?B?VmcwSTZJL1pjSUdFeDVQOS9jbDFGOHc2SW5KQW9pVmpqUllLVmRo?=
+ =?ks_c_5601-1987?B?ZUdTdzJEa3JrQTBkWUF4SVo0Y1BrdVpkV2xBSGFudE9YTi83SFBF?=
+ =?ks_c_5601-1987?B?cGJ2d3RKMTVlSS9Yb2wvOXNhWWFvcWpYT2J0ck1DWnpxWndsZUkr?=
+ =?ks_c_5601-1987?B?aTNFcGFLcDJYalVwVWt2dDBrRnhydURuZEo5K2RWaWJnUS8wTzJo?=
+ =?ks_c_5601-1987?B?QWFxTkEvNFBTdVpNd2lGZEh1QXl6YVBzNjlPUW5VM0dmNWY3M1lp?=
+ =?ks_c_5601-1987?B?ZytFUzRRMHpjZnB3UlNyUGptMmQ0U294UVFyNjZLQmNreEwxZFVm?=
+ =?ks_c_5601-1987?B?OG9BUVFQUjVIc1JhSEdKNEhSSHlTR0JndnA2STVoTE9KajJBNGFs?=
+ =?ks_c_5601-1987?B?cnFsWWpJTm0rNVMwaWdWd2VsTUNoSjF4ek05d0FwUlRvRm9BUFEw?=
+ =?ks_c_5601-1987?B?SVpFQnBudi9Va3ZHWUZwZE9FenE2dnZVSWJIYjluR3VjRnpyM1V2?=
+ =?ks_c_5601-1987?B?ZDNJZ3B4N1U2U2RKYzZpTUdMRDBmY2lpL0kvYVNvS241Uks3L3Mv?=
+ =?ks_c_5601-1987?B?MG1taGpuN0o2VFlhWCtyR3NPdlJxb2RnZlFucmlpQVc0Ny9WdG1B?=
+ =?ks_c_5601-1987?B?WXVsdHlIKzQ2ZW1rc0VFeWg1dmFGOEZpN0dEMU0xQXBEL2Y4Q2o4?=
+ =?ks_c_5601-1987?B?b2VYRjVieWw3RTllaTNLeWo1QXF2Y05WbG51STJGeDBjWURqK1g2?=
+ =?ks_c_5601-1987?B?cjFiL2srOUdId3JXQ083ODlnZWFrUTJFWFNzamd2YjNzSnJXNERB?=
+ =?ks_c_5601-1987?B?SXIwdmZDR3VON3dIUk9CUUdaYk9YMmJ1VmJ4TWtlSmF5cG5leUxW?=
+ =?ks_c_5601-1987?B?VUt0ZnVaaVJKWkVXcmc2QzBXOFlXenZoYWZvQnB1eUlQbUlwTXFh?=
+ =?ks_c_5601-1987?B?UjY0SVA5ZjR3RWhINEg1YVRQSFd5eldVYjhxR0RodEs0aWMyUFJH?=
+ =?ks_c_5601-1987?B?VFlPRGtuaXZQcXR4TmIrUkUrZzQzd1NETlA3aU10YmFwNVpTTVow?=
+ =?ks_c_5601-1987?B?RGhtRkNIQkdEbWxlQkFEUkZYL0VyaUNCbnVkb0pKMURXbWhMMjc0?=
+ =?ks_c_5601-1987?B?NGVZVVZkSTNYczgwYVIwSkNWWnMvbGc3bkNJTjRneE4vS1doSlEv?=
+ =?ks_c_5601-1987?B?UWJHY2puUlE3NGZaV1ZkNmxlZ1dZL0J2VEtCOGhNUVhVUWFLL0cz?=
+ =?ks_c_5601-1987?Q?qsoxDLGA=3D?=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:ko;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SL2P216MB1358.KORP216.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(38070700018);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?ks_c_5601-1987?B?OGx6OXIyc0tRc05yWWJZZUJOUStON05PR3hVYk5pNDVEbGV3a2xK?=
+ =?ks_c_5601-1987?B?a1ZJbWgxZUxPMFRpa1dnZ2FVaWtBRVNxc1I1L2hGdzBWdGtXamdN?=
+ =?ks_c_5601-1987?B?WWZNaEF6cUkwdTBrQUdmVno2VE9mdCtKdWttK2pIZEpTWm05Nmht?=
+ =?ks_c_5601-1987?B?QjJmQ01PdlhpeHV0TTdGUUs4WFBYcDJodHUvZnF5OEs2dm9FWklR?=
+ =?ks_c_5601-1987?B?anVqT0JvSVhGZkVEVW1FZytBM05rTmhNMVlzYlgzWmtPSElzeHRz?=
+ =?ks_c_5601-1987?B?ZGVXb0JrMEd0YlpCNmw0RzVVV0p4RVo4UFBuQ1ViSmlOcXBwQzlZ?=
+ =?ks_c_5601-1987?B?a3RJWE9NMFVPaVpweVFyMFIxMkQ5cnA1ckllT3NNTnNmVGVQTUh2?=
+ =?ks_c_5601-1987?B?OVBkbjFjNFNwT3pUU01VcmJuaTlKdWxDVTNIWkpXUHpQV2dLWXhn?=
+ =?ks_c_5601-1987?B?cW8zK3hLV3Exb1dCK3pvNjdQZVcrVmswNWNUN0kwMFdZenZ2RTJz?=
+ =?ks_c_5601-1987?B?SEFlQ0dmd1BweXpWelpRMnRZVi9RZVFZemNJRjZTRVp2YzJBd1NG?=
+ =?ks_c_5601-1987?B?eXdTWUYrNWZPaFQ5aFU4bER2VjFnL2NDR01ETzlhc3p1VmpHeVpF?=
+ =?ks_c_5601-1987?B?RC84Ym1NT2xxVlVhNEJhRWI5aS8xYjZLRWZaallSTjhVWWNoZnRF?=
+ =?ks_c_5601-1987?B?dFlRZWRMdjdnR1hPZkd1UVdkeXhaMTZiN0EzTElwM1VLZWYrTUFa?=
+ =?ks_c_5601-1987?B?cUlYdkxRbDZrRG9GektBcGVCb21HK1NVNVpyQ0ZYZkZZb2FHcXhU?=
+ =?ks_c_5601-1987?B?N3VXWGxhMEt6UTdVMTdlRE5yb3gvQ0JuSHFlN21ELzhQT0VOSnY2?=
+ =?ks_c_5601-1987?B?Z21MOUNlanlFQjRWdmFZUS9EMHYxOWtrYVNkbW5sKzZMQkhiNTJh?=
+ =?ks_c_5601-1987?B?VjhJMHh0RmpxVDJvK3JVK3hEMGgyZmQ2Q0ltQk1ucVpJZU5hamw0?=
+ =?ks_c_5601-1987?B?U1lhbEJrQ3Vjb3krVFg2eEg4YzN5VCtwUjZMRllKblNjRXJtWTQ4?=
+ =?ks_c_5601-1987?B?SVJrUVp0bUZmVGhlN08rQ0RqT3Blc2F0TzNIVjVzWmhlS0VaakZN?=
+ =?ks_c_5601-1987?B?V0lxdFdGOW5UUmVtZzBsSjQ3REIrQXpLbXZzcEp0V2VKaDhKVFpt?=
+ =?ks_c_5601-1987?B?U3pVd20zVzRSTExFdGY2eEJGTElHcFUvRnN6ZVVwazJNMHY1SzB4?=
+ =?ks_c_5601-1987?B?NjRTcHkweVdjczFhSWgyUjhhblJtT3ZVSENuUEp5R096RkVuUU9s?=
+ =?ks_c_5601-1987?B?SngwZ0R4TVdXQ2kxL1VwakI1d09manFyOGxRUnE2bTRqRUVOQ1BX?=
+ =?ks_c_5601-1987?B?RU9GZW9qNkJqbWF2SFBmK2ZYd2Q1WEMzeFVCQmZoMUVKTWNNSGNR?=
+ =?ks_c_5601-1987?B?MjJxdFRTR1NSUjVVSEpqblJibU5VcXFQOFNkZUpPK0JMVlRMSUkv?=
+ =?ks_c_5601-1987?B?MU9PRm5QWG15SXhtQkNidFdKNGQwc3NRWXA0WU5JbjV3aTRtb3hz?=
+ =?ks_c_5601-1987?B?QnhDRHQvTHoraWU0NnNRMi9vR1lwUmRJK3pUK3kweFhRL2FxR3Vq?=
+ =?ks_c_5601-1987?B?NlhEcjU4WUtRQzROU0d6UE5xN2xuYlh2UkZOLzc1MUt3bjJZRkV3?=
+ =?ks_c_5601-1987?B?TVU4cWJZekJaeTd0anhKczd2Ymk4eW1VaktXM1Q3WWIwOFlRdWdT?=
+ =?ks_c_5601-1987?B?Q285S1VmMlh6M3JWbjhMcWZaRUszdC9JQyt5TkltQnZMYXFvL0ww?=
+ =?ks_c_5601-1987?B?cE9KN3ZUblcvTHA0ZCtyTm4yWnVyeVB4bnJYN3NRZjlCRUU2a0sr?=
+ =?ks_c_5601-1987?B?SXVUK1dyaGYvREdtN0NwSi9FMGora2FNL3p3V0RSbVpsSFkxc0Ry?=
+ =?ks_c_5601-1987?B?ZXppWEZlR2dKWllBNHhoRUlMOS9zNEZiR0g1L3o2UnlxamhyU0RU?=
+ =?ks_c_5601-1987?B?OXpDdWRGWlZKelAyNzkxZGFGcEkvSTZKL0tOTzBKQzRTTlNDazlm?=
+ =?ks_c_5601-1987?B?WEZDOWplVEU3N0ZqdXpnYTJWRFM2RXMxQXIxazYxZFA0dStwUmNU?=
+ =?ks_c_5601-1987?B?R2RGV3NUdUh5YnpWUHowZ252S1ZuTGZTS1J4aTNEY0FlYTdwZFM0?=
+ =?ks_c_5601-1987?B?UUphaTRzUFFpUDVJUzNUUGZJNktrRDhjbnJzVjJIOENRNmcwamNP?=
+ =?ks_c_5601-1987?B?VGEwR25senJTc05lYnRiYnZJdW95ZWh5UG5id3hsL25hT1Q5MzRa?=
+ =?ks_c_5601-1987?B?dUNmalQxNUpYWFNjdlgzVi8rSkxJdlZMUWxZQ2M1NzZ6TVBvYlhq?=
+ =?ks_c_5601-1987?B?STdRQjRiV0o0SGE4WFRsT216eHMrYjN2WGF0WGEwejR3bGh5aHlm?=
+ =?ks_c_5601-1987?Q?q7NJfKX4bK3NpmV+ublXtpvyCHN9Dl80YIiGVVH3?=
+Content-Type: text/plain; charset="ks_c_5601-1987"
+Content-Transfer-Encoding: base64
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-OriginatorOrg: doosan.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SL2P216MB1358.KORP216.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2ff10a3b-d6bc-4443-2b75-08ddc2a863b6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jul 2025 07:31:03.9213
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 9d1b3610-9ab0-42d5-93aa-46150d723d87
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 1s78vPKlOV8nTL4dnlZUdYBFv16fFG2tz590bSBRO9WaOQsbvgvgwlwVKLpIeITS6LbCsmC+J+/Mu1NQEmuobbbd1tXhmRAxHZud6KwtxwQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PS2P216MB1252
+X-GND-Status: LEGIT
+Authentication-Results: spool.mail.gandi.net;
+	dkim=pass header.d=doosan.com header.s=selector1 header.b=eJtfedac;
+	arc=pass ("microsoft.com:s=arcselector10001:i=1");
+	dmarc=pass (policy=none) header.from=doosan.com;
+	spf=pass (spool.mail.gandi.net: domain of mincheol1.shin@doosan.com designates 2a01:111:f403:c410::1 as permitted sender) smtp.mailfrom=mincheol1.shin@doosan.com
 X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdegvdekiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepffegvdefkedvhedvgeelgfdvkeejfeejleekhefgteduffffledvtdehffehgeetnecuffhomhgrihhnpeigvghnohhmrghirdhorhhgpdguvghngidruggvnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopeefpdhrtghpthhtohepjhgrnhdrkhhishiikhgrsehsihgvmhgvnhhsrdgtohhmpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehflhhorhhirghnrdgsvgiiuggvkhgrsehsihgvmhgvnhhsrdgtohhm
-X-GND-Sasl: rpm@xenomai.org
+X-GND-Score: 0
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdehudefiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucenucfjughrpefhvffuthffkfgtgfggsehtsgdttddttdhlnecuhfhrohhmpemhpmluhnmnrldlofhinhgthhgvohhlucfuhhhinhdmucmgmlmkmncuqlnhfmosslnhvlltqmmhhmlvuceomhhinhgthhgvohhluddrshhhihhnseguohhoshgrnhdrtghomheqnecuggftrfgrthhtvghrnhepgfelffetlefgkefhtefgteetjefhhfevhfeuieevtdejjeeivdfhjedvleejffelnecuffhomhgrihhnpeguohhoshgrnhhrohgsohhtihgtshdrtghomhenucfkphepvddujedrjedtrddujeekrddvudegpddviedtfeemuddtleeimedutddumeduvdemmeduudenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudejrdejtddrudejkedrvddugedphhgvlhhopehsphhoohhlrdhmrghilhdrghgrnhguihdrnhgvthdpmhgrihhlfhhrohhmpehmihhntghhvgholhdurdhshhhinhesughoohhsrghnrdgtohhmpdhnsggprhgtphhtthhopedupdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvh
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
-
-> On Thu, 2025-06-05 at 10:00 +0200, Philippe Gerum wrote:
->> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
->> 
->> > Hi Philippe,
->> > 
->> > the following is taken from our CI, testing Dovetail 6.15.
->> > On x86 we have an invalid wait context reported:
->> > 
->> > [  151.574032] 
->> > [  151.574039] =============================
->> > [  151.574043] [ BUG: Invalid wait context ]
->> > [  151.574046] 6.15.0 #1 Not tainted
->> > [  151.574048] -----------------------------
->> > [  151.574048] swapper/0/0 is trying to lock:
->> > [  151.574050] ffffffff841174c0 (&state->readq){....}-{3:3}, at: __wake_up+0x21/0x60
->> > [  151.574063] other info that might help us debug this:
->> > [  151.574064] context-{2:2}
->> > [  151.574065] no locks held by swapper/0/0.
->> > [  151.574066] stack backtrace:
->> > [  151.574073] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 6.15.0 #1 PREEMPT(full) 
->> > [  151.574078] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2~bpo12+1 04/01/2014
->> > [  151.574079] IRQ stage: Linux
->> > [  151.574083] Call Trace:
->> > [  151.574086]  <IRQ>
->> > [  151.574088]  dump_stack_lvl+0x79/0xe0
->> > [  151.574095]  __lock_acquire+0x942/0xbf0
->> > [  151.574104]  lock_acquire+0xe2/0x2f0
->> > [  151.574107]  ? __wake_up+0x21/0x60
->> > [  151.574111]  ? find_held_lock+0x2b/0x80
->> > [  151.574115]  _raw_spin_lock_irqsave+0x49/0x60
->> > [  151.574120]  ? __wake_up+0x21/0x60
->> > [  151.574122]  __wake_up+0x21/0x60
->> > [  151.574125]  xnpipe_wakeup_proc+0x152/0x590
->> > [  151.574132]  handle_synthetic_irq+0xc2/0x250
->> > [  151.574137]  arch_do_IRQ_pipelined+0xca/0x180
->> > [  151.574141]  </IRQ>
->> > [  151.574142]  <TASK>
->> > [  151.574144]  sync_current_irq_stage+0xaa/0x110
->> > [  151.574147]  inband_irq_enable+0x42/0x60
->> > [  151.574151]  cpuidle_idle_call+0x17d/0x200
->> > [  151.574155]  do_idle+0x89/0xd0
->> > [  151.574158]  cpu_startup_entry+0x29/0x30
->> > [  151.574160]  rest_init+0xf0/0x190
->> > [  151.574164]  start_kernel+0x632/0x700
->> > [  151.574179]  x86_64_start_reservations+0x18/0x30
->> > [  151.574185]  x86_64_start_kernel+0x78/0x80
->> > [  151.574188]  common_startup_64+0x13e/0x148
->> > [  151.574198]  </TASK>
->> > 
->> > That seems to be triggered by the Xenomai 3 smokey testsuite.
->> > 
->> > Any ideas?
->> 
->> Does this happen when full preemption is disabled on x86?
->
-> Test-Log: https://lava.xenomai.org/scheduler/job/21679
-> Kernel-Config: https://source.denx.de/Xenomai/xenomai-images/-/blob/next/recipes-kernel/linux/files/amd64_defconfig?ref_type=heads
-
-I can reproduce a similar issue with EVL right now, but this requires
-full preemption to be enabled for the bug to show up, starting from
-6.15. I can see the reason for lockdep to complain in this case, since
-synthetic irqs are not relayed via softirqs yet. However, this can't
-explain why an oldish 4.14 kernel would complain.
-
-root@corei7-64-evl:~# evl test basic-xbuf
-[   17.771991] 
-[   17.771994] ================================
-[   17.771995] WARNING: inconsistent lock state
-[   17.771998] 6.15.0-00925-g63f9fd7a1279 #2 Tainted: G        W          
-[   17.772000] --------------------------------
-[   17.772002] inconsistent {HARDIRQ-ON-W} -> {IN-HARDIRQ-W} usage.
-[   17.772004] swapper/1/0 [HC1[1]:SC0[0]:HE0:SE1] takes:
-[   17.772007] ffff888103bf1960 (&xbuf->ibnd.i_event){?.+.}-{3:3}, at: __wake_up+0x1f/0x50
-[   17.772017] {HARDIRQ-ON-W} state was registered at:
-[   17.772019]   __lock_acquire+0x3af/0x12c0
-[   17.772024]   lock_acquire+0xc9/0x2b0
-[   17.772028]   rt_spin_lock+0x30/0x160
-[   17.772031]   prepare_to_wait_event+0x24/0x1c0
-[   17.772037]   inbound_wait_input+0xb7/0xe0
-[   17.772041]   do_xbuf_read+0x98/0x240
-[   17.772044]   xbuf_read+0x4b/0x60
-[   17.772048]   vfs_read+0xcf/0x320
-[   17.772053]   ksys_read+0xae/0xd0
-[   17.772055]   do_syscall_64+0xbc/0x220
-[   17.772060]   entry_SYSCALL_64_after_hwframe+0x76/0x7e
-[   17.772063] irq event stamp: 28592
-[   17.772064] hardirqs last  enabled at (28591): [<ffffffff813f6ffc>] finish_task_switch+0xdc/0x300
-[   17.772070] hardirqs last disabled at (28592): [<ffffffff8145f60b>] sync_current_irq_stage+0x12b/0x160
-[   17.772076] softirqs last  enabled at (0): [<ffffffff813a7a86>] copy_process+0x836/0x19b0
-[   17.772079] softirqs last disabled at (0): [<0000000000000000>] 0x0
-[   17.772082] 
-[   17.772082] other info that might help us debug this:
-[   17.772083]  Possible unsafe locking scenario:
-[   17.772083] 
-[   17.772084]        CPU0
-[   17.772085]        ----
-[   17.772085]   lock(&xbuf->ibnd.i_event);
-[   17.772087]   <Interrupt>
-[   17.772088]     lock(&xbuf->ibnd.i_event);
-[   17.772090] 
-[   17.772090]  *** DEADLOCK ***
-[   17.772090] 
-[   17.772090] no locks held by swapper/1/0.
-[   17.772092] 
-[   17.772092] stack backtrace:
-[   17.772094] CPU: 1 UID: 0 PID: 0 Comm: swapper/1 Tainted: G        W           6.15.0-00925-g63f9fd7a1279 #2 PREEMPT_{RT,(full)} 
-[   17.772100] Tainted: [W]=WARN
-[   17.772101] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.17.0-4.fc41 04/01/2014
-[   17.772102] IRQ stage: Linux
-[   17.772104] Call Trace:
-[   17.772105]  <IRQ>
-[   17.772108]  dump_stack_lvl+0x80/0xc0
-[   17.772113]  print_usage_bug.part.0+0x22f/0x2c0
-[   17.772119]  mark_lock_irq+0x563/0x8a0
-[   17.772124]  ? stack_trace_save+0x3e/0x50
-[   17.772130]  ? save_trace+0x53/0x240
-[   17.772135]  mark_lock+0x1bd/0x600
-[   17.772140]  mark_usage+0x109/0x120
-[   17.772144]  __lock_acquire+0x3af/0x12c0
-[   17.772149]  ? __resched_curr+0x64/0x260
-[   17.772153]  lock_acquire+0xc9/0x2b0
-[   17.772156]  ? __wake_up+0x1f/0x50
-[   17.772162]  rt_spin_lock+0x30/0x160
-[   17.772165]  ? __wake_up+0x1f/0x50
-[   17.772167]  ? rcuwait_wake_up+0x83/0x170
-[   17.772170]  ? __lock_release.isra.0+0x54/0x150
-[   17.772175]  __wake_up+0x1f/0x50
-[   17.772178]  irq_work_single+0x79/0xa0
-[   17.772183]  irq_work_run+0x40/0x50
-[   17.772187]  inband_work_interrupt+0xe/0x20
-[   17.772192]  handle_synthetic_irq+0xc2/0x250
-[   17.772197]  arch_do_IRQ_pipelined+0x15d/0x1b0
-[   17.772201]  </IRQ>
-[   17.772202]  <TASK>
-[   17.772204]  sync_current_irq_stage+0xc1/0x160
-[   17.772209]  __inband_irq_enable+0x48/0x60
-[   17.772212]  finish_task_switch+0xe1/0x300
-[   17.772216]  ? finish_task_switch+0xae/0x300
-[   17.772221]  ? resume_oob_task+0x84/0x90
-[   17.772226]  __schedule+0x342/0x920
-[   17.772233]  schedule_idle+0x23/0x40
-[   17.772237]  cpu_startup_entry+0x29/0x30
-[   17.772240]  start_secondary+0xfc/0x100
-[   17.772243]  common_startup_64+0x12c/0x138
-[   17.772251]  </TASK>
-
--- 
-Philippe.
+RGVhciBYZW5vbWFpIFByb2plY3QgVGVhbSwNCg0KSGVsbG8sIG15IG5hbWUgaXMgTWluY2hlb2wg
+U2hpbiBmcm9tIHRoZSBEb29zYW4gUm9ib3RpY3MgQ29udHJvbCBBcmNoaXRlY3R1cmUgJiBGcmFt
+ZXdvcmsgVGVhbS4NCg0KSSBoYXZlIGJlZW4gbWFraW5nIGdvb2QgcHJvZ3Jlc3Mgb24gbXkgcHJv
+amVjdCB3aXRoIHRoZSBoZWxwIG9mIHlvdXIgcHJldmlvdXMgYW5zd2Vycy4gSG93ZXZlciwgSSBh
+bSBjdXJyZW50bHkgZmFjaW5nIGEgbmV3IGlzc3VlIHRoYXQgSSBoYXZlIG5vdCBiZWVuIGFibGUg
+dG8gcmVzb2x2ZSwgc28gSSBhbSByZWFjaGluZyBvdXQgZm9yIGFzc2lzdGFuY2UuDQpXaGVuIHVz
+aW5nIHJ0X3F1ZXVlIHdpdGhpbiBhIHNpbmdsZSBwcm9jZXNzP3doZXJlIGJvdGggdGhlIFByb2R1
+Y2VyIGFuZCBDb25zdW1lciBhcmUgaW1wbGVtZW50ZWQgYXMgc2VwYXJhdGUgcnRfdGFza3M/aW50
+ZXItcHJvY2VzcyBjb21tdW5pY2F0aW9uIHdvcmtzIGFzIGV4cGVjdGVkLiBIb3dldmVyLCB3aGVu
+IEkgc2VwYXJhdGUgdGhlIFByb2R1Y2VyIGFuZCBDb25zdW1lciBpbnRvIHR3byBkaWZmZXJlbnQg
+cHJvY2Vzc2VzLCB0aGUgQ29uc3VtZXIgZmFpbHMgdG8gYmluZCB0byB0aGUgcXVldWUsIHJlc3Vs
+dGluZyBpbiBhbiBlcnJvci4NCkFjY29yZGluZyB0byB0aGUgQVBJIG1hbnVhbCwgaXQgaXMgaW1w
+b3J0YW50IGZvciBib3RoIHByb2Nlc3NlcyB0byBiZWxvbmcgdG8gdGhlIHNhbWUgWGVub21haSBz
+ZXNzaW9uLiBJIGhhdmUgY2hlY2tlZCBhbmQgY29uZmlybWVkIHRoYXQgYm90aCBwcm9ncmFtcyBh
+cmUgdXNpbmcgdGhlIHNhbWUgWGVub21haSBsaWJyYXJpZXMgYW5kIGFyZSBiZWluZyBleGVjdXRl
+ZCB3aXRoIHRoZSBzYW1lIHVzZXIgcHJpdmlsZWdlcy4gRGVzcGl0ZSB0aGlzLCB0aGUgcHJvYmxl
+bSBwZXJzaXN0cy4NCkNvdWxkIHlvdSBwbGVhc2UgaGVscCBtZSB1bmRlcnN0YW5kIHdoeSB0aGUg
+Q29uc3VtZXIgaXMgdW5hYmxlIHRvIGJpbmQgdG8gdGhlIHF1ZXVlIGluIHRoaXMgbXVsdGktcHJv
+Y2VzcyBzY2VuYXJpbz8NClRoYW5rIHlvdSBmb3IgeW91ciB0aW1lIGFuZCBhc3Npc3RhbmNlLg0K
+QmVzdCByZWdhcmRzLA0KU2hpbiBNaW4gQ2hlb2wNCkNvbnRyb2wgQXJjaGl0ZWN0dXJlICYgRnJh
+bWV3b3JrDQogDQoNCjE1NSwgSmVvbmdqYWlsLXJvLCBCdW5kYW5nLWd1LCBTZW9uZ25hbS1zaSwg
+R3llb25nZ2ktZG8gRW1haWwgOiBtaW5jaGVvbDEuc2hpbkBkb29zYW4uY29tIE1vYmlsZSA6IDAx
+MCA0Njk5IDE3NTEgV2ViIDogd3d3LmRvb3NhbnJvYm90aWNzLmNvbQ0K
