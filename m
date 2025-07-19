@@ -1,49 +1,72 @@
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+Received: from mslow4.mail.gandi.net (mslow4.mail.gandi.net [217.70.178.250])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4D9C4438B
-	for <xenomai@lists.linux.dev>; Sat, 19 Jul 2025 15:25:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 551A12F4A
+	for <xenomai@lists.linux.dev>; Sat, 19 Jul 2025 21:31:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.250
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752938739; cv=none; b=KziX6gz1l05KRFyyUl36ZqU5VNjGmig2eOy5LK1eon0oVBa/UGd50lrVI3QnjGy1iVIAbNZTYLeyejhQ2Fatr0hk8W+pZr9kPEcS3eXfCjMHKLriRrGLW0kQm5BI2v44wtWonQAg/p7G6a6JjAbxxXiXqdA7aQQwx8DS0YcQxBk=
+	t=1752960665; cv=none; b=lYyraDhhUeIjEMdKejcHl9P95CSpSnsyciTSVY5neqojPnZAvizAxSqIHnsdeTWDF7xkjKIknDY0jkiGa+fJlnJTSV/tykfFhCT668sHcQdakWAxu43MPu2iTPZi/ee4yqRTUvU1AB39GuH5RPL+rH4Mm8zd81fIhcMBtplgtkQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752938739; c=relaxed/simple;
-	bh=259SYu46f3lZ2Sqb1UMz6f1+hZQO1sV2bNPPoIwvhR8=;
+	s=arc-20240116; t=1752960665; c=relaxed/simple;
+	bh=J9eoBaDQVC0xDb6mwaI4YMmNU6lqSGRDVuceK9AR/Ok=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=EqbO3E77Qjnc7ZnRawt3h4tkGbpU2nd7d4fbGWjWZJUZEjmym3tvtU5dByBQiklbY2A7WyGWzVGeg2+2VzKLhwfnPZbs+PsQsydw6s0JeifOvhFzhzHLwv6i76X8PVU57UOoRDVKmRM0Phv9q2EZvRhpNyweVMDOEDmm6kMwyro=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=CB8UGbiX; arc=none smtp.client-ip=217.70.183.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	 MIME-Version:Content-Type; b=e9MfMoiOEMrdzWKBWKaL41q5DcdIbLoWM4qkCLfIniVAqwo1mzrSH1VMoD6PJzLRNA12esHq9BH6axohiZosMP4aCDZamiGHvmy2IDAqHbB+EZNAljnoLJjXK95wKPQfAjljNVMzXcKgcwwUjS1JG7YDBkAXO5/zUWeVZJ4S+Dk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=UCMEkicg; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=taVGBjyM; arc=none smtp.client-ip=217.70.178.250
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="CB8UGbiX"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 4164241C7B;
-	Sat, 19 Jul 2025 15:25:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1752938728;
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="UCMEkicg";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="taVGBjyM"
+Received: from redirect.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+	by mslow4.mail.gandi.net (Postfix) with ESMTP id DB06E600216
+	for <xenomai@lists.linux.dev>; Sat, 19 Jul 2025 21:17:33 +0000 (UTC)
+Received: from spool.mail.gandi.net (spool1.mail.gandi.net [217.70.178.210])
+	by relay11.mail.gandi.net (Postfix) with ESMTPS id 7DFEF43C64
+	for <xenomai@lists.linux.dev>; Sat, 19 Jul 2025 21:17:26 +0000 (UTC)
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id F2ACA941B36
+	for <xenomai@xenomai.org>; Sat, 19 Jul 2025 21:17:25 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1752959844;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=OIwoBNEIy8N+GhR7/6oLDoocBFw6ZyOFcaqEM83FrYk=;
-	b=CB8UGbiXTWNIkZcWOOwcgaWUcdUX0RZQnMdwOuGVjh0k+I2cxZGr1m4LBWyeXuHgtrrrCT
-	EvOor0pFnMM/y0orne5heL4KL/F1LhBrPxSukV5nMzj/ldDIKwmMy5h52P/QzqRWINWyt6
-	PvDKryEYtusHczoXKdGCBhHJpPIX2u9yZtcRHuS+WhuNmuaTenOVFg4aGv5evlpOXQjB/q
-	Fpss/+qb+e38bLdUvce19i3ZPqE4DTSmhOWPXwpXoHkwzTS0SFKvMV8mg3Sgs4LUjahnh7
-	DOSKXGZXXDVASuob62TSD6w/Uecu8tCRF7zP59MXFg+MlwVst33VINxVfuvjRA==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@lists.linux.dev,  Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: Dovetail 6.15: x86: Invalid wait context
-In-Reply-To: <87ldok48lm.fsf@xenomai.org> (Philippe Gerum's message of "Sat,
-	19 Jul 2025 15:24:05 +0200")
-References: <ee6e634d9d87ef52670dbb9ce91d7080b8640a71.camel@siemens.com>
-	<87tt4ubote.fsf@xenomai.org>
-	<997e11d95184f34a23fad2607504ef567ec07758.camel@siemens.com>
-	<87a55bw26w.fsf@xenomai.org>
-	<f9245ae15561f12335177c73df9d9b53de4d7ac9.camel@siemens.com>
-	<87ldok48lm.fsf@xenomai.org>
-User-Agent: mu4e 1.12.8; emacs 30.1
-Date: Sat, 19 Jul 2025 17:25:27 +0200
-Message-ID: <87fres42zc.fsf@xenomai.org>
+	bh=oFcvEnugLvV2961ov3yXEloBN8oXe/mIU9Hb11/Ub8s=;
+	b=UCMEkicgRAaJYnzgEfRr/kshTFiJNmDSuqaiklmZ3YCWBUMQ8glH9uJAleXe4tzVD1/sUV
+	sPJGhF+0BDF56tO31AFN12dEvDsDROEhUaW9Lpe4wdPIArYXgjU2Gp7FlA3MudDaXshyHO
+	ZsrH8W5OXPUV6w8cSzuQDioCiiFFrrsxhMc6E40TrQecE4xYEufdKCEUeHLgGTxRYY3nvz
+	TbOH7e2EPY8U31RGWFiYifOgt/CglO8QXKLYTjVcxmKbHFNBohvkO/ehNA/ZbGHsvQz2AZ
+	e15Vb8k3iVGtF9sXlR8t9j2OMvCIrKhnu4iuMQ1uBe0y10UUctLSDtXxDOI+OQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1752959844;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=oFcvEnugLvV2961ov3yXEloBN8oXe/mIU9Hb11/Ub8s=;
+	b=taVGBjyMHxwLgnAyTHFS5ZDZ4iRVx0QOFSdXB93CS7SyJJdzzzf79T++weQ7MiZAOyhuST
+	r6m49xRxciYi8vAQ==
+To: Phil Auld <pauld@redhat.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Henning Schild
+ <henning.schild@siemens.com>, Peter Zijlstra <peterz@infradead.org>,
+ x86@kernel.org, linux-kernel@vger.kernel.org, Ingo Molnar
+ <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, Guenter Roeck
+ <linux@roeck-us.net>, xenomai@xenomai.org, guocai.he.cn@windriver.com,
+ pauld@redhat.com
+Subject: Re: sched: Unexpected reschedule of offline CPU#2!
+In-Reply-To: <20250709134401.GA675435@lorien.usersys.redhat.com>
+References: <20190729101349.GX31381@hirez.programming.kicks-ass.net>
+ <alpine.DEB.2.21.1907291235580.1791@nanos.tec.linutronix.de>
+ <20190729104745.GA31398@hirez.programming.kicks-ass.net>
+ <20190729205059.GA1127@roeck-us.net>
+ <alpine.DEB.2.21.1908161217380.1873@nanos.tec.linutronix.de>
+ <20190816193208.GA29478@roeck-us.net>
+ <alpine.DEB.2.21.1908172219470.1923@nanos.tec.linutronix.de>
+ <20210727100018.19d61165@md1za8fc.ad001.siemens.net>
+ <745f219e-1593-4fbd-fa7f-1719ef6f444d@siemens.com> <8734mg92pt.ffs@tglx>
+ <20250709134401.GA675435@lorien.usersys.redhat.com>
+Date: Sat, 19 Jul 2025 23:17:23 +0200
+Message-ID: <87frervq1o.ffs@tglx>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -51,102 +74,40 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
+X-GND-Status: LEGIT
+Authentication-Results: spool.mail.gandi.net;
+	dkim=pass header.d=linutronix.de header.s=2020 header.b=UCMEkicg;
+	dkim=pass header.d=linutronix.de header.s=2020e header.b=taVGBjyM;
+	dmarc=pass (policy=none) header.from=linutronix.de;
+	spf=pass (spool.mail.gandi.net: domain of tglx@linutronix.de designates 193.142.43.55 as permitted sender) smtp.mailfrom=tglx@linutronix.de
 X-GND-State: clean
 X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdeiieeilecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepffegvdefkedvhedvgeelgfdvkeejfeejleekhefgteduffffledvtdehffehgeetnecuffhomhgrihhnpeigvghnohhmrghirdhorhhgpdguvghngidruggvnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopeefpdhrtghpthhtohepjhgrnhdrkhhishiikhgrsehsihgvmhgvnhhsrdgtohhmpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehflhhorhhirghnrdgsvgiiuggvkhgrsehsihgvmhgvnhhsrdgtohhm
-X-GND-Sasl: rpm@xenomai.org
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdeijeeflecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffffkgggtsehttdertddttddtnecuhfhrohhmpefvhhhomhgrshcuifhlvghigihnvghruceothhglhigsehlihhnuhhtrhhonhhigidruggvqeenucggtffrrghtthgvrhhnpefhgeekieeftedthefggfdufeevveetkedugefgjeeigeeffeegvddtvefhffffffenucfkphepvddujedrjedtrddujeekrddvuddtpdduleefrddugedvrdegfedrheehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddujedrjedtrddujeekrddvuddtpdhhvghlohepshhpohholhdrmhgrihhlrdhgrghnughirdhnvghtpdhmrghilhhfrhhomhepthhglhigsehlihhnuhhtrhhonhhigidruggvpdhnsggprhgtphhtthhopedupdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvh
 
-Philippe Gerum <rpm@xenomai.org> writes:
+On Wed, Jul 09 2025 at 09:44, Phil Auld wrote:
+> Hi Thomas,
+>
+> On Tue, Sep 03, 2024 at 05:27:58PM +0200 Thomas Gleixner wrote:
+>> On Tue, Jul 27 2021 at 10:46, Jan Kiszka wrote:
+>> 
+>> Picking up this dead thread again.
+>
+> Necro-ing this again...
+>
+> I keep getting occasional reports of this case. Unfortunately
+> though, I've never been able to reproduce it myself.
+>
+> Did the below patch ever go anywhere?
 
-> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
->
->> On Fri, 2025-07-11 at 10:40 +0200, Philippe Gerum wrote:
->>> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
->>> 
->>> > On Thu, 2025-06-05 at 10:00 +0200, Philippe Gerum wrote:
->>> > > Florian Bezdeka <florian.bezdeka@siemens.com> writes:
->>> > > 
->>> > > > Hi Philippe,
->>> > > > 
->>> > > > the following is taken from our CI, testing Dovetail 6.15.
->>> > > > On x86 we have an invalid wait context reported:
->>> > > > 
->>> > > > [  151.574032] 
->>> > > > [  151.574039] =============================
->>> > > > [  151.574043] [ BUG: Invalid wait context ]
->>> > > > [  151.574046] 6.15.0 #1 Not tainted
->>> > > > [  151.574048] -----------------------------
->>> > > > [  151.574048] swapper/0/0 is trying to lock:
->>> > > > [  151.574050] ffffffff841174c0 (&state->readq){....}-{3:3}, at: __wake_up+0x21/0x60
->>> > > > [  151.574063] other info that might help us debug this:
->>> > > > [  151.574064] context-{2:2}
->>> > > > [  151.574065] no locks held by swapper/0/0.
->>> > > > [  151.574066] stack backtrace:
->>> > > > [  151.574073] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not tainted 6.15.0 #1 PREEMPT(full) 
->>> > > > [  151.574078] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.16.3-debian-1.16.3-2~bpo12+1 04/01/2014
->>> > > > [  151.574079] IRQ stage: Linux
->>> > > > [  151.574083] Call Trace:
->>> > > > [  151.574086]  <IRQ>
->>> > > > [  151.574088]  dump_stack_lvl+0x79/0xe0
->>> > > > [  151.574095]  __lock_acquire+0x942/0xbf0
->>> > > > [  151.574104]  lock_acquire+0xe2/0x2f0
->>> > > > [  151.574107]  ? __wake_up+0x21/0x60
->>> > > > [  151.574111]  ? find_held_lock+0x2b/0x80
->>> > > > [  151.574115]  _raw_spin_lock_irqsave+0x49/0x60
->>> > > > [  151.574120]  ? __wake_up+0x21/0x60
->>> > > > [  151.574122]  __wake_up+0x21/0x60
->>> > > > [  151.574125]  xnpipe_wakeup_proc+0x152/0x590
->>> > > > [  151.574132]  handle_synthetic_irq+0xc2/0x250
->>> > > > [  151.574137]  arch_do_IRQ_pipelined+0xca/0x180
->>> > > > [  151.574141]  </IRQ>
->>> > > > [  151.574142]  <TASK>
->>> > > > [  151.574144]  sync_current_irq_stage+0xaa/0x110
->>> > > > [  151.574147]  inband_irq_enable+0x42/0x60
->>> > > > [  151.574151]  cpuidle_idle_call+0x17d/0x200
->>> > > > [  151.574155]  do_idle+0x89/0xd0
->>> > > > [  151.574158]  cpu_startup_entry+0x29/0x30
->>> > > > [  151.574160]  rest_init+0xf0/0x190
->>> > > > [  151.574164]  start_kernel+0x632/0x700
->>> > > > [  151.574179]  x86_64_start_reservations+0x18/0x30
->>> > > > [  151.574185]  x86_64_start_kernel+0x78/0x80
->>> > > > [  151.574188]  common_startup_64+0x13e/0x148
->>> > > > [  151.574198]  </TASK>
->>> > > > 
->>> > > > That seems to be triggered by the Xenomai 3 smokey testsuite.
->>> > > > 
->>> > > > Any ideas?
->>> > > 
->>> > > Does this happen when full preemption is disabled on x86?
->>> > 
->>> > Test-Log: https://lava.xenomai.org/scheduler/job/21679
->>> > Kernel-Config: https://source.denx.de/Xenomai/xenomai-images/-/blob/next/recipes-kernel/linux/files/amd64_defconfig?ref_type=heads
->>> 
->>> I can reproduce a similar issue with EVL right now, but this requires
->>> full preemption to be enabled for the bug to show up, starting from
->>> 6.15. I can see the reason for lockdep to complain in this case, since
->>> synthetic irqs are not relayed via softirqs yet. However, this can't
->>> explain why an oldish 4.14 kernel would complain.
->>
->> Thanks for letting us know. But: Where is 4.14 coming into the game?
->
-> Because the link you sent me referred to a kernel config for 4.14.71. I
-> assumed the yocto recipe which contains it did produce the qemu image
-> showing the issue.
->
->> Our reports (from CI testing) were 6.15 related, nothing older.
->>
->> Is there a specific change in 6.15 that broke the synthetic IRQ
->> handling?
->
-> 814b824b4466b irq_work: dovetail: never defer local work posted from oob
->
->> Are you already working an a fix?
->
-> Yep.
+Nope. Guocai said it does not work and I have no reproducer either to
+actually look at it deeper and there was further debug data provided.
 
-The broken commit was reverted from v6.1.y-cip-rebase, v6.12.y-rebase
-and v6.15, things are back to normal for x4 now. I believe this should
-fix x3 as well.
+> It seems to be stable in my testing with the addition of
+> an "extern" in asm/cpu.h to get it to build.
 
--- 
-Philippe.
+I don't see why it wouldn't be stable, but as it does not seem to solve
+the issue merging it as is does not make sense.
+
+Thanks,
+
+        tglx
