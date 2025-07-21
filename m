@@ -1,39 +1,94 @@
-Received: from out28-148.mail.aliyun.com (out28-148.mail.aliyun.com [115.124.28.148])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lj1-f180.google.com (mail-lj1-f180.google.com [209.85.208.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C026DDC3
-	for <xenomai@lists.linux.dev>; Mon, 21 Jul 2025 02:44:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.28.148
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA311205E26
+	for <xenomai@lists.linux.dev>; Mon, 21 Jul 2025 15:34:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753065901; cv=none; b=YlkWxlNfgeTTTHbY8KGCcU0phQJ1RQmnt12j/6N+yqxktvvS0lIs5/Gb5FAjPDLYwy4RCeANHRIrjwMF+8sIwc40hhUbyzRQe5pcoUCuVw2+MZjyCI4Vd6Z9XZsTXHZO+FVhDIFGuLR7Fd6+LfsZzBshsOkPCRvjTI07HfvJ6/Y=
+	t=1753112078; cv=none; b=DuldnFY/6QrCwEvZliApzbi5YVNjikajw/NShaAq/8BB/1Isdnb1GDwDSDdbIGCyyQwZCdQUO1Daph4JDd3mI7wwh44FjYtg5PIo1LZ8WAPb5m4h/CRDqKBgSJmxIW3SIct7CmuBbfS7ag/yN23U7JkqBywxr5RC4jd2mD7yc2I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753065901; c=relaxed/simple;
-	bh=+XqIjqqaZtnv3dgyRp9f7Cn9o6WQ37JREJCAxKsXKaQ=;
-	h=Date:From:To:Message-ID:Subject:MIME-Version:Content-Type; b=trPESeuzHPdMQRGQ0WeyFZDGAYH6C2avPsFdt7fu0zXRhwqaHkMGShA8pfG9MBPtLdJ92Pois7gezI1ae9NDU6dZGYlUzWExPfZ7mj7ED9xby/FsPGCOuT0MQuVNwurwHM7spwdddnoapiMRE2CiA8s/NvWhxHBk60UlLd6zYc4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=apue.org; spf=pass smtp.mailfrom=apue.org; arc=none smtp.client-ip=115.124.28.148
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=apue.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=apue.org
-X-Alimail-AntiSpam:AC=CONTINUE;BC=0.3083803|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_social|0.0328768-0.00108951-0.966034;FP=16955630277272811992|0|0|0|0|-1|-1|-1;HT=maildocker-contentspam033037025160;MF=luis@apue.org;NM=1;PH=DW;RN=1;RT=1;SR=0;TI=W4_0.2.3_v5ForWebDing_2144949E_1753065887264_o7001c175p;
-Received: from WS-web (luis@apue.org[W4_0.2.3_v5ForWebDing_2144949E_1753065887264_o7001c175p] cluster:ay29) at Mon, 21 Jul 2025 10:44:47 +0800
-Date: Mon, 21 Jul 2025 10:44:47 +0800
-From: "Luis" <luis@apue.org>
-To: "xenomai" <xenomai@lists.linux.dev>
-Reply-To: "Luis" <luis@apue.org>
-Message-ID: <7ec1afca-5d28-4763-a091-886e1c31412f.luis@apue.org>
-Subject: =?UTF-8?B?eGVub21haS5vcmcgZG93bj8=?=
-X-Mailer: [Alimail-Mailagent revision 3][W4_0.2.3][v5ForWebDing][Chrome]
+	s=arc-20240116; t=1753112078; c=relaxed/simple;
+	bh=O/qAxCjE/MLQFnDxwOilAVAYqqpzFRRv3qQDa8bcVzM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=qPwcfIqz1k2A6Uz3NeRMXbd8gK3d2A+QaCOZ17vmsWaq07Kwl3h1pbghxGLh0raAbFiB+hmzSozGfJRYBXrivb/XnCL36Ofiw0a3kqmjbZHCrWzb02FGJjveqMCNgTpvhDBxa77bQ1Z25ie8FJtIFj/9bdQ9Op0dt8guOaiNvWI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b=bW+eBrUd; arc=none smtp.client-ip=209.85.208.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b="bW+eBrUd"
+Received: by mail-lj1-f180.google.com with SMTP id 38308e7fff4ca-32b8134ef6aso45240861fa.0
+        for <xenomai@lists.linux.dev>; Mon, 21 Jul 2025 08:34:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=smile.fr; s=google; t=1753112075; x=1753716875; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9lizjlg3SM5axDADwfvcU2L0sYHSQIOi6wNZ9rNmnkU=;
+        b=bW+eBrUd2yjRmyA3+K9BOfkwqx7dpTqqEyvVlFhiG653MDOE/Z2Wad2j1xoIQgVYG+
+         bACRYSdm1aATSqtEtj/BcXSZhV6WRJJzNOexU2eX7Sp0h54ulT5zPA/2nNOZYvS7GzV3
+         wJbRpA8IHfEcU90D77DCidat3phLx4NjBEuxE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1753112075; x=1753716875;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9lizjlg3SM5axDADwfvcU2L0sYHSQIOi6wNZ9rNmnkU=;
+        b=GkJ48Cx6GYIvOf4P9pUk7fS0L6MCzOYBX/AICmELOjLyW6ikffp80hLxvSnig+zxpl
+         MHk8ZyWKXEFFpPCPLddZu+yRa0E8nvwX63au3ARq6LaXS3fUdMeFxbL9DKcmSAR6ahBM
+         k4qC8CG1xptBawFRW/cuEhA2+0OlSEk9Okod86Ys/42UlgffLoWUc+KVdvimqkynZxvP
+         JMzYcqlWw4v4Ritve0yIO9On6E/0ddwIn2JVFvZ0jWlnx7Sjp1aztLUjQbl9eKCG9I3v
+         ZR473u4X8V9A6S4s3qyHn6d7FF7ifiRAHbj9yA0iOpgUH1L/omubIT2WLFZo4Xa+lf4X
+         Rihw==
+X-Gm-Message-State: AOJu0YzY4ZCq8W+QsGilcB3Z/XvICSW/2vSDW29rCPJ8TlcDDtloyBUV
+	6KpgwQ86XlIe6WPFkCgwN2eGnhSb40/6sx1CNn/AnvMamJr4pGkby7QEL8dNmE+OVRGceNJKQqe
+	09bU/PJXRimqs/UUOj/XAVfm6pEQG8lEMA6qRrJbG6BXBtvIdwFho
+X-Gm-Gg: ASbGnctt91dOES2Vu1Wg6Z1DoY69F5+d/mDkHAd+2vosZuvbKnLClf6vKDvlvTujPkn
+	ypkwBJ74KGNIL6RxAi5xwWA1VOZ+hDgWw1G9zgGhW97qKk2Sn6dxdxl2gEGwPiMKgX214c2pWuB
+	uVX/xXUZ9nY3amZvhUe0k3e/ApaoCDKL8W+PRNFDKhyjP/yjTB5l1AMWchwOlNwrJ3RE3HMXhEC
+	gQ/bazN9l2IZpxEMyxbZ3TzQsusLsrlEZQTBexk
+X-Google-Smtp-Source: AGHT+IFsGZRhjUpwLqQtcXRXRe1Dh6OAsJvHqnBd9wca2JSzTFLgf2RAZBGW9TxEvE4+mo4qTxVUF9ZTRm2884c5xEo=
+X-Received: by 2002:a05:651c:b10:b0:32f:3671:4d6d with SMTP id
+ 38308e7fff4ca-3309a469ac4mr37108511fa.1.1753112074717; Mon, 21 Jul 2025
+ 08:34:34 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-x-aliyun-im-through: {"version":"v1.0"}
-x-aliyun-mail-creator: W4_0.2.3_v5ForWebDing_M3LTW96aWxsYS81LjAgKFdpbmRvd3MgTlQgMTAuMDsgV2luNjQ7IHg2NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzEzOC4wLjAuMCBTYWZhcmkvNTM3LjM2vN
+References: <7ec1afca-5d28-4763-a091-886e1c31412f.luis@apue.org>
+In-Reply-To: <7ec1afca-5d28-4763-a091-886e1c31412f.luis@apue.org>
+From: Pierre FICHEUX <pierre.ficheux@smile.fr>
+Date: Mon, 21 Jul 2025 17:34:23 +0200
+X-Gm-Features: Ac12FXyQWkN2RDtxWbEdxsU6ewX1d4ooZNUtM3l-NkStnalsSXRqXtqr8hhoZGg
+Message-ID: <CAFc1U0v7ENaCASVAje4CdEoJ7xP1GmM13StK4rVCt9T88mBGSg@mail.gmail.com>
+Subject: Re: xenomai.org down?
+To: Luis <luis@apue.org>
+Cc: xenomai <xenomai@lists.linux.dev>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: quoted-printable
 
-aHR0cHM6Ly94ZW5vbWFpLm9yZwoKR2l0TGFiIExvZ28KNTAyCldob29wcywgc29tZXRoaW5nIHdl
-bnQgd3Jvbmcgb24gb3VyIGVuZC4KVHJ5IHJlZnJlc2hpbmcgdGhlIHBhZ2UsIG9yIGdvaW5nIGJh
-Y2sgYW5kIGF0dGVtcHRpbmcgdGhlIGFjdGlvbiBhZ2Fpbi4KClBsZWFzZSBjb250YWN0IHlvdXIg
-R2l0TGFiIGFkbWluaXN0cmF0b3IgaWYgdGhpcyBwcm9ibGVtIHBlcnNpc3RzLgoKR28gYmFjaw==
+Same for me.
+
+
+Le lun. 21 juil. 2025 =C3=A0 04:45, Luis <luis@apue.org> a =C3=A9crit :
+>
+> https://xenomai.org
+>
+> GitLab Logo
+> 502
+> Whoops, something went wrong on our end.
+> Try refreshing the page, or going back and attempting the action again.
+>
+> Please contact your GitLab administrator if this problem persists.
+>
+> Go back
+
+
+
+--=20
+
+Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+                             http://www.smile.fr
+                             https://smile.eu/fr/offres/embarque-iot
+I would love to change the world, but they won't give me the source code
