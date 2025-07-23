@@ -1,46 +1,35 @@
-Received: from mail-out.m-online.net (mail-out.m-online.net [212.18.0.10])
+Received: from mx.nabladev.com (mx.nabladev.com [178.251.229.89])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BE23282F5
-	for <xenomai@lists.linux.dev>; Wed, 23 Jul 2025 23:03:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.18.0.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A2CD282F5
+	for <xenomai@lists.linux.dev>; Wed, 23 Jul 2025 23:03:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.251.229.89
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753311789; cv=none; b=nVMU/er05qajGByLkZm1IKU27LjCladhH6IEtvpqukZW/Iu+3ajIp+/LZm0QathIpaCLqMLydzxx26cbZXtwoo9voh1sp27Lsg33UAn0NhTPFaxX7WQ6T+FGSf57IGQB6Av5bq9xvER3NXFEKrfjeZTtfy+4Qvq/nAjx5jf8Iyo=
+	t=1753311801; cv=none; b=ZJTQUg5/zL/h2LdAYNjfeiLGqWkKAYFIkMWUHfZ8OA8gecrtR1+2K6IZG0TiebUk86hSnaybgqdV2btD+TYCekGfzJoVbInLfriu7gMRlCGTRg25/vn+vsiK1iLEEgyqal/Ri46D0SKCtdY2wvQD2zDZbEeogmn9i5vuuQH6iFo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753311789; c=relaxed/simple;
-	bh=ir8NjjuIOWtpbCv/476ywVT1znnbVVYBxHgRtmWvCpg=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=UkdWaJWG2KaI/J9n734ISvsl3d+UXOXBRBBPAyCTTinhLN76Z9eznE7a4/qZuGHETQ90sZhga9xfkivPwRcP5ZtAaa7RZNeX9XumZgz3LiEaupdQ8qlVfwKylBr00mSgtUqzgnT0Gsl02fyHM7MLaRl0f1ArnAQPwFcXAqVdDz8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=babic.homelinux.org; spf=none smtp.mailfrom=babic.homelinux.org; arc=none smtp.client-ip=212.18.0.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=babic.homelinux.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=babic.homelinux.org
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-	by mail-out.m-online.net (Postfix) with ESMTP id 4bnTzh1HhCz1sFNb;
-	Thu, 24 Jul 2025 00:57:19 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.68])
-	by mail.m-online.net (Postfix) with ESMTP id 4bnTzg1FbWz1qqlY;
-	Thu, 24 Jul 2025 00:57:19 +0200 (CEST)
-X-Virus-Scanned: amavis at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
- by localhost (dynscan1.mail.m-online.net [192.168.6.68]) (amavis, port 10024)
- with ESMTP id ZChw0zx0iqZm; Thu, 24 Jul 2025 00:57:06 +0200 (CEST)
-Received: from babic.homelinux.org (host-88-217-136-221.customer.m-online.net [88.217.136.221])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mail.mnet-online.de (Postfix) with ESMTPS;
-	Thu, 24 Jul 2025 00:57:06 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by babic.homelinux.org (Postfix) with ESMTP id 083D6420137;
-	Wed, 23 Jul 2025 22:57:05 +0000 (UTC)
-Received: from babic.homelinux.org ([127.0.0.1])
-	by localhost (mail.babic.homelinux.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 12zwHdMNqG1M; Wed, 23 Jul 2025 22:57:04 +0000 (UTC)
-Received: from [192.168.178.132] (unknown [192.168.178.132])
-	by babic.homelinux.org (Postfix) with ESMTP id CFF65420127;
-	Wed, 23 Jul 2025 22:57:04 +0000 (UTC)
-Message-ID: <ff2d19f5-ae8c-4db3-904c-c5498733e9c8@babic.homelinux.org>
-Date: Thu, 24 Jul 2025 00:57:04 +0200
+	s=arc-20240116; t=1753311801; c=relaxed/simple;
+	bh=XMToJsyg3ll5jNbwvFplqO/u+UtMkrHzm6MmURNM82w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=d5YHElcz8ZNQmw7oiGsE8VoqtI82Q74AXO+aEojx7XOf5Mk3xA8151oLR7UFj3Ak9u1u6m1DGt6p19amOOMCo2EhQ5QNXtbmV8VYMXyAaXSG0+8McN+7OpUufEWMvZyxl+R4c67E/q1I1NTdvxjL2O/pZW0aP/EaqdTwvh9eABY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nabladev.com; spf=pass smtp.mailfrom=nabladev.com; dkim=pass (2048-bit key) header.d=nabladev.com header.i=@nabladev.com header.b=JkCuNe0K; arc=none smtp.client-ip=178.251.229.89
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nabladev.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nabladev.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=nabladev.com header.i=@nabladev.com header.b="JkCuNe0K"
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 6A62FFF9E5;
+	Thu, 24 Jul 2025 00:54:40 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nabladev.com;
+	s=dkim; t=1753311282;
+	h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding:content-language:in-reply-to:references;
+	bh=ZVtXl2lD24B7aRm/+uIip3dCCcw26Eet3LLucqFfyvc=;
+	b=JkCuNe0KCiz6pYCbknpyVx90ERBUUlpIcLr/Bb9t8QxfxMvf5sYn8CB94NNcCz4PgLqQMG
+	VyUIFV86wfYTmYe9/KyW4yHA8s7irR9xmboirSvoOlL5l0tDIvp8y9BN1sIwY+Eg2mQFN8
+	EU8cqRa2GAsJEBJO5zWh2Pd5LgtBinNYRIoGf+Ik+0NVsTK6BlCa/AxbOZW7/2jgUEX5VJ
+	HBNxlMcO4G/Hyic+4dfkYx7o4+GqEYf8MvKDjh+Pr0wnfJpWfnk9bITaZKrjsAOw7Il3dV
+	2OHHn2NjWzafA5n44RbhOEKkKxyBsFrTYfsa1+pzDdSeU1ehrjy4SrbSJyd7Sg==
+Message-ID: <3fe17e00-5a49-4c1d-adc5-fcc3e5713c7f@nabladev.com>
+Date: Thu, 24 Jul 2025 00:54:39 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -48,7 +37,6 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-From: Stefano Babic <stefano.babic@babic.homelinux.org>
 Subject: Re: xenomai.org down?
 To: Jan Kiszka <jan.kiszka@web.de>, Pierre FICHEUX <pierre.ficheux@smile.fr>,
  Luis <luis@apue.org>
@@ -57,9 +45,11 @@ References: <7ec1afca-5d28-4763-a091-886e1c31412f.luis@apue.org>
  <CAFc1U0v7ENaCASVAje4CdEoJ7xP1GmM13StK4rVCt9T88mBGSg@mail.gmail.com>
  <f616e74e-2df6-494f-9017-201e5825ab4d@web.de>
 Content-Language: en-US
+From: Stefano Babic <sbabic@nabladev.com>
 In-Reply-To: <f616e74e-2df6-494f-9017-201e5825ab4d@web.de>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Last-TLS-Session-Version: TLSv1.3
 
 Hi Jan,
 
@@ -88,7 +78,7 @@ On 21.07.25 18:33, Jan Kiszka wrote:
 > our host.
 > 
 
-I could have access to the server and I fix this, it is online again.
+I could have access the server and I fix this, it is online again.
 
 Stefano
 
