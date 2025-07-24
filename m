@@ -1,127 +1,94 @@
-Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C41610E0
-	for <xenomai@lists.linux.dev>; Thu, 24 Jul 2025 04:01:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.181
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.2])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 830CB2BF3CA
+	for <xenomai@lists.linux.dev>; Thu, 24 Jul 2025 12:00:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.2
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753329687; cv=none; b=GeMBjfZAoVS+7g5alK+vhhl5O75X1kmPII7+sxgL2h9oD5F++p94V0BSzA/uXXW1fnm2jT/GtR5P1ovwUsNswsnO3tT9/iL2J2TSG6aYhrnLxBO6+mo1cGiL7hiXgTf4zDMIoMejw2opiPZKADqO6czlYeVdehDKyz63plwO6Lw=
+	t=1753358424; cv=none; b=YUzgYBIuDrBpqWnLJvMvm24E25UngJfVhJk0vsOeuHuBeDUaQpNpdskwihNTLxFoRUkzzYMf7sSH0ShCfvV79F8jL0DXs4PbB19/9b+shLTLUlCr93rF4+f4/fKxpXGXPzbSF2taMpvKP9CYm/l5dplQWKR/7y6TA8cDRuXMcMk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753329687; c=relaxed/simple;
-	bh=B1jp99JZREoenK8oiBdWsi1L20Fxgnb+6eeOJDTDr6M=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=sof+mJu58xlT3ViPz9G3Nhe7JK1xyhMlQnriV7fGZm/qyJqvZEZF9zw4b2y6kPS2xh9Ejv2waq7E7SXaYlbsHhRpyM7FQLS7e6P35J/ro05n6NbEXCkpjeedBH9UZpo5Ebb/KkMZZa1+XGDCmAxvxUlr7XY8CjsxUunpmYJakjE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b=AyBuSaPq; arc=none smtp.client-ip=209.85.208.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
+	s=arc-20240116; t=1753358424; c=relaxed/simple;
+	bh=+4bf07eg2QSWOBdFSXHHUOiZ7ds9O2celd2uoBVVdj4=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=nQ01C5JAPYB00HHKyw8Iagw02M8aiaf31e6G1s2l4xD/EZZ8rGExrVx/1pmgB5DCNMJOP3/d3oziiDq1IHPfPTiuUd8FJpXwSLbjJ3FBoXwdf0AuGQAOpCTk+GPQn3xRtPsK+n/cXPZ+Voon1aYCwAwa7AnOi7lWeoiU8rmjBJE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=Xm2oitjM; arc=none smtp.client-ip=117.135.210.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b="AyBuSaPq"
-Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-32e14ce168eso5981871fa.1
-        for <xenomai@lists.linux.dev>; Wed, 23 Jul 2025 21:01:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile.fr; s=google; t=1753329683; x=1753934483; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lmnVflJFQeyZ3CX3CF0+0lEnzg2W0G02YyS1FxYVT+8=;
-        b=AyBuSaPqXyVJMz2FhPZl6p++wyxB7A2vkWmQzm5fNQikGS8l7E00TkGyXybBmY3fzL
-         rOinAUIkzFLHuFyt1u3HZLxg6eGOA3+hTJr1Ema0ByLvAj6Zv26uYSxAmvh0omRn94bf
-         JiJA+67Wtff15SdUdGig9TgGWPFa+4vCQKBGA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1753329683; x=1753934483;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=lmnVflJFQeyZ3CX3CF0+0lEnzg2W0G02YyS1FxYVT+8=;
-        b=l9DDOgqmm/jLcvLzodnEhSlHac88+rSQPeGGPqW95rwUlSaOqADXVW8wB+1mB4SXgL
-         DCCNkqaVHcseW2RVSeHmtRuD0oraViLLeiQO0kJ3JPrt2HuUtnZNiDWeR9f2M2RVY7Z0
-         qJWZkvuheEs0Wt7ilWmvQj+nxtUXCSRCnRhjmXl4CyY8OVjSztkDx/FP+4lZj3vDiF8V
-         76hFte1wTPT+bf1AM0luG9NtqCoMjbM2dqLZER2n/arxM8zxX9Tg2/OnS+7196Xv/Xhv
-         q+ZWLYdUror4c+cByXmXEwltd8ulchcTGlUx+8yuW5G7d1QATdRGVgH0HPS9zROiH3g+
-         9+4w==
-X-Forwarded-Encrypted: i=1; AJvYcCVdMRP0gstBvdtcwsZ5DrOutZEVG95lrBgoLHAaCBNJkIKPEERdD4bA9q+EE8WO7KGh05ENATl8@lists.linux.dev
-X-Gm-Message-State: AOJu0YwFIyR4j+81iHWO/1Iqb5q4Q8W3ZX2V614Bq8fjcxCakg8mFVxX
-	1oeBbfNa4IsSnf8nsazfHy+pvPGAuddmBQ9erXshnaO3eGlluyzmhv4VzbZohYwtmBYKilF4cU8
-	Xw27hyI+leBR/Byv5TzZhHRFCSpP1gVCsmMlrrL+D2Q==
-X-Gm-Gg: ASbGncvfqxrYFVEtB4XQfyOclqH5xH51ukcNm2eoMlytexTfUM6dHeNF9F+UNPFD2XT
-	NWQoXhWrGO7JTL6sD+vwGzZS85utJSAC9IJp3KSqoAKdt3PrXZi4NZwGLb8UxAu4753TUWnixR5
-	o93hdPo3LEmYZJ3d2SZ5SLs/fA7ur1nVFCoFWSoo4P7XlxWuHI/FIbBKw61BYAVD9V1jDt6+zhz
-	IwwcaRLipc7mAgBgpIITzR0r1JTtdcEeP7WISWP
-X-Google-Smtp-Source: AGHT+IGxjMqFIGyOLP5UlYvMrp+vvZ6M+OnKNnukCmvTrMChR0RhVAa2rJCFoHHyPcg+0cqameEnjoJVGe8bIlk0QFg=
-X-Received: by 2002:a2e:be11:0:b0:32b:6cd3:3938 with SMTP id
- 38308e7fff4ca-330dfc4801emr16556981fa.13.1753329683083; Wed, 23 Jul 2025
- 21:01:23 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="Xm2oitjM"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=i7
+	gdykPB+fWjN864kcytDpFXAGsv8TpNaVvAnhLSonU=; b=Xm2oitjMLTOn+2oTM/
+	Jho1fBQ5vh1xlFzLF3zwOQ6PpDiya6r0MxuvwnEe7+ihIDZ9VpNmCaYAvUoqAAIm
+	sxjP0iPiEWBa0k79UCiUIKRXYydHoM5Es+b9Hfg4ZN+KEoW4OGXZOIUcS+vLLm+2
+	4j2pVf54TZZNoZDp360zvKgss=
+Received: from u2204.. (unknown [])
+	by gzga-smtp-mtada-g0-0 (Coremail) with SMTP id _____wCHxmpRIIJoV27kGw--.36049S2;
+	Thu, 24 Jul 2025 20:00:18 +0800 (CST)
+From: Haiyang He <aspirestro@163.com>
+To: jan.kiszka@siemens.com
+Cc: xenomai@lists.linux.dev,
+	Haiyang He <aspirestro@163.com>
+Subject: [PATCH 1/2] lib/cobalt: fix incorrect addr passed to sc_cobalt_backtrace syscall
+Date: Thu, 24 Jul 2025 20:00:11 +0800
+Message-Id: <20250724120012.1656476-1-aspirestro@163.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <7ec1afca-5d28-4763-a091-886e1c31412f.luis@apue.org>
- <CAFc1U0v7ENaCASVAje4CdEoJ7xP1GmM13StK4rVCt9T88mBGSg@mail.gmail.com>
- <f616e74e-2df6-494f-9017-201e5825ab4d@web.de> <ff2d19f5-ae8c-4db3-904c-c5498733e9c8@babic.homelinux.org>
-In-Reply-To: <ff2d19f5-ae8c-4db3-904c-c5498733e9c8@babic.homelinux.org>
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Thu, 24 Jul 2025 06:01:12 +0200
-X-Gm-Features: Ac12FXxbRUj0SNIgDJEEe4GOoA0Ad5m3zAW8yQYDn_ghzNwaVhrAx0KGF1wEyr4
-Message-ID: <CAFc1U0stQBrmzaSfN=T_rHy=1xyqxiPjbLOWnaArHbHNCgOmyA@mail.gmail.com>
-Subject: Re: xenomai.org down?
-To: Stefano Babic <stefano.babic@babic.homelinux.org>
-Cc: Jan Kiszka <jan.kiszka@web.de>, Luis <luis@apue.org>, xenomai <xenomai@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID:_____wCHxmpRIIJoV27kGw--.36049S2
+X-Coremail-Antispam: 1Uf129KBjvJXoW7Zr15Ww4DGF1kCw1kKr43GFg_yoW8XF4kpF
+	1Sgrs2krWUGwsYyFZ8Ww1kCry5Xa95XFy7WF13CrW8Cw45XayIqr1aqa4Ivr13Grn8JrW3
+	K3y8tr1UCF1v9aDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pR_sqXUUUUU=
+X-CM-SenderInfo: pdvsx2xhvw20i6rwjhhfrp/1tbiXBOUcWiCFp2zqwAAsT
 
-Hi,
+The correct value of "frames + skip" should be
+&frames[0] + skip * sizeof(void *). But ARM64/XENOMAI_SYSCALL3 expands
+it to (unsigned long)frames + skip, which means &frames[0] + skip. The
+sc_cobalt_backtrace syscall gets incorrect addr, then the backtrace of
+relax is invalid.
 
-It works fine now, thanks for that.
+Symptom maybe as following:
+2
+/root/latency
+316 2 syscall sampling-313
+.
 
-Le jeu. 24 juil. 2025 =C3=A0 00:57, Stefano Babic
-<stefano.babic@babic.homelinux.org> a =C3=A9crit :
->
-> Hi Jan,
->
-> On 21.07.25 18:33, Jan Kiszka wrote:
-> > On 21.07.25 17:34, Pierre FICHEUX wrote:
-> >> Same for me.
-> >>
-> >>
-> >> Le lun. 21 juil. 2025 =C3=A0 04:45, Luis <luis@apue.org> a =C3=A9crit =
-:
-> >>>
-> >>> https://xenomai.org
-> >>>
-> >>> GitLab Logo
-> >>> 502
-> >>> Whoops, something went wrong on our end.
-> >>> Try refreshing the page, or going back and attempting the action agai=
-n.
-> >>>
-> >>> Please contact your GitLab administrator if this problem persists.
-> >>>
-> >>> Go back
-> >>
-> >>
-> >>
-> >
-> > Thanks all for the heads-up, I've informed the admin of source.denx.de,
-> > our host.
-> >
->
-> I could have access to the server and I fix this, it is online again.
->
-> Stefano
->
-> --
-> Nabla Software Engineering
-> HRB 40522 Augsburg
-> Phone: +49 821 45592596
-> E-Mail: office@nabladev.com
->
+Applied this fix:
+2
+/usr/xenomai/bin/latency
+293 2 syscall sampling-290
+0x2970 /usr/xenomai/bin/latency
+0xffffb0de4cb0 ?
+0x13a64 /usr/xenomai/lib/libcobalt.so.2.0.0
+0x13b28 /usr/xenomai/lib/libcobalt.so.2.0.0
+0x39a0 /usr/xenomai/bin/latency
+0x3b5c /usr/xenomai/bin/latency
+0x17a68 /usr/xenomai/lib/libcobalt.so.2.0.0
+0x7d5b8 /usr/lib/aarch64-linux-gnu/libc.so.6
+0xe5edc /usr/lib/aarch64-linux-gnu/libc.so.6
+.
 
+Signed-off-by: Haiyang He <aspirestro@163.com>
+---
+ lib/cobalt/sigshadow.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---=20
+diff --git a/lib/cobalt/sigshadow.c b/lib/cobalt/sigshadow.c
+index 10736b113..938055e08 100644
+--- a/lib/cobalt/sigshadow.c
++++ b/lib/cobalt/sigshadow.c
+@@ -59,7 +59,7 @@ int cobalt_sigshadow_handler(int sig, siginfo_t *si, void *ctxt)
+ 		nr = backtrace(frames, ARRAY_SIZE(frames));
+ 		/* Skip the sighandler context. */
+ 		skip = nr > 3 ? 3 : 0;
+-		XENOMAI_SYSCALL3(sc_cobalt_backtrace, nr - skip, frames + skip, arg);
++		XENOMAI_SYSCALL3(sc_cobalt_backtrace, (nr - skip), (frames + skip), arg);
+ 		break;
+ 	case SIGSHADOW_ACTION_HOME:
+ 		/*
+-- 
+2.34.1
 
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source code
