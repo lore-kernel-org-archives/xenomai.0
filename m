@@ -1,117 +1,61 @@
-Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.4])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 1A2EA2C15B7
-	for <xenomai@lists.linux.dev>; Thu, 24 Jul 2025 12:00:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.4
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15E702E370F
+	for <xenomai@lists.linux.dev>; Thu, 24 Jul 2025 19:09:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753358429; cv=none; b=JHHon+zkX5Up5cKiPmIDDArMug67TJIsdN2x/d6DlMtbidS1KKvMD6XbiWfozMARIOCSkgu5Rnq3HyjBLt1yJw+bY7ugJv4tfFcZetGqle4ahYXDne0I5mcG6p3G/JuTC55XUytjJMfL9CvL5yrQ0kPj54TTOUipeHaR4draxuo=
+	t=1753384193; cv=none; b=J5d+QXomgyZCW5xXAxRKvkdr4KLzT8agt5OCd6Zr2EWAsITsa5B6X8UiBNVUn+vseDi4raUtEvyZFKtiyknYhfPtbXg3reJirjgWfmQPWYNULZcTQho8HIZqL2mkIlC0gfjEayn1wDizBB323ysT52pw3tJBSoYnz/fk3N2ZNaU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753358429; c=relaxed/simple;
-	bh=s0wojbbJtogAZc+34V4JuOIPcAPqgAbBwoMguBO2nZY=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=abPvBWWMdwW9icd0YtjtKlsuMgiA1/Jfm/bl2k8Cx0h1mcqT6WVgn/E4KuO5tOKE6KnE+LRD8YoFdO2qh5GH8OeXpyEqIjLY64NlFOoySrh7CO9eXfM0dCAepRnYyn0hwby4ZQCaUCemzV5cKxfjRfJHNCLMaIP+4z8y2f0H2z4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=A6mdYgMH; arc=none smtp.client-ip=117.135.210.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1753384193; c=relaxed/simple;
+	bh=sSCY0Xz+PBrwQ8FYM+RoQgMdncTaEiax/Cak0O9PDJM=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=kbCIiHyTWmF2MF6txb8OM8umn7B+nVBrDw0XFGojyPS+S/ei0Z4pCT6tRaAavhe+uvo4+Bcd/4APVXzo6+6uF52qvbb2J2Ma7xUK9/mg5kTHgwSq5rH9+eM6dIfoopw9iIuo2o4Jr49G5V0PqwYcjurdHYlp+J2Sbw6okP0riIo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=VgwIb6rv; arc=none smtp.client-ip=185.136.64.225
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="A6mdYgMH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=+H
-	q7EKZVs/DckdAxeyfKJlmDci621NTzR7hmCkd7jps=; b=A6mdYgMHFl6bBQbwGl
-	0rLDWkg4QMqi4dusmh0JTgbxqfuGVpzhSWDSd5wwLKMHVhgb1T7BnyBXtV/9L0ra
-	/P7kkzCkn7av014zM8+dlEZTISn8sP5mgM4chESxmx30s08Gt250vaJlBPIbgUIN
-	+DnbGcfh4iDWpvhiiEMl4L0pQ=
-Received: from u2204.. (unknown [])
-	by gzga-smtp-mtada-g0-0 (Coremail) with SMTP id _____wCHxmpRIIJoV27kGw--.36049S3;
-	Thu, 24 Jul 2025 20:00:18 +0800 (CST)
-From: Haiyang He <aspirestro@163.com>
-To: jan.kiszka@siemens.com
-Cc: xenomai@lists.linux.dev,
-	Haiyang He <aspirestro@163.com>
-Subject: [PATCH 2/2] lib/cobalt: arm64: Fix syscall macro argument casting
-Date: Thu, 24 Jul 2025 20:00:12 +0800
-Message-Id: <20250724120012.1656476-2-aspirestro@163.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20250724120012.1656476-1-aspirestro@163.com>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="VgwIb6rv"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2025072419093997202f89377ef2f3f1
+        for <xenomai@lists.linux.dev>;
+        Thu, 24 Jul 2025 21:09:40 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=sSCY0Xz+PBrwQ8FYM+RoQgMdncTaEiax/Cak0O9PDJM=;
+ b=VgwIb6rvBpTstJTwR49/VcCwauVCVns5ITi8idFcDz0Ddes4C+gCA2q/CchmvOICwjAlzH
+ mARtjRxaft4ItJ5un8iTJ+NDvYxPZ8BrODaN69OaWO0YLwy8OJVhupbLR+ZGuAM4zRN8nhWn
+ udFUbOnchoRATQYj3oHX7WjnLhESkCMTk1nBVsSyAzPhgQYB724B/+eC149Va7/mZzzMitIz
+ rsp+ykY7IFqN3diOUv8kUAmNfb9CE1IOwdZy6BZ5RTzVFOD3zHoO4XgchyQveTK5XFgW1J6+
+ Z7Exx5iP0wCoKXgnuvmuQ7bHbJ+AML5vGnw6cR5XQTovs3VL4VcGUMuw==;
+Message-ID: <137f95aabaf6a5916d4abcfa8b4f384234427cea.camel@siemens.com>
+Subject: Re: [PATCH 2/2] lib/cobalt: arm64: Fix syscall macro argument
+ casting
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Haiyang He <aspirestro@163.com>, jan.kiszka@siemens.com
+Cc: xenomai@lists.linux.dev
+Date: Thu, 24 Jul 2025 21:09:39 +0200
+In-Reply-To: <20250724120012.1656476-2-aspirestro@163.com>
 References: <20250724120012.1656476-1-aspirestro@163.com>
+	 <20250724120012.1656476-2-aspirestro@163.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wCHxmpRIIJoV27kGw--.36049S3
-X-Coremail-Antispam: 1Uf129KBjvJXoW7ArWfXrW8trW3KF1fJw15XFb_yoW8KF43pF
-	4xKw4UKF42g348K343Zry0vry7Jr1DJ3y2gFW2gryUW3WUta1rZryfua4vkrWfCrWkXFWf
-	Zay3tr1qkr4vv3JanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pRsa9-UUUUU=
-X-CM-SenderInfo: pdvsx2xhvw20i6rwjhhfrp/1tbiXR6UcWiCFuWvKwABs6
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-The Xenomai syscall macros in the arm64 header file cast their
-arguments like (unsigned long)__a1. This can cause issues when
-macro arguments are complex expressions, due to missing parentheses.
+On Thu, 2025-07-24 at 20:00 +0800, Haiyang He wrote:
+> The Xenomai syscall macros in the arm64 header file cast their
+> arguments like (unsigned long)__a1. This can cause issues when
+> macro arguments are complex expressions, due to missing parentheses.
+>=20
+> Update all syscall macro definitions to use (unsigned long)(__a1)
+> style, ensuring proper evaluation order and preventing potential
+> macro expansion bugs.
 
-Update all syscall macro definitions to use (unsigned long)(__a1)
-style, ensuring proper evaluation order and preventing potential
-macro expansion bugs.
-
-Signed-off-by: Haiyang He <aspirestro@163.com>
----
- .../arch/arm64/include/asm/xenomai/syscall.h  | 32 +++++++++----------
- 1 file changed, 16 insertions(+), 16 deletions(-)
-
-diff --git a/lib/cobalt/arch/arm64/include/asm/xenomai/syscall.h b/lib/cobalt/arch/arm64/include/asm/xenomai/syscall.h
-index d89697712..5ed9eb252 100644
---- a/lib/cobalt/arch/arm64/include/asm/xenomai/syscall.h
-+++ b/lib/cobalt/arch/arm64/include/asm/xenomai/syscall.h
-@@ -74,31 +74,31 @@ DEFINE_XENOMAI_SYSCALL(5)
- 	__xenomai_do_syscall0(__op)
- #define XENOMAI_SYSCALL1(__op, __a1)				\
- 	__xenomai_do_syscall1(__op,				\
--			      (unsigned long)__a1)
-+			      (unsigned long)(__a1))
- #define XENOMAI_SYSCALL2(__op, __a1, __a2)			\
- 	__xenomai_do_syscall2(__op,				\
--			      (unsigned long)__a1,		\
--			      (unsigned long)__a2)
-+			      (unsigned long)(__a1),		\
-+			      (unsigned long)(__a2))
- #define XENOMAI_SYSCALL3(__op, __a1, __a2, __a3)		\
- 	__xenomai_do_syscall3(__op,				\
--			      (unsigned long)__a1,		\
--			      (unsigned long)__a2,		\
--			      (unsigned long)__a3)
-+			      (unsigned long)(__a1),		\
-+			      (unsigned long)(__a2),		\
-+			      (unsigned long)(__a3))
- #define XENOMAI_SYSCALL4(__op, __a1, __a2, __a3, __a4)		\
- 	__xenomai_do_syscall4(__op,				\
--			      (unsigned long)__a1,		\
--			      (unsigned long)__a2,		\
--			      (unsigned long)__a3,		\
--			      (unsigned long)__a4)
-+			      (unsigned long)(__a1),		\
-+			      (unsigned long)(__a2),		\
-+			      (unsigned long)(__a3),		\
-+			      (unsigned long)(__a4))
- #define XENOMAI_SYSCALL5(__op, __a1, __a2, __a3, __a4, __a5)	\
- 	__xenomai_do_syscall5(__op,				\
--			      (unsigned long)__a1,		\
--			      (unsigned long)__a2,		\
--			      (unsigned long)__a3,		\
--			      (unsigned long)__a4,		\
--			      (unsigned long)__a5)
-+			      (unsigned long)(__a1),		\
-+			      (unsigned long)(__a2),		\
-+			      (unsigned long)(__a3),		\
-+			      (unsigned long)(__a4),		\
-+			      (unsigned long)(__a5))
- #define XENOMAI_SYSBIND(__breq)					\
- 	__xenomai_do_syscall1(sc_cobalt_bind,			\
--			      (unsigned long)__breq)
-+			      (unsigned long)(__breq))
- 
- #endif /* !_LIB_COBALT_ARM64_SYSCALL_H */
--- 
-2.34.1
-
+Good catch. If we apply that, we do not need patch 1, right?
