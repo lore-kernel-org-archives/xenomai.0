@@ -1,124 +1,166 @@
-Received: from redirect.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 952BB265CC0
-	for <xenomai@lists.linux.dev>; Mon, 28 Jul 2025 13:13:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.231
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0F262701CA
+	for <xenomai@lists.linux.dev>; Mon, 28 Jul 2025 14:37:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753708439; cv=none; b=L4nKgCYdfavg2To22Z4tDp/aaCULiuJmuwk9FBgxtnhM3jHq+s0iBz1ipA3lKYwW5rgA+QOdX4pszoOzUDdQ0mCsRGq/vgVkt8S1h3HE3V9UCMDRyWn8NhRTxUfSbYDZkPqdqkx0MQGAwpdxkKPTWRVYUWua2hzPBXIvmMdS5sE=
+	t=1753713438; cv=none; b=L1WoRcQKiZyi/RH4gBu4QC3UO+3XHMpRBraVZAbp71nL+r1HZ+0Eb5rLJMzEzeJK/fEEXjV6UqEXRLW9tbsV6BPQyqfU3KPfOXaH7kdAxd+R9GR7fiNsUzHA/wDz3XvAbsfFocSmONdaEc8H92Hj3lvh5z+93zExGKzIY708cZ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753708439; c=relaxed/simple;
-	bh=rnQAdYSkOSmkh2ESZepaL4/I7ev1FUXTgQe5gsGMi40=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Gy/2ysWiHkHZWFqIf1N+no7cSrt+qIw6j3s73eH4bzQFMQFqTggDRfkyF7dPOHFVP6a97w0tk8H6EsXkiY0qnxFMqK0AB2eloReQeK83VgsNDUrbUzmSZk4svWbXabeJ256a5dbN43SnuDNLWVivwNyV8Y/FyPOFClshPPmT8/4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b=TIlzYx7n; arc=none smtp.client-ip=217.70.178.231
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=redhat.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
+	s=arc-20240116; t=1753713438; c=relaxed/simple;
+	bh=uxtrn9ham88+oZcMymYVavsjlOs/XWe59TVGIs+v9e0=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=eYYEt97A7C9D5W/qaayiUiniWoS+QlyNCA4TMS+Wbh0mGYCmngewBA2N57GWlkHng55O+CL1zpFFy+mYg//dDGWuLeyKXUJHFtHv8zlfrRf11/DBrE1L9QimgB9h/U1ihD3OUx/5HKBJq+9pfACR3YgChXMOwpdx+Zns+yE/jmg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=KYS+RJUh; arc=none smtp.client-ip=185.136.64.225
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="TIlzYx7n"
-Received: from spool.mail.gandi.net (spool3.mail.gandi.net [217.70.178.212])
-	by relay11.mail.gandi.net (Postfix) with ESMTPS id 6E6D2436A4
-	for <xenomai@lists.linux.dev>; Mon, 28 Jul 2025 13:13:49 +0000 (UTC)
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id B450DAC0E95
-	for <xenomai@xenomai.org>; Mon, 28 Jul 2025 13:13:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1753708427;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=pG1arC9sQZZIaXos31tacar34XTTwmcp5owYfE/iX9Y=;
-	b=TIlzYx7nVAJnVENSmlhs9v9ZttA22gTkj7UeyeRiC0oJrrY6HkJdJuzzWB5eGtpGpoNzJ1
-	6ylZh3MRYoxFvaVrAjmpANNoIXpF0oeH/IPw2HziMRgKbhImLUD4lTHTCf15zONuWPy1a4
-	zd/vW8NzT+cnZh9gojQ7z71sYn65XTI=
-Received: from mx-prod-mc-02.mail-002.prod.us-west-2.aws.redhat.com
- (ec2-54-186-198-63.us-west-2.compute.amazonaws.com [54.186.198.63]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.3,
- cipher=TLS_AES_256_GCM_SHA384) id us-mta-680-17ZUJll5OWq_uVGvFoaFmw-1; Mon,
- 28 Jul 2025 09:13:44 -0400
-X-MC-Unique: 17ZUJll5OWq_uVGvFoaFmw-1
-X-Mimecast-MFC-AGG-ID: 17ZUJll5OWq_uVGvFoaFmw_1753708423
-Received: from mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com (mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com [10.30.177.111])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	by mx-prod-mc-02.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id AFCD3195609F;
-	Mon, 28 Jul 2025 13:13:41 +0000 (UTC)
-Received: from pauld.westford.csb (unknown [10.22.88.177])
-	by mx-prod-int-08.mail-002.prod.us-west-2.aws.redhat.com (Postfix) with ESMTPS id 021D31800B69;
-	Mon, 28 Jul 2025 13:13:37 +0000 (UTC)
-Date: Mon, 28 Jul 2025 09:13:34 -0400
-From: Phil Auld <pauld@redhat.com>
-To: Thomas Gleixner <tglx@linutronix.de>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>,
-	Henning Schild <henning.schild@siemens.com>,
-	Peter Zijlstra <peterz@infradead.org>, x86@kernel.org,
-	linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-	Borislav Petkov <bp@alien8.de>, Guenter Roeck <linux@roeck-us.net>,
-	xenomai@xenomai.org, guocai.he.cn@windriver.com
-Subject: Re: sched: Unexpected reschedule of offline CPU#2!
-Message-ID: <20250728131334.GB11434@pauld.westford.csb>
-References: <20190729205059.GA1127@roeck-us.net>
- <alpine.DEB.2.21.1908161217380.1873@nanos.tec.linutronix.de>
- <20190816193208.GA29478@roeck-us.net>
- <alpine.DEB.2.21.1908172219470.1923@nanos.tec.linutronix.de>
- <20210727100018.19d61165@md1za8fc.ad001.siemens.net>
- <745f219e-1593-4fbd-fa7f-1719ef6f444d@siemens.com>
- <8734mg92pt.ffs@tglx>
- <20250709134401.GA675435@lorien.usersys.redhat.com>
- <87frervq1o.ffs@tglx>
- <87a54zuojn.ffs@tglx>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="KYS+RJUh"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20250728143709faaab6e52d129c0b69
+        for <xenomai@lists.linux.dev>;
+        Mon, 28 Jul 2025 16:37:10 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=Ev9DCylRbz3vcR1uK22tjd3fm5qeIWIzUZhi6BKcAng=;
+ b=KYS+RJUhkX9f/WLBW5qOePs/lSz2fNqroLen3kJDq3eeln238U9g0zBggIH57AWED1xrNt
+ +jjQcIW7w0fDOqycFyft+J97urSBaY3QmzqFG1KcHQp7vC3ugnmwyh19Uvqc9/yx4MKxd4k0
+ R6bY5RxrLmWHZUULo8sg/jflA5of+6TwwIsoLI4F2Su02b7fLtpPdaGBdYyHatIcAdBN+cKS
+ Szq8M3/2FgJmw3cB97I3f8TjCXmzz854boU0O/a5+aeQfIYww3fSYiT6VKghmHA5UCR/Adrc
+ N2/i0XQ3SFk2WTt4f/mpeHwrX4lqXlCaB8LDG1NsCYz8ABx/TlAb4iJw==;
+Message-ID: <6fcb3f9830056d99161ea8f50a016b99d98a7c71.camel@siemens.com>
+Subject: Re: Dovetail 6.15: x86: Invalid wait context
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev, Jan Kiszka <jan.kiszka@siemens.com>
+Date: Mon, 28 Jul 2025 16:37:09 +0200
+In-Reply-To: <87fres42zc.fsf@xenomai.org>
+References: <ee6e634d9d87ef52670dbb9ce91d7080b8640a71.camel@siemens.com>
+		<87tt4ubote.fsf@xenomai.org>
+		<997e11d95184f34a23fad2607504ef567ec07758.camel@siemens.com>
+		<87a55bw26w.fsf@xenomai.org>
+		<f9245ae15561f12335177c73df9d9b53de4d7ac9.camel@siemens.com>
+		<87ldok48lm.fsf@xenomai.org> <87fres42zc.fsf@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87a54zuojn.ffs@tglx>
-X-Scanned-By: MIMEDefang 3.4.1 on 10.30.177.111
-X-GND-Status: LEGIT
-Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=redhat.com header.s=mimecast20190719 header.b=TIlzYx7n;
-	dmarc=pass (policy=quarantine) header.from=redhat.com;
-	spf=pass (spool.mail.gandi.net: domain of pauld@redhat.com designates 170.10.133.124 as permitted sender) smtp.mailfrom=pauld@redhat.com
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdelvddviecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomheprfhhihhlucetuhhlugcuoehprghulhgusehrvgguhhgrthdrtghomheqnecuggftrfgrthhtvghrnhepueefjeethefhtddtgefhfeelleefgfffgfegleefgfduhefgleevvdfhveffleehnecukfhppedvudejrdejtddrudejkedrvdduvddpheegrddukeeirdduleekrdeifeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudejrdejtddrudejkedrvdduvddphhgvlhhopehsphhoohhlrdhmrghilhdrghgrnhguihdrnhgvthdpmhgrihhlfhhrohhmpehprghulhgusehrvgguhhgrthdrtghomhdpnhgspghrtghpthhtohepuddprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghv
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On Sun, Jul 20, 2025 at 12:47:24PM +0200 Thomas Gleixner wrote:
-> On Sat, Jul 19 2025 at 23:17, Thomas Gleixner wrote:
-> > On Wed, Jul 09 2025 at 09:44, Phil Auld wrote:
-> >> Hi Thomas,
-> >>
-> >> On Tue, Sep 03, 2024 at 05:27:58PM +0200 Thomas Gleixner wrote:
-> >>> On Tue, Jul 27 2021 at 10:46, Jan Kiszka wrote:
-> >>> 
-> >>> Picking up this dead thread again.
-> >>
-> >> Necro-ing this again...
-> >>
-> >> I keep getting occasional reports of this case. Unfortunately
-> >> though, I've never been able to reproduce it myself.
-> >>
-> >> Did the below patch ever go anywhere?
-> >
-> > Nope. Guocai said it does not work and I have no reproducer either to
-> > actually look at it deeper and there was further debug data provided.
-> 
-> Obviously:
-> 
->         no further debug data was provided, so I can only tap in the
->         dark.
->
+On Sat, 2025-07-19 at 17:25 +0200, Philippe Gerum wrote:
+> Philippe Gerum <rpm@xenomai.org> writes:
+>=20
+> > Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+> >=20
+> > > On Fri, 2025-07-11 at 10:40 +0200, Philippe Gerum wrote:
+> > > > Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+> > > >=20
+> > > > > On Thu, 2025-06-05 at 10:00 +0200, Philippe Gerum wrote:
+> > > > > > Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+> > > > > >=20
+> > > > > > > Hi Philippe,
+> > > > > > >=20
+> > > > > > > the following is taken from our CI, testing Dovetail 6.15.
+> > > > > > > On x86 we have an invalid wait context reported:
+> > > > > > >=20
+> > > > > > > [  151.574032]=20
+> > > > > > > [  151.574039] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > > > > > > [  151.574043] [ BUG: Invalid wait context ]
+> > > > > > > [  151.574046] 6.15.0 #1 Not tainted
+> > > > > > > [  151.574048] -----------------------------
+> > > > > > > [  151.574048] swapper/0/0 is trying to lock:
+> > > > > > > [  151.574050] ffffffff841174c0 (&state->readq){....}-{3:3}, =
+at: __wake_up+0x21/0x60
+> > > > > > > [  151.574063] other info that might help us debug this:
+> > > > > > > [  151.574064] context-{2:2}
+> > > > > > > [  151.574065] no locks held by swapper/0/0.
+> > > > > > > [  151.574066] stack backtrace:
+> > > > > > > [  151.574073] CPU: 0 UID: 0 PID: 0 Comm: swapper/0 Not taint=
+ed 6.15.0 #1 PREEMPT(full)=20
+> > > > > > > [  151.574078] Hardware name: QEMU Standard PC (Q35 + ICH9, 2=
+009), BIOS 1.16.3-debian-1.16.3-2~bpo12+1 04/01/2014
+> > > > > > > [  151.574079] IRQ stage: Linux
+> > > > > > > [  151.574083] Call Trace:
+> > > > > > > [  151.574086]  <IRQ>
+> > > > > > > [  151.574088]  dump_stack_lvl+0x79/0xe0
+> > > > > > > [  151.574095]  __lock_acquire+0x942/0xbf0
+> > > > > > > [  151.574104]  lock_acquire+0xe2/0x2f0
+> > > > > > > [  151.574107]  ? __wake_up+0x21/0x60
+> > > > > > > [  151.574111]  ? find_held_lock+0x2b/0x80
+> > > > > > > [  151.574115]  _raw_spin_lock_irqsave+0x49/0x60
+> > > > > > > [  151.574120]  ? __wake_up+0x21/0x60
+> > > > > > > [  151.574122]  __wake_up+0x21/0x60
+> > > > > > > [  151.574125]  xnpipe_wakeup_proc+0x152/0x590
+> > > > > > > [  151.574132]  handle_synthetic_irq+0xc2/0x250
+> > > > > > > [  151.574137]  arch_do_IRQ_pipelined+0xca/0x180
+> > > > > > > [  151.574141]  </IRQ>
+> > > > > > > [  151.574142]  <TASK>
+> > > > > > > [  151.574144]  sync_current_irq_stage+0xaa/0x110
+> > > > > > > [  151.574147]  inband_irq_enable+0x42/0x60
+> > > > > > > [  151.574151]  cpuidle_idle_call+0x17d/0x200
+> > > > > > > [  151.574155]  do_idle+0x89/0xd0
+> > > > > > > [  151.574158]  cpu_startup_entry+0x29/0x30
+> > > > > > > [  151.574160]  rest_init+0xf0/0x190
+> > > > > > > [  151.574164]  start_kernel+0x632/0x700
+> > > > > > > [  151.574179]  x86_64_start_reservations+0x18/0x30
+> > > > > > > [  151.574185]  x86_64_start_kernel+0x78/0x80
+> > > > > > > [  151.574188]  common_startup_64+0x13e/0x148
+> > > > > > > [  151.574198]  </TASK>
+> > > > > > >=20
+> > > > > > > That seems to be triggered by the Xenomai 3 smokey testsuite.
+> > > > > > >=20
+> > > > > > > Any ideas?
+> > > > > >=20
+> > > > > > Does this happen when full preemption is disabled on x86?
+> > > > >=20
+> > > > > Test-Log: https://lava.xenomai.org/scheduler/job/21679
+> > > > > Kernel-Config: https://source.denx.de/Xenomai/xenomai-images/-/bl=
+ob/next/recipes-kernel/linux/files/amd64_defconfig?ref_type=3Dheads
+> > > >=20
+> > > > I can reproduce a similar issue with EVL right now, but this requir=
+es
+> > > > full preemption to be enabled for the bug to show up, starting from
+> > > > 6.15. I can see the reason for lockdep to complain in this case, si=
+nce
+> > > > synthetic irqs are not relayed via softirqs yet. However, this can'=
+t
+> > > > explain why an oldish 4.14 kernel would complain.
+> > >=20
+> > > Thanks for letting us know. But: Where is 4.14 coming into the game?
+> >=20
+> > Because the link you sent me referred to a kernel config for 4.14.71. I
+> > assumed the yocto recipe which contains it did produce the qemu image
+> > showing the issue.
+> >=20
+> > > Our reports (from CI testing) were 6.15 related, nothing older.
+> > >=20
+> > > Is there a specific change in 6.15 that broke the synthetic IRQ
+> > > handling?
+> >=20
+> > 814b824b4466b irq_work: dovetail: never defer local work posted from oo=
+b
+> >=20
+> > > Are you already working an a fix?
+> >=20
+> > Yep.
+>=20
+> The broken commit was reverted from v6.1.y-cip-rebase, v6.12.y-rebase
+> and v6.15, things are back to normal for x4 now. I believe this should
+> fix x3 as well.
 
-Fair enough, thanks. I did not see the "does not work" part :)
+At least our virtual x86 target is still reporting the same problem
+when running the x3 testsuite. Other archs are still running, let's
+see.
 
+We do not have full preemption enabled.
 
-Cheers,
-Phil
+Test run: https://lava.xenomai.org/scheduler/job/22325
+Report  : https://lava.xenomai.org/scheduler/job/22325#L864
 
-
--- 
 
