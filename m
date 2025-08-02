@@ -1,84 +1,52 @@
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC032149C7B
-	for <xenomai@lists.linux.dev>; Fri,  1 Aug 2025 15:19:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.194
+Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.2])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 171061EE7C6
+	for <xenomai@lists.linux.dev>; Sat,  2 Aug 2025 08:04:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.2
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754061601; cv=none; b=CWXpIPLvZuUQEcPDw6x+AX/rxva6+NKIsuE7sYbgJLmh51jM2N8I9Z9n9iZgkayaVpF+yLbUHjNsllGkZm8Au/Y4GAjyP/lBtQMiHrjNkJHsSSjNHdFV1Xu1o4UOnTDYXtk5A6RZYpav0ZfpgTrpo8ZYbl8hIaFe/3lUg5Fk7tM=
+	t=1754121870; cv=none; b=TTWySytOue1WPE1h47XY40jHfJNbfKWZUhSlgCdMZQEHJAHQVRMUVinbt6hlOq1iC4Pvz7qRRcKsHjHfWUQ0PeuhWAauxMEMe4ihZSDLLOWhlSerENoSqbp9vVBOGaJuERq1mknkDBrnVDlcr0bw6cebf+44PDwZvFC9gQ4xqec=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754061601; c=relaxed/simple;
-	bh=6QgW0tXIeXarBX2glLQkgrkOJ0O3a8xBN56DcAT+M0I=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=ta/4iwz4jGmfQcixOaBBoDjtprmznnUOCo8+6g7GMSAH3uvedY3eoC5bBI+EnTBfda1DEzUl9WG5Q47Aurnswv7ZiWX9NITYKt5F15aKzQuD5SsBJdBDlnVN+XvPSWRX/mz6U5ISP5mkTRX+QaHIkNlRHE/UvhYZY/mJ/jPCCmg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=Nr9uRSYz; arc=none smtp.client-ip=217.70.183.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1754121870; c=relaxed/simple;
+	bh=/LvhSY17RUny4A44rXcFs5hWXcilxTCNd7rsUizp150=;
+	h=Date:From:To:Subject:Content-Type:MIME-Version:Message-ID; b=ojbcD5pcqOibOOdi0EwYcMCZG2ThiZ4AsBszb4wuZXBhszjm7jlfKBDUJlWMNQcIuv2kV4M6kQLC6sSV2NYw03Fjg18IJRA6QNx27Zx0cHxtxRkbP7s3mYH5rnLQlFeLjGqsUM6AiSdrb1UrdJdFR8die7Z6KLE8fFv0ZJ/JWq0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=fail (1024-bit key) header.d=163.com header.i=@163.com header.b=A2LF7y9G reason="signature verification failed"; arc=none smtp.client-ip=220.197.31.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="Nr9uRSYz"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 5398B441BE;
-	Fri,  1 Aug 2025 15:19:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1754061591;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=MxN8nS+ehQy94ANHVk5CQkrBKeqfaqOUojv6h/h1bGY=;
-	b=Nr9uRSYzXklsC8bvk+Hnpw5Juo91psafyjVqHzdmpnsehEKH0AApOEvO66PTAPwadYL56o
-	5L/6YMNImLTGHy9EQivmqw7BQX5ZkG+fVZNQcRJsav+eLeD2VllCa9ZRIBDOf4cxhi2C8Z
-	2FxAC9yAsPbCNz/tIboHFBJHlaAbPql5tOARjDfLAc9ARtrgG6qIqpZELnVXN6sr5ffi28
-	ndBAfRxFjr0KsFUZpnCLtJt0h+Lj7UIu3INOGc/WKlPqLPZaNp5EIi1lOE/UGdRtF9OP3A
-	StJIkPtVH5PS65IS6gdiaAJ+POKSuM1d2eJOdvdz+xWCfWaRu5RtIq00HnVs1Q==
-From: Philippe Gerum <rpm@xenomai.org>
-To: "Xie, Nick" <nick.xie@festo.com>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: Re: Error during libevl build and runtime settings failed
-In-Reply-To: <AM5PR03MB28822B3215D9F909FD7BD0818B26A@AM5PR03MB2882.eurprd03.prod.outlook.com>
-	(Nick Xie's message of "Fri, 1 Aug 2025 14:30:24 +0000")
-References: <AM5PR03MB2882F5ED2ADBA37FAA9562608B7DA@AM5PR03MB2882.eurprd03.prod.outlook.com>
-	<AM5PR03MB2882F38E95A99A0760C60D1F8B27A@AM5PR03MB2882.eurprd03.prod.outlook.com>
-	<AM5PR03MB2882726DD078E29EB76589518B27A@AM5PR03MB2882.eurprd03.prod.outlook.com>
-	<878qk3za1e.fsf@xenomai.org>
-	<AM5PR03MB28822B3215D9F909FD7BD0818B26A@AM5PR03MB2882.eurprd03.prod.outlook.com>
-User-Agent: mu4e 1.12.12; emacs 30.1
-Date: Fri, 01 Aug 2025 17:19:50 +0200
-Message-ID: <87zfcjxe5l.fsf@xenomai.org>
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=163.com header.i=@163.com header.b="A2LF7y9G"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=wDmAtlXfM0t+d9T8Hw4O813e1VDepR83Epn7Gwuh1c0=; b=A
+	2LF7y9G+S8Rp+rOKrNOQntOouI+KOM3WWxxMnyUuuw8A12tnlYbT2EfVmMnGOT9Z
+	jYVXQyDPXlZHkpSjrNzsAEojAfvZ28QiIGuKGtkI8EoQeVt6/Xv+HhgfODY0fZFE
+	F+SZxtZsjwzA+5JcFe5MzTly2cEznJ54Q4zHQytuJw=
+Received: from suntaoworks$163.com ( [120.224.142.42] ) by
+ ajax-webmail-wmsvr-40-124 (Coremail) ; Sat, 2 Aug 2025 16:04:19 +0800 (CST)
+Date: Sat, 2 Aug 2025 16:04:19 +0800 (CST)
+From: Suntao <suntaoworks@163.com>
+To: xenomai@lists.linux.dev
+Subject: How to enable floating-point operations in XNThread
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.14 build 20250519(9504565a)
+ Copyright (c) 2002-2025 www.mailtech.cn 163com
+X-NTES-SC: AL_Qu2eBv2ZvkAu7yOfY+kZk0YXj+c/W8K1vvsg1YdfPJs0kyTU3jwcdm5fNmL19PmCLyqmoQmWVgJX8fZBeqB+Ubqzu22PTJkShZkqRyioGDDG
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgddutdegtdefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpedvlefhvdehkeduheevleegiedtueejgfekhfeijeefvdeijeekgeeigfejhfekgeenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpnhgspghrtghpthhtohepvddprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepnhhitghkrdigihgvsehfvghsthhordgtohhm
-X-GND-Sasl: rpm@xenomai.org
+Message-ID: <310ab4c5.1f5d.19869cf7137.Coremail.suntaoworks@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:fCgvCgD3FzODxo1oPQIRAA--.4453W
+X-CM-SenderInfo: xvxq3txrzr2yrv6rljoofrz/xtbBgAydYmiNvZFmFwACsJ
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-"Xie, Nick" <nick.xie@festo.com> writes:
-
-> Hi Philippe,
->
-> Thank you for your response. My main question is below.
-> Runtime settings failed
-> nick@nicklinux:~$ sudo latmus -t
-> == latmus is now tuning the core timer, period=1000 microseconds (may take a while) irq gravity...latmus: tuning setup failed (irq): Invalid argument nick@nicklinux:~$ sudo /usr/local/libexec/evl/evl-start no EVL core in kernel.
->
-> Does it mean my installation and build is not complete? How can I check whether my xenomai is running correctly? 
->
-
-Again, please upgrade to libevl 0.54, you are running 0.51 which had the
-issues you reported. Those issues have been fixed since then.
-e.g. In r53, "39e12fb latmus: fix tuning mode set up"
-
-As a rule of thumb, you want to use the latest release, always.
-
-Once 0.54 is set up, running "evl test" without error is enough to
-determine whether your installation is ok. The scheduler-related tests
-which failed in your previous setup did so because some kernel options
-were turned off, as I explained earlier. So either you turn them on, or
-you ignore the failure reports for them (i.e. "evl test -k" would keep
-going even if those test fail for the above-mentioned reason).
-
--- 
-Philippe.
+CmRlYXIgYWxso6xJIHVuZGVyc3RhbmQgdGhhdCB3aGVuIGRldmVsb3BpbmcgTGludXgga2VybmVs
+IG1vZHVsZXMgb24gQVJNIHBsYXRmb3JtcywgaWYgZmxvYXRpbmctcG9pbnQgb3BlcmF0aW9ucyBh
+cmUgaW52b2x2ZWQsIGl0J3MgbmVjZXNzYXJ5IHRvIGNhbGwga2VybmVsX25lb25fYmVnaW4oKS9r
+ZXJuZWxfbmVvbl9lbmQoKS4gQWRkaXRpb25hbGx5LCB3aGVuIGNyZWF0aW5nIGFuIHhudGhyZWFk
+LCB0aGUgWE5GUFUgZmxhZyBuZWVkcyB0byBiZSBzZXQuIEhvd2V2ZXIsIEknbSB1bmNsZWFyIGFi
+b3V0IGhvdyB0byBwZXJmb3JtIGZsb2F0aW5nLXBvaW50IG9wZXJhdGlvbnMgc3BlY2lmaWNhbGx5
+IHdpdGhpbiByZWFsLXRpbWUgdGhyZWFkc6GjcGxlYXNlIGhlbHAgbWUsIHRoYW5rcy4KCgo=
