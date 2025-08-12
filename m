@@ -1,52 +1,52 @@
-Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011032.outbound.protection.outlook.com [40.107.130.32])
+Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11013012.outbound.protection.outlook.com [40.107.162.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16FD72EE5EC
-	for <xenomai@lists.linux.dev>; Tue, 12 Aug 2025 11:57:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4A172EE5EC
+	for <xenomai@lists.linux.dev>; Tue, 12 Aug 2025 11:57:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.162.12
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754999828; cv=fail; b=ZBxH4OBkD8WavHL86efKoG26snr0giP+Ffrza1xnixixzd+iFYyOQdxo1S9Jjkwh7ghv/5zz9PIsyIB1sgA3wfI8smKL+GKzGRqhHcglReaUrNC8qKFba1Q2ZR5dNnzGj6vtG77PWHMzcoZvgTD84EwciJRpj42s7dJzxqedH8U=
+	t=1754999841; cv=fail; b=Uyo9auO27Guf/ees7twyfWvGGdL0dLXIKhs4+o0Nal4Oy32CYd/bIayMWND6YELuJk3GJhULXUm9zmz9GM6xlihUNO6xhv014GxjHlQA+jL3m/VaT4PXWzdyEoxeOoLk1mJuuLSNGVLswdzJhiQNzJum8tGy+zrB2nY5gH1ur0w=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754999828; c=relaxed/simple;
-	bh=Tc71U3kwZ4tr7tM2AJAWfe5XBfiuAB/YHaTzhCD9HIs=;
-	h=Message-ID:Date:From:To:Subject:Content-Type:MIME-Version; b=Aw5vl31sriqeeUdVNKlosHaOVprCXo//+kHP5Gkxe2ee7jpKyBBozxK1uVS84ZSCIfESZ1Zu/qJxsX376aj2fwIxHkSVvCT8Mwgx0uHF6CMd4tAqt+VOcLpKJuo8rCMXsJ20E4g1K5dOEg6DHSNdCzzTRfysEIv7OabPG1zpjLo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=XLktkl8T; arc=fail smtp.client-ip=40.107.130.32
+	s=arc-20240116; t=1754999841; c=relaxed/simple;
+	bh=cLj7FuI1QWy4G1pTlkexnTZjkuUrBZC9iRpplET0Tl8=;
+	h=Message-ID:Date:From:To:Subject:Content-Type:MIME-Version; b=TrDPfGIKEE6K7JBb79nAJ9FcsRERnT31mvTt/AqtE7FUlP1IZVKesTMWZ5dlfWVPwCOw6boCNJIwNJYOyGEQ947HwiHlqaMnpMVKfF8Uaa2l6AuGBgptCZWch6dD2X+bkz77s57h4zTKSKZveHJDF5tKNDVS0XXgqO34+Atkjj0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=YyBAXx/M; arc=fail smtp.client-ip=40.107.162.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="XLktkl8T"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="YyBAXx/M"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=NToR5r5CRY6Cy0Bz+F75Ld3eeqgxugcKoV/hylzYWNeyZPzu5/afVIDbME1mAD7a2eVy/jz10WTSKTCgkHWQGqsoexeAQdG44cINeirx36rJbZoBUXrgnTu3znbf63h0YzFXYNO4f1Fobn3l9Oo3lsSS1u0F71RNoDJ8tqlSIrgYvczXP5FJugEzjj/aWeiIUVe7YS2x1VHhXFu64ofh6MJolHIFbstXnNwrzGW3XuV2IluSgDVHTc4GuM/uNZRMgN+FJ0iVEDSSP3EJvSk3Uq/umLnMZzqes6FpqfjrhBSStxg/om28vvtFvL579/Uy/KBbPPrcInHPTi8qn+E+5g==
+ b=hZDjej1PAYeh5q3uMctvX/CWMLnrssQKiGMKr6H32ioMX3uKmMh5uSNRLw3BuQ1Pnoo7K9qHn41apRCRHLZRMhgszZEvTBo7w0j2b+6UmBe4eS0Uf+7rysGU08dCKHtDLmEXHLCsB2Xso7EFnf9h4qOQ4Rk2aHTigcGarFiZI0JQtvxbqO+UddcXPdMvJs155Q6Xfj/C20UD4Ju2+bnnorJ8bkVL581XmXqGus0FsHYP3rxxedo7kSMYn4JcyB1kKvveN8uxWm3lxSjS0YRBNdPI4+qLu5avAo0OY7YBr5lV35QmPEUvtzaZUJl+ICvP3XbaK1Qbp9lIgsEDPJxZMA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=U74Jk+XLj3nAG+fekRUpCc5WdHtzg2hzuQ9p5EdKoDk=;
- b=pOSHmEMvYTBwiEUVnsjQybsmo9a8EtPAM4GVvwVuDGDFcKLEgPrLqQDVOX3D3tYQu+rC9x8yV8AysnPX5RZKIoNR3MdbfCRFqpn4dKtC0RxNolDiLezqGIxNlAU6BwAVqAM7pY1BzQ67NvSyvo4XH901WMN1SlUzwypII0QAEv6U4mBAEVdL6ymIePcbMg57PKwVe0v5ax4r2GFjp6sfkFTGK5ZVv1zEBDctwfHJ3M1OYo8gjLARWhBxc/D45r+E7e4HkrN1twjYQ0Nz2G1IFWCzEdDsUn01PtGnN+HNxol992qkj0q12F6XWxHTZRRE7C7AQKOwqchulC7Rt+Bi1Q==
+ bh=TPMluqrCG/5Eio4IV91tcq8Vk/1hzIdx6MlI6qWuNfg=;
+ b=lM/l5c08VIB8LZN5szj1tcBV7UrsKPvW9vlg20evubaEy+qWzOQAwSvD6Aepgzf0Zrg9iTSGgbZS7LD+iVkFbEHwjcx77CY328QwozoSEoH7pbTAbwy/NydYM1YbaKuEJJ4z0Ffi+qxoLa3CVwB0J0HXuzriRSBllvd/YUgbF5t3FeQTlG0HdQjo0P2WWUnqZPylzjn5bD784qPxVj7Uy2PfEFJJG8wqyxwiaV7Qc8y2hNmsDiR7Zw03hTftgIvWJrsE1NG2MMebNaA0R0VH0W3wQxJ0A90wAUGU0S8xSDtTqCd7FnZhZ8S+WBs0cSpHW9XqWJGySyuro+vWdlksog==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=U74Jk+XLj3nAG+fekRUpCc5WdHtzg2hzuQ9p5EdKoDk=;
- b=XLktkl8TPJ95CdCfX1jZrnVhx03SS87vaDYHK7TR+zvPtpUzyi26QluJfjqDFjE+fa8DWwHZUDRRzxj+gemESxOFC4pcLk6fd/BkpVUvigsnmA+yUFpoTSaZ0otkNZfMYNo+bSBE2FcOR/rDlMx0DQVUcPSKCU+D4KqFq/pBnKN4WiKyVbA2jMNZ3x5SqAQqNMCSqRuJ9rOPVCzJcr+IDV5uPPrjjB1lHdF+1gNdcVuOdmxp2dojZzUzTboo/1yHajWeJQ9Np8L07oH5goGoEx0F/JVJiRjOGW/jc9oc+ZgPfptnGgCPA8Cv7GFEaxvQnc0IBqUlbtXNwCjk6dvmKw==
+ bh=TPMluqrCG/5Eio4IV91tcq8Vk/1hzIdx6MlI6qWuNfg=;
+ b=YyBAXx/MHn/YkyPzJoDF/igzC27+GEBMQZt9yegiziQdMlIPLIj0sRJtKcsqCj7YFk5O/vApQ2jhCjNC9SNsq0IjMuueE4T80LG37eKIVuuhAf3IRlPx8hDCbSR66lWHGYKnCcLFRTl6u98yfpA5IMtthyh4Fa9UwCxGH0p4x7mM+CaWWh+fAH6izr8cNOUPRufEI4S3hrAgUw6XPbZko6gmpaIXwqYhz9KzyILIemU4n+pR8qQ83KVYN9Li+7EZhi0pnJgqSOUxjg2orHc/OEH6xwONPp61qt/Awfonp5zlwkG0daG3nIugXrvOKhGeB62W02Sgm4IzpmukK2h/fg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
  by DU0PR10MB6828.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:47f::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9009.21; Tue, 12 Aug
- 2025 11:57:02 +0000
+ 2025 11:57:15 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408%5]) with mapi id 15.20.9031.012; Tue, 12 Aug 2025
- 11:57:02 +0000
-Message-ID: <aa60da66-ce3a-4b83-a2fb-d00e5306ec5f@siemens.com>
-Date: Tue, 12 Aug 2025 13:56:58 +0200
+ 11:57:15 +0000
+Message-ID: <b90d3598-8a77-4b13-b90b-efff08900522@siemens.com>
+Date: Tue, 12 Aug 2025 13:57:11 +0200
 User-Agent: Mozilla Thunderbird
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: Xenomai <xenomai@lists.linux.dev>
-Subject: [xenomai-images][PATCH] User clear-test-password flag for root user
+Subject: [xenomai-images][PATCH] Update to kas 4.8.2
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
@@ -93,8 +93,8 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH0PR13CA0051.namprd13.prod.outlook.com
- (2603:10b6:610:b2::26) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: CH0PR13CA0041.namprd13.prod.outlook.com
+ (2603:10b6:610:b2::16) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -104,126 +104,722 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DU0PR10MB6828:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0bd2c7f1-0af0-4bce-b557-08ddd997599e
+X-MS-Office365-Filtering-Correlation-Id: 152992b4-d5ce-4ba2-a217-08ddd99760f2
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?UFNVUkwxK2VFOUdoMGxhMDZlNXFZaWJRalg5V1kreXlJZCtMazI3NnZudnhM?=
- =?utf-8?B?TkR5dUlyNzl2OWRudGZ0bFlrVmdxSkUwTWVuZzZCQ3VxcG5rWW9ic2tuL0xw?=
- =?utf-8?B?RzRLU05mVFNoV0VES0tJanZjVkxJUEFnU2tOaGpLUXZRRWh0M0pLQjJ2elVC?=
- =?utf-8?B?NFJ2bkQxUXZYTVRlcnlXVXpXbk82ZHJXdHpaWHFBMHVHMEIvNTJ1N2toanEv?=
- =?utf-8?B?L3RwQXZyUHowNnNBc1h3QmxNT3RNKzZTaUxsOHBsMnNhQms5UHdVa2pUbDhX?=
- =?utf-8?B?bU1PdDZCREY1Vno0SjVtRnRKb0xzUXVzUERlNkhXT3d6aXQwY05nZWlWVC81?=
- =?utf-8?B?eHZtcnQ1Ym9EczNKOFF3bU5PT2dwSG5DY0p2RnNCSDhhT2Z5YXlhSlNHcmJL?=
- =?utf-8?B?WmVhdTFIdXRzM3NWdmVCREtqTlNOZDJ5a3VVVTRteWNNM0tTWVNRL1UwYWZW?=
- =?utf-8?B?czhRWVdlRXlSOENXT1FDRXJoSXZ6V25sdmVkekFucVpDdkRmN3hUaThFTUx2?=
- =?utf-8?B?aHREZFYrWkhmK0dYcVhTeVB4dVdUeFcwOVFpUE4rQWt4clhacVl4MnA2YVpl?=
- =?utf-8?B?YzUwWGZzdVBEK3dUa3Y4STlpc3l0MHhjWTZFTVlWdjRiQ25ZYXNPNERhUXVH?=
- =?utf-8?B?VitUbG8wWnA2bU0xQk1IUmRqU2orSTd0bXcvb3BnckdqbUtBTlhBUUpwRTJw?=
- =?utf-8?B?a3dPcmdTTFNxYzI1MTVpc2NXeC9mMjlTY3BzRkdVdGxjM0t6elFGeHJOVG1i?=
- =?utf-8?B?dHRZWnpQUXN6NzZNT3B0RGJGSFZRRzd6U3NnMkdDdVZRWXRlNzUrU1lMSjJ6?=
- =?utf-8?B?RytPS05FNGV1aE4weWx2YnAyZy94ZmFjYW1ETUhockV5WnlQK09VQUV0S0wx?=
- =?utf-8?B?ZWtFZVJrbEN3a1BGNDBFNk1RWUJSSmJEVmFLbGNHQnhYZjdZUzRhcFdRbllJ?=
- =?utf-8?B?VXVIQnlPR292dnptN2Y5NlgyaUx3RW1FVGV4QTBHSmE5QnRBczY1ZWxBcnVH?=
- =?utf-8?B?MHdQaXlKMUoxUk5NNk95UHNDZnUrVDR4Y2hTZFBxdytZbmZZbUx3ZGl5Rms0?=
- =?utf-8?B?MXA5VWZpU0c1b1g5ZmR5bjNJeW1janpaTGFzajlkK3BjQkJEWmR0L2V4RVNE?=
- =?utf-8?B?UDI2TXoram44QzExeVY3cHcxOE5XUEl0K3RPQ0Q5U3liUDhFRFVXMkkwOCtP?=
- =?utf-8?B?amo4SjlsTlpIMUE3ek51cWU4N2ZESDcxK2RZODNaVXF5SFNwSFF4S2c1dnBn?=
- =?utf-8?B?TEN4RFdNUmo3Z1VtN0c4K3FENFAvVzEzTWxrc0ptRUFiNERwZm1HY3FseVhR?=
- =?utf-8?B?WU11K2IyUXVxSWUzQ05MUm5qOWg2YmhDSVowVTFNYnl4SFlCWi9TYzhFcXM5?=
- =?utf-8?B?ZnJvay8rakF0bmxmRDB2RjZXZzZQUDBYWUF2bkZSMjAyV01scWFvZ2l4Y1Nk?=
- =?utf-8?B?MVQ4MkNNYklVKzdHSXJtYWMvbDhkYSttTWNNeFo0bFE0WUt2WHV1ODRPcHdq?=
- =?utf-8?B?OHBxZlRKWUJSaElSMlRXMlZpOWFWMTNhd1NOU0Q2SnBNcFFWemZld0VhcTQr?=
- =?utf-8?B?YzNRdkt3dm1RbXBxRHhKd09GZXJuNXJuQVRhbE9KdHlVWEc5L2RtYVFwTFVT?=
- =?utf-8?B?YytjWUtUOXRnVE50ZnI1WTliRmd6TzJpd3Y0cFRLdndGUkh5U045S3hsYkNW?=
- =?utf-8?B?Vk1nKzRpdXVlYk50b3BMT2ltQUFwcGlGSVBkdE1kdXhMaDM3ZldXeG5iZGxi?=
- =?utf-8?B?Y0FUYVloRnlXSFpuT3NGK21ibnFLVkpiZlN3NzNIMHJpYW5mUGs0UzJzOG5F?=
- =?utf-8?B?cWZqNENNeW5aZHNaUXpTQ0o0M3c3NVQzc0F6ZVgwRDUySzNtV0pxbG9xVHly?=
- =?utf-8?B?SkgzMlhGWU1yRzhxUThwZk5vZER4QzNPeWVqYzJ1c0c4YVE9PQ==?=
+	=?utf-8?B?SGFQYWI1blBBenZtYWdSQlFENTVWM1ZkYTc0U3VuRmlhQ2pwL0lncEdkSldn?=
+ =?utf-8?B?TXViWG1HcEpOcVEvZ29Rc0MyWVcrWUp2OFAyWkgyRndMVlNzR2lsQ2tBVFdF?=
+ =?utf-8?B?Rm5xSFQ1eGxpbE5oUlFwdEJPbGo5ZlJLNGZsY2lveTgwUU1NVDZUU2JBNlZO?=
+ =?utf-8?B?YWQ3dWkwRjlKMEwwUFNxYWQwSlZETFMrNzI2Tlc4ekE3U281ZVphWWZneE1P?=
+ =?utf-8?B?aVFBNkFDSnlYRldpWlJaYWxOc1Y4S0c4YU9Gb01FZ2V1dzEvUkJQN0dFcm0z?=
+ =?utf-8?B?b2VDU2RTZ1pGRXJsWGo1RlFBU1IxUzN6bE83SDlWZmVKMG0zMmxob3RsbU1l?=
+ =?utf-8?B?QkRRQzhHMXJRdzYycmR0bjJiNENjeHFrbWtVMW9acGVZbG85R1l0dGRCaWpC?=
+ =?utf-8?B?cm8rY1lwOFpVL0h2Y0hPZVBGUnhVdkFhZGoraWRlMmpLZmYxaVY3SE1TRzBz?=
+ =?utf-8?B?THM3R0xUNndzc3lJMnVxNGp0L0NpQlFMQm9uOHFLVHRYMzNsVStVRUg0Y1pW?=
+ =?utf-8?B?VENtU2NWN0lDOW5zL2hiNUZDN25lTVlFLytWVzJOV1pOTmE5YWNSTzJrbmV3?=
+ =?utf-8?B?VGJzbFlvRmN3OXZyZHdqRVRWbVNPeDM0NjZOOWlOeFdacEhSMUVxNG1YaFFS?=
+ =?utf-8?B?cnVldTZjbjJoMkVNcmM5SjJldmJEcjhxK3ZSVVQ3ZjZYNG15YU5iQzgrUWx0?=
+ =?utf-8?B?dnlWWFNMODZ2eGtwa05Ub2pWUzErZFBveE5La1VXMXRaU0dHd1ozWC9qb0xJ?=
+ =?utf-8?B?RUtsYlZ5eFZDNmhWaDRLZFhNWFgrcE9TQ2JVV1cycHZaa3d4TkxZZS82ZlFM?=
+ =?utf-8?B?M1ZTbUVPZGVEN2VCNHhPbUZTN2NmSzN3ZU1iaFliQ01pV1luR0hFSXo3MmtF?=
+ =?utf-8?B?NkM4QmxDTkkzWk1SZWZWU25wL0wxQWtNSXBCMEVveGxtZlg2Q0dpTmV3Sk0v?=
+ =?utf-8?B?NExrR2llRGlIOUZXaTlSa1VMWWt1M0g3TWZKdlk3Q1ZzaXFaTm05N1NTbVhj?=
+ =?utf-8?B?Y0R6UUw5eE9TbDR1QlgvNlZGZUwrMkxYYk5KT3E2WXRvTURMVDhsbXBtQnlw?=
+ =?utf-8?B?WDRHMnZManRwK0EyYnE3aU1hYzlEdWExMDlvQzRmbzhIZVVEYTdsYUlNV1N1?=
+ =?utf-8?B?OTZ1Rkp4YXBDZGMrQ0xib1hIbXdadlZlbTRiZEVndXhRZE1CMVFHa1c4VEM1?=
+ =?utf-8?B?a2NDaG03aXJpWmQ3aURGWEZGZGtJVXNkanhONzhxQUh4MTZNSldMdDZrZ0RO?=
+ =?utf-8?B?cis5cFpNQTdKZFJidDFsSUx3eFJsZlB0Q0k5dmRYSEZNOWFzSHVTcVpRQUw3?=
+ =?utf-8?B?UFBKRkE0dGt5S1NrZG9TU2k3ektNRHZHWEpRTC9PYTdYTVJNZkpKcDF5Mkkx?=
+ =?utf-8?B?N0k4enkzNW9lUDR0bEl2ZXJSeUE3MWdqd2RZZXZhUXFsQXowcEgyb3lEWGQ1?=
+ =?utf-8?B?bXk1WWpEamlrZHRzZnlRdVVjcTUyT3dtTUY0MldJdnp4ZXE2N0M4bVBWQmJ4?=
+ =?utf-8?B?ak9WcjFwUUw4aEQwWjdES1RaWEtJVVpkNXRWa2NkU3N1cmhvRDlnTDlSdGlw?=
+ =?utf-8?B?ZTY2eHhFTkpFM2ZOVFE3RHAycVo5OU5iWllYSEVPN2tDQWhFcS93cysrWHVH?=
+ =?utf-8?B?cWVvV0lWR004d3BZWkpJTWpjQkwxb3FGZ1NpcXFQTm54ZGxYVkhGblFucmNV?=
+ =?utf-8?B?Qm9HMUNxVkZNSXhkWVR4aTBQY3d4cEFYVEhIQ3pUaU56eXNVYU1YWUpVSUxG?=
+ =?utf-8?B?emM0QWFDcmZKa2QweStaSU1ZUERhdSsvWk1qZjhmdVBhY1lmOVlIeXdMa1ZU?=
+ =?utf-8?Q?VajPiVfikJHHLiz3Lhz7+jjljaRti1+VKA7vI=3D?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?eW00TG1vQVZlcmlTRUtqejdTTkxNWmtvdTdFODAzcFkwY1FqOVRsSmEwYXpC?=
- =?utf-8?B?SEJOcy9kcmh1TzltRDIyVzJSbmc4ZjRJbWtNcmdYSktvemQ1NEYzTGRnamN6?=
- =?utf-8?B?V1k3WVE0QWEwUUIzVFFEUEZ2UitxaTZkbjNrSE9YZ0h3TlBLY0ZaTmNSaUJa?=
- =?utf-8?B?aUE4VDN1L285cnhaOVk0ZGlDWGl2YklNL3AyWjI3cXJhV1RQOEFQd3ZhVHRV?=
- =?utf-8?B?VmFPMUJrL2NETytncG53clFkT1RxYStRM0RjTG1oZU5PZFdUZ0l6b1c2MUQ0?=
- =?utf-8?B?cXluWGRqWWsyT3lzdXpJU1pmL3MvMHNiaWQvSitPTWhWT1VHbjlja0plekJQ?=
- =?utf-8?B?T0w3R1IvUlpuRXh3MkVjY2RCY3Y0VGgvRkFhOEdIUGNhQlh5amdHS2sya0dj?=
- =?utf-8?B?N28yU01KYWJaNy9DSGJiUTczb2ZEUDlzYXpmZStWUFNMYTJ3TEtOZDB3Tk1Q?=
- =?utf-8?B?Zi9DMnY1RHpDcCtqaFRJV2VhdXNnakhUc0hSYjMrTks1bG0zSWRGS1ZnaWg1?=
- =?utf-8?B?R3ZsSlMvZ2h4SGpjMTNFeVM1OEN4aFpWSEk0Ry82cHhOay85K1R4WVVLU3N4?=
- =?utf-8?B?bGNwUUU2azlwdVBqRVliZC9tdHVYa2JoaDhqSnVZY2Vvd29Ed2dNVnBuTXBh?=
- =?utf-8?B?ZTUvRjhaQTZSK3BYYmYvTnJ1bEYzMjNGRVRkT1R3RFdENmFBTzRXQnp6WDJy?=
- =?utf-8?B?NExRRWh3cktsYzB6aFpqVFVhY0s4N1hEODlrV1NjUmRKQWxaQkNzTys4elBJ?=
- =?utf-8?B?eHRXWFRhU1VqR0Y0VkxrL2NXdUhiUXM4SGNldk92KzBaRkdyL2tIYis3WDY5?=
- =?utf-8?B?RDFRRVUxMjNteVpTTk5YYUpQRFJxektMbUFQNkN6aFFVWnVhcVBaMHdXdEpj?=
- =?utf-8?B?MXU5YytzZWtuTjBNblB5U0tIV0Z4bnVVOHNnakM0RjVFRDM0dzJIS3lSSDlS?=
- =?utf-8?B?UWxhZTJaSXZPUUkweGVNeHhDYlppNVRlbkZFSmo0MllsQ0hROFJpV2NNV1hl?=
- =?utf-8?B?L0srazJhRkdRYXBrUDNxU21xWXpodmFVaFpoMnFEbjJXeE51QjkwYW1FUUN0?=
- =?utf-8?B?WDhmbVhWNWVXcGlUaEJrZWFMbVl0YjlibkpXTXB1MEc4aWw3dkdkek03NUJk?=
- =?utf-8?B?M1JRcDFXdHJTN3JXT0pPTzVsOFpkUE9XdC9MajNOOTZhTXhSU3ZLTlhUR2NH?=
- =?utf-8?B?LytPOUFlQWhqbU0rOW5HaHg2bFEvZ0FHallHYUpSeU5wVFdQejkvNU5zLzFH?=
- =?utf-8?B?d3o1WksyQXpnTHFhR2dVTE40YWN6em4yKzNURzU3Ymdrc2g0Tlh5MVIrQ0Zj?=
- =?utf-8?B?MEg2N2FnQUdBV1ZjdzdWRHpKbUpXdi9qbjJmUWM0b1NZeGRTeGoxbnpFbHly?=
- =?utf-8?B?bE1KTWxUTzFURFhpN0xJN0RVNEdBUHBKVWdSeW40UUUwYWU0UUVQa2laQlhz?=
- =?utf-8?B?MUFIM0N0RUtyU1ZBRGlYNkplWFBqbThXcjN2d05QUVZTZUhTc0pIYzJxcFNT?=
- =?utf-8?B?N2F1Y2JqYm04WmIyRWJFRzBBMUdVRU1GczlIeGRsMUQvcjMyQjYwSTQ3T1Y1?=
- =?utf-8?B?S3pHakl6MWx2V2VqMG52ZmdROXRnTksrYTJ1c1ZPWXRYaVI4cndmWU8vTDkx?=
- =?utf-8?B?c0NlU01GcDJoZ0ZlUFdkTDFOSzNSWUZMY3ZZN1RCczBvVkl0aEtIKzdYdTZY?=
- =?utf-8?B?NEE0alp6ckdXZnM0d01EbWlITXJCTE9LSzdVTzM5dnIrRit1d1QzYXRKVUlv?=
- =?utf-8?B?Z2VNVVh3d2p1aXU3TXNycmorVi9rdHFNeTlmRjFkSEZZVS9pQmNISXBtOG9q?=
- =?utf-8?B?SEhRZG5KNlBQNkpxL2Ewend0ZExKM2VqaE5uZEY1SGtXdWdFVXhnaUJNL1Np?=
- =?utf-8?B?SHJiYngxUVpJYXlRcUpwdHY4MXUrQU1HRjNGS1hxNUM1dXI0RUR0QmVUcHpT?=
- =?utf-8?B?dXRVSzlzNXZHTzI5RktWOWFzTjkrc3QzRWV4ViszSjNXSjU3ajhKcUlwQjdt?=
- =?utf-8?B?dkFxT1dNNkFEcjZWZjVlY1I3WVRrYkNXNkwzS2hyVU1tMlQ4SXdibW9USThq?=
- =?utf-8?B?N29oNC92TnYxaCtFQlB6aDMxUlBhcWVqdk5ia0hGd2IweklyK3g2V09YS1pq?=
- =?utf-8?B?a3F0MGFNRU40UnRibHJtWmhsNzh1S21wVzBwQkg4YU50bU5UUHhnUnRxZmEv?=
- =?utf-8?B?c3c9PQ==?=
+	=?utf-8?B?d3MyTXVONzRmRDRFczVhQ1pPc0tYN21QUVE1b0Ivem53MjJoVnVUdEVWUGty?=
+ =?utf-8?B?NW1sVzBBNjVzSEt5bUxTcUZ0SVNMRTFuQk1PTHdSUHgyQXdhOGphWC82eTRJ?=
+ =?utf-8?B?Ry9YcHdQa0FmM3dLS01SZXN4Qy81NnY4a0R0anR6T1JEL2xJU0IzWnhrZnZo?=
+ =?utf-8?B?OEVUQU52SktGU0ZwcCtyVFFmL3JzMXFlcjZsQTc5bWNLZGhnOVFiZWJwYm9U?=
+ =?utf-8?B?dWtiSnJqTkMrS2NWWXFFdkFiOE5NTFRvV0FlNm10RlBDRkQ5OHl6WEE0M0VP?=
+ =?utf-8?B?RGRsWlVCWDcyaTN0WTdLYXI0TFVrdjZ4aXdjQlpRejU4K0hrc0dYVUlCK2Vi?=
+ =?utf-8?B?NVBjcFF2ZGxHckVTbkRWSjhXYXBqZmNqc2N6WEpkcXVwSnV4a1B6eXRTSEN1?=
+ =?utf-8?B?Y0RuU1crMG1WZ3ZpNmhJQXVET3BuUnJINWdDQVF6SDRHYXJMNjVUZ2xNVWJp?=
+ =?utf-8?B?alR0ay9ka0YvelB0VHdnWkFvcGVPemdoL3haSGhGM2tpSWpER1RuRHhXSk5s?=
+ =?utf-8?B?ck1BbHlLdWdFVVRYd05qOHJhMmswcENzeFoxcHVENCt3Tk5TSXF0SWZhMmdR?=
+ =?utf-8?B?U1hkQkgxSVkrNnJhSkpCU0dtNlU2T1FyQVdJOXFSNTFXYmlXQXdTSERrcVhI?=
+ =?utf-8?B?OStGTTEySjBkL3ZVY2JlMEJ6WFpqN1FlTnloRHU4MGVwblpsVUp5eHRodVZl?=
+ =?utf-8?B?KzFWcHhlSkhGclJmRFNsZm40ZU1JVGRTam5NZFplVk1mV1h5WEp0Y2YrcWVZ?=
+ =?utf-8?B?THJPbFcyV0NXZTZOLzQ3NXNoVFhrUU9XM3dZSXFDQ3oyYmFvN3BIWVJyVUt3?=
+ =?utf-8?B?Vm1KNFoyZnJxbnMzcTJSQ2NxN2IvUHVheUJwV1hEUjlhN0YzMnVZUUFvZ2RR?=
+ =?utf-8?B?ODdKQUV1enEvb2lVd1IvdGxNOENKVjdWemtHeFlmWFNZcTZSRzQzZ3R5cldi?=
+ =?utf-8?B?M3ZmLy81ZXhNQ1RKZXAxOFBHTFU1amNXR0FpaGVQRm4rdFM5SE84ZTNGdXk4?=
+ =?utf-8?B?Z2VqT01UNHoyclJub3FxQmpzSnk3M1h4WmhNZHFRZFM3ci9BeWk1SEFkVzU0?=
+ =?utf-8?B?bGV2R0QvSnNkUUlnMTZMTmVQaGJOdE5HS0VPajREYzlUTXlNclA2KzVrbm51?=
+ =?utf-8?B?U0pZbFlJUXppRzY1RG1FSHBZN2syKzBmSWZoRzRlVnVZbit3ZG1uNzk0RUw3?=
+ =?utf-8?B?bHl5RnkyZjloQ3N3NVJmb1IyZXFsanNnWTF2dVFYQ0QvSVU0RWdySnJuV0tF?=
+ =?utf-8?B?UFJMUW94cWgyR2hKSmkyWnhnNG43NUgySGx4VmFzQ0NHQXRtNVlhWWJoMWZh?=
+ =?utf-8?B?MUREZnFzSXJEa2RjbURoaUpiek1vNXE1VlRrUHhnbkN3MVBlK3lWYU1SR2VM?=
+ =?utf-8?B?WHcwcGRJanFwRFcyOXVpRkIzaGlLNnpXMlFVQ0NLSWlJUmhuaVVvS1pRajBF?=
+ =?utf-8?B?WUJXa2hCOC8xckd6TCtqeFYyeE8vai80dUxUZ2w1QjZCVlhONXJrOVVSa2tm?=
+ =?utf-8?B?RDFVMjZEZUhzNjlZd0E5a3IyWEdnUFdRUStObTJYb3F4WnJiU202dEtTUVpp?=
+ =?utf-8?B?MEdDTmNzOWtLYmV4MjVYQkxReTNFN0FzVnB3eXFKL25UTjJxRTdCanIzY09j?=
+ =?utf-8?B?MExzWjRlaTVYNE5CRmlScFRoKy91NTFQb2xJeEVTOXprNDZMVXluODhYcm93?=
+ =?utf-8?B?RFcvRHZFTjluUzRmcHJtNnloeU9vbGp5WnA1bHdiNkp5MFhXWml1MHptd1lx?=
+ =?utf-8?B?YmVoVXg2d210YTRVRy9HelQ5Q3dNdEtIM1N3N1UzMlVnOFpzNFNNbmhFLzYr?=
+ =?utf-8?B?OWcvaG50VjhjR1FybkVYeFlyR3dUeGdKT0YwRWdOK05xVDdTaUNsVGJDVlE2?=
+ =?utf-8?B?dUg3d0lTQmNjbWpKQ3NRNjlZN0V3OVljM0tGNUJ0TGJLWExWQ2hmY05aSmsw?=
+ =?utf-8?B?UnZKRjJWT2dscWg3OTdXTkgvZks0NXViYVJ5amh4M0N3dFYzWEc3TkRFV05B?=
+ =?utf-8?B?MmVUTTg3QkVDQS9vYWlTVzVPMzY2TVpLL1dOaE5kekNDa3MxNWdudTRUMUdj?=
+ =?utf-8?B?V3NrcUFTeEpJOW9QbVZiR0gxbVF6ajUrV2V0Tmg5cDE4VTQzZXdiSHIvb0xK?=
+ =?utf-8?B?U3IxY0ZsZGpidHhlV0g5K3NoeEJUUXV0YTdhdytZUG13dzlXN0Y5STNHNEE2?=
+ =?utf-8?B?dEE9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0bd2c7f1-0af0-4bce-b557-08ddd997599e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 152992b4-d5ce-4ba2-a217-08ddd99760f2
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Aug 2025 11:57:02.5427
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Aug 2025 11:57:15.0491
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: lK/3v9iP15QGBIV2EkXxbZR1H8xW9pzY0je/S0CwDntM8yKwmJUFzdzS27psBm/DrW2hJ4vnw6L5Xjmle+JDMQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4KG1aCruw/cTn/oKaM6aoQjgX7nZ3HCJ8ibexQdXUp39SaICchEkknqyoA5L2kiUO3m50TCzGZkbjYx24bTTbw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB6828
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This just makes it clearer.
+Just housekeeping. Should also avoid surprises when eventually updating
+the Debian release.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- conf/distro/xenomai-demo.conf | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ ci/gitlab-ci-base.yml |   2 +-
+ kas-container         | 354 +++++++++++++++++++++++++++++-------------
+ 2 files changed, 245 insertions(+), 111 deletions(-)
 
-diff --git a/conf/distro/xenomai-demo.conf b/conf/distro/xenomai-demo.conf
-index a113a54..8377732 100644
---- a/conf/distro/xenomai-demo.conf
-+++ b/conf/distro/xenomai-demo.conf
-@@ -1,7 +1,7 @@
+diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+index 6b31381..25a18d3 100644
+--- a/ci/gitlab-ci-base.yml
++++ b/ci/gitlab-ci-base.yml
+@@ -30,7 +30,7 @@ variables:
+   SSTATE_MAX_AGE: 14d
+ 
+ default:
+-  image: ghcr.io/siemens/kas/kas-isar:4.6
++  image: ghcr.io/siemens/kas/kas-isar:4.8.2
+ 
+ .sstate-prepare:
+   script:
+diff --git a/kas-container b/kas-container
+index 0437381..476724c 100755
+--- a/kas-container
++++ b/kas-container
+@@ -2,7 +2,7 @@
  #
- # Xenomai Real-Time System
+ # kas - setup tool for bitbake based projects
  #
 -# Copyright (c) Siemens AG, 2018-2024
 +# Copyright (c) Siemens AG, 2018-2025
  #
  # Authors:
  #  Jan Kiszka <jan.kiszka@siemens.com>
-@@ -29,5 +29,5 @@ SDK_INSTALL += "${@'libevl' if d.getVar('XENOMAI_MAJOR_VERSION') == '4' else 'li
- WKS_FILE = "${MACHINE}.wks"
+@@ -27,7 +27,8 @@
  
- USERS += "root"
--# 'root'
--USER_root[password] = "oC3wEGl799tZU"
-+USER_root[flags] = "clear-text-password"
-+USER_root[password] = "root"
+ set -e
+ 
+-KAS_IMAGE_VERSION_DEFAULT="4.6"
++KAS_CONTAINER_SCRIPT_VERSION="4.8.2"
++KAS_IMAGE_VERSION_DEFAULT="${KAS_CONTAINER_SCRIPT_VERSION}"
+ KAS_CONTAINER_IMAGE_PATH_DEFAULT="ghcr.io/siemens/kas"
+ KAS_CONTAINER_IMAGE_NAME_DEFAULT="kas"
+ KAS_CONTAINER_SELF_NAME="$(basename "$0")"
+@@ -40,8 +41,9 @@ usage()
+ 
+ 	printf "%b" "Usage: ${SELF} [OPTIONS] { build | shell } [KASOPTIONS] [KASFILE]\n"
+ 	printf "%b" "       ${SELF} [OPTIONS] { checkout | dump | lock } [KASOPTIONS] [KASFILE]\n"
++	printf "%b" "       ${SELF} [OPTIONS] { diff } [KASOPTIONS] config1 config2\n"
+ 	printf "%b" "       ${SELF} [OPTIONS] for-all-repos [KASOPTIONS] [KASFILE] COMMAND\n"
+-	printf "%b" "       ${SELF} [OPTIONS] { clean | cleansstate | cleanall } [KASFILE]\n"
++	printf "%b" "       ${SELF} [OPTIONS] { clean | cleansstate | cleanall | purge} [KASFILE]\n"
+ 	printf "%b" "       ${SELF} [OPTIONS] menu [KCONFIG]\n"
+ 	printf "%b" "\nPositional arguments:\n"
+ 	printf "%b" "build\t\t\tCheck out repositories and build target.\n"
+@@ -57,6 +59,8 @@ usage()
+ 		    "keep downloads.\n"
+ 	printf "%b" "cleanall\t\tClean build artifacts, sstate cache and " \
+ 		    "downloads.\n"
++	printf "%b" "purge\t\t\tRemove all data managed by kas. Run with '--dry-run'\n"
++	printf "%b" "     \t\t\tto check what would be removed\n"
+ 	printf "%b" "menu\t\t\tProvide configuration menu and trigger " \
+ 		    "configured build.\n"
+ 	printf "%b" "\nOptional arguments:\n"
+@@ -80,7 +84,7 @@ usage()
+ 		    "environment.\n"
+ 	printf "%b" "--repo-ro\t\tMount current repository read-only\n" \
+ 		    "\t\t\t(default for build command)\n"
+-	printf "%b" "--repo-rw\t\tMount current repository writeable\n" \
++	printf "%b" "--repo-rw\t\tMount current repository writable\n" \
+ 		    "\t\t\t(default for shell command)\n"
+ 	printf "%b" "-h, --help\t\tShow this help message and exit.\n"
+ 	printf "%b" "\n"
+@@ -90,22 +94,31 @@ usage()
+ 	exit "${EXIT_CODE:-1}"
+ }
+ 
+-fatal_error(){
++fatal_error()
++{
+ 	echo "${KAS_CONTAINER_SELF_NAME}: Error: $*" >&2
+ 	exit 1
+ }
+ 
+-warning(){
++warning()
++{
+ 	echo "${KAS_CONTAINER_SELF_NAME}: Warning: $*" >&2
+ }
+ 
++debug(){
++	if [ -n "${KAS_VERBOSE}" ]; then
++		echo "${KAS_CONTAINER_SELF_NAME}: Debug: $*" >&2
++	fi
++}
++
+ trace()
+ {
+ 	[ -n "${KAS_VERBOSE}" ] && echo "+ $*" >&2
+ 	"$@"
+ }
+ 
+-enable_isar_mode() {
++enable_isar_mode()
++{
+ 	if [ -n "${ISAR_MODE}" ]; then
+ 		return
+ 	fi
+@@ -119,10 +132,17 @@ enable_isar_mode() {
+ 		KAS_CONTAINER_COMMAND="sudo --preserve-env ${KAS_CONTAINER_COMMAND}"
+ 		# preserved user PATH may lack sbin needed by privileged podman
+ 		export PATH="${PATH}:/usr/sbin"
++	elif [ "${KAS_DOCKER_ROOTLESS}" = "1" ]; then
++		export DOCKER_HOST="${DOCKER_HOST:-unix:///var/run/docker.sock}"
++		debug "kas-isar does not support rootless docker. Using system docker"
++		# force use of well-known system docker socket
++		KAS_CONTAINER_COMMAND="sudo --preserve-env ${KAS_CONTAINER_COMMAND}"
++		KAS_DOCKER_ROOTLESS=0
+ 	fi
+ }
+ 
+-enable_oe_mode() {
++enable_oe_mode()
++{
+ 	if [ "${KAS_CONTAINER_ENGINE}" = "podman" ]; then
+ 		# The container entry point expects that the current userid
+ 		# calling "podman run" has a 1:1 mapping
+@@ -130,30 +150,122 @@ enable_oe_mode() {
+ 	fi
+ }
+ 
+-run_clean() {
+-	if [ -n "${KAS_ISAR_ARGS}" ]; then
+-		# SC2086: Double quote to prevent globbing and word splitting.
+-		# shellcheck disable=2086
+-		trace ${KAS_CONTAINER_COMMAND} run -v "${KAS_BUILD_DIR}":/build:rw \
+-				--workdir=/build --rm ${KAS_ISAR_ARGS} \
+-				${KAS_CONTAINER_IMAGE} \
+-				sudo rm -rf tmp
+-	else
+-		trace rm -rf "${KAS_BUILD_DIR}"/tmp*
++enable_unpriv_userns_docker()
++{
++	if [ -f /etc/os-release ] && grep -q 'NAME="Ubuntu"' /etc/os-release &&
++	   [ -f /proc/sys/kernel/apparmor_restrict_unprivileged_userns ] &&
++	   [ "$(cat /proc/sys/kernel/apparmor_restrict_unprivileged_userns)" = "1" ]; then
++		if [ -f /etc/apparmor.d/rootlesskit ]; then
++			debug "AppArmor restricts unprivileged userns, using \"rootlesskit\" profile"
++			KAS_RUNTIME_ARGS="${KAS_RUNTIME_ARGS} --security-opt apparmor=rootlesskit"
++		else
++			warning "AppArmor restricts unprivileged userns but no suitable apparmor " \
++			        "profile found. Consider setting apparmor_restrict_unprivileged_userns=0"
++		fi
+ 	fi
++}
++
++# Params: NAME CREATE_MODE
++check_and_expand()
++{
++	eval _varval=\"\$"$1"\"
++	[ -z "$_varval" ] && return
++	case "$2" in
++	required)
++		[ ! -d "$_varval" ] && fatal_error "Variable $1 set, but \"$_varval\" is not a directory."
++		;;
++	create)
++		[ ! -d "$_varval" ] && trace mkdir "$_varval"
++		;;
++	createrec)
++		trace mkdir -p "$_varval"
++		;;
++	esac
++	realpath -e "$_varval"
++}
+ 
+-	if [ "$1" != "clean" ]; then
+-		SSTATE_DIR=${SSTATE_DIR:-${KAS_BUILD_DIR}/sstate-cache}
+-		trace rm -rf "${SSTATE_DIR}"
++# Params: FILE
++# Returns: root repo dir of file
++repo_path_of_file()
++{
++	_DIR="$(dirname "$1")"
++	_REPO_DIR=$(git -C "${_DIR}" rev-parse --show-toplevel 2>/dev/null) \
++		|| _REPO_DIR=$(hg --cwd "${_DIR}" root 2>/dev/null) \
++		|| _REPO_DIR=${_DIR}
++	echo "$_REPO_DIR"
++}
+ 
+-		if [ "$1" = "cleanall" ]; then
+-			DL_DIR=${DL_DIR:-${KAS_BUILD_DIR}/downloads}
+-			trace rm -rf "${DL_DIR}"
++# Params: ARG
++process_file_arg()
++{
++	_KAS_FILES=
++	_KAS_FIRST_FILE=
++	_KAS_REPO_DIR=
++	# SC2086: Double quote to prevent globbing and word splitting.
++	# shellcheck disable=2086
++	for FILE in $(IFS=':'; echo $ARG); do
++		if ! KAS_REAL_FILE="$(realpath -qe "$FILE")"; then
++			fatal_error "configuration file '${FILE}' not found"
++		fi
++		if [ -z "${_KAS_FILES}" ]; then
++			_KAS_FIRST_FILE="${KAS_REAL_FILE}"
++			_KAS_FILES="${KAS_REAL_FILE}"
++			_KAS_REPO_DIR=$(repo_path_of_file "${_KAS_FIRST_FILE}")
++		else
++			_KAS_FILES="${_KAS_FILES}:${KAS_REAL_FILE}"
+ 		fi
++	done
++	KAS_FILES="${KAS_FILES} ${_KAS_FILES}"
++	KAS_FIRST_FILES="${KAS_FIRST_FILES} ${_KAS_FIRST_FILE}"
++	KAS_REPO_DIRS="${KAS_REPO_DIRS} ${_KAS_REPO_DIR}"
++}
++
++# Params: NAME CONTAINER_PATH MODE
++# If the dir is not below KAS_WORK_DIR, the dir is mounted into the container.
++forward_dir()
++{
++	eval _varval=\"\$"$1"\"
++	[ -z "$_varval" ] && return
++	FW_DIR_REL=$(realpath -q --relative-base="${KAS_WORK_DIR}" "$_varval")
++	if [ "${FW_DIR_REL}" = "$_varval" ]; then
++		KAS_RUNTIME_ARGS="${KAS_RUNTIME_ARGS} -v ${FW_DIR_REL}:$2:$3 -e $1=$2"
++	else
++		KAS_RUNTIME_ARGS="${KAS_RUNTIME_ARGS} -e $1=/work/${FW_DIR_REL}"
++	fi
++}
++
++check_docker_rootless()
++{
++	KAS_DOCKER_ROOTLESS=0
++	if [ "$(docker context show)" = "rootless" ]; then
++		KAS_DOCKER_ROOTLESS=1
++	fi
++}
++
++enable_docker_rootless()
++{
++	warning "Rootless docker used, only limited functionality available."
++	if [ "${KAS_WORK_DIR}" = "${KAS_REPO_DIR}" ]; then
++		warning "On docker rootless a exclusive KAS_WORK_DIR should be used" \
++		        "as kas temporarily changes the ownership of this directory."
++	fi
++	if [ "${KAS_REPO_MOUNT_OPT}" = "rw" ]; then
++		fatal_error "Docker rootless requires read-only repo."
++	fi
++	KAS_RUNTIME_ARGS="${KAS_RUNTIME_ARGS} -e KAS_DOCKER_ROOTLESS=1"
++}
++
++KAS_GIT_OVERLAY_FILE=""
++kas_container_cleanup()
++{
++	if [ -f "${KAS_GIT_OVERLAY_FILE}" ]; then
++		trace rm -f "${KAS_GIT_OVERLAY_FILE}"
+ 	fi
+ }
++trap kas_container_cleanup EXIT INT TERM
+ 
+-set_container_image_var() {
++set_container_image_var()
++{
+ 	KAS_IMAGE_VERSION="${KAS_IMAGE_VERSION:-${KAS_IMAGE_VERSION_DEFAULT}}"
+ 	KAS_CONTAINER_IMAGE_NAME="${KAS_CONTAINER_IMAGE_NAME:-${KAS_CONTAINER_IMAGE_NAME_DEFAULT}}"
+ 	KAS_CONTAINER_IMAGE_PATH="${KAS_CONTAINER_IMAGE_PATH:-${KAS_CONTAINER_IMAGE_PATH_DEFAULT}}"
+@@ -161,11 +273,18 @@ set_container_image_var() {
+ 	KAS_CONTAINER_IMAGE="${KAS_CONTAINER_IMAGE:-${KAS_CONTAINER_IMAGE_DEFAULT}}"
+ }
+ 
+-KAS_WORK_DIR=$(readlink -fv "${KAS_WORK_DIR:-$(pwd)}")
+-# KAS_WORK_DIR needs to exist for the subsequent code
+-trace mkdir -p "${KAS_WORK_DIR}"
+-KAS_BUILD_DIR=$(readlink -fv "${KAS_BUILD_DIR:-${KAS_WORK_DIR}/build}")
+-trace mkdir -p "${KAS_BUILD_DIR}"
++# SC2034: DIR appears unused (ignore, as they are used inside eval)
++# shellcheck disable=2034
++setup_kas_dirs()
++{
++	KAS_WORK_DIR="${KAS_WORK_DIR:-$(pwd)}"
++	KAS_WORK_DIR="$(check_and_expand KAS_WORK_DIR required)"
++	KAS_BUILD_DIR="$(check_and_expand KAS_BUILD_DIR create)"
++	KAS_REPO_REF_DIR="$(check_and_expand KAS_REPO_REF_DIR required)"
++	DL_DIR="$(check_and_expand DL_DIR createrec)"
++	SSTATE_DIR="$(check_and_expand SSTATE_DIR createrec)"
++}
++setup_kas_dirs
+ 
+ KAS_CONTAINER_ENGINE="${KAS_CONTAINER_ENGINE:-${KAS_DOCKER_ENGINE}}"
+ if [ -z "${KAS_CONTAINER_ENGINE}" ]; then
+@@ -196,6 +315,8 @@ KAS_RUNTIME_ARGS="--log-driver=none --user=root"
+ case "${KAS_CONTAINER_ENGINE}" in
+ docker)
+ 	KAS_CONTAINER_COMMAND="docker"
++	enable_unpriv_userns_docker
++	check_docker_rootless
+ 	;;
+ podman)
+ 	KAS_CONTAINER_COMMAND="podman"
+@@ -248,7 +369,7 @@ while [ $# -gt 0 ]; do
+ 		if [ -z "${SSH_AUTH_SOCK}" ]; then
+ 			fatal_error "no SSH agent running"
+ 		fi
+-		KAS_SSH_AUTH_SOCK=$(readlink -fv "$SSH_AUTH_SOCK")
++		KAS_SSH_AUTH_SOCK=$(realpath -e "$SSH_AUTH_SOCK")
+ 		shift 1
+ 		;;
+ 	--aws-dir)
+@@ -290,7 +411,8 @@ while [ $# -gt 0 ]; do
+ 	--*)
+ 		usage
+ 		;;
+-	clean|cleansstate|cleanall)
++	clean|cleansstate|cleanall|purge)
++		KAS_REPO_MOUNT_OPT_DEFAULT="ro"
+ 		KAS_CMD=$1
+ 		shift 1
+ 		break
+@@ -307,6 +429,12 @@ while [ $# -gt 0 ]; do
+ 		shift 1
+ 		break
+ 		;;
++	diff)
++		KAS_REPO_MOUNT_OPT_DEFAULT="ro"
++		KAS_CMD=$1
++		shift 1
++		break
++		;;
+ 	dump)
+ 		if printf '%s\0' "$@" | grep -xqz -- '--inplace\|-i'; then
+ 			KAS_REPO_MOUNT_OPT_DEFAULT="rw"
+@@ -326,11 +454,12 @@ done
+ [ -n "${KAS_CMD}" ] || usage
+ 
+ KAS_EXTRA_BITBAKE_ARGS=0
++KAS_FILES=
+ 
+ # parse kas sub-command options
+ while [ $# -gt 0 ] && [ $KAS_EXTRA_BITBAKE_ARGS -eq 0 ]; do
+ 	case "$1" in
+-	--skip|--target|--task)
++	--format|--indent|--provenance|--skip|--target|--task)
+ 		KAS_OPTIONS="${KAS_OPTIONS} $1 $2"
+ 		shift 1
+ 		shift 1 || KAS_OPTIONS="--help"
+@@ -343,11 +472,6 @@ while [ $# -gt 0 ] && [ $KAS_EXTRA_BITBAKE_ARGS -eq 0 ]; do
+ 	-E|--preserve-env)
+ 		fatal_error "$1 is not supported with ${KAS_CONTAINER_SELF_NAME}"
+ 		;;
+-	--provenance)
+-		KAS_OPTIONS="${KAS_OPTIONS} $1 $2"
+-		shift 1
+-		shift 1 || KAS_OPTIONS="--help"
+-		;;
+ 	--)
+ 		KAS_EXTRA_BITBAKE_ARGS=$#
+ 		;;
+@@ -367,29 +491,13 @@ while [ $# -gt 0 ] && [ $KAS_EXTRA_BITBAKE_ARGS -eq 0 ]; do
+ 				unset ARG
+ 			fi
+ 		fi
+-		KAS_FILES=
+-		# SC2086: Double quote to prevent globbing and word splitting.
+-		# shellcheck disable=2086
+-		for FILE in $(IFS=':'; echo $ARG); do
+-			if ! KAS_REAL_FILE="$(realpath -qe "$FILE")"; then
+-				fatal_error "configuration file '${FILE}' not found"
+-			fi
+-			if [ -z "${KAS_FILES}" ]; then
+-				KAS_FIRST_FILE="${KAS_REAL_FILE}"
+-				KAS_FILES="${KAS_REAL_FILE}"
+-			else
+-				KAS_FILES="${KAS_FILES}:${KAS_REAL_FILE}"
+-			fi
+-		done
++		process_file_arg "$ARG"
+ 		;;
+ 	esac
+ done
+ 
+-if [ -n "${KAS_FIRST_FILE}" ]; then
+-	KAS_FILE_DIR="$(dirname "${KAS_FIRST_FILE}")"
+-	KAS_REPO_DIR=$(git -C "${KAS_FILE_DIR}" rev-parse --show-toplevel 2>/dev/null) \
+-		|| KAS_REPO_DIR=$(hg --cwd "${KAS_FILE_DIR}" root 2>/dev/null) \
+-		|| KAS_REPO_DIR=${KAS_FILE_DIR}
++if [ -n "${KAS_FIRST_FILES}" ]; then
++	KAS_REPO_DIR=$(echo "${KAS_REPO_DIRS}" | awk '{print $1}')
+ else
+ 	KAS_REPO_DIR=$(pwd)
+ fi
+@@ -402,8 +510,8 @@ if [ -n "${SOURCE_DIR_HOST}" ]; then
+ fi
+ 
+ if [ "${KAS_CMD}" = "menu" ]; then
+-	if [ -z "${KAS_FIRST_FILE}" ]; then
+-		KAS_FIRST_FILE="Kconfig"
++	if [ -z "${KAS_FIRST_FILES}" ]; then
++		KAS_FIRST_FILES="Kconfig"
+ 	fi
+ 
+ 	# When using the menu plugin, we need to track the KAS_REPO_DIR outside
+@@ -412,20 +520,26 @@ if [ "${KAS_CMD}" = "menu" ]; then
+ 	# on the host. This data is then added to the .config.yaml where it can
+ 	# be evaluated by the next invocation of kas-container.
+ 
+-	if ! [ "$(realpath -qe "${KAS_REPO_DIR}")" = "$(realpath -qe "${KAS_WORK_DIR}")" ]; then
+-		set -- "$@" -e _KAS_REPO_DIR_HOST="$(readlink -fv "${KAS_REPO_DIR}")"
++	KAS_REPO_DIR=$(check_and_expand KAS_REPO_DIR required)
++	if ! [ "${KAS_REPO_DIR}" = "${KAS_WORK_DIR}" ]; then
++		set -- "$@" -e _KAS_REPO_DIR_HOST="${KAS_REPO_DIR}"
+ 	fi
+ 
+-	BUILD_SYSTEM=$(tr '\n' '\f' 2>/dev/null < "${KAS_FIRST_FILE}" | \
++	if [ "$(echo "${KAS_FIRST_FILES}" | wc -w)" -ne "1" ]; then
++		fatal_error "menu plugin only supports a single Kconfig file"
++	fi
++	BUILD_SYSTEM=$(tr '\n' '\f' 2>/dev/null < "${KAS_FIRST_FILES}" | \
+ 		sed -e 's/\(.*\fconfig KAS_BUILD_SYSTEM\f\(.*\)\|.*\)/\2/' \
+ 		    -e 's/\f\([[:alpha:]].*\|$\)//' \
+ 		    -e 's/.*default \"\(.*\)\".*/\1/')
+ else
+-	if [ -z "${KAS_FIRST_FILE}" ]; then
+-		KAS_FIRST_FILE="${KAS_WORK_DIR}/.config.yaml"
++	if [ -z "${KAS_FIRST_FILES}" ]; then
++		KAS_FIRST_FILES="${KAS_WORK_DIR}/.config.yaml"
+ 	fi
+ 
+-	BUILD_SYSTEM=$(grep -e "^build_system: " "${KAS_FIRST_FILE}" 2>/dev/null | \
++	# We only get the first build system and let kas check if mixed
++	_KAS_FIRST_FILE=$(echo "${KAS_FIRST_FILES}" | awk '{print $1}')
++	BUILD_SYSTEM=$(grep -e "^build_system: " "${_KAS_FIRST_FILE}" 2>/dev/null | \
+ 		sed 's/build_system:[ ]\+//')
+ fi
+ 
+@@ -435,37 +549,70 @@ elif [ -z "${ISAR_MODE}" ]; then
+ 	enable_oe_mode
+ fi
+ 
++# clean can be executed without config, hence manually forward the build system
++if [ "${ISAR_MODE}" = "1" ] && echo "${KAS_CMD}" | grep -qe "^clean\|purge"; then
++	KAS_OPTIONS="${KAS_OPTIONS} --isar"
++fi
++
+ set_container_image_var
+ 
+-# short circuit for clean* commands. We just need
+-# the build-system information, but no repo mounts, etc...
+-if echo "${KAS_CMD}" | grep -qe "^clean"; then
+-	run_clean "${KAS_CMD}"
+-	exit 0
++if [ "${KAS_DOCKER_ROOTLESS}" = "1" ]; then
++	KAS_REPO_MOUNT_OPT_DEFAULT="ro"
+ fi
+-
+ KAS_REPO_MOUNT_OPT="${KAS_REPO_MOUNT_OPT:-${KAS_REPO_MOUNT_OPT_DEFAULT}}"
+ 
+-KAS_FILES="$(echo "${KAS_FILES}" | sed 's|'"${KAS_REPO_DIR}"'/|/repo/|g')"
+-
+ if [ "$(id -u)" -eq 0 ] && [ "${KAS_ALLOW_ROOT}" != "yes" ] ; then
+ 	fatal_error "Running as root - may break certain recipes." \
+ 	            "Better give a regular user docker access. Set" \
+ 	            "KAS_ALLOW_ROOT=yes to override."
+ fi
+ 
++if [ "${KAS_DOCKER_ROOTLESS}" = "1" ]; then
++	enable_docker_rootless
++fi
++
++if [ "${KAS_CMD}" = "diff" ]; then
++	if [ "$(echo "${KAS_FILES}" | wc -w)" -eq "2" ]; then
++		_KAS_REPO_DIR1="$(echo "${KAS_REPO_DIRS}" | awk '{print $1}')"
++		_KAS_REPO_DIR2="$(echo "${KAS_REPO_DIRS}" | awk '{print $2}')"
++		_KAS_FILES1="$(echo "${KAS_FILES}" | awk '{print $1}' | sed 's|'"${_KAS_REPO_DIR1}"'/|/repo/|g')"
++		_KAS_FILES2="$(echo "${KAS_FILES}" | awk '{print $2}' | sed 's|'"${_KAS_REPO_DIR2}"'/|/repo2/|g')"
++		KAS_FILES="${_KAS_FILES1} ${_KAS_FILES2}"
++		set -- "$@" -v "${_KAS_REPO_DIR2}:/repo2:${KAS_REPO_MOUNT_OPT}"
++	fi
++else
++	KAS_FILES="$(echo "${KAS_FILES}" | sed 's|'"${KAS_REPO_DIR}"'/|/repo/|g')"
++fi
+ set -- "$@" -v "${KAS_REPO_DIR}:/repo:${KAS_REPO_MOUNT_OPT}" \
+ 	-v "${KAS_WORK_DIR}":/work:rw -e KAS_WORK_DIR=/work \
+-	-v "${KAS_BUILD_DIR}":/build:rw \
+ 	--workdir=/repo \
+-	-e KAS_BUILD_DIR=/build \
++	-e KAS_CONTAINER_SCRIPT_VERSION="${KAS_CONTAINER_SCRIPT_VERSION}" \
+ 	-e USER_ID="$(id -u)" -e GROUP_ID="$(id -g)" --rm --init
+ 
+-if [ -n "${KAS_SSH_DIR}" ] ; then
+-	if [ ! -d "${KAS_SSH_DIR}" ]; then
+-		fatal_error "passed KAS_SSH_DIR '${KAS_SSH_DIR}' is not a directory"
++forward_dir KAS_BUILD_DIR "/build" "rw"
++forward_dir DL_DIR "/downloads" "rw"
++forward_dir KAS_REPO_REF_DIR "/repo-ref" "rw"
++forward_dir SSTATE_DIR "/sstate" "rw"
++
++if git_com_dir=$(git -C "${KAS_REPO_DIR}" rev-parse --git-common-dir 2>/dev/null) \
++	&& [ "$git_com_dir" != "$(git -C "${KAS_REPO_DIR}" rev-parse --git-dir)" ]; then
++	# If (it's a git repo) and the common dir isn't the git-dir, it is shared worktree and
++	# we have to mount the common dir in the container to make git work
++	# The mount path inside the container is different from the host path. Hence, we over-mount
++	# the .git file to point to the correct path.
++	KAS_GIT_OVERLAY_FILE=$(mktemp)
++	sed "s|gitdir: ${git_com_dir}/|gitdir: /repo-common/|" "${KAS_REPO_DIR}/.git" > "${KAS_GIT_OVERLAY_FILE}"
++	set -- "$@" -v "${git_com_dir}:/repo-common:${KAS_REPO_MOUNT_OPT}" \
++		-v "${KAS_GIT_OVERLAY_FILE}:/repo/.git:ro"
++	# if the workdir is the same as the repo dir, it is the same shared worktree
++	if [ "${KAS_WORK_DIR}" = "${KAS_REPO_DIR}" ]; then
++		set -- "$@" -v "${KAS_GIT_OVERLAY_FILE}:/work/.git:ro"
+ 	fi
+-	set -- "$@" -v "$(readlink -fv "${KAS_SSH_DIR}")":/var/kas/userdata/.ssh:ro
++fi
++
++KAS_SSH_DIR="$(check_and_expand KAS_SSH_DIR required)"
++if [ -n "${KAS_SSH_DIR}" ] ; then
++	set -- "$@" -v "${KAS_SSH_DIR}":/var/kas/userdata/.ssh:ro
+ fi
+ 
+ if [ -n "${KAS_SSH_AUTH_SOCK}" ]; then
+@@ -476,20 +623,18 @@ if [ -n "${KAS_SSH_AUTH_SOCK}" ]; then
+ 		-e SSH_AUTH_SOCK=/ssh-agent/ssh-auth-sock
+ fi
+ 
++KAS_AWS_DIR="$(check_and_expand KAS_AWS_DIR required)"
+ if [ -n "${KAS_AWS_DIR}" ] ; then
+-	if [ ! -d "${KAS_AWS_DIR}" ]; then
+-		fatal_error "passed KAS_AWS_DIR '${KAS_AWS_DIR}' is not a directory"
+-	fi
+-	set -- "$@" -v "$(readlink -fv "${KAS_AWS_DIR}")":/var/kas/userdata/.aws:ro \
++	set -- "$@" -v "${KAS_AWS_DIR}":/var/kas/userdata/.aws:ro \
+ 		-e AWS_CONFIG_FILE="${AWS_CONFIG_FILE:-/var/kas/userdata/.aws/config}" \
+ 		-e AWS_SHARED_CREDENTIALS_FILE="${AWS_SHARED_CREDENTIALS_FILE:-/var/kas/userdata/.aws/credentials}"
+ fi
+ if [ -n "${AWS_WEB_IDENTITY_TOKEN_FILE}" ] ; then
+ 	if [ ! -f "${AWS_WEB_IDENTITY_TOKEN_FILE}" ]; then
+-		echo "Passed AWS_WEB_IDENTITY_TOKEN_FILE '${AWS_WEB_IDENTITY_TOKEN_FILE}' is not a directory"
++		echo "Passed AWS_WEB_IDENTITY_TOKEN_FILE '${AWS_WEB_IDENTITY_TOKEN_FILE}' is not a file"
+ 		exit 1
+ 	fi
+-	set -- "$@" -v "$(readlink -fv "${AWS_WEB_IDENTITY_TOKEN_FILE}")":/var/kas/userdata/.aws/web_identity_token:ro \
++	set -- "$@" -v "$(realpath -e "${AWS_WEB_IDENTITY_TOKEN_FILE}")":/var/kas/userdata/.aws/web_identity_token:ro \
+ 		-e AWS_WEB_IDENTITY_TOKEN_FILE="${AWS_CONFIG_FILE:-/var/kas/userdata/.aws/web_identity_token}" \
+ 		-e AWS_ROLE_ARN="${AWS_ROLE_ARN}"
+ fi
+@@ -501,7 +646,7 @@ if [ -n "${KAS_GIT_CREDENTIAL_STORE}" ] ; then
+ 		fatal_error "passed KAS_GIT_CREDENTIAL_STORE '${KAS_GIT_CREDENTIAL_STORE}' is not a file"
+ 	fi
+ 	KAS_GIT_CREDENTIAL_HELPER_DEFAULT="store --file=/var/kas/userdata/.git-credentials"
+-	set -- "$@" -v "$(readlink -fv "${KAS_GIT_CREDENTIAL_STORE}")":/var/kas/userdata/.git-credentials:ro
++	set -- "$@" -v "$(realpath -e "${KAS_GIT_CREDENTIAL_STORE}")":/var/kas/userdata/.git-credentials:ro
+ fi
+ 
+ GIT_CREDENTIAL_HELPER="${GIT_CREDENTIAL_HELPER:-${KAS_GIT_CREDENTIAL_HELPER_DEFAULT}}"
+@@ -511,17 +656,22 @@ if [ -n "${GIT_CREDENTIAL_HELPER}" ] ; then
+ fi
+ 
+ if [ -f "${NETRC_FILE}" ]; then
+-	set -- "$@" -v "$(readlink -fv "${NETRC_FILE}")":/var/kas/userdata/.netrc:ro \
++	set -- "$@" -v "$(realpath -e "${NETRC_FILE}")":/var/kas/userdata/.netrc:ro \
+ 		-e NETRC_FILE="/var/kas/userdata/.netrc"
+ fi
+ 
++if [ -f "${NPMRC_FILE}" ]; then
++	set -- "$@" -v "$(realpath -e "${NPMRC_FILE}")":/var/kas/userdata/.npmrc:ro \
++		-e NPMRC_FILE="/var/kas/userdata/.npmrc"
++fi
++
+ if [ -f "${GITCONFIG_FILE}" ]; then
+-	set -- "$@" -v "$(readlink -fv "${GITCONFIG_FILE}")":/var/kas/userdata/.gitconfig:ro \
++	set -- "$@" -v "$(realpath -e "${GITCONFIG_FILE}")":/var/kas/userdata/.gitconfig:ro \
+ 		-e GITCONFIG_FILE="/var/kas/userdata/.gitconfig"
+ fi
+ 
+ if [ -f "${REGISTRY_AUTH_FILE}" ]; then
+-	set -- "$@" -v "$(readlink -fv "${REGISTRY_AUTH_FILE}")":/var/kas/userdata/.docker/config.json:ro \
++	set -- "$@" -v "$(realpath -e "${REGISTRY_AUTH_FILE}")":/var/kas/userdata/.docker/config.json:ro \
+ 		-e REGISTRY_AUTH_FILE="/var/kas/userdata/.docker/config.json"
+ fi
+ 
+@@ -529,19 +679,6 @@ if [ -t 1 ]; then
+ 	set -- "$@" -t -i
+ fi
+ 
+-if [ -n "${DL_DIR}" ]; then
+-	trace mkdir -p "${DL_DIR}"
+-	set -- "$@" \
+-		-v "$(readlink -fv "${DL_DIR}")":/downloads:rw \
+-		-e DL_DIR=/downloads
+-fi
+-
+-if [ -n "${SSTATE_DIR}" ]; then
+-	trace mkdir -p "${SSTATE_DIR}"
+-	set -- "$@" \
+-		-v "$(readlink -fv "${SSTATE_DIR}")":/sstate:rw \
+-		-e SSTATE_DIR=/sstate
+-fi
+ if [ -n "${SSTATE_MIRRORS}" ]; then
+ 	if echo "${SSTATE_MIRRORS}" | grep -q "file:///"; then
+ 		warning "SSTATE_MIRRORS contains a local path." \
+@@ -550,18 +687,15 @@ if [ -n "${SSTATE_MIRRORS}" ]; then
+ 	set -- "$@" -e "SSTATE_MIRRORS=${SSTATE_MIRRORS}"
+ fi
+ 
+-if [ -n "${KAS_REPO_REF_DIR}" ]; then
+-	if [ ! -d "${KAS_REPO_REF_DIR}" ]; then
+-		fatal_error "Passed KAS_REPO_REF_DIR '${KAS_REPO_REF_DIR}' is not a directory"
+-	fi
+-	set -- "$@" \
+-		-v "$(readlink -fv "${KAS_REPO_REF_DIR}")":/repo-ref:rw \
+-		-e KAS_REPO_REF_DIR=/repo-ref
++# propagate timezone information to entrypoint (requires systemd 239)
++if command -v timedatectl >/dev/null; then
++	set -- "$@" -e "KAS_HOST_TZ=$(timedatectl show -p Timezone --value 2>/dev/null)"
+ fi
+ 
+ for var in TERM KAS_DISTRO KAS_MACHINE KAS_TARGET KAS_TASK KAS_CLONE_DEPTH \
+            KAS_PREMIRRORS DISTRO_APT_PREMIRRORS BB_NUMBER_THREADS PARALLEL_MAKE \
+-           GIT_CREDENTIAL_USEHTTPPATH; do
++           GIT_CREDENTIAL_USEHTTPPATH \
++           TZ; do
+ 	if [ -n "$(eval echo \$${var})" ]; then
+ 		set -- "$@" -e "${var}=$(eval echo \"\$${var}\")"
+ 	fi
 -- 
 2.43.0
