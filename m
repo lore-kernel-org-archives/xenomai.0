@@ -1,36 +1,36 @@
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0603327B327
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D21131A063
 	for <xenomai@lists.linux.dev>; Mon, 18 Aug 2025 12:26:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755520016; cv=none; b=jYbrqjkD02Um5lPeivQuO7/WzjVmTmqljrakpUUMtzs7rXsgo5ajTdKj2FOD8E1rOIXo0oN/8vEqmBuvjZ3ErczntA+l0sooZjynlRJVjV7rwkTFv0hxda+k2pM0NO4KHQ5yJJTxuajQ7w5yl+O63R0cF3yO8U5yvsRDr7UKFas=
+	t=1755520016; cv=none; b=SHqYN/HYjjTV43QMx4cU1wAVzDzm4NWZOQMdoUZdyiX9WjY7edLSU0qbvd3f7EjE7tw1CR64eEsfwrGz4P40VkOta+1nvoFLCGaQF4qW0itRb98g3gFOb32DU/B95FMEiVUUND20Nfbkw/vgKIDKqmd+mnh3JShrnzsl9fbHNAs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1755520016; c=relaxed/simple;
-	bh=0rkpLVQ/HopZwBE7aeBN7ZtKPp/jbPNOQvf47fGr1L8=;
+	bh=MgZbqubgtLrEnH+3eVGVFM5diXXcHfGX/nGxYu95R4Y=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=sQR9kK9IYvPkT6iSLiyB1s83iLLSwcV+qDssGEL9cnKbc5dUv+8Z8W62M2OxGHyIOh4f+0ESkIL03ou3Sj1+NrLOuX6crCNKi8OTZCEQeoZn5b5ALwW3PAQgYOI1x6eJIe0EYFctAEh6yDlA6AhVKf3byObdTEs2BdG8GSFLlC0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=LUwjXmmf; arc=none smtp.client-ip=185.136.65.227
+	 In-Reply-To:To:Cc; b=qEtCl+Jae6p1Ad7VrWdC3RYLpdzJJa0g61KWmWmA4dNGJwdXjYP+nh4uKJ0pWTK7HmtCsKmlmArkUpwz70YSHR+unpDY+bvI8n3AJ3YA2+05v1/ZcPtr7ItBQWWduaA4lrNfPvV6rKXI6oVn2whaOeCjh98TgCOrLhk/yofcurw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=T/q+WTyn; arc=none smtp.client-ip=185.136.65.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="LUwjXmmf"
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20250818122645d198d0a38d98ac48b4
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="T/q+WTyn"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 2025081812264500cbf3562d0c184b3a
         for <xenomai@lists.linux.dev>;
         Mon, 18 Aug 2025 14:26:45 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=DBaRHWHaMf/NgrAEJBpFXirs4OZhNmlEl9AUDN+CpM0=;
- b=LUwjXmmfYupp0ZrBo1IqNxPLdE5xTNg8EhKcS1tFQxiX+GjImL0MpCp1nz0cYtLHfOUGd0
- mP/ADSCjwO6kGFFDkwOoDdGI0ivPzdkyi1TqEFL2OxBPlOpDj61Z7Gf1pIuc6FtS7sK2BX8b
- xA/5Ufesd1A/fEs3GfDhg3IkJGSxRsokW+OwDO5cWr5R8pKNEaw2C0Q63oWFGMdNwEFhWQls
- 3chloQk1BUSkZu3KZymZk8oU5poyWltpP9FeVOBZL6ylgz0Z35ePa3nv4tMV6tXbtL8aUztw
- T/QKsiZVQLaSytX3BfGZee8fa2XhRUn382Zb5/9vygEdcm167YEo4bKA==;
+ bh=IW8IQTeNfMG4r7xGge3Dtnnvd5eJGAE7zLmgN28mVi4=;
+ b=T/q+WTynEr6u2XVn6e5foTd6OCUDgp+0M4UlVuQSccRt5FCsKrRXnoabgxyWgehxOwyG/C
+ Sqs/9AMPAL+ocxLuXl7wf4wyF7wfzjV9ZkVZHqKkoqN2aeOwjoiV0PdCAEZ7GEkyLV6s/B87
+ nB7Pl0hBN9WnPyQ8PhIDyazXlUaV3Jx/J9AXtjPCpY/TfB0G1A1sePhaQa4mSuT5qhioC4gX
+ 3U+Wfa5P9ChCj3KgXm3s/I4fmMoDg3qfuUCDSunrSiRMVDWqduvYS4hij6I+JRZ7W58iQRy2
+ a9c/mOjGJM1o6rSeOw63V5wfHGVhsy2o5cNx0HdsiEJYHlKidGdB659w==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Mon, 18 Aug 2025 14:26:46 +0200
-Subject: [PATCH 04/13] drivers/net/freescale: Add missing
+Date: Mon, 18 Aug 2025 14:26:45 +0200
+Subject: [PATCH 03/13] drivers/analogy/national_instruments: Add missing
  MODULE_DESCRIPTION()
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250812-wip-flo-add-missing-module-descriptions-v1-4-c57f195e3f93@siemens.com>
+Message-Id: <20250812-wip-flo-add-missing-module-descriptions-v1-3-c57f195e3f93@siemens.com>
 References: <20250812-wip-flo-add-missing-module-descriptions-v1-0-c57f195e3f93@siemens.com>
 In-Reply-To: <20250812-wip-flo-add-missing-module-descriptions-v1-0-c57f195e3f93@siemens.com>
 To: xenomai@lists.linux.dev
@@ -55,18 +55,21 @@ are also already triggering the warning.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/drivers/net/drivers/freescale/fec_main.c | 1 +
+ kernel/drivers/analogy/national_instruments/mite.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/kernel/drivers/net/drivers/freescale/fec_main.c b/kernel/drivers/net/drivers/freescale/fec_main.c
-index 9561fbc58..69a351762 100644
---- a/kernel/drivers/net/drivers/freescale/fec_main.c
-+++ b/kernel/drivers/net/drivers/freescale/fec_main.c
-@@ -3699,3 +3699,4 @@ module_platform_driver(fec_driver);
+diff --git a/kernel/drivers/analogy/national_instruments/mite.c b/kernel/drivers/analogy/national_instruments/mite.c
+index 09896a3e2..87f7cabe7 100644
+--- a/kernel/drivers/analogy/national_instruments/mite.c
++++ b/kernel/drivers/analogy/national_instruments/mite.c
+@@ -806,6 +806,7 @@ static void __exit mite_cleanup(void)
+ }
  
- MODULE_ALIAS("platform:"DRIVER_NAME);
  MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("RTDM driver for the Motorola Fast Ethernet Controller (FEC) MPC8xx");
++MODULE_DESCRIPTION("RTDM driver for the NI Mite PCI interface chip");
+ module_init(mite_init);
+ module_exit(mite_cleanup);
+ 
 
 -- 
 2.39.5
