@@ -1,36 +1,36 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D21131A063
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BA5C30DD05
 	for <xenomai@lists.linux.dev>; Mon, 18 Aug 2025 12:26:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755520016; cv=none; b=SHqYN/HYjjTV43QMx4cU1wAVzDzm4NWZOQMdoUZdyiX9WjY7edLSU0qbvd3f7EjE7tw1CR64eEsfwrGz4P40VkOta+1nvoFLCGaQF4qW0itRb98g3gFOb32DU/B95FMEiVUUND20Nfbkw/vgKIDKqmd+mnh3JShrnzsl9fbHNAs=
+	t=1755520016; cv=none; b=qS+pWD7VL5Wd4E0W7KVrnSbnUs/Ip/MEX0PKojHHi9Uvwj7fd4BcYLY4Suuf487UwlhxmUC5IWYZfZxdeMVEpszgEglrAgEC7SgaeP1bfGiZPFwWXEG1EyaarV8JC2+nHMpfFYsSbuNxrZYcrJ9kJD2JS7WSe4Bq9i8AYGtlhsQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1755520016; c=relaxed/simple;
-	bh=MgZbqubgtLrEnH+3eVGVFM5diXXcHfGX/nGxYu95R4Y=;
+	bh=xZ5lyr/+iWGPI6g1U3QmBMG+1GkN8dIVroQjRgSzxxc=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=qEtCl+Jae6p1Ad7VrWdC3RYLpdzJJa0g61KWmWmA4dNGJwdXjYP+nh4uKJ0pWTK7HmtCsKmlmArkUpwz70YSHR+unpDY+bvI8n3AJ3YA2+05v1/ZcPtr7ItBQWWduaA4lrNfPvV6rKXI6oVn2whaOeCjh98TgCOrLhk/yofcurw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=T/q+WTyn; arc=none smtp.client-ip=185.136.65.225
+	 In-Reply-To:To:Cc; b=XSTQjALpK3GXU9Zi1QrRHUVo76Iiq97BdsS3XHheZxw3zKCuLyil2SyQ0Rkfo/6pHarvGmi2zu33y6oWk9b4epcRmru7TIY4p8zHcUDfIW92Ot5MVHtXnCeWOe1pT2usV4j7eMvoNDxlWZUvFrog1sd2Uqdtc3xfMU03A0LI6zo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=HNimR1iK; arc=none smtp.client-ip=185.136.65.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="T/q+WTyn"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 2025081812264500cbf3562d0c184b3a
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="HNimR1iK"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20250818122646bed44ed894175ebbe6
         for <xenomai@lists.linux.dev>;
-        Mon, 18 Aug 2025 14:26:45 +0200
+        Mon, 18 Aug 2025 14:26:46 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=IW8IQTeNfMG4r7xGge3Dtnnvd5eJGAE7zLmgN28mVi4=;
- b=T/q+WTynEr6u2XVn6e5foTd6OCUDgp+0M4UlVuQSccRt5FCsKrRXnoabgxyWgehxOwyG/C
- Sqs/9AMPAL+ocxLuXl7wf4wyF7wfzjV9ZkVZHqKkoqN2aeOwjoiV0PdCAEZ7GEkyLV6s/B87
- nB7Pl0hBN9WnPyQ8PhIDyazXlUaV3Jx/J9AXtjPCpY/TfB0G1A1sePhaQa4mSuT5qhioC4gX
- 3U+Wfa5P9ChCj3KgXm3s/I4fmMoDg3qfuUCDSunrSiRMVDWqduvYS4hij6I+JRZ7W58iQRy2
- a9c/mOjGJM1o6rSeOw63V5wfHGVhsy2o5cNx0HdsiEJYHlKidGdB659w==;
+ bh=pTYOm3RJSSSCD2sNMYawI3DkP32lHnn9nbQuuHe+yuw=;
+ b=HNimR1iKLUFf7KKYgytEnRuCjO1pTNhUA4E1+cDqtPmcBBzlqMYsyZwthnZJP8MEEW/dCw
+ hjNKXERMhPjrD6eKc7eArT3tu+QA993wmReOr0d1j2GIH0FzlNlEFuiE5GCeiiWVCEh2uyVX
+ jHgqPkV/cKiHjLMJ15CQizAwH0f2yNHJZJRmgWR8ujS77XJrrHDFBpSq/WbZUEhaEaefsfV4
+ RqjciSc1LamMl8foHPCZ7DR8aNWCuAJXZvkKdOAeG37s/ll0qzxja2DG5IAM7C85RYkneCdu
+ IYb/YWLqBhZJkzuJMhikbIIdXK5a6IlgaMGQD0oP9KDZ/b4pepcmEXFQ==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Mon, 18 Aug 2025 14:26:45 +0200
-Subject: [PATCH 03/13] drivers/analogy/national_instruments: Add missing
+Date: Mon, 18 Aug 2025 14:26:48 +0200
+Subject: [PATCH 06/13] drivers/stack/rtmac: Add missing
  MODULE_DESCRIPTION()
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250812-wip-flo-add-missing-module-descriptions-v1-3-c57f195e3f93@siemens.com>
+Message-Id: <20250812-wip-flo-add-missing-module-descriptions-v1-6-c57f195e3f93@siemens.com>
 References: <20250812-wip-flo-add-missing-module-descriptions-v1-0-c57f195e3f93@siemens.com>
 In-Reply-To: <20250812-wip-flo-add-missing-module-descriptions-v1-0-c57f195e3f93@siemens.com>
 To: xenomai@lists.linux.dev
@@ -55,21 +55,38 @@ are also already triggering the warning.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/drivers/analogy/national_instruments/mite.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/drivers/net/stack/rtmac/nomac/nomac_module.c | 1 +
+ kernel/drivers/net/stack/rtmac/rtmac_module.c       | 1 +
+ kernel/drivers/net/stack/rtmac/tdma/tdma_module.c   | 1 +
+ 3 files changed, 3 insertions(+)
 
-diff --git a/kernel/drivers/analogy/national_instruments/mite.c b/kernel/drivers/analogy/national_instruments/mite.c
-index 09896a3e2..87f7cabe7 100644
---- a/kernel/drivers/analogy/national_instruments/mite.c
-+++ b/kernel/drivers/analogy/national_instruments/mite.c
-@@ -806,6 +806,7 @@ static void __exit mite_cleanup(void)
- }
+diff --git a/kernel/drivers/net/stack/rtmac/nomac/nomac_module.c b/kernel/drivers/net/stack/rtmac/nomac/nomac_module.c
+index 3bd2b0d69..ef5d902c5 100644
+--- a/kernel/drivers/net/stack/rtmac/nomac/nomac_module.c
++++ b/kernel/drivers/net/stack/rtmac/nomac/nomac_module.c
+@@ -161,3 +161,4 @@ module_exit(nomac_release);
  
+ MODULE_AUTHOR("Jan Kiszka");
  MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("RTDM driver for the NI Mite PCI interface chip");
- module_init(mite_init);
- module_exit(mite_cleanup);
++MODULE_DESCRIPTION("rtmac - NoMAC");
+diff --git a/kernel/drivers/net/stack/rtmac/rtmac_module.c b/kernel/drivers/net/stack/rtmac/rtmac_module.c
+index d4174dd32..6da87f707 100644
+--- a/kernel/drivers/net/stack/rtmac/rtmac_module.c
++++ b/kernel/drivers/net/stack/rtmac/rtmac_module.c
+@@ -80,3 +80,4 @@ module_exit(rtmac_release);
  
+ MODULE_AUTHOR("Marc Kleine-Budde, Jan Kiszka");
+ MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("rtmac - real-time networking media access control subsystem");
+diff --git a/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c b/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c
+index 77ad1200b..7b752af97 100644
+--- a/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c
++++ b/kernel/drivers/net/stack/rtmac/tdma/tdma_module.c
+@@ -316,3 +316,4 @@ module_exit(tdma_release);
+ 
+ MODULE_AUTHOR("Jan Kiszka");
+ MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("rtmac - TDMA");
 
 -- 
 2.39.5
