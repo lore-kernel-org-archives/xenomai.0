@@ -1,55 +1,57 @@
-Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010039.outbound.protection.outlook.com [52.101.69.39])
+Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013040.outbound.protection.outlook.com [40.107.159.40])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02F2E2367CD
-	for <xenomai@lists.linux.dev>; Mon, 18 Aug 2025 16:33:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.39
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43DC2320381
+	for <xenomai@lists.linux.dev>; Mon, 18 Aug 2025 16:44:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.40
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755534831; cv=fail; b=YVrSjAQ7jfT1zY099atITrDTnB4Szpswx0CY31p7wRHoq/krDVkUTpx/e50BxRxv/d7NT6yIOE/iDda3T4BEPtoysyHh23RigaFBPLApTOSPQjDZtEAY4HHyGLAxYPjnr9FDst42CGmdEi4vSoycHV550HUstG8UzT43nZ6oOjc=
+	t=1755535479; cv=fail; b=F43RogqZC7dsPvqss0iAFqWVm6m1tUZ0Vmo97PLadrUwbZ6G2/JC2s72bsPgqfDbhtqFPmVgEEzyHPITMUAADiyWcwHFI/B80qJW28Y7D3zRbsnX6QNAWByMbB6PEh4GilmQVjbN02z+hjjDhOwLRzJMCPdgu8LTVD3/3v8JsDM=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755534831; c=relaxed/simple;
-	bh=d4U90FNGIXfBML22/OfQn51O3KOlBXAvUW8IWpiur7U=;
-	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=BcUgt/fDVqKhdDAuTbhfvoyzf0xCtI4VatOYRr3gLdJk5YgDfrlo4Qp98EsPPOn1QGFhZx75WHQ8RdGRNXge0F4I+5Ua1IbokphTwJGI4qf0VKdUkLgPxELKEwM6Kofb3+Q9KqVFCW4UiZMK2YwtS+Z3yZ1MWAnfIfXL3cUKnN8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=Eesw8OBM; arc=fail smtp.client-ip=52.101.69.39
+	s=arc-20240116; t=1755535479; c=relaxed/simple;
+	bh=7x8qgrYNiUJJJGjkcyKMLj9gbm7colnkPgohOuiL5gg=;
+	h=Message-ID:Date:Subject:From:To:Cc:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=e7gF9ughAKHoJ2/Xl9rCQyGvYDzVaBRX1Dfe2iGawcQRJQzQOjFrflxMkimZPuVaULL7asE9doO+bbO4YRAHSplLF8sQgnTLEpRpMDjw1D61h0kKwjmRfaIWKxawfZSvR/3lDlkx3nCT/Gbnj1Re5d9BPyrCRFpRlLnniTimnGA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=KUbfFk0I; arc=fail smtp.client-ip=40.107.159.40
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="Eesw8OBM"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="KUbfFk0I"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=o6/AxrDyLiG1yOc0XSFTMGU6hoxbYkwIsXCBa1e845+KzB1/AbCZTQQWnc1nOVxfoYG7V52Q82yWvLvxdioy+BZX3CEsyvbxeIThPHFUeJbhCHjfFSH2kKAbYN856Mw73OieXq6SQSDQbWhi853nPcmnVfa0xSxhmN/4/syr/chcjBrHA8Me/SKIh/D71cm2VQvBxAwmKedUSPy2po1GHaCt3Mrdg25yPxf7MDrHjH4RwZSU6y8edKM0NT6rvljqXAoZDmkXWxJjEBN0OnOYp3IZbVOonarbPzFlMFp4s1sg8HJeX3g42fGW4Eb+JaIEb7MIAggnR49yZ+QmCNNICQ==
+ b=XkJ17CXYB4XlGs2F+teFOq+R2+BSNR6euOy0AgmOxalNCdRW1GNCiWnujRZtWZbnYVZ7Dflk7kDzxqRxCD/9i6r1gM0uWcqEDALfPGhz8m98CC93ZYtN5L7xzSXb5WVV1ZWJbGtE/7nZrbiQj1LN2nmcYCpstaNlLvsmMjIFHWPrOVewl4HSTFJHWuCtpH8/vzBiAb+OTp7a0d/WAbjgo0mCvz71NiZdfMWHkmCT0jrvJgVYWz8TFkbd2GnvZtQZtyEEKZpL2wU4QDUSb22e6OwgndYvJxIm5NLxEnbvxQs9aRpnJd2oGuHaQBPnn36lWytROi5qLmHKyLwaSLbcRA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7uyErXbXNearRNRFJlgzEpOvUMNpfUMcNNPdUNcOs/4=;
- b=yEwz7ds71CWmtG+QGrRW13aDIkm5EqQwMgYT6S0hY+z7FDwPM5JrMWJUOznQ9elmZxYppV7azGnecYIvezvw5/qqd1euo0xQTup6TgvAn0PPcU9/SHls5VIJit54pvvXUf6PUWoHf1+bwlN51NU+wCpWB3Rgf792/pVHCr0SNzDmgGpzOMqQLkyabCPX/6bT3DE/aeGfcbClJNx2WeTWVhnvv6vJciQAbeCygWEZbE3b/XtHdSjAp3ZWFgsCWdFDzH4VIPdGRoJqQ8doiTSjqGMZvVWgJAZzOyb6S5gINfPJ5a1p44IAJFoq7NiojQVlDAD52mJ9hgiAHbgs3OMzHg==
+ bh=0kwOMPaR2NqwX4XU6k3NG7+Qgikx/KqEnaL5AytI2wU=;
+ b=dku1tBFoCr8asIbZSCfsotANy0pFUKHAqFFrDMLw4I59Wu8iBCNhEOst4gr1l0Mi2oa/iOS6f7/tGPS0mzxcbn2j283LsON8AGKsl2WsCm+RFV7++gMyvkWqDA3JiYtFQMvHoxfSgumhAP/dEk8ryAOfKZ8bfQTOGhZaUOE8Mo8PHocpNhOgqrE5nfyHrUhr5RuqUIjVF9h+kQgmm1Rw2vFLFrR3ZyPnI5sc/aETYAOFmWlJVmL6Bx9VUqPgySR7Kl49g1HEQDm0tkl8bUGm8Bjlh0o47HyqdNNePWKoncJ5G/EfK8fuA0PpPkvfwf+J7xcHRVTnLidg5G4h1GS2Qw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7uyErXbXNearRNRFJlgzEpOvUMNpfUMcNNPdUNcOs/4=;
- b=Eesw8OBMKmbLo9Dyuz63trRTokcvIZLvo9A0Jcxls+sZ71hXIgF5BrHRmYWaSRnPqztNBz0NQkgTX7z7/mJRBLg6FQSPLeGwqrpBa6xQcTtJvKv1xngmcAQRZalmftSiuNHExQl+xdTNfK/CAhT+66zyt2DozRHGZr42pAUoaTJQvI0V2w2q9tYK/AU30Qi3jjpHO1gSzBcjx+GPzjITkpnh/Ti+2RFBFmnF5hQOkufbs8iUkCe+uMaBZ4jIbk27wYpHce19n5BAKUrSn5fF4bdf2Mq8gDCgQPwxjPFW4X1zISui4vVYtcGQXGlA5c2N0Bd56e+IXZ+DnEDSOh2jeQ==
+ bh=0kwOMPaR2NqwX4XU6k3NG7+Qgikx/KqEnaL5AytI2wU=;
+ b=KUbfFk0I81pP3J06LepAatcCy9gBUmEHXrntYP2i/dK7F+TN3jsreVCaB+KNthN53sj1CrgK09hmdhJr259Lqfv+yXU7uv/gOoabXgpqSkSLAJbjYv8d79GEALaJhkoLiOmxCxKBLEZ3WtMn92CK+ycWWMdX3bRjQfY5taUk3IwxdrPiMhshrmc2NkzonNf8AUsTdz47/PpfDXbRJdkyKsWU8BDAfZmPnzteSc/MraPyjhdBhp9qI1PrAsiCwsI5X6d+ibRfX1p56EKiwpHCKJEG36NmSXw1VcEX+C3Gi8crut89QZ0ot0pXQ7S8Gfu01I9mpX1J3zgIHvKuXIMVPw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by GV1PR10MB9109.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:1d3::6) with
+ by PA1PR10MB8839.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:451::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9031.24; Mon, 18 Aug
- 2025 16:33:45 +0000
+ 2025 16:44:34 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::8fe1:7e71:cf4a:7408%5]) with mapi id 15.20.9031.023; Mon, 18 Aug 2025
- 16:33:45 +0000
-Message-ID: <4877f4f9-c018-45fd-8039-6104957c0a65@siemens.com>
-Date: Mon, 18 Aug 2025 18:33:44 +0200
+ 16:44:34 +0000
+Message-ID: <b7eb0be4-c6fa-4096-a76f-d8d64cc21fa3@siemens.com>
+Date: Mon, 18 Aug 2025 18:44:32 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/13] Add missing MODULE_DESCRIPTION() to all affected
- drivers
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
-References: <20250812-wip-flo-add-missing-module-descriptions-v1-0-c57f195e3f93@siemens.com>
+Subject: Re: We are moving to gitlab.com
 From: Jan Kiszka <jan.kiszka@siemens.com>
+To: Xenomai <xenomai@lists.linux.dev>
+Cc: Philippe Gerum <rpm@xenomai.org>,
+ Florian Bezdeka <florian.bezdeka@siemens.com>
+References: <a1f7db9c-0422-4b1a-a762-d5ad2d9edf99@siemens.com>
+ <bda4eb89-41d9-4b80-a332-194f1433294c@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
@@ -94,11 +96,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <20250812-wip-flo-add-missing-module-descriptions-v1-0-c57f195e3f93@siemens.com>
+In-Reply-To: <bda4eb89-41d9-4b80-a332-194f1433294c@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0096.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a9::9) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR4P281CA0384.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:f7::18) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -107,171 +109,191 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GV1PR10MB9109:EE_
-X-MS-Office365-Filtering-Correlation-Id: e5039bca-a8db-4b2f-68b5-08ddde75001b
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|PA1PR10MB8839:EE_
+X-MS-Office365-Filtering-Correlation-Id: b36d1f6c-9e34-4afc-7019-08ddde7682d1
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?NVlhbi9nSXh6N1lIOTczZnBOVE9yRFV4YUh1Wi96WkN0dGxvc1ZDY3R2aytZ?=
- =?utf-8?B?enBuVWVZVUdRN3Z0akhNL2lVZUlwY0Z2UGJ3UDJIR0NWYit4SFc4ai9jNGNp?=
- =?utf-8?B?MkJTUlFmV2ptRlBVR283aThMRi92NXlqOVdhK2xubnVIV2RRY05QYmRnMC9P?=
- =?utf-8?B?QW1CQmNaeUY4VWEwZ3c2cDhtZjBFeHdUYW00TW5qdUFZcUViTWt2eE5kT2dR?=
- =?utf-8?B?aDJRclpCMkhBT0FNM2ppK3d3MU9OcEs2aUVQclFCZmhpUUNranhIaUdlMDJu?=
- =?utf-8?B?UFRzNHlpSTZvNkg2eThuVVYyTFBHbEpORDVSWUljQkRjN0E5NlNGV1dZci9D?=
- =?utf-8?B?NGpkRnV5TWJsTDlmeFcrQUVFN1ltTFA0MVhRZWxhYWRFVTRGcmVoVGNTQk9S?=
- =?utf-8?B?ZVFidFBaWklIelNjNUQ0Q1VkdXAxeTBIelJ2bXpYWER0NThmYmdQeHpMQWhy?=
- =?utf-8?B?cDFRZjM0VnFPeE0xVUJYVElKbnVMRyt3TXNqeFdJQTIyQkV3YnhwaStTWVpR?=
- =?utf-8?B?U2ZpRTFVRm5HL09NdEIzK0VsZzNsVnZXNWd5TUNBY0RsdXVmK0lHekw1NGkr?=
- =?utf-8?B?eDFSdzVleVlpOUJTbU0zbjJ6RDU4ZE5iVGM4enRtYnpLWGNOYUxIUjhRNTJ0?=
- =?utf-8?B?Zzh4TlBnc0hESUs3cEdsMXB3TUE5U0tZTEJhTHRQbWZDbWNjbjIyTWZTeTRD?=
- =?utf-8?B?SEROZmN2RTNiQ0FqbHVQTnhzb0JqbGljOFBMV0EvTDVFRmh5MGs5NEEwUmxs?=
- =?utf-8?B?MnlkRC9jb0t3VmFBYzQ4UnVESFlyWkUrNE5lbGJtamt4Sk4wdE5MU3hhVUxS?=
- =?utf-8?B?dXc4enpkSmp1Slh0NXAvR0g5NkNPekpoaHRTREdKQ2J0MEtTc1poRzVpZ2h6?=
- =?utf-8?B?by9lZ0VTZWRPTitQaExnVXk1U3AzWlVKaktLWXJwTmlJeW5Gek5Wa0lKTWRk?=
- =?utf-8?B?aVE4UnNUa3UxTXlzNHRHTzVFdS9qUHhBZ3E3a3Z0WUhVcjM4U09hMTdLeTZy?=
- =?utf-8?B?eXBmbHFrdDVIVzlSekVlQldMKys3cGtjR3VDZk9xTkRiYUdaTmgyWVRXT2lI?=
- =?utf-8?B?K2lsalJQSXRlbCs1MlZYQThNT2trOVczRUJlVWE5ZmVwSGNXQnZmbUhacGQv?=
- =?utf-8?B?aVVhcDVNRnFLaHN4TnFLR3R3K2Z2SGZCR3JKUExlcWxZQVNDaytoY1dyZVMy?=
- =?utf-8?B?cU13TUxHL1p4VlQwamUrcHArN0RVZUhIZ0tQbTIyRnp3U2VaTUNqYkNyM1FI?=
- =?utf-8?B?aW9VNHFrbjEybVMyeEwwUFN0bTJLakVhSTk3MjR0VG9JRG9sWVlNRXpvbWxk?=
- =?utf-8?B?RXRlaGVOaUlCL2JZeCtNdEs2S0hzK3BZTXVTL0FuSmZHQmlkSDVWTWVIclQ1?=
- =?utf-8?B?YzRjS2hyYnFQK2hrYUc1TEJVUmhOSTVTejZnVDdycHRxdWRNM0QzeWpYOUxo?=
- =?utf-8?B?aVJzWUJMTVNwT285V0R4OU5XY3hrRXJURVN3RFRsYXdmSXY4OE1yR3VlOW8y?=
- =?utf-8?B?YmdQSlIwUUxVWVdDUXl2NTM2bU1DelNhMUJqVXI3YkpCR21YekVySzJOK1ow?=
- =?utf-8?B?S25ROHNxMVJBTnMvcVVldStBRGtqWTIrZURnN0VKWmZ0NjFjZVdqekxEamJQ?=
- =?utf-8?B?bFhMQW9tRGR0MFRCWXRjZDFuK3lwSnVFelY3VnZ0V3N1QloxcjdKTS8wemNJ?=
- =?utf-8?B?VDJKdlovb3BWZFQ4bUpIQ2RkcmZXb24rdWJFM2RHZm5waXN0eDBUTUpoY2NK?=
- =?utf-8?B?WVJ3YW1kQlN2WGNGcHd1SUVob281UDN4MnVYUVpzeFpkT3hHMFNhdkRrbVVj?=
- =?utf-8?B?RWJqL0V6ZUd4MndqaWZCRGVTUjZYK3piWjRnYjRRV2Z1TlpYN3NHZytNak5X?=
- =?utf-8?B?K0NVZ0RPMVJUUWZFSlZrUTZaQXkyMEt3cFZSTExGblZRZWZmb1lFekRnOEFG?=
- =?utf-8?Q?CqnESPXmeYI=3D?=
+	=?utf-8?B?OWNGSzJGUEMxdnFpV1VVaHN5dTRhNjFqK3NESXhlUFcxajU5SUtrNWFZR01n?=
+ =?utf-8?B?TDNxM3pYQ2hhcHhjTXVCVnNOY1A1bHNhRmZLUWpiY2dJb2xDVnBGbHFVb2ht?=
+ =?utf-8?B?TG1odEh3Z0ZvTDZmN2cxZ2plNndscVFvUlRCaGU3UFhVeTNneHlmNE5Id0J4?=
+ =?utf-8?B?aWdzYmQ1VjJDVlcyVS9uTzFBT0t2T1BsUFZYdkI1SHRqUVNpcllFREtUTHpt?=
+ =?utf-8?B?TWlabExCL1FHYUx2ZEJ1bWlqTlJkaHNLYlpZVGxDN0lxYndNeHRZUnRRSDM4?=
+ =?utf-8?B?cTNnWXJadXdHUmhicmkxZHlBSkIwUVk0Ly8vYVZWSWZlRnQweFh1RnhhMkJK?=
+ =?utf-8?B?VmRMSzdoVXo1VnRnS2FFOVd0emF3RzA1TnV1ajlmUzdDNmsxVFQxL2Z2ZUpl?=
+ =?utf-8?B?Um11cmVqQXlhSHVXWXNlTjZaRTNYVWJJTHJ4RnUxMWl0czdIVTZYZ1FTWTFz?=
+ =?utf-8?B?Y3NMNytwME9LR29wbjg0Wk03dHNOOThMSjRDSm9MTmVjTHdDYWViM2xTamFF?=
+ =?utf-8?B?aHB6THYzTUZEY2UyZHh1L3liZW55UHRRdXFSQ1BhalgzSHI5WXQvcUp6aGhY?=
+ =?utf-8?B?VzAwem1CRUNvd3cvcWZSUkkxeWdMZUVLQjEzRG10eGZSL3FjaXY2UmhsRFdx?=
+ =?utf-8?B?c3I0MjVxZndEVkNoeE1HZlBpamNkc1VLbEdNMG4vOEtIb3lmRjR5dnNUT3Ry?=
+ =?utf-8?B?U0RsS1NxdkJkNlduM21CejVGcTk5OXRCbFNlaHJvOStaNkp4WGlDUVVyRXJG?=
+ =?utf-8?B?M25GeWdKcXMveXdkYTlWYzRXRXk5QUZKUTZvMFVzWWNoNndzdzZ6SWY5eXh4?=
+ =?utf-8?B?MFVrUm1weTArWU8rcnBSYzB5c0dvcmJyV1lDSytlUWsrU21aUzllbXM3dk1t?=
+ =?utf-8?B?cXpmbnVqeDRuUDU3OGFNS3pISlllSEIwWmxHZlN1RzJHU2NHbUlSWThiVjNT?=
+ =?utf-8?B?TTBnM3FEYlNGRHpjWjVBV0hkbHlDR3h6UWE4OC9aRXplbS90WGVSS3hMZ2FR?=
+ =?utf-8?B?SXpFNVlRVm10Ti9Va05jK3R0cU5hL1BSb25JN1A0RmdWa2srdEp5QjBaNU9Q?=
+ =?utf-8?B?enVkeWpoMzlJaHQ3Zyt6ejA1ZGFQRW5aTFB2MHJRUjNEdmYvTm9LY2doeW1k?=
+ =?utf-8?B?M20vaWFqaEVLYXlGeGl1MDgwQ2JCdXE2NDUyNS9UOXVCVm16a2VCVkFQL1gr?=
+ =?utf-8?B?Mm51MUFHSGtxc3dMM1RNaXVIQ015NGtMZDRrQmVTS3hSNFVOR3JuRWU2RW5z?=
+ =?utf-8?B?ZkhiSUZvK1MxbFUycCs2ZHY5cGF4cWdxYnY2d2Yyb1RGZVFBaEFJL0FqSDJV?=
+ =?utf-8?B?elVVUUFSZ2NxVkRCSC9INWovNzl1Sk81MEh1cEZWeTJHMjMvUVdQVGlIS2U4?=
+ =?utf-8?B?eWgvT2RTTSt4Uk1pbmlSNG5nVFlsY3NWeWRoQ2ppRUVoYmNRd28vNjIrOWJQ?=
+ =?utf-8?B?SkdvR3hTbWZheEZaMGQ4TzY2ZnV6QTJBZ1JWRmduK2tvWGh1cE1ZYUkzcWNJ?=
+ =?utf-8?B?dFVnaFpleGZPK2t6YzI3QVZ1dmJIdDlNNUdtTFNNcCs4Zi82cXNrclZqdmhx?=
+ =?utf-8?B?dWk3U0VYUjhMbE5yblJFUXNPdFY5ekE0MnNiVThSc1VUdjdUL0N0R2MzUGFI?=
+ =?utf-8?B?c29lWnUzUmxIZWpuVVBISWZncFdaK2pQZXAxUnJSTXg3d3Vna0F6TitGTHA5?=
+ =?utf-8?B?bngrZmJUMEV5TzdPN0VicU5ZOGNHWWhNQ2w1U3FxWk1iUWFaVmRGUjRRTFJT?=
+ =?utf-8?B?WU9NSUdKZzhUQjJLM0tiSDQrSDlLam5wdk5KamhQdS9zc1ptSFVyMndYbU1P?=
+ =?utf-8?Q?XHgOHIIOFKK6cS6R/J8PZSQSkaJcYAIA6+Lao=3D?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Y3ZVampBeTBiWHFFcmtHZko4VmQ1RnJ6S2F2MFBIcTE5L05NbWgva1p1eFlL?=
- =?utf-8?B?TzZyUTNvbW5zMDAzbEVJRmsyN1lUN0FHTncveTdZYzBaYjVxeUZ4WmpFUmRN?=
- =?utf-8?B?T0VIbExVYm83NURaVGhocFAwcGdzdllRR1NiRXJQYytkV2toSlRXWEZnRW1H?=
- =?utf-8?B?OFlVMS9RRTB1RnFIQUNUcnpyWXV0NmxDazEwVVdPV2s4TUdyL2xsUVRvLzBr?=
- =?utf-8?B?UjhPSUNrWVZVWTVPU2Rzd1M5QXhOZDJ0dFZaRzZ1SmJrdlZ3R3JwTk05VktG?=
- =?utf-8?B?RmdGaDJBK3hwTEk3WUhiY3VvUFI1OUprQW5BVjlnSFYwRTNXaEdDdGdsWjFq?=
- =?utf-8?B?RGpaN1k5NExXdUxnOGVIV1ZRUzZRWUJYVHVaNmd1ZFF6ZVg2UWpJMmdiZTMv?=
- =?utf-8?B?cVdpSDYxeXQ2M1pmRXpZZ29pcUNab1VOeFRYbDlHQkNpZ3g5WDNmS3l5Q3ht?=
- =?utf-8?B?QkY0OGNzRjNvUXhDUER2NFJPcldHS1VpV2VxZ2xFSmJlRUtEVjFNNW1TZGNl?=
- =?utf-8?B?K3pDcmZwVzEzV3VhUURDeC95MEFtLzFnY2pVamF3WWdtVXIwbVRySTZ4akpW?=
- =?utf-8?B?dTVCK0toM0VKLzVITXVaRW9zRVcwUCtRUFVrVnhTdTdJc3pWaTE0NU93cWtD?=
- =?utf-8?B?T0lrZm91ZGhjbDh3WUErVU9qa0ZFZU81WDBQQmRPV21EcktkUmRzTTFLcXd1?=
- =?utf-8?B?T2hMSENubmt1TVI3ZE1qODRjRWdpSFFqNUovSVFIbm1hcjkzamV3dEw1ZmVT?=
- =?utf-8?B?UWNNc3RPWXh5SER5VXRpdDk4Z3hFZkpTbFQ2YXZ2eWVCQ21FOHBBZ2Q2NzRn?=
- =?utf-8?B?NnhaYUgxbkkwK3BVU0NMWk5FQmYzNmVlcnBkOUlpMXhyV2VPRTR3aUp1WGJ1?=
- =?utf-8?B?cUxlQmhjTFRrR2NmdE5EMThrUWNyMVFXSk1KRnFQQlpWYkVxSjVNNE5ZQXE3?=
- =?utf-8?B?UFZCU3Q2dEZXNk5hdnVlbi95Y3ZRUDZUQ0gzSm8ycVI3N1dJUUs4K2M2U2ZR?=
- =?utf-8?B?RTlrNWdLTndWa1NLczJkaytmVGdBTVc5VjJ2WjcxbDJLMmE2bzNSS1U0KzVj?=
- =?utf-8?B?b0VBVzllYWpiRXN3ZXF5cWo4UHVGOE8yQ1Q5d2gwV2FCNDNGTFRnSUVPdUJU?=
- =?utf-8?B?L1FJUndYczdBeFNVNC8xNUxmUHV2VURhSjYzQ25KSmV6SWtsMkZDRVZBdUl2?=
- =?utf-8?B?ZlgvclQ5RTI5L2RwbmpDWFRYakhXL3l5ZHhnNnhjYnMwSUhoUUNsbDFMbUp6?=
- =?utf-8?B?R2VkN1YxaXZYUzZUWHYxNzdSWXZnWUdubEJrK2lxYlV1NEdlQnBmbndJenJG?=
- =?utf-8?B?eDRXSE9JWWJnMVUwcUtNenk3WDlKeE1DaHJBUzYyeEJxd0hWTG5UU0IvNHlq?=
- =?utf-8?B?OTN1MkFIcC8zNmN5eWpmaGswU2dMRDMzTjBROHNldUNTcTQ4UjNnamVlSkNQ?=
- =?utf-8?B?Q1dacmxtVFNoNnFTZTVRUGtzb1JSYXkwbHVPaElZejJ3dmlOOFYwQ2huRkg0?=
- =?utf-8?B?a1RrOWg5bXJnckZLU0ZZUEVYclVYQ0hTSVl5ZEM4QnRZSWVCT3NhSEdPZnlu?=
- =?utf-8?B?d3JsdTZyQlUvTlNRaWo5d052d0J1cHVCZGRqZFcxZ1ZickZxZzJ2UkhLTHJ2?=
- =?utf-8?B?OHpvMTZFN2JKRmR3WWNjV1Q5Q0lrVXRzZlMzTGtOMHBQNDk2UXJVajdZT25S?=
- =?utf-8?B?VTZQMktDYzV4UU9Od2pXLzI5YitVcDV4allpSFBWLy85Ukc1cGxDdG9qYVkw?=
- =?utf-8?B?T1Z2ZzVJaU4yRi8wWjBubGhVOTg1bEdlYVNENFo4aXFYSEQxNTZNWmdmTXcz?=
- =?utf-8?B?T2VkeXR1a2VXRTR2MmV6alVZa1F3T2lhcjVCSjk3NkF4ek9MS0htT1JsOEpP?=
- =?utf-8?B?eGdwSTEvcVRXNnE1ems5VjkyUEZTNFVHUDlmNlN1MjlnYVRqUnozZlVaVHBW?=
- =?utf-8?B?TlJVd0htd1BCWEUwdU5sNnFoaHdLVUx6YzhJMnFJd2l3T1Z5cGs3M2RXZU0v?=
- =?utf-8?B?KzNOSWdTMzY0bCtVeDJTT2tobDJKL3dCTVpuTlNMaUJ2M2h1eUJPdU11cFZJ?=
- =?utf-8?B?VUVRVkVQQVNOT2NmNGhUWnEzbmJsb3F1NVAxZkFueTRZVTRPcTU1VXVWRWpk?=
- =?utf-8?Q?M07dJEMzQMMujm2e9EI8VbjEa?=
+	=?utf-8?B?TXRqMjdMMVp2L0xzK0xaaHlXMVAzV2tQZm9VdmJ1N2JqaUJudVJHNHRORXZu?=
+ =?utf-8?B?R2xzOU9tRGhFN0ljVzZ1M0lycE8wUURKeEFnYWZjOE81UU40RmF2Y2dROFl1?=
+ =?utf-8?B?WWROMnovQjU4V2FCQ1J4K3Y5NCtlQ3lhSnowdXk3d3pPeTQ3T25rQlU5MVhj?=
+ =?utf-8?B?QWN6OTYxU1ZOQmJDQkV6T2dtNmxqZlJ5VTExQ05PWnAwT3UweTJHa3FGY2Fk?=
+ =?utf-8?B?Z0ZmUXRsbkE2dzFwaWhNbGFLVFRXaU5jVDJWYUJ0RFhDTG9tT3Vmc09qSnhK?=
+ =?utf-8?B?K1J3bzNMazREcllRcnJEaTM2WWlhMnBYZjh4TEtEeWRtT2dYeFg4SU1lUE5N?=
+ =?utf-8?B?RkM0VmtDVUc2V1Vyam1zdVN1NFFmcENqNmIwaGRrUnFNOVB5R0s4S3FhRDBt?=
+ =?utf-8?B?di9mUGNXaFhzRGdta3Q3Z1hySHJ6R3FJamx2UFBycHJKRU1CdnowOW1aZnEx?=
+ =?utf-8?B?dzl5OXo0YXpUcDkvSkx3azIwcFAwZnp1aDVBOVptaW9PWXV4YzZaOWx0dmgx?=
+ =?utf-8?B?ZmdjTUFLWnMvMEkrMThVTFZqODAzVjBrdk1Nd1k4akVBMm1ualpZZHB1aExz?=
+ =?utf-8?B?bzd0SldYcXMwUjRqYzNHRng0citiaXpRN2RLclM2MU1WTGhmQVhabkNTeGZR?=
+ =?utf-8?B?Q1dwbXBxa2VBUE1ZRi83R25lR0J1SVNBOVlnODFySE1GeWppK0g1YTB3RlBs?=
+ =?utf-8?B?NmxxN1c1Ui9saFV0dGJpNm5sRHVmaVk5QmJwbUhzNmF3dmNXSmxYTnhLdWhK?=
+ =?utf-8?B?OFhmcjZOdnBUR2g3a3doL2wwdlpGZHExY2RnQytaTk5hakpEM1FWOGlVS2JC?=
+ =?utf-8?B?TUF0TEJiT2hPaGgrdmdLSFpMUSt4Ym0wVFNVNHlNWUh3TzdGVHBRaFBqYVVV?=
+ =?utf-8?B?ell1MzVTK3lJdThTd2t2bmJ2YkQxZGY3QnNTRlFTN2FvRFJnTklYK2xSVWNl?=
+ =?utf-8?B?enhZZ0NibE5jamxKdk1RL1lBODQrVnhXYXhMakdRNzhlSnBBZTFqZ0k3a3Ew?=
+ =?utf-8?B?NThQN2RBRElZSGc0ZmxNWjNyZkEwRHBsMDR2Vll1bnhHYXBYK0FaWHd2UlNJ?=
+ =?utf-8?B?ZmFBVUlFcmVRM1dRWmQvNGd1SDYwZ3d5T1JmV0FBOE4rUDM4S2ZWU0VtaDlC?=
+ =?utf-8?B?ek5kdVVsTkNhK1BsdXN1MFNzMkp0MnQvZkNyRVhtVllGVG0waWdYWWsrMTYy?=
+ =?utf-8?B?NENlZkY2bjdDRjNVQWdYOVRHQlJjbW9hanBWU2RWNU9kb2k4TkRQdjJ0aUxJ?=
+ =?utf-8?B?NW1GZVgwWmR6QWI0UXZrc0JTVmE1alFDZU1idFlFSkhzVW5vNWFacWIzRWUy?=
+ =?utf-8?B?RDY2dlROMXBkbmxIQUZrd2hXRTRLekNiOWR5NUNIQ1NGL1FXcXJsc1lEVjdk?=
+ =?utf-8?B?amtEazZENWFSaDJPWGg3Qkw2OXRuUmsrUEVWdFZjM09sZzBPaTJONTZESS8x?=
+ =?utf-8?B?Z1h6V2JtamZPUnIxOTNnWnNCNnhPekJiclA0SzlUVmlKSXdSRnMvKzYvaERL?=
+ =?utf-8?B?c2I0SXYzSWllQThpTWhCTlRzYlhVajFKTmJkV29ja0VGaHVUT2VHY1VHS0tV?=
+ =?utf-8?B?M2VXSFdLN25VbVl2TjZlc25lUE1ZTnNYZEZ4OXd1eFFOUTl2MzJxM3h3T0hu?=
+ =?utf-8?B?dDFkY25qbEprSkNRY3l5Y0tieFhqdGFnb1VSSHg1OUg0MjZyUFFjaWF3MVZM?=
+ =?utf-8?B?bTRJZTlPWE8vbXNqREowanAyTXVhalRJbk4wUXN1ZVhXaE8xR0Rua2d6Rnd0?=
+ =?utf-8?B?R1l2ZjNCRDgwemxJaHlxVDNLazhBYTJFS1FmR3pDelRhLytNVEJ1Y0ZJbkJu?=
+ =?utf-8?B?QUZJVGRBd3VwNE1LQmZxenFQQy9FdmM2MG91OE0wU0haMXRpZnZuTmhFcG8w?=
+ =?utf-8?B?R0poMXJUMm5qTG1tTFZWNGI3MkJITDMreXR5OXQ3SmxOMndSNDcxWGx4K3l2?=
+ =?utf-8?B?SWtPMSsvWE0wcWRUSmlDYklGeGN0N2VqS0tac1VEa0o2ejVmWmw1emhBU1M3?=
+ =?utf-8?B?YzdPcTVocWJYaGUvZGxiR3E1cjNrMG1nS1FIYkljZnlaSU5iUmxCakh0MEJw?=
+ =?utf-8?B?WXpTbGcvanRTelBPR1gvajJUT3IzSXpSNW0zMXVKbGw3d3hxVmc3dmNBVDEv?=
+ =?utf-8?Q?XyLlCeusn3U6wns8I/DDvIvuv?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e5039bca-a8db-4b2f-68b5-08ddde75001b
+X-MS-Exchange-CrossTenant-Network-Message-Id: b36d1f6c-9e34-4afc-7019-08ddde7682d1
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2025 16:33:45.2039
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Aug 2025 16:44:34.1298
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: r789m7W1xG/2eGHpC/G6OhaO3wWlF5Xc7BNHFxSIuXKzbj76BIYzH8H0Vge55JYOWbAstrVJnvKamcnGixwkqw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR10MB9109
+X-MS-Exchange-CrossTenant-UserPrincipalName: kMfZYYZ1WMcqG8041e+tN4NfjLJiQTEOFHBdTs04M0g29GrlJG+ZaUNGwtRLtIT8GzlI96r7o0PVhyIbeb7dXw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA1PR10MB8839
 
-On 18.08.25 14:26, Florian Bezdeka wrote:
-> Hi all,
+On 12.08.25 16:19, Jan Kiszka wrote:
+> On 07.08.25 11:04, Jan Kiszka wrote:
+>> Hi all,
+>>
+>> we have been informed that source.denx.de will eventually be shut down.
+>> There is no exact timeline yet but we better act earlier than later. In
+>> fact, there were already signs that this resource is at risk. Therefore,
+>> Philippe and I were considering options before and came to the
+>> conclusion that gitlab.com is the most straightforward path.
+>>
+>> So I started to build up mirrors for all relevant repos under our
+>> pre-existing group at https://gitlab.com/Xenomai. At this stage,
+>> source.denx.de is pushing all changes also to the corresponding repos on
+>> gitlab.com. CI and websites are still on source.denx.de but we will
+>> likely change that next week. Once those services are running fine,
+>> repos on source.denx.de will become read-only, will stop mirroring, and
+>> all development will start to take place on gitlab.com. We will let you
+>> know.
+>>
+>> Still, we would already recommend to update your git URLs, which is
+>> basically s/source.denx.de/gitlab.com/. If you find any glitches, please
+>> let us know ASAP! We specifically interested if Xenomai user in China
+>> face additional access issues now. We already have some mirrors in
+>> gitee, but their quotas do not allow to push complete kernels there.
+>>
+>>
+>> Another change along this: We currently have so-called hacker spaces on
+>> gitlab.com [1][2] which were created to allow any gitlab.com user to
+>> create issues there or actively pick up todos from them. Some frequent
+>> contributors also used those repos for pushing ongoing work. We also
+>> planned to grant access to the projects CI and test labs, though this
+>> wasn't realized so far.
+>>
+>> However, with the main project moving to gitlab.com as well, there is at
+>> least no longer the need for separate issue tracking. I therefore moved
+>> all issues from [1] to new main repo at [3] and disabled issue tracking
+>> in both hacker spaces. Please continue the creation of and contributions
+>> to Xenomai issues on the main repo [3] from now on!
+>>
+>> And if you are using the hacker space so far for pushing branches,
+>> please speak up so that we can discuss how to handle those use cases
+>> best from now on. It would be possible to grant developer access to the
+>> relevant main repos, but it would obviously be possible as to push to
+>> personal forks.
+>>
+>> Note that this move does not change our patch workflow which remains
+>> mailing list based. No one raised the topic recently if we should
+>> consider a merge-request workflow, and as long no one does, we stick
+>> with our tradition. :)
+>>
+>> Jan
+>>
+>> [1] https://gitlab.com/Xenomai/xenomai-hacker-space
+>> [2] https://gitlab.com/Xenomai/dovetail-hacker-space
+>> [3] https://gitlab.com/Xenomai/xenomai/-/issues
+>>
 > 
-> when building Xenomai against newer Dovetail/Linux versions build
-> warnings like the following occur:
+> Quick update on the migration:
 > 
-> WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/xenomai/net/stack/ipv4/rtipv4.o
-> WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/xenomai/net/stack/ipv4/udp/rtudp.o
-> WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/xenomai/net/stack/ipv4/tcp/rttcp.o
-> WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/xenomai/net/stack/packet/rtpacket.o
-> WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/xenomai/net/stack/rtmac/tdma/tdma.o
-> WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/xenomai/net/stack/rtmac/rtmac.o
-> WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/xenomai/net/stack/rtcfg/rtcfg.o
-> WARNING: modpost: missing MODULE_DESCRIPTION() in drivers/xenomai/udd/xeno_udd.o
+>  - gitlab-based websites have been moved to gitlab.com, sources.denx.de
+>    pages were decommissioned. Please report any broken links if you find
+>    some!
+>  - we will switch the primary repos tomorrow morning (CEST), but there
+>    will still be mirroring afterwards, just the other way around. Still,
+>    please update your git URLs!
+>  - ftp.denx.de will be shut down as well, and we are still considering
+>    what to do with the historic bits under ftp.denx.de/pub/xenomai
 > 
-> I went through all drivers that had a MODULE_LICENSE() but no
-> MODULE_DESCRIPTION() and added the latter.
-> 
-> Cc: Jan Kiszka <jan.kiszka@siemens.com>
-> 
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
-> Florian Bezdeka (13):
->       drivers/gpio: Add missing MODULE_DESCRIPTION()
->       drivers/testing: Add missing MODULE_DESCRIPTION()
->       drivers/analogy/national_instruments: Add missing MODULE_DESCRIPTION()
->       drivers/net/freescale: Add missing MODULE_DESCRIPTION()
->       drivers/eth1394: Add missing MODULE_DESCRIPTION()
->       drivers/stack/rtmac: Add missing MODULE_DESCRIPTION()
->       drivers/stack/ipv4: Add missing MODULE_DESCRIPTION()
->       drivers/stack/packet: Add missing MODULE_DESCRIPTION()
->       drivers/stack/rtcfg: Add missing MODULE_DESCRIPTION()
->       drivers/net/addons: Add missing MODULE_DESCRIPTION()
->       drivers/can: Add missing MODULE_DESCRIPTION()
->       drivers/spi: Add missing MODULE_DESCRIPTION()
->       drivers/udd: Add missing MODULE_DESCRIPTION()
-> 
->  kernel/drivers/analogy/national_instruments/mite.c  | 1 +
->  kernel/drivers/can/rtcan_module.c                   | 1 +
->  kernel/drivers/gpio/gpio-bcm2711.c                  | 1 +
->  kernel/drivers/gpio/gpio-bcm2835.c                  | 2 +-
->  kernel/drivers/gpio/gpio-cherryview.c               | 1 +
->  kernel/drivers/gpio/gpio-mxc.c                      | 1 +
->  kernel/drivers/gpio/gpio-omap.c                     | 1 +
->  kernel/drivers/gpio/gpio-sun8i-h3.c                 | 1 +
->  kernel/drivers/gpio/gpio-xilinx.c                   | 2 +-
->  kernel/drivers/gpio/gpio-zynq7000.c                 | 2 +-
->  kernel/drivers/net/addons/cap.c                     | 1 +
->  kernel/drivers/net/addons/proxy.c                   | 1 +
->  kernel/drivers/net/drivers/eth1394.c                | 1 +
->  kernel/drivers/net/drivers/freescale/fec_main.c     | 1 +
->  kernel/drivers/net/stack/ipv4/af_inet.c             | 1 +
->  kernel/drivers/net/stack/ipv4/tcp/tcp.c             | 1 +
->  kernel/drivers/net/stack/ipv4/udp/udp.c             | 1 +
->  kernel/drivers/net/stack/packet/af_packet.c         | 1 +
->  kernel/drivers/net/stack/rtcfg/rtcfg_module.c       | 1 +
->  kernel/drivers/net/stack/rtmac/nomac/nomac_module.c | 1 +
->  kernel/drivers/net/stack/rtmac/rtmac_module.c       | 1 +
->  kernel/drivers/net/stack/rtmac/tdma/tdma_module.c   | 1 +
->  kernel/drivers/spi/spi-bcm2835.c                    | 1 +
->  kernel/drivers/spi/spi-master.c                     | 1 +
->  kernel/drivers/spi/spi-omap2-mcspi-rt.c             | 1 +
->  kernel/drivers/spi/spi-sun6i.c                      | 1 +
->  kernel/drivers/testing/heapcheck.c                  | 1 +
->  kernel/drivers/udd/udd.c                            | 1 +
->  28 files changed, 28 insertions(+), 3 deletions(-)
-> ---
-> base-commit: 8569b52053cb766a913d18118f4ede2666a9ae4c
-> change-id: 20250812-wip-flo-add-missing-module-descriptions-8ca53e133979
-> 
-> Best regards,
 
-Thanks, applied with minor text adjustments.
+So, the moving should be widely completed by now. The content on
+ftp.denx.de is secured, we just need to re-export it differently (via
+github pages as well) - a minor change.
+
+More important is that we took the chance and reorganized the group
+structure of Xenomai. You will now fine Xenomai 3 related repos under
+the xenomai3 group, analogously to xenomai4. That means:
+
+Old: https://gitlab.com/Xenomai/xenomai
+New: https://gitlab.com/Xenomai/xenomai3/xenomai
+
+The other repos in xenomai3 are just about the website. Thanks to
+forwarding on gitlab.com, you can still use to old URL, but it is still
+better to update directly to the new one when switching from
+source.denx.de anyway.
+
+Talking of source.denx.de: Mirroring from gitlab.com to the old repos
+works now, so no practical change yet. But keep in mind that this URL
+will eventually break as the server will inevitably be stopped. We just
+don't know when yet.
+
+What is no longer working, though, are git clones and fetches from
+git.xenomai.org. That is because we were not able to forward that domain
+to the right repos on gitlab.com. Please update your recipes and scripts
+accordingly. And if you spot any references to git.xenomai.org in your
+docs, please let us know.
 
 Jan
 
