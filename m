@@ -1,37 +1,36 @@
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB1B831B110
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58D0032039C
 	for <xenomai@lists.linux.dev>; Mon, 18 Aug 2025 12:26:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755520018; cv=none; b=tdApn64oITfRPkxnN2k7rZsPmLxSOrEgFiqrwvG9JK4d2bVQAf2pE/6LmvrdNheJvxwh9p79LNyw63u/+dW7b/bWlhs6na9zSR07K8v1b4d0xqFcc0tca+WDTAJ3c0KJT4B5Jr6uYCsxR/aZL1o41KrMiyJGG9jLX99rpaM2ufI=
+	t=1755520021; cv=none; b=NX6cTrvSJQFFtLZSrWyhp2U87f4Spx5kdRABOkqB3qqR2PMOs6J+QIRt7tbpae4vDO86EHXgRy6jtsMFHSCZiGLR4jinrCNzjzWtQxNgEHDDKKbX7bfkLp2pEQE+SJRZu42HpREPjN2gKYzRjxnFt+RavJs3ppcrdvz8d/e1jMI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755520018; c=relaxed/simple;
-	bh=nbMwyuMJRpw1dldPyAtdPjdNLTAKIerM0vB5Q/KcGR8=;
+	s=arc-20240116; t=1755520021; c=relaxed/simple;
+	bh=bjUeO2DW2YynXfwrw0nH0wUcDR4E5PZ/UpqJsy8P7l8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ua1UgSNTpA0LCyg4msz66SORVXe9MwUt5CDzd+XfnuK9eAzwEaeMYenwRuTkS7UzN5AsrqdhMVNkxR+tI1/zOy4YrDIMQuIm8el0fm5yukePFRj9nzUAt94rljXmVrCkmaJYCoDz2rdHcPnvnc3h6Lgkzx6kUlFsGRjza9L7Ck8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=ZVBNEp8Y; arc=none smtp.client-ip=185.136.65.227
+	 In-Reply-To:To:Cc; b=AWK9ihd1f3iwRqrhXMrt2AhLMJ6hcDuGqWZ3DzOGzKG0g50MIeY5N9LgP12Fjc50u3Dayu2uno7UHPAWLeNyUqHNPl0zNMXbnhAm/3M/5S8HJVsMhZEecJiYczFUlKweo2pBIC+e9z9KNun7WCy+xIe1HBXj7GtA7hiFrqt6WYo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=IetNHTsC; arc=none smtp.client-ip=185.136.64.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="ZVBNEp8Y"
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202508181226479e488c140f5073e0f8
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="IetNHTsC"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 202508181226476ffe076b08fa1822b0
         for <xenomai@lists.linux.dev>;
         Mon, 18 Aug 2025 14:26:47 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=q0JcSl1P5wZ9T7INWpc+Dxvh7pI4ylZlv8bySuQkZNY=;
- b=ZVBNEp8YlZVTTr4n/lqEDu2qzf6OyxydYTnWK2RbcblWURfYaKWqA5/vmS0xlmqZtlT+jb
- YAEd/OBKEELrNcSCDOsVt1pxMqivXTBDLCDoBkj6uFLwy8fdDGBJZgvJfnAWSUaSvYEDVLJt
- 4ZMzWcMuz7TO0ILo32HfThPVQSqsJAHXhw5BRsetPPCYjcmmtqaDYccs1rls67rEDJSdB2lj
- 2yqUrCcZvS5xLAHs7Ty6GbTueQiX63n0Nr8IOVpsWtqkflstBb3GsrfEzqD9zKOnpdMfeWVx
- 3K0nuZYu/F8CalM/yGvBpt+x5xGHQRmJr6ac/V8rgM/oyP/72wYwXkSg==;
+ bh=wBg0Zv0W4NdEIlta2pBfIRyRrAziKy1mEaMvJWLMko8=;
+ b=IetNHTsChTv5ljUiv4e+vQdia4OfSawCp83FmZl964My6M5b7VruWh4qXFyXKAn5aNwlFW
+ a7i5IJeMBFxkG4T6lzKrpSE4T/PiSi8DXo1qjmq3+fN4F5Wdxu+XBwzlA++RM7fUGNA9+PkH
+ ArXTRiKHHI83KvjLrlVIWegF7FQGsPzwv26bD+HBIvkEvfN33QKX8aAhkDmpckgC3CJyX0+R
+ Zdz1/gVvQbr8UgWi6FM7q3uxDklY6vns6BEpZRmHNBHm31Tkw2nPye5n9tkJuOSGtzuAhRxc
+ aACOajGOb4qFlYg81LQU7QOPY5UpHIySrPSDwFoTsvXugXrZAhyiTOzg==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Mon, 18 Aug 2025 14:26:51 +0200
-Subject: [PATCH 09/13] drivers/stack/rtcfg: Add missing
- MODULE_DESCRIPTION()
+Date: Mon, 18 Aug 2025 14:26:53 +0200
+Subject: [PATCH 11/13] drivers/can: Add missing MODULE_DESCRIPTION()
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -40,7 +39,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250812-wip-flo-add-missing-module-descriptions-v1-9-c57f195e3f93@siemens.com>
+Message-Id: <20250812-wip-flo-add-missing-module-descriptions-v1-11-c57f195e3f93@siemens.com>
 References: <20250812-wip-flo-add-missing-module-descriptions-v1-0-c57f195e3f93@siemens.com>
 In-Reply-To: <20250812-wip-flo-add-missing-module-descriptions-v1-0-c57f195e3f93@siemens.com>
 To: xenomai@lists.linux.dev
@@ -55,21 +54,21 @@ are also already triggering the warning.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- kernel/drivers/net/stack/rtcfg/rtcfg_module.c | 1 +
+ kernel/drivers/can/rtcan_module.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/kernel/drivers/net/stack/rtcfg/rtcfg_module.c b/kernel/drivers/net/stack/rtcfg/rtcfg_module.c
-index 857237744..5c3cd47df 100644
---- a/kernel/drivers/net/stack/rtcfg/rtcfg_module.c
-+++ b/kernel/drivers/net/stack/rtcfg/rtcfg_module.c
-@@ -34,6 +34,7 @@
- #include <rtcfg/rtcfg_proc.h>
+diff --git a/kernel/drivers/can/rtcan_module.c b/kernel/drivers/can/rtcan_module.c
+index edc977cdb..8fc7a699c 100644
+--- a/kernel/drivers/can/rtcan_module.c
++++ b/kernel/drivers/can/rtcan_module.c
+@@ -38,6 +38,7 @@
+ #include "corectl.h"
  
  MODULE_LICENSE("GPL");
-+MODULE_DESCRIPTION("Real-Time Configuration Distribution Protocol");
++MODULE_DESCRIPTION("RT-Socket-CAN, CAN raw socket interface");
  
- static int __init rtcfg_init(void)
- {
+ const char rtcan_rtdm_provider_name[] =
+     "(C) 2006 RT-Socket-CAN Development Team";
 
 -- 
 2.39.5
