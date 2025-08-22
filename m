@@ -1,33 +1,31 @@
 Received: from cczrelay02.in2p3.fr (cczrelay02.in2p3.fr [134.158.66.142])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FC502FB609
-	for <xenomai@lists.linux.dev>; Fri, 22 Aug 2025 12:52:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 587132FB993
+	for <xenomai@lists.linux.dev>; Fri, 22 Aug 2025 13:29:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=134.158.66.142
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755867169; cv=none; b=Rg0Bo0CtzhnaYZnuzKtCzUaXPO1qJP0L/VWjqXz75OcHk3Rw17c01YWtpxhoOhlYpCHpyG1PqzSlzAlek5wXFdiJOloai4m7+IovLmX9Wr7StXta4pNKaFA1F+ObZ+3XVniT5wFWiSaihSIqS2EH9XYPuSqUnexyeefW7SPenbk=
+	t=1755869370; cv=none; b=AC3QBBOK7lD38syXVPaoEb3JogmqbkUMrbfIZjEWBNGqTKKRW15hdOX6+G6N0891l/GQHYXvZ6SxJmKKTnszMNd8mQE5Ttvb6OqkkuJirUPEwCnHLVkapNdfMJ7ZJ8l01RHscGDn6eMhMwoAe8vNGC7uN54GfVqvchX5wp9ktUo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755867169; c=relaxed/simple;
-	bh=5j0fi3uKN1xTj7Jn4mo61U84CNtd3kUYIgp0dHAFHRQ=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=dcZ/GtLAfFmxN0sJjzGQBSfbYcAVKi74EwXnJ6dEjzn9QyFW1i5OWxAwFzrSPfdotnbFyhxXJsPLWKka8XQgnlQxL2ZgmtXHqw5agh4qRm0Fmj6RISA7ZPktMuVm1vYOcBqfqtjAa3ORw8J2A41nlCATadwDfuZhF2jbdyOrgOw=
+	s=arc-20240116; t=1755869370; c=relaxed/simple;
+	bh=5K8Tr4x1VaMKX0ASix5HzZqZ7KltcmAIzyJaMMVGLwE=;
+	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=N7XCGQWdf/dAMJViUtgflXJH/vMdbK0h2pvHfGN5+t7jDBRhO2yukGnJSWNYC66tLz2l6u8BwcfdNect0soVDwOJcS9HUmCFIVZBW6Jej/8batCSQD3Hd4C8ZBJk1YXkN2nX92CkbFU7UVp7F27zlqPO2IL5ThObyOOx3qJc0bc=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lapp.in2p3.fr; spf=pass smtp.mailfrom=lapp.in2p3.fr; arc=none smtp.client-ip=134.158.66.142
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lapp.in2p3.fr
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lapp.in2p3.fr
 Received: from [134.158.99.46] (lappc-p898.in2p3.fr [134.158.99.46])
 	(authenticated bits=0)
-	by cczrelay02.in2p3.fr (8.14.4/8.14.4) with ESMTP id 57MCKEnx008993
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-	Fri, 22 Aug 2025 14:20:14 +0200
-Message-ID: <081761922aa2b6b7b292a6a083cd26334942df7b.camel@lapp.in2p3.fr>
+	by cczrelay02.in2p3.fr (8.14.4/8.14.4) with ESMTP id 57MDTNKt017270
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO)
+	for <xenomai@lists.linux.dev>; Fri, 22 Aug 2025 15:29:23 +0200
+Message-ID: <120fe6031963eed74f04c365c7b780a86af579c0.camel@lapp.in2p3.fr>
 Subject: Re: Simple Xenomai 4 API use examples and a question
 From: Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai <xenomai@lists.linux.dev>
-Date: Fri, 22 Aug 2025 14:20:13 +0200
-In-Reply-To: <87349jhk9h.fsf@xenomai.org>
+To: xenomai <xenomai@lists.linux.dev>
+Date: Fri, 22 Aug 2025 15:29:23 +0200
+In-Reply-To: <9330e95ad45a1742cedfdf2335141c3f79b7223d.camel@lapp.in2p3.fr>
 References: <9330e95ad45a1742cedfdf2335141c3f79b7223d.camel@lapp.in2p3.fr>
-	 <87349jhk9h.fsf@xenomai.org>
 Content-Type: text/markdown; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.56.2 (3.56.2-1.fc42) 
@@ -38,20 +36,36 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 
-Le vendredi 22 ao=C3=BBt 2025 =C3=A0 09:45 +0200, Philippe Gerum a =C3=A9cr=
-it=C2=A0:
-> EBADF is likely returned because your driver does not register the file =
-=20
-> as an oob-capable one, therefore it won't accept oob_ioctl() requests.
+Le vendredi 22 ao=C3=BBt 2025 =C3=A0 09:13 +0200, Emmanuel Pacaud a =C3=A9c=
+rit=C2=A0:
+> I have started to work on a repository which is intended as a collection =
+of very simple (dumb) examples of Xenomai 4 API use. Each example is an app=
+lication, sometimes coupled with a kernel module, with the strict minimum a=
+round the actual API use. Applications and kernel modules are built using m=
+eson. The meson files are also kept the their simplest form. That was easy =
+for the application building, not so for the kernel modules.
 
-That was the issue. It works fine now.
+In my quest of the simplest example, there is this line in <https://gitlab.=
+com/emmanuelpacaud/xenomai-c-examples/-/blob/8253729aa3eb669576e387bba80085=
+c91199f3cf/meson.build>:
 
-> The way this works is explained in this document:
-> https://v4.xenomai.org/core/kernel-api/file/
+```
+exe =3D executable (e, e + '.c',
+                  dependencies: evl_dep,
+                  c_args:   ['-I' + evl_dep.get_pkgconfig_variable('include=
+dir') 'uapi'],
+                  install: true)
+```
 
-I'm pretty sure my eyes went over this page, but the information did not pr=
-opagate to the brain.
+In my setup, I, don't install kernel user space API headers, as it is a dis=
+kless one, where I want to be able to switch between different kernels. So =
+I let install-uapi enabled, which means *-abi.h files are installed in $pre=
+fix/include/uapi. Which means I have to add this path to the include path m=
+anually, as it is not present in the pkg config file, using c_args paramete=
+r.
 
-Thanks,
+Is it intended ? I would have expected them to be installed along the other=
+ libevl headers. If so, I think the C flags in pkg config file should inclu=
+de $includedir/uapi, when install-uapi option is enabled.
 
 Emmanuel.
