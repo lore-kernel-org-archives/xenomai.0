@@ -1,97 +1,67 @@
-Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
+Received: from relay15.mail.gandi.net (relay15.mail.gandi.net [217.70.178.235])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78C512580CF
-	for <xenomai@lists.linux.dev>; Fri, 22 Aug 2025 06:55:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.228
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C136D1632C8
+	for <xenomai@lists.linux.dev>; Fri, 22 Aug 2025 07:13:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.235
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755845715; cv=none; b=rFXIxSzkCIH1i7AXnF+q4X8vFNeIy4pHh1ONUO37is9ErHDJYA6yYm0VdC3PZJx4wj67MTOaTiz3lm7whMFxBLA1JvxEjZDUcMaYS+zUJnEqp2JL2clItD8AkKOPKkdTvzzd+2i8zfpBRXZamBB1vnvOfenzd2WXJhB/Hq+iEZk=
+	t=1755846813; cv=none; b=Afg4X/g6fuhbLvqf2L8nUI7xx7cz/mTs1BK+GC7UFnCzpOwIbSySXl3gLost6b4x2Baxz1LgoaZ4WR7bq0FhIb54sr4qk6Wp5262kpk1uSHN7+ykDFwzmS8U6o5EW9rzFkzPx1ZAOvjdLrNBg82tp5uKZqc6UWrbraCm0uDYkw8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755845715; c=relaxed/simple;
-	bh=F4dRoYPlc6b6dmAHmZLvI1/nHpa0FaWK1XipBJJaFvU=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=MM3AV8lmmHPsvsSM9QfIlJB5Er93xRrvyYI2aGWP2xhQqn9FlaPd7lqNtQaNqZCZemaipG+Rvy0enfAwMJg/y9PbjHRUR23rcg5QX/OytsmH/U485/yfDRMnusibS3GZWDg1Dt+PlbWfYiyL5RXHmFN1ufKHMsFS0n/I4k96yAc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Mo9+zqyn; arc=none smtp.client-ip=185.136.65.228
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1755846813; c=relaxed/simple;
+	bh=qjd849uhhlmgq9AVS3MKpoz4roSVEKI+sASo8U4f+fg=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=pJdDJ3BUW4kjvLHqucJnJdWEj06mX5iAM1ijrGj7GyIMFB3VAPmxeYll1r6+A2vFGsO0uCl9YQs9tqEA+1o5zQdLgAoVUORnHbYJBt6G0JSTTK+ZfKVG09j5Qqz9u7eFZFeZQBrTszTN9B3BEbhfE84NY65D5RJuOmoAfXotLkA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=Cr4Nrt3j; arc=none smtp.client-ip=217.70.178.235
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Mo9+zqyn"
-Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 20250822065501abbf6cadc8acb62e06
-        for <xenomai@lists.linux.dev>;
-        Fri, 22 Aug 2025 08:55:01 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=efahKiYRg4kBSSYB2wYIuQZLjTnksxnX3TR10Ti1Drk=;
- b=Mo9+zqynqY6Uea/PdQIFYMkHipF1dSV0vUmQ59r9LcatXkV9ObA7kHOj9jTayyoG9C4fnF
- 0UicLjyqtoA+7rlATHJT6TzTsWedhndf4YXKD4JDibDgLQMGb2M6cRaWpgyEuMfyx1+9urmg
- vEYIBT5WBjff59i3Rg3PJsc1PrcOR3nXWgB1bCPO80uNxFW7j1kUPxSjqs/IphYfgXWgQCFf
- mqCFkxieIyj5dCZhSk9dkHqTecvZzQLjSDhvcn9ecQSUS6E4+U6XMJs1aAm0k0hVtZm71Cqd
- vIemV/LauVib/fbE0MkyW6Bz3yykAgMTq+oOpaXDtbuaCknZC0FtG8qg==;
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH Dovetail 6.16 v2 0/2] Dovetail 6.16: Fix some regressions
- introduced during last forward port
-Date: Fri, 22 Aug 2025 08:54:59 +0200
-Message-Id: <20250820-wip-flo-fixes-for-dovetail-6-15-v2-0-535e4fa355f7@siemens.com>
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="Cr4Nrt3j"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 5ECA4442D0;
+	Fri, 22 Aug 2025 07:13:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1755846803;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=XuKNd+BySqIwPUlKGj/gmUH3PQuK4blDqtcNx0+VYcs=;
+	b=Cr4Nrt3jXPVcapyaIdk0mWCvQ4jd3IqWmv9lQ43HZ8bd5cf7SudAitMWrAFTAtbQHZhJ3p
+	70mNgvxC9ujNcQfIoFCm7MDjQIGJrqvYE7G6ogdOIzG/qLRGCojNnhMfx8frtQ2BK5CTLj
+	UHV6E3wl1Po52xQrQJUvXLx55UG+HNqV70zAMJTiReG5r2Ar3u3l4iCCT9fyjpDR5pSxNA
+	+pq1qztql5p06jUTDpYS/GQDAF1omXdDj6XEgfHCffNzFcDAXgluItTH1L6h8+ulfaXuxq
+	QnUgNN3edr/eeq030h0O10mm6YLYPkMBMwQtnmTHYDAOeSuJdUy4fT0ddZsrNA==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr>
+Cc: xenomai <xenomai@lists.linux.dev>
+Subject: Re: xenomai4 - running applications as regular user
+In-Reply-To: <a597e0a51e4adb69e3ff9041f83a67d588c861e6.camel@lapp.in2p3.fr>
+	(Emmanuel Pacaud's message of "Thu, 21 Aug 2025 16:56:43 +0200")
+References: <a597e0a51e4adb69e3ff9041f83a67d588c861e6.camel@lapp.in2p3.fr>
+User-Agent: mu4e 1.12.12; emacs 30.1
+Date: Fri, 22 Aug 2025 09:13:17 +0200
+Message-ID: <87plcnhlrm.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAEMUqGgC/41OSw6CMBC9Cpm1Q1qESly58BaGBS1TmaS2pEXUE
- O5uQzyAy/d/KySKTAnOxQqRFk4cfAbVoQAz9v5OyEPGUImqEW0l8MUTWhfQ8psS2hBxCAvNPTt
- UKBuUR9Xak1UktITcovtEqGPvzZh7/NO5TE6R9nxmbnD95QtVSgVdlkdOc4if/dQid9Pf+4tEg
- UNd20YYXWuhL4npQT6VJjyg27btC1oxPp30AAAA
-To: xenomai@lists.linux.dev
-Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, 
- Florian Bezdeka <florian.bezdeka@siemens.com>
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Content-Type: text/plain
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdduieefudefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpeevueeigeeuteegleevheeifeevveeufeevvefhjedvteeihfevgfejheeifeetheenucffohhmrghinhepgigvnhhomhgrihdrohhrghenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpnhgspghrtghpthhtohepvddprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepvghmmhgrnhhuvghlrdhprggtrghuugeslhgrphhprdhinhdvphefrdhfrh
 
-Hi all,
+Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr> writes:
 
-seems the last forward port to 6.16 introduced some regressions.
-Please review carefully, thanks!
+> [1. text/markdown]
+> Hi,
+>
+> What is the recommended way to run out of band applications as regular user using xenomai4 ?
+>
+> In xenomai3 documentation, there is a dedicated page about this, <https://v3.xenomai.org/tips/regular-user/>, but I did not find similar instructions in xenomai4 version.
+>
+> Emmanuel.
 
-With that applied I have two open problems:
-  - Running dmesg kills the system, no idea yet
-    Requires at least 3 CPUs on my qemu system to reproduce.
-    Update: I know how to fix that, but not fully understood yet.
+See https://v4.xenomai.org/core/user-api/#device-ownership-and-access
 
-  - I'm able to reproduce [1] on 6.16 now
-    Update: This one is understood now. Xenomai 3 bug.
-    Tests already ongoing.
-
-CC: Philippe Gerum <rpm@xenomai.org>
-CC: Jan Kiszka <jan.kiszka@siemens.com>
-
-[1] https://lore.kernel.org/xenomai/6fcb3f9830056d99161ea8f50a016b99d98a7c71.camel@siemens.com/T/
-
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
-Changes in v2:
-- Patch 1: Reworked as discussed on the list
-           Following the same pattern as for arm64 
-- Link to v1: https://lore.kernel.org/r/20250820-wip-flo-fixes-for-dovetail-6-15-v1-0-d44f50cb4b0b@siemens.com
-
----
-Florian Bezdeka (2):
-      x86/fpu: dovetail: Fix FPU corruption
-      irq_pipeline: Fix pipelining code for level triggered IRQs
-
- arch/x86/include/asm/fpu/sched.h   | 17 ++++-------------
- arch/x86/include/asm/fpu/types.h   | 12 ------------
- arch/x86/include/asm/thread_info.h |  1 +
- arch/x86/kernel/fpu/core.c         | 12 ++++--------
- kernel/irq/chip.c                  | 33 +++++++++++++++++++++++++++++++--
- 5 files changed, 40 insertions(+), 35 deletions(-)
----
-base-commit: eec111a874f5899e1078ef785ccf29dff986e5a0
-change-id: 20250820-wip-flo-fixes-for-dovetail-6-15-1368f7f6e0b1
-
-Best regards,
 -- 
-Florian Bezdeka <florian.bezdeka@siemens.com>
-
+Philippe.
