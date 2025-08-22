@@ -1,67 +1,67 @@
-Received: from relay15.mail.gandi.net (relay15.mail.gandi.net [217.70.178.235])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from cczrelay01.in2p3.fr (cczrelay01.in2p3.fr [134.158.66.141])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C136D1632C8
-	for <xenomai@lists.linux.dev>; Fri, 22 Aug 2025 07:13:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.235
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54816393DE4
+	for <xenomai@lists.linux.dev>; Fri, 22 Aug 2025 07:13:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=134.158.66.141
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755846813; cv=none; b=Afg4X/g6fuhbLvqf2L8nUI7xx7cz/mTs1BK+GC7UFnCzpOwIbSySXl3gLost6b4x2Baxz1LgoaZ4WR7bq0FhIb54sr4qk6Wp5262kpk1uSHN7+ykDFwzmS8U6o5EW9rzFkzPx1ZAOvjdLrNBg82tp5uKZqc6UWrbraCm0uDYkw8=
+	t=1755846821; cv=none; b=N85Dy1Yp8fu2UI6lghsGeodYL+kAgUPqVq/GiEzrpxaRup0/JS0F5WlQS5bV/Pt7GWLruh/VM1eTwiuz3ab77VQsIbodATl16mVi6UeKj7GUEUcOgAWOTpBZ3BQsLDOPye/k3RTF/ShAnmzW1tWIjDYJyA5/mPpyLcbf6CoXZcQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755846813; c=relaxed/simple;
-	bh=qjd849uhhlmgq9AVS3MKpoz4roSVEKI+sASo8U4f+fg=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=pJdDJ3BUW4kjvLHqucJnJdWEj06mX5iAM1ijrGj7GyIMFB3VAPmxeYll1r6+A2vFGsO0uCl9YQs9tqEA+1o5zQdLgAoVUORnHbYJBt6G0JSTTK+ZfKVG09j5Qqz9u7eFZFeZQBrTszTN9B3BEbhfE84NY65D5RJuOmoAfXotLkA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=Cr4Nrt3j; arc=none smtp.client-ip=217.70.178.235
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="Cr4Nrt3j"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 5ECA4442D0;
-	Fri, 22 Aug 2025 07:13:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1755846803;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=XuKNd+BySqIwPUlKGj/gmUH3PQuK4blDqtcNx0+VYcs=;
-	b=Cr4Nrt3jXPVcapyaIdk0mWCvQ4jd3IqWmv9lQ43HZ8bd5cf7SudAitMWrAFTAtbQHZhJ3p
-	70mNgvxC9ujNcQfIoFCm7MDjQIGJrqvYE7G6ogdOIzG/qLRGCojNnhMfx8frtQ2BK5CTLj
-	UHV6E3wl1Po52xQrQJUvXLx55UG+HNqV70zAMJTiReG5r2Ar3u3l4iCCT9fyjpDR5pSxNA
-	+pq1qztql5p06jUTDpYS/GQDAF1omXdDj6XEgfHCffNzFcDAXgluItTH1L6h8+ulfaXuxq
-	QnUgNN3edr/eeq030h0O10mm6YLYPkMBMwQtnmTHYDAOeSuJdUy4fT0ddZsrNA==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr>
-Cc: xenomai <xenomai@lists.linux.dev>
-Subject: Re: xenomai4 - running applications as regular user
-In-Reply-To: <a597e0a51e4adb69e3ff9041f83a67d588c861e6.camel@lapp.in2p3.fr>
-	(Emmanuel Pacaud's message of "Thu, 21 Aug 2025 16:56:43 +0200")
-References: <a597e0a51e4adb69e3ff9041f83a67d588c861e6.camel@lapp.in2p3.fr>
-User-Agent: mu4e 1.12.12; emacs 30.1
-Date: Fri, 22 Aug 2025 09:13:17 +0200
-Message-ID: <87plcnhlrm.fsf@xenomai.org>
+	s=arc-20240116; t=1755846821; c=relaxed/simple;
+	bh=oK5S5hVuCAqFKDLAE+i0X+2ZR/H/R3yjyxGSfN0/X9A=;
+	h=Message-ID:Subject:From:To:Date:Content-Type:MIME-Version; b=Sm34Zp2NLMK9aoOy9/VpQzEtm7/WDiXtnKVdVdIvknGi0aC/hq+ZU8Q91IzgLwy3/E1JG4wMDbD5ebmiBJMBRRzD8Fdw8Bjdrzs0XKEVqpqt8Kn+CMbRRQBLPYd/2G0+U1IXJaLt0HuVdcOG+VnAwyPii22t1GIRHd0EkVT+NXo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lapp.in2p3.fr; spf=pass smtp.mailfrom=lapp.in2p3.fr; arc=none smtp.client-ip=134.158.66.141
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=lapp.in2p3.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lapp.in2p3.fr
+Received: from [134.158.99.46] (lappc-p898.in2p3.fr [134.158.99.46])
+	(authenticated bits=0)
+	by cczrelay01.in2p3.fr (8.14.4/8.14.4) with ESMTP id 57M7DYkc031652
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO)
+	for <xenomai@lists.linux.dev>; Fri, 22 Aug 2025 09:13:34 +0200
+Message-ID: <9330e95ad45a1742cedfdf2335141c3f79b7223d.camel@lapp.in2p3.fr>
+Subject: Simple Xenomai 4 API use examples and a question
+From: Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr>
+To: xenomai <xenomai@lists.linux.dev>
+Date: Fri, 22 Aug 2025 09:13:34 +0200
+Content-Type: text/markdown; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2 (3.56.2-1.fc42) 
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdduieefudefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpeevueeigeeuteegleevheeifeevveeufeevvefhjedvteeihfevgfejheeifeetheenucffohhmrghinhepgigvnhhomhgrihdrohhrghenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpnhgspghrtghpthhtohepvddprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepvghmmhgrnhhuvghlrdhprggtrghuugeslhgrphhprdhinhdvphefrdhfrh
 
-Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr> writes:
+Hi,
 
-> [1. text/markdown]
-> Hi,
->
-> What is the recommended way to run out of band applications as regular user using xenomai4 ?
->
-> In xenomai3 documentation, there is a dedicated page about this, <https://v3.xenomai.org/tips/regular-user/>, but I did not find similar instructions in xenomai4 version.
->
-> Emmanuel.
+I have started to work on a repository which is intended as a collection of=
+ very simple (dumb) examples of Xenomai 4 API use. Each example is an appli=
+cation, sometimes coupled with a kernel module, with the strict minimum aro=
+und the actual API use. Applications and kernel modules are built using mes=
+on. The meson files are also kept the their simplest form. That was easy fo=
+r the application building, not so for the kernel modules.
 
-See https://v4.xenomai.org/core/user-api/#device-ownership-and-access
+The repository is here: <https://gitlab.com/emmanuelpacaud/xenomai-c-exampl=
+es>
 
--- 
-Philippe.
+It is similar to what I did for my own project: <https://github.com/AravisP=
+roject/aravis-c-examples>. I do think this sort a simple example collection=
+ are useful to understand how to use an API.
+
+It is a work on progress, the code should be more commented.
+
+But to be useful, all the examples should work, and I'm blocking on the oob=
+_ioctl example :(
+
+* <https://gitlab.com/emmanuelpacaud/xenomai-c-examples/-/blob/cd9f849d4325=
+b57565edcd691021255adc486b90/oob-ioctl.c>
+* <https://gitlab.com/emmanuelpacaud/xenomai-c-examples/-/blob/cd9f849d4325=
+b57565edcd691021255adc486b90/modules/oob-ioctl.c>
+* <https://gitlab.com/emmanuelpacaud/xenomai-c-examples/-/blob/cd9f849d4325=
+b57565edcd691021255adc486b90/modules/oob-ioctl.h>
+
+The ioctl call fails with a `Bad file descriptor` error. What I'm doing wro=
+ng ?
+
+Emmanuel.
