@@ -1,112 +1,88 @@
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 395F426B769
-	for <xenomai@lists.linux.dev>; Fri, 22 Aug 2025 20:52:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6397D23D7C4
+	for <xenomai@lists.linux.dev>; Sat, 23 Aug 2025 20:58:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755895976; cv=none; b=MZqDHDZWfwz9bxpj1mt3LwGvE8pvuMcggQXXOiYeQ5qIfa7PZEKGsB6QORcIzgoNanRA5WyEAU2gHS4GZ0dXasKp4L+2mpJaGpBCW2cN62YbRFvb7lerdpyYo3/4EWIemcRbDeOaDFhqhmYz8NAMPiOaCWYkNYUBYS+dak/Stuk=
+	t=1755982693; cv=none; b=GPecSmJ+7W/i67hnDXh3ZH3hCbwf8NhKCNlmePoIlPriWU5mdmcU1lJ6mL9ZTg/Xy85Hkab8vlqe4YGRraJa4/Hxi/fXthS4eh6+4lJbYN5hGM/+0N+0YBlcpaSiNBpqR82SULu++yg1MGs0fBlAdOnL9BItp2UB6wWoTmC4BDU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755895976; c=relaxed/simple;
-	bh=u0YU4cKt6vAafOP3s3ssrPfgrbZU8QTCwXjsvFG4ZSI=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=bW/kL1OAbXxhTHGplFRFCCR123sLaAlagCz2rWfctNcuQGS5qQ7IRjD/vIageo/p4XRj8UlXodNb9P86YxhaNbOWvXZMrIggv8Qd5ctqtba3IX+qTGJHNPmuPfCCMaq66B70QT/OwuT3xAU2Y6pq/CQE6jHB7Dq84NzvP4lwLzI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=BlD/0XcV; arc=none smtp.client-ip=217.70.183.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1755982693; c=relaxed/simple;
+	bh=YM3YXyiisQvB9HLAG2KNgdkRtp2df5OIVWCr45d/9Y4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=G91HBRZvYZlTcgxXqwH8SlUo5GV6Rxg16jDlg616Xe2KAGz0XmUtWPTkTH8jpMGhiLcHzLcBY+q3dd3/9rmexW1/vFuBj+ioATz4L6fEDc6XJ9cwU4WYCfAIhgYcUW2mahHsmoERa953iAu41DBJjUs4yg2JD5huUz11dDAWwDM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kcW8/1e6; arc=none smtp.client-ip=209.85.216.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="BlD/0XcV"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 0FD5944107;
-	Fri, 22 Aug 2025 20:52:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1755895972;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=5kDpwBrrLk85zp9z2bfb8U98m2l3jxce29SDXxtNu3c=;
-	b=BlD/0XcVMzkMSevoXZGYuULoL6tVThhy0RJZ1G7hE4mTQrCf7LA68SPsghFXAM8X0K7CIL
-	gN/TwH1JSV81Pt33oVgUF9/BXBvD1NXloMkUz8W0LRzc++/M5iuiNegKCz4KBVSf3m1IF7
-	bGxLRFdEePqKPww2e689BiH7cNN8lcHxTh7/tLMKMGy5fH+ktBExhBPkxxnBlh7728jngi
-	b4QsvnBAvb1QA0Z25oUbtqdNAlb5p6l1FKEeMF7yluWps6Cb8d8FvsVQKgF+RAX5d9IqJw
-	Vp7ZRojN0PN2brR5HfpN38iKOwdjMefPbuvtrtsHq2X/gM1XbSnrRA9g/RrYAw==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr>
-Cc: xenomai <xenomai@lists.linux.dev>
-Subject: Re: xenomai4 - running applications as regular user
-In-Reply-To: <f71b0364180199360785ffba2b8e08963ea53775.camel@lapp.in2p3.fr>
-	(Emmanuel Pacaud's message of "Fri, 22 Aug 2025 16:29:30 +0200")
-References: <a597e0a51e4adb69e3ff9041f83a67d588c861e6.camel@lapp.in2p3.fr>
-	<87plcnhlrm.fsf@xenomai.org>
-	<f71b0364180199360785ffba2b8e08963ea53775.camel@lapp.in2p3.fr>
-User-Agent: mu4e 1.12.12; emacs 30.1
-Date: Fri, 22 Aug 2025 22:52:51 +0200
-Message-ID: <87qzx3f598.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kcW8/1e6"
+Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-3253f0c8788so1566768a91.0
+        for <xenomai@lists.linux.dev>; Sat, 23 Aug 2025 13:58:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1755982692; x=1756587492; darn=lists.linux.dev;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YM3YXyiisQvB9HLAG2KNgdkRtp2df5OIVWCr45d/9Y4=;
+        b=kcW8/1e6Gyd7gYvD10X3bQuxviHH1DLTxD7bKshre3MmY8y/VdxPkIBGgnuqlxD1sB
+         noPDu3mOZPrm7rdknBv1eLb/LU28QGuIgamUd5wsxb8ayjiwegdeKqLdLvuWgurN5TNx
+         QdSwfzbr7+2tAlgAUcezZHHUxRF9+174RUhLL7LQCv86mICtB22jPY/tBxN9ztxdiqD9
+         8BpRRzhb13wWOwJjc/dwLcEizxILGOR+inYYgFcLHxoAX3+wYp+4287wVJPlbH6m7PdJ
+         fL1nQ1OC5zhYPWgC0Ii3+deEAJeaO1JKGfmGOJlFMCmyHpMRLTjz/AVu0Lm4UoYs36Q1
+         v0Kg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1755982692; x=1756587492;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=YM3YXyiisQvB9HLAG2KNgdkRtp2df5OIVWCr45d/9Y4=;
+        b=ReejFVAtWA6xvXki6PdEPcNIVd8oFoTTtSf2TW/phXI5Mw906U61v/0+Axl6jbznCt
+         /H5RpVQiM01i5Sdb/iC0x6/AH2hdkIP430vcZuHNwG6WGDbJn1XkB0iYI3SsIivVNtYO
+         127sotSb7HjIyWMYillmynTbfnmuGusvLIfG/Fr/eDVEl/E7EZx4WwZN7vsqS25SQ+gk
+         qb28efVPtwJRSx3Yz0EQAyvU2VMTrWdZ1UTfNXlZ1Ry5C1Qj7iw7QWG5WL5COYt5Gm2e
+         M7AZp3kwvcFDcc+oRzxqofj5FFZZjs4B+6AV+6s1rrv7S3f7iTX3KVi78lcHbki1jpVV
+         sjbA==
+X-Gm-Message-State: AOJu0YyXaWKX0YQycrvlCBd+RfpWYj8tqQlpQmDnBPZpxbRrsqRwsqol
+	p6ezrCP/6+5mGJWpDNEhzQBdkosk6tQSA5c/4N9iwZHN5b2KotdUmt8vTqGox+qI07K3Uy0JVNV
+	djkwIYifMbN2K76rGoyVgx6MisH4SyEU=
+X-Gm-Gg: ASbGncs4MF7VMNpGb1/iqrhod64UwliSdpRNj7ry68/qvRtrqBSPHZ06Du2qZMdWHxo
+	baLeNkBtCHf/vPfOm9sXIp1lHxUDqc3d1Vz+a21CGKvry9jBD3WRPj2HT+T3UbXT5zqfHF+lRi4
+	baO7F+3koHwVFyarTkQ2rHKlT8ceLpWSe4kIAvDbQqS9dk3wFndKorM7MQ7BDifyQtWXWhBSXph
+	vso8Vk=
+X-Google-Smtp-Source: AGHT+IFqc2XwdfaKTax9ERHPX+9Z13HY6HCKONaHMqGWd1ya/KCnJDNYQeKLFiQZCxJpHu/ELgiexQ/la9qxpTweJ4o=
+X-Received: by 2002:a17:90b:514b:b0:321:a1fc:a425 with SMTP id
+ 98e67ed59e1d1-32515eda016mr10104890a91.26.1755982691632; Sat, 23 Aug 2025
+ 13:58:11 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+References: <CAFLxGvy2U_0hfTKfPPZAui8XFBMAFqxLnjgCUcD2-Xw3=79UBA@mail.gmail.com>
+ <CAFLxGvyLoamDw-u64ahzU9OPrOMuCqLFOdvFNpPeSsOx0ZWKPA@mail.gmail.com> <43e42f60-e923-490d-809d-b0e35d4743d2@siemens.com>
+In-Reply-To: <43e42f60-e923-490d-809d-b0e35d4743d2@siemens.com>
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Sat, 23 Aug 2025 22:57:59 +0200
+X-Gm-Features: Ac12FXwtvrvrly1JI_MTENmbgDKgmEA0gtrjJShIb74WYuL3PIDkgMpTYjCVXbI
+Message-ID: <CAFLxGvzSDiNjwHNyys+mfJihO9oEyrR6Fy=7ENEZ750MD9RcnA@mail.gmail.com>
+Subject: Re: Xenomai Meetup at OSS Amsterdam in August
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdduieegjeejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtgfesthhqredttderjeenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepiedtvdejhfejvefghfetteehfefhheeikedtteeuffeljeetueefffdvfeejgfffnecuffhomhgrihhnpeigvghnohhmrghirdhorhhgnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopedvpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopegvmhhmrghnuhgvlhdrphgrtggruhgusehlrghpphdrihhnvdhpfedrfhhr
-X-GND-Sasl: rpm@xenomai.org
 
-Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr> writes:
+On Fri, Aug 22, 2025 at 4:14=E2=80=AFPM Jan Kiszka <jan.kiszka@siemens.com>=
+ wrote:
 
-> [1. text/markdown]
-> Le vendredi 22 ao=C3=BBt 2025 =C3=A0 09:13 +0200, Philippe Gerum a =C3=A9=
-crit=C2=A0:
->>=20
->> > What is the recommended way to run out of band applications as regular=
- user using xenomai4 ?
->> >=20
->> > In xenomai3 documentation, there is a dedicated page about this, <[htt=
-ps://v3.xenomai.org/tips/regular-user/](https://v3.xenomai.org/tips/regular=
--user/)>, but I did not find similar instructions in xenomai4 version.
->> >=20
->> > Emmanuel.
->>=20
->>=20
->> See [https://v4.xenomai.org/core/user-api/#device-ownership-and-access](=
-https://v4.xenomai.org/core/user-api/#device-ownership-and-access)
+> > Finding a place was more work than expected.
+> > But here it is:
+> > When: to start at 19:00 after the booth crawl
 >
-> Thanks.
->
-> I have created a xenomai group, added myself to the group, changed the ow=
-nership to `root:xenomai` of everything in `/dev/evl`, `/dev/evl` included,=
- but still get `Permission denied`. I have checked my groups using id, xeno=
-mai is listed.
->
-> ```
-> $ ls -la /dev/evl
-> total 0
-> drwxrwx--x  8 root xenomai    220 Aug 21 14:53 .
-> drwxr-xr-x 20 root root      3260 Aug 22 15:53 ..
-> drwxrwx--x  2 root xenomai     80 Aug 21 14:53 clock
-> crw-rw----  1 root xenomai 245, 0 Aug 21 14:54 control
-> drwxrwx--x  2 root xenomai     60 Aug 21 17:08 monitor
-> drwxrwx--x  2 root xenomai     60 Aug 21 14:53 observable
-> crw-rw----  1 root xenomai 245, 3 Aug 21 14:54 poll
-> drwxrwx--x  2 root xenomai     60 Aug 21 14:53 proxy
-> crw-rw----  1 root xenomai 245, 7 Aug 21 14:54 random
-> drwxrwx--x  2 root xenomai     60 Aug 22 16:02 thread
-> drwxrwx--x  2 root xenomai     60 Aug 21 14:53 xbuf
-> $ id -Gn
-> virgo wheel dialout ftp xenomai calcul softs_cc diaporama
-> ```
->
-> It works though if I change the ownership of the `/dev/evl` tree to `paca=
-ud:xenomai`. What would be the reason of this behaviour ?
->
+> Just to be clear: that is Tuesday, August 26.
 
-In addition to making those files owned by the 'xenomai' group, you need
-an udev rule fixing up the */clone files in each element directory
-(clock, monitor etc.) giving rw permission to the group members too
-(i.e. 0660).
+Exactly.
 
 --=20
-Philippe.
+Thanks,
+//richard
