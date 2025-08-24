@@ -1,88 +1,114 @@
-Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay15.mail.gandi.net (relay15.mail.gandi.net [217.70.178.235])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6397D23D7C4
-	for <xenomai@lists.linux.dev>; Sat, 23 Aug 2025 20:58:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A544B1422DD
+	for <xenomai@lists.linux.dev>; Sun, 24 Aug 2025 09:02:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.235
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755982693; cv=none; b=GPecSmJ+7W/i67hnDXh3ZH3hCbwf8NhKCNlmePoIlPriWU5mdmcU1lJ6mL9ZTg/Xy85Hkab8vlqe4YGRraJa4/Hxi/fXthS4eh6+4lJbYN5hGM/+0N+0YBlcpaSiNBpqR82SULu++yg1MGs0fBlAdOnL9BItp2UB6wWoTmC4BDU=
+	t=1756026162; cv=none; b=krjSqol466VRG9y4xE16ZOjLITlYlvzw18OJBzL4CZCtmQ8XRnMwk5sOHgihLByy6wiMqy5zoP//fMQB7CgVXNdKfM3Twp8aV3FPIDG1R2rzQSbBSJqsC2KCp/7AqapH7FOhvu8ws7NSVgXhFANkF0tTSKQoc0lgXchfogF6UOE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755982693; c=relaxed/simple;
-	bh=YM3YXyiisQvB9HLAG2KNgdkRtp2df5OIVWCr45d/9Y4=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=G91HBRZvYZlTcgxXqwH8SlUo5GV6Rxg16jDlg616Xe2KAGz0XmUtWPTkTH8jpMGhiLcHzLcBY+q3dd3/9rmexW1/vFuBj+ioATz4L6fEDc6XJ9cwU4WYCfAIhgYcUW2mahHsmoERa953iAu41DBJjUs4yg2JD5huUz11dDAWwDM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kcW8/1e6; arc=none smtp.client-ip=209.85.216.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1756026162; c=relaxed/simple;
+	bh=IMsB3+KUunM6hwxOtUmBMm7LdSukj2BWMHB8aanofU8=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=onmePP0y9NoqtNw0kS84qDkL42Fe9kUkrvj2r7khb1Y8DJPmegF0P81j8IEznCxOBa/AlcA8Grcz57DRh2qTviNHrs+rtSp99PusF+Tv5+OWwNtlWgZSHPteufhawmYuKJvyLzCHdD14b6aA+SeTFmUjX73ilBQ6xEmnYylM4M8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=UzwAxGng; arc=none smtp.client-ip=217.70.178.235
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kcW8/1e6"
-Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-3253f0c8788so1566768a91.0
-        for <xenomai@lists.linux.dev>; Sat, 23 Aug 2025 13:58:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1755982692; x=1756587492; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YM3YXyiisQvB9HLAG2KNgdkRtp2df5OIVWCr45d/9Y4=;
-        b=kcW8/1e6Gyd7gYvD10X3bQuxviHH1DLTxD7bKshre3MmY8y/VdxPkIBGgnuqlxD1sB
-         noPDu3mOZPrm7rdknBv1eLb/LU28QGuIgamUd5wsxb8ayjiwegdeKqLdLvuWgurN5TNx
-         QdSwfzbr7+2tAlgAUcezZHHUxRF9+174RUhLL7LQCv86mICtB22jPY/tBxN9ztxdiqD9
-         8BpRRzhb13wWOwJjc/dwLcEizxILGOR+inYYgFcLHxoAX3+wYp+4287wVJPlbH6m7PdJ
-         fL1nQ1OC5zhYPWgC0Ii3+deEAJeaO1JKGfmGOJlFMCmyHpMRLTjz/AVu0Lm4UoYs36Q1
-         v0Kg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755982692; x=1756587492;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=YM3YXyiisQvB9HLAG2KNgdkRtp2df5OIVWCr45d/9Y4=;
-        b=ReejFVAtWA6xvXki6PdEPcNIVd8oFoTTtSf2TW/phXI5Mw906U61v/0+Axl6jbznCt
-         /H5RpVQiM01i5Sdb/iC0x6/AH2hdkIP430vcZuHNwG6WGDbJn1XkB0iYI3SsIivVNtYO
-         127sotSb7HjIyWMYillmynTbfnmuGusvLIfG/Fr/eDVEl/E7EZx4WwZN7vsqS25SQ+gk
-         qb28efVPtwJRSx3Yz0EQAyvU2VMTrWdZ1UTfNXlZ1Ry5C1Qj7iw7QWG5WL5COYt5Gm2e
-         M7AZp3kwvcFDcc+oRzxqofj5FFZZjs4B+6AV+6s1rrv7S3f7iTX3KVi78lcHbki1jpVV
-         sjbA==
-X-Gm-Message-State: AOJu0YyXaWKX0YQycrvlCBd+RfpWYj8tqQlpQmDnBPZpxbRrsqRwsqol
-	p6ezrCP/6+5mGJWpDNEhzQBdkosk6tQSA5c/4N9iwZHN5b2KotdUmt8vTqGox+qI07K3Uy0JVNV
-	djkwIYifMbN2K76rGoyVgx6MisH4SyEU=
-X-Gm-Gg: ASbGncs4MF7VMNpGb1/iqrhod64UwliSdpRNj7ry68/qvRtrqBSPHZ06Du2qZMdWHxo
-	baLeNkBtCHf/vPfOm9sXIp1lHxUDqc3d1Vz+a21CGKvry9jBD3WRPj2HT+T3UbXT5zqfHF+lRi4
-	baO7F+3koHwVFyarTkQ2rHKlT8ceLpWSe4kIAvDbQqS9dk3wFndKorM7MQ7BDifyQtWXWhBSXph
-	vso8Vk=
-X-Google-Smtp-Source: AGHT+IFqc2XwdfaKTax9ERHPX+9Z13HY6HCKONaHMqGWd1ya/KCnJDNYQeKLFiQZCxJpHu/ELgiexQ/la9qxpTweJ4o=
-X-Received: by 2002:a17:90b:514b:b0:321:a1fc:a425 with SMTP id
- 98e67ed59e1d1-32515eda016mr10104890a91.26.1755982691632; Sat, 23 Aug 2025
- 13:58:11 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="UzwAxGng"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 983EE4313C;
+	Sun, 24 Aug 2025 09:02:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1756026149;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=BZ3qN+GCmYIiWPpupST/OUtXis3O/AxpMjknrbkOdAc=;
+	b=UzwAxGngcTIXNcS6MPDZ1ZUHko8hbWoZpwAtGMh5Z7nHNW87KB/EwdFYJ4/EVgPErpFrm3
+	eYwv3DwrDHjKeWVZ3RLkEiNnnK1k3e/O9NWcCBruU8gtRqhqUHC09bhWDl9G/IJavD8ROA
+	aDcxPjywQCo89V2Uym0V6SH5WVbYMGcvWfaBv4fz5H4drPzwyJi8wGT+mXzA7vBaC0REvz
+	9rdh8oCDlex2IIx71vcQKE26dJoMYgc0oWmod2xEiwSplUCvSZUYJu7YqmQYFyD4m5Xtcn
+	8mMD/LAzV3AVQMKEc13LCFAoE/T41DVER3W8APAnF2hJru+UvB/tSnq4YSSoRg==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr>
+Cc: xenomai <xenomai@lists.linux.dev>
+Subject: Re: Simple Xenomai 4 API use examples and a question
+In-Reply-To: <120fe6031963eed74f04c365c7b780a86af579c0.camel@lapp.in2p3.fr>
+	(Emmanuel Pacaud's message of "Fri, 22 Aug 2025 15:29:23 +0200")
+References: <9330e95ad45a1742cedfdf2335141c3f79b7223d.camel@lapp.in2p3.fr>
+	<120fe6031963eed74f04c365c7b780a86af579c0.camel@lapp.in2p3.fr>
+User-Agent: mu4e 1.12.12; emacs 30.1
+Date: Sun, 24 Aug 2025 11:02:28 +0200
+Message-ID: <877bytks7v.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAFLxGvy2U_0hfTKfPPZAui8XFBMAFqxLnjgCUcD2-Xw3=79UBA@mail.gmail.com>
- <CAFLxGvyLoamDw-u64ahzU9OPrOMuCqLFOdvFNpPeSsOx0ZWKPA@mail.gmail.com> <43e42f60-e923-490d-809d-b0e35d4743d2@siemens.com>
-In-Reply-To: <43e42f60-e923-490d-809d-b0e35d4743d2@siemens.com>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Sat, 23 Aug 2025 22:57:59 +0200
-X-Gm-Features: Ac12FXwtvrvrly1JI_MTENmbgDKgmEA0gtrjJShIb74WYuL3PIDkgMpTYjCVXbI
-Message-ID: <CAFLxGvzSDiNjwHNyys+mfJihO9oEyrR6Fy=7ENEZ750MD9RcnA@mail.gmail.com>
-Subject: Re: Xenomai Meetup at OSS Amsterdam in August
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdefgdduieeluddtucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtgfesthhqredttderjeenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepgeetjedvhfelveehfedtheevjedvteffhffhgfetjeffgeegveehiefhvdffgeetnecuffhomhgrihhnpehgihhtlhgrsgdrtghomhdpmhgvshhonhdrsghuihhlugenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpnhgspghrtghpthhtohepvddprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepvghmmhgrnhhuvghlrdhprggtrghuugeslhgrphhprdhinhdvphefrdhfrh
 
-On Fri, Aug 22, 2025 at 4:14=E2=80=AFPM Jan Kiszka <jan.kiszka@siemens.com>=
- wrote:
+Emmanuel Pacaud <emmanuel.pacaud@lapp.in2p3.fr> writes:
 
-> > Finding a place was more work than expected.
-> > But here it is:
-> > When: to start at 19:00 after the booth crawl
+> [1. text/markdown]
+> Le vendredi 22 ao=C3=BBt 2025 =C3=A0 09:13 +0200, Emmanuel Pacaud a =C3=
+=A9crit=C2=A0:
+>> I have started to work on a repository which is intended as a collection=
+ of very simple (dumb) examples of Xenomai 4 API use. Each example is an ap=
+plication, sometimes coupled with a kernel module, with the strict minimum =
+around the actual API use. Applications and kernel modules are built using =
+meson. The meson files are also kept the their simplest form. That was easy=
+ for the application building, not so for the kernel modules.
 >
-> Just to be clear: that is Tuesday, August 26.
+> In my quest of the simplest example, there is this line in <https://gitla=
+b.com/emmanuelpacaud/xenomai-c-examples/-/blob/8253729aa3eb669576e387bba800=
+85c91199f3cf/meson.build>:
+>
+> ```
+> exe =3D executable (e, e + '.c',
+>                   dependencies: evl_dep,
+>                   c_args:   ['-I' + evl_dep.get_pkgconfig_variable('inclu=
+dedir') 'uapi'],
+>                   install: true)
+> ```
+>
+> In my setup, I, don't install kernel user space API headers, as it is a d=
+iskless one, where I want to be able to switch between different kernels. S=
+o I let install-uapi enabled, which means *-abi.h files are installed in $p=
+refix/include/uapi. Which means I have to add this path to the include path=
+ manually, as it is not present in the pkg config file, using c_args parame=
+ter.
+>
+> Is it intended ? I would have expected them to be installed along the oth=
+er libevl headers. If so, I think the C flags in pkg config file should inc=
+lude $includedir/uapi, when install-uapi option is enabled.
+>
+> Emmanuel.
 
-Exactly.
+Since ABI 42 guarantees that we have no naming conflict anymore thanks
+to the -abi.h suffix for those headers, we can merge them with the
+common library headers, leaving the evl.pc generation as is. I'm pushing
+the following change to the -next branch to address this:
+
+diff --git a/meson/install-uapi.sh b/meson/install-uapi.sh
+index 333122b..2ccee5e 100644
+--- a/meson/install-uapi.sh
++++ b/meson/install-uapi.sh
+@@ -3,4 +3,4 @@
+ # $2 =3D $includedir
+=20
+ cd $1
+-find -L evl \! \( -name '*~' \) -type f | cpio -pdum --quiet $MESON_INSTAL=
+L_DESTDIR_PREFIX/$2/uapi
++find -L evl \! \( -name '*~' \) -type f | cpio -pdum --quiet $MESON_INSTAL=
+L_DESTDIR_PREFIX/$2
+
+Please let me know if that fixes the issue on your end.
 
 --=20
-Thanks,
-//richard
+Philippe.
