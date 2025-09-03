@@ -1,282 +1,290 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011066.outbound.protection.outlook.com [52.101.70.66])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4067D2BDC09
-	for <xenomai@lists.linux.dev>; Wed,  3 Sep 2025 16:07:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756915670; cv=none; b=LDZH6ddVknY9y5qVpup+10rTqQUi5OXJYk0LOGE2IFE0zSaiKoWDBHKPUi7xE1rqWluCwNuDm3T0rzJqoVco2rBulO0xVA7BWp1THChKwbRJvECL60n93OlU6SF4rh/V0jjG7943BKo21alfqBTVwd0U0lcsWobHbmzjN2eglPg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756915670; c=relaxed/simple;
-	bh=HeTePOeEH+a7YYqBkDvIfnTmOrrl3y9op8u6DDs15DE=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=FUj/Yiqqb/7vtSc+5A6ZgUfgT33+PtwBPq1FhEtqhlixj2KeDOA8ZIIYYH5YoOpz0mWnSh/SoAHl3QVKS+IRGFWfyH5ntawi72qyaNBkbicCPow35xN09Jw/QEHtz+m6olbkMfaJC0Ks7nT24maPTdBS/zmU+0QDyIkWzh1CKcQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dLzl9a5o; arc=none smtp.client-ip=209.85.128.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 996182BD030
+	for <xenomai@lists.linux.dev>; Wed,  3 Sep 2025 16:12:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.66
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1756915934; cv=fail; b=FUgulygJHn4MwyEDVP8ddPSw+TTlkMydskbP8V5+SeyBmg/37SNz6AvKxTE0mhx5VBmbIAfIj2poWjGujdW5jMBKlJsVIbr/94lyeIm/m4VKS7BjypL0fLAi0LXvQd4idPwoiDbcSWIjLnrYjEQF1y5wv31wGSTZSeolX9O3R3w=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1756915934; c=relaxed/simple;
+	bh=sjmEp1uuyvU2U6l3BXDxmANKWmXQ1VvZZ0bjWtkydyY=;
+	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=F5Xar7u9dYo29F0dRhC3A1ygEd3lqkKWM1mHRFU8bCUPJS5Dl1svTHYM4ls3UzQPd9s30oOZqeCQaBllZzZsJQWx0AGAZnZapnW0ENtXIEcTsMLVllc5Iy+0mqK+dsZa9+R2r3djL4g8Eq1WQJXYVVTy6KxhmLbUCUr8jSYNNXo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=PoLSjWzt; arc=fail smtp.client-ip=52.101.70.66
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dLzl9a5o"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-45b84c9775cso871025e9.0
-        for <xenomai@lists.linux.dev>; Wed, 03 Sep 2025 09:07:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1756915666; x=1757520466; darn=lists.linux.dev;
-        h=mime-version:message-id:date:user-agent:references:in-reply-to
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=p9mL3O2t0KIpf09NBJ20+bAozW4z/1VVczIvRyxJmuo=;
-        b=dLzl9a5oPL5KRHQL4nUChsxa18ermTCSJF+gRDP6YLwItLDkCLC0biCsS9TZCsBKFe
-         m0DN1p85OZkCNfrUSvoSk4PIxZfdNWHuGcCWAYOr114CIfNsjUj4YzR6wTuzAsiH6Vqa
-         KHBgNErtLfZ5yJuZ+y98DLKWoexg+MABENOHiOnZCAfIw/02uEn/r5mYhLlAzaPlmIyR
-         7Ju1FfiepusysnEYoFCqCW+P2kpdFOGWOn5jgQDCa0Mho5WvH4RqsDqo63wmP3QzebKE
-         zihbLoe45SZnXuCr/OE0UgwCrlSxxJdm/JvJSjmAjdFqR54KcHqQzcPMbX3bJkVIM1XE
-         m1Xg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756915666; x=1757520466;
-        h=mime-version:message-id:date:user-agent:references:in-reply-to
-         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=p9mL3O2t0KIpf09NBJ20+bAozW4z/1VVczIvRyxJmuo=;
-        b=Ujuj2TncDiJw0xaEutcmtIb7AKwq+zsuHXPopnoiAixI3piV0ui2xb9MzDtZmyttnP
-         YqLPYNCo8O/WVq8e/O7SiMSJt6JdOe+QTJVEoTBYmg7utDlLdiXAFy1Mvnzu72V+yXjh
-         2ZdoKENr2t0CPARckIKl7qKuhZROcOfCaF2/OSSIu5qu6QhGKZhicBR5kGHiHgRrt1HP
-         G7uUjGdSgnjHmV+Vg3T/7ySiK+9otrpVR+TfhBKqnw/nIN4wHcE0W5ipKEh8VksHKxRm
-         Hv/zycWwJUy7zn8oeJZeklfIEW4RmVI464n9gmYdcicngk2RnM/ncnQMS2yaBNGB7/6I
-         ZMcw==
-X-Gm-Message-State: AOJu0Yyj/CaKNpi8kHKmvvmyfoSxanhcWKkk1SR3xarc1oS+/Dw6T1Yc
-	5EOINakJXKRr88oMzITcnNTPkepIxwoP7YB4tV98+MOQH7KgIpaqoLtfl9MG5OeK
-X-Gm-Gg: ASbGncs3qvg1EJSbcLLn9W9Rzz7OGiJ3ESTBiPxq4yw045PpSVWnDjVoWCHUTNJ1a/y
-	Fb13CS5rdhQ1qPu+h8JKS5WuH/VI5ibYXHj33+wh9NN2aEbLwzRCjTZkHmhrG431m5eRWGH2eKD
-	iZYMvkXE6FBX742ebe+4IlAAAH4g2084mKIQyfHrxhZ8OpV3gNW7W3R93CYxPkPtSkPWmdkdeOP
-	2Ly//TvoH0+5669w9fllT+IW0LptWAUZ3YPpWI22Vw7W5UJDZWkbXKMI6GUV9L730N8Pue7vpCk
-	Au9iobErsDNKL/A4zXbMWD2aGvSi8ed36T/bc3k2sXjDRGWTeSBRPRLRoZyw4GLZMDqNZ5uULxV
-	mMHq2t9wMRNj/ktg=
-X-Google-Smtp-Source: AGHT+IFTbYWlLMLbtBKzIFFr1UFNZ7iHRqorZ7Tv8wp31/YsN6prsQaZtVdxHsFXWKIk7SufmfRqtw==
-X-Received: by 2002:a05:600c:1ca4:b0:45d:98be:ee8f with SMTP id 5b1f17b1804b1-45d98bef03bmr4454955e9.26.1756915665655;
-        Wed, 03 Sep 2025 09:07:45 -0700 (PDT)
-Received: from bogeyman ([2a01:e0a:9e1:e390:3656:699e:ad52:5555])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3d2250115fdsm18611346f8f.40.2025.09.03.09.07.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 03 Sep 2025 09:07:44 -0700 (PDT)
-From: Philippe Gerum <philippe.gerum@gmail.com>
-X-Google-Original-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@lists.linux.dev,  Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: [PATCH Dovetail 6.16 v2 1/2] x86/fpu: dovetail: Fix FPU corruption
-In-Reply-To: <20250820-wip-flo-fixes-for-dovetail-6-15-v2-1-535e4fa355f7@siemens.com>
-	(Florian Bezdeka's message of "Fri, 22 Aug 2025 08:55:00 +0200")
-References: <20250820-wip-flo-fixes-for-dovetail-6-15-v2-0-535e4fa355f7@siemens.com>
-	<20250820-wip-flo-fixes-for-dovetail-6-15-v2-1-535e4fa355f7@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Wed, 03 Sep 2025 18:07:43 +0200
-Message-ID: <875xdzldtc.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="PoLSjWzt"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=tQNK8Oa7iOapTevjisEyWEBCpszM+0K6tRP1dlB05K6VYIdlOKlxq7Ef691M0XIYmhcfLG8+S7RTKLfzVGpFQzreuofAkBM2SH1+n8L0Dp9YSPWpsbBJtISMJqQqDSMsB/K4VV8AiMBcSNTpqnhgGIFB0okjfG17zxVyEcWQanLJE1mmmMHdc3ph0FHZ8gqga1sI1ZO5UsOTmxaSdhf3ojKTPiFSEzgK7+Jijgs3jAMEthNb4mjbU37MO7ZZ8jyY+Q0f0yqd63zjFdoSW7BP5qZln7Ino6Crfx4mDSzNpn/isWJYIE6vXpBBOQBTtVP030if0eWQ8jQyCOMS02YeKA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NH/Jbf3edjkJRr241Y0JOeV4syduyRnn2zRSjS3Pfd8=;
+ b=mPPMkMVZD3Z1rxYVXOD319w49IDhoF3PR+srnv+tLO0Ey7eHT8xpHP9lJmOTKO+mXVkNvSR6mTFZjl0uURv0mPcdQi7rGKOoHEekH9GbMwrPtYTw1RHcu3fVeVbRW7lPKlpBC+11QUydryaLFl+MmWG3XOlt4uRx51BVWGjYTcYAIytJrTjsbgCmrxw/U4C4RDTu0ClyMcf3vv9aLMAmhq3WweJmursIjPRYBzX9LJ6Z6X/2H1eRTNstKePUZ5grOKwHZsD2JEs5GfvcuykJndinvY3Ttotg61xIJMQarY/mRXoiGHLgxN+X/0SDI2xrUNdgQQnPzWjXncYt6QLibw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NH/Jbf3edjkJRr241Y0JOeV4syduyRnn2zRSjS3Pfd8=;
+ b=PoLSjWzt7V0aRFuWS9jWZIS/hNmXzkKF5dWMp5rkA8zt9NJt9mhJJdfBYcqColkz5Nv6K1oo11reC1KuWUrsyZBw0SlfzNXwfLKdnYE9EE68dwbrm+gh9ReXDEgubzYkFDDs/XAL0PKKbyI1rBMu28PdxY6G0PCX8nXGfrPCDQpqYZzs+tin/fQVAUqdpF697LiTUWy3rq88npmPe/VTOASUz4aE+kU2y9Vyx57X+rpUxNo2RK5UonXkDv4tf9DggbdBFUfO0dZ/KzgkSVF+aNRJgFuUGJAZsVu9ph5o84gXQ5qJBggsA5sHHnoNEbwS7+G1PK4skw80MWqI2VXPwA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:76::15)
+ by PAVPR10MB7307.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:31e::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9073.27; Wed, 3 Sep
+ 2025 16:12:10 +0000
+Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::7fc:74bb:a781:a286]) by GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::7fc:74bb:a781:a286%7]) with mapi id 15.20.9073.026; Wed, 3 Sep 2025
+ 16:12:09 +0000
+Message-ID: <c99efcee-2479-4e3e-b29d-e3769e9e1117@siemens.com>
+Date: Wed, 3 Sep 2025 18:12:04 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [xenomai-images][PATCH 1/2] ci: check the device health
+To: Quirin Gylstorff <Quirin.Gylstorff@siemens.com>, xenomai@lists.linux.dev
+References: <20250903122513.1072751-1-Quirin.Gylstorff@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Content-Language: en-US
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ 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
+In-Reply-To: <20250903122513.1072751-1-Quirin.Gylstorff@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: CH0PR03CA0432.namprd03.prod.outlook.com
+ (2603:10b6:610:10e::20) To GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:150:76::15)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: GV2PR10MB6186:EE_|PAVPR10MB7307:EE_
+X-MS-Office365-Filtering-Correlation-Id: ba492e7e-98cd-4888-72b3-08ddeb04a24b
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?cEhpNzRoUFJsQ3FpY0Vld2l3NlU1N1lRa212UnpHSVBPL3hFK05PZmtRbzZw?=
+ =?utf-8?B?cVpWMStkbEFqZ25rM3VWcWZwQk16Nlg3S1hkakFJRHRXWU9kRUdWTHRacW1K?=
+ =?utf-8?B?c05wR1RRWTYvLzQxWTk1ZmIyMVdWd0thejRyNi9mTDNCZHFQQXNlaC9RRlJI?=
+ =?utf-8?B?TDU5eVE4bW9DdE4xKzJWc3BvbVhkaGdWSTZpUjVtcG9McjZjMjBqWFdCZ09Q?=
+ =?utf-8?B?cExUY0QwdjFETWpMQVZoY09qa250SGR1dzhrcS9pUmJLc2Y3c2tKdzMwMmtO?=
+ =?utf-8?B?YzRENk1BS29oZ25lVXNxWmFudHJ2M2FOS3FvSVNJSjVaR2UzWmZBdnV0Y1Uv?=
+ =?utf-8?B?VnNON2ZYZUNNQ0g5ZFpHUE1nNWJzZ0NQM216cHF5a0llZlc5YlpYOUx1b3NP?=
+ =?utf-8?B?eHRKRldoTVN5ZzhOeEtmSjBld3lmTzNLTk9uRXIyT3U2OEI2WVIxRkE3Z2ZG?=
+ =?utf-8?B?dEF1eDVuWTRncDhuMDMxRXkzdkxBNVBjeDlmMVVlOVZSbVlLK0tQbW1vYXRB?=
+ =?utf-8?B?b3BpT3ZreEdzYm9hazB5ZEYyZ2lDalFMY2tVaDFMWFozZWNEdTlPWXNrL21q?=
+ =?utf-8?B?d05lMlptV3BQUER3bEgySFV1K01wc0ZNK0dUK3FmTGVpd2xub09MS2QwdVQw?=
+ =?utf-8?B?R0pISVg0NUZ1cEx2dUo2cUovd1dqWDFmUXZOenZWVmwrN25rNTQzTlRRMDly?=
+ =?utf-8?B?Vk8yV0Y0YWlPNFdSc1poOVBhTVRrK2VocU52VlVNVDk2UVpic2F2SnBoOGVy?=
+ =?utf-8?B?VDBRLy9hUzVISTJxS0VFNFVjaUEvbmJnZlNGcWovSS9wNEpleHRvNGlCTGJO?=
+ =?utf-8?B?TDgxMm1WdnRiMHk1MnEvMDBZYWVIZk80SkNSVUYvSkg0S3J0ZHZ3VEpjM3Vo?=
+ =?utf-8?B?UWtId09IRFp2VGszU0I2aHhISzBGL2VpZHl6VmJpNEx4ZkhVUC9BSjFqekk2?=
+ =?utf-8?B?Qjl1ZmxmMTJVcEN4NzlTTFhKeDNXR1p6MDBJbW9sVzFUcG9XOEQxdnovLzU0?=
+ =?utf-8?B?V215cmIzUkFwYlZZNXc5UTM1TytCelVwUGV3QzdFL2xTNW9LdWQ3MU1OQWNM?=
+ =?utf-8?B?b0ZWYnhlS1ljZjFWd0xhT1B2VGsydVE4Qmt3QWQ5eGJka1RwZngzMnRyN0Ix?=
+ =?utf-8?B?QzBHbWVadnhnaThjb1R0WFB6RDVIRTZYRlVFVEo2TFBVbklsY3A4eUVUQkVv?=
+ =?utf-8?B?S1lTZGd2aG0xdWl2cTgzZlBTdldCOGxtcW9KVFVwYitPWmdINVh4WWp0MWtQ?=
+ =?utf-8?B?YnQ4bFRnZ3R6QklITnJNOWRnclBkTldidWN3WkNlRzhrOHdrQzV5ZVdvcjRC?=
+ =?utf-8?B?QlNsZ0J6WW4xdUVRUVRQT3JYNDRMbkVVQjlsalQ4cVEwNEpQcmh4MnFaeHBo?=
+ =?utf-8?B?L1ViOGUzUm04V2xlR0tTYXV0Q1krYlJYV2ZTclNOQTJ1OEE2cWJtUWxHZVYz?=
+ =?utf-8?B?cEhtbVpJTVk1eWp4MGFmZmdrTjdCSzJEZVdrUFJCQnJVeWpETnd5bDNVaFZB?=
+ =?utf-8?B?d0ZrNEw2K0VWdHlHbzRPS2ZEdUZMa29TY3VDcndMVXlVZlVXVnFmYzNTMnFG?=
+ =?utf-8?B?eloyTHNPTFJmNU8zVnZwUWMyKzZKalpDOXFVb0VVUVdDcnpBUWlyc0VTd0lY?=
+ =?utf-8?B?bnY0NE1KbEZFaVVUanoydzUyRHRrWmkyNnNlN002TmtXdWRLZ1VjZE12bkpP?=
+ =?utf-8?B?RjYra0NLLytYRHRzaERTY3ZncGplVE53cklmNzdEYzY3ZkhCV1lkNWxJV3h3?=
+ =?utf-8?B?NUVMN3Aya1hWbWRNSHFyb3haWkhkdlVRUGRoN09tMlROQzFYeSttaWFaQ1p4?=
+ =?utf-8?Q?QepsZ8p13G2ROmthzg/qmZ+MG8JZZGtL5AzHA=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?NlRWN2YzSzVWMEYzVjd1aVVhRlJhMjdEc3YvbDJLditKUngvc20reEhYVVpp?=
+ =?utf-8?B?L1NOaGIrUDBjMDdJcllDaWVCWDQ5eXpnbHlLZXJxOHVGK0tNeWtzWE92VTcz?=
+ =?utf-8?B?Ykx6a21kVkFMRkV5YWZ5WHdJcGlyYWkwbzZ3eGV1V2xiWXlSa2pHYlF6b0Fw?=
+ =?utf-8?B?QlYrY0ZwSHpKVnpWcU5iMGgxUkw1c1dnQnl1VS84Mk5ESCtSNGMyaStaTW8z?=
+ =?utf-8?B?b3JzWVI2OHc4dDJManU5RmIwbjAxZ08rZ1BJZTZ1UTJBbVhodVpxbm5zakNN?=
+ =?utf-8?B?MHlhc2EyaXRrSWpyY1h5V2xnWUo3ZTZ6RHBPaTA1Qm9USE1GdnZSZGdFa01Z?=
+ =?utf-8?B?WXRtQjc0SlJaL0RhdlYzZHE4eUlYNWpFaWF6UVRnS3FYL3dDTFMwZnNod1p1?=
+ =?utf-8?B?TkpRenN4ZGNZaXU2WVJ0dWZ5NmN6dHlLSVFTK1NqdEZxSHBVUko4SmlJMlE2?=
+ =?utf-8?B?ME10YklBQzBpdGVQTjc3eTVFNVRnSFYveS9hL29sSlVyQ0lTWG9uNWJJZnlK?=
+ =?utf-8?B?ZE80ZktwS3k5V0pSM3BnTEd5WitOaG1YVHI0UTByYlY1QlovemNrY1pMb3Bz?=
+ =?utf-8?B?NGlmdXliT242YmovRnAwNzkwQnlZNjhaQkd1aFJvczVFWDYydWJLbVl2RWlp?=
+ =?utf-8?B?a3B1KzU5ekJXdUtxNCtOQ0VCaVpFem5IK2dBcFVGNkRjMUtnbkZraVBuWDlP?=
+ =?utf-8?B?SHpIKzFTMjFodWY4dTJwWDhCNjdtVG9NeWpJV3BRR1J1N2RueTVJYWhsVHRh?=
+ =?utf-8?B?TkNNNHpGVjlSbEdtNldidkRrWVNsaGhmcVp0bnhQN2RRaU9PZTBlRThoZ1VG?=
+ =?utf-8?B?YWhRYjFDN2tEbzVJbldjS2VhcTBUVitJaC9sS0ptN1lRUStmbFRZa2IrbkJR?=
+ =?utf-8?B?OEVidFlRdHZ0UWJ3c05LWGJ3QW9qT280RG53L01XSkQwMlpDUXFqU2dkc05r?=
+ =?utf-8?B?R0k0cnFlc0hia21FcFg5blhsTi9oS0xZbENHM2lSUjRhSHBSRUtFbTlUWW84?=
+ =?utf-8?B?Wk4wWFFjVWZmYlkyWlUzb3BoYVhjNmxjaThLNGFwOXozL1Y3UEFoYWZTMlV6?=
+ =?utf-8?B?YnNsVk1kUnVPWDdKQVhJckhXclBkeXhjZUtLUGFpQWx3WkdwOTJmYlQ1dU9K?=
+ =?utf-8?B?d1VUWHpZSFFBaUxSb1BLYmM2MWFrclR5OHBqZ0Y0ajIwTEFnRkhaUG81cnNR?=
+ =?utf-8?B?UGpiNm1QcXJYaEEyOWlIMnZhMWgwa1ZxYU95cnIzV1M4aEFVUERsRkorS1VW?=
+ =?utf-8?B?U0VuaWVCWnZCc2wwRUEzN1E2aG1xODU2cVdUaHFYMW5wMTU0bkN2NGNsZGNT?=
+ =?utf-8?B?c0dQaTFOWExlTi9jMjZDcnFvdjUrdFQ3L1M4bVBHb3hrY205R0V1cU9vU3hn?=
+ =?utf-8?B?Z2tYb3BsQjk5N2FacDYzaDZQbmpyZEtveUw3UlQwMTJiNzIzNllrT3IwdjFU?=
+ =?utf-8?B?WFBzdytvOVNVL0RrcEFlSzlaSkdzN1NtQVJ4ei9kRlBmMFhRazdRNko1enJK?=
+ =?utf-8?B?TElXd0FRNU1IU3lDSmJXRlRMNXZ6d3p1Ty9JVFlkQ09Nby9TY0UwRWdFUC9N?=
+ =?utf-8?B?STlvaFU4TG84eE9EV2FKalNaM0tCVEx4eE1VTXNmYy9nM0N1THUwUVJpZHI5?=
+ =?utf-8?B?UmwxMEgvaEpQQTdjUUZkQU5XNkdOTTlYMFdWakgxM0oyZ2IvNC85OGhqOFZn?=
+ =?utf-8?B?a0VMU2RDVGlqME1QUTRRaTdVbjQwa2NPeG4vcjVCSFdOSWd5TU5HK01sejg3?=
+ =?utf-8?B?RnZySFZDYXBTWmd1TjdEeUw4dk80cFl2S1V4clFMZVVKdnVxRGRIeXg1Z2Nn?=
+ =?utf-8?B?dVpRYUo2TFp1WkF0NzR5ZEUzNUQ5WE1PSUFuS0tBTTBsZnoxVHNoNVVrUHds?=
+ =?utf-8?B?c1ZxVjhSTkNMQVdtb04vNnB2MG9pR3p3bkE0OWhkeEs2Q3FGVDhjeXlaTHlJ?=
+ =?utf-8?B?WlhacldHd1dPTU4rb1J0enBGa3B5UXdBblQyNWhnNExtU21zMWppSllBSko3?=
+ =?utf-8?B?ZG9FdjFSSjRmTmFhQkhWYXhlbXpTU3lmRHpmRU11OSt0c3FybU1meW80bEhw?=
+ =?utf-8?B?MVYrYlp6cEFQdkNRT1NaTVNEWUYrNnpzR0d6dTc1WlIvbHpiUWt6NFlndkR3?=
+ =?utf-8?B?TmdVc285MzdybWdsWFVIQzlYOG0vcldwTGZrVVpxbDFLTFloMWJTREdSVkZ2?=
+ =?utf-8?B?dXc9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ba492e7e-98cd-4888-72b3-08ddeb04a24b
+X-MS-Exchange-CrossTenant-AuthSource: GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Sep 2025 16:12:09.6745
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ws5pjCDs6xfSLkB9CngtbkZHFrPdRtEJW/IQW1wHu5c1xEx/OOZw4ASVf6NtQmYeah4oAx/6meJiR4l5mzu52A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR10MB7307
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
-
-> The kernel splat looked as follows and could be reproduced by running
-> the Xenomai 3 testsuite over a stress-ng produced load. The problem is
-> specific to Dovetail 6.16.
->
-> [19527.937613] ------------[ cut here ]------------
-> [19527.937614] WARNING: CPU: 0 PID: 14 at arch/x86/kernel/fpu/core.c:62 x86_task_fpu+0x18/0x30
-> [19527.937619] Modules linked in: intel_rapl_msr intel_rapl_common intel_pmc_core pmt_telemetry pmt_class intel_pmc_ssram_telemetry intel_vsec ghash_clmulni_intel sha512_ssse3 sha1_ssse3 aesni_intel gf128mul rapl pcspkr button evdev serio_raw joydev sg loop efi_pstore fuse dm_mod drm dax configfs ip_tables x_tables autofs4 ext4 crc16 mbcache jbd2 sr_mod cdrom ata_generic sd_mod hid_generic hid_hyperv ata_piix psmouse hid hv_netvsc hv_storvsc libata scsi_transport_fc floppy i2c_piix4 i2c_smbus scsi_mod scsi_common [last unloaded: xeno_can]
-> [19527.937635] CPU: 0 UID: 0 PID: 14 Comm: ksoftirqd/0 Not tainted 6.16.0-hyprv-xenomai-0+ #196 PREEMPT(voluntary)
-> [19527.937637] Hardware name: Microsoft Corporation Virtual Machine/Virtual Machine, BIOS 090008  12/07/2018
-> [19527.937637] IRQ stage: Xenomai
-> [19527.937638] RIP: 0010:x86_task_fpu+0x18/0x30
-> [19527.937640] Code: 1f 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 0f 1f 44 00 00 48 8d 87 00 20 00 00 f6 47 3e 20 75 05 c3 cc cc cc cc 90 <0f> 0b 90 31 c0 c3 cc cc cc cc 66 66 2e 0f 1f 84 00 00 00 00 00 0f
-> [19527.937641] RSP: 0018:ffffba19c0083b60 EFLAGS: 00010002
-> [19527.937641] RAX: ffffa0a90133c3c0 RBX: 0000000000000001 RCX: ffffa0a93fc5a6e8
-> [19527.937642] RDX: 0000000000000000 RSI: 0000000000000007 RDI: ffffa0a90133a3c0
-> [19527.937643] RBP: ffffa0a93fc5a058 R08: 01364d9cb9685197 R09: ffffffff83e406f8
-> [19527.937643] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000001
-> [19527.937643] R13: ffffa0a90133a3c0 R14: ffffba19c0c62008 R15: 0000000000000001
-> [19527.937645] FS:  0000000000000000(0000) GS:ffffa0a9ba664000(0000) knlGS:0000000000000000
-> [19527.937646] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [19527.937646] CR2: 00007f5c694363c0 CR3: 000000003e038004 CR4: 00000000003706f0
-> [19527.937647] Call Trace:
-> [19527.937648]  <TASK>
-> [19527.937649]  fpu__suspend_inband+0x3c/0x50
-> [19527.937651]  dovetail_context_switch+0x130/0x240
-> [19527.937652]  ? xntimer_start+0x101/0x240
-> [19527.937656]  ___xnsched_run+0x1f9/0x4d0
-> [19527.937659]  run_oob_call+0x87/0x140
-> [19527.937662]  handle_irq_pipelined_finish+0x188/0x1a0
-> [19527.937664]  arch_pipeline_entry+0x43/0xf0
-> [19527.937667]  asm_sysvec_hyperv_stimer0+0x16/0x20
-> [19527.937669] RIP: 0010:kernel_fpu_end+0x5/0x50
-> [19527.937670] Code: 57 02 e8 9e 12 42 00 31 c0 c3 cc cc cc cc 0f 1f 80 00 00 00 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 0f 1f 44 00 00 <65> 0f b6 05 03 40 57 02 84 c0 75 31 65 c6 05 f7 3f 57 02 01 65 f6
-> [19527.937671] RSP: 0018:ffffba19c0083d28 EFLAGS: 00000246
-> [19527.937671] RAX: 000000000000000c RBX: 0000000000000001 RCX: ffffffff842f2260
-> [19527.937672] RDX: 0000000000000000 RSI: ffffffff84c67450 RDI: ffffffff84c673e0
-> [19527.937672] RBP: 0000000000000001 R08: ffffffff842f2260 R09: 0000000000000000
-> [19527.937672] R10: ffffffff84a080c0 R11: 0000000000000001 R12: ffffffff84c67410
-> [19527.937673] R13: ffffffff84c673e0 R14: 0000000000000040 R15: 0000000000000004
-> [19527.937675]  blake2s_compress+0x52/0xa0
-> [19527.937679]  blake2s_update+0x75/0x150
-> [19527.937681]  add_timer_randomness+0xac/0x1a0
-> [19527.937684]  scsi_end_request+0x297/0x3a0 [scsi_mod]
-> [19527.937697]  scsi_io_completion+0x55/0x6a0 [scsi_mod]
-> [19527.937707]  blk_done_softirq+0x46/0x60
-> [19527.937709]  handle_softirqs+0xd0/0x430
-> [19527.937711]  ? __pfx_smpboot_thread_fn+0x10/0x10
-> [19527.937713]  run_ksoftirqd+0x47/0x60
-> [19527.937714]  smpboot_thread_fn+0xec/0x220
-> [19527.937716]  kthread+0xf7/0x240
-> [19527.937718]  ? __pfx_kthread+0x10/0x10
-> [19527.937720]  ret_from_fork+0x28c/0x310
-> [19527.937721]  ? __pfx_kthread+0x10/0x10
-> [19527.937722]  ret_from_fork_asm+0x1a/0x30
-> [19527.937725]  </TASK>
-> [19527.937725] irq event stamp: 1270
-> [19527.937726] hardirqs last  enabled at (1269): [<ffffffff830b2b1c>] run_ksoftirqd+0x4c/0x60
-> [19527.937727] hardirqs last disabled at (1270): [<ffffffff83d90d53>] __schedule+0x853/0x1080
-> [19527.937729] softirqs last  enabled at (1268): [<ffffffff830b29d6>] handle_softirqs+0x346/0x430
-> [19527.937730] softirqs last disabled at (1215): [<ffffffff830b2b17>] run_ksoftirqd+0x47/0x60
-> [19527.937731] ---[ end trace 0000000000000000 ]---
->
-> The main problem was the x86_task_fpu(tsk) helper, which will deliver
-> NULL in case CONFIG_X86_DEBUG_FPU is enabled and
-> (tsk->flags & PF_KTHREAD) is true. We ended up in dereferencing a
-> NULL pointer.
->
-> This problem could be fixed by not using the x86_task_fpu().
-> But:
->   - It seems that the location of struct fpu is under development.
->   - Moving the preemption marker from struct fpu to
->     struct thread_info::flags synchronizes the amd64 and arm64
->     implementation.
->
-> Second, the early exit in fpu__resume_inband() was wrong, as that
-> prevented the FPU restore of in-band kthreads.
->
-> Link: https://lore.kernel.org/xenomai/80a48c1ddc3721eb8022b77548028aa8e7371928.camel@siemens.com/T/
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+On 03.09.25 14:24, Quirin Gylstorff wrote:
+> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+> 
+> Check the device health and the device state. If the device is not
+> healthy or the state is not idle try for "WAIT_FOR_DEVICE_TIMEOUT"
+> minutes until aborting the test.
+> 
+> The default of the variable WAIT_FOR_DEVICE_TIMEOUT is 10.
+> 
+> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 > ---
->  arch/x86/include/asm/fpu/sched.h   | 17 ++++-------------
->  arch/x86/include/asm/fpu/types.h   | 12 ------------
->  arch/x86/include/asm/thread_info.h |  1 +
->  arch/x86/kernel/fpu/core.c         | 12 ++++--------
->  4 files changed, 9 insertions(+), 33 deletions(-)
->
-> diff --git a/arch/x86/include/asm/fpu/sched.h b/arch/x86/include/asm/fpu/sched.h
-> index ba677ffa4fbb..2b66960accd4 100644
-> --- a/arch/x86/include/asm/fpu/sched.h
-> +++ b/arch/x86/include/asm/fpu/sched.h
-> @@ -18,19 +18,9 @@ extern void fpu_flush_thread(void);
->  
->  #ifdef CONFIG_DOVETAIL
->  
-> -static inline void oob_fpu_set_preempt(struct fpu *fpu)
-> +static inline bool oob_fpu_preempted(struct thread_info *old_ti)
->  {
-> -	fpu->preempted = true;
-> -}
-> -
-> -static inline void oob_fpu_clear_preempt(struct fpu *fpu)
-> -{
-> -	fpu->preempted = false;
-> -}
-> -
-> -static inline bool oob_fpu_preempted(struct fpu *old_fpu)
-> -{
-> -	return old_fpu->preempted;
-> +	return test_thread_flag(TIF_KERNEL_FP_PREEMPTED);
+>  scripts/run-lava-tests.sh | 36 ++++++++++++++++++++++++++++++++++--
+>  1 file changed, 34 insertions(+), 2 deletions(-)
+> 
+> diff --git a/scripts/run-lava-tests.sh b/scripts/run-lava-tests.sh
+> index 0971385..e97dd2a 100755
+> --- a/scripts/run-lava-tests.sh
+> +++ b/scripts/run-lava-tests.sh
+> @@ -24,6 +24,23 @@ get_first_xml_attr_value()
+>  	grep -m 1 -o "${tag}=\".*\"" ${file} | cut -d\" -f2
 >  }
 >  
->  #else
-> @@ -60,9 +50,10 @@ static inline void switch_fpu(struct task_struct *old, int cpu)
->  {
->  	if (!test_tsk_thread_flag(old, TIF_NEED_FPU_LOAD) &&
->  		cpu_feature_enabled(X86_FEATURE_FPU)) {
-> +		struct thread_info *old_ti = task_thread_info(old);
->  		struct fpu *old_fpu = x86_task_fpu(old);
->  		if (!(old->flags & (PF_KTHREAD | PF_USER_WORKER)) &&
-> -			!oob_fpu_preempted(old_fpu)) {
-> +			!oob_fpu_preempted(old_ti)) {
->  			set_tsk_thread_flag(old, TIF_NEED_FPU_LOAD);
->  			save_fpregs_to_fpstate(old_fpu);
->  			/*
-> diff --git a/arch/x86/include/asm/fpu/types.h b/arch/x86/include/asm/fpu/types.h
-> index c329a878a581..1c94121acd3d 100644
-> --- a/arch/x86/include/asm/fpu/types.h
-> +++ b/arch/x86/include/asm/fpu/types.h
-> @@ -473,18 +473,6 @@ struct fpu {
->  	 */
->  	unsigned int			last_cpu;
+> +get_device_state()
+> +{
+> +	device_type=$(grep -oP 'device_type: \K.*' "$1")
+> +	devices=$(lavacli device-types show "$device_type" --json | jq .devices[] --raw-output)
+> +	for device in $devices; do
+> +		device_json=$(lavacli devices show "$device" --json)
+> +		state="$(echo "$device_json" | jq -c 'select(.health == "Good" or .health == "Unknown") .state' --raw-output)"
+> +		if [ "$state" = "Idle" ]; then
+> +			break
+
+Why not return 0 from here?
+
+> +		fi
+> +	done
+
+Then you could simply return 1 from here and drop the rest.
+
+> +	if [ "$state" != "Idle" ]; then
+> +		return 1
+> +	fi
+> +	return 0
+> +}
+> +
+>  # S3 artifacts
+>  artifact_url="${LAVA_ARTIFACTS_URL:-https://d1a54g2tyy2hl.cloudfront.net/artifacts}"
+>  # public master
+> @@ -42,12 +59,27 @@ TEST_TIMEOUT_MINUTES=$((TEST_RUNTIME_SECONDS / 60 + ADDITIONAL_TEST_TIMEOUT_MINU
+>  export TEST_TIMEOUT_MINUTES
 >  
-> -#ifdef CONFIG_DOVETAIL
-> -	/*
-> -	 * @preempted:
-> -	 *
-> -	 * When Dovetail is enabled, this flag is set for the inband
-> -	 * task context saved when entering a kernel_fpu_begin/end()
-> -	 * section before the latter got preempted by an out-of-band
-> -	 * task.
-> -	 */
-> -	bool				preempted : 1;
-> -#endif
+>  echo "Deploy artifacts from '${artifact_url}'"
+> +test_definition="tests/jobs/xenomai-${TARGET}.yml"
+>  
+>  tmp_dir=$(mktemp -d)
+>  template="${tmp_dir}/job_${TARGET}_${CI_PIPELINE_ID}.yml"
+>  
+> -cat "tests/jobs/xenomai-${TARGET}.yml" | envsubst > "$template"
 > -
->  	/*
->  	 * @avx512_timestamp:
->  	 *
-> diff --git a/arch/x86/include/asm/thread_info.h b/arch/x86/include/asm/thread_info.h
-> index 77c4c632cef2..53f11b73d0f0 100644
-> --- a/arch/x86/include/asm/thread_info.h
-> +++ b/arch/x86/include/asm/thread_info.h
-> @@ -94,6 +94,7 @@ struct thread_info {
->  #define TIF_NEED_RESCHED_LAZY	4	/* Lazy rescheduling needed */
->  #define TIF_SINGLESTEP		5	/* reenable singlestep on user return*/
->  #define TIF_SSBD		6	/* Speculative store bypass disable */
-> +#define TIF_KERNEL_FP_PREEMPTED	7	/* Dovetail: kernel mode
-> FPU section preempted by OOB */
+> +cat "$test_definition" | envsubst > "$template"
+> +
+> +echo "check for device"
+> +time_elapsed=0
+> +while true; do
+> +	if get_device_state "$test_definition" ;then
 
-Only the current task may set/clear/read this flag, so the latter should
-rather go to the TLF (synchronous) section. As a consequence, non-atomic
-ops would be enough to access it.
+..."; then
 
->  #define TIF_SPEC_IB		9	/* Indirect branch speculation mitigation */
->  #define TIF_SPEC_L1D_FLUSH	10	/* Flush L1D on mm switches (processes) */
->  #define TIF_USER_RETURN_NOTIFY	11	/* notify kernel of userspace return */
-> diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
-> index 7b87a04c0b6e..6d185ad1a996 100644
-> --- a/arch/x86/kernel/fpu/core.c
-> +++ b/arch/x86/kernel/fpu/core.c
-> @@ -1044,7 +1044,6 @@ static int fpu__drop_kernel_fpstate(unsigned int cpu)
->  void fpu__suspend_inband(void)
->  {
->  	struct fpu *kfpu = this_cpu_read(in_kernel_fpstate);
-> -	struct task_struct *tsk = current;
->  
->  	/*
->  	 * If kernel_fpu_allowed is false, we are dealing with the
-> @@ -1054,23 +1053,20 @@ void fpu__suspend_inband(void)
->  	if (!this_cpu_read(kernel_fpu_allowed)) {
->  		save_fpregs_to_fpstate(kfpu);
->  		__cpu_invalidate_fpregs_state();
-> -		oob_fpu_set_preempt(x86_task_fpu(tsk));
-> +		set_thread_flag(TIF_KERNEL_FP_PREEMPTED);
->  	}
->  }
->  
->  void fpu__resume_inband(void)
->  {
->  	struct fpu *kfpu = this_cpu_read(in_kernel_fpstate);
-> -	struct task_struct *tsk = current;
->  
-> -	if (tsk->flags & PF_KTHREAD)
-> -		return;
-> -
-> -	if (oob_fpu_preempted(x86_task_fpu(tsk))) {
-> +	if (test_and_clear_thread_flag(TIF_KERNEL_FP_PREEMPTED)) {
+> +		break
+> +	fi
+> +	time_elapsed="$((time_elapsed+1))"
+> +	if [ "$time_elapsed" -gt "${WAIT_FOR_DEVICE_TIMEOUT:-10}" ]; then
 
-In most cases, we won't need to clear this flag, so a split
-test then clear-if-set approach would be more efficient.
+Will this variable automatically be a CI variable as well then? Should
+we document that? Or what is the envisioned usage?
+
+> +		echo "An test device for '$TARGET' is not available"
+> +		exit 1
+> +	fi
+> +	echo "Wait for test device '$TARGET'"
+> +	sleep 60
+> +done
+>  echo "Submit lava job"
+>  
+>  test_id=$(lavacli jobs submit "${template}")
+
+Jan
 
 -- 
-Philippe.
+Siemens AG, Foundational Technologies
+Linux Expert Center
