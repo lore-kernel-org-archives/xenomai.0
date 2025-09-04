@@ -1,70 +1,179 @@
 Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B0CC2ECEB9
-	for <xenomai@lists.linux.dev>; Thu,  4 Sep 2025 11:49:39 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92C93275B1B
+	for <xenomai@lists.linux.dev>; Thu,  4 Sep 2025 12:10:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756986586; cv=none; b=oiLGEqq/f8X0z/KDU6S4LxKdzKUmEy4lx26ZtzDAfV6Gj7TIILtG2YikQuhGYZPGh2mwKlO31T8N/f6/YpFW+Ir6IPPJ4AEyMus2e4QJQUPNd15LvY6UcLA82UcAE3AtyeAck71UEeczMZ7tivrJfIK1vBA1NpyberEATjXWgd8=
+	t=1756987840; cv=none; b=JfhEAUmscLlFWxzMOmLmPOnmVB72LqrQfwSMT5w318rfWBMe/K9mfFoFposXvWX8RgFTRtLS0wbrFM4Fi/8pCojexStRpFUztM+RuX8l/Y1Nqdv36mPuuG8AzjKFkWN/WP0tFB9lRx7LSQqeI9m23KDHn43/t5is/C8Br1t21uo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756986586; c=relaxed/simple;
-	bh=2Cj0u6i3w73RhLK99uzxiL5QyaIPCEINYh7+1DwP3Ww=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version; b=gLiVwHLacvFyJ2DJl0wmWHzDQ6iM+5azzrT3LjPnWHXOWZC9MjdY98eEZLR+8mBxVxQk29ZeUhu/FT3u6L+VXQOfvDi3PNosMeFk5yE45z8/y1pDRNExjn85r5AcP8tMQ9h9ZQ+ufrYulDNGgKoOCnqrbtjgAZVem6Dis9miSJY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=Quirin.Gylstorff@siemens.com header.b=JEcvQI2n; arc=none smtp.client-ip=185.136.65.226
+	s=arc-20240116; t=1756987840; c=relaxed/simple;
+	bh=INTlHck0oJTOtchIGg+vawrpKDs8OJi4EkosHelcEnA=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=AcGKUMhO2MCQaOMQ9NkW9o+wVjOzKu7oqBhfznJzx/uu4RiL/1YX9HJwYC5aXQGlkjjpr8msh4XsCICwLNOl3fhhJWdOSaXXJB9OBc9bNZK5bhR1MTOizu0Abqp1ltUkXQ3HMMkp5+PhgkGWVjL/l77a/OTOzDZveHRGu449qR8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=IMq/19Se; arc=none smtp.client-ip=185.136.65.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=Quirin.Gylstorff@siemens.com header.b="JEcvQI2n"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20250904113929a7a7c4ef2900020743
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="IMq/19Se"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202509041210320c672bbc2100020771
         for <xenomai@lists.linux.dev>;
-        Thu, 04 Sep 2025 13:39:30 +0200
+        Thu, 04 Sep 2025 14:10:32 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=Quirin.Gylstorff@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding;
- bh=wOry41gx3VjTJTIfJ3lylbVKcgleduZxUE2jWst/uBs=;
- b=JEcvQI2nDYJjkYtYvKFtCqpjbc/vWtlqP94BkmGu0BPASKsXA4sLY5bZZa/MTuxqgBuv4g
- yjGOokFOC7T7J/kwbFG8uzyRWY52oG/Ob5SBStU0uFLkGn+5q3MlhLeopRGRiJDTRqHDwEj+
- Ly5FlomUQHN2Dhuu5k/0CTTObGp8Lxrz+Dagw7fuMVk63Q7XTf2aJeiw3jMixBhUM4Tg+fE8
- B/vfLw9F1UKLm0qWe4oH16vf5tExfiSmkfbFR9RACXFFxtrtguCBtOzCyHzIYyqi3RqwmJog
- Tzi8KKKJVA5w7WKkY4CHXZN1CAQ8wQZk8anQRIAZ3Ff1UtpvkFB+X93g==;
-From: Quirin Gylstorff <Quirin.Gylstorff@siemens.com>
-To: florian.bezdeka@siemens.com,
-	xenomai@lists.linux.dev,
-	jan.kiszka@siemens.com
-Subject: [PATCH] ci: increase wait for device timeout to 30min
-Date: Thu,  4 Sep 2025 13:38:43 +0200
-Message-ID: <20250904113929.2064680-1-Quirin.Gylstorff@siemens.com>
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=u1w/pq1/QSea7GEfpmuX/qa5r6zvHXJzNCNuKHvFKOI=;
+ b=IMq/19SenkWWJtU4t9UHrB9q9CjT5LJt9wQI4UpU4bFMmy8A2+noh1AKQe06k57T489/Ma
+ bUYxSsjMCpqw9HFL2bnoLSZht/YO24Bo9sgGm5C1Z86OBrUchhEYU8ijFHyRHOhtT6SyRQpe
+ MMRVe8XAJ8YgijjTAbOFe9x8fJL1dHf3zzGf7Yb1dBFKBNyxn44Jg0TZZ6ADdXSvx2kVZUhF
+ i6WgowLipfXZ2qcCBcCW98MtH0MmHpF1Dh/e0CIiTQ8FK3reYgxf32nf5XZKaER5/V/Vvm3v
+ Vg70qKjYtFekSL/zf5QHK8TFhE0RTcSZHGtrQybOk2ww+US4wR0vhidg==;
+Message-ID: <0570f53afbc37038742d519d77d40a669d185f1d.camel@siemens.com>
+Subject: Re: [PATCH Dovetail] irq_pipeline: Fix system freeze triggered by
+ periodic edge type IRQs
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Philippe Gerum <philippe.gerum@gmail.com>
+Cc: xenomai@lists.linux.dev, Jan Kiszka <jan.kiszka@siemens.com>
+Date: Thu, 04 Sep 2025 14:10:32 +0200
+In-Reply-To: <965f33cf15a8834446e448a278f30c9684df7e89.camel@siemens.com>
+References: 
+	<20250820-wip-flo-fix-edge-irq-handling-v1-1-1a2c7805b372@siemens.com>
+			<2cb5e8c46cc8d841cf5f452a753d37e7079f3036.camel@siemens.com>
+			<87h5xjlf56.fsf@xenomai.org>
+			<e7d5cddf94d3d1479e987950a07ee7483820ff1a.camel@siemens.com>
+		 <87wm6fjy9r.fsf@xenomai.org>
+	 <965f33cf15a8834446e448a278f30c9684df7e89.camel@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-51332:519-21489:flowmailer
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
+On Thu, 2025-09-04 at 09:45 +0200, Florian Bezdeka wrote:
+> On Wed, 2025-09-03 at 18:28 +0200, Philippe Gerum wrote:
+> > Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+> >=20
+> > > On Wed, 2025-09-03 at 17:39 +0200, Philippe Gerum wrote:
+> > > > Hard irqs have always been off while running the IRQ flow handlers
+> > > > grabbing the IRQ descriptor lock, this is a fundamental requirement=
+, no
+> > > > change there. handle_irq_event() drops the lock before calling the
+> > > > (user) IRQ handler, then reacquires it before returning to the flow
+> > > > handler.
+> > >=20
+> > > Thanks. So
+> > >=20
+> > > 	hard_local_irq_enable();
+> > > 	do_inband_irq(desc);
+> > > 	hard_local_irq_disable();
+> > >=20
+> > > in sync_current_irq_stage() allows pipeline entries for other IRQ lin=
+es
+> > > but the desc->lock prevents this for the same line. Correct?
+> > >=20
+> >=20
+> > What prevents subsequent triggers of that IRQ from happening while it
+> > flows down the pipeline really depends on its flow handling and the
+> > requirement for delivery to in-band.
+> >=20
+> > - a level-triggered interrupt stays masked until the in-band stage
+> > handles it.
+> >=20
+> > - mere oob-handled interrupts are unmasked as soon as the oob
+> > handler returns.
+> >=20
+> > - non-masked (device) interrupts are serialized by the desc->lock acros=
+s
+> > multiple CPUs that could receive them.
+> >=20
+> > - the in-band stage is stalled (pipeline-wise) while synchronizing the
+> > interrupt log, so we cannot pile up handlers, although we might receive
+> > and mark a subsequent occurrence of some IRQ which is being propagated
+> > through the pipeline. That is the reason why sync_current_irq_stage() i=
+s
+> > a loop: we might have received more (in-band) interrupts while we were
+> > busy handling the current one.
+> >=20
+> > - lastly, oob handlers cannot be preempted by the same IRQ since they
+> >   always run with hard IRQs off.
+> >=20
+>=20
+> Just found
+> https://lore.kernel.org/all/20250701163558.2588435-1-liangyan.peng@byteda=
+nce.com/
+>=20
+> which was basically trying to fix the same issue for Linux. Seems I
+> have to understand that first. Thomas added some detailed explanation.
+> Let's see if that helps.
+>=20
 
-This should avoid test failures with due to no device available
+Ok, now things get clearer.
 
-Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
----
- ci/gitlab-ci-base.yml | 1 +
- 1 file changed, 1 insertion(+)
+The main difference between Dovetail and Linux is in
+handle_irq_event():
 
-diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-index 875d951..fc41929 100644
---- a/ci/gitlab-ci-base.yml
-+++ b/ci/gitlab-ci-base.yml
-@@ -28,6 +28,7 @@ variables:
-   SSTATE_LOCATION: "s3://xenomai-images-artifacts/sstate"
-   SSTATE_MIRRORS: "file://.* ${SSTATE_LOCATION}/PATH;downloadfilename=PATH"
-   SSTATE_MAX_AGE: 14d
-+  WAIT_FOR_DEVICE_TIMEOUT: 30
- 
- default:
-   image: ghcr.io/siemens/kas/kas-isar:4.8.2
--- 
-2.50.1
+	raw_spin_unlock(&desc->lock);
+	ret =3D handle_irq_event_percpu(desc);
+	raw_spin_lock(&desc->lock);
 
+The raw_spin_unlock() is redirected to hybrid_spin_unlock() on
+Dovetail, which enables hard irqs.
+
+That allows a pipeline entry for the very same IRQ line, which can not
+happen on Linux. I end up with the same live lock explained above -
+just on a single CPU (no second CPUs involved, no IRQ migration in
+flight).
+
+I verified this with the following temporary hack. The affected system
+is now booting up.
+
+diff --git a/kernel/irq/handle.c b/kernel/irq/handle.c
+index a6c90482d568..7bad55bbed2f 100644
+--- a/kernel/irq/handle.c
++++ b/kernel/irq/handle.c
+@@ -212,11 +212,11 @@ irqreturn_t handle_irq_event(struct irq_desc
+*desc)
+=20
+        desc->istate &=3D ~IRQS_PENDING;
+        irqd_set(&desc->irq_data, IRQD_IRQ_INPROGRESS);
+-       raw_spin_unlock(&desc->lock);
++       raw_spin_unlock(&desc->lock.rlock);
+=20
+        ret =3D handle_irq_event_percpu(desc);
+=20
+-       raw_spin_lock(&desc->lock);
++       raw_spin_lock(&desc->lock.rlock);
+        irqd_clear(&desc->irq_data, IRQD_IRQ_INPROGRESS);
+        return ret;
+ }
+
+
+Seems the root cause is understood now. Open: How to fix that
+properly...
+
+In handle_edge_irq() we have:
+
+	if (may_start_flow(flow) && !irq_can_handle(desc)) {
+		desc->istate |=3D IRQS_PENDING;
+		mask_ack_irq(desc);
+		return;
+	}
+
+Removing this entire block seems to work as well, at the cost that the
+high-frequency-irq is not masked at all and as a follow up enters the
+IRQ log (where it will be replayed right after the currently running
+sync for the same IRQ line is done).
+
+But: The (probably) "high-frequency" irq is not masked, so it might be
+logged multiple times while syncing the same IRQ line. Assuming this is
+not ideal performance wise...
+
+Further ideas/advice?
+
+> > --=20
+> > Philippe.
