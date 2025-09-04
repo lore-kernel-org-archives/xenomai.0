@@ -1,235 +1,202 @@
-Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011045.outbound.protection.outlook.com [40.107.130.45])
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C6AC2F1FC7
-	for <xenomai@lists.linux.dev>; Thu,  4 Sep 2025 12:39:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.45
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756989559; cv=fail; b=lTqOUHEKq+zl3PB/No8VOZTEdzY23Y+HSkgEhKpzRMELF95HIEPbN3Gr9cC+ukZVCuraMkkv/6CQn+1mPZ70Ft4H/fPWZy9vvIyKS4CMwPJh697IPsGzDgigGVpQ7mL8MYeshHpxlwL/C9rG7SI7ZS0SZBZzjasBzp/Ybtkmizg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756989559; c=relaxed/simple;
-	bh=8n0wJQKonBqMOUE6Ta1Zqk/WvlQpFfM12YElhs6OiqM=;
-	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=ov+cAgg+xPkI8BlkkZmH8SoG1RPE7kPNjIYmobRAnNnuRXoTAaiI2elN3yZJnoUhhZmWEZeBEN5740Pno5lcsIrO6Mzo5i+5GWlQ2wfle0gxQA8XjTu2G0G91LOeXdgCK3pVwaVHSZoMHhoKxImOrs3SlUCbWnMy6BUPL+JB9MM=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=LQiwJc7T; arc=fail smtp.client-ip=40.107.130.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A30FF306D57
+	for <xenomai@lists.linux.dev>; Thu,  4 Sep 2025 13:32:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1756992766; cv=none; b=YlIMk+K7m6MWwNZgsp0eHgJ+Bh1UbWGl9nfu8khnCVahEGaadkSzTBJujE8XJ0DNKCSTO1VZD3l1V7TAA95vzvTkvsv3mSoCpb/fxu1OVtMkbeMHyM3Zi523MtFIPJX8NL3Ehf+pTZ+Eh+9naRlm9XSA9XvaXseIoZ/MCjZa04s=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1756992766; c=relaxed/simple;
+	bh=UuIwBwlAdsz5Kgg+Jsy/1EBdpMspCr8uxMhn+RqZjJU=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=WyHL/s5+EVBiHmaM9erU8PTSDJNNXtxN04n2/W6ixh4ZfB7nsESGpfReesXd73LUKNXPpJi3a9ox5K2J3FCgCk94AuC6zOb+2kAfxIov8W07rGdZHp/ORU1xegZO/Jj2LHj2LE9WRLkd+YPxt8MCaWFdCMHxXRKrQrtSvmfSEU0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=hqZvQx+f; arc=none smtp.client-ip=185.136.64.228
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="LQiwJc7T"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=J6U2Ga9Klqh8+g90T7qBQ2tDhZJ5iMfWLyhiAkSSSI4Lo22HBsIF2/Dux/LaPZqQK7Ms94kivkcFedzqUTIR8yIm//SVRuVBBn+8ojU+rYUknDOYt9BsoksdDtVf80pwJOYvJmkKxJ1vFcwtW4ZXzQBr7xLFz8wTZ/MIs/FJC24/HwKDQp4PAyi4+ZVpXnNmmu9FZus95mouUlBh9TMCrmfuM9gvcuMVETMTbtaShUGXNZ6USRUAjMfVeNp8z3E5Pr/21XjaysKzcxSYWCwyNKmAxqehO4jTxQQI4zqfOVkPc/LjxTYuoAuTzJC7un64/pp72reZMlhz6+VZAyrKjg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Q14TIuKmmrfl20LNd0Cywh3XNVydM+D5cCoxLmHLkt4=;
- b=P0VMnjMz9Z3YzYb0Kbms8G67MuUcP5O0hnqDDveiHfONh2Qu+or+qkntw5SeWlupQBzMabhX4GhXYKuzk92WzBnx/m5dqS3t+/E0cGFCMwir1nWwdP5ZLWmFh5uKa60Q498BuffvUJs/EDr5vCAcf5nXgbqhrVDdoUdad+7oPorjxVkj0/Tv9LC0409ByrioGHbzVp31W57N12jXxcstlMgHb68EvNKiBLwlQ8M2LeaJB4Lr4K54C5EVD3WbklPJFT3rWSJHAo8XO3iHkoaVxl4FLsCn/aqqA7Imqhkqqi3d4Yh+qK8z5BJR0MfgIE6UWl0daJY5l0bvMpORy9EKsA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Q14TIuKmmrfl20LNd0Cywh3XNVydM+D5cCoxLmHLkt4=;
- b=LQiwJc7TZi9jaWx3oycjuaIeJz2m7PrVEW7Sa2jLmZMNXqjmgq3P6q/r2hy8uqBiHuXJyzsHALAJIkdMwQyWFy3BJDsCsT7Y+PyWq4V75yhMK4Tvp9WY75kei26Kn1CbKHeEgmE6g/+PPm/BrUG38wgnSWdxnv7wyAeec2/UZukJKGYV/paPLfhK7zDvW3sb/6nDRsEuM7+nF8wVBBqQJUwkyMhJnbTb066wzVF0dZftXooI5S2RbMVUvnqymuw98/UYJF82+1LuxSiYWbJAu1emQc9ggxrKGxc8FebbZlMuSo0WNkFfj6Ek047H+BzzsnJyoodhh3dmoaccPiPXqw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:76::15)
- by PAVPR10MB6914.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:30d::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9094.16; Thu, 4 Sep
- 2025 12:39:11 +0000
-Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::7fc:74bb:a781:a286]) by GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::7fc:74bb:a781:a286%7]) with mapi id 15.20.9073.026; Thu, 4 Sep 2025
- 12:39:11 +0000
-Message-ID: <52126010-5b9b-4649-8883-9ab9295b00ea@siemens.com>
-Date: Thu, 4 Sep 2025 14:39:10 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] ci: increase wait for device timeout to 30min
-To: Quirin Gylstorff <Quirin.Gylstorff@siemens.com>,
- florian.bezdeka@siemens.com, xenomai@lists.linux.dev
-References: <20250904113929.2064680-1-Quirin.Gylstorff@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Content-Language: en-US
-Autocrypt: addr=jan.kiszka@siemens.com; keydata=
- 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
-In-Reply-To: <20250904113929.2064680-1-Quirin.Gylstorff@siemens.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR4P281CA0001.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:c8::15) To GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:150:76::15)
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="hqZvQx+f"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 202509041332307e675da20f000207f7
+        for <xenomai@lists.linux.dev>;
+        Thu, 04 Sep 2025 15:32:30 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=VB4ozBjoGHhwtgvx27nOPi9+JD9xIviwk3HY1RYXR7k=;
+ b=hqZvQx+fp/zRVhTBpYsxp0cANHs7h8na22XFOBKwJSZSIEzdQF4MF0bjCXyR653gLVUXNn
+ 6iW5xGW60dtFnL+RlCYa6tYeIRMEmRnGpvaMXif2k72IOWooxD+v0QVkvOjBeLN1aqb9L8qV
+ luYUa2NvlYKC01woPjiT3JnEe2g0Y3pEz4VpWd5HV6lBzIaCT9fS5Uf+A0NATCO8lm3NUDMH
+ vJ8ULktOkK3C7Bt1wVsdWoepp89U4y2kHDS7NESQrUnVGEy3KK6/9eZFwPt+/exO23U/UTaI
+ NeVf4vsHqAEAguFFrc34TgQxX8DY4iXOqMQCAO47fNMxb2z3ddiyDmQA==;
+Message-ID: <bafd1c636d2f9a97408efa5532476c4c975e0bbe.camel@siemens.com>
+Subject: Re: [PATCH Dovetail] irq_pipeline: Fix system freeze triggered by
+ periodic edge type IRQs
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Philippe Gerum <philippe.gerum@gmail.com>
+Cc: xenomai@lists.linux.dev, Jan Kiszka <jan.kiszka@siemens.com>
+Date: Thu, 04 Sep 2025 15:32:28 +0200
+In-Reply-To: <0570f53afbc37038742d519d77d40a669d185f1d.camel@siemens.com>
+References: 
+	<20250820-wip-flo-fix-edge-irq-handling-v1-1-1a2c7805b372@siemens.com>
+				<2cb5e8c46cc8d841cf5f452a753d37e7079f3036.camel@siemens.com>
+				<87h5xjlf56.fsf@xenomai.org>
+				<e7d5cddf94d3d1479e987950a07ee7483820ff1a.camel@siemens.com>
+			 <87wm6fjy9r.fsf@xenomai.org>
+		 <965f33cf15a8834446e448a278f30c9684df7e89.camel@siemens.com>
+	 <0570f53afbc37038742d519d77d40a669d185f1d.camel@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: GV2PR10MB6186:EE_|PAVPR10MB6914:EE_
-X-MS-Office365-Filtering-Correlation-Id: f9138fd8-7090-40bb-c9a3-08ddebb00c8f
-X-MS-Exchange-AtpMessageProperties: SA
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?eWxtaWczVkhDMnBiaS9BU2d3QTJVVDY4SDdJcllHVVVOQWdMY2wvcDFLZFBR?=
- =?utf-8?B?UWxvZm9URTlTL2Z3Sk9ULzFWcUgybndLT0NWNDdDejFTMzZXY0srVDYrMGVy?=
- =?utf-8?B?NkJnSlFvVk5CRU1ydmVkR2NjWUFMQ3RqZGFkL0lNdXRnUGV1bFpPODE4blQ5?=
- =?utf-8?B?RVJtLzlGdEMzNWdzRVI3UjNLdytBakg0NnhKRzlNeGZLTHRWRVRCdkpBcWJ3?=
- =?utf-8?B?RDdoWVU0dXZ2bzhOYWprN2JMaGZvSzZ5TW00OEhsYkZvNWMwVTJtcE81SGg0?=
- =?utf-8?B?VUowNXZyM1FBaWNFek8waWthcHdweFUyQ1l3YngxdndWMnpjWnNMN1VvT05l?=
- =?utf-8?B?blk2SnQzQ29nVkFGbWphZHowS1M1VHV0MXcrbjBIaDcrbVpaMVBOb3AzZ2hC?=
- =?utf-8?B?SUpOM2VJY1ZEUGRHR0hSQWMyZkhGSkJOZDFscGR1Z2FSRnJHK1dLbkxMa2hB?=
- =?utf-8?B?bFR3THQ0NUhaUVRJZ1AwZ2lwbFVmUXh4YXp1ZTNoZVBFakp3aytjMEZDZmlz?=
- =?utf-8?B?N2c0VE5NOXNSSExzMUFKd2xJZVdHV1NQSUdLT1lCZ3podkdLcjgremNMMDlR?=
- =?utf-8?B?TTZLS3R5UCt6NlNNaG5sQVJuOHJwQWRxZzJZK1duNlRtUHJzQXNFZzJpY0ZJ?=
- =?utf-8?B?ek40RC9VSnh0U2l0V1N2Y2Rac01PUXluTkNUYjR2dTZoK2lPbENJL0NCNWNN?=
- =?utf-8?B?b1E1K211ZnVVNSsrREF0dWErMS9YZjFQakxhQzJYdDJaRUVrZGhxZXQyRnBl?=
- =?utf-8?B?UVZRalJQWmRiU0RyZ3M5bnJBY29BTjlOOW8reE93clpmSExIU2wvNy9iOGIx?=
- =?utf-8?B?d1ZpSzN2cXdWS1RMUHM1RGEyMU9rUzBHNCs1ZWQzN2RCVXI5L3FIdmxwQzdr?=
- =?utf-8?B?UkhvRFNmMDNZd0dKdDl5UnkzOW9yM2RuLy9qVWkrdDFxMzlFVDhjeVBiamQr?=
- =?utf-8?B?VEtUQjFaZ0F4WkliWDN0aU44USs0QmtkWmd3c1BxYWRJbFk5b3RjT3R4blpz?=
- =?utf-8?B?WHFJcDR5ZThYTW5zSzYzNFp5TVVwdGNocURKSWNkWW44dzl5WFB4OXN0SGVj?=
- =?utf-8?B?YlpxVm1JbHYwM0xYWUlPaCtzQkZUTVU1d2VXbzNRRTNpOE8vcGRBN04zcnc0?=
- =?utf-8?B?Z0ZoWEg3S1h4eGpVcXN1OXRJSzFCbHNHcHhlMmgyM0pPajAyUi96L096emJ2?=
- =?utf-8?B?VkRvNExwU3FReXBGV2Rjd1ZHTXQweVFBR1FpYWVETlhDUGhXUkN4clRTbGFW?=
- =?utf-8?B?T0Nab0pnUnI1ajd2RGFwbG9OWDBseDFyeGlwSHNNclExeVZXa1RCd1J0d1hl?=
- =?utf-8?B?QlppRUVkYVNEU25GQ0EyOVE2cGRLcVZTcDZmOHZITVNEYStLbDZsbjFDWTJj?=
- =?utf-8?B?Nythb1NKaThRZVV3RjgrQVgrVk16MVJrUVpOVWowMUd2NGZEQkxvYUVjMzJP?=
- =?utf-8?B?WDZZdXk5ekxSWldhYUtVQ3dVVStYdFdQaE5lWFdicHE3SW5hNnJpNVVCcERF?=
- =?utf-8?B?eFVITlN6N1VRZGZ5Wm5MVkJML3JOb2VtSHZPMW1OSDF1VUM4RTQ5bVNEM2ZT?=
- =?utf-8?B?cjBZZ3dzeldHVUU1WXYwbHdEWVZRTmZIRDI3REpuSW1PM09ocnI2Wkh3MUJO?=
- =?utf-8?B?OU9RcTU2L2xHMlhtYVZvTGpLTGQza01XNHJhYUpsRHBBcXFoMlh0TEtRbVk5?=
- =?utf-8?B?eU5IQ2dxdHBreFNxejJVUVludE16Yk4xdUV3Z2dCOW1YdmE2Y3dzcnYyQWdV?=
- =?utf-8?B?QlAzR0J6ajFLc3NNa21VWGQyVG12ZUo0MjgyV2lhZFp6U2lCMlZRL1FyVkpK?=
- =?utf-8?B?ZTNwV0E4YVpwVG1Vckgwa0ZBZldLOVZ3VGdCS05kckxnSjlibXpSS2trdEpU?=
- =?utf-8?B?T0FMSlkrV1U4RHFsSU1XQUcraGFjV05jYUluR2xRbGRGWWNvVGhEYmQrQTh6?=
- =?utf-8?Q?5xPg6VV4dO0=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?MmdDdjZPdVNsQ2p4QzRzQTFEK2swcWphUVRHdlRHMVdyYktNemUyM0ZZZXFT?=
- =?utf-8?B?dFVkRlQzeXFVSUM4RVRXNTlaem5JK1d3bWxaWkFKTXJHRnZEQkVDaUVaekRx?=
- =?utf-8?B?aHJ2NXhRVjF5Tm9wcmRWY3BHb3dxZ0RzK3VRaVpBalc1YkJCYzNhazMvRmRs?=
- =?utf-8?B?ZDVoTEFZN240dFc5eWxob0dkWHZVNW5MdUpCbkxEMXZvWTVOZFhXaUVzTWwz?=
- =?utf-8?B?dnBFTVhnRTBmY3ljbFZPVHZEdlpCdG95VlVUNDdjK0pFbHNTenlLOVIxV1M2?=
- =?utf-8?B?NldyeWxNT1Z5R2wybmFvbkJteFh4VXk2ZjRLV3E3amZ5MFh6RktjQTVZNEtH?=
- =?utf-8?B?cVRIZ1JvMzVTL2FZRUxERDZuZWw3YlRaY09NU09PcDFyNnNiNExWNWdFVlcr?=
- =?utf-8?B?N3cxdm42c2U1aEY1eXhCRUxpQUNIMVg0ZDZ2bFJvNVk1b1Frdlc2bEZJTk9M?=
- =?utf-8?B?dWM5VDVPTXpJNDE0cjBldk0vQkpQcWJYT1lEbzdLUDU1U3JzeklLcnczdmxG?=
- =?utf-8?B?aURUbTBzc3pWVXZ2N3RtWTUvSGwxeG1sQWdjZjZXS3VQTGNWWW0zSEkvclg0?=
- =?utf-8?B?MEhXM01yZkFCUlFYbkZNdUgyb2IyeW5xSHpYYTNWWUVSK1N2R011dkJSRjlN?=
- =?utf-8?B?QW9TTjk5ZHFlYmZIc0Z1MWxmd2xyYUl0VW1WcGFxbzZSbUZ1VVBRR2ZmK2R3?=
- =?utf-8?B?NmxiSlFLWmIzdHkrL3FQWmJCQUp5MjEzWml2T094dEhvb0xYMGdOUmVianM1?=
- =?utf-8?B?L2VONTlYYVZIZTZjUFdXSmNkRnlnOG5mN2lxeUY2TGxaNzZBZ1RiVGlZWlg3?=
- =?utf-8?B?RUVoNUF4MXFpMXNQN1NMbEt6T2xEVnRJUk41SWxxZlVmZENGaFowQjFWTHdQ?=
- =?utf-8?B?S1o3Z0sxelE3aHhuV21KNDBPcWlrc1l4U05ML01GZXNwQmkzR1pZQlhpVFIy?=
- =?utf-8?B?clU2TmlXNlE0eXhPZGhsV21lYWJQa0NhQTdVMmlEVEFkZktENm5CK2NjMGth?=
- =?utf-8?B?aHdhNVFjWnFzRVFpNHR1VmJ2VmF0YmFjQTU4RzJ1UVRPSzNEQjJLbHBCK1ky?=
- =?utf-8?B?bDEvRVk5b1A4U0lsYUVIUmQ4bHRxa0h4QlpxK280NjlHcWV1WE9HV0dUeUtC?=
- =?utf-8?B?Q21Xc3h3RUJ1dFlmam80SlFuL0YwWG9uRVQ2NW5pRDY2NHVKbWdBUHJCN0tE?=
- =?utf-8?B?NUd4cStkWDBxTG04QmR6dXByM2s5WWwrQnZyekhmU0tPV25KZ2Q0WVYwcTQ3?=
- =?utf-8?B?SUVSZXpCOEc3ZzhHVU5LUHlYWkxBTTYyUDlFS1FsVDdva1ZmTklGTW5wakFW?=
- =?utf-8?B?L21JTnphcW5pOTlxR2VpV1pLWmlxUWpCeFdUa3NIamhkMHRYK2NMZDFjZzBz?=
- =?utf-8?B?UXBxR0JnME1Kb3k3b01PUndKVElkRy9LMjdOejBGcnVnUllCQSs1ZFoyamVj?=
- =?utf-8?B?Wk04S3lrLzNSNmlMc05ValZGaEhSdUx4V2RjWUVTb0hPeHg0bjFiOXMyeVRh?=
- =?utf-8?B?QS9KaitSUzdTc0FnTGVOUzFmM2IwaGhpQXJhUC85VzZEQTNuWlhkUjFnRnVY?=
- =?utf-8?B?VTd5RFpURzhpNmFxdVZJeWpIVkVFdlA4MmhjL3JJOWNVQlc2Q2szQTlHWmpP?=
- =?utf-8?B?aXNHNExkK3lnZUdBRXQycnFxYjFFRG44ZCtOTzBCU1NLNFA1dDJwWXZRcmhD?=
- =?utf-8?B?K21YTkJWNjFJQXkybm1qbG5NTmVCZS83bU9qS2tyYnVoeTBnRDZIR2NnSWN5?=
- =?utf-8?B?UmQzZ3VIYUJMMzNiUnJtTFZTSzNYUFVLcm9GVldqaTVmUVBFTkh6dlIyMFJ6?=
- =?utf-8?B?a3VnazNYZ1pVUkNDY0FBUGU5ZkNneDBQNzVha0xoS3FNZDBwMWhYblZhRmds?=
- =?utf-8?B?NkdKdzBMVFNuZlAvNmlmZmwzeTBHN1h3RUhBZE8vcUo4NjdFdklCS2NlcWNL?=
- =?utf-8?B?TEh4a0ZzanV1MkZaVEJpSDBMMGg0KzA1SFNzNk14ZkM1YnlIZ2tkMmdLMG51?=
- =?utf-8?B?NEk2eDJzQkQ2U1ZSWU1uR25ydGZkQ1RsSFN5VlRuOHRqazZxQWVUdEgyT0tm?=
- =?utf-8?B?cW52Vnh4WWYzOXUvNitFSElXVi9BNUJYY2Q2aXBhekVVNTRNYmlGdVE2QWlt?=
- =?utf-8?B?QTJLcVN6YlhaZzQ1R1lVejhSRDVveE9HYWRFenZYRmFkU1NudUg2dytVcnMw?=
- =?utf-8?B?akE9PQ==?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f9138fd8-7090-40bb-c9a3-08ddebb00c8f
-X-MS-Exchange-CrossTenant-AuthSource: GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Sep 2025 12:39:11.6198
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7529C9yBvENZS0mEwxoxogeqtQ9td9O+cqEQgTbi4nTBiZujUEhZNF5qnwrxSBp8NLua1vOoaBZJy8vLZ6czew==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR10MB6914
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On 04.09.25 13:38, Quirin Gylstorff wrote:
-> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> 
-> This should avoid test failures with due to no device available
-> 
-> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> ---
->  ci/gitlab-ci-base.yml | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-> index 875d951..fc41929 100644
-> --- a/ci/gitlab-ci-base.yml
-> +++ b/ci/gitlab-ci-base.yml
-> @@ -28,6 +28,7 @@ variables:
->    SSTATE_LOCATION: "s3://xenomai-images-artifacts/sstate"
->    SSTATE_MIRRORS: "file://.* ${SSTATE_LOCATION}/PATH;downloadfilename=PATH"
->    SSTATE_MAX_AGE: 14d
-> +  WAIT_FOR_DEVICE_TIMEOUT: 30
->  
+On Thu, 2025-09-04 at 14:10 +0200, Florian Bezdeka wrote:
+> On Thu, 2025-09-04 at 09:45 +0200, Florian Bezdeka wrote:
+> > On Wed, 2025-09-03 at 18:28 +0200, Philippe Gerum wrote:
+> > > Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+> > >=20
+> > > > On Wed, 2025-09-03 at 17:39 +0200, Philippe Gerum wrote:
+> > > > > Hard irqs have always been off while running the IRQ flow handler=
+s
+> > > > > grabbing the IRQ descriptor lock, this is a fundamental requireme=
+nt, no
+> > > > > change there. handle_irq_event() drops the lock before calling th=
+e
+> > > > > (user) IRQ handler, then reacquires it before returning to the fl=
+ow
+> > > > > handler.
+> > > >=20
+> > > > Thanks. So
+> > > >=20
+> > > > 	hard_local_irq_enable();
+> > > > 	do_inband_irq(desc);
+> > > > 	hard_local_irq_disable();
+> > > >=20
+> > > > in sync_current_irq_stage() allows pipeline entries for other IRQ l=
+ines
+> > > > but the desc->lock prevents this for the same line. Correct?
+> > > >=20
+> > >=20
+> > > What prevents subsequent triggers of that IRQ from happening while it
+> > > flows down the pipeline really depends on its flow handling and the
+> > > requirement for delivery to in-band.
+> > >=20
+> > > - a level-triggered interrupt stays masked until the in-band stage
+> > > handles it.
+> > >=20
+> > > - mere oob-handled interrupts are unmasked as soon as the oob
+> > > handler returns.
+> > >=20
+> > > - non-masked (device) interrupts are serialized by the desc->lock acr=
+oss
+> > > multiple CPUs that could receive them.
+> > >=20
+> > > - the in-band stage is stalled (pipeline-wise) while synchronizing th=
+e
+> > > interrupt log, so we cannot pile up handlers, although we might recei=
+ve
+> > > and mark a subsequent occurrence of some IRQ which is being propagate=
+d
+> > > through the pipeline. That is the reason why sync_current_irq_stage()=
+ is
+> > > a loop: we might have received more (in-band) interrupts while we wer=
+e
+> > > busy handling the current one.
+> > >=20
+> > > - lastly, oob handlers cannot be preempted by the same IRQ since they
+> > >   always run with hard IRQs off.
+> > >=20
+> >=20
+> > Just found
+> > https://lore.kernel.org/all/20250701163558.2588435-1-liangyan.peng@byte=
+dance.com/
+> >=20
+> > which was basically trying to fix the same issue for Linux. Seems I
+> > have to understand that first. Thomas added some detailed explanation.
+> > Let's see if that helps.
+> >=20
+>=20
+> Ok, now things get clearer.
+>=20
+> The main difference between Dovetail and Linux is in
+> handle_irq_event():
+>=20
+> 	raw_spin_unlock(&desc->lock);
+> 	ret =3D handle_irq_event_percpu(desc);
+> 	raw_spin_lock(&desc->lock);
+>=20
+> The raw_spin_unlock() is redirected to hybrid_spin_unlock() on
+> Dovetail, which enables hard irqs.
+>=20
+> That allows a pipeline entry for the very same IRQ line, which can not
+> happen on Linux. I end up with the same live lock explained above -
+> just on a single CPU (no second CPUs involved, no IRQ migration in
+> flight).
+>=20
+> I verified this with the following temporary hack. The affected system
+> is now booting up.
+>=20
+> diff --git a/kernel/irq/handle.c b/kernel/irq/handle.c
+> index a6c90482d568..7bad55bbed2f 100644
+> --- a/kernel/irq/handle.c
+> +++ b/kernel/irq/handle.c
+> @@ -212,11 +212,11 @@ irqreturn_t handle_irq_event(struct irq_desc
+> *desc)
+> =20
+>         desc->istate &=3D ~IRQS_PENDING;
+>         irqd_set(&desc->irq_data, IRQD_IRQ_INPROGRESS);
+> -       raw_spin_unlock(&desc->lock);
+> +       raw_spin_unlock(&desc->lock.rlock);
+> =20
+>         ret =3D handle_irq_event_percpu(desc);
+> =20
+> -       raw_spin_lock(&desc->lock);
+> +       raw_spin_lock(&desc->lock.rlock);
+>         irqd_clear(&desc->irq_data, IRQD_IRQ_INPROGRESS);
+>         return ret;
+>  }
+>=20
+>=20
+> Seems the root cause is understood now. Open: How to fix that
+> properly...
+>=20
+> In handle_edge_irq() we have:
+>=20
+> 	if (may_start_flow(flow) && !irq_can_handle(desc)) {
+> 		desc->istate |=3D IRQS_PENDING;
+> 		mask_ack_irq(desc);
+> 		return;
+> 	}
+>=20
+> Removing this entire block seems to work as well, at the cost that the
+> high-frequency-irq is not masked at all and as a follow up enters the
+> IRQ log (where it will be replayed right after the currently running
+> sync for the same IRQ line is done).
+>=20
+> But: The (probably) "high-frequency" irq is not masked, so it might be
+> logged multiple times while syncing the same IRQ line. Assuming this is
+> not ideal performance wise...
+>=20
+> Further ideas/advice?
 
-That alone will not help because we may have >>1 pending qemu test jobs
-and currently only 2 "devices". I think we need to differentiate between
-"no device working" and "all devices busy".
+@@ -669,6 +673,8 @@ static bool irq_can_handle_pm(struct irq_desc
+*desc)
+                WARN_ON_ONCE(irq_pipeline_debug() && !in_pipeline());
+                if (irqd_is_wakeup_armed(&desc->irq_data))
+                        return true;
++               if (irqd_irq_inprogress(&desc->irq_data))
++                       return true;
+        } else if (irq_pm_check_wakeup(desc))
+                return false;
 
-I will remove "ci: check the device health" from next again, and we
-should rethink the conditions for failing things there.
+That is the least invasive fix that I found so far. Qualifies as v2 in
+my eyes.
 
-Jan
-
--- 
-Siemens AG, Foundational Technologies
-Linux Expert Center
+>=20
+> > > --=20
+> > > Philippe.
