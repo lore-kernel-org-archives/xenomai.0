@@ -1,229 +1,301 @@
-Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011017.outbound.protection.outlook.com [40.107.130.17])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CCD5242925
-	for <xenomai@lists.linux.dev>; Wed,  3 Sep 2025 17:36:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.17
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756920965; cv=fail; b=aWirsea9+XBq4xwVzVidQ3iya93TEQMtR6/QzjC8kJ1EkYgr8Z35rVcaNKL8MtAriD0D+yu+2XrU4rmzlCoPOgC4fFWHx8NXzOisnwGBrqPVGPGIu37eO0llVuNe3nzJmo1/3PyBB3zp/AHifipEQLm3a+lA9TNe5tuwaCpkRCM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756920965; c=relaxed/simple;
-	bh=/FRWmRnbUkvPq4kxFTo8rFdGyUc7dqAAPtaFAadnrHE=;
-	h=Message-ID:Date:From:To:Subject:Content-Type:MIME-Version; b=QM6YQdr3dQXFwEHDGPcbkm2CDoaZbx69EVo3Lq06XBTxkUYIUKhOpr6iNMMD38rRoL66jq2Auk4dMl55zP+JPGyZu4DrnFgOykLiujiZnt5XwDR3oOkBugKDEFnlvwDbKQjAQGvkdW9g3I7/1ZE/6Gc+K/lBa+XkiBpQy4A1p60=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=i+uO2Nj7; arc=fail smtp.client-ip=40.107.130.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1E9F29E0ED
+	for <xenomai@lists.linux.dev>; Thu,  4 Sep 2025 07:36:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1756971399; cv=none; b=NQ5z39LCbG+v/8ZTrr9It4/QYXP5OJJFWpy5AcGvSqeFVnz8bqevg0t+K+ln6LtOqZf1w2Sl/34UlkZCmuaCtVwHek2D3dIWIEHJGPkle8xJ0wxphq6cfogJBYyeO7m6prH4MteM55UdFrV60AxFqYk2JSj/EQ7s4tfWtCoR+XA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1756971399; c=relaxed/simple;
+	bh=/qrVXNDzUVG3QwYrOp0bTs0mFNR+2o6XifpFhyd/GdE=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=mWr15d6zqCb1n4NUJSkaBMNFm3HwNFrDKhh3FhldSxQEDXA89jwA239xXBPNTcju3Lt/3GvS53kX6FXsdgH1zgapXN3UJjhTBTuW64Do1xozL7r4W6913B1OnYBHrx1yzDNZZ3DzQnzL2W/5/5Wrkje9jkGfhj275SYTmvLBnzY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=EHhTqPix; arc=none smtp.client-ip=185.136.64.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="i+uO2Nj7"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Ngz80jH1OQ2x2SAO4u3ZkB9r2CseGN0hXiVhmo0oQtHLTl9LpkYo313ALIOCAa+j6CtRUCP4tCmCSvnChAc/0CMu5NJyCEYENk5dtmgE0h4I6nFZbcRvbG5cXIt3WsGTo1ZbcOeGR5zQJN6Nvnot/j/ji/slMjLFRNT13ZfebD9bz39dAhuZEi+2+xrrSgTyLrBD0pgVtAgyImfjs3FmdXCm2/OAU4yXyzOxC+PZjcmfBDmXUgrZmeEKlm+6rdIXJ7ZnqszbtiSi4eSiFX8y4py4ARO+0u8lrBfwlrmv1uF/ZcMBJbMd1YnHR6WGedV+867+IPDMTCzeEO3nFElieg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=cHj7RonWikFm4rqKlrVk0xpjk28ziSYE4+aPRKqYdgQ=;
- b=ne9uvA5CzosnXfqYUn03wz3ucPUlxVL5z0soCx8dvg2hV/qqnvhJjF6x1lgh72hOfhB4GfPHVjhm5Zf2uaRV8EvNmMoJFUHCGeSDiW/9r8XYnMJeQnqGcfqzvXmP0CV23PfliRoCih07394qyJxIv+wSbxUbtdyT25+u+j1w1cQ+UbDxlfxQT8zqJUtmcwtfBmQrua+STCLcPZGiBt8jmdunFnDwZ56M/oFcYrIJ24bfYFQYIVT781Xt+vMb5evehGwfO0/7tXzhP/kAvxJSwus1Ls965+DXexkF4VcId24HkqxuA+0TGmSXWPQnV1MABnYik6bnk0F5yEqWSC0nQA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cHj7RonWikFm4rqKlrVk0xpjk28ziSYE4+aPRKqYdgQ=;
- b=i+uO2Nj7jmHH43kE+3j6QEyCz1IKusg73VF8bkriQFYnzZt1PLmlaiTsAFhGaDHDMRymPV2xmwdj9QEKWXa+r+qIaTep2tBv4IH4Z9KQz25ZzIax+Xx44k0DtPyEairD4atfqL/u/v+AgorPtE5G1IVChq+f5J4ASimvrik0qeJ2/Q9rAPtFUF2eyAaow3LeKKlFsj6YKJs2C+SwmoEqW6feJefbU6UI8HYFln/ELmXVhruJAqWO9SMXgnLtOpiJhn+Ww+YkHq3eZP2t1W7NvyI02sAJbb4v5ev3+Fcjt81C4tFHTXMUMoTcK21omeI0xFJNLdrgC5ckzaaRRqwv5A==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:76::15)
- by PAWPR10MB7769.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:34f::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9073.27; Wed, 3 Sep
- 2025 17:36:00 +0000
-Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::7fc:74bb:a781:a286]) by GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::7fc:74bb:a781:a286%7]) with mapi id 15.20.9073.026; Wed, 3 Sep 2025
- 17:36:00 +0000
-Message-ID: <e430b834-3c7e-4724-9146-b336cc5f40af@siemens.com>
-Date: Wed, 3 Sep 2025 19:35:57 +0200
-User-Agent: Mozilla Thunderbird
-From: Jan Kiszka <jan.kiszka@siemens.com>
-To: Xenomai <xenomai@lists.linux.dev>
-Subject: [PATCH] README: Update project URLs once more
-Content-Language: en-US
-Autocrypt: addr=jan.kiszka@siemens.com; keydata=
- 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
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR2P281CA0080.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:9a::13) To GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:150:76::15)
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="EHhTqPix"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 2025090407363134664d7c51000207ab
+        for <xenomai@lists.linux.dev>;
+        Thu, 04 Sep 2025 09:36:31 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=amTr9TizGGKLf2AvwXQ2xT/uAI7GYS59QBDGQSPdhwI=;
+ b=EHhTqPixY9uvEF6xGdFgh1jmbFmkqUki12vaMTJ6dQIKectVDDQkj6OeV5yeJXcy6HnSNI
+ FRYLKzVOgEmFVRfhze12d9kV8k2b7JwXZNm3rQ32xrsl9A5h15/Ch6XJHFJYG0HPG8EG4cZS
+ lq9dvWTCuPbuD3evECvkofbm4+l4OreHnZ3DialCZlMh2TnqudUq5rlVuT7vPXLrV6r4Wjtn
+ 7kyIgMJm9mNoYpy81YqXFTHEQXQYJXT2ZhHbXdlMjT0nqe0W2yvLfhmdknx9t3iKHS+MktAv
+ afSuC+GpwVbh47bF6Yqe+kbV97lF9fE2Mt4MvQTYV9iQP9vOcVcAlCEA==;
+Message-ID: <1e485eb503d0275da44f29b76c676edd4d1bf3c6.camel@siemens.com>
+Subject: Re: [PATCH Dovetail 6.16 v2 1/2] x86/fpu: dovetail: Fix FPU
+ corruption
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Philippe Gerum <philippe.gerum@gmail.com>
+Cc: xenomai@lists.linux.dev, Jan Kiszka <jan.kiszka@siemens.com>
+Date: Thu, 04 Sep 2025 09:36:30 +0200
+In-Reply-To: <875xdzldtc.fsf@xenomai.org>
+References: 
+	<20250820-wip-flo-fixes-for-dovetail-6-15-v2-0-535e4fa355f7@siemens.com>
+		<20250820-wip-flo-fixes-for-dovetail-6-15-v2-1-535e4fa355f7@siemens.com>
+	 <875xdzldtc.fsf@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: GV2PR10MB6186:EE_|PAWPR10MB7769:EE_
-X-MS-Office365-Filtering-Correlation-Id: c88a3dd1-f598-46fd-e8a1-08ddeb1058b5
-X-MS-Exchange-AtpMessageProperties: SA
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014|13003099007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?K0U3cmhVUmd2YVM5QUpoa1o4OEM3d0s3V2Zia0MxeXNnNHhnU3NBdkEweEJN?=
- =?utf-8?B?RTlCRlRHU2haSitJQWFFdjBlVHhrUFE0Yyt1QytvdVhBeS9NaW9NTHBSWEZH?=
- =?utf-8?B?SjBXWE1NbTZRR0Y2YUV4UUw0a2pRTGZSMFV4SFNsMU9JQUZ0ZzhRN2FIV0hw?=
- =?utf-8?B?ZW9LOXRNd1dmRGVjbnlWU3RPUHNOZllST3RhUXlnWHNVSGViUnlzVEk5b3pm?=
- =?utf-8?B?QzZLdWJVdFkxTU9HYjBxQzJNUzVnK1d0aWlvVDdJVzJQeXhyUFNiNnRpdXd3?=
- =?utf-8?B?enhYb0QxcjI1dEVMMWNMZ29LNkhGR1FDREtKYXFTMWh2dW9ZM3FSOWs5WUNE?=
- =?utf-8?B?L0R0SGFpakxXZFJOZWg1WW5kbm9EcGU3eGY0Q2lRdkk0RUdaUHBXaXZ1WXNv?=
- =?utf-8?B?d1dFdUovcVpQNEdnUklPZmF3NDVZOGY0VUVFUjBTV1F6dFFDU3hSYlB3ZDVV?=
- =?utf-8?B?Y1VzSjdxNU5HVlN0NzN2K0NCemJVbytNelB6WFpEQ0lqcTZ0N1VRUTY2KzVE?=
- =?utf-8?B?aEFqdCswQ0h1R083aHR3TFdvT2JYei8zdnQwbXYzVUs0QkpLUXVuTFlxQ21i?=
- =?utf-8?B?V29tSHowcjh1OTYyd2tsc09kVU1NUFlEaTZWSmNRSkUvSFJyZDBTWDZhNmRO?=
- =?utf-8?B?Ly83RjE4VnNwNEl2MVVPWEpuQjhvSGN6Q29LeU4rYzVOL3FuTkZUaDJYK3d3?=
- =?utf-8?B?Tis4QlRsVWlrelNwYkdFVmxjZ05LL2ZOOWRweEgxV0pza0ZDS1dEUW85Qi9W?=
- =?utf-8?B?bjYyekh5SFhRaUQvS1FweE1DVEwxSUtHR0hWRVpaZ1JuVFFRY3JBbFU0RS8w?=
- =?utf-8?B?OGI4NEZUUnZMWndVK2JMOGhBRXU5MTk0OWRZdXRuRlZabDBJamtQem5DVXB5?=
- =?utf-8?B?WlZtSExwTXQ2bStjL0tiZDEzVEwycnlXWCt1NTdHdWU5dXd6aW1SeFBuU05S?=
- =?utf-8?B?ZERkWk45cVVTUkt5dEtqZGdmekdONFBsYS9tejJMWmFGRWdWdFBqTEVvM0F1?=
- =?utf-8?B?TnZ1Uy9hWkd6Tm1IRDZ0Z3loWUpYQm1PU0NPWEpaYkwrNmVPaW0zbzJyc1Bn?=
- =?utf-8?B?MzJpQjc0UVVFeHJFZm9IYWIwdFE2QldCMkdTd0Q3OEpqVzVQeTQwalpOQThC?=
- =?utf-8?B?NWtJL2UrTDJZMm5YMHhGejRKZFVhTnpyRmFXZTNMV0RkbzVnY2RXU3psWjBl?=
- =?utf-8?B?RWdaTFpQci9LS0o1bVhUNmZiejd2M29sQWJXTlU5MmYxbkNWeDFXRkU5M3V0?=
- =?utf-8?B?Q0VZT0hWVkRyMndvc1BnSFJUQU0wUUt3dTh0cWlPbVdBOEIxa2N5VldZeWZD?=
- =?utf-8?B?SnZENUY0WmlGdUI3NEhqejIxL1haZEl0QWZacStOUUVadE9oSXM5SXpROGZW?=
- =?utf-8?B?citRUnJ2MjJXSmxWcHdUS1J4MHphczBOcVBQdnJnQ1Y2OXZVYWtHajdSY2ds?=
- =?utf-8?B?TkRXbXBFbGh1ZXk4b3VVTE9iejJ4eHhqWVg2NmI5eklhaHRsK1N3dGFocUFt?=
- =?utf-8?B?eWdHcnFkdWVTVmg2ZXNtdGkzZStNWTZjYjBGK1NVbEg2N08vdXBkMjRsQ0xZ?=
- =?utf-8?B?Y1RRc1hhSTJ2TDJuUDRLeGdwd281bHVhZ2lUQVhkcVN1L3ZhdnBHOHoxOWNP?=
- =?utf-8?B?RkZjQ3podmVIQUxHTDY2aDBYT3Y0RHNzTC9VYzRPZHowM3IxVm9rNW9pVW14?=
- =?utf-8?B?TzYxWkpkWXdQcklJR282N3BZMDNtYndYYURaQlprREc2Zy9wQUVVclJNeFBJ?=
- =?utf-8?B?TnRHWkRMVXhITTFvazg4QVRPL09SUEdCckVtUWNGekNrR2xFY05nUkNleWkw?=
- =?utf-8?Q?Jo2WW5VRg1b9CgnuwJP+MeSIEWVnAKuzuaQLI=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(13003099007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ZmtLZWFUZnFIVzBMNnZ0Mkg3NU1KNTFEa3FaaUN1NXBEbExPQUZIeE5ESFk3?=
- =?utf-8?B?VmJDb0ZsM3k2dGl5VFN4YUo5MFpyd05XU2FqRnhpYklyQ2JUcnRUUi9ON3ox?=
- =?utf-8?B?dXJFbk5aM1Jsb1NobkhzREozR2NkdytkbEl1QlFJYjZKMyt0U3FPN0sxdjA5?=
- =?utf-8?B?SXlFNUM0TURPbElYM2toU2MrVlp1UHArWVZvUnpKSUpObnZVOVBkL0JzWnB6?=
- =?utf-8?B?N0xzSEZWU2VTV0JSVXZlWUVHZnNDODBJV3VXakprTE5YSzhxZk1KRFFYT0Yy?=
- =?utf-8?B?ME9tZUpyamlzVmgyVzg3eTRYZFJCaDgyNUpGKzdIRHJENFFITG43VzZPZGU0?=
- =?utf-8?B?ek1YdFRqRDErbVZPQlRqY0ozL2s0a1Q0S2l5VHpLWlpYUG1LTW5DZVAwR1or?=
- =?utf-8?B?UzFVWityM3hiQlNvM2wybFhqZW9PU29IMktBcXNyVlFERWQrWkhoU1ZmVHI3?=
- =?utf-8?B?ajdla2tBS1ZzUXU5U05KY2crTTJzSFdSL25EY3hHSUdkZkRqbWczYnV4ejFz?=
- =?utf-8?B?Z3pnK0Mya3NaQXE0eEFBRlpLOGZEdWtVOFBTV2k1QW9ra3Jpak9HbmFQWGp2?=
- =?utf-8?B?eE13YkJwMzNwV1VVUGtGTG5mb216ODdGV2UzTXhmWWRCYnNrYzBOUXZKVzVK?=
- =?utf-8?B?Nk1wRms0RXFXSnpLWTVZNFpUMi93UlMxUTNtL29GdmZsajZtM0ZlTlVDYVpB?=
- =?utf-8?B?K3l4TG5pV2wvRG5BZ3J5SkRYbUNUdEVoVTRiWmRlSGhteWRqMDBxWkdUTGEz?=
- =?utf-8?B?bmRJSnIrUlVQUTB2L3NGUnY5Y1h4dzM4TXhjZ1hqcFQ5V0t5NWRZU01DeDBK?=
- =?utf-8?B?Q0lGWXB3WjRReVRPSVlleXI4am1Cb1JiMTRsMitaNEx5Q2xRczFmVDRqb2hr?=
- =?utf-8?B?b1JMMGs2bEFETEZqcitYVFd5aGdBSjV1OUUvN0w0d3B0dFlIdi8vdWNmRVVi?=
- =?utf-8?B?M3BBZEZmTWZwRWQ1bG5KQWJHck1KZkR6NG9DQzFzUEhUbE5RN3NwWGs0V29U?=
- =?utf-8?B?QkFkUStkOUx2bWlvdzAzRlh3YVBBRlZQeXhGZUNqQ0NiL2EvVkdyN00wa25q?=
- =?utf-8?B?WFoyNlNNSlEwdkZORmVsVm92OFNseDlVYmxDdXFlQXJKc0RqUWtIdjl1cTN5?=
- =?utf-8?B?UTdHZjByY1l4MytGWXY0eGlmN3Fjc1lBVFgrMDVNQzVXTjhLZzhaYkxzM1Bu?=
- =?utf-8?B?TVIrUWFlSHk0K1c2Y25XL3ZUUWptTEgrWEJzRlB5T2JjN2dsSmNzeUxaSTBx?=
- =?utf-8?B?bWZoU0NlS2owYVJ0aEVZcElFSERXL0VjcG5uaEgzMnI2OVdiOFY0Z3doaDNw?=
- =?utf-8?B?QzJEUHM2MlFsMHBWU0tZTmJGeDVKejYvcVlqZytxWFQwak8wWHZsamt5cHNq?=
- =?utf-8?B?TXNlelVMM1FvNnZUUjNYcHBKUTNOaDU0RVhxVkw5dnBTeXhWU1I5cWFWNEVl?=
- =?utf-8?B?dlhpekd2c0hGRDRSSDhPK09sYUdUcjA0SFI1YWY5RURrRjFKekxnZWZjb1hs?=
- =?utf-8?B?K3hhTEptMkhRdzE0NGd6b2QzdWUzZHA3UFpBVXU5a3ltVmNBNDdFT3lidWNs?=
- =?utf-8?B?Y0ZmSmdxNVAxVGQxZi9uTXlMdU4xb20yajZkR3hvZXByTzcydWpSNVVoNExr?=
- =?utf-8?B?aDdsM1J4RXBhUE8rTVhrK0xxOTlTaTNGbjEwTUtUdWg0NzVWNmlsczFQZHBz?=
- =?utf-8?B?V1ZtY1ZURi9zY0ExMUpBdFZlNGVla3JVSEx2bHgxKzZvYVZrL1dDU283UTR6?=
- =?utf-8?B?VEdTeDBqQTE5MnF1TWV3TW8rMzhVbVdrK2s0eE00b2xzbnNCcUo3RWhVd1Fj?=
- =?utf-8?B?Qy9XSG5rR1k4Tmh3M21abTVEYkVKQmppNVQ5S2haZkJaeTY5MTYrWWxyVjRF?=
- =?utf-8?B?MzJtYVpLc21RbjhIK0IxU3Q2TzlOWW40NVdyT25qV1daTTI5Z1lzNlQ0SXY1?=
- =?utf-8?B?Q2k5Mnd5Q2doNUZyVk5GVEFGUWUramMySFhEWFBab3k3MFZzaUdaZ0VkZzh4?=
- =?utf-8?B?OEtHMGdOTzdhZ3M5Q3pTMTlXVGtvbDQ4bnZWUEJmWlBnYUcwNlloNEFQUnFl?=
- =?utf-8?B?R3ZDbExxNEF0eEs5K1I3eUdCV3FOMmZtYjA5eXR3VWJobnJ0NEM5Z25rSWcy?=
- =?utf-8?B?bVQ3dmFlUzI3UlBzVHlkM3BvKzRiS3BkTlJzejZwS3BLMHZwVnZ6am5DRVNr?=
- =?utf-8?B?c0E9PQ==?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c88a3dd1-f598-46fd-e8a1-08ddeb1058b5
-X-MS-Exchange-CrossTenant-AuthSource: GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Sep 2025 17:35:59.9351
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MVnxlnkOXMRuGIfissQ+UQreKwHGlo3FkSjW3zC+2KZj4m1X5XnQ0Rnq0HL7m1aKJgLrmIQ4Id7OtxMjYXDh9w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR10MB7769
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On Wed, 2025-09-03 at 18:07 +0200, Philippe Gerum wrote:
+> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+>=20
+> > The kernel splat looked as follows and could be reproduced by running
+> > the Xenomai 3 testsuite over a stress-ng produced load. The problem is
+> > specific to Dovetail 6.16.
+> >=20
+> > [19527.937613] ------------[ cut here ]------------
+> > [19527.937614] WARNING: CPU: 0 PID: 14 at arch/x86/kernel/fpu/core.c:62=
+ x86_task_fpu+0x18/0x30
+> > [19527.937619] Modules linked in: intel_rapl_msr intel_rapl_common inte=
+l_pmc_core pmt_telemetry pmt_class intel_pmc_ssram_telemetry intel_vsec gha=
+sh_clmulni_intel sha512_ssse3 sha1_ssse3 aesni_intel gf128mul rapl pcspkr b=
+utton evdev serio_raw joydev sg loop efi_pstore fuse dm_mod drm dax configf=
+s ip_tables x_tables autofs4 ext4 crc16 mbcache jbd2 sr_mod cdrom ata_gener=
+ic sd_mod hid_generic hid_hyperv ata_piix psmouse hid hv_netvsc hv_storvsc =
+libata scsi_transport_fc floppy i2c_piix4 i2c_smbus scsi_mod scsi_common [l=
+ast unloaded: xeno_can]
+> > [19527.937635] CPU: 0 UID: 0 PID: 14 Comm: ksoftirqd/0 Not tainted 6.16=
+.0-hyprv-xenomai-0+ #196 PREEMPT(voluntary)
+> > [19527.937637] Hardware name: Microsoft Corporation Virtual Machine/Vir=
+tual Machine, BIOS 090008  12/07/2018
+> > [19527.937637] IRQ stage: Xenomai
+> > [19527.937638] RIP: 0010:x86_task_fpu+0x18/0x30
+> > [19527.937640] Code: 1f 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90=
+ 90 0f 1f 44 00 00 48 8d 87 00 20 00 00 f6 47 3e 20 75 05 c3 cc cc cc cc 90=
+ <0f> 0b 90 31 c0 c3 cc cc cc cc 66 66 2e 0f 1f 84 00 00 00 00 00 0f
+> > [19527.937641] RSP: 0018:ffffba19c0083b60 EFLAGS: 00010002
+> > [19527.937641] RAX: ffffa0a90133c3c0 RBX: 0000000000000001 RCX: ffffa0a=
+93fc5a6e8
+> > [19527.937642] RDX: 0000000000000000 RSI: 0000000000000007 RDI: ffffa0a=
+90133a3c0
+> > [19527.937643] RBP: ffffa0a93fc5a058 R08: 01364d9cb9685197 R09: fffffff=
+f83e406f8
+> > [19527.937643] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000=
+000000001
+> > [19527.937643] R13: ffffa0a90133a3c0 R14: ffffba19c0c62008 R15: 0000000=
+000000001
+> > [19527.937645] FS:  0000000000000000(0000) GS:ffffa0a9ba664000(0000) kn=
+lGS:0000000000000000
+> > [19527.937646] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > [19527.937646] CR2: 00007f5c694363c0 CR3: 000000003e038004 CR4: 0000000=
+0003706f0
+> > [19527.937647] Call Trace:
+> > [19527.937648]  <TASK>
+> > [19527.937649]  fpu__suspend_inband+0x3c/0x50
+> > [19527.937651]  dovetail_context_switch+0x130/0x240
+> > [19527.937652]  ? xntimer_start+0x101/0x240
+> > [19527.937656]  ___xnsched_run+0x1f9/0x4d0
+> > [19527.937659]  run_oob_call+0x87/0x140
+> > [19527.937662]  handle_irq_pipelined_finish+0x188/0x1a0
+> > [19527.937664]  arch_pipeline_entry+0x43/0xf0
+> > [19527.937667]  asm_sysvec_hyperv_stimer0+0x16/0x20
+> > [19527.937669] RIP: 0010:kernel_fpu_end+0x5/0x50
+> > [19527.937670] Code: 57 02 e8 9e 12 42 00 31 c0 c3 cc cc cc cc 0f 1f 80=
+ 00 00 00 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 0f 1f 44 00 00=
+ <65> 0f b6 05 03 40 57 02 84 c0 75 31 65 c6 05 f7 3f 57 02 01 65 f6
+> > [19527.937671] RSP: 0018:ffffba19c0083d28 EFLAGS: 00000246
+> > [19527.937671] RAX: 000000000000000c RBX: 0000000000000001 RCX: fffffff=
+f842f2260
+> > [19527.937672] RDX: 0000000000000000 RSI: ffffffff84c67450 RDI: fffffff=
+f84c673e0
+> > [19527.937672] RBP: 0000000000000001 R08: ffffffff842f2260 R09: 0000000=
+000000000
+> > [19527.937672] R10: ffffffff84a080c0 R11: 0000000000000001 R12: fffffff=
+f84c67410
+> > [19527.937673] R13: ffffffff84c673e0 R14: 0000000000000040 R15: 0000000=
+000000004
+> > [19527.937675]  blake2s_compress+0x52/0xa0
+> > [19527.937679]  blake2s_update+0x75/0x150
+> > [19527.937681]  add_timer_randomness+0xac/0x1a0
+> > [19527.937684]  scsi_end_request+0x297/0x3a0 [scsi_mod]
+> > [19527.937697]  scsi_io_completion+0x55/0x6a0 [scsi_mod]
+> > [19527.937707]  blk_done_softirq+0x46/0x60
+> > [19527.937709]  handle_softirqs+0xd0/0x430
+> > [19527.937711]  ? __pfx_smpboot_thread_fn+0x10/0x10
+> > [19527.937713]  run_ksoftirqd+0x47/0x60
+> > [19527.937714]  smpboot_thread_fn+0xec/0x220
+> > [19527.937716]  kthread+0xf7/0x240
+> > [19527.937718]  ? __pfx_kthread+0x10/0x10
+> > [19527.937720]  ret_from_fork+0x28c/0x310
+> > [19527.937721]  ? __pfx_kthread+0x10/0x10
+> > [19527.937722]  ret_from_fork_asm+0x1a/0x30
+> > [19527.937725]  </TASK>
+> > [19527.937725] irq event stamp: 1270
+> > [19527.937726] hardirqs last  enabled at (1269): [<ffffffff830b2b1c>] r=
+un_ksoftirqd+0x4c/0x60
+> > [19527.937727] hardirqs last disabled at (1270): [<ffffffff83d90d53>] _=
+_schedule+0x853/0x1080
+> > [19527.937729] softirqs last  enabled at (1268): [<ffffffff830b29d6>] h=
+andle_softirqs+0x346/0x430
+> > [19527.937730] softirqs last disabled at (1215): [<ffffffff830b2b17>] r=
+un_ksoftirqd+0x47/0x60
+> > [19527.937731] ---[ end trace 0000000000000000 ]---
+> >=20
+> > The main problem was the x86_task_fpu(tsk) helper, which will deliver
+> > NULL in case CONFIG_X86_DEBUG_FPU is enabled and
+> > (tsk->flags & PF_KTHREAD) is true. We ended up in dereferencing a
+> > NULL pointer.
+> >=20
+> > This problem could be fixed by not using the x86_task_fpu().
+> > But:
+> >   - It seems that the location of struct fpu is under development.
+> >   - Moving the preemption marker from struct fpu to
+> >     struct thread_info::flags synchronizes the amd64 and arm64
+> >     implementation.
+> >=20
+> > Second, the early exit in fpu__resume_inband() was wrong, as that
+> > prevented the FPU restore of in-band kthreads.
+> >=20
+> > Link: https://lore.kernel.org/xenomai/80a48c1ddc3721eb8022b77548028aa8e=
+7371928.camel@siemens.com/T/
+> > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> > ---
+> >  arch/x86/include/asm/fpu/sched.h   | 17 ++++-------------
+> >  arch/x86/include/asm/fpu/types.h   | 12 ------------
+> >  arch/x86/include/asm/thread_info.h |  1 +
+> >  arch/x86/kernel/fpu/core.c         | 12 ++++--------
+> >  4 files changed, 9 insertions(+), 33 deletions(-)
+> >=20
+> > diff --git a/arch/x86/include/asm/fpu/sched.h b/arch/x86/include/asm/fp=
+u/sched.h
+> > index ba677ffa4fbb..2b66960accd4 100644
+> > --- a/arch/x86/include/asm/fpu/sched.h
+> > +++ b/arch/x86/include/asm/fpu/sched.h
+> > @@ -18,19 +18,9 @@ extern void fpu_flush_thread(void);
+> > =20
+> >  #ifdef CONFIG_DOVETAIL
+> > =20
+> > -static inline void oob_fpu_set_preempt(struct fpu *fpu)
+> > +static inline bool oob_fpu_preempted(struct thread_info *old_ti)
+> >  {
+> > -	fpu->preempted =3D true;
+> > -}
+> > -
+> > -static inline void oob_fpu_clear_preempt(struct fpu *fpu)
+> > -{
+> > -	fpu->preempted =3D false;
+> > -}
+> > -
+> > -static inline bool oob_fpu_preempted(struct fpu *old_fpu)
+> > -{
+> > -	return old_fpu->preempted;
+> > +	return test_thread_flag(TIF_KERNEL_FP_PREEMPTED);
+> >  }
+> > =20
+> >  #else
+> > @@ -60,9 +50,10 @@ static inline void switch_fpu(struct task_struct *ol=
+d, int cpu)
+> >  {
+> >  	if (!test_tsk_thread_flag(old, TIF_NEED_FPU_LOAD) &&
+> >  		cpu_feature_enabled(X86_FEATURE_FPU)) {
+> > +		struct thread_info *old_ti =3D task_thread_info(old);
+> >  		struct fpu *old_fpu =3D x86_task_fpu(old);
+> >  		if (!(old->flags & (PF_KTHREAD | PF_USER_WORKER)) &&
+> > -			!oob_fpu_preempted(old_fpu)) {
+> > +			!oob_fpu_preempted(old_ti)) {
+> >  			set_tsk_thread_flag(old, TIF_NEED_FPU_LOAD);
+> >  			save_fpregs_to_fpstate(old_fpu);
+> >  			/*
+> > diff --git a/arch/x86/include/asm/fpu/types.h b/arch/x86/include/asm/fp=
+u/types.h
+> > index c329a878a581..1c94121acd3d 100644
+> > --- a/arch/x86/include/asm/fpu/types.h
+> > +++ b/arch/x86/include/asm/fpu/types.h
+> > @@ -473,18 +473,6 @@ struct fpu {
+> >  	 */
+> >  	unsigned int			last_cpu;
+> > =20
+> > -#ifdef CONFIG_DOVETAIL
+> > -	/*
+> > -	 * @preempted:
+> > -	 *
+> > -	 * When Dovetail is enabled, this flag is set for the inband
+> > -	 * task context saved when entering a kernel_fpu_begin/end()
+> > -	 * section before the latter got preempted by an out-of-band
+> > -	 * task.
+> > -	 */
+> > -	bool				preempted : 1;
+> > -#endif
+> > -
+> >  	/*
+> >  	 * @avx512_timestamp:
+> >  	 *
+> > diff --git a/arch/x86/include/asm/thread_info.h b/arch/x86/include/asm/=
+thread_info.h
+> > index 77c4c632cef2..53f11b73d0f0 100644
+> > --- a/arch/x86/include/asm/thread_info.h
+> > +++ b/arch/x86/include/asm/thread_info.h
+> > @@ -94,6 +94,7 @@ struct thread_info {
+> >  #define TIF_NEED_RESCHED_LAZY	4	/* Lazy rescheduling needed */
+> >  #define TIF_SINGLESTEP		5	/* reenable singlestep on user return*/
+> >  #define TIF_SSBD		6	/* Speculative store bypass disable */
+> > +#define TIF_KERNEL_FP_PREEMPTED	7	/* Dovetail: kernel mode
+> > FPU section preempted by OOB */
+>=20
+> Only the current task may set/clear/read this flag, so the latter should
+> rather go to the TLF (synchronous) section. As a consequence, non-atomic
+> ops would be enough to access it.
+>=20
+> >  #define TIF_SPEC_IB		9	/* Indirect branch speculation mitigation */
+> >  #define TIF_SPEC_L1D_FLUSH	10	/* Flush L1D on mm switches (processes) =
+*/
+> >  #define TIF_USER_RETURN_NOTIFY	11	/* notify kernel of userspace return=
+ */
+> > diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
+> > index 7b87a04c0b6e..6d185ad1a996 100644
+> > --- a/arch/x86/kernel/fpu/core.c
+> > +++ b/arch/x86/kernel/fpu/core.c
+> > @@ -1044,7 +1044,6 @@ static int fpu__drop_kernel_fpstate(unsigned int =
+cpu)
+> >  void fpu__suspend_inband(void)
+> >  {
+> >  	struct fpu *kfpu =3D this_cpu_read(in_kernel_fpstate);
+> > -	struct task_struct *tsk =3D current;
+> > =20
+> >  	/*
+> >  	 * If kernel_fpu_allowed is false, we are dealing with the
+> > @@ -1054,23 +1053,20 @@ void fpu__suspend_inband(void)
+> >  	if (!this_cpu_read(kernel_fpu_allowed)) {
+> >  		save_fpregs_to_fpstate(kfpu);
+> >  		__cpu_invalidate_fpregs_state();
+> > -		oob_fpu_set_preempt(x86_task_fpu(tsk));
+> > +		set_thread_flag(TIF_KERNEL_FP_PREEMPTED);
+> >  	}
+> >  }
+> > =20
+> >  void fpu__resume_inband(void)
+> >  {
+> >  	struct fpu *kfpu =3D this_cpu_read(in_kernel_fpstate);
+> > -	struct task_struct *tsk =3D current;
+> > =20
+> > -	if (tsk->flags & PF_KTHREAD)
+> > -		return;
+> > -
+> > -	if (oob_fpu_preempted(x86_task_fpu(tsk))) {
+> > +	if (test_and_clear_thread_flag(TIF_KERNEL_FP_PREEMPTED)) {
+>=20
+> In most cases, we won't need to clear this flag, so a split
+> test then clear-if-set approach would be more efficient.
 
-We moved now under the xenomai3 group.
+I aligned that with the arm64 implementation of the fpu restore. Should
+I fix that up for both implementations afterwards? Same applies to the
+flag location / access.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- README | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/README b/README
-index cbb557808e..d974dfbac4 100644
---- a/README
-+++ b/README
-@@ -39,7 +39,7 @@ https://v3.xenomai.org/installation/
- 
- - GIT clone:
- 
--  https://gitlab.com/Xenomai/xenomai.git
-+  https://gitlab.com/Xenomai/xenomai3/xenomai.git
- 
-   Once the repository is cloned, make sure to bootstrap the autoconf
-   system in the top-level directory by running scripts/bootstrap.  In
-@@ -53,7 +53,7 @@ https://v3.xenomai.org/installation/
- 
- - Tarballs:
- 
--  https://gitlab.com/Xenomai/xenomai/-/tags
-+  https://gitlab.com/Xenomai/xenomai3/xenomai/-/tags
- 
-   Source tarballs are self-contained and ready for building.
- 
--- 
-2.43.0
+>=20
+> --=20
+> Philippe.
