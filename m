@@ -1,295 +1,190 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11012002.outbound.protection.outlook.com [52.101.66.2])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 48C6F242D92
-	for <xenomai@lists.linux.dev>; Thu,  4 Sep 2025 07:54:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756972467; cv=none; b=iG+6a4hs2Dal6RNAGJdzzOhNGQc9GPh33AhAJtZI7G9fLxx/ICH1AeJ/clKXGSGlLSxrjrgdAfaxa2YZ0DkyMvwke8jgBa2w6CU/Y5hKK7K2mTbjNNLQhxn54IGjyUp8Y4H995wpa7j3P16Z0dAtMl0+mtZ1uuJHuzAat/n14dU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756972467; c=relaxed/simple;
-	bh=EOOkt/tN49m7hNsA8U54oufPARj0beHtdj1zBobJ4sU=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=OQqXArwiWkrItX5Dd4CJX82bfgfw8Vo/cuJnwTeNiBCuwWLFKWMVc1o2kvDr+mcqcZ+7M+YAXb4SpQ/UZJ0yi1tWWqHVwGIOHim+hcnaoAM0Fn89dXV4q2VEvqSG3ONt2k0YUV9BVVy+qmBvVJbickHSyo2CS6o7q7u50srewNw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=amMqayQ1; arc=none smtp.client-ip=209.85.128.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B0F724B28
+	for <xenomai@lists.linux.dev>; Thu,  4 Sep 2025 08:43:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.2
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1756975400; cv=fail; b=PfzO7wU5CVQ/7gVYKH5IWbIpSo3fn/w/oB+kXM9UB1spWNPF/7sn4BAhEIsxpPhbzijWEZ9ErQ1O2Vj+6Ag1XgkolVMYjIQBR6msUV5IsrYjyQeuUD1X/BNDR3pT5R+DZuzf0BonwalmG91XV+1+HOhlmtTCrxVCZcs0RRR8eZs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1756975400; c=relaxed/simple;
+	bh=Q6FPddDvkpI/3Cfgca2MUwHLrNgT3AmBtWk7YVewSLU=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=RVe3LjD4Dasz7ZVaBiGqEhxtl+I9yFwEtuC+VGIKDXBPReUYVRnRTLwAB6ClWY+VXjs62WiV1kibL3qfwEFYcYudmlwiXPrkA9sd6/cTmbbqHOIwpJHVLpSCNQ7Ee9ziXPujfspeClO8msycEJrTp+ezwpjIuYefp1AvUW6RsaY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=sOyaGEY3; arc=fail smtp.client-ip=52.101.66.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="amMqayQ1"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-45cb6428c46so5166425e9.1
-        for <xenomai@lists.linux.dev>; Thu, 04 Sep 2025 00:54:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1756972464; x=1757577264; darn=lists.linux.dev;
-        h=mime-version:message-id:date:user-agent:references:in-reply-to
-         :subject:cc:to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=jTFfGDANCd/LE/LbFIM1+XbU2TiVYlQ1it6TeKa0er8=;
-        b=amMqayQ14STcLuiI1/Fue52TWv3bCrHl419EZpZun5c19aGGEvwI9ixiw3qSR+UK/O
-         0iBz92Je7NFAd89MzdcrirBHqHD9C5BA7e7GHsjRhsEJiqiXqs3Z4ZFH6+IIOB92OY41
-         LAgRujpbqSO2zzhtGTXtrsD3BW0/IUYd50Gj3AdYSixZ5Xy9V8GfvmUqWkb1QfB44rnS
-         D1aZlRq5vrAcGQmguhc8x+ynpnhQMZwSZ3BEd4z1QwahEqRbtx6xlVGAjuPu5hT8PZrD
-         /b/q8viU913eGmVm5DKFkQ5qnfWVnPytkXVru3RhpjY0fyBvbdiQBV8Qb6fZo9Ost3MZ
-         7E8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756972464; x=1757577264;
-        h=mime-version:message-id:date:user-agent:references:in-reply-to
-         :subject:cc:to:from:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jTFfGDANCd/LE/LbFIM1+XbU2TiVYlQ1it6TeKa0er8=;
-        b=odWurOUJEaJ4Ip1V/NtHY1lcoEvUMLg7bczZRcvPWRQIzlvdSSIo2qYFwqbDxDBHYA
-         rOsM0CaB2u1t58sX9SpbDYsss4ACoZ3GbRayCxoKxL3k4Tsg8cy5kaTemjtg8ELIjUnM
-         89PFz2c2y8t0e292k8cw+4zTBLlhw2bt/9/tZaQgjWuSYvKO3VgMqkj9mYa59v/fZEO3
-         Dzj3yLE1S7fRdKQgGnST6nt6MSakqoeuwZcJfyAU5wALCA9kPGqf3O7poMdxMx0VlhLg
-         euOvO2bWZQtKLEjUslhUtiGBF15aRtTEJI4BwmW6B7S+WOVFCy0KIENBgvHIQ6gN66zW
-         gEww==
-X-Forwarded-Encrypted: i=1; AJvYcCWJnAzAbkD7SpsX13Hk6qQH9HDaw7WMJfrkBvUm5C21BoylxPrQg64uYsLFmtUy8qJmH81mN+aJ@lists.linux.dev
-X-Gm-Message-State: AOJu0YzuCMAuM+UUaj/nynQVNBVWziP0G4tF7yZBin89a28tZiiVbS1T
-	UU4GbHKP7Huzc8b4IkKaH6d+0WcKubQZK/oxRetPTJ9EbogH9OBzubVjw6XDB17k
-X-Gm-Gg: ASbGncst7MVxIr6QRtKyw9s8z3AxsLhZPONkXVb1U7Xp5JXrxD/Y+kgWIBdsLYkiL6y
-	ju7RqrrKtCVvf9lJNDPBrnFVAIPTGhCQMt/GIEiClDui2fTMjyg0Z88rSX9wEd1XjRRvvfaLIx0
-	b9OigNSj+ulMf0V7vXLRVcTdH0UGVFe4wMLa0ZUQqtxECE3jOOcR9RQiv4EGElcoIpeC7XGPrUG
-	0xu16TJT32/1CwCJ6S1pV/nnS7J3OJEIY5jot9F8MAh+eBo91IDHPPsWNk95WXUmBySgkGwsIUj
-	2dgOLN/UaJK1J82/VS3xruUwwRKlT7443th54TZ+Jgva7HFUKVg761h/4iOCHlSO0Q3hR4P1FD/
-	7z5+3kecujk1h/WQ12V8hbNxP2jl1+MiYJCm0sA==
-X-Google-Smtp-Source: AGHT+IHJeh6NGsDvZLa+5pynf9hFioQYKIgIJGhnWflHKnVHJPZCUtQ2QPcec5UDi9JoKw1wkCzhnA==
-X-Received: by 2002:a05:600c:1c88:b0:45c:b52d:8d30 with SMTP id 5b1f17b1804b1-45cb52d8f28mr46481565e9.26.1756972463334;
-        Thu, 04 Sep 2025 00:54:23 -0700 (PDT)
-Received: from bogeyman ([2a01:e0a:9e1:e390:3656:699e:ad52:5555])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45b7e92a42asm270989155e9.20.2025.09.04.00.54.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 04 Sep 2025 00:54:22 -0700 (PDT)
-From: Philippe Gerum <philippe.gerum@gmail.com>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: Philippe Gerum <philippe.gerum@gmail.com>,  xenomai@lists.linux.dev,
-  Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: [PATCH Dovetail 6.16 v2 1/2] x86/fpu: dovetail: Fix FPU corruption
-In-Reply-To: <1e485eb503d0275da44f29b76c676edd4d1bf3c6.camel@siemens.com>
-	(Florian Bezdeka's message of "Thu, 04 Sep 2025 09:36:30 +0200")
-References: <20250820-wip-flo-fixes-for-dovetail-6-15-v2-0-535e4fa355f7@siemens.com>
-	<20250820-wip-flo-fixes-for-dovetail-6-15-v2-1-535e4fa355f7@siemens.com>
-	<875xdzldtc.fsf@xenomai.org>
-	<1e485eb503d0275da44f29b76c676edd4d1bf3c6.camel@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Thu, 04 Sep 2025 09:54:21 +0200
-Message-ID: <87qzwmk5zm.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="sOyaGEY3"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=IuKRqE607zbDQvCPJ1lS37Av1C6v4YD9bCNHxl8bGf2ltF7piejR7H/R72ErD6OQI7oFXWcucto2vVp9THjh7/QH+PZ6C1Vb+nxTTvwuY+Whd0n3QmGYtw/V3e9ORNhWr8neSFLVQRZMOREf/M6G531ANnlupwoOfWZqg1IkY5V/FF5LrCxffnodq+r6Lsl0FVIuCJht85ntM97la/s+j0uQ6DOd12XNe1+iIvpzx350v4xQsir+CVjKCp+BSXpPww7NopoOicfzp3cYNAte/UWvHKrt/g7z8pO3KHX8mPgNCrGP5lNPnTBrVdJc1LSpC/YzJHvNDW/I7LuzkxUtrw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=158Yld3AWjig1YehnICcIaEMHR/x0EoRZ8IryNuBfY4=;
+ b=Uw/jiSs8wWVIRlD/7hcqHRm980vHzDud+xOfNVjCizpGj2l6q5NA044vyRF0U5+WejiMGzNfK4M6C5cU4Tr0sZ5lXmCbnJXxwNZoCa2n4dSwgm/wB1OM6H10rrg+X7K3HUujt/43LPtfHVNh1Eg+36MRZ4yjh6hjusA2iFaA97kMfzM8yWSL8tSadtZny4swZCFgDhbrBWzhlV77kBzIFxiXTXKYJrV6jN2dof82+n7iljQF1XhMVGvlqu0zof+fo0xQv12Camqkw/6L7LsPRE5D/brSKSg1ghxhIUjpNeg+cv9Jr6UFDFzOZDdjIzQCTVArNjra3N6yXAxhm8mCqQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=158Yld3AWjig1YehnICcIaEMHR/x0EoRZ8IryNuBfY4=;
+ b=sOyaGEY36h4sB86z7XgucTfNAxP6+ETuWSWkwpeXPH0RNqXEYa0QLrVxeJDlrkgY5R02ZkAXNoe5FuNK9dV+MuP610nYz+bm7tUkwJ2kxcQHJEcNmlJbx+Qv6yzbz2u8S47Nam+YNB2fxYTlplolQs6SBBiE0y7smDbZnJmyLlwsfRynA1lxt3LNlDyU7mTVxKk6ernRm/6MBu2FczkLokgV0AzZYthHYs868gFwL12HBjbgPWPWI/fT9tkzkScE/+Q+Lbd02H44otJqJOqFsJj1KpqCxLzq/1rjfGceEmFb2cOsd03Q6bMQJluh1362ORVwmKxS1cMONReSpMInhA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:550::8)
+ by AS4PR10MB5920.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:51b::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9073.25; Thu, 4 Sep
+ 2025 08:43:12 +0000
+Received: from AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::4cbc:c0b7:27cc:2082]) by AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::4cbc:c0b7:27cc:2082%5]) with mapi id 15.20.9094.017; Thu, 4 Sep 2025
+ 08:43:12 +0000
+From: Tobias Schaffner <tobias.schaffner@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: jan.kiszka@siemens.com,
+	quirin.gylstorff@siemens.com,
+	Tobias Schaffner <tobias.schaffner@siemens.com>
+Subject: [xenomai-images][PATCH] ci: Retry LAVA boot action up to three times
+Date: Thu,  4 Sep 2025 10:43:07 +0200
+Message-ID: <20250904084307.1090704-1-tobias.schaffner@siemens.com>
+X-Mailer: git-send-email 2.43.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: CH0PR03CA0011.namprd03.prod.outlook.com
+ (2603:10b6:610:b0::16) To AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:550::8)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS2PR10MB6349:EE_|AS4PR10MB5920:EE_
+X-MS-Office365-Filtering-Correlation-Id: 78da97c8-bd5b-4976-527b-08ddeb8f14f6
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?MyH1JrVeKwBH41JmvkVXDagRynIYC+KLhD+eY9K7AXHc23Ej6O40sZU1HZbR?=
+ =?us-ascii?Q?7j8I1I8AgcTG6a+IeaG87qQuCiOJtM7ZNf/MOxfuw69Alou7U0vJSLxnJJl8?=
+ =?us-ascii?Q?qS9d0vh3+ffvNRNcVFVh1uTRY2iNZQysbxZ9ClbMKQV7IBLICxYb5/2oMrWQ?=
+ =?us-ascii?Q?VEF1eczVt+Ix6WlH/hKwqsDJt9IG5K3mKWpMaRsnNHcJEITrLZU/QzBRL1WB?=
+ =?us-ascii?Q?3dJYUWPaUtQFld/zQVijxhtNB5TIIJly0IykLzX0MqrpKvu0lBTbeoD1CNua?=
+ =?us-ascii?Q?2pVJQB2Nb+qZSJKkgtrQ3x8ImJCxPz5eYVY9VoNtlitC1jAxJnkH9XIhfb9R?=
+ =?us-ascii?Q?PNNLfYI+jF7NKeKRSdPJhGnBTwEaRvZWxL/YyN9/9WPDujtbPOVxO0P7fxPf?=
+ =?us-ascii?Q?uQB16XUdiIAzhmVi6i2uxqy70YKiFmk7sGn6lUjN0+WQl7HzC4Foifsff2QL?=
+ =?us-ascii?Q?TVj2R2ZLCXkxDhZ30IYgTxovRsAKd7GRTVlf4sn53dyECURoIGIUpjA7BEL8?=
+ =?us-ascii?Q?T3yns+/sTEtvVAvFxyLujbMqiuDDlmI6drBIoNIczjwGvOE6KqnI0k35X11l?=
+ =?us-ascii?Q?Qehm0+tqGWzMVZk2pLj/5EeCC5oBS/rpNubC/iFn+L+0JcDNPFnBAZAy3vZY?=
+ =?us-ascii?Q?p3OoZCJjLLt9aZj3SRiR0S0gXJXY3OHnNKgCl+OaU0wyD9TnB9cOyPJ3xKTU?=
+ =?us-ascii?Q?3eCxFKlI6llyA6YcTd7YVXyf1Hoiybpz8nKk+UJqovaioDrKbA+WJxZqkaZR?=
+ =?us-ascii?Q?AlIFu9YjspS4SUXMVJqMG1YPdwUFSPS8btKVjx0lFkfMGbSvfQszfesg8NAa?=
+ =?us-ascii?Q?ZumA5dCWSSmyuZweBJWrxBnPIzx8dq4zXbCk216Yrk9hKbMaVXhCwegEt8W7?=
+ =?us-ascii?Q?IWcSbosk9lzg0w1+OvqiziqoOL0d2KWI/Bu8ra0R96KVwDC6tnY1bHn4CS/f?=
+ =?us-ascii?Q?0Kakv1poINHCH2gSJa/EvQI9jn/vRryEREVExc7rPBLcQ87B/YCe2VpZZeni?=
+ =?us-ascii?Q?m/weu6PA0jKxjIDslyX5XLoW1dizJhZBB5xFIIfE0fooww0RLguZbuuBf6VM?=
+ =?us-ascii?Q?+fJbhX4GK0AS+nKn9jk4m9k/3QQ3ji5VzGlVf4Rvd4d96LnsBiaPyXduzIut?=
+ =?us-ascii?Q?qeA7uUwQessKhD1aylbJtC3zuSC8rhmiKtFDm1RS3VIBsuaDAO2FMhlxnsWc?=
+ =?us-ascii?Q?Jgf6H03kMw5mCInV2Z1QfPDdNnoUyl7Etl7VH8CeEvwskBrtnhFunqK8jWGn?=
+ =?us-ascii?Q?NDcWELRQXM/wK3tQkVbvZXUxE5kUPXiE/RUDh/Vn6iW01qdpcyrhJXcjNCYx?=
+ =?us-ascii?Q?gr69RmGe1hYkiLaDq3VgAt5M29R/eWJav4ot6p3HcnQlFzsAebl34oeogxGq?=
+ =?us-ascii?Q?eDAuhTJYbKOpH/IyOrvLuBNf2dWmmwCxYkLTYh2P4K/PGuTH0OUS1G/aqPty?=
+ =?us-ascii?Q?E+o/MNQwZSY=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?xMP0XgfWPd2VVZ2jPufAKZU4kTqdPmdsClvoBhYB5Y6tuEF1MWtGMUz/9Yw1?=
+ =?us-ascii?Q?D+RVebADNRxmuP1yIiy1MYIiDrkkS/j8Jpm9kNfAb1SMpflW7eLqgDXKNplF?=
+ =?us-ascii?Q?wR+oTdcMAG9RnGK4Eu8XaEmmBtGLKid+NnI2llouPkX5yS2stuMkceskNmOZ?=
+ =?us-ascii?Q?yvdRxctuifOz4goiW0Z0IvD/eoVxYTzf38Yo9SIG5VySF2dxy/JXrJOPBK2z?=
+ =?us-ascii?Q?zWsGOjAuxzWIJr0UvALRJ/CABpwVBJgHEeF05ThLdmb0fKJ05BxRg1d2CocC?=
+ =?us-ascii?Q?PBbiunOL5vKtxnABr5W6hW6NDCeGew1+NEHg/SQDjYxFQX7dWGIfragS1SvE?=
+ =?us-ascii?Q?OGoJd63bo9A9+tTfK5URWUrN2HnBC0ER2AQmVw+2qw9eLLMUZVanTgtqjLDZ?=
+ =?us-ascii?Q?o/ltlfOuN8M+6FYE98BFd/0Hh+jGTzMlMUvdUqwk0qnYHXt1N3xmsMcIuGl2?=
+ =?us-ascii?Q?Luuk6sAM9DnGD1/yeeHyuQfqVLhR0+8hY4hewy6Z/qWxPX4detxKZyLtRER9?=
+ =?us-ascii?Q?j1/Tvqn6TM9GVR4jKj1ZTvQgf7o52mtrnTZElbZG0DYA2bwlSicAyJo8QhLc?=
+ =?us-ascii?Q?a0rqvPC4GGLnhS0pGxT/2ph8ppRmbGM6nXXdbJT/4ZNq4YzSWqnt3qw2stz+?=
+ =?us-ascii?Q?vGuptHusCZbPl30Beu3YQO0DqoM5zMvEy25rUlZDYHR/dos51g5zVxq/Zk8R?=
+ =?us-ascii?Q?8OVHv49NknsFArLVwx0cTLRaZBxmT1D3GDHQKCYkf9Vq4aMz2rspYwVnSH8B?=
+ =?us-ascii?Q?ylRpazJB/ndfcA0vJZNYCHRJIxzPmfaG8whHyVQwd+F2XD3dsCT1yzlYUY5I?=
+ =?us-ascii?Q?gOEbr/Tn6a6lmK+ySe00+IBmuk1yylsJye1PY1Ul162fDO+Ehzjnjzt3AGzf?=
+ =?us-ascii?Q?zQFHciEeFAjEw7Ar2r18WMFSQctw3w2zSBfCUOWI/ICPRXL624CLDBZy+6UC?=
+ =?us-ascii?Q?le3mhZ0wH/gGuDHuV34R035vISVZtxYgRuJS5eOOg4mSfouh0P2/o4altHYr?=
+ =?us-ascii?Q?g4E1AO9UReBDxZgUjQFMzQ/vsw0PEqgHdqr9S0yweBZdM3piRuY/pDXXvylQ?=
+ =?us-ascii?Q?YWiihj7HBChl5oXznbZwika/VQHvL2yfWdey246veuNSqufiJy86e5Ka0ECJ?=
+ =?us-ascii?Q?WcTCfnWuYdRQR74+D7QXQvgY8B7o6p2CiX9eYXChirEKHK2XN01M3+LaTiXC?=
+ =?us-ascii?Q?zPxwFD1dbmmpNbimqKHE6rLRdAV0I1pqDVKaqv8//sM75wkVVACcrNQY14IH?=
+ =?us-ascii?Q?NV2oFT70IcF1hoPR2KHcMpcofGiaAcs/sjxA+RUKc1k3Lmyruu8Q4yB9nEpA?=
+ =?us-ascii?Q?VH7GFIAz4sDWM85xJQpPVztD7AQ9VLKQ6p+EoSJgxIGhuRQLdNV7y1cd1Q/h?=
+ =?us-ascii?Q?UTUo3SS10waSIdYn0vLuGeCmDAvxDntUE7Px5S9fLAduwzAlHKcJXocdnpMH?=
+ =?us-ascii?Q?4Td2Npz5s8pvLLCd898qCj2KWka1JAUM/vvhQ9c8cVPT2tbwDf/617yvwtYn?=
+ =?us-ascii?Q?7hXU21pUKbR/3XzlERrCighAEZoOVj4jQNcJ6nrpyhohyYCQrvYwILePYX96?=
+ =?us-ascii?Q?+EoRVpWHcMAsrPlRsByEfMKacPLJ2rJQUPSCuj8qrPVJSrpKdnbogHO9YzoU?=
+ =?us-ascii?Q?lQ=3D=3D?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 78da97c8-bd5b-4976-527b-08ddeb8f14f6
+X-MS-Exchange-CrossTenant-AuthSource: AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Sep 2025 08:43:12.3830
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 90qmxxfCKcKcm/nZrCVyb6+lBs8+syDRJmbc+O2rXImTBrQWVTaI+vIAZJ53oP582AKvXTVXve+LXZ+XgY57UyPV5PSYzSFHYTQRHMlNB18=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4PR10MB5920
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+Increase test robustness by retrying the LAVA boot action up to three
+times on failure. Failures are detected via server-side error message
+matching. This logic will be refined in the designated repository.
 
-> On Wed, 2025-09-03 at 18:07 +0200, Philippe Gerum wrote:
->> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
->> 
->> > The kernel splat looked as follows and could be reproduced by running
->> > the Xenomai 3 testsuite over a stress-ng produced load. The problem is
->> > specific to Dovetail 6.16.
->> > 
->> > [19527.937613] ------------[ cut here ]------------
->> > [19527.937614] WARNING: CPU: 0 PID: 14 at arch/x86/kernel/fpu/core.c:62 x86_task_fpu+0x18/0x30
->> > [19527.937619] Modules linked in: intel_rapl_msr intel_rapl_common intel_pmc_core pmt_telemetry pmt_class intel_pmc_ssram_telemetry intel_vsec ghash_clmulni_intel sha512_ssse3 sha1_ssse3 aesni_intel gf128mul rapl pcspkr button evdev serio_raw joydev sg loop efi_pstore fuse dm_mod drm dax configfs ip_tables x_tables autofs4 ext4 crc16 mbcache jbd2 sr_mod cdrom ata_generic sd_mod hid_generic hid_hyperv ata_piix psmouse hid hv_netvsc hv_storvsc libata scsi_transport_fc floppy i2c_piix4 i2c_smbus scsi_mod scsi_common [last unloaded: xeno_can]
->> > [19527.937635] CPU: 0 UID: 0 PID: 14 Comm: ksoftirqd/0 Not tainted 6.16.0-hyprv-xenomai-0+ #196 PREEMPT(voluntary)
->> > [19527.937637] Hardware name: Microsoft Corporation Virtual Machine/Virtual Machine, BIOS 090008  12/07/2018
->> > [19527.937637] IRQ stage: Xenomai
->> > [19527.937638] RIP: 0010:x86_task_fpu+0x18/0x30
->> > [19527.937640] Code: 1f 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 0f 1f 44 00 00 48 8d 87 00 20 00 00 f6 47 3e 20 75 05 c3 cc cc cc cc 90 <0f> 0b 90 31 c0 c3 cc cc cc cc 66 66 2e 0f 1f 84 00 00 00 00 00 0f
->> > [19527.937641] RSP: 0018:ffffba19c0083b60 EFLAGS: 00010002
->> > [19527.937641] RAX: ffffa0a90133c3c0 RBX: 0000000000000001 RCX: ffffa0a93fc5a6e8
->> > [19527.937642] RDX: 0000000000000000 RSI: 0000000000000007 RDI: ffffa0a90133a3c0
->> > [19527.937643] RBP: ffffa0a93fc5a058 R08: 01364d9cb9685197 R09: ffffffff83e406f8
->> > [19527.937643] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000001
->> > [19527.937643] R13: ffffa0a90133a3c0 R14: ffffba19c0c62008 R15: 0000000000000001
->> > [19527.937645] FS:  0000000000000000(0000) GS:ffffa0a9ba664000(0000) knlGS:0000000000000000
->> > [19527.937646] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> > [19527.937646] CR2: 00007f5c694363c0 CR3: 000000003e038004 CR4: 00000000003706f0
->> > [19527.937647] Call Trace:
->> > [19527.937648]  <TASK>
->> > [19527.937649]  fpu__suspend_inband+0x3c/0x50
->> > [19527.937651]  dovetail_context_switch+0x130/0x240
->> > [19527.937652]  ? xntimer_start+0x101/0x240
->> > [19527.937656]  ___xnsched_run+0x1f9/0x4d0
->> > [19527.937659]  run_oob_call+0x87/0x140
->> > [19527.937662]  handle_irq_pipelined_finish+0x188/0x1a0
->> > [19527.937664]  arch_pipeline_entry+0x43/0xf0
->> > [19527.937667]  asm_sysvec_hyperv_stimer0+0x16/0x20
->> > [19527.937669] RIP: 0010:kernel_fpu_end+0x5/0x50
->> > [19527.937670] Code: 57 02 e8 9e 12 42 00 31 c0 c3 cc cc cc cc 0f 1f 80 00 00 00 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 0f 1f 44 00 00 <65> 0f b6 05 03 40 57 02 84 c0 75 31 65 c6 05 f7 3f 57 02 01 65 f6
->> > [19527.937671] RSP: 0018:ffffba19c0083d28 EFLAGS: 00000246
->> > [19527.937671] RAX: 000000000000000c RBX: 0000000000000001 RCX: ffffffff842f2260
->> > [19527.937672] RDX: 0000000000000000 RSI: ffffffff84c67450 RDI: ffffffff84c673e0
->> > [19527.937672] RBP: 0000000000000001 R08: ffffffff842f2260 R09: 0000000000000000
->> > [19527.937672] R10: ffffffff84a080c0 R11: 0000000000000001 R12: ffffffff84c67410
->> > [19527.937673] R13: ffffffff84c673e0 R14: 0000000000000040 R15: 0000000000000004
->> > [19527.937675]  blake2s_compress+0x52/0xa0
->> > [19527.937679]  blake2s_update+0x75/0x150
->> > [19527.937681]  add_timer_randomness+0xac/0x1a0
->> > [19527.937684]  scsi_end_request+0x297/0x3a0 [scsi_mod]
->> > [19527.937697]  scsi_io_completion+0x55/0x6a0 [scsi_mod]
->> > [19527.937707]  blk_done_softirq+0x46/0x60
->> > [19527.937709]  handle_softirqs+0xd0/0x430
->> > [19527.937711]  ? __pfx_smpboot_thread_fn+0x10/0x10
->> > [19527.937713]  run_ksoftirqd+0x47/0x60
->> > [19527.937714]  smpboot_thread_fn+0xec/0x220
->> > [19527.937716]  kthread+0xf7/0x240
->> > [19527.937718]  ? __pfx_kthread+0x10/0x10
->> > [19527.937720]  ret_from_fork+0x28c/0x310
->> > [19527.937721]  ? __pfx_kthread+0x10/0x10
->> > [19527.937722]  ret_from_fork_asm+0x1a/0x30
->> > [19527.937725]  </TASK>
->> > [19527.937725] irq event stamp: 1270
->> > [19527.937726] hardirqs last  enabled at (1269): [<ffffffff830b2b1c>] run_ksoftirqd+0x4c/0x60
->> > [19527.937727] hardirqs last disabled at (1270): [<ffffffff83d90d53>] __schedule+0x853/0x1080
->> > [19527.937729] softirqs last  enabled at (1268): [<ffffffff830b29d6>] handle_softirqs+0x346/0x430
->> > [19527.937730] softirqs last disabled at (1215): [<ffffffff830b2b17>] run_ksoftirqd+0x47/0x60
->> > [19527.937731] ---[ end trace 0000000000000000 ]---
->> > 
->> > The main problem was the x86_task_fpu(tsk) helper, which will deliver
->> > NULL in case CONFIG_X86_DEBUG_FPU is enabled and
->> > (tsk->flags & PF_KTHREAD) is true. We ended up in dereferencing a
->> > NULL pointer.
->> > 
->> > This problem could be fixed by not using the x86_task_fpu().
->> > But:
->> >   - It seems that the location of struct fpu is under development.
->> >   - Moving the preemption marker from struct fpu to
->> >     struct thread_info::flags synchronizes the amd64 and arm64
->> >     implementation.
->> > 
->> > Second, the early exit in fpu__resume_inband() was wrong, as that
->> > prevented the FPU restore of in-band kthreads.
->> > 
->> > Link: https://lore.kernel.org/xenomai/80a48c1ddc3721eb8022b77548028aa8e7371928.camel@siemens.com/T/
->> > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
->> > ---
->> >  arch/x86/include/asm/fpu/sched.h   | 17 ++++-------------
->> >  arch/x86/include/asm/fpu/types.h   | 12 ------------
->> >  arch/x86/include/asm/thread_info.h |  1 +
->> >  arch/x86/kernel/fpu/core.c         | 12 ++++--------
->> >  4 files changed, 9 insertions(+), 33 deletions(-)
->> > 
->> > diff --git a/arch/x86/include/asm/fpu/sched.h b/arch/x86/include/asm/fpu/sched.h
->> > index ba677ffa4fbb..2b66960accd4 100644
->> > --- a/arch/x86/include/asm/fpu/sched.h
->> > +++ b/arch/x86/include/asm/fpu/sched.h
->> > @@ -18,19 +18,9 @@ extern void fpu_flush_thread(void);
->> >  
->> >  #ifdef CONFIG_DOVETAIL
->> >  
->> > -static inline void oob_fpu_set_preempt(struct fpu *fpu)
->> > +static inline bool oob_fpu_preempted(struct thread_info *old_ti)
->> >  {
->> > -	fpu->preempted = true;
->> > -}
->> > -
->> > -static inline void oob_fpu_clear_preempt(struct fpu *fpu)
->> > -{
->> > -	fpu->preempted = false;
->> > -}
->> > -
->> > -static inline bool oob_fpu_preempted(struct fpu *old_fpu)
->> > -{
->> > -	return old_fpu->preempted;
->> > +	return test_thread_flag(TIF_KERNEL_FP_PREEMPTED);
->> >  }
->> >  
->> >  #else
->> > @@ -60,9 +50,10 @@ static inline void switch_fpu(struct task_struct *old, int cpu)
->> >  {
->> >  	if (!test_tsk_thread_flag(old, TIF_NEED_FPU_LOAD) &&
->> >  		cpu_feature_enabled(X86_FEATURE_FPU)) {
->> > +		struct thread_info *old_ti = task_thread_info(old);
->> >  		struct fpu *old_fpu = x86_task_fpu(old);
->> >  		if (!(old->flags & (PF_KTHREAD | PF_USER_WORKER)) &&
->> > -			!oob_fpu_preempted(old_fpu)) {
->> > +			!oob_fpu_preempted(old_ti)) {
->> >  			set_tsk_thread_flag(old, TIF_NEED_FPU_LOAD);
->> >  			save_fpregs_to_fpstate(old_fpu);
->> >  			/*
->> > diff --git a/arch/x86/include/asm/fpu/types.h b/arch/x86/include/asm/fpu/types.h
->> > index c329a878a581..1c94121acd3d 100644
->> > --- a/arch/x86/include/asm/fpu/types.h
->> > +++ b/arch/x86/include/asm/fpu/types.h
->> > @@ -473,18 +473,6 @@ struct fpu {
->> >  	 */
->> >  	unsigned int			last_cpu;
->> >  
->> > -#ifdef CONFIG_DOVETAIL
->> > -	/*
->> > -	 * @preempted:
->> > -	 *
->> > -	 * When Dovetail is enabled, this flag is set for the inband
->> > -	 * task context saved when entering a kernel_fpu_begin/end()
->> > -	 * section before the latter got preempted by an out-of-band
->> > -	 * task.
->> > -	 */
->> > -	bool				preempted : 1;
->> > -#endif
->> > -
->> >  	/*
->> >  	 * @avx512_timestamp:
->> >  	 *
->> > diff --git a/arch/x86/include/asm/thread_info.h b/arch/x86/include/asm/thread_info.h
->> > index 77c4c632cef2..53f11b73d0f0 100644
->> > --- a/arch/x86/include/asm/thread_info.h
->> > +++ b/arch/x86/include/asm/thread_info.h
->> > @@ -94,6 +94,7 @@ struct thread_info {
->> >  #define TIF_NEED_RESCHED_LAZY	4	/* Lazy rescheduling needed */
->> >  #define TIF_SINGLESTEP		5	/* reenable singlestep on user return*/
->> >  #define TIF_SSBD		6	/* Speculative store bypass disable */
->> > +#define TIF_KERNEL_FP_PREEMPTED	7	/* Dovetail: kernel mode
->> > FPU section preempted by OOB */
->> 
->> Only the current task may set/clear/read this flag, so the latter should
->> rather go to the TLF (synchronous) section. As a consequence, non-atomic
->> ops would be enough to access it.
->> 
->> >  #define TIF_SPEC_IB		9	/* Indirect branch speculation mitigation */
->> >  #define TIF_SPEC_L1D_FLUSH	10	/* Flush L1D on mm switches (processes) */
->> >  #define TIF_USER_RETURN_NOTIFY	11	/* notify kernel of userspace return */
->> > diff --git a/arch/x86/kernel/fpu/core.c b/arch/x86/kernel/fpu/core.c
->> > index 7b87a04c0b6e..6d185ad1a996 100644
->> > --- a/arch/x86/kernel/fpu/core.c
->> > +++ b/arch/x86/kernel/fpu/core.c
->> > @@ -1044,7 +1044,6 @@ static int fpu__drop_kernel_fpstate(unsigned int cpu)
->> >  void fpu__suspend_inband(void)
->> >  {
->> >  	struct fpu *kfpu = this_cpu_read(in_kernel_fpstate);
->> > -	struct task_struct *tsk = current;
->> >  
->> >  	/*
->> >  	 * If kernel_fpu_allowed is false, we are dealing with the
->> > @@ -1054,23 +1053,20 @@ void fpu__suspend_inband(void)
->> >  	if (!this_cpu_read(kernel_fpu_allowed)) {
->> >  		save_fpregs_to_fpstate(kfpu);
->> >  		__cpu_invalidate_fpregs_state();
->> > -		oob_fpu_set_preempt(x86_task_fpu(tsk));
->> > +		set_thread_flag(TIF_KERNEL_FP_PREEMPTED);
->> >  	}
->> >  }
->> >  
->> >  void fpu__resume_inband(void)
->> >  {
->> >  	struct fpu *kfpu = this_cpu_read(in_kernel_fpstate);
->> > -	struct task_struct *tsk = current;
->> >  
->> > -	if (tsk->flags & PF_KTHREAD)
->> > -		return;
->> > -
->> > -	if (oob_fpu_preempted(x86_task_fpu(tsk))) {
->> > +	if (test_and_clear_thread_flag(TIF_KERNEL_FP_PREEMPTED)) {
->> 
->> In most cases, we won't need to clear this flag, so a split
->> test then clear-if-set approach would be more efficient.
->
-> I aligned that with the arm64 implementation of the fpu restore. Should
-> I fix that up for both implementations afterwards? Same applies to the
-> flag location / access.
->
+Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+---
+ tests/jobs/xenomai-beagle-bone-black.yml | 1 +
+ tests/jobs/xenomai-hikey.yml             | 1 +
+ tests/jobs/xenomai-rpi4.yml              | 1 +
+ 3 files changed, 3 insertions(+)
 
-Yep, that would make sense to align both.
-
+diff --git a/tests/jobs/xenomai-beagle-bone-black.yml b/tests/jobs/xenomai-beagle-bone-black.yml
+index 8e47dd6..b7a95bc 100644
+--- a/tests/jobs/xenomai-beagle-bone-black.yml
++++ b/tests/jobs/xenomai-beagle-bone-black.yml
+@@ -41,6 +41,7 @@ actions:
+       compression: gz
+ # BOOT_BLOCK
+ - boot:
++    failure_retry: 3
+     timeout:
+       minutes: 5
+     method: u-boot
+diff --git a/tests/jobs/xenomai-hikey.yml b/tests/jobs/xenomai-hikey.yml
+index aaf8949..27beb07 100644
+--- a/tests/jobs/xenomai-hikey.yml
++++ b/tests/jobs/xenomai-hikey.yml
+@@ -40,6 +40,7 @@ actions:
+       compression: gz
+ #  BOOT_BLOCK
+ - boot:
++    failure_retry: 3
+     timeout:
+       minutes: 5
+     method: u-boot
+diff --git a/tests/jobs/xenomai-rpi4.yml b/tests/jobs/xenomai-rpi4.yml
+index 50ff9ee..4074825 100644
+--- a/tests/jobs/xenomai-rpi4.yml
++++ b/tests/jobs/xenomai-rpi4.yml
+@@ -40,6 +40,7 @@ actions:
+       compression: gz
+ #  BOOT_BLOCK
+ - boot:
++    failure_retry: 3
+     timeout:
+       minutes: 5
+     method: u-boot
 -- 
-Philippe.
+2.43.0
+
