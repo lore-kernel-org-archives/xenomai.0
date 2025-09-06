@@ -1,117 +1,114 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39FE42EA477
-	for <xenomai@lists.linux.dev>; Fri,  5 Sep 2025 21:54:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E93E0315D4A
+	for <xenomai@lists.linux.dev>; Sat,  6 Sep 2025 06:50:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757109270; cv=none; b=LX8HmjKAwifm29Ju01pJ1OG2nq3h85yddGpiLgXbaj3wWe81CmwQKWv8aRmjc3hcmDQENpoNlUKtQNHR6MdwUqQX8Y5jQ87X11o/sGYnS4tDTOAO78rzhbfoHKiHdtEOfgXzDuauSZ9JzwHznfqa+kqTsWOEpWHWbJx8EWf1+6c=
+	t=1757141458; cv=none; b=IqxRY9ioF4t5CQTYCYHvLuaofIN7yGDB7CI+lAG7LVfd82hEz5X214lmkXMN4MnyXPTqhhIeNBXlvknvjCit8kASfNGUr9J/X6Nf2SbsIf+MrBf2C90Q5uUyWnU2tWaza+zF6YiDEk8FrGw++7MpM2Kr2u4jXITJt0BMJ2p6hCo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757109270; c=relaxed/simple;
-	bh=kSKO6cFiY2w7D5/zWSmE110sR2J1EPZ8YOr/pvJyXb4=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=YOyiJHoDR/bNahHNBTqLpO/T886Sy1JShkznXytFW2183Frua1yUlgW3vQM7moaOFz+4wuT/o4qrNQzcCznRY6iw3OFch6cPQKjYtJ2/tL9Ies7NwpB0PNkmpJxrUjjgXOsB2OkQzuNp1pyO2X05+vFaMHtlvoMqd9X6hx8nb3c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=aBPIgxKN; arc=none smtp.client-ip=185.136.64.226
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1757141458; c=relaxed/simple;
+	bh=NEyhI6NujHPomh8WrhnoVTZhL35WwUmE5fZaNZZb9tc=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=ntOYfzOj0kBO4FrsdVn2ATA8+2ALjbg3XFgnPUnAnj6hW4/EneOtIlyfntwnij3BOlzbuYIXbbXEzaTFMy4CgbADO+86MddwIsvo/4MMj0mJK+SqpCaPDAmcRU4tlXcmdn1+UgsD7z9SrvK9yYpqWpFIs6BcYTANprqmcvU1IP8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SGMO8YgT; arc=none smtp.client-ip=209.85.218.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="aBPIgxKN"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202509052154215b73bc9efe00020736
-        for <xenomai@lists.linux.dev>;
-        Fri, 05 Sep 2025 23:54:22 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=Vo2rsT/aywPgxDcxFZDqzfdY5PtAT/MBCaOQ+TZn5Kw=;
- b=aBPIgxKNsB2rYb2+elwdmXxftuN32ptRxvQC/dvCiiSWOUIGf/wVa8Bo4VlBt2gBrOpDfR
- wRsLGwGnR+lMqL456NMwGSoHgX5y20sMMWSR10WLkLU/a2omySkJPSuGqb5ca2EBFatZKtQe
- RMLFjBWNIkwllQmIlpdDxa6oFMSgfm8naAAkscc2QiIHBCVAJZfbNZ0aBRMiK3jBqbAvOezY
- /Brtq9UufoaMg05i1Mu8O+N/cBkFnYul2aUgg4e5Oq1fN/KiFrVMUIfw8ubmjFNcG0AmO1h6
- wnZZbIu96+i68b1n9YKmVS6lbmBy6uffx0ZLWh8URxs0DIV3sI16Wfkg==;
-Message-ID: <18e3f6b4f6f10574fafa5530be7bbeb1347fcfa1.camel@siemens.com>
-Subject: Re: [PATCH Dovetail v2] irq_pipeline: Fix system freeze triggered
- by periodic edge type IRQs
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Philippe Gerum <philippe.gerum@gmail.com>
-Cc: xenomai@lists.linux.dev, Jan Kiszka <jan.kiszka@siemens.com>
-Date: Fri, 05 Sep 2025 23:54:18 +0200
-In-Reply-To: <87ikhwk7y8.fsf@xenomai.org>
-References: 
-	<20250820-wip-flo-fix-edge-irq-handling-v2-1-1a958d17eace@siemens.com>
-	 <87ikhwk7y8.fsf@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SGMO8YgT"
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-afcb7ace3baso519364266b.3
+        for <xenomai@lists.linux.dev>; Fri, 05 Sep 2025 23:50:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1757141455; x=1757746255; darn=lists.linux.dev;
+        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=M1hXIoP5TwhVwnz5cYLKTPvzLiKsuF3BAd05d8FghT8=;
+        b=SGMO8YgTbNgX7pcKUADHqvt1nUEKvS2TeQ87jEwSBP7iAYSihx+smmDJjX2xLD3iWl
+         l5ztYnfPdXEIDRW57DiCssz4fM+lRLDS4iZrHbST0gNXR1Aj0YlRbNhdE43pT9wGrV/I
+         0+VlY8nMJAL2UBJpxI0OVByf07qvPfUUqlXbEWXL7qBeswzEgWlRi/VU7ZeK5tjgGdc7
+         lHra/AjfPT6KU19oGvE2LTGBnqn4klSX5k0zz/DrkpzPqVbIAwYLpXtGASaCxIi4/2TY
+         nDzBtP4eZoQs62KGNmD5DPRk9Q6X+G1XU65I/ZOn9w2DP2UseVlvqPltUdkuOTLRvjLp
+         vq2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1757141455; x=1757746255;
+        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=M1hXIoP5TwhVwnz5cYLKTPvzLiKsuF3BAd05d8FghT8=;
+        b=IgQydSHmAqTKFlLlU+rcOrAJ4Z6JVmDBDMtv2F5R7IGF1LOTuGZJuTz9YIpoN/3EuK
+         2XTaUOy8SXB9lnnm12WPxTgBc9guB3qlezzGHFrOghKgwXc0Dyeb1xkDqglqNPSAi5kq
+         XQjW3+wK5cJ7nPyjq7/S8z0rYJ//CxY8VYCn+V9m2A3XlzgBFhxtlxrZ5x4oAYuBAnYq
+         aFgElM4AL3r/YFJ8yoVAA3ylgO5h4CyRoArg1aVsfR5Bn7I8g9y0o7lHWLA15iEJK10e
+         jOfcNG9euLxwyV6czfClp3LI4YCSWipDnSabn7LI6yPtDBCwkUqJN2CMVQ5gZdVDWPqP
+         m5Lw==
+X-Gm-Message-State: AOJu0YwkDBf0EhosFTusx99YDE5HUxTPtg1gG4XpLrDgk10nVWkBBFP1
+	qk4FbApNUQm6EUXDOlB/b9UN6Zw8YeW4qDTXbKA/LiZiY23UDR3w00p7AI1dSeiYEMB+2n6bCGy
+	8Qi3Cop0TNjFb7F87jZOC6v/WmJy9wHgdreZ2LQ==
+X-Gm-Gg: ASbGncu/27yBxUFxPs1nJZRfw6ITZwrXlXw2c6PvkTqoWQoi5S5kOuNIsDFBy3dThB9
+	AuThUUBd+HkrEBzDd9hOcqZ4nMqCyh+P7YVdcA8yjR+pRRzswhKsHqHkdnpdlNYBf2OBx+LNTma
+	YxXPqDm7/7lJ2BsYoTXmUOZPLFWWc5HyrqAJjcA1uqTaGNFrsS9s7OquBJfdyTdwWD5B8d6fXE/
+	dhNo5mRfK9sN4RKCNxQElVdiUXKLvsoi4Ir3mfbuxasoSEdJ/ggvH729AAVjp8TFJhBrChtXpJQ
+	8Ls+e3hqWEcIY2s=
+X-Google-Smtp-Source: AGHT+IG2/ck77cmKpbfJXj5awqlT66VbiDe6ELviNmmP1VZ/44XrYLx/D08Z/DtB9ACxRJjETvmoFyv1R4Ck4hJ8keg=
+X-Received: by 2002:a17:907:7290:b0:b04:32ff:5d3a with SMTP id
+ a640c23a62f3a-b04b10081d8mr127077366b.0.1757141454899; Fri, 05 Sep 2025
+ 23:50:54 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+From: Serhii Bulavinov <thebsvi@gmail.com>
+Date: Sat, 6 Sep 2025 08:50:44 +0200
+X-Gm-Features: Ac12FXzAtPsydVMF3m1ZVCizGlALJX669tLu-WE0YXL48_cvhzvayiOIz7d2rBA
+Message-ID: <CAFnWUrcgQideZ8CnoKeKzv1_Fmofzm4755apuB_z1SN9tQZz9Q@mail.gmail.com>
+Subject: [QUESTION] GDB hangs when EVL attached. Ptrace sync ongoing
+To: xenomai@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On Fri, 2025-09-05 at 21:36 +0200, Philippe Gerum wrote:
-> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
->=20
-> > When IRQ pipelining is enabled, it could happen that handle_edge_irq()
-> > is interrupted while syncing the IRQ log - for the very same IRQ.
-> >=20
-> > The pipeline entry code will set the IRQS_PENDING flag and bail out
-> > forcing the sync code (lower part in handle_edge_irq()) to loop to
-> > infinity as the (periodic) IRQ might fire again after calling
-> > unmask_irq() and reaching the hard IRQ enablement in handle_irq_event()=
-.
-> >=20
-> > There is a "race window" involved. To trigger looping to infinity the
-> > IRQ(s) must arrive while processing the IRQ log for the same IRQ in
-> > handle_irq_event().
-> >=20
->=20
-> [snip]
->=20
-> >  kernel/irq/chip.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >=20
-> > diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-> > index 8a0831193d74..0fa3dce5b9fd 100644
-> > --- a/kernel/irq/chip.c
-> > +++ b/kernel/irq/chip.c
-> > @@ -669,6 +669,8 @@ static bool irq_can_handle_pm(struct irq_desc *desc=
-)
-> >  		WARN_ON_ONCE(irq_pipeline_debug() && !in_pipeline());
-> >  		if (irqd_is_wakeup_armed(&desc->irq_data))
-> >  			return true;
-> > +		if (irqd_irq_inprogress(&desc->irq_data))
-> > +			return true;
-> >  	} else if (irq_pm_check_wakeup(desc))
-> >  		return false;
-> > =20
-> >=20
-> > ---
-> > base-commit: eec111a874f5899e1078ef785ccf29dff986e5a0
-> > change-id: 20250820-wip-flo-fix-edge-irq-handling-16e48193aeac
-> >=20
->=20
-> Good catch, this bug was obviously no fun to track down.
->=20
-> The change above raises an issue though: what guarantees us that no hard
-> interrupt context for a given IRQ can run on multiple CPUs in parallel,
-> since the interrupt is not going to be masked anymore? The logic above
-> works if all occurrences hit the same CPU because the pipeline
-> introduces the needed serialization by design via the log, but if an
-> interrupt distributor decides to spray multiple occurrences of that
-> interrupt on multiple CPUs, we could be toast.
+Hello Xenomai community!
 
-I thought about that as well, but as far as I understood the code at
-least x86 and arm64 enforce a single CPU inside the effective affinity
-mask. So for those archs we would be fine - as long as no IRQ migration
-is in flight. Still unsure about others archs...
+I am trying to bring up xenomai4 (6.12.30 kernel) on my custom
+embedded board, evl test passes and hectic reports with no errors. I
+need to have a vscode setup with possibility for debugging for other
+developers. As a debugger I use gdb 15 with default buildroot
+settings.
 
-The live lock situation during IRQ migration can happen on Linux as
-well. There is a fix in flight [1] that will handle that for Linux >=3D
-6.17.=20
+When my thread is attached to evl and I single step inside a function,
+(or place a breakpoint on any function call), gdb hangs.
 
-Ideas welcome.
+- evl ps -l reports status #T -> Ptrace sync ongoing and Stopped on ptrace event
+- If switched inband, problem persists (and as far as I know, any
+signal switches thread to inband anyways).
+- If detached from evl (after being attached), debugging works.
+- If I press Ctrl-C, GDB regains control and then behaves normally
+again until the next function call.
 
-[1] https://github.com/torvalds/linux/commit/8d39d6ec4db5da9899993092227584=
-a97c203fd3
+So it seems the thread is stopped at a SIGTRAP but the event is not
+delivered back to gdbserver.
+
+Is there a solution for this?
+Any guidance or known workarounds would be much appreciated.
+
+I'm pretty new to linux kernel and came from bare metal programming,
+so maybe I'm missing something obvious, and LLMs are of no help either
+:)
+
+Thanks!
+
+My test program, hangs if single stepped in func() or over
+evl_switch_inband, compiled with -O0:
+   volatile int i = 0;
+    void func() {
+        i++;
+    }
+
+    int main(void) {
+        if (evl_attach_self("hello") < 0) {
+            perror("evl_attach_self");
+            return 1;
+        }
+        evl_switch_inband();
+
+        i++;
+        func();
+    }
