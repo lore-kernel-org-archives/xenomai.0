@@ -1,36 +1,45 @@
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8133B2EBDF4
-	for <xenomai@lists.linux.dev>; Mon,  8 Sep 2025 13:52:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.196
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C78B30C367
+	for <xenomai@lists.linux.dev>; Mon,  8 Sep 2025 13:54:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757339575; cv=none; b=dxFZ3tlbu3mjVWygn4nIX7iOSO2st6d4lHe51tVEBlOWpSLamPZ5Nk1z3PCF/83JtgAqoAicqyTxeCdliZFEOdGKIXw3BSjY8qaL3nwCzTXJjEEdoKGFQLI3YXRheBv4ahujJGSHJGuhu2uTKwKmAlRpv5sZoYamBYJ306BSLPI=
+	t=1757339681; cv=none; b=IJJH/alYiWuEtsxNtBNrFwRHcDRlx1JHOfT7M1V9rxAq27I76C+2r3VY4xMnIv0nPPJbdHCiwsKCy/rF5dYNWA0lVmopgqON14wbG4c6p1yUTsWDDE4lwHKJvxVV/MpIk/MkEhGTmxmwfXPd2YrAtHekO9y/lR7y17qMZx+9STM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757339575; c=relaxed/simple;
-	bh=GVqeOKmiSNZDM/AQKa/ulx08pt0EF5JpF4eKy9v5SQ4=;
+	s=arc-20240116; t=1757339681; c=relaxed/simple;
+	bh=nEt7GKoqACz2cBtSRBTG0H198xlGRn6WsRryaI8vBXI=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=j+8W65YjhB2iyfIaxomvz+qypOGsRGkYuGOjjfEIwC73H5qwNlGqXXRhSlXjdIjh/CL+k8UHpKbZ9rPsSHwXotNLfEomef9x6PvvV6LpqW7pi5ND7/GO6ywi9C6EzRZBS4XAziVaB/lOrw7cfO4aA8LTywbJDL3OisNNN/mmr5Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com; spf=fail smtp.mailfrom=gmail.com; arc=none smtp.client-ip=217.70.183.196
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=gmail.com
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 1DE3F42FD8;
-	Mon,  8 Sep 2025 13:52:46 +0000 (UTC)
-From: Philippe Gerum <philippe.gerum@gmail.com>
+	 MIME-Version:Content-Type; b=hdoNz4354LME/QQ9xAReIwOoqbAwyTwzJW/SmNllACBkFHU0uHwpxdFwtCitbqTM4n7KxAd8KIcGKeNoweKMUjRAo/FXIMmYIDlt51JdbjEOT7QDC909IEo5WAl0THg3UlcElEKgUyePZF39ciqKgpxUqzL/5SbsB3oYH/11x5E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=MBHGBdJg; arc=none smtp.client-ip=217.70.183.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="MBHGBdJg"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 7236A4399D;
+	Mon,  8 Sep 2025 13:54:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1757339671;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=DKAg87erqx4ShAfGovktvNVACyR0DasUviRUNxByMjk=;
+	b=MBHGBdJgxDqc5jmc0Q/1NOXAKIEMFEC4/ZEWeIRgRRa9yn/0rJj+yNnPvZOBJKKFBDFf7y
+	Bl/Du3bREYOVqbNeUJ4DvD6JBXscNpKn2RLRoxAcoJoetZo722EFc6zgcCbB6B92cZXFBL
+	QACFn0j4Keg8nObP1Z/tG5KGv5bVpzCBKvdnVfCX1EUBI5btRa1IoWmWJpgWIGTFLHdxR4
+	sAFLuteod9J9bklgOhESZOHOGySYyMKtcUlF66HvPMzC/REqF58ZWqMrw4KyjOt88Pz02+
+	Szk435OU8xiQwVou6K9ejZEpqiaGmdG7C37qmxjgCerZWWwuiP7+/g9EfMT4Og==
+From: Philippe Gerum <rpm@xenomai.org>
 To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: Philippe Gerum <philippe.gerum@gmail.com>,  xenomai@lists.linux.dev,
-  Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: [PATCH Dovetail v2] irq_pipeline: Fix system freeze triggered
- by periodic edge type IRQs
-In-Reply-To: <312c039a18f033ee21137ec9af77b7d5a07ddf6a.camel@siemens.com>
-	(Florian Bezdeka's message of "Mon, 08 Sep 2025 11:23:56 +0200")
-References: <20250820-wip-flo-fix-edge-irq-handling-v2-1-1a958d17eace@siemens.com>
-	<87ikhwk7y8.fsf@xenomai.org>
-	<18e3f6b4f6f10574fafa5530be7bbeb1347fcfa1.camel@siemens.com>
-	<312c039a18f033ee21137ec9af77b7d5a07ddf6a.camel@siemens.com>
+Cc: xenomai@lists.linux.dev
+Subject: Re: [RFC Dovetail 6.16]: Lockdep warning, IRQ while holding
+ pci_config_lock
+In-Reply-To: <2d7bbdc839cb0f78ddb979b35d491a8f4fb9d0c8.camel@siemens.com>
+	(Florian Bezdeka's message of "Mon, 08 Sep 2025 15:35:43 +0200")
+References: <2d7bbdc839cb0f78ddb979b35d491a8f4fb9d0c8.camel@siemens.com>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Mon, 08 Sep 2025 15:52:45 +0200
-Message-ID: <87frcx830y.fsf@xenomai.org>
+Date: Mon, 08 Sep 2025 15:54:31 +0200
+Message-ID: <87a53582y0.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -40,60 +49,22 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-GND-State: clean
 X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggddujeejtdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceophhhihhlihhpphgvrdhgvghruhhmsehgmhgrihhlrdgtohhmqeenucggtffrrghtthgvrhhnpefhkefgtdehueffhefgvedtveetfedvtdeukedvfeffvdejkedugffhteehveelleenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomhepphhhihhlihhpphgvrdhgvghruhhmsehgmhgrihhlrdgtohhmpdhnsggprhgtphhtthhopeegpdhrtghpthhtohepjhgrnhdrkhhishiikhgrsehsihgvmhgvnhhsrdgtohhmpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehphhhilhhiphhpvgdrghgvrhhumhesghhmrghilhdrtghomhdprhgtphhtthhopehflhhorhhirghnrdgsvgiiu
- ggvkhgrsehsihgvmhgvnhhsrdgtohhm
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggddujeejudcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepvdelhfdvheekudehveelgeeitdeujefgkefhieejfedvieejkeegiefgjefhkeegnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopedvpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehflhhorhhirghnrdgsvgiiuggvkhgrsehsihgvmhgvnhhsrdgtohhm
 X-GND-Sasl: rpm@xenomai.org
 
 Florian Bezdeka <florian.bezdeka@siemens.com> writes:
 
+> Hi Philippe,
 >
-> I'm currently testing the following, which is heavily enspired by the
-> upstream Fix for the IRQ migration issue:
+> from time to time I can see the following lockdep warning when testing
+> on qemu.
 >
-> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-> index 45d0ab985068..acb6a580cc7f 100644
-> --- a/kernel/irq/chip.c
-> +++ b/kernel/irq/chip.c
-> @@ -638,6 +638,27 @@ static inline bool should_feed_pipeline(struct irq_desc *desc,
->         }
->  }
->  
-> +static bool irq_active_on_this_cpu(struct irq_desc *desc)
-> +{
-> +       struct irq_data *data = &desc->irq_data;
-> +       const struct cpumask *aff;
-> +
-> +       /* Check if active on any CPU */
-> +       if (!irqd_irq_inprogress(data))
-> +               return false;
-> +
-> +       /* The below works only for single target interrupts */
-> +       if (!IS_ENABLED(CONFIG_GENERIC_IRQ_EFFECTIVE_AFF_MASK) ||
+> I'm not sure if my interpretation is correct. Should we convert
+> pci_config_lock into a hard_spin_lock_t?
+>
 
-CONFIG_GENERIC_IRQ_EFFECTIVE_AFF_MASK is turned off in uniprocessor
-builds which are still available with v6.16, in this case we can and
-want to rely on the pipeline for serializing the IRQs,
-i.e. irq_active_on_this_cpu() should yield true.
-
-> +           !irqd_is_single_target(data) || desc->handle_irq != handle_edge_irq)
-> +               return false;
-> +
-> +       aff = irq_data_get_effective_affinity_mask(data);
-> +       if (cpumask_first(aff) != smp_processor_id())
-> +               return false;
-> +
-> +       return true;
-> +}
-> +
->  static bool irq_can_handle_pm(struct irq_desc *desc)
->  {
->         unsigned int mask = IRQD_IRQ_INPROGRESS | IRQD_WAKEUP_ARMED;
-> @@ -668,6 +689,8 @@ static bool irq_can_handle_pm(struct irq_desc *desc)
->                 WARN_ON_ONCE(irq_pipeline_debug() && !in_pipeline());
->                 if (irqd_is_wakeup_armed(&desc->irq_data))
->                         return true;
-> +               if (irq_active_on_this_cpu(desc))
-> +                       return true;
+No, we can't convert this lock. This would be a massive trauma, both
+with respect to the PCI locking model and latency figures.
 
 -- 
 Philippe.
