@@ -1,112 +1,90 @@
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6A3A2E8B83
-	for <xenomai@lists.linux.dev>; Mon,  8 Sep 2025 12:41:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8309227EA8
+	for <xenomai@lists.linux.dev>; Mon,  8 Sep 2025 12:53:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757335267; cv=none; b=IY/0YBHBaY+7TpGCGsG3R7Fe/UKht30BH9MwFU117Xb69+HRuOEUI/jjtWZBmaoBvSay3wGGHbfN9WOnChmrsRofY+VEkens2H8OiBC8dgJowIj0R/3Uak07q9VoKIx5rhrkylm6dY1KP+AA+IRRS3Y40HHkVbkeCEanDS2g1vQ=
+	t=1757336018; cv=none; b=qSxI1EkjR8Kbi3OMRCM6byq5nQxi6GWZqumanzXZZoTkPfroS9QSkosWb9RxpuHsWsYjWWheV2lNWNXmkWIDCcYIt+XDVHhLzu/gkzA81DlOQswa5frWyWlzrC6tTWON2FSA+cmjDV3L/UMb1SU2SifzEBAcYzz+ebdRGXoaSls=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757335267; c=relaxed/simple;
-	bh=FhTDKqiIs0BzaUvaUzhStRIqekC1dBJcpijLtznlSlg=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=MECX8Sn6fO+Wz1Gxr6nnUgq2pDc5E2h2ba9raHPpfKQefnhW0IxxuTjpLLhSDRo6lrSXI/duiX1UtEXFD6SaOG2cXdiXrMjoZ+lLsD6drG88kh9Il+k+EcHqr7vYf52VjutkteqYsXyNtKYMW9nU6AGaw8dOvoKfUqlMxyFGMOk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=Vs+0xOrU; arc=none smtp.client-ip=217.70.183.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1757336018; c=relaxed/simple;
+	bh=UV49EfyZ+YLQjNV1slfx/gaNE3RUGdLLim63Y7ASj1A=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=l8ru62edsrP3bOeECmz+5QsBSRRwZsgLpnqtiezCgPunqgDlE03awwOlglBrsYvBUmdfLY1DAlrV8W2b+NsmoJo9IdqWoi3MMnVxRYJ+WGZ0Vg/YYLRC4nDtjE0hwk5YDDw+vyEETXZazIzAlEFFAFCAMBfP3wzgv1fVZzpE4JQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=l35Fe7CG; arc=none smtp.client-ip=185.136.65.227
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="Vs+0xOrU"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 04CBC440EF;
-	Mon,  8 Sep 2025 12:40:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1757335256;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=RsXEhhdTGbjyFk0CA/wv8FfHm364n2jQwD6+SOHyId0=;
-	b=Vs+0xOrUNZcnmL8NibDcH2Skk9DaG0PJKD/8TAURv0HlFn+lBuRIXQQsPGOfKDDMeD7f7o
-	VFizVDyb6bb+jwiSynd1d6t5GzvmSxT+EO7Hq+eFlOaJtQxaeVqDzR4v//o0DLwsgxGbOu
-	3EolenKPsEby+PriEdC2MGZuj+Wxea8WLLzpODMOVvvkDSMOUv5DesX/ENyVdMe6PwstVx
-	mAR5tpG5JDX/NMkEOWeya6Cv17vfYOjkGMEpHFDJqJvrGpyfQVqcKv41bEqh2UmyjG2thE
-	1tweW8jcqg+9I3HqPskcnaVXm3RnHhvIj2ly3wPQSyFWhZIqcN1AckCfdTFgqg==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@lists.linux.dev,  Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: [PATCH Dovetail 6.16 v3 3/3] irq_pipeline: Fix pipelining code
- for level triggered IRQs
-In-Reply-To: <20250820-wip-flo-fixes-for-dovetail-6-15-v3-3-ae4a674d8e10@siemens.com>
-	(Florian Bezdeka's message of "Fri, 05 Sep 2025 16:26:27 +0200")
-References: <20250820-wip-flo-fixes-for-dovetail-6-15-v3-0-ae4a674d8e10@siemens.com>
-	<20250820-wip-flo-fixes-for-dovetail-6-15-v3-3-ae4a674d8e10@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Mon, 08 Sep 2025 14:40:55 +0200
-Message-ID: <87ldmp86co.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="l35Fe7CG"
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 2025090812532974611e1f1f00020716
+        for <xenomai@lists.linux.dev>;
+        Mon, 08 Sep 2025 14:53:29 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=j9bNfVGcVvdQZqU+iuzt+U/zuWE8LG70dC0goaIy5dQ=;
+ b=l35Fe7CGNSDfsNs7XVgT8QcYzPyzmCzix8JKfH9nQVEgN7MtVWxgocbN8SURtpTbzjalKT
+ 7GC4RfpwtKyOzMaMvhQtjcKy+nyLfmGjxrgh2aLa5MnVUZ8goH7OVkvJfocw+YXV13T1LVsv
+ P/gpOZRrdvIvsuzrMrxGvOG2i991jxkOxbSIW9A8VNR1//DLDQgwSbWlS9y6JSuNuJojmxTc
+ hxvSKKzPOKG8iyd/R1glyTrL6M9E7UBHQKrE1rLs4aRHi+tLAuIUZRv8qGOiA5+V/E/zS406
+ AlT51Q6H+RUc+CpBYXnPcpUntZvs5tgv0p4kaKttG2olffCW1HOS72VA==;
+Message-ID: <5da04d495818b200d7191b66e578fcc6e1e82d4b.camel@siemens.com>
+Subject: Re: [PATCH Dovetail 6.16 v3 1/3] x86/fpu: dovetail: Fix FPU
+ corruption
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev, Jan Kiszka <jan.kiszka@siemens.com>
+Date: Mon, 08 Sep 2025 14:53:29 +0200
+In-Reply-To: <87wm6986ih.fsf@xenomai.org>
+References: 
+	<20250820-wip-flo-fixes-for-dovetail-6-15-v3-0-ae4a674d8e10@siemens.com>
+		<20250820-wip-flo-fixes-for-dovetail-6-15-v3-1-ae4a674d8e10@siemens.com>
+	 <87wm6986ih.fsf@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggddujeehhecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepvdelhfdvheekudehveelgeeitdeujefgkefhieejfedvieejkeegiefgjefhkeegnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopeefpdhrtghpthhtohepjhgrnhdrkhhishiikhgrsehsihgvmhgvnhhsrdgtohhmpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehflhhorhhirghnrdgsvgiiuggvkhgrsehsihgvmhgvnhhsrdgtohhm
-X-GND-Sasl: rpm@xenomai.org
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+On Mon, 2025-09-08 at 14:37 +0200, Philippe Gerum wrote:
+> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+>=20
+> > diff --git a/arch/x86/include/asm/thread_info.h b/arch/x86/include/asm/=
+thread_info.h
+> > index 77c4c632cef2..2fc72d622229 100644
+> > --- a/arch/x86/include/asm/thread_info.h
+> > +++ b/arch/x86/include/asm/thread_info.h
+> > @@ -237,10 +237,11 @@ static inline int arch_within_stack_frames(const =
+void * const stack,
+> >  #define TS_OFFSTAGE		0x0040	/* Thread is in-flight to OOB context */
+> >  #define TS_OOBTRAP		0x0080	/* Handling a trap from OOB context */
+> > =20
+> > -#define _TLF_OOB		TS_OOB
+> > -#define _TLF_DOVETAIL		TS_DOVETAIL
+> > -#define _TLF_OFFSTAGE		TS_OFFSTAGE
+> > -#define _TLF_OOBTRAP		TS_OOBTRAP
+> > +#define _TLF_OOB			TS_OOB
+> > +#define _TLF_DOVETAIL			TS_DOVETAIL
+> > +#define _TLF_OFFSTAGE			TS_OFFSTAGE
+> > +#define _TLF_OOBTRAP			TS_OOBTRAP
+> > +#define _TLF_KERNEL_FPU_PREEMPTED	0x0100	/* Dovetail: kernel mode FPU =
+section preempted by OOB */
+> >=20
+>=20
+> The TS_* enumeration originates from the upstream implementation, so we
+> added our thread-synchronous flags there. The _TLF_* aliasing comes from
+> the Dovetail implementation, in order to get a common naming scheme
+> because not all archs would define TS_* flags. So we should keep it the
+> current way which is intended to prevent conflicting upstream addition
+> to go unnoticed, i.e. define TS_KERNEL_FPU_PREEMPTED then alias it to
+> _TLF_KERNEL_FPU_PREEMPTED.
 
-> During the last forward port to 6.16 the pipelining code was
-> accidentally removed from handle_level_irq().
->
-> Forward porting the (old) code from 6.15 again to fix this problem.
->
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
->  kernel/irq/chip.c | 22 ++++++++++++++++++++--
->  1 file changed, 20 insertions(+), 2 deletions(-)
->
-> diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-> index 8a0831193d74..f5dfc378ccf2 100644
-> --- a/kernel/irq/chip.c
-> +++ b/kernel/irq/chip.c
-> @@ -846,15 +846,33 @@ static void cond_unmask_irq(struct irq_desc *desc)
->   */
->  void handle_level_irq(struct irq_desc *desc)
->  {
-> +	int flow;
-> +
->  	guard(hybrid_spinlock)(&desc->lock);
-> -	mask_ack_irq(desc);
->  
-> -	if (!irq_can_handle(desc))
-> +	flow = get_flow_step(desc);
-> +	if (may_start_flow(flow)) {
-> +		mask_ack_irq(desc);
-> +
-> +		if (!irq_can_handle(desc))
-> +			return;
-> +	}
-> +
-> +	if (should_feed_pipeline(desc, flow)) {
-> +		if (handle_oob_irq(desc))
-> +			goto out_unmask;
-> +		return;
-> +	}
-> +
-> +	if (flow == IRQ_FLOW_FORWARD) {
-> +		forward_irq_event(desc);
->  		return;
-> +	}
->  
->  	kstat_incr_irqs_this_cpu(desc);
->  	handle_irq_event(desc);
->  
-> +out_unmask:
->  	cond_unmask_irq(desc);
->  }
->  EXPORT_SYMBOL_GPL(handle_level_irq);
+Got it. Will send out v4 soon. Thanks a lot!
 
-Ack.
-
--- 
-Philippe.
+>=20
+> The rest looks good to me.
