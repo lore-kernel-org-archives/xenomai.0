@@ -1,245 +1,196 @@
-Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11013008.outbound.protection.outlook.com [52.101.83.8])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C088E4A21
-	for <xenomai@lists.linux.dev>; Tue,  9 Sep 2025 08:40:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.83.8
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757407235; cv=fail; b=mnzVTfszWd4oWlRrTTTWf+wV4FsebsU7ukvmUxoFvBZPB8j7FhXrN9iTPQwt753m0MSjgVwPCQT7VanoAr7OsTlC0TOy+QEb1Zn7yHM5pMLJOPyWkAGKr1BmgqdKm5JlqC+VDgniio17GN44YdQw2XBt525GmWvTy2lJvBhLk8E=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757407235; c=relaxed/simple;
-	bh=QeV1tu88SefR405h4mFj7ZpY6Sqx9od//tf/oyBGoDg=;
-	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=nxz39yHDoKEI2OPVtVq7uYjX2XdYTe7QsUb1077FctDTu6182jfX4EDPkEBO1a2gbbk5TIqkU90thIDCkhI/BxwyPFgsJZXMY9Z586BT9xe4X7Ef637WLzy4hAd7sJ+rWydAOwT/OLQtLz7SwY3/PfiH93r+EoBTYPI0zqZLN5A=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=KnSUILvk; arc=fail smtp.client-ip=52.101.83.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0C9434A317
+	for <xenomai@lists.linux.dev>; Tue,  9 Sep 2025 13:30:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1757424620; cv=none; b=nLFHrTNN3vspDx67KLeQo2AatzlimLKxwea5gGGaq8VHyc31rdpRIpgYsUmnR/AoQ/m20jBR6SygqciJMnLmNirioKzKEx43zcW3/6pMfAgYL8BmvICwmI4n+iZL5XOKJ6VECYodAZ4dWiCP+4g6ztkvwDU5XWj//yj3prta3KE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1757424620; c=relaxed/simple;
+	bh=2W8yDCMkQ9sfr2UCLX2w5b0EOOak3ipFhNNot9T8/Ak=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=L1S3+7sTRCz4VDVoN8MaGVozmUE8GXlHRNQF5RfAHIaeVL/qShVk4XR2ovf9QBBwfWhkzBAQ6acl/yZJfKaRWvj1bEihJcOxXDXKLNXyTzbS7ooLj3715WJ/XpitZl3fvMSv08tpM6rLhuujdyewlY2VIlQDyumzVNiuBfHay3c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Df5mUiV8; arc=none smtp.client-ip=185.136.65.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="KnSUILvk"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=PPL76WS1Se8ygWkVKRUfPDJlCruhoYt7aN5lfsYmYRr8Xdtf7+3qrhayl4ulltom91RsIiHCN2hwj7ayfjQYKW/OMQ5zGg34mOOCR/WFNMz1rpWDu7Pfs/3QF0B0jbIQ+ta8+ibH5NFqf39HGl6QxoQX20BMz5kOPg4V//TxeFAabutlGfmiLtlztCmrwH2xoZGeNVeyC/5DnWXLQNHiZgAUbvYU2sdqZKYJ4fWroOzhdwbQ1MI59UjHsuiU9zetzU1aYSlKVxhzp1W9ETipleTMImAE0hDoGdel/GQW5+RV6l4DnX1VC1Brdhndqc6+DzviRVBA28Ot4U6RdEPPAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UXzIE87fcNT5qLiPHf44rfd0ESTDVwijsD8TCH/32uI=;
- b=FTXSDtJnoBlDtxndqWgiRGzT4GTjt1+KdRVSTAx+mHB/0VOJhTqCqTUmAoeY6C9IaoNYUFnEixpOmqiNRd1B4sbCsoC7x+e7dehmykehNm7w7OhJFGYxZu4kSwMQOHTuz1/lg8C7JTqBqUYJSCyKV8Vek8wWzsb+oWapXDKx/tuc5zKNvrA/G2moqC/kw3+jnfXpIvScFpGHFMQ6C92wQY8Lea/1/S04k/Q+re/GzZGmKLrvbZx7uZlgEIJ1G9BqqfH10gZKLCbKYFBLR9I2PV7M75co9t6Nfdbcyya10SbTlpwKUvVUqdGmIBDS0rduFDMHINx/kXu9reG4PryfZg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UXzIE87fcNT5qLiPHf44rfd0ESTDVwijsD8TCH/32uI=;
- b=KnSUILvkpkXTvxdJX+DyA1JqwQmDRLaOxqIhlCsd0M+7SJ0kyMJtDl/jpPQRKy3GcFCoA00uED7jAS/OFJS27WNNfmfwllufSQFHhTFYktzMFogE1ShbL5MFagl2Gl8ehMczj/9Q0Ndet0ofYdjEjGS+YQGNVR8z3rW5bSU8Qedirn84XReGTgJg9UHK0FbVWzuEGvaTDrBDsGqVPO4mtA0Z2PQrrugZV42G+6sbuyrG+KhX0hOGp4YS/kXYDARv+bQciOKyW+JF5cQdmRHiyfEX0zzkr9wVUULyIZksD4uxoTNU977IM5cJOMqcYoKICYhh4DHBoWrB/ihkOIdEXQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by PAWPR10MB8115.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:384::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9094.19; Tue, 9 Sep
- 2025 08:40:24 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8fe1:7e71:cf4a:7408%5]) with mapi id 15.20.9094.021; Tue, 9 Sep 2025
- 08:40:24 +0000
-Message-ID: <488f8a8b-c7c6-4a62-98c3-a4e25229d2d3@siemens.com>
-Date: Tue, 9 Sep 2025 10:40:23 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [xenomai-images][PATCH v2] ci: Remove sstate-analyze step from CI
- pipeline
-To: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
-References: <20250909064454.657166-1-tobias.schaffner@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Content-Language: en-US
-Autocrypt: addr=jan.kiszka@siemens.com; keydata=
- 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
-In-Reply-To: <20250909064454.657166-1-tobias.schaffner@siemens.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR4P281CA0024.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:c9::15) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Df5mUiV8"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 2025090913301037e692fcf90002076a
+        for <xenomai@lists.linux.dev>;
+        Tue, 09 Sep 2025 15:30:10 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=M+9j85mk+XkcPAPqC0Ezl/Nyydsei7VtYpvSBe3bUNI=;
+ b=Df5mUiV8btGEelSCT+WXHVKMN4J4MuxibFDuTPxNLPs6OqERlzU3WKsgEBOcAQEm7vEvXF
+ Kj81OVvx45i+8AiScpOzRU3WXyVtnLi1yuKxR5Gb8NSnZYOtFJ7x9ph6sODVdOA+HIWbuhB3
+ Y/lNjEqmKRbD2vKyRriqvpFOkCUsH1zWJ5w7JWzXs0c0JWImrOyiUZDGOa+FmZXKZZ4eGxmD
+ lmEk4Lo58aA6SXXZpePQkaqQOATbXmAL6jMezPevKcxITjjgiJuPQiiq7f+pVMMnBtqlKpMQ
+ dPtYJx5R3HLd5d6Z6PjmiS9g/84TmEVxGMAGDpKfrvAeRAU7oLGcXaWQ==;
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Date: Tue, 09 Sep 2025 15:30:09 +0200
+Subject: [PATCH Dovetail v3] irq_pipeline: Fix system freeze triggered by
+ edge IRQs
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|PAWPR10MB8115:EE_
-X-MS-Office365-Filtering-Correlation-Id: abd57e93-9111-4ba2-091c-08ddef7c84fe
-X-MS-Exchange-AtpMessageProperties: SA
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?WlZ3MUtWT01ycGZKWVhPcjJrVUNvMWZScWdINXpzV1VsUHAza3NZY0Q1Sjk5?=
- =?utf-8?B?UElpaFloZTIrMXowTk8vVkY1WXVmSFVVZXRTeHJld0V0SFozNCtsNlk0MUlD?=
- =?utf-8?B?bVVVazJ1UEJ6LzRzNkNMZldWcFVMTG5FdVZDcHNjelJXK3lTT1k4SVN5LzBz?=
- =?utf-8?B?bkh1U2pmSHpPWGlZc3ZGb2haOWRDNFBHYy9oU2ZRWFIwWUdlZEg3NjdxZmR1?=
- =?utf-8?B?TkNXNXR6U2syaElpMC9qdTF2V3VZaklmZ1BLaXhWSElBcTBhbnpyM0lmYjB4?=
- =?utf-8?B?MzJQNUdUL1kzOTR3OFpaSTB1bzQrVFJ5cUxUcjNYNkpleEIrenVkdGlyZlpO?=
- =?utf-8?B?bTkwVmxUZDMwMENWcE5iVnVoWVIwYUR1ajhYSFN5NkVwMFBLa3EvQk9KeURS?=
- =?utf-8?B?bElXQ0ZDbVNZV21QM3h6cW5uaitzR09vM0ZPMWQ1UytvNWRpdjNscVZRYmMw?=
- =?utf-8?B?a1VPaENxTmxkdU9EU1hFSlhDTjI0cjdkV3ByYjBFVHpiTXpwbVA3SHFuaVhO?=
- =?utf-8?B?QUNvK1FDN2pCL1JCTVJBVFFxdE5EVXpJK082U1JIWHNNYmlUbktvWlhFRkJE?=
- =?utf-8?B?aXpMdFFyMkNtVVduODZIZFhSTU1FZVV6TENGV1BqQzRIL0xkcFc0cGtFSUNE?=
- =?utf-8?B?OFlJUXpSTmp0cDQ4RWdvWGtpK0d6cmMxZTcyWnlKaTZ0c2dtRldMS0NoeSt6?=
- =?utf-8?B?RFBxTTA5UXVOeTlBS0dSckFXeFlqL29nY3B3a2tMVDk1M2tQdW5jTHdhZTA0?=
- =?utf-8?B?dkVtalRxTXBmNE1tek5iZDlmekVlUlI4MFkwVm9jb3FMMEh6MFpyemNEdTBQ?=
- =?utf-8?B?MWJqS0JlUzVYNVpmMjRGcU9HRHhPS2ZKd3ZvMVQrN3ovRWdWUVduUGsvNnhC?=
- =?utf-8?B?OUZjMjU2ckQzcE0vVElZYy9JME4vYjF2bEEvUTJNaWhqQXVObUViR01ZeG0r?=
- =?utf-8?B?L3FGWjczd0p0NFY5aW53bDFjSC9qaHpXRjBFWDZhWUkyakNobFo2QzFZSDNZ?=
- =?utf-8?B?TkZkaFRkYkZhZFFoWTBKR3hhc3JCV0J0L1RVZUFrYW9YWXY1WmVEbmxxcjFp?=
- =?utf-8?B?enRZOTlWUTBUbzcvaTNrZFYvR2Z0U2w4bW9vOWJkVS9kU0FPeWlFeGRmbjVS?=
- =?utf-8?B?dmdWdXd0NWVLKzZzSC9UZUN5ei9uSWlrdElsR3dmbGt1elpURm4yWmVZWU1t?=
- =?utf-8?B?RGZBY0lrbEF6TFoyTzBrd241bTdIWTEveC9yRFhZclJFbG0waVg3VUxDNUEy?=
- =?utf-8?B?VVlRMU5hL2hyTHMyV2lTb0RuUnRxVkMvK0tienViRlhJaU1NUUx1MWloRHBX?=
- =?utf-8?B?WlBTMHFrdDN2eitzdmNIQ1BiL0VZVzV5Mk84Z09yVHhteVhaNUlrMlB0MFQ5?=
- =?utf-8?B?aVNWTG9CRHNhUmc3RXZGQVl4OGVKQXdSNllldjdsdng5TmRDcm5FeHMxT081?=
- =?utf-8?B?bk9wdExNUlQzWkdxQjNtM0pzMVZRL2RHbmh4VnI4ZUN6Szg4QXA0aHJBanVJ?=
- =?utf-8?B?Q1RPNGsyN081djZ3L1d5V2dxVFhvb1NYQmU3c2lFb3BZTnd3bVREMUJ6ZDZs?=
- =?utf-8?B?SFZyMVh1L04vVXpDVms0QmsrUGxYRzVRa3Y3bFBJbExDZVJUZmF1NndXZzBY?=
- =?utf-8?B?WTRvVUJMZ3V5eVB0Z3lzcGpNVkF0VEEvNXdDL2NucnhhUUlacHpqMDU5Z0FK?=
- =?utf-8?B?SVhFMnVTODYvRmFQbjFBWmJibGxNVVRiaWV4YW1zVXMwV2c4YlJnZ3pOTzBv?=
- =?utf-8?B?VUJHVGM5Q2J1RFVRU1RQN3ZZc0pJV29RME1qWDhVWjlFRmZKdmtobXEwcVg0?=
- =?utf-8?B?eHg5YmFDZzE1ZW9QOUhIYzZTSVZFTFp3K0NWVkJJN1R0cW1OcU5QOVpNQkRk?=
- =?utf-8?B?NzJQaUdIeGNaTGZqVW8reXpaMlRqMVE2S2YxY2ZubDhFcVdiSHN1SG1zeTMy?=
- =?utf-8?Q?/FiN3CgJa4Y=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?aXFMWlM1RVVLeHF2ZDc2QlVNdTRGTDNrVzNZZzJCRGFlVWRLOHl4OVVKS1Rk?=
- =?utf-8?B?NFRRODYxOHg2SWp1RmxyMGkxN2NSeEZhaVZvd05QbnAwVE1oK3pmQk1jc0Q1?=
- =?utf-8?B?UklzY2tiZUZGTGZWZ2NscFdSdzlrS09TYURHSHBCNzBSbC90MXNVaFY2RVN5?=
- =?utf-8?B?Ums4S3Q1ays3QlJ0ZHFBYzdFUUVxRmNhVzgrTERGdzZSWUhzY05nMk5xdSsr?=
- =?utf-8?B?a1BoeUJQaG5odFVaaENLdE0rYnBXQTI3bm9Bekg1REJNQkJxRmhLRGhYZnpT?=
- =?utf-8?B?N2lsK3FZYnh2czBPNVpKbm55NGpJL3c3emlsVlc3cmZLeXpjOGpsVTNicTRD?=
- =?utf-8?B?OHBIUjArWVg0YUdDS05VaG1ST2pQUC9PY05KUDM5TGtuK0FUeGlzR3dvMFRo?=
- =?utf-8?B?NWo5UTdpV0hmR2p5NTVHSFZjNFNTL01ta3RUOThBTGFFSWNrUm8zQjJRaW1l?=
- =?utf-8?B?RnhGalA2aTNMdStOd0pnckZGYkVTc1lOQkJqVXI5ZHhFdjBIZGQyOGhHYzNO?=
- =?utf-8?B?RElONURTaEdHU1VUVDBBMy9rYkR3eHlRRlFyR2phTmRkaGdwekY5UmFwNVlC?=
- =?utf-8?B?TTBBRmhJMzBkYW0wcTFtblhnZDZqbEpjaDdBVlZwbTJJSVVxTmFpUXBCTGtU?=
- =?utf-8?B?Q0ZLTVhuRVh6RGlkNEpSYW1uNDZwUXFuWnZhUm1xOTFlOW00Yk1RRFRuN21v?=
- =?utf-8?B?MTNNUWFqbmwrM3F1a2U3dTgrWCtZbG1hVmd5VkFKY3drR3N3OGFuaUhkeUJa?=
- =?utf-8?B?NzdzR3AzbXc5Y3lEQVh3OTl4eGZtZG9nOXUxOUt2OXRNRTUranNqZm5Ba0Jx?=
- =?utf-8?B?SjlESGFYM2V0SUprd0Rkelp6cjNQOE1Ud243bGpMWlFGbWRValJOdVBSSndl?=
- =?utf-8?B?RytrUWhKcCs4N3VlVjlyQzJSdEE4VmxTNkNzcHRrbFkvK3ZTdnJLZjlEcEdR?=
- =?utf-8?B?NUloWEQvc3pXM1MrYVpONWNtUlhGM1hxbC9WV1Zvd1p5Q0lMdkc3d3ROREdQ?=
- =?utf-8?B?U3RHd0FtN1BZMzVIVnJyZC9xa2FObVN6eGRmUlNzOVdQeWxuckNZb0lHZSsr?=
- =?utf-8?B?WENUMVprZXl0TFZkeTVnL0c1cnVRcUhkM0ZVOWEzbnYyNGlwQjBpaFhrMVZX?=
- =?utf-8?B?YVdPU244eW9KcUtuSjRhMllrTnZ2WExoVDlPa2dvenF4RkE2ZUxQTU9OajZt?=
- =?utf-8?B?YWF5dVpySkpRZWwybmo2bUF4U2Fwc3JhNEwvYVpTaVVhR3pWT2NSeFNkYjlC?=
- =?utf-8?B?SVF3bkhkbUVWdTE1dDdtZ2d5bnprd1dQbVN2S1hpcmhzSS9wVzFPZmVSbEJ6?=
- =?utf-8?B?S1hMQWN5WWxZUmw2UVB6ZnU5Vi9JQVY3N2tSQnMvMnlOQXNWWHRneUtJdXRH?=
- =?utf-8?B?bWZiWWRtNE9QSHVKTU5ZRTlGSzhrOG5GWU9Sd3lXTU9JYk1QSUhMSXZ5bXAv?=
- =?utf-8?B?Q1pVV2RQbFlGQUQ5MUJzMnMzelE4OHJteFltOS92RW1rYmVXemVvQUJQQWtP?=
- =?utf-8?B?dzRKNkJ4dGFHejF3YUtFK29HYUMrU3B6SzFySzBQaU4xMVZhbGlybFFZb0Zo?=
- =?utf-8?B?V3dqYkpjc1oyWXhBOWlIS1psanI1ZWQzaGRjVm9yb3FQcW5hOG5RWGs0M01K?=
- =?utf-8?B?SFNLVXpOZDhpM2MzeVNZaU1HWVcyeDdHNnlRR3VUNTdrWTRoNk82U251L241?=
- =?utf-8?B?ZkIzaHpaaGFmQ3YxSm5NY05LUXNuUjZEWnNpSDBiZWY3aENJL2pXcDVGdjdz?=
- =?utf-8?B?RDFBZkU3US9QNDVndUVkSERUSk02a0JNVEpkR1A3VnZrMWg0aVVGZzdGMEJD?=
- =?utf-8?B?djNJLzBLTGV0aEhTN2R0bzIzcXZJalpkTkRWek1idFpsTHdGZUpYdEdmN0VC?=
- =?utf-8?B?cC93VWlTdWpJMUVQRXNoYTQ1cFdXVUV6SDY3QithRWlNNE02SUhQMlp6eDhr?=
- =?utf-8?B?clh5bi9TeE5QNlZZdTZHSi9uOUZiK2YvdFJLdHhpMUtkSi94emF2QlErV0U4?=
- =?utf-8?B?NlMxeEJ5S0xOZ3grczhDVFU1M1FWYXpmTzRyN0JRWW1VSFo4OUNNSHA3cHJQ?=
- =?utf-8?B?aS9wYTdNS0dlWHNQbGVUZnA2R0haRGxEaUI4eUFWc3JzQ2NOb05DbXFNbTBh?=
- =?utf-8?B?ZDNzVEZpbkdhbUxGbHRYZlp2TmNFQmR5TUcxbnN0TDRCaitFNTZPTnFhMFZE?=
- =?utf-8?B?K0E9PQ==?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: abd57e93-9111-4ba2-091c-08ddef7c84fe
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Sep 2025 08:40:24.5410
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5qGfVU+a8+9/tok5kVYDvfUEj/PUNAD7TXLX2P+7+38YbtytdTovJpBR1Lsxem76ZcZkjkbTtvr/R/MsvvYKvw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR10MB8115
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250820-wip-flo-fix-edge-irq-handling-v3-1-8cc08939e6ca@siemens.com>
+X-B4-Tracking: v=1; b=H4sIAOArwGgC/5WPMQ7CMAxFr1JlxqhJKS1MDNwCMaSpSy2FpCQQQ
+ Kh3x2RjA3n6/vb79ktEDIRRbIuXCJgokncsqkUhzKjdCYF61kKVqi5bVcKdJhish4EegP3HDxf
+ gyd6SO4Fc46qVm0qjNoIZnY4IXdDOjExxN2u5OQXk7Rx6EHuf8KrJiiM7I8WrD898TZLZ/zE4S
+ eDSyjRtWXdVo3aR8IwuLo0/Z3ZSf/FU5m3qtpcNP4PfvHme3xKOnf47AQAA
+To: xenomai@lists.linux.dev
+Cc: Florian Bezdeka <florian.bezdeka@siemens.com>, 
+ Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On 09.09.25 08:44, Tobias Schaffner wrote:
-> Do not run sstate-analyze for now, as the cache has been stable
-> for a while and its output can occasionally make the job logs
-> confusing.
-> 
-> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
-> ---
->  ci/gitlab-ci-base.yml | 6 ++----
->  1 file changed, 2 insertions(+), 4 deletions(-)
-> 
-> diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
-> index 875d951..bf1734f 100644
-> --- a/ci/gitlab-ci-base.yml
-> +++ b/ci/gitlab-ci-base.yml
-> @@ -39,10 +39,8 @@ default:
->      - ./isar/scripts/isar-sstate clean "${SSTATE_LOCATION}" --max-age "${SSTATE_MAX_AGE}"
->      - ./isar/scripts/isar-sstate info -v "${SSTATE_LOCATION}"
->  
-> -.sstate-analyze:
-> +.sstate-lint:
->    script:
-> -    - echo "=== Analyze sstate differences with remote ${SSTATE_LOCATION} ==="
-> -    - ./isar/scripts/isar-sstate analyze "build/sstate-cache" "${SSTATE_LOCATION}"
->      - echo "=== Check for cacheability issues in build/sstate-cache ==="
->      - ./isar/scripts/isar-sstate lint "build/sstate-cache"
->            --sources-dir "${CI_PROJECT_DIR}"
-> @@ -80,7 +78,7 @@ default:
->      - du -ah -d1 build/downloads
->      - if [ -n "${USE_S3_BUCKET}" ]; then scripts/deploy_to_aws.sh ${TARGET}; fi
->    after_script:
-> -    - !reference [.sstate-analyze, script]
-> +    - !reference [.sstate-lint, script]
->      - !reference [.sstate-upload, script]
->    cache:
->      - key: downloads-${CACHE_ARCH}-${CACHE_KERNEL}
+When IRQ pipelining is enabled, it could happen that handle_edge_irq()
+is interrupted while syncing the IRQ log - for the very same IRQ.
 
-Thanks, applied.
+The pipeline entry code will set the IRQS_PENDING flag and bail out
+forcing the sync code (lower part in handle_edge_irq()) to loop to
+infinity as the (periodic) IRQ might fire again after calling
+unmask_irq() and reaching the hard IRQ enablement in handle_irq_event().
 
-Jan
+There is a "race window" involved. To trigger looping to infinity the
+IRQ(s) must arrive while processing the IRQ log for the same IRQ in
+handle_irq_event().
 
+Call graph, delivered by a modified NMI handler and NMI injected by
+hyper-v:
+[    5.929380] Call Trace:
+[    5.929381]  <NMI>
+[    5.929383]  default_do_nmi+0xd9/0x110
+[    5.929387]  exc_nmi+0xde/0x110
+[    5.929388]  end_repeat_nmi+0xf/0x53
+[    5.929390] RIP: 0010:mask_ioapic_irq+0x86/0xf0
+[    5.929392] Code:
+[    5.929392] RSP: 0000:ffffa1c680003e48 EFLAGS: 00010086
+[    5.929393] RAX: ffffffffff5fc000 RBX: 0000000000000086 RCX: ffff8e4f01049340
+[    5.929393] RDX: 0000000000203000 RSI: 0000000000010030 RDI: 0000000000000014
+[    5.929394] RBP: ffff8e4f01049320 R08: 0000000000000012 R09: 0000000000000001
+[    5.929394] R10: 0000000000000000 R11: 770e017136e49082 R12: ffffffffac506000
+[    5.929395] R13: ffff8e4f3ec49840 R14: 0000000000000000 R15: 0000000000000000
+[    5.929402]  </NMI>
+[    5.929402]  <IRQ>
+[    5.929402]  handle_edge_irq+0x300/0x320
+[    5.929405]  generic_pipeline_irq_desc+0xc2/0x220
+[    5.929408]  arch_handle_irq+0x5d/0x180
+[    5.929410]  arch_pipeline_entry+0x38/0xf0
+[    5.929413]  asm_common_interrupt+0x22/0x40
+[    5.929421]  handle_irq_event+0xbe/0xe0
+[    5.929424]  handle_edge_irq+0x1ec/0x320
+[    5.929425]  arch_do_IRQ_pipelined+0xa5/0x560
+[    5.929427]  </IRQ>
+[    5.929427]  <TASK>
+[    5.929428]  sync_current_irq_stage+0x191/0x240
+[    5.929430]  __inband_irq_enable+0x48/0x60
+[    5.929431]  setup_IO_APIC+0x36b/0x860
+[    5.929434]  ? ioapic_read_entry+0x1a/0x80
+[    5.929436]  ? clear_IO_APIC_pin+0x1d/0x240
+[    5.929437]  ? clear_IO_APIC_pin+0x190/0x240
+[    5.929440]  apic_intr_mode_init+0x6f/0xf0
+[    5.929441]  x86_late_time_init+0x20/0x40
+[    5.929442]  start_kernel+0x743/0x890
+[    5.929445]  x86_64_start_reservations+0x14/0x30
+[    5.929446]  x86_64_start_kernel+0xc1/0xd0
+[    5.929447]  common_startup_64+0x13e/0x148
+[    5.929452]  </TASK>
+
+Enabling some debug options like CONFIG_PROVE_LOCKING widens this
+window as execution time increases.
+
+If we detect that the very same IRQ line is currently processed while we
+receive another hard irq, the current event is logged into the IRQ log.
+The event gets replayed within the same sync run in
+sync_current_irq_stage().
+
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+Hi all,
+
+the problem could be observed and debuged quite well on hyper-v with
+lockdep enabled and a slightly modified NMI handler to print out the
+current call stack.
+
+This seems to be a long standing issue for Dovetail. We had several
+reports in the past that debug options (like lockdep) on hypervisors
+(like VirtualBox) ended up in a boot failure.
+
+Once we agree that the patch is correct I can send backports, if
+necessary, haven't checked that yet.
+
+Best regards,
+Florian
+
+CC: Philippe Gerum <rpm@xenomai.org>
+CC: Jan Kiszka <jan.kiszka@siemens.com>
+---
+Changes in v3:
+- Introduce irq_active_on_this_cpu() 
+- Link to v2: https://lore.kernel.org/r/20250820-wip-flo-fix-edge-irq-handling-v2-1-1a958d17eace@siemens.com
+
+Changes in v2:
+- v1 crashed qemu, similar to 
+  https://lore.kernel.org/all/20250701163558.2588435-1-liangyan.peng@bytedance.com/
+  so v1 was analyzed further and reworked completely 
+- Link to v1: https://lore.kernel.org/r/20250820-wip-flo-fix-edge-irq-handling-v1-1-1a2c7805b372@siemens.com
+---
+ kernel/irq/chip.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index f5dfc378ccf2..12b820c99bb9 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -639,6 +639,26 @@ static inline bool should_feed_pipeline(struct irq_desc *desc, int state)
+ 	return false;
+ }
+ 
++static bool irq_active_on_this_cpu(struct irq_desc *desc)
++{
++	struct irq_data *data = &desc->irq_data;
++	const struct cpumask *aff;
++
++	/* Check if active on any CPU */
++	if (!irqd_irq_inprogress(data))
++		return false;
++
++	/* The below works only for single target interrupts */
++	if (!irqd_is_single_target(data) || desc->handle_irq != handle_edge_irq)
++		return false;
++
++	aff = irq_data_get_effective_affinity_mask(data);
++	if (cpumask_first(aff) != smp_processor_id())
++		return false;
++
++	return true;
++}
++
+ static bool irq_can_handle_pm(struct irq_desc *desc)
+ {
+ 	unsigned int mask = IRQD_IRQ_INPROGRESS | IRQD_WAKEUP_ARMED;
+@@ -669,6 +689,8 @@ static bool irq_can_handle_pm(struct irq_desc *desc)
+ 		WARN_ON_ONCE(irq_pipeline_debug() && !in_pipeline());
+ 		if (irqd_is_wakeup_armed(&desc->irq_data))
+ 			return true;
++		if (irq_active_on_this_cpu(desc))
++			return true;
+ 	} else if (irq_pm_check_wakeup(desc))
+ 		return false;
+ 
+
+---
+base-commit: fd7ae0eaafd268a5d1cbc2876d6cbe2a284b0d8c
+change-id: 20250820-wip-flo-fix-edge-irq-handling-16e48193aeac
+
+Best regards,
 -- 
-Siemens AG, Foundational Technologies
-Linux Expert Center
+Florian Bezdeka <florian.bezdeka@siemens.com>
+
