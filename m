@@ -1,55 +1,55 @@
-Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013057.outbound.protection.outlook.com [40.107.159.57])
+Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11012018.outbound.protection.outlook.com [52.101.66.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 031BB371E80
-	for <xenomai@lists.linux.dev>; Thu, 11 Sep 2025 17:14:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.57
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25CD02E8DE6
+	for <xenomai@lists.linux.dev>; Thu, 11 Sep 2025 17:37:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.18
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757610898; cv=fail; b=LFys4fZoXFFRrFPyTQ+E0uGFnxE369x+o8ifXTbiO6VenRCxcFcp/atPeCuro/SmpM26z/pjo/JqQI4qGTF+YePXT1HFJUFk3Pa68aJGrLLikV5IZKboxriRKCWq16jDCdR/NjZf+49Nhod5SxydbTLdtMGzMjj5yC5gtPUEZ50=
+	t=1757612280; cv=fail; b=LguayFR1pTKetTK+JZM82PXqB0eoGkpSU5XLWNlXHHmDFab2mUCiCnsy35P3k3Z4NjRX4/tafu/FtRyCeX04UUMll2tUJEb0MPzYHsQkI1cFTCipnfG0JPx2zrvi9cq2Woil3EdjaEbxMu/sbSIVRdw5XweW+hl4fL/KNT5qZAA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757610898; c=relaxed/simple;
-	bh=/0DL1fl0YIoWFyl6H7Ca0udpb/esXDxTQy8Gn4EfDuk=;
+	s=arc-20240116; t=1757612280; c=relaxed/simple;
+	bh=0T6Ra6o8qhRx0aOYAIc/ehLwDYhiuFsexZyiv282gCs=;
 	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=WH7I2TA/X6s7X5A/QRLogo2PPgJ2oBMyi7irg8zON0j3s2dCZYnmg1xy1lHUmZ9hDUgFMpO1EYZ46mRQBmE/bVIq6oxmfYeQg7z5ihx+DkcVQdhqAu3lhRnRQTxwqW44jd/GiM59se9WYIG2RqYEZ5g+Kug+WzGLuR8+4nUQA/E=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=festo.com; spf=pass smtp.mailfrom=festo.com; dkim=pass (1024-bit key) header.d=festo.com header.i=@festo.com header.b=haiU15xi; arc=fail smtp.client-ip=40.107.159.57
+	 Content-Type:MIME-Version; b=ea2b7od8R9xO7jKJD0otJiZbOQKrd5LF4fFeFHeIXxSz2+5ZIlCTg10zCLChLMsjO2BaDpuK1WrsnOMErckZcYFYERvt/Do93txxeLPDr72F+tFgk14DnO1IYrJ9CKqDwuI4q9lu8thEoos0pQVV0S+02TphLtG9sVoq0QFHcQw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=festo.com; spf=pass smtp.mailfrom=festo.com; dkim=pass (1024-bit key) header.d=festo.com header.i=@festo.com header.b=n4osCJxH; arc=fail smtp.client-ip=52.101.66.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=festo.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=festo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=festo.com header.i=@festo.com header.b="haiU15xi"
+	dkim=pass (1024-bit key) header.d=festo.com header.i=@festo.com header.b="n4osCJxH"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=bq1+D2/4ANHQArr1LcE3n8crEUfaZKm987DnCZm+agycHq9tqk8mUwEIRg/cuVCJD4W91UFJeSNcpv3FIxmHvslWpzQw1BVb82v2GbCW18CpxvNaG7eEplQKsoJp+CkYAnKjUpBkYxFlB1X0FtnlAOUO40GzYVl645PZaGlr/JadFu8/dNdQVlfnTMYTxttydj55RK/bFh5osEzJ5vV+eOegK93UhFYxGQ+t3oogJPMP4KjiAN3CjtreuOv50cBZSTWemMptCmF0TuU+kBePE4ijQdoVbYAQRJstEBAdtqVILyCPpl7pb/n97qMS/709P+U3muBLEtGEQYI14N/ozw==
+ b=HkKIFWIUcLEywu0aYelbs11A0+3JhEUBjCFiSVvsjn4Cj4bkcaHojdE7mIlcQWBo6FBN1cxBEWj0ohKKodZuKLhCYO9Z8ws0ng+6vYrmOCJOSy7pQm7TXrYys7OIDEJV/Znh/UcS0vOiQ/SvwH8NK9kcysJOLa11kB6mCOziyt0YOh2ShFbppHQsFTEAEosLwuyg6SofebGJAbws+yAuoH8Jl9PuqlyYS5Zukn/yRxAuC19MAiLRL1ypGcZwxysfDBvlC6PR+eRfUpOnW2hzTiFxvI43AUwf2J1E0NZTIm4pIdfQ0aVYd3/5XW9QciTdPwO0kCVB16BbAZ6Dedq53g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=KKIWrcpHkhzq2pHhb/JX0p9QUz+zjdInx+7MiMV/40c=;
- b=d2Ds77WAo6SIk2n34xv396tFCcq18ygIq7GUC7sNxMryYLRxWeD6qbr9yM9rftLzJgsTG9smEPOUuslzsPpxXZxAYSuD4ER7UzduilwfX3M7sdapT0iEvcyq8EMoErlxg8z/DeiKFDJx/6OzvzxlECwgwuxe80GUrjgnRbt3RH+A29XKCS8/WyDFoo+4+N7Hy7LKzY0U78/NL8GS78U1lUvll0iOfgIrfssUhE19RTSpME7uRZjDAB08VPUTthT1NzUuy2Ovok7RGaGSFPKgSsfqFU3ZRKFV/Ro8JGbczgFvoxx+zzYGgDQKYXBmv+41yCJMPXXyeehAz2U+g0bM7g==
+ bh=89KzUeVUAAui2Zf/NVUxs96DLjTJMpVcCdKT+/EnA/E=;
+ b=mXXf5EjbmkXmxc6V+u1BZ7V7O/pwLZHz0Cje7j9wHdwdxetkN8SKZyXMj83jmkbaaXtRi9CJKyU3g4+ioOvM8a//4o2boIkBudIlTV8+uHlUbBMQ76h3fBclYcB+ON6DuoApR8UHJ2fXU+EOZ+EoGPJAGEP08HXkZW4k3MMTDxgq2J3XpTLULmHvdEQULLV7B6oQjx0ee002QfNDf10wmHAzTh7EyG/WWMe3wSR5MTp6Ujl8u+sNcvxEurt0lyCFhNQYWOLeo4MVZFIzaKgZUrMasnwdecFRt9E1b0U5b4xd+3hxMJDDUakPeN/Qe0Qa9fBL4po+BkJRMs5vO+Kz2g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=festo.com; dmarc=pass action=none header.from=festo.com;
  dkim=pass header.d=festo.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=festo.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=KKIWrcpHkhzq2pHhb/JX0p9QUz+zjdInx+7MiMV/40c=;
- b=haiU15xi1pK/gRcFko7zM7ppOa9y7uIJzN3+zi1mlgvGEJtlduYRj7EBWlMIU/Lu27bp/zT30vaTJXRdfq8C91rq9hwlgV36ynE7uQgwKkY0AVpc8hAMiGdlyRi/5QDQ2WbRKvAIJEigF+gJ/yttpjrrl7igrPxx/IuJnbSxt9w=
+ bh=89KzUeVUAAui2Zf/NVUxs96DLjTJMpVcCdKT+/EnA/E=;
+ b=n4osCJxHmA4VlQxy9kKB8c9+dc8/GnoMI9VwN3XfFmLKu/FJZRRBAJGhBswFxzO+fjOCwobzFDK9lSC6KMlmuDQhk0Rz/03qE3OXgOtbjyqhBPwjAKsHBL3CjzM+iMCitYL5pMjjVnkYStgBfqymWh3XOdbART9Q+vmRr/7sUkY=
 Received: from AS8PR03MB10056.eurprd03.prod.outlook.com (2603:10a6:20b:63d::7)
- by GVXPR03MB11034.eurprd03.prod.outlook.com (2603:10a6:150:287::22) with
+ by DU0PR03MB8910.eurprd03.prod.outlook.com (2603:10a6:10:475::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9094.22; Thu, 11 Sep
- 2025 17:14:51 +0000
+ 2025 17:37:52 +0000
 Received: from AS8PR03MB10056.eurprd03.prod.outlook.com
  ([fe80::5350:1f43:188a:6db5]) by AS8PR03MB10056.eurprd03.prod.outlook.com
  ([fe80::5350:1f43:188a:6db5%3]) with mapi id 15.20.9094.021; Thu, 11 Sep 2025
- 17:14:51 +0000
+ 17:37:52 +0000
 From: "Xie, Nick" <nick.xie@festo.com>
 To: Philippe Gerum <rpm@xenomai.org>
 CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
 Subject: RE: Error during libevl build and runtime settings failed
 Thread-Topic: Error during libevl build and runtime settings failed
 Thread-Index:
- AdvhNCsPSr13v8uwQHKA1c0dN9vzhQhJ1t/wAAMSmAAAFusnuwfrxy3QAAfyhxgAKuLKwA==
-Date: Thu, 11 Sep 2025 17:14:51 +0000
+ AdvhNCsPSr13v8uwQHKA1c0dN9vzhQhJ1t/wAAMSmAAAFusnuwfrxy3QAAfyhxgAKuLKwAABK2KQ
+Date: Thu, 11 Sep 2025 17:37:51 +0000
 Message-ID:
- <AS8PR03MB100561B2E374D4680213E55DD8B09A@AS8PR03MB10056.eurprd03.prod.outlook.com>
+ <AS8PR03MB100561D915B59849E100C37768B09A@AS8PR03MB10056.eurprd03.prod.outlook.com>
 References:
  <AM5PR03MB2882F5ED2ADBA37FAA9562608B7DA@AM5PR03MB2882.eurprd03.prod.outlook.com>
 	<AM5PR03MB2882F38E95A99A0760C60D1F8B27A@AM5PR03MB2882.eurprd03.prod.outlook.com>
@@ -57,7 +57,9 @@ References:
 	<878qk3za1e.fsf@xenomai.org>
 	<AS8PR03MB10056F9D6FBDE93A148E03F5A8B0EA@AS8PR03MB10056.eurprd03.prod.outlook.com>
  <878qimxczv.fsf@xenomai.org>
-In-Reply-To: <878qimxczv.fsf@xenomai.org>
+ <AS8PR03MB100561B2E374D4680213E55DD8B09A@AS8PR03MB10056.eurprd03.prod.outlook.com>
+In-Reply-To:
+ <AS8PR03MB100561B2E374D4680213E55DD8B09A@AS8PR03MB10056.eurprd03.prod.outlook.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach:
@@ -68,70 +70,70 @@ msip_labels:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=festo.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AS8PR03MB10056:EE_|GVXPR03MB11034:EE_
-x-ms-office365-filtering-correlation-id: 26a892a1-8a76-42c3-6467-08ddf156b7e4
+x-ms-traffictypediagnostic: AS8PR03MB10056:EE_|DU0PR03MB8910:EE_
+x-ms-office365-filtering-correlation-id: d995d1ba-8f2b-429e-5e73-08ddf159eef7
 x-ms-reactions: disallow
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|366016|376014|38070700021;
+x-microsoft-antispam: BCL:0;ARA:13230040|366016|376014|1800799024|38070700021;
 x-microsoft-antispam-message-info:
- =?us-ascii?Q?ICvXEZwezg+G0MCxoLR67hFGigV0AbHGXcGnFGQktQqgIM7w42qvtxUr5cfW?=
- =?us-ascii?Q?MtPRJhxOV7lMBOho5TwaaBdWEYmNfw/Aw+zUYMallpoHeo1GVABpo9zRozkF?=
- =?us-ascii?Q?bZFJ/wyCnqL/Wh7jsiokY9xvRHac+xvXtfiss2T6n2YhfTNKEBx+/3FxEhLo?=
- =?us-ascii?Q?VTZ9axEMdSTCd9rz1kUDJNsHNFyhD/cbIk6X+8/jfHdQKYzQ9Sw2p4ZBG8Fi?=
- =?us-ascii?Q?nfN4Ey8Qhay4i/nT/8wSXqvCi+5iII8OnQveYVVmT0TeHOrEnKYpOWPpZ8xH?=
- =?us-ascii?Q?Hpy/Yhxexx7ivcdlsDcGz94rkQK5jGL8JsrdXA4eGQKUDTK/7Sef/h+hoBDU?=
- =?us-ascii?Q?bjwcQOdJ98CM9jqgGVO5hopqwRxBVFbEWf6ZpxZ2HBk85JGZvZRmBSN2y5yY?=
- =?us-ascii?Q?AjmY4MmYOgVy0K6Iv2HKZUrSLqExju8TgTUEQpgx/blLJp7AtKhAMKaAI9P6?=
- =?us-ascii?Q?q6VwJOgBhShD1jt8l34kAYYRsOqbB2C8AUzFfxhwK9DHCmS+4pLyRdTIkNu3?=
- =?us-ascii?Q?7eBdT0F2rS1ELlnyOlfNYME+QVUIn78GP8JAxODPqMqeXnOoSUNBO+GccWGV?=
- =?us-ascii?Q?aGdRfX7sKkkZNTU0XQTALtYbFKUVPmyOlB9vqMOqjiEb1Tu4eSwEAr/K205m?=
- =?us-ascii?Q?pkcL04A/IeoP697Gy3Q88oxp9G3SchbLzcCDG7JReXrPUNQIt9Nz0xrLVRyu?=
- =?us-ascii?Q?FvXHE5M2ZAGkpelQHyszyICVUx8zNUtFma+SPNTRBTkPXLncZtFj0EyEUEkk?=
- =?us-ascii?Q?zbfkQiObboFlrg2RKZKdV/ugxCVpU727i51EHQxTu5/bNxBd8uwCI9MR9zJi?=
- =?us-ascii?Q?ne2g4ZJwhGEhtsSouRODjTeQxib4wKwENnweHj1neHGERIdg7aYVAAFy7ANL?=
- =?us-ascii?Q?tPnLPbgyRZ2z4h6s3AsUT8+9v8w8Uue2mLIi5t719PM19eaB+DBarNFIdxKT?=
- =?us-ascii?Q?tNJfYqlmG21cEUJBg0JnaRelwNhk+GyhJlbicHKMglV/ZRRx5yDAkxp+6CNL?=
- =?us-ascii?Q?m5V1xtVfGvQUCgOWr3VM52UB6aPAobCn1S4zAxtm58JS+gP9602vT2BjQPf9?=
- =?us-ascii?Q?ZzLOAMo3UWAmd3hjkYO7eyuk00FzjCaaq2b49kFDYmI4zSQjp+aBvyAFtr8X?=
- =?us-ascii?Q?9yGr22JSEREBpXgdSU8DUAeKGRhxRLt9sMAFgaJ8uS28nBJClLHyv7i9k21v?=
- =?us-ascii?Q?SQBy6I+PRXthJsjNQf4XFtJaUaVMkVqYTTOE6tJ2DMj82PqgRIajNJenIU5Q?=
- =?us-ascii?Q?t6Qin1JcdbRrVr06Vw/OmVyqB9Sn/U9t5qM4tGoW0B2MrD9lGYK+qPg1Gkvr?=
- =?us-ascii?Q?2skCXxxKJtgkJTx5uBge0ajinXlQOj04q7vh13lpAIVbLcWbCFF/Ld7mYiNk?=
- =?us-ascii?Q?j28CZebcaTjixd4cWWuDG0IcPgR+8h9XCoQ+PgDRcXQlR/WkqRoya++B5SfQ?=
- =?us-ascii?Q?CnSwVgYzcw2IfrS0XYY/yi9gFNzXC500IjipGTvMYSAlGLxGGAaB6tb66XPB?=
- =?us-ascii?Q?Xr0Oa4SQn6xVPuw=3D?=
+ =?us-ascii?Q?zIl3pzixhFz0QiHh2TWN9kB1mja+ZCan+mdmeHqk3bC6HVgk2f6p7zuqo2hr?=
+ =?us-ascii?Q?aT15sLf86vg0veZinyeLZtZpv7T+/EGlvdoBCtrRDfMC1rLkbAZBrw7hxxqH?=
+ =?us-ascii?Q?sX6ccuXGfM3WMX8+hX2YsHn+VjaHwTMxxaAzM5O+f1EYPSdtaimqpPGpX3mT?=
+ =?us-ascii?Q?Q6jlboPO4Hg9BzIu5O+yKBaQZD621cPKujCEnx0O8uydARCXA6Ej8RbYjPnh?=
+ =?us-ascii?Q?wIIsO2XJowKHgH8qed5+i7kcOH7P8WGkbZQ4CuNL7I6i61TPQ6CbmTnDrHc9?=
+ =?us-ascii?Q?gvj7GMoTDnnJvG9fhxipCtb9oNKjCZHDb++S11E/Uu1X4xeLzgeetZ6VyYdP?=
+ =?us-ascii?Q?iD1Qs6XlvtZxsK3ELSUnwaU56mMpJ3PJdB0N9nFYTHwhHFsRpihbqmrZ59nt?=
+ =?us-ascii?Q?9B8+TOgGOAYkYiurbhNRPiXeU974H2tTnX/Sa/6pZybagFBS4y8wURJxY1UB?=
+ =?us-ascii?Q?1WvAewm6lP8YS9KKpmKJf186aJn6b35smww4fJhkLz8H3yoV/mVBpQG185cL?=
+ =?us-ascii?Q?THkPZh9l5DXUa/0eYLI8nzAMqIQLk0JuJXA0u0PMTdVoUUM33t7qtL0yiKYz?=
+ =?us-ascii?Q?ril+efHsRxkLim88wOtaqr9xpdopvjZaoJ/289fogm+B5G84oUacy4/8avb9?=
+ =?us-ascii?Q?NyjySZLUbThYxJdLwN/k+reJKGGjMXquzQUASrop10KaZ+1MbD6xHkLxNVez?=
+ =?us-ascii?Q?jPWkrc5gBf8yamjOX57HsR3OGTGXyHbhg1+xQFp+Amt7Vyt2nM1l2c4xseKj?=
+ =?us-ascii?Q?YhnrAj9jC2OMSGW2ann+IqaXvMTayH5NfH6jn0kvpKFyNbt9uKM+yawNGxbM?=
+ =?us-ascii?Q?FuuNXnrzJAq0n6jqYSzzlRpFsZTP22jGc8Gd0cascHOHrGFhcAcjUREsaHvo?=
+ =?us-ascii?Q?MWmq+0l/WVvJ+iZ0X6TUq9nTBeGDwf0sqPunInfXJC4wXnlK2bhU+h3VZmII?=
+ =?us-ascii?Q?rP5wkJJzg4x23HGwH35rKuWXhWWZnIYCMqInZ7YG9/mIRsrY74rYFZcN42vJ?=
+ =?us-ascii?Q?5WUT74uVoZVHAWB9W0QggmWOeslKdyLwwawWpqBmeTka8Som4MquUs5tvu+g?=
+ =?us-ascii?Q?xIcET4atsbgsDJy3zIFSI2pvPcATxzbYrnhvG+fo6kf/LXYCwSxgNdt8k8Jj?=
+ =?us-ascii?Q?zMJgIK0txpYxZpBhJrirJFuOwkGToWgsLZ6XdVT3g5uXR1BnsvegoSjyFI6T?=
+ =?us-ascii?Q?rwByeAeDty63OQ/pjfyLytgUIuwt3hGzCsDTYfRMZ0SSK7AdzApgVifs//YW?=
+ =?us-ascii?Q?OvLonoEEVxk3BreltMjTgPOfY0BfxH8r7EKEjVpcoetVVjMpXaU0319LAjZ8?=
+ =?us-ascii?Q?lEn1N2KIvrWEBxrb1qQzZgae1JMxUyAXuYatz8rJeZZdcU1PgjS9jejS6duh?=
+ =?us-ascii?Q?Vbt4YcOxD2/JAQlj/kAnLWzizwbMsqJ9F4PdEJd6hYpUipNRP0hQr94C3s1p?=
+ =?us-ascii?Q?PKVYPzCKcVfXqGWggFpr/+wOyzJmpkOIGrOmHBw5OjC3lvehecyry+EGTC/I?=
+ =?us-ascii?Q?otL7ccStSef5JZw=3D?=
 x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR03MB10056.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(38070700021);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR03MB10056.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(38070700021);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?2MYYUGiQ1dIMNNv3phHb709m15axduRqQW2oRSa4FS3grYa4UH/t3Rs3UoBF?=
- =?us-ascii?Q?VGsTaopIuhYOn7Rb8zK9NL/SnghIYTVTEk9UHCoK6Ho9R8R0zu7nRQnOLRsh?=
- =?us-ascii?Q?jk/MVAMoAqrL/yzGk1WEk5UCAs0oUwXhEbPEXLav3MpmJm4nZaV04S7JFq8O?=
- =?us-ascii?Q?wgDQgmVAB8UlR0YsUrKREGR4nkuwJu40d2j+f/nIHONZkNYtPRaVvBaC2aLi?=
- =?us-ascii?Q?WE/e2lbtJEFL0mViOa/kBUjF0JCszbLIHMIMhmgsoQ+68RwwdLJQB3dsuWAe?=
- =?us-ascii?Q?9fwSDvWZi7r/UO8Ed5WEN4/qFYNnDtZey/4XDfRl3UlAx8i8TOO1nQzQbPzx?=
- =?us-ascii?Q?lGuXOi8vfew3O4WFVLn5tbiv99BJ7yR/XswMzlvxWpYIfMhjwjpmEhJPrHQp?=
- =?us-ascii?Q?0KkM6BgDMgCEBc+28FsJLZMdVwoAiiBjk56aHjli4j1TvhYh1LOJY3/e3HLs?=
- =?us-ascii?Q?aSn3xKVEwlwU4VAiQvkEC7yGECw83NhlxuddGnqiC2GIwLLeaLPCGI9gIwxi?=
- =?us-ascii?Q?nPSqevusBFs4Xgdb6Rd80KlqtU7dkN6apuQJcy+WtYO2z4cmCVJaCvRW7tuK?=
- =?us-ascii?Q?ZibEy8VaAkC39XShb3jrINh0pi7Hc15YIbcdCJpjB6JUCzXp+/jNnEGTBAIt?=
- =?us-ascii?Q?pf3JxIDN16qCVAL41xkZijr9VWHG4/rXvOhhffwCJ5ZMVaX/lbSe4awHE9Xs?=
- =?us-ascii?Q?leycxwWOQbqXvVcVg7XCXtSj26iAWvZD9QN7WwFCSObsnUQsIJcRzg2tuC9H?=
- =?us-ascii?Q?Vgi/ZtS7rHnLn3l1lQ7iGqWJKk1yLqyF6Yc9CTHYllkbhKk8qn+cG6gPk8ox?=
- =?us-ascii?Q?d9Tms8voxPukHYtzC2SEAAWHK6BTXAIqNbaoGMi/Jrc67mtIaJdefpCK3Zmk?=
- =?us-ascii?Q?L6OcZvjp1cD+wruhiKW+iY0872T3mYbL+l88jNYjSRBvXOkxKMTmO5GjSkl5?=
- =?us-ascii?Q?XEXf1R/ytLOMYRJTvjshUnv/IwP5SmSy7qA/EwQf+YZe45zTsx+oRn9DBFBb?=
- =?us-ascii?Q?hkTDAwfuW9+ilPJgELyzgb5o5cPtL44Gzcq22rAF7xkcpENzPQAQrNe+THAy?=
- =?us-ascii?Q?0fuJTox6YB/ppAWFYIZRY2v/HsM7WYEvoqB/W/fyVr0CvtzSrzyFgVlGv6Pd?=
- =?us-ascii?Q?rK0bNGoRg4/2TzH0NXhQ1w6ZPbsY48T2cqQdfOOSkALpyyDunKDWX7vPOIBF?=
- =?us-ascii?Q?xPgaHdE5CB80TKEQ/DeXZolub3VIN0Zruep0js3Grck8OtrXxCwKZNYLOTD/?=
- =?us-ascii?Q?LztCZcmj6z1/w7eqD4cz6lqDGHr5r0SMI5XmbBXYT1DugNk+r3wnlx9fcfBx?=
- =?us-ascii?Q?IH/ztEfrOeA5JoPkZ3b7BO/pNTOdT1bHDZz1JjHy0APxbwmVdlSZCgNdnfOK?=
- =?us-ascii?Q?VBDN6mBDo7iJoH0HZsvQ3T2BQQWeXCy6zZ/uQ1O/URk6XChxdxlyfuQ8OkLI?=
- =?us-ascii?Q?Cibe8dY/zXEHoeKu6400oBePic2ICNO4dgHwGJNghB7ANQhVCvNGPWkaT+dG?=
- =?us-ascii?Q?8dL9JqCp4jp3mMqhemmO6cgDEmY3akXsT2xhW1XPfBQ7QpCZi+G5xjTrNR9Y?=
- =?us-ascii?Q?Bjg9OLpj6vv8KR2aeTU=3D?=
+ =?us-ascii?Q?ZPxI0B2W6LtXC6++gUVieDUnfViCb8L+c4XNcen397hmbntdeGpOF+646qrl?=
+ =?us-ascii?Q?vvrBPZ4j7r3utssljraVQvLJC8xhdZUUKXHiHXDf9f8PvPwmTNMVXmDN3WjE?=
+ =?us-ascii?Q?Ue2j9s6qLfE7EogbAEtDCe81SbAdepCxrPiPqOydqdOoOjSxe0se2Z96snan?=
+ =?us-ascii?Q?9Af+ueyiBg+12QrW9htfMlIkcNSSanu0GT5OIssDe4T3f7VU5CgA39qjEByS?=
+ =?us-ascii?Q?M1lA/wB5SiivBOrjL5qyVY4wFuXA2xwmgpM5FN3WFVrSqF8Rlztl6wc7ejOF?=
+ =?us-ascii?Q?X21M8JicNnQyC8gfa1LE2bbPwZ6YO/Yo4VVoDmqb64AHN8+elaczTebfgqDD?=
+ =?us-ascii?Q?Va1HxShH29cvGkvC+tUHNpt4xASJLejy2y+PSbdwyN/2itujyv8qLy7hs+XB?=
+ =?us-ascii?Q?Odo4SDDZzMjgxMG/CrGRkzHrYCOvudi512BzL7qhAt65iISWw+DsTPMbNlnt?=
+ =?us-ascii?Q?hF6VW0bfgcz+ixlY0xVAm+rFLbhBXDe96e//Apy3T1zEH8CBIG1Mm5rT3Sc2?=
+ =?us-ascii?Q?Vs9fvRKqyR+7GpTXXLEzeOJGTQQDyHEuo/KNW+OEFE/XD2Md5nr8o8LGD6ws?=
+ =?us-ascii?Q?uBByI8nWnxJm4VW6EAEwjy/C4JJTmNHg8xd5tzHkhYtW8Azj9wOcjOAopGsr?=
+ =?us-ascii?Q?Jp46BbmHJMroaoxY2s61jEh/Ca51RFNiIPm4Mes9fN7QJGVPJdv26LFUmaCd?=
+ =?us-ascii?Q?ZgntQHf6i/pTTcFey3AdQkQCU+eLG0z69EnAmrck8cc2ycC7Xcq5UPveDqLB?=
+ =?us-ascii?Q?6/3s9AEO9BSHLy0YivYrfIRCtP5hZttD0uwzzWNupgix0Ugw46DhrSKfxVuR?=
+ =?us-ascii?Q?HzhSTdtq6y8wHBqqO35bFqzDiDtFiCDNoIHG16mYqqUy+wGBUWQONB8U2U6e?=
+ =?us-ascii?Q?IMQRHcYF5he1siMV+K+l7qZ2QgdkYoaju5HRAxM0W/v+Utpgr/p2wi17ZLXD?=
+ =?us-ascii?Q?hM+nV5nQPOZ5lHBb+kAfuT+tQR9jwJOUHXInIqhjvavi2PnBYMTruXXY/u8K?=
+ =?us-ascii?Q?CEAVHqKjqMKXA91+dSNn8Lfpx12stZctRgqnckztlHliIcLoo9fbOTa5O8Ll?=
+ =?us-ascii?Q?kOIaCmp3qBz1lOw4qIPHEXbX2tOZjdq3HifAKgmya8Vmc9u3+JgQ3/crubha?=
+ =?us-ascii?Q?a/W+PJ5Bqi0K9lH8hOz3pbwf/tdCa/SdQleFygK1E9w1G4JqZajxH20GksIp?=
+ =?us-ascii?Q?sxdHBFIdOX6WoHeP7+QxpLA+V2Qg188zgTS6dtTwz+SoQCelQqOm+qAphp6X?=
+ =?us-ascii?Q?ltJ3lfBU3iwEn4pKOCmu1EpGAh3tx6+F+d924PaHczabUIDYSCP4Huv+D9nA?=
+ =?us-ascii?Q?OPulcopoocTkCrC3jbTgQCB5DvlizYf5HlJgNAukbQ+nfphpgVEX3HcDkhZ0?=
+ =?us-ascii?Q?tB0oEG1MgpfxbxP5iVjzoUEGGZ14jbDS9RU8BVDhkM2NiiBige0CibIpLhlb?=
+ =?us-ascii?Q?JTapLQ6N+a49eoas6GCceL4kCd+Oll/tpK9TrxmSHWEwnV5EW6Zpm10gWVxO?=
+ =?us-ascii?Q?g6pVEs03jwNO6ENWnxqlAaJ0tCS6WaN1wwMaK/RWKdb67ZKvrJRkGhr8qdkO?=
+ =?us-ascii?Q?aJPD5rdGrRYnAHigDuY=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -143,14 +145,426 @@ MIME-Version: 1.0
 X-OriginatorOrg: festo.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: AS8PR03MB10056.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 26a892a1-8a76-42c3-6467-08ddf156b7e4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Sep 2025 17:14:51.0838
+X-MS-Exchange-CrossTenant-Network-Message-Id: d995d1ba-8f2b-429e-5e73-08ddf159eef7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Sep 2025 17:37:51.9627
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a1ae89fb-21b9-40bf-9d82-a10ae85a2407
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gIp6POIZKRuu8BNseMaaLbWYd/iBE7/+0Th5JoTDe5czc9QdU5X3YW+2URgh9rjs47bVErwYp9aYk1RxM/ZovQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR03MB11034
+X-MS-Exchange-CrossTenant-userprincipalname: O6d5k+GJMm96UpXy3GRagXLNkEIFqf/F9wSBTOTm/pFmZ3P5TcpfMyPWZBn/gOIe1dbuAAayhcu/8srwIpwTsA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR03MB8910
+
+Hi Philippe,
+
+I tried again and fail on install step. It is different from before. Please=
+ see below.=20
+
+nick@nicklinux:~/linux-evl$ sudo make modules_install install
+  INSTALL /lib/modules/6.12.30/modules.builtin
+  INSTALL /lib/modules/6.12.30/modules.builtin.modinfo
+  INSTALL /boot
+run-parts: executing /etc/kernel/postinst.d/initramfs-tools 6.12.30 /boot/v=
+mlinuz-6.12.30
+update-initramfs: Generating /boot/initrd.img-6.12.30
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/crypto/xor.ko error=
+=3DNo such file or directory
+dracut-install: could not get modinfo from 'btrfs': No such file or directo=
+ry
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/crypto/xor.ko error=
+=3DNo such file or directory
+dracut-install: dracut_install '/lib/modules/6.12.30/kernel/crypto/blake2b_=
+generic.ko' '/lib/modules/6.12.30/kernel/crypto/blake2b_generic.ko' ERROR
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/lib/lz4/lz4hc_compre=
+ss.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'f2fs': No such file or director=
+y
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/lib/lz4/lz4hc_compre=
+ss.ko error=3DNo such file or directory
+dracut-install: dracut_install '/lib/modules/6.12.30/kernel/arch/x86/crypto=
+/crc32-pclmul.ko' '/lib/modules/6.12.30/kernel/arch/x86/crypto/crc32-pclmul=
+.ko' ERROR
+dracut-install: dracut_install '/lib/modules/6.12.30/kernel/crypto/crc32_ge=
+neric.ko' '/lib/modules/6.12.30/kernel/crypto/crc32_generic.ko' ERROR
+dracut-install: could not get modinfo from 'isofs': No such file or directo=
+ry
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/fs/nls/nls_ucs2_util=
+s.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'jfs': No such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/fs/nls/nls_ucs2_util=
+s.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'reiserfs': No such file or dire=
+ctory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/lib/crc-itu-t.ko err=
+or=3DNo such file or directory
+dracut-install: could not get modinfo from 'udf': No such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/lib/crc-itu-t.ko err=
+or=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/lib/libcrc32c.ko err=
+or=3DNo such file or directory
+dracut-install: could not get modinfo from 'xfs': No such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/lib/libcrc32c.ko err=
+or=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/fs/lockd/lockd.ko er=
+ror=3DNo such file or directory
+dracut-install: could not get modinfo from 'nfs': No such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/fs/lockd/lockd.ko er=
+ror=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/fs/nfs/nfs.ko error=
+=3DNo such file or directory
+dracut-install: could not get modinfo from 'nfsv2': No such file or directo=
+ry
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/fs/nfs/nfs.ko error=
+=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/fs/nfs_common/nfs_ac=
+l.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'nfsv3': No such file or directo=
+ry
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/fs/nfs_common/nfs_ac=
+l.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/fs/nfs/nfs.ko error=
+=3DNo such file or directory
+dracut-install: could not get modinfo from 'nfsv4': No such file or directo=
+ry
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/fs/nfs/nfs.ko error=
+=3DNo such file or directory
+dracut-install: could not get modinfo from 'psmouse': No such file or direc=
+tory
+dracut-install: could not get modinfo from 'nls_iso8859_1': No such file or=
+ directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/hid/hid.ko e=
+rror=3DNo such file or directory
+dracut-install: could not get modinfo from 'usbhid': No such file or direct=
+ory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/hid/hid.ko e=
+rror=3DNo such file or directory
+dracut-install: could not get modinfo from 'xhci_plat_hcd': No such file or=
+ directory
+dracut-install: could not get modinfo from 'extcon_usb_gpio': No such file =
+or directory
+dracut-install: could not get modinfo from 'extcon_usbc_cros_ec': No such f=
+ile or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/platform/chr=
+ome/cros_ec.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'cros_ec_spi': No such file or d=
+irectory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/platform/chr=
+ome/cros_ec.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/mfd/intel-lp=
+ss.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'intel_lpss_pci': No such file o=
+r directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/mfd/intel-lp=
+ss.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/spi/spi-pxa2=
+xx-core.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'spi_pxa2xx_platform': No such f=
+ile or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/spi/spi-pxa2=
+xx-core.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/dma/dw/dw_dm=
+ac_core.ko error=3DNo such file or directory
+dracut-install: dracut_install '/lib/modules/6.12.30/kernel/drivers/dma/dw/=
+dw_dmac.ko' '/lib/modules/6.12.30/kernel/drivers/dma/dw/dw_dmac.ko' ERROR
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/platform/sur=
+face/aggregator/surface_aggregator.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'surface_aggregator_registry': N=
+o such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/platform/sur=
+face/aggregator/surface_aggregator.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/net/802/garp.ko erro=
+r=3DNo such file or directory
+dracut-install: could not get modinfo from '8021q': No such file or directo=
+ry
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/net/802/garp.ko erro=
+r=3DNo such file or directory
+dracut-install: could not get modinfo from 'ipvlan': No such file or direct=
+ory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/scsi/iscsi_b=
+oot_sysfs.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'be2iscsi': No such file or dire=
+ctory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/scsi/iscsi_b=
+oot_sysfs.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/scsi/libiscs=
+i.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'bnx2i': No such file or directo=
+ry
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/scsi/libiscs=
+i.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/net/ethernet=
+/chelsio/cxgb3/cxgb3.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'cxgb3i': No such file or direct=
+ory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/net/ethernet=
+/chelsio/cxgb3/cxgb3.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/net/ethernet=
+/chelsio/cxgb4/cxgb4.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'cxgb4i': No such file or direct=
+ory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/net/ethernet=
+/chelsio/cxgb4/cxgb4.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/scsi/iscsi_b=
+oot_sysfs.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'qedi': No such file or director=
+y
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/scsi/iscsi_b=
+oot_sysfs.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/scsi/iscsi_b=
+oot_sysfs.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'qla4xxx': No such file or direc=
+tory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/scsi/iscsi_b=
+oot_sysfs.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'scsi_dh_alua': No such file or =
+directory
+dracut-install: could not get modinfo from 'scsi_dh_emc': No such file or d=
+irectory
+dracut-install: could not get modinfo from 'scsi_dh_rdac': No such file or =
+directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/message/fusi=
+on/mptscsih.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'mptfc': No such file or directo=
+ry
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/message/fusi=
+on/mptscsih.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/message/fusi=
+on/mptscsih.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'mptsas': No such file or direct=
+ory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/message/fusi=
+on/mptscsih.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/message/fusi=
+on/mptbase.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'mptscsih': No such file or dire=
+ctory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/message/fusi=
+on/mptbase.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/message/fusi=
+on/mptscsih.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'mptspi': No such file or direct=
+ory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/message/fusi=
+on/mptscsih.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'scsi_transport_srp': No such fi=
+le or directory
+dracut-install: could not get modinfo from 'dax_pmem': No such file or dire=
+ctory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/nvdimm/nd_bt=
+t.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'nd_pmem': No such file or direc=
+tory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/nvdimm/nd_bt=
+t.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/firewire/fir=
+ewire-core.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'firewire_ohci': No such file or=
+ directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/firewire/fir=
+ewire-core.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/firewire/fir=
+ewire-core.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'firewire_sbp2': No such file or=
+ directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x5857750cf910 path=3D/lib/modules/6.12.30/kernel/drivers/firewire/fir=
+ewire-core.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'pwm_cros_ec': No such file or d=
+irectory
+dracut-install: could not get modinfo from 'pwm_bl': No such file or direct=
+ory
+dracut-install: could not get modinfo from '842_decompress': No such file o=
+r directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/md/persisten=
+t-data/dm-persistent-data.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'dm_cache': No such file or dire=
+ctory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/md/persisten=
+t-data/dm-persistent-data.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/md/dm-cache.=
+ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'dm_cache_smq': No such file or =
+directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/md/dm-cache.=
+ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/md/dm-region=
+-hash.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'dm_mirror': No such file or dir=
+ectory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/md/dm-region=
+-hash.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/md/persisten=
+t-data/dm-persistent-data.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'dm_thin_pool': No such file or =
+directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/md/persisten=
+t-data/dm-persistent-data.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/md/dm-region=
+-hash.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/md/raid456.k=
+o error=3DNo such file or directory
+dracut-install: could not get modinfo from 'dm_raid': No such file or direc=
+tory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/md/raid456.k=
+o error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/md/dm-bufio.=
+ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'dm_snapshot': No such file or d=
+irectory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/md/dm-bufio.=
+ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'raid0': No such file or directo=
+ry
+dracut-install: could not get modinfo from 'raid1': No such file or directo=
+ry
+dracut-install: could not get modinfo from 'raid10': No such file or direct=
+ory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/crypto/async_tx/asyn=
+c_raid6_recov.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'raid456': No such file or direc=
+tory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/crypto/async_tx/asyn=
+c_raid6_recov.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/gpu/drm/drm_=
+vram_helper.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'vboxvideo': No such file or dir=
+ectory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/gpu/drm/drm_=
+vram_helper.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/video/vgasta=
+te.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'vga16fb': No such file or direc=
+tory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/video/vgasta=
+te.ko error=3DNo such file or directory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/virtio/virti=
+o_dma_buf.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'virtio_gpu': No such file or di=
+rectory
+libkmod: ERROR ../libkmod/libkmod-module.c:191 kmod_module_parse_depline: c=
+tx=3D0x60a7cff82910 path=3D/lib/modules/6.12.30/kernel/drivers/virtio/virti=
+o_dma_buf.ko error=3DNo such file or directory
+dracut-install: could not get modinfo from 'psmouse': No such file or direc=
+tory
+run-parts: executing /etc/kernel/postinst.d/unattended-upgrades 6.12.30 /bo=
+ot/vmlinuz-6.12.30
+run-parts: executing /etc/kernel/postinst.d/update-notifier 6.12.30 /boot/v=
+mlinuz-6.12.30
+run-parts: executing /etc/kernel/postinst.d/xx-update-initrd-links 6.12.30 =
+/boot/vmlinuz-6.12.30
+run-parts: executing /etc/kernel/postinst.d/zz-shim 6.12.30 /boot/vmlinuz-6=
+.12.30
+run-parts: executing /etc/kernel/postinst.d/zz-update-grub 6.12.30 /boot/vm=
+linuz-6.12.30
+Sourcing file `/etc/default/grub'
+Generating grub configuration file ...
+Found linux image: /boot/vmlinuz-6.12.30-g0014b990ba7f
+Found initrd image: /boot/initrd.img-6.12.30-g0014b990ba7f
+Found linux image: /boot/vmlinuz-6.12.30-g06a9a69b631e
+Found initrd image: /boot/initrd.img-6.12.30-g06a9a69b631e
+Found linux image: /boot/vmlinuz-6.12.30-g06a9a69b631e.old
+Found initrd image: /boot/initrd.img-6.12.30-g06a9a69b631e
+Found linux image: /boot/vmlinuz-6.12.30
+Found initrd image: /boot/initrd.img-6.12.30
+Found linux image: /boot/vmlinuz-6.12.30.old
+Found initrd image: /boot/initrd.img-6.12.30
+Found linux image: /boot/vmlinuz-6.8.0-79-generic
+Found initrd image: /boot/initrd.img-6.8.0-79-generic
+Found linux image: /boot/vmlinuz-6.8.0-60-generic
+Found initrd image: /boot/initrd.img-6.8.0-60-generic
+Found linux image: /boot/vmlinuz-6.6.0-rt15
+Found initrd image: /boot/initrd.img-6.6.0-rt15
+Found linux image: /boot/vmlinuz-6.6.0-060600-generic
+Found initrd image: /boot/initrd.img-6.6.0-060600-generic
+Found memtest86+ 64bit EFI image: /boot/memtest86+x64.efi
+Warning: os-prober will not be executed to detect other bootable partitions=
+.
+Systems on them will not be added to the GRUB boot configuration.
+Check GRUB_DISABLE_OS_PROBER documentation entry.
+Adding boot menu entry for UEFI Firmware Settings ...
+done
+
+-----Original Message-----
+From: Xie, Nick=20
+Sent: Thursday, September 11, 2025 1:15 PM
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev
+Subject: RE: Error during libevl build and runtime settings failed
 
 Hi Philippe,
 
@@ -166,8 +580,8 @@ option under general setup" to get the install done. This is very different=
 ing from the beginning and see any different. Is 6.12 the correct version I=
  can use with new libevl? Do you have other through? Please advise. =20
 
-nick@nicklinux:~/linux-evl$ sudo make modules_install install
-[sudo] password for nick:=20
+nick@nicklinux:~/linux-evl$ sudo make modules_install install [sudo] passwo=
+rd for nick:=20
   INSTALL /lib/modules/6.12.30-g06a9a69b631e/modules.builtin
   INSTALL /lib/modules/6.12.30-g06a9a69b631e/modules.builtin.modinfo
   INSTALL /boot
@@ -181,8 +595,8 @@ run-parts: /etc/kernel/postinst.d/initramfs-tools exited with return code 1
 make[2]: *** [arch/x86/Makefile:321: install] Error 1
 make[1]: *** [/home/nick/linux-evl/Makefile:347: __build_one_by_one] Error =
 2
-make: *** [Makefile:224: __sub-make] Error 2
-nick@nicklinux:~/linux-evl$ make menuconfig
+make: *** [Makefile:224: __sub-make] Error 2 nick@nicklinux:~/linux-evl$ ma=
+ke menuconfig
 
 
 Your configuration changes were NOT saved.
@@ -213,8 +627,8 @@ run-parts: /etc/kernel/postinst.d/initramfs-tools exited with return code 1
 make[2]: *** [arch/x86/Makefile:321: install] Error 1
 make[1]: *** [/home/nick/linux-evl/Makefile:347: __build_one_by_one] Error =
 2
-make: *** [Makefile:224: __sub-make] Error 2
-nick@nicklinux:~/linux-evl$ make menuconfig
+make: *** [Makefile:224: __sub-make] Error 2 nick@nicklinux:~/linux-evl$ ma=
+ke menuconfig
 
 *** End of the configuration.
 *** Execute 'make' to start the build or try 'make help'.
@@ -251,21 +665,18 @@ Found linux image: /boot/vmlinuz-6.12.30-g06a9a69b631e
 Found initrd image: /boot/initrd.img-6.12.30-g06a9a69b631e
 Found linux image: /boot/vmlinuz-6.12.30-g06a9a69b631e.old
 Found initrd image: /boot/initrd.img-6.12.30-g06a9a69b631e
-Found linux image: /boot/vmlinuz-6.12.30
-Found initrd image: /boot/initrd.img-6.12.30
-Found linux image: /boot/vmlinuz-6.12.30.old
-Found initrd image: /boot/initrd.img-6.12.30
-Found linux image: /boot/vmlinuz-6.8.0-79-generic
-Found initrd image: /boot/initrd.img-6.8.0-79-generic
-Found linux image: /boot/vmlinuz-6.8.0-60-generic
-Found initrd image: /boot/initrd.img-6.8.0-60-generic
-Found linux image: /boot/vmlinuz-6.6.0-rt15
-Found initrd image: /boot/initrd.img-6.6.0-rt15
-Found linux image: /boot/vmlinuz-6.6.0-060600-generic
+Found linux image: /boot/vmlinuz-6.12.30 Found initrd image: /boot/initrd.i=
+mg-6.12.30 Found linux image: /boot/vmlinuz-6.12.30.old Found initrd image:=
+ /boot/initrd.img-6.12.30 Found linux image: /boot/vmlinuz-6.8.0-79-generic=
+ Found initrd image: /boot/initrd.img-6.8.0-79-generic Found linux image: /=
+boot/vmlinuz-6.8.0-60-generic Found initrd image: /boot/initrd.img-6.8.0-60=
+-generic Found linux image: /boot/vmlinuz-6.6.0-rt15 Found initrd image: /b=
+oot/initrd.img-6.6.0-rt15 Found linux image: /boot/vmlinuz-6.6.0-060600-gen=
+eric
 Found initrd image: /boot/initrd.img-6.6.0-060600-generic
-Found linux image: /boot/vmlinuz-6.2.0-37-generic
-Found initrd image: /boot/initrd.img-6.2.0-37-generic
-Found memtest86+ 64bit EFI image: /boot/memtest86+x64.efi
+Found linux image: /boot/vmlinuz-6.2.0-37-generic Found initrd image: /boot=
+/initrd.img-6.2.0-37-generic Found memtest86+ 64bit EFI image: /boot/memtes=
+t86+x64.efi
 Warning: os-prober will not be executed to detect other bootable partitions=
 .
 Systems on them will not be added to the GRUB boot configuration.
@@ -278,7 +689,7 @@ Nick Xie=20
 
 
 -----Original Message-----
-From: Philippe Gerum <rpm@xenomai.org>=20
+From: Philippe Gerum <rpm@xenomai.org>
 Sent: Wednesday, September 10, 2025 4:35 PM
 To: Xie, Nick <nick.xie@festo.com>
 Cc: xenomai@lists.linux.dev
