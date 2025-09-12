@@ -1,56 +1,54 @@
-Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011048.outbound.protection.outlook.com [52.101.70.48])
+Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011071.outbound.protection.outlook.com [52.101.65.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 530C11D63F7
-	for <xenomai@lists.linux.dev>; Fri, 12 Sep 2025 05:35:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89FBA3203A4
+	for <xenomai@lists.linux.dev>; Fri, 12 Sep 2025 15:10:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.71
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757655338; cv=fail; b=V7/AUFL1M5/KP3X5H9dyaeFtIaqcqhMkG11oCqGWstlPcWzqJHKhS+Ds0xMhLG83zn2KVVz5NWiK6HD6qADJ1pnN/ZjoMcxs9W0JZ89A8ZG3WlE2srYbit9LA0wQnOTbTX+hxwgzesBg+JgJ2dRsE0f2R7RaX4M7YKdqW/ooPhI=
+	t=1757689832; cv=fail; b=XIJ8yI4fEpEGmZv0Cll5nKYxSNNQ21EwQXW2C3oaE3XwZl7og6cLlxTpsoXKS3KenoZE/YynyiYNX4U9okPuOuKMIDVQ6noxYgOSDioZe5WBdMMhghdliiUpjhiMNQM4ZANNe+i14HoNZkSsIieH9V2TKWYOOaiPEhAisBx0qvg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757655338; c=relaxed/simple;
-	bh=tcCv6d231e9VfMWwSO3puGkIL0rU30PXV3sxuDk8yyc=;
-	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=LVn43fiNqIs4FK3o7cLBL3K9wersMCLYbORhrE3W+oGfr20MwE9zmxdEx7wnuQ/9sEkfuXoPowfSDjmyDsqoprWCXC0UPo6EzhYcGWFETJ1kan5MHjeXoFhEwuHRdEn7+9vXS3bn3l2cnXR2xQgKtK8XHd1rW0cSc5SFQ0HcDR0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=cuMPJp6N; arc=fail smtp.client-ip=52.101.70.48
+	s=arc-20240116; t=1757689832; c=relaxed/simple;
+	bh=L1uBxJIcZwI6epjbbmClWbTc1EbcyC+IbPAExeTf2/4=;
+	h=Message-ID:Date:From:To:Subject:Cc:Content-Type:MIME-Version; b=TTD64hLmK2eds/i7yn8ML8Vabq6JLCmRz/2jcfn6oGUttnMGxNvJlCAhSlqYFwrYL01f9SpnV67eZQKObuM8S3/E68nsVoFCtwpPWiZoCaTWXA0VQUYjonG9+Uw3pOvN8Cb8nITy/CWifl4tZPo87dlrBsWlFpqOmC4sHvP1BOY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=y6JdK4uD; arc=fail smtp.client-ip=52.101.65.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="cuMPJp6N"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="y6JdK4uD"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=vg3juDNhntalWDH+zKiJVQfV8VIE4x+/Vr4M3u3WaizRwYWe+/deZBBqL9XWY56p/z45yRxRTb1XA8kEl1YXLWZe9D0HTZb2alfDJHZP6aqflZHve9refjRp4J1OHwGNYRqPq6hlRlcw/q3r+FQYWw10puqteo1bsFfNiFjQ69TWuSgorT8Otis4taoEGR08M7OitYmNGTXpvjSjZy3qVhZ7D5Bi8j3TNO0pBTvSDT0Yv59VmENEwC4k5yVJF0EMVoFSKctZjpRxlxNaZJv2Xl82X//W3MC4UoYurddow1WN/vEGeJJ6GEKtUerRyHo5KCcwxbh/rqG8TAjPZ/yI3w==
+ b=HFys90NYRoSCUQlOFSYxe+22ZaalFanlN3EZAfGVgvfeGma1sYdmhkv1OLMJLcioSMWtnD+qRB8hpIXV59X3Y34ZExnbuPNdFy857ohH6dm6zHvCWtp/CkvIkCd+yBsJdwuivx/H8CzorJUeyix5r5yjQXHxVCLlLYB6KZMouUbLhF96yLPoUL8b9AVPzi1qdhCOzWsGXO/8c3HysALtFFKrSwvuKhc8frcpgtJdp1OOK+kN2uTUDOdFKj5dwFw1xMHWVvU5QBHRlRlSMwjaoBFhZ+XMXnH6mXoFDzL6keuPxSPvk4obH1Df+YApY7lskOftYPT0p3jJa3I4SOrCHg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OpKkE+8tHfCHoP0x58UBlWpwhoEfqridi4PucdJDlO0=;
- b=lEnzLocL8tC0rRIRuWfrUdt17hh7SA+hXCmLc2tW7capWuqiESnzHvM/U43k8BPHw/Qzk97yafpG8muElchNBbAItdhfyBs2pQxxk5gHQ0E9si85yfmOMmqMeQv2RhGyomN1XiAC4wMiexikcDuCHk4ZFQxSLeR021TNvdLGJn/RwII6WFXp1xU0u+UXtxaiDE7UHxIx3wSrUJqQ2XfRWDWiMXeepTRxKDkVV0p5sd0/EfYoVM0fRm9oKvjBwPgjwemYAE705cWSi91cojX0S3ahPKp9PhAcoahwlxJSO4LM04YRZIm8SFpWq4SLN3MSC56OirotMJ9U74cdMv9rLg==
+ bh=4JuhGRz0QqaOu6cA+dEGyf1V+UgxCv+Efru3eYkW12k=;
+ b=Z+p4IyAdWx4ND2kL4Lfgu8+RLWQv/JZpzyzG6n7ibN20FSKh/Xs0igXEgKmuxazKqyW2ToWT3s+5XbYtAj+Sk5Qq0q7lMm/xANE/wm2ktUhvAIt0/2KZQh03kNeE8egr/x6LxEOQuw+YjmMtuL7MmPmEsBLCXK6Y6VIMCdp4K70ozK6MXKb1/FRDt9OAss0dJuBnLfnFc8ke/Y/NmHg92CZoTjyrdUXxXcOC3IEHssmThbAAruRhJQ5/VezsHGob4tgICxAr4GseGghgn1l8sQsfYrn7taeHh2DdwNlpcbBWhQH3Pq23+LHHldgLlxb9nEyBb/JKoDJa02OLn/5BaQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OpKkE+8tHfCHoP0x58UBlWpwhoEfqridi4PucdJDlO0=;
- b=cuMPJp6NH+dN1WoTZQX8SodGYQ/d97bPNNz9Q/lSjXpBBY154JSNMXWdGFsimL/IvLIUiEcX8qpC1sIZU4wP2kDU2KEEPYhPJ78nicZJIdtsH+kWc+VAtqETqE7ushJN34i60i8RE5GBzyfX4RKIWxyd5WBnwcNN+/gQrfrH7gpdQsat0ZAhyw9f4dbocBJTdFRRrL6LPW4ZZZfxwfw4xakNrNwKWhpyDBt1pnKgURTUeX+HA4uJCoVUSsgfly9SfaEG4TA5E1Z/qUXxtG2DlHR8OTN6AJpTGDafuB3xz/h3PBXEZs7NOWTMHh6oy27tD58DJ9F7SBAGtpHPGGXzPg==
+ bh=4JuhGRz0QqaOu6cA+dEGyf1V+UgxCv+Efru3eYkW12k=;
+ b=y6JdK4uDv0Sz/WN9HZdpu7SmqdHswrgFpw649Q27Oa/2SCCaTKSqBJ92QpkQ2sT0dEyoaXefk7gSEXT5x1Zhi7+x+9nc0JOTWvjudyqaf7WK9eN7QOOqeMwU9xp1hwZhqBDqp21c8m4/IiiOdQNm+nf5L81YhkKtQDgSwpFqC2TDPU4lfW1tnzQ+nXRN7X8SxKcyYoZ/UBMlgG+nTrFyPHtsKFkep2Mvi+3rofF6VC6Z69fEYBzSxZ1tczBR9JMmy2MWIaN6Wf+2Yub0fuwRkNggd96OJdyd1yeWfiurJkwKch76ecDgnjS85VMqSyRJM2V1eVh0NGBi7UPjagFlLg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:76::15)
- by PAVPR10MB6864.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:324::7) with
+ by AM0PR10MB3218.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:186::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9094.22; Fri, 12 Sep
- 2025 05:35:30 +0000
+ 2025 15:10:26 +0000
 Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::7fc:74bb:a781:a286]) by GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::7fc:74bb:a781:a286%6]) with mapi id 15.20.9094.021; Fri, 12 Sep 2025
- 05:35:29 +0000
-Message-ID: <8fe896da-950e-4f76-9386-accd3b87c1d5@siemens.com>
-Date: Fri, 12 Sep 2025 07:35:28 +0200
+ 15:10:26 +0000
+Message-ID: <c62a5bad-f2f8-4fd7-b9a4-01e51e23d605@siemens.com>
+Date: Fri, 12 Sep 2025 17:10:25 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [xenomai-images][ PATCH] armhf: Enable audit syscalls
-To: Quirin Gylstorff <Quirin.Gylstorff@siemens.com>, xenomai@lists.linux.dev,
- florian.bezdeka@siemens.com
-References: <20250911121216.2585340-1-Quirin.Gylstorff@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
+To: Xenomai <xenomai@lists.linux.dev>
+Subject: [PATCH] lib/cobalt: Update vdso parser to latest Linux version
 Content-Language: en-US
+Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
  uNUqthIkgLGWzKugodvkcCK8Wbyw+1vxcl4Lw56WezLsOTfu7oi7Z0vp1XkrLcM0tofTbClW
@@ -94,11 +92,10 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <20250911121216.2585340-1-Quirin.Gylstorff@siemens.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR0P281CA0115.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a8::14) To GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR4P281CA0203.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:e5::6) To GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:150:76::15)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -107,133 +104,366 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: GV2PR10MB6186:EE_|PAVPR10MB6864:EE_
-X-MS-Office365-Filtering-Correlation-Id: 29db332a-378d-4069-5b2e-08ddf1be2f4a
+X-MS-TrafficTypeDiagnostic: GV2PR10MB6186:EE_|AM0PR10MB3218:EE_
+X-MS-Office365-Filtering-Correlation-Id: bdcec6ea-ec53-45be-ba0c-08ddf20e80dd
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|1800799024|376014;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?dWMrcEVUdXZla2pXVkF1MXc5Q3hCc0ZxUFhDWWpSZnE4Q1ZwclZYWkNMRnQ5?=
- =?utf-8?B?K2RKUlpLS2NCc0lYQkJucEEyeFZQMWJML0F1cUNnblFwdGRiRDJleXB5clpI?=
- =?utf-8?B?MFJIZVl5QmMxaGlwZHpJL2FDUkVKS0NYS3g5dkVoOFlYdlBubHB3d1Mvemhv?=
- =?utf-8?B?MGxXVzFFaHlPVm80VWlqcjBBbDJvUmJJeFJLSm1ydFFKZEMrc2pnMERyTVBV?=
- =?utf-8?B?S2JPaEhVRWlzemZTMVFCR1Rja3BqS2s1M0RCczlpS0M1Q2VBVXJwYk5RZ1FG?=
- =?utf-8?B?MUFyemdUOHFqZHU3Q3pndUFYb1ord3VKZ2FTNGo4Y3BvcmxBNHVqbkl6TWQ4?=
- =?utf-8?B?dUJkNUEwejlRenpLdnNmZnJMdkcvYXBnVTgwTFJSSW45OFc0OEdTODZNWWtx?=
- =?utf-8?B?UEFnSEQ2WXNxSnJiVUZVYmExR2tHSEc3ZThwVG5scUQ5VmJHTHFML01nRUlY?=
- =?utf-8?B?ckxMVllQNHFZc2xyMlVBbERRRThIMTR1R3FxazZDaFNDTjNaVnRSR0pLbHJC?=
- =?utf-8?B?bFVSLytoQVdIUGdwY2hHZDRKa0ZJKzVBV1RVaW00R3NKS0U1ZHBTZnQ5UG5m?=
- =?utf-8?B?K2FueHJVZFk5UllTeGFVTjBzZTE3L1Z3cUZGN2ZaYmRkb0prNzVhaTlPSG9j?=
- =?utf-8?B?ZUplQTlsVVBUTElSODJEVEFXZENqUG5YTHNwb1lCd2crRHdlRklDdFo5dDJ6?=
- =?utf-8?B?TmcwQTJETEdENks3MXBnL1E3WEhNUXRneDBCV0NYZjI3VGR4TE1DWVFONnVV?=
- =?utf-8?B?N1pyYU44Ym5SenQ0KzlrM05WOXd3cFlSNTJNU3FhQkVCQm1SNm1NM0hmZHdI?=
- =?utf-8?B?NHp2ZlpQVFRNZmthZ0NsT2JOMW8rcVFJQzJTR2RIRDAxckdDNUNQZHZwMS9z?=
- =?utf-8?B?MTd5ZWRqbFYvSkJDSU9QOGU0M1ZSUHdvVm5kOVpJdVVyR3lDZHFjazVZaW8v?=
- =?utf-8?B?SnBnS1d0YkRqMmxlamhmZm1XL2UrYWhGY3QwdkJHY3ByaUZJSW5sMUVZQ2Uy?=
- =?utf-8?B?ODUyNHBXaGdvT2d2TjhHVHM1TDZLM05aWE0wTGNEcytVVzEvZCtBTEZBK05P?=
- =?utf-8?B?eDV3YjlrWXc3UlRHVjE0MDljcm5VZnFwKzBvNVZNaEJxNWdqTlRJNjZ1cTc2?=
- =?utf-8?B?VzVhNE5uM0xjSytnbkJSdVFPWFJtMXlsVkxoamV2blRVcVFpa3lhODVFM29E?=
- =?utf-8?B?Y3NGYm1pOGdPR3N3VHhoMStFQndtQzJSR0tWTm1OMTN6a1FHVXgvUWUzMEZT?=
- =?utf-8?B?RzhIN0tHLzVSb1J6c2VjdjFTeTVWNW1qM1FnOUdVZ2ZMRjVVNTZrMUtMRXJ3?=
- =?utf-8?B?RjhJc3ZqWlB0QjlOcFd2TjhzUlorbHNNb2VCc2Q5SVZWMjV5S01iYnNLV2xs?=
- =?utf-8?B?VnF2dytTbEg0cGU5SzUvSys3cXNkT1hKeG9nNmZSWTNUUTNaQ2hGWklKRXJu?=
- =?utf-8?B?UC94U1MyTkxLTWNmSWZHb3BaWDhzVTFaZTBTQllqelBScmZGUk1xTUc2YW0r?=
- =?utf-8?B?MmV4Kzd3VEFqK2RXK0dzSTU3RVFkMDFFUzJyck9CZHlKcnNERm5kYWN6UmNG?=
- =?utf-8?B?QUNHZ2JPZmY5cFdPbzJIcTB3WTd1eEk5N2JSaWoyNW03Y2ZadlhOd1Y2cm1m?=
- =?utf-8?B?cWVpSG0wYVIvZVkwS2NTenR3dW9ibk42NGVVekExMnZwTGtCZ0o5Z2VSRnM5?=
- =?utf-8?B?akJqZTFVNDhVT3FvMU1FMU54a3hLZUJXQzl3ZmNITWVzYnBDSkRYZmlVWmpx?=
- =?utf-8?B?aGl1cmo3SmdNVFRzZm5raUs2SDhTTkl3SE1uVEhqWEhhaFF0OS9MTnlpbDgz?=
- =?utf-8?B?TVByalhPeVlQQXNGcXpEUkZtUTZoK1NhcnBqZldXVlBMZDU2Qm83ZkZZYTU5?=
- =?utf-8?B?NGZvQmtxbnFtU2p3UFB4M2RFZXZqNGIxR2NaZlRmQ1UvVTRrVVBYb2RTR1Uv?=
- =?utf-8?Q?DMaZNTYzL4Y=3D?=
+	=?utf-8?B?VStNVkZnRTZvZHV0V3B5OEdvVkwybyt5WnRQL0J1UmgyditJaG8rRUFlS0N3?=
+ =?utf-8?B?Wm0xbklqdDJhZWJndlYzOU9pU3R6cjV5UzA4TllXMXpxV0JTYUhMWW5vQWJS?=
+ =?utf-8?B?VHQ1UDFhWlNBMHNjZzJodHhXbUw1cnFSNUp5Vm1YU29oMVN6ajhRU0xObU1z?=
+ =?utf-8?B?YWpOUW5pZ2M2RHQxbmxzalZFaXplOTMyNjNoTENkaUxPbTNzanpvR2VibHBQ?=
+ =?utf-8?B?NVhFcmZSNGxxYWY4aHBTN1RIT2xKMHpIcnM2T2VFU0w4NTVXS2xSRVIyWGll?=
+ =?utf-8?B?QXVCUnJheFBzcUM3Tll3ZkV0TjRqb2kvczltTE1HcmZ3KzdMZkcrMkUvSmsx?=
+ =?utf-8?B?c0J4Sm5CMnBZZlRwdjBiaEdMa2FyUlY5N040TTdJb0xZaitqaE91TUhGL2ZW?=
+ =?utf-8?B?QS9pYTdCOGJkZnh1ck01d2hjZkhxUUg0Mmd4d0xHVGNoSmdoN3NxV1dhSVli?=
+ =?utf-8?B?b3l6LzN1QjVnVlhFVDl5bHhaQzdWclFxNkc1K2lzYTlPQW1BcnJwUTIvZlBw?=
+ =?utf-8?B?RDAxVkV3eFJzcmxWWVM0bGtwWjlvYlFtelhnWXM2aXMzVU1KWGRpeEVFaUk2?=
+ =?utf-8?B?bXB4aFBvK09qV053cm5rbXB0THVRaTBMSldNOTEveU9PTG5jcWlabVFLTE8z?=
+ =?utf-8?B?eElxNEFpZmNvc3pXeEovZEw0S2YxUW9Ua3hjeEw1QWxrRmg4UWhzc1h0QzJt?=
+ =?utf-8?B?NFBsNEttOHMwaS8xU1Y3VDNvTC9vbE9yQlhTUGwySlhlOGExSEdJemllamtj?=
+ =?utf-8?B?Zm1zZzJSNzV6WGs4aTZZVzcvYTFMMEM5ZDM1aWZVRkQ0MDhnS3lxTzFpWGdW?=
+ =?utf-8?B?U2l3cVRuZWw4M04zTm51amNpd2p6SXgyRXpjQ1l6K2VtbkJvUnJCVi9oaDFF?=
+ =?utf-8?B?Qk9iOGRTMGdIVWdtWFNqUTBOaFRsZHhaT1laTXRCeVN5QlpWNU0xSTQ3aG1m?=
+ =?utf-8?B?OHNyTURzdzRPNklMMlh0dlVkVFllbDVGMWwrQmxqMEhLbHJyaDFtUzJ4WVhx?=
+ =?utf-8?B?Nm1UNEhkL2ZEb1JEVGhhb2hHamJDdWZMODZRN3JIY3AwUTUreWY4c0J4YnNB?=
+ =?utf-8?B?dERRMnVjU3BGRzZlWC9DblhxY280T3NSYm80L0UvbDhpWGxPcmp5T0JTOXhH?=
+ =?utf-8?B?VElFWEhnU2ZMcnNxRUllcE1BZVNaRjAxK0VRQjRIbDJ3eE1SeWVzQXFUZ3Jn?=
+ =?utf-8?B?R2pGQ1kvWTQ4QUc5WldBZjNuQk96VGpxcnFvTlUxQ0dMTkk5YXF5MkdvL1hk?=
+ =?utf-8?B?aWdFN1QvOGJRbVE3aEoyNDFpSytQREdYT3RoUXJQZjVQaHNSV3JjU2pic3Bq?=
+ =?utf-8?B?UUVBL2FkRmMxS3hocDFHelowMmt5aEFTQ0duUm5ieDZTWVJUQ1YzUUdrNnpB?=
+ =?utf-8?B?ZkxhSmoyTG1BblRTeDFOK3dyMWlqdFhQQWVlTzFkcE0rUlVLWUd5OXhrclg1?=
+ =?utf-8?B?NVBYOWF0L29Fb0lOQWZ0SUx1M2Qvb1o1c1lFMitacGxTUTM4Y1VpYTdUaC9Z?=
+ =?utf-8?B?RVpJKzJLa0JERmRtQWl5ZjNPeUJ2T2pNWUR3MjJQQStpbXJSQVBOaCtERTRO?=
+ =?utf-8?B?Mk5oWTNGY3NXOSs3NTV0cVdMcjBhZWhTTGY5dmtjQVRiQ1dZTFZHMUVDalN1?=
+ =?utf-8?B?bFpnQTliY0FUSnN5NitpZFdNaXBjMkhvMHhIN3J0UEg1dWFvRUJzL2oxdWlP?=
+ =?utf-8?B?WGVmeXpudjh4OGdrU3ZVQWFhVHVkVkxVN2t5WXdXd0hFcWM1RnJ6dW5DM3o2?=
+ =?utf-8?B?ZWlPRkltZURBOExpZkhNVkhocFo5aHROYnlzWmZyS0tWVGNxNExCOGFObjFB?=
+ =?utf-8?B?WnU1cXUrOVRFaVIrUVNZQ2NKZzBXdzZBYUdFMWs4cmdsMGlLOGlhaG1hdnVu?=
+ =?utf-8?B?dGV3SlZvYmtXalZZT2ovUnhxOFBmamUwUW14L20yblFROVF3eWF4QVlYckNO?=
+ =?utf-8?Q?zJiolPpcBLg=3D?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?b1hWNEs4Mk8vUXBMMGwySG9HYmhIUmNsOEVCaTNTNW1tK2VBeUt6V1M5cWc2?=
- =?utf-8?B?QzFPangzSjc4MFV0MWJkY2ZUM0lielV6dlE1L01Vb3g1SlgxOWhtMVV2aHVm?=
- =?utf-8?B?SkZIRUcveEVETExVTGlUZzIxY2J2QUI3RWtaM2ZQMDJuY3E5RE1xanJKdTFF?=
- =?utf-8?B?ZzZhMllyTWovQ3FSVnMxQ0JoK0Rla3hwY1RtRnVzbld0ZFBHTUFDTlZJd3VX?=
- =?utf-8?B?VytPV1hTRFFQZXg4bjhhMGVieHhPSUN3ekRVY1hTdlZCOFltdFdRSUtRcG00?=
- =?utf-8?B?eVdtTXBQVnVtNkJDMjZ3Smpkc1V3alpFZ2hDa0FDeFVmL0RuaGpQM3JCaDJX?=
- =?utf-8?B?cnpOMmI4RHpYS1JLMlloNWdZVEIwbFNvRlkycCtzU0sySzk0K1Q0ZHBUeSsx?=
- =?utf-8?B?eS9YUU5jWlRPaDA4cTBBbUQxeWE5VERiTlpCVVdzc1hSR2xZOGRPSGpGSWtM?=
- =?utf-8?B?cmRZU3VHNW8zVmxYeHZZRksyc3lrRTlqK05sQllKQTNYM1hqZ0JkMkx4QUE5?=
- =?utf-8?B?RHVQRmZkMUlrcEthaEJ0emRhNUdUUjg4NDcyZVQ3anM1MUhPVjEyTVlrdHZj?=
- =?utf-8?B?VElhTmZyaHgrTDlBY2czRUpoTU5mRzluR05lTWd4YzIzKzU0QUU2VTdZdjJS?=
- =?utf-8?B?S0VmaG9neXF0WlZhTm1WeWM0MTRUVjJmL0RpMzVpZWdOUUlFRy91c0J4WHRC?=
- =?utf-8?B?SHNQT1dsY1E0YTR3QlBkc3lhMkdrRFhZSGUxT0t6b2FTNlI4MW5ORTExSmNo?=
- =?utf-8?B?citneDVlVW04ODZHcEQzd3FTcVJ1ZFFGcXROVDFYRVlBSDRCWmhuaFpvZE84?=
- =?utf-8?B?VzA0UVltZ0JTWkljWVgvbUhEaVYvMUZ6MTIxTHJsQ0FLWEEzcDc1QzJlWkRs?=
- =?utf-8?B?MUxaT1lYbVFZc0xCWUpaNXN6b054emEzL1NmQ1MwV3NDcVlndFViUW1uOU5V?=
- =?utf-8?B?ektBL2pBMlNWS2dkYlduU2RKd3FWSjRDR0pZeVVsMnp0RGVDejc2dkFtVU05?=
- =?utf-8?B?OW9Ka05rbno0cHl0YS9qYU91VzdscG5FOGFneUYxTkh0Z09ib3VaYkFkdVAx?=
- =?utf-8?B?dTRCdTRoVUVheTF2SjhHeEQ2OWlCSmlLVjNINmhncEJkdGthSGMrMStmWHBz?=
- =?utf-8?B?RjMyRUxzWVdMdG1GeThZWXlJOVlPbWhZWHFHcjcvQW52RmlKZHJWZ1U5c2hs?=
- =?utf-8?B?Wkk1S2xKNEZpWllXSDgxVTJ5ZUhrOVVTWHlaRGtrNFUxMTRIVHhQalR6U05a?=
- =?utf-8?B?aXJoYWlvTTdQZUw0UXg3NTlKWjNvT0hzUnAvU3E4MUZrV045eDlyMnVmeWRm?=
- =?utf-8?B?UHpobVBMUEFBZ2o3RllHQzdOTjVDWEFoWDFGaVJmTGtTYzVKVThya0pQZC9C?=
- =?utf-8?B?RUdFZVhtL2c2T2N3VE9Vd0c4S1l3QjM4TjlPRnA4MktHdkZON25XM3M1MmZT?=
- =?utf-8?B?a2ZFZUttd0YvOHowNW83WEU0N05URXlSSUFYeHg2Z2p1NldjdklLRHVOZzRq?=
- =?utf-8?B?K3VON3hBRm1ybnN2YUtpajJUL3pGOWRqZnZpNkpLendDUElQYTdhNkxGcmw1?=
- =?utf-8?B?QmVOS1RuNXBITHc5MjVidFQ2NWdaWUdmS0xML2JWTlpuN3crWG54WGVhcjNS?=
- =?utf-8?B?bnFSbHVaelkvR0UyK1BvS3FtNXBsVGQxWmNPWHE5RUxJbTlraTc1RWdwMUda?=
- =?utf-8?B?c2JPZkZLVWtjdTBUR0R4b3pjRzVkYk1QR2tDTFFBRlFQNmFITThYWFZIUzAw?=
- =?utf-8?B?VUcvYmtNdklXeGlkdFhtSVR0ZDFKR1d5VDRFL1BRRXBVcXBuSGxHZENJSWVk?=
- =?utf-8?B?TjQzOFpqMUVpOWduWmprdGpZcVA5aUNQUXArZG5XdHZ3UDVnQkhRdmpvVjla?=
- =?utf-8?B?S3IvZ0hLV3BBbWR0MjdSaU9BV1hhV1VETkJjbVBSVW5xMmtBUjJJQW42VnYr?=
- =?utf-8?B?THJLbSs0c0U4QnNQa2tQZ2pFOW15dlhydWxucHVwNlBtM1pVTnMycXBDaDkw?=
- =?utf-8?B?Q01jM3VhUDlLcHNWUWxoeEluYldkQ3FDNGJiWlRiWGR6WHpNMlg5ZGx4YTdn?=
- =?utf-8?B?U3BtdVd2bmVhTk40QklDRU5TVVBrTHVOaGh6dXJ6bUpqTHg3ZHJGeHdNSExO?=
- =?utf-8?Q?bkRW9ybvyEl0wGZHz2ibN7C0Z?=
+	=?utf-8?B?bzM2eG5lZDRmK2ZPWk1VbS84eEVGckJpTWZBSVBrbG9NSXVONDZoNUtoMEt5?=
+ =?utf-8?B?WlNhRU1tSW5VTFJaR1dHWkhvMDIwQzI5Y3B1WlVlT2JzUDFpOUZaS0pqMmVa?=
+ =?utf-8?B?TjZlT3VtTG5BK3BuTHdFZSszUnB0cDcyd0RwUWgrOXFWL05Fb0xZSWZDN21n?=
+ =?utf-8?B?Y3RWdUZabHp2UGozYTgrVGY2dlEwTk5ibGVFSGIzVlA0TzE0MmRQQVlxOGkw?=
+ =?utf-8?B?M0JRUkt4UjluU1JIOTNTR1ZXVWk4cnVaK0htVDRaQzVHWFQ0cFYyaWJ3RDNK?=
+ =?utf-8?B?NnBROWE2M203aUkzOW5XRll5aVlDc0xMNnlQSkE0cFZaY09Wdms2SXZsdmt2?=
+ =?utf-8?B?a3Jub1ltcUNMYUtjdGVQbzQxVVJkcm9wSTdJdmY5VXEvdm1TNnNNVXZscjVX?=
+ =?utf-8?B?VHJraWxSSUs5WU1CKzc3SUlscG5wTER0ZmM5NnpKKzF4bGwzQmk4NG9VUlFZ?=
+ =?utf-8?B?Y3hSRldCSHQ5SmQvZWYxSG9yZDg3RWpuM3o1amNWdzROaTF1WVBsSnd0WHFY?=
+ =?utf-8?B?RWxGOUZCK25jVVg4T29PUGZZbjlBNGg0RW4rQTZSdTFNSzJJQW1vMVQ0U2Y1?=
+ =?utf-8?B?V2Iwd1ZoWFFRdTlXZHJncmswTVBGMWhDVnhPaVE5UTg5ci9SNWhKeEhhV1h1?=
+ =?utf-8?B?NkpuVEZXRU4yYTZQUEJUcXNTZWdKckROM05pYW50aHVRUkt3dDFCVno5VmdV?=
+ =?utf-8?B?M2pCNWppYVBIK28xREZ2OCtXU1NjcDVUUGVCR1hxL3Vydm15RHcwdUdrYTB1?=
+ =?utf-8?B?VWwxOHpUV0RuQXNJeXRwWmxyaDNxNDNCTUd4aCtRV0Q5blZjRUZ1Z0lIcmM1?=
+ =?utf-8?B?b3VQemtEanljLzNoN0xjSEczUG9qNHh2T2REVitHNWNFNFZpaXZsUlF3UFQz?=
+ =?utf-8?B?T2xadkNmTmljVXQxdDE2RHZtWVZFUGxYYzFzaHpVTzBySzducFFFU2lxNmwy?=
+ =?utf-8?B?OGdZTXE4YUxYSkhWZnZDRW1VWmlhMldpVHRjaFhEa1RJNlBFWWVHdVVyMXdi?=
+ =?utf-8?B?MEY3OWRnODRZazFldFVCSkNwQjhsUlVBZnJtSVRnTzJZWlZTS0c3NkRMaGV0?=
+ =?utf-8?B?Mm1neVB0WkQ2MVBWd0tDdk9CbGlwRzFtTGpxamorcnFoR1VHSkw2U3NLRGQ2?=
+ =?utf-8?B?V0wwL2pEeXJKZVliV2MwTjdodkFWQlhIbHZ0YjE1ZkxKL1NUcWl1ZFE3UzdK?=
+ =?utf-8?B?dlU4UUdPRE9QaVFpbm92RkR5N3l3eUNaeXJ0QndNMEQwYXFxUXVWb01iMFp1?=
+ =?utf-8?B?eFVLeFlxWVRHWVBSUS8ySHlienk4MnArOW5JWG0rT0N4cU93QlFxcWVqOWxn?=
+ =?utf-8?B?SFB3QXd6UVJnVnJrdlBGRWVBa0lEMlFTQmpBcHV5Z3NSZU5SY2dqT2NLbm9M?=
+ =?utf-8?B?Njl3V2dOUGRONTRVQmFhdk9pU3prNWpHZ0RHZ0ErbWZNanNlcU1tQWtQdHdN?=
+ =?utf-8?B?UlVkM0VKRUF2VWhoR2MrZW95bisrR0dIYkVOVHlSYTVGY28zNkF0Q0dvYmE0?=
+ =?utf-8?B?cUVLWklMV21hcjAwb1JRODAyYTltNWRDTVgzMEE1UmF2V0hWK29aZnc4WXY2?=
+ =?utf-8?B?UkNRckJyQmlNVmZoMHlZVE5meVNjZmF6VHJQQWg4a3RpazdUcjI0S2hRQTR0?=
+ =?utf-8?B?S3RKZE5EZUdYRkUxWi9CUjZaUENmRnoxOHM4bXgzdzNYdDFhVDVXY0pVS2V4?=
+ =?utf-8?B?REJ5OFBUekdGL3BMdk01aVpibnk2WERNQkpvTGdPeDJuSzRleDZkSGhkM0dC?=
+ =?utf-8?B?RXdqb0VSZmZFZFhVcFZUL1VTbHB2ek1RcmlOcklkTVZJeThOamNDMmF1QWtx?=
+ =?utf-8?B?alY3UWd3UjZVOXBsTk5FNVZUNFVFS2NaeVJqWWN2dWd2NEJYV3hlcmlSdjg0?=
+ =?utf-8?B?SUVYWVRld1ErYXBjbk9tWGxNQ0E2WUdyaUwrclQ1ejBZam5xbzRVb2luZ3Rq?=
+ =?utf-8?B?OWhacko4ZDlhZFI2Tk50SVhhYlRCeFZiQ0VibmJubFN2N0QrM25hbW16MnhF?=
+ =?utf-8?B?ekFuMk5FbmNQbmIzdHExdE40YjIwdFh0SnFCVmNpMU43a0dwc0RPMW55SVh2?=
+ =?utf-8?B?WE1YRzh6bEc1TUdNeHBHZW9HQ1NHb1FRQ2wzbU5FQTczQ0lqNXQ0WUs3cFdm?=
+ =?utf-8?B?QTVjSnZvelZuNFZSODlUTkdXN3BhRTQ0a3ErQ3BZQS92b3BwMHNHc1lNODJn?=
+ =?utf-8?B?eHc9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 29db332a-378d-4069-5b2e-08ddf1be2f4a
+X-MS-Exchange-CrossTenant-Network-Message-Id: bdcec6ea-ec53-45be-ba0c-08ddf20e80dd
 X-MS-Exchange-CrossTenant-AuthSource: GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Sep 2025 05:35:29.8539
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Sep 2025 15:10:26.4409
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: m1K5B/yOdICtOVUAw4Of3YtCRoXu465ZJAbY8xG2CLH6sbcv0qkuFz3Shj2CyKK4icQHucGis2TpiiTl6IBdxw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR10MB6864
+X-MS-Exchange-CrossTenant-UserPrincipalName: 4l2izflaNE9W3xqN+yYNgwSAjI5023OcQncRQy6rTfch1k51OvLabuyb1A98WimM2Ql5ymk+CaooctDC32CylQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB3218
 
-On 11.09.25 14:11, Quirin Gylstorff wrote:
-> From: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> 
-> This fixes the following error during the execution of the LAVA
-> testsuites:
-> [[0;1;31mFAILED[0m] Failed to start [0;1;39mauditd.ser…e[0m - Security Auditing Service.
-> See 'systemctl status auditd.service' for details
-> 
-> Signed-off-by: Quirin Gylstorff <quirin.gylstorff@siemens.com>
-> ---
->  recipes-kernel/linux/files/armhf_defconfig | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/recipes-kernel/linux/files/armhf_defconfig b/recipes-kernel/linux/files/armhf_defconfig
-> index dee6f5e..7f370b9 100644
-> --- a/recipes-kernel/linux/files/armhf_defconfig
-> +++ b/recipes-kernel/linux/files/armhf_defconfig
-> @@ -56,8 +56,11 @@ CONFIG_SYSVIPC_SYSCTL=y
->  CONFIG_CROSS_MEMORY_ATTACH=y
->  CONFIG_FHANDLE=y
->  # CONFIG_USELIB is not set
-> -# CONFIG_AUDIT is not set
-> +CONFIG_AUDIT=y
->  CONFIG_HAVE_ARCH_AUDITSYSCALL=y
-> +CONFIG_AUDITSYSCALL=y
-> +CONFIG_AUDIT_WATCH=y
-> +CONFIG_AUDIT_TREE=y
->  
->  #
->  # IRQ subsystem
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Thanks, applied.
+This widely aligns our copy of
+linux/tools/testing/selftests/vDSO/parse_vdso.c with the version found
+in 6.17-rc5+. We were primarily missing support for DT_GNU_HASH. This
+becomes noticeable with the Debian 13 toolchain on arm64 which caused
+DT_HASH to become absent from the vDSO.
 
-Jan
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
+Will go into 3.3.x as well. Older ones do not need that because they do 
+not support affected kernels.
+
+ lib/cobalt/parse_vdso.c | 159 +++++++++++++++++++++++++---------------
+ 1 file changed, 100 insertions(+), 59 deletions(-)
+
+diff --git a/lib/cobalt/parse_vdso.c b/lib/cobalt/parse_vdso.c
+index 766f90fad7..37b997b78f 100644
+--- a/lib/cobalt/parse_vdso.c
++++ b/lib/cobalt/parse_vdso.c
+@@ -25,26 +25,6 @@
+ #include <elf.h>
+ #include "internal.h"
+ 
+-/*
+- * To use this vDSO parser, first call one of the vdso_init_* functions.
+- * If you've already parsed auxv, then pass the value of AT_SYSINFO_EHDR
+- * to vdso_init_from_sysinfo_ehdr.  Otherwise pass auxv to vdso_init_from_auxv.
+- * Then call lookup_vdso for each symbol you want.  For example, to look up
+- * gettimeofday on x86_64, use:
+- *
+- *     <some pointer> = lookup_vdso("LINUX_2.6", "gettimeofday");
+- * or
+- *     <some pointer> = lookup_vdso("LINUX_2.6", "__vdso_gettimeofday");
+- *
+- * lookup_vdso will return 0 if the symbol doesn't exist or if the init function
+- * failed or was not called.  lookup_vdso is a little slow, so its return value
+- * should be cached.
+- *
+- * lookup_vdso is threadsafe; the init functions are not.
+- */
+-
+-
+-/* And here's the code. */
+ #ifndef ELF_BITS
+ # if ULONG_MAX > 0xffffffffUL
+ #  define ELF_BITS 64
+@@ -57,6 +37,8 @@
+ #define ELF_BITS_XFORM(bits, x) ELF_BITS_XFORM2(bits, x)
+ #define ELF(x) ELF_BITS_XFORM(ELF_BITS, x)
+ 
++#define ELF_HASH_ENTRY ELF(Word)
++
+ static struct vdso_info
+ {
+ 	bool valid;
+@@ -68,28 +50,45 @@ static struct vdso_info
+ 	/* Symbol table */
+ 	ELF(Sym) *symtab;
+ 	const char *symstrings;
+-	ELF(Word) *bucket, *chain;
+-	ELF(Word) nbucket, nchain;
++	ELF(Word) *gnu_hash, *gnu_bucket;
++	ELF_HASH_ENTRY *bucket, *chain;
++	ELF_HASH_ENTRY nbucket, nchain;
+ 
+ 	/* Version table */
+ 	ELF(Versym) *versym;
+ 	ELF(Verdef) *verdef;
+ } vdso_info;
+ 
+-/* Straight from the ELF specification. */
++/*
++ * Straight from the ELF specification...and then tweaked slightly, in order to
++ * avoid a few clang warnings.
++ */
+ static unsigned long elf_hash(const char *name)
+ {
+ 	unsigned long h = 0, g;
+-	while (*name)
++	const unsigned char *uch_name = (const unsigned char *)name;
++
++	while (*uch_name)
+ 	{
+-		h = (h << 4) + *name++;
+-		if ((g = h & 0xf0000000))
++		h = (h << 4) + *uch_name++;
++		g = h & 0xf0000000;
++		if (g)
+ 			h ^= g >> 24;
+ 		h &= ~g;
+ 	}
+ 	return h;
+ }
+ 
++static uint32_t gnu_hash(const char *name)
++{
++	const unsigned char *s = (void *)name;
++	uint32_t h = 5381;
++
++	for (; *s; s++)
++		h += h * 32 + *s;
++	return h;
++}
++
+ static void vdso_init_from_sysinfo_ehdr(uintptr_t base)
+ {
+ 	size_t i;
+@@ -130,8 +129,9 @@ static void vdso_init_from_sysinfo_ehdr(uintptr_t base)
+ 	/*
+ 	 * Fish out the useful bits of the dynamic table.
+ 	 */
+-	ELF(Word) *hash = 0;
++	ELF_HASH_ENTRY *hash = 0;
+ 	vdso_info.symstrings = 0;
++	vdso_info.gnu_hash = 0;
+ 	vdso_info.symtab = 0;
+ 	vdso_info.versym = 0;
+ 	vdso_info.verdef = 0;
+@@ -148,10 +148,15 @@ static void vdso_init_from_sysinfo_ehdr(uintptr_t base)
+ 				 + vdso_info.load_offset);
+ 			break;
+ 		case DT_HASH:
+-			hash = (ELF(Word) *)
++			hash = (ELF_HASH_ENTRY *)
+ 				((uintptr_t)dyn[i].d_un.d_ptr
+ 				 + vdso_info.load_offset);
+ 			break;
++		case DT_GNU_HASH:
++			vdso_info.gnu_hash =
++				(ELF(Word) *)((uintptr_t)dyn[i].d_un.d_ptr +
++					      vdso_info.load_offset);
++			break;
+ 		case DT_VERSYM:
+ 			vdso_info.versym = (ELF(Versym) *)
+ 				((uintptr_t)dyn[i].d_un.d_ptr
+@@ -164,17 +169,27 @@ static void vdso_init_from_sysinfo_ehdr(uintptr_t base)
+ 			break;
+ 		}
+ 	}
+-	if (!vdso_info.symstrings || !vdso_info.symtab || !hash)
++	if (!vdso_info.symstrings || !vdso_info.symtab ||
++	    (!hash && !vdso_info.gnu_hash))
+ 		return;  /* Failed */
+ 
+ 	if (!vdso_info.verdef)
+ 		vdso_info.versym = 0;
+ 
+ 	/* Parse the hash table header. */
+-	vdso_info.nbucket = hash[0];
+-	vdso_info.nchain = hash[1];
+-	vdso_info.bucket = &hash[2];
+-	vdso_info.chain = &hash[vdso_info.nbucket + 2];
++	if (vdso_info.gnu_hash) {
++		vdso_info.nbucket = vdso_info.gnu_hash[0];
++		/* The bucket array is located after the header (4 uint32) and the bloom
++		 * filter (size_t array of gnu_hash[2] elements).
++		 */
++		vdso_info.gnu_bucket = vdso_info.gnu_hash + 4 +
++				       sizeof(size_t) / 4 * vdso_info.gnu_hash[2];
++	} else {
++		vdso_info.nbucket = hash[0];
++		vdso_info.nchain = hash[1];
++		vdso_info.bucket = &hash[2];
++		vdso_info.chain = &hash[vdso_info.nbucket + 2];
++	}
+ 
+ 	/* That's all we need. */
+ 	vdso_info.valid = true;
+@@ -218,37 +233,63 @@ static bool vdso_match_version(ELF(Versym) ver,
+ 		&& !strcmp(name, vdso_info.symstrings + aux->vda_name);
+ }
+ 
+-static void *lookup_vdso(const char *version, const char *name)
++static bool check_sym(ELF(Sym) *sym, ELF(Word) i, const char *name,
++		      const char *version, unsigned long ver_hash)
+ {
+-	unsigned long ver_hash;
++	/* Check for a defined global or weak function w/ right name. */
++	if (ELF64_ST_TYPE(sym->st_info) != STT_FUNC)
++		return false;
++	if (ELF64_ST_BIND(sym->st_info) != STB_GLOBAL &&
++	    ELF64_ST_BIND(sym->st_info) != STB_WEAK)
++		return false;
++	if (strcmp(name, vdso_info.symstrings + sym->st_name))
++		return false;
++
++	/* Check symbol version. */
++	if (vdso_info.versym &&
++	    !vdso_match_version(vdso_info.versym[i], version, ver_hash))
++		return false;
++
++	return true;
++}
+ 
++static void *vdso_sym(const char *version, const char *name)
++{
++	unsigned long ver_hash;
+ 	if (!vdso_info.valid)
+ 		return 0;
+ 
+ 	ver_hash = elf_hash(version);
+-	ELF(Word) chain = vdso_info.bucket[elf_hash(name) % vdso_info.nbucket];
+-
+-	for (; chain != STN_UNDEF; chain = vdso_info.chain[chain]) {
+-		ELF(Sym) *sym = &vdso_info.symtab[chain];
+-
+-		/* Check for a defined global or weak function w/ right name. */
+-		if (ELF64_ST_TYPE(sym->st_info) != STT_FUNC)
+-			continue;
+-		if (ELF64_ST_BIND(sym->st_info) != STB_GLOBAL &&
+-		    ELF64_ST_BIND(sym->st_info) != STB_WEAK)
+-			continue;
+-		if (sym->st_shndx == SHN_UNDEF)
+-			continue;
+-		if (strcmp(name, vdso_info.symstrings + sym->st_name))
+-			continue;
+-
+-		/* Check symbol version. */
+-		if (vdso_info.versym
+-		    && !vdso_match_version(vdso_info.versym[chain],
+-					   version, ver_hash))
+-			continue;
+-
+-		return (void *)(vdso_info.load_offset + sym->st_value);
++	ELF(Word) i;
++
++	if (vdso_info.gnu_hash) {
++		uint32_t h1 = gnu_hash(name), h2, *hashval;
++
++		i = vdso_info.gnu_bucket[h1 % vdso_info.nbucket];
++		if (i == 0)
++			return 0;
++		h1 |= 1;
++		hashval = vdso_info.gnu_bucket + vdso_info.nbucket +
++			  (i - vdso_info.gnu_hash[1]);
++		for (;; i++) {
++			ELF(Sym) *sym = &vdso_info.symtab[i];
++			h2 = *hashval++;
++			if (h1 == (h2 | 1) &&
++			    check_sym(sym, i, name, version, ver_hash))
++				return (void *)(vdso_info.load_offset +
++						sym->st_value);
++			if (h2 & 1)
++				break;
++		}
++	} else {
++		i = vdso_info.bucket[elf_hash(name) % vdso_info.nbucket];
++		for (; i; i = vdso_info.chain[i]) {
++			ELF(Sym) *sym = &vdso_info.symtab[i];
++			if (sym->st_shndx != SHN_UNDEF &&
++			    check_sym(sym, i, name, version, ver_hash))
++				return (void *)(vdso_info.load_offset +
++						sym->st_value);
++		}
+ 	}
+ 
+ 	return 0;
+@@ -271,7 +312,7 @@ void *cobalt_lookup_vdso(const char *version, const char *name)
+ 
+ 	pthread_once(&parse_vdso_once, parse_vdso);
+ 
+-	sym = lookup_vdso(version, name);
++	sym = vdso_sym(version, name);
+ 	if (!sym)
+ 		error(1, ENOENT, "%s not found in vDSO", name);
+ 
 -- 
-Siemens AG, Foundational Technologies
-Linux Expert Center
+2.51.0
