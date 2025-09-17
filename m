@@ -1,45 +1,45 @@
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D1D0306B0C
-	for <xenomai@lists.linux.dev>; Wed, 17 Sep 2025 08:09:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.193
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDE9D221DAE
+	for <xenomai@lists.linux.dev>; Wed, 17 Sep 2025 08:10:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758096569; cv=none; b=IMG6++UDsiaUvwvxaZ8ebNNO6HlzcDF0SnBt8dBJ5hkf6HIndE8qGvEYuLKIPRgfjnF3phSh5sKyZ4yF5JGMlk1aOk/3D60nHkKjYVb6vLtjZglN/bpdd45LnUdGrjYHJ9SGwxCcaFIiCZSIkhnNWHnyPsOMfQyAcm9yz52W4es=
+	t=1758096608; cv=none; b=pUen4xOxSMsHOiWKuSHUlpzMHzQDvY5SDC4w/CGoZxCcM6FpZaHX9MS3I+mp5zb2SjxEC9KSAyGnRsFyg+S+zrKcw9p1zsN7SEOQxt+/0soxh6UTuq9v2OiD3wrHXmwvrTEfR0JBBA5dMJXvrUmYfjwfMV/BXVbMxzkeGFeiIKA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758096569; c=relaxed/simple;
-	bh=/skEhTbDoa4JXIYdHtP/vZLX2c4QnEhDwJBanHSD8RQ=;
+	s=arc-20240116; t=1758096608; c=relaxed/simple;
+	bh=BwIsMhb10S35/2Gq5fBKK09F3lmF+TV4Y/Ekjnd7nAo=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=miOtLhSlPpUKJ0/SfTxg9NRsKrFuJ9cvIv6bGk/Vz4N76yiaBjh9d2FHFSgO/H7Aq1bgDLycTa3z73Rz59pUkC6Qoyt4cBOSXyryizS/8ekqYF0JGhQJlc7Z1TuRqSMkjz2mCPcLV49jS67fDJVxSNnTY+cJx5kW7+9qW/wuS94=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=KUd67tUq; arc=none smtp.client-ip=217.70.183.193
+	 MIME-Version:Content-Type; b=TbQIi399t/re/iYuQothI4/ljE61ZRwYGY5fKa4ns48ZsPQMlnQy+gTpe1rlMdU1ZsxgNVuD90pi2CZKbSPuxgjDpLLSCXVDi/iR28HX+HEUBhCh1hK4K9mTHOwkrdx3FQZEELyEUrB2RKEy/WcgvoPX10vAirIO6q5RLFLAsZY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=Hpo9dZLm; arc=none smtp.client-ip=217.70.183.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="KUd67tUq"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 627F74326F;
-	Wed, 17 Sep 2025 08:09:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="Hpo9dZLm"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 281C642EF5;
+	Wed, 17 Sep 2025 08:09:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1758096563;
+	t=1758096598;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=yYDY+WyD/oN/U+QhtUM8KmJm+Yw5O+VbUIR6ZfZrUq8=;
-	b=KUd67tUqOO110AWv3mE/7yv+L4hHIZP0ReisEtED4vSObYmvSWlLKCpcC6cVy7+NM2CyUL
-	SPH7OaTXnJt9jxuKaLqS3EBMwqeD0Fj/eLg1NNG3jdcpafYBoo3oWWxvC3H08MarA4QewO
-	n4xiAU3JMiRxa9MpzzAKaugKftyBuPyWSxSp0YnN9PHiOSGOxI9pMukrjo9AmIU5LR97eD
-	lEAgrfujqc7JBnQaZqguZyONDMRHgZV0/dEkp/BUwmSwiGP7QZg+PjqK4/09FyxHJ64+le
-	chDZws/ijk3rF4zXqoLQRRkrJRGEbocllEeWZa7U/pgVHxK2lci6YmDOLYMCZw==
+	bh=fAGU9cbpfeP75PYUJf3e1+bdwh+jcAfUDJ50T4Oqxxw=;
+	b=Hpo9dZLm7UjOf/hlD3jldoKaM0ImDPGUvmM5hMfnKCU0e1Stcr/AYFqbFuBrZJTJ040v4S
+	GB70NJd9vj6KrZwn6PneNTu5CxrW+T+T+0XvNHaUKABf9gEv1nXtEEqgW+qO2iu2MqIs8h
+	DFqyLVr9BHYvYEBs6tpMHoKMzUkEP2d9JwRkjXFXy4H+LV1ooLeVTBV9GQ4FaqYoKfbnQj
+	Fs7oilHgTsqLJQIc8awITt94d8Z8clmwgA2PGYCDrS/lOoYTrToQRsNxbNNP2om2Pekwl3
+	+2PvaFO2JE1w/mypvVb8avBb7Kd4PcgIIeJWqwy/xl2bSpgiEJQO8rA1Zul8cw==
 From: Philippe Gerum <rpm@xenomai.org>
 To: Florian Bezdeka <florian.bezdeka@siemens.com>
 Cc: xenomai@lists.linux.dev,  Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: [PATCH Dovetail 6.16 v4] irq_pipeline: Fix system freeze
- triggered by edge IRQs
-In-Reply-To: <20250820-wip-flo-fix-edge-irq-handling-v4-1-7598c686bfd0@siemens.com>
-	(Florian Bezdeka's message of "Mon, 15 Sep 2025 09:18:34 +0200")
-References: <20250820-wip-flo-fix-edge-irq-handling-v4-1-7598c686bfd0@siemens.com>
+Subject: Re: [PATCH Dovetail 6.12 6.1 5.15 5.10] irq_pipeline: Fix system
+ freeze triggered by edge IRQs
+In-Reply-To: <20250917071411.2403592-1-florian.bezdeka@siemens.com> (Florian
+	Bezdeka's message of "Wed, 17 Sep 2025 09:14:11 +0200")
+References: <20250917071411.2403592-1-florian.bezdeka@siemens.com>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Wed, 17 Sep 2025 10:09:18 +0200
-Message-ID: <87ecs5sdox.fsf@xenomai.org>
+Date: Wed, 17 Sep 2025 10:09:56 +0200
+Message-ID: <878qidsdnv.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -49,7 +49,7 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-GND-State: clean
 X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggdegvdelgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepffffkeelffdvhfffjeduteehudeftdehudffffdvuddujedvhedvheejjeelhefgnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpnhgspghrtghpthhtohepfedprhgtphhtthhopehjrghnrdhkihhsiihkrgesshhivghmvghnshdrtghomhdprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepfhhlohhrihgrnhdrsggviiguvghkrgesshhivghmvghnshdrtghomh
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggdegvdelfecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepvdelhfdvheekudehveelgeeitdeujefgkefhieejfedvieejkeegiefgjefhkeegnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopeefpdhrtghpthhtohepjhgrnhdrkhhishiikhgrsehsihgvmhgvnhhsrdgtohhmpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehflhhorhhirghnrdgsvgiiuggvkhgrsehsihgvmhgvnhhsrdgtohhm
 X-GND-Sasl: rpm@xenomai.org
 
 Florian Bezdeka <florian.bezdeka@siemens.com> writes:
@@ -117,50 +117,14 @@ Florian Bezdeka <florian.bezdeka@siemens.com> writes:
 >
 > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 > ---
-> Hi all,
->
-> the problem could be observed and debuged quite well on hyper-v with
-> lockdep enabled and a slightly modified NMI handler to print out the
-> current call stack.
->
-> This seems to be a long standing issue for Dovetail. We had several
-> reports in the past that debug options (like lockdep) on hypervisors
-> (like VirtualBox) ended up in a boot failure.
->
-> Once we agree that the patch is correct I can send out the backport for
-> Dovetail 6.12 down to 5.10.
->
-> Best regards,
-> Florian
->
-> Cc: Philippe Gerum <rpm@xenomai.org>
-> Cc: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
-> Changes in v4:
-> - Remove irqd_irq_inprogress() from irq_active_on_this_cpu().
->   That check was always true as it is already detected by the caller.
-> - Add !SMP check to irq_active_on_this_cpu(), Review comment from
->   Philippe 
-> - Link to v3: https://lore.kernel.org/r/20250820-wip-flo-fix-edge-irq-handling-v3-1-8cc08939e6ca@siemens.com
->
-> Changes in v3:
-> - Introduce irq_active_on_this_cpu() 
-> - Link to v2: https://lore.kernel.org/r/20250820-wip-flo-fix-edge-irq-handling-v2-1-1a958d17eace@siemens.com
->
-> Changes in v2:
-> - v1 crashed qemu, similar to 
->   https://lore.kernel.org/all/20250701163558.2588435-1-liangyan.peng@bytedance.com/
->   so v1 was analyzed further and reworked completely 
-> - Link to v1: https://lore.kernel.org/r/20250820-wip-flo-fix-edge-irq-handling-v1-1-1a2c7805b372@siemens.com
-> ---
 >  kernel/irq/chip.c | 24 ++++++++++++++++++++++++
 >  1 file changed, 24 insertions(+)
 >
 > diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-> index f5dfc378ccf2..12f520f6a197 100644
+> index 4e81a93fc7f5..ce9b09d6d07b 100644
 > --- a/kernel/irq/chip.c
 > +++ b/kernel/irq/chip.c
-> @@ -639,6 +639,28 @@ static inline bool should_feed_pipeline(struct irq_desc *desc, int state)
+> @@ -676,6 +676,28 @@ static inline bool should_feed_pipeline(struct irq_desc *desc, int state)
 >  	return false;
 >  }
 >  
@@ -186,10 +150,10 @@ Florian Bezdeka <florian.bezdeka@siemens.com> writes:
 > +}
 > +#endif
 > +
->  static bool irq_can_handle_pm(struct irq_desc *desc)
+>  static bool irq_may_run(struct irq_desc *desc)
 >  {
 >  	unsigned int mask = IRQD_IRQ_INPROGRESS | IRQD_WAKEUP_ARMED;
-> @@ -669,6 +691,8 @@ static bool irq_can_handle_pm(struct irq_desc *desc)
+> @@ -706,6 +728,8 @@ static bool irq_may_run(struct irq_desc *desc)
 >  		WARN_ON_ONCE(irq_pipeline_debug() && !in_pipeline());
 >  		if (irqd_is_wakeup_armed(&desc->irq_data))
 >  			return true;
@@ -197,15 +161,8 @@ Florian Bezdeka <florian.bezdeka@siemens.com> writes:
 > +			return true;
 >  	} else if (irq_pm_check_wakeup(desc))
 >  		return false;
->  
->
-> ---
-> base-commit: 00ee08d46dd81202d1dad7946f3bd4c1c106f3df
-> change-id: 20250820-wip-flo-fix-edge-irq-handling-16e48193aeac
->
-> Best regards,
 
-Merged, thanks.
+Merged into v6.1.y-cip, v6.12.y.
 
 -- 
 Philippe.
