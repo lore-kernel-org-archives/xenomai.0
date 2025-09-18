@@ -1,38 +1,38 @@
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3274313D58
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF9B730FC0F
 	for <xenomai@lists.linux.dev>; Thu, 18 Sep 2025 15:56:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758210978; cv=none; b=YpViUmwjj0jOp+8hRBedhXmSq9cNMdefnKhi3FPTmHfvDDLYCZwab3/RhUF0SFBiiaM+N0gEWRc/vwPHFZfnVvIuCPPgrmTqFiO4MZCLCrrtdauMR/Pr1lHprOzHFRTlsvtIqW65O4cR2SUah9jG2v6dESccmAalrSjHEHetWCQ=
+	t=1758210978; cv=none; b=N2TcO8fTdrmUkubidv864DLOXlU2bqNx5Q17/pCwFZDEv9xrtnvNtYguENvRDscyZ2+3J4wsUVrc0v1qA0Ek5LHYL/JS+JRkY9qbgdD/WL56uXfkb+KJRWbd5BVyThr03IErIx/XfD2jyvEAWjnYzHk6nDC5DtzjppkFcIockYU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1758210978; c=relaxed/simple;
-	bh=wK5Aushq2Lrdr5C57oa2ydF5kcAQmqSctRHw5kSfuIk=;
+	bh=F8pT0j09uqdYOWeHGFZLaPNGHb1ETbdQAXAX6U1FrzE=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=r9Bg6dIaJLkCvoLPqZGNF3zKIVWshzcOlS3zZluQgFymuAbu0SgeBznEmU5qIOaCboQv3GlmU9XVLauustW8FZaIa4twFpatkKHUb6fHbPv9sgsxLOKcLqTGcdKYVfDY+hqrXOvlD/EbtZ47J8vZeQRoORs6+xX4GWvm1eSSas0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=OrNDP218; arc=none smtp.client-ip=185.136.64.225
+	 MIME-Version; b=JqXCfsT/Ah00OuY3YK850pjmtYbYa+Sb9nQfqx4BGbjNY2ufAGZLVJcR/+Mf6tPHcea+x/P+wZDinZFhkk28gEIxokvSaTHoJYHoqpbOF3EWljifZg235p+ySiYEtnwIya4nPsBxfhXlQreAKGpX1eeH9jGXh3boy/JKwhivgLs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=GHmffcOV; arc=none smtp.client-ip=185.136.65.228
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="OrNDP218"
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2025091815561477d1c758040002070c
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="GHmffcOV"
+Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 202509181556169f784e3e34000207b7
         for <xenomai@lists.linux.dev>;
-        Thu, 18 Sep 2025 17:56:14 +0200
+        Thu, 18 Sep 2025 17:56:16 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=TXrdjbK+oO8GOMobKEqdn6v5dn0d5fa3rLwM262u620=;
- b=OrNDP218Br/mBzB4LbFUFJb0gnDnLRE0ZvKaFD3zNFEI8/02GfGqA6psVgFRP9Z5j+hZRv
- DDFv3C6U9redEJb9AJy0ns/4JBmj49bqbx5cQzXiXhcfkElCw4LqZZnB4wlI2aBuliG49V26
- 3mbpkSiE4ea1AAfbCNro6UCGs8S1DMwBEP5JZcViYnxsNFxGuWL9Ov/ggmZcZgRDIpMHhhYj
- nJz51AGMg2phYmq8VWKU1qYnhaJ0qHpnuEe28+Jzlb3d2egDCzFNq0wEqlz5OEcFbK8ZvxWN
- /Ufuz5morFpDJm6cl+6sMIIKjwlvRz8bKSDeOSnY1EgG0WNJWdB82a0w==;
+ bh=dIT8hN9JvT9Jfs8hsw7Fj0k8137gocPnv/eYfDLmy1w=;
+ b=GHmffcOVgT8E7eRFa0EXMvxEC81moa4aOcU6UEh02/sfe9GTLgLi1G37DaP8366YDPGEAz
+ Up3cExRxqMVaU1cIQzdVy/tAol0uN7kK+JThf4/ooA3gSwwUXheJj6XNKJksY7tKyNwfNlsN
+ dM/p3FhbqMa9uuBLej9DYY0giGiFxjR//ALrC/EGnKXB4aumHU29V9sMD+I7sTJjwtXXtjdy
+ Cx2RKWEGTmRuSmTpVg0d+mLznP897cdl2ryCMsqrzePTVud/Z9zREJ8p5xX+MvdQHDlIvzsj
+ XgsUt3Wplyo5VhKMA4MOrgz4BEvbs807uX/PvWUrSoLAXJa7+atqcKKA==;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [xenomai-images][PATCH 09/13] Add missing options and menu entries for stable 3.x releases
-Date: Thu, 18 Sep 2025 17:55:51 +0200
-Message-ID: <0081c121e99c7b8ce9ee7a439b075f44d32dcea2.1758210955.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 12/13] ci: Enabled build tests for Xenomai 4
+Date: Thu, 18 Sep 2025 17:55:54 +0200
+Message-ID: <8c63ef4c2f7b77c1bc1cc928573d2306abd0a135.1758210955.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1758210955.git.jan.kiszka@siemens.com>
 References: <cover.1758210955.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -47,128 +47,90 @@ Feedback-ID: 519:519-294854:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-We already had the menu entry for "latest 3.2.x release", but that was
-no longer working since the introduction of 3.3. Furthermore, we were
-missing this for 3.1.x. Fix both.
-
-Also add an option file for the latest 3.3.x release even if that is
-currently the default, just for consistency and to avoid future issues.
-
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- Kconfig               |  8 +++++++-
- opt-xenomai-3.1.x.yml | 20 ++++++++++++++++++++
- opt-xenomai-3.2.x.yml | 20 ++++++++++++++++++++
- opt-xenomai-3.3.x.yml | 20 ++++++++++++++++++++
- 4 files changed, 67 insertions(+), 1 deletion(-)
- create mode 100644 opt-xenomai-3.1.x.yml
- create mode 100644 opt-xenomai-3.2.x.yml
- create mode 100644 opt-xenomai-3.3.x.yml
+ .gitlab-ci.yml                  | 6 ++++++
+ ci/gitlab-ci-base.yml           | 4 ++++
+ ci/xenomai_3_next.yml           | 2 +-
+ ci/xenomai_3_next_long_term.yml | 2 +-
+ ci/xenomai_4_next.yml           | 2 +-
+ 5 files changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/Kconfig b/Kconfig
-index a155c45..8846b1c 100644
---- a/Kconfig
-+++ b/Kconfig
-@@ -98,14 +98,20 @@ config XENOMAI_3_1_HEAD
- 	bool "Head of stable/v3.1.x branch"
- 	depends on !TARGET_RPI4
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index c22a46a..d95d441 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -59,6 +59,12 @@ xenomai-3/next-long-term:
+   rules:
+     - if: '$CI_PIPELINE_SOURCE == "schedule" && $ONLY_RUN == $CI_JOB_NAME'
  
-+config XENOMAI_3_1
-+	bool "Latest 3.1.x release"
++xenomai-4/next:
++  extends: .parent
++  trigger:
++    include:
++      - local: '/ci/xenomai_4_next.yml'
 +
- endchoice
+ lavacli-container:
+   image: quay.io/buildah/stable
+   stage: build
+diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+index f461999..31c9414 100644
+--- a/ci/gitlab-ci-base.yml
++++ b/ci/gitlab-ci-base.yml
+@@ -107,6 +107,8 @@ default:
+         - report.xml
+     expire_in: 1 week
+   rules:
++    - if: '$XENOMAI_VERSION == "4-next"'
++      when: never
+     - if: '$LAVA_TESTS_ENABLED == "true"'
  
- config KAS_INCLUDE_XENOMAI
- 	string
- 	default "opt-xenomai-next.yml" if XENOMAI_HEAD
- 	default "opt-xenomai-3.3.x-head.yml" if XENOMAI_3_3_HEAD
-+	default "opt-xenomai-3.3.x.yml" if XENOMAI_3_3
- 	default "opt-xenomai-3.2.x-head.yml" if XENOMAI_3_2_HEAD
--	default "opt-xenomai-3.1.x.head.yml" if XENOMAI_3_1_HEAD
-+	default "opt-xenomai-3.2.x.yml" if XENOMAI_3_2
-+	default "opt-xenomai-3.1.x-head.yml" if XENOMAI_3_1_HEAD
-+	default "opt-xenomai-3.1.x.yml" if XENOMAI_3_1
+ .test-qemu:
+@@ -115,6 +117,8 @@ default:
+     ADDITIONAL_XENO_TEST_ARGS: "--vm"
+     ADDITIONAL_TEST_TIMEOUT_MINUTES: 25
+   rules:
++    - if: '$XENOMAI_VERSION == "4-next"'
++      when: never
+     - if: '$LAVA_TESTS_ENABLED != "true"'
+       when: never
+     - if: '$KERNEL_VERSION == $LATEST_KERNEL_VERSION'
+diff --git a/ci/xenomai_3_next.yml b/ci/xenomai_3_next.yml
+index 9c984ba..15095dd 100644
+--- a/ci/xenomai_3_next.yml
++++ b/ci/xenomai_3_next.yml
+@@ -19,5 +19,5 @@ include:
  
- choice
- 	prompt "Kernel version"
-diff --git a/opt-xenomai-3.1.x.yml b/opt-xenomai-3.1.x.yml
-new file mode 100644
-index 0000000..8a7f593
---- /dev/null
-+++ b/opt-xenomai-3.1.x.yml
-@@ -0,0 +1,20 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2025
-+#
-+# Authors:
-+#  Jan Kiszka <jan.kiszka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+header:
-+  version: 14
-+
-+local_conf_header:
-+  debian-release: |
-+    DEBIAN_RELEASE = "bookworm"
-+  xenomai-version: |
-+    PREFERRED_VERSION_xenomai = "3.1%"
-+    PREFERRED_VERSION_xenomai-compat = "3.1%"
-diff --git a/opt-xenomai-3.2.x.yml b/opt-xenomai-3.2.x.yml
-new file mode 100644
-index 0000000..56c29f7
---- /dev/null
-+++ b/opt-xenomai-3.2.x.yml
-@@ -0,0 +1,20 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2025
-+#
-+# Authors:
-+#  Jan Kiszka <jan.kiszka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+header:
-+  version: 14
-+
-+local_conf_header:
-+  debian-release: |
-+    DEBIAN_RELEASE = "bookworm"
-+  xenomai-version: |
-+    PREFERRED_VERSION_xenomai = "3.2%"
-+    PREFERRED_VERSION_xenomai-compat = "3.2%"
-diff --git a/opt-xenomai-3.3.x.yml b/opt-xenomai-3.3.x.yml
-new file mode 100644
-index 0000000..a33a3f9
---- /dev/null
-+++ b/opt-xenomai-3.3.x.yml
-@@ -0,0 +1,20 @@
-+#
-+# Xenomai Real-Time System
-+#
-+# Copyright (c) Siemens AG, 2025
-+#
-+# Authors:
-+#  Jan Kiszka <jan.kiszka@siemens.com>
-+#
-+# SPDX-License-Identifier: MIT
-+#
-+
-+header:
-+  version: 14
-+
-+local_conf_header:
-+  debian-release: |
-+    DEBIAN_RELEASE = "bookworm"
-+  xenomai-version: |
-+    PREFERRED_VERSION_xenomai = "3.3%"
-+    PREFERRED_VERSION_xenomai-compat = "3.3%"
+ variables:
+   XENOMAI_BUILD_OPTION: ":kas/opt/xenomai-next.yaml:kas/opt/debug.yaml"
+-  XENOMAI_VERSION: "next"
++  XENOMAI_VERSION: "3-next"
+   LATEST_KERNEL_VERSION: "6.12"
+diff --git a/ci/xenomai_3_next_long_term.yml b/ci/xenomai_3_next_long_term.yml
+index e62fc71..975bf34 100644
+--- a/ci/xenomai_3_next_long_term.yml
++++ b/ci/xenomai_3_next_long_term.yml
+@@ -15,7 +15,7 @@ include:
+ 
+ variables:
+   XENOMAI_BUILD_OPTION: ":kas/opt/xenomai-next.yaml"
+-  XENOMAI_VERSION: "next"
++  XENOMAI_VERSION: "3-next"
+   LATEST_KERNEL_VERSION: "6.12"
+   TEST_RUNTIME_SECONDS: 3600
+   TEST_COMMAND: "xeno-test -k -l 'dohell -m /tmp ${TEST_RUNTIME_SECONDS}' ${ADDITIONAL_XENO_TEST_ARGS} -- -m ${TEST_MAXIMUM_LATENCY}"
+diff --git a/ci/xenomai_4_next.yml b/ci/xenomai_4_next.yml
+index 78edc77..5fe06a0 100644
+--- a/ci/xenomai_4_next.yml
++++ b/ci/xenomai_4_next.yml
+@@ -16,7 +16,7 @@ include:
+ 
+ variables:
+   XENOMAI_BUILD_OPTION: ":kas/opt/libevl-next.yaml:kas/opt/debug.yaml"
+-  XENOMAI_VERSION: "next"
++  XENOMAI_VERSION: "4-next"
+   LATEST_KERNEL_VERSION: "6.12"
+   BUILD_IDENTIFIER: "evl-${XENOMAI_VERSION}_kernel-${KERNEL_VERSION}"
+   CACHE_KERNEL: evl
 -- 
 2.51.0
 
