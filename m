@@ -1,55 +1,55 @@
-Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011062.outbound.protection.outlook.com [52.101.65.62])
+Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013062.outbound.protection.outlook.com [52.101.72.62])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C1931F12E0
-	for <xenomai@lists.linux.dev>; Fri, 19 Sep 2025 16:36:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.62
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B92021D3C0
+	for <xenomai@lists.linux.dev>; Sun, 21 Sep 2025 21:26:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.72.62
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758299781; cv=fail; b=rBYjsx9xPDjLEv7UQsXFPE4tfT9ADP9P5GbF2BCqB+XoUSGiHA3vf8uVxV/RGoXRTaZLwi7QuArWcDS1QJij2Sw36hpH1yg0UoyFQaR2bnCSjm1X9PMH4ylPUfktOekeM07TMGBmp+7JmsKB5Eid5bDt5SDHd8Ra0VrDtW+qK2Y=
+	t=1758489979; cv=fail; b=hZCOYY36E0N1V0aAI8LWiEZxJauLj5faoecizU7XUrfoMiw586v+3UUpbGEFuzyjtDf3DWGaECB4tKKELlBgfGgC+d1ktiJYRblOPX2ZRQ5DlDdFDbNph05s5w+/5FlTgrKf9Fi1HYrSP7alcIzS838/LCjoqXc5AYotd/mmGHM=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758299781; c=relaxed/simple;
-	bh=ZIBElh6XfzKS7nBD3Xz3/yBJNsr+KQSqvujpqD1Uexo=;
+	s=arc-20240116; t=1758489979; c=relaxed/simple;
+	bh=EGNyo0J2MoEXOyHX/NkB90NLHEYadaL4Sd2u+1OoC1k=;
 	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=RThNxC91CpG61T7KCFS8ciezjAasLOR7O6RQPar2Bp7mf3Vn6bAPKnNDNm8QcSXzTSaU4+QH7etrAWaEwozzqcGJpXwscfG6kWso/t82udH1yBBD55RmCj+ooyEyQ1If6Im+mLAlPFewo1EYoJufxhHkY1bSmxsD+uoiENEvjpk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=festo.com; spf=pass smtp.mailfrom=festo.com; dkim=pass (1024-bit key) header.d=festo.com header.i=@festo.com header.b=wEbvaRtS; arc=fail smtp.client-ip=52.101.65.62
+	 Content-Type:MIME-Version; b=cis8c7s1MidWkq27RrzMFvrm2NJsEnS+vxUeS7LBhCondwVAXM0jkR4sdTQU2wXAv18MVk+PElwDwUsmsgVAmQuZll5ZPlUe82MoF6Nq1C7qKCTkgog/q/c857VfvDjtqcmVBgiKuCKWIITtmgGIJW6dOFQAy7ZPjJlCheMOOlc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=festo.com; spf=pass smtp.mailfrom=festo.com; dkim=pass (1024-bit key) header.d=festo.com header.i=@festo.com header.b=QB/jRiSk; arc=fail smtp.client-ip=52.101.72.62
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=festo.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=festo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=festo.com header.i=@festo.com header.b="wEbvaRtS"
+	dkim=pass (1024-bit key) header.d=festo.com header.i=@festo.com header.b="QB/jRiSk"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=SReNNcfheGrHscdvInBkIpIr7wJFieyE32sJKWl/MOASFVLXESr463WipyMDoscXTzWeE+RWt8rLPLMXL+k1qRjS5TfElrEpkEW7y3+63h0gmQGgHnVJ5AMfqrbogQ+roFGIDNsFq0rTj9Ju6wuwFd3GzkI6yIh4drmlPBMvDO3XmHC2JxDbr/YYYsOTgaPaqzeroUaw18dR87Y+ULkQhkArL+d4ZKjobJaf5GzQgvLgixPRRV2LOalp8u0T7uqQ+dwJAc4JhADoSBjmJYqzkSKY3Igpt+2ycrw1EkTXrPj9xH2yubzhaV6j8k8qIe0AbBFcuh5UqKmXKuHeZ+CIPA==
+ b=wli2tjRT8FFsV+E8a6zN5Fn2xAWyJWJs5KywVCYAFEmGL64WRmuV4ptqiS+pT7Rwn7qnyiWfG7g/j5EM9dvKoLr5PgMplZsslu/JNGslghGE8oQmhcHxrOQ0MKVljVY7jQKnwLz1LqFCLiR7YLqM7a5GmrMpw8ojzFXYkWKOUOK7BwQu5i/L+dq/YfdlCzgFdZRo0wq3vB0cykxYXDRMKZPesfTzWZ+hKGU86ofb95ARF/ATSBI/9uspD/S2KPtYhRsF2G2b2dp6k3hZuvfbdu0zUW8EwkgLJQiJw+gFnxlASS0OF7XnJWM+PiT33jX1uG27hXkAY2c4aTfRnD/MeA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=eEUTgya26Uu5bKs3rbKZhne2wK+47Y1cOez05iFT3JA=;
- b=QudualMtHBu1RKY8KGG4cB5WqiYK1S2DWSjQsF3ojknLS0orrmCVht3/ZJUj8IDwJ/5JxdKtT9M/h3m8gkx9VPl/jI/S2JwSLYruN1zas/5618n6Gr2Nk+Nl/9eIc7HbFCmCIcQsGY2g8hc68QKF3tmSeAdPsw2/u6wejRsuZPBxRu/MPLkrvO9RhEReWek7FanSZ5s1el4KdFUXN7VQfH9lKmTvE+6fDL/zfOsV4LugSkxKWCcO7rs4kpU+hdGiSsMXpEC8b1EHELp1HtVVXXtQUjcIpH95eqQ+UkHHP4r1ju48Krbn76OKvQT3ozcVIim+hbkPTB3IjZoo3ls/OA==
+ bh=gbxVdVDpyn5Vnv6COsc1Qwdj9ngtWUTSnq8tciDkKaQ=;
+ b=gpAIOyrLhpvWQx6TIGHIAPRaVcGzA9AwJdV/d0K8jFxynY4BLAU55V5bx4pnWR/F9Gg/ahtVfFyFvjkx0upwZy13DfvLWIyVHR6cilG+Xd/evtAqf8picP6FSK/t0vByv2vrhS6DnZT8q8ZzVDC9qoGetZcDzZkX6eZs+rFwHpDHXAkvmsqb4M2iUDfJomzf4uYYxQL5MLOsC1kDEtDEaQM9P+PgBGqMZukyBgbbYHERio1aSqJdroygpNURPIsKhuBj+AcaU9eiOVmnDmdLJS9c3rVKx3UCwNq2QVa8lmGonRw0SR97qKV6tcowROeGbowa/2h2j3CUy+gv5pi8nA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=festo.com; dmarc=pass action=none header.from=festo.com;
  dkim=pass header.d=festo.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=festo.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=eEUTgya26Uu5bKs3rbKZhne2wK+47Y1cOez05iFT3JA=;
- b=wEbvaRtS++9te7nDMGDAV9r9bgbDU9Yqz6ASpqXfu7GiCTTqqDExFpx3wr2u4SfKvU1ELQxQ/j35sqY1g1LJwt37aSg2qNgTUwpGD4hqABbqB2cEIn6ZxNJhbkrPC3oIpkJZF5gRKRKtnabkUr9Iopi8nwgntxzt2v0jFfTlcwI=
+ bh=gbxVdVDpyn5Vnv6COsc1Qwdj9ngtWUTSnq8tciDkKaQ=;
+ b=QB/jRiSkIEbvQ63zVZAqo+IzpRFQzYPQontrFYX3qvJ1Ij4KuwFr+jdBDhE7606b4T5Ps1P5piFq4BNRWS7hqqgWOZLdWcKqJTtz2qxCTE46K+NJhxpVh5s1YTqCpidF0PSXxpDfDrVNIvW7+zDhLYjxE9wKF+Cw9xlGDBd+5IY=
 Received: from AS8PR03MB10056.eurprd03.prod.outlook.com (2603:10a6:20b:63d::7)
- by VI1PR03MB6622.eurprd03.prod.outlook.com (2603:10a6:800:17f::16) with
+ by PAXPR03MB7713.eurprd03.prod.outlook.com (2603:10a6:102:205::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9137.16; Fri, 19 Sep
- 2025 16:36:14 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9137.19; Sun, 21 Sep
+ 2025 21:26:08 +0000
 Received: from AS8PR03MB10056.eurprd03.prod.outlook.com
  ([fe80::5350:1f43:188a:6db5]) by AS8PR03MB10056.eurprd03.prod.outlook.com
- ([fe80::5350:1f43:188a:6db5%3]) with mapi id 15.20.9137.012; Fri, 19 Sep 2025
- 16:36:14 +0000
+ ([fe80::5350:1f43:188a:6db5%3]) with mapi id 15.20.9137.017; Sun, 21 Sep 2025
+ 21:26:08 +0000
 From: "Xie, Nick" <nick.xie@festo.com>
 To: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 CC: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
 Subject: RE: Error during libevl build and runtime settings failed
 Thread-Topic: Error during libevl build and runtime settings failed
 Thread-Index:
- AdvhNCsPSr13v8uwQHKA1c0dN9vzhQhJ1t/wAAMSmAAAFusnuwfrxy3QAAfyhxgAKuLKwABgKnAqAQl7ioAAEisLgAAVEMvg
-Date: Fri, 19 Sep 2025 16:36:14 +0000
+ AdvhNCsPSr13v8uwQHKA1c0dN9vzhQhJ1t/wAAMSmAAAFusnuwfrxy3QAAfyhxgAKuLKwABgKnAqAQl7ioAAEisLgAAVEMvgAG5y25A=
+Date: Sun, 21 Sep 2025 21:26:07 +0000
 Message-ID:
- <AS8PR03MB10056194CE9C24DCF7863A7478B11A@AS8PR03MB10056.eurprd03.prod.outlook.com>
+ <AS8PR03MB10056E8AC01A0C90B520575328B13A@AS8PR03MB10056.eurprd03.prod.outlook.com>
 References:
  <AM5PR03MB2882F5ED2ADBA37FAA9562608B7DA@AM5PR03MB2882.eurprd03.prod.outlook.com>
  <AM5PR03MB2882F38E95A99A0760C60D1F8B27A@AM5PR03MB2882.eurprd03.prod.outlook.com>
@@ -61,7 +61,9 @@ References:
  <87plbuz9ib.fsf@xenomai.org>
  <AS8PR03MB100560006594FE9480F592EB98B16A@AS8PR03MB10056.eurprd03.prod.outlook.com>
  <08e34367-c342-48a9-91f2-09e00779d870@siemens.com>
-In-Reply-To: <08e34367-c342-48a9-91f2-09e00779d870@siemens.com>
+ <AS8PR03MB10056194CE9C24DCF7863A7478B11A@AS8PR03MB10056.eurprd03.prod.outlook.com>
+In-Reply-To:
+ <AS8PR03MB10056194CE9C24DCF7863A7478B11A@AS8PR03MB10056.eurprd03.prod.outlook.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach:
@@ -72,69 +74,69 @@ msip_labels:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=festo.com;
 x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AS8PR03MB10056:EE_|VI1PR03MB6622:EE_
-x-ms-office365-filtering-correlation-id: 9dbeae86-00e1-4c67-a83f-08ddf79aa627
+x-ms-traffictypediagnostic: AS8PR03MB10056:EE_|PAXPR03MB7713:EE_
+x-ms-office365-filtering-correlation-id: a33bcd27-50a6-477d-31ff-08ddf9557a96
 x-ms-reactions: disallow
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|366016|1800799024|376014|38070700021;
+x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|376014|366016|38070700021;
 x-microsoft-antispam-message-info:
- =?us-ascii?Q?0an783LVrAszYYOJigGxE+JYkU18/8c6Gah0r4MjUk4sU6cOeMJI/kNBulqf?=
- =?us-ascii?Q?tHmxK++sPTJUnr2AHLuUU+ZC0px65T34yg/tbrOJKM1G8N3s8PgMQm4aqILM?=
- =?us-ascii?Q?91mmu29rOynTE1k+yfefV/cMmo2zCMWyN6PqHJ//2215P2omb4JqTSuwOXRz?=
- =?us-ascii?Q?uDjPtXShjeN7NAnhAnH9H8rzyCkpQSTuVVMK3eiwRrZQmZ06kt0ktkELr//L?=
- =?us-ascii?Q?WXMYFy02GFNeBbSJAsc6PssN+aFmDEsebSNQ0XaqNL0uexf0JLnv+HC4HQ6L?=
- =?us-ascii?Q?jJEOMkGzKdaimO7xVN+4Ux63rD+jgd6hVOJkoW9r0yUo5koIlxO1M4OULkat?=
- =?us-ascii?Q?dinnLs7XyFmcGBEPBVLo0KYQ3pqZAyGbch09NO/7jC1sbspYGNRWHWH5HIIl?=
- =?us-ascii?Q?7AK7XvTV/Ejf3LNVFbzvo9eDSPHMec6caOwYNV76vo+z/+miGQREyHomLtOx?=
- =?us-ascii?Q?3AuDeoWC7/nc0WN35ieLhlJkLxMPOc2qmAivgO14dRqYwfw4yeGvJjos5YMq?=
- =?us-ascii?Q?OPr/s6bY6asLToJX5C3dWp+Wc7HPjG4QN3DmCnV7c+yvifJlcEZ5prtDayKk?=
- =?us-ascii?Q?FeOFc92md8vq+J+EyVZwcT6tJu1I5HOpKxn+q4fom3ezt1Fzv5XBAcOWrXNf?=
- =?us-ascii?Q?AdkV4QMzBFfz1KdOalvUc+sEkdVx2IecCEqk738Ojz5kqqgIIhUgd7s62LYR?=
- =?us-ascii?Q?w9M0w5675KFNav4zLhyhWT0KtDncozqpnigYI22JMrQfCBziBgYnB2BdTQRD?=
- =?us-ascii?Q?BBpOD1HZDVspyYUPJOmCQ34d8YwXxMMwlvu/0A7N2Dw7KaUgPmHUCtG6CPLT?=
- =?us-ascii?Q?/0qeqhCm5If4dIwVm6w2yFspZ20zV//mqUasGzle9GN6zPmFCVOUCQ98qjk0?=
- =?us-ascii?Q?FdKVoCGxVwVLC8didAaIv6MeX4Qyu0h/J1zywDbnST2jQwuXtckEZiT1otCy?=
- =?us-ascii?Q?ltKpI1zdCcYrW+/z0X1aocQjI091LbTZ3BAeN3UutNi5qfn7q0DGRCZSek7b?=
- =?us-ascii?Q?N8LNBc92F/Z17PflqL7WHJ5wJGn09ePZG9vwNyH19+Fe+SXl261POZfgWSYH?=
- =?us-ascii?Q?UNPkOe23OTimwhsSLx4E+n9ajfr0Ejey3pVhzQF5JqUtTaV4S9gOigQ4xRm0?=
- =?us-ascii?Q?l8n2g9pyOjy5eQnvVKoIZj/CF/wxeYvZgkCk5dtISeOQSXf41D4MQCcqZxUC?=
- =?us-ascii?Q?s4qmtbq/9lThyBJ3pwc6gNYxwr4oxJaYIJ9gYy9mBMdQh7MINnZ4qPgT+TKD?=
- =?us-ascii?Q?CEeLwX4wqKcGWH765nxafXF3lsIYmo3mpfZIHUAa3e1w+p44nEfwbS/BGLLb?=
- =?us-ascii?Q?PwtGswvPU5aD7MHkYZOONJF1U111tJcJekGtvk07M1L6kj4VWBzmf7f6XSYT?=
- =?us-ascii?Q?Svr9QHigmo4ABy6+bdtEw8/M0utBHY1BjF1pvADPujYCutO8gk54KWCzE8Og?=
- =?us-ascii?Q?oYxqb+K0QYw=3D?=
+ =?us-ascii?Q?IhS0hZNOWJYs4f+IoO+T1B/2JdJR5X5sCF2Rp1nh8k/91gTQlGVNKKf7mjbk?=
+ =?us-ascii?Q?1MPzKoIMudhSwNLTQd9H+isYkldr5508N9tdJFJ/mQWlVU/ElmMEk7nKVa5O?=
+ =?us-ascii?Q?Hn+46pLK3AoOlbXrih5N4igpqmAzm+a7De/CO2N2PoHc5CGKsFWrnfkHjTc7?=
+ =?us-ascii?Q?VtusDX5OwnWAprBWDpuxpbVTdVO3ZftnQk74B6OVrrw8CUMhzwGnERs7zjPi?=
+ =?us-ascii?Q?bitQ+X8fIjBwBaj3XtIAiZhNOKTqutiGEDrbqVsvricU2Y0JtvUeJjssEs7m?=
+ =?us-ascii?Q?4nKzsJwQ6fNwSiVyEsuIW0jU/l5cqVNR4jCaqFtG20dGF2j4KhOuexfPpz7Y?=
+ =?us-ascii?Q?Zr1TUpmUq+LGP8KNxrFiDo7/CJSlwPerivJN1Y/hbADUHnm//jocrAw0n35U?=
+ =?us-ascii?Q?EQFBmNJnqvkBGSRmhVKXJsQeFNEb9S5uydcBJ7TLq99UO4gAgnqYDXI/+wTI?=
+ =?us-ascii?Q?L2Po6MSIZNdlO4SaLjO1RRTr8UMNl0iKj57gJIZ/s/9/DxF3G1unutPbZq74?=
+ =?us-ascii?Q?KkqDcu2OkrFg/ATbuCzAA081xqfRWkIOT7dirVVI66QsaDkDorNa2KJ2ijek?=
+ =?us-ascii?Q?qkqFLodihSYN7dClQPket/S201HEMLKdcMlsmBxWSHw2wMKhCXwsLQ6sqV2v?=
+ =?us-ascii?Q?tocUTSvfsWUTLuYxtFumZR7OPO8zjHx5MoYI+tOKEp3t2+CxaPQcNJ3LLcq1?=
+ =?us-ascii?Q?KyiAB0bHGzr9T7U6yaaPZ7KTcrEF56EL21mdoz1QliBwqhe58r+7iTzLoDmY?=
+ =?us-ascii?Q?xccdhl6VDegrKXYtTwscdLWQxoklHRFg0DueHCCd8nL6elpcN4vnigGtRBZp?=
+ =?us-ascii?Q?S3vTdn+0Hi2mIN99afANNJ7swEbsssvkxclMe9MCej7rbC0Dwt+GpuSuR6oQ?=
+ =?us-ascii?Q?a81lQOG/bVvD9KBGPbjqQamHABQUsK3BPRj6bQH9h41sY1i1fes5jNqEI8f3?=
+ =?us-ascii?Q?PPpUG9OKtexRk7ggenpzYpT+GvnBsCSHse5pfT2HBimiZ/FnfGLrbkZJb+f7?=
+ =?us-ascii?Q?AguYJZEp8cN4+H7E6cDCdbZxt1V8ryHCfWa6UK6BDiRzby9UVvw7bzgLT309?=
+ =?us-ascii?Q?43KCYb7y1/V1nIIojF6ZXmKErFeMCn4QUSDG0QokUMPYvWgp7/oMeDX9l0Ob?=
+ =?us-ascii?Q?osofWtA09sI7gm+wPHaYg/oSJvUOgmE91bLGI8vwVUzI34/wG9R44YteKzwL?=
+ =?us-ascii?Q?inJWTdNMIcTB2CH/hPRvInTYo4dubZl/0Gwhp+rfPDLtz79+V2u+m+tz/wD1?=
+ =?us-ascii?Q?oX92Bv3UDLwCVpjba55rTucchP/TF2ZWbautYaYV5wtFfDyAdyWKkw1w4gGK?=
+ =?us-ascii?Q?7AjDlcXLYKYKqO1rzLNtjX+8RMWj3U2BGfcKA3gRI2i4xw9rAglwB6FdKTjy?=
+ =?us-ascii?Q?5KP5zeBigO4TLAPR/eQcodOJSsQzYrN2vFlT3cM6ChobqsE2DRAVM1OhoAgH?=
+ =?us-ascii?Q?aHEWdmXxOFI=3D?=
 x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR03MB10056.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(38070700021);DIR:OUT;SFP:1101;
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR03MB10056.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(38070700021);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
 x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?mNVMuPBo3QIBT0TY+i8n5YlW/zwvj9LZjm0ZyFi7Mi/MOUdDsCr1a3A7RjC0?=
- =?us-ascii?Q?xlP2g/3HI+4xoBivkmCfCo2iTLeXXWJDVDnYiw4ehao/Fz5UJarsbRrw+N7K?=
- =?us-ascii?Q?1VQwGWiYSvEc4G1SY2R5i8hAwh5HNkfVEaAMF1TNosgT3RG7p6zGEKDhDQnS?=
- =?us-ascii?Q?968KwnoCXrQvSmz1AyIC1SP24w8T6/MQhcF3WH7GFVMV0j1oRQ7bAoxgi5IQ?=
- =?us-ascii?Q?1eAJ2eMJoLBXNx8+LYfVO9HSKkbB7EI4JMWwUuD0HzjhrBo3UiyUqseYOZPU?=
- =?us-ascii?Q?JWJ0hcugPE4wlowJi7A1k23ima+8TMxKFKwoGZgOfr4CXk3Q4SWrcKs/CO9b?=
- =?us-ascii?Q?oOPZHoBlCpb6JPSQouA5QuNYuAqJk4ZBDkgJSdqzCyw8a/sabSgIJbJReXGA?=
- =?us-ascii?Q?Mhymga83mDsHtoInMVAa80FsqzSLWtJBune+klvtUevH1tjJ0gzaFtetTzN2?=
- =?us-ascii?Q?YSjytx5wE5McIaZnxTKQV3Bzspe6Us1lGZWh4aFsaX5CAPFAyKZks8sEQMBL?=
- =?us-ascii?Q?JsgTZOVLkiSCoXW1vw4w4wCqVjTtgcOA6TNhknImRjQs3khUYU+PwzokU2F+?=
- =?us-ascii?Q?XESkNbVv95JT5eAFv2pH+HjkyQMEDHoSC+pNIgGEU82CJuKLtzuZHzAzqf5V?=
- =?us-ascii?Q?erqLy9ArF0OI4mNEMhfySwoBXEhQ2hnZrHG4LwnG6f5RvaLAQmhs7mEZaf2e?=
- =?us-ascii?Q?czbEC48oslJa4HJoq7HrOZ4aNu0sTUiYq1eH3KJjJw/wj+4y8IdKa9CiQx9J?=
- =?us-ascii?Q?MGRAFxVd6bjiPG6vaP4D/W/hr7rOgsPlBT8ERDtrsLzrv/ekAz73ESpx0HL6?=
- =?us-ascii?Q?HfdxjtfEGQnuK68Kq0fu2CYr7RzXcmQTodO2qAEGOzvHUGctF1weJEnt+fxU?=
- =?us-ascii?Q?AKApI47n0XRp3A/RZWz/opbGqXESMyJZMQ5iwVyUZtFQfqi8h/SmDvQ9lQ8E?=
- =?us-ascii?Q?1vLlCxFR4sKGWBsFBkZF9Uf81ZTpfBxMsp7wC86bIJkhSJbYKGLb4k4O5gVd?=
- =?us-ascii?Q?eB4PLSLsRnNIqMQSotfe4n7y1yH06st8h6XgRqEVCQL5dZTtcBCXbIyOp+CI?=
- =?us-ascii?Q?yDSd3GTPBuoahnotDf4ryJhUvFMKTr273I+hfvIb4/o/ejYFDuoWJuOcM+Zx?=
- =?us-ascii?Q?U4PhwO186uOlp2JoblI3Rg/sAAoAHm52DEt+lPo0MoRsAzDa7VmQGfRSd8pp?=
- =?us-ascii?Q?BTVtN1Dl/I91T9sgdyRym3MUIXbA7kcQNXc/zMsQTdxKIi4Z8Ut4TE0S2vHl?=
- =?us-ascii?Q?aFUDNW5lP+yo7Ggl4VDjDpc5FqDTx68DJl/rom3owFJ5mJ04dpV2meS4IM6s?=
- =?us-ascii?Q?xeS5ob9+7EXyehPVSdB3VxTvkFKhAHO+q0zxK2CxqyJPsGgp/VARgSxC6TJy?=
- =?us-ascii?Q?okF3CX/CY4wYDPVQYhiKppHFeqeUpzCKQlu9qWza/2LohOAPqZ1wN2fAgnMQ?=
- =?us-ascii?Q?ufI/kM0ViNfEzHHzBAn6p36Tv1ly4nqqCLLTI9nucB/3jV8N0cWpy1XOa2Ft?=
- =?us-ascii?Q?VSaWyif82fYQercrqcaz2W/11ovJ7uUjFgpvriKtk/QMlwnaJ8Lm1dF27oup?=
- =?us-ascii?Q?qXTjn+NWos5MZDnE+o4=3D?=
+ =?us-ascii?Q?hnP4g5k8Nz4su2a2bCBYAczkkf1GmAyo63djAsgfg2AwSASdxEUsxx2G4Hab?=
+ =?us-ascii?Q?QAKSyr99oiubIJBS184uR0IUN4gE5n3xEYenUuAnizMnXYgfwdNN/zGUpvDk?=
+ =?us-ascii?Q?6ZKfkOEZdMO2q7OPrEPWji11YFpzGXqQJcQc889F21RzzQDbYlvitzo339c0?=
+ =?us-ascii?Q?li9RvwqJ8Kwj2nanmc0qqX4KutAk5ILZJ3O6hZCraK7hIYbSHXeYXOt0RTlk?=
+ =?us-ascii?Q?JSYoUqYz1/uGu9Y4FlzVt/Z4ozKMEg+fthkGzeQtmrZOS9EnDpoYDhYalUO+?=
+ =?us-ascii?Q?JoUSB9aP0Ba86woSfGCWzQnS2VTG0geizOveEIYfBNjGKYpWT/FVEkeVaU+H?=
+ =?us-ascii?Q?/xD2gRAhG3mSk7Z0T1HtrbG4EGoa0U1bGW4bfV4aAYUxOQfwik/AJlJW3JR9?=
+ =?us-ascii?Q?MWxKUu24XcmdCa+G7H0jOA00gguJt0rVc7OXY/s+etIJU9B7nISf6jr8XPQa?=
+ =?us-ascii?Q?2eoaBHgHZceEzIsJweEpzhsVYAwqZnl4+4HeBgmJYYDQGxuEw2/BtP9AQRmc?=
+ =?us-ascii?Q?41HvgW80vt2omP7fJqvT1yajGx3GUj8iKe64qD0R+5DLPZAwmguwSILELFRq?=
+ =?us-ascii?Q?eh/VEIunBa/ouLPJw41FZgJ+tgJfSdL910FwxuUKGS22VKR4y8AlOJxLfgUl?=
+ =?us-ascii?Q?8cNLZ2EnpoSwjQzKMK+uzjAqrT5HTfQhzuc5A+zTUIzu4aJapuFFW2M7BZNZ?=
+ =?us-ascii?Q?Gs7+SM4LE7phi/SCGzkXpsB69AoNvdLVC1se9galFQY2krETKH+3INtPa6nA?=
+ =?us-ascii?Q?9sttihNzpapkmpe9OmxghsglkzkAYQr2//HWApA0foNAdPIJ3MsSLDWUwdIc?=
+ =?us-ascii?Q?j0pTUxI/cuxv08LPvMqRtBz0V6LzMHmuRYcqSPmzLZmvx6Xjmb1f6UWI1fUI?=
+ =?us-ascii?Q?Qc+FnfH8xoUTGgnUGj/RSsV2rB7yIdU/IxVJ2fQYPFpG7HRdRzDQ1MRzQb5V?=
+ =?us-ascii?Q?HGprgLN8VXzlb+q9KZVcDYKI0CoCJlPH5B680Fc0/+Nnb59oHB7N+alKQo1a?=
+ =?us-ascii?Q?PVDtHK1T0aC9piKvDPpPUy8WWbUCkrqKBUT0j6ov0UuAhTikrj1IUNcfhcwQ?=
+ =?us-ascii?Q?dRPw1iHAUhSq7yCvYxB7f6tTZpRCcgd4WcCfzyXuIRjsGhL8+BRof1BdEXzq?=
+ =?us-ascii?Q?RIeHeJE2ClEmGNqKxYmNuyiUHr1qrfRQnbwFVreeXw5M7yuUF7GWapoCG6cP?=
+ =?us-ascii?Q?RikmN7G3MFrJxMnCbnlTMZOllbkdWh5cbU7tLqjGmdoya+IfyXyDxQ+UsJWs?=
+ =?us-ascii?Q?0ajvxcMCN/C7A8UWSOwwriQ4CaqiHYnoi4j3JiRF/Bo83TVPcO3zAcTHBSKg?=
+ =?us-ascii?Q?X4B+U9v0r4WjDKgu/Ss5PektdOs+EsTlLYTgkViA0xr+y9DCgq9I1sZo5fzQ?=
+ =?us-ascii?Q?erbmqfNaGvaM4gt5ZSvdGBJrf0GCAeVJ0kEQmzk989IQo9Z+yLg4OVDk3knc?=
+ =?us-ascii?Q?r/z96ugTOjJr6AZgjpeK1s3usyC0h5XDkhsV/gXCviT+4C9KKNghNuRekduY?=
+ =?us-ascii?Q?1JdImoWiBl90mZcN2mZE1KzzRyIi1VkLOZkUCIzdcv4SJnYlrKmOVqjSTJu8?=
+ =?us-ascii?Q?i5/9CyZcj21JBQCssWQ=3D?=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -146,14 +148,328 @@ MIME-Version: 1.0
 X-OriginatorOrg: festo.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: AS8PR03MB10056.eurprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9dbeae86-00e1-4c67-a83f-08ddf79aa627
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Sep 2025 16:36:14.0746
+X-MS-Exchange-CrossTenant-Network-Message-Id: a33bcd27-50a6-477d-31ff-08ddf9557a96
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Sep 2025 21:26:08.0633
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a1ae89fb-21b9-40bf-9d82-a10ae85a2407
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yUt4S11t1RDZtkgHJ8JYswSeFlhGEJLQdp3VTcfRAjQX800LbXCFETBFSvBhMESAeTIifw5sPYmIN3l6gEgfkA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR03MB6622
+X-MS-Exchange-CrossTenant-userprincipalname: rD2tPAJLsqt9LBMGbOUX3qF9PsluZWxjoFcKuozTHqNw7CEeoPlrQes4x14zBBCxk0LeVPkWFoDxFaaKStagfA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR03MB7713
+
+Hi Jan and Philippe,
+
+I resolved the issue from last email. I thought it was caused by virtualbox=
+. I used Vmware workstation to ran the installation again. The problem went=
+ away. Please see the evl and latency test result below. The actual Linux m=
+achine was running much better than the virtual machine, but I were still s=
+eeing about 200us latency. Xenomai's latency could tune to <30us. Is it tur=
+e? I have a few questions below. Please advise. Thank you in advance.
+
+1. Should I run Xenomai in virtual machine? Does it affect the performance.
+2. How can I improve the latency? (I am going to use it to build a EtherCat=
+ master) Is there any hardware requirement?
+
+Both machine are Ubuntu24
+1. Machine one 4-core Ubuntu
+ick@nicklinux:~$ sudo evl test
+[sudo] password for nick:
+basic-xbuf: OK
+clock-timer-periodic: OK
+clone-fork-exec: OK
+detach-self: OK
+duplicate-element: OK
+element-visibility: OK
+fault: OK
+fpu-preload: OK
+fpu-stress: OK
+heap-torture: OK
+hectic: OK
+mapfd: OK
+monitor-deadlock: OK
+monitor-deboost-stress: OK
+monitor-event: OK
+monitor-event-targeted: OK
+monitor-event-untrack: OK
+monitor-flags: OK
+monitor-flags-broadcast: OK
+monitor-flags-inband: OK
+monitor-pi: OK
+monitor-pi-deadlock: OK
+monitor-pi-deboost: OK
+monitor-pi-stress: OK
+monitor-pp-dynamic: OK
+monitor-pp-lazy: OK
+monitor-pp-lower: OK
+monitor-pp-nested: OK
+monitor-pp-pi: OK
+monitor-pp-raise: OK
+monitor-pp-tryenter: OK
+monitor-pp-weak: OK
+monitor-recursive: OK
+monitor-steal: OK
+monitor-trylock: OK
+monitor-wait-multiple: OK
+monitor-wait-requeue: OK
+observable-hm: OK
+observable-inband: OK
+observable-onchange: OK
+observable-oob: OK
+observable-race: OK
+observable-thread: OK
+observable-unicast: OK
+poll-close: OK
+poll-flags: OK
+poll-many: OK
+poll-multiple: OK
+poll-nested: OK
+poll-observable-inband: OK
+poll-observable-oob: OK
+poll-sem: OK
+poll-xbuf: OK
+proxy-echo: OK
+proxy-eventfd: OK
+proxy-pipe: OK
+proxy-poll: OK
+ring-spray: OK
+rwlock-read: OK
+rwlock-write: OK
+../libevl/tests/sched-quota-accuracy.c:213: FAILED: evl_control_sched(44, &=
+p, &q, test_cpu) (=3DOperation not supported)
+sched-quota-accuracy: no kernel support
+../libevl/tests/sched-tp-accuracy.c:222: FAILED: evl_control_sched(45, p, (=
+(void *)0), test_cpu) (=3DOperation not supported)
+sched-tp-accuracy: no kernel support
+../libevl/tests/sched-tp-overrun.c:220: FAILED: evl_control_sched(45, p, ((=
+void *)0), test_cpu) (=3DOperation not supported)
+sched-tp-overrun: no kernel support
+sem-close-unblock: OK
+sem-flush: OK
+sem-timedwait: OK
+sem-wait: OK
+simple-clone: OK
+stax-lock: OK
+stax-warn: OK
+thread-mode-bits: OK
+
+sudo latmus -m
+warming up on CPU0 (not isolated)...
+RTT|  00:00:01  (user, 1000 us period, priority 98, CPU0-noisol)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat w=
+orst
+RTD|      0.479|     11.304|     73.482|       0|     0|      0.479|     73=
+.482
+RTD|      2.134|     66.364|    167.666|       0|     0|      0.479|    167=
+.666
+RTD|      2.679|     70.065|    164.169|       0|     0|      0.479|    167=
+.666
+RTD|      2.486|     61.561|    127.858|       0|     0|      0.479|    167=
+.666
+RTD|      4.370|     62.240|     76.170|       0|     0|      0.479|    167=
+.666
+RTD|      4.220|     82.704|    193.732|       0|     0|      0.479|    193=
+.732
+RTD|      0.180|     99.642|    202.283|       0|     0|      0.180|    202=
+.283
+RTD|      4.316|     98.797|    207.727|       0|     0|      0.180|    207=
+.727
+RTD|      7.103|     63.529|     78.923|       0|     0|      0.180|    207=
+.727
+RTD|      4.281|     76.397|    194.532|       0|     0|      0.180|    207=
+.727
+RTD|      1.636|     65.308|    187.265|       0|     0|      0.180|    207=
+.727
+RTD|      2.314|     67.532|    192.044|       0|     0|      0.180|    207=
+.727
+RTD|      4.585|     63.799|    153.583|       0|     0|      0.180|    207=
+.727
+RTD|      1.563|     63.780|    120.452|       0|     0|      0.180|    207=
+.727
+RTD|      3.757|     63.276|    123.750|       0|     0|      0.180|    207=
+.727
+RTD|      3.794|     62.681|    120.261|       0|     0|      0.180|    207=
+.727
+RTD|     -0.022|     80.300|    209.774|       0|     0|     -0.022|    209=
+.774
+RTD|      1.381|     63.559|    161.354|       0|     0|     -0.022|    209=
+.774
+RTD|      5.056|     63.004|     75.401|       0|     0|     -0.022|    209=
+.774
+RTD|      2.896|     61.048|     74.324|       0|     0|     -0.022|    209=
+.774
+RTD|      1.338|     61.750|    187.294|       0|     0|     -0.022|    209=
+.774
+RTT|  00:00:22  (user, 1000 us period, priority 98, CPU0-noisol)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat w=
+orst
+RTD|      0.512|      7.897|     70.633|       0|     0|     -0.022|    209=
+.774
+
+2. Machine 2 Virtual Ubuntu using Vmware 8 cores
+
+nick@nickvm:~$ sudo evl test
+[sudo] password for nick:
+basic-xbuf: OK
+clock-timer-periodic: OK
+clone-fork-exec: OK
+detach-self: OK
+duplicate-element: OK
+element-visibility: OK
+fault: OK
+fpu-preload: OK
+fpu-stress: OK
+heap-torture: OK
+hectic: OK
+mapfd: OK
+monitor-deadlock: OK
+monitor-deboost-stress: OK
+monitor-event: OK
+monitor-event-targeted: OK
+monitor-event-untrack: OK
+monitor-flags: OK
+monitor-flags-broadcast: OK
+monitor-flags-inband: OK
+monitor-pi: OK
+monitor-pi-deadlock: OK
+monitor-pi-deboost: OK
+monitor-pi-stress: OK
+monitor-pp-dynamic: OK
+monitor-pp-lazy: OK
+monitor-pp-lower: OK
+monitor-pp-nested: OK
+monitor-pp-pi: OK
+monitor-pp-raise: OK
+monitor-pp-tryenter: OK
+monitor-pp-weak: OK
+monitor-recursive: OK
+monitor-steal: OK
+monitor-trylock: OK
+monitor-wait-multiple: OK
+monitor-wait-requeue: OK
+observable-hm: OK
+observable-inband: OK
+observable-onchange: OK
+observable-oob: OK
+observable-race: OK
+observable-thread: OK
+observable-unicast: OK
+poll-close: OK
+poll-flags: OK
+poll-many: OK
+poll-multiple: OK
+poll-nested: OK
+poll-observable-inband: OK
+poll-observable-oob: OK
+poll-sem: OK
+poll-xbuf: OK
+proxy-echo: OK
+proxy-eventfd: OK
+proxy-pipe: OK
+proxy-poll: OK
+ring-spray: OK
+rwlock-read: OK
+rwlock-write: OK
+sched-quota-accuracy: 80.8%
+sched-tp-accuracy: OK
+sched-tp-overrun: OK
+sem-close-unblock: OK
+sem-flush: OK
+sem-timedwait: OK
+sem-wait: OK
+simple-clone: OK
+stax-lock: OK
+stax-warn: OK
+thread-mode-bits: OK
+nick@nickvm:~$ sudo latmus -P 10
+warming up on CPU0 (not isolated)...
+RTT|  00:00:01  (user, 1000 us period, priority 10, CPU0-noisol)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat w=
+orst
+RTD|   -929.993|    174.488|   2600.458|       5|     0|   -929.993|   2600=
+.458
+RTD|     18.963|    297.375|    983.319|       5|     0|   -929.993|   2600=
+.458
+RTD|     19.865|    298.184|   2808.978|       7|     0|   -929.993|   2808=
+.978
+RTD|   -979.453|    -19.014|   1014.285|       8|     0|   -979.453|   2808=
+.978
+RTD|   -911.677|      7.487|   1587.974|      10|     0|   -979.453|   2808=
+.978
+RTD|   -979.476|   -677.605|    -52.038|      10|     0|   -979.476|   2808=
+.978
+RTD|   -918.623|     95.344|   2168.010|      12|     0|   -979.476|   2808=
+.978
+RTD|     84.914|    365.212|    963.395|      12|     0|   -979.476|   2808=
+.978
+RTD|   -919.064|    -66.003|   1421.899|      14|     0|   -979.476|   2808=
+.978
+RTD|   -930.611|     71.721|    754.604|      14|     0|   -979.476|   2808=
+.978
+RTD|     63.837|    359.260|   2245.524|      16|     0|   -979.476|   2808=
+.978
+RTD|   -910.610|    181.606|   1004.474|      17|     0|   -979.476|   2808=
+.978
+^C---|-----------|-----------|-----------|--------|------|-----------------=
+------
+RTS|   -979.476|     92.452|   2808.978|      18|     0|      00:00:12/00:0=
+0:12
+nick@nickvm:~$ sudo latmus -P 99
+warming up on CPU0 (not isolated)...
+RTT|  00:00:01  (user, 1000 us period, priority 99, CPU0-noisol)
+RTH|----lat min|----lat avg|----lat max|-overrun|---msw|---lat best|--lat w=
+orst
+RTD|     68.162|    391.712|   1611.035|       2|     0|     68.162|   1611=
+.035
+RTD|   -912.291|   -475.666|   1010.092|       3|     0|   -912.291|   1611=
+.035
+RTD|   -918.423|    119.871|   1937.203|       4|     0|   -918.423|   1937=
+.203
+RTD|     60.344|    387.485|    903.844|       4|     0|   -918.423|   1937=
+.203
+RTD|     76.729|    388.215|    980.691|       4|     0|   -918.423|   1937=
+.203
+RTD|     71.667|    379.802|   1528.251|       5|     0|   -918.423|   1937=
+.203
+RTD|     64.122|    391.833|   1084.815|       6|     0|   -918.423|   1937=
+.203
+RTD|   -923.345|   -162.983|   1046.850|       8|     0|   -923.345|   1937=
+.203
+RTD|     56.628|    402.514|   1140.448|       9|     0|   -923.345|   1937=
+.203
+RTD|   -911.562|    231.340|   1141.412|      11|     0|   -923.345|   1937=
+.203
+RTD|   -928.371|   -361.258|    869.662|      11|     0|   -928.371|   1937=
+.203
+RTD|     71.141|    396.117|    976.691|      11|     0|   -928.371|   1937=
+.203
+RTD|     63.273|    393.677|    946.488|      11|     0|   -928.371|   1937=
+.203
+RTD|     70.335|    401.533|    942.252|      11|     0|   -928.371|   1937=
+.203
+RTD|     71.243|    395.450|    857.735|      11|     0|   -928.371|   1937=
+.203
+RTD|     66.630|    401.924|   1087.476|      12|     0|   -928.371|   1937=
+.203
+RTD|     68.832|    396.441|   2199.416|      14|     0|   -928.371|   2199=
+.416
+RTD|     83.153|    388.793|   1171.043|      15|     0|   -928.371|   2199=
+.416
+RTD|     76.944|    406.898|   1074.956|      16|     0|   -928.371|   2199=
+.416
+RTD|     71.327|    394.167|    986.145|      16|     0|   -928.371|   2199=
+.416
+RTD|   -944.379|    -77.007|   1662.945|      18|     0|   -944.379|   2199=
+.416
+
+Best Regards,
+Nick Xie
+
+-----Original Message-----
+From: Xie, Nick
+Sent: Friday, September 19, 2025 12:36 PM
+To: 'Jan Kiszka' <jan.kiszka@siemens.com>; Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev
+Subject: RE: Error during libevl build and runtime settings failed
 
 Hi Jan and Philippe,
 
@@ -165,9 +481,8 @@ an the evl test. Do you have any idea? Thank you in advance.
 
 nick2@Xenomai22:~$ uname -a
 Linux Xenomai22 6.12.30+ #1 SMP PREEMPT_DYNAMIC EVL Fri Sep 19 07:59:54 PDT=
- 2025 x86_64 x86_64 x86_64 GNU/Linux
-nick2@Xenomai22:~$ sudo evl test
-[sudo] password for nick2:
+ 2025 x86_64 x86_64 x86_64 GNU/Linux nick2@Xenomai22:~$ sudo evl test [sudo=
+] password for nick2:
 basic-xbuf: OK
 ../libevl/tests/clock-timer-periodic.c:43: FAILED: ticks =3D=3D 1 (=3Dfalse=
 )
