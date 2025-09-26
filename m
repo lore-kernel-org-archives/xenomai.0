@@ -1,80 +1,89 @@
-Received: from mail-lj1-f175.google.com (mail-lj1-f175.google.com [209.85.208.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mslow3.mail.gandi.net (mslow3.mail.gandi.net [217.70.178.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8285830CD95
-	for <xenomai@lists.linux.dev>; Thu, 25 Sep 2025 17:25:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6C401EDA02
+	for <xenomai@lists.linux.dev>; Fri, 26 Sep 2025 07:34:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.249
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758821135; cv=none; b=Mci9IvD2aYfU3433AXbG1b6TqvgJ1qRlW8AKWWhoDCy8iYN8a/V6qbSONC9hS6O4iJd2M5N5UG711HTfsVhRLNLg6pM7R0itneQzCqNVUPfMAxcFWhWvpuo9xrMcTgfYBkFcASAUeo114LHI0RldRuzlzUAxIcapxhylqYR1iAQ=
+	t=1758872061; cv=none; b=e77ua3c6t7OwEH+RhloUqOi13yhsXCdB7i8ZbimWbCAK9y4yMqZVvY2jBYTI655ldoEohcrTb6UeGpAF/VUjZHWMhx1sG+IoUmVQEH0oAwUfcjEq52npLEBKEgQiJcxYTDOUq2wMh4eUpFlfmp1M6pZGjQ/uQpK6yvWcAyLm11o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758821135; c=relaxed/simple;
-	bh=5WXg6SjWG75Vj1CIHzrF/wdi5C509XGc/dwtbfqOmxE=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=g/zR9jDZr8DLI/lA85M263rarL9o4lKrqgxX5nhpERlKzkpqCBGSk7HeGgqUWySNrYwvCBmVcVVSRq2maU3Q5UpW2wOnADJkcGFR5tIkrQCRaKhB0eoMU1OiZeXgOnO7IvxglCtIyKx42swFCp58qQZ5VipuEghXCV44TfTv9kA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b=bz8uiICf; arc=none smtp.client-ip=209.85.208.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
+	s=arc-20240116; t=1758872061; c=relaxed/simple;
+	bh=pVOGXgws5Xtenx09au1uqq27dCaziIaOJkWvBuTopls=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=JejE0GtFcJ7weeg3zjN9ul9Uz9FO71NkdZQQZh65IzCq98OXE1quxA+r6XrAijrcw6eInwYaTbNUXyMR53wZ6IWzuLwOmNWay6m9ezf3DqlSEnjwrBaLXRpqT9fGVeD2bwrL5ZZxzuRqUMXJfR7MYNqxkIPYo2OtFz65mmwRh4g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=BrZ8gCzr; arc=none smtp.client-ip=217.70.178.249
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b="bz8uiICf"
-Received: by mail-lj1-f175.google.com with SMTP id 38308e7fff4ca-361d175c97fso11520621fa.3
-        for <xenomai@lists.linux.dev>; Thu, 25 Sep 2025 10:25:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile.fr; s=google; t=1758821131; x=1759425931; darn=lists.linux.dev;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Uvuvpx5LmrV8/18kmxkeg4quNzDUHicZjtSPtAwEPI0=;
-        b=bz8uiICfVR5sokot61jmupDQbCFhE+Tj8puRgVSRi2P+UK6zTYoH79DiBIm9l8yQjo
-         RjA2Ca9oW+xQhkMhIlRleYzH3wTDpRV7ti6FFLMb2XoK+yshXuoK8Jd8nIpsHfm5ZoQi
-         3V3GqYdRqSguEZLqRrMVb0YVzskYQvUhlv/Eg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758821131; x=1759425931;
-        h=to:subject:message-id:date:from:mime-version:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Uvuvpx5LmrV8/18kmxkeg4quNzDUHicZjtSPtAwEPI0=;
-        b=BpL3rvKBdGF9EX6ijx0HzoYV6M+c9Jcp0Bkff0wayhgfN0F/u0JxfeQom/oSKahJax
-         Nq7+zKK0qJsDkNmKo8rWJllwPAKcPLCqtleIhRazY6yKXBic/7KuH5AthhlwyP1n7Vof
-         7PEQv4H23QTPoMBZhqSVMTZHzGlU2KC0pxrLnT2tAqMQT1AgEdjQV4riYhgDNY+LxdpB
-         Lm7hCP5O9YNcKgJSmzJY3ePpuT3vyaRbRfAjZfrgOwt0KQ1nOwOnHGKe19Bn3y0U1c0k
-         tvPb6z3axdp+yVcPuKtXbvEjENwjMy+h/me0OkvWhF9lDdYebCx6q7/hSLBpXrpn5DlZ
-         c6mA==
-X-Gm-Message-State: AOJu0Yz93FNR6W9+6pc0nirryXI/YeUbfD7U9wN3eT3eG6hW58PfSZsY
-	blvGxIFaTO8mclxGMm2EQiCY0aiPZjJhdLA7zVIBNCXcHTzjAEjxF0mEDlKtDjf/qSwAsjS0Xk9
-	8EQ9U9oIu4czzNBPIrApXSt0VQLpVD+/fhn8IMVisacA5cSSIVRom
-X-Gm-Gg: ASbGnctTkRmU2XQ5mUsFm4QE1fNEaoS74CjR0N798xbg2+SUUqlbs+A+mOWrAL3zQ14
-	CQTNTbkLuUhL9+E0x9R2gMnCECiMaQk/2c59UlyE9Y0UgtQiRf+/DRRiPIl4wjQ6r22MlofSiiS
-	C3N7d+6b9XvChUbH3ScUpUpw6lGERCBz3daG4gpYqkEWhS3Orcu0FtoWmLoPg/Biaw1KueDGyzi
-	ZoyCIH/I3HwoNDpNrSOr0TQQ4RjpmLYUUd2RXtP
-X-Google-Smtp-Source: AGHT+IFrSN4rnNnHOyEEvpTm3YLNPWT0siL1S1JTAGxiIAM94fmSRBr+Kfij4bXC6IvDSPHY54x4emgYhCYWvNeIaf0=
-X-Received: by 2002:a2e:be05:0:b0:36d:6ae3:816b with SMTP id
- 38308e7fff4ca-36f7d6cd772mr12935391fa.13.1758821131124; Thu, 25 Sep 2025
- 10:25:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="BrZ8gCzr"
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+	by mslow3.mail.gandi.net (Postfix) with ESMTP id B198D58238E
+	for <xenomai@lists.linux.dev>; Fri, 26 Sep 2025 07:24:02 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id BB3CA44386;
+	Fri, 26 Sep 2025 07:23:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1758871435;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=+jwoZb7NK7qRYq1yRbUiLToBbRr1IRofrMQAGBzfmR8=;
+	b=BrZ8gCzrA68LsQC54FuQsMl66XThYpUqyPlnuApg76AvhugRDTGdkLfFtiL3RRzYzUQ/iX
+	hqwEhoJ3VRVWlGa5p2lvdqvSs7tz6mIkzBKKPu5I/O/HUc5byVkEjJqJy32WSASMysXN0z
+	aIQWKJz9uTgeTfyg4qbESmyJrCNa/x/7dEV3S3MXRDGt9l3X0FJhoJ59PPq66wIghc0gY8
+	duJbT4EOia19R/cRWUukAPqDZ8uTuG0UHY6Jg4GE73NgftDMIvWR3pSBz/Eoi+3jWg3Xaw
+	u0iGknLoOuuJt7T5hWPRTfFhizUoCkXIJHsYAQgPC8nS+8fLl/VtzKFvBmwdyA==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: xenomai@lists.linux.dev,  Jan Kiszka <jan.kiszka@siemens.com>
+Subject: Re: [PATCH RFC Dovetail 6.16 2/2] genirq: irq_pipeline: Migrate
+ mask_lock to a hybrid spinlock
+In-Reply-To: <20250924-wip-flo-fix-lockdep-warning-for-6-16-v1-2-8a8475e2cdc0@siemens.com>
+	(Florian Bezdeka's message of "Wed, 24 Sep 2025 23:23:15 +0200")
+References: <20250924-wip-flo-fix-lockdep-warning-for-6-16-v1-0-8a8475e2cdc0@siemens.com>
+	<20250924-wip-flo-fix-lockdep-warning-for-6-16-v1-2-8a8475e2cdc0@siemens.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Fri, 26 Sep 2025 09:23:49 +0200
+Message-ID: <875xd5ismy.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Thu, 25 Sep 2025 19:25:19 +0200
-X-Gm-Features: AS18NWC3KDdb45hhLs2RRifixkYf0s-YZYi05DJcr7H9UdAEMD2N1eXi9OKowgw
-Message-ID: <CAFc1U0vEL8-2vhaZpw5wHFjxCSMPCniQWL5AL7R_w+kQC=5PMA@mail.gmail.com>
-Subject: Running main() in the Xenomai domain
-To: Xenomai <xenomai@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggdeikeejiecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepvdelhfdvheekudehveelgeeitdeujefgkefhieejfedvieejkeegiefgjefhkeegnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopeefpdhrtghpthhtohepjhgrnhdrkhhishiikhgrsehsihgvmhgvnhhsrdgtohhmpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehflhhorhhirghnrdgsvgiiuggvkhgrsehsihgvmhgvnhhsrdgtohhm
+X-GND-Sasl: rpm@xenomai.org
 
-Hi,
+Florian Bezdeka <florian.bezdeka@siemens.com> writes:
 
-Maybe it's a silly question but I think I did it some years ago but I
-don't remember how to do it.
+> The reason for the migration is the lockdep report below.
+>
+> The irq_desc_lock_class is the dovetail specific hybrid spinlock.
+> pci_config_lock and mask_lock are both raw spinlocks.
+>
+> The behaviour of the pci_config_lock is different on kernels with
+> IRQ pipelining enabled. While on plain Linux the critical section
+> is entered with hard IRQs disabled, the inband stage is stalled with
+> hard IRQs enabled on CONFIG_IRQ_PIPELINE. This is the reason why the
+> pipeline entry code may still run on the same CPU and grab a
+> (hybrid) IRQ descriptor lock.
+>
+> The critical section protected by the mask_lock was always entered
+> with hard IRQs on.
+>
+> To break the cycle we migrate the mask_lock to a hybrid spinlock.
+> This lock is only grabbed for IRQ setup. It's expected to have the
+> lowest RT impact.
+>
+> irq_setup_affinity() is expected to be called from the inband stage
+> only, so we will now enter the critical section with hard IRQs
+> disabled. With that the pipeline entry code is locked out, breaking
+> the cyclic lock dependency.
+>
 
-Is that possible in Xenomai 3 ?
-
-Thx
-
-Regards
+LGTM.
 
 -- 
-
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source code
+Philippe.
