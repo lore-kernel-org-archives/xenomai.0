@@ -1,111 +1,162 @@
-Received: from mail-lf1-f53.google.com (mail-lf1-f53.google.com [209.85.167.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from redirect.mail.gandi.net (relay14.mail.gandi.net [217.70.178.234])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6706E10FD
-	for <xenomai@lists.linux.dev>; Fri, 26 Sep 2025 15:44:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BACB522172D
+	for <xenomai@lists.linux.dev>; Sat, 27 Sep 2025 17:53:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.234
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758901470; cv=none; b=B8Sy/k1U+wHy4ILLEEjYv7NlM9Gvvi8tZo/dgPSs9nZHncNTN37A9TbHRGh1sv61OBVlII4cD/lYhTI+MvhGHc9FHqkcbH8qkI2xIMtmG+z8efxRpP4NpufqRTqpDR6Mioq3UhsWiv/F20cJUPYQ0HOmxX7dAxLU9SmPzTtTR9I=
+	t=1758995625; cv=none; b=F9TutvpJgCGMiQdmu6961IrBB/YO+9GW3QbimTgwflggJ+rI4EXVCXIska2XDJgStS5LtTyiLrCcrZfO6F4V3c05hO0cVVypaGvMY3/VnxadYsVpgz0nf5INbZI1PONZXT70xsE1q/ZF0RYvsfiDqIHnn7mnWwe/yZKRHWUY9fk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758901470; c=relaxed/simple;
-	bh=vlZcrWWDpr0OrzzJznWI3A8r1+aa8vWckGR6BS8by7I=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=lNUFwicgjmA3vyXLjyKbHY3uErIopM564bb3BgB1XoKN7itMMBPNR/so+s90bHBx3jBASi7tp7yWKkRXzAFtn+PrYWJA2Zw01gKRwv8ddGgBbr/wLK7rUdO6JEaOFthZvb+pkRDGDhlJ4hxoZNPeBoK0lEjxlDjRyaEIUaqHq84=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b=hGkWEWBW; arc=none smtp.client-ip=209.85.167.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
+	s=arc-20240116; t=1758995625; c=relaxed/simple;
+	bh=xHxzTk2n175ADaYvxRv9LBrTFIsD9qlEYLmstaVwpCc=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=YU+jzwSumn1BDCW/EF1P1+qmUs3syRPiJip0a4OiSEWa8fbq46VSu1rkwHZjki6QtJzC/HttkgE0M5zJfUhBGUY3HJ7NBsE3TVrw/nLaTHpTz12+WbM36p6elQCZIVwo0NeAVSgzJnxkIb3GcK+SSWaIt5RNYVfHqkGTsuTVHgM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=KZGlh4Pm; arc=none smtp.client-ip=217.70.178.234
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b="hGkWEWBW"
-Received: by mail-lf1-f53.google.com with SMTP id 2adb3069b0e04-57d5ccd73dfso2327608e87.0
-        for <xenomai@lists.linux.dev>; Fri, 26 Sep 2025 08:44:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile.fr; s=google; t=1758901466; x=1759506266; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OJNsVL9OMebeEh3GhVfR2GUIqrqm5FgOinSlaM7lQ40=;
-        b=hGkWEWBWOCjMt71hF+EYS0xbsYkJI9d7iCzAzzjkVGDbTz8RdsAfGgmTLSHKGXhi27
-         8n9jEb8oX6vrf6k0baslDwqD0NS1hc3+NqUnaLlj+r3p1jV2DMV8DqD9dpl+QclG52Eg
-         2nMVh5ygfry5NtULud/POa9kGUarQT6ml4+Tc=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758901466; x=1759506266;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=OJNsVL9OMebeEh3GhVfR2GUIqrqm5FgOinSlaM7lQ40=;
-        b=rWxH8Kjai14Isj03jOQ1ATjsJbq0VVuJsZQcJsxE9IJrrxZF8IKVHQhFECZ016alT0
-         TjI3Na9XSpl1fFdg5UozQwrmBmxUoLeQk8aP0Dyky/QbaoHMHBmCqNNatlNFTy+NWtBN
-         QhATtTkw+7czFoarrFB9nN3Kq9SLKgcLsgCkYrXYr85/ukTA0jkXSE+/E/i9NY/vugfx
-         q/gMDTC9Io9H69WTNfGtMQRqU/Pd0PDxFAHKgj4boz1OIb1tYuvFvt2mLuE86ZiPZpfR
-         pMQ423Ob0qETn1SWx4MO6mJRT3yRmwVTEHJKV04s5KmDCmwHyTcNuToPBUSOJYBw7fIV
-         Lw5Q==
-X-Gm-Message-State: AOJu0Yxw7PMaQ1m5iZdMMkL2juG2ZkXJyz2WEketT1Zecq0I4XG3RDk8
-	HEh4i4+stinrC+kcT4Cajecalq2E8WVBwOY8gEkOSTsEswRFlj7xMGvhuQ9f+Jl3HTOVVDhddRE
-	59xRRpKPDyuKFBgRPQTktm7jJLWwjKh5xqn2a0NJXUV9Q4e2YUDrI
-X-Gm-Gg: ASbGnctROEzv0Bj8iXqz2yOjCLPFiThX8mpZX5f9g6/QsLGJfW7Rh27UkE4aEVAfycr
-	mfevnZ3lep4HvhgMA/rlEw5p6AKsxrDSmsw9TLxqLSEuNkkVV5mE42ZVucJ1tRlgpl5UtMiXQI9
-	H3sD3PzGZtllbJC7087rhFo5rMNXxUjfDP9BWIFK19fahTkAsu3uILKY19ptenG+vkNIvZ6fSxF
-	OZTBhq6X8gPy9jLmAGYORIM81wRjZFGgV1/ddiQohtdU3gaw9g=
-X-Google-Smtp-Source: AGHT+IEQ+pudHG0CXBwIGwYXJdpMcGesQInH90FzrK8ptuP1FdVIP1SrzVL0/zaBjkWhinnJ9eNG6CKSXpFEHQQqimU=
-X-Received: by 2002:a05:6512:12d6:b0:57a:d20:d499 with SMTP id
- 2adb3069b0e04-582d37cb373mr2637964e87.51.1758901466314; Fri, 26 Sep 2025
- 08:44:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="KZGlh4Pm"
+Received: from spool.mail.gandi.net (spool5.mail.gandi.net [217.70.178.214])
+	by relay14.mail.gandi.net (Postfix) with ESMTPS id 9A73643C30
+	for <xenomai@lists.linux.dev>; Sat, 27 Sep 2025 17:53:40 +0000 (UTC)
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 18FB0D80084
+	for <xenomai@xenomai.org>; Sat, 27 Sep 2025 17:53:40 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 5A98443195;
+	Sat, 27 Sep 2025 17:53:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1758995620;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=YkXsA/AUpz55y995FH51EZY59psawjUbydmd9icbjOQ=;
+	b=KZGlh4Pm2NgCBo+dskXzClimmIV76Fu6vLF1vYpAMsqT9Ai4U3HOjFyXKLQfXLHp8BWSAD
+	y5lqoIpK7e2YmFIiIDVuPk7xERKq9UaFnJGVIl8N2GFgKOfSlmbu9CrTkKHIpfJx0ZXNfn
+	pj/LYX1hGQANDH/53ULVjAjzMofFSRHGmf3cGaYHOaLSMwatYPh7+Wx87ko9L+pMtj7wJt
+	LFqQmC1QSZ0vIm+HZ+rMhckAqJi/qdkQwsPbNXMwqfhw4o0KBErtpe+cQAfUpKNA/rhnm/
+	nU6CRgHKmILAVR53aCsAC05kXJqSvj5UbCJicZSI+Kwnij3YK+daj1ce7hv2SA==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>,  xenomai@xenomai.org
+Subject: Re: [dovetail 6.1.y-cip][PATCH 1/3] arm64: fpsimd: dovetail:
+ Hard-disable interrupts inside fpsimd_save_and_flush_cpu_state
+In-Reply-To: <682e1128c6f0450f28db6234c032a3f25ec5d914.camel@siemens.com>
+	(Florian Bezdeka's message of "Thu, 25 Sep 2025 14:57:02 +0200")
+References: <cover.1758264904.git.jan.kiszka@siemens.com>
+	<b9ecf3458a5c8850edc16b46a8ef67152bd0d197.1758264904.git.jan.kiszka@siemens.com>
+	<87bjn1m28m.fsf@xenomai.org>
+	<e4b8990c-291d-457b-bf6b-3ca0359310b4@siemens.com>
+	<f2339b70d34b7bd4c8e720428d860bc7748aec4d.camel@siemens.com>
+	<8359c1ef-1c5c-4f99-877e-12804efc955b@siemens.com>
+	<682e1128c6f0450f28db6234c032a3f25ec5d914.camel@siemens.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Sat, 27 Sep 2025 19:53:34 +0200
+Message-ID: <87qzvrkcip.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAFc1U0vEL8-2vhaZpw5wHFjxCSMPCniQWL5AL7R_w+kQC=5PMA@mail.gmail.com>
- <87o6qxha7r.fsf@xenomai.org>
-In-Reply-To: <87o6qxha7r.fsf@xenomai.org>
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Fri, 26 Sep 2025 17:44:15 +0200
-X-Gm-Features: AS18NWD237X-oeu7PQ2r8tTfSje4l01_2OP2kPF_eVjE3c-ztMX4Oy9HbV_Wm8c
-Message-ID: <CAFc1U0tCXd2BSRabj5xsenJZnpcrnuLs=-DcV5=nxz5nQeEPWQ@mail.gmail.com>
-Subject: Re: Running main() in the Xenomai domain
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggdejvdeltdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepueelgffghedtfeegkefgffduteekkefhheduheefiefggfejkeekleefkeejueevnecuffhomhgrihhnpehgihhtlhgrsgdrtghomhenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpnhgspghrtghpthhtohepfedprhgtphhtthhopeigvghnohhmrghiseigvghnohhmrghirdhorhhgpdhrtghpthhtohepjhgrnhdrkhhishiikhgrsehsihgvmhgvnhhsrdgtohhmpdhrtghpthhtohepfhhlohhrihgrnhdrsggviiguvghkrgesshhivghmvghnshdrtghomh
+X-GND-Sasl: rpm@xenomai.org
+X-GND-Status: LEGIT
+Authentication-Results: spool.mail.gandi.net;
+	dkim=pass header.d=xenomai.org header.s=gm1 header.b=KZGlh4Pm;
+	dmarc=none;
+	spf=pass (spool.mail.gandi.net: domain of rpm@xenomai.org designates 2001:4b98:dc4:8::227 as permitted sender) smtp.mailfrom=rpm@xenomai.org
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggdejvdeltdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepueelgffghedtfeegkefgffduteekkefhheduheefiefggfejkeekleefkeejueevnecuffhomhgrihhnpehgihhtlhgrsgdrtghomhenucfkphepvddujedrjedtrddujeekrddvudegpddvtddtudemgegsleekmegutgegmeekmeemvddvjeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudejrdejtddrudejkedrvddugedphhgvlhhopehsphhoohhlrdhmrghilhdrghgrnhguihdrnhgvthdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvh
 
-Hi Philippe,
+Florian Bezdeka <florian.bezdeka@siemens.com> writes:
 
-I saw that doc yesterday but I didn't test it.
-
-It works fine now, thx for your help.
-
-
-
-Le ven. 26 sept. 2025 =C3=A0 10:47, Philippe Gerum <rpm@xenomai.org> a =C3=
-=A9crit :
+> On Thu, 2025-09-25 at 14:49 +0200, Jan Kiszka wrote:
+>> On 25.09.25 14:47, Florian Bezdeka wrote:
+>> > On Thu, 2025-09-25 at 14:40 +0200, Jan Kiszka wrote:
+>> > > On 23.09.25 20:51, Philippe Gerum wrote:
+>> > > > Jan Kiszka <jan.kiszka@siemens.com> writes:
+>> > > > 
+>> > > > > From: Jan Kiszka <jan.kiszka@siemens.com>
+>> > > > > 
+>> > > > > Not all callers of this function do that themselves.
+>> > > > > 
+>> > > > 
+>> > > > Are we 100% sure that kvm_arch_vcpu_load_fp() and kvm_arch_vcpu_put_fp()
+>> > > > would not benefit from doing that themselves precisely, to create an
+>> > > > atomic section around their internal state change _and_ the fpsimd flush
+>> > > > op?
+>> > > 
+>> > > Is kvm on arm64 officially enabled for oob (-preemption), or are we
+>> > > patching blindly here? If no one was looking at kvm yet, then you might
+>> > > be right. If it was reviewed already, then this here is just cleaning up.
+>> > 
+>> > We have
+>> > https://gitlab.com/Xenomai/linux-dovetail/-/commit/028ad3b2c19ca8a3655577fb34cac7996f166d2a
+>> > 
+>> > since 6.14 (AFAICT). At the time of writing this was the first kernel
+>> > release that used in-kernel FPU. Maybe that changed (thanks to
+>> > backports)? Btw: Which version are we talking about right now? 6.1?
+>> > 6.12?
+>> 
+>> All of them.
+>> 
 >
-> Pierre FICHEUX <pierre.ficheux@smile.fr> writes:
+> In case backporting is considered:
 >
-> > Hi,
-> >
-> > Maybe it's a silly question but I think I did it some years ago but I
-> > don't remember how to do it.
-> >
-> > Is that possible in Xenomai 3 ?
-> >
-> > Thx
-> >
-> > Regards
+
+We already have 028ad3b2 in [rebase/]6.1.y-cip, I'll pick 97cb63af01de
+as well.
+
+> Please also take
 >
-> Yes, see [1].
+> 97cb63af01de ("arm64: fpsimd: dovetail: Align with x86 implementation")
 >
-> [1] https://doc.xenomai.org/v3/html/xeno3prm/group__cobalt__api__sched.ht=
-ml#ga14f50e1f5d815c90f1f4225eca5d3a8c
+> into account. Just a "couple of weeks" old and brings some
+> optimizations.
 >
-> --
-> Philippe.
+>
 
+We also need to enable the oob preemption test in switchtest, which was
+disabled so far due to lack of support. Now that 028ad3b2 enables safe
+preemption of kernel_neon_begin/end sections by oob thread, we should
+allow testing this feature in v3 as well with something along these
+lines:
 
+diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
+index 0958d5e2a..b8c0c39c5 100644
+--- a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
++++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
+@@ -10,16 +10,20 @@
+ #include <linux/errno.h>
+ #include <asm/xenomai/uapi/fptest.h>
+ #include <asm/hwcap.h>
++#include <asm/neon.h>
+ 
+ #define have_fp (ELF_HWCAP & HWCAP_FP)
+ 
+ static inline int fp_linux_begin(void)
+ {
+-	return -ENOSYS;
++	kernel_neon_begin();
++
++	return 0;
+ }
+ 
+ static inline void fp_linux_end(void)
+ {
++	kernel_neon_end();
+ }
+ 
+ static inline int fp_detect(void)
 
---
+This was just done in v4 by [1], no issue detected afterwards by the
+'hectic' test (switchtest equivalent).
 
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source code
+[1] https://gitlab.com/Xenomai/xenomai4/linux-evl/-/commit/0396a52a9b3dc352ef10e6a9d2ed096718ef5d80
+
+-- 
+Philippe.
