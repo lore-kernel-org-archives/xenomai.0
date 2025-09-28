@@ -1,174 +1,181 @@
-Received: from redirect.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42F4918DF8D
-	for <xenomai@lists.linux.dev>; Sat, 27 Sep 2025 18:54:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84B2854918
+	for <xenomai@lists.linux.dev>; Sun, 28 Sep 2025 07:24:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758999267; cv=none; b=sFbqjFgUCpLl09C9igV3H144p9cdvfA4BPHa28fhg1YsD8Pd7yyfkbbauErXk08vpKMe5o/5jIs0aPCkNWTvzO0FDrkSPJ2iDvYY0iGKCCTrugO4nqInr7RX0Nu5C4py0HmRQ3xwm75u4SXF77lL71WSVPbx1zmDrQ3Q8+wGvUg=
+	t=1759044279; cv=none; b=K0MNLDxRveJKQKncOwjv2cpAIxHZ5ceXhoM8xrqDB4+mFVX4Du4rZ/RcONpumgB5nX2GNQjypGSw2Jiru34aMhzlgCNFRQXrEtt37KjooWQQ4lSXVEYM9Y5AZ8dH6TDGbS3Yq6AAcMhb+46jeH3cNMSUmI11SPV4BfCDqfedzDM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758999267; c=relaxed/simple;
-	bh=oZXoxoESQ1lZpKtsnpk5xp/OWs89j8lG7qdXFIsZ7WY=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=T5eOKVLtZfJeL3+UE37sj4biBLsFgx0rPEnUXMwOytPXVK4c4NJqbWE+o2lv4+mK4vxn2vDS22YzfFL6jUmB8cog68q3OZIhQLvGxvt4x+Ztxn9ZnNYZws0kmY0ADADo418y7wKwlXNPQayjL2jr2eSbK0G8OcygpBUwKR/Z/ro=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=blnihsG3; arc=none smtp.client-ip=217.70.178.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
+	s=arc-20240116; t=1759044279; c=relaxed/simple;
+	bh=DchC8Lon3/Ka4v7NDqID4vfD1Qtwz9bZOhKeHfn+tog=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=AqIwuIR1qWCW9BfD094TZakdQKtLamgnzAAcw1X7hSbseIcEyxc15YIAQI09gZOPkQLMQl2anE1euILLBiNRt79fueQ9Doq8togp+hFDs1cr6oE1o5wmU34SDIz7yePgOgFh7qUxmsz1stSG1Hu+WEzMnBSfmqVbnREZMyriv0Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=PYQNO5Md; arc=none smtp.client-ip=217.70.183.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="blnihsG3"
-Received: from spool.mail.gandi.net (spool4.mail.gandi.net [217.70.178.213])
-	by relay12.mail.gandi.net (Postfix) with ESMTPS id 1E01D43CC3
-	for <xenomai@lists.linux.dev>; Sat, 27 Sep 2025 18:54:14 +0000 (UTC)
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 7DE5178003C
-	for <xenomai@xenomai.org>; Sat, 27 Sep 2025 18:54:13 +0000 (UTC)
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20250927185412142bd1d59a0002074f
-        for <xenomai@xenomai.org>;
-        Sat, 27 Sep 2025 20:54:13 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=lJbFxLtfguTdghUFKaKKez89yh5adg3hcphIXAdgGa8=;
- b=blnihsG36qT++NLz1IrBxxmfMjRaAAaot5t4CmXKd9K8BbxP671wwcMwY3esQNZGThpHeD
- yH9Ot9y71DTyypEnCltnzFLTLJee73rblQ+/VNbN4+B3kjMZAZJthbXHCLGIm+kUFS55jhqP
- 2cS2uG7KfENf7Tt3mKhjo5ss4sr4dGU4KsHbARqeAcP+zQgVL8qaIzvmGtHEoWxVTiU5E4c8
- Vakg2iwAI3J7zTzVQVeYPxfNUHKwpRPTqZmkhmW7bBIj96bigPa52KaOBOJKlrOLBUa632z6
- aIssQ7Rt8FsNn+6M9zwWm1qgVVA6gzH27mgH51G/Wzt0ouwi30rH9hjg==;
-Message-ID: <ed58111d2e01e76f3a64df0379e4f71e90680f0b.camel@siemens.com>
-Subject: Re: [dovetail 6.1.y-cip][PATCH 1/3] arm64: fpsimd: dovetail:
- Hard-disable interrupts inside fpsimd_save_and_flush_cpu_state
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@xenomai.org
-Date: Sat, 27 Sep 2025 20:54:10 +0200
-In-Reply-To: <87qzvrkcip.fsf@xenomai.org>
-References: <cover.1758264904.git.jan.kiszka@siemens.com>
-		<b9ecf3458a5c8850edc16b46a8ef67152bd0d197.1758264904.git.jan.kiszka@siemens.com>
-		<87bjn1m28m.fsf@xenomai.org>
-		<e4b8990c-291d-457b-bf6b-3ca0359310b4@siemens.com>
-		<f2339b70d34b7bd4c8e720428d860bc7748aec4d.camel@siemens.com>
-		<8359c1ef-1c5c-4f99-877e-12804efc955b@siemens.com>
-		<682e1128c6f0450f28db6234c032a3f25ec5d914.camel@siemens.com>
-	 <87qzvrkcip.fsf@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="PYQNO5Md"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id A4CA64336D;
+	Sun, 28 Sep 2025 07:24:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1759044268;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=zWd+in6q6Ovpc4PzMkzq8q+1l0EbZRfrOkQoIlc5f74=;
+	b=PYQNO5MdqgdD+lEyTy6bM+XEb9yueBgJlV6L+ISSJJEqJUZacdGXdjTjHzJPBGh87EroQy
+	fOo5DIaAQy3xj9yOepoh+x48ByYoREzJGnyJo+7oXTduCNLgZRXe7r0g3TogHhJF6PCWfn
+	MOFO8T3a+Bedw4nuFi5q5BUmxrO0iL5KaJEtoFpnCt43zE7nVoWIENC+QdsioGWe6U39WH
+	V9A9XzOPSFHpMSTuI02Wt08LvFyTGMWHXThVuu/2ARqY4hkarqIsdFvyxrXhyALn/pramh
+	dBpFinE3qvUGrK1eq2iRNtWJT2qCGwtqmeSvQJlQyBwyRrChrgepay8LMDGP1g==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: xenomai@lists.linux.dev
+Subject: Re: [PATCH 1/4] clocksource/hyper-v: irq_pipeline: Enable pipelined
+ clock events
+In-Reply-To: <11dda4abd1986a4abcb0dca5af57f3fe8bb40bbe.camel@siemens.com>
+	(Florian Bezdeka's message of "Wed, 24 Sep 2025 09:51:58 +0200")
+References: <20250602-flo-add-hyperv-support-for-6-15-v1-0-449e6c20debd@siemens.com>
+	<20250602-flo-add-hyperv-support-for-6-15-v1-1-449e6c20debd@siemens.com>
+	<87h5wtm2ot.fsf@xenomai.org>
+	<11dda4abd1986a4abcb0dca5af57f3fe8bb40bbe.camel@siemens.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Sun, 28 Sep 2025 09:24:24 +0200
+Message-ID: <87jz1jrqdz.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
-X-GND-Status: LEGIT
-Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=siemens.com header.s=fm1 header.b=blnihsG3;
-	dmarc=pass (policy=reject) header.from=siemens.com;
-	spf=pass (spool.mail.gandi.net: domain of fm-68982-20250927185412142bd1d59a0002074f-G71EFr@rts-flowmailer.siemens.com designates 185.136.65.227 as permitted sender) smtp.mailfrom=fm-68982-20250927185412142bd1d59a0002074f-G71EFr@rts-flowmailer.siemens.com
+Content-Type: text/plain
 X-GND-State: clean
 X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggdejfedtvdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhepkffuhffvveffjghftgfgggesthhqredttddtjeenucfhrhhomhephfhlohhrihgrnhcuuegviiguvghkrgcuoehflhhorhhirghnrdgsvgiiuggvkhgrsehsihgvmhgvnhhsrdgtohhmqeenucggtffrrghtthgvrhhnpeelleffffeivdejgfdvvddvleevteekueeuieehhfffieduteegfeetffekjedthfenucffohhmrghinhepghhithhlrggsrdgtohhmnecukfhppedvudejrdejtddrudejkedrvddufedpudekhedrudefiedrieehrddvvdejnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddujedrjedtrddujeekrddvudefpdhhvghlohepshhpohholhdrmhgrihhlrdhgrghnughirdhnvghtpdhmrghilhhfrhhomhepfhhmqdeikeelkedvqddvtddvhedtledvjedukeehgeduvddugedvsgguudguheelrgdttddtvddtjeegfhdqifejudfghfhrsehrthhsqdhflhhofihmrghilhgvrhdrshhivghmvghnshdrtghomhdpnhgspghrtghpthhtohepuddprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghv
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggdejgeehvdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfitefpfffkpdcuggftfghnshhusghstghrihgsvgenuceurghilhhouhhtmecufedtudenucesvcftvggtihhpihgvnhhtshculddquddttddmnecujfgurhephffvvefujghffgffkfggtgesthdtredttdertdenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepvdelhfdvheekudehveelgeeitdeujefgkefhieejfedvieejkeegiefgjefhkeegnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopedvpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehflhhorhhirghnrdgsvgiiuggvkhgrsehsihgvmhgvnhhsrdgtohhm
+X-GND-Sasl: rpm@xenomai.org
 
-On Sat, 2025-09-27 at 19:53 +0200, Philippe Gerum wrote:
-> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
->=20
-> > On Thu, 2025-09-25 at 14:49 +0200, Jan Kiszka wrote:
-> > > On 25.09.25 14:47, Florian Bezdeka wrote:
-> > > > On Thu, 2025-09-25 at 14:40 +0200, Jan Kiszka wrote:
-> > > > > On 23.09.25 20:51, Philippe Gerum wrote:
-> > > > > > Jan Kiszka <jan.kiszka@siemens.com> writes:
-> > > > > >=20
-> > > > > > > From: Jan Kiszka <jan.kiszka@siemens.com>
-> > > > > > >=20
-> > > > > > > Not all callers of this function do that themselves.
-> > > > > > >=20
-> > > > > >=20
-> > > > > > Are we 100% sure that kvm_arch_vcpu_load_fp() and kvm_arch_vcpu=
-_put_fp()
-> > > > > > would not benefit from doing that themselves precisely, to crea=
-te an
-> > > > > > atomic section around their internal state change _and_ the fps=
-imd flush
-> > > > > > op?
-> > > > >=20
-> > > > > Is kvm on arm64 officially enabled for oob (-preemption), or are =
-we
-> > > > > patching blindly here? If no one was looking at kvm yet, then you=
- might
-> > > > > be right. If it was reviewed already, then this here is just clea=
-ning up.
-> > > >=20
-> > > > We have
-> > > > https://gitlab.com/Xenomai/linux-dovetail/-/commit/028ad3b2c19ca8a3=
-655577fb34cac7996f166d2a
-> > > >=20
-> > > > since 6.14 (AFAICT). At the time of writing this was the first kern=
-el
-> > > > release that used in-kernel FPU. Maybe that changed (thanks to
-> > > > backports)? Btw: Which version are we talking about right now? 6.1?
-> > > > 6.12?
-> > >=20
-> > > All of them.
-> > >=20
-> >=20
-> > In case backporting is considered:
-> >=20
->=20
-> We already have 028ad3b2 in [rebase/]6.1.y-cip, I'll pick 97cb63af01de
-> as well.
->=20
-> > Please also take
-> >=20
-> > 97cb63af01de ("arm64: fpsimd: dovetail: Align with x86 implementation")
-> >=20
-> > into account. Just a "couple of weeks" old and brings some
-> > optimizations.
-> >=20
-> >=20
->=20
-> We also need to enable the oob preemption test in switchtest, which was
-> disabled so far due to lack of support. Now that 028ad3b2 enables safe
-> preemption of kernel_neon_begin/end sections by oob thread, we should
-> allow testing this feature in v3 as well with something along these
-> lines:
->=20
-> diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h b/kern=
-el/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-> index 0958d5e2a..b8c0c39c5 100644
-> --- a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-> +++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-> @@ -10,16 +10,20 @@
->  #include <linux/errno.h>
->  #include <asm/xenomai/uapi/fptest.h>
->  #include <asm/hwcap.h>
-> +#include <asm/neon.h>
-> =20
->  #define have_fp (ELF_HWCAP & HWCAP_FP)
-> =20
->  static inline int fp_linux_begin(void)
->  {
-> -	return -ENOSYS;
-> +	kernel_neon_begin();
-> +
-> +	return 0;
->  }
-> =20
->  static inline void fp_linux_end(void)
->  {
-> +	kernel_neon_end();
->  }
-> =20
->  static inline int fp_detect(void)
->=20
-> This was just done in v4 by [1], no issue detected afterwards by the
-> 'hectic' test (switchtest equivalent).
->=20
-> [1] https://gitlab.com/Xenomai/xenomai4/linux-evl/-/commit/0396a52a9b3dc3=
-52ef10e6a9d2ed096718ef5d80
+Florian Bezdeka <florian.bezdeka@siemens.com> writes:
 
-Thanks for the reminder...
+> On Tue, 2025-09-23 at 20:41 +0200, Philippe Gerum wrote:
+>> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+>> 
+>> > Fixes a boot failure on hyper-v.
+>> > 
+>> 
+>> A bit of context would help here. Failure doing what, enabling the proxy
+>> tick on STIMER0?
+>
+> ACK. That goes back to the early phase of enabling hyper-v where I
+> simply did not care about story telling yet.
+>
+> Proposal:
+>
+> Make the clock event around the STIMER0 pipeline safe. The
+> implementation is following the same pattern that we already have in
+> place for the x86 LAPIC interrupt / clock event.
+>
+> To get the proxy tick working we need to link the hyperv clock event
+> device with the STIMER0 vector. This part is also following the pattern
+> of the x86 lapic interrupt. Both have a fixed arch specific vector
+> assigned.
+>
 
-I'm quite sure I had sent that to the list. Might have got forgotten or
-it's hiding successfully in my xenomai queue. I will check and take
-care of the test enablement.
+LGTM.
 
+>> 
+>> > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+>> > ---
+>> >  drivers/clocksource/hyperv_timer.c | 34 +++++++++++++++++++++++++++++++++-
+>> >  1 file changed, 33 insertions(+), 1 deletion(-)
+>> > 
+>> > diff --git a/drivers/clocksource/hyperv_timer.c b/drivers/clocksource/hyperv_timer.c
+>> > index 2edc13ca184e0..0850b0c385a8e 100644
+>> > --- a/drivers/clocksource/hyperv_timer.c
+>> > +++ b/drivers/clocksource/hyperv_timer.c
+>> > @@ -26,6 +26,7 @@
+>> >  #include <clocksource/hyperv_timer.h>
+>> >  #include <hyperv/hvhdk.h>
+>> >  #include <asm/mshyperv.h>
+>> > +#include <asm/trace/irq_vectors.h>
+>> >  
+>> >  static struct clock_event_device __percpu *hv_clock_event;
+>> >  /* Note: offset can hold negative values after hibernation. */
+>> > @@ -53,6 +54,30 @@ static int stimer0_irq = -1;
+>> >  static int stimer0_message_sint;
+>> >  static __maybe_unused DEFINE_PER_CPU(long, stimer0_evt);
+>> >  
+>> > +#ifdef CONFIG_IRQ_PIPELINE
+>> > +
+>> > +#define HV_STIMER_IRQ	apicm_vector_irq(HYPERV_STIMER0_VECTOR)
+>> > +
+>> 
+>> Does this mean that we won't support Hyper-V on architectures with
+>> per-CPU irqs (according to the comment heading hv_setup_stimer0_irq()),
+>> or is this ok to always bypass the ACPI in order to get the STIMER0
+>> interrupt in the pipeline case?
+>
+> I came along the same question during implementation. The most
+> confusing part is, that this per-cpu IRQ implementation has no in-tree
+> user - or I could not find it.
+>
+> It all starts in hv_stimer_setup_percpu_clockev() (x86 specific) where
+> we have the only user of hv_stimer_alloc() with have_percpu_irqs set to
+> false.
+>
+> With that I decided to follow the same pattern as we have in place for
+> the APIC timer IRQ on x86.
+>
+
+Makes sense to me too.
+
+>> 
+>> > +static irqreturn_t hv_stimer_oob_handler(int irq, void *dev_id)
+>> > +{
+>> > +	struct clock_event_device *evt = this_cpu_ptr(hv_clock_event);
+>> > +
+>> > +	trace_local_timer_entry(HYPERV_STIMER0_VECTOR);
+>> > +	clockevents_handle_event(evt);
+>> > +	trace_local_timer_exit(HYPERV_STIMER0_VECTOR);
+>> > +
+>> > +	return IRQ_HANDLED;
+>> > +}
+>> > +
+>> 
+>> Could not we have hv_stimer0_isr() call clockevents_handle_event()
+>> instead, so that hv_setup_stimer0_irq() -> hv_stimer0_percpu_isr() could
+>> be reused, only fixed up for picking the IRQ number from the apic
+>> mapping if interrupts are pipelined?
+>
+> I definitely tried updating hv_stimer0_isr() to call
+> clockevents_handle_event(). It has been a while so I'm not sure if
+> memories are still correct: It might happen that the STIMER0 IRQ fires
+> before the proxy tick infrastructure is in place, so it ended up in
+> "ignoring a timer tick".
+>
+> In any case there was/is a reason why the LAPIC is using
+> local_apic_timer_interrupt() for a short period in time and later moves
+> on to the oob action. The same reason applied to STIMER0.
+>
+
+Ok. Another way would be to make the handler bullet-proof to the
+inband->oob transition of the clock device if this is indeed the issue
+at stake, following the same pattern than armv7 is implementing, i.e.:
+
+static irqreturn_t twd_handler(int irq, void *dev_id)
+{
+	struct clock_event_device *evt = dev_id;
+
+	if ((running_inband() && clockevent_is_oob(evt)) || twd_timer_ack()) {
+		clockevents_handle_event(evt);
+		return IRQ_HANDLED;
+	}
+
+	return IRQ_NONE;
+}
+
+This said, Hyper-v is hardly going to be a hot spot for pipeline-related
+changes, so I'm ok with the fully decoupled approach you suggested.
+
+-- 
+Philippe.
