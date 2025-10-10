@@ -1,62 +1,62 @@
-Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11012023.outbound.protection.outlook.com [52.101.66.23])
+Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013034.outbound.protection.outlook.com [40.107.159.34])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D9742ED15A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C578E2C159D
 	for <xenomai@lists.linux.dev>; Fri, 10 Oct 2025 09:52:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.23
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.34
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760089951; cv=fail; b=QfhMgMk1KlCVFWZlugc+PuG+jtK+rZsFwLifO1QbOlco79gfEwuVATkYqiqHzjBgbsIjduUOOc8YS7S4Uyl72Du5/hDsnEaWF8uo5afzGDOcLH4/C/7/eQ1J6qT+IyhXOcRSnJvDDnyUTKxPnnw50CZ14DcmDo+gA4fEV2f6Fh0=
+	t=1760089951; cv=fail; b=bAf5ACNma6KtGT0IP3/GUIInaKIBJ9wz9EZNIbRUZT2O6GhVC5ZUy7Vjf6Y0yHx97Ogyzc7z27RFxKPRR+5YmZAZ5TxjBPY7rZhKvBuOpBCJEpL4c/ckHoqvVBl3pcQhh68dKCwR9+KF9sUYIgt+/G/eQOkQBn1E8AKJD2h5YdI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1760089951; c=relaxed/simple;
-	bh=eBylErW1ks5v9xKKMLKAg+BLPSGKqk7g7i9fgz9WODY=;
+	bh=30xq9Thsp2xa50nunc8ZXvwbv0FJ9PRr3nHLyNPBtek=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=j78KciA9C4YpM8ykJAdo8yAIHUIcunAe3bNU41ILGpCORmigPpl3DljYRMYhbgdqD77VJ+2VrlR1AOl33Qa0MMJscRVsouDlBA2QdIzrAz8Y2/yypI02qdSgjgfLXlQlRJc3Aa/I20N8mLdsbUeDZGv5aR+wcuGzjEaVjAE3gA0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=UG+VDtXI; arc=fail smtp.client-ip=52.101.66.23
+	 Content-Type:MIME-Version; b=iMG8D9rMQkE56rsGkIh8odJUI4J1Kebiooh4pDzU5fwGoOTMGu/nCbLvWuxNS1q1Ekx2vImEKzMNaaQdfea0wZpUK1f5LQzVyPvUGPmM1BZS6ylQFu9I+DSodhAOAIxqHbe6HEXtNaPkTaYtbUfiotOdGWhBxauDpADay6H1tqM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=RglCmKzy; arc=fail smtp.client-ip=40.107.159.34
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="UG+VDtXI"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="RglCmKzy"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=xZv3WJ7c+m+ctgJl3+Y4Emo8U0b5JN8WDYo4yhYM4aOHlOPFCU6CSJblAbomRF2AClZaLUw504CIC7l08Zzloh4fWSajHJluxvl6BwVQKd6rB/TaySVDMWQ6/oXY6ezbGKJ5+6+A2629an+YTd0VuKeTZH8X+rfn8PIKMGFI3fywuevzVcdAOvZO4Fr1UNcMIz6xqNy1WZFgClgZqpqpN83bHJXnXLWdJTojSI7UcUU0TJC2wjQkWRJGoluZAgXiAfjO0QKseXUuhXnfWl9/K0Td8hCxRRN3FbvzkzHRBm8dMdSgCOlzvROYXh4hlkMHv+VRxVfWuP08jeke7T0Wxg==
+ b=sHCqgfvhfWdGVJhpzY29TCd6KJmOK9lj+kujMhDKbS6DHLPByxZjuhHhC/NMTVZn+Aj2nzmppSKHeG3T6teJPaUaMvH4tueaYSNbZtbdR9GfOEhtw5s3nDcam0R1q9nykRUpIuD6cMtTmKOcaY8HaBdMnzCai8msCJWEFSO4EFMwDnd3Q0VJYeREaPj9ikPimDvZ5F05dUT1B4QnMVgVTxcg5W8Tc0gTEWHymA7t5j/a9vsQuV9hsG4wT4RvzALW2zzIryiQ0gBtIUhw3dUupx1isFukyr6scQ6wzBUOYvJQfla1wBq6QYALV31WFU6AR0b5EHJrFa6fSCiG8L6J1Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Vpa5bthkMn1R7ZObiNvfGy6+XLjpjDj+xq1+6ONSPP4=;
- b=wL/0YBhrvMxYbkxpWbU9E9Hqp8DDnsleiZ6elKvZ7Q2pxDytXerVYCsUbmNnkQJ9/6yV3nEiSRjTHzXZbX2a30/lAsi0PjxIHeo9BtMTtlrz+4eIkZsrVYAyuijYxUPtYgQV6Hkdv9Xw7mFUXuwZSOZOTuxknqOuDVLqvcRpV+2KGtPTExrf37wCeIi32hbsYrNvDUiL9dM8M6NnofHR+bg5q2n6nAMLFYbOecLTTLNB4ls7SQj651V1PvQaRk1qDbjfHGJRkLlwgWqpHdPCHVxBG0GtxAgjhu+XevHZ7E3UoyymQM0kYLupAFJPXxcl6qpp44PN6stqiLqvMNp7mg==
+ bh=XD3bKBnLcTWu5PCfjUyWhjjRg0kmMJVKHgkeKTfJj78=;
+ b=I61FD/z008n5SqfjUKLKwxVKAEdDSaCLZnfVw7x1v7bECoVfK/Is1NZEaRxRrJAiTuWeiOCxwCXqf7oLl0+Nyxr9yFqKOd3JEwfSbmEdcIgbWi/N4RhoTtPz6NWEn/y1HZ1vNd2Ug7fkadkyQg51aclczoOhcUJ6imceOaBnI1Iz+2+Ju1aYvmPqvLiF1n5Mn9D+s6EAdlKnJfjgBj2NRnDgqjtH13MgDRcWZNb31RStgk6NzOZvms/SqKy4pINDFJFnPoejJX9YMQvEtdBlLdTsKB7J23dITyg7TUVWgVl4m5KsgX1adNAK/qBgdzPszA4Rrcgxvg0a9p6nXqdVeA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vpa5bthkMn1R7ZObiNvfGy6+XLjpjDj+xq1+6ONSPP4=;
- b=UG+VDtXIzURhheKszDzaoqFy4mhF31DxUSCortroMIUgwdtYEpeC5wFoBv/4tnK1G3ko3c7N7iB6FvHNZeoim33SQvVBLE2w9J7viKktxduaM1luKa74TIDeMHzKW9rgOV+aDuiZ6PiPFpCrjN2Dkxd6Ym7oPOnuFMCY0Z4hx2Mxh1PteYk/lPXJ1tvh7mZABCwPC0BezxLC+uA2GzNtDvavKagUjvdhws6vScBhboTBVsN9qSaJhF6MM2Np5uyjX8Q02iSAAsvWtomunWm3lCIG/AVz7s4pLkM35pFguzNrcciMWbw/80j3IXxXvKxdVvudOQ8y/MOdDelCgmXx5Q==
+ bh=XD3bKBnLcTWu5PCfjUyWhjjRg0kmMJVKHgkeKTfJj78=;
+ b=RglCmKzyLKJ8TCwDsn1y09am86oYv+BIn6pv/Mg2K6PYSs/SRXVN2edaDMLz+tLxvcesOhAUiyB8StfETvNCMsbvkTHOgO7+goYZAXGf8Ko48KrtQdfSzG3Fa6KdB9e1tqn1EvR5cb6W9J3pXJZABh4W/aQZvAfvdsZIh3989YqWVN/1B+TkPm6fPmj35X0IXwq9l8hiQjzlHFaOka0RUVjBsZdwCHjgTFukhN9PQ7C+6djbzkf+a3LJM1GdVHS0HlNsadLxvAPfKoGUZ91PVDpfanhZYiTC43xZDUe48Pn9zWH8/gfiSVI+RYBpUaFK5JaoDWpJQRTpPG6V10lmgg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:550::8)
  by DU0PR10MB6084.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:3e3::6) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9203.9; Fri, 10 Oct
- 2025 09:52:21 +0000
+ 2025 09:52:22 +0000
 Received: from AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::4cbc:c0b7:27cc:2082]) by AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::4cbc:c0b7:27cc:2082%4]) with mapi id 15.20.9203.007; Fri, 10 Oct 2025
- 09:52:21 +0000
+ 09:52:22 +0000
 From: Tobias Schaffner <tobias.schaffner@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: rpm@xenomai.org,
 	shannmu <shanmu1901@gmail.com>,
 	Tobias Schaffner <tobias.schaffner@siemens.com>
-Subject: [PATCH 7/8] riscv: add dovetail-aware memory management
-Date: Fri, 10 Oct 2025 11:51:55 +0200
-Message-ID: <20251010095156.3756799-8-tobias.schaffner@siemens.com>
+Subject: [PATCH 8/8] riscv: enable Dovetail support in KVM
+Date: Fri, 10 Oct 2025 11:51:56 +0200
+Message-ID: <20251010095156.3756799-9-tobias.schaffner@siemens.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20251010095156.3756799-1-tobias.schaffner@siemens.com>
 References: <20251010095156.3756799-1-tobias.schaffner@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: FR5P281CA0060.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:f0::18) To AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR5P281CA0054.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:f0::7) To AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:550::8)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -66,225 +66,168 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AS2PR10MB6349:EE_|DU0PR10MB6084:EE_
-X-MS-Office365-Filtering-Correlation-Id: f91e35b7-0910-4e03-b770-08de07e2b4cc
+X-MS-Office365-Filtering-Correlation-Id: dd031488-726b-4e29-94f7-08de07e2b573
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?M3H3nGCvxhQ4gViNse0Wt4ZRkExu4WPfKlcQkO5iFly7XFrYZlpUqdYBhH6j?=
- =?us-ascii?Q?hwj/INw3p/8RobKnIeDuuZvK5rdumc1DOj+03mS5todIAYrBpVc9UXG/ksag?=
- =?us-ascii?Q?Cvxb0LKtdomIJzzU70c72dpA9PKCfFc2jV/xzNKnIb8Pr+UkpOaQZiMOd50T?=
- =?us-ascii?Q?WN4KenjfLEyuw6MtYy6FDbDstVc8/JFiDdWGJBCu+2O8YS0gnVlyWEH8EZv3?=
- =?us-ascii?Q?1DUqyxm0BjX+fKcCRm5O8azlPi1+ndeniCPHcX6Jhntx+dPyV76s/diQfSJq?=
- =?us-ascii?Q?4BPhJQPg8YntNLUOmUsNeloQsl13BEItv6A8jN9XrAcAycw225/C1seWyyXa?=
- =?us-ascii?Q?M1tuaC3/U6vNHcKoaVAdU2EMrkCumUmtIklEe4pzAtt1/Te3FTRT00uXRZ50?=
- =?us-ascii?Q?7TuVwn3IXkf7XSDZ+p3OyZNQ7U9WqGnld8UW/I3J4vMf0g2UZzqkGjWkd087?=
- =?us-ascii?Q?7HEr89zYou3wFrgfCuzn4HsrUf6B7ChCheHqTupg5vTmJVot8YsNFvZHJei3?=
- =?us-ascii?Q?2GbpjahKG0oozaGJvGKGu1VzddugQKdWqSYj5snLURK1Tc/tAcLA/Pu2d1/i?=
- =?us-ascii?Q?IF8aBwl1pOs9RrPOyYr4MDgKxx2DkKif7oGGV1YVSlrGZ5BAmhDlyxgnmqle?=
- =?us-ascii?Q?bVa2jnZQ20BeTwTSIjJti9A12h9PDV9umKydqSC9BQYrDa49GuAKaR1itwuL?=
- =?us-ascii?Q?Mmi+D0ddWUDp0lhzstFY0Bg4sJSIG8GAFzBuFm9XJiW4LSBq0xPGFIoX6gSW?=
- =?us-ascii?Q?Xm/dB+b1CRKutB+N5QjrJ4Gnye7nZ1apJnQl4dMfp0gk9DT/9CLEzssJWPYj?=
- =?us-ascii?Q?DnXk8BycoazveUbUOjv2Dn+nfVRQXGscVIfeMvK1PXChhSZb8711z9Q/M9h6?=
- =?us-ascii?Q?04ZKsQ9Z5PlN4ObXdCtfWa0FgEjW6FqQsbozz81jJWaTai93rU42y/K4gWj6?=
- =?us-ascii?Q?UzpGo+cBNz6SyvqnhzW3P8LE6+p3r30zf7jO9KjvG7J756QAEy9oP2GuQMv9?=
- =?us-ascii?Q?P+4grMsYjTr07Bv9Bzr0yWJvblyTvMTbwGJLYZuxSiJ1cQ+YHGf8HGq2lWLn?=
- =?us-ascii?Q?WMpq+sOuCiFwgDktYi+/4FoXFCNx/akrpYCe/Q2yOMKCzZ94gpAUKuaCu3hY?=
- =?us-ascii?Q?JvprIfTQ5DksaxwxN3HxcKJLUHlkRBvxkw+Ta0dxJCQnT1/uv+2bj+MVbCSY?=
- =?us-ascii?Q?H3TDdtxL1m0OUMpU8XXYjBYrOYRg34PxgOv0D5cbvPJmDyyLxGd0Y/hwqh5q?=
- =?us-ascii?Q?VgrtrZyPeGhUUZs4TtnvvtC3CUXuaFAFK/qWL+psclp8Qjh11jgEtbtYnLZR?=
- =?us-ascii?Q?sqntJ+IPLmOyuxTmkIRtjR7CsuwDaAgWGufCzuvuQOwFf8J04JFLxEMwQHir?=
- =?us-ascii?Q?pwzlNxYQcriJu3/XPD32Iq3htnQMHlXKMEq/l7iNBPhaUeaB0divsKN1AE6S?=
- =?us-ascii?Q?Q07R8nOX1Qn2p4ofd8IDzQmo2jAJe0Iw?=
+	=?us-ascii?Q?shE4laW05MZGOVIbyEZtcOK49fYRe21gj2WK27vNqiFnxO4pWwI8AmjZxuHy?=
+ =?us-ascii?Q?JipWQWFwIQjeAcO8na7D3Eo+I+t9sHSOoc5omMwjlucvCUAqiEWGipwUSkiX?=
+ =?us-ascii?Q?iAYxEdsR019QRP/BQ8AwNuHf9/7wOZo9yfdjgwoPD5FOwCvEVepxf9udEvbx?=
+ =?us-ascii?Q?qUL3yPaSN3ntWSyrTQGW/lisW452oHQF5W8unTIs/VVrhq/zKoBMTbU8BYZv?=
+ =?us-ascii?Q?13nJcSFfXS8opk9eiIh3fYqy4oCZ3Er3IfXfkx5fT+4EYEgxp2FhyeskRtlm?=
+ =?us-ascii?Q?RA8/AluTfQ5oq2y5tEKVb7KdA9NxmO4bYQ6NfAEFPHlAjNjVqAA+OKFDgg0Q?=
+ =?us-ascii?Q?XpxmxZD62sIt1oTzxenxT0PxDrHCcjQBsOFw+4BqQENhe+xXKmL7aZ+gZsZ1?=
+ =?us-ascii?Q?fQgVGvQzWH6a4APoN5Tr+7LX8Xw7vHUxr9yMUUowRFf2y/IFKeYUUYoDrJyE?=
+ =?us-ascii?Q?DUJk8k0lHZ0eM1oJQTszPfxS4LucNMA9FsUE4m1+uTPaEfolGTchudAM6EHU?=
+ =?us-ascii?Q?dXiY4BVAhvi0Nu/RQYXkbnb8Gd8FOXL5y0zag2ksPmieaPG6VO+8CRCQHyVw?=
+ =?us-ascii?Q?f3q6nmDjlKISQ3mmeFQXoQLr6Ajsv/sr9jyBxPxWwMHXkAYJ68od3lVne9HD?=
+ =?us-ascii?Q?vqpOMjmYkdKVb/rjch9wxfmjRFaL8IYgQL4IAmFzvQoIQxdqanGx07pKCnqw?=
+ =?us-ascii?Q?w/fDgJLQC45dyA3VT6RdyWvdgql7maafnwPukLuyQ6GLE9PzuNbSQazXbfd3?=
+ =?us-ascii?Q?4gpSTaQwnZlJWwrndvmBm0SuTB7dRo0UqiA+Df+fUKmEzJ4lZjjpe2JErT3Z?=
+ =?us-ascii?Q?yZefaPlYvuwqLNAggcyEEUuGJs/NmpWkQCTzMt4mmNHby65CHB32sdMeG0N2?=
+ =?us-ascii?Q?+sF/hiqtdYGrhHRr/4OfVF1QWyl9CjIsW529XQb5ca9EGI4PQi31ve16XRJF?=
+ =?us-ascii?Q?eLWp93K1SOoGObk+p08QDO63OKI6+2eBSg8I3NO8rLj8JdDymj9sYNjg28zl?=
+ =?us-ascii?Q?zrhJwl1TW/NMme9FwYqJVEUoVU8EOpSs8xyvu2nLOhil5fzHoKnoHqRrk4va?=
+ =?us-ascii?Q?X32CFbO6aNtOHZqysOs+tBf3ojpKsL5B60syeiOdO5R4wBr4YXLN2IGfO8JA?=
+ =?us-ascii?Q?wwmgizWmwL/CX9v62WJp3mYmfsE7HEHzuCHWf7PtxvfnBjfiycUJPbIw1AYa?=
+ =?us-ascii?Q?Nqco+mGZjpF7JoWXbJPfDTnSZjhdPIBRLcjX679fWGQ/3YhtJtG7kCxPzwKw?=
+ =?us-ascii?Q?/IETOn8Y/fByGcHU2DVxF25QzOxf8dUV1sYrRg2me7jbfgCGhNHAweQ7v903?=
+ =?us-ascii?Q?YVWXd46hOUvS2fSLVi7ljh5eP/xZN72+h313eDpKHvammgPDI6frwPpeAncw?=
+ =?us-ascii?Q?fmWGOGrAbycpq7NqFtWNdCHz/UYufk7G5tHM4kw6sTRmycCshhN1FmV8fIRc?=
+ =?us-ascii?Q?uNEZjYu3hSkN4CvrwXJYxLOzTcTxmkJY?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?EnrZ1MSqq/B7yvsBgekDVl8M2DXOTkbcP/Ji7NQxKzx3CxlaQvCxtJAllye3?=
- =?us-ascii?Q?K/n4uhgDDjk5uHbmztRNnbg73OrsaM6Ae5jntpwiJNAg+IOj0H5dZe3v+2Be?=
- =?us-ascii?Q?U4D1r9tX1DHV0lukwg2v42zT5fjN/qgJq6Quxc1SNhp9k8/0B4ZnSiFpfAA6?=
- =?us-ascii?Q?sjBsRtWxmhE64jOpVVwIsK2G3skaVjUBfhnO0shgFWKldK5BOdXshP4NDK5a?=
- =?us-ascii?Q?rNmdv5uBUuBlg6KKFuKzBYV00JfKFCR7E2aqQLlds0tKKQ21SMTBcig6h3Hn?=
- =?us-ascii?Q?r9qKV664/u6RNjOASASmTOKrKWsm8BGFviCh3+v4STJJ1A0JEZy6yrJxvYSZ?=
- =?us-ascii?Q?t0chFLP/tf7nkyzwcf33/vt5RFqOym5LuZnSvBBH/+nDeqfb/Y2xWfi+8khV?=
- =?us-ascii?Q?tS/qDlq6RYHb2Ka8r8t0I1ADhequ4SZW/UB/kEIfAlkmffaV/WHGo/rG83Gy?=
- =?us-ascii?Q?0aV3DSKrII+Ny42GK7AhSV6xACSnjKTiXurFV+aCXSn67qJ5K4WE2F4eJ13W?=
- =?us-ascii?Q?AIdEUUVKmhDk9KYg2XB0xiig8mM5S/BZ9bshTV0CkJ9AHnBnAQ/m/NPeh1pr?=
- =?us-ascii?Q?9zTLoJFhr17Hj3mnxjrJyRjobknFHgkzQvQe2G02Bq9IpGpck8hktgvFSfBE?=
- =?us-ascii?Q?ZdamJ4AQBt9wkdnMd/xb7lLffu4Zk97D8r5P8mFWAcpLnV72VEAz9TGXRckI?=
- =?us-ascii?Q?1X/kdsVQBJIwVbdHy5R6xjaOomwOlnZkI1TQUsYe1VqGo/ndJ6z+zCUOBUPX?=
- =?us-ascii?Q?IZTcBxlTEWO8uUexPcv0iAcpqnXgOsIcwlFBp/Fpjuk49fABOzt5Q3YZlYec?=
- =?us-ascii?Q?CbW3pbHtcbQvrxVN4ppcInwmFrvEHcEN58ivvGRsqPRXwbGBo9fzqkUrpDSM?=
- =?us-ascii?Q?oWXxXi3b/ClesqMJt7P40Tj4l5ilr/5C+o1gV4qc0xAMzffwT3wSxJGWBN0Z?=
- =?us-ascii?Q?eJiNw/n2oQRgs5PxRhNQozRyBYw7GKSlm9R+Y8caDHjIShCwOXemFJJhPlzO?=
- =?us-ascii?Q?+490kAcXLi1CcSC9QGMNqGRqs1ftwuKDKujTWGon/nGcpZwq+rUzhs4n3xje?=
- =?us-ascii?Q?uRveheFsg97/vYnoP/J3gJKu9m30iba94spTg4s3BId/EPDyBuaFNtppAYZr?=
- =?us-ascii?Q?dnKSTh22UavIODipJ04OnIK5fdV5iKClRCbnReXnmglyOzlYRBG7a4YSc7K7?=
- =?us-ascii?Q?Q1spRJDGONqcomdS/I1n4bczll59MKUmOzFLL3m22q6dPiALE8yp7qz5cx2j?=
- =?us-ascii?Q?fsHmuPLrS/Q/Hkf3pY5r2arcM6Cog+Y6gEvRCRTX6GsrGaZBJ8ZUSQP3paXL?=
- =?us-ascii?Q?yEakUCCuq40OXB74UY5zIeHAfIfVW/bYEoUwNZjtBSdNXVwpfQU85Jz8JKLR?=
- =?us-ascii?Q?h7u4OK2HkAzxE2VFPmWBlHwW5sNRZn8zIfzPFwNEW2FT801I2JTzVVW7o/k6?=
- =?us-ascii?Q?Ncwhwjuvm6kSj0CSM385d0FZw6SCKLDUrlKC0yFKaOo/fEPUOXYPTjaaPOfo?=
- =?us-ascii?Q?abLZZzD0ejoH3egSeCc/iGdhik24CdrnsJ27BiN7R8G9hYnwlYaVaO7un7eQ?=
- =?us-ascii?Q?2w4GdWDflwAQbzWATAf5d805DYQYMwHBnhL4UisbwjmBrLGnIqPwCf/rfqhA?=
- =?us-ascii?Q?cw=3D=3D?=
+	=?us-ascii?Q?qCs/rux5OrJ4LEYe+0QMbYaRReib4lq4+sxf6g3Kg6+x85BOXlQGqifPqDCu?=
+ =?us-ascii?Q?jbiwrfHAJLvvgtktljZ1QQjESHBZdwad7Pco4OvGadbMbHXfhdUCYnM/ZfPl?=
+ =?us-ascii?Q?RvDzXE1XvmmqfrC893cWqzaANQ76t0SZ6Eur7p6wyNRyHJBD9mDsHAmFkXet?=
+ =?us-ascii?Q?6qXXF37BYEjl0hmMfE1+HhzjY7kP6VAkgGZLUbqBJxsSTAHgAQxn5utGQhBD?=
+ =?us-ascii?Q?8O6p4D02RUC1zxdAaeDmXR2hUZ9zpcPhUyDa3V6zIfLhj7+58dCSgpdrPl47?=
+ =?us-ascii?Q?H0uyXmKJA2FFmls5zZu1XEBhtBn60M25S7mOI2gg4XRGCZbi+QS4n9/Uco9y?=
+ =?us-ascii?Q?wqioQ3rwZ4dkex14Mlj2XTKPUfwRvHT1koo5F3PAvPezOhr8CEHhK9d0V//G?=
+ =?us-ascii?Q?cUO2+oNiJwnVnQ+7TqgayMwga2wNUA+VlFRWHb45gRuAnoZS3zt92NMwLfKf?=
+ =?us-ascii?Q?7SJLBUJWmacmrhrrJH7ELvSibrJfRFA3qTNBoaP9WYDSHayhIFTGqMeOpGJR?=
+ =?us-ascii?Q?ednhLEx4Gm3p24QHCqfuB7pPHm2Kf5/M/AYjKk2UodYlNvLZ5utZmj3FsMbV?=
+ =?us-ascii?Q?RUfgTY7OrCQVx7FiUNa1aFuVUKGZKB4vHMvZzenDuWlpuio7UUo5nSWgpPUk?=
+ =?us-ascii?Q?JKCVpgEmzXIkiaKudS/262kYnSzXkesAIkOLT8wSvhLq9OH2LbUZBv/GTyai?=
+ =?us-ascii?Q?L3iUWQPfSNZ7s1v0IdXCaLPmGOjdUe79KxfYnKvdCuCoEwi7hTQ+y4V3ruUM?=
+ =?us-ascii?Q?qVQCvzioH8YduYWEHoBbWuZStw3Zpqj02v4MSaxd/1MUPYxDUzilv9xmXL/c?=
+ =?us-ascii?Q?bm9UhUPVhyWooAoiJwycPwu6PubLHJmHMrTcShyfea909V2rxNw+9uNokULp?=
+ =?us-ascii?Q?XKRrQsJQwrEpYkrewdN/5TwLbMEN5rIL6FwRk7ZdvYCj0DBikTxpAQuPE2Tu?=
+ =?us-ascii?Q?ioAmm3DtWdE/EnmQcDXGvfmTd9gJpVottAZy9qPB/7syO40yUahBhNxdWImb?=
+ =?us-ascii?Q?1yh+z3qgPh6YVqJ7b9Vy2R+rdx9UkZbRtcRfbTN5MWcguRYz2rce45KX4CdN?=
+ =?us-ascii?Q?rfOdcmLpG0o1ZmGVub4hJBJRBzZZS64P3wc/2T8KpNHxLyyDeQaMC/alqqvV?=
+ =?us-ascii?Q?cWQFAU/DbTiCGkVz53FJ5Ix00PNfGxXLJyXT/1p9GF5Tf6j0UjWh4WqnyHGx?=
+ =?us-ascii?Q?4i1gkYn3JtKhjSk6E+hiwLxoamD9V9LBceT3PqpKmPWYuSfiwhZQKMaMP3ie?=
+ =?us-ascii?Q?wpZ9m7lsrq5UTRfXFdtlxbW1Fg37V0KIuGMZJY4Ftgrzi72wcwoBnibPzMx2?=
+ =?us-ascii?Q?kS6NF7X7qP0m71r3XH0W7GghQwDmLnt5k5cVQF4U/tpQhoC37mQZvrN/OCnj?=
+ =?us-ascii?Q?S1CJkTrhTZyEMJnDfn3Vj2Co/AG8lgHO37hGupVIeyJRjElH9tZA09M27h3a?=
+ =?us-ascii?Q?IsjIc8slRHWk+KgBMEp+j+fhjquewda3fbDH+Fa+PbvfPgrwPWtBew4EfDtk?=
+ =?us-ascii?Q?vzT/OCg0TS0Ws6q88abFuT0ezl05uvbdUnAg7UcjGfO6m5DBfnsl8XwExPNF?=
+ =?us-ascii?Q?8JcS9bhP9KG3JyLWe8Olg7DJVn2AaI+LMX5Dgo9BhGXmXb/Zi1XhM8CJ6PP6?=
+ =?us-ascii?Q?og=3D=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f91e35b7-0910-4e03-b770-08de07e2b4cc
+X-MS-Exchange-CrossTenant-Network-Message-Id: dd031488-726b-4e29-94f7-08de07e2b573
 X-MS-Exchange-CrossTenant-AuthSource: AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2025 09:52:21.1882
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Oct 2025 09:52:22.2810
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cMoazeMESN/HZ6vGZcl62Use7c+yYtvtGaV+yoC8LiJgADUNMtymeGvwq9xyNLdLa6Fum7lyK+ofoduTh8nMb4fiqJ4tN4/4QyIf9g8ny6o=
+X-MS-Exchange-CrossTenant-UserPrincipalName: rdMrqT2qIeMkSB4GUSPv/Gv8xw5YMbQK/bSIBr6hs2eZkisDe9QubX29gbk5vrtmu4bn5cC5mFNqEBgaOM/MbHbXBLADWk6MN96tv/Fg3tU=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB6084
 
 From: shannmu <shanmu1901@gmail.com>
 
-This patch provides the foundation for safely managing memory contexts
-for both in-band and out-of-band tasks in the co-kernel.
+Add the necessary modifications to support the Dovetail co-kernel
+in the RISC-V KVM backend.
 
 Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
 ---
- arch/riscv/include/asm/mmu_context.h |  6 ++----
- arch/riscv/mm/cacheflush.c           |  5 +++--
- arch/riscv/mm/context.c              | 18 +++++++++++++++++-
- arch/riscv/mm/fault.c                |  3 ++-
- arch/riscv/mm/tlbflush.c             |  5 +++--
- 5 files changed, 27 insertions(+), 10 deletions(-)
+ arch/riscv/include/asm/kvm_host.h |  6 ++++++
+ arch/riscv/kvm/vcpu.c             | 13 +++++++------
+ 2 files changed, 13 insertions(+), 6 deletions(-)
 
-diff --git a/arch/riscv/include/asm/mmu_context.h b/arch/riscv/include/asm/mmu_context.h
-index acf3b8e20e27..b62d69dbdd06 100644
---- a/arch/riscv/include/asm/mmu_context.h
-+++ b/arch/riscv/include/asm/mmu_context.h
-@@ -15,6 +15,8 @@
+diff --git a/arch/riscv/include/asm/kvm_host.h b/arch/riscv/include/asm/kvm_host.h
+index 2e2254fd2a2a..f24c31e179a9 100644
+--- a/arch/riscv/include/asm/kvm_host.h
++++ b/arch/riscv/include/asm/kvm_host.h
+@@ -9,6 +9,7 @@
+ #ifndef __RISCV_KVM_HOST_H__
+ #define __RISCV_KVM_HOST_H__
  
- void switch_mm(struct mm_struct *prev, struct mm_struct *next,
- 	struct task_struct *task);
-+void switch_oob_mm(struct mm_struct *prev, struct mm_struct *next,
-+	struct task_struct *task);
++#include "linux/spinlock_types.h"
+ #include <linux/types.h>
+ #include <linux/kvm.h>
+ #include <linux/kvm_types.h>
+@@ -246,7 +247,12 @@ struct kvm_vcpu_arch {
+ 	struct kvm_vcpu_timer timer;
  
- #define activate_mm activate_mm
- static inline void activate_mm(struct mm_struct *prev,
-@@ -33,10 +35,6 @@ static inline int init_new_context(struct task_struct *tsk,
- 	return 0;
- }
- 
--static inline void
--switch_oob_mm(struct mm_struct *prev, struct mm_struct *next,
--	      struct task_struct *tsk) { }
--
- DECLARE_STATIC_KEY_FALSE(use_asid_allocator);
- 
- #include <asm-generic/mmu_context.h>
-diff --git a/arch/riscv/mm/cacheflush.c b/arch/riscv/mm/cacheflush.c
-index b81672729887..6dabe4c0a203 100644
---- a/arch/riscv/mm/cacheflush.c
-+++ b/arch/riscv/mm/cacheflush.c
-@@ -45,8 +45,9 @@ void flush_icache_mm(struct mm_struct *mm, bool local)
- {
- 	unsigned int cpu;
- 	cpumask_t others, *mask;
+ 	/* HFENCE request queue */
++#ifdef CONFIG_IRQ_PIPELINE
++	hard_spinlock_t hfence_lock;
++#else
+ 	spinlock_t hfence_lock;
++#endif
++
+ 	unsigned long hfence_head;
+ 	unsigned long hfence_tail;
+ 	struct kvm_riscv_hfence hfence_queue[KVM_RISCV_VCPU_MAX_HFENCE];
+diff --git a/arch/riscv/kvm/vcpu.c b/arch/riscv/kvm/vcpu.c
+index 8d7d381737ee..7d0096c3c3d7 100644
+--- a/arch/riscv/kvm/vcpu.c
++++ b/arch/riscv/kvm/vcpu.c
+@@ -733,6 +733,7 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu)
+ 	int ret;
+ 	struct kvm_cpu_trap trap;
+ 	struct kvm_run *run = vcpu->run;
 +	unsigned long flags;
  
--	preempt_disable();
-+	flags = hard_preempt_disable();
+ 	if (!vcpu->arch.ran_atleast_once)
+ 		kvm_riscv_vcpu_setup_config(vcpu);
+@@ -786,7 +787,7 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu)
  
- 	/* Mark every hart's icache as needing a flush for this MM. */
- 	mask = &mm->context.icache_stale_mask;
-@@ -78,7 +79,7 @@ void flush_icache_mm(struct mm_struct *mm, bool local)
- 		on_each_cpu_mask(&others, ipi_remote_fence_i, NULL, 1);
- 	}
+ 		kvm_riscv_check_vcpu_requests(vcpu);
  
--	preempt_enable();
-+	hard_preempt_enable(flags);
- }
+-		preempt_disable();
++		flags = hard_preempt_disable();
  
- #endif /* CONFIG_SMP */
-diff --git a/arch/riscv/mm/context.c b/arch/riscv/mm/context.c
-index 4abe3de23225..81199e192804 100644
---- a/arch/riscv/mm/context.c
-+++ b/arch/riscv/mm/context.c
-@@ -315,7 +315,7 @@ static inline void flush_icache_deferred(struct mm_struct *mm, unsigned int cpu,
- #endif
- }
+ 		/* Update AIA HW state before entering guest */
+ 		ret = kvm_riscv_vcpu_aia_update(vcpu);
+@@ -795,7 +796,7 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu)
+ 			continue;
+ 		}
  
--void switch_mm(struct mm_struct *prev, struct mm_struct *next,
-+static void do_switch_mm(struct mm_struct *prev, struct mm_struct *next,
- 	struct task_struct *task)
- {
- 	unsigned int cpu;
-@@ -336,3 +336,19 @@ void switch_mm(struct mm_struct *prev, struct mm_struct *next,
+-		local_irq_disable();
++		hard_local_irq_disable();
  
- 	flush_icache_deferred(next, cpu, task);
- }
-+
-+void switch_mm(struct mm_struct *prev, struct mm_struct *next,
-+	struct task_struct *task)
-+{
-+	unsigned flags;
-+
-+	protect_inband_mm(flags);
-+	do_switch_mm(prev, next, task);
-+	unprotect_inband_mm(flags);
-+}
-+
-+void switch_oob_mm(struct mm_struct *prev, struct mm_struct *next,
-+	struct task_struct *task)
-+{
-+	do_switch_mm(prev, next, task);
-+}
-\ No newline at end of file
-diff --git a/arch/riscv/mm/fault.c b/arch/riscv/mm/fault.c
-index f7275f1a39ac..97bd890d65a4 100644
---- a/arch/riscv/mm/fault.c
-+++ b/arch/riscv/mm/fault.c
-@@ -7,6 +7,7 @@
-  */
+ 		/*
+ 		 * Ensure we set mode to IN_GUEST_MODE after we disable
+@@ -868,16 +869,16 @@ int kvm_arch_vcpu_ioctl_run(struct kvm_vcpu *vcpu)
+ 		 * recognised, so we just hope that the CPU takes any pending
+ 		 * interrupts between the enable and disable.
+ 		 */
+-		local_irq_enable();
+-		local_irq_disable();
++		hard_local_irq_enable();
++		hard_local_irq_disable();
  
+ 		guest_timing_exit_irqoff();
  
-+#include <linux/preempt.h>
- #include <linux/mm.h>
- #include <linux/kernel.h>
- #include <linux/interrupt.h>
-@@ -263,7 +264,7 @@ void handle_page_fault(struct pt_regs *regs)
- 	 * If we're in an interrupt, have no user context, or are running
- 	 * in an atomic region, then we must not take the fault.
- 	 */
--	if (unlikely(faulthandler_disabled() || !mm)) {
-+	if (unlikely(running_inband() && (faulthandler_disabled() || !mm))) {
- 		tsk->thread.bad_cause = cause;
- 		no_context(regs, addr);
- 		return;
-diff --git a/arch/riscv/mm/tlbflush.c b/arch/riscv/mm/tlbflush.c
-index 9b6e86ce3867..0009593bd5ec 100644
---- a/arch/riscv/mm/tlbflush.c
-+++ b/arch/riscv/mm/tlbflush.c
-@@ -83,11 +83,12 @@ static void __flush_tlb_range(const struct cpumask *cmask, unsigned long asid,
- 			      unsigned long stride)
- {
- 	unsigned int cpu;
-+	unsigned long flags;
+-		local_irq_enable();
++		hard_local_irq_enable();
  
- 	if (cpumask_empty(cmask))
- 		return;
+ 		trace_kvm_exit(&trap);
  
--	cpu = get_cpu();
-+	cpu = hard_get_cpu(flags);
+-		preempt_enable();
++		hard_preempt_enable(flags);
  
- 	/* Check if the TLB flush needs to be sent to other CPUs. */
- 	if (cpumask_any_but(cmask, cpu) >= nr_cpu_ids) {
-@@ -104,7 +105,7 @@ static void __flush_tlb_range(const struct cpumask *cmask, unsigned long asid,
- 		on_each_cpu_mask(cmask, __ipi_flush_tlb_range_asid, &ftd, 1);
- 	}
+ 		kvm_vcpu_srcu_read_lock(vcpu);
  
--	put_cpu();
-+	hard_put_cpu(flags);
- }
- 
- static inline unsigned long get_mm_asid(struct mm_struct *mm)
 -- 
 2.43.0
 
