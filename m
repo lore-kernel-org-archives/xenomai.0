@@ -1,34 +1,34 @@
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88C39DF76
-	for <xenomai@lists.linux.dev>; Sat, 11 Oct 2025 16:56:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F9A61A5B92
+	for <xenomai@lists.linux.dev>; Sat, 11 Oct 2025 17:15:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.200
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760201775; cv=none; b=JlNDFsLrK7Pk7lcPm93FLZjRJ948cpCzhf3OOcrMRueTEbOYni6QrfTMP48I3ymxbYYnCZ1tLKwQvXmjwbaZghcmfl6y1eCK4m69GYBykSRqibvQSdVO/vNGLSqt6xiCPunh72GcKcZxBREViuYXU5sj8UZxTDUUjN80gPzpHA0=
+	t=1760202938; cv=none; b=cWLrzRJZFjb80ixMX+BGfLqRmdnORVSa5xhBxe8bFTx2/xzxXCkezvkc0A1/d0kYmM0wwFk5q3HzKUHICE6JZpacBa/GKiar3WtmEJO8uctfPmfigZXjoXsWW08ZAq7YBDMHJsq+UsUkLSpXiumoCwdgL7zQD0E69AjRPAWQ7GI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760201775; c=relaxed/simple;
-	bh=eIxqFK5M+rZhVCVRqHSmzKq03K7Zdm854sAqA313c4s=;
+	s=arc-20240116; t=1760202938; c=relaxed/simple;
+	bh=kiaram+8UojpifFoizXdF9Yn4tlvShlhOOTFmOY5nAo=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=tMIaPJCpkQ3fKyNpjO95mHjfaXgtP+jm3ZCErnIu7BhUKiBEBSopTxQfxTRHy7mlWKnOFSjazyJpzsIkjoVe0ilYKDL9ttvcd+uAxPO9/+lnBQ8e+nFE2ixaYh935veElQvLDo5begk5ErWDeEeJU9U4IK3QmdDh5S1WWXDA5Dc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=I5p/rg9/; arc=none smtp.client-ip=217.70.183.195
+	 MIME-Version:Content-Type; b=UmgmH6l5zISe+VX2VOWGAag/5zKbs6vSSlEiXAzTgxm+ohzBZ3gXvJJcHepsAeyiVK7jgpxJN/+avRlf+G8IzpRpdKT1odwT+uFU0gFa2yvLLv+Lhnyz02O5/YLQF8M6icxL9aFNDU195BGy7zBT/DXxCjET7s7OziwhNfw7Pw4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=ccedfPYO; arc=none smtp.client-ip=217.70.183.200
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="I5p/rg9/"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 4B6E020492;
-	Sat, 11 Oct 2025 16:56:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="ccedfPYO"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 037974435D;
+	Sat, 11 Oct 2025 17:15:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1760201765;
+	t=1760202928;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=2jAKVGZq9XoMwh2BzzlBg4X4R3GWh1uapZOnxwTEmM0=;
-	b=I5p/rg9/ciGlpaN4A4gwN31PlFJDpgVcfjQumxaBw8qZ0acwnFWhe9iiGhDsAxXdDl5erk
-	DbtoPdOBsC9G3UMKoORx/5nWgrzbnPJ6WedqDK2cy59RpFHZweovaG3+13Jub/z6OkNGJb
-	sBrrBJ7myMtCXQxwe//mVS+t10Iq8/SZh/hTymT1CzgOLeTxoHIgTsbhQ9DjRe6iHO3VO9
-	pVYAqqytHWC4KiJN7UozVXx+NTkNFOFNMOUCC7HZeSSiC2Bn5QYGfQRX9uRL7LzVSZ9/TC
-	ThFPvT6X+SLRBPTtEAwciScJEYTlxhriGdX96HZ2EH6HCmSyfJuNVm/8RvWocA==
+	bh=sW85Sqx2vIodAyVVCsK4vrYsKXwbcdOsFq+FT4KT4Gg=;
+	b=ccedfPYOOsDdqt3AY4ztV1TwEh05kr4KWyS3o24E2PYmXti7CjBnvrtAVqSRmcK7fKMKHY
+	kreiEepwiLx99CJylvInwNgq/B+JpqgGaCjGPHaWIuWZblpvr4aDkKtNVt994ZoCvXR0oy
+	OIjSdeKmpR1Lbwapj0iKt4k14Z90HzaH0YsUPK9delixvcYwFLMrQ8TX6w+nOB3eZRCI1V
+	2Y8AxBnLlgYZOOqKRf+8D6dG1eWBSDLiEYmoiu9dWqE1L+SYfd5mcmgl9OkB/NFMsqe9Tz
+	MfZBwjqopOPJa8iu11VwYBsnn2SCjb0a4QJDx3/T275AkjBie70MTzbPytF7qA==
 From: Philippe Gerum <rpm@xenomai.org>
 To: Giulio Moro <giulio@bela.io>
 Cc: =?utf-8?Q?=C5=81ukasz?= Majewski <lukma@nabladev.com>,  Xenomai
@@ -42,8 +42,8 @@ References: <d3f7d465-e914-bf4d-be69-7e42fe288064@bela.io>
 	<87qzv9sa9c.fsf@xenomai.org> <87ikgls9kh.fsf@xenomai.org>
 	<f916d01d-2bd0-cdfd-2e9e-562968a9934f@bela.io>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Sat, 11 Oct 2025 18:56:04 +0200
-Message-ID: <87a51xs7h7.fsf@xenomai.org>
+Date: Sat, 11 Oct 2025 19:15:27 +0200
+Message-ID: <874is5s6kw.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -82,8 +82,7 @@ Giulio Moro <giulio@bela.io> writes:
 >
 > I can confirm that on v6.1.y-cip-evl-rebase I don't see that issue, even though MMF_DOVETAILED is 31 also there.
 
-Meanwhile, I've been trying to reproduce on x86 and armv8 (odroid c4)
-using the posted recipe, no luck so far. I'll check armv7 as well.
+Quick check: does "evl check" run without any output (as expected)?
 
 -- 
 Philippe.
