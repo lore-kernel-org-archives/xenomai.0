@@ -1,80 +1,60 @@
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+Received: from mail-07.mail-europe.com (mail-07.mail-europe.com [188.165.51.139])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71009279918
-	for <xenomai@lists.linux.dev>; Sun, 12 Oct 2025 14:44:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFCEE3081A3
+	for <xenomai@lists.linux.dev>; Mon, 13 Oct 2025 13:45:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=188.165.51.139
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760280295; cv=none; b=f/7ysboJ4yY5gWD17iGJvqS1JaX+lQzr1xksz7WXa45ZGG24+FoOUj6Oblr+yeZCQuMoO0BxD52uHZeAW51NvGDseHmOkaBiQFkfyC8WvKZYOBLdYCYaQZ+SPSR8UAcslyizufOkSI1Gh1awyUi96s4/wdoqB/Vq31EH7oRgkpU=
+	t=1760363105; cv=none; b=M6rWYUi3n9bGlyFyN/YtEVlI4nM4Kl0ogUJpuorEEsI/qCVGpkWsBV9cJyQz3Ine9ZPf1+StOVL+KfWHviJxaNWfofO6kJKq94DHV2IS8hTyV3N1+7838fk/b7Iz44Fr6ErfzK/SsKw8lFwkCrCmgj6eHQUT3YNcdY8/Vyd4Evw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760280295; c=relaxed/simple;
-	bh=p7vY3F2okgqBGqgwz33t3YtnFfkXuhmJiNU1V705zG0=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=u/wF8MpSDPQcp3Hocsim9Dm8/QTsFz7n5wbKShsI2529H7E7vyS2IwQeTTYLYuTtBq6AUpSiINyjOo8s/LO9CT7lYKavRXObAx702moVSODtEKzk3HAKeo4R5e6Ga/Ar6qojk5dQkAJzUc1FrhygEqJzbn10FrYvmNCm+TnzD4Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=g03f3Pp/; arc=none smtp.client-ip=217.70.183.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1760363105; c=relaxed/simple;
+	bh=j1S73JNSIrB7VZSt0YMkd48rzPbFY1we00+HsVDn/7M=;
+	h=Date:To:From:Subject:Message-ID:MIME-Version:Content-Type; b=QDDMTVqh4kNL2uu4StgXGnHyXE/VOE4qtHKu7NfDyWi03ug+tVnCLC4PkmN7TGE1YVmW9XgrsNsTkQB3dyiCAxUTVhZsHsPBC2gRIM6d3H0bCGFIWNBFiW/BWxjk4TyjBQ2woQkCB2wRUyPlAnRie3fEUCrSyty+Zfi7vgJLEDM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=codecraftsmen.org; spf=pass smtp.mailfrom=codecraftsmen.org; dkim=pass (1024-bit key) header.d=codecraftsmen.org header.i=@codecraftsmen.org header.b=rNxBcjYP; arc=none smtp.client-ip=188.165.51.139
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=codecraftsmen.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=codecraftsmen.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="g03f3Pp/"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 2AA70442D1;
-	Sun, 12 Oct 2025 14:44:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1760280290;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=KwLMQjREZswm+VQeOCNJM86D3FR6U4qXX1bh0WZID9A=;
-	b=g03f3Pp/f0M9A1vDeffJYVZ9fCOMZSra+2hpC7YiJmS5lvUOIi2ogPLOzx31/hw9ec7p3j
-	69B0q7Hj9l9EpbP4mKuQ4JLm1WGdYaUL/EwmT2tuPyfaX+QqYDXl8ImjpIjO4l7sKvSK3g
-	TC65GTPE5BSrAHAXscEokDbawgzGTAjpt4i5VJhRjbHAiWVlZPBTZxJxNEBF27s1lXfoBu
-	N/W0iEOUS+aUxW6sX7G6BQlybqAPkRRVshq6NhfxbRewXfFW4KFbGSOgUy+Zh5o6aVLUYy
-	9nRwBsIutScQiGOqogOUekWkd/Mt4q+aNS8SEImixEGjyDDvayxdCCeV/qzVKg==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Giulio Moro <giulio@bela.io>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: Unexpected switches to in-band
-In-Reply-To: <be366ae4-b0c3-d6b5-25f2-813424f47c3c@bela.io> (Giulio Moro's
-	message of "Sat, 11 Oct 2025 14:46:56 -0500")
-References: <d3f7d465-e914-bf4d-be69-7e42fe288064@bela.io>
-	<20251009151737.0d03b211@wsk>
-	<20676160-4572-d92d-4b33-ff4255946345@bela.io>
-	<87qzv9sa9c.fsf@xenomai.org> <87ikgls9kh.fsf@xenomai.org>
-	<f916d01d-2bd0-cdfd-2e9e-562968a9934f@bela.io>
-	<874is5s6kw.fsf@xenomai.org>
-	<be366ae4-b0c3-d6b5-25f2-813424f47c3c@bela.io>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Sun, 12 Oct 2025 16:44:49 +0200
-Message-ID: <874is4i3ha.fsf@xenomai.org>
+	dkim=pass (1024-bit key) header.d=codecraftsmen.org header.i=@codecraftsmen.org header.b="rNxBcjYP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codecraftsmen.org;
+	s=protonmail; t=1760363085; x=1760622285;
+	bh=+7GPlR37QjoUXELUeRsyXiB8WSdV44GuHnf6qPvwNgs=;
+	h=Date:To:From:Subject:Message-ID:Feedback-ID:From:To:Cc:Date:
+	 Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=rNxBcjYP1bB4BmEDvhcs7SH+khfbllF27JI4w4HGRTKDqTwxTi4B1+L7zF8eVO2zU
+	 O9tH368dqwjpg0VzUjmb1y9UtyTj6BxxtfJQqKqW1JaYYV2gOMxN8m+fFKaOUTrwHV
+	 2lqR/oDC6cA5f0eVo0L5vcs4aRfkOWaqMoFlchAY=
+Date: Mon, 13 Oct 2025 13:44:37 +0000
+To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+From: Jeff Webb <w1@codecraftsmen.org>
+Subject: Latency issue on 6.12
+Message-ID: <UyAUfjoIsmXhBUPBcslxRMNNb8GuRTy_kf6DCgLluexP13gUInYxr2sneftMAHkSwlvsvfMJMWnYvdXgpQCSsVSEDKG2-sFu1AV3dogwtdo=@codecraftsmen.org>
+Feedback-ID: 11561076:user:proton
+X-Pm-Message-ID: 4f05818f879a69030979cc3ddf5d3efd9ac7c806
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Giulio Moro <giulio@bela.io> writes:
+We have recently upgraded our real-time x86 application from ipipe 4.19.266=
+-cip86/xenomai-3.1 to 6.1.137-cip42-dovetail4/xenomai-3.3.1, and the new se=
+tup seems to be working reliably with both our own application and the Xeno=
+mai-provided latency test program. When we use a 6.12.30-dovetail4 kernel, =
+however, the latency program and our real-time application seems to still w=
+ork properly on some older hardware (i7-8700K processor), but we eventually=
+ start getting some latency spikes in the 700 us range on our newer i5-1440=
+0 systems.
 
->> Quick check: does "evl check" run without any output (as expected)?
->
-> Yes
->
-> Further update: tested v6.16-evl-rebase and it seems to have the same in-band switching issue. So far the only good one was v6.1.y-cip-evl-rebase.
->
->> Meanwhile, I've been trying to reproduce on x86 and armv8 (odroid c4) using the posted recipe, no luck so far.
->
-> Thanks for giving it a try. Wanna have a look at/try my config? https://github.com/giuliomoro/linux/blob/v6.12.y-evl-rebase/.config
+Tracking down this issue is on my to-do list, but has not been a high prior=
+ity, since we have a working setup.  In light of some recent posts mentioni=
+ng latency issues with 6.12 and later kernels, I thought it would be a good=
+ time to post this information to the list, in case it is relevant to the i=
+ssue others are investigating.
 
-I could not reproduce this issue yet, neither on x86 nor arm64, trying a
-bunch of configurations of linux-evl/v6.12.49. At this point, the best
-approach would be to track down the latency spot on the TI board using
-the 'latspot' (f)tracepoint which latmus triggers each time a new
-latency maximum is reached, so that we might find out the reason for
-taking those minor faults which are causing in-band switches. There is
-some documentation about its usage at [1].
+Thanks,
 
-[1] https://v4.xenomai.org/core/commands/index.html
+-Jeff
 
--- 
-Philippe.
