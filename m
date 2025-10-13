@@ -1,38 +1,38 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B05C92BE7B5
-	for <xenomai@lists.linux.dev>; Mon, 13 Oct 2025 17:01:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8461722AE65
+	for <xenomai@lists.linux.dev>; Mon, 13 Oct 2025 17:11:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760374875; cv=none; b=nSm6hqCkFDFxFKCtsOfmchBjr6RU5TVOwbOwXo7jTC+cEplGCjgCgrp1wbH2Kz9shEWkvVJNWH+XF2m7Wf53bTAjVZU6ZI5pvR7HMCErk5feza9lmTXYU2CVLSIYxaQrBkAoWKNQT9CgGBjNiReu4sh8TjPIK7a0k9jE41OLVTI=
+	t=1760375474; cv=none; b=YoQEIIFZzuVs8u54hvJsDkDEBoerBlwkAQbpRzhNCD7SXHLSije5th9X78UgaLcQriRZ35b80FjHVSk9QOHnZGeG0BPm0C9ixud54WFLvvxdOm7kSQAe1v6qfng+6aavmolk5jIlsKIzutxxQWoS8K5nzKRGyvPDi0aw0x/x6p0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760374875; c=relaxed/simple;
-	bh=m1NMRNqihVKbruLdc/8b4+arizqHeC/CoKtgCCQDKQM=;
+	s=arc-20240116; t=1760375474; c=relaxed/simple;
+	bh=2nYI4qNidBZuzmWuoBP458EI/mrkTVo9rS9pLL5cPiw=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ugKifk3TqrQx4pUx9NwXuksn/TUxZs5SdXOqZ+PfJDPswijaHMrOScSUAjFOYW5qjkiVuZ/U4yphXms+mrZIWP5XccW5phwUx+tOwSY4YL6EfClgqW7qY4rpwLMVLRvtuTTatHhUtqPh8stJV5Z5R36awS06frve0ZCn+czeFpM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=ACayGQhW; arc=none smtp.client-ip=185.136.64.226
+	 MIME-Version; b=CZYHeMTCDBPgvDY/ODrqO+Xzj2ehIC07V749VIF0nFYySKNzi7SoiwP4GvKfQB9dhE3wWRcbjHKnpLZx7dZxZCNWjkY1Ln6pBeyaeSogWLFZzcG5rlHw7SvxAyME38UZQeCKjhaoEC2tcxWyNOLZurqjAp58URXeQxCsQfwX0dQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=U3iuNDCO; arc=none smtp.client-ip=185.136.64.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="ACayGQhW"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 2025101317010028110254c800020778
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="U3iuNDCO"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20251013170101f7e44b27fd000207b9
         for <xenomai@lists.linux.dev>;
         Mon, 13 Oct 2025 19:01:01 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=/Klp/RxQE/AdApolJMufV97oaehqQuZpQK+LPi6pjV4=;
- b=ACayGQhWe00ARtkyZW955b26cxizy4aRT4g/bn8Y6NaHFrvdn6VQtUSmXlJtlHnJjOkOxY
- XpUB6Yva+j55LjCxYWrutLpzq4v8B5p1kJGRKiXm4FpdzC/1VGlwx3RBzvCQJjh8NNd9KUpC
- q1sZdxCfS0YgeRYiR+fVlddxow2duMiUpmOJjlY5wjQwXHspIqpsqwr3h9TyNDbN717pJUKB
- /W/PGTOKZ80alZg+XO8ymnSpGmB4e5QTQSrKmX8incAnAd17s+ymxbIr8i3HOafNhuLmK902
- SOG8A2IKumVd2qmTBwyq63AtCO/7kg7YKVDdCF4cLMB5g7NFZcK8X1sg==;
+ bh=aQ0EghxcLUE8wVwT4Ob0svRoxJYJqu5VAjYkzvamfQA=;
+ b=U3iuNDCOhunKiCFDcSxiP/bFqE+zqXDVbAo44JxW0UT5LTs3mZJLcjPhdJ/zl80oaQxd/v
+ CQYST+zywwrv8GWM50Hn4hP6b5Ry6YKe+oAR2503hx7kBtkJOA3gp5tUjOrw8e4729jLptqh
+ jDD835R0DTZmtUGsv+NLoIoh/Xzj6ySWRlHNdjotWUq9wz8SZ2HsJet9W10bJsA89Vst9IGD
+ 2l3E97xqREuy5UH9SiZvEZYid655K7Ag4ewP1l5CVZnuouopdqmKjJ33zNy/EGSq+jpOwpXh
+ uOpOBIidVk+JjFqV+dkf8jGjF0GRW/bwKC2JXakJHDsjGE7HvJ4l1RYw==;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [PATCH 2/6] lib/cobalt: arm: Avoid thumb mode in syscall-issuing modules
-Date: Mon, 13 Oct 2025 19:00:56 +0200
-Message-ID: <b2aa6e5eb2bf3b7357239aae8d55289f0baac9a8.1760374860.git.jan.kiszka@siemens.com>
+Subject: [PATCH 6/6] lib/cobalt: x86: Fix and simplify 32-bit syscall argument setup
+Date: Mon, 13 Oct 2025 19:01:00 +0200
+Message-ID: <f7f09fec1e92730da837efb27d0c72da659aabe3.1760374860.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1760374860.git.jan.kiszka@siemens.com>
 References: <cover.1760374860.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -47,103 +47,137 @@ Feedback-ID: 519:519-294854:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-In 4abd59b4e3e4, we noticed the clash between r7 usage for setting up
-Xenomai syscalls and the compiler suddenly refusing this. What we was
-not clear at that point was the origin of the clash: if the compiler
-is configured to prefer thumb mode over regular 32-bit ARM instructions,
-it also starts to claim r7 as frame pointer.
+This ancient code to constructing the argument setup of 32-bit syscalls
+now fail with recent compilers plus debug settings. Why the code was
+once designed in such a complex way is 20 years+ later no longer clear,
+but it seems that simply stating which register should contain which
+argument as assembler constraints is just working today.
 
-Now, the solution taken back then turned out to have a problem: It broke
-stack unwinding. That is not only an issue when debugging, it is
-actually required for pthread_cancel and pthread_exit. The glibc will
-use unwinding to call destructors of the terminating context to call
-them before shutting down. This broke when we were inside a syscall
-because r7 was then pointing to the syscall number.
+Fixes assembly sequences like these (__cobalt_timer_gettime):
+   ...
+   1395d:       c7 45 f4 75 00 00 00    movl   $0x75,-0xc(%ebp)
+   13964:       8b 45 f4                mov    -0xc(%ebp),%eax
+   13967:       0d 00 00 00 10          or     $0x10000000,%eax
+   1396c:       89 c3                   mov    %eax,%ebx
+   1396e:       8b 45 08                mov    0x8(%ebp),%eax
+   13971:       8b 4d 0c                mov    0xc(%ebp),%ecx
+   13974:       53                      push   %ebx
+   13975:       89 c3                   mov    %eax,%ebx
+   13977:       89 d8                   mov    %ebx,%eax
+   13979:       65 ff 15 10 00 00 00    call   *%gs:0x10
 
-Most glibc versions detected the broken call chain and simply skipped
-the destructors - which was still a problem, just unnoticed. But with
-recent glibc from trixie, we are now even crashing while unwinding, and
-that is even less acceptable.
-
-We could now either use the pattern of glibc to push the syscall
-invocation into an assembly function - or simply enforce ARM mode for
-libcobalt so that r7 become usable again. Take the latter approach as it
-is leaner.
-
-Fixes: 4abd59b4e3e4 ("lib/cobalt: arm: Account for register allocation clash")
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- configure.ac                                    |  1 +
- .../arch/arm/include/asm/xenomai/syscall.h      | 17 +++++++++++------
- 2 files changed, 12 insertions(+), 6 deletions(-)
+ .../arch/x86/include/asm/xenomai/syscall.h    | 71 ++-----------------
+ 1 file changed, 7 insertions(+), 64 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index a28d80a5e0..c1214bda88 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -937,6 +937,7 @@ if test $rtcore_type = cobalt; then
-    XENO_COBALT_CFLAGS="$XENO_USER_CFLAGS"
-    case "$build_for" in
-     i*86*-*) XENO_COBALT_CFLAGS="$XENO_COBALT_CFLAGS -fno-omit-frame-pointer";;
-+    arm*-*) XENO_COBALT_CFLAGS="$XENO_COBALT_CFLAGS -marm";;
-     esac
+diff --git a/lib/cobalt/arch/x86/include/asm/xenomai/syscall.h b/lib/cobalt/arch/x86/include/asm/xenomai/syscall.h
+index 79bf17ee75..d00bd287e3 100644
+--- a/lib/cobalt/arch/x86/include/asm/xenomai/syscall.h
++++ b/lib/cobalt/arch/x86/include/asm/xenomai/syscall.h
+@@ -41,50 +41,13 @@
+ /* The one that cannot fail. */
+ #define DOSYSCALLSAFE  "int $0x80\n\t"
  
- dnl Build wrapping information. XENO_POSIX_WRAPPERS lists all wrapping
-diff --git a/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h b/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
-index 105bf9faf1..1fc605b1ba 100644
---- a/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
-+++ b/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
-@@ -29,6 +29,10 @@
- #error "ARM OABI support has been removed with Xenomai 3.3.x"
- #endif
+-asm (".L__X'%ebx = 1\n\t"
+-     ".L__X'%ecx = 2\n\t"
+-     ".L__X'%edx = 2\n\t"
+-     ".L__X'%eax = 3\n\t"
+-     ".L__X'%esi = 3\n\t"
+-     ".L__X'%edi = 3\n\t"
+-     ".L__X'%ebp = 3\n\t"
+-     ".L__X'%esp = 3\n\t"
+-     ".macro bpushl name reg\n\t"
+-     ".if 1 - \\name\n\t"
+-     ".if 2 - \\name\n\t"
+-     "pushl %ebx\n\t"
+-     ".else\n\t"
+-     "xchgl \\reg, %ebx\n\t"
+-     ".endif\n\t"
+-     ".endif\n\t"
+-     ".endm\n\t"
+-     ".macro bpopl name reg\n\t"
+-     ".if 1 - \\name\n\t"
+-     ".if 2 - \\name\n\t"
+-     "popl %ebx\n\t"
+-     ".else\n\t"
+-     "xchgl \\reg, %ebx\n\t"
+-     ".endif\n\t"
+-     ".endif\n\t"
+-     ".endm\n\t"
+-     ".macro bmovl name reg\n\t"
+-     ".if 1 - \\name\n\t"
+-     ".if 2 - \\name\n\t"
+-     "movl \\reg, %ebx\n\t"
+-     ".endif\n\t"
+-     ".endif\n\t"
+-     ".endm\n\t");
+-
+ #define XENOMAI_DO_SYSCALL(nr, op, args...)			\
+ ({								\
+ 	unsigned __resultvar;					\
+ 	asm volatile (						\
+-		LOADARGS_##nr					\
+-		"movl %1, %%eax\n\t"				\
+ 		DOSYSCALL					\
+-		RESTOREARGS_##nr				\
+ 		: "=a" (__resultvar)				\
+-		: "g" (__xn_syscode(op)) ASMFMT_##nr(args)	\
++		: "a" (__xn_syscode(op)) ASMFMT_##nr(args)	\
+ 		: "memory", "cc");				\
+ 	(int) __resultvar;					\
+ })
+@@ -93,44 +56,24 @@ asm (".L__X'%ebx = 1\n\t"
+ ({								\
+ 	unsigned __resultvar;					\
+ 	asm volatile (						\
+-		LOADARGS_##nr					\
+-		"movl %1, %%eax\n\t"				\
+ 		DOSYSCALLSAFE					\
+-		RESTOREARGS_##nr				\
+ 		: "=a" (__resultvar)				\
+-		: "g" (__xn_syscode(op)) ASMFMT_##nr(args)	\
++		: "a" (__xn_syscode(op)) ASMFMT_##nr(args)	\
+ 		: "memory", "cc");				\
+ 	(int) __resultvar;					\
+ })
  
-+#ifdef __thumb__
-+#error "Xenomai syscalls cannot be issued in Thumb mode"
-+#endif
-+
- /*
-  * Some of the following macros have been adapted from Linux's
-  * implementation of the syscall mechanism in <asm-arm/unistd.h>:
-@@ -54,8 +58,8 @@
- 	LOADARGS_4(syscode, arg1, arg2, arg3, arg4);		\
- 	__a4 = (unsigned long) (arg5)
+-#define LOADARGS_0
+-#define LOADARGS_1 \
+-	"bpushl .L__X'%k2, %k2\n\t" \
+-	"bmovl .L__X'%k2, %k2\n\t"
+-#define LOADARGS_2	LOADARGS_1
+-#define LOADARGS_3	LOADARGS_1
+-#define LOADARGS_4	LOADARGS_1
+-#define LOADARGS_5	LOADARGS_1
+-
+-#define RESTOREARGS_0
+-#define RESTOREARGS_1 \
+-	"bpopl .L__X'%k2, %k2\n\t"
+-#define RESTOREARGS_2	RESTOREARGS_1
+-#define RESTOREARGS_3	RESTOREARGS_1
+-#define RESTOREARGS_4	RESTOREARGS_1
+-#define RESTOREARGS_5	RESTOREARGS_1
+-
+ #define ASMFMT_0()
+ #define ASMFMT_1(arg1) \
+-	, "acdSD" (arg1)
++	ASMFMT_0(), "b" (arg1)
+ #define ASMFMT_2(arg1, arg2) \
+-	, "adSD" (arg1), "c" (arg2)
++	ASMFMT_1(arg1), "c" (arg2)
+ #define ASMFMT_3(arg1, arg2, arg3) \
+-	, "aSD" (arg1), "c" (arg2), "d" (arg3)
++	ASMFMT_2(arg1, arg2), "d" (arg3)
+ #define ASMFMT_4(arg1, arg2, arg3, arg4) \
+-	, "aD" (arg1), "c" (arg2), "d" (arg3), "S" (arg4)
++	ASMFMT_3(arg1, arg2, arg3), "S" (arg4)
+ #define ASMFMT_5(arg1, arg2, arg3, arg4, arg5) \
+-	, "a" (arg1), "c" (arg2), "d" (arg3), "S" (arg4), "D" (arg5)
++	ASMFMT_4(arg1, arg2, arg3, arg4), "D" (arg5)
  
--#define CLOBBER_REGS_0
--#define CLOBBER_REGS_1 "r0"
-+#define CLOBBER_REGS_0 "r7"
-+#define CLOBBER_REGS_1 CLOBBER_REGS_0, "r0"
- #define CLOBBER_REGS_2 CLOBBER_REGS_1, "r1"
- #define CLOBBER_REGS_3 CLOBBER_REGS_2, "r2"
- #define CLOBBER_REGS_4 CLOBBER_REGS_3, "r3"
-@@ -69,7 +73,8 @@
- #define LOADREGS_5 LOADREGS_4; __r4 = __a4
- 
- #define ASM_INDECL_0							\
--	register unsigned long __r0  __asm__ ("r0");
-+	register unsigned long __r0  __asm__ ("r0");			\
-+	register unsigned long __r7  __asm__ ("r7");
- #define ASM_INDECL_1 ASM_INDECL_0;					\
- 	unsigned long __a0;
- #define ASM_INDECL_2 ASM_INDECL_1;					\
-@@ -91,15 +96,15 @@
- #define XENOMAI_DO_SYSCALL(nr, op, args...)				\
- 	({								\
- 		ASM_INDECL_##nr;					\
--		unsigned long __r7 = __xn_syscode(op);			\
- 		LOADARGS_##nr(__xn_syscode(op), args);			\
- 		__asm__ __volatile__ ("" : /* */ : /* */ :		\
- 				      CLOBBER_REGS_##nr);		\
- 		LOADREGS_##nr;						\
-+		__r7 = __xn_syscode(op);				\
- 		__asm__ __volatile__ (					\
--			"push {r7}; mov %%r7,%[__r7]; swi\t0; pop {r7}"	\
-+			"swi 0"						\
- 			: "=r" (__r0)					\
--			: ASM_INPUT_##nr, [__r7] "r" (__r7)		\
-+			: ASM_INPUT_##nr, "r" (__r7)			\
- 			: "memory");					\
- 		(int) __r0;						\
- 	})
+ #define XENOMAI_SYSBIND(breq) \
+ 	XENOMAI_DO_SYSCALL_SAFE(1, sc_cobalt_bind, breq)
 -- 
 2.51.0
 
