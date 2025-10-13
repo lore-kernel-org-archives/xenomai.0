@@ -1,40 +1,37 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37F01299952
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12C512701DC
 	for <xenomai@lists.linux.dev>; Mon, 13 Oct 2025 17:11:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760375474; cv=none; b=UFnaOKkBZ914QDszVn/s+65pzmmv4btNmSozblOzIAgTLdKkWdWn7FiB4AHnJGd5i7hJHf9jLOMMaVwRiRGYsiMRHvVcqizRJvz7wkrgmSBsLrZgruYu/Wx4oBClbUkhQENUTBndlGdx8gVoPTe/LiJ6/xQYU8Wmlgq3TUQecLg=
+	t=1760375475; cv=none; b=hUTFdztVuGbVnsHgTi0CmQvWTWf2RMe6FXfBNgOttPUCBCHVX4NuZkFy2togruuekmp2gTDJKMogdTksEo9+7YqI2AMapKaHOrSPswq62uI3I62OgjV1vIv2V0cdbxuay5ARz/ZjUR7ftu31crOm4VNPLgeRnDIKKLLB3ImmsTQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760375474; c=relaxed/simple;
-	bh=lno6U57wW/RdEmIRzHs7+Kmqro0HX+jTgrt8arsWgS8=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=maC0aldM72USShSxCu+LGdIYEjGi6/JXgMtK5NPbBAy3XdY0dk8Ya9HM34x4zUC28tcsZba9G5PVRMrgAUgrwjG/oNZdUnNFBPp6xOYY7afnMFJU0pmWuUZspQ7ROTUK5McA4lBWu5ocsYKTpbbAafYfsj9Bz/z0/XgVVfnRMyE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=H5TU3g+7; arc=none smtp.client-ip=185.136.65.225
+	s=arc-20240116; t=1760375475; c=relaxed/simple;
+	bh=eDs8stUyJRdwgxiAODKAytJ0ICkkTz7MrfBXafyQbNk=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version; b=rP98gH5Z3LIJt7TdpRdR99P1zAC2JnzjKF+TrsBpTY6wdlrnxsZ//3MG4B3npeqeF81lEPtnxYWic08yaOxzR/sOKWeeNpciq3aKWdTzH0W0B7328pj1owUwBbJbR3TX7aLq1I1xv/PLogWFjgusiD65hoOUp2san+XJRxT90TE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=V5UNpOE2; arc=none smtp.client-ip=185.136.64.228
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="H5TU3g+7"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20251013170100a0622172a8000207f6
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="V5UNpOE2"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 202510131701007dd72186350002076d
         for <xenomai@lists.linux.dev>;
         Mon, 13 Oct 2025 19:01:00 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=jan.kiszka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=B+99sR89LaXAi8+vfJ06rIWlkGmmYdAYaNMRvCWqEnQ=;
- b=H5TU3g+74P912e4snWMSYmBe7pIMK5prQHE9zR7lgh4jCbsYmlbvNMciGhoMmFbk89GPD6
- rHln6FDjutu1JR64jDizMKZ2Zr5IJcODvG1n1c5bQXPtpz0OX77TRHxsY81YcCKAbM1UkK6V
- gX3vYQX/5RwAHJXrWhowE8YHIA2Pa+iwIJplT6vh89w7pSZYwQQ6vefuaBEc5ytqGYhuddGO
- Y9wmieQKAbw69qu/u46Jr99zQoYv/Z6U5yIlTsHvjIvDSe00iv+Qn6G1k8zICwB3HjQ0ffPw
- aty8M0RoGKM1Tg/NWXhEc08l/yiflzvpcSrFUsJi4Wnhg+0xbyRKdvcg==;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding;
+ bh=kXPKpUDKbNiGSILGqOJq/DbgicjHTeq6tygcLng9KzQ=;
+ b=V5UNpOE2n8cPGq6yFPP2w+2nSK+S/3qbWgc2XRgKvV/M82pe1BT6u85HosO0PhAqdQzp7m
+ jAii5yYbv9XUR0+QMnn8oWsPggyRESanBfnSpOLZuEMxvfIDOmxdedVIkQ0qHEeBvpfz2ZD6
+ wbx8qUaQbdMDMhXNFulQrylhCTfbhDBNd+IKu5mInKsKf/Di4q8g+XjP9jHHC9WT8DYPkW9d
+ e2AnpYL1byNnSxDcknGHtnhZgCGolvU7JU5r23u4qYh3T/mubWfnTMHwYfCsMicxnuAuFguq
+ VIBwCh7K5Lh7+4aT1QS3wQUvsj7PIhyDh2MnVX/bA8elTm3dIy2bjrOg==;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [PATCH 1/6] testsuite/switchtest: Avoid including arch-specific syscall header
-Date: Mon, 13 Oct 2025 19:00:55 +0200
-Message-ID: <8e7aeb4b292dd03d0da30929935766f751356811.1760374860.git.jan.kiszka@siemens.com>
-In-Reply-To: <cover.1760374860.git.jan.kiszka@siemens.com>
-References: <cover.1760374860.git.jan.kiszka@siemens.com>
+Subject: [PATCH 0/6] Fixes related to toolchain / libc update
+Date: Mon, 13 Oct 2025 19:00:54 +0200
+Message-ID: <cover.1760374860.git.jan.kiszka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -45,30 +42,47 @@ Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-294854:519-21489:flowmailer
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+Fixes that where found via the trixie update in xenomai-images and some
+cleanups. Most affect ARM 32-bit, the last one also 32-bit x86.
 
-We only need the generic one, and the arch-specific one will soon
-require non-thumb mode from its users.
+While the patches do not change the ABI and would therefore be backport
+candiates, I will likely only pick patches 3 and 5 for stable.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- testsuite/switchtest/switchtest.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Which means that current stable versions of Xenomai should remain
+careful before updating their toolchains or libc versions for ARM and
+32-bit x86.
 
-diff --git a/testsuite/switchtest/switchtest.c b/testsuite/switchtest/switchtest.c
-index 434004450a..a2ff42dcfd 100644
---- a/testsuite/switchtest/switchtest.c
-+++ b/testsuite/switchtest/switchtest.c
-@@ -37,8 +37,8 @@
- #include <getopt.h>
- #include <asm/unistd.h>
- #include <asm/xenomai/features.h>
--#include <asm/xenomai/syscall.h>
- #include <asm/xenomai/uapi/fptest.h>
-+#include <cobalt/uapi/asm-generic/syscall.h>
- #include <cobalt/trace.h>
- #include <rtdm/testing.h>
- #include <sys/cobalt.h>
+Jan
+
+Jan Kiszka (6):
+  testsuite/switchtest: Avoid including arch-specific syscall header
+  lib/cobalt: arm: Avoid thumb mode in syscall-issuing modules
+  arm: fptest: Ensure that fp_regs_set/check functions are truly inline
+  kernel/cobalt: Optimize xndebug_trace_relax implementation
+  lib/cobalt: arm: Skip SIGSHADOW_ACTION_BACKTRACE over asynchronous
+    signals
+  lib/cobalt: x86: Fix and simplify 32-bit syscall argument setup
+
+ configure.ac                                  |  1 +
+ .../arm/include/asm/xenomai/uapi/fptest.h     |  8 ++-
+ kernel/cobalt/debug.c                         | 11 ++-
+ kernel/cobalt/debug.h                         |  5 +-
+ kernel/cobalt/thread.c                        |  2 +-
+ .../arch/arm/include/asm/xenomai/Makefile.am  |  1 +
+ .../arch/arm/include/asm/xenomai/debug.h      | 27 +++++++
+ .../arch/arm/include/asm/xenomai/syscall.h    | 17 +++--
+ .../arm64/include/asm/xenomai/Makefile.am     |  1 +
+ .../arch/arm64/include/asm/xenomai/debug.h    | 18 +++++
+ .../arch/x86/include/asm/xenomai/Makefile.am  |  1 +
+ .../arch/x86/include/asm/xenomai/debug.h      | 18 +++++
+ .../arch/x86/include/asm/xenomai/syscall.h    | 71 ++-----------------
+ lib/cobalt/sigshadow.c                        | 12 ++--
+ testsuite/switchtest/switchtest.c             |  2 +-
+ 15 files changed, 110 insertions(+), 85 deletions(-)
+ create mode 100644 lib/cobalt/arch/arm/include/asm/xenomai/debug.h
+ create mode 100644 lib/cobalt/arch/arm64/include/asm/xenomai/debug.h
+ create mode 100644 lib/cobalt/arch/x86/include/asm/xenomai/debug.h
+
 -- 
 2.51.0
 
