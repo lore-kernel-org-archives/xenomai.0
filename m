@@ -1,42 +1,42 @@
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A4F031A065
-	for <xenomai@lists.linux.dev>; Wed, 15 Oct 2025 07:21:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B49E313E0B
+	for <xenomai@lists.linux.dev>; Wed, 15 Oct 2025 07:23:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760512875; cv=none; b=pBWty1fqG2SMXz35Zb0MulYUIF3a2kRTt7YtCT6f8/eFEg0vE0eykN1hj7iK+NKTMFoOZu/Ful4f/9owPWGl4FU3eZ58QOp2fKR0pAQcHteALEBeGOLARk0xzsx76Ek4j0QWj3on2ZbHbUCw8fZXCPL1Hc7fuRcPlxi6LM8ohmk=
+	t=1760512993; cv=none; b=GFMRHQ2+3PKcMHECoIedCyM0+x8uHMlVEU48QKeUxljDcpVC6wMATGGcAhjpsI+/onCrGoalpOm2b4Z0qkpqI6XdwTwN4CRyY+iNY3wq8s9KbWZWCmXn2ZzhgjA7ys/6osvf6v8VIlnJCdDLRQ4CLf5PVb3mZa6KNCRara+3Ozg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760512875; c=relaxed/simple;
-	bh=eSlgzppsnlnER1KT/0+Ha8W+aKfS0TlCtu/+Ogosm08=;
+	s=arc-20240116; t=1760512993; c=relaxed/simple;
+	bh=RCqF/LHdld+u/Auz/rY4Btsev9rTy/48M+0AuSAxbCo=;
 	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=JG+nN05LnTOFy6soI1EJObDtJoTte6AZ56Y5PxyJ+eRy07thsAAlyZ3p9kVN+LgwAfQsG6YmQjg1xJ6VaRbrdIa7Rhr8m5qpkgzmJGZbcaWXew/fOSrwA/U6oqWSfjRqp2Y3oIgkreMntk3l8gYNPpqSapier8c6xEpYL01Meao=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=VV1hLLWl; arc=none smtp.client-ip=185.136.65.227
+	 Content-Type:MIME-Version; b=BXtwYnZh2qepXeQwh5EfDpUdXQ8vilSP8PkeNsSafPvOvrnVs6JegY1aw2vyLtrI196nP1KKw2b35yiVvp4Ag2OY/O68N1UTSIbRBMkHd6jLx5qO5J6a2xKbm95+ZkqONkzG1zIguz3gDCrOxxhYBUFODv9HA5Qut9QMV2neCIc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Qc9hfkwg; arc=none smtp.client-ip=185.136.64.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="VV1hLLWl"
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 2025101507210011b81276df0002075f
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Qc9hfkwg"
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20251015071254f62e9f12120002077b
         for <xenomai@lists.linux.dev>;
-        Wed, 15 Oct 2025 09:21:00 +0200
+        Wed, 15 Oct 2025 09:12:54 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=ibt0LGOm+mhDRgfCucDn8CoO3KTwUdRsDn8bv1zzW2o=;
- b=VV1hLLWlq2SCmXNRPPsGiKs8idN5bCGJbbUhjtGhLsK9tKfUBUnWklqt8OgdcPAI9rjpm4
- wGPLqFZQZ66JzCDt0GiJfpAYXgCLrvi1/VabE0G7agSlmB0zsxEn4k0dxP8JugyMe//Z87GW
- Oj2lM5CI02qnxh33mQfcJkrE07IaDDXqIPId1rbE6ZWrXpVxoySegiLrStq5dhoiI65w15hA
- nVtNaosDqlvjev1ikeVHJyihwZBCaBu2ef/r6ZCi2/qscS7VA0bJjtgGNREtIqpZE827aECU
- +9XyrWIWOuOvlv+1PnGBoyIelORtKj3S5tQsIW7HTTk/7QAWkUYxCBTQ==;
-Message-ID: <041484c388d623bbfb4832b55858083feb856ec1.camel@siemens.com>
-Subject: Re: [PATCH 5/6] lib/cobalt: arm: Skip SIGSHADOW_ACTION_BACKTRACE
- over asynchronous signals
+ bh=oTiVMftcdtFtjkwjtpOjK+gyEdr6EmIxr61B3ivM/bg=;
+ b=Qc9hfkwg1WJwjzYgV5YFWeId4rqZ0knRyJNrxyJwuaBRwnr0Uuov1f+D84zP2ZQGPPpEX0
+ jjycSzH3e8gzcd/mBY8GZKbq8P8MyWJxH+VAz9U2As89NaKG7mjk/b9lVzhYHTZ36VIaRtWt
+ jZvI109bCL4EtyeqRU3jkwV9gzEe8cvJ6dCHPX9IWjXv6n4lJv5vFN8bLz6r6USp3mAxUFL3
+ Wds56tpLNeAgJsHFdWuqI4gwVjLq2D499bqHJ9lmQhFZWb81FxSLOBdFLPppsF1m31NfOs+Y
+ dLCoWBo4HJLHL1HsJ7D+QEbhugRCJ7SoNtYeO6wQeo+jJeGmhk6Qd44w==;
+Message-ID: <77c5c99cb6dda43b48ba8bf8ef29f665ee19ea6f.camel@siemens.com>
+Subject: Re: [PATCH 2/6] lib/cobalt: arm: Avoid thumb mode in
+ syscall-issuing modules
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
-Date: Wed, 15 Oct 2025 09:21:00 +0200
-In-Reply-To: <111db6f38a33a6d7e8a2a0b983dc244049a37d44.1760374860.git.jan.kiszka@siemens.com>
+Date: Wed, 15 Oct 2025 09:12:54 +0200
+In-Reply-To: <b2aa6e5eb2bf3b7357239aae8d55289f0baac9a8.1760374860.git.jan.kiszka@siemens.com>
 References: <cover.1760374860.git.jan.kiszka@siemens.com>
-	 <111db6f38a33a6d7e8a2a0b983dc244049a37d44.1760374860.git.jan.kiszka@siemens.com>
+	 <b2aa6e5eb2bf3b7357239aae8d55289f0baac9a8.1760374860.git.jan.kiszka@siemens.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -51,205 +51,118 @@ Feedback-ID: 519:519-68982:519-21489:flowmailer
 On Mon, 2025-10-13 at 19:00 +0200, Jan Kiszka wrote:
 > From: Jan Kiszka <jan.kiszka@siemens.com>
 >=20
-> The unwinders of libgcc and libunwind prefer the ARM exception handling
-> table over debug information. Unwinding this way is not designed to
-> handle asynchronous signals, causing wrong backtraces in the best case
-> but also too often even crashes.
+> In 4abd59b4e3e4, we noticed the clash between r7 usage for setting up
+> Xenomai syscalls and the compiler suddenly refusing this. What we was
+                                                                 ^  =20
+"we" seems superfluous.
 
-Has that changed with trixie or why did this problem not manifest
-earlier?
+> not clear at that point was the origin of the clash: if the compiler
+> is configured to prefer thumb mode over regular 32-bit ARM instructions,
+> it also starts to claim r7 as frame pointer.
+>=20
+> Now, the solution taken back then turned out to have a problem: It broke
+> stack unwinding. That is not only an issue when debugging, it is
+> actually required for pthread_cancel and pthread_exit. The glibc will
+> use unwinding to call destructors of the terminating context to call
+> them before shutting down. This broke when we were inside a syscall
+> because r7 was then pointing to the syscall number.
+>=20
+> Most glibc versions detected the broken call chain and simply skipped
+> the destructors - which was still a problem, just unnoticed. But with
+> recent glibc from trixie, we are now even crashing while unwinding, and
+> that is even less acceptable.
+
+Ok, so not a trixie regression, but something that was never correct on
+our end. Good to know as trixie will get more traction soon.
 
 >=20
-> Avoid running into that trap by skipping the request to create a
-> backtrace via SIGSHADOW on ARM in case either the migration reason was a
-> signal, or PTHREAD_WARNSW is enabled for the current thread. In both
-> cases, the SIGSHADOW could be raised over the first instruction of
-> another signal handler, causing the unwinder to fail.
+> We could now either use the pattern of glibc to push the syscall
+> invocation into an assembly function - or simply enforce ARM mode for
+> libcobalt so that r7 become usable again. Take the latter approach as it
+> is leaner.
 
-Hm. Adding more arch specific code... Not nice, but well...
-
-Does that have any effect on how debugging works or feels on arm now?
-Especially any difference to arm64? I'm concerned about gdb showing
-different information for the same issue. (In terms of different
-instruction shown as root cause of a migration, or things alike)
+As it broke again - and as already written as comment to the series -
+we might think of reviving the syscall() series. That would allow us to
+simply remove that code here. Seems hard to maintain and hard to
+debug...
 
 >=20
-> Improving the unwinding libraries themselves is likely no longer with
-                                                                  ^^^^
-Typo with -> worth?
-
-> the effort for this phase-out architecture.
->=20
+> Fixes: 4abd59b4e3e4 ("lib/cobalt: arm: Account for register allocation cl=
+ash")
 > Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 > ---
->  .../arch/arm/include/asm/xenomai/Makefile.am  |  1 +
->  .../arch/arm/include/asm/xenomai/debug.h      | 27 +++++++++++++++++++
->  .../arm64/include/asm/xenomai/Makefile.am     |  1 +
->  .../arch/arm64/include/asm/xenomai/debug.h    | 18 +++++++++++++
->  .../arch/x86/include/asm/xenomai/Makefile.am  |  1 +
->  .../arch/x86/include/asm/xenomai/debug.h      | 18 +++++++++++++
->  lib/cobalt/sigshadow.c                        | 12 ++++++---
->  7 files changed, 74 insertions(+), 4 deletions(-)
->  create mode 100644 lib/cobalt/arch/arm/include/asm/xenomai/debug.h
->  create mode 100644 lib/cobalt/arch/arm64/include/asm/xenomai/debug.h
->  create mode 100644 lib/cobalt/arch/x86/include/asm/xenomai/debug.h
+>  configure.ac                                    |  1 +
+>  .../arch/arm/include/asm/xenomai/syscall.h      | 17 +++++++++++------
+>  2 files changed, 12 insertions(+), 6 deletions(-)
 >=20
-> diff --git a/lib/cobalt/arch/arm/include/asm/xenomai/Makefile.am b/lib/co=
-balt/arch/arm/include/asm/xenomai/Makefile.am
-> index a7dd090432..8cc767030f 100644
-> --- a/lib/cobalt/arch/arm/include/asm/xenomai/Makefile.am
-> +++ b/lib/cobalt/arch/arm/include/asm/xenomai/Makefile.am
-> @@ -1,4 +1,5 @@
+> diff --git a/configure.ac b/configure.ac
+> index a28d80a5e0..c1214bda88 100644
+> --- a/configure.ac
+> +++ b/configure.ac
+> @@ -937,6 +937,7 @@ if test $rtcore_type =3D cobalt; then
+>     XENO_COBALT_CFLAGS=3D"$XENO_USER_CFLAGS"
+>     case "$build_for" in
+>      i*86*-*) XENO_COBALT_CFLAGS=3D"$XENO_COBALT_CFLAGS -fno-omit-frame-p=
+ointer";;
+> +    arm*-*) XENO_COBALT_CFLAGS=3D"$XENO_COBALT_CFLAGS -marm";;
+>      esac
 > =20
->  noinst_HEADERS =3D	\
-> +	debug.h		\
->  	features.h	\
->  	syscall.h
-> diff --git a/lib/cobalt/arch/arm/include/asm/xenomai/debug.h b/lib/cobalt=
-/arch/arm/include/asm/xenomai/debug.h
-> new file mode 100644
-> index 0000000000..e49b928516
-> --- /dev/null
-> +++ b/lib/cobalt/arch/arm/include/asm/xenomai/debug.h
-> @@ -0,0 +1,27 @@
-> +/*
-> + * Copyright (c) Siemens, 2025
-> + *
-> + * This library is free software; you can redistribute it and/or
-> + * modify it under the terms of the GNU Lesser General Public
-> + * License as published by the Free Software Foundation; either
-> + * version 2 of the License, or (at your option) any later version.
-> + */
-> +
-> +#ifndef _LIB_COBALT_ARM_DEBUG_H
-> +#define _LIB_COBALT_ARM_DEBUG_H
-> +
-> +#include <signal.h>
-> +#include "current.h"
-> +
-> +static inline int cobalt_avoid_backtrace(int reason)
-> +{
-> +	if (reason =3D=3D SIGDEBUG_MIGRATE_SIGNAL)
-> +		return 1;
-> +
-> +	if (cobalt_get_current_mode() & PTHREAD_WARNSW)
-> +		return 1;
-> +
-> +	return 0;
-> +}
-> +
-> +#endif /* !_LIB_COBALT_ARM_DEBUG_H */
-> diff --git a/lib/cobalt/arch/arm64/include/asm/xenomai/Makefile.am b/lib/=
-cobalt/arch/arm64/include/asm/xenomai/Makefile.am
-> index a7dd090432..8cc767030f 100644
-> --- a/lib/cobalt/arch/arm64/include/asm/xenomai/Makefile.am
-> +++ b/lib/cobalt/arch/arm64/include/asm/xenomai/Makefile.am
-> @@ -1,4 +1,5 @@
+>  dnl Build wrapping information. XENO_POSIX_WRAPPERS lists all wrapping
+> diff --git a/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h b/lib/coba=
+lt/arch/arm/include/asm/xenomai/syscall.h
+> index 105bf9faf1..1fc605b1ba 100644
+> --- a/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
+> +++ b/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
+> @@ -29,6 +29,10 @@
+>  #error "ARM OABI support has been removed with Xenomai 3.3.x"
+>  #endif
 > =20
->  noinst_HEADERS =3D	\
-> +	debug.h		\
->  	features.h	\
->  	syscall.h
-> diff --git a/lib/cobalt/arch/arm64/include/asm/xenomai/debug.h b/lib/coba=
-lt/arch/arm64/include/asm/xenomai/debug.h
-> new file mode 100644
-> index 0000000000..6ca1d42a34
-> --- /dev/null
-> +++ b/lib/cobalt/arch/arm64/include/asm/xenomai/debug.h
-> @@ -0,0 +1,18 @@
-> +/*
-> + * Copyright (c) Siemens, 2025
-> + *
-> + * This library is free software; you can redistribute it and/or
-> + * modify it under the terms of the GNU Lesser General Public
-> + * License as published by the Free Software Foundation; either
-> + * version 2 of the License, or (at your option) any later version.
-> + */
+> +#ifdef __thumb__
+> +#error "Xenomai syscalls cannot be issued in Thumb mode"
+> +#endif
 > +
-> +#ifndef _LIB_COBALT_ARM64_DEBUG_H
-> +#define _LIB_COBALT_ARM64_DEBUG_H
-> +
-> +static inline int cobalt_avoid_backtrace(int reason)
-> +{
-> +	return 0;
-> +}
-> +
-> +#endif /* !_LIB_COBALT_ARM64_DEBUG_H */
-> diff --git a/lib/cobalt/arch/x86/include/asm/xenomai/Makefile.am b/lib/co=
-balt/arch/x86/include/asm/xenomai/Makefile.am
-> index a7dd090432..8cc767030f 100644
-> --- a/lib/cobalt/arch/x86/include/asm/xenomai/Makefile.am
-> +++ b/lib/cobalt/arch/x86/include/asm/xenomai/Makefile.am
-> @@ -1,4 +1,5 @@
+>  /*
+>   * Some of the following macros have been adapted from Linux's
+>   * implementation of the syscall mechanism in <asm-arm/unistd.h>:
+> @@ -54,8 +58,8 @@
+>  	LOADARGS_4(syscode, arg1, arg2, arg3, arg4);		\
+>  	__a4 =3D (unsigned long) (arg5)
 > =20
->  noinst_HEADERS =3D	\
-> +	debug.h		\
->  	features.h	\
->  	syscall.h
-> diff --git a/lib/cobalt/arch/x86/include/asm/xenomai/debug.h b/lib/cobalt=
-/arch/x86/include/asm/xenomai/debug.h
-> new file mode 100644
-> index 0000000000..9d39233d12
-> --- /dev/null
-> +++ b/lib/cobalt/arch/x86/include/asm/xenomai/debug.h
-> @@ -0,0 +1,18 @@
-> +/*
-> + * Copyright (c) Siemens, 2025
-> + *
-> + * This library is free software; you can redistribute it and/or
-> + * modify it under the terms of the GNU Lesser General Public
-> + * License as published by the Free Software Foundation; either
-> + * version 2 of the License, or (at your option) any later version.
-> + */
-> +
-> +#ifndef _LIB_COBALT_X86_DEBUG_H
-> +#define _LIB_COBALT_X86_DEBUG_H
-> +
-> +static inline int cobalt_avoid_backtrace(int reason)
-> +{
-> +	return 0;
-> +}
-> +
-> +#endif /* !_LIB_COBALT_X86_DEBUG_H */
-> diff --git a/lib/cobalt/sigshadow.c b/lib/cobalt/sigshadow.c
-> index 10736b113f..b98e4a1d55 100644
-> --- a/lib/cobalt/sigshadow.c
-> +++ b/lib/cobalt/sigshadow.c
-> @@ -18,6 +18,7 @@
+> -#define CLOBBER_REGS_0
+> -#define CLOBBER_REGS_1 "r0"
+> +#define CLOBBER_REGS_0 "r7"
+> +#define CLOBBER_REGS_1 CLOBBER_REGS_0, "r0"
+>  #define CLOBBER_REGS_2 CLOBBER_REGS_1, "r1"
+>  #define CLOBBER_REGS_3 CLOBBER_REGS_2, "r2"
+>  #define CLOBBER_REGS_4 CLOBBER_REGS_3, "r3"
+> @@ -69,7 +73,8 @@
+>  #define LOADREGS_5 LOADREGS_4; __r4 =3D __a4
 > =20
->  #include <pthread.h>
->  #include <signal.h>
-> +#include <asm/xenomai/debug.h>
->  #include <asm/xenomai/syscall.h>
->  #include "internal.h"
-> =20
-> @@ -43,7 +44,7 @@ static bool past_constructors;
->  int cobalt_sigshadow_handler(int sig, siginfo_t *si, void *ctxt)
->  {
->  	void *frames[SIGSHADOW_BACKTRACE_DEPTH];
-> -	int action, arg, nr, skip;
-> +	int action, reason, nr, skip;
-> =20
->  	if (si->si_code !=3D SI_QUEUE)
->  		return 0;
-> @@ -55,11 +56,14 @@ int cobalt_sigshadow_handler(int sig, siginfo_t *si, =
-void *ctxt)
->  		XENOMAI_SYSCALL1(sc_cobalt_migrate, COBALT_PRIMARY);
->  		break;
->  	case SIGSHADOW_ACTION_BACKTRACE:
-> -		arg =3D sigshadow_arg(si->si_int);
-> -		nr =3D backtrace(frames, ARRAY_SIZE(frames));
-> +		reason =3D sigshadow_arg(si->si_int);
-> +		nr =3D 0;
-> +		if (!cobalt_avoid_backtrace(reason))
-> +			nr =3D backtrace(frames, ARRAY_SIZE(frames));
->  		/* Skip the sighandler context. */
->  		skip =3D nr > 3 ? 3 : 0;
-> -		XENOMAI_SYSCALL3(sc_cobalt_backtrace, nr - skip, frames + skip, arg);
-> +		XENOMAI_SYSCALL3(sc_cobalt_backtrace, nr - skip, frames + skip,
-> +				 reason);
->  		break;
->  	case SIGSHADOW_ACTION_HOME:
->  		/*
+>  #define ASM_INDECL_0							\
+> -	register unsigned long __r0  __asm__ ("r0");
+> +	register unsigned long __r0  __asm__ ("r0");			\
+> +	register unsigned long __r7  __asm__ ("r7");
+>  #define ASM_INDECL_1 ASM_INDECL_0;					\
+>  	unsigned long __a0;
+>  #define ASM_INDECL_2 ASM_INDECL_1;					\
+> @@ -91,15 +96,15 @@
+>  #define XENOMAI_DO_SYSCALL(nr, op, args...)				\
+>  	({								\
+>  		ASM_INDECL_##nr;					\
+> -		unsigned long __r7 =3D __xn_syscode(op);			\
+>  		LOADARGS_##nr(__xn_syscode(op), args);			\
+>  		__asm__ __volatile__ ("" : /* */ : /* */ :		\
+>  				      CLOBBER_REGS_##nr);		\
+>  		LOADREGS_##nr;						\
+> +		__r7 =3D __xn_syscode(op);				\
+>  		__asm__ __volatile__ (					\
+> -			"push {r7}; mov %%r7,%[__r7]; swi\t0; pop {r7}"	\
+> +			"swi 0"						\
+>  			: "=3Dr" (__r0)					\
+> -			: ASM_INPUT_##nr, [__r7] "r" (__r7)		\
+> +			: ASM_INPUT_##nr, "r" (__r7)			\
+>  			: "memory");					\
+>  		(int) __r0;						\
+>  	})
 > --=20
 > 2.51.0
