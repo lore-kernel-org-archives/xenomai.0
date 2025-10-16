@@ -1,38 +1,38 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A307C2DE6E1
-	for <xenomai@lists.linux.dev>; Thu, 16 Oct 2025 06:32:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E77172DEA70
+	for <xenomai@lists.linux.dev>; Thu, 16 Oct 2025 06:32:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760596354; cv=none; b=I4cmErdLqMVMKg+D7CDv8yjCZILg2uE25SbkB6CQnqZRBWDzeYwAudHD+Lu4EY0qKU5Acsnh2dXQtj2JYde66MZV/ONCaHV6L1w883xlTYNv8E+zJPkW/Rr2Efr4QL+LuLWadlajisMKvXS9kWQhuZXNsgMqIxJWmxIGWMvoRpI=
+	t=1760596355; cv=none; b=U7yH2FMhQ+L950TpVy+LkKPdQEUoMZ52J2GGXHYCLyExsGfT2NM8KG6gI06qS8h1Ailw9iqNRlkjJcHI0kZheah//KUP3RAXQ5H4Jij5kGAapt3RXVU8q8UfAWtI+kunQtl4kekczMQhKh7WAqFoiGjfbxSFefOZIt4Nt5wwy7M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760596354; c=relaxed/simple;
-	bh=QSCq39KNhgjBgE2jT8/cYz4PrOiIpY4H+XdMnKttkW4=;
+	s=arc-20240116; t=1760596355; c=relaxed/simple;
+	bh=m7x34XwKO1zo+su16C3o15GpDqoxB0QLO9Vuc70OXgw=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=uMzw/Y+YAZxMchSLEfLlzvK/+Hglut1tQ6LAhc6bbDm9gkJBo8Yx9jyVCNUPmClyXGb/btzMcgk2KwlC1NJ15RPTElqMsxm5cZwH0PlXV/YAtK/QiAO0a/5420bfuSXeubuTQ9q7qSWofW69/wye1DoSntnC6zQ4Xxp5YTF6F8k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=C1hB4hDB; arc=none smtp.client-ip=185.136.64.226
+	 MIME-Version; b=b7XpUSHLZUMnYgQe5JJ8xnIAsfXoab9zBuA3AtND/YQZDSBZVMn+AZkQdkE69O6sAmTHCIgfXb92Fm8UOSBe8JizFPAWmUMHTHR7gI4LiFFcdc2sOofb+doVUnoSjCyVBovuhdl8Nl5dGrwavwVermJ4XXE966SVSFCoA5RZL/o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=FBLhHTh3; arc=none smtp.client-ip=185.136.65.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="C1hB4hDB"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20251016063226bc7698742c0002075a
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="FBLhHTh3"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202510160632262bc501bd68000207bd
         for <xenomai@lists.linux.dev>;
         Thu, 16 Oct 2025 08:32:26 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=uT1wZHEje8jYVUXfIO55BC8os4YL/xvwkwLHGLCh3aE=;
- b=C1hB4hDBWRpe4GrrUSTdqm8w/2Odpe/Q05Lh5l3iof7eJtlDqF904IFhlh9X5Q028LZeU9
- dHouUDUn08U8Vq7HGCABqzAUKVmKAbVI8SzsT9toxGz3pULYK0ou7O6vnRaoDaT7Q3RiuMeb
- 1CFfj43WdyNgZ1hbKUNOqh4TJ1/gEmoHJ8ca+A3bnRnjdd4ZMxByC023pFuRSIaiTzMqKeQH
- PkNMXFI/h/aJzw9VLbXziHO20CAIlpCf2Aii9aqSqkJrFmdHZZo1NTszBfv/ubexKNuTJAwH
- 9a7qI2ukwTccLeDrus4fHyPuR1pAJOtOPXBljHKrHrjXzCijQAgSK8gA==;
+ bh=82ptro8bOwtj9fnlPEYsQkmceWflHirP9XO1q86Ehd8=;
+ b=FBLhHTh3o1bozGjLvUUpPzz90/bYYQQcYcaJTtIgSRHekEKCDMngwG5izWyXIPL37ejJ6+
+ IxPVlo27UuP0onAIVLVDKJpozo2rq8tGuG7QM8bxLpsnzpd1ZdwvoNrQZlSC344POOW7WAUx
+ Nt0B3q2FHf7A+QNvXg7/muwgrYGU/bSM0xMjqwDBc8y67aUKH7uimVan+ZGcGXFOdxeT0n8X
+ 6t8VAOTYv68Rn7CWQts7FfUeorqkYUpV/XFUm/NjAafSGMCo/qLKxnxXaSsXaSHJ0acEAJLM
+ AsqXnOzmpH5fPCLHUh95p1uyUfHFy9dm1KnPMZlezAjaw4PCsAVa/0NQ==;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [PATCH v2 7/7] testsuite/smokey/sched-quota: Make workload more predictable
-Date: Thu, 16 Oct 2025 08:32:24 +0200
-Message-ID: <2c177a0216d4d58e3d261a06075847a1551a11ee.1760596344.git.jan.kiszka@siemens.com>
+Subject: [PATCH v2 2/7] lib/cobalt: arm: Avoid thumb mode in syscall-issuing modules
+Date: Thu, 16 Oct 2025 08:32:19 +0200
+Message-ID: <3a39a24a11a7cd8bb9791d532de16fd3423960ac.1760596344.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1760596344.git.jan.kiszka@siemens.com>
 References: <cover.1760596344.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -47,36 +47,103 @@ Feedback-ID: 519:519-294854:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Adding some time-based busy-waiting makes the workload way more
-predictable for the calibration and later on evaluation. This fixes
-rather frequent failures of this test on real hardware, since the update
-to a Debian 13 toolchain specifically on RPi4.
+In 4abd59b4e3e4, we noticed the clash between r7 usage for setting up
+Xenomai syscalls and the compiler suddenly refusing this. What was not
+clear at that point was the origin of the clash: if the compiler is
+configured to prefer thumb mode over regular 32-bit ARM instructions, it
+also starts to claim r7 as frame pointer.
 
+Now, the solution taken back then turned out to have a problem: It broke
+stack unwinding. That is not only an issue when debugging, it is
+actually required for pthread_cancel and pthread_exit. The glibc will
+use unwinding to call destructors of the terminating context to call
+them before shutting down. This broke when we were inside a syscall
+because r7 was then pointing to the syscall number.
+
+Most glibc versions detected the broken call chain and simply skipped
+the destructors - which was still a problem, just unnoticed. But with
+recent glibc from trixie, we are now even crashing while unwinding, and
+that is even less acceptable.
+
+We could now either use the pattern of glibc to push the syscall
+invocation into an assembly function - or simply enforce ARM mode for
+libcobalt so that r7 become usable again. Take the latter approach as it
+is leaner.
+
+Fixes: 4abd59b4e3e4 ("lib/cobalt: arm: Account for register allocation clash")
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- testsuite/smokey/sched-quota/sched-quota.c | 2 ++
- 1 file changed, 2 insertions(+)
+ configure.ac                                    |  1 +
+ .../arch/arm/include/asm/xenomai/syscall.h      | 17 +++++++++++------
+ 2 files changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/testsuite/smokey/sched-quota/sched-quota.c b/testsuite/smokey/sched-quota/sched-quota.c
-index 5abe75d27e..f9e64e37f1 100644
---- a/testsuite/smokey/sched-quota/sched-quota.c
-+++ b/testsuite/smokey/sched-quota/sched-quota.c
-@@ -17,6 +17,7 @@
- #include <sys/cobalt.h>
- #include <boilerplate/time.h>
- #include <boilerplate/ancillaries.h>
-+#include <copperplate/threadobj.h>
- #include <smokey/smokey.h>
+diff --git a/configure.ac b/configure.ac
+index a28d80a5e0..c1214bda88 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -937,6 +937,7 @@ if test $rtcore_type = cobalt; then
+    XENO_COBALT_CFLAGS="$XENO_USER_CFLAGS"
+    case "$build_for" in
+     i*86*-*) XENO_COBALT_CFLAGS="$XENO_COBALT_CFLAGS -fno-omit-frame-pointer";;
++    arm*-*) XENO_COBALT_CFLAGS="$XENO_COBALT_CFLAGS -marm";;
+     esac
  
- smokey_test_plugin(sched_quota,
-@@ -63,6 +64,7 @@ static volatile int throttle;
- static unsigned long __attribute__(( noinline ))
- __do_work(unsigned long count)
- {
-+	threadobj_spin(1000);
- 	return count + 1;
- }
+ dnl Build wrapping information. XENO_POSIX_WRAPPERS lists all wrapping
+diff --git a/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h b/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
+index 105bf9faf1..1fc605b1ba 100644
+--- a/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
++++ b/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
+@@ -29,6 +29,10 @@
+ #error "ARM OABI support has been removed with Xenomai 3.3.x"
+ #endif
  
++#ifdef __thumb__
++#error "Xenomai syscalls cannot be issued in Thumb mode"
++#endif
++
+ /*
+  * Some of the following macros have been adapted from Linux's
+  * implementation of the syscall mechanism in <asm-arm/unistd.h>:
+@@ -54,8 +58,8 @@
+ 	LOADARGS_4(syscode, arg1, arg2, arg3, arg4);		\
+ 	__a4 = (unsigned long) (arg5)
+ 
+-#define CLOBBER_REGS_0
+-#define CLOBBER_REGS_1 "r0"
++#define CLOBBER_REGS_0 "r7"
++#define CLOBBER_REGS_1 CLOBBER_REGS_0, "r0"
+ #define CLOBBER_REGS_2 CLOBBER_REGS_1, "r1"
+ #define CLOBBER_REGS_3 CLOBBER_REGS_2, "r2"
+ #define CLOBBER_REGS_4 CLOBBER_REGS_3, "r3"
+@@ -69,7 +73,8 @@
+ #define LOADREGS_5 LOADREGS_4; __r4 = __a4
+ 
+ #define ASM_INDECL_0							\
+-	register unsigned long __r0  __asm__ ("r0");
++	register unsigned long __r0  __asm__ ("r0");			\
++	register unsigned long __r7  __asm__ ("r7");
+ #define ASM_INDECL_1 ASM_INDECL_0;					\
+ 	unsigned long __a0;
+ #define ASM_INDECL_2 ASM_INDECL_1;					\
+@@ -91,15 +96,15 @@
+ #define XENOMAI_DO_SYSCALL(nr, op, args...)				\
+ 	({								\
+ 		ASM_INDECL_##nr;					\
+-		unsigned long __r7 = __xn_syscode(op);			\
+ 		LOADARGS_##nr(__xn_syscode(op), args);			\
+ 		__asm__ __volatile__ ("" : /* */ : /* */ :		\
+ 				      CLOBBER_REGS_##nr);		\
+ 		LOADREGS_##nr;						\
++		__r7 = __xn_syscode(op);				\
+ 		__asm__ __volatile__ (					\
+-			"push {r7}; mov %%r7,%[__r7]; swi\t0; pop {r7}"	\
++			"swi 0"						\
+ 			: "=r" (__r0)					\
+-			: ASM_INPUT_##nr, [__r7] "r" (__r7)		\
++			: ASM_INPUT_##nr, "r" (__r7)			\
+ 			: "memory");					\
+ 		(int) __r0;						\
+ 	})
 -- 
 2.51.0
 
