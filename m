@@ -1,153 +1,136 @@
-Received: from mx.nabladev.com (mx.nabladev.com [178.251.229.89])
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E40F134AB
-	for <xenomai@lists.linux.dev>; Tue, 21 Oct 2025 11:13:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.251.229.89
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14BA113635C
+	for <xenomai@lists.linux.dev>; Tue, 21 Oct 2025 12:23:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761045218; cv=none; b=eUstm7aOjSMgzlgAIZoGE4HYYoS+fO3zRkAHl4SssMbTNXx5Iur13jcdN8IbcC9XCIVqvvg8zCweDu3VWXl9v1F1SDZEvhX571d27IB46hIRXFqY8YceGcogQRhC4bNjxPK6esIwPJ7CM726XzVOjZBFKtLPRzBG0TovFyMxkGM=
+	t=1761049404; cv=none; b=boGURCoDbtV7WClmDc6FPDVGnJhV1gAHdvMIcxBkjzXEBPUb8KwmiQBeTrkLuQJdIahoOK8A93BBOobBW58rB8pTjrkyD3sWa0TorTOho4q5lMgDt9j6NLhzkIEEekOUNl/Cy7Zc1kuXvR+p8UPT+BTgBPWprwrGgTdKdAO7B+w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761045218; c=relaxed/simple;
-	bh=uQwR61Ey4bQjzIugsViNUNP/9r3v5paQaOQwXsNAfDA=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=sRkW1BA/5/p1e8wmDoP0MztCw1QXoQq2zN/HibzRHjOXpESbgmYQtGuPT4ECwqTMF+PUKc6nUr6bLUZY1kVCBNsskH3njBivMcuoCQfFUcvlomZ3fHePtiNI7hdjG2XjdMIHU+Npw+04+um4rmAtxqH39WgdKjPC+b5k0E5BCR8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nabladev.com; spf=pass smtp.mailfrom=nabladev.com; dkim=pass (2048-bit key) header.d=nabladev.com header.i=@nabladev.com header.b=EMDSMx6m; arc=none smtp.client-ip=178.251.229.89
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nabladev.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nabladev.com
+	s=arc-20240116; t=1761049404; c=relaxed/simple;
+	bh=Yjz83AAXmiHYYaaN54/yVMfut8QfgGr2M/fJX4soM9o=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=iDJYFzcTLJ+Qk5/sNtFG2XlFeXB1rqwEfGwGO/jJlBV7bj1Ed+rIQA2MTmbduRtW/+nXtfV/YXM6KNblWUpr+4uc/+l3Ed+k4nqe4yDnsXJXPKiUSBEGAmtS9+iWF2SzMFz0sjn+nw99OxFOeGGVSplYwaHVOh0kXunTiPQdgNc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=IkIEHuDm; arc=none smtp.client-ip=185.136.64.228
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nabladev.com header.i=@nabladev.com header.b="EMDSMx6m"
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 6B174101EC7;
-	Tue, 21 Oct 2025 13:13:27 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nabladev.com;
-	s=dkim; t=1761045208;
-	h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 content-transfer-encoding:in-reply-to:references;
-	bh=uQwR61Ey4bQjzIugsViNUNP/9r3v5paQaOQwXsNAfDA=;
-	b=EMDSMx6m/0kQw+I9CTfvzIO5KCW598LFBCW1jILFRN+7/h8iOnxjS3IjgDfFOjAZHzKun0
-	BKuSHxJ2Hl/XGFAvJTRR+gCzlyvZYktpt92R3K51yZBWYZSyZQcXb20Lk4pZHfy1UxIJW9
-	pS8zvURa/6NHa9XGQcAy/WlpClMcZWJ1RtTL/0ioJDTY+TOAU0FsFyx5j9SNOqmfgH3Vvn
-	ogKUe2KlFXA1QO6j0DwqX2p+Fw45uXM5yt9yax7sGbrhTttLuKbGhRI+MvkEQHXAWA/ndT
-	Vik20wVp2o/QyZttsfLmopPQBGEQcG+Ykaq8uT9e7fLdIkRZ5E/hAX4RlFUhVQ==
-Date: Tue, 21 Oct 2025 13:13:26 +0200
-From: =?UTF-8?B?xYF1a2Fzeg==?= Majewski <lukma@nabladev.com>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Giulio Moro <giulio@bela.io>, Xenomai <xenomai@lists.linux.dev>
-Subject: Re: Unexpected switches to in-band
-Message-ID: <20251021131326.7c48b483@wsk>
-In-Reply-To: <87o6q1ad07.fsf@xenomai.org>
-References: <d3f7d465-e914-bf4d-be69-7e42fe288064@bela.io>
-	<20251009151737.0d03b211@wsk>
-	<20676160-4572-d92d-4b33-ff4255946345@bela.io>
-	<87qzv9sa9c.fsf@xenomai.org>
-	<87ikgls9kh.fsf@xenomai.org>
-	<f916d01d-2bd0-cdfd-2e9e-562968a9934f@bela.io>
-	<20251020094705.2ac256f2@wsk>
-	<9d2bacac-8d70-f083-e926-21beee2207c2@bela.io>
-	<87o6q1ad07.fsf@xenomai.org>
-Organization: Nabla
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="IkIEHuDm"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20251021122312088388b15500020717
+        for <xenomai@lists.linux.dev>;
+        Tue, 21 Oct 2025 14:23:12 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=CMlXMRzMysIGRS0ZChzfdVPFdvKuEKQasvm07EYXoT4=;
+ b=IkIEHuDmmpWgp4st02/3PbLJKa8AB3jLgBt//9MZFYfJFEBuRj/+9bK1G3+QWq9SyP1m/7
+ FcMMeqT2FYPBOUNIYnaFDqYv/QKFdRhnuZKraldTVVluJqOYRkGVgJtE2hcgoIp6o8H5OpOz
+ AFYSYr71Fw1K4gnDiCsO+7wo4Yw8RN9fhRk9HAb/4fftFJGXjiJChtaoRXrPTSc6qrM0012P
+ rSlfogGzpw4usZBkUztzkXdqWnQjdI0gny67CHES/Ym9I9LlM0Fe0c4Js5IvnMWb6Wi52i6I
+ k+Hsj/Tz7j/1woFyfBwy6mw/sraPlDhGBffy31izsEp2gI2BggSXwr3g==;
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Date: Tue, 21 Oct 2025 14:23:11 +0200
+Subject: [PATCH Dovetail 6.17 v3 1/4] clocksource/hyper-v: irq_pipeline:
+ Enable pipelined clock events
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250602-flo-add-hyperv-support-for-6-15-v3-1-f3b45eaed2e8@siemens.com>
+References: <20250602-flo-add-hyperv-support-for-6-15-v3-0-f3b45eaed2e8@siemens.com>
+In-Reply-To: <20250602-flo-add-hyperv-support-for-6-15-v3-0-f3b45eaed2e8@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>, 
+ Florian Bezdeka <florian.bezdeka@siemens.com>
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi Philippe, Giulio,
+Make the clock event around the STIMER0 pipeline safe. The
+implementation is following the same pattern that we already have in
+place for the x86 LAPIC interrupt / clock event.
 
-> Giulio Moro <giulio@bela.io> writes:
->=20
-> > =C5=81ukasz Majewski wrote on 20/10/2025 02:47:
-> > =20
-> >> Could you share which version of libevl do you use? =20
-> >
-> > I was using the latest release of libevl that was compatible with
-> > the kernel UAPI. Sorry I haven't provided more details on the
-> > issue; I am focusing on building an image around 6.1 for a deadline
-> > coming up next month so I haven't been able to get into tracing yet.
-> >
-> > The only additional finding I have so far is that there seems to be
-> > something on the Linux side that "breaks real-time" which affects
-> > both linux and evl. In the below list, "evl bad" means that the
-> > above mentioned ISW are observed. "Linux bad" means that I see a
-> > disproportionate number of underruns under stress on a Linux program
-> > running with SCHED_FIFO and priority 95 with a period of 360us. I
-> > understand "disproportionate" is a very subjective term but, to give
-> > an idea, over a 10 minutes test I get a couple of underruns with
-> > "linux good" and I get hundreds of underruns with "linux good"
-> >
-> > v6.12.y-evl-rebase: evl bad, linux bad
+To get the proxy tick working we need to link the hyperv clock event
+device with the STIMER0 vector. This part is also following the pattern
+of the x86 lapic interrupt. Both have a fixed arch specific vector
+assigned.
 
-The evl ps -l -> gives value of ISW 0 all the time.
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ drivers/clocksource/hyperv_timer.c | 34 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 33 insertions(+), 1 deletion(-)
 
-> > v6.11.y-evl-rebase: evl bad, linux untested
-> > v6.10.y-evl-rebase: evl bad, linux untested
-> > v6.9.y-evl-rebase: evl bad, linux bad
-> > v6.6.y-evl-rebase: evl bad, linux bad
-> > v6.3.y-evl-rebase: evl bad, linux bad on startup only
-> > v6.2.y-evl-rebase: libevl r42, evl good, linux good
-> > v6.1.y-cip-evl-rebase: libevl master, evl good, linux good
-> >
-> > Not sure if this is of any help; I hope to be able to get back on
-> > this soon. Best,
-> > Giulio =20
+diff --git a/drivers/clocksource/hyperv_timer.c b/drivers/clocksource/hyperv_timer.c
+index 2edc13ca184e0..0850b0c385a8e 100644
+--- a/drivers/clocksource/hyperv_timer.c
++++ b/drivers/clocksource/hyperv_timer.c
+@@ -26,6 +26,7 @@
+ #include <clocksource/hyperv_timer.h>
+ #include <hyperv/hvhdk.h>
+ #include <asm/mshyperv.h>
++#include <asm/trace/irq_vectors.h>
+ 
+ static struct clock_event_device __percpu *hv_clock_event;
+ /* Note: offset can hold negative values after hibernation. */
+@@ -53,6 +54,30 @@ static int stimer0_irq = -1;
+ static int stimer0_message_sint;
+ static __maybe_unused DEFINE_PER_CPU(long, stimer0_evt);
+ 
++#ifdef CONFIG_IRQ_PIPELINE
++
++#define HV_STIMER_IRQ	apicm_vector_irq(HYPERV_STIMER0_VECTOR)
++
++static irqreturn_t hv_stimer_oob_handler(int irq, void *dev_id)
++{
++	struct clock_event_device *evt = this_cpu_ptr(hv_clock_event);
++
++	trace_local_timer_entry(HYPERV_STIMER0_VECTOR);
++	clockevents_handle_event(evt);
++	trace_local_timer_exit(HYPERV_STIMER0_VECTOR);
++
++	return IRQ_HANDLED;
++}
++
++static struct irqaction hv_stimer_oob_action = {
++	.handler = hv_stimer_oob_handler,
++	.name = "Out-of-band STIMER0 timer interrupt",
++	.flags = IRQF_TIMER | IRQF_PERCPU,
++};
++#else
++#define HV_STIMER_IRQ	-1
++#endif
++
+ /*
+  * Common code for stimer0 interrupts coming via Direct Mode or
+  * as a VMbus message.
+@@ -137,8 +162,9 @@ static int hv_stimer_init(unsigned int cpu)
+ 
+ 	ce = per_cpu_ptr(hv_clock_event, cpu);
+ 	ce->name = "Hyper-V clockevent";
+-	ce->features = CLOCK_EVT_FEAT_ONESHOT;
++	ce->features = CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_PIPELINE;
+ 	ce->cpumask = cpumask_of(cpu);
++	ce->irq = HV_STIMER_IRQ;
+ 
+ 	/*
+ 	 * Lower the rating of the Hyper-V timer in a TDX VM without paravisor,
+@@ -305,6 +331,12 @@ int hv_stimer_alloc(bool have_percpu_irqs)
+ 		hv_remove_stimer0_irq();
+ 		goto free_clock_event;
+ 	}
++
++#ifdef CONFIG_IRQ_PIPELINE
++	ret = setup_percpu_irq(HV_STIMER_IRQ, &hv_stimer_oob_action);
++	if (ret)
++		goto free_clock_event;
++#endif
+ 	return ret;
+ 
+ free_clock_event:
 
-When switching to 6.12.y-evl-rebase [1] (including the MMF_DOVETAIL bit
-fix with libevl r55) I cannot catch the issue anymore. For comparison -
-I've fallback to 6.6 (with r50 libevl) with the same setup and I can
-catch it.
+-- 
+2.39.5
 
-Giulio, on what system do you run the test setup:
-
-echo 2 | sudo tee /proc/sys/vm/overcommit_memory
-echo 0 | sudo tee /proc/sys/vm/overcommit_ratio
-echo 1 | sudo tee /proc/sys/vm/oom_kill_allocating_task
-
-I then have a C++ program allocating 50MiB, and I run 4 or more
-instances of it, one per core:
- =20
-while sleep 0.1; do ./alloc& ./alloc& ./alloc& ./alloc; done
-
-Furthermore, I have four instance of dd in the background:
-
-dd if=3D/dev/zero of=3D/dev/null
-
-With that, I can trigger latmus's inband switch pretty reliably within
-seconds (e.g.: latmus -m -K -p 360)
-
-As on mine the write to:
-echo 0 | sudo tee /proc/sys/vm/overcommit_ratio
-
-just makes the system unusable:
-./run_tst.sh: fork: Cannot allocate memory
-
-
-
->=20
-> If someone could send me the relevant portion of a trace file with a
-> 'latspot' tracepoint triggered on a latmus run, I could investigate
-> this issue. I'd need the function tracer active on all CPUs, with all
-> traces dumped to a single trace file ('evl trace -ef' should do).
->=20
-
-I strive to have the issue reproductible on 6.12.
-
-Links:
-[1] -
-https://gitlab.com/Xenomai/xenomai4/linux-evl/-/commits/v6.12.y-evl-rebase?=
-ref_type=3Dheads
-
---=20
-Best regards,
-
-Lukasz Majewski
-
---
-Nabla Software Engineering GmbH
-HRB 40522 Augsburg
-Phone: +49 821 45592596
-E-Mail: office@nabladev.com
-Geschftsfhrer : Stefano Babic
