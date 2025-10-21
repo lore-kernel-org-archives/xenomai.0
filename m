@@ -1,37 +1,37 @@
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14BA113635C
-	for <xenomai@lists.linux.dev>; Tue, 21 Oct 2025 12:23:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EDCD35502A
+	for <xenomai@lists.linux.dev>; Tue, 21 Oct 2025 12:23:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761049404; cv=none; b=boGURCoDbtV7WClmDc6FPDVGnJhV1gAHdvMIcxBkjzXEBPUb8KwmiQBeTrkLuQJdIahoOK8A93BBOobBW58rB8pTjrkyD3sWa0TorTOho4q5lMgDt9j6NLhzkIEEekOUNl/Cy7Zc1kuXvR+p8UPT+BTgBPWprwrGgTdKdAO7B+w=
+	t=1761049404; cv=none; b=dmbMBr8zKErHhjhksgynHv0m6zcoIBmn7NsJa8H1v9VEJB0J6PDTj1CoHNH7HHDvdpufuh3SO29mcOcEY2k3l4UY4NJG7b3LcyjL7w11ejsm44aV4/e86E5U4k0ePZDo4ZormCv9NVRNwjqul0aWQ2si2ncwYT1kIbLFfEOH658=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1761049404; c=relaxed/simple;
-	bh=Yjz83AAXmiHYYaaN54/yVMfut8QfgGr2M/fJX4soM9o=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=iDJYFzcTLJ+Qk5/sNtFG2XlFeXB1rqwEfGwGO/jJlBV7bj1Ed+rIQA2MTmbduRtW/+nXtfV/YXM6KNblWUpr+4uc/+l3Ed+k4nqe4yDnsXJXPKiUSBEGAmtS9+iWF2SzMFz0sjn+nw99OxFOeGGVSplYwaHVOh0kXunTiPQdgNc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=IkIEHuDm; arc=none smtp.client-ip=185.136.64.228
+	bh=UnRB8W8hd2u750QYKhkYjS9zrhXN/C0PndnY7cInZhM=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ZfduZseiCyO8xEUJDiJz7ExWB2U0kBF7iGipW5up7rRV0enVEFblErNSliqZUrcwtrb6ZN1NSn103Q3Q4mUzr5auGAM+6ds/y648F9X4Q17OJAXaA/MqLEl8HRs+9Us+im7RTivs3nkRsQijk3mxbirLHoex0zMrk1DXA6jiu70=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=SDcaKBiU; arc=none smtp.client-ip=185.136.64.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="IkIEHuDm"
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20251021122312088388b15500020717
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="SDcaKBiU"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2025102112231206b422703d0002078e
         for <xenomai@lists.linux.dev>;
         Tue, 21 Oct 2025 14:23:12 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=CMlXMRzMysIGRS0ZChzfdVPFdvKuEKQasvm07EYXoT4=;
- b=IkIEHuDmmpWgp4st02/3PbLJKa8AB3jLgBt//9MZFYfJFEBuRj/+9bK1G3+QWq9SyP1m/7
- FcMMeqT2FYPBOUNIYnaFDqYv/QKFdRhnuZKraldTVVluJqOYRkGVgJtE2hcgoIp6o8H5OpOz
- AFYSYr71Fw1K4gnDiCsO+7wo4Yw8RN9fhRk9HAb/4fftFJGXjiJChtaoRXrPTSc6qrM0012P
- rSlfogGzpw4usZBkUztzkXdqWnQjdI0gny67CHES/Ym9I9LlM0Fe0c4Js5IvnMWb6Wi52i6I
- k+Hsj/Tz7j/1woFyfBwy6mw/sraPlDhGBffy31izsEp2gI2BggSXwr3g==;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=TrN0m0t8JjCxL5Qevr+g5rKpWLLsPYHxaBDzvEn7xmo=;
+ b=SDcaKBiUAACoCv7whP6K7LaPxIsGG85jwqNGkv846X51KwtjIJZPOdjRR7ifH/5mdKOmtN
+ Nmyo3a+aOxxUFhmdrrhuoHLvsaEV5g5GhIGDO915Ufb0pl/iJ/g7Ha9+I3npOx7exygeHOru
+ 6rgrWT6C1F8roDTjXBKjdOqKKx6OYN8I/f8k18KNcyzywiqMFeu/zlh0OXEZbHegEy11gOi9
+ JYEAbt1GiqvT876al1yY7DgzJUbxn8Eb6KmMabBSbvwF+TJGMQ+f6wCEEbyPxKSc/HHYDgzd
+ VMJ1lZftQYVC37nJ3MLaTzWDnep6KFu3aPO22aOx6m+C+BDG1Ayzfb9g==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Tue, 21 Oct 2025 14:23:11 +0200
-Subject: [PATCH Dovetail 6.17 v3 1/4] clocksource/hyper-v: irq_pipeline:
- Enable pipelined clock events
+Subject: [PATCH Dovetail 6.17 v3 0/4] dovetail: Add support for hyper-v as
+ hypervisor
+Date: Tue, 21 Oct 2025 14:23:10 +0200
+Message-Id: <20250602-flo-add-hyperv-support-for-6-15-v3-0-f3b45eaed2e8@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -40,97 +40,71 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250602-flo-add-hyperv-support-for-6-15-v3-1-f3b45eaed2e8@siemens.com>
-References: <20250602-flo-add-hyperv-support-for-6-15-v3-0-f3b45eaed2e8@siemens.com>
-In-Reply-To: <20250602-flo-add-hyperv-support-for-6-15-v3-0-f3b45eaed2e8@siemens.com>
+X-B4-Tracking: v=1; b=H4sIAC5792gC/5XNTQ6CMBCG4auQrh3SHyjoyoW3MC5aOpUmQEmLj
+ YRwdxt27nT5ZSbPu5GIwWEkl2IjAZOLzk95iFNBul5NTwRn8iac8ppKysEOHpQx0K8zhgTxNc8
+ +LGB9AAmsBtGIptVGCouMZGUOaN37KNzJzSdclBsKWbKGPPK5d3HxYT36iR1PP6cSAwpVdUbZc
+ WpQm2t0OOIUy86Ph574nyLPomVdS7lmSivxLe77/gHGrv49MQEAAA==
 To: xenomai@lists.linux.dev
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>, 
  Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Make the clock event around the STIMER0 pipeline safe. The
-implementation is following the same pattern that we already have in
-place for the x86 LAPIC interrupt / clock event.
+Hi all,
 
-To get the proxy tick working we need to link the hyperv clock event
-device with the STIMER0 vector. This part is also following the pattern
-of the x86 lapic interrupt. Both have a fixed arch specific vector
-assigned.
+with this series applied dovetail is successfully booting up on a
+Windows host using the Hyper-V hypervisor as virtualization platform.
+
+You won't get any RT guarantees - that's clear - but it helps to test
+non-RT stuff using a dovetail enabled kernel on such a platform.
+
+The following config knobs were turned on during testing:
+  - CONFIG_HYPERV
+  - CONFIG_HYPERV_NET
+  - CONFIG_HYPERV_KEYBOARD
+  - CONFIG_HYPERV_TIMER
+  - CONFIG_HYPERV_UTILS
+  - CONFIG_HYPERV_BALLOON
+  - CONFIG_HYPERV_IOMMU
+  - CONFIG_HYPERV_STORAGE
+
+Best regards,
+Florian
+
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Philippe Gerum <rpm@xenomai.org>
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
+Changes in v3:
+- Rebased on top of Dovetail 6.17 rc
+- Set patch prefix to 6.17
+- Adress review comments from Philippe, basically git log update of
+  patch 1
+- Link to v2: https://lore.kernel.org/r/20250602-flo-add-hyperv-support-for-6-15-v2-0-f1c802b1aba3@siemens.com
+
+Changes in v2:
+- Added correct "Dovetail 6.16" prefix
+- Updated Cc list
+- Link to v1: https://lore.kernel.org/r/20250602-flo-add-hyperv-support-for-6-15-v1-0-449e6c20debd@siemens.com
+
+---
+Florian Bezdeka (4):
+      clocksource/hyper-v: irq_pipeline: Enable pipelined clock events
+      x86: irq_pipeline: Implement inband handler for hyper-v specific vectors
+      hyper-v: x86: dovetail: Close race window in PV spinlocks
+      x86: irq_pipeline: Allow CONFIG_HYPERV in combination with CONFIG_DOVETAIL
+
+ arch/x86/hyperv/hv_spinlock.c      |  4 ++--
+ arch/x86/kernel/irq_pipeline.c     |  9 +++++++++
  drivers/clocksource/hyperv_timer.c | 34 +++++++++++++++++++++++++++++++++-
- 1 file changed, 33 insertions(+), 1 deletion(-)
+ drivers/hv/Kconfig                 |  2 +-
+ 4 files changed, 45 insertions(+), 4 deletions(-)
+---
+base-commit: e978823786e09bd5842045153f99af39ffebbcfc
+change-id: 20250602-flo-add-hyperv-support-for-6-15-37378bd63fe1
 
-diff --git a/drivers/clocksource/hyperv_timer.c b/drivers/clocksource/hyperv_timer.c
-index 2edc13ca184e0..0850b0c385a8e 100644
---- a/drivers/clocksource/hyperv_timer.c
-+++ b/drivers/clocksource/hyperv_timer.c
-@@ -26,6 +26,7 @@
- #include <clocksource/hyperv_timer.h>
- #include <hyperv/hvhdk.h>
- #include <asm/mshyperv.h>
-+#include <asm/trace/irq_vectors.h>
- 
- static struct clock_event_device __percpu *hv_clock_event;
- /* Note: offset can hold negative values after hibernation. */
-@@ -53,6 +54,30 @@ static int stimer0_irq = -1;
- static int stimer0_message_sint;
- static __maybe_unused DEFINE_PER_CPU(long, stimer0_evt);
- 
-+#ifdef CONFIG_IRQ_PIPELINE
-+
-+#define HV_STIMER_IRQ	apicm_vector_irq(HYPERV_STIMER0_VECTOR)
-+
-+static irqreturn_t hv_stimer_oob_handler(int irq, void *dev_id)
-+{
-+	struct clock_event_device *evt = this_cpu_ptr(hv_clock_event);
-+
-+	trace_local_timer_entry(HYPERV_STIMER0_VECTOR);
-+	clockevents_handle_event(evt);
-+	trace_local_timer_exit(HYPERV_STIMER0_VECTOR);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static struct irqaction hv_stimer_oob_action = {
-+	.handler = hv_stimer_oob_handler,
-+	.name = "Out-of-band STIMER0 timer interrupt",
-+	.flags = IRQF_TIMER | IRQF_PERCPU,
-+};
-+#else
-+#define HV_STIMER_IRQ	-1
-+#endif
-+
- /*
-  * Common code for stimer0 interrupts coming via Direct Mode or
-  * as a VMbus message.
-@@ -137,8 +162,9 @@ static int hv_stimer_init(unsigned int cpu)
- 
- 	ce = per_cpu_ptr(hv_clock_event, cpu);
- 	ce->name = "Hyper-V clockevent";
--	ce->features = CLOCK_EVT_FEAT_ONESHOT;
-+	ce->features = CLOCK_EVT_FEAT_ONESHOT | CLOCK_EVT_FEAT_PIPELINE;
- 	ce->cpumask = cpumask_of(cpu);
-+	ce->irq = HV_STIMER_IRQ;
- 
- 	/*
- 	 * Lower the rating of the Hyper-V timer in a TDX VM without paravisor,
-@@ -305,6 +331,12 @@ int hv_stimer_alloc(bool have_percpu_irqs)
- 		hv_remove_stimer0_irq();
- 		goto free_clock_event;
- 	}
-+
-+#ifdef CONFIG_IRQ_PIPELINE
-+	ret = setup_percpu_irq(HV_STIMER_IRQ, &hv_stimer_oob_action);
-+	if (ret)
-+		goto free_clock_event;
-+#endif
- 	return ret;
- 
- free_clock_event:
-
+Best regards,
 -- 
-2.39.5
+Florian Bezdeka <florian.bezdeka@siemens.com>
 
