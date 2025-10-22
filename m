@@ -1,71 +1,97 @@
-Received: from mslow3.mail.gandi.net (mslow3.mail.gandi.net [217.70.178.249])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D144328629
-	for <xenomai@lists.linux.dev>; Tue, 21 Oct 2025 13:13:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.249
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ACAB34844D
+	for <xenomai@lists.linux.dev>; Wed, 22 Oct 2025 15:02:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761052439; cv=none; b=OIfF0EMOjwhgRhQkGUuqDEmOnnwHdVgz1/caDMtLgiq9gOOLyq5/xCwCuZS60kNgXxsGMh/kbxrOX6vPhaydMmXvQp+pHHBmzZK/ZNiArJQ32PEchNLA60MetXSXWjm7fJ59vyiI3l8gYnS3SBY5tX+b22enNQRnFmIYkeplT8s=
+	t=1761145370; cv=none; b=VfNLM/X+k6QDuAc/IErXKGp+dy+BlYVq5oqcsDGGUBEXx0EBj1tlPRGkNAnN8G37KxhqLvUEcom1b5XRRIQX9kPkEISQgNfiUKgFuaAK+Mdw/XCZIuhsSC9CjsqzBTmuj5BkAYY2b/4haA17WLtkl1yxs+23yA5pkzwsV44YYY4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761052439; c=relaxed/simple;
-	bh=AswPhelLswarz4U0IptsEfoeplEiyzcWfnLvWdmw9fA=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=GR0s+5IN+QVxKvDtbL9+YmAlU1mskmO6JCkzWa5SW3VNSR7v1OaQLUW66K9Ih1mMonhGZIcvddKLNobbE86c3rkJD3rZvvTQ+Hjk14w+zXUYvzBaTyGPhMQACToWQAuScEY8UkwSasz2RXorFMXhnGIVxXHDfsmU05bk4IrX0LI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=Wv+2y8tQ; arc=none smtp.client-ip=217.70.178.249
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1761145370; c=relaxed/simple;
+	bh=tKLoOY5LrQRacasSbz6EBai6pJQldkpJ+nr8lyu/olw=;
+	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=AYNtzvDFlTJVeQU4nMfIubugWlHeB9HO5XRh/JBhDXemHs5h03t8r2nU4Xk4Lqu5H91MmFMxZFWP6qDweHH2Q/O9qKNK5C+GtQ6uvK0ED95NFJSLAuZ3TucRcWlS28pWMXgNF7K6T7eL5fpyuVFJCugMs0AYrespntOb40pyx0U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=H5C095NQ; arc=none smtp.client-ip=185.136.64.227
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="Wv+2y8tQ"
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
-	by mslow3.mail.gandi.net (Postfix) with ESMTP id 5B7EB583DB5
-	for <xenomai@lists.linux.dev>; Tue, 21 Oct 2025 12:47:47 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id BB19243E8D;
-	Tue, 21 Oct 2025 12:47:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1761050860;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=sf07vKaTFOxLK1X+oNblEgQNG/DDSGBZvDmxiqGqlDw=;
-	b=Wv+2y8tQKEp9D9mcG/zlO1qPxMHDrqcs8W1rz3MsVba3/Ac4BLL6uzE43VY8X5tQx9OHst
-	8CQpC9U2rpu5pOJ8N3Sc1TclsoO1jpcAOV0Vuk1YeieWQWx6lJ9Wc2fwgdYK1szWlESVmV
-	WCJiprfUJSUWa/yGuQeboxlJDMjyLlGaLdl9b2Rl4Lu90tKlDL51/AlSsVpTGeL3RFT8SG
-	lk0xrmxxaK9sBYzFjkLI9qKNu+UUxOOKlYnlX3w4R2MdyKu4s9Qz+kt/TM5x/fPdTw1T9G
-	HhLazZJk38xca2RZ5KuyqNL88/scnZAp0yT2++Y3JT0qlDFDNvI/wTxQ25nQHQ==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@lists.linux.dev,  Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: [PATCH Dovetail 6.17 v3 1/4] clocksource/hyper-v: irq_pipeline:
- Enable pipelined clock events
-In-Reply-To: <20250602-flo-add-hyperv-support-for-6-15-v3-1-f3b45eaed2e8@siemens.com>
-	(Florian Bezdeka's message of "Tue, 21 Oct 2025 14:23:11 +0200")
-References: <20250602-flo-add-hyperv-support-for-6-15-v3-0-f3b45eaed2e8@siemens.com>
-	<20250602-flo-add-hyperv-support-for-6-15-v3-1-f3b45eaed2e8@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Tue, 21 Oct 2025 14:47:35 +0200
-Message-ID: <87a51kbevs.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="H5C095NQ"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20251022150237f234ffab0c000207b1
+        for <xenomai@lists.linux.dev>;
+        Wed, 22 Oct 2025 17:02:37 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
+ bh=woi8UkMy6Artg30sSvDjLAWfZ+kXcSAC73AY8vKAo88=;
+ b=H5C095NQTARV+U5CSlnMOuIftK+yfwOP0QPZKLYNYOVBOtKRUeR6jdr6HPLtEIB3CEXrby
+ uu3bxtJXw/oLi9MFd75W/SVivy97iBgfTWOrAKYfWyP35qCCFH6xovfLp3LVR+2k0a3eopY2
+ fWP8ySeu8UYPPjBkoummp0RyAdxw0Hso+nl/+RVioxiBzKe5Ai+zUnabwtuyj6eBs72wYeXT
+ t93b4cSzcsByxg16BPRBVhHyYfBoOaoiMfWmFEr6aUb7FBHzPY2GS5ZYvNNqflN18Wxq6TdE
+ n55DQGIdNi8CVSfVT4YMqWOAvrpVNpEI5TsnhBPFf5CJ6xjAd35Y2naw==;
+Message-ID: <787da4f86b16c6588dfcf41acab658d2a17ff75a.camel@siemens.com>
+Subject: Re: [PATCH 1/2] linux-xenomai: Add arch specific debug kernel
+ configuration snippets
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
+Date: Wed, 22 Oct 2025 17:02:37 +0200
+In-Reply-To: <73e0d573-6e0c-4e73-a62e-d80f811dac52@siemens.com>
+References: <20251009111228.3504354-1-tobias.schaffner@siemens.com>
+	 <20251009111228.3504354-2-tobias.schaffner@siemens.com>
+	 <0e60ea350929090e70354a5ff705348f441ea15a.camel@siemens.com>
+	 <73e0d573-6e0c-4e73-a62e-d80f811dac52@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+On Fri, 2025-10-10 at 16:08 +0200, Tobias Schaffner wrote:
+> On 10.10.25 15:16, Florian Bezdeka wrote:
+> > On Thu, 2025-10-09 at 13:12 +0200, Tobias Schaffner wrote:
+> > > [snip]
+> >=20
+> > > diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/=
+linux/linux-xenomai.inc
+> > > index 8c7df40..501c212 100644
+> > > --- a/recipes-kernel/linux/linux-xenomai.inc
+> > > +++ b/recipes-kernel/linux/linux-xenomai.inc
+> > > @@ -16,9 +16,10 @@ FILESPATH =3D. "${LAYERDIR_xenomai}/recipes-kernel=
+/linux/files:"
+> > >  =20
+> > >   XENOMAI_DEFCONFIG =3D "${DISTRO_ARCH}_defconfig"
+> > >   KERNEL_DEFCONFIG ?=3D "${XENOMAI_DEFCONFIG}"
+> > > +KERNEL_DEBUGCONFIG =3D "${DISTRO_ARCH}_debugconfig"
+> > >   XENOMAI_DEBUG ?=3D "0"
+> > >  =20
+> > >   SRC_URI +=3D "${@'file://${KERNEL_DEFCONFIG}' if d.getVar('KERNEL_D=
+EFCONFIG') =3D=3D d.getVar('XENOMAI_DEFCONFIG') else ''}"
+> > > -SRC_URI +=3D "${@'file://common_nodbg.cfg' if d.getVar('XENOMAI_DEBU=
+G') =3D=3D '0' else ''}"
+> > > +SRC_URI +=3D "${@'file://${KERNEL_DEBUGCONFIG}' if d.getVar('XENOMAI=
+_DEBUG') =3D=3D '1' else ''}"
+> >=20
+> > NACK. This switches all the CI builds to no-debug.
+>=20
+> No it doesn't. XENOMAI_DEBUG is set to 1 in ci builds by kas/opt/debug.ya=
+ml.
 
-> Make the clock event around the STIMER0 pipeline safe. The
-> implementation is following the same pattern that we already have in
-> place for the x86 LAPIC interrupt / clock event.
->
-> To get the proxy tick working we need to link the hyperv clock event
-> device with the STIMER0 vector. This part is also following the pattern
-> of the x86 lapic interrupt. Both have a fixed arch specific vector
-> assigned.
->
+Yep, I got this backwards.
 
-Series merged, thanks.
+So the default is 0, but the default for CI is 1. That makes sense.
 
--- 
-Philippe.
+>=20
+> > We need all the debug flags enabled for CI builds.
+> > Otherwise, we risk to loose really important debug information.
+> >=20
+> > no-debug builds, for example for performance measurement purposes need
+> > to disable the debug settings, not the other way around.
+> >=20
+> > >  =20
+> > >   S =3D "${WORKDIR}/git"
+> > > --=20
+> > > 2.43.0
