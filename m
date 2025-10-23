@@ -1,97 +1,137 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from mx.nabladev.com (mx.nabladev.com [178.251.229.89])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ACAB34844D
-	for <xenomai@lists.linux.dev>; Wed, 22 Oct 2025 15:02:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFD94315D57
+	for <xenomai@lists.linux.dev>; Thu, 23 Oct 2025 13:54:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.251.229.89
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761145370; cv=none; b=VfNLM/X+k6QDuAc/IErXKGp+dy+BlYVq5oqcsDGGUBEXx0EBj1tlPRGkNAnN8G37KxhqLvUEcom1b5XRRIQX9kPkEISQgNfiUKgFuaAK+Mdw/XCZIuhsSC9CjsqzBTmuj5BkAYY2b/4haA17WLtkl1yxs+23yA5pkzwsV44YYY4=
+	t=1761227696; cv=none; b=VMUKZ/n5dI0i3ceL2r1CGxCqMd6b14Ag2KIk/4wkyHFOmilf21F7Ur/OyDlaGz2K+h4wIKJLjfEehCS4JscJhE3KjjLP8JTrqZ1RZnQF8qZI8S64Xn34SXNx1vmHcZfymdeEBKqJiCeQUefMiWjuhHdq48Xpdk/mUmq7n65Gt3I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761145370; c=relaxed/simple;
-	bh=tKLoOY5LrQRacasSbz6EBai6pJQldkpJ+nr8lyu/olw=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=AYNtzvDFlTJVeQU4nMfIubugWlHeB9HO5XRh/JBhDXemHs5h03t8r2nU4Xk4Lqu5H91MmFMxZFWP6qDweHH2Q/O9qKNK5C+GtQ6uvK0ED95NFJSLAuZ3TucRcWlS28pWMXgNF7K6T7eL5fpyuVFJCugMs0AYrespntOb40pyx0U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=H5C095NQ; arc=none smtp.client-ip=185.136.64.227
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1761227696; c=relaxed/simple;
+	bh=vlBxEhADYDa2TcFegGTG3dySMluFjyKumXDJdGYX1Fg=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=rYXllYnvDT2fo0FN3ck/dO74A4fGFM54teHFP8AvcKhJHUp9GpAajhGgWjSeKEwNSvTNzXprFw3Sxp+xupsu9JbSr51uLERXVTtGQtfKCxkRmiw3Fh6nMSFO4La/XPuHB9/ugJNbqSfjSnSU20iuMynKIGoUsdxH9GiFNGFiRNQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nabladev.com; spf=pass smtp.mailfrom=nabladev.com; dkim=pass (2048-bit key) header.d=nabladev.com header.i=@nabladev.com header.b=GXqiaf+D; arc=none smtp.client-ip=178.251.229.89
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nabladev.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nabladev.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="H5C095NQ"
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20251022150237f234ffab0c000207b1
-        for <xenomai@lists.linux.dev>;
-        Wed, 22 Oct 2025 17:02:37 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=woi8UkMy6Artg30sSvDjLAWfZ+kXcSAC73AY8vKAo88=;
- b=H5C095NQTARV+U5CSlnMOuIftK+yfwOP0QPZKLYNYOVBOtKRUeR6jdr6HPLtEIB3CEXrby
- uu3bxtJXw/oLi9MFd75W/SVivy97iBgfTWOrAKYfWyP35qCCFH6xovfLp3LVR+2k0a3eopY2
- fWP8ySeu8UYPPjBkoummp0RyAdxw0Hso+nl/+RVioxiBzKe5Ai+zUnabwtuyj6eBs72wYeXT
- t93b4cSzcsByxg16BPRBVhHyYfBoOaoiMfWmFEr6aUb7FBHzPY2GS5ZYvNNqflN18Wxq6TdE
- n55DQGIdNi8CVSfVT4YMqWOAvrpVNpEI5TsnhBPFf5CJ6xjAd35Y2naw==;
-Message-ID: <787da4f86b16c6588dfcf41acab658d2a17ff75a.camel@siemens.com>
-Subject: Re: [PATCH 1/2] linux-xenomai: Add arch specific debug kernel
- configuration snippets
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
-Date: Wed, 22 Oct 2025 17:02:37 +0200
-In-Reply-To: <73e0d573-6e0c-4e73-a62e-d80f811dac52@siemens.com>
-References: <20251009111228.3504354-1-tobias.schaffner@siemens.com>
-	 <20251009111228.3504354-2-tobias.schaffner@siemens.com>
-	 <0e60ea350929090e70354a5ff705348f441ea15a.camel@siemens.com>
-	 <73e0d573-6e0c-4e73-a62e-d80f811dac52@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=nabladev.com header.i=@nabladev.com header.b="GXqiaf+D"
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id C73781031D9;
+	Thu, 23 Oct 2025 15:54:44 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nabladev.com;
+	s=dkim; t=1761227685;
+	h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding:in-reply-to:references;
+	bh=vlBxEhADYDa2TcFegGTG3dySMluFjyKumXDJdGYX1Fg=;
+	b=GXqiaf+D3XfqAuM/nCY/dcd0UgSRJ6y3Ehr7M9NKROmUKndbAx3fFkpNXlaXzsCzIvK8y/
+	kcIjO+YurXjlxtmn79NCGwxWlUVVSjJnPGGAkFgWwVbMbvBpOLz0eJPf6LW7GKr6ujUSIF
+	2wyBgVBu6vo3cbicQt9VavRfv4oLJHazxmkGbBafLBDTtl1fT9O0prIyEUMOsn5Q6Jv3/h
+	QASldrWJZJbdgk7wefMggPa+qjwGbFaLASzpJO+5R43jquWuSuycH65DItHHq8ZqMfPyxV
+	K6lfqESAMfU0k4nK98rb5NaPzDqLU2iPMEGMRseVe6M7puJBScWin5M+Fk4RKQ==
+Date: Thu, 23 Oct 2025 15:54:39 +0200
+From: =?UTF-8?B?xYF1a2Fzeg==?= Majewski <lukma@nabladev.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Giulio Moro <giulio@bela.io>, Xenomai  <xenomai@lists.linux.dev>
+Subject: Re: Unexpected switches to in-band
+Message-ID: <20251023155439.0170f987@wsk>
+In-Reply-To: <87o6q1ad07.fsf@xenomai.org>
+References: <d3f7d465-e914-bf4d-be69-7e42fe288064@bela.io>
+	<20251009151737.0d03b211@wsk>
+	<20676160-4572-d92d-4b33-ff4255946345@bela.io>
+	<87qzv9sa9c.fsf@xenomai.org>
+	<87ikgls9kh.fsf@xenomai.org>
+	<f916d01d-2bd0-cdfd-2e9e-562968a9934f@bela.io>
+	<20251020094705.2ac256f2@wsk>
+	<9d2bacac-8d70-f083-e926-21beee2207c2@bela.io>
+	<87o6q1ad07.fsf@xenomai.org>
+Organization: Nabla
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Last-TLS-Session-Version: TLSv1.3
 
-On Fri, 2025-10-10 at 16:08 +0200, Tobias Schaffner wrote:
-> On 10.10.25 15:16, Florian Bezdeka wrote:
-> > On Thu, 2025-10-09 at 13:12 +0200, Tobias Schaffner wrote:
-> > > [snip]
-> >=20
-> > > diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/=
-linux/linux-xenomai.inc
-> > > index 8c7df40..501c212 100644
-> > > --- a/recipes-kernel/linux/linux-xenomai.inc
-> > > +++ b/recipes-kernel/linux/linux-xenomai.inc
-> > > @@ -16,9 +16,10 @@ FILESPATH =3D. "${LAYERDIR_xenomai}/recipes-kernel=
-/linux/files:"
-> > >  =20
-> > >   XENOMAI_DEFCONFIG =3D "${DISTRO_ARCH}_defconfig"
-> > >   KERNEL_DEFCONFIG ?=3D "${XENOMAI_DEFCONFIG}"
-> > > +KERNEL_DEBUGCONFIG =3D "${DISTRO_ARCH}_debugconfig"
-> > >   XENOMAI_DEBUG ?=3D "0"
-> > >  =20
-> > >   SRC_URI +=3D "${@'file://${KERNEL_DEFCONFIG}' if d.getVar('KERNEL_D=
-EFCONFIG') =3D=3D d.getVar('XENOMAI_DEFCONFIG') else ''}"
-> > > -SRC_URI +=3D "${@'file://common_nodbg.cfg' if d.getVar('XENOMAI_DEBU=
-G') =3D=3D '0' else ''}"
-> > > +SRC_URI +=3D "${@'file://${KERNEL_DEBUGCONFIG}' if d.getVar('XENOMAI=
-_DEBUG') =3D=3D '1' else ''}"
-> >=20
-> > NACK. This switches all the CI builds to no-debug.
+Hi Philippe,
+
+> Giulio Moro <giulio@bela.io> writes:
 >=20
-> No it doesn't. XENOMAI_DEBUG is set to 1 in ci builds by kas/opt/debug.ya=
-ml.
-
-Yep, I got this backwards.
-
-So the default is 0, but the default for CI is 1. That makes sense.
-
+> > =C5=81ukasz Majewski wrote on 20/10/2025 02:47:
+> > =20
+> >> Could you share which version of libevl do you use? =20
+> >
+> > I was using the latest release of libevl that was compatible with
+> > the kernel UAPI. Sorry I haven't provided more details on the
+> > issue; I am focusing on building an image around 6.1 for a deadline
+> > coming up next month so I haven't been able to get into tracing yet.
+> >
+> > The only additional finding I have so far is that there seems to be
+> > something on the Linux side that "breaks real-time" which affects
+> > both linux and evl. In the below list, "evl bad" means that the
+> > above mentioned ISW are observed. "Linux bad" means that I see a
+> > disproportionate number of underruns under stress on a Linux program
+> > running with SCHED_FIFO and priority 95 with a period of 360us. I
+> > understand "disproportionate" is a very subjective term but, to give
+> > an idea, over a 10 minutes test I get a couple of underruns with
+> > "linux good" and I get hundreds of underruns with "linux good"
+> >
+> > v6.12.y-evl-rebase: evl bad, linux bad
+> > v6.11.y-evl-rebase: evl bad, linux untested
+> > v6.10.y-evl-rebase: evl bad, linux untested
+> > v6.9.y-evl-rebase: evl bad, linux bad
+> > v6.6.y-evl-rebase: evl bad, linux bad
+> > v6.3.y-evl-rebase: evl bad, linux bad on startup only
+> > v6.2.y-evl-rebase: libevl r42, evl good, linux good
+> > v6.1.y-cip-evl-rebase: libevl master, evl good, linux good
+> >
+> > Not sure if this is of any help; I hope to be able to get back on
+> > this soon. Best,
+> > Giulio =20
 >=20
-> > We need all the debug flags enabled for CI builds.
-> > Otherwise, we risk to loose really important debug information.
-> >=20
-> > no-debug builds, for example for performance measurement purposes need
-> > to disable the debug settings, not the other way around.
-> >=20
-> > >  =20
-> > >   S =3D "${WORKDIR}/git"
-> > > --=20
-> > > 2.43.0
+> If someone could send me the relevant portion of a trace file with a
+> 'latspot' tracepoint triggered on a latmus run, I could investigate
+> this issue. I'd need the function tracer active on all CPUs, with all
+> traces dumped to a single trace file ('evl trace -ef' should do).
+>=20
+
+Please find tar'ed output for the trace(s).
+
+Please, however be aware that - I've fall back to 6.6 (as it is the
+version in which I can reproduce the issue in the fastest way).
+
+Customer also reported, that they can reproduce with their SW stack the
+issue on 6.1-slts and 6.12, but it takes considerably longer than for
+6.6 (in which I can use simple programs to "allocate" memory).
+
+I've used pretty standard set of ftrace CONFIG_* options enabled.
+
+However, it seems like there is a "hole" around the time when in-band
+switch has been reported (in dmesg) and in ftrace output.
+
+I'm going to do the same with all available tracers enabled.
+
+Last but not least, the latspot event is not present in my ftrace
+output (although I've enabled all the CONFIG_EVL*DEBUG options).
+
+Is there any special set of options to required for EVL tracig?
+
+Tars with logs:
+https://nextcloud.swupdate.org/index.php/s/FgiMsHG9xG8frk3
+https://nextcloud.swupdate.org/index.php/s/XcW75xsQPMXm3zg
+
+
+--=20
+Best regards,
+
+Lukasz Majewski
+
+--
+Nabla Software Engineering GmbH
+HRB 40522 Augsburg
+Phone: +49 821 45592596
+E-Mail: office@nabladev.com
+Geschftsfhrer : Stefano Babic
