@@ -1,114 +1,164 @@
-Received: from redirect.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
+Received: from mx.nabladev.com (mx.nabladev.com [178.251.229.89])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 216E530C609
-	for <xenomai@lists.linux.dev>; Mon, 27 Oct 2025 16:07:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.230
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0162031326B
+	for <xenomai@lists.linux.dev>; Mon, 27 Oct 2025 16:25:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.251.229.89
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761581247; cv=none; b=hu4bj5EtPJAsYegmkOAIFBP8Gd03x9VbatnyJZRIFPUHKGey0AadlSyskPTR9pH8s/il+Q7rvjJ7+NAnrVszIP/7/r6mtpdYuImLhLLL4vRzPIMvYiQX0T0df5SDWom8Cza2Cw6hOtdKOaPisjHugjPaq9dTU6n2M21GUQn2+nQ=
+	t=1761582313; cv=none; b=kpPzyBOCRyBMUKODj415pvb7XxqdfG20rxksxcRaaNhD0Vxg0hzPVd9UcRPCBL0odtq2F1AO1+SIMzx1NJce3TbDyAlS8nhLV015s9HgQCe/4l9C0IwxhoPLzbLmhpc4WNUsm5fnmu0D1oIx3rFiNkV5gavovp2teA7Hs51Tgao=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761581247; c=relaxed/simple;
-	bh=6CqcyJG0fgmz2vq7Zxhs2HES+oPjEYuz5ij0mwc/mLI=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=n6TdQY9aq7VtijAe6AsNWq6ToyX1S/dxcCd4Mm6BE2srv4ArGsfMBgxa3Bp2vTlyS/0MpeRxWe5EZUuDWaW7+BuBkr55b1cizRwTNeFytSgHFJrR5MZhoMxPvRPP7YA3RWSShCreCydLX57hbiP/hn3C7c46FAvHMID7vJdo1Ro=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=GjLqErNX; arc=none smtp.client-ip=217.70.178.230
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
+	s=arc-20240116; t=1761582313; c=relaxed/simple;
+	bh=/x9tR0vnfsJ4pYvHksMUuhtUGlyQEnL5Q2xTNngU7Qs=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=OqnVLO1YUXTG1zpbAInHU1QssImhnIkSvl3xghP+tQhhK7Uc5Hy/vk57O03fHrS+C7vtvKLsl4zi774VV2UIDd6edyNdtewVXittUDIv18pdnALQj8SBBvnYEvH7D8bBSGUYMsgDikAxmuZP+gDrL5zK2977aRFECHinWyzeCFI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nabladev.com; spf=pass smtp.mailfrom=nabladev.com; dkim=pass (2048-bit key) header.d=nabladev.com header.i=@nabladev.com header.b=KzNta/yZ; arc=none smtp.client-ip=178.251.229.89
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nabladev.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nabladev.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="GjLqErNX"
-Received: from spool.mail.gandi.net (spool5.mail.gandi.net [217.70.178.214])
-	by relay10.mail.gandi.net (Postfix) with ESMTPS id 2018F43AEC
-	for <xenomai@lists.linux.dev>; Mon, 27 Oct 2025 16:07:23 +0000 (UTC)
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 98889D801B1
-	for <xenomai@xenomai.org>; Mon, 27 Oct 2025 16:07:22 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 5290D443D2;
-	Mon, 27 Oct 2025 16:07:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1761581242;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=cOJ3Kbb+2tf600fWXNDljv+0XZ6kzM/15NZsiLK54bo=;
-	b=GjLqErNXv/OvepackXQZumkHtmrl4hDyfaHaCcFFN1R7cOKzb2F3nVX0eeVAuoGd9k65tL
-	WquWWEF1BSsIBUQHrjmYnB0jGaljDd6AEZ14NavN1ZvWqj/mQ4Wj5JrUijQkW5okubiAJi
-	cSQ0UBpX1O6A+DmeSuMOKpJhjWjOCNsbI6Bl/7sgOnegHpnKkVcX2MWk7CjZlS/2xdRInN
-	GWxQ5tyaS4bv6Vgx9X7mWmfpoEr90B467roK50wM9f6/KhDDqA46ZV3qbV7g5849WlJQUW
-	vY5O76pQADHLx8BWo9A0d3rEaMIagkkrq1jhbvHB0IYrjHNali05KDRNTMauQQ==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai@xenomai.org
-Subject: Re: [dovetail 6.1.y-cip][PATCH 2/3] arm64: fpsimd: dovetail: drop
- redundant hard irqs disabling
-In-Reply-To: <0f63813f-d16f-444e-8efd-7b1c4598cf7a@siemens.com> (Jan Kiszka's
-	message of "Mon, 27 Oct 2025 17:01:19 +0100")
-References: <cover.1758264904.git.jan.kiszka@siemens.com>
-	<69e5ff8590d101d24ace2e6708196af7a2ead2f8.1758264904.git.jan.kiszka@siemens.com>
-	<0f63813f-d16f-444e-8efd-7b1c4598cf7a@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Mon, 27 Oct 2025 17:07:21 +0100
-Message-ID: <87qzuo5nwm.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=nabladev.com header.i=@nabladev.com header.b="KzNta/yZ"
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 9DCDA1015A9;
+	Mon, 27 Oct 2025 17:25:07 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nabladev.com;
+	s=dkim; t=1761582308;
+	h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding:in-reply-to:references;
+	bh=szosOMkljtsX3D1NjsEUbI/o+nWWaA3M9Y93lE6D+ik=;
+	b=KzNta/yZkjGLBef6692Yq5xQuRDavzQ3EfD4c1rD1qYTLiIENRzjaV4c/Y0UGu//oCab5T
+	DQvkLajCn4Js5yT7JchmKwxpXsRA+3hZmm5gq0g9MsPw1QjXIyigtAIuhAakbo9D7T6tYO
+	utKqET3Z+C1al1/uonXSFnS4pEdB8YqgkePv51aHENyJ4eMKUzv7I/4wut0eSKlbG7D5ME
+	iQK4vJkAdPljeWkb0eZfWBkaSM8sEDnbMVAiPtp804z8MC1EaeDm06k5fQ6Ut3eyrCaynL
+	y138jwDSA3sRc9TSBZ/OiBSK7TNo35aooC8kmLFFBkC0272ldaAZiugglBzaQg==
+Date: Mon, 27 Oct 2025 17:25:05 +0100
+From: =?UTF-8?B?xYF1a2Fzeg==?= Majewski <lukma@nabladev.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Giulio Moro <giulio@bela.io>, Xenomai <xenomai@lists.linux.dev>
+Subject: Re: Unexpected switches to in-band
+Message-ID: <20251027172505.29eecfb2@wsk>
+In-Reply-To: <20251027120535.7933c720@wsk>
+References: <d3f7d465-e914-bf4d-be69-7e42fe288064@bela.io>
+	<20251009151737.0d03b211@wsk>
+	<20676160-4572-d92d-4b33-ff4255946345@bela.io>
+	<87qzv9sa9c.fsf@xenomai.org>
+	<87ikgls9kh.fsf@xenomai.org>
+	<f916d01d-2bd0-cdfd-2e9e-562968a9934f@bela.io>
+	<20251020094705.2ac256f2@wsk>
+	<9d2bacac-8d70-f083-e926-21beee2207c2@bela.io>
+	<87o6q1ad07.fsf@xenomai.org>
+	<20251023155439.0170f987@wsk>
+	<87a51djuor.fsf@xenomai.org>
+	<20251027120535.7933c720@wsk>
+Organization: Nabla
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggdduheekgeduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpedvlefhvdehkeduheevleegiedtueejgfekhfeijeefvdeijeekgeeigfejhfekgeenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpnhgspghrtghpthhtohepvddprhgtphhtthhopeigvghnohhmrghiseigvghnohhmrghirdhorhhgpdhrtghpthhtohepjhgrnhdrkhhishiikhgrsehsihgvmhgvnhhsrdgtohhm
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Status: LEGIT
-Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=xenomai.org header.s=gm1 header.b=GjLqErNX;
-	dmarc=none;
-	spf=pass (spool.mail.gandi.net: domain of rpm@xenomai.org designates 2001:4b98:dc4:8::224 as permitted sender) smtp.mailfrom=rpm@xenomai.org
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggdduheekgeduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpedvlefhvdehkeduheevleegiedtueejgfekhfeijeefvdeijeekgeeigfejhfekgeenucfkphepvddujedrjedtrddujeekrddvudegpddvtddtudemgegsleekmegutgegmeekmeemvddvgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudejrdejtddrudejkedrvddugedphhgvlhhopehsphhoohhlrdhmrghilhdrghgrnhguihdrnhgvthdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopedupdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvh
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Last-TLS-Session-Version: TLSv1.3
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+Hi Philippe,
 
-> On 19.09.25 08:55, Jan Kiszka wrote:
->> From: Jan Kiszka <jan.kiszka@siemens.com>
->> 
->> fpsimd_save_and_flush_cpu_state() itself does take care of this.
->> 
->> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->> ---
->>  arch/arm64/kernel/fpsimd.c | 4 ----
->>  1 file changed, 4 deletions(-)
->> 
->> diff --git a/arch/arm64/kernel/fpsimd.c b/arch/arm64/kernel/fpsimd.c
->> index ba804fcdfdb3f..f915706332191 100644
->> --- a/arch/arm64/kernel/fpsimd.c
->> +++ b/arch/arm64/kernel/fpsimd.c
->> @@ -2148,13 +2148,9 @@ void __efi_fpsimd_end(void)
->>  static int fpsimd_cpu_pm_notifier(struct notifier_block *self,
->>  				  unsigned long cmd, void *v)
->>  {
->> -	unsigned long flags;
->> -
->>  	switch (cmd) {
->>  	case CPU_PM_ENTER:
->> -		flags = hard_cond_local_irq_save();
->>  		fpsimd_save_and_flush_cpu_state();
->> -		hard_cond_local_irq_restore(flags);
->>  		break;
->>  	case CPU_PM_EXIT:
->>  		break;
->
-> And this one for 6.1 should also be merged. The changes in patch 1 and 3
-> found their way into v6.1.y-cip-dovetail-rebase in the meantime, as it
-> looks like.
->
-> BTW, a new release for 6.1 would be good as well then, to get all of
-> this tagged.
->
+> > so either some
+> > traces are missing,  
+> 
+> I will check if I can add more tracing.
 
-There is a set of fixes for the oob network stack coming shortly, rebase
-over stable is planned right after (Wednesday).
+On one console:
+---------------
+evl trace -eirq -f; sleep 1; latmus -c 2 -p 1000 -P 99
+
+
+On the second one:
+------------------
+test_prog/stress_prog_NO_IO &
+sleep 5
+test_prog/stress_prog_NO_IO &
+
+echo 0 > /sys/kernel/tracing/tracing_on
+evl trace -p > Xenomai4-ISW-trace-6.6-logs.txt
+
+First trace:
+############
+
+The relevant dmesg output:
+
+[   75.214527] EVL: timer-responder:743 switching in-band [pid=745,
+excpt=14, user_pc=0x77d08492a5fe]
+
+When I do look into logs - there is also a "hole" when the ISW is
+reported by dmesg.
+
+
+However, there are some hints when we look around evl_latmus:
+
+timer-responder-745     [002] d.~2.    75.868139: evl_latspot: **
+latency peak: 18843.649 us **
+
+On CPU 20:
+stress_prog_NO_-752     [020] ...2.    75.868139: folio_add_lru_vma
+<-__handle_mm_fault
+
+Which ends with folio_add_lru()...
+And after that we do have the ~18ms latency peak.
+
+And the "folio_*" is a relatively new feature added to Linux kernel [1].
+
+The logs can be fetched from:
+https://nextcloud.swupdate.org/index.php/s/EjHo5EAwMTeY5ya
+
+
+Second trace [*]:
+#################
+
+
+[ 1610.086961] EVL: timer-responder:768 switching in-band [pid=770,
+excpt=14, user_pc=0x72e9d35af5fe]
+
+<idle>-0 [008] *..1.  1610.076068: rcu_dyntick: Start 1 0 0x2ec
+<idle>-0 [003] *.~1.  1610.102242: rcu_dyntick: Endirq 0 1 0x404
+<idle>-0 [003] *.~2.  1610.102242: arch_handle_irq <-arch_pipeline_entry
+<idle>-0 [003] *.~2.  1610.102242: irq_to_desc <-arch_handle_irq
+<idle>-0 [003] *.~1.  1610.102242: ma_read: mtree_load  
+	Node: 00000000c4071949 (0 18446744073709551615) range: 4355-4355
+<idle>-0 [003] *.~2.  1610.102242: rcu_oob_prepare_lock <-mtree_load
+<idle>-0 [003] *.~2.  1610.102242: __rcu_read_lock <-mtree_load
+<idle>-0 [003] *.~2.  1610.102242: __rcu_read_unlock <-mtree_load
+
+
+Now some questions:
+1. Why '~' (i.e. oob stage) is on CPU=3 as we pinpointed execution
+   of the 'latmus' to CPU=2 (and the command line has isolcpu=2) ?
+
+2. The mtree_load() is called in the OOB context... IMHO, this shall be
+done before we do start the latmus?
+
+3. In this case - there is also a "hole" between the ISW time
+(1610.086961) and the ones between rcu_dyntick: Start / Endirq
+
+
+Link to the full log:
+https://nextcloud.swupdate.org/index.php/s/nPRAnqCLFDibX6r
+
+
+Note:
+[*] - All ftrace options enabled in the kernel
+
+
+Links:
+[1] -
+https://github.com/torvalds/linux/commit/49f8275c7d92?spm=a2c65.11461447.0.0.68003853Pbec3R
 
 -- 
-Philippe.
+Best regards,
+
+Lukasz Majewski
+
+--
+Nabla Software Engineering GmbH
+HRB 40522 Augsburg
+Phone: +49 821 45592596
+E-Mail: office@nabladev.com
+Geschftsfhrer : Stefano Babic
