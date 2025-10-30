@@ -1,180 +1,237 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 582172773F0
-	for <xenomai@lists.linux.dev>; Thu, 30 Oct 2025 15:53:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA3881D5CFB
+	for <xenomai@lists.linux.dev>; Thu, 30 Oct 2025 16:17:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.193
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761839621; cv=none; b=SCMTagNstKqpIp9NERyP0QynX7BjemJD/iyhInwplpjTiU/ZPpsys6Hm9SXa73xjn6mdetrE59YF/Tm1KgLGMlwd8L9yy7JO4NltQ3tqoU01nJ1P5Bt1Fklndm4eqzwaVc+a9hn2GiK8+A44FoMwzZA5q5xkhRBqA1pfWEW+5fU=
+	t=1761841037; cv=none; b=WZb7+cDwyFXkKKmtT58/y2KivOCXGaHryN7Ykdlx6hTDZas8HAZ8g6nzIzKZ9zTnC3KrVwA2XUIfV3cumrtHZ6cTcs4tLExvbnmoXFROJ9cg7TtDqJLEHu81etirsjFdg/Ax0Uj7vnWbcqjDLYla/3obLz+NdNW3Np+lid4m+UI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761839621; c=relaxed/simple;
-	bh=0ALqYF/VBIqUXZRgTx+7OTl3tiVUj8qZPUh8C6Q26V8=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=Tirk9kYrmgH9Dn8SSBnSFbRuw/xFoPsHRGFnAKnLaf6g8dUK7oSTdQtVTB4+oancHMiPc3EIZ2Qe8syPdL+arYaHsCjQElCE8JcqB9/Hx3mnhEf8/f3M5d2iIy8yNdsPy+vyuiOnvBdstxU3SB40kYVfiHvMuh2l13aYhO8ayAw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mntHB8pC; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1761841037; c=relaxed/simple;
+	bh=vRvYnx2c1l2D1WPQEEH64OtnWTWHEISQNziU6iKHexw=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=gcMl1a3l6Dv5DA/800tGvBIvcPrbzCfIFJi/CGPc1X4f2g4uYt9q+jCOaGTxHmL57S39KfoEGuRqyBRyFfvN63Le4qjuKjyPd4jDKsrfexH84dHgQisgr+IkfsGuDFNK4MQxETAhdjn4SbWCgc8IGrtiizE8iyokhIisptBWIw0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=fubEgL8R; arc=none smtp.client-ip=217.70.183.193
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mntHB8pC"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-475d9de970eso8789015e9.1
-        for <xenomai@lists.linux.dev>; Thu, 30 Oct 2025 08:53:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1761839617; x=1762444417; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=C06wnAI3amj6W2D80vMnpI87Jopxw9gDTd00YUsLig4=;
-        b=mntHB8pCC360jixINYjECIMpJFtpmThOtefU55R+KGu9OAXDJqVy6SHQ2kdnEZz8vR
-         R/9EILTd4euX9XABJtGhnNplD8FKWi2sqvns7qLmAqfNinNjnoBR8efnQ1eQXEQgsxVB
-         iltcQ+4Z29DB9tBIBLQD6TaHRCvbFG0smG9+VIopeEvySLdMKO6IWc8jdZI+ybRNVUsi
-         IqwxIO/k4d+qDG3DrqbKzyYJdamMtvFYDhQfE03G8G+TleOJszImEh6frp6N+ieb1y6f
-         Ub9A9kSbvfsxhDG+3zAY87oJZyW4XubT/rn7T51IzuVcwHPXqR+1tjRDal913/j3CYF2
-         SpNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761839617; x=1762444417;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=C06wnAI3amj6W2D80vMnpI87Jopxw9gDTd00YUsLig4=;
-        b=WQ9IjS3Xun9Ba4j+ifiosgP8ur82wHhEpvOxhe1PuokU/DdBxMooYcvbujeFEaCEfr
-         0pJtaMY4nIk43i0QBRB4penwCVcRhFZfI1yiqg2C44VG7C6f+SQUTUbCPwXvh2BlOvYF
-         dL8xYuPodtgpFbRUmccDLDsy7VWZT+UA3ppXJexo5sJGxRAjYgx9pR85Q2cFQhxPWSQ9
-         Tup4pefI4pCforZYdkxYM1x/oGSJ936+KUsA+QcvjtI/p+OTeZZ2qNvFE8vWsjIcrBlo
-         gNG9SOLNSfTzveu+u+Md7EkGiEb1K3eKnPw6L4J9LG0xKCpNFpi2dgGOrk+9hyw2Wiaa
-         vA/w==
-X-Gm-Message-State: AOJu0YzatBgoQmePUCEQYFl5FePPMzuyTGnAhIaQ4Me61UENtLI+xyHs
-	hqBtl/yowzeSq26wKQ/3xxWBZu9AbDipUZFCMNUgHvkKoFMOAmfn/8uSDt8S2WObRk8=
-X-Gm-Gg: ASbGncuSKHnPxdNqrfY/SDPbFSiy4H7LvNR1a+yi6tX8ycKpDAoMxcsg9YKscULE0vo
-	p270CIgs1K2/a144+PsQAjV5MZzWyKIaWS13BqevJ8iMBN0Etae3Az2RMtllIpETZz+2HSC2Rdb
-	9D9fIEixJlyTdppQjRTBllyz3pmAMHh342WPfapBwikyK7yJCrKUEeXocFwakJrkMuQE96CLhT4
-	sienZN+XiJxgsNBjRTBwVB9z/gx3PghxXKmO6QvjsqNmHGrZsLs3QcGbCozG21oRm6F+sRRVmCa
-	y8sON6OxnWj0QOmkNKjCMrqFY8CdZewlsA2ZWefDGEBpRtrCGmq4CHxWmYkCm3+3ODzrWlrWJfH
-	zjZLqoXCUSb8jHd9lYczO/wFZEx8kDOiFt4TkkuNkTxATI8ARX+tD5Wknou14/0G6m/IcYhifxT
-	SAjpEL3sbU2D1xFCS8SdVvsWedTOMnXXJzfCD+TjPxFsECZfKD2L2LjeYbCzWYori8egU=
-X-Google-Smtp-Source: AGHT+IEHDMk+w7/LYeXV5+i4DG6yKKr1ANYbNUDbnX0vvx97hLttgD19q7/DaxX1gahn8KbOGT8YRA==
-X-Received: by 2002:a05:600c:6389:b0:475:de05:6611 with SMTP id 5b1f17b1804b1-47730793c68mr2266735e9.7.1761839616942;
-        Thu, 30 Oct 2025 08:53:36 -0700 (PDT)
-Received: from pop-os.sigmatek.local (83-215-235-230.stat.cablelink.at. [83.215.235.230])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-429952cbb20sm32608509f8f.18.2025.10.30.08.53.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Oct 2025 08:53:36 -0700 (PDT)
-From: m.kurz92@gmail.com
-To: xenomai@lists.linux.dev
-Cc: Markus Kurz <m.kurz92@gmail.com>
-Subject: [PATCH 2/2] docs(xeno3): fix warnings in doxygen build
-Date: Thu, 30 Oct 2025 16:53:29 +0100
-Message-Id: <20251030155329.1337840-3-m.kurz92@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20251030155329.1337840-1-m.kurz92@gmail.com>
-References: <20251030155329.1337840-1-m.kurz92@gmail.com>
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="fubEgL8R"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id E41FD4437C;
+	Thu, 30 Oct 2025 16:17:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1761841027;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=5qxTWDnRVatK0cxdORsBe+iw9KTvtJbv9HOvLf+4iPs=;
+	b=fubEgL8RFPcd1mD5dwcOdRSgX1Mmi76dhPYS8hkL1X04J7iPW7LqrbQP91VzBNqKe3pE19
+	Q9vZnNZtbdXOoIlQVm6COtwjp9fh3HJj7Smx0GRTc3ZA/SeutrmYDy905qoI7e8jU65ZIl
+	58NHdsfXrBEP/hXunhmiC/ZIzMHmRfXA6IlPTcRFlmTRumQd0YQAy1ItLZVa7Wy92SkT+h
+	sFDYfNd3jZFh3Yyr+bZk1Em7pljirDjS7fC0kPsV7knZQ/kXAml2HOxCIQ0iwxR5nlIoFj
+	RvgAH/JWXr9JXg8JHLw8S8qM9ii8l1uFZ43u01O8C1oLIFtmYT+K+hHY/qFSEQ==
+From: Philippe Gerum <rpm@xenomai.org>
+To: =?utf-8?Q?=C5=81ukasz?= Majewski <lukma@nabladev.com>
+Cc: Giulio Moro <giulio@bela.io>,  Xenomai <xenomai@lists.linux.dev>
+Subject: Re: Unexpected switches to in-band
+In-Reply-To: <20251030132602.2d1ccfcc@wsk> (=?utf-8?Q?=22=C5=81ukasz?=
+ Majewski"'s message of
+	"Thu, 30 Oct 2025 13:26:02 +0100")
+References: <d3f7d465-e914-bf4d-be69-7e42fe288064@bela.io>
+	<20251009151737.0d03b211@wsk>
+	<20676160-4572-d92d-4b33-ff4255946345@bela.io>
+	<87qzv9sa9c.fsf@xenomai.org> <87ikgls9kh.fsf@xenomai.org>
+	<f916d01d-2bd0-cdfd-2e9e-562968a9934f@bela.io>
+	<20251020094705.2ac256f2@wsk>
+	<9d2bacac-8d70-f083-e926-21beee2207c2@bela.io>
+	<87o6q1ad07.fsf@xenomai.org> <20251023155439.0170f987@wsk>
+	<87a51djuor.fsf@xenomai.org> <20251027120535.7933c720@wsk>
+	<20251027172505.29eecfb2@wsk> <875xbyawx7.fsf@xenomai.org>
+	<20251029145125.71debaab@wsk> <20251030132602.2d1ccfcc@wsk>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Thu, 30 Oct 2025 17:17:06 +0100
+Message-ID: <87qzukuzy5.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggdduieejtdeiucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtgfesthhqredttderjeenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepudejieegtdfffeevjeekieegheduieeuueelhfelfffgtdetvdfhledujeeguedvnecuffhomhgrihhnpehsfihuphgurghtvgdrohhrghenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpnhgspghrtghpthhtohepfedprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepghhiuhhlihhosegsvghlrgdrihhopdhrtghpthhtoheplhhukhhmrgesnhgrsghlrgguvghvrdgtohhm
+X-GND-Sasl: rpm@xenomai.org
 
-From: Markus Kurz <m.kurz92@gmail.com>
 
-Remove obsolete doxygen configuration and change to the correct default
-paper_type of a4.
+Hi =C5=81ukasz,
 
-Signed-off-by: Markus Kurz <m.kurz92@gmail.com>
----
- doc/doxygen/xeno3prm-common.conf.in | 22 ----------------------
- doc/doxygen/xeno3prm-html.conf.in   | 10 ++++++----
- doc/doxygen/xeno3prm-latex.conf.in  | 10 ++++++----
- 3 files changed, 12 insertions(+), 30 deletions(-)
+=C5=81ukasz Majewski <lukma@nabladev.com> writes:
 
-diff --git a/doc/doxygen/xeno3prm-common.conf.in b/doc/doxygen/xeno3prm-common.conf.in
-index 1becf3dc5..71db05686 100644
---- a/doc/doxygen/xeno3prm-common.conf.in
-+++ b/doc/doxygen/xeno3prm-common.conf.in
-@@ -459,12 +459,6 @@ VERBATIM_HEADERS       = YES
- 
- ALPHABETICAL_INDEX     = NO
- 
--# If the alphabetical index is enabled (see ALPHABETICAL_INDEX) then 
--# the COLS_IN_ALPHA_INDEX tag can be used to specify the number of columns 
--# in which this list will be split (can be a number in the range [1..20])
--
--COLS_IN_ALPHA_INDEX    = 5
--
- # In case all classes in a project start with a common prefix, all 
- # classes will be put under the same header in the alphabetical index. 
- # The IGNORE_PREFIX tag can be used to specify one or more prefixes that 
-@@ -714,14 +708,6 @@ EXTERNAL_GROUPS        = YES
- # Configuration options related to the dot tool   
- #---------------------------------------------------------------------------
- 
--# If the CLASS_DIAGRAMS tag is set to YES (the default) Doxygen will 
--# generate a inheritance diagram (in HTML, RTF and LaTeX) for classes with base or 
--# super classes. Setting the tag to NO turns the diagrams off. Note that this 
--# option is superseded by the HAVE_DOT option below. This is only a fallback. It is
--# recommended to install and use dot, since it yields more powerful graphs.
--
--CLASS_DIAGRAMS         = YES
--
- # If set to YES, the inheritance and collaboration graphs will hide 
- # inheritance and usage relations if the target is undocumented 
- # or is not a class.
-@@ -816,14 +802,6 @@ DOTFILE_DIRS           =
- 
- MAX_DOT_GRAPH_DEPTH    = 0
- 
--# Set the DOT_TRANSPARENT tag to YES to generate images with a transparent 
--# background. This is disabled by default, which results in a white background. 
--# Warning: Depending on the platform used, enabling this option may lead to 
--# badly anti-aliased labels on the edges of a graph (i.e. they become hard to 
--# read).
--
--DOT_TRANSPARENT        = NO
--
- # Set the DOT_MULTI_TARGETS tag to YES allow dot to generate multiple output 
- # files in one run (i.e. multiple -o and -T options on the command line). This 
- # makes dot run faster, but since only newer versions of dot (>1.8.10) 
-diff --git a/doc/doxygen/xeno3prm-html.conf.in b/doc/doxygen/xeno3prm-html.conf.in
-index e62df4d70..b8119b0b3 100644
---- a/doc/doxygen/xeno3prm-html.conf.in
-+++ b/doc/doxygen/xeno3prm-html.conf.in
-@@ -153,11 +153,13 @@ MAKEINDEX_CMD_NAME     = makeindex
- 
- COMPACT_LATEX          = NO
- 
--# The PAPER_TYPE tag can be used to set the paper type that is used
--# by the printer. Possible values are: a4, a4wide, letter, legal and
--# executive. If left blank a4wide will be used.
-+# The PAPER_TYPE tag can be used to set the paper type that is used by the
-+# printer. Possible values are: a4 (210 x 297 mm), letter (8.5 x 11 inches),
-+# legal (8.5 x 14 inches) and executive (7.25 x 10.5 inches).
-+# The default value is: a4.
-+# This tag requires that the tag GENERATE_LATEX is set to YES.
- 
--PAPER_TYPE             = a4wide
-+PAPER_TYPE             = a4
- 
- # The EXTRA_PACKAGES tag can be to specify one or more names of LaTeX
- # packages that should be included in the LaTeX output.
-diff --git a/doc/doxygen/xeno3prm-latex.conf.in b/doc/doxygen/xeno3prm-latex.conf.in
-index a7611080c..059cc8414 100644
---- a/doc/doxygen/xeno3prm-latex.conf.in
-+++ b/doc/doxygen/xeno3prm-latex.conf.in
-@@ -141,11 +141,13 @@ MAKEINDEX_CMD_NAME     = makeindex
- 
- COMPACT_LATEX          = NO
- 
--# The PAPER_TYPE tag can be used to set the paper type that is used
--# by the printer. Possible values are: a4, a4wide, letter, legal and
--# executive. If left blank a4wide will be used.
-+# The PAPER_TYPE tag can be used to set the paper type that is used by the
-+# printer. Possible values are: a4 (210 x 297 mm), letter (8.5 x 11 inches),
-+# legal (8.5 x 14 inches) and executive (7.25 x 10.5 inches).
-+# The default value is: a4.
-+# This tag requires that the tag GENERATE_LATEX is set to YES.
- 
--PAPER_TYPE             = a4wide
-+PAPER_TYPE             = a4
- 
- # The EXTRA_PACKAGES tag can be to specify one or more names of LaTeX
- # packages that should be included in the LaTeX output.
+>> > Could you get me a trace which goes back up to two secs before the
+>> > time reported by evl about the inband switch of the timer responder?
+>> > e.g.
+>
+> Why is it 2 seconds? Is it related to latmus "refresh time"? (which is
+> 1s)
+>
+
+Picking this delay is purely heuristical. Such a long backlog is likely
+going to include the smoking gun, if any.
+
+>> >=20
+>> > [   75.214527] EVL: timer-responder:743 switching in-band [pid=3D745,
+>> > excpt=3D14, user_pc=3D0x77d08492a5fe]
+>> >=20
+>> > In the above case, I would need a trace going back to 73.214527 or
+>> > so.=20
+>>=20
+>> Apparently the ftrace buffer was too small. I will adjust it to store
+>> more data and share results.
+>
+> It is also interesting, that:
+>
+> bash-5.2# echo 16384 > /sys/kernel/debug/tracing/buffer_size_kb
+> bash-5.2# cat /sys/kernel/debug/tracing/buffer_size_kb
+> 16387
+> bash-5.2# evl trace -eirq -f
+> tracing enabled
+> bash-5.2# cat /sys/kernel/debug/tracing/buffer_size_kb
+> 131
+>
+> Reduces the buffer size...
+>
+
+Yeah, the evl-trace script is not that smart. I can see the issue
+causing this, will fix.
+
+> Hence, I've used the "normal" ftrace with enabled evl functions - the
+
+FWIW, EVL relies on the normal ftrace. However, evl-trace fiddles with
+the sysfs entries manually, and may be a bit naive at times. As Jan
+pointed out long ago, relying on the trace-cmd front-end would be a
+better approach than tweaking ftrace's sysfs-based controls manually at
+the very least. evl-trace adds EVL semantics to the tracing
+configuration which is handy, but the way it is done today may deserve a
+revamping, or maybe drop it entirely in favor of trace-cmd if we have
+enough flexibility there in order to introduce some EVL specifics.
+
+> detailed information about the ftrace config is with log files:
+> https://nextcloud.swupdate.org/index.php/s/czBd3Ydq9B9noZ7
+>
+>
+> To extract the cpu2 specific data:
+> bash-5.2# grep -rnE '\[002\]' Xenomai4-ISW-trace-6.6-logs.txt > cpu2.txt
+>
+> Here again the ISW happens in the cpu2 execution "hole":
+> [  128.466459] EVL: timer-responder:736 switching in-band [pid=3D738,
+> excpt=3D14, user_pc=3D0x7588e71985fe]
+>
+> Happens for cpu2 between:
+>
+> 11832546:          <idle>-0     [002] *..2.   128.466438:
+> 	sched_idle_set_state <-cpuidle_enter_state
+> 11832547:          <idle>-0     [002] *..2.   128.466468:
+> 	handle_irq_pipelined_prepare <-arch_pipeline_entry
+>
+> However, now the log is large enough to inspect what has happened in
+> the system for ~4s before.
+>
+>
+> With the logs:
+> timer-responder-738     [002] *.~2.   128.466214: evl_timer_shot:
+> [proxy-timer/2] at 128.466467 (delay: 253 us, 66918 cycles)
+>
+> and after ISW:
+>
+> <idle>-0       [002] *.~1.   128.466469: evl_timer_shot:
+> latmus_pulse_handler at 128.467208 (delay: 739 us, 195206 cycles)
+>
+> Why there is such increase in "delay" (253 vs 739 us) ?=20
+>
+> It looks like we have only 2us delay as the timer has fired on
+> 128.466469 vs. expected 128.466467.
+>
+
+Ok, so the issue is still the same: for some reason, the timer-responder
+thread is taking a (minor) fault when accessing some memory, on its way
+back from the ioctl(EVL_LATIOC_PULSE) syscall, or right after. This
+seems to be valid memory though, just not immediately accessible,
+otherwise we'd have received SEGV, which we did not.
+
+--
+          <idle>-0       [002] #.~2.   129.084225: fpu__suspend_inband <-do=
+vetail_context_switch
+          <idle>-0       [002] #.~2.   129.084225: switch_mm_irqs_off <-dov=
+etail_context_switch
+ timer-responder-738     [002] *.~3.   129.084225: switch_fpu_return <-dove=
+tail_context_switch
+ timer-responder-738     [002] *.~2.   129.084225: evl_switch_tail: { curre=
+nt=3Dtimer-responder:736[738] }
+ timer-responder-738     [002] d.~2.   129.084225: evl_finish_wait: wchan=
+=3D&wf->wait
+ timer-responder-738     [002] d.~2.   129.084225: evl_oob_sysexit: result=
+=3D0
+--
+
+The responder is resuming from a wait on the EVL_LATIOC_PULSE flag,
+leaving the kernel, all seems fine so far.. I'm trying to find some
+rationale for taking a fault in the syscall return path from the
+assembly section which would explain a lack of trace _and_ the faulting
+instruction living in a user-space mapping (this is no vDSO call
+anyway), but cannot find any so far. A corruption of the register frame
+used in restoring the calling user context would most likely have
+triggered a major fault, not a minor one. Hopefully.
+
+--
+ timer-responder-738     [002] *.~3.   129.084226: handle_oob_trap_entry <-=
+__oob_trap_notify
+ timer-responder-738     [002] *.~2.   129.084227: evl_thread_fault: ip=3D0=
+x7588e71985fe trapnr=3D0xe
+ timer-responder-738     [002] *.~3.   129.084227: _printk <-handle_oob_tra=
+p_entry
+--
+
+We need more information from the register file passed to us upon
+trap. Could you apply the following quick patch to the test kernel? (not
+to be upstreamed as-is, this is x86-specific unlike the file it applies
+to). TIA,
+
+diff --git a/include/trace/events/evl.h b/include/trace/events/evl.h
+index 7136437d00227..3deeafb17e0fc 100644
+--- a/include/trace/events/evl.h
++++ b/include/trace/events/evl.h
+@@ -443,17 +443,26 @@ TRACE_EVENT(evl_thread_fault,
+ 	TP_ARGS(trapnr, regs),
+=20
+ 	TP_STRUCT__entry(
++		__field(long,	sp)
++		__field(long,	flags)
+ 		__field(long,	ip)
++		__field(long,	orig_ax)
++		__field(u16,	cs)
+ 		__field(unsigned int, trapnr)
+ 	),
+=20
+ 	TP_fast_assign(
++		__entry->sp =3D regs->sp;
++		__entry->flags =3D regs->flags;
+ 		__entry->ip =3D instruction_pointer(regs);
++		__entry->orig_ax =3D regs->orig_ax;
++		__entry->cs =3D regs->cs;
+ 		__entry->trapnr =3D trapnr;
+ 	),
+=20
+-	TP_printk("ip=3D%#lx trapnr=3D%#x",
+-		  __entry->ip, __entry->trapnr)
++	TP_printk("ip=3D%#lx trapnr=3D%#x, sp=3D%#lx, flags=3D%#lx, orig_ax=3D%#l=
+x, cs=3D%#hx",
++		__entry->ip, __entry->trapnr,
++		__entry->sp, __entry->flags, __entry->orig_ax, __entry->cs)
+ );
+=20
+ TRACE_EVENT(evl_thread_set_current_prio,
+
+--=20
+Philippe.
