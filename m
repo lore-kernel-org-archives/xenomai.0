@@ -1,41 +1,40 @@
 Received: from mx.nabladev.com (mx.nabladev.com [178.251.229.89])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D125A17C77
-	for <xenomai@lists.linux.dev>; Sat,  1 Nov 2025 11:32:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4FF72836F
+	for <xenomai@lists.linux.dev>; Sat,  1 Nov 2025 16:00:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.251.229.89
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761996769; cv=none; b=XUkkdwuYTl33u0pN3V7tWDi8M9HHLhR9M2krdM6jNK+QhTB0mkSvwnIOdQ+eIU9b4gbFZMXvCIyaNL0yppcTATpoZoPG5r0XNRJHraaspCu5rh42gyserjTBRb2njnYIhDVTx5NqB1S0zUKnO2uYi2qnhVBImMLxybEpsFUo7MU=
+	t=1762012811; cv=none; b=Q23efJWT5ArXwq7Vztmqlw3Ewl9xWPVDySZrnvHHG7YPcVyv4K6H2ba/JfuCrCvkz2J/5mJDHhqYIYqyjd9o0b2iUCv2BGzjotu+fJEUbqrSHQrIZSWpLXp07dR+Ew9NCgezyO4SGs+Krfhx+VkWH3tEQ4BmXCqwcT993MC6VRA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761996769; c=relaxed/simple;
-	bh=ZnQkZuWeVnd514DdRI/kdFv5evH4r2AWzqLGCviVvoc=;
+	s=arc-20240116; t=1762012811; c=relaxed/simple;
+	bh=D8FF2IcwinmcQNgv0uWF8zrjpf16v8gBs45ll8xOmM0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=JbgQSdwNtQVSwXJGlbhd3AcpSEme/acOZkhA1il8VQ2IpuGJ+A9B9A8oZu7yP7B6uQy7HiPaB4uRysBGl1F34Iub1MbCk/xMz1Yzi106SGmYVyJhiGA5At3l7xkqdxbp0ALrFGF9ObnvhfDxUom3yJ4WGNK0U5YuWqPyLwkwf54=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nabladev.com; spf=pass smtp.mailfrom=nabladev.com; dkim=pass (2048-bit key) header.d=nabladev.com header.i=@nabladev.com header.b=GOHRRjep; arc=none smtp.client-ip=178.251.229.89
+	 MIME-Version:Content-Type; b=pjmLfTXMfNXzIfT3RvIyjhalD52DGOMLBSfZk6JDFRKoOOe+XKfHItMQxJ2kMX5DYQUyp5UcSgRT7wpozfFAQ+j0gNyG/SOk/mlFyNTUQf42GAXHQlhLJdqfefQHmjquQ5T7sfA7vx0kdJ2sun2lV+4V5a7wckBCJyVIN7dkv1k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nabladev.com; spf=pass smtp.mailfrom=nabladev.com; dkim=pass (2048-bit key) header.d=nabladev.com header.i=@nabladev.com header.b=hZ3QdUIx; arc=none smtp.client-ip=178.251.229.89
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nabladev.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nabladev.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nabladev.com header.i=@nabladev.com header.b="GOHRRjep"
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 77CC91034AD;
-	Sat,  1 Nov 2025 12:32:43 +0100 (CET)
+	dkim=pass (2048-bit key) header.d=nabladev.com header.i=@nabladev.com header.b="hZ3QdUIx"
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id F31BF1034A4;
+	Sat,  1 Nov 2025 16:59:59 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nabladev.com;
-	s=dkim; t=1761996764;
+	s=dkim; t=1762012800;
 	h=from:subject:date:message-id:to:cc:mime-version:content-type:
 	 content-transfer-encoding:in-reply-to:references;
-	bh=3cW7PoI600VIMNiOFhCSN5y2X7NNUyS15PMKUgR0sbY=;
-	b=GOHRRjepVmVkw9DH9ROw2DNn6376LyV1ju/HpXKVQLA+r5gTNpzHLsKjmaV+qBGlY2ZHvz
-	gdfPTWIZ5fxSBT1mAdIo1VwnRm+FzPgFpuEF5H6ecUWvFiOSFjnLfZ7wANpXtkxfrtcmTn
-	eKj+Q7DGtKd3mgyfNUrt8vRl7nbnb/v8sLmw5voBx+iBhWFO7sA0lCd+qk89kibpMJVOwi
-	9bFA4hCZlcB8oz63Fq9tpPJNoHQg2rVPeM+lmUCTbvkNcIMciU4nDZ0L2JgfAneJjIOxJw
-	4Sv8ldCJG+H9D0kO+P1VCd1EeF0eBsawLAAXphO+/DBn7ASoqG123b0S1/QFHg==
-Date: Sat, 1 Nov 2025 12:32:41 +0100
+	bh=ED2evM/q+y1MqMQckvTzi0E6/9JjNZ2A+10zJlG3Sa0=;
+	b=hZ3QdUIxXCX0ftkYthjzXdVTLPEMBeNaZt+zUiuz49+SM1EAZX16WrZk+qf1juKTLGj1GU
+	NXwIS6oMofz0BpujMskOYOgg05lYoLnb07a/lWP7MtH1LNwOE3KaWYQYOWCld4k+U6elDB
+	fk/N05ayEPM07jNR25HVI+BsZ4bY8JOsP+cAdEOstUN8e31tk8frIamb2xgpby4NLlPq2n
+	wCpXhP1NycNQgbZ0eHxm1xLnGfoEahOcY5XtLVu356/7JW5Oq1DWVJoVrVHhkEVJ5u4SaI
+	/GDUQeLYRUF2kG4VZMs59w7aiH4Lajd8ymTergDPnMXsZGYayMBL22EcUc0TJQ==
+Date: Sat, 1 Nov 2025 16:59:57 +0100
 From: =?UTF-8?B?xYF1a2Fzeg==?= Majewski <lukma@nabladev.com>
 To: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Giulio Moro <giulio@bela.io>,
- Xenomai <xenomai@lists.linux.dev>
+Cc: Giulio Moro <giulio@bela.io>, Xenomai <xenomai@lists.linux.dev>
 Subject: Re: Unexpected switches to in-band
-Message-ID: <20251101123241.6adc1252@wsk>
-In-Reply-To: <87qzujaqlw.fsf@xenomai.org>
+Message-ID: <20251101165957.12432bf4@wsk>
+In-Reply-To: <87bjlnc9u5.fsf@xenomai.org>
 References: <d3f7d465-e914-bf4d-be69-7e42fe288064@bela.io>
 	<20251009151737.0d03b211@wsk>
 	<20676160-4572-d92d-4b33-ff4255946345@bela.io>
@@ -55,9 +54,6 @@ References: <d3f7d465-e914-bf4d-be69-7e42fe288064@bela.io>
 	<87qzukuzy5.fsf@xenomai.org>
 	<20251031165615.2c9f72f5@wsk>
 	<87bjlnc9u5.fsf@xenomai.org>
-	<5c69758f-876b-4a56-99b7-09eb22537680@siemens.com>
-	<875xbvc5a3.fsf@xenomai.org>
-	<87qzujaqlw.fsf@xenomai.org>
 Organization: Nabla
 X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
@@ -72,149 +68,141 @@ X-Last-TLS-Session-Version: TLSv1.3
 
 Hi Philippe,
 
-> Philippe Gerum <rpm@xenomai.org> writes:
+> =C5=81ukasz Majewski <lukma@nabladev.com> writes:
 >=20
-> > Jan Kiszka <jan.kiszka@siemens.com> writes:
+> > Hi Philippe,
 > > =20
-> >> On 31.10.25 17:30, Philippe Gerum wrote: =20
-> >>> =C5=81ukasz Majewski <lukma@nabladev.com> writes:
-> >>>  =20
-> >>>> Hi Philippe,
-> >>>> =20
-> >>>>> Hi =C5=81ukasz,
-> >>>>>
-> >>>>> =C5=81ukasz Majewski <lukma@nabladev.com> writes:
-> >>>>> =20
-> >>>>>>>> Could you get me a trace which goes back up to two secs
-> >>>>>>>> before the time reported by evl about the inband switch of
-> >>>>>>>> the timer responder? e.g.   =20
-> >>>>>>
-> >>>>>> Why is it 2 seconds? Is it related to latmus "refresh time"?
-> >>>>>> (which is 1s)
-> >>>>>>   =20
-> >>>>>
-> >>>>> Picking this delay is purely heuristical. Such a long backlog is
-> >>>>> likely going to include the smoking gun, if any.
-> >>>>> =20
-> >>>>>>>>
-> >>>>>>>> [   75.214527] EVL: timer-responder:743 switching in-band
-> >>>>>>>> [pid=3D745, excpt=3D14, user_pc=3D0x77d08492a5fe]
-> >>>>>>>>
-> >>>>>>>> In the above case, I would need a trace going back to
-> >>>>>>>> 73.214527 or so.    =20
-> >>>>>>>
-> >>>>>>> Apparently the ftrace buffer was too small. I will adjust it
-> >>>>>>> to store more data and share results.   =20
-> >>>>>>
-> >>>>>> It is also interesting, that:
-> >>>>>>
-> >>>>>> bash-5.2# echo 16384 > /sys/kernel/debug/tracing/buffer_size_kb
-> >>>>>> bash-5.2# cat /sys/kernel/debug/tracing/buffer_size_kb
-> >>>>>> 16387
-> >>>>>> bash-5.2# evl trace -eirq -f
-> >>>>>> tracing enabled
-> >>>>>> bash-5.2# cat /sys/kernel/debug/tracing/buffer_size_kb
-> >>>>>> 131
-> >>>>>>
-> >>>>>> Reduces the buffer size...
-> >>>>>>   =20
-> >>>>>
-> >>>>> Yeah, the evl-trace script is not that smart. I can see the
-> >>>>> issue causing this, will fix.
-> >>>>> =20
-> >>>>>> Hence, I've used the "normal" ftrace with enabled evl
-> >>>>>> functions - the   =20
-> >>>>>
-> >>>>> FWIW, EVL relies on the normal ftrace. However, evl-trace
-> >>>>> fiddles with the sysfs entries manually, and may be a bit naive
-> >>>>> at times. As Jan pointed out long ago, relying on the trace-cmd
-> >>>>> front-end would be a better approach than tweaking ftrace's
-> >>>>> sysfs-based controls manually at the very least. evl-trace adds
-> >>>>> EVL semantics to the tracing configuration which is handy, but
-> >>>>> the way it is done today may deserve a revamping, or maybe drop
-> >>>>> it entirely in favor of trace-cmd if we have enough flexibility
-> >>>>> there in order to introduce some EVL specifics.
-> >>>>> =20
-> >>>>>> detailed information about the ftrace config is with log files:
-> >>>>>> https://nextcloud.swupdate.org/index.php/s/czBd3Ydq9B9noZ7
-> >>>>>>
-> >>>>>>
-> >>>>>> To extract the cpu2 specific data:
-> >>>>>> bash-5.2# grep -rnE '\[002\]' Xenomai4-ISW-trace-6.6-logs.txt >
-> >>>>>> cpu2.txt
-> >>>>>>
-> >>>>>> Here again the ISW happens in the cpu2 execution "hole":
-> >>>>>> [  128.466459] EVL: timer-responder:736 switching in-band
-> >>>>>> [pid=3D738, excpt=3D14, user_pc=3D0x7588e71985fe]
-> >>>>>>
-> >>>>>> Happens for cpu2 between:
-> >>>>>>
-> >>>>>> 11832546:          <idle>-0     [002] *..2.   128.466438:
-> >>>>>> 	sched_idle_set_state <-cpuidle_enter_state
-> >>>>>> 11832547:          <idle>-0     [002] *..2.   128.466468:
-> >>>>>> 	handle_irq_pipelined_prepare <-arch_pipeline_entry
-> >>>>>>
-> >>>>>> However, now the log is large enough to inspect what has
-> >>>>>> happened in the system for ~4s before.
-> >>>>>>
-> >>>>>>
-> >>>>>> With the logs:
-> >>>>>> timer-responder-738     [002] *.~2.   128.466214:
-> >>>>>> evl_timer_shot: [proxy-timer/2] at 128.466467 (delay: 253 us,
-> >>>>>> 66918 cycles)
-> >>>>>>
-> >>>>>> and after ISW:
-> >>>>>>
-> >>>>>> <idle>-0       [002] *.~1.   128.466469: evl_timer_shot:
-> >>>>>> latmus_pulse_handler at 128.467208 (delay: 739 us, 195206
-> >>>>>> cycles)
-> >>>>>>
-> >>>>>> Why there is such increase in "delay" (253 vs 739 us) ?=20
-> >>>>>>
-> >>>>>> It looks like we have only 2us delay as the timer has fired on
-> >>>>>> 128.466469 vs. expected 128.466467.
-> >>>>>>   =20
-> >>>>>
-> >>>>> Ok, so the issue is still the same: for some reason, the
-> >>>>> timer-responder thread is taking a (minor) fault when accessing
-> >>>>> some memory, on its way back from the ioctl(EVL_LATIOC_PULSE)
-> >>>>> syscall, or right after. This seems to be valid memory though,
-> >>>>> just not immediately accessible, otherwise we'd have received
-> >>>>> SEGV, which we did not. =20
-> >>>>
-> >>>> Yes, I also think so - like some "deferred allocation" despite of
-> >>>> mlockall.
-> >>>>
-> >>>> Please find the logs with the below patch applied:
-> >>>> https://nextcloud.swupdate.org/index.php/s/JXNW5bJrB3fQo5E
-> >>>> =20
-> >>>=20
-> >>> Thanks. I need to analyze the fault flags next week to see if I
-> >>> can make something of these, but I just stumbled on an obviously
-> >>> significant fact when looking at the multi-CPU view: the memory
-> >>> compaction daemon is running asynchronously on other cores while
-> >>> the responder is taking the fault. Compaction is all about moving
-> >>> memory around to free larger physical regions, so updating PTEs
-> >>> will happen as a result.
-> >>>=20
-> >>> Moreover, I could not reproduce the issue at hand, but I did not
-> >>> have CONFIG_COMPACTION enabled. In the meantime, could you try
-> >>> disabling this on your end, to see if the fault still appears? =20
-> >>
-> >> CONFIG_COMPACTION selects CONFIG_MIGRATION, and that is well-known
-> >> to be incompatible with RT. Xenomai 3 is warning about that that,
-> >> EVL does not?=20
+> >> Hi =C5=81ukasz,
+> >>=20
+> >> =C5=81ukasz Majewski <lukma@nabladev.com> writes:
+> >>  =20
+> >> >> > Could you get me a trace which goes back up to two secs before
+> >> >> > the time reported by evl about the inband switch of the timer
+> >> >> > responder? e.g.   =20
+> >> >
+> >> > Why is it 2 seconds? Is it related to latmus "refresh time"?
+> >> > (which is 1s)
+> >> >   =20
+> >>=20
+> >> Picking this delay is purely heuristical. Such a long backlog is
+> >> likely going to include the smoking gun, if any.
+> >>  =20
+> >> >> >=20
+> >> >> > [   75.214527] EVL: timer-responder:743 switching in-band
+> >> >> > [pid=3D745, excpt=3D14, user_pc=3D0x77d08492a5fe]
+> >> >> >=20
+> >> >> > In the above case, I would need a trace going back to
+> >> >> > 73.214527 or so.    =20
+> >> >>=20
+> >> >> Apparently the ftrace buffer was too small. I will adjust it to
+> >> >> store more data and share results.   =20
+> >> >
+> >> > It is also interesting, that:
+> >> >
+> >> > bash-5.2# echo 16384 > /sys/kernel/debug/tracing/buffer_size_kb
+> >> > bash-5.2# cat /sys/kernel/debug/tracing/buffer_size_kb
+> >> > 16387
+> >> > bash-5.2# evl trace -eirq -f
+> >> > tracing enabled
+> >> > bash-5.2# cat /sys/kernel/debug/tracing/buffer_size_kb
+> >> > 131
+> >> >
+> >> > Reduces the buffer size...
+> >> >   =20
+> >>=20
+> >> Yeah, the evl-trace script is not that smart. I can see the issue
+> >> causing this, will fix.
+> >>  =20
+> >> > Hence, I've used the "normal" ftrace with enabled evl functions -
+> >> > the   =20
+> >>=20
+> >> FWIW, EVL relies on the normal ftrace. However, evl-trace fiddles
+> >> with the sysfs entries manually, and may be a bit naive at times.
+> >> As Jan pointed out long ago, relying on the trace-cmd front-end
+> >> would be a better approach than tweaking ftrace's sysfs-based
+> >> controls manually at the very least. evl-trace adds EVL semantics
+> >> to the tracing configuration which is handy, but the way it is
+> >> done today may deserve a revamping, or maybe drop it entirely in
+> >> favor of trace-cmd if we have enough flexibility there in order to
+> >> introduce some EVL specifics.
+> >>  =20
+> >> > detailed information about the ftrace config is with log files:
+> >> > https://nextcloud.swupdate.org/index.php/s/czBd3Ydq9B9noZ7
+> >> >
+> >> >
+> >> > To extract the cpu2 specific data:
+> >> > bash-5.2# grep -rnE '\[002\]' Xenomai4-ISW-trace-6.6-logs.txt >
+> >> > cpu2.txt
+> >> >
+> >> > Here again the ISW happens in the cpu2 execution "hole":
+> >> > [  128.466459] EVL: timer-responder:736 switching in-band
+> >> > [pid=3D738, excpt=3D14, user_pc=3D0x7588e71985fe]
+> >> >
+> >> > Happens for cpu2 between:
+> >> >
+> >> > 11832546:          <idle>-0     [002] *..2.   128.466438:
+> >> > 	sched_idle_set_state <-cpuidle_enter_state
+> >> > 11832547:          <idle>-0     [002] *..2.   128.466468:
+> >> > 	handle_irq_pipelined_prepare <-arch_pipeline_entry
+> >> >
+> >> > However, now the log is large enough to inspect what has
+> >> > happened in the system for ~4s before.
+> >> >
+> >> >
+> >> > With the logs:
+> >> > timer-responder-738     [002] *.~2.   128.466214: evl_timer_shot:
+> >> > [proxy-timer/2] at 128.466467 (delay: 253 us, 66918 cycles)
+> >> >
+> >> > and after ISW:
+> >> >
+> >> > <idle>-0       [002] *.~1.   128.466469: evl_timer_shot:
+> >> > latmus_pulse_handler at 128.467208 (delay: 739 us, 195206 cycles)
+> >> >
+> >> > Why there is such increase in "delay" (253 vs 739 us) ?=20
+> >> >
+> >> > It looks like we have only 2us delay as the timer has fired on
+> >> > 128.466469 vs. expected 128.466467.
+> >> >   =20
+> >>=20
+> >> Ok, so the issue is still the same: for some reason, the
+> >> timer-responder thread is taking a (minor) fault when accessing
+> >> some memory, on its way back from the ioctl(EVL_LATIOC_PULSE)
+> >> syscall, or right after. This seems to be valid memory though,
+> >> just not immediately accessible, otherwise we'd have received
+> >> SEGV, which we did not. =20
 > >
-> > Dovetail should do that when CONFIG_DOVETAIL is set, this is by
-> > definition common to any rt core. =20
+> > Yes, I also think so - like some "deferred allocation" despite of
+> > mlockall.
+> >
+> > Please find the logs with the below patch applied:
+> > https://nextcloud.swupdate.org/index.php/s/JXNW5bJrB3fQo5E
+> > =20
 >=20
-> Also, it would be much better to find a way to exclude any mm bearing
-> the MMF_DOVETAIL flag from the movable set, instead of excluding
-> everything that sets CONFIG_COMPACTION.
+> Thanks. I need to analyze the fault flags next week to see if I can
+> make something of these, but I just stumbled on an obviously
+> significant fact when looking at the multi-CPU view: the memory
+> compaction daemon is running asynchronously on other cores while the
+> responder is taking the fault. Compaction is all about moving memory
+> around to free larger physical regions, so updating PTEs will happen
+> as a result.
+>=20
+> Moreover, I could not reproduce the issue at hand, but I did not have
+> CONFIG_COMPACTION enabled. In the meantime, could you try disabling
+> this on your end, to see if the fault still appears?
 >=20
 
-Yes, as we may be "hit" again in the future when either the CONFIG_*
-name is changed or new, improved approach is silently introduced...
+CONFIG_COMPACTION=3Dn - it also automatically set CONFIG_MIGRATION=3Dn
+
+=46rom the Kconfig dependencies CONFIG_MIGRATION=3Dn -> !PREEMPT_RT [=3Dn]
+(i.e. it can be only enabled when PREEMPT_RT is NOT)
+
+I've just set CONFIG_COMPACTION=3Dn (which also disabled the
+CONFIG_MIGRATION) and now I cannot reproduce the issue on my setup (i.e.
+v6.6.) anymore.
+
+It looks like those (enabled by default) config options have slipped in
+silently and introduced the issue...
+
 
 --=20
 Best regards,
