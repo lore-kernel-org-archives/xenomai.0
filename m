@@ -1,42 +1,44 @@
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+Received: from mslow3.mail.gandi.net (mslow3.mail.gandi.net [217.70.178.249])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5605B2750ED
-	for <xenomai@lists.linux.dev>; Mon,  3 Nov 2025 14:00:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C88313B293
+	for <xenomai@lists.linux.dev>; Mon,  3 Nov 2025 14:15:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.249
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762178421; cv=none; b=pb3WkLvzy6tsQeV5Wt6BKmCoJyAGmR2b6AYkM1swe9GWqOeBQ07ll1TKGj2sSwS3BOWKNZBZptssXLtAPQv9rBX1/6+mEFDPhmHz9bZL7LCqWekdI8dTvUKeo3dmIqM69OQGpgao6cEtiUy1XqYwF9n+pCfGTP1MTCrz40Hjo1Y=
+	t=1762179323; cv=none; b=Nnq7u9jEZoV4NFq6G6uibbx/W7j4sZK0xoaxLSmjeo26bPJVpC7EvLw6lsieOhHIurfBngX//yNU3O9/dLzWLy7iRmJ2AzFySz3dmlcLHiYtNXDHYwNMcVNwQPkvWspcM7piQj0v6Y+J9uOjeL6wNmmA9vYycTLjkn2ECifV5Xo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762178421; c=relaxed/simple;
-	bh=0oSYlHu+Uc86rSx+/AYfx0h9bi+aBsA2ZLZ79xVDOJ0=;
+	s=arc-20240116; t=1762179323; c=relaxed/simple;
+	bh=Oj8TIcowaCPGB4I1KVwlM1xBTAbemXe8vYU27KXmWJU=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=FLhc1b6ZJA49ygm1Grt+lGA5dng9RoNRQ4a5OBcenji5lVifIEaHo5URIdjU8XbYMbryb6TxxkYZKKOxf17nsDz1sAxqHjxD+p2k2jFwBYhjJmk185OEsq87xeLAQvIovU2TcB3HnO7r+Rsfq8YgrB3YCBM+tSDC9SgcWUoOpKk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=MvcmQe3g; arc=none smtp.client-ip=217.70.183.194
+	 MIME-Version:Content-Type; b=ALERuAfgQA3slXAQBSEVmrq3QpNYt1WgB34T6P1LPEEieUybnPr7mZhWT2EpaECYGvUSskXiExbLlX108vX1Q5hWMa8ixa4bodQz9+exe+fKNsmfGrz+Hb+8yHLT3z14v2ucb7waBAIn9QYGknL2/aMsyqtpEoGVVNaJFyDDoEg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=grs2xKUa; arc=none smtp.client-ip=217.70.178.249
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="MvcmQe3g"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id A5FA543D43;
-	Mon,  3 Nov 2025 14:00:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="grs2xKUa"
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::225])
+	by mslow3.mail.gandi.net (Postfix) with ESMTP id 48F49581A18
+	for <xenomai@lists.linux.dev>; Mon,  3 Nov 2025 14:06:30 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id E9C544326A;
+	Mon,  3 Nov 2025 14:06:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1762178411;
+	t=1762178783;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=ic0oe+sHTDi3HTOQp/zlY+/AoLBey+elkFaCWouIWsA=;
-	b=MvcmQe3gK07Ejex9Q8HOil+M00Lw8PiasO+Kdvc5+PRlWNbwEXszGrVah+d24ICCeoMNzT
-	B1/7Jy+x7103CqgwGjhSHqEu1UUdIorecS07LlaYgkIfLnOAJeWAmtidecZykQ/Qr8dq82
-	nb7MCk3yF9+1UrtpjkHPyeNpWIJ/k2Pxtlba4c0AGwCa8IMMFwK8lCfhjtX6CxmxtOIcaX
-	26UlQZESf2kYR5xy0BfnfFlfhRRZbzbhjnPyGoGUqyjJQvigl6xemyJck/sxlCN8Mqe2pj
-	rcaLWlEX6mHzQ+6RMvGOTDuRMJoroNArdWjhqKtD1TfYhToBuNcBkyzDizTKfg==
+	bh=VLei5HccQ3sKmGNSRcGBSkp0ScdGe97Y1Le2EbFtB84=;
+	b=grs2xKUa5Y1PAgt3lg3uO1gB1ry/1IO1In1I+ni5SdUsolajA0kwxJE7AnubC7NXqaSHtw
+	RAdDTv+ReoJY4f4xkAXywUTh1nRqJOwwpvykLE4d7iRr0h//6nAwgqrFpy82RjrgSortYX
+	og8erZKVa5ccv70BKBNf4ZLC8OLUdoF6a+JHREGXnIQVVIlu5gf04cDr4z1GIX5SfGk2Um
+	6hZotwQpLLRpQQXyf4WFnhSo2lS2el9wkP2JvRUv1vj8bo4uwW+dNB52UWOICSagR04Vyt
+	6G/FVnGXkZQM/EPLC3JNZQ0Wg8vQUW829sS5gYvxXB+8+3xghoxa9KCDaWwarg==
 From: Philippe Gerum <rpm@xenomai.org>
-To: =?utf-8?Q?=C5=81ukasz?= Majewski <lukma@nabladev.com>
-Cc: Giulio Moro <giulio@bela.io>,  Xenomai <xenomai@lists.linux.dev>
+To: Giulio Moro <giulio@bela.io>
+Cc: =?utf-8?Q?=C5=81ukasz?= Majewski <lukma@nabladev.com>,  Xenomai
+ <xenomai@lists.linux.dev>
 Subject: Re: Unexpected switches to in-band
-In-Reply-To: <20251101165957.12432bf4@wsk> (=?utf-8?Q?=22=C5=81ukasz?=
- Majewski"'s message of
-	"Sat, 1 Nov 2025 16:59:57 +0100")
+In-Reply-To: <58fcd922-3a50-74c5-bfee-01cbcb7e1e6d@bela.io> (Giulio Moro's
+	message of "Sat, 1 Nov 2025 11:33:35 -0500")
 References: <d3f7d465-e914-bf4d-be69-7e42fe288064@bela.io>
 	<20251009151737.0d03b211@wsk>
 	<20676160-4572-d92d-4b33-ff4255946345@bela.io>
@@ -50,165 +52,48 @@ References: <d3f7d465-e914-bf4d-be69-7e42fe288064@bela.io>
 	<20251029145125.71debaab@wsk> <20251030132602.2d1ccfcc@wsk>
 	<87qzukuzy5.fsf@xenomai.org> <20251031165615.2c9f72f5@wsk>
 	<87bjlnc9u5.fsf@xenomai.org> <20251101165957.12432bf4@wsk>
+	<58fcd922-3a50-74c5-bfee-01cbcb7e1e6d@bela.io>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Mon, 03 Nov 2025 15:00:06 +0100
-Message-ID: <87ikfrnrmh.fsf@xenomai.org>
+Date: Mon, 03 Nov 2025 15:06:22 +0100
+Message-ID: <87cy5znrc1.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
 X-GND-State: clean
 X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggddujeekfeduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtgfesthhqredttderjeenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepudejieegtdfffeevjeekieegheduieeuueelhfelfffgtdetvdfhledujeeguedvnecuffhomhgrihhnpehsfihuphgurghtvgdrohhrghenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpnhgspghrtghpthhtohepfedprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepghhiuhhlihhosegsvghlrgdrihhopdhrtghpthhtoheplhhukhhmrgesnhgrsghlrgguvghvrdgtohhm
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggddujeekfedvucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpedvlefhvdehkeduheevleegiedtueejgfekhfeijeefvdeijeekgeeigfejhfekgeenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpnhgspghrtghpthhtohepfedprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtoheplhhukhhmrgesnhgrsghlrgguvghvrdgtohhmpdhrtghpthhtohepghhiuhhlihhosegsvghlrgdrihho
 X-GND-Sasl: rpm@xenomai.org
 
-=C5=81ukasz Majewski <lukma@nabladev.com> writes:
+Giulio Moro <giulio@bela.io> writes:
 
-> Hi Philippe,
+> Hi everyone,
 >
->> =C5=81ukasz Majewski <lukma@nabladev.com> writes:
->>=20
->> > Hi Philippe,
->> >=20=20
->> >> Hi =C5=81ukasz,
->> >>=20
->> >> =C5=81ukasz Majewski <lukma@nabladev.com> writes:
->> >>=20=20=20
->> >> >> > Could you get me a trace which goes back up to two secs before
->> >> >> > the time reported by evl about the inband switch of the timer
->> >> >> > responder? e.g.=20=20=20=20
->> >> >
->> >> > Why is it 2 seconds? Is it related to latmus "refresh time"?
->> >> > (which is 1s)
->> >> >=20=20=20=20
->> >>=20
->> >> Picking this delay is purely heuristical. Such a long backlog is
->> >> likely going to include the smoking gun, if any.
->> >>=20=20=20
->> >> >> >=20
->> >> >> > [   75.214527] EVL: timer-responder:743 switching in-band
->> >> >> > [pid=3D745, excpt=3D14, user_pc=3D0x77d08492a5fe]
->> >> >> >=20
->> >> >> > In the above case, I would need a trace going back to
->> >> >> > 73.214527 or so.=20=20=20=20=20
->> >> >>=20
->> >> >> Apparently the ftrace buffer was too small. I will adjust it to
->> >> >> store more data and share results.=20=20=20=20
->> >> >
->> >> > It is also interesting, that:
->> >> >
->> >> > bash-5.2# echo 16384 > /sys/kernel/debug/tracing/buffer_size_kb
->> >> > bash-5.2# cat /sys/kernel/debug/tracing/buffer_size_kb
->> >> > 16387
->> >> > bash-5.2# evl trace -eirq -f
->> >> > tracing enabled
->> >> > bash-5.2# cat /sys/kernel/debug/tracing/buffer_size_kb
->> >> > 131
->> >> >
->> >> > Reduces the buffer size...
->> >> >=20=20=20=20
->> >>=20
->> >> Yeah, the evl-trace script is not that smart. I can see the issue
->> >> causing this, will fix.
->> >>=20=20=20
->> >> > Hence, I've used the "normal" ftrace with enabled evl functions -
->> >> > the=20=20=20=20
->> >>=20
->> >> FWIW, EVL relies on the normal ftrace. However, evl-trace fiddles
->> >> with the sysfs entries manually, and may be a bit naive at times.
->> >> As Jan pointed out long ago, relying on the trace-cmd front-end
->> >> would be a better approach than tweaking ftrace's sysfs-based
->> >> controls manually at the very least. evl-trace adds EVL semantics
->> >> to the tracing configuration which is handy, but the way it is
->> >> done today may deserve a revamping, or maybe drop it entirely in
->> >> favor of trace-cmd if we have enough flexibility there in order to
->> >> introduce some EVL specifics.
->> >>=20=20=20
->> >> > detailed information about the ftrace config is with log files:
->> >> > https://nextcloud.swupdate.org/index.php/s/czBd3Ydq9B9noZ7
->> >> >
->> >> >
->> >> > To extract the cpu2 specific data:
->> >> > bash-5.2# grep -rnE '\[002\]' Xenomai4-ISW-trace-6.6-logs.txt >
->> >> > cpu2.txt
->> >> >
->> >> > Here again the ISW happens in the cpu2 execution "hole":
->> >> > [  128.466459] EVL: timer-responder:736 switching in-band
->> >> > [pid=3D738, excpt=3D14, user_pc=3D0x7588e71985fe]
->> >> >
->> >> > Happens for cpu2 between:
->> >> >
->> >> > 11832546:          <idle>-0     [002] *..2.   128.466438:
->> >> > 	sched_idle_set_state <-cpuidle_enter_state
->> >> > 11832547:          <idle>-0     [002] *..2.   128.466468:
->> >> > 	handle_irq_pipelined_prepare <-arch_pipeline_entry
->> >> >
->> >> > However, now the log is large enough to inspect what has
->> >> > happened in the system for ~4s before.
->> >> >
->> >> >
->> >> > With the logs:
->> >> > timer-responder-738     [002] *.~2.   128.466214: evl_timer_shot:
->> >> > [proxy-timer/2] at 128.466467 (delay: 253 us, 66918 cycles)
->> >> >
->> >> > and after ISW:
->> >> >
->> >> > <idle>-0       [002] *.~1.   128.466469: evl_timer_shot:
->> >> > latmus_pulse_handler at 128.467208 (delay: 739 us, 195206 cycles)
->> >> >
->> >> > Why there is such increase in "delay" (253 vs 739 us) ?=20
->> >> >
->> >> > It looks like we have only 2us delay as the timer has fired on
->> >> > 128.466469 vs. expected 128.466467.
->> >> >=20=20=20=20
->> >>=20
->> >> Ok, so the issue is still the same: for some reason, the
->> >> timer-responder thread is taking a (minor) fault when accessing
->> >> some memory, on its way back from the ioctl(EVL_LATIOC_PULSE)
->> >> syscall, or right after. This seems to be valid memory though,
->> >> just not immediately accessible, otherwise we'd have received
->> >> SEGV, which we did not.=20=20
->> >
->> > Yes, I also think so - like some "deferred allocation" despite of
->> > mlockall.
->> >
->> > Please find the logs with the below patch applied:
->> > https://nextcloud.swupdate.org/index.php/s/JXNW5bJrB3fQo5E
->> >=20=20
->>=20
->> Thanks. I need to analyze the fault flags next week to see if I can
->> make something of these, but I just stumbled on an obviously
->> significant fact when looking at the multi-CPU view: the memory
->> compaction daemon is running asynchronously on other cores while the
->> responder is taking the fault. Compaction is all about moving memory
->> around to free larger physical regions, so updating PTEs will happen
->> as a result.
->>=20
->> Moreover, I could not reproduce the issue at hand, but I did not have
->> CONFIG_COMPACTION enabled. In the meantime, could you try disabling
->> this on your end, to see if the fault still appears?
->>=20
+>> CONFIG_COMPACTION=n - it also automatically set CONFIG_MIGRATION=n
+>>  From the Kconfig dependencies CONFIG_MIGRATION=n -> !PREEMPT_RT
+>> [=n]
+>> (i.e. it can be only enabled when PREEMPT_RT is NOT)
+>> I've just set CONFIG_COMPACTION=n (which also disabled the
+>> CONFIG_MIGRATION) and now I cannot reproduce the issue on my setup (i.e.
+>> v6.6.) anymore.
+>> It looks like those (enabled by default) config options have slipped
+>> in
+>> silently and introduced the issue...
+>> 
 >
-> CONFIG_COMPACTION=3Dn - it also automatically set CONFIG_MIGRATION=3Dn
+> I can confirm disabling CONFIG_COMPACTION and CONFIG_MIGRATION fixed the issue for me as well. Fun fact is that I started looking over these options when I first raised the issue, but then realised that evl check did not flag them as problematic, giving me a false sense of security ...
+> Without knowing much about the internals, in hindsight it makes perfect sense that the process was more likely to fail early on in the lifteime of the process and/or of the kernel than after it had been running for a long time: once the memory layout has settled, it's unlikely it will get moved again.
 >
-> From the Kconfig dependencies CONFIG_MIGRATION=3Dn -> !PREEMPT_RT [=3Dn]
-> (i.e. it can be only enabled when PREEMPT_RT is NOT)
->
-> I've just set CONFIG_COMPACTION=3Dn (which also disabled the
-> CONFIG_MIGRATION) and now I cannot reproduce the issue on my setup (i.e.
-> v6.6.) anymore.
->
-> It looks like those (enabled by default) config options have slipped in
-> silently and introduced the issue...
->
+> By the way, I was thinking that replacing an in-menuconfig warning (a
+> la Xenomai-3) would be nice to have, instead of having to manually run
+> evl check on the config file.
 
-Yeah, sorry guys. This silly issue should never have happened, I simply
-overlooked the migration setting which has been well-known to be a
-latency killer since 2015 or so if my memory serves me well, my bad.
+Actually, we want both. Some automated configuration process may not
+give us any hint loud enough, a runtime check is always welcome,
+especially when providing support.
 
---=20
+-- 
 Philippe.
