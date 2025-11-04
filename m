@@ -1,129 +1,130 @@
-Received: from mx.nabladev.com (mx.nabladev.com [178.251.229.89])
+Received: from mslow3.mail.gandi.net (mslow3.mail.gandi.net [217.70.178.249])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9B0F30AAB8
-	for <xenomai@lists.linux.dev>; Tue,  4 Nov 2025 07:53:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.251.229.89
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D87F16DEB3
+	for <xenomai@lists.linux.dev>; Tue,  4 Nov 2025 08:25:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.249
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762242823; cv=none; b=fpx3hzErXNVIZL2JRQQqAQaOql5sFYZVJEl1vp2QHEz7Y4z5zGEuwtDsbR+L1D6Jf7rrWYHbo9Yt4AfUH2KdFvj/K5kpeZ53ZdYrmHRyk/LMxsr3OOJZWHfCpuixFZpvOHf3YoQSbyEhQzms2QrGVbzRopy76JuWh7OhEwGUtyI=
+	t=1762244747; cv=none; b=ZBRrPFqwJWCxO7ip+84d6Ggod/F6R+BEpKDVbPUCxUi+jtLekjF9nVZgVjkS9WniOY/aLLIo2k3SeLrwUvZVs3W2vKX0pUQgeyYnqN4f8Blak9uyEAFmU4YH52j7Rlp82npANrwnNY8tjK2hz9ltjBfZWcPgG5ByeCRZrAYDezo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762242823; c=relaxed/simple;
-	bh=6Mzgy5aDjQBqykbLcSJ3a3sixKIXmq1QB7Un+o/s5io=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=euFkuQNEQFo8BReFH5FchBQGDNdeMe1Il+6JjHGkmAWqd63LLkROwru5bXmb5jhTVPGMbylcKNoivQSFf7QEUg3YDRdgKN2njOH1jKmtRKBJKJL8VxvcdWb3Ao24WqqA83aqbYREYzF0arO1Wc59CR9GlT8vJerxQVbkXLG6fu4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nabladev.com; spf=pass smtp.mailfrom=nabladev.com; dkim=pass (2048-bit key) header.d=nabladev.com header.i=@nabladev.com header.b=UMoWd0ou; arc=none smtp.client-ip=178.251.229.89
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nabladev.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nabladev.com
+	s=arc-20240116; t=1762244747; c=relaxed/simple;
+	bh=l0C1dyjj/7i5tCEssyWnbrk0i6T3tGg7GNOLL2zuUzM=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=GQeLwauPuayOyhpJ1qBU3B0/tU6yzV5FVF3dlf6+a1meZBboY7BhTloJT+XWchGnG6gDHkgJvQqxM+jMdInwS+z16Xk9ah5vw+2YYegJTQCJdjo+DheoKS9AwFMrXcSkcfMrUUzKRpOxpIIuBOu+ium09CK062ZDtkonAm/Dndc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=G2Zxg2Yt; arc=none smtp.client-ip=217.70.178.249
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=nabladev.com header.i=@nabladev.com header.b="UMoWd0ou"
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id C2F3D108D02;
-	Tue,  4 Nov 2025 08:53:31 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nabladev.com;
-	s=dkim; t=1762242812;
-	h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 content-transfer-encoding:in-reply-to:references;
-	bh=jweSj5czry2AuxzblM4G/p0/TGfpEODQ71wh2f5EC78=;
-	b=UMoWd0ouBGaVJNbiy/rMUUa5yPxyS70h7QpAAXvj4VcYxa55y6rxFprm1n8UYaLsIgWIwV
-	R4LpPd9y3fBDLpyzifETIgxh3hCd0ncpDMubNKp0sznMRH1aWNaTAPTU/1Cq0wlGT6v0kh
-	Zz0cxJafaw4CbVNMZnojL9iB3MGFFVOQ7Yv+HmeDVUpdR5zy/MugKtpp5BN9AbFGnLLNOu
-	PqPPx5/GEF2MIuobyccUcnKL8bRv8UWOuzXMEIfFVZ4GTvftYkBBw6B7ZkBl8oh1ACjawr
-	gPeJR5gRWr2kQMr7gIbyG1JYc32xBapqys+0Lf3Uzh5hPhMmr9e7U0iiJdJG2w==
-Date: Tue, 4 Nov 2025 08:53:29 +0100
-From: =?UTF-8?B?xYF1a2Fzeg==?= Majewski <lukma@nabladev.com>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Giulio Moro <giulio@bela.io>, Xenomai <xenomai@lists.linux.dev>
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="G2Zxg2Yt"
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+	by mslow3.mail.gandi.net (Postfix) with ESMTP id 7762E582573
+	for <xenomai@lists.linux.dev>; Tue,  4 Nov 2025 08:19:34 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 0212144302;
+	Tue,  4 Nov 2025 08:19:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1762244367;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=LDRzMc/Zx6Tr/gdUn7retyBqn7vWSbBI1Nbkp74e/h4=;
+	b=G2Zxg2Ytlo29/dmt6z6A1EnIwnh1+drOUJ4pbanR3ew4TT7TCvcaj4L3ZskIOBu16TrpG3
+	iqXk6j2MvNrsFo47CQ10udlYxafQq0EeDVJUs3ue1eV7aTpMWVz13n9lH6r0goukumLc3J
+	Whu4l2bphdzRptuy0RNd/iylpNCujJyPkui+7cQk9lITjk5Ww52GQF3tpwxAZ13J0RH09s
+	cW9uVpbxEdlL0EtccHwysQ8YYlJ+jDMhQB9/0/B34VfQKqFMjZ0Kj7qjnJ9JfqB/vlg3R3
+	cHkfoSDjbzKLQv9CsFJqtP8iEOTnF9tsGHEu5EAZjZIvPV8/2I7TmW7xEO0hxg==
+From: Philippe Gerum <rpm@xenomai.org>
+To: =?utf-8?Q?=C5=81ukasz?= Majewski <lukma@nabladev.com>
+Cc: Giulio Moro <giulio@bela.io>,  Xenomai <xenomai@lists.linux.dev>
 Subject: Re: Unexpected switches to in-band
-Message-ID: <20251104085329.3bfa97f9@wsk>
-In-Reply-To: <87cy5znrc1.fsf@xenomai.org>
+In-Reply-To: <20251104085329.3bfa97f9@wsk> (=?utf-8?Q?=22=C5=81ukasz?=
+ Majewski"'s message of
+	"Tue, 4 Nov 2025 08:53:29 +0100")
 References: <d3f7d465-e914-bf4d-be69-7e42fe288064@bela.io>
-	<20251009151737.0d03b211@wsk>
-	<20676160-4572-d92d-4b33-ff4255946345@bela.io>
-	<87qzv9sa9c.fsf@xenomai.org>
-	<87ikgls9kh.fsf@xenomai.org>
+	<87qzv9sa9c.fsf@xenomai.org> <87ikgls9kh.fsf@xenomai.org>
 	<f916d01d-2bd0-cdfd-2e9e-562968a9934f@bela.io>
 	<20251020094705.2ac256f2@wsk>
 	<9d2bacac-8d70-f083-e926-21beee2207c2@bela.io>
-	<87o6q1ad07.fsf@xenomai.org>
-	<20251023155439.0170f987@wsk>
-	<87a51djuor.fsf@xenomai.org>
-	<20251027120535.7933c720@wsk>
-	<20251027172505.29eecfb2@wsk>
-	<875xbyawx7.fsf@xenomai.org>
-	<20251029145125.71debaab@wsk>
-	<20251030132602.2d1ccfcc@wsk>
-	<87qzukuzy5.fsf@xenomai.org>
-	<20251031165615.2c9f72f5@wsk>
-	<87bjlnc9u5.fsf@xenomai.org>
-	<20251101165957.12432bf4@wsk>
+	<87o6q1ad07.fsf@xenomai.org> <20251023155439.0170f987@wsk>
+	<87a51djuor.fsf@xenomai.org> <20251027120535.7933c720@wsk>
+	<20251027172505.29eecfb2@wsk> <875xbyawx7.fsf@xenomai.org>
+	<20251029145125.71debaab@wsk> <20251030132602.2d1ccfcc@wsk>
+	<87qzukuzy5.fsf@xenomai.org> <20251031165615.2c9f72f5@wsk>
+	<87bjlnc9u5.fsf@xenomai.org> <20251101165957.12432bf4@wsk>
 	<58fcd922-3a50-74c5-bfee-01cbcb7e1e6d@bela.io>
-	<87cy5znrc1.fsf@xenomai.org>
-Organization: Nabla
-X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+	<87cy5znrc1.fsf@xenomai.org> <20251104085329.3bfa97f9@wsk>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Tue, 04 Nov 2025 09:19:22 +0100
+Message-ID: <87v7jq43cl.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Last-TLS-Session-Version: TLSv1.3
-
-Hi Philippe,
-
-> Giulio Moro <giulio@bela.io> writes:
-> 
-> > Hi everyone,
-> >  
-> >> CONFIG_COMPACTION=n - it also automatically set CONFIG_MIGRATION=n
-> >>  From the Kconfig dependencies CONFIG_MIGRATION=n -> !PREEMPT_RT
-> >> [=n]
-> >> (i.e. it can be only enabled when PREEMPT_RT is NOT)
-> >> I've just set CONFIG_COMPACTION=n (which also disabled the
-> >> CONFIG_MIGRATION) and now I cannot reproduce the issue on my setup
-> >> (i.e. v6.6.) anymore.
-> >> It looks like those (enabled by default) config options have
-> >> slipped in
-> >> silently and introduced the issue...
-> >>   
-> >
-> > I can confirm disabling CONFIG_COMPACTION and CONFIG_MIGRATION
-> > fixed the issue for me as well. Fun fact is that I started looking
-> > over these options when I first raised the issue, but then realised
-> > that evl check did not flag them as problematic, giving me a false
-> > sense of security ... Without knowing much about the internals, in
-> > hindsight it makes perfect sense that the process was more likely
-> > to fail early on in the lifteime of the process and/or of the
-> > kernel than after it had been running for a long time: once the
-> > memory layout has settled, it's unlikely it will get moved again.
-> >
-> > By the way, I was thinking that replacing an in-menuconfig warning
-> > (a la Xenomai-3) would be nice to have, instead of having to
-> > manually run evl check on the config file.  
-> 
-> Actually, we want both. Some automated configuration process may not
-> give us any hint loud enough, a runtime check is always welcome,
-> especially when providing support.
-> 
-
-IMHO, it would be enough if we would have:
-
-1. evl check complaining loudly about CONFIG_COMPACTION=y and
-CONFIG_MIGRATION=y
-
-2. Just adjust Kconfig to have:
-CONFIG_MIGRATION if !DOVETAIL
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeeffedrtdeggddukedthedvucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtgfesthhqredttderjeenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepveegudejhedtheeihfelfeffleffleeitdelgfelhfduhedvtdeljeekteeghefhnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhnsggprhgtphhtthhopeefpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehgihhulhhiohessggvlhgrrdhiohdprhgtphhtthhopehluhhkmhgrsehnrggslhgruggvvhdrtghomh
+X-GND-Sasl: rpm@xenomai.org
 
 
+Hi =C5=81ukasz,
 
--- 
-Best regards,
+=C5=81ukasz Majewski <lukma@nabladev.com> writes:
 
-Lukasz Majewski
+> Hi Philippe,
+>
+>> Giulio Moro <giulio@bela.io> writes:
+>>=20
+>> > Hi everyone,
+>> >=20=20
+>> >> CONFIG_COMPACTION=3Dn - it also automatically set CONFIG_MIGRATION=3Dn
+>> >>  From the Kconfig dependencies CONFIG_MIGRATION=3Dn -> !PREEMPT_RT
+>> >> [=3Dn]
+>> >> (i.e. it can be only enabled when PREEMPT_RT is NOT)
+>> >> I've just set CONFIG_COMPACTION=3Dn (which also disabled the
+>> >> CONFIG_MIGRATION) and now I cannot reproduce the issue on my setup
+>> >> (i.e. v6.6.) anymore.
+>> >> It looks like those (enabled by default) config options have
+>> >> slipped in
+>> >> silently and introduced the issue...
+>> >>=20=20=20
+>> >
+>> > I can confirm disabling CONFIG_COMPACTION and CONFIG_MIGRATION
+>> > fixed the issue for me as well. Fun fact is that I started looking
+>> > over these options when I first raised the issue, but then realised
+>> > that evl check did not flag them as problematic, giving me a false
+>> > sense of security ... Without knowing much about the internals, in
+>> > hindsight it makes perfect sense that the process was more likely
+>> > to fail early on in the lifteime of the process and/or of the
+>> > kernel than after it had been running for a long time: once the
+>> > memory layout has settled, it's unlikely it will get moved again.
+>> >
+>> > By the way, I was thinking that replacing an in-menuconfig warning
+>> > (a la Xenomai-3) would be nice to have, instead of having to
+>> > manually run evl check on the config file.=20=20
+>>=20
+>> Actually, we want both. Some automated configuration process may not
+>> give us any hint loud enough, a runtime check is always welcome,
+>> especially when providing support.
+>>=20
+>
+> IMHO, it would be enough if we would have:
+>
+> 1. evl check complaining loudly about CONFIG_COMPACTION=3Dy and
+> CONFIG_MIGRATION=3Dy
+>
+> 2. Just adjust Kconfig to have:
+> CONFIG_MIGRATION if !DOVETAIL
 
---
-Nabla Software Engineering GmbH
-HRB 40522 Augsburg
-Phone: +49 821 45592596
-E-Mail: office@nabladev.com
-Geschftsfhrer : Stefano Babic
+Unfortunately, CONFIG_MIGRATION is required via the CONFIG_CMA
+dependency for some platforms such as i.MX with Vivante GPUs.  In this
+case, we have to enable this feature, restricting page migration to
+well-identified runtime phases. We might try to add per-{arch, platform}
+conditionals in order to narrow the scope, but this might be a fragile
+solution.
+
+--=20
+Philippe.
