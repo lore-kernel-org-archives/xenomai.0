@@ -1,105 +1,129 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from mx.nabladev.com (mx.nabladev.com [178.251.229.89])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3795031B131
-	for <xenomai@lists.linux.dev>; Mon,  3 Nov 2025 17:38:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9B0F30AAB8
+	for <xenomai@lists.linux.dev>; Tue,  4 Nov 2025 07:53:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.251.229.89
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762191509; cv=none; b=DnNcv/r+2sx7/KfqsWNdI6u59QcO4Gg9Zcsf1capN+U9pM5Oilk3VxDnLOrnAh+oy0ndCSGSQLlRqvoLLh+FJYSpG1R16RvhFTn8t7YlywePY3S+ds2xfZYq+nD9n3Ozk5XZupPTabo5eYoJ0WF+XW3nB+a+SGfD5RuoJE2Jy5A=
+	t=1762242823; cv=none; b=fpx3hzErXNVIZL2JRQQqAQaOql5sFYZVJEl1vp2QHEz7Y4z5zGEuwtDsbR+L1D6Jf7rrWYHbo9Yt4AfUH2KdFvj/K5kpeZ53ZdYrmHRyk/LMxsr3OOJZWHfCpuixFZpvOHf3YoQSbyEhQzms2QrGVbzRopy76JuWh7OhEwGUtyI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762191509; c=relaxed/simple;
-	bh=B+zDBtQKAIZef6T871UR542r5uVRZd63aBW4RM8Dcco=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=WIFubdtqVgB+pGTzN9RGcAuurPAHeOOLDOcOaQKVVit6jLmXJHsKaLsBWKLno9/mVXFApTUPCofdGge66tKfVQMgHvgROB+jWzqVJDqsFgaV9fGxL9I43Op7N83QD4+2Q7RpMdRMIWWRxBLUEaYjQFIjkDvo4pdcrlI6oLBFzjQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=HFi/h+Bo; arc=none smtp.client-ip=185.136.64.227
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1762242823; c=relaxed/simple;
+	bh=6Mzgy5aDjQBqykbLcSJ3a3sixKIXmq1QB7Un+o/s5io=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=euFkuQNEQFo8BReFH5FchBQGDNdeMe1Il+6JjHGkmAWqd63LLkROwru5bXmb5jhTVPGMbylcKNoivQSFf7QEUg3YDRdgKN2njOH1jKmtRKBJKJL8VxvcdWb3Ao24WqqA83aqbYREYzF0arO1Wc59CR9GlT8vJerxQVbkXLG6fu4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nabladev.com; spf=pass smtp.mailfrom=nabladev.com; dkim=pass (2048-bit key) header.d=nabladev.com header.i=@nabladev.com header.b=UMoWd0ou; arc=none smtp.client-ip=178.251.229.89
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=nabladev.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nabladev.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="HFi/h+Bo"
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20251103075737b6b35ec1e8000207c2
-        for <xenomai@lists.linux.dev>;
-        Mon, 03 Nov 2025 08:57:37 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=B+zDBtQKAIZef6T871UR542r5uVRZd63aBW4RM8Dcco=;
- b=HFi/h+BooKTzKUalLVWPCymyyDvxoK/RyezLal7BKKYFZlxKtQT5J484dD5hpAHnGZSheL
- /jFFlL0BYK668Y5jYnzmoZOnMKBWdw3o4Ub1PuIJr2N6NO0cDATeYlbodPF1n5d6xAD9dqGL
- XhZLHIsr0wnOivpi7dzGmkMswvYJTvdlDRft1NMYQEycqrvMaswJM+iM+D0V+eYxzpXZJPKX
- nnK+wjuXNyzZUETsaJ1jrtQbMP2nUS6MwqHoo3Cf/vCAKpzJ4PPB+yqniTwfVv86Q0BpgNsv
- 8ixjZ93+vBtaV7pNDO79D8AeHlzNAlj1yL6M6wh3bMgcidBSD9U8uZfQ==;
-Message-ID: <2de7f3b171d713e45a624896ea170d49066d5aeb.camel@siemens.com>
+	dkim=pass (2048-bit key) header.d=nabladev.com header.i=@nabladev.com header.b="UMoWd0ou"
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id C2F3D108D02;
+	Tue,  4 Nov 2025 08:53:31 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nabladev.com;
+	s=dkim; t=1762242812;
+	h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 content-transfer-encoding:in-reply-to:references;
+	bh=jweSj5czry2AuxzblM4G/p0/TGfpEODQ71wh2f5EC78=;
+	b=UMoWd0ouBGaVJNbiy/rMUUa5yPxyS70h7QpAAXvj4VcYxa55y6rxFprm1n8UYaLsIgWIwV
+	R4LpPd9y3fBDLpyzifETIgxh3hCd0ncpDMubNKp0sznMRH1aWNaTAPTU/1Cq0wlGT6v0kh
+	Zz0cxJafaw4CbVNMZnojL9iB3MGFFVOQ7Yv+HmeDVUpdR5zy/MugKtpp5BN9AbFGnLLNOu
+	PqPPx5/GEF2MIuobyccUcnKL8bRv8UWOuzXMEIfFVZ4GTvftYkBBw6B7ZkBl8oh1ACjawr
+	gPeJR5gRWr2kQMr7gIbyG1JYc32xBapqys+0Lf3Uzh5hPhMmr9e7U0iiJdJG2w==
+Date: Tue, 4 Nov 2025 08:53:29 +0100
+From: =?UTF-8?B?xYF1a2Fzeg==?= Majewski <lukma@nabladev.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Giulio Moro <giulio@bela.io>, Xenomai <xenomai@lists.linux.dev>
 Subject: Re: Unexpected switches to in-band
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
-Cc: =?UTF-8?Q?=C5=81ukasz?= Majewski <lukma@nabladev.com>, Giulio Moro
-	 <giulio@bela.io>, Xenomai <xenomai@lists.linux.dev>
-Date: Mon, 03 Nov 2025 08:57:37 +0100
-In-Reply-To: <87qzujaqlw.fsf@xenomai.org>
+Message-ID: <20251104085329.3bfa97f9@wsk>
+In-Reply-To: <87cy5znrc1.fsf@xenomai.org>
 References: <d3f7d465-e914-bf4d-be69-7e42fe288064@bela.io>
-		<20251009151737.0d03b211@wsk>
-		<20676160-4572-d92d-4b33-ff4255946345@bela.io>	<87qzv9sa9c.fsf@xenomai.org>
-	 <87ikgls9kh.fsf@xenomai.org>	<f916d01d-2bd0-cdfd-2e9e-562968a9934f@bela.io>
-		<20251020094705.2ac256f2@wsk>
-		<9d2bacac-8d70-f083-e926-21beee2207c2@bela.io>	<87o6q1ad07.fsf@xenomai.org>
-	 <20251023155439.0170f987@wsk>	<87a51djuor.fsf@xenomai.org>
-	 <20251027120535.7933c720@wsk>	<20251027172505.29eecfb2@wsk>
-	 <875xbyawx7.fsf@xenomai.org>	<20251029145125.71debaab@wsk>
-	 <20251030132602.2d1ccfcc@wsk>	<87qzukuzy5.fsf@xenomai.org>
-	 <20251031165615.2c9f72f5@wsk>	<87bjlnc9u5.fsf@xenomai.org>
-		<5c69758f-876b-4a56-99b7-09eb22537680@siemens.com>
-		<875xbvc5a3.fsf@xenomai.org> <87qzujaqlw.fsf@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	<20251009151737.0d03b211@wsk>
+	<20676160-4572-d92d-4b33-ff4255946345@bela.io>
+	<87qzv9sa9c.fsf@xenomai.org>
+	<87ikgls9kh.fsf@xenomai.org>
+	<f916d01d-2bd0-cdfd-2e9e-562968a9934f@bela.io>
+	<20251020094705.2ac256f2@wsk>
+	<9d2bacac-8d70-f083-e926-21beee2207c2@bela.io>
+	<87o6q1ad07.fsf@xenomai.org>
+	<20251023155439.0170f987@wsk>
+	<87a51djuor.fsf@xenomai.org>
+	<20251027120535.7933c720@wsk>
+	<20251027172505.29eecfb2@wsk>
+	<875xbyawx7.fsf@xenomai.org>
+	<20251029145125.71debaab@wsk>
+	<20251030132602.2d1ccfcc@wsk>
+	<87qzukuzy5.fsf@xenomai.org>
+	<20251031165615.2c9f72f5@wsk>
+	<87bjlnc9u5.fsf@xenomai.org>
+	<20251101165957.12432bf4@wsk>
+	<58fcd922-3a50-74c5-bfee-01cbcb7e1e6d@bela.io>
+	<87cy5znrc1.fsf@xenomai.org>
+Organization: Nabla
+X-Mailer: Claws Mail 3.19.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Last-TLS-Session-Version: TLSv1.3
 
-On Fri, 2025-10-31 at 19:11 +0100, Philippe Gerum wrote:
+Hi Philippe,
 
-[snip]
+> Giulio Moro <giulio@bela.io> writes:
+> 
+> > Hi everyone,
+> >  
+> >> CONFIG_COMPACTION=n - it also automatically set CONFIG_MIGRATION=n
+> >>  From the Kconfig dependencies CONFIG_MIGRATION=n -> !PREEMPT_RT
+> >> [=n]
+> >> (i.e. it can be only enabled when PREEMPT_RT is NOT)
+> >> I've just set CONFIG_COMPACTION=n (which also disabled the
+> >> CONFIG_MIGRATION) and now I cannot reproduce the issue on my setup
+> >> (i.e. v6.6.) anymore.
+> >> It looks like those (enabled by default) config options have
+> >> slipped in
+> >> silently and introduced the issue...
+> >>   
+> >
+> > I can confirm disabling CONFIG_COMPACTION and CONFIG_MIGRATION
+> > fixed the issue for me as well. Fun fact is that I started looking
+> > over these options when I first raised the issue, but then realised
+> > that evl check did not flag them as problematic, giving me a false
+> > sense of security ... Without knowing much about the internals, in
+> > hindsight it makes perfect sense that the process was more likely
+> > to fail early on in the lifteime of the process and/or of the
+> > kernel than after it had been running for a long time: once the
+> > memory layout has settled, it's unlikely it will get moved again.
+> >
+> > By the way, I was thinking that replacing an in-menuconfig warning
+> > (a la Xenomai-3) would be nice to have, instead of having to
+> > manually run evl check on the config file.  
+> 
+> Actually, we want both. Some automated configuration process may not
+> give us any hint loud enough, a runtime check is always welcome,
+> especially when providing support.
+> 
 
-> > >=20
-> > > > Thanks. I need to analyze the fault flags next week to see if I can=
- make
-> > > > something of these, but I just stumbled on an obviously significant=
- fact
-> > > > when looking at the multi-CPU view: the memory compaction daemon is
-> > > > running asynchronously on other cores while the responder is taking=
- the
-> > > > fault. Compaction is all about moving memory around to free larger
-> > > > physical regions, so updating PTEs will happen as a result.
-> > > >=20
-> > > > Moreover, I could not reproduce the issue at hand, but I did not ha=
-ve
-> > > > CONFIG_COMPACTION enabled. In the meantime, could you try disabling=
- this
-> > > > on your end, to see if the fault still appears?
-> > >=20
-> > > CONFIG_COMPACTION selects CONFIG_MIGRATION, and that is well-known to=
- be
-> > > incompatible with RT. Xenomai 3 is warning about that that, EVL does =
-not?
-> > >=20
-> >=20
-> > Dovetail should do that when CONFIG_DOVETAIL is set, this is by
-> > definition common to any rt core.
->=20
-> Also, it would be much better to find a way to exclude any mm bearing
-> the MMF_DOVETAIL flag from the movable set, instead of excluding
-> everything that sets CONFIG_COMPACTION.
+IMHO, it would be enough if we would have:
 
-Are there any concrete ideas already? Asking because I'm expecting this
-topic to appear on my radar soon, again. Some colleagues were fighting
-with the opposite direction in the past: CONFIG_COMPACTION being
-disabled. That caused some trouble with a memory intense application
-running next to the RT workload. The OOM killer was invoked quite
-regularly.
+1. evl check complaining loudly about CONFIG_COMPACTION=y and
+CONFIG_MIGRATION=y
 
-Florian
+2. Just adjust Kconfig to have:
+CONFIG_MIGRATION if !DOVETAIL
 
+
+
+-- 
+Best regards,
+
+Lukasz Majewski
+
+--
+Nabla Software Engineering GmbH
+HRB 40522 Augsburg
+Phone: +49 821 45592596
+E-Mail: office@nabladev.com
+Geschftsfhrer : Stefano Babic
