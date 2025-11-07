@@ -1,63 +1,105 @@
-Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013067.outbound.protection.outlook.com [52.101.72.67])
+Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013065.outbound.protection.outlook.com [52.101.72.65])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC6D53101B8
-	for <xenomai@lists.linux.dev>; Fri,  7 Nov 2025 08:00:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.72.67
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E5932E1F02
+	for <xenomai@lists.linux.dev>; Fri,  7 Nov 2025 16:32:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.72.65
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762502444; cv=fail; b=Ir5T0w8igxr9xhuAmyLcJiQU1Zi70xKY4M6VNhX8kQaMeXVZdKg5XmEFLeolCLsKCSuiMvKLqNE5RScyZ6Jv3e9cQQ0KACD+IsmKo4laodjiy+huLeyRMhfFQGNFo7NYOXDNAc+uAI7j5dzfe7K1kHU64/i7lH2ylZoWhgExpgg=
+	t=1762533178; cv=fail; b=dE/VXrbt5s8nR+g7lSYzUBbrN24N5ka0Kp3GsCcxTDjnxfru3XP9iSg+yjKA8JcVrBbz1YW7G3p3aHrJB401/hneYGPM0rJw4uJ3xhyAaYO5UCsseM+On0gj2lDmH3q/B3GpJzYAHLMHymRBDeIO+JqEEj29/NB/cK4wSLx3r3E=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762502444; c=relaxed/simple;
-	bh=/RDvo2DVmrOLgT0adBMuVBFNtTK4/NItjgql+SA35FI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=B85A38ABQVxiSkxOnQNgEuQpysu3LsIk6Vd9CvNXYjDRuN3EwlSb/ZTPpzxlXM9tsANWko1OTtsDcb14gIrJEhI9NBl9YjhBXNuvvb0jaGdoZf1gxQ3xFd3418TXQcs27HeAVu+mTAdvC2tWpnHdKhttQ86kkz+gkn5IJ/SOumg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=ej2ZX30W; arc=fail smtp.client-ip=52.101.72.67
+	s=arc-20240116; t=1762533178; c=relaxed/simple;
+	bh=X3yzjsABEWmc4/J0v62tcmFlwY9DesvVos4OCaRAno8=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Ae5Ufs61cPbZG1Z1M+GKrNj87+s0AnodWUrmml4KNZcS9vrEcoVbxwVAJ5kldTfnMxV3Q4J+CZmQbtCKWEmyLYrukd/DbU1FaPa0+lq5PzA2cg4RCNc56ZKfVn+McfGMOh0W4SRcitqIxo+BpMRnr3Plg8xcybyN4Rw6sHJIfeM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=IyychbVr; arc=fail smtp.client-ip=52.101.72.65
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="ej2ZX30W"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="IyychbVr"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=PQSWyPCKvWWbbTCLNBdSSIMqbBAMG132z9zVZzJJ4OxVMlqp6gzxW/OKlfFMZuX6hWkLbe/1+WopeY2U5tQJg+QxVDhxxyalUtR/t0O7y1audxwAT6LrHfKoWyjSPfNdSWt1Mx41WU7s97balqrmLdqU6ELwrpglEl7zZPOLzubGO64YFDx1Q0fNcmWylMjAeV51hQTRk4rF6vVVg4vkzh6+QrUv/14Oo0lHpCoan5JgJdUhNap2eElOwq8KaFPNVJBZACp0VOpngVMeaog2yXoHiK3DlwqyZnGy+xYRVaZ9/tLOD+94cFHgKClnPWCLw49pZF6CNJWuLTdbCU9xQA==
+ b=ebJUCp02NiYH6yXoOVkyIpArfYeOTpU31j/w9teP7KO7Ru9ayIiBxv9MDGUFac87n7agEUhaWF2PtMrEKE564X3xNkH43EVXoLPSb0RNIGl+AOm8PjhJpv9ceGAtgOJIGr0IRp6Gu0JzqBkeOFTvhNUSRLGBUTd76bW3h2yRaDWo5jZH+6rKCn9IV+MoSL9xurrRaeivRvjAtJlbhcGsNpRqzkhtEpCIASe0c9rPbXIFrIitD0XQVgl0eaoP/L6XxDYLC6XiGWicDXarECXn1ec8NHYVyLFxTwDR9DuwcTY1mJRBYfMctC+lZYAoXQOJUWzfufOVzHo6Mmrhx66dWw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=mILkNEkeKRwlCgAkCyb631REUAqeOF61wa0BeYg9SmQ=;
- b=DVJZRakADnYZZjj7CM1WZSHjRu+56lOOf0g4ZdhLMqdk74+WAN5HVgcXHCwy1uC4HgndiaFeN9APYPvisJZS/A6Y/5bn1IHWjrJuE7q5siL1n22XwXEkHo9Z86UKt+VSEdYlOXVeSNAIKBQNFA7h0/cii2ZiIVMrUbHdfviQFNy+dj0F8jrTziuFRfSnJKf2KFnm4+nOxcem91dr2ycfyXX5YvhtRT9fG5hPkOcx7BQWGwLz2bnrYDbI6p8V08Wy4nkBKS6hU7CqfLLShUemaZLg455eJyVpBXvXoGGbFJW31Y7Rf+7F+90S0sPBiSkULKU+ek8Oa5gqi+X7rtFpzQ==
+ bh=G4q2lQBzPHRo3YoDqVg0PZgEy/yE0KiZJIfWJfR62d8=;
+ b=iaHIrWymYSHr+j6g6Mp3b/R0qWhBOXbtmZyd/84ZIrp2bg+HTAgrByCMUpqWKXy2U53yuFw7Mb5r0S8A6HzrYBDOuqlljjbSmq13Q+LUa221mLC2obuQSjSqt5gGMlW8Y4TmrrLaAiY5S+fkFxvIrfUqzOEJUFuUBUNIGJlr1QnburPFCkg3NFuKm9HAQ3iOnI1XXQub36BUB4fWg8RQm4fCzmQw37ciLrqHvtF3C9iwn8AToBce+Fn61MxBf04VQdLn/jhoLrcGndv6HkljdgytMw8m6+v89N8oZmtRAnB3S3bDCncz7iK/DeukNtplBqYsnehad1eLNrqx9dme0Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mILkNEkeKRwlCgAkCyb631REUAqeOF61wa0BeYg9SmQ=;
- b=ej2ZX30WO8VNwytw+978lX/cFJc+K/SfO+IhHmhZ+QnQ2SWYKkZG0WvcfbEeL90BPI5MnhkZv3FB5TL7sL78oe8F3sIHlgYc/DBtEt6W+FWq31uJCnkVRuD0AonFjf5SgjIrz6q8FKlQx+84TxStvVl3EgwELnxQBcwDimBP1PyopdNgpZBhsOjWEnG8Pyb+yACqXUrih6Tqm4FuTAwVUCVcpZfKf/7KkZaAS2FY2+hM3sAZxA4rdpX6dBpqoU1Y11dJyc9Cxt59wgPi2lg4KzGYYbQ7omY55wMmRfZkWzIfn9Zde7NsGne3B9tfr+lko0TWvBPVmPfUzG4GG4/G8Q==
+ bh=G4q2lQBzPHRo3YoDqVg0PZgEy/yE0KiZJIfWJfR62d8=;
+ b=IyychbVrBv5UQSNZ/VRleFy/d+3fk2e//vDQl3CPTJl6gXLRxtH7a0QOfRPEZywipczHYxQSJLh7LNipExHGbhOwQEB7XtneDFcfEweoywpzNR7L9Cm/yakGhuD0ueGt6NmX0vvira+oR5DZ9cduDWiyWHoqE4+XTlckvuCr5r/8bvE56uhkh4ZlFHXjoPEAqKioI8LQcJjaQP3emCXCFXxinTzEz4I/eGAQ0Rqu/HN24FKohnXfH8vOHzkjr+LXTSttIHrbIE7wXdugExPmU8kfPMyWtymB3SAnm/zoNZWh8ogcL47xK0Th3c3V+bdcYQOBXhB3PdpfT9a/M+xCkA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:550::8)
- by AS8PR10MB6675.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:563::9) with
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by PA1PR10MB8547.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:453::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9275.16; Fri, 7 Nov
- 2025 08:00:36 +0000
-Received: from AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::4cbc:c0b7:27cc:2082]) by AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::4cbc:c0b7:27cc:2082%4]) with mapi id 15.20.9298.007; Fri, 7 Nov 2025
- 08:00:35 +0000
-From: Tobias Schaffner <tobias.schaffner@siemens.com>
-To: xenomai@lists.linux.dev
-Cc: jan.kiszka@siemens.com,
-	florian.bezdeka@siemens.com,
-	Tobias Schaffner <tobias.schaffner@siemens.com>
-Subject: [PATCH xenomai-images v2 2/2] linux-xenomai: Consolidate debug-configurations
-Date: Fri,  7 Nov 2025 09:00:05 +0100
-Message-ID: <20251107080005.1272435-3-tobias.schaffner@siemens.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20251107080005.1272435-1-tobias.schaffner@siemens.com>
-References: <20251107080005.1272435-1-tobias.schaffner@siemens.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: CH0PR04CA0076.namprd04.prod.outlook.com
- (2603:10b6:610:74::21) To AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:550::8)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9298.12; Fri, 7 Nov
+ 2025 16:32:54 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408%6]) with mapi id 15.20.9275.015; Fri, 7 Nov 2025
+ 16:32:53 +0000
+Message-ID: <85a9f8c3-d5fe-4c94-b79f-59229474d918@siemens.com>
+Date: Fri, 7 Nov 2025 17:32:52 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: Dovetail 6.1 arm64: Lockdep report while booting up
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
+Cc: Philippe Gerum <rpm@xenomai.org>
+References: <10779edbd5633fe1d8fb8df2bea3ca5ca53935cb.camel@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Content-Language: en-US
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
+ uNUqthIkgLGWzKugodvkcCK8Wbyw+1vxcl4Lw56WezLsOTfu7oi7Z0vp1XkrLcM0tofTbClW
+ xMA964mgUlBT2m/J/ybZd945D0wU57k/smGzDAxkpJgHBrYE/iJWcu46jkGZaLjK4xcMoBWB
+ I6hW9Njxx3Ek0fpLO3876bszc8KjcHOulKreK+ezyJ01Hvbx85s68XWN6N2ulLGtk7E/sXlb
+ 79hylHy5QuU9mZdsRjjRGJb0H9Buzfuz0XrcwOTMJq7e7fbN0QakjivAXsmXim+s5dlKlZjr
+ L3ILWte4ah7cGgqc06nFb5jOhnGnZwnKJlpuod3pc/BFaFGtVHvyoRgxJ9tmDZnjzMfu8YrA
+ +MVv6muwbHnEAeh/f8e9O+oeouqTBzgcaWTq81IyS56/UD6U5GHet9Pz1MB15nnzVcyZXIoC
+ roIhgCUkcl+5m2Z9G56bkiUcFq0IcACzjcRPWvwA09ZbRHXAK/ao/+vPAIMnU6OTx3ejsbHn
+ oh6VpHD3tucIt+xA4/l3LlkZMt5FZjFdkZUuAVU6kBAwElNBCYcrrLYZBRkSGPGDGYZmXAW/
+ VkNUVTJkRg6MGIeqZmpeoaV2xaIGHBSTDX8+b0c0hT/Bgzjv8QARAQABzSNKYW4gS2lzemth
+ IDxqYW4ua2lzemthQHNpZW1lbnMuY29tPsLBlAQTAQoAPhYhBABMZH11cs99cr20+2mdhQqf
+ QXvYBQJmWPvXAhsDBQkFo5qABQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJEGmdhQqfQXvY
+ zPAP/jGiVJ2VgPcRWt2P8FbByfrJJAPCsos+SZpncRi7tl9yTEpS+t57h7myEKPdB3L+kxzg
+ K3dt1UhYp4FeIHA3jpJYaFvD7kNZJZ1cU55QXrJI3xu/xfB6VhCs+VAUlt7XhOsOmTQqCpH7
+ pRcZ5juxZCOxXG2fTQTQo0gfF5+PQwQYUp0NdTbVox5PTx5RK3KfPqmAJsBKdwEaIkuY9FbM
+ 9lGg8XBNzD2R/13cCd4hRrZDtyegrtocpBAruVqOZhsMb/h7Wd0TGoJ/zJr3w3WnDM08c+RA
+ 5LHMbiA29MXq1KxlnsYDfWB8ts3HIJ3ROBvagA20mbOm26ddeFjLdGcBTrzbHbzCReEtN++s
+ gZneKsYiueFDTxXjUOJgp8JDdVPM+++axSMo2js8TwVefTfCYt0oWMEqlQqSqgQwIuzpRO6I
+ ik7HAFq8fssy2cY8Imofbj77uKz0BNZC/1nGG1OI9cU2jHrqsn1i95KaS6fPu4EN6XP/Gi/O
+ 0DxND+HEyzVqhUJkvXUhTsOzgzWAvW9BlkKRiVizKM6PLsVm/XmeapGs4ir/U8OzKI+SM3R8
+ VMW8eovWgXNUQ9F2vS1dHO8eRn2UqDKBZSo+qCRWLRtsqNzmU4N0zuGqZSaDCvkMwF6kIRkD
+ ZkDjjYQtoftPGchLBTUzeUa2gfOr1T4xSQUHhPL8zsFNBGZY+hkBEADb5quW4M0eaWPIjqY6
+ aC/vHCmpELmS/HMa5zlA0dWlxCPEjkchN8W4PB+NMOXFEJuKLLFs6+s5/KlNok/kGKg4fITf
+ Vcd+BQd/YRks3qFifckU+kxoXpTc2bksTtLuiPkcyFmjBph/BGms35mvOA0OaEO6fQbauiHa
+ QnYrgUQM+YD4uFoQOLnWTPmBjccoPuiJDafzLxwj4r+JH4fA/4zzDa5OFbfVq3ieYGqiBrtj
+ tBFv5epVvGK1zoQ+Rc+h5+dCWPwC2i3cXTUVf0woepF8mUXFcNhY+Eh8vvh1lxfD35z2CJeY
+ txMcA44Lp06kArpWDjGJddd+OTmUkFWeYtAdaCpj/GItuJcQZkaaTeiHqPPrbvXM361rtvaw
+ XFUzUlvoW1Sb7/SeE/BtWoxkeZOgsqouXPTjlFLapvLu5g9MPNimjkYqukASq/+e8MMKP+EE
+ v3BAFVFGvNE3UlNRh+ppBqBUZiqkzg4q2hfeTjnivgChzXlvfTx9M6BJmuDnYAho4BA6vRh4
+ Dr7LYTLIwGjguIuuQcP2ENN+l32nidy154zCEp5/Rv4K8SYdVegrQ7rWiULgDz9VQWo2zAjo
+ TgFKg3AE3ujDy4V2VndtkMRYpwwuilCDQ+Bpb5ixfbFyZ4oVGs6F3jhtWN5Uu43FhHSCqUv8
+ FCzl44AyGulVYU7hTQARAQABwsF8BBgBCgAmFiEEAExkfXVyz31yvbT7aZ2FCp9Be9gFAmZY
+ +hkCGwwFCQWjmoAACgkQaZ2FCp9Be9hN3g/8CdNqlOfBZGCFNZ8Kf4tpRpeN3TGmekGRpohU
+ bBMvHYiWW8SvmCgEuBokS+Lx3pyPJQCYZDXLCq47gsLdnhVcQ2ZKNCrr9yhrj6kHxe1Sqv1S
+ MhxD8dBqW6CFe/mbiK9wEMDIqys7L0Xy/lgCFxZswlBW3eU2Zacdo0fDzLiJm9I0C9iPZzkJ
+ gITjoqsiIi/5c3eCY2s2OENL9VPXiH1GPQfHZ23ouiMf+ojVZ7kycLjz+nFr5A14w/B7uHjz
+ uL6tnA+AtGCredDne66LSK3HD0vC7569sZ/j8kGKjlUtC+zm0j03iPI6gi8YeCn9b4F8sLpB
+ lBdlqo9BB+uqoM6F8zMfIfDsqjB0r/q7WeJaI8NKfFwNOGPuo93N+WUyBi2yYCXMOgBUifm0
+ T6Hbf3SHQpbA56wcKPWJqAC2iFaxNDowcJij9LtEqOlToCMtDBekDwchRvqrWN1mDXLg+av8
+ qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
+ 8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
+ ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
+In-Reply-To: <10779edbd5633fe1d8fb8df2bea3ca5ca53935cb.camel@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR5P281CA0032.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:f3::6) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -65,1660 +107,186 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS2PR10MB6349:EE_|AS8PR10MB6675:EE_
-X-MS-Office365-Filtering-Correlation-Id: b0460b90-69d4-400d-9355-08de1dd3ba1c
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|PA1PR10MB8547:EE_
+X-MS-Office365-Filtering-Correlation-Id: 620254ae-a9ab-4c99-4dfd-08de1e1b4c7e
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?x9xjT/vPgiaywXSM9TzeZFTDVA7lIwpQWjcm2XINfJ+XZSPsQf/Gd1FFzIre?=
- =?us-ascii?Q?qrLfgJVcxF9RbPW2leqmMG/5NQno4MuYWXFsR7mWC0/sg82DB2QhlCXKGUGC?=
- =?us-ascii?Q?U/rGYj1gi40oJhk74Fax+lVAFYBEl3JTa6DWSJhQe5zak2cIWMqYFh6fpgNs?=
- =?us-ascii?Q?yV0iPrlf6qHveiPUMI4ycypEeYkPr64vSbEzc7byJQL2M/97kyDWzpLFWLJQ?=
- =?us-ascii?Q?zeHtIWGcvXvJownLuwVJ7+x3GGZlGEPeOJ6uE/8/3QIRwDfgbWKib/dRV/ZT?=
- =?us-ascii?Q?esMqGYnhiC9G+eEsrN6/bZ4G681twicbL15JmnmvPss//4LsY3LxHnC99vht?=
- =?us-ascii?Q?ef09WklE5I1jiTBZDv7RvUyyxLRdsm37HjDk9af/ArR929ZVcHAtFEq0cOyY?=
- =?us-ascii?Q?xlb631rt1cN/LcrDuP8S37MOykuv9kW75t1tf2rUjRYxiHk6nfNnhEV9ekd6?=
- =?us-ascii?Q?U3uNS7OOjOoE2yPOjVThN/1OuGHiM7ket+jbq3msH4fxSWovR7n4l59JziS2?=
- =?us-ascii?Q?WJL8pRTlERxj18VLd452u3zsdBgBKO3RuVYxf4BEJIu50a6Gdo+jpgj05cP6?=
- =?us-ascii?Q?odY/pPvSRZj2WuSKtUH42SLYL9jTXwgaLefHQBOx6dDKyHVqUITDv9I4V/Vx?=
- =?us-ascii?Q?qBZ8aRdqBhW/mPKm2zg9rh2KXihd055DEkvgg9H6apX0TI+6Hp+rQkWgsqGJ?=
- =?us-ascii?Q?zv3BKsQ5hhyIAJNW6Wgnhj6KJFC3XuI/mFuTjZWAcXP+7yjJAj+npf/ElWFD?=
- =?us-ascii?Q?Ji6zEpYgPr+cHzrcVqZpjSdgOegN8n1eGtNk05bls8t+rS0U4CDIJqzatUh9?=
- =?us-ascii?Q?6WoJsR7JFYnVAjvFOehJ0Q+32Cn0sexywpVrlcQPW6GvonT56gUoc7/v5qQm?=
- =?us-ascii?Q?kqgGR5KylaQObi1Yh5ptIYuBuPO8ffLqA4Qq/mAPnA1PMRcaarIdj6xbuMMR?=
- =?us-ascii?Q?OaPU6h9OCQh5LdmYQvBnCgbvBeRbfQlRw/3TRYVF6eGBVeGiAuBQZTWa3XS2?=
- =?us-ascii?Q?znQQhUP9u4C/Q1kUfOPtFyilFH3NYMwrA6GboW5g9czkh4J8BTexYkScxVkR?=
- =?us-ascii?Q?612tVx/oJ+hgCxgZ4HTbWC97h4YVsAGf1N+J+kBoGSfA5+3SL9iFKuh+7Wgu?=
- =?us-ascii?Q?i/lYbXUK+0kfqKEi0xEw4esI+SU/Cpb9BCJ9sUGk7OIq+mXk0TuzsJRynP8u?=
- =?us-ascii?Q?6gVyLBZYLOT9w/oLGosUq/tQ8R12OPecnYTPesAmbYFNJPt1ECQbDhUZys6g?=
- =?us-ascii?Q?WzprLAXhoZPVlaKOyZXw7QuAXFu9bHrn9dNiszwwgcOB39wZu5yS62gA7J0P?=
- =?us-ascii?Q?xvCOL+4YQZtdvgYE9NDhLoQKwjHPgg9Pb3d2y18+jFt0WX6UjIiwRvJH0LMa?=
- =?us-ascii?Q?mC90Ogc+L3hxLU4DOeAMRmMXZoLnh8xExmEdn99A30bMXNRnLGtmUl5iIeL3?=
- =?us-ascii?Q?Il0TQ9E7kXjbdCrK6ZcWzFQ5KFzfM6+X?=
+	=?utf-8?B?eHpEdEZhRkVBSlgrQzVZYnBNV2dhdzhUL0RBSmJvTzhNNTBLZTdDZUZzM2Vq?=
+ =?utf-8?B?T0thU0d6TlBlbUg3MkdERUhPcHNrS0RNKzFYa2pPaU05SmIrb3NhbkYrYU11?=
+ =?utf-8?B?Y2wvRSs2MG5WekpjTWxqQjNSVnZRN3NSM01TaUl1OEJyWmxPYXNVOFVaVjV2?=
+ =?utf-8?B?eGhBSWcvMFBtQ2lES1ZwdjJwV0htVjlZS2JlK0gycnFIMGtCYjlFZWhQTWdN?=
+ =?utf-8?B?OFJKNEhlNXVuOXZZdE9RTU5HSnREZWJpQjZXUkpDNzFkT29WU2pmM2RKcHpQ?=
+ =?utf-8?B?UVBYdUlOblVHdDdsQmg5VWVjNFhZTTUrZGo3OHJDM1FNSXNLZnFoNCtNOUt6?=
+ =?utf-8?B?VVJWQzRPcWxVN2xuTjduWElITkZrUWZWcWZaYkJnS0dRaE1WSEg0YWRocEJh?=
+ =?utf-8?B?bFhZbUEwMkxvbGZOWHlkSEk4czJ1elR3eS82Q2lISmF3WFVvWjJCOWxSMEVs?=
+ =?utf-8?B?c2ZrT3kweWZvdXRGbW9NbXdwS3ptd21nVmNDOW5RVUxuODdlcitSSzZLMFk4?=
+ =?utf-8?B?RTBXSDJ6ODR4ZStKb01hYklHb1dSZGRBRUZRYy85Z0tVampzdytWeG5oTWRC?=
+ =?utf-8?B?dDFCVkkwS0luakxRMXdtcjBDR1BSTW5JaUkzYWthS2dBc0NrV1pDcThUUDNS?=
+ =?utf-8?B?MzFhTk55K0JQdlRBU0lwTFc0RUQwNHdWRXdPUnkzalYrYnFFQzdJbnRTMUll?=
+ =?utf-8?B?YWhJaVpmZkxSdUFYSFQvVGFSZTQ4aGdEbm9xREhEc0JlVHI2QXZnZEZwY1FY?=
+ =?utf-8?B?VTRLWEhaYmcvRWlIUEo3elVJS2w1OTVpY25YODlONkpLT0tXdDJLRlBldlUr?=
+ =?utf-8?B?YzZRdlZienVnYnFCakJIN1RlLzBSME13SVk2TEY1RjNHblVBQ01rVllNV0Ez?=
+ =?utf-8?B?WmlZTkpQN3JJVzJNQ1RiTlYxSWlvOTBWNHEwL2pSQmV5bk40bmVQYnI0OE1S?=
+ =?utf-8?B?WDI2d2JpWTQyOFBha1krbDEzcUtVQzdvWEd4RGhuK0tHNFdYRlJjNy9Jb1pP?=
+ =?utf-8?B?MGN3ZnRQdGkySTdIbzlXQXB4YUJBSXZPQzFvWHEyZ1MwMk9DWFpiNThMUDZC?=
+ =?utf-8?B?ZWRqcXUrdW9hQ01keVQxb3YxcHlVYTJPM3V2STQyVjA2TDY5Zyt6NjVJY0tt?=
+ =?utf-8?B?dFNwYUlSUWdFUk9xeFVjMEJhMjQ0VkNYeW0wb2FaSE1FemptMUV5SHhQMEpC?=
+ =?utf-8?B?UTFGK0hKaW5IOGNJeEtKS2NHcm81YWpuY0N5WkNybU1FUk4wWUFpNC90Q1Rx?=
+ =?utf-8?B?ZG1XSGo2Q1U3Witta0ZNVWVJZUlKRmhuVk14Uk1aT0dndk9TRXptREErS0JW?=
+ =?utf-8?B?a1ZlL1psbzJxL2RManFEeEhicTYxTzl2bnc4S0tYL0JQSU5NZHlEQlFSL253?=
+ =?utf-8?B?Y0lnUVlTdzc2N3d4UkpqeGcyV2hGRFB6OEcxSEVkNXFSa2hpcWY3VElmN2V4?=
+ =?utf-8?B?Sm81VkZLNkNyVmwzWDZiYnFKemNZMWtVdWdxVUdDekNBcENxY3Iwc1BDSWpQ?=
+ =?utf-8?B?Y2hMTjJVWmQvM0RPazJYVUZSb2FGYkpMM2hKUzNyM1A3eHFoRTZGMURGQ21D?=
+ =?utf-8?B?bHBPN0c1WWoyb3RsSlpXakZtaTViTVBkZk1URzJmelJQVjdOcE5vVzhhai9F?=
+ =?utf-8?B?TVVSWEpFZ3JzWTI5NkxuMGlwVjZQdzJqc0tQMTI1dng2c2Q3bjh5dnRBZytY?=
+ =?utf-8?B?U3RSYmVlOVJVQmlEVzBkaTIzNGJ0TitNYnMyQkFEeC8zczl3b0l3MjZLclR0?=
+ =?utf-8?B?dXgvZ25oZkJJZG8xVUFWSVQzMWxXUEtyRHVEd0QydTdaYTQzRnBiNHllYURv?=
+ =?utf-8?B?eVlObnREdXNwUytRdk1jc3RLbW90QTViaDBCbWJTQ0hBeUNBdGdVUzJTVnFU?=
+ =?utf-8?B?WGRLN3hDNzBxb293UVFDK2FpTXFxenZ4TWI5WkZ5eFNnWHdaaStsVjZWdWwz?=
+ =?utf-8?B?RGRkeTF3N0xlU2V4aGl2Mk9MbGR2UGpnSmxXSzI4WmFGR1hLM1ZCZHNwZ1pM?=
+ =?utf-8?B?U1l6dys1bVVBPT0=?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?TR5DjCbyaqtz/697dTUWiDF4QYzViMpN0Jz6Gf4jft76SvvGDiW/zhnTQ0X9?=
- =?us-ascii?Q?tSS4lwoZU9BQrtbUWG73UEMGrQAjsy345FZihVMOMr/4gdhipvIli8MyeOLj?=
- =?us-ascii?Q?xDBiSh2MFKWa1J6qo/3e2IA1b/PcbTDeC1QTEN1xtbX8mb1HEfyOao0QOQhD?=
- =?us-ascii?Q?maH3ZvuKeDdoSQqlaR/R+2MJS+QIvf4oHDiTa238QKk6NVvq5u1AlByBw7Rh?=
- =?us-ascii?Q?peutyshjzf5wjkCmJz1bxjff8ux/+N9a9+UF3hN7bwMjotD8HUgOu60LVKHA?=
- =?us-ascii?Q?BDE5tQkqgrCVFeJMZBvi9tBoZFy/kwUZ1GoFIcS06St6oOj8WvE9o+FM3ZZg?=
- =?us-ascii?Q?7nqN7WtvImZ+KYVT2Qxxvf9rSWhlbeYGSHaLE9Sch6Es3YadlsF5FhLrXoDd?=
- =?us-ascii?Q?wGOfx6mFTj8rpTyFtB+GMUkxjbebojBIOSlMQp7O32OiJ9fkU1mtjkimqZVa?=
- =?us-ascii?Q?OIApIHMz0ouf/cIXEna0rzHan6c0HOsWkxvYNJaMKmOd3H5yfFUf3VhMfwTK?=
- =?us-ascii?Q?7EufUB9QT1lfLYylfGHet2/nvO0ch/lLckvW+zOLkRJgte+kqSZqsnrhzqkY?=
- =?us-ascii?Q?zpCtnMAMEZwptAqedz5hyO0oWfkyYu/g2+MEYylc3OQ09GW39n5ZOY7LCwat?=
- =?us-ascii?Q?ZdSRbghz/dle/3yOT4PcADIyl9LNM6KxBZzQT48v6ao4kqeVQ4vwYABNG63U?=
- =?us-ascii?Q?K7XSJUhsVKh0PHKxr1LKkuuuhi6L9Qy6cSIQhETFEegQz4YyMGGTuYsMJETA?=
- =?us-ascii?Q?UMw5Jxr2vEVRwf1vXO+DaLnDaJHD6QmL/H3vh/5hRJY2CezbsfdDNA1/CTGA?=
- =?us-ascii?Q?liKgqBMHJYC28XNMeDF7FsGLtDeurmjSaSdXPNsm49RDxS9iR8bn7B6Cfwor?=
- =?us-ascii?Q?pWknXfX64GLmHy0yj4lNILoj4P0aSMB20wXlErtpIdNbxlPW7+WX7XVJ4fWK?=
- =?us-ascii?Q?IIl2NmFriyclRmo6ZaA6U3oajE+gT2WZ5rPObFwBbDvaa524kXQfnvT07stN?=
- =?us-ascii?Q?Wx4sE9comG8NAIPQZ57LzB5L6YTweEyHc0wonXQOaau3G7d8dAWCswJLX11w?=
- =?us-ascii?Q?NdRII5uk392z/SuWZFhWRbzUjQ0T40VyraiavIIsNodF3+3AWOmHEJc9F/L6?=
- =?us-ascii?Q?tttcTYFa0sHDFxYO+WUirw2TGthMizIIA/9PqLGuNEUFBJYMtlI0ga9FQzdI?=
- =?us-ascii?Q?KmTR3HFb6w8IyvZFqrrfnh7mkVEQGTpXmvx4voc5yFUM4ItOi0ECZeiwCQzz?=
- =?us-ascii?Q?Dx8cN0wHYE05fKbezKPhN7ImEdqgF/0OvpvC8fM0qpR1WeMm05bhXAYi8KwA?=
- =?us-ascii?Q?EtbahUgCBGPvV5J7wYPzjcSYbunOJutzbW1+t5fKB9Bf7ToO7WcpS2c7Xir3?=
- =?us-ascii?Q?Y9CxFcnl8MRbZpFkRveVMdk5SuNeKktCyLQqf64mtwuXffNuYlfsGg7jzIMD?=
- =?us-ascii?Q?JhjBovH3Oc+hMfXdvMwWrar2WNfTeo2dE9JgexwMBLa2C0U7qeHLwbCmDt7Y?=
- =?us-ascii?Q?paZloY64U2UhcUJAPTD5KrscKHc6nkN6RLbqqr7F3n/rP3/1Nz0p10VTLnPt?=
- =?us-ascii?Q?qBFf/nVcB8K8VAHS35g4PrSWNW/HLJpLGPeJgHnRL6OL5qC++qgjSxTu10bP?=
- =?us-ascii?Q?zxognTP5VsadKICPkfEDIOY=3D?=
+	=?utf-8?B?L0xKTUEvNkd2U0NZSU05cklsa0RSZFJnYktyS2FLRGlpUng3R2pTLzhndE1r?=
+ =?utf-8?B?Z2FrSnp4S0ZKT2luSGxvY3YxQk9KSFJPWkVtVEt5TmZiQXlBdjYrakorSTRs?=
+ =?utf-8?B?MjR0M29qUWgvY3RyTzZKbVlBd0NKMjNVZUpDaWtaYWRIRHp6VVczWVliaTUv?=
+ =?utf-8?B?SE8wMFFsODdMQW8xd3BManVDdy9Sc2tVV3U2QkU4OTdGd2NqM2pmbEtpUTdt?=
+ =?utf-8?B?TjVRTzFuTkJBWVRhL3FoT1UvWW94M1ZkbURETjFiTjM5Q3N5bmNHT3l0VGs1?=
+ =?utf-8?B?QWhaS3JtWndZeFRDVzdFRUhORVp2Wkp1VnQxeE9BRnQzczQybWoramJhS1gz?=
+ =?utf-8?B?ZkVuYlRQbWh6cUtCdkpzK3V3WnMwZDJoSlM2OEpuOGVQODJtbXc2ZStYZTE5?=
+ =?utf-8?B?M0U4T2lnYUdlWEcyeTM1UUdpYmQxb0pWVWxteGpwcE40WWErVHd5aTFaLy90?=
+ =?utf-8?B?aTN1SU01QlVNVWtlWWVjNnBXT2E2bVdhaEoydFJpRkhmVk82eDhiTHE4cWY3?=
+ =?utf-8?B?c0ZBQ1QyMXI2dUJKdWxCV3B1Q0ZRMVh4TG5YenpyRGxmb0REVHhlMmFkR0d1?=
+ =?utf-8?B?WUJkWWd3bld1V29KM2s0QW1RRlduRDlTbWV2QjQvdUl0YmNRUUpXdnJ1SDJv?=
+ =?utf-8?B?cGN1bDlIZG5pMGszajdvZzJvNk9PaVBzT2FkV0JobzZURHI2bVJVT2srbHI5?=
+ =?utf-8?B?RzU2djFWckk3UDRiWjMwai9FRXQyZmwxODhWaWhueWFCMk14QkhaclloSEhl?=
+ =?utf-8?B?eWxTaS9nS3lVN0p1MHc5dE1iSDB3bTIzTHNpaGFHL2J3UWhGcWo5eWdiT3Vt?=
+ =?utf-8?B?MGs2Q21vRUc2RUZLZmhna3RBT1A4WnFxZHBRUVVXZ1JRTlJKRkd6TlN6ZjdH?=
+ =?utf-8?B?eTd0a2t1UHJvT2hyREgzR2FPR3ZCak9mS2cwY0hjM3d3TjFQbTM5MjNlSEVJ?=
+ =?utf-8?B?azYycGFsYVJYdk9YZ3pRUytqbXkzNHc2Zi9LMkNjbFJaNStjUGxVQjBub3JO?=
+ =?utf-8?B?a0RGdWI4TnJUUDZGSFE5WWdHQUE5T2RRZms1Q3ZGUFJ2bWZlZ2ZvS1JrTUQx?=
+ =?utf-8?B?YVErVjQvd0V6MVNGU3B1TjRkUUppZGNNMVgyTjdDcFZPOWRoMTZZYTFLTWlO?=
+ =?utf-8?B?RHFNQWtZaUVZVVNoeU9yOWhyUHlyNmJxc0gvMEt5Ujgybzd4Mzg3UmV3UWkr?=
+ =?utf-8?B?TTlva2tiaEJBaEJrNDYybVFET1VXQTVocWYwK1EwbDlGall2SjMzaDdRNzQx?=
+ =?utf-8?B?YzBvOUQyRy84NEdjQmowUEN1Znd6SDhvdHp4blplT3hyT0paYkpPTmtnek9p?=
+ =?utf-8?B?NGFJd29EY0FWK0wyeStieVVVUS9xaWNVM1pwamtpUmViMmk5Z1dETGxCT0JD?=
+ =?utf-8?B?ZXU4R3hnSzcxM241em01ZjFwQ2U4ZDlyZlZXWWdkQit5VXNDVHl6NWtmdVVN?=
+ =?utf-8?B?STZjOTdvN1BYQkRCZ29iTXFIS1ZJMkdzZzNtVE9IRndKQTVSMTRKMnU2ZWFR?=
+ =?utf-8?B?VjA1VE45cHhmUEZkMjBudzZqR0ZjSDMrcVE3bEc0ck96RDdiWjFSNjBWUlR0?=
+ =?utf-8?B?R0xFeHpnSTVwVUdHMktHTmdxdC9uS2dpQW1zK1hhY0ozdFUyd0hoVEt4dXVZ?=
+ =?utf-8?B?RVgzTWhLNUgrUnp0RWI1a0xuOUt2NEVadmVUK1lITWlMWHdHZWhudEdvYTUv?=
+ =?utf-8?B?TFFlTnM3elFLWkxZQmttS044MkpXTER0N3dxY0tWQkVHUmNTK0dneVpyU2U2?=
+ =?utf-8?B?eWF2dGc2cGxpblozbjVQZCtJYmV1eGpPMFF6L1luMjNBUThrRTFvbjE2N0l6?=
+ =?utf-8?B?Sk0ybEYyWjNJZ1NXQVNjaEc3QUwwaU9NVUE1ajlpVm11d3JRM0pSYkg0QkV3?=
+ =?utf-8?B?WE9XYnhPbXg5YmdHVm5wOHBrQXdmd3pjSkR3UjJCbmdDeXMwSnVha1M3bkk4?=
+ =?utf-8?B?Q3Nkem9EMzVEYm5aeVFQeGZBeDg3M2JnSkM0aXhlR1d3SS9jSzJSRENEQlIw?=
+ =?utf-8?B?SjQ1TzZiZGp2d1o2ZW5TRUtWNWNNRlBLbkJCVzB1Z1c1bjJrTDZwWndMWnVl?=
+ =?utf-8?B?T0lEK0o3Nk92clJFcms3U0FkczQ3VVZObkIxV1RaYzRpZ1RYaHRTN1NKMDk2?=
+ =?utf-8?Q?DJ/OeIy+TYRTbFFqcC7mRsTsa?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b0460b90-69d4-400d-9355-08de1dd3ba1c
-X-MS-Exchange-CrossTenant-AuthSource: AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 620254ae-a9ab-4c99-4dfd-08de1e1b4c7e
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Nov 2025 08:00:34.8285
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Nov 2025 16:32:53.1370
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Z7QXNfPW+SQds0CmitVxZo2JijYjwnzfpMG+352MlWZsKu2jBvjjRnTYsqyZIZ3cpJd1r4nLt2Me4VIAX91voRqNQi+VuFhiaDZC6JyEzgk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB6675
+X-MS-Exchange-CrossTenant-UserPrincipalName: PcGmJzcVEoDLX3YV0lyoBkziG4/KgxxtQroWHS7TcCnnk8fCzv+Nq63Ux+6uF8wmuW1/ghE/E7DX0ciViduVAg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA1PR10MB8547
 
-Remove the per-architecture debug configuration snippets that were
-previously introduced to collect common kernel debugging features.
+On 06.11.25 10:05, Florian Bezdeka wrote:
+> Hi all,
+> 
+> I get the following lockdep report on 6.1, arm64. The uart port lock -
+> which is a spinlock_t - is used in (inband) IRQ context, which seems
+> wrong to me as well.
+> 
+> Dovetail specifics start in clockevents_register_proxy(), where we print
+> out (printk) some details about the registered proxy tick device. That
+> looks like
+> 
+> [    2.054973] CPU2: proxy tick device registered (62.50MHz)
+> [    2.055008] CPU0: proxy tick device registered (62.50MHz)
+> [    2.055159] CPU1: proxy tick device registered (62.50MHz)
+> [    2.055444] CPU3: proxy tick device registered (62.50MHz)
+> 
+> clockevents_register_proxy() is executed on all CPUs in parallel using
+> an IPI mechanism. So we end up in (inband) IRQ context.
+> 
+> Input on how to solve that is welcome.
+> 
+> I should note that Jan tried to reproduce on his end as well. Obviously
+> he was not able to trigger that. I have no idea why...
+> 
+> The code paths seems unchanged in newer releases as well. I haven't
+> tested that yet, but I think they are affected as well.
+> 
+> [    2.218254] =============================
+> [    2.218324] [ BUG: Invalid wait context ]
+> [    2.218398] 6.1.155-cip47 #442 Not tainted
+> [    2.218561] -----------------------------
+> [    2.218575] swapper/1/0 is trying to lock:
+> [    2.218639] ffffff80038e0898 (&port_lock_key){....}-{3:3}, at: pl011_console_write+0x140/0x1c4
+> [    2.219156] other info that might help us debug this:
+> [    2.219198] context-{2:2}
+> [    2.219250] 2 locks held by swapper/1/0:
+> [    2.219295]  #0: ffffffc009c7f4c0 (console_lock){+.+.}-{0:0}, at: vprintk_emit+0x2ec/0x420
+> [    2.219407]  #1: ffffffc009c7f5c0 (console_owner){-...}-{0:0}, at: console_emit_next_record.constprop.0+0x168/0x36c
+> [    2.219481] stack backtrace:
+> [    2.219785] CPU: 1 PID: 0 Comm: swapper/1 Not tainted 6.1.155-cip47 #442
+> [    2.219856] Hardware name: linux,dummy-virt (DT)
+> [    2.219883] IRQ stage: Linux
+> [    2.220148] Call trace:
+> [    2.220177]  dump_backtrace+0xe8/0x140
+> [    2.220241]  show_stack+0x20/0x30
+> [    2.220254]  dump_stack_lvl+0xa8/0xf4
+> [    2.220275]  dump_stack+0x18/0x28
+> [    2.220289]  __lock_acquire+0x918/0x1fe0
+> [    2.220308]  lock_acquire+0x1f8/0x324
+> [    2.220326]  _raw_spin_lock+0x58/0x70
+> [    2.220343]  pl011_console_write+0x140/0x1c4
+> [    2.220362]  console_emit_next_record.constprop.0+0x1b0/0x36c
+> [    2.220381]  console_unlock+0x1dc/0x240
+> [    2.220393]  vprintk_emit+0x324/0x420
+> [    2.220405]  vprintk_default+0x40/0x50
+> [    2.220417]  vprintk+0xdc/0x100
+> [    2.220429]  _printk+0x64/0x8c
+> [    2.220443]  clockevents_register_proxy+0x110/0x120
+> [    2.220462]  register_proxy_device+0x3c/0x80
+> [    2.220477]  __flush_smp_call_function_queue+0x160/0x30c
+> [    2.220495]  generic_smp_call_function_single_interrupt+0x1c/0x30
+> [    2.220511]  ipi_handler+0x68/0x400
+> [    2.220528]  handle_percpu_devid_irq+0x10c/0x1f4
+> [    2.220546]  handle_irq_desc+0x4c/0x6c
+> [    2.220560]  arch_do_IRQ_pipelined+0x4c/0x80
+> [    2.220577]  sync_current_irq_stage+0x1c4/0x2dc
+> [    2.220591]  __inband_irq_enable+0x84/0xa0
+> [    2.220604]  inband_irq_enable+0x1c/0x50
+> [    2.220618]  arch_cpu_idle+0x1c/0x2c
+> [    2.220635]  default_idle_call+0x90/0xe4
+> [    2.220651]  do_idle+0x2a8/0x340
+> [    2.220664]  cpu_startup_entry+0x3c/0x44
+> [    2.220677]  secondary_start_kernel+0x164/0x190
+> [    2.220693]  __secondary_switched+0xb0/0xb4
+> 
+> Best regards,
+> Florian
 
-All enabled debugging options have been merged into a unified
-configuration, eliminating duplication across architectures.
+This turned out to be a false positive of upstream kernels < 6.12. It
+was resolved by [1] there. Due to dependencies, backporting this was
+likely never considered.
 
-This results in more debugging features enabled for the individual
-archtectures.
+Jan
 
-Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
----
- recipes-kernel/linux/files/arm64_debug.cfg    | 404 ---------------
- recipes-kernel/linux/files/armhf_debug.cfg    | 438 ----------------
- .../{amd64_debug.cfg => common_debug.cfg}     | 474 ++++++++++++------
- recipes-kernel/linux/linux-xenomai.inc        |   3 +-
- 4 files changed, 323 insertions(+), 996 deletions(-)
- delete mode 100644 recipes-kernel/linux/files/arm64_debug.cfg
- delete mode 100644 recipes-kernel/linux/files/armhf_debug.cfg
- rename recipes-kernel/linux/files/{amd64_debug.cfg => common_debug.cfg} (70%)
+[1]
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/commit/?id=daeed1595b4ddf314bad8ee40b2662e03fd012dc
 
-diff --git a/recipes-kernel/linux/files/arm64_debug.cfg b/recipes-kernel/linux/files/arm64_debug.cfg
-deleted file mode 100644
-index df45c04..0000000
---- a/recipes-kernel/linux/files/arm64_debug.cfg
-+++ /dev/null
-@@ -1,404 +0,0 @@
--#
--# Debug Kernel Configuration
--#
--CONFIG_STACKTRACE_SUPPORT=y
--CONFIG_LOCKDEP_SUPPORT=y
--CONFIG_TRACE_IRQFLAGS_SUPPORT=y
--CONFIG_ARCH_SUPPORTS_UPROBES=y
--
--#
--# IRQ subsystem
--#
--CONFIG_GENERIC_IRQ_PROBE=y
--# CONFIG_IRQ_DOMAIN_DEBUG is not set
--# CONFIG_GENERIC_IRQ_DEBUGFS is not set
--
--#
--# RCU Subsystem
--#
--# CONFIG_DEBUG_BLK_CGROUP is not set
--CONFIG_CGROUP_PERF=y
--# CONFIG_CGROUP_DEBUG is not set
--CONFIG_SYSCTL_EXCEPTION_TRACE=y
--CONFIG_KALLSYMS=y
--CONFIG_KALLSYMS_ALL=y
--# CONFIG_KALLSYMS_ABSOLUTE_PERCPU is not set
--CONFIG_KALLSYMS_BASE_RELATIVE=y
--CONFIG_HAVE_PERF_EVENTS=y
--
--#
--# Kernel Performance Events And Counters
--#
--CONFIG_PERF_EVENTS=y
--# CONFIG_DEBUG_PERF_USE_VMALLOC is not set
--CONFIG_SLUB_DEBUG=y
--# CONFIG_KPROBES is not set
--# CONFIG_UPROBES is not set
--CONFIG_HAVE_KPROBES=y
--CONFIG_HAVE_KRETPROBES=y
--CONFIG_HAVE_ARCH_TRACEHOOK=y
--CONFIG_HAVE_DMA_API_DEBUG=y
--CONFIG_HAVE_PERF_REGS=y
--CONFIG_HAVE_PERF_USER_STACK_DUMP=y
--
--#
--# GCOV-based kernel profiling
--#
--CONFIG_BLK_DEBUG_FS=y
--
--#
--# Sizes and static limits
--#
--CONFIG_XENO_OPT_DEBUG_TRACE_LOGSZ=16
--
--#
--# Latency settings
--#
--CONFIG_XENO_OPT_DEBUG=y
--CONFIG_XENO_OPT_DEBUG_COBALT=y
--CONFIG_XENO_OPT_DEBUG_MEMORY=y
--CONFIG_XENO_OPT_DEBUG_CONTEXT=y
--CONFIG_XENO_OPT_DEBUG_LOCKING=y
--CONFIG_XENO_OPT_DEBUG_USER=y
--CONFIG_XENO_OPT_DEBUG_MUTEX_RELAXED=y
--CONFIG_XENO_OPT_DEBUG_MUTEX_SLEEP=y
--CONFIG_XENO_OPT_DEBUG_LEGACY=y
--CONFIG_XENO_OPT_DEBUG_TRACE_RELAX=y
--
--#
--# Testing drivers
--#
--CONFIG_XENO_DRIVERS_HEAPCHECK=y
--
--#
--# CAN drivers
--#
--CONFIG_XENO_DRIVERS_CAN_DEBUG=y
--
--#
--# Protocols
--#
--CONFIG_XENO_DRIVERS_NET_RTIPV4_DEBUG=y
--CONFIG_XENO_DRIVERS_NET_RTCFG_DEBUG=y
--
--#
--#
--
--
--#
--# Bus support
--#
--# CONFIG_PCIEASPM_DEBUG is not set
--# CONFIG_PCI_DEBUG is not set
--
--#
--# ARM errata workarounds via the alternatives framework
--#
--CONFIG_ARCH_SUPPORTS_DEBUG_PAGEALLOC=y
--CONFIG_HW_PERF_EVENTS=y
--# CONFIG_CMA_DEBUG is not set
--# CONFIG_CMA_DEBUGFS is not set
--
--#
--# ARMv8.2 architectural features
--#
--# CONFIG_RANDOMIZE_BASE is not set
--
--#
--# Power management options
--#
--# CONFIG_PM_DEBUG is not set
--
--#
--# CPU frequency scaling drivers
--#
--# CONFIG_ARM_BRCMSTB_AVS_CPUFREQ_DEBUG is not set
--
--#
--# Network testing
--#
--# CONFIG_BT_DEBUGFS is not set
--
--#
--# Bluetooth device drivers
--#
--# CONFIG_CFG80211_DEBUGFS is not set
--# CONFIG_CFG80211_INTERNAL_REGDB is not set
--# CONFIG_MAC80211_DEBUGFS is not set
--# CONFIG_MAC80211_MESSAGE_TRACING is not set
--# CONFIG_MAC80211_DEBUG_MENU is not set
--# CONFIG_NET_9P_DEBUG is not set
--
--#
--# Generic Driver Options
--#
--# CONFIG_DEBUG_DRIVER is not set
--# CONFIG_DEBUG_DEVRES is not set
--# CONFIG_DEBUG_TEST_DRIVER_REMOVE is not set
--# CONFIG_TEST_ASYNC_DRIVER_PROBE is not set
--CONFIG_GENERIC_CPU_AUTOPROBE=y
--# CONFIG_DMA_FENCE_TRACE is not set
--
--#
--# RAM/ROM/Flash chip drivers
--#
--# CONFIG_MTD_JEDECPROBE is not set
--
--#
--# LPDDR & LPDDR2 PCM memory drivers
--#
--CONFIG_PNP_DEBUG_MESSAGES=y
--
--#
--# SCSI Transports
--#
--# CONFIG_SCSI_DEBUG is not set
--
--#
--# Distributed Switch Architecture drivers
--#
--# CONFIG_SKY2_DEBUG is not set
--
--#
--# MII PHY device drivers
--#
--# CONFIG_ATH_DEBUG is not set
--# CONFIG_BRCM_TRACING is not set
--
--#
--# Character devices
--#
--# CONFIG_TRACE_SINK is not set
--
--#
--# Other I2C/SMBus bus drivers
--#
--# CONFIG_I2C_DEBUG_CORE is not set
--# CONFIG_I2C_DEBUG_ALGO is not set
--# CONFIG_I2C_DEBUG_BUS is not set
--# CONFIG_SPI_DEBUG is not set
--
--#
--# SPI Protocol Masters
--#
--# CONFIG_PPS_DEBUG is not set
--
--#
--# Pin controllers
--#
--# CONFIG_DEBUG_PINCTRL is not set
--# CONFIG_DEBUG_GPIO is not set
--
--#
--# USB GPIO expanders
--#
--# CONFIG_POWER_SUPPLY_DEBUG is not set
--# CONFIG_HWMON_DEBUG_CHIP is not set
--
--#
--# Multifunction device drivers
--#
--# CONFIG_REGULATOR_DEBUG is not set
--
--#
--# Multimedia core support
--#
--# CONFIG_VIDEO_ADV_DEBUG is not set
--
--#
--# Graphics support
--#
--# CONFIG_DRM_DEBUG_MM_SELFTEST is not set
--
--#
--# ACP (Audio CoProcessor) Configuration
--#
--CONFIG_NOUVEAU_DEBUG=5
--CONFIG_NOUVEAU_DEBUG_DEFAULT=3
--
--#
--# Sub-drivers
--#
--# CONFIG_DRM_TEGRA_DEBUG is not set
--
--#
--# Console display driver support
--#
--# CONFIG_SND_DEBUG is not set
--
--#
--# also be needed; see USB_STORAGE Help for more info
--#
--# CONFIG_USB_STORAGE_DEBUG is not set
--
--#
--# Gadget/Dual-role mode requires USB Gadget support to be enabled
--#
--# CONFIG_USB_DWC2_DEBUG is not set
--
--#
--# USB Physical Layer drivers
--#
--# CONFIG_USB_GADGET_DEBUG is not set
--# CONFIG_USB_GADGET_DEBUG_FILES is not set
--# CONFIG_USB_GADGET_DEBUG_FS is not set
--
--#
--# MMC/SD/SDIO Host Controller Drivers
--#
--# CONFIG_MMC_DEBUG is not set
--
--#
--# iptables trigger is under Netfilter config (LED target)
--#
--# CONFIG_EDAC_DEBUG is not set
--# CONFIG_RTC_DEBUG is not set
--
--#
--# HID Sensor RTC drivers
--#
--# CONFIG_DMADEVICES_DEBUG is not set
--
--#
--# Clock Source drivers
--#
--CONFIG_TIMER_PROBE=y
--
--#
--# Tegra firmware driver
--#
--# CONFIG_ACPI_DEBUGGER is not set
--# CONFIG_ACPI_EC_DEBUGFS is not set
--# CONFIG_ACPI_DEBUG is not set
--# CONFIG_ACPI_APEI_ERST_DEBUG is not set
--
--#
--# File systems
--#
--# CONFIG_EXT4_DEBUG is not set
--# CONFIG_JBD2_DEBUG is not set
--# CONFIG_BTRFS_DEBUG is not set
--# CONFIG_QUOTA_DEBUG is not set
--
--#
--# Pseudo filesystems
--#
--# CONFIG_SUNRPC_DEBUG is not set
--
--#
--# printk and dmesg options
--#
--# CONFIG_DYNAMIC_DEBUG is not set
--
--#
--# Compile-time checks and compiler options
--#
--CONFIG_DEBUG_INFO=y
--# CONFIG_DEBUG_INFO_REDUCED is not set
--# CONFIG_DEBUG_INFO_SPLIT is not set
--# CONFIG_DEBUG_INFO_DWARF4 is not set
--# CONFIG_GDB_SCRIPTS is not set
--CONFIG_DEBUG_FS=y
--# CONFIG_DEBUG_SECTION_MISMATCH is not set
--CONFIG_ARCH_WANT_FRAME_POINTERS=y
--CONFIG_FRAME_POINTER=y
--# CONFIG_DEBUG_FORCE_WEAK_PER_CPU is not set
--CONFIG_MAGIC_SYSRQ=y
--CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE=0x1
--CONFIG_MAGIC_SYSRQ_SERIAL=y
--CONFIG_IPIPE_DEBUG=y
--CONFIG_IPIPE_DEBUG_CONTEXT=y
--CONFIG_IPIPE_DEBUG_INTERNAL=y
--CONFIG_HAVE_IPIPE_TRACER_SUPPORT=y
--# CONFIG_IPIPE_TRACE is not set
--CONFIG_DEBUG_KERNEL=y
--
--#
--# Memory Debugging
--#
--# CONFIG_PAGE_EXTENSION is not set
--# CONFIG_DEBUG_PAGEALLOC is not set
--# CONFIG_DEBUG_RODATA_TEST is not set
--# CONFIG_DEBUG_OBJECTS is not set
--# CONFIG_SLUB_DEBUG_ON is not set
--CONFIG_HAVE_DEBUG_KMEMLEAK=y
--# CONFIG_DEBUG_KMEMLEAK is not set
--# CONFIG_DEBUG_STACK_USAGE is not set
--# CONFIG_DEBUG_VM is not set
--CONFIG_ARCH_HAS_DEBUG_VIRTUAL=y
--# CONFIG_DEBUG_VIRTUAL is not set
--CONFIG_DEBUG_MEMORY_INIT=y
--# CONFIG_DEBUG_PER_CPU_MAPS is not set
--CONFIG_HAVE_ARCH_KASAN=y
--# CONFIG_KASAN is not set
--CONFIG_ARCH_HAS_KCOV=y
--# CONFIG_KCOV is not set
--# CONFIG_DEBUG_SHIRQ is not set
--
--#
--# Debug Lockups and Hangs
--#
--# CONFIG_SCHED_DEBUG is not set
--CONFIG_SCHED_INFO=y
--# CONFIG_DEBUG_TIMEKEEPING is not set
--# CONFIG_DEBUG_PREEMPT is not set
--
--#
--# Lock Debugging (spinlocks, mutexes, etc...)
--#
--# CONFIG_DEBUG_RT_MUTEXES is not set
--# CONFIG_DEBUG_SPINLOCK is not set
--# CONFIG_DEBUG_MUTEXES is not set
--# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
--# CONFIG_DEBUG_LOCK_ALLOC is not set
--# CONFIG_PROVE_LOCKING is not set
--# CONFIG_DEBUG_ATOMIC_SLEEP is not set
--# CONFIG_DEBUG_LOCKING_API_SELFTESTS is not set
--# CONFIG_STACKTRACE is not set
--# CONFIG_DEBUG_KOBJECT is not set
--CONFIG_HAVE_DEBUG_BUGVERBOSE=y
--CONFIG_DEBUG_BUGVERBOSE=y
--# CONFIG_DEBUG_LIST is not set
--# CONFIG_DEBUG_PI_LIST is not set
--# CONFIG_DEBUG_SG is not set
--# CONFIG_DEBUG_NOTIFIERS is not set
--# CONFIG_DEBUG_CREDENTIALS is not set
--
--#
--# RCU Debugging
--#
--# CONFIG_PROVE_RCU is not set
--# CONFIG_RCU_PERF_TEST is not set
--# CONFIG_RCU_TRACE is not set
--# CONFIG_RCU_EQS_DEBUG is not set
--# CONFIG_DEBUG_WQ_FORCE_RR_CPU is not set
--# CONFIG_DEBUG_BLOCK_EXT_DEVT is not set
--CONFIG_HAVE_FUNCTION_TRACER=y
--CONFIG_HAVE_FUNCTION_GRAPH_TRACER=y
--CONFIG_HAVE_DYNAMIC_FTRACE=y
--CONFIG_HAVE_FTRACE_MCOUNT_RECORD=y
--CONFIG_HAVE_SYSCALL_TRACEPOINTS=y
--CONFIG_TRACING_SUPPORT=y
--CONFIG_EVENT_TRACING=y
--CONFIG_CONTEXT_SWITCH_TRACER=y
--CONFIG_TRACING=y
--CONFIG_FTRACE=y
--# CONFIG_DMA_API_DEBUG is not set
--
--#
--# Runtime Testing
--#
--# CONFIG_BACKTRACE_SELF_TEST is not set
--CONFIG_HAVE_ARCH_KGDB=y
--# CONFIG_KGDB is not set
--CONFIG_ARCH_HAS_UBSAN_SANITIZE_ALL=y
--# CONFIG_ARCH_WANTS_UBSAN_NO_NULL is not set
--# CONFIG_UBSAN is not set
--# CONFIG_ARM64_PTDUMP_DEBUGFS is not set
--# CONFIG_DEBUG_WX is not set
--# CONFIG_DEBUG_ALIGN_RODATA is not set
--# CONFIG_DEBUG_EFI is not set
--
--#
--# Library routines
--#
-diff --git a/recipes-kernel/linux/files/armhf_debug.cfg b/recipes-kernel/linux/files/armhf_debug.cfg
-deleted file mode 100644
-index 68f525d..0000000
---- a/recipes-kernel/linux/files/armhf_debug.cfg
-+++ /dev/null
-@@ -1,438 +0,0 @@
--#
--# Debug Kernel Configuration
--#
--CONFIG_STACKTRACE_SUPPORT=y
--CONFIG_LOCKDEP_SUPPORT=y
--CONFIG_TRACE_IRQFLAGS_SUPPORT=y
--CONFIG_ARCH_SUPPORTS_UPROBES=y
--
--#
--# IRQ subsystem
--#
--CONFIG_GENERIC_IRQ_PROBE=y
--CONFIG_IRQ_DOMAIN_DEBUG=y
--# CONFIG_GENERIC_IRQ_DEBUGFS is not set
--
--#
--# RCU Subsystem
--#
--# CONFIG_CGROUP_PERF is not set
--# CONFIG_CGROUP_DEBUG is not set
--CONFIG_KALLSYMS=y
--# CONFIG_KALLSYMS_ALL is not set
--# CONFIG_KALLSYMS_ABSOLUTE_PERCPU is not set
--CONFIG_KALLSYMS_BASE_RELATIVE=y
--CONFIG_HAVE_PERF_EVENTS=y
--CONFIG_PERF_USE_VMALLOC=y
--
--#
--# Kernel Performance Events And Counters
--#
--CONFIG_PERF_EVENTS=y
--# CONFIG_DEBUG_PERF_USE_VMALLOC is not set
--CONFIG_SLUB_DEBUG=y
--CONFIG_TRACEPOINTS=y
--# CONFIG_KPROBES is not set
--CONFIG_UPROBES=y
--CONFIG_HAVE_KPROBES=y
--CONFIG_HAVE_KRETPROBES=y
--CONFIG_HAVE_OPTPROBES=y
--CONFIG_HAVE_ARCH_TRACEHOOK=y
--CONFIG_HAVE_DMA_API_DEBUG=y
--CONFIG_HAVE_PERF_REGS=y
--CONFIG_HAVE_PERF_USER_STACK_DUMP=y
--
--#
--# GCOV-based kernel profiling
--#
--CONFIG_BLK_DEBUG_FS=y
--
--#
--# Sizes and static limits
--#
--CONFIG_XENO_OPT_DEBUG_TRACE_LOGSZ=16
--
--#
--# Latency settings
--#
--CONFIG_XENO_OPT_DEBUG=y
--CONFIG_XENO_OPT_DEBUG_COBALT=y
--CONFIG_XENO_OPT_DEBUG_MEMORY=y
--CONFIG_XENO_OPT_DEBUG_CONTEXT=y
--CONFIG_XENO_OPT_DEBUG_LOCKING=y
--CONFIG_XENO_OPT_DEBUG_USER=y
--CONFIG_XENO_OPT_DEBUG_MUTEX_RELAXED=y
--CONFIG_XENO_OPT_DEBUG_MUTEX_SLEEP=y
--CONFIG_XENO_OPT_DEBUG_LEGACY=y
--CONFIG_XENO_OPT_DEBUG_TRACE_RELAX=y
--
--#
--# Testing drivers
--#
--CONFIG_XENO_DRIVERS_HEAPCHECK=y
--
--#
--# CAN drivers
--#
--CONFIG_XENO_DRIVERS_CAN_DEBUG=y
--
--#
--# Protocols
--#
--# CONFIG_XENO_DRIVERS_NET_RTIPV4_DEBUG is not set
--# CONFIG_XENO_DRIVERS_NET_RTCFG_DEBUG is not set
--
--#
--# ANALOGY drivers
--#
--# CONFIG_XENO_DRIVERS_ANALOGY_DEBUG is not set
--
--#
--# Real-time GPIO drivers
--#
--# CONFIG_XENO_DRIVERS_GPIO_DEBUG is not set
--
--#
--# Real-time SPI master drivers
--#
--# CONFIG_XENO_DRIVERS_SPI_DEBUG is not set
--
--#
--# CSR SiRF atlas6/primaII/Atlas7 Specific Features
--#
--CONFIG_UX500_DEBUG_UART=2
--
--#
--# Processor Features
--#
--CONFIG_DEBUG_ALIGN_RODATA=y
--
--#
--# Bus support
--#
--# CONFIG_PCIEASPM_DEBUG is not set
--# CONFIG_PCI_DEBUG is not set
--
--#
--# RAW_PRINTK to work. Otherwise, you will get no output on raw_printk()
--#
--CONFIG_HW_PERF_EVENTS=y
--
--#
--# Power management options
--#
--# CONFIG_PM_DEBUG is not set
--
--#
--# CAN USB interfaces
--#
--# CONFIG_CAN_DEBUG_DEVICES is not set
--CONFIG_BT_DEBUGFS=y
--
--#
--# Bluetooth device drivers
--#
--# CONFIG_CFG80211_DEBUGFS is not set
--# CONFIG_CFG80211_INTERNAL_REGDB is not set
--# CONFIG_MAC80211_DEBUGFS is not set
--# CONFIG_MAC80211_MESSAGE_TRACING is not set
--# CONFIG_MAC80211_DEBUG_MENU is not set
--
--#
--# Generic Driver Options
--#
--# CONFIG_DEBUG_DRIVER is not set
--# CONFIG_DEBUG_DEVRES is not set
--# CONFIG_DEBUG_TEST_DRIVER_REMOVE is not set
--# CONFIG_TEST_ASYNC_DRIVER_PROBE is not set
--CONFIG_GENERIC_CPU_AUTOPROBE=y
--# CONFIG_DMA_FENCE_TRACE is not set
--
--#
--# RAM/ROM/Flash chip drivers
--#
--# CONFIG_MTD_JEDECPROBE is not set
--
--#
--# SCSI Transports
--#
--# CONFIG_SCSI_DEBUG is not set
--
--#
--# MII PHY device drivers
--#
--# CONFIG_ATH_DEBUG is not set
--# CONFIG_BRCM_TRACING is not set
--# CONFIG_RT2X00_DEBUG is not set
--
--#
--# Character devices
--#
--# CONFIG_TRACE_SINK is not set
--
--#
--# Other I2C/SMBus bus drivers
--#
--# CONFIG_I2C_DEBUG_CORE is not set
--# CONFIG_I2C_DEBUG_ALGO is not set
--# CONFIG_I2C_DEBUG_BUS is not set
--# CONFIG_SPI_DEBUG is not set
--
--#
--# SPI Protocol Masters
--#
--# CONFIG_PPS_DEBUG is not set
--
--#
--# Pin controllers
--#
--# CONFIG_DEBUG_PINCTRL is not set
--# CONFIG_DEBUG_GPIO is not set
--
--#
--# USB GPIO expanders
--#
--# CONFIG_POWER_SUPPLY_DEBUG is not set
--# CONFIG_HWMON_DEBUG_CHIP is not set
--
--#
--# Watchdog Device Drivers
--#
--# CONFIG_BCM_KONA_WDT_DEBUG is not set
--
--#
--# Sonics Silicon Backplane
--#
--# CONFIG_BCMA_DEBUG is not set
--
--#
--# Multifunction device drivers
--#
--CONFIG_AB8500_DEBUG=y
--
--#
--# STMicroelectronics STMPE Interface Drivers
--#
--# CONFIG_REGULATOR_DEBUG is not set
--
--#
--# Multimedia core support
--#
--# CONFIG_VIDEO_ADV_DEBUG is not set
--
--#
--# Webcam, TV (analog/digital) USB devices
--#
--# CONFIG_VIDEO_STI_HVA_DEBUGFS is not set
--
--#
--# Graphics support
--#
--# CONFIG_DRM_DEBUG_MM is not set
--# CONFIG_DRM_DEBUG_MM_SELFTEST is not set
--
--#
--# ACP (Audio CoProcessor) Configuration
--#
--CONFIG_NOUVEAU_DEBUG=5
--CONFIG_NOUVEAU_DEBUG_DEFAULT=3
--
--#
--# Sub-drivers
--#
--# CONFIG_DRM_TEGRA_DEBUG is not set
--
--#
--# Console display driver support
--#
--# CONFIG_SND_DEBUG is not set
--
--#
--# also be needed; see USB_STORAGE Help for more info
--#
--# CONFIG_USB_STORAGE_DEBUG is not set
--
--#
--# Gadget/Dual-role mode requires USB Gadget support to be enabled
--#
--# CONFIG_USB_DWC2_DEBUG is not set
--
--#
--# USB Physical Layer drivers
--#
--# CONFIG_USB_GADGET_DEBUG is not set
--# CONFIG_USB_GADGET_DEBUG_FILES is not set
--# CONFIG_USB_GADGET_DEBUG_FS is not set
--
--#
--# MMC/SD/SDIO Host Controller Drivers
--#
--# CONFIG_MMC_DEBUG is not set
--
--#
--# iptables trigger is under Netfilter config (LED target)
--#
--# CONFIG_EDAC_DEBUG is not set
--# CONFIG_RTC_DEBUG is not set
--
--#
--# HID Sensor RTC drivers
--#
--# CONFIG_DMADEVICES_DEBUG is not set
--
--#
--# Clock Source drivers
--#
--CONFIG_TIMER_PROBE=y
--
--#
--# Extcon Device Drivers
--#
--# CONFIG_OMAP_GPMC_DEBUG is not set
--
--#
--# File systems
--#
--# CONFIG_EXT4_DEBUG is not set
--# CONFIG_JBD2_DEBUG is not set
--
--#
--# DOS/FAT/NT Filesystems
--#
--# CONFIG_NTFS_DEBUG is not set
--
--#
--# Pseudo filesystems
--#
--# CONFIG_SUNRPC_DEBUG is not set
--
--#
--# printk and dmesg options
--#
--# CONFIG_DYNAMIC_DEBUG is not set
--
--#
--# Compile-time checks and compiler options
--#
--# CONFIG_DEBUG_INFO is not set
--CONFIG_DEBUG_FS=y
--# CONFIG_DEBUG_SECTION_MISMATCH is not set
--# CONFIG_DEBUG_FORCE_WEAK_PER_CPU is not set
--CONFIG_MAGIC_SYSRQ=y
--CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE=0x1
--CONFIG_MAGIC_SYSRQ_SERIAL=y
--CONFIG_IPIPE_DEBUG=y
--CONFIG_IPIPE_DEBUG_CONTEXT=y
--CONFIG_IPIPE_DEBUG_INTERNAL=y
--CONFIG_HAVE_IPIPE_TRACER_SUPPORT=y
--# CONFIG_IPIPE_TRACE is not set
--CONFIG_DEBUG_KERNEL=y
--
--#
--# Memory Debugging
--#
--# CONFIG_PAGE_EXTENSION is not set
--# CONFIG_DEBUG_PAGEALLOC is not set
--# CONFIG_DEBUG_PAGE_REF is not set
--# CONFIG_DEBUG_RODATA_TEST is not set
--# CONFIG_DEBUG_OBJECTS is not set
--# CONFIG_SLUB_DEBUG_ON is not set
--CONFIG_HAVE_DEBUG_KMEMLEAK=y
--# CONFIG_DEBUG_KMEMLEAK is not set
--# CONFIG_DEBUG_STACK_USAGE is not set
--# CONFIG_DEBUG_VM is not set
--CONFIG_ARCH_HAS_DEBUG_VIRTUAL=y
--# CONFIG_DEBUG_VIRTUAL is not set
--# CONFIG_DEBUG_MEMORY_INIT is not set
--# CONFIG_DEBUG_PER_CPU_MAPS is not set
--# CONFIG_DEBUG_HIGHMEM is not set
--# CONFIG_DEBUG_SHIRQ is not set
--
--#
--# Debug Lockups and Hangs
--#
--CONFIG_SCHED_DEBUG=y
--# CONFIG_SCHED_INFO is not set
--# CONFIG_DEBUG_TIMEKEEPING is not set
--
--#
--# Lock Debugging (spinlocks, mutexes, etc...)
--#
--# CONFIG_DEBUG_RT_MUTEXES is not set
--# CONFIG_DEBUG_SPINLOCK is not set
--# CONFIG_DEBUG_MUTEXES is not set
--# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
--# CONFIG_DEBUG_LOCK_ALLOC is not set
--# CONFIG_PROVE_LOCKING is not set
--# CONFIG_DEBUG_ATOMIC_SLEEP is not set
--# CONFIG_DEBUG_LOCKING_API_SELFTESTS is not set
--CONFIG_STACKTRACE=y
--# CONFIG_DEBUG_KOBJECT is not set
--CONFIG_DEBUG_BUGVERBOSE=y
--# CONFIG_DEBUG_LIST is not set
--# CONFIG_DEBUG_PI_LIST is not set
--# CONFIG_DEBUG_SG is not set
--# CONFIG_DEBUG_NOTIFIERS is not set
--# CONFIG_DEBUG_CREDENTIALS is not set
--
--#
--# RCU Debugging
--#
--# CONFIG_PROVE_RCU is not set
--# CONFIG_RCU_PERF_TEST is not set
--CONFIG_RCU_TRACE=y
--# CONFIG_RCU_EQS_DEBUG is not set
--# CONFIG_DEBUG_WQ_FORCE_RR_CPU is not set
--# CONFIG_DEBUG_BLOCK_EXT_DEVT is not set
--CONFIG_NOP_TRACER=y
--CONFIG_HAVE_FUNCTION_TRACER=y
--CONFIG_HAVE_FUNCTION_GRAPH_TRACER=y
--CONFIG_HAVE_DYNAMIC_FTRACE=y
--CONFIG_HAVE_DYNAMIC_FTRACE_WITH_REGS=y
--CONFIG_HAVE_FTRACE_MCOUNT_RECORD=y
--CONFIG_HAVE_SYSCALL_TRACEPOINTS=y
--CONFIG_TRACE_CLOCK=y
--CONFIG_RING_BUFFER=y
--CONFIG_EVENT_TRACING=y
--CONFIG_CONTEXT_SWITCH_TRACER=y
--CONFIG_TRACING=y
--CONFIG_TRACING_SUPPORT=y
--CONFIG_FTRACE=y
--# CONFIG_FUNCTION_TRACER is not set
--# CONFIG_IRQSOFF_TRACER is not set
--# CONFIG_SCHED_TRACER is not set
--# CONFIG_HWLAT_TRACER is not set
--# CONFIG_ENABLE_DEFAULT_TRACERS is not set
--# CONFIG_FTRACE_SYSCALLS is not set
--# CONFIG_TRACER_SNAPSHOT is not set
--CONFIG_BRANCH_PROFILE_NONE=y
--# CONFIG_STACK_TRACER is not set
--# CONFIG_BLK_DEV_IO_TRACE is not set
--CONFIG_UPROBE_EVENTS=y
--CONFIG_PROBE_EVENTS=y
--# CONFIG_TRACEPOINT_BENCHMARK is not set
--# CONFIG_RING_BUFFER_BENCHMARK is not set
--# CONFIG_RING_BUFFER_STARTUP_TEST is not set
--# CONFIG_TRACE_EVAL_MAP_FILE is not set
--CONFIG_TRACING_EVENTS_GPIO=y
--# CONFIG_DMA_API_DEBUG is not set
--
--#
--# Runtime Testing
--#
--# CONFIG_BACKTRACE_SELF_TEST is not set
--CONFIG_HAVE_ARCH_KGDB=y
--# CONFIG_KGDB is not set
--# CONFIG_ARCH_WANTS_UBSAN_NO_NULL is not set
--# CONFIG_UBSAN is not set
--CONFIG_ARM_UNWIND=y
--# CONFIG_DEBUG_USER is not set
--# CONFIG_DEBUG_LL is not set
--CONFIG_DEBUG_IMX_UART_PORT=1
--CONFIG_DEBUG_VF_UART_PORT=1
--CONFIG_DEBUG_LL_INCLUDE="mach/debug-macro.S"
--# CONFIG_DEBUG_UART_8250 is not set
--
--#
--# Library routines
--#
-diff --git a/recipes-kernel/linux/files/amd64_debug.cfg b/recipes-kernel/linux/files/common_debug.cfg
-similarity index 70%
-rename from recipes-kernel/linux/files/amd64_debug.cfg
-rename to recipes-kernel/linux/files/common_debug.cfg
-index a07ec9d..16b5f78 100644
---- a/recipes-kernel/linux/files/amd64_debug.cfg
-+++ b/recipes-kernel/linux/files/common_debug.cfg
-@@ -1,51 +1,55 @@
-+
- #
- # Debug Kernel Configuration
- #
--CONFIG_LOCKDEP_SUPPORT=y
--CONFIG_STACKTRACE_SUPPORT=y
- CONFIG_ARCH_SUPPORTS_DEBUG_PAGEALLOC=y
- CONFIG_ARCH_SUPPORTS_UPROBES=y
-+CONFIG_LOCKDEP_SUPPORT=y
-+CONFIG_STACKTRACE_SUPPORT=y
-+CONFIG_TRACE_IRQFLAGS_SUPPORT=y
- 
- #
- # IRQ subsystem
- #
--CONFIG_GENERIC_IRQ_PROBE=y
--# CONFIG_IRQ_DOMAIN_DEBUG is not set
- # CONFIG_GENERIC_IRQ_DEBUGFS is not set
-+CONFIG_GENERIC_IRQ_PROBE=y
-+CONFIG_IRQ_DOMAIN_DEBUG=y
- 
- #
- # RCU Subsystem
- #
--# CONFIG_CGROUP_PERF is not set
- # CONFIG_CGROUP_DEBUG is not set
--CONFIG_SYSCTL_EXCEPTION_TRACE=y
-+CONFIG_CGROUP_PERF=y
-+# CONFIG_DEBUG_BLK_CGROUP is not set
-+CONFIG_HAVE_PERF_EVENTS=y
- CONFIG_KALLSYMS=y
--CONFIG_KALLSYMS_ALL=y
- CONFIG_KALLSYMS_ABSOLUTE_PERCPU=y
-+CONFIG_KALLSYMS_ALL=y
- CONFIG_KALLSYMS_BASE_RELATIVE=y
--CONFIG_HAVE_PERF_EVENTS=y
-+CONFIG_PERF_USE_VMALLOC=y
-+CONFIG_SYSCTL_EXCEPTION_TRACE=y
- 
- #
- # Kernel Performance Events And Counters
- #
--CONFIG_PERF_EVENTS=y
- # CONFIG_DEBUG_PERF_USE_VMALLOC is not set
--CONFIG_SLUB_DEBUG=y
--CONFIG_TRACEPOINTS=y
--CONFIG_KPROBES=y
--CONFIG_OPTPROBES=y
--CONFIG_UPROBES=y
--CONFIG_KRETPROBES=y
-+CONFIG_HAVE_ARCH_TRACEHOOK=y
-+CONFIG_HAVE_DMA_API_DEBUG=y
-+CONFIG_HAVE_HARDLOCKUP_DETECTOR_PERF=y
- CONFIG_HAVE_KPROBES=y
-+CONFIG_HAVE_KPROBES_ON_FTRACE=y
- CONFIG_HAVE_KRETPROBES=y
- CONFIG_HAVE_OPTPROBES=y
--CONFIG_HAVE_KPROBES_ON_FTRACE=y
--CONFIG_HAVE_ARCH_TRACEHOOK=y
--CONFIG_HAVE_DMA_API_DEBUG=y
- CONFIG_HAVE_PERF_EVENTS_NMI=y
--CONFIG_HAVE_HARDLOCKUP_DETECTOR_PERF=y
- CONFIG_HAVE_PERF_REGS=y
- CONFIG_HAVE_PERF_USER_STACK_DUMP=y
-+CONFIG_KPROBES=y
-+CONFIG_KRETPROBES=y
-+CONFIG_OPTPROBES=y
-+CONFIG_PERF_EVENTS=y
-+CONFIG_SLUB_DEBUG=y
-+CONFIG_TRACEPOINTS=y
-+CONFIG_UPROBES=y
- 
- #
- # GCOV-based kernel profiling
-@@ -60,22 +64,22 @@ CONFIG_BLK_DEBUG_FS=y
- #
- # Sizes and static limits
- #
--CONFIG_XENO_OPT_DEBUG_TRACE_LOGSZ=16
-+# CONFIG_XENO_OPT_DEBUG_TRACE_LOGSZ is not set
- 
- #
- # Latency settings
- #
- CONFIG_XENO_OPT_DEBUG=y
- CONFIG_XENO_OPT_DEBUG_COBALT=y
--# CONFIG_XENO_OPT_DEBUG_MEMORY is not set
- CONFIG_XENO_OPT_DEBUG_CONTEXT=y
-+CONFIG_XENO_OPT_DEBUG_LEGACY=y
- CONFIG_XENO_OPT_DEBUG_LOCKING=y
--CONFIG_XENO_OPT_DEBUG_USER=y
-+CONFIG_XENO_OPT_DEBUG_MEMORY=y
- CONFIG_XENO_OPT_DEBUG_MUTEX_RELAXED=y
- CONFIG_XENO_OPT_DEBUG_MUTEX_SLEEP=y
- CONFIG_XENO_OPT_DEBUG_POSIX_SYNCHRO=y
--CONFIG_XENO_OPT_DEBUG_LEGACY=y
- CONFIG_XENO_OPT_DEBUG_TRACE_RELAX=y
-+CONFIG_XENO_OPT_DEBUG_USER=y
- 
- #
- # Testing drivers
-@@ -90,16 +94,16 @@ CONFIG_XENO_DRIVERS_CAN_DEBUG=y
- #
- # Protocols
- #
--CONFIG_XENO_DRIVERS_NET_RTIPV4_DEBUG=y
- CONFIG_XENO_DRIVERS_NET_RTCFG_DEBUG=y
-+CONFIG_XENO_DRIVERS_NET_RTIPV4_DEBUG=y
- 
- #
- # ANALOGY drivers
- #
- CONFIG_XENO_DRIVERS_ANALOGY_DEBUG=y
- # CONFIG_XENO_DRIVERS_ANALOGY_DEBUG_FTRACE is not set
--CONFIG_XENO_DRIVERS_ANALOGY_DEBUG_LEVEL=0
--CONFIG_XENO_DRIVERS_ANALOGY_DRIVER_DEBUG_LEVEL=0
-+# CONFIG_XENO_DRIVERS_ANALOGY_DEBUG_LEVEL is not set
-+# CONFIG_XENO_DRIVERS_ANALOGY_DRIVER_DEBUG_LEVEL is not set
- 
- #
- # Real-time GPIO drivers
-@@ -115,30 +119,30 @@ CONFIG_X86_DEBUGCTLMSR=y
- #
- # Performance monitoring
- #
--CONFIG_PERF_EVENTS_INTEL_UNCORE=y
--CONFIG_PERF_EVENTS_INTEL_RAPL=y
--CONFIG_PERF_EVENTS_INTEL_CSTATE=y
--# CONFIG_PERF_EVENTS_AMD_POWER is not set
- CONFIG_ARCH_MEMORY_PROBE=y
-+# CONFIG_DEBUG_HOTPLUG_CPU0 is not set
- CONFIG_MTRR_SANITIZER=y
--CONFIG_MTRR_SANITIZER_ENABLE_DEFAULT=0
--CONFIG_MTRR_SANITIZER_SPARE_REG_NR_DEFAULT=1
-+# CONFIG_MTRR_SANITIZER_ENABLE_DEFAULT is not set
-+# CONFIG_MTRR_SANITIZER_SPARE_REG_NR_DEFAULT is not set
-+# CONFIG_PERF_EVENTS_AMD_POWER is not set
-+CONFIG_PERF_EVENTS_INTEL_CSTATE=y
-+CONFIG_PERF_EVENTS_INTEL_RAPL=y
-+CONFIG_PERF_EVENTS_INTEL_UNCORE=y
- # CONFIG_RANDOMIZE_BASE is not set
--# CONFIG_DEBUG_HOTPLUG_CPU0 is not set
- 
- #
- # Power management and ACPI options
- #
--CONFIG_PM_DEBUG=y
-+# CONFIG_ACPI_APEI_ERST_DEBUG is not set
-+# CONFIG_ACPI_DEBUG is not set
-+# CONFIG_ACPI_DEBUGGER is not set
-+# CONFIG_ACPI_EC_DEBUGFS is not set
- # CONFIG_PM_ADVANCED_DEBUG is not set
--CONFIG_PM_TEST_SUSPEND=y
-+CONFIG_PM_DEBUG=y
- CONFIG_PM_SLEEP_DEBUG=y
-+CONFIG_PM_TEST_SUSPEND=y
- CONFIG_PM_TRACE=y
- CONFIG_PM_TRACE_RTC=y
--# CONFIG_ACPI_DEBUGGER is not set
--# CONFIG_ACPI_EC_DEBUGFS is not set
--# CONFIG_ACPI_DEBUG is not set
--# CONFIG_ACPI_APEI_ERST_DEBUG is not set
- 
- #
- # Bus options (PCI etc.)
-@@ -164,11 +168,12 @@ CONFIG_PM_TRACE_RTC=y
- #
- # Generic Driver Options
- #
--# CONFIG_DEBUG_DRIVER is not set
- # CONFIG_DEBUG_DEVRES is not set
-+# CONFIG_DEBUG_DRIVER is not set
- # CONFIG_DEBUG_TEST_DRIVER_REMOVE is not set
--# CONFIG_TEST_ASYNC_DRIVER_PROBE is not set
-+# CONFIG_DMA_FENCE_TRACE is not set
- CONFIG_GENERIC_CPU_AUTOPROBE=y
-+# CONFIG_TEST_ASYNC_DRIVER_PROBE is not set
- 
- #
- # Bus devices
-@@ -194,10 +199,11 @@ CONFIG_PNP_DEBUG_MESSAGES=y
- #
- # Other I2C/SMBus bus drivers
- #
--# CONFIG_I2C_DEBUG_CORE is not set
- # CONFIG_I2C_DEBUG_ALGO is not set
- # CONFIG_I2C_DEBUG_BUS is not set
-+# CONFIG_I2C_DEBUG_CORE is not set
- # CONFIG_PPS_DEBUG is not set
-+# CONFIG_SPI_DEBUG is not set
- 
- #
- # Enable PHYLIB and NETWORK_PHY_TIMESTAMPING to see the additional clocks.
-@@ -207,12 +213,13 @@ CONFIG_PNP_DEBUG_MESSAGES=y
- #
- # USB GPIO expanders
- #
--# CONFIG_POWER_SUPPLY_DEBUG is not set
- # CONFIG_HWMON_DEBUG_CHIP is not set
-+# CONFIG_POWER_SUPPLY_DEBUG is not set
- 
- #
- # Multifunction device drivers
- #
-+CONFIG_AB8500_DEBUG=y
- # CONFIG_REGULATOR_DEBUG is not set
- 
- #
-@@ -230,6 +237,7 @@ CONFIG_DMADEVICES_DEBUG=y
- #
- # File systems
- #
-+# CONFIG_BTRFS_DEBUG is not set
- # CONFIG_EXT4_DEBUG is not set
- # CONFIG_JBD2_DEBUG is not set
- # CONFIG_QUOTA_DEBUG is not set
-@@ -243,11 +251,7 @@ CONFIG_DMADEVICES_DEBUG=y
- # Pseudo filesystems
- #
- # CONFIG_PSTORE_FTRACE is not set
--
--#
--# Kernel hacking
--#
--CONFIG_TRACE_IRQFLAGS_SUPPORT=y
-+# CONFIG_SUNRPC_DEBUG is not set
- 
- #
- # printk and dmesg options
-@@ -257,180 +261,346 @@ CONFIG_TRACE_IRQFLAGS_SUPPORT=y
- #
- # Compile-time checks and compiler options
- #
-+CONFIG_ARCH_WANT_FRAME_POINTERS=y
-+# CONFIG_DEBUG_FORCE_WEAK_PER_CPU is not set
-+CONFIG_DEBUG_FS=y
- CONFIG_DEBUG_INFO=y
-+# CONFIG_DEBUG_INFO_DWARF4 is not set
- # CONFIG_DEBUG_INFO_REDUCED is not set
- # CONFIG_DEBUG_INFO_SPLIT is not set
--# CONFIG_DEBUG_INFO_DWARF4 is not set
--CONFIG_GDB_SCRIPTS=y
--CONFIG_DEBUG_FS=y
-+CONFIG_DEBUG_KERNEL=y
- CONFIG_DEBUG_SECTION_MISMATCH=y
--# CONFIG_DEBUG_FORCE_WEAK_PER_CPU is not set
--CONFIG_MAGIC_SYSRQ=y
--CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE=0x1
--CONFIG_MAGIC_SYSRQ_SERIAL=y
-+CONFIG_FRAME_POINTER=y
-+CONFIG_GDB_SCRIPTS=y
-+CONFIG_HAVE_IPIPE_TRACER_SUPPORT=y
- CONFIG_IPIPE_DEBUG=y
- CONFIG_IPIPE_DEBUG_CONTEXT=y
- CONFIG_IPIPE_DEBUG_INTERNAL=y
--CONFIG_HAVE_IPIPE_TRACER_SUPPORT=y
- CONFIG_IPIPE_TRACE=y
- # CONFIG_IPIPE_TRACE_ENABLE is not set
--CONFIG_IPIPE_TRACE_MCOUNT=y
- CONFIG_IPIPE_TRACE_IRQSOFF=y
--CONFIG_IPIPE_TRACE_SHIFT=14
--# CONFIG_IPIPE_TRACE_VMALLOC is not set
-+CONFIG_IPIPE_TRACE_MCOUNT=y
- CONFIG_IPIPE_TRACE_PANIC=y
--CONFIG_DEBUG_KERNEL=y
-+# CONFIG_IPIPE_TRACE_SHIFT is not set
-+# CONFIG_IPIPE_TRACE_VMALLOC is not set
-+CONFIG_MAGIC_SYSRQ=y
-+# CONFIG_MAGIC_SYSRQ_DEFAULT_ENABLE is not set
-+CONFIG_MAGIC_SYSRQ_SERIAL=y
- 
- #
- # Memory Debugging
- #
--CONFIG_PAGE_EXTENSION=y
-+CONFIG_ARCH_HAS_DEBUG_VIRTUAL=y
-+CONFIG_ARCH_HAS_KCOV=y
-+# CONFIG_DEBUG_HIGHMEM is not set
-+# CONFIG_DEBUG_KMEMLEAK is not set
-+CONFIG_DEBUG_MEMORY_INIT=y
-+# CONFIG_DEBUG_OBJECTS is not set
- CONFIG_DEBUG_PAGEALLOC=y
- # CONFIG_DEBUG_PAGEALLOC_ENABLE_DEFAULT is not set
- # CONFIG_DEBUG_PAGE_REF is not set
-+# CONFIG_DEBUG_PER_CPU_MAPS is not set
- CONFIG_DEBUG_RODATA_TEST=y
--# CONFIG_DEBUG_OBJECTS is not set
--CONFIG_SLUB_DEBUG_ON=y
--CONFIG_HAVE_DEBUG_KMEMLEAK=y
--# CONFIG_DEBUG_KMEMLEAK is not set
-+CONFIG_DEBUG_SHIRQ=y
-+# CONFIG_DEBUG_STACKOVERFLOW is not set
- # CONFIG_DEBUG_STACK_USAGE is not set
-+CONFIG_DEBUG_VIRTUAL=y
- CONFIG_DEBUG_VM=y
--# CONFIG_DEBUG_VM_VMACACHE is not set
--# CONFIG_DEBUG_VM_RB is not set
- # CONFIG_DEBUG_VM_PGFLAGS is not set
- CONFIG_DEBUG_VM_PGTABLE=y
--CONFIG_ARCH_HAS_DEBUG_VIRTUAL=y
--CONFIG_DEBUG_VIRTUAL=y
--CONFIG_DEBUG_MEMORY_INIT=y
--# CONFIG_DEBUG_PER_CPU_MAPS is not set
--CONFIG_HAVE_DEBUG_STACKOVERFLOW=y
--# CONFIG_DEBUG_STACKOVERFLOW is not set
-+# CONFIG_DEBUG_VM_RB is not set
-+# CONFIG_DEBUG_VM_VMACACHE is not set
- CONFIG_HAVE_ARCH_KASAN=y
-+CONFIG_HAVE_DEBUG_KMEMLEAK=y
-+CONFIG_HAVE_DEBUG_STACKOVERFLOW=y
- # CONFIG_KASAN is not set
--CONFIG_ARCH_HAS_KCOV=y
- # CONFIG_KCOV is not set
--CONFIG_DEBUG_SHIRQ=y
-+CONFIG_PAGE_EXTENSION=y
-+CONFIG_SLUB_DEBUG_ON=y
- 
- #
- # Debug Lockups and Hangs
- #
-+CONFIG_DEBUG_PREEMPT=y
-+# CONFIG_DEBUG_TIMEKEEPING is not set
- CONFIG_SCHED_DEBUG=y
- CONFIG_SCHED_INFO=y
--# CONFIG_DEBUG_TIMEKEEPING is not set
--CONFIG_DEBUG_PREEMPT=y
- 
- #
- # Lock Debugging (spinlocks, mutexes, etc...)
- #
--CONFIG_DEBUG_RT_MUTEXES=y
--CONFIG_DEBUG_SPINLOCK=y
--CONFIG_DEBUG_MUTEXES=y
--# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
--CONFIG_DEBUG_LOCK_ALLOC=y
--CONFIG_PROVE_LOCKING=y
--CONFIG_LOCKDEP=y
--# CONFIG_DEBUG_LOCKDEP is not set
- CONFIG_DEBUG_ATOMIC_SLEEP=y
--CONFIG_DEBUG_LOCKING_API_SELFTESTS=y
--CONFIG_TRACE_IRQFLAGS=y
--CONFIG_STACKTRACE=y
--# CONFIG_DEBUG_KOBJECT is not set
- CONFIG_DEBUG_BUGVERBOSE=y
-+# CONFIG_DEBUG_CREDENTIALS is not set
-+# CONFIG_DEBUG_KOBJECT is not set
- CONFIG_DEBUG_LIST=y
-+# CONFIG_DEBUG_LOCKDEP is not set
-+CONFIG_DEBUG_LOCKING_API_SELFTESTS=y
-+CONFIG_DEBUG_LOCK_ALLOC=y
-+CONFIG_DEBUG_MUTEXES=y
-+# CONFIG_DEBUG_NOTIFIERS is not set
- CONFIG_DEBUG_PI_LIST=y
-+CONFIG_DEBUG_RT_MUTEXES=y
- # CONFIG_DEBUG_SG is not set
--# CONFIG_DEBUG_NOTIFIERS is not set
--# CONFIG_DEBUG_CREDENTIALS is not set
-+CONFIG_DEBUG_SPINLOCK=y
-+# CONFIG_DEBUG_WW_MUTEX_SLOWPATH is not set
-+CONFIG_HAVE_DEBUG_BUGVERBOSE=y
-+CONFIG_LOCKDEP=y
-+CONFIG_PROVE_LOCKING=y
-+CONFIG_STACKTRACE=y
-+CONFIG_TRACE_IRQFLAGS=y
- 
- #
- # RCU Debugging
- #
--# CONFIG_PROVE_RCU is not set
--# CONFIG_RCU_PERF_TEST is not set
--# CONFIG_RCU_TRACE is not set
--# CONFIG_RCU_EQS_DEBUG is not set
--# CONFIG_DEBUG_WQ_FORCE_RR_CPU is not set
-+# CONFIG_BLK_DEV_IO_TRACE is not set
-+CONFIG_BRANCH_PROFILE_NONE=y
-+CONFIG_CONTEXT_SWITCH_TRACER=y
- # CONFIG_DEBUG_BLOCK_EXT_DEVT is not set
--CONFIG_USER_STACKTRACE_SUPPORT=y
--CONFIG_NOP_TRACER=y
--CONFIG_HAVE_FUNCTION_TRACER=y
--CONFIG_HAVE_FUNCTION_GRAPH_TRACER=y
-+# CONFIG_DEBUG_WQ_FORCE_RR_CPU is not set
-+# CONFIG_DMA_API_DEBUG is not set
-+# CONFIG_ENABLE_DEFAULT_TRACERS is not set
-+CONFIG_EVENT_TRACING=y
-+CONFIG_FTRACE=y
-+# CONFIG_FTRACE_STARTUP_TEST is not set
-+CONFIG_FTRACE_SYSCALLS=y
-+CONFIG_FUNCTION_GRAPH_TRACER=y
-+CONFIG_FUNCTION_TRACER=y
-+CONFIG_GENERIC_TRACER=y
- CONFIG_HAVE_DYNAMIC_FTRACE=y
- CONFIG_HAVE_DYNAMIC_FTRACE_WITH_REGS=y
- CONFIG_HAVE_FTRACE_MCOUNT_RECORD=y
-+CONFIG_HAVE_FUNCTION_GRAPH_TRACER=y
-+CONFIG_HAVE_FUNCTION_TRACER=y
- CONFIG_HAVE_SYSCALL_TRACEPOINTS=y
--CONFIG_TRACER_MAX_TRACE=y
--CONFIG_TRACE_CLOCK=y
--CONFIG_RING_BUFFER=y
--CONFIG_EVENT_TRACING=y
--CONFIG_CONTEXT_SWITCH_TRACER=y
--CONFIG_RING_BUFFER_ALLOW_SWAP=y
--CONFIG_TRACING=y
--CONFIG_GENERIC_TRACER=y
--CONFIG_TRACING_SUPPORT=y
--CONFIG_FTRACE=y
--CONFIG_FUNCTION_TRACER=y
--CONFIG_FUNCTION_GRAPH_TRACER=y
--CONFIG_IRQSOFF_TRACER=y
--# CONFIG_PREEMPT_TRACER is not set
--CONFIG_SCHED_TRACER=y
- # CONFIG_HWLAT_TRACER is not set
--CONFIG_FTRACE_SYSCALLS=y
--CONFIG_TRACER_SNAPSHOT=y
--CONFIG_TRACER_SNAPSHOT_PER_CPU_SWAP=y
--CONFIG_BRANCH_PROFILE_NONE=y
--# CONFIG_STACK_TRACER is not set
--# CONFIG_BLK_DEV_IO_TRACE is not set
-+CONFIG_IRQSOFF_TRACER=y
- CONFIG_KPROBE_EVENTS=y
--CONFIG_UPROBE_EVENTS=y
--CONFIG_PROBE_EVENTS=y
--# CONFIG_FTRACE_STARTUP_TEST is not set
- # CONFIG_MMIOTRACE is not set
--# CONFIG_TRACEPOINT_BENCHMARK is not set
-+CONFIG_NOP_TRACER=y
-+# CONFIG_PREEMPT_TRACER is not set
-+CONFIG_PROBE_EVENTS=y
-+# CONFIG_PROVE_RCU is not set
-+# CONFIG_RCU_EQS_DEBUG is not set
-+# CONFIG_RCU_PERF_TEST is not set
-+CONFIG_RCU_TRACE=y
-+CONFIG_RING_BUFFER=y
-+CONFIG_RING_BUFFER_ALLOW_SWAP=y
- # CONFIG_RING_BUFFER_BENCHMARK is not set
- # CONFIG_RING_BUFFER_STARTUP_TEST is not set
-+CONFIG_SCHED_TRACER=y
-+# CONFIG_STACK_TRACER is not set
-+# CONFIG_TRACEPOINT_BENCHMARK is not set
-+CONFIG_TRACER_MAX_TRACE=y
-+CONFIG_TRACER_SNAPSHOT=y
-+CONFIG_TRACER_SNAPSHOT_PER_CPU_SWAP=y
-+CONFIG_TRACE_CLOCK=y
- # CONFIG_TRACE_EVAL_MAP_FILE is not set
-+CONFIG_TRACING=y
- CONFIG_TRACING_EVENTS_GPIO=y
--# CONFIG_DMA_API_DEBUG is not set
-+CONFIG_TRACING_SUPPORT=y
-+CONFIG_UPROBE_EVENTS=y
-+CONFIG_USER_STACKTRACE_SUPPORT=y
- 
- #
- # Runtime Testing
- #
--# CONFIG_KPROBES_SANITY_TEST is not set
--# CONFIG_BACKTRACE_SELF_TEST is not set
--# CONFIG_TEST_DEBUG_VIRTUAL is not set
--CONFIG_HAVE_ARCH_KGDB=y
--CONFIG_KGDB=y
--CONFIG_KGDB_SERIAL_CONSOLE=y
--CONFIG_KGDB_TESTS=y
--# CONFIG_KGDB_TESTS_ON_BOOT is not set
--# CONFIG_KGDB_LOW_LEVEL_TRAP is not set
--# CONFIG_KGDB_KDB is not set
- CONFIG_ARCH_HAS_UBSAN_SANITIZE_ALL=y
- # CONFIG_ARCH_WANTS_UBSAN_NO_NULL is not set
--# CONFIG_UBSAN is not set
--# CONFIG_DEBUG_WX is not set
-+# CONFIG_ARM64_PTDUMP_DEBUGFS is not set
-+CONFIG_ARM_UNWIND=y
-+# CONFIG_BACKTRACE_SELF_TEST is not set
-+# CONFIG_CPA_DEBUG is not set
-+# CONFIG_DEBUG_BOOT_PARAMS is not set
-+# CONFIG_DEBUG_EFI is not set
-+# CONFIG_DEBUG_ENTRY is not set
-+# CONFIG_DEBUG_IMX_UART_PORT is not set
-+# CONFIG_DEBUG_LL is not set
-+# CONFIG_DEBUG_LL_INCLUDE is not set
-+# CONFIG_DEBUG_NMI_SELFTEST is not set
- # CONFIG_DEBUG_TLBFLUSH is not set
--# CONFIG_IOMMU_DEBUG is not set
-+# CONFIG_DEBUG_UART_8250 is not set
-+# CONFIG_DEBUG_USER is not set
-+# CONFIG_DEBUG_VF_UART_PORT is not set
-+# CONFIG_DEBUG_WX is not set
-+# CONFIG_DEFAULT_IO_DELAY_TYPE is not set
-+CONFIG_HAVE_ARCH_KGDB=y
- CONFIG_HAVE_MMIOTRACE_SUPPORT=y
--CONFIG_IO_DELAY_TYPE_0X80=0
--CONFIG_IO_DELAY_TYPE_0XED=1
--CONFIG_IO_DELAY_TYPE_UDELAY=2
--CONFIG_IO_DELAY_TYPE_NONE=3
-+# CONFIG_IOMMU_DEBUG is not set
- CONFIG_IO_DELAY_0X80=y
- # CONFIG_IO_DELAY_0XED is not set
--# CONFIG_IO_DELAY_UDELAY is not set
- # CONFIG_IO_DELAY_NONE is not set
--CONFIG_DEFAULT_IO_DELAY_TYPE=0
--# CONFIG_DEBUG_BOOT_PARAMS is not set
--# CONFIG_CPA_DEBUG is not set
--# CONFIG_DEBUG_ENTRY is not set
--# CONFIG_DEBUG_NMI_SELFTEST is not set
--CONFIG_X86_DEBUG_FPU=y
-+# CONFIG_IO_DELAY_TYPE_0X80 is not set
-+# CONFIG_IO_DELAY_TYPE_0XED is not set
-+# CONFIG_IO_DELAY_TYPE_NONE is not set
-+# CONFIG_IO_DELAY_TYPE_UDELAY is not set
-+# CONFIG_IO_DELAY_UDELAY is not set
-+CONFIG_KGDB=y
-+# CONFIG_KGDB_KDB is not set
-+# CONFIG_KGDB_LOW_LEVEL_TRAP is not set
-+CONFIG_KGDB_SERIAL_CONSOLE=y
-+CONFIG_KGDB_TESTS=y
-+# CONFIG_KGDB_TESTS_ON_BOOT is not set
-+# CONFIG_KPROBES_SANITY_TEST is not set
- # CONFIG_PUNIT_ATOM_DEBUG is not set
--CONFIG_UNWINDER_ORC=y
-+# CONFIG_TEST_DEBUG_VIRTUAL is not set
-+# CONFIG_UBSAN is not set
- # CONFIG_UNWINDER_FRAME_POINTER is not set
-+CONFIG_UNWINDER_ORC=y
-+CONFIG_X86_DEBUG_FPU=y
-+
-+#
-+# Real-time SPI master drivers
-+#
-+# CONFIG_XENO_DRIVERS_SPI_DEBUG is not set
-+
-+#
-+# CSR SiRF atlas6/primaII/Atlas7 Specific Features
-+#
-+# CONFIG_UX500_DEBUG_UART is not set
-+
-+#
-+# Processor Features
-+#
-+CONFIG_DEBUG_ALIGN_RODATA=y
-+
-+#
-+# RAW_PRINTK to work. Otherwise, you will get no output on raw_printk()
-+#
-+CONFIG_HW_PERF_EVENTS=y
-+
-+#
-+# CAN USB interfaces
-+#
-+CONFIG_BT_DEBUGFS=y
-+# CONFIG_CAN_DEBUG_DEVICES is not set
-+
-+#
-+# Bluetooth device drivers
-+#
-+# CONFIG_CFG80211_DEBUGFS is not set
-+# CONFIG_CFG80211_INTERNAL_REGDB is not set
-+# CONFIG_MAC80211_DEBUGFS is not set
-+# CONFIG_MAC80211_DEBUG_MENU is not set
-+# CONFIG_MAC80211_MESSAGE_TRACING is not set
-+
-+#
-+# RAM/ROM/Flash chip drivers
-+#
-+# CONFIG_MTD_JEDECPROBE is not set
-+
-+#
-+# SCSI Transports
-+#
-+# CONFIG_SCSI_DEBUG is not set
-+
-+#
-+# MII PHY device drivers
-+#
-+# CONFIG_ATH_DEBUG is not set
-+# CONFIG_BRCM_TRACING is not set
-+# CONFIG_RT2X00_DEBUG is not set
-+
-+#
-+# Pin controllers
-+#
-+# CONFIG_DEBUG_PINCTRL is not set
-+
-+#
-+# Watchdog Device Drivers
-+#
-+# CONFIG_BCM_KONA_WDT_DEBUG is not set
-+
-+#
-+# Sonics Silicon Backplane
-+#
-+# CONFIG_BCMA_DEBUG is not set
-+
-+#
-+# Multimedia core support
-+#
-+# CONFIG_VIDEO_ADV_DEBUG is not set
-+
-+#
-+# Webcam, TV (analog/digital) USB devices
-+#
-+# CONFIG_VIDEO_STI_HVA_DEBUGFS is not set
-+
-+#
-+# Graphics support
-+#
-+# CONFIG_DRM_DEBUG_MM is not set
-+# CONFIG_DRM_DEBUG_MM_SELFTEST is not set
-+
-+#
-+# ACP (Audio CoProcessor) Configuration
-+#
-+# CONFIG_NOUVEAU_DEBUG is not set
-+# CONFIG_NOUVEAU_DEBUG_DEFAULT is not set
-+
-+#
-+# Sub-drivers
-+#
-+# CONFIG_DRM_TEGRA_DEBUG is not set
-+
-+#
-+# Console display driver support
-+#
-+# CONFIG_SND_DEBUG is not set
-+
-+#
-+# also be needed; see USB_STORAGE Help for more info
-+#
-+# CONFIG_USB_STORAGE_DEBUG is not set
-+
-+#
-+# Gadget/Dual-role mode requires USB Gadget support to be enabled
-+#
-+# CONFIG_USB_DWC2_DEBUG is not set
-+
-+#
-+# USB Physical Layer drivers
-+#
-+# CONFIG_USB_GADGET_DEBUG is not set
-+# CONFIG_USB_GADGET_DEBUG_FILES is not set
-+# CONFIG_USB_GADGET_DEBUG_FS is not set
-+
-+#
-+# MMC/SD/SDIO Host Controller Drivers
-+#
-+# CONFIG_MMC_DEBUG is not set
-+
-+#
-+# Clock Source drivers
-+#
-+CONFIG_TIMER_PROBE=y
-+
-+#
-+# Extcon Device Drivers
-+#
-+# CONFIG_OMAP_GPMC_DEBUG is not set
-+
-+#
-+# DOS/FAT/NT Filesystems
-+#
-+# CONFIG_NTFS_DEBUG is not set
-+
-+#
-+# ARM errata workarounds via the alternatives framework
-+#
-+# CONFIG_CMA_DEBUG is not set
-+# CONFIG_CMA_DEBUGFS is not set
-+
-+#
-+# CPU frequency scaling drivers
-+#
-+# CONFIG_ARM_BRCMSTB_AVS_CPUFREQ_DEBUG is not set
-+
-+#
-+# Distributed Switch Architecture drivers
-+#
-+# CONFIG_SKY2_DEBUG is not set
- 
- #
--# Library routines
-+# Tegra firmware driver
- #
-diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
-index d93eb1b..f90de9b 100644
---- a/recipes-kernel/linux/linux-xenomai.inc
-+++ b/recipes-kernel/linux/linux-xenomai.inc
-@@ -16,10 +16,9 @@ FILESPATH =. "${LAYERDIR_xenomai}/recipes-kernel/linux/files:"
- 
- XENOMAI_DEFCONFIG = "${DISTRO_ARCH}_defconfig"
- KERNEL_DEFCONFIG ?= "${XENOMAI_DEFCONFIG}"
--KERNEL_DEBUGCONFIG = "${DISTRO_ARCH}_debug.cfg"
- XENOMAI_DEBUG ?= "0"
- 
- SRC_URI += "${@'file://${KERNEL_DEFCONFIG}' if d.getVar('KERNEL_DEFCONFIG') == d.getVar('XENOMAI_DEFCONFIG') else ''}"
--SRC_URI += "${@'file://${KERNEL_DEBUGCONFIG}' if d.getVar('XENOMAI_DEBUG') == '1' else ''}"
-+SRC_URI += "${@'file://common_debug.cfg' if d.getVar('XENOMAI_DEBUG') == '1' else ''}"
- 
- S = "${WORKDIR}/git"
 -- 
-2.43.0
-
+Siemens AG, Foundational Technologies
+Linux Expert Center
