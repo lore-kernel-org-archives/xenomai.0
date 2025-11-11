@@ -1,52 +1,59 @@
-Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011056.outbound.protection.outlook.com [52.101.70.56])
+Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11013022.outbound.protection.outlook.com [40.107.162.22])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92BBA393DC0
-	for <xenomai@lists.linux.dev>; Tue, 11 Nov 2025 17:02:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7498622157B
+	for <xenomai@lists.linux.dev>; Tue, 11 Nov 2025 17:48:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.162.22
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762880553; cv=fail; b=fQ41+chaROYvTiZaZtor4cs9rZHTfdSJmMjFsfjQQwPM0i1c5EDTV7d3XQU8yuT6J2ZHgOZ4h5mGPSoqxZ1aZMov5Tu9jwTLJC0mDXDKQpW33GDWfP8DwH6tTvxEBYIdK6tXYj+ohUs3jPEXnpuhxeXOdMlRuaBF9He2R8anX6Q=
+	t=1762883303; cv=fail; b=MqPlOMugzBrTkdKXam1WCynnZStEwlc6BS51khCNsEyax4x6KpDS70Ulje0HKfZFMnzcc51cfJTpfK+Mr41so9vdLpqaRfqQxBN0nAdsPw6sZbwOQamH1QEbfXAyj2FmFTE9T88oHgYKWONdFZtwwIoi1eInn6c5BdHLL3MnJ8U=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762880553; c=relaxed/simple;
-	bh=u4oX13x4SxZdZ3xKxmntmWXTgOs1Flbv172BSSaKzto=;
-	h=Message-ID:Date:From:Subject:To:Content-Type:MIME-Version; b=nCljzgikiilZp45p8740vmaoGAb6TmL1G7KTGG7TvmKHsMtJfTdjRI6BrZ9gRwLsZibTFD4Io2UIqmWFTjeewTcFL7tYvaIFr5YQkX8E4wEHJOO/MwHcAYCF42RmOcIU+prPc+8FNlDl3fPyxpWhfc1CubHqOZHukG6N9x5+BYU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=tT57KEaw; arc=fail smtp.client-ip=52.101.70.56
+	s=arc-20240116; t=1762883303; c=relaxed/simple;
+	bh=W4RSQe1qrbd0Ma6MBs0m8YRuLEuMF/fjA2kUcEdG0Ck=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Dof1Rn5dA963FcMEwcN5cIE1hzo4Cv5mXqYScwbszO7RJjp5nvFH68E9Qjr/JxR4urqArf5rZoXDZ0gCKsJ611T6Yf548T1LKVIJ76wa0LjkFHbXGDFT1bQyUdXHoJwEp0tUB5GVRony51NyTUdNGmKGHtSNNS2S5TWvx8wh7Bk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=uUkLgh2v; arc=fail smtp.client-ip=40.107.162.22
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="tT57KEaw"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="uUkLgh2v"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=HrIA6wtTkelTp4CIpMMYvBZhU+WTgW3QisUb7eEFsj/6IICVEhUh31MtHuXlCsTQDt8Ie0i4nxdjWp8MMA9sSFFl+mwNsJDzxQu08BbvKwx6xj+L+AkmshE8it2KyFipUsXwInTVp0A8yxp6XLwXov8bEoDJBZ3wL2kQBbpUNluICcrMMMMSFzgSUZbmSu0cHz7HXr7vt/vCgCFoUOBgG3uQ13cg1jKNGKEQRle7tFXogFPIEbDd1H9aoY0rNJOxfpAxzI8uf05h6LJ2VUXYhKXUFCg2LflwztI53pu4dyPlIfY7xdL3CTE0lq/gqvwn3saYacmmTCcShgZVLYxadg==
+ b=wdTkBNO+dW7gt/00G2U6IanyYXMk10dvyn4Fd8zVvr4CFxBf5Uihmgjqed3BCIzWberl53ZwgtVIItzoyOr3OFT9UquUa2duc4ijjZdkNnjT6apWm7ZOP93ALRq4LCzLb0iOipYH9aeyBVlkn6fnkF69CjhrDxBABs8vKY+ycWtLsZQu2J+P8SBex2GZvbYmWD8YhIGVJArocuDhi9Cv+/a1ymYQswPBPoBoMCUYbJTLBrwls+HY9fhVjiCg+v34/ORVPelpS7Dx3Aw0/TSkVIEYuekDmj5n6/y7T+1egYN7myEG/0eBT1tghnlpbVEqLnbV6fhc4o3JqFx2V7btCA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Z10Zh7y+J6Meujs6UI7g4HJ9GbU90MBt+ZNKZm11w2M=;
- b=mcg/oBruRecr657lX1pDqRl+DTG9QYgagDejRI/9zZukltcIXXxepp5IhFC/Kayard/o8CFy1pqeuHP2DTZho+L/4FOUsFPa2zf5ceBoQNisBfeuFAGl/GWL0waxckRA/2ROyEHA1WE4cTSVEbwBHfQ3Kr6BHjFJSEjVtqTCx9JyiOw4QcRXNFjTBP1ntS7z8JLODf6duFJHcxymDtIUGmJSH2mVhOaKxh2jJDbMKDoQsSPynBhHJMSAQ9qPQYyWiyUr0rT35VySmup+6N1GDhm8qmU89Bh/Svzo0L7fehFvPKytIw/bi2k1wfT58eAcjnGtvvFgle2ObG/kRWmuKA==
+ bh=77drSWlXmyNxhfsbI2cwpYmmw3kvQPGOCnYVf/+Aa84=;
+ b=omxL2wf3ymi/ChHM+ulggCca9eYICF1rzue03yXPXtzMlyvlB9HVJPShIGdUkTyy7/Sg8QA3INFn5L6kgP3sco1S9meofOJEufWT91piYQLkF8y8CFWUppoZsl3hqqObmg2bZMSRfkbEExFJcTkJk25qvfTRwm/6TtazfgDE8YBkM7J0X8A6uXnztkOxkmyxAmHIGBX99R27wDlZ+7KtV5USh6ZDhHjdmok+X37sb/NSMikw+yXMMdvSgGuub1EI0NM5WMi26lWsH4RpqNn+Xm9TTkVZxUki+64VMiHr0uowjzoOkLBXZsGLQLBNttQ+EDwDfZ7EcmZeWcvUlMdy6A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Z10Zh7y+J6Meujs6UI7g4HJ9GbU90MBt+ZNKZm11w2M=;
- b=tT57KEawBjtZNEJBAUEEQWqUWmbeYCBNEVhuIRV0Jz2ULAFURZjCfmWSKD5aCXRE/OBQuQ78vJV1OTNbV6j6yipQUbHq2xwT9XLUSspqANa+Nk0Kilp52kGQqTKrpZOg18j6xfvabpFk6oL/cem+yTo7d5w1fqrmCjRvsfvREK+JeIO/oTPldJbJAPkosbSJGa1PE50rZRf40dct1pyZyi/+Bh9bWYXlv1FvX5IRHBFbZZjBiVuA10KzULTzcsweQOTUBwgRXTnx7N3JsgNtZ0wqVmPBEmXf1Iokp68BUpK1y3bPtmuZS7i0LfjaUkFaaueRx4P9gvl6IFaBpDWbKw==
+ bh=77drSWlXmyNxhfsbI2cwpYmmw3kvQPGOCnYVf/+Aa84=;
+ b=uUkLgh2vXMBgDs/X0EMtvfvXt4mOgpFEYq0RYOPdyKPpz45UHSctW+5Z2Qc0OGfHk+OIYHjsX+ASME06qpgehDY1oWzUwnJHffn7ESO2bjHciiqBdApzZLOQ/AtV8Aw8xQdhRYNjeMp5hPpi9eN+Ds2LQW5X79h1EXkoMLdZk3SXChvES8kuuthKXX4/gZojotfufZn9nfE0JOM29cFXQuv5P48Vp5KGl43WBvzYSbPEbRH/5YVqViansP0E/Y6mPR734PnzG1UY3+LenseyVSxZwPaFgADvwZId0FKbS8PeYHIq8zjj6ngFRyYp57eCrNhpTlok6mXMZqQRWGQxMg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DBAPR10MB4057.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:1c4::22) with
+Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:76::15)
+ by PA1PR10MB8625.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:444::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9298.16; Tue, 11 Nov
- 2025 17:02:28 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8fe1:7e71:cf4a:7408%6]) with mapi id 15.20.9298.015; Tue, 11 Nov 2025
- 17:02:27 +0000
-Message-ID: <84e205ca-76fc-4a34-abef-f614867bdee4@siemens.com>
-Date: Tue, 11 Nov 2025 18:02:26 +0100
+ 2025 17:48:18 +0000
+Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::7fc:74bb:a781:a286]) by GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::7fc:74bb:a781:a286%6]) with mapi id 15.20.9298.015; Tue, 11 Nov 2025
+ 17:48:18 +0000
+Message-ID: <dcfc1a13-f380-4f53-b8ce-9a0b747ec7e1@siemens.com>
+Date: Tue, 11 Nov 2025 18:48:16 +0100
 User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH xenomai-images v2 1/2] linux-xenomai: Add arch specific
+ debug kernel configuration snippets
+To: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
+Cc: florian.bezdeka@siemens.com
+References: <20251107080005.1272435-1-tobias.schaffner@siemens.com>
+ <20251107080005.1272435-2-tobias.schaffner@siemens.com>
+ <1c4413b7-6d87-408e-9854-bd2c6e0daac7@siemens.com>
+ <7876b2fb-e3cb-4815-91eb-aa262c1dabbd@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Xenomai community call on Wednesday, November 12, 2025, UTC 7:30 AM
-To: Xenomai <xenomai@lists.linux.dev>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
@@ -91,11 +98,12 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
+In-Reply-To: <7876b2fb-e3cb-4815-91eb-aa262c1dabbd@siemens.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR4P281CA0340.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:ea::19) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR5P281CA0054.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:f0::7) To GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:150:76::15)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -103,111 +111,481 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DBAPR10MB4057:EE_
-X-MS-Office365-Filtering-Correlation-Id: 284e8a79-6312-497e-045f-08de214417bc
+X-MS-TrafficTypeDiagnostic: GV2PR10MB6186:EE_|PA1PR10MB8625:EE_
+X-MS-Office365-Filtering-Correlation-Id: ec9a2811-5e1c-45a3-a659-08de214a7f30
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?Und2T05SUUNmdkVCK0Jma3Fad09tZ2p5TkpUSGU2QndmNW4rZE5UaXl4aFVO?=
- =?utf-8?B?eTMybEZSUjZHMmpIUXh0TmxIck43RkdBVUVRdDVsWTdGQWN1V2lIWml5VWtt?=
- =?utf-8?B?RjQzK0h2cCtLSVhKYzB2V3dqVzAxSjk3bXIvWDhYQWQ2bUhHN2k2UFFiN3ZD?=
- =?utf-8?B?TjlXazNCelB4VDNYcG5xakh2ZlJxK1ZVdzcyVmNRU0xDQXZibVBLdjBOVXE1?=
- =?utf-8?B?OTBKNFRRTnV5SndDQ2VOeU1VbWtmejA0YTFUb1d5c2dKc3oxRU9OSVFKRFJB?=
- =?utf-8?B?b2RoSGFLLzlJQVEreTVzV2hCalFjYkpNUldCaml0RHhtaUFMeGZPUkJSdUVi?=
- =?utf-8?B?TlZlQjRUNzNNRlVKTE1pUVBDQWFtOEp3a3FOK21NVzJkOXR5Qjl5R3FxZXc1?=
- =?utf-8?B?d0pVcFFWRGdSWFB2b0dyaDNkMGM2OXRWd0l1K29nUksvMTlFY3lVY1pxTURq?=
- =?utf-8?B?dkxtRFVMb0tHL1V0dWQ1OUZIU2hPVFl2MjZBV1BibEhRMndVTERUekhCWDVX?=
- =?utf-8?B?Qnlvd1lvbmRuU1VQaDNqcTE3R2grOVpoNlRvZ09Vd0p5d0VhdTVXSFN1RTlh?=
- =?utf-8?B?eFdqS1RybU0zMVZpbllqemhSUlNXYTZtSk05Q08wTFFFR1g1dGR4QkcwWHRt?=
- =?utf-8?B?aFkrWFRXVGYrODh2bGtnMHZCZGI5MS81UUttUkFtbnJUT0VZYUpJV3VMaG1u?=
- =?utf-8?B?dTZSRDBrRXVxWm5OZ2I0N2krWUFrRDVpZWYvcWlPSWJvdlh4MEZzSGoyN2FG?=
- =?utf-8?B?TmFiRzRvMDZ4VmNOM1ZCVDI1Z3pmNENPZkhKVVFBeDF4UTlzM0ZMTlc1empm?=
- =?utf-8?B?Wk1uN2NlS1JWYmdia0h0ZVBKNjYwdkdKVml5eGpXd1BjNnowOUdGRzNjY0JF?=
- =?utf-8?B?TUl6bis3NWlpOFdwTFhIVHJWYnVhbjU0TENDaXZGK2FDVWJ2dGpRZjVlTmpE?=
- =?utf-8?B?YnViRlpadmdLZG52djEyTGk2WllkaDNpU0FnRU1qYXFWbDloUzBwUnFJUlVp?=
- =?utf-8?B?ak9zQzFyeFljOEJNWHUwc3Y4TlkyZTk2RXF4UHVBOHhUbWQ4U0xQYWZMTk54?=
- =?utf-8?B?VmNCY3VrK2hVb05nRFBmaXNacDh1Szd3L0p3L0h2UkNITU1VWHV4RU5YMUhK?=
- =?utf-8?B?SWZYRGFsaUEyZlRsSXRNaGx6dnhwR0puM1RCTXRwS3NYa1pUNzZqb3JDNThn?=
- =?utf-8?B?WGlQWm5seXVQL3UrRjdjWWQ2MWpnaXN5UFJZYkdQbkRQdDAvaUZmNzkxVnFS?=
- =?utf-8?B?RG9LRHBGaHFtR0pnd3F3Q1ZHWnhpWkxwL3M2K1VBemkzZTZJR2w2S2QybTlC?=
- =?utf-8?B?d2lob2c2UEVYM2YyMDRrMW1iM0MxRkMzNTUwbTFhVVJBUGlPUmZBc1ZwdExN?=
- =?utf-8?B?QVlwdFhGRUNOMlVxMTJyV2ZQQlo0ZHAvMmZGamlBN2dtUzNMZlUvSXIyZlpz?=
- =?utf-8?B?aXRVd0lpbGdyT25KYUNGVkxjTTlLSldVeGhpbi9RSk9Td2xxS3NpZ3NJWlVF?=
- =?utf-8?B?bzlaeFBCNlJuWng3MjM1Y3RGczBGRFhtYTN5bU9QQVVwdmFVRUt4Wi8vMmVa?=
- =?utf-8?B?Ym0yQzlPM0c0aEY2emJqd0VrOE9pQ21EemNuQnhKblZTOFBYU2ZUUTlZL3NW?=
- =?utf-8?B?RGRBTDY4NlpEbTZlZE5GLzBwaWpEYitkZmlteEpUdExTcmlLZTBxWU96Q0JE?=
- =?utf-8?B?MFJjY0xzVS8zTzBMNlA2VUdqeDRLZytzTnJ0UDdYWWVXVGowU3NSS1RzczlW?=
- =?utf-8?B?aE04K2gxa1c0OGllQVBScUR4RnJNanJGRVg3TzhJWjlFdHJyVk9zNjZDRW5S?=
- =?utf-8?B?ekJvZHRzcXFxcSt4cHZYQ3dUd1h1dm9OTHk0Q0lFbjk2T2dYYkZ0c0t2QzQ0?=
- =?utf-8?B?Tkc1L0tnb1V1RXZEbEp6aTFEZHI5eXJQSS9qdEZDNUpDTm4xMFNKUmNtaE42?=
- =?utf-8?Q?bA52JoTBIJ6/Ay3lqjFXXUwrkp+0Myiv?=
+	=?utf-8?B?am5HejNGcENjdHFxNDBNTnpwelJhZVIzUy96UWdCbndXbloveUI3MWFTL1ZU?=
+ =?utf-8?B?eWdhdnN3TVVvVXBSQ3VSUnVMN05LNXM5NnNZWnB1RlpYRWZuZm10SXRpRkE0?=
+ =?utf-8?B?Wkpzb1BnUVo5b3BuY2hsdnNTWGFXMU96WkxVcHFWK1FyRlNBald4NGwrSmRM?=
+ =?utf-8?B?N1N1TGZySHRrNUdaT25FTFFNcjBidGdKUTlUQjBvYXZBRWFMeDEzMngwdFFU?=
+ =?utf-8?B?eXdTRHR0RjFQekduZ2xhcGxMNStjT1k1WDBSaSsvZ3lJLzN1UkYyZnQ4enhG?=
+ =?utf-8?B?aWNuNWthcTZJSFdic1BLazg4VmsycFR2d0NlM2c5T0hja252M2MvZnkyMmxM?=
+ =?utf-8?B?aVUxb3g1cG5LTVNnU0tUT2NVZ01Vc0tOeUxEUnVmZGlnWGVMTGJ3bHR0RFcr?=
+ =?utf-8?B?cS9jRzdHWloyKzdyT3NhQTdTSDhZaTRnTVVlaHNrdzRBYkJlSkFpc3djUmdT?=
+ =?utf-8?B?Q3h4RG11OGhkVGF4ei9GQmd6OU9uQWo3ZlMrNXQvM2J1c0NuQm9jUHFuc0Vz?=
+ =?utf-8?B?K3diYlBsNXZJaGp5dnpBTTY2QXpjUG9KME9tdlo5Z00ydjZDV1pEQlJ2eTZR?=
+ =?utf-8?B?TldJQmRpWnI0Q2lCd3k3QWNhcEFablowc2t2YjkwTHZLSUhBM3NEUzZUcFlO?=
+ =?utf-8?B?UUI3QVV2L09yano4M3lpQTVYQnJWSit0QTJoaEpHbW1GQTVYRmkrY1NUNVFT?=
+ =?utf-8?B?UkIwd1ZzWDMwVzZ3cGZsNnFKemJnRnFubmxrR0VwSThYNW8zTnF0ZTN3NU0r?=
+ =?utf-8?B?Mm1YVjZPMEZjNFpkdW5VODhUWnQxeVQ0TWdDS0NRcGlhR1NVT0NUSitnWGpu?=
+ =?utf-8?B?WmNQc2hDQjNFYzROR0ZDaTZHaTlaUUlKT3hNbm5oZk5hRjgzWkJvZTZIK09y?=
+ =?utf-8?B?NVpLblovOGpncU5OblAwMWxZWlhvOFhPd0JGYzUxVkxubXNwc0ZqdTU0SW9R?=
+ =?utf-8?B?Ti8xVUs0NlVDRTY3Y2Y5RFI5TjdPbmpiNXcraUliSVd1aWdFUWEwOTJ6THY0?=
+ =?utf-8?B?YTdGOWMyQ3dobjhOd1BKQjloaTU5ZTNHUlI4Wkw1Mld6eDlnSndTeDJITXhW?=
+ =?utf-8?B?RUZTU3lCZEY3QURhTmJqSTRzTHgySG1iVmVzS1pVYWFXcTFSa3FrU2VTTTBW?=
+ =?utf-8?B?VUZxYTdsZVh5K0ZYSm1GSGR2VUN6dGxQcmd0OUtTT2tlOE1CMDJ3VFAvVGp0?=
+ =?utf-8?B?Tng1aEZocU5pa1FTYUJEMGlmS0kyeDhtVC9sUXFwbE5FMUg0SVBmUEVFSmNi?=
+ =?utf-8?B?USt2TW9uZ0VSYWJ1dE9SMGE1UEo1ZndObnJscnVqaVlLS0hSaW40S1NRZUww?=
+ =?utf-8?B?QVlSWTZBbE5sb2g1aC9sd0JHTENHamR5MXpyNWNRL29NVlRpQ3lxZFJZWk1P?=
+ =?utf-8?B?ZndMTFl6V3ZNZ3ltbDc3VWxqNjZZVUkyc1lVbElYejZYZG93d1pmV2RpeGNm?=
+ =?utf-8?B?ckk3dGR5bjZkNmorL3kvUmdyQkg5ai8vTXFiVTIrMFFLOUlHNFVGV0RUT2da?=
+ =?utf-8?B?dlZ1ODdkNEoxdmU5TzRDanJiam1STFFXTUFia3lvWHhXYnY0cUhCY214Z0lQ?=
+ =?utf-8?B?aXg2QSt3cUc0T2FYem1idXpBM1RwRTVFT2RMR2VSZXJkaTh1TEJ2RHEzcHRZ?=
+ =?utf-8?B?cHM5YUJnUUJKS3k0VnZRTHJsV0JYMi8vM29icDk1NkNuYjRveGFzR3JuakY1?=
+ =?utf-8?B?SjBCbjRyM2xndzl5RFJ4WCs1OWc4MmxORlhmUXE3U3A2M3hpSDFWWDhZbmov?=
+ =?utf-8?B?dzZLMzlNbHFFc1R6SUI4d1RqbUZlNjBSdHBhd01uVW5UMWEwZXBSQVlscGZ4?=
+ =?utf-8?B?Smg4SXNxMmJja042WTd0VGp3OGl2eGtRaS9VSWZYUm8reEFVVEh3UnpjL3Nw?=
+ =?utf-8?B?VDZvMHpJUzBQR2pQRVlNZkR5bFFuSHJWc1dQMmU0Q01lNFUwbzRvWWM1TWh6?=
+ =?utf-8?Q?RYP9rv4cViJ/Kamne55gCnEn72J++BV8?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?YXZLZ3VzZ0NtYTZPbnR4Yk9vaUQrZ0lxYXp0QmxJK2wyMVUxUDh1ckV2aFdp?=
- =?utf-8?B?RWVoWlpNNXZGT2k2b0hGWEttWUwzSEJJazVZRG9PM2hCcExlb0NNdVd1WHB3?=
- =?utf-8?B?SHErejdNWUpDNDhTVUhHYVVJZmIwOFNCMVdqL0w5cVlUS2Jqam9xaldpTFNo?=
- =?utf-8?B?bWhLNDZYM1I5cjFxVlRaVVhwcmIzYkZEb3RSZm1QSWtaSCs2U1QxRGt0c1Z5?=
- =?utf-8?B?cVV4RURuTzdFK0liazNyZlRKUXY2K1I3ZHYyeFNvQ1VqMG5qZG9kdUpzSERn?=
- =?utf-8?B?UzFaQS9jYkl1QTFlTVBNV2N0WlkxbXl4U2FLaHpsUyt1Y2RjeHYxTGljVDYy?=
- =?utf-8?B?T0FnbTBVWVJPMzNlWkg4UGx2c2g3L0twNDNZNm9mLzhwaW1sYUtMYUMrMTgx?=
- =?utf-8?B?YlNBc0ZvV2R2WEwvRkNxbll3RDhnbnJ0TFR1R1JZOVpTdDRVcGpiMExTeUFK?=
- =?utf-8?B?S3huZm9OdUM4YTloa1lPcm02TGFqc1VTa0tKWndKdnZlVWtMZU1YNzZHaUhO?=
- =?utf-8?B?MUIybzVSeVdDelVXVFNYZGd0Y3dxNUhzeWJOZUgybE0wc3hvejNrM0tqZExI?=
- =?utf-8?B?aGQxMitxd3hTUU9DYkZaczNhQ0EzY1B3S0NLVjlFbVFqRnBmZmxoR2E0SHJw?=
- =?utf-8?B?K0tNRFZaeERkZkxCRHR4U3ROc0NQRHZYa0I5d1FtMEc2b1dLT2NpMkptb3VI?=
- =?utf-8?B?VXJlV01yeXV3bTBXdURyaUUzTkJBTjRHQVhYZjI0ZGpPM1E2MHhsRnA0Z3JT?=
- =?utf-8?B?eWpQbll0QTByNUk0YzIvZHJOT0J5YlpUUG8yQXFTTE1NWjJ3dG90c2lxMGtk?=
- =?utf-8?B?MDZTR1F5dnpzY3dMWmpOYUNpUnloNXVwbStYQmQ0d3FZREhqSEE2cjdGY0JO?=
- =?utf-8?B?UytWcUMxNkVJOGRMWTFHSmpscEw3N2ozWjZQclZDMjFWYWhaQUs4ckdiUk4z?=
- =?utf-8?B?SmVSbUVyRm5GV0M2Y2xidUNLN2ZrbEQ4YUFvNmpoZVFVQ05aZHF0clN1dDkr?=
- =?utf-8?B?VDVJMkZtY1c0ZlhMMWVhdm5DRTQrZVYxV2k2dlBqS0tuRFJycG1KSkRBcjZo?=
- =?utf-8?B?clN6VXpoUGZKSkVKWHlsUG5SdU84aS80UnA2emxmdmJaS1AyaUQrTG1rQ1JD?=
- =?utf-8?B?ZlJwVHNvT3JkYzU5Vllka08wVkJlWWRGRldIanpILzVpRkRKclJmVzg2MmVa?=
- =?utf-8?B?eGxNMDdPMis2bk1ZTWlNc2owQXN5RHhvWVp0WlNHT1R3TktTMTExSzBkdTlq?=
- =?utf-8?B?YlY1OXJSV3FuVXBVQlo0eWx1Z21MZSs3R21iOWI3UCtzSm5NNjVmcUZlTTl3?=
- =?utf-8?B?NUd2Y3pPM2V4UFZJVkpVU0EzTnkxMGsyUGgrMmF6YVpVNWVUK3k0aS8xQ21P?=
- =?utf-8?B?TmgzdWhTeDBwdzFDamd1TUpGVjY5aWZZUU9uZXNWRG0vZFBCR3hNTmVER25l?=
- =?utf-8?B?QVhVdWxBS2RaSjF5QnQyUjY4RmZoK1V4Um5GZVcwWWV2eW00UW5QODNDV0Zs?=
- =?utf-8?B?bVpFV1BwUFE5U0pkclJhdnJJYUR4Y0tmK1lDR0l3amVzQUFZQUhKSmsyN3Vt?=
- =?utf-8?B?aEJIUEM2YjVjOHByeUYrUXA2di9CL2hmVlVrV0pnYjNUcTRBSTZ4WmVWdUVy?=
- =?utf-8?B?M0hrREFDaUxKNUsxM0NnU0czcW5pVmJUVDhjb3hGVGZXRndJdjdQazRlcVB3?=
- =?utf-8?B?U05tMXRYQjhwbnMwRlp3VmQxRll1ZXRaaWpvdlEzS3dndDFGTjQwNWZjTEtJ?=
- =?utf-8?B?dDZpajVXSUNEM0hoT0dPcTQ0MlpMUVJMbjNxSUhJUmlXaWJya3F0N2FoaEd0?=
- =?utf-8?B?OXl0UElwTGZyM1MxZGFqVW0xbmFhMG5BZnZqSE1nNVVLWEFXWncraUxJV2h4?=
- =?utf-8?B?WW5WcWwyak8rS2pVckJRNnl4TVVaZXNkenBSMm5vWE9pUnVJcExxNnVzVFJW?=
- =?utf-8?B?d3I3NHEwY1VlbVFUYVN1Qi9PTXdDUmlLNE5ZOXhKU3RESG5iVVVrR0xaK1NO?=
- =?utf-8?B?d2hqODI2OG1NanRHUTBoR1dYTmxoWUtyRmloWGl5V29YbzdMWTNFYXlQcm9l?=
- =?utf-8?B?TkpCRGdTWnk2a3dpaDVyR0pMSGZwM0t0VUNQVEZTTDkxZFBqOHNrTVg2SWhB?=
- =?utf-8?B?a2pTbVVHbGRGN0h2VCtCbUFpcExyMURZbUIwZHJzaTkwVHlOUTBkQmt5ZGRN?=
- =?utf-8?B?cHc9PQ==?=
+	=?utf-8?B?REdmb3JueERxazhOTnlwS0NadEdMTnZtVThRRndWUHZkcUhhc0x0L21uZExP?=
+ =?utf-8?B?MUVuQ0NncW5vYnNkTlhtN3lOR0g0d0NFZnpSK2pnT0R0TnhjRUNGbWVQajFk?=
+ =?utf-8?B?YU1hYjVwd0JTQVlzSXpERXRKbjMzelZPV2UzWjF5UXNuV1VLc0dYWDBaQVNs?=
+ =?utf-8?B?TFo4bVYva242TWpOS21OSzluWCtMalBKcjdtRUxYTWdmM2hHd1RTRDdDTWpX?=
+ =?utf-8?B?R2d3RzJqOEpIbXVzNkQ4UlRmYzhiczR0QndlRS9zbE01RDY1QnBlbTVQdFlp?=
+ =?utf-8?B?R0t4M1ducEtONlhTOFlaRzZKOXZ1UzlxK0NPdzYvNWtVQkt6eHNFUEtJOUNI?=
+ =?utf-8?B?b0I0akpKOUtKcEV1WWVweFVwbXUxZTdrOGc3L0gxWjkxVTlJcUlRSEdycU5w?=
+ =?utf-8?B?bDIwbEhJZzBhWFRaNG95S25NQ2tPL3d1aGxjc3o1eVFNVVFYMGIyblNaQWxj?=
+ =?utf-8?B?aUc1dEQralQ0cjlEZUN4QjRsMVJSTHExdDBhb3k4c3Y3NlVZYzEzckhHVG9F?=
+ =?utf-8?B?YWdQcXowcnljajVrT01hZEh3cHBEenNpdlRWVE5TaFJwcUE0cVo4Z05VV3RQ?=
+ =?utf-8?B?aTE4TVNpd2lYNFk1MmN4ckRLbC9HUGoyVE9ZTXJSZWZWNTQ4MWZ3WEJUODVR?=
+ =?utf-8?B?QThzUlVGamFYT3h0eTVaeWFGMFU4U01tdmpodllGVEgzZWVWK3F1T3htSGFD?=
+ =?utf-8?B?ajMzM3NQSU5XMVdTWW9jT0Q1a0pXbFcxKytnam90ak1nS0kxVmlwbFJIcXJH?=
+ =?utf-8?B?bDdGcWtZVHNyZ3p0SXFmem5IUFhnY01rVlkrN09Ka1RaVVN1UExKbnhINS9R?=
+ =?utf-8?B?bGk2T2Nna2NFTEFtakNyMVE5bm9WQ2JGeTdKVldibldRVVVHVnkrNmFUWmlE?=
+ =?utf-8?B?WTNBSzJGR3FCQTZaaEFYTm9TOXEyd01sZXRFd25KaUVyYUZVWHFEbzhMU3VI?=
+ =?utf-8?B?S2tOK3FIY25TbnJiMEFCdDJzem90eGFYNkQ0TXNsT2o5bEpxTGJod2trS2Ew?=
+ =?utf-8?B?Z0RpYXhSV0pPSU0zS3hGdDgxMzYrenAveUlCdEp4cXlsN3N4Q1kxVGhULy9q?=
+ =?utf-8?B?aUdhaHN3cmNSZXJ5MFdudE1wcE1ORE13d2ZKOVp0eEwrSXN1OW9CTU1Oc2p6?=
+ =?utf-8?B?N2ptM0ozdkZzNmV5aTNXcWhLbXNlSWRDTGtITHFhMnF2NWZ2dndKR1QyWWUv?=
+ =?utf-8?B?TUNqdWtEeG5Ka2NjU0RJdnVxN1gwQUpXUWk1SVhuM3NFNXF0OGg3RzIyUElU?=
+ =?utf-8?B?NnB5cW8zU3RHL2x2K3doWFkzUkN1a0ZUd2lrTzFTTXdIL2VlYjZnYnQwKysv?=
+ =?utf-8?B?Y2Q5aEFFenhIU0xtc2RDNGJiTGJsQkdDM1R2UnRzOCtYeThLd2NlZ2dONVdw?=
+ =?utf-8?B?WkVvWjQxQWZzRFBSS1RWcUdIWnZieTdBTTV6NHVEYUh5ckVsdDA1Tk1MeUZD?=
+ =?utf-8?B?T3Ftb0tEQncxZWwza0hLeG5hZ3JVT0lQR3ZPVHlVeFk4R2VlWDlyakdzSUF0?=
+ =?utf-8?B?eUFwZDdaNW8ydDdzNnhWcVI0WXBYNXBMOWYvdzNzM2pMZHNTWm5IREJ0MDBS?=
+ =?utf-8?B?R2IwTXRkdW5OeFIyb0FZeXNSd2JBT1VOQmh2YkpkRkw2cUl0V3ZXNm5GQ2ZJ?=
+ =?utf-8?B?dTFET2pQVmNnZit0NUVEOGZuVzlZR1V1b1FuUmdNNXV6MWpaQ0ozZk56Qm81?=
+ =?utf-8?B?b1dKUjRDQ3NuL1pkbEo3bklJdkhyMHlyNTNMN09UTkt4VDZ6RG1TQVJkaGVJ?=
+ =?utf-8?B?TmF1M1NadGRSRTdCWjZXUnRhMWo3N2h4NlVWNjk3VGh4Q3NabTllMHk3LzJ3?=
+ =?utf-8?B?NkFqUnJ1RDB5UnE1UXhBSEhqVlROTlR0clpobGMrZ3FScitXT0lvUzhnamFB?=
+ =?utf-8?B?TURuNjFLR1cwUnVnVm1kT29hY3B0dmJQMGhJMWloSkN5bGw4Ni9HcGNSTVY3?=
+ =?utf-8?B?RTZ6Tk5PNlp1WjRvRVVlQnVvYjRqYm5HeXQ0clNwb1RJSjd2a2pMOHFGcEdt?=
+ =?utf-8?B?ZTJBVlVmWjNDQnNDdjRuNENFR1MxZ0ZOSUNaTHVqUnIyOFNBMGdCM25pYm1z?=
+ =?utf-8?B?cTFQVERQN1pBektjcm1hQVFOUTRYWk0zMFZ4ZWhUM3ZlMnNBKzMreVk3bW1Z?=
+ =?utf-8?B?RGRnMUtyNFdwMTNsSGphbFpqY04wSU01VDhUcC9VczZENFF5QVJPcEVQVjBP?=
+ =?utf-8?B?Nmc9PQ==?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 284e8a79-6312-497e-045f-08de214417bc
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: ec9a2811-5e1c-45a3-a659-08de214a7f30
+X-MS-Exchange-CrossTenant-AuthSource: GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Nov 2025 17:02:27.4425
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Nov 2025 17:48:18.5608
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AlOx+VmDNz+bVKvh0kJlpxzhkRF3w6Y4zebAY563qrRGb7hx1+RHVNAHRpCXUC7UaAKEiCPo8yRfQlT+YKbwFQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR10MB4057
+X-MS-Exchange-CrossTenant-UserPrincipalName: 9NlLCtUJxRX192m5iVmKo1VQ/YVTlDzgsQAzVs0a1UaH0KxNsu1cM7swVlQGZS2LwSmBVAhQd6U62TRPhvMoEg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA1PR10MB8625
 
-Topics may include but are not limited to upstream/downstream project
-plans, status updates, and technical discussions. It's an open online
-meeting that anyone can join and ask questions (you may have to wait for
-the organizer to let you in).
+On 11.11.25 17:36, Tobias Schaffner wrote:
+> On 11/10/25 07:25, Jan Kiszka wrote:
+>> On 07.11.25 09:00, Tobias Schaffner wrote:
+>>> Add dedicated debug configuration snippets for each architecture to
+>>> consolidate common kernel debugging features. This replaces the
+>>> previous approach of using an inverted no-debug configuration to
+>>> disable debugging options.
+>>>
+>>> Separating debug and no-debug configurations improves maintainability
+>>> and simplifies future consolidation of debug settings across
+>>> architectures.
+>>>
+>>> The change has been verified using the kconfig library. Applying the
+>>> new debug configuration to the updated defconfig and running
+>>> ‘make oldconfig’ produces an identical resulting configuration to the
+>>> previous defconfig for all supported architectures and kernel
+>>> versions.
+>>>
+>>> Several debug switches that were previously left enabled in the
+>>> no-debug configuration have been moved to the new debug snippet.
+>>>
+>>
+>> Do you have an overview of those? Would it be a lot of effort to factor
+>> those changes out?
+> 
+> Hi Jan,
+> 
+> these are the config changes for all ARCH - kernel combinations in the
+> nodebug case:
+> 
+> ------------------------------------------------------
+> - AMD64 - ipipe-x86-4.19.y-cip
+> ------------------------------------------------------
+>  ARCH_MEMORY_PROBE y -> n
+>  BUG_ON_DATA_CORRUPTION n -> y
+>  DEBUG_FS y -> n
 
-Time:
-Wednesday, November 12, 2025, UTC 7:30 AM
-Paris, France CET 8:30 AM
-China CST 3:30 PM
+This is harmless.
 
-Join Teams Meeting:
-https://teams.microsoft.com/l/meetup-join/19%3ameeting_NmQ4NjFlZmItZmE1NS00MzZjLTk3OWMtNzc3N2Q0N2Y2MzM4%40thread.v2/0?context=%7b%22Tid%22%3a%2238ae3bcd-9579-4fd4-adda-b42e1495d55a%22%2c%22Oid%22%3a%22058073ef-2de1-450d-b434-70a67389dcfa%22%7d
+>  DEBUG_KERNEL y -> n
+>  DEBUG_LIST n -> y
+>  DEBUG_RODATA_TEST y -> n
+>  DEBUG_SECTION_MISMATCH y -> n
+>  DMADEVICES_DEBUG y -> n
+>  KPROBES y -> n
+>  MAGIC_SYSRQ y -> n
+
+This one as well.
+
+>  MTRR_SANITIZER y -> n
+>  PAGE_EXTENSION y -> n
+>  PERF_EVENTS_INTEL_CSTATE y -> n
+>  PERF_EVENTS_INTEL_RAPL y -> n
+>  PERF_EVENTS_INTEL_UNCORE y -> n
+>  PM_DEBUG y -> n
+>  PNP_DEBUG_MESSAGES y -> n
+>  SCHED_OMIT_FRAME_POINTER y -> n
+>  SLUB_DEBUG_ON y -> n
+>  STACKTRACE y -> n
+>  XENO_DRIVERS_ANALOGY_DEBUG y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_GPIO_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+>  XENO_DRIVERS_NET_RTCFG_DEBUG y -> n
+>  XENO_DRIVERS_NET_RTIPV4_DEBUG y -> n
+> ------------------------------------------------------
+> - AMD64 - ipipe-x86-5.4.y
+> ------------------------------------------------------
+>  ARCH_MEMORY_PROBE y -> n
+>  BUG_ON_DATA_CORRUPTION n -> y
+>  DEBUG_FS y -> n
+>  DEBUG_KERNEL y -> n
+>  DEBUG_LIST n -> y
+
+Why is this being turned on?
+
+>  DEBUG_RODATA_TEST y -> n
+>  DEBUG_SECTION_MISMATCH y -> n
+>  DMADEVICES_DEBUG y -> n
+>  KPROBES y -> n
+>  MAGIC_SYSRQ y -> n
+>  MTRR_SANITIZER y -> n
+>  PAGE_EXTENSION y -> n
+>  PERF_EVENTS_INTEL_CSTATE y -> n
+>  PERF_EVENTS_INTEL_RAPL y -> n
+>  PERF_EVENTS_INTEL_UNCORE y -> n
+>  PM_DEBUG y -> n
+>  PNP_DEBUG_MESSAGES y -> n
+>  SCHED_OMIT_FRAME_POINTER y -> n
+>  SLUB_DEBUG_ON y -> n
+>  STACKTRACE y -> n
+>  XENO_DRIVERS_ANALOGY_DEBUG y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_GPIO_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+>  XENO_DRIVERS_NET_RTCFG_DEBUG y -> n
+>  XENO_DRIVERS_NET_RTIPV4_DEBUG y -> n
+> ------------------------------------------------------
+> - AMD64 - v5.10.y-cip-dovetail-rebase
+> ------------------------------------------------------
+>  ARCH_MEMORY_PROBE y -> n
+>  BUG_ON_DATA_CORRUPTION n -> y
+>  DEBUG_FS y -> n
+>  DEBUG_KERNEL y -> n
+>  DEBUG_LIST n -> y
+>  DEBUG_RODATA_TEST y -> n
+>  DEBUG_SECTION_MISMATCH y -> n
+>  DEBUG_VM_PGTABLE y -> n
+>  DMADEVICES_DEBUG y -> n
+>  KPROBES y -> n
+>  MAGIC_SYSRQ y -> n
+>  MTRR_SANITIZER y -> n
+>  PAGE_EXTENSION y -> n
+>  PERF_EVENTS_INTEL_CSTATE y -> n
+>  PERF_EVENTS_INTEL_RAPL y -> n
+>  PERF_EVENTS_INTEL_UNCORE y -> n
+>  PM_DEBUG y -> n
+>  PNP_DEBUG_MESSAGES y -> n
+>  SCHED_OMIT_FRAME_POINTER y -> n
+>  SLUB_DEBUG_ON y -> n
+>  STACKTRACE y -> n
+>  XENO_DRIVERS_ANALOGY_DEBUG y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_GPIO_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+>  XENO_DRIVERS_NET_RTCFG_DEBUG y -> n
+>  XENO_DRIVERS_NET_RTIPV4_DEBUG y -> n
+> ------------------------------------------------------
+> - AMD64 - v5.15.y-dovetail-rebase
+> ------------------------------------------------------
+>  ARCH_MEMORY_PROBE y -> n
+>  BUG_ON_DATA_CORRUPTION n -> y
+>  DEBUG_FS y -> n
+>  DEBUG_KERNEL y -> n
+>  DEBUG_LIST n -> y
+>  DEBUG_RODATA_TEST y -> n
+>  DEBUG_SECTION_MISMATCH y -> n
+>  DEBUG_VM_PGTABLE y -> n
+>  DMADEVICES_DEBUG y -> n
+>  KPROBES y -> n
+>  MAGIC_SYSRQ y -> n
+>  MTRR_SANITIZER y -> n
+>  PAGE_EXTENSION y -> n
+>  PERF_EVENTS_INTEL_CSTATE y -> n
+>  PERF_EVENTS_INTEL_RAPL y -> n
+>  PERF_EVENTS_INTEL_UNCORE y -> n
+>  PM_DEBUG y -> n
+>  PNP_DEBUG_MESSAGES y -> n
+>  SCHED_OMIT_FRAME_POINTER y -> n
+>  SLUB_DEBUG_ON y -> n
+>  STACKTRACE y -> n
+>  XENO_DRIVERS_ANALOGY_DEBUG y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_GPIO_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+>  XENO_DRIVERS_NET_RTCFG_DEBUG y -> n
+>  XENO_DRIVERS_NET_RTIPV4_DEBUG y -> n
+> ------------------------------------------------------
+> - AMD64 - v6.1.y-cip-dovetail-rebase
+> ------------------------------------------------------
+>  ARCH_MEMORY_PROBE y -> n
+>  BUG_ON_DATA_CORRUPTION n -> y
+>  DEBUG_FS y -> n
+>  DEBUG_KERNEL y -> n
+>  DEBUG_LIST n -> y
+>  DEBUG_RODATA_TEST y -> n
+>  DEBUG_SECTION_MISMATCH y -> n
+>  DEBUG_VM_PGTABLE y -> n
+>  DMADEVICES_DEBUG y -> n
+>  KPROBES y -> n
+>  MAGIC_SYSRQ y -> n
+>  MTRR_SANITIZER y -> n
+>  PAGE_EXTENSION y -> n
+>  PERF_EVENTS_INTEL_CSTATE y -> n
+>  PERF_EVENTS_INTEL_RAPL y -> n
+>  PERF_EVENTS_INTEL_UNCORE y -> n
+>  PM_DEBUG y -> n
+>  PNP_DEBUG_MESSAGES y -> n
+>  SCHED_OMIT_FRAME_POINTER y -> n
+>  SLUB_DEBUG_ON y -> n
+>  XENO_DRIVERS_ANALOGY_DEBUG y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_GPIO_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+>  XENO_DRIVERS_NET_RTCFG_DEBUG y -> n
+>  XENO_DRIVERS_NET_RTIPV4_DEBUG y -> n
+> ------------------------------------------------------
+> - AMD64 - v6.12.y-dovetail-rebase
+> ------------------------------------------------------
+>  ARCH_MEMORY_PROBE y -> n
+>  BUG_ON_DATA_CORRUPTION n -> y
+>  DEBUG_FS y -> n
+>  DEBUG_KERNEL y -> n
+>  DEBUG_RODATA_TEST y -> n
+>  DEBUG_SECTION_MISMATCH y -> n
+>  DEBUG_VM_PGTABLE y -> n
+>  DMADEVICES_DEBUG y -> n
+>  KPROBES y -> n
+>  LIST_HARDENED n -> y
+>  MAGIC_SYSRQ y -> n
+>  MTRR_SANITIZER y -> n
+>  PAGE_EXTENSION y -> n
+>  PERF_EVENTS_INTEL_CSTATE y -> n
+>  PERF_EVENTS_INTEL_RAPL y -> n
+>  PERF_EVENTS_INTEL_UNCORE y -> n
+>  PM_DEBUG y -> n
+>  PNP_DEBUG_MESSAGES y -> n
+>  SCHED_OMIT_FRAME_POINTER y -> n
+>  SLUB_DEBUG_ON y -> n
+>  XENO_DRIVERS_ANALOGY_DEBUG y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_GPIO_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+>  XENO_DRIVERS_NET_RTCFG_DEBUG y -> n
+>  XENO_DRIVERS_NET_RTIPV4_DEBUG y -> n
+> ------------------------------------------------------
+> - ARM64 - ipipe-arm64/ipipe/4.19.y-cip
+> ------------------------------------------------------
+>  DEBUG_FS y -> n
+>  DEBUG_KERNEL y -> n
+>  MAGIC_SYSRQ y -> n
+>  PERF_EVENTS y -> n
+>  PNP_DEBUG_MESSAGES y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+>  XENO_DRIVERS_NET_RTCFG_DEBUG y -> n
+>  XENO_DRIVERS_NET_RTIPV4_DEBUG y -> n
+> ------------------------------------------------------
+> - ARM64 - ipipe-arm64/ipipe/5.4.y
+> ------------------------------------------------------
+>  DEBUG_FS y -> n
+>  DEBUG_KERNEL y -> n
+>  MAGIC_SYSRQ y -> n
+>  PERF_EVENTS y -> n
+>  PNP_DEBUG_MESSAGES y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+>  XENO_DRIVERS_NET_RTCFG_DEBUG y -> n
+>  XENO_DRIVERS_NET_RTIPV4_DEBUG y -> n
+> ------------------------------------------------------
+> - ARM64 - v5.10.y-cip-dovetail-rebase
+> ------------------------------------------------------
+>  DEBUG_FS y -> n
+>  DEBUG_KERNEL y -> n
+>  MAGIC_SYSRQ y -> n
+>  PERF_EVENTS y -> n
+>  PNP_DEBUG_MESSAGES y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+>  XENO_DRIVERS_NET_RTCFG_DEBUG y -> n
+>  XENO_DRIVERS_NET_RTIPV4_DEBUG y -> n
+> ------------------------------------------------------
+> - ARM64 - v5.15.y-dovetail-rebase
+> ------------------------------------------------------
+>  DEBUG_FS y -> n
+>  DEBUG_KERNEL y -> n
+>  MAGIC_SYSRQ y -> n
+>  PERF_EVENTS y -> n
+>  PNP_DEBUG_MESSAGES y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+>  XENO_DRIVERS_NET_RTCFG_DEBUG y -> n
+>  XENO_DRIVERS_NET_RTIPV4_DEBUG y -> n
+> ------------------------------------------------------
+> - ARM64 - v6.1.y-cip-dovetail-rebase
+> ------------------------------------------------------
+>  DEBUG_FS y -> n
+>  DEBUG_KERNEL y -> n
+>  MAGIC_SYSRQ y -> n
+>  PERF_EVENTS y -> n
+>  PNP_DEBUG_MESSAGES y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+>  XENO_DRIVERS_NET_RTCFG_DEBUG y -> n
+>  XENO_DRIVERS_NET_RTIPV4_DEBUG y -> n
+> ------------------------------------------------------
+> - ARM64 - v6.12.y-dovetail-rebase
+> ------------------------------------------------------
+>  DEBUG_FS y -> n
+>  DEBUG_KERNEL y -> n
+>  MAGIC_SYSRQ y -> n
+>  PERF_EVENTS y -> n
+>  PNP_DEBUG_MESSAGES y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+>  XENO_DRIVERS_NET_RTCFG_DEBUG y -> n
+>  XENO_DRIVERS_NET_RTIPV4_DEBUG y -> n
+> ------------------------------------------------------
+> - ARMHF - ipipe-arm/ipipe/4.19.y-cip
+> ------------------------------------------------------
+>  DEBUG_ALIGN_RODATA y -> n
+>  DEBUG_BUGVERBOSE y -> n
+>  DEBUG_FS y -> n
+>  KALLSYMS y -> n
+>  MAGIC_SYSRQ y -> n
+>  PERF_EVENTS y -> n
+>  RCU_TRACE y -> n
+>  SCHED_DEBUG y -> n
+>  SLUB_DEBUG y -> n
+>  STACKTRACE y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+> ------------------------------------------------------
+> - ARMHF - ipipe-arm/ipipe/5.4.y
+> ------------------------------------------------------
+>  DEBUG_ALIGN_RODATA y -> n
+>  DEBUG_BUGVERBOSE y -> n
+>  DEBUG_FS y -> n
+>  KALLSYMS y -> n
+>  MAGIC_SYSRQ y -> n
+>  PERF_EVENTS y -> n
+>  RCU_TRACE y -> n
+>  SCHED_DEBUG y -> n
+>  SLUB_DEBUG y -> n
+>  STACKTRACE y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+> ------------------------------------------------------
+> - ARMHF - v5.10.y-cip-dovetail-rebase
+> ------------------------------------------------------
+>  DEBUG_ALIGN_RODATA y -> n
+>  DEBUG_BUGVERBOSE y -> n
+>  DEBUG_FS y -> n
+>  KALLSYMS y -> n
+>  MAGIC_SYSRQ y -> n
+>  PERF_EVENTS y -> n
+>  RCU_TRACE y -> n
+>  SCHED_DEBUG y -> n
+>  SLUB_DEBUG y -> n
+>  STACKTRACE y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+> ------------------------------------------------------
+> - ARMHF - v5.15.y-dovetail-rebase
+> ------------------------------------------------------
+>  DEBUG_ALIGN_RODATA y -> n
+>  DEBUG_BUGVERBOSE y -> n
+>  DEBUG_FS y -> n
+>  KALLSYMS y -> n
+>  MAGIC_SYSRQ y -> n
+>  PERF_EVENTS y -> n
+>  RCU_TRACE y -> n
+>  SCHED_DEBUG y -> n
+>  SLUB_DEBUG y -> n
+>  STACKTRACE y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+> ------------------------------------------------------
+> - ARMHF - v6.1.y-cip-dovetail-rebase
+> ------------------------------------------------------
+>  DEBUG_ALIGN_RODATA y -> n
+>  DEBUG_BUGVERBOSE y -> n
+>  DEBUG_FS y -> n
+>  KALLSYMS y -> n
+>  MAGIC_SYSRQ y -> n
+>  PERF_EVENTS y -> n
+>  RCU_TRACE y -> n
+>  SCHED_DEBUG y -> n
+>  SLUB_DEBUG y -> n
+>  STACKTRACE y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+> ------------------------------------------------------
+> - ARMHF - v6.12.y-dovetail-rebase
+> ------------------------------------------------------
+>  DEBUG_ALIGN_RODATA y -> n
+>  DEBUG_BUGVERBOSE y -> n
+>  DEBUG_FS y -> n
+>  KALLSYMS y -> n
+>  MAGIC_SYSRQ y -> n
+>  PERF_EVENTS y -> n
+>  RCU_TRACE y -> n
+>  SLUB_DEBUG y -> n
+>  STACKTRACE y -> n
+>  XENO_DRIVERS_CAN_DEBUG y -> n
+>  XENO_DRIVERS_HEAPCHECK y -> n
+> 
+
+So, this was helpful (and that's why I'm asking for a separate commit):
+
+ - 2 cases where things could be left on
+ - 1 case where debugging is enabled, instead of disabled
 
 Jan
 
