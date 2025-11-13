@@ -1,54 +1,55 @@
 Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010010.outbound.protection.outlook.com [52.101.84.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AAF7134D3AF
-	for <xenomai@lists.linux.dev>; Thu, 13 Nov 2025 12:10:28 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E570134D92C
+	for <xenomai@lists.linux.dev>; Thu, 13 Nov 2025 12:10:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.84.10
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763035830; cv=fail; b=MY3OgZKPCeBZqxVqOZa/gNAT90GjGy4RhCgy1dDu8cQaSXDoExpIceWz0b1XKjVArWNL6VPX7TiWuclscn72DI9+V5bdK05uBmrKMPK2Qprw+fjEyea4crvu4OZmPX73KcYu9hXetgwXfbUoLVKoQBg04bJD6ShJuUlHdq/fPgQ=
+	t=1763035832; cv=fail; b=N67623GmBojFKF6fllJ+S+T+wkEkMe4ec1xk4Jpbc1kJoP9Rp2Tv1XOEUP8Izni4szkOgSZXOSRYUOPCH52Tkk9ZUsRCEefILX0A/oeaqMB7tjHQKVF0Ot8CTVd0eW2Hl0d5djkBnAk/9jo2DDHXBoNu3Owgh5v29PKZBuJLyVc=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763035830; c=relaxed/simple;
-	bh=lhIn0WUd+OHjKnZrTGO8WIiEOwWbmuv+3QsGCiEVt6o=;
+	s=arc-20240116; t=1763035832; c=relaxed/simple;
+	bh=26BrmrUI5THoxYIO2PlrFtCiLSkjnG3ME6xu+rJ7sr0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=HcpT6A8Agk9aHm2Q+vHTIRWsjPpQFwzRosdmVMJepCuMEX2lxxmCPqTcnm4HpHrQuBQ+SK3SHqWlMGBOMPnZSbLXJ2oyi3y3KJ3l+be10708zonIdiQJzYYdjZ6Np0gNynRCRBi6MXyGrEAfLHjTCsBaxkAZHEPK3JXUf3kplnc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=dwysOGzy; arc=fail smtp.client-ip=52.101.84.10
+	 Content-Type:MIME-Version; b=tpPOe7d+Uj/fp8s5oHKatxoznKIwmm4EY0sCYlJBaHQkgCQXMwoVY5iaLR3Oo7JTnnIaTZhdQj/V7q+jJ3IcYeG+EDREg2mOiE91T22lF6R6nq642zPWhxnqwiqbIKaQYFF/NCk5o68emV3BB9p3Q7KmJN3uqijI3dlZEqKlckQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=YFWuptSd; arc=fail smtp.client-ip=52.101.84.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="dwysOGzy"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="YFWuptSd"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=V9vtzl0B0YNfURCmRltQ7iA5EMiP6hB5gEOVsOEI4Lw4DiWeQHDY8VIMjDD+qFiopibsoi7tFuk6Qsjg9VwZeVl8jNn/zDUuPCgJFh7bdLVHc0NHFCIEPGQ4OgvVq/sjazZrpZs7e+QrHm6+4X38bSq5HmgP5TtVVAI2lGJ6DmQ7MWfsfJAsM8T0YjluB+JgTd46uX30uE9VrBquchNKlZG/VGlavlgCSDskgmD26qygWHFoP5LBAoReE0i/LoQKhswc9A1UQ0cOlh+SOyXBlgyEgJ7uorskf50xAVGDC1JWhOaOLYkvgadyuSmgekInNVzEGT9J6Oc2DWyAppdFQw==
+ b=MAObgOrJ2jkuo6cX2UfUw5VlTFWjVWO5dRyHH4tRpjIZp2e/g79F2W1NV7O4oVHXA5miueHMU+HGn38nGDwLyJ6vb2zdMS8HHdWmEM0eaTtZeeQY7w3op/uOvGTbsFy1fQesiN2HY4ArThEXmVviupD26QMgBH5kTypVLltC8w+7M/QIGc3imCe/noGTWZhrffqdWmzYn2U+FikkJqADxHDu7vAgm1HMyfnywffSUkO2QlN56fjNhe/Iji/GLUVct3oJKivthwaGfK8jfY75eZb6CA5v+DWHeww0f5NkOf6O68ytM5aAJWSeztI74Z+9ySk4GIRwVDSqkohL3N73Gg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ffh2VDoFon8XhLlVbQiGLbWO2Ou2JtEv/8dcdVXOETQ=;
- b=Mz+FakmgwQJu8CvriDs9I5vawzNft5iPI0HJqYvSZj2F8aZqVqPnurSKSqQG/Nj3P8tbdPrPZijaR9NEY1/Z1ebyaOfZykG0NlOi1vzXdTN7NqULnybLSFgp/ouRD8+uAZy/VCh6K0YhEbKZCrkus7MEb7RS+s52uQ5TrQ1yyfcWtgFGcAReb/tKIaIZfx6qf7vNgxYz+DJtQx8V+0rYBy7tAeq0ADl2B/gI5BgYfTg5aJacfcOWPCgOfYVrFyzIutkErVZVONqamqQzSoQdWxqOsUSctrhImNM9UNILT7S/3hUgpu5I3o0N9dcBuB08/KkO1Bei9uSFly1JPSA/xg==
+ bh=Jbp2Gd1Qd6ZwAHrpsaIv6ObrfIsPfk4Lx3BSpN4uPgY=;
+ b=eiiRVYn6+OTlrSST5W+ny8+QvEdsgKhgmVRdsuHN4TlGYlmOfAh+Y6gG1PRgad3LmYrWknHR0BYTy4XPoWZKDt7B1NM/fw2hTKXT1E1X0g00ydLHrcc7pXxv9wySD/s0wAdyOG8F9aZ2GRVH2aZBQECDsYOwwlKlliFugQVkBgoOcYvUyp5ZayXVwmJPmtm1bS0QTlGiw+En56uxjhb9rt632NMUGJtF0YnxrE/ORsriFWBUxRdeVDrFwaDjcscxeW3cwoOVJNyX/YIP88BEUfmd09MkK0ved7nbHbeP473q8njAtflDh0XP702az11s5Tfd6+vwegdlwB+jyb2mnw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ffh2VDoFon8XhLlVbQiGLbWO2Ou2JtEv/8dcdVXOETQ=;
- b=dwysOGzysylb2aqzgcEgvoyAuJIMkhTMysdozHMtHnlLSJcNR3AVnpnfl3IHb/mJr5E+e43R9A65jjq7dAHuX98rcMm7cJvKdWo04fL+5c6xHwADYrDs1zPC5w//Dbawb+yxHdzY42acX8u6aeXEalavfj7nXj5b/v0NHpj1aZmDlzRdf0B6pZSrwWsWNATydMBZJmS6K62jEpuzxh69CyJmzsPMns18DlEzmayTR1MDtNw7LGci5ASPtaIqRDx5imAxDCnCk6bxJQIbcOOTcc6YFAWt6YZ983o67Fk7LV7x1juX743KeNid9DybmM9MLPPfzAvGXGygFANOb6osog==
+ bh=Jbp2Gd1Qd6ZwAHrpsaIv6ObrfIsPfk4Lx3BSpN4uPgY=;
+ b=YFWuptSdh5aFcRhotLBgjYcDnBMaTpvl5MK2QkWZ358LJn1xgDtUTr9qbPD8tNLF5tNjCMn/k3tm1zFMPI0LGXmg12BiLKIuVSobLimGVD0e7p4z3KbFkwuFnjLl3ZsZRmAKQ1DrLrIivkgvGC7sR2ud3BC7CJ3FjNaxnkz63EiTZjyccwWCg1HiFRHEKniFqRPeRbyrcVkhrA5+2AjLLKR4XlpMbA2ieG8siTGY1q7w8dYU7aQxQ42djlZ9xQx/v0mGdBjeCj3uhS0QjJtg7+80hWY8kUZMikONAz564cOVb0IGwzwUUW04tTLkuPZ74+KuUnPaM9tuygCHJU72HA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:550::8)
  by DB9PR10MB8286.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:4c6::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9320.17; Thu, 13 Nov
- 2025 12:10:26 +0000
+ 2025 12:10:27 +0000
 Received: from AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::4cbc:c0b7:27cc:2082]) by AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::4cbc:c0b7:27cc:2082%4]) with mapi id 15.20.9320.013; Thu, 13 Nov 2025
- 12:10:25 +0000
+ 12:10:27 +0000
 From: Tobias Schaffner <tobias.schaffner@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: rpm@xenomai.org,
+	shannmu <shanmu1901@gmail.com>,
 	Tobias Schaffner <tobias.schaffner@siemens.com>
-Subject: [PATCH dovetail v3 6/8] riscv: add out-of-band aware trap handling
-Date: Thu, 13 Nov 2025 13:10:01 +0100
-Message-ID: <20251113121003.416012-7-tobias.schaffner@siemens.com>
+Subject: [PATCH dovetail v3 7/8] riscv: add dovetail-aware memory management
+Date: Thu, 13 Nov 2025 13:10:02 +0100
+Message-ID: <20251113121003.416012-8-tobias.schaffner@siemens.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20251113121003.416012-1-tobias.schaffner@siemens.com>
 References: <20251113121003.416012-1-tobias.schaffner@siemens.com>
@@ -65,405 +66,225 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AS2PR10MB6349:EE_|DB9PR10MB8286:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8a2710b1-7546-4246-56e1-08de22ada0d1
+X-MS-Office365-Filtering-Correlation-Id: b162e6df-ee36-46e7-9201-08de22ada1f7
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|1800799024|366016;
 X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?w1jZdNeaAAukJWr0bCPL8gQxP9ShywhIY6//BWhqrAYNLs9yqsl3pAosi1Gm?=
- =?us-ascii?Q?ZvVGkWCEM4FOxLn9omQXkerdnjnQEhTFLjDE+TrF+soXeZBBoaeNMCF+uy4F?=
- =?us-ascii?Q?QKDWm2fWfI89m/l1YMQauycsgaDyEtB1LfqqZ5oUx0wdDRC5PE7nqUFdKEZ2?=
- =?us-ascii?Q?TXG+Rhe7nuU2w0A9VAqE6D6i66Bno1NicUKT1pAWJygtP0HPOV6++QJsAVbO?=
- =?us-ascii?Q?gqIzo06Rucc1AeN70YY9nvEjJLHyyfkK1y/YPSuGxJSj+6NZDYo2uMACTS10?=
- =?us-ascii?Q?KTr0NIX6f2/nl3rRXKDxWb3NlMYYsFVwWwtMvbXO89sPFuFqRdLgVBctbw3+?=
- =?us-ascii?Q?Ssh4GHa8PdiB8mPmNRMN0W/hnbMfQXeX7RRqsaLyTcdWgvjBLxgzxiSLY2sd?=
- =?us-ascii?Q?7PJB2JpYyujVVZ/D6WyV8Jt3/o44SJd8z+IxVFSeP4P8ADLh58MOrlLGRxmx?=
- =?us-ascii?Q?N3mCwFgkkYJWKno0v7e68eSh+h03pBfLghnpgviqAu2m8hsxuc3iBJ0MGbbJ?=
- =?us-ascii?Q?zUw2Xj8osJqtRO7iic7ijxm0qZolfx1lA6MTPIlQ2waXxv1xsGXkrbsov7Vh?=
- =?us-ascii?Q?/xf2pSmktJqLvvElpIGsPyD3Q7ZdBZbHvcDOJcweAtW3QpUmheBGItbx6rVO?=
- =?us-ascii?Q?fATInZgJG8/f3Fu2N/E7FSqTX1IuanNF2gQM40QO22D3x6Knex4+/tpcvbZM?=
- =?us-ascii?Q?FunF9sOTbl8Ir0RQMdb+aC/PORZGZYghTMG53AnmOuAoMg0X4fX48iUMbbXY?=
- =?us-ascii?Q?Fl8SmRMeLSc0uKLVcW7ocHiCG26f+ARi1QZERjTK1IchUB3JSagpDu0urV0v?=
- =?us-ascii?Q?l8QhiyVeitqbS/LAmVX3HqlrC4fEsTeBIGSeKu/20ykJ3eutAIXdJm1iDKlp?=
- =?us-ascii?Q?Jdg2B62FohHSHApBelrbUfAupIbIaErSit+BRx60VikFu0kX/HQj9p1gJIj3?=
- =?us-ascii?Q?+4aEUltL7mArezl+IUFyjOzXjzv5SKSM0zWDHLDdHV7MuWFp5SRt1TKnzT/X?=
- =?us-ascii?Q?tAF9fJpQ1wqWuqjUG+OLneMQAT7F3XHSIyff2Eon3DUuk11N6bph+b/x+j2N?=
- =?us-ascii?Q?bIm5f9Y6zDXXELR+sS43jIOc6r3jIbzy3u1ilmwAOGrboIxYIoKuRxHrRQ08?=
- =?us-ascii?Q?h6sKKeC2MEy8g0P9eLjStNSezUoP0pGqSAUaH9YiIZZOZ+J0ylNv8uSSvP0h?=
- =?us-ascii?Q?bvc67uGcYoONaqrAxdCU0aSk04HSDAs+ycBxzVq+gxtrZEU32pxlvSPSIeSJ?=
- =?us-ascii?Q?7s9BAVCw+C8rhnyxI8GskiX4tpOabJcbl5H6vYeHeiGjGcg/SGCCYTjd4Hht?=
- =?us-ascii?Q?u20f3LdKV4v3YZG1CsLs7NApRTsL1zB7sX6pnL6PNa1IT1nnwYtaTSEo5X6o?=
- =?us-ascii?Q?VR58riseRWbZQEvsi+m5ItJdHsyvDm/kUhjq7PZ+8+pnSHdfdPkaQIEwi2mi?=
- =?us-ascii?Q?dB0JbJcsAAqCoxrWZtgrR08eBq7uOSpY?=
+	=?us-ascii?Q?f1RioZkmo71D0/f68wcC0QZxtwInszGFsjmxAK5uZ961FnnJjOGLZGG8lqfw?=
+ =?us-ascii?Q?BOO5XPymVr165DAsgkQSBH9DJqvsagSrcLED0YWUZwY7zQCSzRt0wrxBKj3t?=
+ =?us-ascii?Q?0r0dIhd87XJpdiOcuY4kg6wUfn4OTnv5cqQFaBHbv6Xsi57dvTtvltrW1WeK?=
+ =?us-ascii?Q?Lma2r3dWF3j1fc+mWx+6Alx4XHRuu5/gG5m8k1/bV50iwXc9G0pO00anYiMu?=
+ =?us-ascii?Q?HXvhSwOzkj0o9OABVkHq+VBU1Xb1YaO+NNnr6f5/VdJ2cTTGSAsF5ZSwxWzf?=
+ =?us-ascii?Q?/KE514/k4GxhtBMeU3ZPY64aK3mBAPdw+AGa1k9SESR8nWkITDZvCKhDMi1Z?=
+ =?us-ascii?Q?qe+/DBy5QDmc6uahNVB+82YLbbF3zPxHNF/NuH2TzhpaNy9w7hoHNwhPTqV0?=
+ =?us-ascii?Q?iMEKJ0nDIKGF+pT3dV7fLH2+aE5BwSUBMeu06y77vsE/7SVlz5jwV1d1X5c9?=
+ =?us-ascii?Q?xVopJdaREkU6W79cPElrS4GnubyvVXgkEDKICM1ci33wXKxML9Y0WPJDXKs3?=
+ =?us-ascii?Q?N97ROFaIUp/VYxVGCJQhe2/bLyMFL/5ECVvhKyhfO1kEvwipv6VmkbIqiS31?=
+ =?us-ascii?Q?4bA+jHRB+2h9AClczJLgC+IUWb/1sZKXtXSQNyrImsNk48otLHSqJt/AnQ8I?=
+ =?us-ascii?Q?6AGehb4E7KD2ASlChoZrfYPtEn7Wqpb59VwrCdx74siloVqnGxKJsIMSF66T?=
+ =?us-ascii?Q?gXRJcU+xOwRKFv6oOaDPzRpWKagYtYiKoY46W6GrBHNTnnFlqmWfqpdJUtOq?=
+ =?us-ascii?Q?1Z7zfYK8KEf3CqSQmj27Amiac6LhKfSAY5X79qZEWqK687KfmeeC82rAXSpc?=
+ =?us-ascii?Q?7w5JR/42qsH9IctggsO8Sr20i3U6winDAsF/EbQ68w8891wehbb7DrBPVRGS?=
+ =?us-ascii?Q?S7N9TRAdus5GcRK2hjeRiDEUrr9aFrUdtAjUeRkcafyj1k5ONNc118zSjR5d?=
+ =?us-ascii?Q?2vI6TQ28YX4h9tlI/gq8Cow5X+6MrMlfqD09XO0LyuLhazaE8TmeUhmqPs79?=
+ =?us-ascii?Q?TpM1PwwogGl+AsI4KB0Lz/0lUkYB3qLDyYxnnksIaGAYQZcfecBxndVqrqLZ?=
+ =?us-ascii?Q?Qv2+govHiZLqWYwOTjvyj94rwrHN4B+45MsRry4hgrrDI2Vyw7gJWO/P/Hbo?=
+ =?us-ascii?Q?GMbSpLPuB7sLegOvXIg8ujjPoOim7uJ3E5eFooBNQYUytdt+i0UZB/3X0z3A?=
+ =?us-ascii?Q?NtMPH3QjPd/Fiu7MfLmgR2WACLYHhfLP0Undsm31g5c+LpDTGdoMJEDHPOVQ?=
+ =?us-ascii?Q?ZHgvQFgTZU/ZDoA0aSygYKixteSIaaCjDPtJALQuaTTYheEebnT/nSVSQiRR?=
+ =?us-ascii?Q?S4d4u0QMcstAVTCGE4gTaWCbVFR0OULD5ucjheJGRHkkG8SBcvMMJf9xt+pf?=
+ =?us-ascii?Q?9oFKjedNMRLN2qrdhxB5V2AqV8qLgI/h9Ub+f77DTsg3uF7VpneCqrLL51Mm?=
+ =?us-ascii?Q?xfaBhO3DyiwPLpY4bTt85sXbaWJdgBr6?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?07vWP6FnlHaxzga8w7p+H21xvAjDXwhipiULiriMvkGTNPh4z4/2vFAc8bMp?=
- =?us-ascii?Q?Gb2F9wX7iqSiIKHx5hNZa6d0da7uT4TZjr/2oHFMpLrUzjkcSUKmddS4RL2L?=
- =?us-ascii?Q?Ydp5AHbA7DjfQOk1HnRasWhphsvFSmfgyHeB07p3eRvPYHGVTO5XSYbBchrk?=
- =?us-ascii?Q?MVftBHbPTwGlYZcwuN1oyRsIZ7wQUFxkIyNWDNGDZjzYJhkmaJWY39JhsmV2?=
- =?us-ascii?Q?CEhsup9WUrcrZnyQcEEU3D2/2wkszeJLUQCzGkdBeD9ku77ZNrLJd2b/LcXw?=
- =?us-ascii?Q?eINMqGsoXMGLcAjYmXH12p3md1lp11ywWyqqlkExBS9dt9sp2RmfsDYL2AE7?=
- =?us-ascii?Q?rYoqyi10S1AwfvZT89ITfMgwNW74uANRfAYqFsHHixT7FJBuvUf8AgIHfxfr?=
- =?us-ascii?Q?mhYl+RIMb0KYKtEGcbg7+tXuAZszdR4VTEMjoaM/hGnGxJ+/xM5EbF6Nh040?=
- =?us-ascii?Q?JiZMjzG/tKk2JhY4sIdKbU2i8Sw4ZXl5bW81+ar6tHCrVPWNGA49GHM8pjqV?=
- =?us-ascii?Q?g1RzbQY4/qXRL+R5Zl51Jmdmm00rJ28Xk24/DbG0y/2BJ5deSs8g1A00uCkB?=
- =?us-ascii?Q?tvZOfNXrFSvz3qq2A8Pj3RUC7ucJeh+c4xlwTaLmlD9h6toSJtMRm3xY6BzY?=
- =?us-ascii?Q?QB8U7s+UiTRWg4YF6uVo4it8PLjwo/Efd/iD219WqhroHKlab8cYh7l77P1g?=
- =?us-ascii?Q?vnlfQVCFIAA/OSmyftUtO9yzMyhyxccpFrn8bqOtZlSW/b3XVXJZJPdx6CMQ?=
- =?us-ascii?Q?faYps3ZU0hl/A/HkoL/+0Jh5kxiGGCjSA/a+dD9W4z8J3ljbUSf6RslnTNUs?=
- =?us-ascii?Q?HxjcIZtuoIIMCeyuXL5UtaxtNZDsRO+jo0gqkuHEy6F7IijPTxqH2R9ofwAJ?=
- =?us-ascii?Q?a+KYkhkTbQmvQALkLDOyoEkEqyyK9dBElEB3oOyheIOVivZda1etZlrhamAh?=
- =?us-ascii?Q?P+jBfiyk+4Ktpm+Xg73mEVhoaBxJPWBADUnsHHlCWENQeYIF7hoHbfQiC5t+?=
- =?us-ascii?Q?RUiQsJjzRJEpkiuy8YUv4x+gAwPIgTtLlwdZgS0pE9KAOuLnI9Sjfka8otBa?=
- =?us-ascii?Q?EmeTHaxgFvZNvVEhfMdjucVUxtsAetgD2ahZD0kBHrT/2xvuAliaeaD9SNip?=
- =?us-ascii?Q?95hISRImjK2ojCfurpBTJ3soouU6CCH2ZsOkUm/bSjeFI1+nDCL9mExn7yXb?=
- =?us-ascii?Q?EDLCXAjCs2uL+vBGOOuLGqqzeEDKHFnsczfBw6q0MHYl6oYnMjFhaOB9tj2+?=
- =?us-ascii?Q?xnEXJwRSYnRSSc8z7PADrftqPol9ykdInXLSfKPLXFy1y+VL1g2CFq/on1NN?=
- =?us-ascii?Q?TxU6y1ZzXqhvvWpYnrjN2nqI+7FlmH3276dgjxtdFnLO11wRXBFG6km3to6Y?=
- =?us-ascii?Q?at0inDzIkfFHNpIvPTf3vy20vZtgg2v0nbWzXV56KzeuCNfY5C3bnp76cub1?=
- =?us-ascii?Q?s7csUzMR7cCRNipiFgBMbcbT2NyhJTiBIo0C4tOFR11HwD8dgVB7WrwMcG9r?=
- =?us-ascii?Q?EPwaV8xVI9Tgj++er5i9E2etnCvgnekQcdinUktgFp9X/orv6cCgdrad5gPL?=
- =?us-ascii?Q?l/0ubw9Y+YUj8J+/KvPNsZeZc8cIREugt9vHOvzVKi3Xi9yawBKMOgXJjl4u?=
- =?us-ascii?Q?pw=3D=3D?=
+	=?us-ascii?Q?rHoUGFfATDfsfB5uF8HwLAJ1Xbyly7uvZ4l2SGk5lD+rib4cWl+S5uFB1o33?=
+ =?us-ascii?Q?TPcuFZ8LaMNBXPooRPWeoRIt7Vfwcuf3zw0/LgMn1ItgkLuZfTdNorT/JcGT?=
+ =?us-ascii?Q?YaJin5Yme8U9Rc5mNo/4UCspP66snWsilOXvvXF3L3Dv0uGhQgoayueFvRrA?=
+ =?us-ascii?Q?m++7uC5CG56aCak2e0U1k9TjlP7zAhF95dYS9Me3MXaR/0D/eifzFlX0l71X?=
+ =?us-ascii?Q?g2XOfUVIFVCQXJAtlvkTATmID8Y8JvWuJFX0QsGfjTR2oEIyPkty/IXmtzSt?=
+ =?us-ascii?Q?ax/Kxx8B0V55pfAqlbZ8//MZUnTaM0fZk9UuCqmwQsy3h+zBKk8TUkCNt9Zh?=
+ =?us-ascii?Q?4VbcCRuSKOEUtG6zudQZ7VQByDv98K81UlOlvb72QWMWeTT9pgt/6yWpQvOq?=
+ =?us-ascii?Q?7s4YGFQDl59kJ1eGZfKrIyW6UJ9/r6q1fwM15rRMz6RTOK6DT0PWDCEjVMNC?=
+ =?us-ascii?Q?bFkxOwjks2XNrumD4nbwiANYQehzNOj7lGUMTlPDJbN408GP5KHkCg3lIiGl?=
+ =?us-ascii?Q?5VdX2Aj1eEZ+3G+9vjHaBG4k2ewB4GnT+8AOuf62NSaDbEg0dkU361hxI8dj?=
+ =?us-ascii?Q?nKho1hryWzXk5pi9MyfqhpQ8wLsm2EYG5n2H3vgYGFDzwjZ0OsPFkzzfwFcc?=
+ =?us-ascii?Q?uKu6DmqLa3D7ImkfisUrTduqOJFOMCAT1XugwCJDrRzIFO7/sVtcUPITJK5y?=
+ =?us-ascii?Q?DdJzY7BNw0GglSM4gYE7Gc+KWgTSM+6bKPDhxrUekE4qzmJmiZnJ1X4vIms1?=
+ =?us-ascii?Q?IWq4OIURxC0PbYF9KeL/1z6Drq+1vLvaCwsB8zVfaXRsM1sUJv+woI6hdo+D?=
+ =?us-ascii?Q?t0wHMWHJ2B9s1WkRU3xPxYEFADPQuJv3MpEnf8KskE/N7sOF0BoHPT7i1K11?=
+ =?us-ascii?Q?QEHPNSvZ9ESBuAROrCfMqWTEs1nZdYyIf/kIDKDSH5uquchIerPkT1IeuNAP?=
+ =?us-ascii?Q?tEL5Txc2YZMyiPXThWP01798au9bSL9i8+AcEqyPz2denctZ0AymN7IM+vF8?=
+ =?us-ascii?Q?koIhjUFTeMo3rGP8SbpTXNTrX+mn6/hE0CLdGIbi4gY1I0XaifZCBUZ/gxsu?=
+ =?us-ascii?Q?iSvKR8s2h5k7vrIByfInKDRqSZIsEgUAYibmSU9cO3qojmyO++AbDO8BCVUC?=
+ =?us-ascii?Q?9SDTh2XAoD8Cxcp43BR4JPnh1Ekgvh+vEIG2mWbLCtc++MR59X3crPswabWI?=
+ =?us-ascii?Q?A4oJGtUi/8D2DfTFnmJTdaJ/RIsB3h+EfAh58zX4OtXxr1t0mh/4ka25KlCq?=
+ =?us-ascii?Q?XbXjISAGURcEwi2L5k8f98PTxe0UmPkasdS0IEdhAnFQCOQJAYlcfk0HMgRJ?=
+ =?us-ascii?Q?aUTdC40RpYcGOKDXV8AVXhbMZ7uxcquctT49CcdCMf55il7fjqjOY6U9BeZN?=
+ =?us-ascii?Q?rZjyGwlcqZeDyg3PeuSID/IJee6A92aM5Eiix3vgH8SxaV2T0K6RyxvbKeq4?=
+ =?us-ascii?Q?RE1J7/tONSbguZUlFNP4NgbYhxr4nC1wRWyNtS2w7PTpOuswIo5BA5ZDQNCB?=
+ =?us-ascii?Q?mHkyXvD2hTVFFhQinNf4D0d1WhVqMy9HR0ckHGfXc89EkyyzW+mGBvTZSlMN?=
+ =?us-ascii?Q?plUXg7H8ixa8fjUVdiSLnFPvWg2/2M3he5yud1aP++hFkECHhkxRT15k/ctx?=
+ =?us-ascii?Q?DA=3D=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a2710b1-7546-4246-56e1-08de22ada0d1
+X-MS-Exchange-CrossTenant-Network-Message-Id: b162e6df-ee36-46e7-9201-08de22ada1f7
 X-MS-Exchange-CrossTenant-AuthSource: AS2PR10MB6349.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2025 12:10:25.8919
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Nov 2025 12:10:27.7839
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hsHovNeaHB/GcBzSq9ZbcAc0CPsmWevrR/U4pKnFxwhaDd1qfI6ipDf5aW0WkMekRdM/LsHMcNUiydkvXsfOcb72nrxSXHvTWHbm0ZyqPWU=
+X-MS-Exchange-CrossTenant-UserPrincipalName: kU8X7rqZP4OfLpLThCWjWLJgR0T8qoVzjVwaAzSeH1zy1tW4cGuYvUycIX9Aw9u+c6XkoiSNF7A1FUexdUgoOovu5YenDQpwDNYm5sweEx8=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB8286
 
-Introduce trap handling hooks for the Dovetail co-kernel, integrating
-out-of-band (OOB) notification and unwind support.
+From: shannmu <shanmu1901@gmail.com>
+
+This patch provides the foundation for safely managing memory contexts
+for both in-band and out-of-band tasks in the co-kernel.
 
 Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
 ---
- arch/riscv/kernel/traps.c | 92 +++++++++++++++++++++++++++++++++------
- arch/riscv/mm/fault.c     | 21 +++++----
- 2 files changed, 91 insertions(+), 22 deletions(-)
+ arch/riscv/include/asm/mmu_context.h |  6 ++----
+ arch/riscv/mm/cacheflush.c           |  5 +++--
+ arch/riscv/mm/context.c              | 18 +++++++++++++++++-
+ arch/riscv/mm/fault.c                |  3 ++-
+ arch/riscv/mm/tlbflush.c             |  5 +++--
+ 5 files changed, 27 insertions(+), 10 deletions(-)
 
-diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
-index 83aef3fac26f..e156f83acd2e 100644
---- a/arch/riscv/kernel/traps.c
-+++ b/arch/riscv/kernel/traps.c
-@@ -3,6 +3,8 @@
-  * Copyright (C) 2012 Regents of the University of California
-  */
+diff --git a/arch/riscv/include/asm/mmu_context.h b/arch/riscv/include/asm/mmu_context.h
+index acf3b8e20e27..b62d69dbdd06 100644
+--- a/arch/riscv/include/asm/mmu_context.h
++++ b/arch/riscv/include/asm/mmu_context.h
+@@ -15,6 +15,8 @@
  
-+#include <asm-generic/signal.h>
-+#include <linux/compiler_attributes.h>
- #include <linux/cpu.h>
- #include <linux/kernel.h>
- #include <linux/init.h>
-@@ -114,6 +116,8 @@ void die(struct pt_regs *regs, const char *str)
- static __always_inline
- bool mark_trap_entry(int signo, struct pt_regs *regs)
- {
-+	oob_trap_notify(signo, regs);
-+
- 	/*
- 	 * Dovetail: irqentry_enter*() already synchronized the
- 	 * virtual and real interrupt states for us. If running
-@@ -125,21 +129,40 @@ bool mark_trap_entry(int signo, struct pt_regs *regs)
- 		return true;
- 	}
+ void switch_mm(struct mm_struct *prev, struct mm_struct *next,
+ 	struct task_struct *task);
++void switch_oob_mm(struct mm_struct *prev, struct mm_struct *next,
++	struct task_struct *task);
  
-+	oob_trap_unwind(signo, regs);
-+
- 	return false;
+ #define activate_mm activate_mm
+ static inline void activate_mm(struct mm_struct *prev,
+@@ -33,10 +35,6 @@ static inline int init_new_context(struct task_struct *tsk,
+ 	return 0;
  }
  
- static __always_inline
- void mark_trap_exit(int signo, struct pt_regs *regs)
- {
-+	oob_trap_unwind(signo, regs);
- 	hard_cond_local_irq_disable();
- }
- 
--void do_trap(struct pt_regs *regs, int signo, int code, unsigned long addr)
-+static __always_inline
-+bool mark_trap_entry_raw(int trapnr, struct pt_regs *regs)
- {
--	struct task_struct *tsk = current;
-+	oob_trap_notify(trapnr, regs);
- 
--	if (!mark_trap_entry(signo, regs))
--		return;
-+	if (running_oob()) {
-+		oob_trap_unwind(trapnr, regs);
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
-+static __always_inline
-+void mark_trap_exit_raw(int trapnr, struct pt_regs *regs)
-+{
-+	oob_trap_unwind(trapnr, regs);
-+}
-+
-+static void do_trap_raw(struct pt_regs *regs, int signo, int code, unsigned long addr)
-+{
-+	struct task_struct *tsk = current;
- 
- 	if (show_unhandled_signals && unhandled_signal(tsk, signo)
- 	    && printk_ratelimit()) {
-@@ -152,6 +175,14 @@ void do_trap(struct pt_regs *regs, int signo, int code, unsigned long addr)
- 	}
- 
- 	force_sig_fault(signo, code, (void __user *)addr);
-+}
-+
-+void do_trap(struct pt_regs *regs, int signo, int code, unsigned long addr)
-+{
-+	if(!mark_trap_entry(signo, regs))
-+		return;
-+
-+	do_trap_raw(regs, signo, code, addr);
- 
- 	mark_trap_exit(signo, regs);
- }
-@@ -162,7 +193,7 @@ static void do_trap_error(struct pt_regs *regs, int signo, int code,
- 	current->thread.bad_cause = regs->cause;
- 
- 	if (user_mode(regs)) {
--		do_trap(regs, signo, code, addr);
-+		do_trap_raw(regs, signo, code, addr);
- 	} else {
- 		/*
- 		 * Dovetail: If we trapped from kernel space, either
-@@ -180,9 +211,12 @@ static void do_trap_error(struct pt_regs *regs, int signo, int code,
- #else
- #define __trap_section noinstr
- #endif
--#define DO_ERROR_INFO(name, signo, code, str)					\
-+#define DO_ERROR_INFO(name, signo, code, str, trapnr)				\
- asmlinkage __visible __trap_section void name(struct pt_regs *regs)		\
- {										\
-+	if(!mark_trap_entry(trapnr, regs))					\
-+		return;								\
-+										\
- 	if (user_mode(regs)) {							\
- 		irqentry_enter_from_user_mode(regs);				\
- 		do_trap_error(regs, signo, code, regs->epc, "Oops - " str);	\
-@@ -192,19 +226,24 @@ asmlinkage __visible __trap_section void name(struct pt_regs *regs)		\
- 		do_trap_error(regs, signo, code, regs->epc, "Oops - " str);	\
- 		irqentry_nmi_exit(regs, state);					\
- 	}									\
-+										\
-+	mark_trap_exit(trapnr, regs);						\
- }
- 
- DO_ERROR_INFO(do_trap_unknown,
--	SIGILL, ILL_ILLTRP, "unknown exception");
-+	SIGILL, ILL_ILLTRP, "unknown exception", EXC_INST_ILLEGAL);
- DO_ERROR_INFO(do_trap_insn_misaligned,
--	SIGBUS, BUS_ADRALN, "instruction address misaligned");
-+	SIGBUS, BUS_ADRALN, "instruction address misaligned", EXC_INST_MISALIGNED);
- DO_ERROR_INFO(do_trap_insn_fault,
--	SIGSEGV, SEGV_ACCERR, "instruction access fault");
-+	SIGSEGV, SEGV_ACCERR, "instruction access fault", EXC_INST_ACCESS);
- 
- asmlinkage __visible __trap_section void do_trap_insn_illegal(struct pt_regs *regs)
- {
- 	bool handled;
- 
-+	if(!mark_trap_entry(EXC_INST_ILLEGAL, regs))
-+		return;
-+
- 	if (user_mode(regs)) {
- 		irqentry_enter_from_user_mode(regs);
- 
-@@ -233,13 +272,17 @@ asmlinkage __visible __trap_section void do_trap_insn_illegal(struct pt_regs *re
- 
- 		irqentry_nmi_exit(regs, state);
- 	}
-+	mark_trap_exit(EXC_INST_ILLEGAL, regs);
- }
- 
- DO_ERROR_INFO(do_trap_load_fault,
--	SIGSEGV, SEGV_ACCERR, "load access fault");
-+	SIGSEGV, SEGV_ACCERR, "load access fault", EXC_LOAD_ACCESS);
- 
- asmlinkage __visible __trap_section void do_trap_load_misaligned(struct pt_regs *regs)
- {
-+	if(!mark_trap_entry(EXC_LOAD_MISALIGNED, regs))
-+		return;
-+
- 	if (user_mode(regs)) {
- 		irqentry_enter_from_user_mode(regs);
- 
-@@ -257,10 +300,15 @@ asmlinkage __visible __trap_section void do_trap_load_misaligned(struct pt_regs
- 
- 		irqentry_nmi_exit(regs, state);
- 	}
-+
-+	mark_trap_exit(EXC_LOAD_MISALIGNED, regs);
- }
- 
- asmlinkage __visible __trap_section void do_trap_store_misaligned(struct pt_regs *regs)
- {
-+	if(!mark_trap_entry(EXC_STORE_MISALIGNED, regs))
-+		return;
-+
- 	if (user_mode(regs)) {
- 		irqentry_enter_from_user_mode(regs);
- 
-@@ -278,13 +326,15 @@ asmlinkage __visible __trap_section void do_trap_store_misaligned(struct pt_regs
- 
- 		irqentry_nmi_exit(regs, state);
- 	}
-+
-+	mark_trap_exit(EXC_STORE_MISALIGNED, regs);
- }
- DO_ERROR_INFO(do_trap_store_fault,
--	SIGSEGV, SEGV_ACCERR, "store (or AMO) access fault");
-+	SIGSEGV, SEGV_ACCERR, "store (or AMO) access fault", EXC_STORE_ACCESS);
- DO_ERROR_INFO(do_trap_ecall_s,
--	SIGILL, ILL_ILLTRP, "environment call from S-mode");
-+	SIGILL, ILL_ILLTRP, "environment call from S-mode", EXC_SYSCALL);
- DO_ERROR_INFO(do_trap_ecall_m,
--	SIGILL, ILL_ILLTRP, "environment call from M-mode");
-+	SIGILL, ILL_ILLTRP, "environment call from M-mode", EXC_SUPERVISOR_SYSCALL);
- 
- static inline unsigned long get_break_insn_length(unsigned long pc)
- {
-@@ -336,6 +386,9 @@ void handle_break(struct pt_regs *regs)
- 
- asmlinkage __visible __trap_section void do_trap_break(struct pt_regs *regs)
- {
-+	if(!mark_trap_entry_raw(EXC_BREAKPOINT, regs))
-+		return;
-+
- 	if (user_mode(regs)) {
- 		irqentry_enter_from_user_mode(regs);
- 
-@@ -349,6 +402,8 @@ asmlinkage __visible __trap_section void do_trap_break(struct pt_regs *regs)
- 
- 		irqentry_nmi_exit(regs, state);
- 	}
-+
-+	mark_trap_exit_raw(EXC_BREAKPOINT, regs);
- }
- 
- asmlinkage __visible __trap_section  __no_stack_protector
-@@ -365,6 +420,15 @@ void do_trap_ecall_u(struct pt_regs *regs)
- 
- 		syscall = syscall_enter_from_user_mode(regs, syscall);
- 
-+		if(dovetailing()) {
-+			if (syscall == EXIT_SYSCALL_OOB) {
-+				hard_local_irq_disable();
-+				return;
-+			}
-+			if (syscall == EXIT_SYSCALL_TAIL)
-+				goto done_inband;
-+		}
-+
- 		add_random_kstack_offset();
- 
- 		if (syscall >= 0 && syscall < NR_syscalls)
-@@ -382,6 +446,7 @@ void do_trap_ecall_u(struct pt_regs *regs)
- 		 */
- 		choose_random_kstack_offset(get_random_u16());
- 
-+done_inband:
- 		syscall_exit_to_user_mode(regs);
- 	} else {
- 		irqentry_state_t state = irqentry_nmi_enter(regs);
-@@ -391,7 +456,6 @@ void do_trap_ecall_u(struct pt_regs *regs)
- 
- 		irqentry_nmi_exit(regs, state);
- 	}
+-static inline void
+-switch_oob_mm(struct mm_struct *prev, struct mm_struct *next,
+-	      struct task_struct *tsk) { }
 -
+ DECLARE_STATIC_KEY_FALSE(use_asid_allocator);
+ 
+ #include <asm-generic/mmu_context.h>
+diff --git a/arch/riscv/mm/cacheflush.c b/arch/riscv/mm/cacheflush.c
+index b81672729887..6dabe4c0a203 100644
+--- a/arch/riscv/mm/cacheflush.c
++++ b/arch/riscv/mm/cacheflush.c
+@@ -45,8 +45,9 @@ void flush_icache_mm(struct mm_struct *mm, bool local)
+ {
+ 	unsigned int cpu;
+ 	cpumask_t others, *mask;
++	unsigned long flags;
+ 
+-	preempt_disable();
++	flags = hard_preempt_disable();
+ 
+ 	/* Mark every hart's icache as needing a flush for this MM. */
+ 	mask = &mm->context.icache_stale_mask;
+@@ -78,7 +79,7 @@ void flush_icache_mm(struct mm_struct *mm, bool local)
+ 		on_each_cpu_mask(&others, ipi_remote_fence_i, NULL, 1);
+ 	}
+ 
+-	preempt_enable();
++	hard_preempt_enable(flags);
  }
  
- #ifdef CONFIG_MMU
+ #endif /* CONFIG_SMP */
+diff --git a/arch/riscv/mm/context.c b/arch/riscv/mm/context.c
+index 4abe3de23225..81199e192804 100644
+--- a/arch/riscv/mm/context.c
++++ b/arch/riscv/mm/context.c
+@@ -315,7 +315,7 @@ static inline void flush_icache_deferred(struct mm_struct *mm, unsigned int cpu,
+ #endif
+ }
+ 
+-void switch_mm(struct mm_struct *prev, struct mm_struct *next,
++static void do_switch_mm(struct mm_struct *prev, struct mm_struct *next,
+ 	struct task_struct *task)
+ {
+ 	unsigned int cpu;
+@@ -336,3 +336,19 @@ void switch_mm(struct mm_struct *prev, struct mm_struct *next,
+ 
+ 	flush_icache_deferred(next, cpu, task);
+ }
++
++void switch_mm(struct mm_struct *prev, struct mm_struct *next,
++	struct task_struct *task)
++{
++	unsigned flags;
++
++	protect_inband_mm(flags);
++	do_switch_mm(prev, next, task);
++	unprotect_inband_mm(flags);
++}
++
++void switch_oob_mm(struct mm_struct *prev, struct mm_struct *next,
++	struct task_struct *task)
++{
++	do_switch_mm(prev, next, task);
++}
+\ No newline at end of file
 diff --git a/arch/riscv/mm/fault.c b/arch/riscv/mm/fault.c
-index f7275f1a39ac..7033119e4e2f 100644
+index 7033119e4e2f..712ba55e7a7c 100644
 --- a/arch/riscv/mm/fault.c
 +++ b/arch/riscv/mm/fault.c
-@@ -279,6 +279,10 @@ void handle_page_fault(struct pt_regs *regs)
- 		die_kernel_fault("access to user memory without uaccess routines", addr, regs);
- 	}
+@@ -7,6 +7,7 @@
+  */
  
-+	oob_trap_notify(EXC_INST_PAGE_FAULT, regs);
-+	if (!running_inband())
-+		goto out;
-+
- 	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, addr);
  
- 	if (cause == EXC_STORE_PAGE_FAULT)
-@@ -297,7 +301,7 @@ void handle_page_fault(struct pt_regs *regs)
- 		count_vm_vma_lock_event(VMA_LOCK_SUCCESS);
++#include <linux/preempt.h>
+ #include <linux/mm.h>
+ #include <linux/kernel.h>
+ #include <linux/interrupt.h>
+@@ -263,7 +264,7 @@ void handle_page_fault(struct pt_regs *regs)
+ 	 * If we're in an interrupt, have no user context, or are running
+ 	 * in an atomic region, then we must not take the fault.
+ 	 */
+-	if (unlikely(faulthandler_disabled() || !mm)) {
++	if (unlikely(running_inband() && (faulthandler_disabled() || !mm))) {
  		tsk->thread.bad_cause = cause;
- 		bad_area_nosemaphore(regs, SEGV_ACCERR, addr);
--		return;
-+		goto out;
+ 		no_context(regs, addr);
+ 		return;
+diff --git a/arch/riscv/mm/tlbflush.c b/arch/riscv/mm/tlbflush.c
+index 9b6e86ce3867..0009593bd5ec 100644
+--- a/arch/riscv/mm/tlbflush.c
++++ b/arch/riscv/mm/tlbflush.c
+@@ -83,11 +83,12 @@ static void __flush_tlb_range(const struct cpumask *cmask, unsigned long asid,
+ 			      unsigned long stride)
+ {
+ 	unsigned int cpu;
++	unsigned long flags;
+ 
+ 	if (cpumask_empty(cmask))
+ 		return;
+ 
+-	cpu = get_cpu();
++	cpu = hard_get_cpu(flags);
+ 
+ 	/* Check if the TLB flush needs to be sent to other CPUs. */
+ 	if (cpumask_any_but(cmask, cpu) >= nr_cpu_ids) {
+@@ -104,7 +105,7 @@ static void __flush_tlb_range(const struct cpumask *cmask, unsigned long asid,
+ 		on_each_cpu_mask(cmask, __ipi_flush_tlb_range_asid, &ftd, 1);
  	}
  
- 	fault = handle_mm_fault(vma, addr, flags | FAULT_FLAG_VMA_LOCK, regs);
-@@ -315,7 +319,7 @@ void handle_page_fault(struct pt_regs *regs)
- 	if (fault_signal_pending(fault, regs)) {
- 		if (!user_mode(regs))
- 			no_context(regs, addr);
--		return;
-+		goto out;
- 	}
- lock_mmap:
- 
-@@ -324,7 +328,7 @@ void handle_page_fault(struct pt_regs *regs)
- 	if (unlikely(!vma)) {
- 		tsk->thread.bad_cause = cause;
- 		bad_area_nosemaphore(regs, code, addr);
--		return;
-+		goto out;
- 	}
- 
- 	/*
-@@ -336,7 +340,7 @@ void handle_page_fault(struct pt_regs *regs)
- 	if (unlikely(access_error(cause, vma))) {
- 		tsk->thread.bad_cause = cause;
- 		bad_area(regs, mm, code, addr);
--		return;
-+		goto out;
- 	}
- 
- 	/*
-@@ -354,12 +358,12 @@ void handle_page_fault(struct pt_regs *regs)
- 	if (fault_signal_pending(fault, regs)) {
- 		if (!user_mode(regs))
- 			no_context(regs, addr);
--		return;
-+		goto out;
- 	}
- 
- 	/* The fault is fully completed (including releasing mmap lock) */
- 	if (fault & VM_FAULT_COMPLETED)
--		return;
-+		goto out;
- 
- 	if (unlikely(fault & VM_FAULT_RETRY)) {
- 		flags |= FAULT_FLAG_TRIED;
-@@ -378,7 +382,8 @@ void handle_page_fault(struct pt_regs *regs)
- 	if (unlikely(fault & VM_FAULT_ERROR)) {
- 		tsk->thread.bad_cause = cause;
- 		mm_fault_error(regs, addr, fault);
--		return;
- 	}
--	return;
-+
-+out:
-+	oob_trap_unwind(EXC_INST_PAGE_FAULT, regs);
+-	put_cpu();
++	hard_put_cpu(flags);
  }
+ 
+ static inline unsigned long get_mm_asid(struct mm_struct *mm)
 -- 
 2.43.0
 
