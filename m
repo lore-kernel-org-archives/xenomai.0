@@ -1,110 +1,166 @@
-Received: from mail-lj1-f181.google.com (mail-lj1-f181.google.com [209.85.208.181])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98B3A2F49EC
-	for <xenomai@lists.linux.dev>; Fri, 14 Nov 2025 06:59:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F3E72D8375
+	for <xenomai@lists.linux.dev>; Fri, 14 Nov 2025 18:22:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763103565; cv=none; b=IxlSUrjcleFcu91EOxlDIQMlHBTmtnw843kFavAR6a4Wk934SLWTjGh+8qUyjGpadX45/t0L8IuhYQOGrcmK/ow84Y9EAUw4+zubSvEqUcQ5QTPXL9GgRdo7gphIiEx1i3L40mR0maZ1JuTT1lpzVc0OgBDjvwz+DG8Oe3r/lv8=
+	t=1763144549; cv=none; b=Re/sJMKGuiCAeE7skD/uCuCVpuT50MwRheJlviJzFMqutEKD2UYYqU9PkraRnDBAyK7xmkCJy8fmNKHv2UzKodb/c5q5pB1eQMbg+Zu6F7fRiM02ShDW7F/ZnUBSZq4/a875Lw+E84VSsy5KWWhlIjbp88saNQWmraXO62RU3eU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763103565; c=relaxed/simple;
-	bh=fyb7gBB0bBtTz7L8Uq3swVrAPbmRp2RnAthliEDRtDg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ngogmr2vyaBcQ/NHwdOkU5o3Cc94KyxJiPSUcRmyQWghqRvbJ3D1P3n4DGrLGivmvjNod3NzaekDVOMqgJGNbxjlVdmnYpm6nJKN7BcHDqS90yvQzdxo/nHnUUKg12fIjvt8nyF1LpBqx5PCaHNEz/mAu8s77wkFp9f64kgnHzI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b=lLUV2HXn; arc=none smtp.client-ip=209.85.208.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
+	s=arc-20240116; t=1763144549; c=relaxed/simple;
+	bh=GumiCiyqYbxDQJamd43+KBhBE88L3uLPmXUvxy0r4/k=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=e+fakwkj+DU0aSSgeJ3+x027egMI3Bk89c/hCZYTigLllVKmj2GR8bK7jZti3beUdAGCPUpxR8C8ZhB06HL794UkVfJhFzJXKMRBCMv14L+qgSXm1l3udo+viOjU+pm59U1JwmQ644qhVHo7Zg7+nwzT7CIf8gXoBwyBNCcxvCY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KzQ2TD/r; arc=none smtp.client-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b="lLUV2HXn"
-Received: by mail-lj1-f181.google.com with SMTP id 38308e7fff4ca-37b95f87d4eso14238841fa.1
-        for <xenomai@lists.linux.dev>; Thu, 13 Nov 2025 22:59:23 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KzQ2TD/r"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-42b3377aaf2so1497478f8f.2
+        for <xenomai@lists.linux.dev>; Fri, 14 Nov 2025 10:22:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile.fr; s=google; t=1763103562; x=1763708362; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1763144546; x=1763749346; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:user-agent
+         :references:in-reply-to:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=2EaBaPbBuugJ+ASPzwEbL7lWIAJFrGPYDBgwGx/D+SY=;
-        b=lLUV2HXn/t1rDwsCUBAtEztL4dW0XhIlwhzfsUDruqKp6U+kjMhpWRA0d66hUnDMA8
-         5bv+hYN4a/krYAfTsBgOPq88idp9S2VfjjVLa3q6rF9M8joNPoVbJQwFBL/WH4uX4xFn
-         J6u6YblDPf0hG2LU5yG4vPjH8ullcluboIvu4=
+        bh=vTmZW78szLYE0Ueoyhp9eVyYn7YbGYkUhIXZRpgY8qg=;
+        b=KzQ2TD/ruCt5QP6xC2PICDwMxuYVn3ra3ByUgWzISRkOZBiXfkESQ8XS4nchPy7fPT
+         xRYZNNtdze2E3WuMc9a/qK42gF/QimEr9EbyfRnQgEvbPCjFf5lQr1ts3+/hhzMQP+Xw
+         U3pOzmR2lyuGCZX8ynYVTgoRVnWZovV0p3BEFD+0m1z1PvRwintIhd3jPRMOfzGb5PwP
+         IK53X0JRmuvpvglUSOotPL4hxxnUWcsWyXasunxmpO+LVhkUHKQE0bYD5p9HtBHc0ylf
+         UsPsdoukN3Rx+2UY91EfTj+TZl7frCuPQOLJ20aXv8Rqcb2RdFOyKCAunIj10vlw39Rn
+         jjqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763103562; x=1763708362;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=2EaBaPbBuugJ+ASPzwEbL7lWIAJFrGPYDBgwGx/D+SY=;
-        b=IcPSOj73DrPBoHgdVhBPO01Y+nhppMl5PyFj6FzCIr4jbVOat+0FC6/9SOD+xs+VKq
-         /dIDz95WiqIHkYZ4bKKtdoCc7b2nBWwbQIozBcYWDMtso/vFpoRCA1Hgu2pMYqXFzHYv
-         z+cMfQJdTFmBZZU/o3f7J9dTyRAigcqjwwAydIMnSNhlV26hw6g2Ce+128rnleEgH9O7
-         xQpkflG2+FTqh3dlEmxFuLSXaYPuATS994EUAocdljEQuY2emqTdi5u+9sWVRSD2yDsh
-         1a+tWnnUxAEt7UcAcXD4qPVBiUVcGQzvDB3kf5Op5cgE3s1zPi+RQoQMzjVJEmJPtXW7
-         ToxQ==
-X-Gm-Message-State: AOJu0YzfKeq4khtO4MNb0rqswF4TN4n/QfgsUkLFGvkprsNuQxxerhxE
-	29vNY/+dWtqZ3GateluvcebF8vExbDO6J7Qe9pk0FS4Y/m4vVF27xUatgsViWdWnCmgfzNhq92X
-	JacKPIzJYNE3p8RCWGFhtod6IjSLMtaXnrm4nXwVO3ze6XAGgobz/cxg=
-X-Gm-Gg: ASbGncuJh5NgId/vQ7q6Ezlz7XWqRlEv3KqOeCL+RpFVo0aAlSN7dP+GXs2vVlGnBHV
-	35mpoy5yufSQgOdH9F14rLbsNUYvCWVzZZPITqJLnHWMZTFhvoEv7TUCoA+/Wn8dfNCvqb0dlOy
-	eJTIFmdmBA365s7gzyeZEGJRsdIZOFoToIlF00EYeikOSLNsGeNpBvPSw8cuwGEEyLzi4gfL1B+
-	Qdg7X+fQ9gponFaUoff+g2NEt/+KlbIX2hcnTughrT8QwEwYoM2VyiZL2pTM8V9O7TxkxdLk1RB
-	Xm4D0Z1CbKUUJQ34Pmh5W8K8kf8FDM2cXiiTxPFUrCwAr68ZSh4PpiCQvb7wKkPtlXl9b/B0KbE
-	+ZVFH5i9ouJ2lxJ0BZu2DYLfkUzw=
-X-Google-Smtp-Source: AGHT+IF9J3XWVOJGn+6QX8Z6gy/cRI+GE4CUyRXVcbuwhRb8+hFOrXwrMGKX7f+LH07V8QdYCXWrMbIw+L0pR5iSw34=
-X-Received: by 2002:a2e:a00a:0:b0:372:9bf0:aed6 with SMTP id
- 38308e7fff4ca-37babd5c9b5mr3197891fa.25.1763103561582; Thu, 13 Nov 2025
- 22:59:21 -0800 (PST)
+        d=1e100.net; s=20230601; t=1763144546; x=1763749346;
+        h=content-transfer-encoding:mime-version:message-id:date:user-agent
+         :references:in-reply-to:subject:cc:to:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=vTmZW78szLYE0Ueoyhp9eVyYn7YbGYkUhIXZRpgY8qg=;
+        b=kylRcRw28QnlfaNXuj2cPbv6m2EFlDDGfm1L6nYdHb0q7j56h9ty/dP4kIDoCQgG97
+         DrjwIeirtRXUiB2AoO5NkQq9+mEpIsZgexptIGsXoDL961QlqF50HQA+MgSsW++WrX/w
+         IsN9lsM7lN8JZIm5RJBvKx11+auAD3oK4YoFCnlOZ5iOpUUh3TBktvgnudgGzqob0CN7
+         0zGRCfHqZWdOhr11zd8bWpRo6vNPp72sV5oNG5BO7/QaGmvM6vRxBvxGN9pVmkT/h1iP
+         YxlqNfqcYHP8v+Z8aFD2Q4T2ntFxIK+UEX7FNj1j3adp1SxgmloW48pZ7/uVyeAQVMlp
+         5rTQ==
+X-Gm-Message-State: AOJu0YxdyF4RsegA+mWMrqcT4PxWSdEatpZG0SBhmwEPzXbndaGCKYyg
+	jlJGczmjySrdajm5HW9XTDrOZoPEC21OmEKJIPPoRHZZETPuCLkS8LFu7mSjog==
+X-Gm-Gg: ASbGncsh81DqR/TsJAdx55Zrk/KPE85agKWFX/lO8ogfcI7tFBOnZ+CylRTUkim8X4p
+	Ukp4Tt7TTOc/ksIOJqAE8zlOMvNvRc1J3I+gia9OUUkf+fMBRiyqj2F3xPTz/VKZ6ZSV2hrErV5
+	Huw0Gp5tpH5nna56sLj3i8D1wi557ifJSZ++4Dmo3Uc533JRFIvPxi87OP9n9DIylDwNRoquxMk
+	cb1iFuDugyo/ICik4U6GmmHQW6++mRDNR+vZCVzdiipUmKbbuTIfKEl+P2DfnhykUi/KiYjo73L
+	Y0t0GdNiES23acvnzyzk4BTRBW1gnDIvH/2LvCGMtwFkEd1BLUF7zSmMqoG4S2aZ5YfWW6nfoF4
+	1v0XY/APbiZItq53Xza0KW4KUUCCnwtcg0/Ibh0TkN+8qDjf8tieM2wW3OrPeJzhHWvxLynaycV
+	mN4g==
+X-Google-Smtp-Source: AGHT+IHUBppQIg9b1x6JTbznUzsNPm817B93tN8orVQtRVo13QZ3UYLijdeKdIdwvMQAEgA/g906OA==
+X-Received: by 2002:a05:6000:240e:b0:42b:3746:3b87 with SMTP id ffacd0b85a97d-42b595b7fddmr4004156f8f.52.1763144545514;
+        Fri, 14 Nov 2025 10:22:25 -0800 (PST)
+Received: from bogeyman ([2a01:e0a:f57:6270:428b:3280:55df:97c])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-42b53e7b14bsm10974526f8f.9.2025.11.14.10.22.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 14 Nov 2025 10:22:25 -0800 (PST)
+From: Philippe Gerum <philippe.gerum@gmail.com>
+X-Google-Original-From: Philippe Gerum <rpm@xenomai.org>
+To: Tobias Schaffner <tobias.schaffner@siemens.com>
+Cc: xenomai@lists.linux.dev,  Jan Kiszka <jan.kiszka@siemens.com>
+Subject: Re: [PATCH dovetail v3 0/8] riscv: Add Dovetail support
+In-Reply-To: <76574cc0-c85c-4d71-beb6-1233799799d6@siemens.com> (Tobias
+	Schaffner's message of "Thu, 13 Nov 2025 13:26:11 +0100")
+References: <20251113121003.416012-1-tobias.schaffner@siemens.com>
+	<76574cc0-c85c-4d71-beb6-1233799799d6@siemens.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Fri, 14 Nov 2025 19:22:19 +0100
+Message-ID: <87ikfc5vac.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAFc1U0vT7a_qcGQwfuFUibL+eSv8uktTFNAz+uQB+UO0HkvKrQ@mail.gmail.com>
- <79e2290f-5e86-43c4-9acf-c658a12f7944@siemens.com>
-In-Reply-To: <79e2290f-5e86-43c4-9acf-c658a12f7944@siemens.com>
-From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Fri, 14 Nov 2025 07:59:10 +0100
-X-Gm-Features: AWmQ_blskHhyFIOzdpej6DXuM5XTe9p47Bu-3jI1FjlsIIPkDvcH7kUjCL7JU3Q
-Message-ID: <CAFc1U0sDC7T5RY-o0-xZ3joaSE6nX2Vgc8rC7yVfjB3UB9hcQw@mail.gmail.com>
-Subject: Re: DENX is shutting down
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 
-Yes I know, but I've just read a message from Karim Yaghmour on
-LinkedIn (about DENX and Nabla).
 
-https://www.linkedin.com/posts/karimyaghmour_goodbye-activity-7394939523467=
-694080-C6mn?utm_source=3Dshare&utm_medium=3Dmember_desktop&rcm=3DACoAAAAiSq=
-oB5NnhF8ZwyNzorwlaNsy_kbgZdl4
+Hi Tobias,
 
-regards
+Tobias Schaffner <tobias.schaffner@siemens.com> writes:
 
-Le ven. 14 nov. 2025 =C3=A0 07:55, Jan Kiszka <jan.kiszka@siemens.com> a =
-=C3=A9crit :
+> Hi Philippe,
 >
-> On 14.11.25 07:46, Pierre FICHEUX wrote:
-> > Hi,
-> >
-> > I think you're aware of this, but just in case:
-> >
-> > https://www.denx.de/
-> >
-> >
+> The EVL testsuite is running successfully on QEMU with this set of patche=
+s.
 >
-> Yes, that's why we are on gitlab.com since August.
->
-> Jan
->
-> --
-> Siemens AG, Foundational Technologies
-> Linux Expert Center
 
+Nice work.
 
+> I=E2=80=99d like to ask how we should proceed from here.
+>
+> If possible, I=E2=80=99d like to merge the RISC-V components for
+> xenomai-images so that we can set up an initial testing pipeline. To
+> do that, we=E2=80=99ll need a development branch that integrates the Dove=
+tail
+> and EVL components, which can be referenced.
+>
+> My private testing branch[1] is currently based on v6.12-evl1-rebase,
+> but I=E2=80=99m happy to port it to whichever version you=E2=80=99d prefe=
+r to continue
+> with.
+>
+
+You now have maintainer access to the
+linux-dovetail.git/wip/dovetail-riscv and linux-evl.git/wip/evl-riscv
+branches. You should be able to maintain the Dovetail and EVL core ports
+from those separate trees. Both branches should be considered as
+rebasable. Those kernel trees contain the riscv bits I once harvested on
+the mailing list some time ago, so by no mean up to date. You can
+definitely replace them at will.
+
+You also have maintainer access to the libevl.git/wip/libevl-riscv branch
+(rebasable too), which I just forked off the -next branch.  I'll pull
+from the former branch when deemed ready. Please keep in sync with
+-next, not master.
+
+linux-evl/wip/evl-riscv and libevl/wip/libevl-riscv can be the source
+trees for xenomai-images at the moment, until merged.
+
+The Dovetail kernel tree should not contain any EVL-specific bit so that
+other real-time cores (e.g. x3 Cobalt) can use it seamlessly as well,
+the EVL tree should include the Dovetail tree plus the EVL core with
+riscv support.
+
+The Dovetail patch set should introduce riscv support piecemeal, in a
+way which allows us to bisect code when chasing regressions by enabling
+features incrementally, from mere interrupt pipelining to alternate
+scheduling of oob threads, along with oob networking, oob device support
+(gpio, clocksources, timers). Of course, as development goes on, we end
+up with individual fixes stacked on top of this ideal series of
+commits. From time to time, these fixes are squashed into the commits
+forming the fundamental series I just mentioned.
+
+e.g. looking at rebase/v6.17-dovetail, the fundamental series adding
+Dovetail support piecemeal goes from 12e0fbdff1d45 to
+c09b64e1767a2. Commits on top of this range are fixes to this series,
+which we may squash at some point, when forward porting to some upcoming
+kernel release (this normally happens during the upstream -rc cycle).
+
+As you know, the EVL tree for a newer kernel release is obtained from
+forking off the matching Dovetail tree, forward porting the EVL bits
+from the latest release. Pretty straightforward. Here again, we may have
+Dovetail fixes landing on top, and EVL fixes as well. The latter are
+never squashed though. Any merge-related change to the EVL bits most
+often appears explicitly in an individual commit, because there are very
+few places for merge conflicts with upstream changes in the EVL code
+base, so we are usually able to merge seamlessly, we have to compile and
+run it for finding issues in most cases.
+
+Eventually, the plan is to merge wip/dovetail-riscv and wip/evl-riscv
+into the linux-dovetail and linux-evl trees when ready. A working
+initial port of EVL to some riscv hardware would indicate that such port
+is ready for inclusion.
+
+Basing the initial riscv port on v6.12.y-cip would benefit people who
+need an SLTS kernel. However, this would also double the initial
+maintenance work on your end, since we are going to need a port to v6.18
+which is brewing here. What's your take on this?
 
 --=20
-
-Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
-                             http://www.smile.fr
-                             https://smile.eu/fr/offres/embarque-iot
-I would love to change the world, but they won't give me the source code
+Philippe.
