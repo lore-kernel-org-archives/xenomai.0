@@ -1,190 +1,276 @@
-Received: from sonic309-24.consmr.mail.ir2.yahoo.com (sonic309-24.consmr.mail.ir2.yahoo.com [77.238.179.82])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11013027.outbound.protection.outlook.com [52.101.83.27])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF435328266
-	for <xenomai@lists.linux.dev>; Tue, 25 Nov 2025 15:30:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.238.179.82
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764084626; cv=none; b=b3R1To4hB26gBCP/N410jYs27VtPJXp04Oge2JAeuiFIyuOEGhPMDNy3ppczDrLRe/Wcr6byQh7lYElZD5o35KnLXQD1YkVG8zLWuWoSMJ+dIo6X6FddktBlM6JQK+ZM7gMZTSc3j4YE2FeM61eQh06gMrlAP83jNtim9Z4jn/0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764084626; c=relaxed/simple;
-	bh=RGsvxTg/gjV3KNp4D2HXTO0vDc9XGyrH9O8x9McvqPs=;
-	h=Content-Type:Message-ID:Date:MIME-Version:Subject:To:References:
-	 Cc:From:In-Reply-To; b=cPFsvpfllVx3raGn34jicBi7xvztfSz0G9UPimq5E60KAuFmucwphkB3oBbMp4qI2hDQTDEyPIeHReutYg9FgiSR67egjs+ktFhDl7C9kQpdQNezk97SlHMKEx+S4zQ6ENvwBpe/y608kKS/SKrcr6bgf2Ch5a4Xsuqk1HfGGyI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com; spf=pass smtp.mailfrom=yahoo.com; dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b=nUMZ+h5g; arc=none smtp.client-ip=77.238.179.82
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yahoo.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9180478F51
+	for <xenomai@lists.linux.dev>; Tue, 25 Nov 2025 16:51:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.83.27
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1764089480; cv=fail; b=fEILDAM/nYCvapuoY7aHcQECs+5jfCI8tIwnYkp1BzObWv5ziCWkQvKRTkB9w6SHpS05O8Dxaii9QBjZ5yAOARg4DEx82cAogONJeWP+7snhxgh6AfNgPRyV5Avym5beaaetWuzmCSu0fKuvE1gSd8FAj1YKbISHjIbAUE/piO8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1764089480; c=relaxed/simple;
+	bh=JBYBX0391Pke6nz9gnrKNL+1i40Y8i6SydDsyZ93XUY=;
+	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=cKaSyf/2PPfDVIeA56qKn/GGWfbIFaN9TmVUCXwKWGGF2G3xLW7exTCbbf2jx/lJJEC0Cvw+ECDWdPl5PxaNqn/TQ8VyfAuAlA7odOKaKNHvmRL24PK9ajrwtuU+2sXYJHematD9K89QL8u3rXIWTQuNlc/IuasOmx3f05vqWqU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=aK8LZ1O4; arc=fail smtp.client-ip=52.101.83.27
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b="nUMZ+h5g"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1764084622; bh=xvEGsl5rKXpCAWq+/WuZqJL8sfy54G8kFUnNvLQ7XAU=; h=Date:Subject:To:References:Cc:From:In-Reply-To:From:Subject:Reply-To; b=nUMZ+h5gBteZi5yp7YJScdMtxKBgC4VDlcJEqxKBjRzrQ2zFHcUHLGqc39QRBF43NwNao1Os56jarV9u91+xv/r1T5ZxLe0h9QlV0jH6cH0i045Ygo8L+V8jfCxX71bqvvUKY+qPyi215ByRgMYXHjZzc+bYHJJwD80mnceXxu3hWuMHU6ik6fA0g9b/g6rhmy3AhIxN+BQS0D6H1fkC4PGZM4b42uQMLsjJGnOdqwHU9G4VLiMte/Ozd6709edxmGEENNrGi3oGsXYoaOQg/b4ZDl7TyEBtHPmErHAiDpGPBiXdBsKCrcxMOibEkMOb2CUCzHJYBvW7kP5zvHZVSg==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1764084622; bh=RY0X7Jk7ypvg0m27vF8ERIubOWnYmkcyxR0S/MKif+l=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=lj0ZidIoe6NZUCYbKsAJz0IHgB+PnanNWdX4lvfnVsIftvR5YCBGWWOJE8DGP7BAiMqyzttHck3pZa20toDZFg8dX+j32CaidYTetoQI6dp28rv1V+mCI9JVC2wQvgmFajG9wltC67ajYfQfvQ5/ELftkGXKeYl+aOsngWnMq8/jrJie+ij9VuGy4hzbnP0aOeVOTPJDa89GP+ZJqt1Q4fHmuiaQzU3fMXTDiKfTFrSn5d34iMNw2GZPnOH1HcdTOOkn+W5A9rBThvGjoqOFB6h381UdrUtk/mSpDXklTPdBDLh8kK/7iqg9V4IOCeWMRzF7DsCw9sj34OfMaZynOg==
-X-YMail-OSG: e6KcUhQVM1mLMfd3SLPTLlCoIk_iLEMu1ycujMwv1jDrELioLTSVlJ_88Cit1xI
- cNA1TMnBlgdreBUlpxVacwt5A2zPL8Z8X1Plsay5EWFv8Fy8sAlisSebTt5hGgFS16A.s2w0p1_8
- P.iswQoFbWfl0YRZSevNPOQNqGI3PJYkTBNKh5_Rg2RKfvhtjmjImsLwbp48K._s4IP5zL7_RAn0
- n.B5l4nA115ECoxyetBi4lDkF1kuooVFpqgd9rm3qasTsQBdWl23DoqBQ3W.sZd9ZCrn2R9PDEfX
- M90VycGphNLBbVoOyzrIgaY08Yr0QhXQd.HfYEXqCEtPaCqhKw3zJZMOoI8EcOvGWMDRxA7JaCog
- dQFxk4SelW17vIzF8qHgMa.A6gujzM.hFXC4dQIOYD0l.NCP7_1D.WtfBGP3glmrpsclFM4g2k4V
- p9paBfny0TpZrFmIqNAbu.adn2UT7i4WVbngiGXwzWJdyPCw_CAh1KB3DwHVw5pCcsXVptcaKzdL
- UBIf.3xM43_JgZXq4lWhqa5dZDjAOwHCZZUzuCL3GjwAThQg4rYz2hgKkGpbjQS2GsPn4wxOeasX
- JepyvuYEwx2ERLrm0mGTqfC_E7pW6dDagrdG6.scUcT5jlwBCQglo7OA7rZwBoqxXJiMVGCcxNtv
- zm1tzqPH_.kajfvakylQBgSstpcNEX.VJ7nRRUqZlgAZc6H..K0EA2MjM7HHRCs3kwpu_FeghlcZ
- vhpnFzbf3wSDUb7KdV_Ifzbl1V9jmd.VsH2BN3kodNL6bMIlO6jSDtPAdrSS1ctu6ICXkylDS7El
- realqmPeZKDNDLVRiZbgZMrGNF_Wk_isiKgtgQLcnjKQ7wO2KuEtg_xwFQCXKxHeePaPiyc.I_N9
- qVNEk2kvynXx.ijFavRWthXlomwfqr.bIqd61QHgeUBeAC08XxvGulbs7p_f4T8v0DNw9dcKMu5T
- 4d.SJrc5HMuvMzOPl0L286nvEFuti0O18Qzgw1Ku6xCZnpTd.rnuNfQ3uam5yekl5OU_rueQPXU0
- OEGnWKYEjgva7d.9XvNOjAEBJYW.lHBIrfcBO6_8UqRiM5oZtUVIJL_xB4hWU0zmSRKfx7mDKPHF
- G1uUeJsF9ZR4VhjI5AVABWmBAWUdH.aSLgKR61y7kGbKNlmoQGtVR9qGXUwTbmRcrbbofKft62im
- uqJOYO1d_G3C3Mf196u.Fkys.dMdVRu6i7v8uEUSIRn7_mLC4GFctvoAkI5lwWuZPbLvNH0HtTA5
- AFgjQ795zR0f8rIZmiy.B9xcK9PRyzmUeqwFD4bQ3tl2BkT5P3aXnnmHYdmcjriV2u__X9f7Z96C
- Ez629BOyHZyMp5q1pzxQ3WIEgk_HJI1yAeRCTt6dTEd62RDL9GKM_YnlIt4JIAPNIMc335lW_QYz
- olAStk.ZTgXUFXuJGlwZHCro8Xg3s3TFD4iAWD25iGArr92Xy2XZm6nuH5q.VwGRe0qNMA91AeB9
- PLW9iffpzQr6YR.2VC7m0jc8c4myIJhC_aj.R2W31CyHu9PR18yjvH9GGfFd9DukjWS4shDNwuvl
- duEn2ENuGc808yr_59zHkmhwPexfdZ0T4mHMzs1QxdFW8ofHr_YcNi7c9DBq7J3HWc4GcBhIo7Lw
- ZBFoBUigAarn1iPmh0KOhFAH6cgpAIYdHvBaLfPvRYwP1avQ8bEiVyOUYWhJODv6EL6e9pVMSjC5
- 72WSc2noEsc7n4xbpVQI6vxhmkOx_ej.Wqn3Y0w2DecgQYBYm6H5FmTXekRgVL2LLEuTYWowj5WW
- J_mh.IncwL1Ocv3BxvM39mwuxv60npPauOar0XvISiS_e_geNPDM0iMOUpWJ4m8FxSjHNB1lxrpp
- Xsi68gQ6LrQU_565EKSmpd81ylRygIimjVhq.NrQ1pK.EK4OGCg4CXgOmDGx2e2PFvRj.4.X7yS0
- 8H58UEGM7TV93TiTQae9DRHBXdQ_tgsqwt03ttzNDbEARu3i4.ZQwO2GfDdQqo1taowCJQOJcbv4
- x4J3sbCWSNxtq0QD8O_A8e0YW_4tMmczHw8EYmlbhmJrinYIeOxLL4JNlopSwG0qhr40qNC0B5te
- p3W3yIOM5WZgCBY1GnRWXwLnxRyq65d5D61Nm.beS_pP69WDyNfrJabTzu7t.UpSp4og0PZxziJO
- w4hzn6OV8RNG2oLh31GsWe9qFfsQml_ecoD8M8K3FGbGI1FTXuSuTypTkEESrUV19p6NntIAX.is
- jmgRdPEzZKCF8sHX.eYEMHmMtqeo8zbHo
-X-Sonic-MF: <mau.salvi@yahoo.com>
-X-Sonic-ID: c0cd101f-93cd-49e5-88ba-8fa7afef0981
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic309.consmr.mail.ir2.yahoo.com with HTTP; Tue, 25 Nov 2025 15:30:22 +0000
-Received: by hermes--production-ir2-76fb978d99-fx5fk (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 2251d36d8ef3016a69de15cdfb9f570b;
-          Tue, 25 Nov 2025 15:10:03 +0000 (UTC)
-Content-Type: multipart/mixed; boundary="------------OYu97WgZ90VE6Ozm5zoLi07U"
-Message-ID: <172ca47c-acb1-45cc-8e2c-3282c17354f5@yahoo.com>
-Date: Tue, 25 Nov 2025 16:10:07 +0100
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="aK8LZ1O4"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=yPaYmrIaopup4JGmoIF36bZekTMi5IvoURQq3O9+zNJgsfuI3/dPJ9A9uA+6rue73M4BhoTEReARbxcW8WzlwQYuH0w5CVC0Ojvo7u8KCHsTDa0pdZxq1RomZl3ETZrldK8aXdqjmpdRXP2LWG412HQLYm0EaMAyKhXVAPnv/2Yvdo8yQ5D2Cl4Ghk1LukYoLtJEcEQb8yDYNwQgvV8WIDXHL6WMRReC0wSisylZZeUuPng1Z73L4IznI7Ukg+m3ZiX5ujM3CNy5pozJl4XSngE33N3JEDL90YDWHwnAJqpZVfLHygszKbH61f3VClhOmW4EGqKVH8h8MkZMDByRvg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NTBmX9qOIUcReO4jIoZUr18xikGSYYJTXY5/0NZSCgk=;
+ b=B0UAZiN9Mb9aCYYFXqQ4ZQT4ZPfs5kF8j+D2N4WAqB5tLMB1bjhN9JQ2ZBwDE7P8Sg/5YdpgeYzPdCO1cJ3sVjf6lxxd3QwWDR4N3Bou3aAdbL3e2VGU3Gl6sKsPEVkP+5JQTVSJk5xeDYXlhH67T3P3/OFBKF3fmvHlp9QKWAXD9aYK4yC//NbMypoHUv90IYruoXiDmw+3P9goYviu05+DwySCe/pZ9iYHtU7Z4gnHgFH4KVvu7ERGvSsJ/3aCbNX7npSRLdnh72MRPeflRT7FJLff67JJOOcJLJYf7QTh3Mi572s8MoZ0z1q5F+PFjCng0wwPrwh6t184w0g12w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NTBmX9qOIUcReO4jIoZUr18xikGSYYJTXY5/0NZSCgk=;
+ b=aK8LZ1O4W7L+4LkdjI7QtVv2Mz5hUovQKQ7QQaOrWSgnewK9fjm/oObklEnV+F8ui25WSUIQF8kzwiFgs/XhgVm5fsmV4XVXuhZCPNBgRhXLZBLzftrF1KMtAlCJbJiJ2+DUTgvnuesO5nY7e6I4V1qgcfOakJWS2hsvUCovLGD5+wKYeS256FQKFc11gePrbLHIMSyRgqF+/n7sPMzSyqCiMf6vsPhFmsXqKoHL07lPZ8eFEBS/VnzBnXI/U0Ef8nzxRQuxBSH+tVPas6aug7tOIHQ2C/+QvSTBbhtItGsMmNxrqNX6af5ZV6lH0o9zvuss3lMx5w834EBhld6kqg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by DU4PR10MB9072.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:55c::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9366.11; Tue, 25 Nov
+ 2025 16:51:14 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::8fe1:7e71:cf4a:7408%6]) with mapi id 15.20.9366.009; Tue, 25 Nov 2025
+ 16:51:14 +0000
+Message-ID: <90450dcc-6293-4835-8f75-788090a867ba@siemens.com>
+Date: Tue, 25 Nov 2025 17:51:12 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: rt_task_resume() resumes a wrong task
+To: Mauro S <mau.salvi@yahoo.com>, xenomai@lists.linux.dev
+References: <144fcdcd-0944-4971-80fb-80ee7e72cb83.ref@yahoo.com>
+ <144fcdcd-0944-4971-80fb-80ee7e72cb83@yahoo.com>
+ <348b1bfc-8f0b-4e97-a100-999928f67ab5@siemens.com>
+ <172ca47c-acb1-45cc-8e2c-3282c17354f5@yahoo.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Content-Language: en-US
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ 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
+In-Reply-To: <172ca47c-acb1-45cc-8e2c-3282c17354f5@yahoo.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR3P281CA0046.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:4a::12) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: rt_task_resume() resumes a wrong task
-To: xenomai@lists.linux.dev
-References: <144fcdcd-0944-4971-80fb-80ee7e72cb83.ref@yahoo.com>
- <144fcdcd-0944-4971-80fb-80ee7e72cb83@yahoo.com>
- <348b1bfc-8f0b-4e97-a100-999928f67ab5@siemens.com>
-Content-Language: en-US
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
-From: Mauro S <mau.salvi@yahoo.com>
-In-Reply-To: <348b1bfc-8f0b-4e97-a100-999928f67ab5@siemens.com>
-X-Mailer: WebService/1.1.24794 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DU4PR10MB9072:EE_
+X-MS-Office365-Filtering-Correlation-Id: 05fa488b-c468-49bc-a68e-08de2c42d84a
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?TEhrSGFFTnFraXJBTmNXb01PbzBVOUkxZW5ITlM3Rm9GRjFQZ2dnRFhIem9z?=
+ =?utf-8?B?cG1makhsVTJPYlZSV2tId0ZSTHFKZWo4ZTljaXhQZE1JU3J0RkpjKzN5K2pI?=
+ =?utf-8?B?US94YXJRNVdadTByVENhbytMWUFPemhLVnYvbmNEYUdyd0N5c1d0Mko1dEZL?=
+ =?utf-8?B?M2N2bkNKOW1GOGZzQ0EyVDI0NmYwSUROcWZCa1Q5U1dqdjgwMUh3eUp5OEoy?=
+ =?utf-8?B?RGFmWWl6eXJWemp6bXljWklGQ2IzMFU2TWVGQmVJcTJTWjEwV1Q5VEpNbHZB?=
+ =?utf-8?B?ZEhnNDBnMEs3QmFJanhoRTZYOGFBTjQvSERaRGVESnlsSmk3U2FPb0loZWRG?=
+ =?utf-8?B?OUU2b0M2a0piMG9pdytxbXhnMjhZTWhNdDVGdFAvOVNkejNjem1iejl0V251?=
+ =?utf-8?B?RTFYaURETTRiZ29lbVVaTDFNWkhmSlR4MXJxU1ZpalpCaGJVV1Nhc01LT253?=
+ =?utf-8?B?YmdtV0tIeEdodTJ5OVM3M1VxMGtBWnF2YmdnY2tHV1U4cVRGZlVhSmttYjd6?=
+ =?utf-8?B?Z01iajFCTStuZTJmemJTWmk4MVBISWQwYjVhSTR1b093SXBGUWRONUtyaTFa?=
+ =?utf-8?B?bGxXUXlkQWM1eGM1NFUzTzUyb2pjUHhHekxhZTNIU1VyK1hTK2x5UFM0dXh3?=
+ =?utf-8?B?SGZUL2RUVzhudmRFR2o5dHIwNjdUT2pHQnU5NThidUhqeC8rbHNJVURENUlU?=
+ =?utf-8?B?MkJQaEZJSytuOE5MQjdiZm5tcVdzUzVXWDZ0MmRoVFJtaDlpK1VPNk1XSnlp?=
+ =?utf-8?B?Q0JUY2ZYcXFNV2FOVDZkNFdld1VCbFptaHNBQ2syTlh5b1pkanZJOTFFakNw?=
+ =?utf-8?B?amtPMHdCL09mbkpoUlY0WTBldzZiVWNuT3NUQjV5MFNydzNERHNPZ2NlbHFH?=
+ =?utf-8?B?VkdhVmVMRENGNGM2WFg4RjZXanZ0eEd0Ry9jYVdxYm9uRFBpTHF4am9BRU9C?=
+ =?utf-8?B?cC82UTlxZGNRbGVacmhxVkY1Qy82TnRYbmVGU2JVbnVrWkZITDFlNzAzU3l3?=
+ =?utf-8?B?emtZNEJNK0U4VGJnZnA2NW9yYkV4UjdzTXphM3lMQk1CbzBpaXdaV2Fpb2xI?=
+ =?utf-8?B?c2h3YUlaTGZQU1A1OGlCT2hEa0pNTGpHWWJtUnh2ZVV4SVFhUFJhZ1JteEJo?=
+ =?utf-8?B?cHZWbGdYU0FVbzhlY1M2TjlrOUphL0k2RVhmNkVQTk1EWFRzTkpkTVRhdUxh?=
+ =?utf-8?B?UHRWZ0hsdWpMcVZoQ3FwQUFWSXdDa1NzUEMzSXRoTzZ4dFd0Q3JtWDd6R0No?=
+ =?utf-8?B?bjQ2dmZZcW94WTVJUGsweGMxKytwdnFFV3FXMC85cW84c0tSUlluYWNvZlBG?=
+ =?utf-8?B?SElHNjlaQzFxZlBkSG5sTFlDRmRvMEFxMWx3aDNHRFVZNlJqNXlPMEdLTVNi?=
+ =?utf-8?B?dmFReWZ2MEZnWmJtanBYL1Q0NkdZRStxaCtLWGw0aHJTSHF6WjVDbG1sVTZ1?=
+ =?utf-8?B?QjVpZmpYem01M0NEZEN6NUFFeTVrb1NSVnQwSGFBNU5rWnJrQzNpSW1VVWpl?=
+ =?utf-8?B?SlJBeHQ4TEtoRXZma2tiTmFMVjdWWWxBc0JLeHB5cmh0Z2FKVi85MEVMc0RZ?=
+ =?utf-8?B?M1V1aXIydG5GQXlhQzM2N2tMcjRtOUtXVE9rN1VjMVFaZnVCdVlwbGpJZTc4?=
+ =?utf-8?B?d1FrRTFiSWNPS2gwaFpCMUlVYU03MzJhYmZtWC9hQXV5S3NZSGphL2c0T2Fn?=
+ =?utf-8?B?S2wrdlVZSkl2OFZldXdIZWxKaE5OenpOd2kzM3FsMGNkY0J4NDFFSU9WSlZW?=
+ =?utf-8?B?a0hYc0ZrN09RY1dCNTBzSzFHMHNQcXdlNTBzYk1BU3B4blo0M1F3dHpTbEpx?=
+ =?utf-8?B?OVdSZjNHZ3puTzJmV1RRTmZKMWhGb1kvV1JBNVpMdVh2TW12RGlTY1VXc2tm?=
+ =?utf-8?B?VHZ6aWhtLzMrTGFMZmJHcS84RS9JZGx6V2ZEUzFnWVloRllsUEJKWnVueXl5?=
+ =?utf-8?Q?Bz+rm4/XX4QsjWeVqB82q9XtGqCdmdF1?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?RUlUOTBobW4xMWYxeWlFcFpVb3J0aUdid3FtWmdGbVU3RzNKYXBlNkZNemZQ?=
+ =?utf-8?B?NUFHcFMwNzQ3OEppeEdjbERkNU5ZTHdiRlR1Z2ovbHdPVXdqZVozL1R3ekll?=
+ =?utf-8?B?MXMvSCtCczZYOFFJR0t5UnRWdFl0b2hpTyt4RDRGQjQ3N1JxbUQybm5qVjdl?=
+ =?utf-8?B?OTBjd2VwNkVlWDhBY09oQnZlUFUremNyRXhLMjNKTGhuLzZSWStlb0tYV3Jx?=
+ =?utf-8?B?dk54azVSRmNGMGR0b2kyRS9PWEgwZFk3aFZGRm1Ka3ZoOE9GLzg5Y2JjVHNF?=
+ =?utf-8?B?NVNnd3d0U0lsZWNxdlpXdVpMZ1VtWW8wMFljRUZsWVJZQnFhenQ0dEk5bW4r?=
+ =?utf-8?B?OGEzOFFnVWVNNXZwbTFaOTFVeUpYV1I1T0xUbVdML1FqTEhWYkp3YXphRDlZ?=
+ =?utf-8?B?RkFQOHhVWENtbkM2SDY4Vmk2Q0R0VFEyTGQvVFd6c0g3OXo4citTYnlwY1ZQ?=
+ =?utf-8?B?aVVHSUFEVndhc1JrdmlsbmF3eTZTelpNbVRCSlBkY0gzOWxzcmtEcUdBQWp2?=
+ =?utf-8?B?d0NweS9ycW1KemMyRGp4YU9iZTcrS3hnZjFmc1RYc2laZDVIMWR3VWx1N1ZB?=
+ =?utf-8?B?bmZRcVgvNGVsb090cVM0TFpaYklHcE9UR2YvUCtFVmdRTDl0djBIa3gwY2Jm?=
+ =?utf-8?B?OE4yMXVJbUtCYmlFOUh5VGF3bk9QQS9JM3RJZHdoemFOSUhBMjJ5bkZjZkRD?=
+ =?utf-8?B?WEhOZnZhdUQzVVM4QU1OcGoxQmJFaDNyNmFneS9ZYUFaSUpCbU8wRFlucjNB?=
+ =?utf-8?B?QUZQM29LdXV4bW1LVzVBQlZHL21CUXE1RWdmbGtQZ0wwaFR1dFZ3SkRWUUVi?=
+ =?utf-8?B?WWtZUUY3MW83UXlvMDZGK1d4SVVsTVRJa3hmTWlsT2JHOE9DL1pmZUp2U2d3?=
+ =?utf-8?B?MWVqYlNxK2hnb2lxOVdKOHB0YWQ2WlZvcitEc0VPbmxQajZmZUJYTlpCRDRK?=
+ =?utf-8?B?OWdJdGRQeVFhOW9NSWZoZHpaRUIxS3djNDhPZ1dFS2ZTNksrKzlwc2ZHNzZW?=
+ =?utf-8?B?cnNRNGhvaVE1R0UzRWVSbEtWNFJLeUpHMjZjZjY5ZXNRYktkamdlbnZNVFNl?=
+ =?utf-8?B?Ti8xVm9OTjVFUmVzUThLS2MxbFhKaXo1aEdwWkUveVZOWEpPY2xvaFY2MWJ1?=
+ =?utf-8?B?V1IxR1RjRldrYWp4eE5Dc25OK1lxaXlNYTJOYWMvaktTQXArOWZXQzdZa1lB?=
+ =?utf-8?B?SnA1Y2c2eDRlU0FBU012V3hlTzhDM1dIZHFSUXlOU09BYXg4V25KcWpIYlJ4?=
+ =?utf-8?B?Q3R3ZkxOZENzbEk2dTd2Wko4UGY2aUxocUN1bjhMNlBIUEtUMlcyR3hQL2ti?=
+ =?utf-8?B?U25kdncxYVdsa3hISHFNTGQ1aTFmcGNDbFAxenZQWXNaamFKalhSc3BsZVBP?=
+ =?utf-8?B?dGltd3oxNStyd1Njc3ZBbXV0Tko0L3cyaDRBUk8yaThTQVczdENWUDFhaTd6?=
+ =?utf-8?B?Ykg3NFRjNmhZYjlpMUhjbGppNjBRVUdDbnRSQ2hXSE5YSXYxQ0c3ZUJUeHQv?=
+ =?utf-8?B?NUNQWDNuUlpEbFJCM2l1MVlaU2x4elkzQ0tiZ0NYREVEL1JMeVRJK2VKZ1ov?=
+ =?utf-8?B?ZWVkQkg5V3p0dHk5VS9qSHFORXpqTWxiL1dJSU5xeURlRWN0UTFobUdURzRF?=
+ =?utf-8?B?QTVsWFpOclhmemNsRU9lQVIrQWhBcTZMbUdYWWNicDZyV1BlWVVkY2tLenZh?=
+ =?utf-8?B?VGJ6blhlUThNcC9vVHp5RHVZVDlzS1RZblV4VElGRHBmTzlSQU5pdmZlVG1H?=
+ =?utf-8?B?ZzI3RHhCWmlrK3poNVFpSHIvb2wvZVVKYnBUVTVsRGNzelB5ajhRZ1NYSjI1?=
+ =?utf-8?B?QXMxTnBPTkZTemdhamNCU0lPUUgyVmlwb2pZcXp4UU1LZXNncDNpMUdzelVz?=
+ =?utf-8?B?ZU14QWJjM3ZVL25wMmJHcEh2SlowRmdlRDBBSytmeXdwcWowd0doN3dsT1l3?=
+ =?utf-8?B?Y3NKZkdselRWNitmb0Q5UnlvZFJiZXFQUDRmZG50NVNIVlZWdHFnd2E2THMz?=
+ =?utf-8?B?MGZqTEhkd1NMTCtURUVLTDkzSFVDbjB1RVliZmdUZTQ0djUzZFd1YjFDaW9F?=
+ =?utf-8?B?dE5rNmRPeUYwTnRkc2xaWE5LdHRyMUx2N2JhQi8yRm1CUG1LbFFLOHViZk9z?=
+ =?utf-8?B?dndpS05lemhOU1pDbmV3czNMWTBaRllUd29ITmNUS3hmREJncHNnZTBIc1ZX?=
+ =?utf-8?B?c0E9PQ==?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 05fa488b-c468-49bc-a68e-08de2c42d84a
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Nov 2025 16:51:14.3367
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6GSp0wPJR0uIUia5zzF0SsI9gJi7bie0Fiv4YWW2rbzXn1vYhNPx98v/Z6V0Icw/MnFztYAonlwh+JYtORDBbA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU4PR10MB9072
 
-This is a multi-part message in MIME format.
---------------OYu97WgZ90VE6Ozm5zoLi07U
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-
-
-
-On 11/25/25 15:33, Jan Kiszka wrote:
-> On 25.11.25 13:23, Mauro S wrote:
->> Hi all,
+On 25.11.25 16:10, Mauro S wrote:
+> 
+> 
+> On 11/25/25 15:33, Jan Kiszka wrote:
+>> On 25.11.25 13:23, Mauro S wrote:
+>>> Hi all,
+>>>
+>>> Not sure if I found an obscure corner case or I'm doing something nasty.
+>>>
+>>> I'm using Xenomai 3.2.8 on an Intel Atom system with Linux 5.4.299.
+>>> Target image and toolchain generated by Yocto.
+>>>
+>>> Please find attached test case code.
+>>> Program is very simple: the main task starts a bunch of joinable tasks
+>>> that immediately suspend theirselves. After starting tasks, the main
+>>> task resumes all tasks. They do a small sleep and then terminates.
+>>> Terminated tasks are joined by another task, that was launched at the
+>>> beginning of the program execution.
+>>> Subsequently, main task continues to recreate, restart and resume joined
+>>> tasks, on and on, until a CTRL+C is issued.
+>>>
+>>> What I observe is that, when calling rt_task_resume(), the wrong task is
+>>> resumed.
+>>> Please see the attached log. In this log I'm printing the .handle
+>>> and .thread data in RT_TASK function as hexadecimal.
+>>> At row 19 you can see that Task1 (that has .handle value fc1c9, the same
+>>> of the terminated but not yet joined task 0) has been resumed when the
+>>> rt_task_resume() was called on Task0. Task0 has been terminated its
+>>> execution, but has NOT been joined yet: if I'm not wrong its resources
+>>> should not be usable until join is done (at least this is what I
+>>> understand by documentation). I expect that calling rt_task_resume() on
+>>> a terminated-but-not-yet-joined joinable task should return an error,
+>>> not resume another task. Am I wrong?
+>>>
+>>> I know that is some of a stressful test: in fact if I call the
+>>> rt_task_resume() only if task is not terminated (checking also the
+>>> executed flag adding "&& TaskList[i].executed == 0" into the if) the
+>>> problem obviously does not happen, but as I said I expect an error
+>>> instead of a wrong resume.
+>>>
+>>> Launching the attached code, you should be able to reproduce the problem
+>>> on your side. When the test detects a wrong resume, program terminates
+>>> automatically.
+>>>
 >>
->> Not sure if I found an obscure corner case or I'm doing something nasty.
+>> Can you rule out data races on the shared TaskList structure? Seems both
+>> your sub-tasks and the main one are accessing it, and that possibly
+>> concurrently and/or unordered. Or does this also trigger in a uni-core
+>> setup?
 >>
->> I'm using Xenomai 3.2.8 on an Intel Atom system with Linux 5.4.299.
->> Target image and toolchain generated by Yocto.
->>
->> Please find attached test case code.
->> Program is very simple: the main task starts a bunch of joinable tasks
->> that immediately suspend theirselves. After starting tasks, the main
->> task resumes all tasks. They do a small sleep and then terminates.
->> Terminated tasks are joined by another task, that was launched at the
->> beginning of the program execution.
->> Subsequently, main task continues to recreate, restart and resume joined
->> tasks, on and on, until a CTRL+C is issued.
->>
->> What I observe is that, when calling rt_task_resume(), the wrong task is
->> resumed.
->> Please see the attached log. In this log I'm printing the .handle
->> and .thread data in RT_TASK function as hexadecimal.
->> At row 19 you can see that Task1 (that has .handle value fc1c9, the same
->> of the terminated but not yet joined task 0) has been resumed when the
->> rt_task_resume() was called on Task0. Task0 has been terminated its
->> execution, but has NOT been joined yet: if I'm not wrong its resources
->> should not be usable until join is done (at least this is what I
->> understand by documentation). I expect that calling rt_task_resume() on
->> a terminated-but-not-yet-joined joinable task should return an error,
->> not resume another task. Am I wrong?
->>
->> I know that is some of a stressful test: in fact if I call the
->> rt_task_resume() only if task is not terminated (checking also the
->> executed flag adding "&& TaskList[i].executed == 0" into the if) the
->> problem obviously does not happen, but as I said I expect an error
->> instead of a wrong resume.
->>
->> Launching the attached code, you should be able to reproduce the problem
->> on your side. When the test detects a wrong resume, program terminates
->> automatically.
+>> Jan
 >>
 > 
-> Can you rule out data races on the shared TaskList structure? Seems both
-> your sub-tasks and the main one are accessing it, and that possibly
-> concurrently and/or unordered. Or does this also trigger in a uni-core
-> setup?
+> Hi Jan,
 > 
-> Jan
+> attached the modified code: each access to a TaskList element is now
+> protected with a semaphore (one semaphore each element).
+> Strange behavior happens anyway.
 > 
 
-Hi Jan,
+...would have been too easy. Ok, will try the other day if I can
+reproduce and maybe even understand.
 
-attached the modified code: each access to a TaskList element is now 
-protected with a semaphore (one semaphore each element).
-Strange behavior happens anyway.
+If you would like to understand a bit more already, you could catch an
+event trace (trace-cmd record -e "cobalt*" -e "sched*" -e "signal*") and
+study the task interaction (trace-cmd report / kernelshark).
 
-Thanks, regards
+Jan
 
 -- 
-Mauro S.
-
---------------OYu97WgZ90VE6Ozm5zoLi07U
-Content-Type: application/gzip; name="xeno-test-resume.tar.gz"
-Content-Disposition: attachment; filename="xeno-test-resume.tar.gz"
-Content-Transfer-Encoding: base64
-
-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
-
---------------OYu97WgZ90VE6Ozm5zoLi07U--
+Siemens AG, Foundational Technologies
+Linux Expert Center
