@@ -1,43 +1,44 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AFFA2D780C
-	for <xenomai@lists.linux.dev>; Mon, 15 Dec 2025 10:16:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADDC1329384
+	for <xenomai@lists.linux.dev>; Mon, 15 Dec 2025 10:24:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765793798; cv=none; b=Nym0ofleJ5WIuuGN290zCv7Shx/4BVT41uT3d3GKj8HfkECdRXJHgouqvvQfNP6skM+7d/xwXWd498Bf7WxLgW4qb3GPGfnmMALeGJeMPSkFNjkkqnNInahey2JVjn8vTdd5wEPpY3y8g9A5FIV8jlVIfgAE7oTRUlYv5+HUQLw=
+	t=1765794304; cv=none; b=Z2lC4Pm6rzJnlW1Y415uOqFeflW6UBh0di0loQGzEQrhLUQ6bbaYgKjM8dvMn6GWRt8eLvkHHWPmSBeekq+Q+gZxJZ0hLlrMk0BmIXk6I1YiKTStvxRveu2NojJIEBHZtiAwPOMhqzHfbA8K0dWrR7SQQn+kfiEBtZXnJ3mpUz8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765793798; c=relaxed/simple;
-	bh=ZN4in7EcxvvPwbo4VxOkz79if5/24QTwA2MEXiQAKio=;
+	s=arc-20240116; t=1765794304; c=relaxed/simple;
+	bh=Y34ZjUvBAYoxmUq8O7hSmpSLQmCtwNgF7YvuaP3PsGc=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=OK8h1TdVojTyiPAy2nXuWhtQ8arrPvYLm9invW2/OtrfDQkwub498kKa/UH4D475Lf8xMGh0MB8fvPl1xPCVBQ8Lvs+bdCrPYAJQuVyMgbUcCnM3TgcHxbW4RQ1pUYQRclcnfca+PM5zjJFKE7QQtfbgTyaN3DLq1fu5XOup4PY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=c/GMgkAW; arc=none smtp.client-ip=185.136.65.225
+	 Content-Type:MIME-Version; b=fBd0/8C3nVv5q2nCpezrudILoraceqzdazfdRVFrmJ6mH8D7DZaGfxT75EVC2lCPRkvxivdZm5Ogj7w6FfLqeprL/9t0Cx2mi92SMtBRkAuja6Ia6KgtsUloSn1UkEmxOeMEOsp845k5fU65W/Xp02t1bx6fLE4iB3wRxHW9IKg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=QVTF0pJ3; arc=none smtp.client-ip=185.136.64.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="c/GMgkAW"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20251215101623ac204773cb000207bd
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="QVTF0pJ3"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20251215102450b74ccaaf74000207fe
         for <xenomai@lists.linux.dev>;
-        Mon, 15 Dec 2025 11:16:24 +0100
+        Mon, 15 Dec 2025 11:24:50 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=ZN4in7EcxvvPwbo4VxOkz79if5/24QTwA2MEXiQAKio=;
- b=c/GMgkAWc6/S3yKi11iBAvmdGVL40FHjhl2RYixe+jv438eVsSlze2OBnJR1NK3oGZ+lGt
- gr1yxLuS8Ckw02ZI5ESiJ8cQT/B5nIArhT5j5BViD2SkFTDr2a+qfewkqD9iAlOfmwngyNfR
- xA+pbWrciGCoDhLDWmfCbcg4BeeNs9YgWfKpO5jcJBF41aY5h4COjLyfylo/tJ+4YtfYpdqa
- QUJNPRLyikuIpxgVlMx2rzx2fqve739i9Ac2oSbLx1AQEEgOk3aIJCaXNcVd5xearOxQyVqA
- 1qu7PMz4EFrTpBbZgqh4vHJFKaLfS4dzDZ/AFOFmubIMeDxD68rF8NWg==;
-Message-ID: <061af3d688e85a88f29eac6d586796119d9d8984.camel@siemens.com>
-Subject: Re: [PATCH 0/6] Some fixes for the select syscall
+ bh=CAzyoHyibYj+CfK/Je9QR0beMmVqvewurZVTR952D4Q=;
+ b=QVTF0pJ35od76vi4FdQgqiPpBx5nQk/I0THopEKM0I7glVi1kWJiZBlcFAo1PeFfy9xSpq
+ +ZsMb63uQYABf+zPB8/GHtS/Z1G8LUGfEy9zvvHj2m/M4hINbcpLPErM5sf21pxKIMozers+
+ NQwJamAkfxk9RfkWGFO4jo19nEeOi6X+9WbVaiyUrsE+cd6ctcNClT9hffAazATXHOxyn14I
+ x0BpgvZP3wr/E7i3iI8nOHm2NOXZyUJ7F1HWYlUizOWLTS+i/x1Jdxtnkp3qMtnGzNyd5bbs
+ rEWfOBm/EBwaE1I+zm0UZo7mSVhuKLYr7pay1bhoY8uwPUk5nmS4Zb5Q==;
+Message-ID: <de9afb9abf9358ef89f961f95c4bd6e8c19695d7.camel@siemens.com>
+Subject: Re: [PATCH 2/6] y2038: lib/cobalt: select: Fix timeout writeback of
+ the compat time64_t case
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
 Cc: Andreas Ziegler <ziegler.andreas@siemens.com>
-Date: Mon, 15 Dec 2025 11:16:23 +0100
-In-Reply-To: <a4b1a462-c36f-40f9-ba20-9010d8c972cc@siemens.com>
+Date: Mon, 15 Dec 2025 11:24:49 +0100
+In-Reply-To: <771a9041-5c1b-4ede-b44e-37a0712ad5a5@siemens.com>
 References: <20251204-flo-fix-select-syscall-v1-0-7f9c545a63ce@siemens.com>
-	 <7bf94e8c64a09fc98850d7bc923e2ce47e713f9e.camel@siemens.com>
-	 <a4b1a462-c36f-40f9-ba20-9010d8c972cc@siemens.com>
+	 <20251204-flo-fix-select-syscall-v1-2-7f9c545a63ce@siemens.com>
+	 <771a9041-5c1b-4ede-b44e-37a0712ad5a5@siemens.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -49,49 +50,49 @@ MIME-Version: 1.0
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On Mon, 2025-12-15 at 07:58 +0100, Jan Kiszka wrote:
-> On 05.12.25 11:53, Florian Bezdeka wrote:
-> > On Fri, 2025-12-05 at 10:03 +0100, Florian Bezdeka wrote:
-> > > Hi all,
-> > >=20
-> > > this is the result of a short debug session triggered by Andreas who =
-was
-> > > staring at some strange select() behavior.
-> > >=20
-> > > The issues were introduced while working at the y2038 support, so
-> > > backports should go into the stable 3.2 and 3.3 series as well.
+On Mon, 2025-12-15 at 08:02 +0100, Jan Kiszka wrote:
+> On 05.12.25 10:03, Florian Bezdeka wrote:
+> > The kernel might modify the timeout parameter. As we have to convert
+> > from struct timeval (user) to struct timespec (kernel, pselect) the
+> > updated value was hidden from the user.
 > >=20
-> > Still true for 3.3, for 3.2 some more details:
+> > Fixes: c2b883446b80 ("y2038: lib/cobalt: Implement necessary wrappers f=
+or y2038 support")
+> > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> > ---
+> >  lib/cobalt/select.c | 5 +++++
+> >  1 file changed, 5 insertions(+)
 > >=20
-> >=20
-> > After looking at the problematic user again, we realized that there is =
-a
-> > different behavior regarding select() between Xenomai 3.2 and 3.3.
-> >=20
-> > 3.3 comes with the following commit (see Fixes: of patches) which
-> > aligned the cobalt select() implementation with Linux, by doing the
-> > additional normalization.
-> >=20
-> > faef02b5e76f ("y2038: cobalt/posix/select: Refactor __cobalt_select()")
-> >=20
-> > That was done to make sure select() behaves identical under Xenomai and
-> > Linux.
-> >=20
-> > To harmonize 3.2 and 3.3 in this regard we need to backport the
-> > mentioned commit upfront. It doesn't apply 1:1 but seems doable. Not
-> > sure if all kernels still supported by 3.2 would build, though. Needs
-> > checking. In case some users somehow relied on failing select() calls
-> > they might be surprised by a stable update.
+> > diff --git a/lib/cobalt/select.c b/lib/cobalt/select.c
+> > index 611994d17..4a44b4fc1 100644
+> > --- a/lib/cobalt/select.c
+> > +++ b/lib/cobalt/select.c
+> > @@ -57,6 +57,11 @@ static inline int do_select(int __nfds, fd_set *__re=
+strict __readfds,
+> > =20
+> >  	pthread_setcanceltype(oldtype, NULL);
+> > =20
+> > +	if (__timeout) {
+> > +		__timeout->tv_sec =3D to.tv_sec;
+> > +		__timeout->tv_usec =3D to.tv_nsec / 1000;
+> > +	}
+> > +
 >=20
-> I'm not sure yet why we should backport to 3.2. The normalization
-> (instead of rejection) for tv_usec >=3D USEC_PER_SEC was added to 3.3.
-> Patch 2 references a commit that is 3.3-only as well. I do not see a
-> reason to bother stable/v3.2.x with this series.
+> I think we can skip the above if the branch below is taken - small
+> optimization for the forwarded case.
 
-I'm fine with skipping the back-porting, as long as it is clear that we
-will (still) have different behavior between 3.2 and 3.3. The result
-would be
+Not sure. What should the fallback to std(select) actually see? The
+original user provided timeout? As we have that fallback twice (this is
+the one for the compat but y2038 support enabled case) we should do it
+the same way.
 
-3.2 -> rejection
-3.3 -> accept, aligned with Linux
+I'm not expecting cobalt to update / write the timeout while returning
+an error for the same call, so both ways should be OK but maybe
+confusing when comparing the two do_select() implementations.
 
+>=20
+> >  	if (err =3D=3D -EADV || err =3D=3D -EPERM || err =3D=3D -ENOSYS)
+> >  		err =3D __STD(__select64(__nfds, __readfds, __writefds,
+> >  				       __exceptfds, __timeout));
+> >=20
+>=20
