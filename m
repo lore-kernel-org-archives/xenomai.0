@@ -1,37 +1,37 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 005DA2248A4
-	for <xenomai@lists.linux.dev>; Thu, 18 Dec 2025 20:02:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CE2F2309B9
+	for <xenomai@lists.linux.dev>; Thu, 18 Dec 2025 20:02:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766088138; cv=none; b=Bo+JqKQk8ouXfq6acvIxBBcu8yx7slMU/PRErtGnYgybaCdPXZGgfaF9eNy94W8Gz548MwUjvA7EGwW83zIt/wJhvrIJPYOpzmJ5N0/1JJqmjgZmIHeJcu4JqK26FMN6kBbT5oUtZRAiNnORQs2V5LEZ+mGE/EyxZdy8EGd5/x4=
+	t=1766088139; cv=none; b=BqBvQp3QToE3mPqj9Zh7gesAbVN4s5ehXSl+6JYIhI9YiNdQ/6sKww6fKFyYtzgGSf/djFJ2mFNrUiCdxgXL2m5TDmBjhX6ckc+sIiTqmY1TBSNrCo6Pj+UYhkEt+uedCxfT7KQq1+y397dHmlgTadGp0Wz3gHrE93K7tA1jlew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766088138; c=relaxed/simple;
-	bh=e/6fJD0QaDHpAOvJ0UCXwe1HAEtxAV2zNDcWlQvSx/8=;
+	s=arc-20240116; t=1766088139; c=relaxed/simple;
+	bh=I93jw/ri+QxPhlz3WLuWmALL5Bv4qsjpfwRzklDcIjg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=qeL1bRp0iRp16sFQ3Vb9dACKTd6scp42i/Ztc/tJDvvaIkGrRnKb1ElCXon9kfJiiP3c6A5BVqV8eOTg8Gh9l++viX7rrGWfZWgMEwnnDrLapcBn5/bmeOL8myXoD7rloJ+3Dln02btENOtQD0tWzlv8EaURQGYc/qGnowGhprE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=UZl1o5gM; arc=none smtp.client-ip=185.136.65.225
+	 In-Reply-To:To:Cc; b=SZyPB0UsbSsbatKUJVQjdDBS2sdBRBTY2Bs45agfMyOiHjNfc3y7ASxIVarTLTmeDOvF7qYdSrF0/7rYb0kArWDxj7L2CdFMEA0FPlqcYBCE3uYflnnD8BOcbbGWCfc28PKhF0PAGiD8AWNiCe8T1Kx43z0sm8cTvYFbBBmoIH4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=JHg/lvhB; arc=none smtp.client-ip=185.136.64.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="UZl1o5gM"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202512182002112155cdac38000207da
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="JHg/lvhB"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2025121820020794aec820e20002074e
         for <xenomai@lists.linux.dev>;
-        Thu, 18 Dec 2025 21:02:11 +0100
+        Thu, 18 Dec 2025 21:02:07 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=bthg5fSJo9qdE+oEiao9BIngH1CGNEAztxmBafJCmog=;
- b=UZl1o5gMUIAoGgVI8QKL6juH4AKOJ+FjBCI0OztVyMOBbmekzxMVGUgxsImorA7KQXbo6J
- toqWlhtO9TmzUB8wwT4YQxieRbmwKJBO2ioZOyxIFZzceEu7+Uc28yIJvkE4mF/RoEsL0Zx8
- U0y9IIVH3T4ieCPEcFtdqHie8Ttvb43KP4ndwWHpytv+vOgm4K9zxtINDV6SGARLd4sHnr03
- VbRQxRLNOrk8irQGg4j6wxUtJnhh0cRNBz352rNjY8la3ta7ZqSPUOFPLNEz5HAKvncMQj/n
- aZwmGeWj8D/Z9sQI4RSOocbSA2sTcmYY4z8aKtdYZuhWhxbrUe9TosRQ==;
+ bh=RQDyUl3zwxN9JSGg/yI9wGGAV6rrkGhfBjL0TC2Tokk=;
+ b=JHg/lvhBJ44AAHSnUvux7sTmsT1OT8DPN02VwS2OiO5SA/UmOq7EwbjACq70izPn85KXf3
+ XzE+Rsi06lJQAEYiN4Tl/YnYZInvsnqWgZw+I3DyUg86zLKBhTMgW87W1oG52LqJk/PNekyX
+ DmJfGbO6nikDKR+q4o2qahwSPFqz33o1YMx5COIZXc19+xpfmrPUhBWhIUJ8Q8iHuZW9fkHZ
+ Q3o2lxPS8CGtaBtIS72N0tehS1b8fTTkA4G/Yv3ltEvBRNL5MKfNa++UwpjsiKo1LRzyj3+L
+ +rnal5fiUPn3t9d+i9lDHf42x6C9gNX8wPP959Ospl/Vo3QoVM5GGD2A==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Thu, 18 Dec 2025 21:02:06 +0100
-Subject: [PATCH v2 6/6] testsuite/smokey/posix-select: Extend the testsuite
- by invalid timeouts
+Date: Thu, 18 Dec 2025 21:02:02 +0100
+Subject: [PATCH v2 2/6] y2038: lib/cobalt: select: Fix timeout writeback of
+ the compat time64_t case
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20251204-flo-fix-select-syscall-v2-6-f606e54e8d57@siemens.com>
+Message-Id: <20251204-flo-fix-select-syscall-v2-2-f606e54e8d57@siemens.com>
 References: <20251204-flo-fix-select-syscall-v2-0-f606e54e8d57@siemens.com>
 In-Reply-To: <20251204-flo-fix-select-syscall-v2-0-f606e54e8d57@siemens.com>
 To: xenomai@lists.linux.dev
@@ -50,84 +50,35 @@ Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-One corner case was missing a normalization about the timeout value
-supplied to select(). Extending the testsuite to make sure we cover
-that case as well.
+The kernel might modify the timeout parameter. As we have to convert
+from struct timeval (user) to struct timespec (kernel, pselect) the
+updated value was hidden from the user.
 
+Fixes: c2b883446b80 ("y2038: lib/cobalt: Implement necessary wrappers for y2038 support")
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- testsuite/smokey/posix-select/posix-select.c | 52 ++++++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+ lib/cobalt/select.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/testsuite/smokey/posix-select/posix-select.c b/testsuite/smokey/posix-select/posix-select.c
-index 154b3d730..620b677da 100644
---- a/testsuite/smokey/posix-select/posix-select.c
-+++ b/testsuite/smokey/posix-select/posix-select.c
-@@ -143,6 +143,54 @@ out:
- 	return ret;
- }
+diff --git a/lib/cobalt/select.c b/lib/cobalt/select.c
+index 611994d17..5472e991e 100644
+--- a/lib/cobalt/select.c
++++ b/lib/cobalt/select.c
+@@ -57,9 +57,13 @@ static inline int do_select(int __nfds, fd_set *__restrict __readfds,
  
-+static int test_select_timeout(void)
-+{
-+	unsigned long diff_in_nsec;
-+	struct timespec ts1, ts2;
-+	struct timeval tv;
-+	int ret;
-+
-+	/* Invalid timeval, usec too big, normalization to 1 sec, 1 usec */
-+	tv.tv_sec = 0;
-+	tv.tv_usec = 1000 * 1000 + 1;
-+
-+	ret = smokey_check_errno(clock_gettime(CLOCK_MONOTONIC, &ts1));
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * y2038 speciality ahead:
-+	 * select() services provided by Linux and Cobalt both normalize the
-+	 * timeout value before using it. pselect() services do not do that.
-+	 *
-+	 * As the select() service of libcobalt is routed to the pselect() of
-+	 * Cobalt we have to do the normalization in userspace. The test below
-+	 * is exactly stressing that case.
-+	 */
-+	ret = select(0, NULL, NULL, NULL, &tv);
-+	if (!smokey_assert(ret == 0))
-+		return ret;
-+
-+	ret = smokey_check_errno(clock_gettime(CLOCK_MONOTONIC, &ts2));
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * Check that the writeback happened as expected. This makes also sure
-+	 * that the normalization took place.
-+	 */
-+	smokey_assert(tv.tv_sec == 1);
-+	smokey_assert(tv.tv_usec == 1);
-+
-+	diff_in_nsec = (ts2.tv_sec * 1000 * 1000 * 1000) + ts2.tv_nsec;
-+	diff_in_nsec -= (ts1.tv_sec * 1000 * 1000 * 1000) + ts1.tv_nsec;
-+
-+	/* Check that at least 1sec has passed */
-+	smokey_assert(diff_in_nsec > 1 * 1000 * 1000 * 1000); // 1sec
-+
-+	return 0;
-+}
-+
- static int run_posix_select(struct smokey_test *t, int argc, char *const argv[])
- {
- 	int ret;
-@@ -151,5 +199,9 @@ static int run_posix_select(struct smokey_test *t, int argc, char *const argv[])
- 	if (ret)
- 		return ret;
+ 	pthread_setcanceltype(oldtype, NULL);
  
-+	ret = test_select_timeout();
-+	if (ret)
-+		return ret;
-+
- 	return ret;
- }
+-	if (err == -EADV || err == -EPERM || err == -ENOSYS)
++	if (err == -EADV || err == -EPERM || err == -ENOSYS) {
+ 		err = __STD(__select64(__nfds, __readfds, __writefds,
+ 				       __exceptfds, __timeout));
++	} else if (__timeout) {
++		__timeout->tv_sec = to.tv_sec;
++		__timeout->tv_usec = to.tv_nsec / 1000;
++	}
+ 
+ 	if (err >= 0)
+ 		return err;
 
 -- 
 2.39.5
