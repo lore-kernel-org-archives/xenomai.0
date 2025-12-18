@@ -1,36 +1,37 @@
 Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0065022D7A1
-	for <xenomai@lists.linux.dev>; Thu, 18 Dec 2025 20:02:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 868452566E9
+	for <xenomai@lists.linux.dev>; Thu, 18 Dec 2025 20:02:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766088139; cv=none; b=rbWC/oozCTYV4BW6zsY81Y6psbBSsMv4hN9EO0Cfv59M9jrhOlS0r5qW8hNcGsbsQmjF5Ornnl9lVh1/5WnQdtUq6g3tiAPNnizqAONEKjRB1PD12roZ32LJBvq4F1PqhzZ/oGSkS+t163qNNjKMF3i9r1fkp+tgr/xA57iT4Ds=
+	t=1766088139; cv=none; b=Jt+wiXnuLNE40TXrNi/74T9Xs+Yvh+jdsGPVTeUrygu+7Uhcsndpu3b0qsVl3NTXYwt/CMUNzYG1F8TZYEacUsk/3jJ0mQQQMNKepjOxBpBBwdyCpVNB07CDE2ChdKfNvCxIBqt3s55CdVLjF7HSkUoL+vOx1fS7b2SpGEd92h4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1766088139; c=relaxed/simple;
-	bh=hHOsga8ZJ+4D7fb6RJJAct/5fC+vyMvo+NLOZqMiSsc=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=sNMwVH/b3qmnZ4v1VrzrgSmExQtnaQxV3pT57hmOnPJaZRrfi9DfnA30zQh8VjOcyaV4hvYWG7lwD4bvQgwbqjnxGy0zECOHoFay/jVNqcRY9x+WjeR7c97yInK6YlsSOht1fASO/d9Tz5lPjFcuGhEZRQrIbhjDeSL4AopAybo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=al4Kc2dw; arc=none smtp.client-ip=185.136.65.225
+	bh=/s28Lkw86la8bjqeCsSZv806CQ8ZK7SpYVX2M8OAJFc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=oTlF7I7GuySdaPzE/8jcl510WC3V/32HTYwsiat9mVxJoyvM4nnqxidurzoAJISNG9jFtCTyZSIaZRKghegGBqKGCf7YcZwN38pc+ORrZzLTpeWMtBekM4y9T6uc9YYjemg2ggs003d9p5Nl0qD0J15wIVGVAfvdTIvsdV4SzLQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=H7SVdc8i; arc=none smtp.client-ip=185.136.65.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="al4Kc2dw"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 2025121820020524b98377b300020747
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="H7SVdc8i"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202512182002074f20b7008d00020757
         for <xenomai@lists.linux.dev>;
-        Thu, 18 Dec 2025 21:02:05 +0100
+        Thu, 18 Dec 2025 21:02:07 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=jNSbnBT8lcopRwC5r7ZAEYNprqQDhcQedtTJoffWZLE=;
- b=al4Kc2dwhJKkwOet8Qr7Rr+WdbviJs2+uVaBc25vc1tcVU88GM/rHr5MwYaCSjiMWLNzvt
- DgLHkieFO6fAgwg8eiwpAhTS64yeiBVCUk/yJ5ajkIpzlaScYfvj7mb//WuEChZk64qrztJX
- IYZTPuKoK4zKNkqy23CRJa5z9BNUpuRlFGiaCm3sm/1uDSkVVCiPEI2I2sviQ7IbzTs+gf9T
- pppj9oeV543Lz2rwRYqDlJmqj6PSFbxETytBOd3WUiLoBvzknCe+2zHcmnqsHtzBvhKD6JU1
- kHv2yulwTvDef3ckVGN9CMxL7h+f118GhitaEFMtKjlDVnCvcfPhQayw==;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=CbxdMftL7NQfiK6vzeLpntYOgfu2znyl1ZZBVfIY5Oo=;
+ b=H7SVdc8iw0FvZ1hZQP7EQ5QzBRAkdGON4Ruf+PEDwBUOXhGBViFmc7sjNR1hdKA5g7NQKl
+ AF8hSN71tYrTTYSk88PPrzCfZpRTgjapjlo34rtBnwnTNJmgn6iDbjBVQkgkvmVz1NlwPVmz
+ L9zExbtPd6XZ8mYmJH05AQYKb1t+bm99XkMUWqmGKV4gKT8wjuFIF/Hw1tkLiGe137LwgCfC
+ UovJ1Jbrf1fje15ac5uhUJtZNDpOzc+QxQvhM2tc8GrplEWILpWa1u2AfdFXHBOCtuKjK+Mi
+ PI0R07ogRZGWteWWQgniPDN2e406iXDXjEk9GB10s7ESlqDVmISUYhGA==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v2 0/6] Some fixes for the select syscall
-Date: Thu, 18 Dec 2025 21:02:00 +0100
-Message-Id: <20251204-flo-fix-select-syscall-v2-0-f606e54e8d57@siemens.com>
+Date: Thu, 18 Dec 2025 21:02:03 +0100
+Subject: [PATCH v2 3/6] cobalt/posix/select: Optimize
+ cobalt_timeval_to_timespec64()
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -39,10 +40,9 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIALhdRGkC/4WNQQ6CMBAAv0J6dk1bKYon/2E4lHUrTUprukgkh
- L9b+YDHmWQyq2DKnlhcq1Vkmj37FAvoQyVwsPFJ4B+FhZbaKC1rcCGB8x9gCoQT8MJoQ4DeoVG
- XtpFOoShxb5mgzzbiUPL4DqHIV6aS7rd7V3jwPKW87PNZ/ezfz6xAwtm1aGpjmxPSjT2NFPmIa
- RTdtm1faiWzodMAAAA=
+Message-Id: <20251204-flo-fix-select-syscall-v2-3-f606e54e8d57@siemens.com>
+References: <20251204-flo-fix-select-syscall-v2-0-f606e54e8d57@siemens.com>
+In-Reply-To: <20251204-flo-fix-select-syscall-v2-0-f606e54e8d57@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, 
  Andreas Ziegler <ziegler.andreas@siemens.com>, 
@@ -50,50 +50,69 @@ Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi all,
-
-This is the result of a short debug session triggered by Andreas, who
-was staring at some strange select() behavior.
-
-The issues were introduced while working at the y2038 support, so it's
-kind of 3.3 only, but: We have a difference regarding the timeout
-handling in Xenomai 3.2 and 3.3 now. In case someone is running a
-testsuite against both versions the result might be different.
-
-The testsuite has been extended so that we cover the missing case now as
-well. CI test runs were based on dovetail 6.17, covering all supported
-architectures, compat userland included.
-
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Andreas Ziegler <ziegler.andreas@siemens.com>
+The signature of the cobalt_timeval_to_timespec64() helper
+has been updated. That saves us one additional struct timespec64 on the
+stack.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
-Changes in v2:
-- Patch 2: Optimize timeout writeback code
-- Patch 6: Address review comments from Jan, improved the test
-- Link to v1: https://lore.kernel.org/r/20251204-flo-fix-select-syscall-v1-0-7f9c545a63ce@siemens.com
+ kernel/cobalt/include/asm-generic/xenomai/syscall.h | 13 +++++--------
+ kernel/cobalt/posix/io.c                            |  2 +-
+ kernel/cobalt/posix/syscall32.c                     |  2 +-
+ 3 files changed, 7 insertions(+), 10 deletions(-)
 
----
-Florian Bezdeka (6):
-      y2038: lib/cobalt: select: Normalize timeout value in the y2038 case
-      y2038: lib/cobalt: select: Fix timeout writeback of the compat time64_t case
-      cobalt/posix/select: Optimize cobalt_timeval_to_timespec64()
-      cobalt/posix/select: Optimize cobalt_timespec64_to_timeval()
-      testsuite/smokey/posix-select: Move message queue test into own function
-      testsuite/smokey/posix-select: Extend the testsuite by invalid timeouts
+diff --git a/kernel/cobalt/include/asm-generic/xenomai/syscall.h b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+index facc60bcc..557ba17ba 100644
+--- a/kernel/cobalt/include/asm-generic/xenomai/syscall.h
++++ b/kernel/cobalt/include/asm-generic/xenomai/syscall.h
+@@ -139,15 +139,12 @@ static inline int cobalt_put_itimerspec32(struct old_itimerspec32 __user *dst,
+ 	return cobalt_copy_to_user(dst, &u_its, sizeof(*dst));
+ }
+ 
+-static inline struct timespec64
+-cobalt_timeval_to_timespec64(const struct __kernel_old_timeval *src)
++static inline void
++cobalt_timeval_to_timespec64(struct timespec64 *ts,
++			     const struct __kernel_old_timeval *src)
+ {
+-	struct timespec64 ts;
+-
+-	ts.tv_sec = src->tv_sec + (src->tv_usec / USEC_PER_SEC);
+-	ts.tv_nsec = (src->tv_usec % USEC_PER_SEC) * NSEC_PER_USEC;
+-
+-	return ts;
++	ts->tv_sec = src->tv_sec + (src->tv_usec / USEC_PER_SEC);
++	ts->tv_nsec = (src->tv_usec % USEC_PER_SEC) * NSEC_PER_USEC;
+ }
+ 
+ static inline struct __kernel_old_timeval
+diff --git a/kernel/cobalt/posix/io.c b/kernel/cobalt/posix/io.c
+index 4e20ca19d..5b6799b9e 100644
+--- a/kernel/cobalt/posix/io.c
++++ b/kernel/cobalt/posix/io.c
+@@ -380,7 +380,7 @@ COBALT_SYSCALL(select, primary,
+ 		return -EFAULT;
+ 
+ 	if (u_tv) {
+-		ts64 = cobalt_timeval_to_timespec64(&tv);
++		cobalt_timeval_to_timespec64(&ts64, &tv);
+ 		to = &ts64;
+ 	}
+ 
+diff --git a/kernel/cobalt/posix/syscall32.c b/kernel/cobalt/posix/syscall32.c
+index 484f05984..7f05d2070 100644
+--- a/kernel/cobalt/posix/syscall32.c
++++ b/kernel/cobalt/posix/syscall32.c
+@@ -519,7 +519,7 @@ COBALT_SYSCALL32emu(select, primary,
+ 		return -EFAULT;
+ 
+ 	if (u_tv) {
+-		ts64 = cobalt_timeval_to_timespec64(&tv);
++		cobalt_timeval_to_timespec64(&ts64, &tv);
+ 		to = &ts64;
+ 	}
+ 
 
- .../cobalt/include/asm-generic/xenomai/syscall.h   | 25 +++------
- kernel/cobalt/posix/io.c                           |  4 +-
- kernel/cobalt/posix/syscall32.c                    |  4 +-
- lib/cobalt/select.c                                | 16 +++++-
- testsuite/smokey/posix-select/posix-select.c       | 65 +++++++++++++++++++++-
- 5 files changed, 90 insertions(+), 24 deletions(-)
----
-base-commit: d557f120bf73a0e467196c99e9de210244b29774
-change-id: 20251204-flo-fix-select-syscall-bfc518960f1c
-
-Best regards,
 -- 
-Florian Bezdeka <florian.bezdeka@siemens.com>
+2.39.5
 
