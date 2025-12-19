@@ -1,38 +1,38 @@
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB0C386341
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB179218ACC
 	for <xenomai@lists.linux.dev>; Fri, 19 Dec 2025 16:51:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766163122; cv=none; b=ImOsWgCbLuzU6DKpT2wmxkoHDjQXfEWGMqd5m/92ioyI+47ttPdBfLuuJINyzUC3QIdDePN3YF/w8JyvFMKLVgJ3yuh8c0X2xLiSeBnROt0BZ/4put2g/lNDx6LJPrOb0IOe4fWjJRbLLG61k3rtsogVI/LJlh5omDv41T+UrBo=
+	t=1766163123; cv=none; b=jXOhK8mbziWY/HPxgZ7tpkuobDZbySBIOSlLA+/X+DSBY4ESV64BPwz+GuMqz1gXxdWNVy19V41qLlju+4zGc3Uak640WOLl8Ywrw0NiCmOazvIoBRJ+l5RmucJMUH/hVPai7lUPteqlrRMUw1EDBX2NDweIZzdZxDMu8cUXAew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766163122; c=relaxed/simple;
-	bh=QzhCV5E7HkLW/PnHkqvTColDZM9+rjw+nkiP2U+IZmY=;
+	s=arc-20240116; t=1766163123; c=relaxed/simple;
+	bh=5Cn90f+nFiB5lmahDuQrUMyfVoA3c5B4UyPBhX6AbpA=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=VYoBUp+fo9zFONr9276GujxLRZlKsYx4IAuFix7LeN+kstiSRhiNHMQl41wFCuW1FIUNfQeKMJESbtpc5258voC9y7RdWCsKAQwj0E6pCXYrRDpb8dNFUqa3awf8mbbxn4ZDOkUwvh+ewVLpETXBuieDyO9VFcb6dC66Jg5HadA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=ksekZeoA; arc=none smtp.client-ip=185.136.64.225
+	 MIME-Version; b=VBPN2mNyGHIchGjuqml0w9b9W00vLXWDpruaW9+g5HBJgLildhJ9U1UJrrlS64jsFIjXx9lHwnFof5xGkGZGtBPQE/zjXN6nQhTD3ujmefMKEUO/bjLL03ZePDIbqxBWeuhQvSqrEoj0jZXFHUnCJQf6SYZa2SCmkVWkex/jKD8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=VpQE1Caz; arc=none smtp.client-ip=185.136.65.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="ksekZeoA"
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2025121916515574b9e4a8e800020720
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="VpQE1Caz"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202512191651557a83ae38eb00020734
         for <xenomai@lists.linux.dev>;
         Fri, 19 Dec 2025 17:51:55 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=Qoh0yXGrHIgLB2psgedhBLbPE1qtZcuXiUUNXTrL6BU=;
- b=ksekZeoAxCJmWMg0zTd2wf0YUf9WNoCOXFR6nQlkKQFe+JCBkHI7jwlqB2B3GgiVOoDlpE
- CrfKztU345SZuGLvBkQKc+nOS5JEcDm7Mr3eVXSOND6mVHc5td26QN2rQVmY1OJRDB0DnBkd
- lMOX9CS+QeotnKDRXkkiisX4fe/pmovKTD/jtElXa6iWf8fIPBCLkJ3Rqp0Kl9HwMeqA3hDD
- EVtrGKrkUCHNZjRWbOd174WmWNm2bNOUKka7nIB2J/uoST2MY8WJysmYH28W/X82Nbi166d9
- 7Q3fv8PbTkOgLmqhRouCqEJDpn7M+wwe9DRbpg70BHykgyRqOw5T+lpQ==;
+ bh=xRXA379iRq4Vzqvqi28opa0abIpNiMM6IqTfZxg0+bQ=;
+ b=VpQE1CazDfSO8IBT4W2sWui6ElnVEEHsnw4yR3Q/Jyu5MIk5GaC1ZmDVV4BZwTzifk/8Nr
+ xGYcUdyedE+Kw2qyrWHhhcXo7cNgL0oRgUekzoaEEOV7caIZ3kQ5NV3jEFBkgPmCLpP8ClYE
+ b47dJnHe+qQkEmHAtrh5etECx3a/ZWPcnRIBfjL5AWNdXcMHzzqTnkMdaEG+gLKxJM44dOPX
+ DjqK7KU76AXfBIqB+D+O4Wi0LSAH754TrXvDMb/fv0Xi7RcM46mv35AAZ0l1xwo4XI2V19Ng
+ zNA0oL/jbZh2rlgCrg4EAL41jVe/9yn4PqmWtzk91hx1zqw69pyJWo2A==;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: xenomai@lists.linux.dev
-Subject: [xenomai-images][PATCH 3/5] Account for reduced kernel support for Xenomai 3 head
-Date: Fri, 19 Dec 2025 17:51:52 +0100
-Message-ID: <611eb9a31c3ecad2945599b12bc6750b3de54cb4.1766163114.git.jan.kiszka@siemens.com>
+Subject: [xenomai-images][PATCH 2/5] ci: Lift x86 compat tests to 6.1 kernel
+Date: Fri, 19 Dec 2025 17:51:51 +0100
+Message-ID: <4730a9b747ae02fbf5d7920ee63f99f31cd92c7d.1766163114.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1766163114.git.jan.kiszka@siemens.com>
 References: <cover.1766163114.git.jan.kiszka@siemens.com>
 Precedence: bulk
@@ -47,55 +47,47 @@ Feedback-ID: 519:519-294854:519-21489:flowmailer
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Next major Xenomai 3 release will require kernel 6.1 or newer.
+Kernel 5.15 moves out of scope for Xenomai 3 head, so we need to move
+forward to the overlap between stable/3.2.x and head.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- Kconfig               | 8 ++++----
- ci/xenomai_3_next.yml | 2 --
- 2 files changed, 4 insertions(+), 6 deletions(-)
+ ci/compat_jobs.yml | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/Kconfig b/Kconfig
-index 56b1ebe..178db97 100644
---- a/Kconfig
-+++ b/Kconfig
-@@ -139,19 +139,19 @@ config KERNEL_6_1
+diff --git a/ci/compat_jobs.yml b/ci/compat_jobs.yml
+index ccbb15b..1fad3b3 100644
+--- a/ci/compat_jobs.yml
++++ b/ci/compat_jobs.yml
+@@ -9,22 +9,22 @@
+ # SPDX-License-Identifier: MIT
+ #
  
- config KERNEL_5_15_HEAD
- 	bool "Head of 5.15 Dovetail branch"
--	depends on XENOMAI_HEAD || XENOMAI_3_3_HEAD || XENOMAI_3_3 || XENOMAI_3_2_HEAD || XENOMAI_3_2
-+	depends on XENOMAI_3_3_HEAD || XENOMAI_3_3 || XENOMAI_3_2_HEAD || XENOMAI_3_2
+-build-5.15-compat:x86-64-efi:
++build-6.1-compat:x86-64-efi:
+   extends:
+     - .build:x86-64-efi
+     - .compat-vars
+   variables:
+-    LINUX_BUILD_OPTION: ":kas/opt/linux-5.15-head.yaml"
+-    KERNEL_VERSION: "5.15"
++    LINUX_BUILD_OPTION: ":kas/opt/linux-6.1-head.yaml"
++    KERNEL_VERSION: "6.1"
+     CACHE_KERNEL: dovetail
  
- config KERNEL_5_15
- 	bool "Latest 5.15 Dovetail release"
--	depends on XENOMAI_HEAD || XENOMAI_3_3_HEAD || XENOMAI_3_3 || XENOMAI_3_2_HEAD || XENOMAI_3_2
-+	depends on XENOMAI_3_3_HEAD || XENOMAI_3_3 || XENOMAI_3_2_HEAD || XENOMAI_3_2
+-lava-test-5.15-compat:x86-64-efi:
+-  needs: [ "build-5.15-compat:x86-64-efi" ]
++lava-test-6.1-compat:x86-64-efi:
++  needs: [ "build-6.1-compat:x86-64-efi" ]
+   extends:
+     - .lava-test:x86-64-efi
+     - .compat-vars
+   variables:
+-    KERNEL_VERSION: "5.15"
++    KERNEL_VERSION: "6.1"
  
- config KERNEL_5_10_HEAD
- 	bool "Head of 5.10 Dovetail branch"
--	depends on XENOMAI_HEAD || XENOMAI_3_3_HEAD || XENOMAI_3_3 || XENOMAI_3_2_HEAD || XENOMAI_3_2
-+	depends on XENOMAI_3_3_HEAD || XENOMAI_3_3 || XENOMAI_3_2_HEAD || XENOMAI_3_2
- 
- config KERNEL_5_10
- 	bool "Latest 5.10 Dovetail release"
--	depends on XENOMAI_HEAD || XENOMAI_3_3_HEAD || XENOMAI_3_3 || XENOMAI_3_2_HEAD || XENOMAI_3_2
-+	depends on XENOMAI_3_3_HEAD || XENOMAI_3_3 || XENOMAI_3_2_HEAD || XENOMAI_3_2
- 
- config KERNEL_4_19_HEAD
- 	bool "Head of 4.19-cip I-pipe branch"
-diff --git a/ci/xenomai_3_next.yml b/ci/xenomai_3_next.yml
-index 15095dd..6559357 100644
---- a/ci/xenomai_3_next.yml
-+++ b/ci/xenomai_3_next.yml
-@@ -11,8 +11,6 @@
- 
- include:
-   - local: '/ci/gitlab-ci-base.yml'
--  - local: '/ci/kernel_5_10.yml'
--  - local: '/ci/kernel_5_15.yml'
-   - local: '/ci/kernel_6_1.yml'
-   - local: '/ci/kernel_6_12.yml'
-   - local: '/ci/xenomai_3_next_compat.yml'
+ build-6.12-compat:rpi4:
+   extends:
 -- 
 2.51.0
 
