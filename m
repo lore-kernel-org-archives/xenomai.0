@@ -1,597 +1,341 @@
-Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11013060.outbound.protection.outlook.com [52.101.83.60])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from sonic301-21.consmr.mail.ir2.yahoo.com (sonic301-21.consmr.mail.ir2.yahoo.com [77.238.176.98])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA65D316917
-	for <xenomai@lists.linux.dev>; Fri, 19 Dec 2025 11:31:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.83.60
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766143884; cv=fail; b=APgezfk9baJJO5wXruVek8HCskTwpPPACBYTz5y3GQTAu7XtBASBVvSetk2djvV1yxgSKrtF9rh7NzteV2YrSol9eYsyBeGIH+bR1apPqNXxuKM9+w7o4BsK9CYzxOg5Z4L67s8JD7DzefC6k7JW+24vflOpQV1QdN02YJEt6zM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766143884; c=relaxed/simple;
-	bh=yo6FXMDzkA0ZB5WttpoM3TmLmk5dlMjtJuH4Gg0CSrQ=;
-	h=Message-ID:Date:From:To:Subject:Cc:Content-Type:MIME-Version; b=qwLZm9FlQESuFxGrCtZLs+jjIybTfa2FL1uPUy4bKhjq12v4GSECHtidT72tt3TGJpiJ0pJpHUytLkqIGPSZPU+76fm9sBSZR815R0cifCQd3ianDUXpp5PhF7QA99rpbVYrgH9T2fhcu6YfrmqWop16G26vzFN5F8HiIMAqKew=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=E0+TjMA7; arc=fail smtp.client-ip=52.101.83.60
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9E8832A3CF
+	for <xenomai@lists.linux.dev>; Fri, 19 Dec 2025 14:12:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=77.238.176.98
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1766153536; cv=none; b=j6BLvcPmCj3oYYlYJl716Y1EXnVZcwdW/LMT+/68arwY/0O7SwEauLx+tR3jDe/iA8gPX8jh9mdNfdBppi961WZG7+ojZFAkenX2LGy40fZZPG2RtFchDmhJUazyxWZ5C7Ouoo0jyfT8oodQyGoT+RjTz3/lLUyNHjNc400YvgA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1766153536; c=relaxed/simple;
+	bh=PBQbf95JMac6/+OrRbUuanU83GBETrUgH/+qooV8k4Y=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=XvoLpQGKWgS6OHdzCpnN9WN2zBYRcbWaEnUkX4iRdMkXV05zk4M46rKcbZsqxtgSeJZ9WjPIqrfRoTiQ9B9w+3KsPy/aK8UKd23AhKlpZT9jmNaniyJdrO/q9JxUkyTIhCq7ynfL4qp20mXDrFM+iO/170rkPvUEIYvHB9dagMI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com; spf=pass smtp.mailfrom=yahoo.com; dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b=NHB5auY4; arc=none smtp.client-ip=77.238.176.98
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yahoo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="E0+TjMA7"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=aRq6qZBthCkQ2MKbcg4ZBgaX2MqR56gYXeI925mUOSHmoK8BmDKENdZwKTGVY4xAvMA4Ru0n0bcEPGkE2wH+TE2MzGufxj4QC/Ajtmrvh7+2LwN2gI8qJSu4Lhr2eilG6FO8zALH9VE5qGvvUNK6dupv1JZLZbIXqwNyURWUSs/AS9auOEGv0j3sshbYH+HmarJdK5MaXRpgyJbGlAz5lsRbdL+7AIydLUvIwRbnBxe2TTvMfrWLKDPn4gFQzwy513ic+gAZOVKsHAXeceOi4wnKCA0Yzc12j+CemVhZt46zAmWOZEyw8QOxEd5ergdTwYxy/ofF0MIf2HV7PG+pJA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HN8SUzlyx+JK6t1y5raWI+RslF31gFpfxg53B71NgNg=;
- b=UG5P35JFrQtq3TpfSppnA8yDJDvGKLkNemcn/dA0gO1zEzX1X7Oh35e99uwsTZ7JOedZ33WC1/FeaEjVKMoD7dzxLr3K1+daOla5t21lgrhtkJCmO17kv/5VYmy18zJSNGb5DNhj8DYq5TuyYzugHRg7Gu4PXP4mBVKBos0E1dx3CqjLNaSwStjGdgJkyUrCnG4i14NJUfilfF2EcTz/hcD636tTwb6zowyrW8QEwG39WFoJA0StMaLFOC+CGw2L/vzEs3lkbvMGQnxuzeq6jLmpR8KykBwYlhQJ0oIx804nmlRlualAR9XZE0RTK5n5/7rTjAWxIhLXnCAmcrlRXg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HN8SUzlyx+JK6t1y5raWI+RslF31gFpfxg53B71NgNg=;
- b=E0+TjMA73pd1EJD6xc6Nz3GKIZh6egdz6nVkI4sTbCzWX45fI7Wa5f658UCxNQj15fr2rZx+q60+h2yvi04ws/eeRfmdc6/SvKc1T2mcVXVr2ZReyNCmTGp18HrTCU0BvbxDzNsvujfRbLMKrx+rE/GkLpovDprDepLrn38LxdsE6VmweDCDByG/CQzXxd3ozijTDZwZQZMVhkzSt4jNfTlK0CpREOVdxmwE2Grr17kjaXAYYeTWnhFuaNL7VkSPNYXHuEnblf8t1ZiDKGuVj6a28VVL07JJYxqWULjngEzqr62fpyEDD8NN52LR8FvVNObhIdBz51w08BSf9H0o+w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by GV1PR10MB8901.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:1d5::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9434.9; Fri, 19 Dec
- 2025 11:31:18 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8fe1:7e71:cf4a:7408]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::8fe1:7e71:cf4a:7408%6]) with mapi id 15.20.9434.001; Fri, 19 Dec 2025
- 11:31:18 +0000
-Message-ID: <fcbe8f96-a7ed-4678-ad60-130b535cbe57@siemens.com>
-Date: Fri, 19 Dec 2025 12:31:13 +0100
-User-Agent: Mozilla Thunderbird
-From: Jan Kiszka <jan.kiszka@siemens.com>
-To: Xenomai <xenomai@lists.linux.dev>
-Subject: [PATCH v2] Lift minimal kernel version to 6.1
-Content-Language: en-US
-Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
-Autocrypt: addr=jan.kiszka@siemens.com; keydata=
- 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
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH0PR03CA0187.namprd03.prod.outlook.com
- (2603:10b6:610:e4::12) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+	dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b="NHB5auY4"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1766153527; bh=gfiOQhBgen2TJgaEewbbWQtYg0zCuGTaNdQo6JxyCAA=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=NHB5auY46937cjmCS0RBKnfiGW6VvJMYlXWgHWR3cuE7rCsgZ/PSvoO5JWWzN2zyFlZDFFRZSGdnjIffwpxPEqc3vtbSX9czu8HHuB8GKePCSRPmaqwOzXXpU2xmOAqM4LkPVhm0atgQR4Dl/nhV050czkmItgueBhDR1AVyvfUDPrpdehMg6+Xvuj01rFCzu9uccCihiU6vCNuClTINhdguSgD+uNjLjEbE4os5fssXDAATIAchsjDdna7GIcR8nYoyOWSsFWV8X8hdZtObYeMFcpt4Ly3JXze97M4nZ9n4v7c+BMIOd3JMKk7PlilkfmHWM3d+Xj31WTIgPdL3BA==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1766153527; bh=PT977OKsnhvR/UG+uYQHDpD5DkKG6JhMgm+/TBtf1Kf=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=tocP6oFwfHOOkd9dtu4hARWSfMMpra833/mRzFfjv9SV0MPS9q/46mUwecDxqkJ9vlmaIx91+kXN2ngzEmk2uoA1fQGRtOBhNXu8FHzE93aVKjqIiE2b7Cv67lx6/xWA1KoQYZzKJIUS+q6sgjrECFgM0CTMFN4EL9ogTZj/+eQ909bepLLcH0jIk0Ti4t8hVtsdk4HYGc7VDkO+YKLULEVgW5Dd+vmyrvsDJ1WsQJ9IpmTODw0qrrkz8rxbh0HFfsT3l/C7fZD929cgMlf+ZgeyLHjTep3WuIrEe7fhhxCZszLrToWKwLxO14PC/q0QymayoNUGNY2Vc8HkmTBWmw==
+X-YMail-OSG: ZNKYhOUVM1kqGoMCoZnqGb.9ekncJli5AwUGSoh8AT7liHWOYFoTPJ89d0l8RjK
+ kTWhQFWOjl0rirFOA28v4n9cJviy0KxljutEP5jUEea48GILVcFaYUHd2DETwOzwtwNotN3LpY8R
+ bxfhbS_8iBkQSBfG8p_ErB2nZPuhyfkHWC7V5wEFM3zOznDwS_XNW7Fg5R.EbiuncnKjDFXQeVF0
+ .e5fAawxP6NooBY6o3bfVtHUEbXcBzrP6QUT6UA_3HiRFyi4DTHnlj0iFL5qfojgMOBt5U6jCI1y
+ ERuDFcpYt3hFNN.3na7Ig1vsDnLcBbimWm7a711RFBfAC76gqfjJoQoMI8cBqprTi6en2K5mXOQz
+ ahHNoTElhJN_5z7wgYROfnKs44Dvb0qp6KEE2UCFWcgXi56pRZBziPn_cPuXU7CAm2nGKYyPn7ox
+ MCPao.XZ0juTqCCzH5gzwP26CYys9lmL5PFinqEnq84WuMny5.ZjUCBwPjB7iGkvskIFRD8guWYk
+ 7VR.cu5SAQUZ_p8WPCDL4i_miQo_uwOdrBM7o.iVjNz4zXX.83NnTYZj0Qfd31vnoEg9YbwDNjJh
+ RJS8UdOVyIxIwQuGn66NKo1sB88FRnzB4wj4T6fIgjQbeNQuXL3kWDqr0I9Z41iJXajMOBx0rx9r
+ _jt1S6dA2AsrSATsYFjhmb.7l35dl8wVHCikOCwDQy3AN4y7z2mUluzqVFiAWjk7WqC8EUyRJlkE
+ SamQtuQcEqDqtytOaNUkenbzFJa.fYnBjZnOEX02C3bI54J_ak45XXljbvZh89xRKkaW1MO7wmn2
+ SV1txYG21XWJPe1vAOX0PLJ3HWHKvVRFesSh0trEyu3u42n9z6Wo7xajDanzQR1h6YroYwydRvfC
+ .gV.dFxGMDJLvWDO20QjTAN8hiImedGCd34Zz1_6elWK1Izlq.HtGdSmJ0QFD_10CXbOXau_guF7
+ Ccz.3fhAYbRWRJn6C.wxeiguzMCRZwQPw_gNyAAyBF7RDgr.zQXiQvMpRxIlctVwaHuaeR0cfyMU
+ zysrXrU1mJ919E7sYH2dHsLoDDGgcy5ZwYP8uLN09C5SJUeXGp22cAq_0CMuc3PkOzWm5PmbbPLw
+ koO9FjRm6GbijqpvldsOjVYuQLxe_LeaduIswFem7VRavZqO73io56d54rkrmiuKob8WLOwQcnB3
+ MnFg7IIf4_pf2YTvEUNf9TiAycsYRuWmUsFXKRXMG3ImYEUlOgxubHRVPuzckgo5VTsRccgy1A.5
+ 58V_8_sJxwXFs2a4_Z19hRxSvl.HTL6qROCvlBJkfBoVa9sKv8POxbSFNhqquQUe0Q2.85xVQheL
+ Zomp1W9bej3M1UYII.QvM3aT68haEC0oe7cOxfeoxbdWToB7GAiToJ1JmLc6z00w_gQnbY2MPcIi
+ 26J4q.o7__Qhd9ztsRpLW0hNs4vJxAL2ADWHYbvst.bRHdGY8JvkzhUA1a4q_wOxAlXoYRyGufFx
+ DP1qVzEjLeJIcJ1Li8jMqoZdZhIdGO5mbsUy5ORSUWF_Df1gejjlblyrzZvKvZ1Lp1Z8C9MVD6fy
+ S83FiCWDg64JX3jFN0v_4ixmK.DuMzNgZxxuscqIJzllrEaQ_FkWaS3.ssGDSIMGCcF.gBKxM.Za
+ MTy.C0S5nLaRd6xKdCHdx4HPvkGE0bOoGutxn8AUZ7169Lvpmnl2o3zQu6hkTkbjq9.mbUuEm7Lx
+ TQrUG83RFyT8ud8Y3UTuNDFF9juXUnfIDwRAywkb7mvuSE.5_u1DCz4Y9XMydN0WkGXP4C5.X5DV
+ HYntJaLOwZKxBg8zvTLvCZS99OXICsrWdIEp6a_z7cMJybQ2SDt9ewENpFMez661CgWdreGw7R7U
+ fUwOqODi4w9y.4OfnhS4F36WDB_Kklr.uK_e9Miyxbh3QsWwc.x7fb_rbokS7tmEwqzFmT68GK5M
+ wYiQjbFapllklFT6atfNAw2fMprZ1RRdj4ijGPUGM.MDuF9ex1gYWwcg5Ks1qe5eScq6V_wyVKSt
+ K3umGawOyPO2wqkZAKzUQbL04pUbxM6R4wvgeEzOe2XMXG3t0DB8VWdC.EXPaRmI.3YrzhFM8n_X
+ xtRWjgMNYIOCRzRnyA1TIf3XBx04lAaL8dAdhVpgYyxYgBjtKKA9YZvEzY2pao51JJalFevXGViP
+ yuAkJB74OPWFR_3qKUieYjEljvUTohU1Hm.RyZgmNlPZd1wsMvPdGvmzHvhZXAFtglZCDzqjJpuc
+ 3C3NUYozkqoqlY9RHbizdsCQh65C3DuTodjEhuHGK0jsOxsN.GciMy.VAPmbgvm59fbYiABV6eAp
+ aGcxZgWkOeQRERKk-
+X-Sonic-MF: <mau.salvi@yahoo.com>
+X-Sonic-ID: 582932e2-3b61-4695-846f-32ae49019c31
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic301.consmr.mail.ir2.yahoo.com with HTTP; Fri, 19 Dec 2025 14:12:07 +0000
+Received: by hermes--production-ir2-7679c5bc-h9fxd (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 5b0be7ebf09fd01b5f492b3bdc599bf6;
+          Fri, 19 Dec 2025 14:12:04 +0000 (UTC)
+Message-ID: <f9116b18-0aa2-4b32-bce1-98913cf0c721@yahoo.com>
+Date: Fri, 19 Dec 2025 15:12:03 +0100
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GV1PR10MB8901:EE_
-X-MS-Office365-Filtering-Correlation-Id: 286520a8-e937-4af5-8e06-08de3ef2205c
-X-MS-Exchange-AtpMessageProperties: SA
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?Zld1ZWxNak1JVmtOaXVZZ2dFTjdPVGs2eXZBTlhNcUZxZE1SdmZTQzAwdXlx?=
- =?utf-8?B?Zm9BOFVHKzljQ2xHMmJWdFRjZ3NRZTZuOGlHL0MzWHhYb2YrcjJIM0RGYVNw?=
- =?utf-8?B?YjI3Q3lSVEgxdHFFdkJBNUE3NDZ3c1ZCRGFyV3RUQU11QTZwLzh6V1NRYmJX?=
- =?utf-8?B?NkZ4SERIckJ0b2p5MmNjeFNLUjNHcDV5VjVKQTVwbFc3UnFBSmtwSTFES3la?=
- =?utf-8?B?QUJGS1RYS1hOWDhXeW44T0dGSWFJWTZubDZZazBJYmNmOGQ3c0xpbDIwbjdX?=
- =?utf-8?B?VU0xWDZmQXpxdjdJdlFPZjRwSjV5UTlhZjlsVzM3NStUMjhxa3VIeWtpK0R2?=
- =?utf-8?B?VytNVDJFeHB3ZFE3Rm1uanU5Q0pJNzMrMFA0WlpEeUsvYkFMTlB2aytTUVhr?=
- =?utf-8?B?RmFuRm9MZGxFcXlQRnFtUzA2WWo1MUJIOWFZK05KQ2FLUHEweW83ZVJRaWU3?=
- =?utf-8?B?RDlNYXRkWTNmOG1QL25oSkJ6WWNEb0pQb0VzamZLeURoS2p6NUdueEN1TG1v?=
- =?utf-8?B?cG43RlBSSnFmRFVNRGJqYmFSbjJvUVR5SU1XbXhJK0NHTU9FTE93eWN5YkZG?=
- =?utf-8?B?dWhMQ3JmM2EvYmYvekJCKy9rWDBvc0JGaGI1a0lZMCtrd1NoZExFdkx5NEJk?=
- =?utf-8?B?TVJkNnRLOFp5V1VndXRVbTZnb09JMllRQnpmcnh1M0tLYTA1Y09ZTi80RWFy?=
- =?utf-8?B?MVNiU245dHY1cy9zaGhmM2UzZld6djAyRElsem9UU2FtdmxHUWRvU1MzWFBl?=
- =?utf-8?B?Q0pTYmNiYk1obEVIYUlIVGtlTmV3M2xkNlAwUTNvV2VDeVpXZ1p4cW4xZzRt?=
- =?utf-8?B?aXFPY2ZqQmhzNEtveURNSUwxU3JUN2c4cjh4NkYzUk1Kdm01K0Q2OHNaZzZh?=
- =?utf-8?B?TG1USWNubTJPazRoOCtmOVdnRHdtaHVIT00vQ1FvcEk4dSttWVlPU1dkQmJ6?=
- =?utf-8?B?MmFBVWhLbGRRZzZLWEZGZThSZWREN0VyZVVlU0I5T0lJUVQzZFNTWTlINzlY?=
- =?utf-8?B?WElLaWQ1T21jc0JXV0JtVjUvVVdtN0V0aWJxRVlENXVlOFhaTE5IU1M3WWd6?=
- =?utf-8?B?TDdCbW9ZT0ttRmhIYWtMSWc4ZW1FbE9NMFJLQkgvbXlDbzhkSnJzRVlPQ1ZN?=
- =?utf-8?B?SDZ6VGx4S1ZpY1dJQnBwQmtyUTBZTVVONkZQUmE4d1Y1ZmJyNmpqNmlEOXBx?=
- =?utf-8?B?cWZUSUpIK0lMcXpaYk56eGN3RUxnbndES25XMWZYdlB4R1NkRXIyQVI5UHBJ?=
- =?utf-8?B?aEdKUkRxR1Rlek52aURhVS9pL0hPOTBsaVJua0NGTjRXZXBGSWlTVlkvMjZz?=
- =?utf-8?B?V2d1aDkvc0U0YnVrbGtuRUI4aTNQQ1FwYUZsYUpzYTJpLzZpNVJpbTA2MDBh?=
- =?utf-8?B?NXVsVHAwQ2g5QUtLY2tWT0xIYUdSUndnbzVRaVA5eS9XeTdJcXQxRmZHcUZI?=
- =?utf-8?B?VkJaV1NHVjU5Q2pUTFp6aUpRRENDMGpiMUpXM3phRm5HZjgzNDNXVExuNEVR?=
- =?utf-8?B?eFEwdmp4d0EybmlZbFJud2tYeU1hdGJQVTFTSUJXc0lHWGk1T3NZazArZjln?=
- =?utf-8?B?c1UwV3RDOVJzMWphRk1nZDJRNkNUK2ZWUk5nbFhjWFVpSEdIczlBU1ptWC9M?=
- =?utf-8?B?LzJCcjJncEc0cXhrd3Y0VytaQWR5alhySkt3MTJyRmJwOTBsMkhTeTZ6c3E2?=
- =?utf-8?B?VXBXT290WlNyTGdCcy9ud1pGSlBWL3ZQMGRiUUhtdnF6Q2laeUNYbTRjcExT?=
- =?utf-8?B?YVZDL3dQVDhmcFdBWDlRRk9LRTlkWHdRcS9FTDVTczVBUVJYUUx6TnpaZlk5?=
- =?utf-8?B?dmtnTTVGQzBaUXpqUzlKQ29oUERDbkN2VHhyVVA3eXRmaXpHT1NVZCs5UlR4?=
- =?utf-8?B?Zmt4eXZzMXcrVmVpRnJud2pIMlNFZjkwM200Zmt5ajRxaWxCd1hlbDFyVVhw?=
- =?utf-8?Q?sArxXRp3fvQ5JBgeqAIm1DAzXa42AemG?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?YnRFcUI4cHlKYmlDcDZRK3c0bWRaZmMyN0kxNFlUTFh6SmllYlQrOWdnVFdz?=
- =?utf-8?B?TjFDb1l4MExZODdHWXlvZitlQXZzcklUbUl1S21YVGJ4N2didkY2Y3ZJbkxH?=
- =?utf-8?B?d01MRjhLWWJpb0xtUWdQMW5HdDVHeUpqcjVKVTdRcEIxSmR0dDNKRU95bXZD?=
- =?utf-8?B?TUdJT0wwTWlhelFGYlByRStTNDY4cTJ2Y1prV2psLzc5ZHg1QkZieXlDeFdG?=
- =?utf-8?B?Y1d3OTFFUDJHU3d0eDk1Qkk3SW8xbUlvTWoweDdhS0lUc1pTaDlCckg2em44?=
- =?utf-8?B?ZkFCQUJPdmY0TG0rR0JlUFErcldQZHdEaDc3M0s5TGFiTTNRckJJam0yZ3FZ?=
- =?utf-8?B?K3lHQTI2R3E5YVNnbjhkTjhWb0lpRDluamV1SlM4aytZcW1BM0UyN2M3MURC?=
- =?utf-8?B?Qmx6bC9VYUtMQUpkU3FuYlNodmV2ODExYUlDZFBkTDU1VE16elhLVXIyVVJx?=
- =?utf-8?B?OTdGOFo3bFhaZmhGeHhJNXBEdm1aZHpaeGlXVEdVU1dSWktPejA2YlQ4VGFw?=
- =?utf-8?B?MnFWQ0JPWWpKUFZMMjVqK09EZ25nV0xldGRkbVpoc0NrOFVOdm1wL0NuNk1m?=
- =?utf-8?B?YUVHanVZUm9sVTZSMlBCdXorcGhzMnV1SjBPdmNIUkhia25UY2F6cWhzSU5n?=
- =?utf-8?B?Wm10SE9MTVBjclRRYUxsWXRzMWVFV21EbmFXV3NZZjVtN1BPTFdmcGorQmV3?=
- =?utf-8?B?Q3dKb2xCazVzalRlM3B4clErTVlkVXJRcVgwS1BNVUVmWTdqVDlGUmc4akpt?=
- =?utf-8?B?RzlVNU1NY3M5ZVMzSjBPdDJHWUdRUXVMRGF4em9aMGdXSmlvSXdIdEliSVZq?=
- =?utf-8?B?aGJJWnVkQlM4TUF2OUEvUCt6b2RjcmxtRmRFRUtPcEdGUHExaDRxVzNiQW85?=
- =?utf-8?B?ZWkrRDNieGs1UUh5UUI2VFlQOGZhWGtNaDZienZpOS9INU1LbVJsS1dKckpK?=
- =?utf-8?B?a1VWMW15YlhSK3VPRkJySEhwRFBsTEhMN2FhTXZnRExyZGlLazhhRHE2OExo?=
- =?utf-8?B?MFNoczhMWExpZVJ4WUdNVmwvVHJQQkp3WFZ3OEQ0b2VRUmlFQkw1OVUxTFgy?=
- =?utf-8?B?cUltRUNmczRWVFBRa0JnNUVOdUtmeW5acnJSSGh2cDZVV2pXVnhpaGFJVk1K?=
- =?utf-8?B?c2lMQVRVWEJTNnI5OGxRRCtLTENtYytWMC9rY1EvNkRPYXdzQ01HdHdVT1Z0?=
- =?utf-8?B?OVIyY1lkTXJ1VzYvaTR5MXljcWRqa2pFNTdZYUYxejBJMDhHWC9yOFlOTEVk?=
- =?utf-8?B?K3B5UTMzZ0FzQWU2WFVqVlZVSjliWXJ3MWp2eCtFdTlKMmpPQjg0a0lJM25v?=
- =?utf-8?B?NzRDa0NoQ2kyUVJaTDA5WXU2S2ErTHZ2OEh6NHRNTXV2M0pSbzdoZjZEZUlm?=
- =?utf-8?B?NG5xS3lHWSswTkh3aGViM2NJek1jQkVFbW1vUDJkUnJXYmpLUDltdHg0SHBS?=
- =?utf-8?B?cDVSQXkrSlFJK2RIMTNCaHZ2RjZYWFFuczA0bGM0bFJDM1diN0xuOW9SWUtl?=
- =?utf-8?B?eFJ4SWc3THdGWWkrbjF2Vnkvd3ZWM2s5dTVGNnpLakhobUZxRWVLWEZlZE9X?=
- =?utf-8?B?bTZjZ3NLVCtXaHR0V3dYSlo0akQrZ3hnc0tGN2x1MStBS05TREJsYVJHN3Zi?=
- =?utf-8?B?SGhuVTc2cEVtMjZXMGtpL3UzZnFUTGExVEdzT0lKZnJBS09PcHlzRnQ5MS92?=
- =?utf-8?B?bmNDczdDSm1NVWxES3NFNVpGdlRrbGZVRzZaMGVwVExMQ1ArR01HOG9yaW5W?=
- =?utf-8?B?WHFYZmdOZU9lenBlOS93a2l4M3hURWZYaVdseXBOMEQvdk5ZVmNiSFc5Qzla?=
- =?utf-8?B?ektVQUJDeVZXR2tIV3BkSVJtdGpvalJKWDhaYWhLeGVVRTlyTUpjb3FYQmEr?=
- =?utf-8?B?SnJmVk9MQzA5NkdFeElxTUpjd1lzTmJ2MzhXWUMxUG1QR2hOZnV6MDM0NHBm?=
- =?utf-8?B?N2RIdlNDeGhuN2hNSHh4UzNuVDk2VStCNko2aklyY0VhNVNmRTBOZW95bUhj?=
- =?utf-8?B?UHl3emJOZjV3Vk0yUHA1ZXk4UFprM1pORWxPcUpFdU1ja3dkYlk1aTlycW54?=
- =?utf-8?B?V282SUFEL0lSK1Zaa1kyL3FFOXJqRys4Q0JYS3JLQW9YR1kzQ1hDa2EvYjRP?=
- =?utf-8?B?L0dNZ0dldU5maEM0YUdGakQ3U3VSY1Iyb1F0ckVmZjRqSFRobjhPZWcvZXR2?=
- =?utf-8?B?VVE9PQ==?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 286520a8-e937-4af5-8e06-08de3ef2205c
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Dec 2025 11:31:18.1891
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nKPkd3Ot2sC2aY6J+HgSfHSVQ8G6Eu6aGW9gVVhJ/j5KECwsAYgwMfD6HPzAW2HU8X37adaXR/kT8Ct4qqF/Bg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR10MB8901
+User-Agent: Mozilla Thunderbird
+Subject: Re: rt_task_resume() resumes a wrong task
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@lists.linux.dev
+References: <144fcdcd-0944-4971-80fb-80ee7e72cb83.ref@yahoo.com>
+ <144fcdcd-0944-4971-80fb-80ee7e72cb83@yahoo.com>
+ <348b1bfc-8f0b-4e97-a100-999928f67ab5@siemens.com>
+ <172ca47c-acb1-45cc-8e2c-3282c17354f5@yahoo.com>
+ <90450dcc-6293-4835-8f75-788090a867ba@siemens.com>
+ <348cb4d0-b82a-49e0-881d-fe75ee134964@yahoo.com>
+ <d2569de3-405f-4305-a05a-be104160d1a8@yahoo.com>
+ <75ab33ce-0a98-4154-add6-9e8fa989b4eb@siemens.com>
+ <651094df-88c8-4998-b389-28a6086704e9@yahoo.com>
+ <e9573efd-0e55-43fe-a341-da42acf06bf8@siemens.com>
+ <d8dd9ec4-1f98-48b5-b877-39a1de243081@yahoo.com>
+ <badbf3d2-4ff7-4d72-ae3e-24898f84c015@siemens.com>
+Content-Language: en-US, it
+From: "Mauro S." <mau.salvi@yahoo.com>
+In-Reply-To: <badbf3d2-4ff7-4d72-ae3e-24898f84c015@siemens.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Mailer: WebService/1.1.24866 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 12/19/25 07:50, Jan Kiszka wrote:
+> On 17.12.25 17:16, Mauro S wrote:
+>>
+>>
+>> On 12/17/25 13:31, Jan Kiszka wrote:
+>>> On 17.12.25 09:42, Mauro S wrote:
+>>>> On 12/17/25 07:59, Jan Kiszka wrote:
+>>>>> On 02.12.25 09:56, Mauro S wrote:
+>>>>>>
+>>>>>>
+>>>>>> On 11/26/25 12:50, Mauro S wrote:
+>>>>>>> On 11/25/25 17:51, Jan Kiszka wrote:
+>>>>>>>> On 25.11.25 16:10, Mauro S wrote:
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> On 11/25/25 15:33, Jan Kiszka wrote:
+>>>>>>>>>> On 25.11.25 13:23, Mauro S wrote:
+>>>>>>>>>>> Hi all,
+>>>>>>>>>>>
+>>>>>>>>>>> Not sure if I found an obscure corner case or I'm doing something
+>>>>>>>>>>> nasty.
+>>>>>>>>>>>
+>>>>>>>>>>> I'm using Xenomai 3.2.8 on an Intel Atom system with Linux
+>>>>>>>>>>> 5.4.299.
+>>>>>>>>>>> Target image and toolchain generated by Yocto.
+>>>>>>>>>>>
+>>>>>>>>>>> Please find attached test case code.
+>>>>>>>>>>> Program is very simple: the main task starts a bunch of joinable
+>>>>>>>>>>> tasks
+>>>>>>>>>>> that immediately suspend theirselves. After starting tasks, the
+>>>>>>>>>>> main
+>>>>>>>>>>> task resumes all tasks. They do a small sleep and then
+>>>>>>>>>>> terminates.
+>>>>>>>>>>> Terminated tasks are joined by another task, that was launched
+>>>>>>>>>>> at the
+>>>>>>>>>>> beginning of the program execution.
+>>>>>>>>>>> Subsequently, main task continues to recreate, restart and resume
+>>>>>>>>>>> joined
+>>>>>>>>>>> tasks, on and on, until a CTRL+C is issued.
+>>>>>>>>>>>
+>>>>>>>>>>> What I observe is that, when calling rt_task_resume(), the wrong
+>>>>>>>>>>> task is
+>>>>>>>>>>> resumed.
+>>>>>>>>>>> Please see the attached log. In this log I'm printing the .handle
+>>>>>>>>>>> and .thread data in RT_TASK function as hexadecimal.
+>>>>>>>>>>> At row 19 you can see that Task1 (that has .handle value fc1c9,
+>>>>>>>>>>> the same
+>>>>>>>>>>> of the terminated but not yet joined task 0) has been resumed
+>>>>>>>>>>> when
+>>>>>>>>>>> the
+>>>>>>>>>>> rt_task_resume() was called on Task0. Task0 has been
+>>>>>>>>>>> terminated its
+>>>>>>>>>>> execution, but has NOT been joined yet: if I'm not wrong its
+>>>>>>>>>>> resources
+>>>>>>>>>>> should not be usable until join is done (at least this is what I
+>>>>>>>>>>> understand by documentation). I expect that calling
+>>>>>>>>>>> rt_task_resume() on
+>>>>>>>>>>> a terminated-but-not-yet-joined joinable task should return an
+>>>>>>>>>>> error,
+>>>>>>>>>>> not resume another task. Am I wrong?
+>>>>>>>>>>>
+>>>>>>>>>>> I know that is some of a stressful test: in fact if I call the
+>>>>>>>>>>> rt_task_resume() only if task is not terminated (checking also
+>>>>>>>>>>> the
+>>>>>>>>>>> executed flag adding "&& TaskList[i].executed == 0" into the if)
+>>>>>>>>>>> the
+>>>>>>>>>>> problem obviously does not happen, but as I said I expect an
+>>>>>>>>>>> error
+>>>>>>>>>>> instead of a wrong resume.
+>>>>>>>>>>>
+>>>>>>>>>>> Launching the attached code, you should be able to reproduce the
+>>>>>>>>>>> problem
+>>>>>>>>>>> on your side. When the test detects a wrong resume, program
+>>>>>>>>>>> terminates
+>>>>>>>>>>> automatically.
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> Can you rule out data races on the shared TaskList structure?
+>>>>>>>>>> Seems
+>>>>>>>>>> both
+>>>>>>>>>> your sub-tasks and the main one are accessing it, and that
+>>>>>>>>>> possibly
+>>>>>>>>>> concurrently and/or unordered. Or does this also trigger in a
+>>>>>>>>>> uni-core
+>>>>>>>>>> setup?
+>>>>>>>>>>
+>>>>>>>>>> Jan
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Hi Jan,
+>>>>>>>>>
+>>>>>>>>> attached the modified code: each access to a TaskList element is
+>>>>>>>>> now
+>>>>>>>>> protected with a semaphore (one semaphore each element).
+>>>>>>>>> Strange behavior happens anyway.
+>>>>>>>>>
+>>>>>>>>
+>>>>>>>> ...would have been too easy. Ok, will try the other day if I can
+>>>>>>>> reproduce and maybe even understand.
+>>>>>>>>
+>>>>>>>
+>>>>>>> Hi Jan,
+>>>>>>>
+>>>>>>> sorry, I should me more verbose in my response.
+>>>>>>> First of all: no pressure, take your time.
+>>>>>>>
+>>>>>>> Then, a more deep explanation.
+>>>>>>> I added semaphores to avoid possible concurrent access on TaskList
+>>>>>>> elements, but I already verified that code should access them in an
+>>>>>>> ordered way without concurrency, thanks to "joined", "started" and
+>>>>>>> "exited" flags.
+>>>>>>> In detail, TaskList elements are accessed:
+>>>>>>>
+>>>>>>> - by main task
+>>>>>>>       - under task creation, writing task handler and "joined"
+>>>>>>> flag: this
+>>>>>>> happens only if task was joined before
+>>>>>>>       - to resume task, reading some elements ("started", "joined" and
+>>>>>>> task handler) and writing "resumed" flag before resuming the task.
+>>>>>>> Here, "started" must be 1 and "joined" must be 0, this can happen
+>>>>>>> only
+>>>>>>> after task creation and start
+>>>>>>>
+>>>>>>> - by sub-tasks ourselves: during their execution. Variables written:
+>>>>>>> "started" (at the beginning of the task) and "exited" (just before
+>>>>>>> termination, after task is resumed and did its sleep). Also, verifies
+>>>>>>> "resumed" flag when got resumed, to check if resume request was
+>>>>>>> for it
+>>>>>>>
+>>>>>>> - by join task: this happens only if task is "started", "exited" and
+>>>>>>> not "joined". This can happen only after a complete subtask execution
+>>>>>>> task resets all flags and sets "joined" to 1
+>>>>>>>
+>>>>>>> Printf sequence seems to confirm that execution order is OK.
+>>>>>>>
+>>>>>>>
+>>>>>>>> If you would like to understand a bit more already, you could
+>>>>>>>> catch an
+>>>>>>>> event trace (trace-cmd record -e "cobalt*" -e "sched*" -e
+>>>>>>>> "signal*") and
+>>>>>>>> study the task interaction (trace-cmd report / kernelshark).
+>>>>>>>>
+>>>>>>>
+>>>>>>> I'll do the setup to trace events (I don't have trace-cmd on
+>>>>>>> target, I
+>>>>>>> need to setup a qemu image with it).
+>>>>>>>
+>>>>>>> Thanks in advance, regards
+>>>>>>>
+>>>>>>> Mauro
+>>>>>>>
+>>>>>>>> Jan
+>>>>>>>>
+>>>>>>>
+>>>>>> Hi Jan,
+>>>>>>
+>>>>>> I made a sequential version of the test application: instead of
+>>>>>> having a
+>>>>>> join task, join call was done by the main task, one subtask at time.
+>>>>>> With this code, tasks does not access concurrently to variables.
+>>>>>> Problem happens also with this code.
+>>>>>>
+>>>>>
+>>>>> Starting to look into this:
+>>>>>
+>>>>
+>>>> Great, thank you!
+>>>>
+>>>>>> STARTED TASK Task0 (82a9eab0-829636c0)
+>>>>>> TASK Task0 RUNNING (self: 82a9eab0-829636c0  ext: 82a9eab0-829636c0)
+>>>>>> STARTED TASK Task1 (82a9e2b0-829526c0)
+>>>>>> TASK Task1 RUNNING (self: 82a9e2b0-829526c0  ext: 82a9e2b0-829526c0)
+>>>>>> RESUMING TASK Task0 (82a9eab0-829636c0)
+>>>>>> RESUMED TASK Task0 (self: 82a9eab0-829636c0  ext: 82a9eab0-829636c0)
+>>>>>> RESUMING TASK Task1 (82a9e2b0-829526c0)
+>>>>>> RESUMED TASK Task1 (self: 82a9e2b0-829526c0  ext: 82a9e2b0-829526c0)
+>>>>>> TASK Task1 EXITED (self: 82a9e2b0-829526c0  ext: 82a9e2b0-829526c0)
+>>>>>> TASK Task0 EXITED (self: 82a9eab0-829636c0  ext: 82a9eab0-829636c0)
+>>>>>> JOINED TASK Task1 (82a9e2b0-829526c0)
+>>>>>> STARTED TASK Task1 (82a9eab0-829526c0)
+>>>>>> TASK Task1 RUNNING (self: 82a9eab0-829526c0  ext: 82a9eab0-829526c0)
+>>>>>
+>>>>> So far so good.
+>>>>>
+>>>>>> RESUMING TASK Task0 (82a9eab0-829636c0)
+>>>>>
+>>>>> And here you are resuming a task that is in waiting-to-be-joined state,
+>>>>> right? That is an application bug, but one may expect it to be either
+>>>>> ignored, only affect that Task0 negatively, or even throwing an error
+>>>>> back to the caller.
+>>>>>
+>>>>
+>>>> Yes, exactly: task is ended yet, then should be joined and not resumed,
+>>>> but I would expect that the resume command was ignored and/or an error
+>>>> was returned.
+>>>>
+>>>>>> RESUMED TASK Task1 (self: 82a9eab0-829526c0  ext: 82a9eab0-829526c0)
+>>>>>> ERROR: RESUMED TASK Task1 (self: 82a9eab0-829526c0  ext:
+>>>>>> 82a9eab0-829526c0) HAS NOT BEEN ASKED TO RESUME
+>>>>>
+>>>>> Instead, we see that spurious wakeup of task1. Let me debug into
+>>>>> this...
+>>>>>
+>>>>
+>>>> Thumbs up!
+>>>
+>>> Ok, here is the catch: The task handle that was used for task0 is freed,
+>>> even before someone joined that task. And task1 handle was freed as well
+>>> before you call CreateAndStartFn(1) again. Now your task1 will get the
+>>> handle of previous task0, and when you try to use that stale handle for
+>>> resuming task0, alchemy looks up the new task1 instead - and resumes
+>>> that.
+>>>
+>>> I looked a bit into whether we could delay the handle deregistration
+>>> after the joining, but that would be a hairy operation, likely also
+>>> affecting libcopperplate. Given all that, I think we are safer off
+>>> living with this "specialty", rather than risking instability in the
+>>> cleanup path to handle the application error a bit nicer.
+>>>
+>>> Jan
+>>>
+>>
+>> Ok, got it.
+>> IMO this behavior should be documented somewhere because it's not what a
+>> user would expect.
+>>
+>> Just throwing out an idea (that could be completely wrong): to
+>> workaround the deregistration issue, should the resume function use both
+>> the two RT_TASK fields to decide if resume or not a task, resuming it
+>> only if both the two IDs matching? From the log seems that the second
+>> field (pthread ID?) stills occupied until the join happens.
+>>
+> 
+> I played with that idea. It initially looked simple, then reveal a
+> catch, but I think I was able to address that as well. Please have a
+> look at the patches I just shared.
+> 
+> Jan
+> 
 
-To limit the test matrix of the next major release, lift the minimally
-supported kernel version to 6.1. Drop any compat code for older kernels
-and update the pipeline to use 6.12 instead of 5.10 for build tests.
+Hi Jan,
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
+I've seen patches, thanks a lot!
+Unfortunately I'm not able to test them on the final system, but a quick 
+test in a QEMU machine works properly (no doubts about it).
 
-Changes in v2:
- - update the pipeline
- - update installation guide
+As soon as I'll test on the final system, I'll be back with a feedback.
 
- .gitlab-ci.yml                                | 24 +++++++++----------
- doc/asciidoc/README.INSTALL.adoc              |  2 +-
- .../include/asm-generic/xenomai/wrappers.h    | 24 -------------------
- kernel/drivers/net/drivers/at91_ether.c       | 10 --------
- kernel/drivers/net/drivers/e1000e/netdev.c    | 10 --------
- .../drivers/net/drivers/freescale/fec_main.c  | 18 --------------
- kernel/drivers/net/drivers/igb/igb_main.c     |  8 -------
- kernel/drivers/net/drivers/igc/igc_main.c     |  8 -------
- kernel/drivers/net/drivers/macb.c             | 10 --------
- kernel/drivers/serial/16550A_pci.h            |  2 --
- kernel/drivers/spi/spi-device.c               |  8 -------
- 11 files changed, 13 insertions(+), 111 deletions(-)
-
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index fd23775965..572e0990a3 100644
---- a/.gitlab-ci.yml
-+++ b/.gitlab-ci.yml
-@@ -193,18 +193,18 @@ arm-6.xx-latest:
-     PIPELINE_REV: "v6\\.[0-9].*-dovetail-rebase"
-     KERNEL_DEFCONFIG: multi_v7_defconfig
- 
--arm-6.1-head:
-+arm-6.12-head:
-   extends: .build
-   variables:
-     ARCH: arm
--    PIPELINE_REV: v6.1.y-cip-dovetail-rebase
-+    PIPELINE_REV: v6.12.y-dovetail-rebase
-     KERNEL_DEFCONFIG: multi_v7_defconfig
- 
--arm-5.10-head:
-+arm-6.1-head:
-   extends: .build
-   variables:
-     ARCH: arm
--    PIPELINE_REV: v5.10.y-cip-dovetail-rebase
-+    PIPELINE_REV: v6.1.y-cip-dovetail-rebase
-     KERNEL_DEFCONFIG: multi_v7_defconfig
- 
- arm64-6.xx-latest:
-@@ -214,18 +214,18 @@ arm64-6.xx-latest:
-     PIPELINE_REV: "v6\\.[0-9].*-dovetail-rebase"
-     KERNEL_DEFCONFIG: defconfig
- 
--arm64-6.1-head:
-+arm64-6.12-head:
-   extends: .build
-   variables:
-     ARCH: arm64
--    PIPELINE_REV: v6.1.y-cip-dovetail-rebase
-+    PIPELINE_REV: v6.12.y-dovetail-rebase
-     KERNEL_DEFCONFIG: defconfig
- 
--arm64-5.10-head:
-+arm64-6.1-head:
-   extends: .build
-   variables:
-     ARCH: arm64
--    PIPELINE_REV: v5.10.y-cip-dovetail-rebase
-+    PIPELINE_REV: v6.1.y-cip-dovetail-rebase
-     KERNEL_DEFCONFIG: defconfig
- 
- x86-6.xx-latest:
-@@ -235,18 +235,18 @@ x86-6.xx-latest:
-     PIPELINE_REV: "v6\\.[0-9].*-dovetail-rebase"
-     KERNEL_DEFCONFIG: x86_64_defconfig
- 
--x86-6.1-head:
-+x86-6.12-head:
-   extends: .build
-   variables:
-     ARCH: x86
--    PIPELINE_REV: v6.1.y-cip-dovetail-rebase
-+    PIPELINE_REV: v6.12.y-dovetail-rebase
-     KERNEL_DEFCONFIG: x86_64_defconfig
- 
--x86-5.10-head:
-+x86-6.1-head:
-   extends: .build
-   variables:
-     ARCH: x86
--    PIPELINE_REV: v5.10.y-cip-dovetail-rebase
-+    PIPELINE_REV: v6.1.y-cip-dovetail-rebase
-     KERNEL_DEFCONFIG: x86_64_defconfig
- 
- i386-userland:
-diff --git a/doc/asciidoc/README.INSTALL.adoc b/doc/asciidoc/README.INSTALL.adoc
-index cad32f3d56..5797b8fc0d 100644
---- a/doc/asciidoc/README.INSTALL.adoc
-+++ b/doc/asciidoc/README.INSTALL.adoc
-@@ -267,7 +267,7 @@ although this is not mandatory if building with `--disable-tls`.
- _Cobalt_-specific requirements
- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
- 
--- The kernel version must be 5.10 or better.
-+- The kernel version must be 6.1 or better.
- 
- - An interrupt pipeline (Dovetail) patch must be available for your
-   target kernel. You can find the official patches issued by the
-diff --git a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-index b611c405c8..a68c3b1951 100644
---- a/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-+++ b/kernel/cobalt/include/asm-generic/xenomai/wrappers.h
-@@ -43,30 +43,6 @@
- 		.proc_lseek = seq_lseek,				\
- }
- 
--#if LINUX_VERSION_CODE < KERNEL_VERSION(5,11,0)
--#define IRQ_WORK_INIT(_func) (struct irq_work) {	\
--	.flags = ATOMIC_INIT(0),			\
--	.func = (_func),				\
--}
--#endif
--
--#if LINUX_VERSION_CODE < KERNEL_VERSION(5,14,0) && \
--    (LINUX_VERSION_CODE >= KERNEL_VERSION(5,11,0) || \
--     LINUX_VERSION_CODE < KERNEL_VERSION(5,10,220))
--#define close_fd(__ufd)	__close_fd(current->files, __ufd)
--#endif
--
--#if LINUX_VERSION_CODE < KERNEL_VERSION(5,15,0) && \
--    (LINUX_VERSION_CODE >= KERNEL_VERSION(5,11,0) || \
--     LINUX_VERSION_CODE < KERNEL_VERSION(5,10,188))
--#define dev_addr_set(dev, addr)		memcpy((dev)->dev_addr, addr, MAX_ADDR_LEN)
--#define eth_hw_addr_set(dev, addr)	memcpy((dev)->dev_addr, addr, ETH_ALEN)
--#endif
--
--#if LINUX_VERSION_CODE < KERNEL_VERSION(5,17,0)
--#define pde_data(i)	PDE_DATA(i)
--#endif
--
- #if LINUX_VERSION_CODE < KERNEL_VERSION(6,2,0)
- #define timer_delete_sync	del_timer_sync
- #endif
-diff --git a/kernel/drivers/net/drivers/at91_ether.c b/kernel/drivers/net/drivers/at91_ether.c
-index a5ef40c579..4bd2ec76ba 100644
---- a/kernel/drivers/net/drivers/at91_ether.c
-+++ b/kernel/drivers/net/drivers/at91_ether.c
-@@ -303,9 +303,6 @@ static int __init at91ether_probe(struct platform_device *pdev)
- 	struct macb *lp;
- 	int res;
- 	u32 reg;
--#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 13, 0)
--	const char *mac;
--#endif
- 
- 	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!regs)
-@@ -358,15 +355,8 @@ static int __init at91ether_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, dev);
- 
--#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 13, 0))
- 	res = of_get_mac_address(pdev->dev.of_node, lp->dev->dev_addr);
- 	if (res)
--#else
--	mac = of_get_mac_address(pdev->dev.of_node);
--	if (mac)
--		memcpy(lp->dev->dev_addr, mac, ETH_ALEN);
--	else
--#endif
- 		rtmacb_get_hwaddr(lp);
- 
- 	res = of_get_phy_mode(pdev->dev.of_node);
-diff --git a/kernel/drivers/net/drivers/e1000e/netdev.c b/kernel/drivers/net/drivers/e1000e/netdev.c
-index 0679688e20..dad685eb7b 100644
---- a/kernel/drivers/net/drivers/e1000e/netdev.c
-+++ b/kernel/drivers/net/drivers/e1000e/netdev.c
-@@ -3912,11 +3912,6 @@ static int e1000_probe(struct pci_dev *pdev,
- 	if (err)
- 		goto err_pci_reg;
- 
--#if LINUX_VERSION_CODE <= KERNEL_VERSION(6,0,0)
--	/* AER (Advanced Error Reporting) hooks */
--	pci_enable_pcie_error_reporting(pdev);
--#endif
--
- 	pci_set_master(pdev);
- 	/* PCI config space info */
- 	err = pci_save_state(pdev);
-@@ -4240,11 +4235,6 @@ static void e1000_remove(struct pci_dev *pdev)
- 
- 	rtdev_free(netdev);
- 
--#if LINUX_VERSION_CODE <= KERNEL_VERSION(6,0,0)
--	/* AER disable */
--	pci_disable_pcie_error_reporting(pdev);
--#endif
--
- 	pci_disable_device(pdev);
- }
- 
-diff --git a/kernel/drivers/net/drivers/freescale/fec_main.c b/kernel/drivers/net/drivers/freescale/fec_main.c
-index 69a3517621..cb0eda73bf 100644
---- a/kernel/drivers/net/drivers/freescale/fec_main.c
-+++ b/kernel/drivers/net/drivers/freescale/fec_main.c
-@@ -1250,15 +1250,9 @@ static void fec_get_mac(struct net_device *ndev)
- 	if (!is_valid_ether_addr(iap)) {
- 		struct device_node *np = fep->pdev->dev.of_node;
- 		if (np) {
--#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 13, 0)
- 			int err = of_get_mac_address(np, tmpaddr);
- 			if (!err)
- 				iap = tmpaddr;
--#else
--			const char *mac = of_get_mac_address(np);
--			if (!IS_ERR(mac))
--				iap = (unsigned char *) mac;
--#endif
- 		}
- 	}
- 
-@@ -2157,13 +2151,9 @@ static void fec_enet_itr_coal_set(struct net_device *ndev)
- }
- 
- static int
--#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
- fec_enet_get_coalesce(struct net_device *ndev, struct ethtool_coalesce *ec,
- 		      struct kernel_ethtool_coalesce *kernel_coal,
- 		      struct netlink_ext_ack *extack)
--#else
--fec_enet_get_coalesce(struct net_device *ndev, struct ethtool_coalesce *ec)
--#endif
- {
- 	struct fec_enet_private *fep = netdev_priv(ndev);
- 
-@@ -2180,13 +2170,9 @@ fec_enet_get_coalesce(struct net_device *ndev, struct ethtool_coalesce *ec)
- }
- 
- static int
--#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
- fec_enet_set_coalesce(struct net_device *ndev, struct ethtool_coalesce *ec,
- 		      struct kernel_ethtool_coalesce *kernel_coal,
- 		      struct netlink_ext_ack *extack)
--#else
--fec_enet_set_coalesce(struct net_device *ndev, struct ethtool_coalesce *ec)
--#endif
- {
- 	struct fec_enet_private *fep = netdev_priv(ndev);
- 	struct device *dev = &fep->pdev->dev;
-@@ -2238,11 +2224,7 @@ static void fec_enet_itr_coal_init(struct net_device *ndev)
- 	ec.tx_coalesce_usecs = FEC_ITR_ICTT_DEFAULT;
- 	ec.tx_max_coalesced_frames = FEC_ITR_ICFT_DEFAULT;
- 
--#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 15, 0)
- 	fec_enet_set_coalesce(ndev, &ec, NULL, NULL);
--#else
--	fec_enet_set_coalesce(ndev, &ec);
--#endif
- }
- 
- static int fec_enet_get_tunable(struct net_device *netdev,
-diff --git a/kernel/drivers/net/drivers/igb/igb_main.c b/kernel/drivers/net/drivers/igb/igb_main.c
-index d757396479..aedf526b63 100644
---- a/kernel/drivers/net/drivers/igb/igb_main.c
-+++ b/kernel/drivers/net/drivers/igb/igb_main.c
-@@ -2029,10 +2029,6 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	if (err)
- 		goto err_pci_reg;
- 
--#if LINUX_VERSION_CODE <= KERNEL_VERSION(6,0,0)
--	pci_enable_pcie_error_reporting(pdev);
--#endif
--
- 	pci_set_master(pdev);
- 	pci_save_state(pdev);
- 
-@@ -2467,10 +2463,6 @@ static void igb_remove(struct pci_dev *pdev)
- 	kfree(adapter->shadow_vfta);
- 	rtdev_free(netdev);
- 
--#if LINUX_VERSION_CODE <= KERNEL_VERSION(6,0,0)
--	pci_disable_pcie_error_reporting(pdev);
--#endif
--
- 	pci_disable_device(pdev);
- }
- 
-diff --git a/kernel/drivers/net/drivers/igc/igc_main.c b/kernel/drivers/net/drivers/igc/igc_main.c
-index 29501b6108..a3a6b71135 100644
---- a/kernel/drivers/net/drivers/igc/igc_main.c
-+++ b/kernel/drivers/net/drivers/igc/igc_main.c
-@@ -3693,10 +3693,6 @@ static int igc_probe(struct pci_dev *pdev,
- 	if (err)
- 		goto err_pci_reg;
- 
--#if LINUX_VERSION_CODE <= KERNEL_VERSION(6,0,0)
--	pci_enable_pcie_error_reporting(pdev);
--#endif
--
- 	pci_set_master(pdev);
- 
- 	err = -ENOMEM;
-@@ -3925,10 +3921,6 @@ static void igc_remove(struct pci_dev *pdev)
- 
- 	rtdev_free(netdev);
- 
--#if LINUX_VERSION_CODE <= KERNEL_VERSION(6,0,0)
--	pci_disable_pcie_error_reporting(pdev);
--#endif
--
- 	pci_disable_device(pdev);
- }
- 
-diff --git a/kernel/drivers/net/drivers/macb.c b/kernel/drivers/net/drivers/macb.c
-index 6da5761479..36b258012e 100644
---- a/kernel/drivers/net/drivers/macb.c
-+++ b/kernel/drivers/net/drivers/macb.c
-@@ -1570,9 +1570,6 @@ static int __init macb_probe(struct platform_device *pdev)
- 	u32 config;
- 	int err = -ENXIO;
- 	struct pinctrl *pinctrl;
--#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 13, 0)
--	const char *mac;
--#endif
- 
- 	regs = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!regs) {
-@@ -1690,15 +1687,8 @@ static int __init macb_probe(struct platform_device *pdev)
- 	config |= macb_dbw(bp);
- 	macb_writel(bp, NCFGR, config);
- 
--#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 13, 0)
- 	err = of_get_mac_address(pdev->dev.of_node, bp->dev->dev_addr);
- 	if (err)
--#else
--	mac = of_get_mac_address(pdev->dev.of_node);
--	if (mac)
--		memcpy(bp->dev->dev_addr, mac, ETH_ALEN);
--	else
--#endif
- 		rtmacb_get_hwaddr(bp);
- 
- 	err = of_get_phy_mode(pdev->dev.of_node);
-diff --git a/kernel/drivers/serial/16550A_pci.h b/kernel/drivers/serial/16550A_pci.h
-index 161874d1cc..95d1b90586 100644
---- a/kernel/drivers/serial/16550A_pci.h
-+++ b/kernel/drivers/serial/16550A_pci.h
-@@ -36,7 +36,6 @@ struct rt_16550_pci_board {
- #define PCI_DEVICE_ID_CP112UL		0x1120
- #define PCI_DEVICE_ID_CP114UL		0x1143
- #define PCI_DEVICE_ID_CP138U		0x1380
--#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,17,0)
- #define PCI_DEVICE_ID_MOXA_CP102UL	0x1021
- #define PCI_DEVICE_ID_MOXA_CP102U	0x1022
- #define PCI_DEVICE_ID_MOXA_C104		0x1040
-@@ -48,7 +47,6 @@ struct rt_16550_pci_board {
- #define PCI_DEVICE_ID_MOXA_CP134U	0x1340
- #define PCI_DEVICE_ID_MOXA_C168		0x1680
- #define PCI_DEVICE_ID_MOXA_CP168U	0x1681
--#endif
- 
- static const struct rt_16550_pci_board rt_16550_moxa_c104 = {
- 	.name = "Moxa C104H/PCI",
-diff --git a/kernel/drivers/spi/spi-device.c b/kernel/drivers/spi/spi-device.c
-index 9fb1501fe8..f3963d81d7 100644
---- a/kernel/drivers/spi/spi-device.c
-+++ b/kernel/drivers/spi/spi-device.c
-@@ -124,19 +124,11 @@ static int spi_device_probe(struct spi_device *spi)
- 	return 0;
- }
- 
--#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,18,0)
- static void spi_device_remove(struct spi_device *spi)
--#else
--static int spi_device_remove(struct spi_device *spi)
--#endif
- {
- 	struct rtdm_spi_remote_slave *slave = spi_get_drvdata(spi);
- 
- 	slave->master->ops->detach_slave(slave);
--
--#if LINUX_VERSION_CODE < KERNEL_VERSION(5,18,0)
--	return 0;
--#endif
- }
- 
- static const struct of_device_id spi_device_match[] = {
--- 
-2.51.0
+Thanks again, regards
 
 
 -- 
-Siemens AG, Foundational Technologies
-Linux Expert Center
+Mauro S.
