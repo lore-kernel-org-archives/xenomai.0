@@ -1,1099 +1,224 @@
-Received: from out28-4.mail.aliyun.com (out28-4.mail.aliyun.com [115.124.28.4])
+Received: from mout.web.de (mout.web.de [212.227.17.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9599123B62C
-	for <xenomai@lists.linux.dev>; Mon, 29 Dec 2025 06:54:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.28.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2262220ADD6
+	for <xenomai@lists.linux.dev>; Mon, 29 Dec 2025 09:04:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766991249; cv=none; b=k2Z3tTUo4hYBbisD8fu48A2Oe50IBbY3kH5X018kmFvOJX8LBFgeOVLe8k9VjZk3deu6iMVyG3RfiEVx6wJL4JtwjaZOJ9CphhkuDXLdgKY6lbCwEVOgQ5AX81CaFMyg/J6OkTAddGNirm+ewq15ToLtUWjuu/HT96tV0O523zM=
+	t=1766999058; cv=none; b=UxejrT65mNjxQXsDHp1g7162CiRwoUiUOCp3b08Ehx3YHK8CZxF0hwgY8m9vHJIwWK+7Je++xwvtEs5Imv6bgbMslNpAqA+t1/OxqABWNQ6sNEZdcoDnc/ZjJW9Sg6b2MNPv6pBseCWI0ASFbTmCD3edBsilW8eRDd3Eyw+/3UY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766991249; c=relaxed/simple;
-	bh=w/M8r8pLtP+Uf46LhqId8easFI6mQAwsi1JlTQv9JP0=;
-	h=Cc:Content-Type:Date:To:From:Mime-Version:Message-Id:Subject; b=YY+9Q3MHMDcnVrxodhCmpQPGXaVra2rABVOaQwm+146cgdJq42riqPRqCD23kAwDZx0dmIKw+rtQQ6maY30/Gs5o1s4QT47/QJCInUe1cC1kvet00yRgjh9zXPdDrcmAyvYYeZLB7rrRQgdD+9Jq2vwssfgDM/Tu9L1xjxwVrig=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sinsegye.com.cn; spf=none smtp.mailfrom=sinsegye.com.cn; arc=none smtp.client-ip=115.124.28.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sinsegye.com.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=sinsegye.com.cn
-Received: from localhost(mailfrom:liuyang@sinsegye.com.cn fp:SMTPD_---.fvLaw9e_1766991242 cluster:ay29)
-          by smtp.aliyun-inc.com;
-          Mon, 29 Dec 2025 14:54:02 +0800
-Cc: "xenomai" <xenomai@lists.linux.dev>, 
-	=?utf-8?q?=E5=AE=8B=E5=81=A5=E7=8E=AE?= <songjianwei@sinsegye.com.cn>, 
-	=?utf-8?q?=E9=83=AD=E5=8F=8C=E6=8B=B4?= <guoshuangshuan@sinsegye.com.cn>, 
-	=?utf-8?q?=E9=83=AD=E4=BF=8A?= <guojun@sinsegye.com.cn>
-X-Lms-Return-Path: <lba+169522588+958d04+web.de+liuyang@sinsegye.com.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Date: Mon, 29 Dec 2025 14:53:59 +0800
-To: "Jan Kiszka" <jan.kiszka@web.de>
-From: =?utf-8?q?=E5=88=98=E6=9D=A8?= <liuyang@sinsegye.com.cn>
+	s=arc-20240116; t=1766999058; c=relaxed/simple;
+	bh=iMfYkHIEQndVlkOpK8bkjw9aTYTvLGQGVaDaHKg3jI4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=cAz7qWHmp6NA8pd22XlT1XopA/8DoQ14I0Bvqxc7jraje24sGMLLjTmNuwdM06KYub4GhOj0OQN6Zss5Rcwsk4GCKpSKkkAVhFcZfM/Cwum+UD2QHx5EwzOPVGDb4KMoYayLvy/FZuy78CxTexp9niqOr4kGTju+gCW4amhJXzo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=jan.kiszka@web.de header.b=UaenWAnH; arc=none smtp.client-ip=212.227.17.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=web.de header.i=jan.kiszka@web.de header.b="UaenWAnH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
+	s=s29768273; t=1766999053; x=1767603853; i=jan.kiszka@web.de;
+	bh=iMfYkHIEQndVlkOpK8bkjw9aTYTvLGQGVaDaHKg3jI4=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To:Content-Type:
+	 Content-Transfer-Encoding:cc:content-transfer-encoding:
+	 content-type:date:from:message-id:mime-version:reply-to:subject:
+	 to;
+	b=UaenWAnHBABx0Lrh8IW89ATtFPlP83Xi3MSK/cepLNqJdMp7XBZygEFWMb1v54Lg
+	 AZD0v2yt3/eCXqHxpDeh5lIthZzuFbfeXT513n8HFMo7+80bRyfuLt1uNazNvWB/R
+	 w+F6w2wfTUOUrwDpkSG3lurfjiorA45LKNMJ6i1BxvTwfmGnGvKrsNxbhyw6w/327
+	 HUzo1wpqiimjWBvBkXQGrWjsbF1a1SWHpEGXJU0/RCSLwReXJrXuHILqUn1wUwAOA
+	 QJ4tAVE4OVeld+tFQ+lJaLCVfw3TCKK1GoASNYBaZehsYv91u4sk28KLtx+dxMs0J
+	 czX3Z9/v6IUizUZCfg==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from [192.168.178.31] ([82.83.21.22]) by smtp.web.de (mrweb105
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1Mx0Mr-1vpMyU01il-017TlJ; Mon, 29
+ Dec 2025 10:04:13 +0100
+Message-ID: <9e679d7b-c247-489d-8351-5e5976ae40b1@web.de>
+Date: Mon, 29 Dec 2025 10:04:12 +0100
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-Message-Id: <ed7c43ef85386e7d9b7bfcd2895307dc2948cb81.90c6520a.23af.43fe.9b63.9c6842941db7@feishu.cn>
+MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
 Subject: Re: the kernel hang with kernel 6.12
+To: =?UTF-8?B?5YiY5p2o?= <liuyang@sinsegye.com.cn>
+Cc: xenomai <xenomai@lists.linux.dev>, =?UTF-8?B?5a6L5YGl546u?=
+ <songjianwei@sinsegye.com.cn>, =?UTF-8?B?6YOt5Y+M5ou0?=
+ <guoshuangshuan@sinsegye.com.cn>, =?UTF-8?B?6YOt5L+K?=
+ <guojun@sinsegye.com.cn>
+References: <ed7c43ef85386e7d9b7bfcd2895307dc2948cb81.90c6520a.23af.43fe.9b63.9c6842941db7@feishu.cn>
+From: Jan Kiszka <jan.kiszka@web.de>
+Content-Language: en-US
+Autocrypt: addr=jan.kiszka@web.de; keydata=
+ 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
+In-Reply-To: <ed7c43ef85386e7d9b7bfcd2895307dc2948cb81.90c6520a.23af.43fe.9b63.9c6842941db7@feishu.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:Ng7LWezYP6ynEP42+RA/Pocq0gvB+JOart6QcWYCwqL3tC/ZL8w
+ GQTLfQ3EQkusIo6F41spLQ0K8+R1usWoHLqbC70JCNgsy3baTdPdSc1nDI6tP6AVzz1MBlO
+ KDs4R/b8KBL+GBfeRLbz5dEfYBevM1S4aqzYxpPJXHiF8njq2fOMhw+CcMIkSmLc6a7nT8N
+ 1YCG4pt28ydMQdPAeCwIA==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:665DPMkwVlo=;fP/MJz+S2XqgUJ+6cUYXXf8JjAF
+ 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
+ 0aRpgRpppLqIDJvfNEhi5+1R/U/3iIjlwdxP0F
 
-Hi xenomai:
-=C2=A0=C2=A0=C2=A0 After testing, the kernel hang problem disappeared after=
- applying the following patch. Is this modification safe/correct, or are th=
-ere any potential issues with it?
+On 29.12.25 07:53, =E5=88=98=E6=9D=A8 wrote:
+> Hi xenomai:
+> =C2=A0=C2=A0=C2=A0 After testing, the kernel hang problem disappeared af=
+ter applying the following patch. Is this modification safe/correct, or ar=
+e there any potential issues with it?
+>=20
+> diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+> index c48a466db0c3..c5e0456b63e6 100644
+> --- a/arch/x86/kvm/svm/svm.c
+> +++ b/arch/x86/kvm/svm/svm.c
+> @@ -4280,7 +4280,7 @@ static noinstr void svm_vcpu_enter_exit(struct kvm=
+_vcpu *vcpu, bool spec_ctrl_in
+> =C2=A0=C2=A0 =C2=A0 =C2=A0 =C2=A0 * IRQs are being enabled/disabled.=C2=
+=A0 Note!=C2=A0 GIF=3D0 for the entirety of
+> =C2=A0=C2=A0 =C2=A0 =C2=A0 =C2=A0 * this path, so IRQs aren't actually u=
+nmasked while running host code.
+> =C2=A0=C2=A0 =C2=A0 =C2=A0 =C2=A0 */
+> - =C2=A0 =C2=A0 =C2=A0 raw_local_irq_enable();
+> + =C2=A0 =C2=A0 =C2=A0 hard_local_irq_enable();
+>=20
+> =C2=A0=C2=A0 =C2=A0 =C2=A0=C2=A0 amd_clear_divider();
+>=20
+> @@ -4290,7 +4290,7 @@ static noinstr void svm_vcpu_enter_exit(struct kvm=
+_vcpu *vcpu, bool spec_ctrl_in
+> =C2=A0=C2=A0 =C2=A0 =C2=A0=C2=A0 else
+> =C2=A0=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0 __svm_vcpu_=
+run(svm, spec_ctrl_intercepted);
+>=20
+> - =C2=A0 =C2=A0 =C2=A0 raw_local_irq_disable();
+> + =C2=A0 =C2=A0 =C2=A0 hard_local_irq_disable();
+>=20
+> =C2=A0=C2=A0 =C2=A0 =C2=A0=C2=A0 guest_state_exit_irqoff();
+> =C2=A0}
+>=20
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index c48a466db0c3..c5e0456b63e6 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -4280,7 +4280,7 @@ static noinstr void svm_vcpu_enter_exit(struct kvm_vc=
-pu *vcpu, bool spec_ctrl_in
-=C2=A0=C2=A0 =C2=A0 =C2=A0 =C2=A0 * IRQs are being enabled/disabled.=C2=A0 =
-Note!=C2=A0 GIF=3D0 for the entirety of
-=C2=A0=C2=A0 =C2=A0 =C2=A0 =C2=A0 * this path, so IRQs aren't actually unma=
-sked while running host code.
-=C2=A0=C2=A0 =C2=A0 =C2=A0 =C2=A0 */
-- =C2=A0 =C2=A0 =C2=A0 raw_local_irq_enable();
-+ =C2=A0 =C2=A0 =C2=A0 hard_local_irq_enable();
+Sound reasonable. But given that we have zero patches via dovetail on
+top of arch/x86/kvm/svm/ so far, the entry/exit paths need a second
+careful review. Studying what we do for vmx and comparing it to svm
+would be a starting point.
 
-=C2=A0=C2=A0 =C2=A0 =C2=A0=C2=A0 amd_clear_divider();
+And, again, we need CI testing for this. I've just created
+https://gitlab.com/Xenomai/xenomai3/xenomai/-/issues/55.
 
-@@ -4290,7 +4290,7 @@ static noinstr void svm_vcpu_enter_exit(struct kvm_vc=
-pu *vcpu, bool spec_ctrl_in
-=C2=A0=C2=A0 =C2=A0 =C2=A0=C2=A0 else
-=C2=A0=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0 __svm_vcpu_run=
-(svm, spec_ctrl_intercepted);
+Jan
 
-- =C2=A0 =C2=A0 =C2=A0 raw_local_irq_disable();
-+ =C2=A0 =C2=A0 =C2=A0 hard_local_irq_disable();
-
-=C2=A0=C2=A0 =C2=A0 =C2=A0=C2=A0 guest_state_exit_irqoff();
-=C2=A0}
-
-Thanks,
-=C2=A0=C2=A0=C2=A0 liuyang
-> From: "=E5=88=98=E6=9D=A8"<liuyang@sinsegye.com.cn>
-> Date:=C2=A0 Mon, Dec 29, 2025, 14:26
-> Subject:=C2=A0 Re: the kernel hang with kernel 6.12
-> To: "Jan Kiszka"<jan.kiszka@web.de>
-> Cc: "xenomai"<xenomai@lists.linux.dev>, "=E5=AE=8B=E5=81=A5=E7=8E=AE"<son=
-gjianwei@sinsegye.com.cn>, "=E9=83=AD=E5=8F=8C=E6=8B=B4"<guoshuangshuan@sin=
-segye.com.cn>, "=E9=83=AD=E4=BF=8A"<guojun@sinsegye.com.cn>
-> Hi maintainers,
-> =C2=A0=C2=A0 =C2=A0 I found that commit b2a37d35 ("KVM: SVM: Use raw_loca=
-l_irq_{disable,enable} in svm_vcpu_enter_exit") caused a serious kernel han=
-g on my AMD system when using a real-time patched kernel (Xenomai/Dovetail)=
-.
-> The symptom is: after the guest starts, the vCPU thread gets stuck foreve=
-r in svm_vcpu_run (specifically at the VMRUN instruction), and the host CPU=
- running the vCPU becomes unresponsive (RCU stalls, net watchdog timeouts, =
-etc.).
-> By comparing the assembly before and after this commit, I noticed that th=
-e explicit sti / cli around vmrun.
-> After manually adding back the following code, everything works normally =
-again:
->=C2=A0
-> diff --git a/arch/x86/kvm/svm/vmenter.S b/arch/x86/kvm/svm/vmenter.S
-> index 235c4af6b692..34098ba7f45b 100644
-> --- a/arch/x86/kvm/svm/vmenter.S
-> +++ b/arch/x86/kvm/svm/vmenter.S
-> @@ -173,8 +173,10 @@ SYM_FUNC_START(__svm_vcpu_run)
-> =C2=A0=C2=A0 =C2=A0 =C2=A0=C2=A0 VM_CLEAR_CPU_BUFFERS
->=C2=A0
-> =C2=A0=C2=A0 =C2=A0 =C2=A0=C2=A0 /* Enter guest mode */
-> + =C2=A0 =C2=A0 =C2=A0 sti
-> =C2=A03: =C2=A0 =C2=A0 vmrun %_ASM_AX
-> =C2=A04:
-> + =C2=A0 =C2=A0 =C2=A0 cli
-> =C2=A0=C2=A0 =C2=A0 =C2=A0=C2=A0 /* Pop @svm to RAX while it's the only a=
-vailable register. */
-> =C2=A0=C2=A0 =C2=A0 =C2=A0=C2=A0 pop %_ASM_AX
->=C2=A0
-> What was the original motivation for this commit? Was it to fix a specifi=
-c issue or improve compatibility with certain patches (e.g. PREEMPT_RT or o=
-ther real-time extensions)?
-> Is my workaround (explicit sti/cli) safe and acceptable, or is there a be=
-tter/proper way to restore compatibility with real-time interrupt pipeline =
-patches like Dovetail on AMD SVM?
->=C2=A0
-> Thank you very much!
-> Best regards,
-> liuyang
-> > From: "Jan Kiszka"<jan.kiszka@web.de>
-> > Date:=C2=A0 Sat, Dec 27, 2025, 17:11
-> > Subject:=C2=A0 Re: the kernel hang with kernel 6.12
-> > To: "=E5=88=98=E6=9D=A8"<liuyang@sinsegye.com.cn>, "xenomai"<xenomai@li=
-sts.linux.dev>
-> > Cc: "=E5=AE=8B=E5=81=A5=E7=8E=AE"<songjianwei@sinsegye.com.cn>, "=E9=83=
-=AD=E5=8F=8C=E6=8B=B4"<guoshuangshuan@sinsegye.com.cn>, "=E9=83=AD=E4=BF=8A=
-"<guojun@sinsegye.com.cn>
-> > On 25.12.25 10:39, =C3=A5=C3=A6=C2=A8 wrote:
->=C2=A0
-> > > Hi xenomai:
->=C2=A0
-> > > =C2=A0=C2=A0=C2=A0 I'm using the Linux-dovetail kernel version 6.12.5=
-5 with Cobalt 3.3.1. When I install this kernel on an AMD Ryzen 7 8845HS sy=
-stem and try to start a virtual machine using QEMU + KVM, the entire host s=
-ystem hangs completely.=C2=A0
->=C2=A0
-> >=C2=A0
-> > We likely have a blind spot with KVM on AMD here. If the issue triggers
->=C2=A0
-> > immediately and reliably, that should be debuggable, though. There is
->=C2=A0
-> > probably something going wrong with hard or soft-disabling of IRQs
->=C2=A0
-> > around the switching between a KVM thread and an OOB context.
->=C2=A0
-> >=C2=A0
-> > > I installed the same kernel on an Intel N97 processor and performed t=
-he exact same operations =E2=80=94 no system hang occurs.
->=C2=A0
-> > > I also tested it on a Hygon 3330 CPU, and the behavior is similar: so=
-metimes the system freezes immediately upon starting the VM, and other time=
-s it prints some error logs before freezing. Here are the error logs:
->=C2=A0
-> >=C2=A0
-> > Seems like the Hygon is also providing an AMD-based virtualization
->=C2=A0
-> > interface. Then it's the same issue.
->=C2=A0
-> >=C2=A0
-> > >=C2=A0
->=C2=A0
-> > > [=C2=A0 629.692131] rcu: INFO: rcu_preempt self-detected stall on CPU
->=C2=A0
-> > > [=C2=A0 629.692137] rcu: =C2=A0 =C2=A0 4-....: (59999 ticks this GP) =
-idle=3Dd6d4/1/0x4000000000000000 softirq=3D10473/10473 fqs=3D15000
->=C2=A0
-> > > [=C2=A0 629.692146] rcu: =C2=A0 =C2=A0 (t=3D60000 jiffies g=3D14441 q=
-=3D771 ncpus=3D8)
->=C2=A0
-> > > [=C2=A0 629.692151] CPU: 4 UID: 0 PID: 128 Comm: ksmd Tainted: G =C2=
-=A0 =C2=A0 =C2=A0=C2=A0 W =C2=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0 6.12.55-rkernel=
--s1.7 #metaOS
->=C2=A0
-> > > [=C2=A0 629.692154] Tainted: [W]=3DWARN
->=C2=A0
-> > > [=C2=A0 629.692155] Hardware name: TianBei GEM12/GEM12, BIOS 1.00 03/=
-07/2024
->=C2=A0
-> > > [=C2=A0 629.692155] IRQ stage: Linux
->=C2=A0
-> > > [=C2=A0 629.692156] RIP: 0010:smp_call_function_many_cond+0x12f/0x490
->=C2=A0
-> > > [=C2=A0 629.692161] Code: d0 e8 65 ab 5a 00 39 05 df 8b b6 01 76 26 4=
-8 63 d0 49 8b 4d 00 48 03 0c d5 40 6a 8b 8e 8b 51 08 83 e2 01 74 0a f3 90 8=
-b 51 08 <83> e2 01 75 f6 83 c0 01 eb c0 48 83 c4 30 5b 41 5c 41 5d 41 5e 41
->=C2=A0
-> > > [=C2=A0 629.692162] RSP: 0018:ffffbc71005bfb80 EFLAGS: 00000202 ORIG_=
-RAX: 0000000000000000
->=C2=A0
-> > > [=C2=A0 629.692164] RAX: 0000000000000000 RBX: 0000000000000000 RCX: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 629.692165] RDX: 0000000000000000 RSI: 0000000000000000 RDI: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 629.692166] RBP: ffffbc71005bfbd8 R08: 0000000000000000 R09: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 629.692166] R10: 0000000000000000 R11: 0000000000000000 R12: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 629.692167] R13: 0000000000000000 R14: 0000000000000000 R15: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 629.692168] FS:=C2=A0 0000000000000000(0000) GS:ffff9506adc00=
-000(0000) knlGS:0000000000000000
->=C2=A0
-> > > [=C2=A0 629.692169] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 00000000800=
-50033
->=C2=A0
-> > > [=C2=A0 629.692170] CR2: 000001984bad1000 CR3: 000000010bf60000 CR4: =
-0000000000750eb0
->=C2=A0
-> > > [=C2=A0 629.692171] PKRU: 55555554
->=C2=A0
-> > > [=C2=A0 629.692171] Call Trace:
->=C2=A0
-> > > [=C2=A0 629.692172]=C2=A0 <TASK>
->=C2=A0
-> > > [=C2=A0 629.692175]=C2=A0 ? __pfx_flush_tlb_func+0x10/0x10
->=C2=A0
-> > > [=C2=A0 629.692178]=C2=A0 ? __pfx_flush_tlb_func+0x10/0x10
->=C2=A0
-> > > [=C2=A0 629.692179]=C2=A0 ? __pfx_should_flush_tlb+0x10/0x10
->=C2=A0
-> > > [=C2=A0 629.692181]=C2=A0 on_each_cpu_cond_mask+0x49/0x80
->=C2=A0
-> > > [=C2=A0 629.692183]=C2=A0 native_flush_tlb_multi+0xb0/0x110
->=C2=A0
-> > > [=C2=A0 629.692185]=C2=A0 flush_tlb_mm_range+0x157/0x1b0
->=C2=A0
-> > > [=C2=A0 629.692188]=C2=A0 ptep_clear_flush+0x61/0x70
->=C2=A0
-> > > [=C2=A0 629.692191]=C2=A0 write_protect_page+0x1ad/0x450
->=C2=A0
-> > > [=C2=A0 629.692196]=C2=A0 try_to_merge_one_page+0x9f/0x6d0
->=C2=A0
-> > > [=C2=A0 629.692198]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 629.692201]=C2=A0 ? mtree_load+0x1f8/0x230
->=C2=A0
-> > > [=C2=A0 629.692207]=C2=A0 try_to_merge_with_ksm_page+0x65/0x150
->=C2=A0
-> > > [=C2=A0 629.692210]=C2=A0 ksm_scan_thread+0x1cb/0x11e0
->=C2=A0
-> > > [=C2=A0 629.692213]=C2=A0 ? __pfx_autoremove_wake_function+0x10/0x10
->=C2=A0
-> > > [=C2=A0 629.692217]=C2=A0 ? __pfx_ksm_scan_thread+0x10/0x10
->=C2=A0
-> > > [=C2=A0 629.692218]=C2=A0 kthread+0xfb/0x130
->=C2=A0
-> > > [=C2=A0 629.692221]=C2=A0 ? __pfx_kthread+0x10/0x10
->=C2=A0
-> > > [=C2=A0 629.692223]=C2=A0 ret_from_fork+0x3e/0x50
->=C2=A0
-> > > [=C2=A0 629.692226]=C2=A0 ? __pfx_kthread+0x10/0x10
->=C2=A0
-> > > [=C2=A0 629.692227]=C2=A0 ret_from_fork_asm+0x1a/0x30
->=C2=A0
-> > > [=C2=A0 629.692233]=C2=A0 </TASK>
->=C2=A0
-> > > [=C2=A0 640.032915] rcu: INFO: rcu_preempt detected expedited stalls =
-on CPUs/tasks: { 4-.... 7-...D } 64207 jiffies s: 689 root: 0x90/.
->=C2=A0
-> > > [=C2=A0 640.032927] rcu: blocking rcu_node structures (internal RCU d=
-ebug):
->=C2=A0
-> > > [=C2=A0 640.032932] Sending NMI from CPU 0 to CPUs 4:
->=C2=A0
-> > > [=C2=A0 640.032937] NMI backtrace for cpu 4
->=C2=A0
-> > > [=C2=A0 640.032938] CPU: 4 UID: 0 PID: 128 Comm: ksmd Tainted: G =C2=
-=A0 =C2=A0 =C2=A0=C2=A0 W =C2=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0 6.12.55-rkernel=
--s1.7 #metaOS
->=C2=A0
-> > > [=C2=A0 640.032940] Tainted: [W]=3DWARN
->=C2=A0
-> > > [=C2=A0 640.032940] Hardware name: TianBei GEM12/GEM12, BIOS 1.00 03/=
-07/2024
->=C2=A0
-> > > [=C2=A0 640.032941] IRQ stage: Linux
->=C2=A0
-> > > [=C2=A0 640.032942] RIP: 0010:smp_call_function_many_cond+0x12f/0x490
->=C2=A0
-> > > [=C2=A0 640.032943] Code: d0 e8 65 ab 5a 00 39 05 df 8b b6 01 76 26 4=
-8 63 d0 49 8b 4d 00 48 03 0c d5 40 6a 8b 8e 8b 51 08 83 e2 01 74 0a f3 90 8=
-b 51 08 <83> e2 01 75 f6 83 c0 01 eb c0 48 83 c4 30 5b 41 5c 41 5d 41 5e 41
->=C2=A0
-> > > [=C2=A0 640.032944] RSP: 0018:ffffbc71005bfb80 EFLAGS: 00000202
->=C2=A0
-> > > [=C2=A0 640.032945] RAX: 0000000000000007 RBX: ffffffff8d0a4d10 RCX: =
-ffff9506adfb2340
->=C2=A0
-> > > [=C2=A0 640.032946] RDX: 0000000000000011 RSI: 0000000000000010 RDI: =
-ffff9503802dc0b8
->=C2=A0
-> > > [=C2=A0 640.032947] RBP: ffffbc71005bfbd8 R08: 0000000000000007 R09: =
-ffff9503802dc7e8
->=C2=A0
-> > > [=C2=A0 640.032948] R10: ffff95038aa31000 R11: 0000000000000000 R12: =
-ffff9506adfb2340
->=C2=A0
-> > > [=C2=A0 640.032948] R13: ffff9506adcabd40 R14: 0000000000000001 R15: =
-ffff9506adcabd40
->=C2=A0
-> > > [=C2=A0 640.032949] FS:=C2=A0 0000000000000000(0000) GS:ffff9506adc00=
-000(0000) knlGS:0000000000000000
->=C2=A0
-> > > [=C2=A0 640.032950] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 00000000800=
-50033
->=C2=A0
-> > > [=C2=A0 640.032951] CR2: 000001984bad1000 CR3: 000000010bf60000 CR4: =
-0000000000750eb0
->=C2=A0
-> > > [=C2=A0 640.032952] PKRU: 55555554
->=C2=A0
-> > > [=C2=A0 640.032952] Call Trace:
->=C2=A0
-> > > [=C2=A0 640.032953]=C2=A0 <TASK>
->=C2=A0
-> > > [=C2=A0 640.032954]=C2=A0 ? __pfx_flush_tlb_func+0x10/0x10
->=C2=A0
-> > > [=C2=A0 640.032956]=C2=A0 ? __pfx_flush_tlb_func+0x10/0x10
->=C2=A0
-> > > [=C2=A0 640.032957]=C2=A0 ? __pfx_should_flush_tlb+0x10/0x10
->=C2=A0
-> > > [=C2=A0 640.032958]=C2=A0 on_each_cpu_cond_mask+0x49/0x80
->=C2=A0
-> > > [=C2=A0 640.032961]=C2=A0 native_flush_tlb_multi+0xb0/0x110
->=C2=A0
-> > > [=C2=A0 640.032962]=C2=A0 flush_tlb_mm_range+0x157/0x1b0
->=C2=A0
-> > > [=C2=A0 640.032965]=C2=A0 ptep_clear_flush+0x61/0x70
->=C2=A0
-> > > [=C2=A0 640.032967]=C2=A0 write_protect_page+0x1ad/0x450
->=C2=A0
-> > > [=C2=A0 640.032971]=C2=A0 try_to_merge_one_page+0x9f/0x6d0
->=C2=A0
-> > > [=C2=A0 640.032973]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 640.032975]=C2=A0 ? mtree_load+0x1f8/0x230
->=C2=A0
-> > > [=C2=A0 640.032978]=C2=A0 try_to_merge_with_ksm_page+0x65/0x150
->=C2=A0
-> > > [=C2=A0 640.032981]=C2=A0 ksm_scan_thread+0x1cb/0x11e0
->=C2=A0
-> > > [=C2=A0 640.032984]=C2=A0 ? __pfx_autoremove_wake_function+0x10/0x10
->=C2=A0
-> > > [=C2=A0 640.032987]=C2=A0 ? __pfx_ksm_scan_thread+0x10/0x10
->=C2=A0
-> > > [=C2=A0 640.032988]=C2=A0 kthread+0xfb/0x130
->=C2=A0
-> > > [=C2=A0 640.032990]=C2=A0 ? __pfx_kthread+0x10/0x10
->=C2=A0
-> > > [=C2=A0 640.032992]=C2=A0 ret_from_fork+0x3e/0x50
->=C2=A0
-> > > [=C2=A0 640.032994]=C2=A0 ? __pfx_kthread+0x10/0x10
->=C2=A0
-> > > [=C2=A0 640.032995]=C2=A0 ret_from_fork_asm+0x1a/0x30
->=C2=A0
-> > > [=C2=A0 640.032999]=C2=A0 </TASK>
->=C2=A0
-> > > [=C2=A0 640.033935] Sending NMI from CPU 0 to CPUs 7:
->=C2=A0
-> > > [=C2=A0 640.033941] NMI backtrace for cpu 7
->=C2=A0
-> > > [=C2=A0 640.033943] CPU: 7 UID: 1000 PID: 1913 Comm: CPU 4/KVM Tainte=
-d: G =C2=A0 =C2=A0 =C2=A0=C2=A0 W =C2=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0 6.12.55=
--rkernel-s1.7 #metaOS
->=C2=A0
-> > > [=C2=A0 640.033946] Tainted: [W]=3DWARN
->=C2=A0
-> > > [=C2=A0 640.033947] Hardware name: TianBei GEM12/GEM12, BIOS 1.00 03/=
-07/2024
->=C2=A0
-> > > [=C2=A0 640.033947] IRQ stage: Linux
->=C2=A0
-> > > [=C2=A0 640.033948] RIP: 0010:svm_vcpu_run+0x27a/0x790 [kvm_amd]
->=C2=A0
-> > > [=C2=A0 640.033956] Code: 02 00 00 48 3b 82 70 06 00 00 74 13 48 89 c=
-2 b9 d9 01 00 00 48 c1 ea 20 0f 30 0f 1f 44 00 00 48 89 df e8 c9 79 ec ff 0=
-f 01 dc <48> 8b 83 48 19 00 00 83 78 70 61 0f 84 1e 03 00 00 f6 83 00 02 00
->=C2=A0
-> > > [=C2=A0 640.033957] RSP: 0018:ffffbc71031efca0 EFLAGS: 00000056
->=C2=A0
-> > > [=C2=A0 640.033959] RAX: 0000000000000800 RBX: ffff95039c31b860 RCX: =
-0000000000000da0
->=C2=A0
-> > > [=C2=A0 640.033960] RDX: 0000000000000000 RSI: 0000000000350ef8 RDI: =
-ffff95039c31b860
->=C2=A0
-> > > [=C2=A0 640.033961] RBP: ffffbc71031efcd0 R08: 0000000000000000 R09: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 640.033961] R10: 0000000000000000 R11: 0000000000000000 R12: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 640.033962] R13: 0000000000000000 R14: 0000000000000000 R15: =
-00000000000a9b48
->=C2=A0
-> > > [=C2=A0 640.033963] FS:=C2=A0 00007f140899c6c0(0000) GS:ffff9506adf00=
-000(0000) knlGS:0000000000000000
->=C2=A0
-> > > [=C2=A0 640.033964] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 00000000800=
-50033
->=C2=A0
-> > > [=C2=A0 640.033965] CR2: 00007ff638732d00 CR3: 000000010986e000 CR4: =
-0000000000750eb0
->=C2=A0
-> > > [=C2=A0 640.033966] PKRU: 55555554
->=C2=A0
-> > > [=C2=A0 640.033966] Call Trace:
->=C2=A0
-> > > [=C2=A0 640.033967]=C2=A0 <TASK>
->=C2=A0
-> > > [=C2=A0 640.033970]=C2=A0 vcpu_enter_guest+0xaea/0x19b0 [kvm]
->=C2=A0
-> > > [=C2=A0 640.033998]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 640.034003]=C2=A0 kvm_arch_vcpu_ioctl_run+0x156/0x6b0 [kvm]
->=C2=A0
-> > > [=C2=A0 640.034020]=C2=A0 kvm_vcpu_ioctl+0x538/0x920 [kvm]
->=C2=A0
-> > > [=C2=A0 640.034037]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 640.034041]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 640.034042]=C2=A0 ? __fget_files+0x7f/0xb0
->=C2=A0
-> > > [=C2=A0 640.034046]=C2=A0 __x64_sys_ioctl+0x97/0xd0
->=C2=A0
-> > > [=C2=A0 640.034049]=C2=A0 x64_sys_call+0x1d09/0x1d50
->=C2=A0
-> > > [=C2=A0 640.034051]=C2=A0 do_syscall_64+0xc0/0x220
->=C2=A0
-> > > [=C2=A0 640.034054]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 640.034056]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 640.034058]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 640.034060]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 640.034062]=C2=A0 entry_SYSCALL_64_after_hwframe+0x76/0x7e
->=C2=A0
-> > > [=C2=A0 640.034064] RIP: 0033:0x7f140b417e1d
->=C2=A0
-> > > [=C2=A0 640.034065] Code: 04 25 28 00 00 00 48 89 45 c8 31 c0 48 8d 4=
-5 10 c7 45 b0 10 00 00 00 48 89 45 b8 48 8d 45 d0 48 89 45 c0 b8 10 00 00 0=
-0 0f 05 <89> c2 3d 00 f0 ff ff 77 1a 48 8b 45 c8 64 48 2b 04 25 28 00 00 00
->=C2=A0
-> > > [=C2=A0 640.034066] RSP: 002b:00007f140899b440 EFLAGS: 00000246 ORIG_=
-RAX: 0000000000000010
->=C2=A0
-> > > [=C2=A0 640.034068] RAX: ffffffffffffffda RBX: 000055ad3d2bd5a0 RCX: =
-00007f140b417e1d
->=C2=A0
-> > > [=C2=A0 640.034069] RDX: 0000000000000000 RSI: 000000000000ae80 RDI: =
-000000000000001a
->=C2=A0
-> > > [=C2=A0 640.034069] RBP: 00007f140899b490 R08: 000055ad25e60648 R09: =
-0000000000000001
->=C2=A0
-> > > [=C2=A0 640.034070] R10: 000055ad3cefe090 R11: 0000000000000246 R12: =
-000000000000ae80
->=C2=A0
-> > > [=C2=A0 640.034071] R13: 0000000000000000 R14: 0000000000000000 R15: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 640.034075]=C2=A0 </TASK>
->=C2=A0
-> > > [=C2=A0 701.629797] rcu: INFO: rcu_preempt detected stalls on CPUs/ta=
-sks:
->=C2=A0
-> > > [=C2=A0 701.629805] rcu: =C2=A0 =C2=A0 4-...0: (169 ticks this GP) id=
-le=3Dea9c/1/0x4000000000000000 softirq=3D10688/10690 fqs=3D15000
->=C2=A0
-> > > [=C2=A0 701.629813] rcu: =C2=A0 =C2=A0 (detected by 0, t=3D60002 jiff=
-ies, g=3D14825, q=3D910 ncpus=3D8)
->=C2=A0
-> > > [=C2=A0 701.629819] Sending NMI from CPU 0 to CPUs 4:
->=C2=A0
-> > > [=C2=A0 701.629824] NMI backtrace for cpu 4
->=C2=A0
-> > > [=C2=A0 701.629827] CPU: 4 UID: 1000 PID: 1910 Comm: CPU 1/KVM Tainte=
-d: G =C2=A0 =C2=A0 =C2=A0=C2=A0 W =C2=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0 6.12.55=
--rkernel-s1.7 #metaOS
->=C2=A0
-> > > [=C2=A0 701.629830] Tainted: [W]=3DWARN
->=C2=A0
-> > > [=C2=A0 701.629830] Hardware name: TianBei GEM12/GEM12, BIOS 1.00 03/=
-07/2024
->=C2=A0
-> > > [=C2=A0 701.629831] IRQ stage: Linux
->=C2=A0
-> > > [=C2=A0 701.629832] RIP: 0010:svm_vcpu_run+0x27a/0x790 [kvm_amd]
->=C2=A0
-> > > [=C2=A0 701.629841] Code: 02 00 00 48 3b 82 70 06 00 00 74 13 48 89 c=
-2 b9 d9 01 00 00 48 c1 ea 20 0f 30 0f 1f 44 00 00 48 89 df e8 c9 79 ec ff 0=
-f 01 dc <48> 8b 83 48 19 00 00 83 78 70 61 0f 84 1e 03 00 00 f6 83 00 02 00
->=C2=A0
-> > > [=C2=A0 701.629842] RSP: 0018:ffffbc71031d7c80 EFLAGS: 00000056
->=C2=A0
-> > > [=C2=A0 701.629844] RAX: 0000000000000800 RBX: ffff95038db83860 RCX: =
-0000000000000da0
->=C2=A0
-> > > [=C2=A0 701.629845] RDX: 0000000000000000 RSI: 0000000000350ef8 RDI: =
-ffff95038db83860
->=C2=A0
-> > > [=C2=A0 701.629846] RBP: ffffbc71031d7cb0 R08: 0000000000000000 R09: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 701.629846] R10: 0000000000000000 R11: 0000000000000000 R12: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 701.629847] R13: 0000000000000000 R14: 0000000000000000 R15: =
-00000000000a9b48
->=C2=A0
-> > > [=C2=A0 701.629848] FS:=C2=A0 00007f14037fe6c0(0000) GS:ffff9506adc00=
-000(0000) knlGS:0000000000000000
->=C2=A0
-> > > [=C2=A0 701.629849] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 00000000800=
-50033
->=C2=A0
-> > > [=C2=A0 701.629850] CR2: 000002c591858598 CR3: 000000010986e000 CR4: =
-0000000000750eb0
->=C2=A0
-> > > [=C2=A0 701.629851] PKRU: 55555554
->=C2=A0
-> > > [=C2=A0 701.629851] Call Trace:
->=C2=A0
-> > > [=C2=A0 701.629852]=C2=A0 <TASK>
->=C2=A0
-> > > [=C2=A0 701.629856]=C2=A0 vcpu_enter_guest+0xaea/0x19b0 [kvm]
->=C2=A0
-> > > [=C2=A0 701.629884]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 701.629888]=C2=A0 ? kvm_apic_has_interrupt+0x43/0x90 [kvm]
->=C2=A0
-> > > [=C2=A0 701.629911]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 701.629913]=C2=A0 ? kvm_cpu_has_interrupt+0x27/0x40 [kvm]
->=C2=A0
-> > > [=C2=A0 701.629933]=C2=A0 kvm_arch_vcpu_ioctl_run+0x156/0x6b0 [kvm]
->=C2=A0
-> > > [=C2=A0 701.629951]=C2=A0 kvm_vcpu_ioctl+0x538/0x920 [kvm]
->=C2=A0
-> > > [=C2=A0 701.629969]=C2=A0 ? __this_cpu_preempt_check+0x17/0x20
->=C2=A0
-> > > [=C2=A0 701.629972]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 701.629974]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 701.629977]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 701.629979]=C2=A0 ? __fget_files+0x7f/0xb0
->=C2=A0
-> > > [=C2=A0 701.629982]=C2=A0 __x64_sys_ioctl+0x97/0xd0
->=C2=A0
-> > > [=C2=A0 701.629985]=C2=A0 x64_sys_call+0x1d09/0x1d50
->=C2=A0
-> > > [=C2=A0 701.629988]=C2=A0 do_syscall_64+0xc0/0x220
->=C2=A0
-> > > [=C2=A0 701.629991]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 701.629992]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 701.629994]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 701.629996]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 701.629998]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 701.630000]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 701.630001]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 701.630003]=C2=A0 ? arch_pipeline_entry+0xf0/0x120
->=C2=A0
-> > > [=C2=A0 701.630005]=C2=A0 entry_SYSCALL_64_after_hwframe+0x76/0x7e
->=C2=A0
-> > > [=C2=A0 701.630007] RIP: 0033:0x7f140b417e1d
->=C2=A0
-> > > [=C2=A0 701.630008] Code: 04 25 28 00 00 00 48 89 45 c8 31 c0 48 8d 4=
-5 10 c7 45 b0 10 00 00 00 48 89 45 b8 48 8d 45 d0 48 89 45 c0 b8 10 00 00 0=
-0 0f 05 <89> c2 3d 00 f0 ff ff 77 1a 48 8b 45 c8 64 48 2b 04 25 28 00 00 00
->=C2=A0
-> > > [=C2=A0 701.630010] RSP: 002b:00007f14037fd440 EFLAGS: 00000246 ORIG_=
-RAX: 0000000000000010
->=C2=A0
-> > > [=C2=A0 701.630011] RAX: ffffffffffffffda RBX: 000055ad3d2a0590 RCX: =
-00007f140b417e1d
->=C2=A0
-> > > [=C2=A0 701.630012] RDX: 0000000000000000 RSI: 000000000000ae80 RDI: =
-0000000000000014
->=C2=A0
-> > > [=C2=A0 701.630013] RBP: 00007f14037fd490 R08: 000055ad25e60648 R09: =
-0000000000000001
->=C2=A0
-> > > [=C2=A0 701.630013] R10: 000055ad3cefe090 R11: 0000000000000246 R12: =
-000000000000ae80
->=C2=A0
-> > > [=C2=A0 701.630014] R13: 0000000000000000 R14: 0000000000000000 R15: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 701.630018]=C2=A0 </TASK>
->=C2=A0
-> > > [=C2=A0 761.828796] rcu: INFO: rcu_preempt detected stalls on CPUs/ta=
-sks:
->=C2=A0
-> > > [=C2=A0 761.828805] rcu: =C2=A0 =C2=A0 2-...0: (1 GPs behind) idle=3D=
-bb04/1/0x4000000000000000 softirq=3D11260/11261 fqs=3D15000
->=C2=A0
-> > > [=C2=A0 761.828815] rcu: =C2=A0 =C2=A0 (detected by 3, t=3D60002 jiff=
-ies, g=3D14869, q=3D257 ncpus=3D8)
->=C2=A0
-> > > [=C2=A0 761.828820] Sending NMI from CPU 3 to CPUs 2:
->=C2=A0
-> > > [=C2=A0 761.828827] NMI backtrace for cpu 2
->=C2=A0
-> > > [=C2=A0 761.828829] CPU: 2 UID: 1000 PID: 1911 Comm: CPU 2/KVM Tainte=
-d: G =C2=A0 =C2=A0 =C2=A0=C2=A0 W =C2=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0 6.12.55=
--rkernel-s1.7 #metaOS
->=C2=A0
-> > > [=C2=A0 761.828832] Tainted: [W]=3DWARN
->=C2=A0
-> > > [=C2=A0 761.828833] Hardware name: TianBei GEM12/GEM12, BIOS 1.00 03/=
-07/2024
->=C2=A0
-> > > [=C2=A0 761.828834] IRQ stage: Linux
->=C2=A0
-> > > [=C2=A0 761.828835] RIP: 0010:svm_vcpu_run+0x27a/0x790 [kvm_amd]
->=C2=A0
-> > > [=C2=A0 761.828844] Code: 02 00 00 48 3b 82 70 06 00 00 74 13 48 89 c=
-2 b9 d9 01 00 00 48 c1 ea 20 0f 30 0f 1f 44 00 00 48 89 df e8 c9 79 ec ff 0=
-f 01 dc <48> 8b 83 48 19 00 00 83 78 70 61 0f 84 1e 03 00 00 f6 83 00 02 00
->=C2=A0
-> > > [=C2=A0 761.828845] RSP: 0018:ffffbc71031dfad0 EFLAGS: 00000056
->=C2=A0
-> > > [=C2=A0 761.828847] RAX: 0000000000000800 RBX: ffff950382b5d490 RCX: =
-0000000000000da0
->=C2=A0
-> > > [=C2=A0 761.828848] RDX: 0000000000000000 RSI: 0000000000350ef8 RDI: =
-ffff950382b5d490
->=C2=A0
-> > > [=C2=A0 761.828849] RBP: ffffbc71031dfb00 R08: 0000000000000000 R09: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 761.828850] R10: 0000000000000000 R11: 0000000000000000 R12: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 761.828851] R13: 0000000000000000 R14: 0000000000000000 R15: =
-00000000000a9b48
->=C2=A0
-> > > [=C2=A0 761.828851] FS:=C2=A0 00007f1403fff6c0(0000) GS:ffff9506ada00=
-000(0000) knlGS:0000000000000000
->=C2=A0
-> > > [=C2=A0 761.828853] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 00000000800=
-50033
->=C2=A0
-> > > [=C2=A0 761.828853] CR2: 0000019849e83000 CR3: 000000010986e000 CR4: =
-0000000000750eb0
->=C2=A0
-> > > [=C2=A0 761.828854] PKRU: 55555554
->=C2=A0
-> > > [=C2=A0 761.828855] Call Trace:
->=C2=A0
-> > > [=C2=A0 761.828856]=C2=A0 <TASK>
->=C2=A0
-> > > [=C2=A0 761.828860]=C2=A0 vcpu_enter_guest+0xaea/0x19b0 [kvm]
->=C2=A0
-> > > [=C2=A0 761.828889]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 761.828893]=C2=A0 ? x86_emulate_instruction+0x396/0x6f0 [kvm]
->=C2=A0
-> > > [=C2=A0 761.828912]=C2=A0 kvm_arch_vcpu_ioctl_run+0x156/0x6b0 [kvm]
->=C2=A0
-> > > [=C2=A0 761.828930]=C2=A0 kvm_vcpu_ioctl+0x538/0x920 [kvm]
->=C2=A0
-> > > [=C2=A0 761.828948]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 761.828951]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 761.828953]=C2=A0 ? __fget_files+0x7f/0xb0
->=C2=A0
-> > > [=C2=A0 761.828956]=C2=A0 __x64_sys_ioctl+0x97/0xd0
->=C2=A0
-> > > [=C2=A0 761.828960]=C2=A0 x64_sys_call+0x1d09/0x1d50
->=C2=A0
-> > > [=C2=A0 761.828962]=C2=A0 do_syscall_64+0xc0/0x220
->=C2=A0
-> > > [=C2=A0 761.828966]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 761.828968]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 761.828970]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 761.828972]=C2=A0 ? __this_cpu_preempt_check+0x17/0x20
->=C2=A0
-> > > [=C2=A0 761.828974]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 761.828975]=C2=A0 ? __ct_user_enter+0x99/0x110
->=C2=A0
-> > > [=C2=A0 761.828978]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 761.828980]=C2=A0 ? syscall_exit_to_user_mode+0x1d5/0x310
->=C2=A0
-> > > [=C2=A0 761.828982]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 761.828984]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 761.828985]=C2=A0 ? __ct_user_enter+0x99/0x110
->=C2=A0
-> > > [=C2=A0 761.828987]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 761.828989]=C2=A0 ? syscall_exit_to_user_mode+0x1d5/0x310
->=C2=A0
-> > > [=C2=A0 761.828991]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 761.828993]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 761.828995]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 761.828997]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 761.828999]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 761.829000]=C2=A0 ? syscall_exit_to_user_mode+0x1d5/0x310
->=C2=A0
-> > > [=C2=A0 761.829003]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 761.829004]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 761.829006]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 761.829008]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 761.829010]=C2=A0 entry_SYSCALL_64_after_hwframe+0x76/0x7e
->=C2=A0
-> > > [=C2=A0 761.829012] RIP: 0033:0x7f140b417e1d
->=C2=A0
-> > > [=C2=A0 761.829014] Code: 04 25 28 00 00 00 48 89 45 c8 31 c0 48 8d 4=
-5 10 c7 45 b0 10 00 00 00 48 89 45 b8 48 8d 45 d0 48 89 45 c0 b8 10 00 00 0=
-0 0f 05 <89> c2 3d 00 f0 ff ff 77 1a 48 8b 45 c8 64 48 2b 04 25 28 00 00 00
->=C2=A0
-> > > [=C2=A0 761.829015] RSP: 002b:00007f1403ffe440=C2=A0EFLAGS: 00000246 =
-ORIG_RAX: 0000000000000010
->=C2=A0
-> > > [=C2=A0 761.829016] RAX: ffffffffffffffda RBX: 000055ad3d2aa020 RCX: =
-00007f140b417e1d
->=C2=A0
-> > > [=C2=A0 761.829017] RDX: 0000000000000000 RSI: 000000000000ae80 RDI: =
-0000000000000016
->=C2=A0
-> > > [=C2=A0 761.829018] RBP: 00007f1403ffe490 R08: 000055ad25e60648 R09: =
-0000000000000001
->=C2=A0
-> > > [=C2=A0 761.829019] R10: 000055ad3cefe090 R11: 0000000000000246 R12: =
-000000000000ae80
->=C2=A0
-> > > [=C2=A0 761.829019] R13: 0000000000000000 R14: 0000000000000000 R15: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 761.829023]=C2=A0 </TASK>
->=C2=A0
-> > > [=C2=A0 821.834293] rcu: INFO: rcu_preempt detected stalls on CPUs/ta=
-sks:
->=C2=A0
-> > > [=C2=A0 821.834301] rcu: =C2=A0 =C2=A0 3-...0: (1 GPs behind) idle=3D=
-8ca4/1/0x4000000000000000 softirq=3D10896/10897 fqs=3D15000
->=C2=A0
-> > > [=C2=A0 821.834310] rcu: =C2=A0 =C2=A0 (detected by 0, t=3D60002 jiff=
-ies, g=3D14873, q=3D389 ncpus=3D8)
->=C2=A0
-> > > [=C2=A0 821.834315] Sending NMI from CPU 0 to CPUs 3:
->=C2=A0
-> > > [=C2=A0 821.834321] NMI backtrace for cpu 3
->=C2=A0
-> > > [=C2=A0 821.834324] CPU: 3 UID: 1000 PID: 1911 Comm: CPU 2/KVM Tainte=
-d: G =C2=A0 =C2=A0 =C2=A0=C2=A0 W =C2=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0 6.12.55=
--rkernel-s1.7 #metaOS
->=C2=A0
-> > > [=C2=A0 821.834327] Tainted: [W]=3DWARN
->=C2=A0
-> > > [=C2=A0 821.834328] Hardware name: TianBei GEM12/GEM12, BIOS 1.00 03/=
-07/2024
->=C2=A0
-> > > [=C2=A0 821.834328] IRQ stage: Linux
->=C2=A0
-> > > [=C2=A0 821.834330] RIP: 0010:svm_vcpu_run+0x27a/0x790 [kvm_amd]
->=C2=A0
-> > > [=C2=A0 821.834339] Code: 02 00 00 48 3b 82 70 06 00 00 74 13 48 89 c=
-2 b9 d9 01 00 00 48 c1 ea 20 0f 30 0f 1f 44 00 00 48 89 df e8 c9 79 ec ff 0=
-f 01 dc <48> 8b 83 48 19 00 00 83 78 70 61 0f 84 1e 03 00 00 f6 83 00 02 00
->=C2=A0
-> > > [=C2=A0 821.834340] RSP: 0018:ffffbc71031dfad0 EFLAGS: 00000056
->=C2=A0
-> > > [=C2=A0 821.834342] RAX: 0000000000000800=C2=A0RBX: ffff950382b5d490 =
-RCX: 0000000000000da0
->=C2=A0
-> > > [=C2=A0 821.834343] RDX: 0000000000000000 RSI: 0000000000350ef8=C2=A0=
-RDI: ffff950382b5d490
->=C2=A0
-> > > [=C2=A0 821.834344] RBP: ffffbc71031dfb00 R08: 0000000000000000 R09: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 821.834345] R10: 0000000000000000 R11: 0000000000000000 R12: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 821.834345] R13: 0000000000000000 R14: 0000000000000000 R15: =
-00000000000a9b48
->=C2=A0
-> > > [=C2=A0 821.834346] FS:=C2=A0 00007f1403fff6c0(0000) GS:ffff9506adb00=
-000(0000) knlGS:0000000000000000
->=C2=A0
-> > > [=C2=A0 821.834347] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 00000000800=
-50033
->=C2=A0
-> > > [=C2=A0 821.834348] CR2: 0000019849e83000 CR3: 000000010986e000=C2=A0=
-CR4: 0000000000750eb0
->=C2=A0
-> > > [=C2=A0 821.834349] PKRU: 55555554
->=C2=A0
-> > > [=C2=A0 821.834350] Call Trace:
->=C2=A0
-> > > [=C2=A0 821.834351]=C2=A0 <TASK>
->=C2=A0
-> > > [=C2=A0 821.834355]=C2=A0 vcpu_enter_guest+0xaea/0x19b0 [kvm]
->=C2=A0
-> > > [=C2=A0 821.834387]=C2=A0 kvm_arch_vcpu_ioctl_run+0x156/0x6b0 [kvm]
->=C2=A0
-> > > [=C2=A0 821.834406]=C2=A0 kvm_vcpu_ioctl+0x538/0x920 [kvm]
->=C2=A0
-> > > [=C2=A0 821.834425]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 821.834430]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 821.834432]=C2=A0 ? __fget_files+0x7f/0xb0
->=C2=A0
-> > > [=C2=A0 821.834436]=C2=A0 __x64_sys_ioctl+0x97/0xd0
->=C2=A0
-> > > [=C2=A0 821.834439]=C2=A0 x64_sys_call+0x1d09/0x1d50
->=C2=A0
-> > > [=C2=A0 821.834442]=C2=A0 do_syscall_64+0xc0/0x220
->=C2=A0
-> > > [=C2=A0 821.834446]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 821.834448]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 821.834450]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 821.834452]=C2=A0 ? __this_cpu_preempt_check+0x17/0x20
->=C2=A0
-> > > [=C2=A0 821.834454]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 821.834456]=C2=A0 ? __ct_user_enter+0x99/0x110
->=C2=A0
-> > > [=C2=A0 821.834458]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 821.834460]=C2=A0 ? syscall_exit_to_user_mode+0x1d5/0x310
->=C2=A0
-> > > [=C2=A0 821.834462]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 821.834464]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 821.834466]=C2=A0 ? __ct_user_enter+0x99/0x110
->=C2=A0
-> > > [=C2=A0 821.834468]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 821.834470]=C2=A0 ? syscall_exit_to_user_mode+0x1d5/0x310
->=C2=A0
-> > > [=C2=A0 821.834472]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 821.834474]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 821.834476]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 821.834478]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 821.834479]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 821.834481]=C2=A0 ? syscall_exit_to_user_mode+0x1d5/0x310
->=C2=A0
-> > > [=C2=A0 821.834483]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 821.834485]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 821.834487]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 821.834489]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 821.834491]=C2=A0 entry_SYSCALL_64_after_hwframe+0x76/0x7e
->=C2=A0
-> > > [=C2=A0 821.834493] RIP: 0033:0x7f140b417e1d
->=C2=A0
-> > > [=C2=A0 821.834495] Code: 04 25 28 00 00 00 48 89 45 c8 31 c0 48 8d 4=
-5 10 c7 45 b0 10 00 00 00 48 89 45 b8 48 8d 45 d0 48 89 45 c0 b8 10 00 00 0=
-0 0f 05 <89> c2 3d 00 f0 ff ff 77 1a 48 8b 45 c8 64 48 2b 04 25 28 00 00 00
->=C2=A0
-> > > [=C2=A0 821.834496] RSP: 002b:00007f1403ffe440=C2=A0EFLAGS: 00000246 =
-ORIG_RAX: 0000000000000010
->=C2=A0
-> > > [=C2=A0 821.834497] RAX: ffffffffffffffda RBX: 000055ad3d2aa020 RCX: =
-00007f140b417e1d
->=C2=A0
-> > > [=C2=A0 821.834498] RDX: 0000000000000000 RSI: 000000000000ae80 RDI: =
-0000000000000016
->=C2=A0
-> > > [=C2=A0 821.834499] RBP: 00007f1403ffe490 R08: 000055ad25e60648 R09: =
-0000000000000001
->=C2=A0
-> > > [=C2=A0 821.834500] R10: 000055ad3cefe090 R11: 0000000000000246 R12: =
-000000000000ae80
->=C2=A0
-> > > [=C2=A0 821.834501] R13: 0000000000000000 R14: 0000000000000000 R15: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 821.834505]=C2=A0 </TASK>
->=C2=A0
-> > > [=C2=A0 881.905482] rcu: INFO: rcu_preempt detected stalls on CPUs/ta=
-sks:
->=C2=A0
-> > > [=C2=A0 881.905491] rcu: =C2=A0 =C2=A0 4-...0: (1 GPs behind) idle=3D=
-ec5c/1/0x4000000000000000 softirq=3D10733/10734 fqs=3D15000
->=C2=A0
-> > > [=C2=A0 881.905500] rcu: =C2=A0 =C2=A0 (detected by 0, t=3D60002 jiff=
-ies, g=3D14905, q=3D856 ncpus=3D8)
->=C2=A0
-> > > [=C2=A0 881.905505] Sending NMI from CPU 0 to CPUs=C2=A04:
->=C2=A0
-> > > [=C2=A0 881.905511] NMI backtrace for cpu 4
->=C2=A0
-> > > [=C2=A0 881.905514] CPU: 4 UID: 1000 PID: 1911 Comm: CPU 2/KVM Tainte=
-d: G =C2=A0 =C2=A0 =C2=A0=C2=A0 W =C2=A0 =C2=A0 =C2=A0 =C2=A0=C2=A0 6.12.55=
--rkernel-s1.7 #metaOS
->=C2=A0
-> > > [=C2=A0 881.905517] Tainted: [W]=3DWARN
->=C2=A0
-> > > [=C2=A0 881.905518] Hardware name: TianBei GEM12/GEM12, BIOS 1.00 03/=
-07/2024
->=C2=A0
-> > > [=C2=A0 881.905519] IRQ stage: Linux
->=C2=A0
-> > > [=C2=A0 881.905519] RIP: 0010:svm_vcpu_run+0x27a/0x790 [kvm_amd]
->=C2=A0
-> > > [=C2=A0 881.905528] Code: 02 00 00 48 3b 82 70 06 00 00 74 13 48 89 c=
-2 b9 d9 01 00 00 48 c1 ea 20 0f 30 0f 1f 44 00 00 48 89 df e8 c9 79 ec ff 0=
-f 01 dc <48> 8b 83 48 19 00 00 83 78 70 61 0f 84 1e 03 00 00 f6 83 00 02 00
->=C2=A0
-> > > [=C2=A0 881.905529] RSP: 0018:ffffbc71031dfb70 EFLAGS: 00000056
->=C2=A0
-> > > [=C2=A0 881.905531] RAX: 0000000000000800=C2=A0RBX: ffff950382b5d490 =
-RCX: 0000000000000da0
->=C2=A0
-> > > [=C2=A0 881.905532] RDX: 0000000000000000 RSI: 0000000000350ef8=C2=A0=
-RDI: ffff950382b5d490
->=C2=A0
-> > > [=C2=A0 881.905533] RBP: ffffbc71031dfba0 R08: 0000000000000000 R09: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 881.905534] R10: 0000000000000000 R11: 0000000000000000 R12: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 881.905535] R13: 0000000000000000 R14: 0000000000000000 R15: =
-00000000000a9b48
->=C2=A0
-> > > [=C2=A0 881.905535] FS:=C2=A0 00007f1403fff6c0(0000) GS:ffff9506adc00=
-000(0000) knlGS:0000000000000000
->=C2=A0
-> > > [=C2=A0 881.905537] CS:=C2=A0 0010 DS: 0000 ES: 0000 CR0: 00000000800=
-50033
->=C2=A0
-> > > [=C2=A0 881.905537] CR2: 0000018933253210 CR3: 000000010986e000=C2=A0=
-CR4: 0000000000750eb0
->=C2=A0
-> > > [=C2=A0 881.905538] PKRU: 55555554
->=C2=A0
-> > > [=C2=A0 881.905539] Call Trace:
->=C2=A0
-> > > [=C2=A0 881.905540]=C2=A0 <TASK>
->=C2=A0
-> > > [=C2=A0 881.905544]=C2=A0 vcpu_enter_guest+0xaea/0x19b0 [kvm]
->=C2=A0
-> > > [=C2=A0 881.905573]=C2=A0 ? debug_smp_processor_id+0x1b/0x30
->=C2=A0
-> > > [=C2=A0 881.905579]=C2=A0 kvm_arch_vcpu_ioctl_run+0x156/0x6b0 [kvm]
->=C2=A0
-> > > [=C2=A0 881.905597]=C2=A0 kvm_vcpu_ioctl+0x538/0x920 [kvm]
->=C2=A0
-> > > [=C2=A0 881.905615]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 881.905618]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 881.905621]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 881.905624]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 881.905626]=C2=A0 ? __fget_files+0x7f/0xb0
->=C2=A0
-> > > [=C2=A0 881.905629]=C2=A0 __x64_sys_ioctl+0x97/0xd0
->=C2=A0
-> > > [=C2=A0 881.905633]=C2=A0 x64_sys_call+0x1d09/0x1d50
->=C2=A0
-> > > [=C2=A0 881.905635]=C2=A0 do_syscall_64+0xc0/0x220
->=C2=A0
-> > > [=C2=A0 881.905637]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 881.905639]=C2=A0 ? inband_irq_enable+0xd/0x20
->=C2=A0
-> > > [=C2=A0 881.905642]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 881.905643]=C2=A0 ? __schedule+0x13f7/0x1930
->=C2=A0
-> > > [=C2=A0 881.905645]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 881.905647]=C2=A0 ? __this_cpu_preempt_check+0x17/0x20
->=C2=A0
-> > > [=C2=A0 881.905650]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 881.905652]=C2=A0 ? __this_cpu_preempt_check+0x17/0x20
->=C2=A0
-> > > [=C2=A0 881.905653]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 881.905655]=C2=A0 ? __ct_user_enter+0x99/0x110
->=C2=A0
-> > > [=C2=A0 881.905657]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 881.905659]=C2=A0 ? syscall_exit_to_user_mode+0x1d5/0x310
->=C2=A0
-> > > [=C2=A0 881.905661]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 881.905663]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 881.905665]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 881.905666]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 881.905668]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 881.905670]=C2=A0 ? do_syscall_64+0xcc/0x220
->=C2=A0
-> > > [=C2=A0 881.905672]=C2=A0 ? srso_alias_return_thunk+0x5/0xfbef5
->=C2=A0
-> > > [=C2=A0 881.905673]=C2=A0 ? arch_pipeline_entry+0xf0/0x120
->=C2=A0
-> > > [=C2=A0 881.905676]=C2=A0 entry_SYSCALL_64_after_hwframe+0x76/0x7e
->=C2=A0
-> > > [=C2=A0 881.905678] RIP: 0033:0x7f140b417e1d
->=C2=A0
-> > > [=C2=A0 881.905679] Code: 04 25 28 00 00 00 48 89 45 c8 31 c0 48 8d 4=
-5 10 c7 45 b0 10 00 00 00 48 89 45 b8 48 8d 45 d0 48 89 45 c0 b8 10 00 00 0=
-0 0f 05 <89> c2 3d 00 f0 ff ff 77 1a 48 8b 45 c8 64 48 2b 04 25 28 00 00 00
->=C2=A0
-> > > [=C2=A0 881.905680] RSP: 002b:00007f1403ffe440=C2=A0EFLAGS: 00000246 =
-ORIG_RAX: 0000000000000010
->=C2=A0
-> > > [=C2=A0 881.905682] RAX: ffffffffffffffda RBX: 000055ad3d2aa020 RCX: =
-00007f140b417e1d
->=C2=A0
-> > > [=C2=A0 881.905683] RDX: 0000000000000000 RSI: 000000000000ae80 RDI: =
-0000000000000016
->=C2=A0
-> > > [=C2=A0 881.905683] RBP: 00007f1403ffe490 R08: 000055ad25e60648 R09: =
-0000000000000001
->=C2=A0
-> > > [=C2=A0 881.905684] R10: 000055ad3cefe090 R11: 0000000000000246 R12: =
-000000000000ae80
->=C2=A0
-> > > [=C2=A0 881.905685] R13: 0000000000000000 R14: 0000000000000000 R15: =
-0000000000000000
->=C2=A0
-> > > [=C2=A0 881.905689]=C2=A0 </TASK>
->=C2=A0
-> > >=C2=A0
->=C2=A0
-> > >=C2=A0
->=C2=A0
-> > > Has anyone encountered this issue before? Any ideas on what might be =
-causing it, or suggestions for debugging/workarounds?
->=C2=A0
-> > > Thanks in advance!
->=C2=A0
-> >=C2=A0
-> > Besides debugging and fixing this particular bug, we really need to
->=C2=A0
-> > extend our test coverage by a KVM scenario. We could spawn some KVM/QEM=
-U
->=C2=A0
-> > aside the switchtest or even expand the latter by KVM thread. People ar=
-e
->=C2=A0
-> > using KVM aside (separate cores) or even on top of Xenomai (same cores)=
-,
->=C2=A0
-> > but our core CI tests are not reflecting this.
->=C2=A0
-> >=C2=A0
-> > Jan
-> >=C2=A0
