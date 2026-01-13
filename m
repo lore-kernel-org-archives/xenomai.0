@@ -1,102 +1,85 @@
-Received: from mslow3.mail.gandi.net (mslow3.mail.gandi.net [217.70.178.249])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F018F35CB9A
-	for <xenomai@lists.linux.dev>; Fri,  9 Jan 2026 16:07:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.249
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F064275AE8
+	for <xenomai@lists.linux.dev>; Mon, 12 Jan 2026 09:53:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767974846; cv=none; b=QtFGkZ6B0nr7DVy8HrgAxQppVr1Gf5eYHzPaerXXs8TsqOge3dEaOBDH0EY+AR9ipWdoF58ubO+f4E2iiiOSOU4xHDBvxfuVfV8P765rX5hVm5YIpLaMADNw6RUjrvVbYq0ejdHnM1Wg9zx6LjkXTFP7zfFaXF0d9TKp5Ai1Z8Y=
+	t=1768211607; cv=none; b=gAxD4Wt0Z3h2GJ8fGOXuOrntX8q1gWZQckcXvd9cIfDHUKknRzxEhY+x+wq89rdG8E2+b/l/3Ko465kBgUH8Y45px9bcL8slHI91prrA3IyKMm3fb4UD/2ic0yU0x2YLAxn4GmUu+lEgMkG/HBNlERTOHbkymHy8/kT/Ui9NDQ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767974846; c=relaxed/simple;
-	bh=4L0uELMvz8HUTjH4XjPKggcVkW/MbnxlKkeDZEK7fX0=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=khkn6TK1sGQ2j2N9fJdHBhtSNJTglWrQ4SgWUauvslixwBWfHOKmKRZPDvrRDj/FuY2vV4KEAqS+FBGuKwShg9ezDYCwjZZ0BDJP39utLISwJRXbo5/ROmqng7SeuiWySkFSIAT8K4EkCJZgFwnaJhYnxaBGvL/Af+PWeT76pWU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=T8VkBuaN; arc=none smtp.client-ip=217.70.178.249
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1768211607; c=relaxed/simple;
+	bh=KczFsLWRDTGQPyxeDhtKdUN8p+It0dM+fybaX80Y3PQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=CRLKjPJUBsKR2tyR5YNHqBzHMywSlkrqvkGi2lnzEhKVQmXpJTCC6ZplWX5dEgpwSSyvC3KUjPOunpsZ6utNNR4FPK1xjHNOVMLQ/XR7Vv7NUNANNivG/COg5+8cYh5Q2e0XpOG/6Z65l2dd+pSGhE/CKayjy/lZ9KgbnX8CRc8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OjgQqAiR; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="T8VkBuaN"
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-	by mslow3.mail.gandi.net (Postfix) with ESMTP id DD7C35821D9
-	for <xenomai@lists.linux.dev>; Fri,  9 Jan 2026 16:06:34 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 16FC2201A1;
-	Fri,  9 Jan 2026 16:06:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1767974787;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=J/koOAGWqaJis5khx4WCqi4Y1QTAHgibHakxeJEUt/o=;
-	b=T8VkBuaN7XV36ExVrznoGEPhOJQm5yY9gtYOpTpBRjlxx19MOPn5PSMNzLmd5b6UkgNzZA
-	MVcI2Pezo2vuHRCSsw391SaZBHTDD5G4dtv8re5gFdwDDm2eFMKfG92TuMv8jJodmQFx8f
-	kxVU1H3gvT5WxJFxPDyJYGiX1KPNWwgZZvvo+K8ExqMqI99FRg8GLE7pIwXvfAdbHBCOA8
-	muXeeFUQ5u71AQsZtgqQhFeVpxN2+k/RaIEwK5aW6VqWIqMS1nSM0S/MU9KVWjRm6TjgTh
-	AevBng8VWnnOsg5FUF+LHXQxLCNFo83E9A9sUK2AVHpmjQT/2EBKQPZKbRbEfQ==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Tobias Schaffner <tobias.schaffner@siemens.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: [PATCH libevl] evl-test: return non-zero status when tests fail
- with -k
-In-Reply-To: <20260109143157.1102568-1-tobias.schaffner@siemens.com> (Tobias
-	Schaffner's message of "Fri, 9 Jan 2026 15:31:57 +0100")
-References: <20260109143157.1102568-1-tobias.schaffner@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Fri, 09 Jan 2026 17:06:26 +0100
-Message-ID: <87344ekby5.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OjgQqAiR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1768211606; x=1799747606;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=KczFsLWRDTGQPyxeDhtKdUN8p+It0dM+fybaX80Y3PQ=;
+  b=OjgQqAiRk5T5ElBJiHQY8U38hzIAV97PgMxsSFEUff6xlv/7BIQJ8OSy
+   WtP76JbhNnbCmMd4DfJRKvj1LgvdAH/Jeqd/x71uJB7CeRsn34f+Km+0x
+   pjPMZku5XTlJUz1QEYhiDt0URUj1/aMhYxo2SkiVP4BsC6RU66E6dizKb
+   8eY594YRZVsrOKzOw12xgdNAu8b6TlgK12TpDD4POA3UEW42CroE7gWX9
+   XLwt6mcKAo2p4A/2GRevAf/bAE5SMhvfmXyNj2KrB/xqqxyE/5J9ld8Tw
+   qqG2EFShn6aDUJr4enSimAyYFgEC7aVUbBNijDHje1qWPPhGv4nS7Uy9N
+   g==;
+X-CSE-ConnectionGUID: Gzt1FRm5SemTmchLP/yTvQ==
+X-CSE-MsgGUID: CXdZRhcvR4ut9ZSzl7k+0g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11668"; a="69218272"
+X-IronPort-AV: E=Sophos;i="6.21,219,1763452800"; 
+   d="scan'208";a="69218272"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2026 01:53:26 -0800
+X-CSE-ConnectionGUID: 7Z9q2cqGTcGn0YmBi1OR0Q==
+X-CSE-MsgGUID: lAvMJqT2Q965kl589ad+1w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,219,1763452800"; 
+   d="scan'208";a="234742396"
+Received: from junxiao.bj.intel.com ([10.238.152.69])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2026 01:53:24 -0800
+From: Junxiao Chang <junxiao.chang@intel.com>
+To: xenomai@lists.linux.dev,
+	yuan1.wang@intel.com
+Cc: junxiao.chang@intel.com
+Subject: [PATCH evl 6.18 1/2] evl/genirq/test: fix irq test build issue
+Date: Tue, 13 Jan 2026 17:48:51 +0800
+Message-ID: <20260113094852.2806192-1-junxiao.chang@intel.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddutdelvdegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpedvlefhvdehkeduheevleegiedtueejgfekhfeijeefvdeijeekgeeigfejhfekgeenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpqhhiugepudeihfevvddvtddutedupdhmohguvgepshhmthhpohhuthdpnhgspghrtghpthhtohepvddprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepthhosghirghsrdhstghhrghffhhnvghrsehsihgvmhgvnhhsrdgtohhm
+Content-Transfer-Encoding: 8bit
 
-Tobias Schaffner <tobias.schaffner@siemens.com> writes:
+raw lock in irq test case should be replaced with hybrid lock.
 
-> The -k option of evl-test allows the test suite to continue running
-> after a test failure. However, evl-test currently exits with status 0
-> even if one or more tests have failed.
->
-> Track the failure status and return a non-zero exit code when any test
-> failed.
->
-> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
-> ---
->  utils/evl-test | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
->
-> diff --git a/utils/evl-test b/utils/evl-test
-> index b2d3a7f..0d0ca81 100644
-> --- a/utils/evl-test
-> +++ b/utils/evl-test
-> @@ -68,6 +68,8 @@ if test x$do_list = xtrue; then
->     exit 0
->  fi
->  
-> +result=0
-> +
->  for t in $test_list; do
->      test \! -x $t && echo "$(basename $0): $(basename $t): no such test" && exit 2
->      # Swap stdout<->stderr for the test, capturing stderr into $log.
-> @@ -83,9 +85,10 @@ for t in $test_list; do
->  	    echo "$(basename $t): no kernel support"
->  	else
->  	    echo "** $(basename $t): BROKEN"
-> -	    test x$keep_going = xfalse && exit $status
-> +	    result=$status
-> +	    test x$keep_going = xfalse && break
->  	fi
->      fi
->  done
->  
-> -exit 0
-> +exit $result
+Fixes: a4a5748406af ("genirq: irq_pipeline: add IRQ pipeline core")
+Signed-off-by: Junxiao Chang <junxiao.chang@intel.com>
+Signed-off-by: Yuan Wang <yuan1.wang@intel.com>
+---
+ kernel/irq/irq_test.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Merged, thanks.
-
+diff --git a/kernel/irq/irq_test.c b/kernel/irq/irq_test.c
+index e2d31914b3c4..f13ea0f7cbdc 100644
+--- a/kernel/irq/irq_test.c
++++ b/kernel/irq/irq_test.c
+@@ -145,7 +145,7 @@ static void irq_shutdown_depth_test(struct kunit *test)
+ 	disable_irq(virq);
+ 	KUNIT_EXPECT_EQ(test, desc->depth, 1);
+ 
+-	scoped_guard(raw_spinlock_irqsave, &desc->lock)
++	scoped_guard(hybrid_spinlock_irqsave, &desc->lock)
+ 		irq_shutdown_and_deactivate(desc);
+ 
+ 	KUNIT_EXPECT_FALSE(test, irqd_is_activated(data));
 -- 
-Philippe.
+2.43.0
+
