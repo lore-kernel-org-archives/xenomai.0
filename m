@@ -1,241 +1,146 @@
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+Received: from smtp5-g21.free.fr (smtp5-g21.free.fr [212.27.42.5])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02D8238737F
-	for <xenomai@lists.linux.dev>; Wed, 14 Jan 2026 09:57:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A670A163
+	for <xenomai@lists.linux.dev>; Wed, 14 Jan 2026 10:42:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.27.42.5
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768384645; cv=none; b=vFaYEvK/haWxAtKu9yhy5XFR9fneWSA6EDUTnugsA7hCf/sdixeZsphCu+hre1z7zEbnqU3F+ndaz56PaumR0QwnnTJK9j8taXK1qVt8Oh1L+95PT1IlpYIOmOsaJAfKxA7I0nq8whIXQixrA0mvvOtCSjuzZdfvJIhcZ59jewA=
+	t=1768387341; cv=none; b=iLXfLZR25CCZfuOTHanIxP/QC8wmu5E9jnnORoQlNawvRNcFpME60FehSrx17pGAd4SqWdrUug2Fw1Sj+iY6D1kbv6I/GhryHqIbvDqHTi8X0J4osNljo3ksu1wRE2iEvd8v1ahMloE+lMNU9YOykh0dGX4f3q3g3XuwEpeLsgA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768384645; c=relaxed/simple;
-	bh=M8acvudJ7uVdJs83fXCxtxP9uO1fQujRb07+e3/fXIk=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=rK5Qz7wppgn/Xj4IisN/XMpsECJQ675h2ld2qEPbWvFi6s5P6XYPMyAjlSzbtASASTLTC3LSXJcsdSWDYJIb5XHwTVlV6AFlmWYmF0xecYx0O+fflkcfkKPwHZpc3hpryyCL0ebzCc7fbFCTht2Z1PvPlJyieX/dUJFVbQsmS0M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=K9B0qcaC; arc=none smtp.client-ip=185.136.64.225
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1768387341; c=relaxed/simple;
+	bh=Jcbmctwl5Zb5jPI+9Cvvyak7vsgouPDWMFCqiVoktQ8=;
+	h=From:In-Reply-To:Content-Type:Date:Cc:To:MIME-Version:Message-ID:
+	 Subject; b=DKxcvtIlfDmpJsr9t/ymFERxkGk0AHJxxf5A+Qv02rz4W1d4I27R5O1eb/lALx9sH8VvHigmeESeij4qnJkvSqkL9TubBaI2fHWnZqGWM1vZk4WhlLRuBCCVTpJgXCsY18YoeiwEZW4ZaprAeaR456ZWU4P47/mRtQfcGJsCCHM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thom.fr.eu.org; spf=pass smtp.mailfrom=thom.fr.eu.org; dkim=permerror (0-bit key) header.d=thom.fr.eu.org header.i=@thom.fr.eu.org header.b=F7SPPoN2; arc=none smtp.client-ip=212.27.42.5
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=thom.fr.eu.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=thom.fr.eu.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="K9B0qcaC"
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20260114095715a07e52098c0002074d
-        for <xenomai@lists.linux.dev>;
-        Wed, 14 Jan 2026 10:57:15 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=clara.kowalsky@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=NGc4vLW+38kOoN4XMEdw41V7AGNf6fJE8VvRFsvWLNc=;
- b=K9B0qcaCz3HIAYVe0gEAPLsvyzdjBZKbboITPHIdnH99kgMz0dSsibw9lQvrxcsb6Bsy2n
- 85Vfb1l9roXlIu/4Ay3evs5TLtjlUU/WhQBH36kHhZJMG2KAc5g3H57hIO4jjmAlNqYXcSaF
- 4Onda8nFzRQAJWOYv1eX5K3N7cmJjjxdC35PAMdIHetRvIivSn/MtvrMML/fth2/jUp64rnl
- /ekWYdZFjPB9m0BEL6FkRqJPtWTOCcZDN2u1+XQ7fyc1Hi9iYmTFn+6RR6KjvrM2uOWHjG1e
- 0QaMEJ2BsitooOttWRTBumkmNtnTzc6rfdN4Hkz4UuCs44ltxlv7y/mQ==;
-From: Clara Kowalsky <clara.kowalsky@siemens.com>
-To: xenomai@lists.linux.dev
-Cc: jan.kiszka@siemens.com,
-	Clara Kowalsky <clara.kowalsky@siemens.com>
-Subject: [xenomai-images][PATCH 3/3] test/README: make minor changes and fix typos
-Date: Wed, 14 Jan 2026 10:56:57 +0100
-Message-ID: <20260114095657.2440127-3-clara.kowalsky@siemens.com>
-In-Reply-To: <20260114095657.2440127-1-clara.kowalsky@siemens.com>
-References: <20260114095657.2440127-1-clara.kowalsky@siemens.com>
+	dkim=permerror (0-bit key) header.d=thom.fr.eu.org header.i=@thom.fr.eu.org header.b="F7SPPoN2"
+Received: from mail.thom.fr.eu.org (unknown [82.64.149.25])
+	by smtp5-g21.free.fr (Postfix) with ESMTPS id 8730660129;
+	Wed, 14 Jan 2026 11:42:14 +0100 (CET)
+Authentication-Results: smtp5-g21.free.fr;
+	dkim=permerror header.d=thom.fr.eu.org header.i=@thom.fr.eu.org header.a=ed25519-sha256 header.s=default header.b=F7SPPoN2;
+	dkim-atps=neutral
+Received: from localhost ([127.0.0.1])
+	by mail.thom.fr.eu.org (8.15.2/8.15.2/Debian-22+deb11u3) with ESMTP id 60EAgCxL173328;
+	Wed, 14 Jan 2026 11:42:13 +0100
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/simple; d=thom.fr.eu.org;
+	s=default; t=1768387333;
+	bh=Jcbmctwl5Zb5jPI+9Cvvyak7vsgouPDWMFCqiVoktQ8=;
+	h=From:In-Reply-To:Date:Cc:To:Subject;
+	b=F7SPPoN23AN5YZUZJBcSYxeMfktOPCoUgRZojKwhIDn0R26ywLIJdJuaoNnKSyT6F
+	 1V4Y7J4d/hAaLU2KPyNU1gh5ZBvAlIbQtFAoOpDNF5Vplu8zRnC9HAjLFl9FVDEfW9
+	 YP9wIcuMl+9sz3PTuzSfGgMWIk0hh0tZYk0fDuj8JM9fWCGZB+hr3s4nr7NYP1SO/A
+	 7hT8QGBTd+As6+wGAHrm7+i23JYwd50uHm1YPVIE8oAn5kaocE8yMiSKCu82Nojty4
+	 gyp+ns6ElQJtGqCKzGpeK91PUCbRqSOy+vnUhnhrRBivGwDHBm1lBiulPwOCKPFkzt
+	 jgx1oyA1H4Q3g==
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <devel@thom.fr.eu.org>
+In-Reply-To: <00cd175a-59fe-4cdc-8446-bda6624c8817@siemens.com>
+Content-Type: text/plain; charset="utf-8"
+X-Forward: 217.109.173.233, 147.161.180.82
+Date: Wed, 14 Jan 2026 11:42:12 +0100
+Cc: xenomai@lists.linux.dev
+To: "Jan Kiszka" <jan.kiszka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-1047747:519-21489:flowmailer
+Message-ID: <1320-69677300-11-384038c0@265651652>
+Subject: =?utf-8?q?Re=3A?= [PATCH] add vlan detection on RTNET receive path
+User-Agent: SOGoMail 5.0.1
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.10 at tls-srv-03
+X-Virus-Status: Clean
 
-Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
----
- tests/README.md | 111 ++++++++++++++++++++++++------------------------
- 1 file changed, 55 insertions(+), 56 deletions(-)
+Le Mercredi, Janvier 14, 2026 09:10 CET, Jan Kiszka <jan.kiszka@siemens=
+.com> a =C3=A9crit: 
+ 
+> On 13.01.26 18:25, Fran=C3=A7ois Legal wrote:
+> > This patch allows classifying the frame in the right protocol (skb-=
+>protocol) when receiving an ethernet frame with a VLAN tag.
+> > 
+> > This allows to make raw PF=5FPACKET sockets be transparent to VLAN =
+tagging when filtering on ethertype.
+> > 
+> > |    MAC Dest @    |     MAC Src @     | EtherType | VLAN TPID | VL=
+AN TCI | Payload |
+> > | 11:22:33:44:55:66 | FF:FF:FF:FF:FF:FF |     8100       |      080=
+6     |    201B     |        ...    |
+> > 
+> > With this patch and  CONFIG=5FVLAN=5F8021Q set in kconfig, the pack=
+et above will be classified as ARP (skb->protocol =3D 0806)
+> 
+> We generally avoided to bind RTnet settings to regular network stack
+> configs, just to control them independently and avoid surprises on th=
+e
+> RTnet side when changing something on the Linux part.
+> 
 
-diff --git a/tests/README.md b/tests/README.md
-index b8288e7..5ad52fe 100644
---- a/tests/README.md
-+++ b/tests/README.md
-@@ -1,13 +1,13 @@
- # Testing
- 
--For image testing this project uses the
--[Linaro Automated Validation Architecture(LAVA)](https://www.lavasoftware.org/).
--The images are generate a gitlab-ci pipeline. This pipline builds the images and
--sends them to the lava testlab.
-+For image testing, this project uses the
-+[Linaro Automated Validation Architecture (LAVA)](https://www.lavasoftware.org/).
-+The images are generated by a GitLab CI pipeline. This pipeline builds the images and
-+sends them to the LAVA test lab.
- 
- ## Test targets
- 
--following images are test:
-+The following images are tested:
- - qemu-armhf
- - qemu-arm64
- - qemu-amd64
-@@ -17,24 +17,24 @@ following images are test:
- 
- ## Deploy test
- 
--After the [LAVA setup](#lava-setup) a test can be deploy with the lavacli tool, e.g.:
-+After the [LAVA setup](#lava-setup), a test can be deployed with the `lavacli` tool, e.g.:
- ```
- lavacli jobs run tests/jobs/xenomai-qemu-amd64.yml
- ```
- 
- # Tests
- 
--Currently the following tests are executed on each target:
-+Currently, the following tests are executed on each target:
- - lava-smoketest
- - xenomai-test-suite
- 
- ### xenomai-test-suite
- 
--The xenomai test suite executes the xeno-test tool from xenomai/testsuite.
-+The Xenomai test suite executes the `xeno-test` tool from `xenomai/testsuite`.
- 
- # Test Architecture
- 
--To test xenomai-images on the target hardware the following architecture
-+To test xenomai-images on the target hardware, the following architecture
- is used:
- ```
-                                                                +----------+
-@@ -51,85 +51,84 @@ is used:
-                                                           \
-                                                            \   +----------+
-                                                             \- | Target n |
--                                                              \| qemu     |
-+                                                              \| QEMU     |
-                                                                |          |
-                                                                +----------+
- ```
- A test is deployed in the following steps:
--1. gitlab-runner: builds the artifacts
--2. After the build is successful the build artifacts are deployed to a AWS S3 bucket.
--3. The runner sends a lava job description to the LAVA master, who triggers the
--job execution on LAVA Dispatcher.
-+1. gitlab-runner: builds the artifacts.
-+2. After the build is successful, the build artifacts are deployed to an AWS S3 bucket.
-+3. The runner sends a LAVA job description to the LAVA master, which triggers the
-+job execution on the LAVA Dispatcher.
- 
- The LAVA master selects the LAVA Dispatcher to execute the given job on a
--target. Qemu targets are executed directly on the LAVA Dispatcher. For non-virtual
--targets the payload (kernel,rootfs,...) is deployed via tftp to the selected
-+target. QEMU targets are executed directly on the LAVA Dispatcher. For non-virtual
-+targets, the payload (kernel, rootfs,...) is deployed via TFTP to the selected
- hardware.
- 
- The dispatcher executes the following steps:
--1. Instrumentation of the rootfs. This will collect the necessary lavatools
--and adds them to the rootfs
--2. Power up the target
--3. deploy the payload(kernel,rootfs,...) with help of the bootloader
--4. trigger the payload boot
--5. execute the tests
--6. power off the target
-+1. Instrumentation of the rootfs. This collects the necessary LAVA tools
-+and adds them to the rootfs.
-+2. Power up the target.
-+3. Deploy the payload (kernel, rootfs,...) with the help of the bootloader.
-+4. Trigger the payload boot.
-+5. Execute the tests.
-+6. Power off the target.
- 
- # LAVA Setup
- 
--Setup a lava environment by following the
-+Set up a LAVA environment by following the
- [installation guide](https://docs.lavasoftware.org/lava/first-installation.html)
--or use [lava-docker](https://github.com/kernelci/lava-docker).
-+or use [lava-docker](https://github.com/BayLibre/lava-docker).
- 
- # CI Files
- 
--To support different ci setups all ci files are stored in `.ci`. `.gitlab-ci.yml` in
--the repository root use the settings to build on gitlab.com. To use another setup adapt
--the [Custom CI configuration path](https://code.siemens.com/help/ci/pipelines/settings#custom-ci-configuration-path)
--
-+To support different CI setups, all CI files are stored in [`ci`](/ci). The [`.gitlab-ci.yml`](/.gitlab-ci.yml) in
-+the repository root uses these settings to build on gitlab.com. To use another setup, adapt
-+the [custom CI configuration path](https://docs.gitlab.com/ci/pipelines/settings/#custom-ci-configuration-path).
- 
- ## CI Variables
- 
--The following variables are used and set by the ci system:
-+The following variables are used and set by the CI system:
- - Proxy settings:
--  - `HTTP_PROXY`    : http proxy
--  - `HTTPS_PROXY`   : https proxy
--  - `FTP_PROXY`     : ftp proxy
-+  - `HTTP_PROXY`    : HTTP proxy
-+  - `HTTPS_PROXY`   : HTTPS proxy
-+  - `FTP_PROXY`     : FTP proxy
-   - `NO_PROXY`      : no proxy
- 
- - Build environment specific settings:
--  - `ALT_DNS_SERVER`: optional, can be set to something like "8.8.8.8" to use a specific DNS server
--  - `DISTRO_APT_PREMIRRORS`: optional, can be set to something like "deb\.debian\.org cdn-aws.deb.debian.org\n" to use a specific Debian mirror
-+  - `ALT_DNS_SERVER`: Optional, can be set to something like "8.8.8.8" to use a specific DNS server.
-+  - `DISTRO_APT_PREMIRRORS`: Optional, can be set to something like "deb\.debian\.org cdn-aws.deb.debian.org\n" to use a specific Debian mirror.
- 
--- CI job "filers":
--  - `ALL_QEMU_JOBS`: Default is false. Set to true to enable all qemu based jobs
--  - `LAVA_TESTS_ENABLED`: Default is true. Set to false to disable all LAVA jobs
-+- CI job "filters":
-+  - `ALL_QEMU_JOBS`: Default is `false`. Set to `true` to enable all QEMU-based jobs.
-+  - `LAVA_TESTS_ENABLED`: Default is `true`. Set to `false` to disable all LAVA jobs.
- 
- - LAVA settings:
--  - `LAVA_MASTER_ACCOUNT`: lava master account name to register lavacli for test execution
--  - `LAVA_MASTER_TOKEN`: token to connect with the lava master
--  - `LAVA_ARTIFACTS_URL`: optional variable where to get the artifacts for testing
--  - `LAVA_MASTER_URL`: URL to the LAVA Master
--  - `CONTAINER_REGISTRY`: Container registry server to pull lavacli base image from. Uses registry.gitlab.com if unset.
-+  - `LAVA_MASTER_ACCOUNT`: LAVA master account name to register `lavacli` for test execution.
-+  - `LAVA_MASTER_TOKEN`: Token to connect with the LAVA master.
-+  - `LAVA_ARTIFACTS_URL`: Optional variable where to get the artifacts for testing.
-+  - `LAVA_MASTER_URL`: URL to the LAVA Master.
-+  - `CONTAINER_REGISTRY`: Container registry server to pull `lavacli` base image from. Uses `registry.gitlab.com` if unset.
-   - `WAIT_FOR_DEVICE_TIMEOUT`: Timeout for device health check. Default is 10 minutes.
- 
- - Image deployment settings:
--  - `USE_S3_BUCKET`: Set to `1` in order to upload build artifacts to AWS S3
--  - `AWS_ACCESS_KEY_ID`: Key ID to use for uploading
--  - `AWS_SECRET_ACCESS_KEY`: Secret access key for uploading
--  - `S3_BUCKET_URL`: S3 URL where to place the artifacts (synchronize with `LAVA_ARTIFACTS_URL`)
-+  - `USE_S3_BUCKET`: Set to `1` in order to upload build artifacts to AWS S3.
-+  - `AWS_ACCESS_KEY_ID`: Key ID to use for uploading.
-+  - `AWS_SECRET_ACCESS_KEY`: Secret access key for uploading.
-+  - `S3_BUCKET_URL`: S3 URL where to place the artifacts (synchronize with `LAVA_ARTIFACTS_URL`).
- 
- - Build settings:
--  - `BUILD_OPTIONS` : optional parameter. Used for triggers. Overwrite to build the newest ipipe together with xenomai or other combinations.
-+  - `BUILD_OPTIONS`: Optional parameter. Used for triggers. Overwrite to build the newest ipipe together with Xenomai or other combinations.
- 
- - Scheduled lavacli container build (not needed if using official container):
--  - `CONTAINER_DEPLOY_TOKEN_USER`: Username of deploy token for uploading lavacli container to `CONTAINER_REGISTRY`
--  - `CONTAINER_DEPLOY_TOKEN_PWD`: Password of deploy token for uploading lavacli container to `CONTAINER_REGISTRY`
-+  - `CONTAINER_DEPLOY_TOKEN_USER`: Username of deploy token for uploading `lavacli` container to `CONTAINER_REGISTRY`.
-+  - `CONTAINER_DEPLOY_TOKEN_PWD`: Password of deploy token for uploading `lavacli` container to `CONTAINER_REGISTRY`.
- 
--## LAVA Template variable
-+## LAVA Template Variables
- 
--- `TARGET`: Name of the target in the LAVA Lab
--- `BUILD_ARCH`: Architecture of the Target
--- `DEPLOY_DIR`: Path to the test components will be generate by the script `scripts/run-lava-tests.sh`
--- `ISAR_IMAGE`: Name of the ISAR image (e.g. demo-image)
--- `ISAR_DISTRIBUTION`: Name of the ISAR DISTRIBUTION (e.g. xenomai-demo)
-+- `TARGET`: Name of the target in the LAVA Lab.
-+- `BUILD_ARCH`: Architecture of the target.
-+- `DEPLOY_DIR`: Path to the test components that will be generated by the script [`scripts/run-lava-tests.sh`](/scripts/run-lava-tests.sh).
-+- `ISAR_IMAGE`: Name of the Isar image (e.g., `demo-image`).
-+- `ISAR_DISTRIBUTION`: Name of the Isar distribution (e.g., `xenomai-demo`).
--- 
-2.52.0
+Ok. I'll submit a new version of the patch
+
+> > 
+> > The behaviour here is somewhat different from upstream as we dont s=
+trip the tag from the frame (for performance reason) as upstream does i=
+t and return the VLAN information as out of band (with recvmsg).
+> > 
+> 
+> So, what is the envisioned use case with RTnet? How does the RX-side
+> handling help when not doing anything special for TX? We should docum=
+ent
+> that as well.
+> 
+
+I use it in a data recorder app, where I want to capture some ethertype=
+ traffic wether or not this ethertype is in a specific vlan or not.
+
+Fran=C3=A7ois
+
+> Jan
+> 
+> > Signed-off-by: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
+> > --
+> > diff --git a/kernel/drivers/net/stack/eth.c b/kernel/drivers/net/st=
+ack/eth.c
+> > index 427687f..9b3ad94 100644
+> > --- a/kernel/drivers/net/stack/eth.c
+> > +++ b/kernel/drivers/net/stack/eth.c
+> > @@ -23,6 +23,9 @@
+> >  #include <linux/netdevice.h>
+> >  #include <linux/etherdevice.h>
+> >  #include <linux/skbuff.h>
+> > +#ifdef CONFIG=5FVLAN=5F8021Q
+> > +#include <linux/if=5Fvlan.h>
+> > +#endif
+> >  
+> >  #include <rtdev.h>
+> >  #include <rtnet=5Finternal.h>
+> > @@ -107,8 +110,18 @@
+> >  			skb->pkt=5Ftype =3D PACKET=5FOTHERHOST;
+> >  	}
+> >  
+> > -	if (ntohs(eth->h=5Fproto) >=3D 1536)
+> > +	if (ntohs(eth->h=5Fproto) >=3D 1536) {
+> > +#ifdef CONFIG=5FVLAN=5F8021Q
+> > +		if (eth->h=5Fproto =3D=3D htons (ETH=5FP=5F8021Q)) {
+> > +			struct vlan=5Fhdr * vlan =3D (struct vlan=5Fhdr *) (skb->data);=
+
+> > +			return vlan->h=5Fvlan=5Fencapsulated=5Fproto;
+> > +		} else {
+> > +			return eth->h=5Fproto;
+> > +		}
+> > +#else
+> >  		return eth->h=5Fproto;
+> > +#endif
+> > +	}
+> >  
+> >  	rawp =3D skb->data;
+> > 
+> > 
+> 
+> -- 
+> Siemens AG, Foundational Technologies
+> Linux Expert Center
 
