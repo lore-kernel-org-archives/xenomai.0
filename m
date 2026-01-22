@@ -1,44 +1,46 @@
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C685A275870
-	for <xenomai@lists.linux.dev>; Thu, 22 Jan 2026 18:44:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2925A38BF74
+	for <xenomai@lists.linux.dev>; Thu, 22 Jan 2026 19:00:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769107472; cv=none; b=TimHfo5LrY1dMT6LiKlZ+RO4iXKdW9CvnkIztS3ATwy1RE96fFAeCFTrFm24rHSXH04pRw5v/KkPYs8DtmjSVsnPF5SdSpHjF0yrqwjH7zCV9u+FvXMdFiPu5tPemvKysc5gYmW2CLY5Jj2E+LeoRZjzTzslf8c9Hvq+8Q3OtY0=
+	t=1769108469; cv=none; b=nxzYkCbtkvUIAKrSN1IAAnu1XzD9jLDEpo5TnqO0f4OSL4OM4v8J5a5k0NcoLPAhjgJQWBopfoVPb7PJ3tD+XTQ4t0/uokIYpDWz7nF26h8Iqlfd7bNwXeGikbRtG6Ic6HMjzxZIWzUN3E5B8l7+Tw3zCI/kGnEKfmLwtBoz8WY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769107472; c=relaxed/simple;
-	bh=KhB46vTpkD4X8eWw71lBn0xOooMD6NPGTln/CPCf+FA=;
+	s=arc-20240116; t=1769108469; c=relaxed/simple;
+	bh=n/E8Gw0FCUD4EZl15jYnL+0BSQHyQVgtLTi4IFhRTFk=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=LWbkJuSa5IgOFc01UJV27eQTnRJZFQRElC5u6mK7n7fx2bZVDtO8UZ67YYqlVhIs21qmI+9tMMhNUAj3hcIA+2SJCcx/eTa/bK+RS/puK2u5xHgzSb3YVenvKblEBimb+fHgYgOMJy3hgHeQLq1hSXSfeWNwfEZ2D13alH9Rp1M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=AcIC36Td; arc=none smtp.client-ip=217.70.183.197
+	 MIME-Version:Content-Type; b=lEMWsOL/Y8uMwrOlzDbfvw1JtyiynBJPH6DmIrFgG7AHSwV6S8sqCdud3IcjEDNY/Tigwib30lPziTTNWlwGy7cC2Hgnb7GXAP8D4ZPYiJNc8SLUSuQjGAX/KL6qlRHlcuqGoo3cFQ1Fj8VcDU5SPSNmd5jWGkGQdbuwUbP4kZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=k+4k5w8z; arc=none smtp.client-ip=217.70.183.195
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="AcIC36Td"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 17238442E5;
-	Thu, 22 Jan 2026 18:44:19 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="k+4k5w8z"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 5B19D204B4;
+	Thu, 22 Jan 2026 19:00:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1769107460;
+	t=1769108434;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=DCcNm4v7OSaVRNbjQuRKhCT6XqZctcP6aVd4+YGBmzc=;
-	b=AcIC36TdDeZBJ/Pj00eenZ5Q5cwtAcAJEx14ss0FhDxTZX42VwH3htVnIcp3zQsdv8UHCI
-	lU8H6G1XDyNPj50He16/IeIFczKFSYh+JTph5Ps5o0/jsRcsIdRAEYDGhXsLocRT951PnY
-	K7sqH7Ext63+srZz1EapSmH06K1qnWdpx2axuqCJdiaJMayiK+tE7jf/mB7iK3UfhJPg7y
-	BdF3fIH2gWFosmF1JCWmIBFfdbgVg4J8uWu7OTY2FfoXR6hPtvrDgT3GcTBX0fWNnm3eCZ
-	JXE8j9MWsmmaiDxRnGp2weFYdGPUY4+42arYEy4o5b8Pi8iYow8jwm7cQBN16A==
+	bh=MsP5iKReG5bWOsqz64loGljKg10kBtw6u1XNSRPz5WM=;
+	b=k+4k5w8z2i3U/029RqyitYOT10b/IM+HYUgGHg++1qvaaNlP89U/WsbVv52sOUuwYpwdVM
+	Ou+GJwbBgOiso8imJZZbasWzJtHR4awfF2RKK6i+rppNPDXyHQU2flwhHlP98RSjJprYIS
+	yClExOA+a6+/oj1Um9ABpYjD2F15QDMGq8N0jm0c2aPELlXugzOy6poBhSN4fy6apcjCz5
+	mz72SbEEuB47DZwga7es2R3vwUSX9UcjVPZUDM+c1glk2EiqvN3OBQ7Vj6ozONZzDsCEap
+	PNlSmDAp4AZMscu3/mUnMZqT5gtDk4UNBaTwAQKPV+5hpZ75mxpRWdyQ8BFuTw==
 From: Philippe Gerum <rpm@xenomai.org>
-To: Tobias Schaffner <tobias.schaffner@siemens.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: [PATCH libevl] evl-test: fix opt parsing ignoring shifts
-In-Reply-To: <20260116084112.2303951-1-tobias.schaffner@siemens.com> (Tobias
-	Schaffner's message of "Fri, 16 Jan 2026 09:41:12 +0100")
-References: <20260116084112.2303951-1-tobias.schaffner@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Tobias Schaffner <tobias.schaffner@siemens.com>,  xenomai@lists.linux.dev
+Subject: Re: [PATCH xenomai-images] ci: run the EVL testsuite for basic testing
+In-Reply-To: <1141d131-a699-4050-8f38-8775cfe13f6a@siemens.com> (Jan Kiszka's
+	message of "Thu, 22 Jan 2026 15:46:17 +0100")
+References: <20260122103928.424945-1-tobias.schaffner@siemens.com>
+	<8ad846eb-c7b6-4056-818e-9e12f8a94cb2@siemens.com>
+	<1141d131-a699-4050-8f38-8775cfe13f6a@siemens.com>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Thu, 22 Jan 2026 19:44:19 +0100
-Message-ID: <87wm19ij24.fsf@xenomai.org>
+Date: Thu, 22 Jan 2026 20:00:32 +0100
+Message-ID: <87qzrhiib3.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -48,52 +50,80 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-GND-Sasl: rpm@xenomai.org
 X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddugeeileduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpedvlefhvdehkeduheevleegiedtueejgfekhfeijeefvdeijeekgeeigfejhfekgeenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpqhhiugepudejvdefkeeggedvgfehpdhmohguvgepshhmthhpohhuthdpnhgspghrtghpthhtohepvddprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepthhosghirghsrdhstghhrghffhhnvghrsehsihgvmhgvnhhsrdgtohhm
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddugeeileegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpeeulefggfehtdefgeekgfffudetkeekhfehudehfeeigffgjeekkeelfeekjeeuveenucffohhmrghinhepghhithhlrggsrdgtohhmnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhqihgupeehueduleffvddtgeeugedpmhhouggvpehsmhhtphhouhhtpdhnsggprhgtphhtthhopeefpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehtohgsihgrshdrshgthhgrfhhfnhgvrhesshhivghmvghnshdrtghomhdprhgtphhtthhopehjrghnrdhkihhsi
+ ihkrgesshhivghmvghnshdrtghomh
 X-GND-State: clean
 
-Tobias Schaffner <tobias.schaffner@siemens.com> writes:
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-> The for loop used for opt parsing copies the list before iterating over
-> its elements. Use a while loop to make the shift calls work as expected.
+> On 22.01.26 13:48, Jan Kiszka wrote:
+>> On 22.01.26 11:39, Tobias Schaffner wrote:
+>>> Run the EVL test suite for some first smoke tests.
+>>>
+>>> EVL_TESTS_SKIP_PATTERN allows to exclude tests in the test suite. At
+>>> the moment this is used to disable scheduling quota tests that fail on
+>>> virtual targets.
+>>>
+>>> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+>>> ---
+>>>  ci/gitlab-ci-base.yml | 5 +----
+>>>  ci/xenomai_4_next.yml | 1 +
+>>>  2 files changed, 2 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/ci/gitlab-ci-base.yml b/ci/gitlab-ci-base.yml
+>>> index 186d1cb..76e38e6 100644
+>>> --- a/ci/gitlab-ci-base.yml
+>>> +++ b/ci/gitlab-ci-base.yml
+>>> @@ -107,8 +107,6 @@ default:
+>>>          - report.xml
+>>>      expire_in: 1 week
+>>>    rules:
+>>> -    - if: '$XENOMAI_VERSION == "4-next"'
+>>> -      when: never
+>>>      - if: '$LAVA_TESTS_ENABLED == "true"'
+>>>  
+>>>  .test-qemu:
+>>> @@ -116,9 +114,8 @@ default:
+>>>    variables:
+>>>      ADDITIONAL_XENO_TEST_ARGS: "--vm"
+>>>      ADDITIONAL_TEST_TIMEOUT_MINUTES: 25
+>>> +    EVL_TESTS_SKIP_PATTERN: "sched-quota-accuracy|sched-tp-accuracy|sched-tp-overrun"
+>>>    rules:
+>>> -    - if: '$XENOMAI_VERSION == "4-next"'
+>>> -      when: never
+>>>      - if: '$LAVA_TESTS_ENABLED != "true"'
+>>>        when: never
+>>>      - if: '$KERNEL_VERSION == $KERNEL_VERSION_WITH_QEMU'
+>>> diff --git a/ci/xenomai_4_next.yml b/ci/xenomai_4_next.yml
+>>> index 30ca9b1..03dc233 100644
+>>> --- a/ci/xenomai_4_next.yml
+>>> +++ b/ci/xenomai_4_next.yml
+>>> @@ -20,3 +20,4 @@ variables:
+>>>    KERNEL_VERSION_WITH_QEMU: "6.12"
+>>>    BUILD_IDENTIFIER: "evl-${XENOMAI_VERSION}_kernel-${KERNEL_VERSION}"
+>>>    CACHE_KERNEL: evl
+>>> +  TEST_COMMAND: "evl test -k $(evl test -l | grep -Ev \"${EVL_TESTS_SKIP_PATTERN}\")"
+>> 
+>> Thanks, applied.
+>> 
 >
-> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
-> ---
->  utils/evl-test | 10 ++++++----
->  1 file changed, 6 insertions(+), 4 deletions(-)
+> Seems there is an issue with ptrace right now:
 >
-> diff --git a/utils/evl-test b/utils/evl-test
-> index 0d0ca81..f17a781 100644
-> --- a/utils/evl-test
-> +++ b/utils/evl-test
-> @@ -18,12 +18,13 @@ test_args=false
->  test_arg_list=
->  test_list=
->  
-> -for opt
-> +while test $# -gt 0
->  do
->      if test x$test_args = xtrue; then
-> -	test_arg_list="$test_arg_list $opt"
-> +	test_arg_list="$test_arg_list $1"
-> +	shift
->      else
-> -	case "$opt" in
-> +	case "$1" in
->  	    -k) keep_going=true;
->  		shift;;
->  	    -h) help=true;
-> @@ -39,7 +40,8 @@ do
->  	        exit 0;;
->  	    -*) usage $0
->  		exit 1;;
-> -	    *)  test_list="$test_list $(eval echo $EVL_TESTDIR/$opt)"
-> +	    *)  test_list="$test_list $(eval echo $EVL_TESTDIR/$1)"
-> +		shift;;
->  	esac
->      fi
->  done
+> https://gitlab.com/Xenomai/xenomai-images/-/pipelines/2278891139
+> ("** ptrace-sync: BROKEN" on all archs, 6.1 and 6.12)
+>
 
-Merged (along with the typo fix in the help string), thanks.
+This is a new unit test recently added to check the newly revamped
+synchronous ptracing support available with x4, there was no such test
+prior to libevl r56. Since I cannot reproduce this issue on any of my
+targets here, I suspect some pattern matching issue against the gdb
+output in the CI environment, or even a more basic problem forking off
+gdb.
+
+Running this test manually with verbosity turned on (-v) may help
+pinning down the problem, e.g.:
+
+$ evl test ptrace-sync -- -v
 
 -- 
 Philippe.
