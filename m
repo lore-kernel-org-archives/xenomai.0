@@ -1,122 +1,123 @@
-Received: from redirect.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
+Received: from redirect.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D739D3BB4A
-	for <xenomai@lists.linux.dev>; Mon, 26 Jan 2026 15:11:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.232
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E67F244694
+	for <xenomai@lists.linux.dev>; Mon, 26 Jan 2026 15:50:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.231
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769440320; cv=none; b=EDQuDqhBEbNi+ByX+V8z5FGAWIxL20O2BCEcClAMm36xVvI10yeEL5UalFpdd2RRsOVcot6WhuhFPpQDn3QgsiPN4OBUsP6tS5nq591MyRUbMo5sOtuCbv6etO0HUgEbarLDZuCyhIGPofq6eGosdHhytFD9uMnLYkjxX3/Euwk=
+	t=1769442609; cv=none; b=oiMopNxZuQ13KomkFmIZau6KSxp9RocGDpueCBgnjdPwXQH8AsAl2QC3M4rwHMkWk0beI4zjH2E2o6G3fxwzGwnBG3+jktnEf2n8zZfHrA3M0t+e4BbAW1FA6vs914CNiWgUFTHOPRXhlWSTlj92Ce4XXmEh4rDS2UnnNHg5oUI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769440320; c=relaxed/simple;
-	bh=zvux5hnsA1dNCPJJC3UQrzX/YTdAdMqpFoOQhVt2AVs=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=f8tQYH9SOxAnywMXOIBzsAsKMqJ/zHqOBv5qzDOSFddnzRWeblOp5D42Lr5UAZupvmD3RyuV1xoYmp1DqbtWuYaeTfuAa3glxFWpc5u2QE6NPFp0XASJyWTjIkfK70Av34gy8CyP1GoUjplscl0qTIbHBDvuRO7xzVLl533TQ0c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b=qqWIM3IO; arc=none smtp.client-ip=217.70.178.232
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at
+	s=arc-20240116; t=1769442609; c=relaxed/simple;
+	bh=nGroIsFzSgvlWMTuQyVs/B2SS3zLnE5WdeiZiZwzGKU=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=KYdCgJ1z5ZoJ7PFrLWQL0vAAGsvl411wKZWMgpbXoKVNtZTltRtghiQRtlJqiC32sS4sZdF9qGGY965Ck/NEWg4ikPAkeBL00q5/jbgXcsSVJtrj5afnyfkwIo04kevg7alTjE8xzrYmbynwMetX97DyIZRlBImNz+qAN+jqxZo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=redirect.mail.gandi.net; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=NN91pipZ; arc=none smtp.client-ip=217.70.178.231
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sigma-star.at header.i=@sigma-star.at header.b="qqWIM3IO"
-Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
-	by relay12.mail.gandi.net (Postfix) with ESMTPS id BF46D43D3F
-	for <xenomai@lists.linux.dev>; Mon, 26 Jan 2026 15:11:49 +0000 (UTC)
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 44FAB27E0CE3
-	for <xenomai@xenomai.org>; Mon, 26 Jan 2026 16:11:49 +0100 (CET)
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="NN91pipZ"
+Received: from spool.mail.gandi.net (spool3.mail.gandi.net [217.70.178.212])
+	by relay11.mail.gandi.net (Postfix) with ESMTPS id DF4C443630
+	for <xenomai@lists.linux.dev>; Mon, 26 Jan 2026 15:50:03 +0000 (UTC)
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 7F7D72680A57
+	for <xenomai@xenomai.org>; Mon, 26 Jan 2026 16:50:03 +0100 (CET)
 Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=sigma-star.at header.s=google header.b=qqWIM3IO;
-	dmarc=pass (policy=none) header.from=sigma-star.at;
-	spf=pass (spool.mail.gandi.net: domain of richard@sigma-star.at designates 2a00:1450:4864:20::32d as permitted sender) smtp.mailfrom=richard@sigma-star.at
-Received: by mail-wm1-x32d.google.com with SMTP id 5b1f17b1804b1-4801d24d91bso48564915e9.2
-        for <xenomai@xenomai.org>; Mon, 26 Jan 2026 07:11:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sigma-star.at; s=google; t=1769440309; x=1770045109; darn=xenomai.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=zvux5hnsA1dNCPJJC3UQrzX/YTdAdMqpFoOQhVt2AVs=;
-        b=qqWIM3IOhXEKk/b1omN26dEGzatZtpHK4raRjrJLZlUQurLeZPw28nz7BvD75fzg+P
-         c8OQl+7jQgGxPH+ZsOQjebWZ0LbUmly0DfGL3S1/t9GpXcTAhBZgbdaX4korLNwFwQkX
-         rjR6G6Ge6aKKGVbYWoFOxlbWGzatVqKvQZV2dZhWVYLYOmqNhta7Oobjlk4eEAJe5gAE
-         j0TVPP5LJMUlV5wnxdh2WUK76otLRpgd4UCchZrIGraQFxUzgIrLXya8G4vNV4cg+2zT
-         H7e0E6WeJBlg1h6wZUK4HqXTBBGFnPXjfBX5IaAk9iMwKJ/iEEhCRJHTwVH9R7znhY7w
-         Wzyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769440309; x=1770045109;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=zvux5hnsA1dNCPJJC3UQrzX/YTdAdMqpFoOQhVt2AVs=;
-        b=WDPmCYba2Eqg5lh+QN4bSYbuXmxl1yBG3fzPUYan25gmMIqSapcuHuDcT76HpunMcg
-         cO9no+XGU7DuliH3zDH0+hf9B4S2/gfjZ4d5lf1E713tVIyqwHVkH/egc7+0x39XNkgt
-         yMr0CXZ22pImephPvi2bwn7wrk8z9GW6XqXXJpgMqgsO4x1DzLKy8WBDkEJi40k/tsZa
-         afo+DEnI/oMO2Bm38ojw6BnREFdsVAR//+HVjk/BJy3tQSdl/7C2p9L36irV4td/1WwF
-         7uGrFQlKrzRNXNWdKbZx6t4zyArHgmubX1+z6LZLBgVZQSjhLhuNHx4ABimOybY2IL/i
-         3d0g==
-X-Forwarded-Encrypted: i=1; AJvYcCUic/xy68XJGgPBAOvDwZTegAD0+ipkRXPj6/wvB/B7I6LY/rxEDC5ZKyYGoC20lZrJM9hue8xr@xenomai.org
-X-Gm-Message-State: AOJu0YzNSyt1SF1WnvV74J8jJKZwv+T+mH92ZdG5CPGb7rkzR7b06wbU
-	sQBMJmKvPByoXsgbicLaTFHdk6y8BuFymbpHGVeP2ou1kNcFodl/BZ1DOHiLRH7tCxY=
-X-Gm-Gg: AZuq6aKLvLeIAnRk2tfIZ8EKHfaijzn7kV7lVMxyCshFCuCi2YrmDLPy0zc4IC7zK5f
-	ixlKhzXjJZULYHcVO9+I6WkS1LZ2HISIGf7UAH1Ybk5wFoc8AETvb5Kgi0S3rNSAoD3XXRnl95p
-	ltDtD0XCCexETIwwePBQdzJa2TiEaShulYU1K2zp9rSzzZxuukoi0lAx9Q/Z2QGiSSnDIpb61pI
-	xDbrXW56KakrtMtwrVUkuvPG8DIYWPpyj/COfTJ/jj4tRDpkEjNUPBWGXoIzNPvpnbJzSfQ5rBc
-	NRXsGSJnnQDk6K8Tvxb0ddOTWHqkGzq08MYtTcSeJgxcIZmEiidAyD6RrPEJFm4zu0yMWmk/flS
-	sBhJjau/dHocQWQWRfli4y1gj4qmcjEDgbv7HqYFJmrKSeyR4OPNybc09T8733A==
-X-Received: by 2002:a05:600c:4e8e:b0:480:4a90:1b06 with SMTP id 5b1f17b1804b1-4805d06c7efmr74192725e9.34.1769440308552;
-        Mon, 26 Jan 2026 07:11:48 -0800 (PST)
-Received: from somecomputer ([213.208.157.38])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4804d8a5c32sm343194095e9.11.2026.01.26.07.11.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Jan 2026 07:11:48 -0800 (PST)
-From: Richard Weinberger <richard@sigma-star.at>
-To: Richard Weinberger <richard@nod.at>, xenomai@xenomai.org,
- upstream+xenomai@sigma-star.at
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
+	dkim=pass header.d=siemens.com header.s=fm1 header.b=NN91pipZ;
+	dmarc=pass (policy=reject) header.from=siemens.com;
+	spf=pass (spool.mail.gandi.net: domain of fm-68982-202601261550027674ca2078000207db-0r5E7_@rts-flowmailer.siemens.com designates 185.136.65.225 as permitted sender) smtp.mailfrom=fm-68982-202601261550027674ca2078000207db-0r5E7_@rts-flowmailer.siemens.com
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202601261550027674ca2078000207db
+        for <xenomai@xenomai.org>;
+        Mon, 26 Jan 2026 16:50:02 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=MFKtMPI8BdbdnU78TOESoHeeV6vV5VU00cuVtazBh/w=;
+ b=NN91pipZOGc5DXlYeI/4l6Fl91NTeXQS1FNw8BHaxyaoJtDA1wTi8SgJYeCgRN7UxCtw81
+ JnbETiDVf0n5yYEjaPSzB8UFViBzMpqiHe57LhLSXyz5piB4wFMSIE3wiHCDCF3Aw8rflF8D
+ rHE/gZX1/Ipng+ecu5L9fiLBHUdjNJ/DmEnc+dHvrKi8zDFvPFdQEzvi7REcn611um1bKYMZ
+ P1NrnjAXrJ9oVXFkWbuzzUimff+vSW5gM5m5RPe7N9/GflOAnFXijpNo/dBqClH1I6EprjjO
+ 2t3a2MdCMrC73004Snr/YYcQCRnppKjLCw8oJNZx7V+JLW/jSvGMhKKg==;
+Message-ID: <e3c92da16a134131ab9f0e958da4844d7394e6e2.camel@siemens.com>
 Subject: Re: [PATCH] Allow changing CPU affinity of RT kernel tasks
-Date: Mon, 26 Jan 2026 16:11:46 +0100
-Message-ID: <3016173.h6DGQjDypG@nailgun>
-In-Reply-To: <29de15c3-4d96-4194-9cbf-c362e9e83698@siemens.com>
-References:
- <20260126125701.21000-1-richard@nod.at>
- <29de15c3-4d96-4194-9cbf-c362e9e83698@siemens.com>
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Richard Weinberger <richard@nod.at>, xenomai@xenomai.org
+Cc: upstream+xenomai@sigma-star.at
+Date: Mon, 26 Jan 2026 16:50:01 +0100
+In-Reply-To: <20260126125701.21000-1-richard@nod.at>
+References: <20260126125701.21000-1-richard@nod.at>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
-X-GND-State: clean
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgdduheejleelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufffkfgjfhgggfgtsehtqhertddttdejnecuhfhrohhmpeftihgthhgrrhguucghvghinhgsvghrghgvrhcuoehrihgthhgrrhgusehsihhgmhgrqdhsthgrrhdrrghtqeenucggtffrrghtthgvrhhnpeetkeffffefgfeuieeivdejhfevfffghfeuffduheduuefhjedugffgleefgffffeenucfkphepvddujedrjedtrddujeekrddvuddupddvudefrddvtdekrdduheejrdefkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvudejrdejtddrudejkedrvdduuddphhgvlhhopehsphhoohhlrdhmrghilhdrghgrnhguihdrnhgvthdpmhgrihhlfhhrohhmpehrihgthhgrrhgusehsihhgmhgrqdhsthgrrhdrrghtpdhqihgupeeuhfegieffgeefffefhfdpmhhouggvpehsmhhtphhouhhtpdhnsggprhgtphhtthhopedupdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvh
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgdduheektdekucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefkuffhvfevffgjfhgtgfggsehtqhertddttdejnecuhfhrohhmpefhlhhorhhirghnuceuvgiiuggvkhgruceofhhlohhrihgrnhdrsggviiguvghkrgesshhivghmvghnshdrtghomheqnecuggftrfgrthhtvghrnheptdevgffhvddvvdeikeefueeiteevvddvteffkeffleffieduteehhfevkeetfffhnecukfhppedvudejrdejtddrudejkedrvdduvddpudekhedrudefiedrieehrddvvdehnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvddujedrjedtrddujeekrddvuddvpdhhvghlohepshhpohholhdrmhgrihhlrdhgrghnughirdhnvghtpdhmrghilhhfrhhomhepfhhmqdeikeelkedvqddvtddviedtuddvieduheehtddtvdejieejgegtrgdvtdejkedttddtvddtjegusgdqtdhrhefgjegpsehrthhsqdhflhhofihmrghilhgvrhdrshhivghmvghnshdrtghomhdpqhhiugepfffhgeevgeegfeeifedtpdhmohguvgepshhmthhpohhuthdpnhgspghrtghpthhtohepuddprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghv
+X-GND-State: clean
 
-On Montag, 26. J=C3=A4nner 2026 15:28 'Jan Kiszka' via upstream wrote:
-> This is one issue with setting the affinity "from outside",
-> asynchronously. The other is that it will always imply a migration of
-> the kernel task, thus a phase of non-RT. If someone forgets about this
-> and sets the affinity at the wrong time, it can ruin RT workloads.
+On Mon, 2026-01-26 at 13:57 +0100, Richard Weinberger wrote:
 
-I assumed this is known and expected since changing the CPU affinity of use=
-rspace
-tasks as the same implications.
+General note: xenomai@xenomai.org is the old address. Not sure if those
+mails make it to all the inboxes.=20
 
-> This tuning gap for RTDM task is rather old. I was already considering
-> to add an explicit affinity API to RTDM to set this from the driver.
-> That would allow to set the affinity early, right after task creation
-> and before the driver signals it is ready. Risk of such an interface is
-> that people start to hard-code the affinity into the drivers, rather
-> than making it configurable to userspace.
+New: xenomai@lists.linux.dev
 
-Well, the goal of my patch is improving the situation to match userspace
-semantics.
-People expect that sched_setaffinity() kinda works.
+> [snip]=20
+> =20
+> +static inline int __rtdm_task_should_stop(void)
+> +{
+> +	return xnthread_test_info(xnthread_current(), XNCANCELD);
+> +}
 
-Thanks,
-//richard
+^ Is that used somewhere? Haven't looked into more details yet.
 
-=2D-=20
-=E2=80=8B=E2=80=8B=E2=80=8B=E2=80=8B=E2=80=8Bsigma star gmbh | Eduard-Bodem=
-=2DGasse 6, 6020 Innsbruck, AUT UID/VAT Nr:
-ATU 66964118 | FN: 374287y
-
-
+> +
+> +static inline void rtdm_task_test_sigshadow(void)
+> +{
+> +	if (signal_pending(current)) {
+> +		xnthread_relax(0, 0);
+> +		XENO_WARN_ON(COBALT, kernel_dequeue_signal() !=3D SIGSHADOW);
+> +		xnthread_harden();
+> +	}
+> +}
+> +
+>  static inline int rtdm_task_should_stop(void)
+>  {
+> +	rtdm_task_test_sigshadow();
+> +
+>  	return xnthread_test_info(xnthread_current(), XNCANCELD);
+>  }
+> =20
+> diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+> index 607f115a7..e9baf38e1 100644
+> --- a/kernel/cobalt/thread.c
+> +++ b/kernel/cobalt/thread.c
+> @@ -204,6 +204,8 @@ static int kthread_trampoline(void *arg)
+>  		return ret;
+>  	}
+> =20
+> +	allow_signal(SIGSHADOW);
+> +
+>  	trace_cobalt_shadow_entry(thread);
+> =20
+>  	thread->entry(thread->cookie);
+> @@ -2373,8 +2375,9 @@ void __xnthread_signal(struct xnthread *thread, int=
+ sig, int arg)
+>  	struct lostage_signal *sigwork;
+>  	int slot;
+> =20
+> -	if (XENO_WARN_ON(COBALT, !xnthread_test_state(thread, XNUSER)))
+> -		return;
+> +	if (!xnthread_test_state(thread, XNUSER))
+> +		if (XENO_WARN_ON(COBALT, sig !=3D SIGSHADOW))
+> +			return;
+> =20
+>  	slot =3D get_slot_index_from_sig(sig, arg);
+>  	if (WARN_ON_ONCE(slot < 0))
+> --=20
+> 2.51.0
