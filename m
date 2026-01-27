@@ -1,95 +1,61 @@
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+Received: from lithops.sigma-star.at (mailout.nod.at [116.203.167.152])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66371335547
-	for <xenomai@lists.linux.dev>; Tue, 27 Jan 2026 09:56:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE1CF3446B7
+	for <xenomai@lists.linux.dev>; Tue, 27 Jan 2026 10:46:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=116.203.167.152
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769507787; cv=none; b=GZBbJTGRkA7CCPPbL9WGt0z2tnm5pzEcq1MDXmu/QLGFkvOkkNt7TxhczcQ8y/cX0GMDMavzULnDGuEucZwqyIFgEFZuwFADagXB6VcPXKdlQA62egXZRBnz3Li55mBwKIcOWPyygwgPRKwYQ4DTlsyKuckmM/bxtvZlQ3h7i5s=
+	t=1769510821; cv=none; b=SwEd0JfTt91AMWRtPJK0JFXL5q5bfQBlkARs1AxD+6tjD5k9KUgfUu4Rr+gQ2Dma4ww4bARr5jb/7EHxChAjNh9doCN4xB4mCUzkQkx+F4GdRwKAXuEJoq4Kn5lUWIHw1hE2zbIQv9ACzZRB8yHnXYZ+sdFHWTfbLVlLEzV8Faw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769507787; c=relaxed/simple;
-	bh=9YwUnFDtX0UDUiGnMk2BXLSrnjZxBtgVeaGNySjKMt8=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Frubrz1uC1rELdkNN1MeF0xpCfyw0WeJ+5tBFvI4h1RAg8S04hGpgPlwG/168ilxSUUGl+W4o1jNm4EWCANTSnprfcHnXsQKu8r1pWmDgjkkm67XUAY5VEFGV7KhHp1jTza2w/PHL/vGvGi73L1W4lmauPBiSoZyilNgrnf+rfE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=B8ibTj+h; arc=none smtp.client-ip=217.70.183.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="B8ibTj+h"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id CF6291F766;
-	Tue, 27 Jan 2026 09:56:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1769507777;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=jf4TejsZgWjYt4J6lvvW8VpX9OOfh/cC1iA6yyipch4=;
-	b=B8ibTj+hufb+qPXUWcd3Sl4y8PjHQiP7K6ZCBEQ8XUUqZMHbDmdGfm7QFniGq5PQxYToyn
-	YL+WwAkE33v1c7vckHMyjjExsD9J57jz8qKK2PeEVuB5QuNEcjBEus2FoF1c1f0ihxGITQ
-	REjbYWIxF9B0Ek8Xb9RmeC+eJZGZPrkFYCAvBnpEQqT+Xq6ZLtVN6HIyYlT93MG71XIils
-	JkDbK4KwcuMYYGF6DGvjkbJXgwL+0X8FqpuaDV++F5oj2dqssuSiMsk8wS3bg3sOu2D1Vr
-	tt2VO3J693Vyg3+WBu6jd8nToGNtsU1VnQB9myTP6UE4A9SWYGeodl7zqnrIfQ==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Richard Weinberger <richard@nod.at>
+	s=arc-20240116; t=1769510821; c=relaxed/simple;
+	bh=S60J43/vHggk3avmepRbjGZOWAYnjC45pIhQUEO+UV4=;
+	h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:
+	 MIME-Version:Content-Type; b=QGBiVQ46bvXqItWHHrNdbk7megwf0dPgJ6XHlEDNlc4doNx9PIphSKHMAIQ+PLQJ8beVwNKX3/fg2pEmXG5QYTTaR1ZINUejPDVqegg/FLRxzi0VBoq8taCwfzdItaYRuX5qZ0ZTtW1C3VBs1dfWDL1O4+oTnnxwCmF7Q2b3IIY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at; spf=fail smtp.mailfrom=nod.at; arc=none smtp.client-ip=116.203.167.152
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
+Received: from localhost (localhost [127.0.0.1])
+	by lithops.sigma-star.at (Postfix) with ESMTP id 7AB4D2C14AB;
+	Tue, 27 Jan 2026 11:46:56 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+	with ESMTP id LFk0UYQs4qkR; Tue, 27 Jan 2026 11:46:56 +0100 (CET)
+Received: from localhost (localhost [127.0.0.1])
+	by lithops.sigma-star.at (Postfix) with ESMTP id EC5812C14B4;
+	Tue, 27 Jan 2026 11:46:55 +0100 (CET)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id TGXS16w7oFzC; Tue, 27 Jan 2026 11:46:55 +0100 (CET)
+Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
+	by lithops.sigma-star.at (Postfix) with ESMTP id C13E72C14AB;
+	Tue, 27 Jan 2026 11:46:55 +0100 (CET)
+Date: Tue, 27 Jan 2026 11:46:55 +0100 (CET)
+From: Richard Weinberger <richard@nod.at>
+To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: xenomai <xenomai@lists.linux.dev>
+Message-ID: <71486589.18531.1769510815576.JavaMail.zimbra@nod.at>
+In-Reply-To: <e0ae25a5-94b3-4d8b-8b92-faf40a5ed2eb@siemens.com>
+References: <1209867549.13389.1769444884253.JavaMail.zimbra@nod.at> <5a4b5aff-fa90-42e1-bdf7-3a42786830bf@siemens.com> <1353891765.13527.1769446729193.JavaMail.zimbra@nod.at> <d953a897-92a8-4a83-ba2c-7d95059b4525@siemens.com> <724391155.14329.1769456288068.JavaMail.zimbra@nod.at> <e0ae25a5-94b3-4d8b-8b92-faf40a5ed2eb@siemens.com>
 Subject: Re: CPU Hotplug Splat
-In-Reply-To: <1209867549.13389.1769444884253.JavaMail.zimbra@nod.at> (Richard
-	Weinberger's message of "Mon, 26 Jan 2026 17:28:04 +0100 (CET)")
-References: <1209867549.13389.1769444884253.JavaMail.zimbra@nod.at>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Tue, 27 Jan 2026 10:56:12 +0100
-Message-ID: <87o6mfxttv.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgdduiedtvddvucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpeeugedtgfduffduleejteeujeejieelteelveehfeektdefvdduleeugefggffhgfenucffohhmrghinhepohhpvghnshhushgvrdhorhhgnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhqihgupeevhfeivdeludfhjeeiiedpmhhouggvpehsmhhtphhouhhtpdhnsggprhgtphhtthhopedvpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehrihgthhgrrhgusehnohgurdgrth
-X-GND-State: clean
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF146 (Linux)/8.8.12_GA_3809)
+Thread-Topic: CPU Hotplug Splat
+Thread-Index: xHlq1OEDYO4ceMwUWjs1GUc7gVx2PA==
 
-Richard Weinberger <richard@nod.at> writes:
+----- Urspr=C3=BCngliche Mail -----
+> Von: "Jan Kiszka" <jan.kiszka@siemens.com>
+> Regression, i.e. was 6.12 fine? And all it takes is some "echo 0 >
+> /sys/devices/system/cpu/cpu1/online"?
 
-> Hi!
->
-> While toying around with CPU affinities I noticed that offlining a CPU
-> triggers reliable a crash. Is this known?
->
-> [   32.812858] BUG: kernel NULL pointer dereference, address: 0000000000000000
-> [   32.812879] #PF: supervisor read access in kernel mode
-> [   32.812881] #PF: error_code(0x0000) - not-present page
-> [   32.812883] PGD 0 P4D 0 
-> [   32.812886] Oops: Oops: 0000 [#1] SMP PTI IRQ_PIPELINE
-> [   32.812892] CPU: 4 UID: 0 PID: 36 Comm: migration/4 Not tainted 6.17.0-g970519241701-dirty #38 PREEMPT(voluntary) 
-> [   32.812896] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.2-3-gd478f380-rebuilt.opensuse.org 04/01/2014
-> [   32.812898] IRQ stage: Linux
-> [   32.812899] Stopper: multi_cpu_stop+0x0/0x110 <- __stop_cpus.constprop.0+0x79/0xc0
-> [   32.812909] RIP: 0010:proxy_irq_handler+0x13/0x30
-> [   32.812914] Code: 9d 5b e9 00 11 ee 00 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 90 f3 0f 1e fa 65 48 8b 05 6c 96 41 02 48 8b bf
-> [   32.812917] RSP: 0018:ffff9dcf0018cfd0 EFLAGS: 00010287
-> [   32.812920] RAX: ffff8fdea8989000 RBX: 0000000000000000 RCX: ffff8fde00e64108
-> [   32.812922] RDX: ffff8fde00e64000 RSI: ffff8fde3bd1dac0 RDI: 0000000000000000
-> [   32.812923] RBP: ffff8fde00ea6200 R08: ffff8fde00e64100 R09: 0000000000000000
-> [   32.812938] R10: 0000000000000000 R11: 0000000000000001 R12: ffff8fde00fad600
-> [   32.812940] R13: 000000000000001b R14: ffff9dcf0005bd00 R15: 0000000000000004
-> [   32.812947] FS:  0000000000000000(0000) GS:ffff8fdea8989000(0000) knlGS:0000000000000000
-> [   32.812950] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   32.812952] CR2: 0000000000000000 CR3: 0000000058a30000 CR4: 00000000000006f0
-> [   32.812954] Call Trace:
-> [   32.812976]  <IRQ>
-> [   32.812978]  handle_synthetic_irq+0x9b/0x1b0
-> [   32.812988]  arch_do_IRQ_pipelined+0x85/0x460
-> [   32.812995]  </IRQ>
-> [   32.812996]  <TASK>
-> [   32.812999]  sync_current_irq_stage+0x159/0x160
-> [   32.813003]  inband_irq_restore+0x5d/0x80
-> [   32.813008]  multi_cpu_stop+0xdd/0x110
+I have v6.12 a try, seems to work. So it's a regression.
+Yes, echo 0 > /sys/devices/system/cpu/cpu1/online is enough to trigger it.
 
-The crash above is a timer event still pending in the inband IRQ log
-after the tick proxy was dismantled on that CPU, bad.
-
--- 
-Philippe.
+Thanks,
+//richard
