@@ -1,54 +1,67 @@
-Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11013051.outbound.protection.outlook.com [52.101.83.51])
+Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11013071.outbound.protection.outlook.com [52.101.83.71])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23B3837A488
-	for <xenomai@lists.linux.dev>; Thu, 29 Jan 2026 07:45:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.83.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10141366048
+	for <xenomai@lists.linux.dev>; Thu, 29 Jan 2026 07:46:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.83.71
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769672757; cv=fail; b=Q4t1AxJXZqV28nQ/byfr44lGfusfwsLTfcsR/lpqXMIfHiHWeug82Kqr26xGjzjyHIrcK6IDbPwcTcc7EkJTJzQdb+xs1p00zPxHErfHp5npLoKHV52/0W2d4Df7u/py27y0LnoNkjjBZG/UtqstJsVfRlzd/JklTYbgNxwKY7c=
+	t=1769672792; cv=fail; b=InC/RydQsbcKsAGQwNG/LuFv/mryvTb9tJucCoMiWtPot3RvLNQ3fLVGoL41xyd8KX3fdoBSprVFdc4J4EetJULiOW2AEpuEj8AxAak7d6BQm65l/j2GUhXCKjzJTRAGDD9m8QPKA7ERj3xyuTaZzevPbTGrNySQK3MlvvagPSw=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769672757; c=relaxed/simple;
-	bh=3sup1SWIdSswY97C7wy9iDmvofuGFRcpzfP104OzfE4=;
+	s=arc-20240116; t=1769672792; c=relaxed/simple;
+	bh=BPsjE2E7Ubh0QZ3bdS8j/zWTrnDAOJj30I7WxRIOF9Y=;
 	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=PsD7S+8ShAofP+yY5EUqUJgKj3CRmqG0at4sWjuz7lHl2nihXVKGUfLzCWhbjhvaDcThzpYmEDPat8WPclaPubg8Bd66KGLkEJ7IzfjQF7NS38aZ1jJ+PxWB/+x6skRGNr4IBXW3nDTF/oCgnZ4wk8nS9Ndl3EDXVkQ3UMyuYmA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=iagXb+13; arc=fail smtp.client-ip=52.101.83.51
+	 Content-Type:MIME-Version; b=RCGBX8MC4qZKKYfUJbLi7OxFziI/byIGyLzOSVAM97cEvWMLadrL9Z32Mf2AFAtL49wkm1QXA0LppdtOsCIwSoDKjayFuSpVcwbIGKRnAQK9brhbh+kWDPLYNIT3bRWQFU79Gm0mSoFGPwCzqmDwJhS90G51A+et5PyxqdU5Evc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=y0WEe8GH; arc=fail smtp.client-ip=52.101.83.71
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="iagXb+13"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="y0WEe8GH"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ra6XCZ4ETHm+kuGqErRkoVr0V7GjbsxdKEvE5bE0Ke8YmzLkLB0A2AAW0SkDlYxYRSCBmSFdkzn2+3nNA/im/xyQGvry5OviMwyr/64Q5hjidGZcTw5cRBGMAq6eBQsqmYXbGMqeY4oaFQKfmGmYE3QrF+mEZSbPiFeVFQPGZYC3mjcbSEAUSTsq/5VCiaS825y21yYLTYePIo5Bg+Y0H1LqI5UGqMvqLkAK7rKByM2PjOO27jgm450xaf4rFFKGn6VHSwnx1ELRgv5BhmUe2rJFWESuyKq4TFCqXVDjls5cKZ1Np200QF27DJrqJNbmCkUBYEHPKy8A5xs/PmBZEg==
+ b=U3hebeKqMlj2FzabXxFEfUg31Hhx9nb2lCLS9Z+Bmk4yMvXYREG4SbAvYH3O3G0mtA3ofyO9A9iipROk7petAv0NPQxaJXMKfc+WmHdpaWw6aXG2ycEheO1DN99IUlf3TUXI50zfBxFWXUT0mChSQK/VqxMOrUWySqgCgWannpxZr00kPS35/QVNElS7rQ5k0me5IXcylBf1RVIZGiUNuYIcpxSl+OOO2XxipzVaCJi+N2dhDptxf24aBw7lwokKXc1LdG9/VGzKd9W0br4D8C+wdyrakPhGKdYIYRZ1/O/Hg2ISpmUsHRKImCyWvFEciMh9iwAPl0WZYFyqJPA9Pw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=wiUeS9DLlS47uXNLO/ruNICNEXtqXTiWEgTPRu5YYkk=;
- b=OBZ0jpSxcGssdLAW+sML/2NW1rZO2kr/xXvIWLOn34206R9+aKB3yOBLIVO180XlHRqdWtYIDy/2a5sH1He8ATmQ4AlnC/HGKiN7T5/aDstk6MuEy3FTKkCd7fFU7ElbUTr1ibbAW8fvASsg5lOSEw4erY4eFs3C5uA1kbbz1zwM3vAUzTLBrXf9OLNQpCasa0YIfcChSgfaGtXNgK3irhL+L60AUP/DaSgT0x8SvBF04S3Sq+CMZFPwwzEU78dQN0cGf3BvrU8WeCP6xAHPS9+ppkbVGXDx5H1sYj8eEQvnGfkKipPmeoxiBsfKT1PiETR5xZu4uLIDkmDhHlaXkw==
+ bh=3wJkWh0sF277ObcgK/Z0tG3X2R76iJCcAGBLRuOUPV4=;
+ b=fV4OXy6h1c2yW8pCACbTOPdsFMQVxd8Z2pt/Lxs+YQ80h4DuqSsfWjEvmK5dYacISQrcFN7l5/x1/TRPXhYsBN7iN8QY0yIBzHt5HHW94tVRJj2cXDv31wB3QRTrxt0uSxVPgxCkmlaxQAVMq+7r4/MtUExht/7TxQOcODchexQd0K10Fw5cj8w/ZkM9L9yXi5BhxM7pu+McZOL8cYhxm7y+Pyy5x+MLAmldxX7/Pnha5o8/BR6AAmaVDDcKM5rMbJA55qiORcWTnD+SKpnTnwn7uBMWyTE2nJiSW+LByGU5Hqm/LIplLM1jkbuUUlnlT1SgWjFnB6P8P6lNZH92KA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wiUeS9DLlS47uXNLO/ruNICNEXtqXTiWEgTPRu5YYkk=;
- b=iagXb+13yT9LHiOjQSbpsIwNoQwVsPgo4ML71l6ZKUQIG7eRQlrO283Uc0f+uaOPSlYd3TAvwC3pKAvgN+A4eUswiP4TeamjFQ+aQZg7zgZASvwhSrrR2gB0XPb7Qf5Mi/tBVME6+bTfoBITSG7/+LB5foNqFlkRwQsPppyMpfU8k9UNQC37iNp+zMat9bsvCWErDcUJdr6LnWuV8IKNP9gacrUAbsJ8bMTjLyGAURTgtDrzOypmIZRxizBa+BV/gX7JRxofFXXyPQm2Vo5Nu5AzqqLUQg5/ZO4YbHwTY0lbUk2bBwCA3uz1jsTZAbTWz2NKUvW3GEKYmYiOOiiaMA==
+ bh=3wJkWh0sF277ObcgK/Z0tG3X2R76iJCcAGBLRuOUPV4=;
+ b=y0WEe8GHXD+tfxJ6Z8Lm3fQ8KqVEn+HxVv6kpgxvqNppQDYoiEqnJ2XPyQBjubvzzZA0NF8P/aT4j8bDypRMpiI14+cD/B0M2KlKXdBZGiXQ2o0DO3wt6ngv0zN6BhKh0YCTj69qY0MMkrUyVM7ET+rvGQc5zEvDbw8MKA/RhUniFGa6DEd4TR7WTHGj/yQHdnUeWT+6L2UkISOdNndlrXO+Uf/3MeV0MaZmOspM5xxgsHLmseBMxwD8aQcmVdSdY1nB1BE/hglYgThnwjcwRH6YsUhjgxyly90aCxnqInVmuX71v9Cp30b9xoby3QOA8Z0p6+gg1J2WoMDhiLCTrA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
  by AS5PR10MB8176.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:678::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9564.7; Thu, 29 Jan
- 2026 07:45:51 +0000
+ 2026 07:46:27 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1%6]) with mapi id 15.20.9564.006; Thu, 29 Jan 2026
- 07:45:51 +0000
-Message-ID: <2c9f0b74-4e8c-4542-b0ef-ee13ad21c2d0@siemens.com>
-Date: Thu, 29 Jan 2026 08:45:49 +0100
+ 07:46:27 +0000
+Message-ID: <65e006b2-dc10-44f0-85b5-16cbbdcb3bd0@siemens.com>
+Date: Thu, 29 Jan 2026 08:46:26 +0100
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] Fix race between RTDM task termination and xnthread_join
-To: Richard Weinberger <richard@nod.at>, xenomai@lists.linux.dev
-Cc: upstream+xenomai@sigma-star.at
-References: <20260127213927.26960-1-richard@nod.at>
+Subject: Re: rt_task_resume() resumes a wrong task
+To: "Mauro S." <mau.salvi@yahoo.com>
+Cc: xenomai@lists.linux.dev
+References: <144fcdcd-0944-4971-80fb-80ee7e72cb83.ref@yahoo.com>
+ <144fcdcd-0944-4971-80fb-80ee7e72cb83@yahoo.com>
+ <348b1bfc-8f0b-4e97-a100-999928f67ab5@siemens.com>
+ <172ca47c-acb1-45cc-8e2c-3282c17354f5@yahoo.com>
+ <90450dcc-6293-4835-8f75-788090a867ba@siemens.com>
+ <348cb4d0-b82a-49e0-881d-fe75ee134964@yahoo.com>
+ <d2569de3-405f-4305-a05a-be104160d1a8@yahoo.com>
+ <75ab33ce-0a98-4154-add6-9e8fa989b4eb@siemens.com>
+ <651094df-88c8-4998-b389-28a6086704e9@yahoo.com>
+ <e9573efd-0e55-43fe-a341-da42acf06bf8@siemens.com>
+ <d8dd9ec4-1f98-48b5-b877-39a1de243081@yahoo.com>
+ <badbf3d2-4ff7-4d72-ae3e-24898f84c015@siemens.com>
+ <f9116b18-0aa2-4b32-bce1-98913cf0c721@yahoo.com>
+ <7d2de011f553742fb9c016f190956dd72792d8ec.camel@yahoo.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
@@ -94,11 +107,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <20260127213927.26960-1-richard@nod.at>
+In-Reply-To: <7d2de011f553742fb9c016f190956dd72792d8ec.camel@yahoo.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR4P281CA0430.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:d1::20) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR4P281CA0426.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:d1::9) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -108,278 +121,446 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS5PR10MB8176:EE_
-X-MS-Office365-Filtering-Correlation-Id: dd907c32-3271-4010-b506-08de5f0a6cd4
+X-MS-Office365-Filtering-Correlation-Id: 484e4414-36d4-4a25-5650-08de5f0a823b
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?VWVsVUxlUEZ0Uk82azR6L0RmSCtBeW9KVWdzNklqK1VDK3RhbW1DcEc0RXY5?=
- =?utf-8?B?elVTZ25PS3hlQ2tGTjdHdnNZb045UVlCTmJEZklKUjVGc1RZVjI0clBrSnVK?=
- =?utf-8?B?WmJuQnUyd0tmMjhYbGxTZXVLWkJzU2V3RHlYMnBSWDkwWW13cnhLcFFOSDIw?=
- =?utf-8?B?NmdPVTJOejZHZi9BNkFmVjZ3a1NoSnY0SS82dWNPczFzcEdudVVzeGs0MURh?=
- =?utf-8?B?bnFBUGJnRlNZTnRnSm1Wb2ZTTEdGNkFuYUpkRU1iVHVSVExiQitLZkhLczJH?=
- =?utf-8?B?MlcrVkttOGZBZk9IbWZKTXdRSms0NGU5aVlQOHRLeWs1Rk5zaGNpRS85Tm1a?=
- =?utf-8?B?OUF4TVZIMjkxSk9RWjhGNDhpeGlLcndtWVdxL29KcVllYkNtcHAvWVFOMXUw?=
- =?utf-8?B?TW1mUlhGVmp3dDJHMVZkd3JiYjZoSkxieWlMb2IwdGNoVnNPRXBoeDhZa3dk?=
- =?utf-8?B?MDFQK2ZQNnVGci9wUmxpT2twTmh2WFMrVWYwK2V0OU5tU0w2TXcyZmE0OWFv?=
- =?utf-8?B?K3N5RkxQZ0hYdE5QWVBIalRmTEwvZmNiakFkUksvZWpmeE9vcFdzK0lCa3pt?=
- =?utf-8?B?akI3MjlBbWRRZVNiekR3VElwOTZraG5tcmZyTjRPWkx1QXo4Z3kvSEdaTmRX?=
- =?utf-8?B?cWtvaStsK1RqbHN0bW5nUHpsWFBkdXFNS1hmL1JhL2tMUEpRdW1OMkxkRUkw?=
- =?utf-8?B?aXFXajFPeUY3NGhudjFOOWxaK01SVU15OXVNRjl2WnJVL2FtTHJwVFhCTWhD?=
- =?utf-8?B?NHZmcGwremdoUnh0aHVwTENlaUpHOUVzeU5rYXc5bWo2elNqTUFPc1VQMncr?=
- =?utf-8?B?QkhQdkMxaHgzM2hyMENQVW9mTDZtODNkTXQ2TWcyNjNkT0xjYTc0bE0vZm5n?=
- =?utf-8?B?OUZtYTB4dlpEbHZuL29QdktJUlVMc3VPZm9vS2ZpWW5sUk5xeU9WK0dUcytK?=
- =?utf-8?B?ZjU1Um5IUEs5aGp1dHNIVXdtQ3J5YzRTdHZFUU5qSVppVUxxRkVublQ0M1o0?=
- =?utf-8?B?WEZOcTAxZ1R4RlBLNWJEaGVGYnZNS1Q1WjljbXFZd0xreU4ycUc2RnNmcGxt?=
- =?utf-8?B?VGVUa3dRbDBiaHFKQUV1VnRUWGJmakI2VjVqdWdZZDJQbjZqQXJON1p0b21x?=
- =?utf-8?B?bS9IcVRhRHB6NDRXVndvVS9pcUdjTzNHd0NBTUQvS1RGM3FobDA3MmRPOFIr?=
- =?utf-8?B?T294M3NjeHhBeDVKSHRsK04vSmVlaFhLVnVEd2hzclE1NXBPMEFuMURsekg4?=
- =?utf-8?B?THZKa1NUWEU3cTlaS2xtdG9WcVQ0MGNlOThrTXREOWl4ZDhtQVI0bnMzWWJv?=
- =?utf-8?B?cDhwak9sc0Zqd05SbE5OTDg1RytTYWUyaDcwci9CUFErbXF0eWxJdTh3dDFs?=
- =?utf-8?B?NTU4L0tKVnNGQVBiaHd2V1pTSU91QlJRenkyRC9IWElPd2ZlVFpEdVFrUDYx?=
- =?utf-8?B?ckQ4SlhNb2NHbzV0TlliRjVqdmU3dG9nSk9mOC9yUituaUxTKzdMVkZOeERj?=
- =?utf-8?B?VkJSNXlOTEUxREI3Z2RsVlE4dUYvVlY5UlFxZXRmblBJemZhYUl4a1RjdGFC?=
- =?utf-8?B?aCtCbzFlcjhYMCttdm9EcmFHZ1ZlUXhielZqcGdNSzZqbTEyT2p0dmZhN2FD?=
- =?utf-8?B?ZXozNThLbjhEQXFWVURlbFlPRjkzZWYxbjJIZTRnNEI1S1puWFZ3YW5wc0Yv?=
- =?utf-8?B?ckVKYk1Ud3VKWnU3QUhOZW5QL1dvc2FDa2NNRWMxVWpFdHJ6aDV2KzdQYUFN?=
- =?utf-8?B?SVEwVHA5anFla0VmMTVVYURsYWtJZU5CM3E3Z3l3U01Oak04bVh5d1liWWx6?=
- =?utf-8?B?Tm90dGtOamY4dVI0VkR0b3F1b3YzdXhIanVmN08xSUY4KzFxbExRajBmcHFw?=
- =?utf-8?B?L0srSzBtcDJOSnVEdlAwT3p3VnU2R3J3VWFTWkRJTnZtU2duVXlNcHJob3ZL?=
- =?utf-8?B?VjhVUENlVnBrTXVSWlpLbUlZZm9ZYTM0SFQyazJjOHZkd1gwdFZDWnVQaWZt?=
- =?utf-8?B?czF4RC9rQ09NOGQ2NUtTT2ZQVUg5QXN6NENzUHBROUdIaWFFNXM2T1ZTZVRq?=
- =?utf-8?B?V1FLKzNRUUxXWjRoa1k3LzFsTEowTlZQazFuY0JHYjNnMG5pQzJQNWhsdmxk?=
- =?utf-8?Q?h+lc=3D?=
+	=?utf-8?B?bmVRdldxN0xnM2I0SFQwT3E1blhxZGJnclRZWThZSGZldlQwWllMd0RxZGx4?=
+ =?utf-8?B?eXp5aHpUd1NLWnRlcmlDZWZCbjAydFZTNFZ1S214SXdNYkkvejBadG9Sb0Ir?=
+ =?utf-8?B?RjZRcjlZbHRNcERQaU1UZWoxekZWS3lwRzczSDlYVXdoLzUydEYrbkRseFNx?=
+ =?utf-8?B?aW5LNDRuUlNDaGZvN3QyUTNVSU1CZ2lMQkxJbnFtYmdCcjBhdzZCRHNMNVZz?=
+ =?utf-8?B?bWdwVDZrUUd0bVJ2emY0MUYxR1NaUHBVL1Q0WFNBS3NKRThNV3crNVJRY1RH?=
+ =?utf-8?B?NlE1eTAwL1lnUXV5VEN6UUNHV2FaZ2RJaUdNNDhJSld6L0J2dU5OR1NRc1Ri?=
+ =?utf-8?B?RzF4SlZTRFY4L3FnbHVwdXRhQXpSZXZIbCtBMjV1NGdpWVFiN1ZYMU1XemJo?=
+ =?utf-8?B?TWl0M2pNWjNMRTFhcUpPQzBHRnZJVlhuZndjdnY4Vk9kY0lvRGVVSUhaWE1D?=
+ =?utf-8?B?WEIzeWxIRXRWMkZMMEhYMWxjc3k2WEhSZ1F2c2svTTJ6aTNKSTgzZDJ2aUNn?=
+ =?utf-8?B?d1NRT0NIYWRLR3JvdWxFcDZZdkxnOXFHU3dVaEZxMWVVeTBDeGU3YkZwTEVQ?=
+ =?utf-8?B?RFJKWDJaYzBPYTMrMGR3Tzd4YkRYVzB3SVZ1MlJFWFZHM3hKd2lDclhrQ1pY?=
+ =?utf-8?B?WWxWUk5SRExSbmFHSDFaZERaYkZJNFM0T2hkYlBNQUVJR0xaK2p2NHorZkV5?=
+ =?utf-8?B?OHNzZ3k1RnJuUG0zSndRZXp3UDZ1YXB4Tys0amV6QVc4bVVGbzhKTDZ2STFC?=
+ =?utf-8?B?QzFTVDUxQkpGb3lFUmdpNUYxQ2dGWkk4VEdGUXk3dTZxakd5Qi9EdHloSnBV?=
+ =?utf-8?B?ZGNab2ZXaHZhdThvUFM5aG9xU2NxNnR1WUM1cm85SU90MTB4WnJibmZUYlRv?=
+ =?utf-8?B?TmpBMml0VHJMSVNnR2lLWEQxV1RXb1IyVzVqd1pWdXhTbUs5cEFOblo2RkVM?=
+ =?utf-8?B?M1pncjJsNllDOHRSb2YwbDBYK0E4cy9yMFlkaTd0cFhnSkRtWUUxdy9BMEE2?=
+ =?utf-8?B?Zk9YUmZqb29rckMreEdrVjhNR3VZQ1R0SEFBSEx0UnBLUTRnMGNLNW45Skk4?=
+ =?utf-8?B?NGpaS3MzVUVEYXRaMFV5UWZibmhkNzJ1c0paeTg3ekNGYkNDODkvZmJONXdQ?=
+ =?utf-8?B?UnVoNWFCU3JPcy9iODFkSHMybWhsbzhPZ1E0MzE0aVg5Z3lGRWFaQUxPcW4x?=
+ =?utf-8?B?OUk3RWlhUHkvQ3lRSzQ3dnp4blA4Z0FNbkl1eUkzVWVQRXZPcmVEakxSZUta?=
+ =?utf-8?B?NmlJY042RitpUjl6ZjNnaDZYUXJidmZyem80bnZVeEpFQ051dzkxS1k3Q1Ra?=
+ =?utf-8?B?V2pQUU9jSmZuR1NyR1BVNnVFTDJtYVNQYlBhZy9kbnorRFQ3V29ONFRPYTFv?=
+ =?utf-8?B?YU1aYzJoK3cwdU1kRStWNzdoclRMZzk2eS9icDlOMU0rRWZMK3YycnI2TEVz?=
+ =?utf-8?B?SFZ1M0poUDB0azN3Yzl1aGFZbHBqdjM5R3M0MjE0bHlZNVBGNVRrd3RFWWFj?=
+ =?utf-8?B?TVBEa2VUWEREdklTMHowVWo5eGJpUmlSb3MzRThaaSticG4xaE9uSE8rZlJz?=
+ =?utf-8?B?SVRtYUNZNWsyVW9aQnZaMGhrRVlZejZsdjNOVWdwZVhxeEMwOTNEc0lOd1Q5?=
+ =?utf-8?B?Q1Uzc1NBd1l2OUdKTnpEeDBkYWJ0eVJScGNvWmFvanc2MGF2R20zMHdOOFZE?=
+ =?utf-8?B?ZTRTMTllelpRUjN5My94WDZTK2pwM2wvU1JDSy9GL2hkUTc2Rk54T092UmFB?=
+ =?utf-8?B?eGhsTzNhQXhOS0JMNDRwRzE0K1ZaTUtqb3NJQjVRZDJIT3plclZaUHZ3OFB4?=
+ =?utf-8?B?VWRua3prbU1GdUdNY1kxMnpYRXE5K3Z0cEx1U1ZaV2hIaGtBTWJVQnNDT1da?=
+ =?utf-8?B?RkdHOVJmaVRVRXJ1elQzVWUxSU5uVnV6U3FCOXJJcWVmQ1BkUWJDQ3pKcWly?=
+ =?utf-8?B?MTl4M0Z4cjgyVEdJMTFGa0VaNmVLcGtNbjR5dDNEWkR4cHNlY0svWi9lQTlI?=
+ =?utf-8?B?NEdFWit2UENXcFlRS1ZPcEM4UWFZSGZzbm9YMEFwcDFqMytHTTlWaHdyM2N5?=
+ =?utf-8?B?aHA4YjRvejh3MWhkQlhpWnVSbUZwbDNQZXBPeUlCemFXanI1RERzMXFTSnNB?=
+ =?utf-8?Q?5NGU=3D?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Yjd4MHFiYVhnV1BJMGZwb3NuMFlKSzFmb001TkVOSnNKZ1FLbStnSHJJZ0RW?=
- =?utf-8?B?dWVDOW9peHJEWHVPNE5hR1dDWWl6ejJqcGtCWmx6d0hhUE5mV2I4NFZNWEdX?=
- =?utf-8?B?QUg5em5halNFcFJENzJVR0M2UUFLYXc2Z2NXMXZVQ1czZWZEV202UHhwejB4?=
- =?utf-8?B?L0lHYm1wM21VZzMyZ2VmdzQvSmQ4RUw3ZWdheTR3d3hYUnhOVXFjNG1TUXR1?=
- =?utf-8?B?K3hUUkJwTjA4alZzSzhoRGFIbytrdlJBOWptanY3eTF6Q1FKN0ZDSmlBK216?=
- =?utf-8?B?akxlMVdqc2NnVXJzNDI2NzNDc0pJTzZzTmQ3V3BNQytGMUNMc0p6KzkySkRN?=
- =?utf-8?B?WmtCMGdJZmlsdzY5OW5QMDlCQUpoODg4NW5kcVIwZ0ZWaHZBbUJXalpibG9Z?=
- =?utf-8?B?REZTR0IxTTdvVCtVaVRMU1BoWHRwSFRYSDNKbmMrMTBQUnV4dkZRTlZnVzJB?=
- =?utf-8?B?Y1lFeW04K1FwQldLazZGeHo0YjJ3S28rRmx0YW9KSEdVRHN0R09hWkk0d3l2?=
- =?utf-8?B?RE5VMDVJVyt2dFlacStrdkJPMVk3bEVUYjkvaEZDUXcvcUVHYituZXY4cWE1?=
- =?utf-8?B?S1lxL2k4WUFxbmhHZVo5TzZPdlJwM0Q1MXhDRW4yME05cVVCa3BzdnViMTUv?=
- =?utf-8?B?Vll6MmcwR2dtMDBXS0cxSzNPY3JsVDdmVDhPVGFReUxrSDZkai9USE4xNkpr?=
- =?utf-8?B?MGNZKzg2dm14aEgyeUhQQVByVFc0N1NacUVnNWErbi9xbFlXMEdyNldxWGpD?=
- =?utf-8?B?RmlDcnNtUCs0aHY0QjlBVCs2QW42amVGNTVwa1VVMWdDYXJDYnhFS1IrN2Z6?=
- =?utf-8?B?MEhKV2VxaWhyb0o2MWNFaGVEb2c4OG4yOUxDTHB0Y2ljRzVvQWNYMlR0QnBs?=
- =?utf-8?B?QXc2aEJQVEErTzY4K050ZHJNN29wRW1xZW1NUnRMcUdjL3I4WVN1Tm9FeEhp?=
- =?utf-8?B?YnVxbExRMnc3dXo2QU9EcExjbVNVa2ZYZ0VpQjhNTE1yWGJtbWJDYmlWd1RG?=
- =?utf-8?B?TTMyc1YxdzNVTk1PaUdFaGh5TVdxVFBxK29zQ2Y0OVJaQTF5dXg2Z0Q1Ukdx?=
- =?utf-8?B?RHAvcW9GaW1UTGkwNVpVa1FFblNvN2x2VmNobGVXdWRqR1Z1Q2lZOXMwN2hM?=
- =?utf-8?B?NkY2VmNxRGUrQ3NVZFlqakZ1OEdPQU9OVjFsUWprQkxlSFIvZmtqYXZtTDR6?=
- =?utf-8?B?RGJjS2QzQml5QXhuZTRUcGpmM1VBam1RK3pWVlBmaFNiWW1vK2VNbytJTXBK?=
- =?utf-8?B?aTE0OWRiYk5rOSsvODd3dnR1ZmhLNytXcGtmSEZseHFHemV2a1NQZHJDSnZv?=
- =?utf-8?B?YW5zMzZhNWhPTU9NZHc1SDlpU005RkNRUlNZT1ZFRUlnNUF0V1IwdUpaNkdK?=
- =?utf-8?B?U1YzR1RmT2dPVGR3ME9idnQ2dE9ESnU0cG5mMHFGZWZVN3RGeG9WOGoraW5Z?=
- =?utf-8?B?cFhGcHZtWEFzRmZ6Y2c2ZWg2dTUxem84ZVBRb2lsQk9LLzAzNHBUU2c1Vm85?=
- =?utf-8?B?aktLdlhpamt1Z1BEUTd0amZURTlsalhaY3RSMlRzSDFUY1hHN1BiRmM5cWd5?=
- =?utf-8?B?azM0S0hib0hmMWtDSExUL3doZmx3K2R1QUJwOHpQT0tHY1RpenBxd2RVenBH?=
- =?utf-8?B?b21mbnl2ajJCRmtlZVpLR1FrR0x3SFUrbDhnM3pDK0l4NnI1WStwY0RDVXFh?=
- =?utf-8?B?S0o4YkY3d1ZNU1VPdXRVN1JZM0ZtcmJlaUFsM0MrbVQrcnJsVzRCb0R2QTla?=
- =?utf-8?B?WWZrc3lTQ3orbG12SE9JNWdsMWEvb2VrTTR2K293azZNL3lveEh0OEVjbE5u?=
- =?utf-8?B?c1QwM1lqczhYcFZ4ZmFFeis0N0dRUEZNNnkzTHhGaHNmVy90cEtzRjBqRVA4?=
- =?utf-8?B?SFZZVWRLbDczT3lFTUtUMy8vU1RKd2d5N3VZcUF5Qm1CTGpEUDNZYms4ZlNa?=
- =?utf-8?B?ZzZnQjRWb0tIbDNEYzVFV3pkZnFobkpKTGNScjlWelZMT1phZGdPRnV1OFd5?=
- =?utf-8?B?L3VMWTU5dzNLcWNnRTJ3bTlDU1RMTHhTaHJHMTk1OXMvZGljQ3ZqV2RLdVJz?=
- =?utf-8?B?MVdraW1KK3YxRzhpem1uOVJhNWRFWHlBcHFUdDZTNHk4SDBZQ3Fqb0I5czRu?=
- =?utf-8?B?bUQreUVYYmVSVDZzWjRQYUVERmlkWTJjRTRCRmt1MXF4QTRrT3BPa1dlemE0?=
- =?utf-8?B?R1ZFaGhwOVRUaldaM1kzd0lId2NLUmRjY1N6bi8rZFZFbWcvbjhva2hIeXR4?=
- =?utf-8?B?QkdlUkpidGMwVThQZkxsNFFqWkdKV1hUdkFGa2FRcmhpWGdCWXF6ek1MblFu?=
- =?utf-8?B?K1kxSkljWm5mUjc5SUhPaWVxZFZHOWpqWURLcEhyUm5YbXhId2Nadz09?=
+	=?utf-8?B?a281RnppZXpBRlZDcGUxWUtKNSszMm9OcGJjN1dnUFlXb0RRczlBYmNZcjIx?=
+ =?utf-8?B?M0ZuN0JwRlZhVjhUOGprcjBQQkc4SUpvMjhRQ0IrbVZpQVpmYnpZRW5CU3kw?=
+ =?utf-8?B?azlIaXg1WHBvVHJVaU1POHNJQXRGK3ZCTitmT1pzbnBGeXh3L3Y3cVdQWk1J?=
+ =?utf-8?B?OUx6bDRuVWdLNG5jNDhhOHlvQ1BQOGRWaFJkVWk3KzUwUS9KbnRLQ1dOSHVi?=
+ =?utf-8?B?K3dNNU1oZzVkVlQrTkNZMU9BdVBBODhpOURBNk44QzgvZk1hcm1ia0JXMUxl?=
+ =?utf-8?B?Qm95WFk1ZE1tZzAxNXVudlUxRG5UcmdOZEhCTmFURlIza0ZlYWdYaVlCSGFO?=
+ =?utf-8?B?ZDhTSDkwVnRBb2gvbTQ4YW90MS8zaWVvUXNmbjVDK0JVdHhXcTFpVlBCU1Bw?=
+ =?utf-8?B?MDNodUw3QUlwL1BWM1JLcXU3Q2FSVHBZSlZKWGdaVXJ4bHpUWnZmT21yZ2to?=
+ =?utf-8?B?SnBmNDRKQU1MZGRHYTZXOXNZdkdkd3Nla3pOQzdnR05kWlRoSDFUb3Axb250?=
+ =?utf-8?B?UUs2cXBqK25QaFVhSU9ETGJ2d2pZbk4xQzM1dFBYVE1wcU9jM0NvYlZsQmV2?=
+ =?utf-8?B?Vng3ZDladnRnYk54N05yUDJvYWUvcDBMREdVTGh2ZHAyYmw4UCt2K3VTRlNQ?=
+ =?utf-8?B?Z2xBWFUxYUlwUVA0WTFCRmJ1aHdUdFZXdnU4dFBmSmtoajZWcFlkalFiOHBh?=
+ =?utf-8?B?R2xJaXVacXNiZkZDeGVzZ2t6VnVvMFBNUDJOSVkvZ3diSHZkYUxETlNkN2tT?=
+ =?utf-8?B?ZTBNUkdRaTNLU0RtUDdhS3Q3YmN3bktOVUovbEE5WTVma2hDSjRkUk1SdUJi?=
+ =?utf-8?B?Vlo4WjRUd3pzcTRuR0RNZ21nT3A4UTcxenIzcWFYbVZ5a0lydTVLczBSYjQz?=
+ =?utf-8?B?Wm9SNE9ZRzRWMEtvUVZ3QU9DczZsdUQ4YjdjbWdIOGdyc0JsTWV4VGJNTWtj?=
+ =?utf-8?B?SFZ5L3pwUnZIT0R0M2ZUN2hFQWwvendDTEZNQTNVbUpHZEhYRzhQMm5xY2pr?=
+ =?utf-8?B?djg1Z2IvYmQzeXgxRGNDLy9Fbk9qeTVlbHpuM0NyTllnOE53azZnL01TSG80?=
+ =?utf-8?B?MkFiVGxBUDZLcjhQQWRwV0tjdXljUzRXZXdNMWpjRTJ2QzBCUldPSWhrd0gr?=
+ =?utf-8?B?cUFqZm40L014SENvakxGckN6cTArYW5lVzk2ejlsZ2owMXV3Tk8xWS9yQjlF?=
+ =?utf-8?B?ajNidjg1dEdaenVEN3duUjNSc2FKaGErbUkwc1R0SHhnajdOaVJkL2ZkVGY0?=
+ =?utf-8?B?d2N1TXNsNmE4NzYvRytHRWhhRlRsZWhOUVU5a3E4NHV6aklUNzR6SDVPMGpY?=
+ =?utf-8?B?TmhIYy9uOVhwS1NhOWd5SXJnRFdiNVlnd0wwT1lib095ZEE3UitQSGM2eTRn?=
+ =?utf-8?B?MnBoYlZuQVppWDcvaFE0NkFCaDI3dlYxUGtjRUkzVGVMNVlvQ21maSs1Y3F5?=
+ =?utf-8?B?T0hmby8zMWx4NnZ6WVZNZmpONkhZWjZXSkthbTRWVjBpeFIwRUZGcXlXeEVq?=
+ =?utf-8?B?RTZqNExkYXA0WWtuSlRSTDhTSHRoWEljcXhoY01qaGI4N2pvYmFVa0NuZEpN?=
+ =?utf-8?B?MzBYM2NUOVVhUlFTRmsxbzluOEIzUHIzaDhKVnRiTGRGSDB0OGt5M0pJVlZY?=
+ =?utf-8?B?czlSM1p0aXRhOENrQ2VPSkhFaU91SUp1c003cHdSeit0SUpsREY3cFlLdUxS?=
+ =?utf-8?B?bHAyN29ZNWkycHBxWTRVNkdQdFdlZVROc09WRE5hN01WdmV4RC9zQVNpU0J3?=
+ =?utf-8?B?TEVWYXFEbGUxZ0lreDgzemNnRTQvMkdYWlRmbG1leUY3UVZVMlk0STcvMmw5?=
+ =?utf-8?B?UEZQQjNqM0VKRkhBdjNJUS8rR2FnMjduekl4MnFwVzVUZTR0aE9qRE50c2pM?=
+ =?utf-8?B?ckxHZTVrSnVBVlZTUk5sN3Vxc21XOTZYbnVJTEsxSEtTeWQ2UTI4amFCY1lY?=
+ =?utf-8?B?WnZDcDc4YVQvelFMNlU3ZVFXbHo5SGVaNnJZSGRjN2tFSm5SZDdiV3hZcEZw?=
+ =?utf-8?B?RFJNTVJIbm52dGZySFhyY2hOZG9aRXhlSjA4aGsrK0JlSTNsWkd5aFdMbG9w?=
+ =?utf-8?B?aC9TZFB5Q1Q2TDJ0WHBQQWZLTHExaURURnV3eDAraWMyV0dnSEduUWFLc08z?=
+ =?utf-8?B?SGF1cjloMmZPZnpIL0hWTHVNb0R1TTJUUUx1VitBaW41OXRWVWZrbUtVaElr?=
+ =?utf-8?B?UklnamRIZmNuYTdjOUxKNHVaKzl3SGJoS3ZuelhyRXluU2pQbURBRnh5cmxv?=
+ =?utf-8?B?NmlHVHVCZGV4OEVvVHo2a2xnNDd2c3l0RmJEQkw4SkVvY0FMbzVUVWxVQk1N?=
+ =?utf-8?B?Rk5zZEw3ZFdUQWQ3Tnk0NWdDSXJtNGZUVFBWcU8rV3FJa0lQREMwZz09?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd907c32-3271-4010-b506-08de5f0a6cd4
+X-MS-Exchange-CrossTenant-Network-Message-Id: 484e4414-36d4-4a25-5650-08de5f0a823b
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jan 2026 07:45:51.5790
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Jan 2026 07:46:27.4268
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: x4mGolB2WtUYEr00gfwr3HzJKHoIvO6JKTRm6tgG14ySqEMVo/ksgaRG6SDEMuTD8CTSy8vqNxR/G+s9RTT9SA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2FeLzC9xinceO0CipM3lTLXUvFwPBfPCAXY1Xch5HVgXlsXB60ILtNHFHSrmiQAsM+8yKZlLzd7ZR7zFfUPGkA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS5PR10MB8176
 
-On 27.01.26 22:39, Richard Weinberger wrote:
-> Ensure that the task structure remains valid until the join operation is complete.
-> Previously, a race condition could cause the structure to be freed before
-> xnthread_join() accessed it, leading to a use-after-free scenario.
+On 28.01.26 14:03, Mauro S. wrote:
+> On Fri, 2025-12-19 at 15:12 +0100, Mauro S. wrote:
+>> On 12/19/25 07:50, Jan Kiszka wrote:
+>>> On 17.12.25 17:16, Mauro S wrote:
+>>>>
+>>>>
+>>>> On 12/17/25 13:31, Jan Kiszka wrote:
+>>>>> On 17.12.25 09:42, Mauro S wrote:
+>>>>>> On 12/17/25 07:59, Jan Kiszka wrote:
+>>>>>>> On 02.12.25 09:56, Mauro S wrote:
+>>>>>>>>
+>>>>>>>>
+>>>>>>>> On 11/26/25 12:50, Mauro S wrote:
+>>>>>>>>> On 11/25/25 17:51, Jan Kiszka wrote:
+>>>>>>>>>> On 25.11.25 16:10, Mauro S wrote:
+>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> On 11/25/25 15:33, Jan Kiszka wrote:
+>>>>>>>>>>>> On 25.11.25 13:23, Mauro S wrote:
+>>>>>>>>>>>>> Hi all,
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Not sure if I found an obscure corner case or
+>>>>>>>>>>>>> I'm doing something
+>>>>>>>>>>>>> nasty.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> I'm using Xenomai 3.2.8 on an Intel Atom system
+>>>>>>>>>>>>> with Linux
+>>>>>>>>>>>>> 5.4.299.
+>>>>>>>>>>>>> Target image and toolchain generated by Yocto.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Please find attached test case code.
+>>>>>>>>>>>>> Program is very simple: the main task starts a
+>>>>>>>>>>>>> bunch of joinable
+>>>>>>>>>>>>> tasks
+>>>>>>>>>>>>> that immediately suspend theirselves. After
+>>>>>>>>>>>>> starting tasks, the
+>>>>>>>>>>>>> main
+>>>>>>>>>>>>> task resumes all tasks. They do a small sleep
+>>>>>>>>>>>>> and then
+>>>>>>>>>>>>> terminates.
+>>>>>>>>>>>>> Terminated tasks are joined by another task,
+>>>>>>>>>>>>> that was launched
+>>>>>>>>>>>>> at the
+>>>>>>>>>>>>> beginning of the program execution.
+>>>>>>>>>>>>> Subsequently, main task continues to recreate,
+>>>>>>>>>>>>> restart and resume
+>>>>>>>>>>>>> joined
+>>>>>>>>>>>>> tasks, on and on, until a CTRL+C is issued.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> What I observe is that, when calling
+>>>>>>>>>>>>> rt_task_resume(), the wrong
+>>>>>>>>>>>>> task is
+>>>>>>>>>>>>> resumed.
+>>>>>>>>>>>>> Please see the attached log. In this log I'm
+>>>>>>>>>>>>> printing the .handle
+>>>>>>>>>>>>> and .thread data in RT_TASK function as
+>>>>>>>>>>>>> hexadecimal.
+>>>>>>>>>>>>> At row 19 you can see that Task1 (that has
+>>>>>>>>>>>>> .handle value fc1c9,
+>>>>>>>>>>>>> the same
+>>>>>>>>>>>>> of the terminated but not yet joined task 0)
+>>>>>>>>>>>>> has been resumed
+>>>>>>>>>>>>> when
+>>>>>>>>>>>>> the
+>>>>>>>>>>>>> rt_task_resume() was called on Task0. Task0 has
+>>>>>>>>>>>>> been
+>>>>>>>>>>>>> terminated its
+>>>>>>>>>>>>> execution, but has NOT been joined yet: if I'm
+>>>>>>>>>>>>> not wrong its
+>>>>>>>>>>>>> resources
+>>>>>>>>>>>>> should not be usable until join is done (at
+>>>>>>>>>>>>> least this is what I
+>>>>>>>>>>>>> understand by documentation). I expect that
+>>>>>>>>>>>>> calling
+>>>>>>>>>>>>> rt_task_resume() on
+>>>>>>>>>>>>> a terminated-but-not-yet-joined joinable task
+>>>>>>>>>>>>> should return an
+>>>>>>>>>>>>> error,
+>>>>>>>>>>>>> not resume another task. Am I wrong?
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> I know that is some of a stressful test: in
+>>>>>>>>>>>>> fact if I call the
+>>>>>>>>>>>>> rt_task_resume() only if task is not terminated
+>>>>>>>>>>>>> (checking also
+>>>>>>>>>>>>> the
+>>>>>>>>>>>>> executed flag adding "&& TaskList[i].executed
+>>>>>>>>>>>>> == 0" into the if)
+>>>>>>>>>>>>> the
+>>>>>>>>>>>>> problem obviously does not happen, but as I
+>>>>>>>>>>>>> said I expect an
+>>>>>>>>>>>>> error
+>>>>>>>>>>>>> instead of a wrong resume.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>> Launching the attached code, you should be able
+>>>>>>>>>>>>> to reproduce the
+>>>>>>>>>>>>> problem
+>>>>>>>>>>>>> on your side. When the test detects a wrong
+>>>>>>>>>>>>> resume, program
+>>>>>>>>>>>>> terminates
+>>>>>>>>>>>>> automatically.
+>>>>>>>>>>>>>
+>>>>>>>>>>>>
+>>>>>>>>>>>> Can you rule out data races on the shared
+>>>>>>>>>>>> TaskList structure?
+>>>>>>>>>>>> Seems
+>>>>>>>>>>>> both
+>>>>>>>>>>>> your sub-tasks and the main one are accessing it,
+>>>>>>>>>>>> and that
+>>>>>>>>>>>> possibly
+>>>>>>>>>>>> concurrently and/or unordered. Or does this also
+>>>>>>>>>>>> trigger in a
+>>>>>>>>>>>> uni-core
+>>>>>>>>>>>> setup?
+>>>>>>>>>>>>
+>>>>>>>>>>>> Jan
+>>>>>>>>>>>>
+>>>>>>>>>>>
+>>>>>>>>>>> Hi Jan,
+>>>>>>>>>>>
+>>>>>>>>>>> attached the modified code: each access to a
+>>>>>>>>>>> TaskList element is
+>>>>>>>>>>> now
+>>>>>>>>>>> protected with a semaphore (one semaphore each
+>>>>>>>>>>> element).
+>>>>>>>>>>> Strange behavior happens anyway.
+>>>>>>>>>>>
+>>>>>>>>>>
+>>>>>>>>>> ...would have been too easy. Ok, will try the other
+>>>>>>>>>> day if I can
+>>>>>>>>>> reproduce and maybe even understand.
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Hi Jan,
+>>>>>>>>>
+>>>>>>>>> sorry, I should me more verbose in my response.
+>>>>>>>>> First of all: no pressure, take your time.
+>>>>>>>>>
+>>>>>>>>> Then, a more deep explanation.
+>>>>>>>>> I added semaphores to avoid possible concurrent access
+>>>>>>>>> on TaskList
+>>>>>>>>> elements, but I already verified that code should
+>>>>>>>>> access them in an
+>>>>>>>>> ordered way without concurrency, thanks to "joined",
+>>>>>>>>> "started" and
+>>>>>>>>> "exited" flags.
+>>>>>>>>> In detail, TaskList elements are accessed:
+>>>>>>>>>
+>>>>>>>>> - by main task
+>>>>>>>>>       - under task creation, writing task handler and
+>>>>>>>>> "joined"
+>>>>>>>>> flag: this
+>>>>>>>>> happens only if task was joined before
+>>>>>>>>>       - to resume task, reading some elements
+>>>>>>>>> ("started", "joined" and
+>>>>>>>>> task handler) and writing "resumed" flag before
+>>>>>>>>> resuming the task.
+>>>>>>>>> Here, "started" must be 1 and "joined" must be 0, this
+>>>>>>>>> can happen
+>>>>>>>>> only
+>>>>>>>>> after task creation and start
+>>>>>>>>>
+>>>>>>>>> - by sub-tasks ourselves: during their execution.
+>>>>>>>>> Variables written:
+>>>>>>>>> "started" (at the beginning of the task) and "exited"
+>>>>>>>>> (just before
+>>>>>>>>> termination, after task is resumed and did its sleep).
+>>>>>>>>> Also, verifies
+>>>>>>>>> "resumed" flag when got resumed, to check if resume
+>>>>>>>>> request was
+>>>>>>>>> for it
+>>>>>>>>>
+>>>>>>>>> - by join task: this happens only if task is "started",
+>>>>>>>>> "exited" and
+>>>>>>>>> not "joined". This can happen only after a complete
+>>>>>>>>> subtask execution
+>>>>>>>>> task resets all flags and sets "joined" to 1
+>>>>>>>>>
+>>>>>>>>> Printf sequence seems to confirm that execution order
+>>>>>>>>> is OK.
+>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>>> If you would like to understand a bit more already,
+>>>>>>>>>> you could
+>>>>>>>>>> catch an
+>>>>>>>>>> event trace (trace-cmd record -e "cobalt*" -e
+>>>>>>>>>> "sched*" -e
+>>>>>>>>>> "signal*") and
+>>>>>>>>>> study the task interaction (trace-cmd report /
+>>>>>>>>>> kernelshark).
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> I'll do the setup to trace events (I don't have trace-
+>>>>>>>>> cmd on
+>>>>>>>>> target, I
+>>>>>>>>> need to setup a qemu image with it).
+>>>>>>>>>
+>>>>>>>>> Thanks in advance, regards
+>>>>>>>>>
+>>>>>>>>> Mauro
+>>>>>>>>>
+>>>>>>>>>> Jan
+>>>>>>>>>>
+>>>>>>>>>
+>>>>>>>> Hi Jan,
+>>>>>>>>
+>>>>>>>> I made a sequential version of the test application:
+>>>>>>>> instead of
+>>>>>>>> having a
+>>>>>>>> join task, join call was done by the main task, one
+>>>>>>>> subtask at time.
+>>>>>>>> With this code, tasks does not access concurrently to
+>>>>>>>> variables.
+>>>>>>>> Problem happens also with this code.
+>>>>>>>>
+>>>>>>>
+>>>>>>> Starting to look into this:
+>>>>>>>
+>>>>>>
+>>>>>> Great, thank you!
+>>>>>>
+>>>>>>>> STARTED TASK Task0 (82a9eab0-829636c0)
+>>>>>>>> TASK Task0 RUNNING (self: 82a9eab0-829636c0  ext:
+>>>>>>>> 82a9eab0-829636c0)
+>>>>>>>> STARTED TASK Task1 (82a9e2b0-829526c0)
+>>>>>>>> TASK Task1 RUNNING (self: 82a9e2b0-829526c0  ext:
+>>>>>>>> 82a9e2b0-829526c0)
+>>>>>>>> RESUMING TASK Task0 (82a9eab0-829636c0)
+>>>>>>>> RESUMED TASK Task0 (self: 82a9eab0-829636c0  ext:
+>>>>>>>> 82a9eab0-829636c0)
+>>>>>>>> RESUMING TASK Task1 (82a9e2b0-829526c0)
+>>>>>>>> RESUMED TASK Task1 (self: 82a9e2b0-829526c0  ext:
+>>>>>>>> 82a9e2b0-829526c0)
+>>>>>>>> TASK Task1 EXITED (self: 82a9e2b0-829526c0  ext:
+>>>>>>>> 82a9e2b0-829526c0)
+>>>>>>>> TASK Task0 EXITED (self: 82a9eab0-829636c0  ext:
+>>>>>>>> 82a9eab0-829636c0)
+>>>>>>>> JOINED TASK Task1 (82a9e2b0-829526c0)
+>>>>>>>> STARTED TASK Task1 (82a9eab0-829526c0)
+>>>>>>>> TASK Task1 RUNNING (self: 82a9eab0-829526c0  ext:
+>>>>>>>> 82a9eab0-829526c0)
+>>>>>>>
+>>>>>>> So far so good.
+>>>>>>>
+>>>>>>>> RESUMING TASK Task0 (82a9eab0-829636c0)
+>>>>>>>
+>>>>>>> And here you are resuming a task that is in waiting-to-be-
+>>>>>>> joined state,
+>>>>>>> right? That is an application bug, but one may expect it to
+>>>>>>> be either
+>>>>>>> ignored, only affect that Task0 negatively, or even
+>>>>>>> throwing an error
+>>>>>>> back to the caller.
+>>>>>>>
+>>>>>>
+>>>>>> Yes, exactly: task is ended yet, then should be joined and
+>>>>>> not resumed,
+>>>>>> but I would expect that the resume command was ignored and/or
+>>>>>> an error
+>>>>>> was returned.
+>>>>>>
+>>>>>>>> RESUMED TASK Task1 (self: 82a9eab0-829526c0  ext:
+>>>>>>>> 82a9eab0-829526c0)
+>>>>>>>> ERROR: RESUMED TASK Task1 (self: 82a9eab0-829526c0  ext:
+>>>>>>>> 82a9eab0-829526c0) HAS NOT BEEN ASKED TO RESUME
+>>>>>>>
+>>>>>>> Instead, we see that spurious wakeup of task1. Let me debug
+>>>>>>> into
+>>>>>>> this...
+>>>>>>>
+>>>>>>
+>>>>>> Thumbs up!
+>>>>>
+>>>>> Ok, here is the catch: The task handle that was used for task0
+>>>>> is freed,
+>>>>> even before someone joined that task. And task1 handle was
+>>>>> freed as well
+>>>>> before you call CreateAndStartFn(1) again. Now your task1 will
+>>>>> get the
+>>>>> handle of previous task0, and when you try to use that stale
+>>>>> handle for
+>>>>> resuming task0, alchemy looks up the new task1 instead - and
+>>>>> resumes
+>>>>> that.
+>>>>>
+>>>>> I looked a bit into whether we could delay the handle
+>>>>> deregistration
+>>>>> after the joining, but that would be a hairy operation, likely
+>>>>> also
+>>>>> affecting libcopperplate. Given all that, I think we are safer
+>>>>> off
+>>>>> living with this "specialty", rather than risking instability
+>>>>> in the
+>>>>> cleanup path to handle the application error a bit nicer.
+>>>>>
+>>>>> Jan
+>>>>>
+>>>>
+>>>> Ok, got it.
+>>>> IMO this behavior should be documented somewhere because it's not
+>>>> what a
+>>>> user would expect.
+>>>>
+>>>> Just throwing out an idea (that could be completely wrong): to
+>>>> workaround the deregistration issue, should the resume function
+>>>> use both
+>>>> the two RT_TASK fields to decide if resume or not a task,
+>>>> resuming it
+>>>> only if both the two IDs matching? From the log seems that the
+>>>> second
+>>>> field (pthread ID?) stills occupied until the join happens.
+>>>>
+>>>
+>>> I played with that idea. It initially looked simple, then reveal a
+>>> catch, but I think I was able to address that as well. Please have
+>>> a
+>>> look at the patches I just shared.
+>>>
+>>> Jan
+>>>
+>>
+>> Hi Jan,
+>>
+>> I've seen patches, thanks a lot!
+>> Unfortunately I'm not able to test them on the final system, but a
+>> quick 
+>> test in a QEMU machine works properly (no doubts about it).
+>>
+>> As soon as I'll test on the final system, I'll be back with a
+>> feedback.
+>>
+>> Thanks again, regards
+>>
+> 
+> Hi Jan,
+> 
+> sorry for the long delay.
+> I managed to try your patches on the final system and I confirm that
+> they work.
+> 
 
-Where exactly? xnthread_join performs some checks for the existence of
-the target, and it is locking it (find_get_pid).
+Never mind, and thanks for confirming!
 
 Jan
-
-> 
-> [   21.643656] ==================================================================
-> [   21.643667] BUG: KASAN: slab-use-after-free in xnthread_join+0x7a9/0x8f0
-> [   21.643710] Read of size 4 at addr ffff888108929550 by task rmmod/249
-> [   21.643715]
-> [   21.643730] CPU: 1 UID: 0 PID: 249 Comm: rmmod Not tainted 6.18.2-g768d3d5bf800-dirty #60 PREEMPT(voluntary)
-> [   21.643736] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.16.2-3-gd478f380-rebuilt.opensuse.org 04/01/2014
-> [   21.643740] IRQ stage: Linux
-> [   21.643743] Call Trace:
-> [   21.643748]  <TASK>
-> [   21.643751]  dump_stack_lvl+0x94/0xd0
-> [   21.643762]  print_report+0xcb/0x610
-> [   21.643769]  ? __timer_delete_sync+0x120/0x1b0
-> [   21.643776]  ? __virt_addr_valid+0x1dd/0x2d0
-> [   21.643790]  ? xnthread_join+0x7a9/0x8f0
-> [   21.643795]  kasan_report+0x96/0xd0
-> [   21.643801]  ? xnthread_join+0x7a9/0x8f0
-> [   21.643807]  xnthread_join+0x7a9/0x8f0
-> [   21.643812]  ? __pfx_xnthread_join+0x10/0x10
-> [   21.643817]  ? mutex_unlock+0x7d/0xd0
-> [   21.643826]  rtpc_cleanup+0x2b/0x60 [rtnet]
-> [   21.643844]  rtnet_release+0xe/0xd00 [rtnet]
-> [   21.643858]  __do_sys_delete_module+0x315/0x4e0
-> [   21.643864]  ? __pfx___do_sys_delete_module+0x10/0x10
-> [   21.643869]  ? fput_close_sync+0xd8/0x190
-> [   21.643874]  ? __pfx_fput_close_sync+0x10/0x10
-> [   21.643879]  ? pipeline_syscall+0x9b/0x210
-> [   21.643885]  do_syscall_64+0xea/0x3b0
-> [   21.643892]  entry_SYSCALL_64_after_hwframe+0x77/0x7f
-> [   21.643898] RIP: 0033:0x7fca2bc38b77
-> [   21.643903] Code: 73 01 c3 48 8b 0d 89 92 0c 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 b8 b0 08
-> [   21.643908] RSP: 002b:00007ffdb96b9bd8 EFLAGS: 00000206 ORIG_RAX: 00000000000000b0
-> [   21.643916] RAX: ffffffffffffffda RBX: 00005634eb2f1490 RCX: 00007fca2bc38b77
-> [   21.643919] RDX: 0000000000000000 RSI: 0000000000000800 RDI: 00005634eb2f14f8
-> [   21.643923] RBP: 0000000000000000 R08: 1999999999999999 R09: 0000000000000000
-> [   21.643926] R10: 00007fca2bcacac0 R11: 0000000000000206 R12: 00007ffdb96b9e20
-> [   21.643929] R13: 00007ffdb96baebb R14: 00005634eb2f02a0 R15: 00007ffdb96b9e28
-> [   21.643934]  </TASK>
-> [   21.643936]
-> [   21.643938] Allocated by task 2:
-> [   21.643941]  kasan_save_stack+0x24/0x50
-> [   21.643946]  kasan_save_track+0x14/0x30
-> [   21.643950]  __kasan_slab_alloc+0x59/0x70
-> [   21.643955]  kmem_cache_alloc_node_noprof+0x12b/0x540
-> [   21.643960]  copy_process+0x345/0x66c0
-> [   21.643966]  kernel_clone+0xba/0x6e0
-> [   21.643970]  kernel_thread+0xc6/0x100
-> [   21.643974]  kthreadd+0x397/0x570
-> [   21.643979]  ret_from_fork+0x232/0x290
-> [   21.643986]  ret_from_fork_asm+0x1a/0x30
-> [   21.643993]
-> [   21.643994] Freed by task 0:
-> [   21.643996]  kasan_save_stack+0x24/0x50
-> [   21.644000]  kasan_save_track+0x14/0x30
-> [   21.644004]  __kasan_save_free_info+0x3a/0x60
-> [   21.644010]  __kasan_slab_free+0x43/0x70
-> [   21.644014]  kmem_cache_free+0xd6/0x470
-> [   21.644018]  rcu_core+0x56d/0x1a10
-> [   21.644023]  handle_softirqs+0x186/0x570
-> [   21.644027]  irq_exit_rcu+0xb3/0xe0
-> [   21.644031]  arch_do_IRQ_pipelined+0x10e/0x550
-> [   21.644038]  sync_current_irq_stage+0x353/0x410
-> [   21.644044]  irq_pipeline_can_idle+0x6d/0xc0
-> [   21.644048]  do_idle+0x337/0x4d0
-> [   21.644053]  cpu_startup_entry+0x4f/0x60
-> [   21.644057]  start_secondary+0x1c9/0x250
-> [   21.644062]  common_startup_64+0x13e/0x148
-> [   21.644067]
-> [   21.644069] Last potentially related work creation:
-> [   21.644070]  kasan_save_stack+0x24/0x50
-> [   21.644074]  kasan_record_aux_stack+0x89/0xa0
-> [   21.644078]  __call_rcu_common.constprop.0+0x70/0x8a0
-> [   21.644086]  rcu_core+0x56d/0x1a10
-> [   21.644089]  handle_softirqs+0x186/0x570
-> [   21.644092]  irq_exit_rcu+0xb3/0xe0
-> [   21.644095]  arch_do_IRQ_pipelined+0x10e/0x550
-> [   21.644100]  sync_current_irq_stage+0x353/0x410
-> [   21.644103]  irq_pipeline_can_idle+0x6d/0xc0
-> [   21.644107]  do_idle+0x337/0x4d0
-> [   21.644111]  cpu_startup_entry+0x4f/0x60
-> [   21.644114]  start_secondary+0x1c9/0x250
-> [   21.644118]  common_startup_64+0x13e/0x148
-> [   21.644122]
-> [   21.644123] Second to last potentially related work creation:
-> [   21.644124]  kasan_save_stack+0x24/0x50
-> [   21.644128]  kasan_record_aux_stack+0x89/0xa0
-> [   21.644132]  __call_rcu_common.constprop.0+0x70/0x8a0
-> [   21.644136]  finish_task_switch+0x47f/0x610
-> [   21.644143]  __schedule+0xf4b/0x2b50
-> [   21.644147]  schedule_idle+0x5c/0x90
-> [   21.644151]  do_idle+0x26d/0x4d0
-> [   21.644154]  cpu_startup_entry+0x4f/0x60
-> [   21.644157]  start_secondary+0x1c9/0x250
-> [   21.644161]  common_startup_64+0x13e/0x148
-> [   21.644165]
-> [   21.644166] The buggy address belongs to the object at ffff888108928f80
-> [   21.644166]  which belongs to the cache task_struct of size 3840
-> [   21.644170] The buggy address is located 1488 bytes inside of
-> [   21.644170]  freed 3840-byte region [ffff888108928f80, ffff888108929e80)
-> [   21.644174]
-> [   21.644176] The buggy address belongs to the physical page:
-> [   21.644180] page: refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x108928
-> [   21.644185] head: order:3 mapcount:0 entire_mapcount:0 nr_pages_mapped:0 pincount:0
-> [   21.644188] flags: 0x200000000000040(head|node=0|zone=2)
-> [   21.644195] page_type: f5(slab)
-> [   21.644201] raw: 0200000000000040 ffff8881001d8dc0 dead000000000122 0000000000000000
-> [   21.644205] raw: 0000000000000000 0000000080080008 00000000f5000000 0000000000000000
-> [   21.644209] head: 0200000000000040 ffff8881001d8dc0 dead000000000122 0000000000000000
-> [   21.644213] head: 0000000000000000 0000000080080008 00000000f5000000 0000000000000000
-> [   21.644216] head: 0200000000000003 ffffea0004224a01 00000000ffffffff 00000000ffffffff
-> [   21.644220] head: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
-> [   21.644222] page dumped because: kasan: bad access detected
-> [   21.644223]
-> [   21.644224] Memory state around the buggy address:
-> [   21.644227]  ffff888108929400: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [   21.644230]  ffff888108929480: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [   21.644233] >ffff888108929500: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [   21.644235]                                                  ^
-> [   21.644237]  ffff888108929580: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [   21.644240]  ffff888108929600: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [   21.644242] ==================================================================
-> [   21.644244] Disabling lock debugging due to kernel taint
-> [   22.758097] RTnet: unloaded
-> 
-> Signed-off-by: Richard Weinberger <richard@nod.at>
-> ---
->  kernel/cobalt/thread.c | 10 +++++++++-
->  1 file changed, 9 insertions(+), 1 deletion(-)
-> 
-> diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-> index e9baf38e1..dfa5108b9 100644
-> --- a/kernel/cobalt/thread.c
-> +++ b/kernel/cobalt/thread.c
-> @@ -228,6 +228,7 @@ static inline int spawn_kthread(struct xnthread *thread)
->  	if (IS_ERR(p))
->  		return PTR_ERR(p);
->  
-> +	get_task_struct(p);
->  	wait_for_completion(&done);
->  
->  	return 0;
-> @@ -1675,8 +1676,12 @@ int xnthread_join(struct xnthread *thread, bool uninterruptible)
->  		goto out;
->  	}
->  
-> -	if (xnthread_test_info(thread, XNDORMANT))
-> +	if (xnthread_test_info(thread, XNDORMANT)) {
-> +		if (!xnthread_test_state(thread, XNUSER | XNROOT))
-> +			put_task_struct(xnthread_host_task(thread));
-> +
->  		goto out;
-> +	}
->  
->  	trace_cobalt_thread_join(thread);
->  
-> @@ -1748,6 +1753,9 @@ int xnthread_join(struct xnthread *thread, bool uninterruptible)
->  
->  	put_pid(pid);
->  done:
-> +	if (!xnthread_test_state(thread, XNUSER | XNROOT))
-> +		put_task_struct(xnthread_host_task(thread));
-> +
->  	ret = 0;
->  	if (switched)
->  		ret = xnthread_harden();
 
 -- 
 Siemens AG, Foundational Technologies
