@@ -1,95 +1,119 @@
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8A7036654D
-	for <xenomai@lists.linux.dev>; Mon,  2 Feb 2026 13:57:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 390DF36607B
+	for <xenomai@lists.linux.dev>; Mon,  2 Feb 2026 14:04:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.50
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770040657; cv=pass; b=TXgx5U0s723u/UGEhCe2TjP/klKYM9icf3dAR5GQHdb7VfgWX0lZudN8rNJjWh9P/K3eQnTu7sGAOJOEepiHmeJUKdLEDnlGFgAgWV39CZn4Oq2XnUA0FH9FS06czdsfngTCt7a5MEpLQfEQSY/OqmkHWnnyXbDA7MXjZCPNMf4=
+	t=1770041055; cv=pass; b=L7NfigbvQDL8L51+teZbnHh/FyRVOTJMiWrtvusEx+g1FX6Z0JQPKKvukhkR6imhb+6kAf5zPexeLk3s+CX68LpCheMveIyk1gLdnZje2DVgo99A/bshreDw+mmWEsANn/U6eRHGSO25baPZIR3aDHamy2tZMFCGGqVm97ytNvM=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770040657; c=relaxed/simple;
-	bh=pP70bYZALUDw3u8hDTZeRyoVRl36yOdnU202dKsNBks=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=nwjV1YdIp4ivmBMtN30Pc/+/V5qFcws9/vs9IbHzlimqNV7abDygW2xz2Qiu0+h7pd40NDZQGDy3SRJlPwWTV8yyHvnpVPA8S2IYyA/yanu9al0WlR6GNNRQZELJStmxfSikMoMGX6EZRhYvktfci3J3PdE+AjTOrTydFrchb8s=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b=BgkswBG+; arc=pass smtp.client-ip=209.85.221.49
+	s=arc-20240116; t=1770041055; c=relaxed/simple;
+	bh=q0373vM7Equ/RribMgKVR2NSarYR5N4R8JikMhA9rh0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Content-Type; b=sstlSTlArrHQUgKwbHAofy65B5fXuSMmQuYw6o3T+ut8eOfPKsFfxAz5j0RV0i2fRtU5st8lURTb7VX0+jQeZbvkdN3R4nBiW4oYwNf1iHSZ2FvbW/sfpBthYsbPAyMc7R0hKMSQvWVsC0kLFvrRfLaxtZd41ngretq3cowp0Z4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b=3q0xhrNu; arc=pass smtp.client-ip=209.85.218.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b="BgkswBG+"
-Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-42fed090e5fso3586070f8f.1
-        for <xenomai@lists.linux.dev>; Mon, 02 Feb 2026 05:57:35 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1770040653; cv=none;
+	dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b="3q0xhrNu"
+Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-b8871718b00so762420866b.3
+        for <xenomai@lists.linux.dev>; Mon, 02 Feb 2026 06:04:13 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1770041052; cv=none;
         d=google.com; s=arc-20240605;
-        b=SAC3kpKnUQ7Tf7N2px8bzXikUtpQCAJuLayq0RdG5Y2ROhYrKiM3nKyANvA780xSJu
-         nWfF+iiRxEcpxLC9euiYzCusId8gjSHJNE/1q0Z1nHRV0/roY0IHDeSVMNUPzYwSb+qv
-         9TgRzQnJQfSOwwckHdzyMNZx4Gfn1YCbGdSaYjYJQyVKYWRQ3BddiHom/s5JESIsHkRk
-         TNohN89UTZ/c/cP/+X9nc8zSpj5dTikpdrUJTcPy/xypowx0L4wBS2n/O83IrQnQfTze
-         vIb+u5SL39YixjW7HnTfYboUHaWMwbLKj9FJbK0qcHqPBmB+rh69GKMlkzdp9CbIaTby
-         xIJg==
+        b=kwJhqYNdXHkY5Aplbdaj2x2s8i1o9R5ApD5A0BUMeR4OrwAv664jKpeUruBrzHL5OB
+         fJZ6UswsahQWhqYoM6VwGpz4/SJdHNUugRI3Cgn4k/Z3rD1WE8Dw1I3qZpc5klFnmRo2
+         +l8B7osPvqy/c+2YiSYXdHTpLxkjzpb86r063ZnWcSeWpZIVZAmOWjqoZ2U1xLBSbaaq
+         brTf0m64KQBmNsCBp0Wh1GJg0oLbaj0Sy7M5IbPYLK2V9CEDFNqEnHB//WnGvXhxmAYF
+         e1/HaSIa5gVq06ZS5yP6RA04pA2s0mxe3q2zgZ3FwjWMsiT1ubVpcTIQxUqSEnNPzLj6
+         zbVg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=to:subject:message-id:date:from:mime-version:dkim-signature;
-        bh=gQ5d/aDh+h3eCOQh7lYu9yL5n1BDNLbHAKA427Ir8kI=;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=ZJZrMpkecMaCQVX2n2yc6VyMBcfrvHzg/Iaf1oG6nxo=;
         fh=O15oOK5VJ7+HnQyR0P4j8h8E3vdYlzLasLiICAHXHME=;
-        b=G4lzUgo3qhfna+9BYymVt6mo4uxgpheeMcLHj+07CPpIjSUsUbL4UWMY7Ji8xFOkwM
-         kI0c/sFXLZ1JoBJzrTekWoyQXX4RbMB6PqnXB1jIFqNziEjG/wUa92UYMm7xfVkxbwEL
-         dl51OajTPxoYtAt2dA+fpI4uw8pM3XtMBHKPH+1yynI5LYM8waMfmiQ3Erd03/p4tTBJ
-         xjlPm50leP586r0AqOgdaR88hm4+VCzR8qDN4aPvGUuwbS5ietQ6iJcU0B7+t+kqMCNf
-         pKHrR6LWyo2KidVH92GJ+BktVdzmv93m20XgO+4DDcyndRfvv6PbmYLYbb9d0YMZ6gim
-         W4Rw==;
+        b=Pi5NGP0jaZmHgCDp9McPD5ZHhxlgJmotBV4B/gTaKJCPRY0MeQGaQkss+oQjxBFfvB
+         /Fugv/B6HmG3Bm3fZ4NYBjfh60ZP2B7ilIJpCJyIe+JOvYGwOmfyLQSBRyNaKEgB8yGQ
+         nW7Mq+ZVyPySYbZdXhcMHKg34gLHORtQh5GTj+k3vJSBTFHgrxYxe4yQe2FEir07SCPp
+         EIVc3bijESm5ICK7NK9dhqwkYkcDW/ElNNm+7IkBO3I2Y6JCy6m1jGXsZL30NqmUwGbi
+         uBbWSTxDw4P3EIzxlC/V9QmWRpa3AKvsgeKPfvfGQq1AzCpaZ905eeMYDKpcdpN7AaNK
+         sA6Q==;
         darn=lists.linux.dev
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=smile.fr; s=google; t=1770040653; x=1770645453; darn=lists.linux.dev;
-        h=to:subject:message-id:date:from:mime-version:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=gQ5d/aDh+h3eCOQh7lYu9yL5n1BDNLbHAKA427Ir8kI=;
-        b=BgkswBG+a5rzgr0wwtk0eRnX/6l7SG14YnvmgmHAHJ/A7DVRgol2+AxGqviT46th8v
-         sgkXAQH0XrG8H8QIVWSE2QAvuAMW8xurO8uVFoo4NdpX5oD3Bzdz8ClQq+dBM2SEQYVO
-         Ag0ONikB3le5m8b0TjEVZ/FS19HDiTjs1LlHM=
+        d=smile.fr; s=google; t=1770041052; x=1770645852; darn=lists.linux.dev;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ZJZrMpkecMaCQVX2n2yc6VyMBcfrvHzg/Iaf1oG6nxo=;
+        b=3q0xhrNufhhcRSB32RUVnDPwnigm8Qv1lstUvtH2kwESJkB4DoppxqX2nBn1bAS7hu
+         XIygy1o/JxJL8povURhDkqTwXR7+pagOWmwBDNUxrs4Yq+kXu47oUToHjOdEIHUTzOnK
+         RR08ex8NT6vcWFB/YFG/m8d6JfX3CfHvJrDs4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770040653; x=1770645453;
-        h=to:subject:message-id:date:from:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=gQ5d/aDh+h3eCOQh7lYu9yL5n1BDNLbHAKA427Ir8kI=;
-        b=GQICFJDvaRHEw/BAfsL/TIfB74iVHnhUwsx3kpf0txMpO7d5OFOBGP+k6S0+KtCWS1
-         9hKmt6LVcILX3a6rBQT7USJWoK++7O7K7IqV4mS7gGs+9PFehX3Kcoll+FedYjyY5no9
-         FqhQ2Co/7a89TrU/MLTy679F76GggWZsSNb+ddF5wyYacqwrzluV6cVzrdBsRlRa7P0h
-         ry/a6x5sSt+aXaytao5oN9tfbN5Yz0SfrBTfkceMIM23X3yw6n4Z2TTbMAFjZuSJq/v0
-         N0sinuJck3BLGkXy9+fx7gWbVFByKtFRDaOo144yQFelgqEg1VerevZ6Vb9Jd4EYPwqJ
-         h4ig==
-X-Gm-Message-State: AOJu0YzPqfv8B22OadGXrTnqswX6nNgRFzM+9pF6ZMZbJMHkE/jUwna/
-	bzF8csZtJoqmMHAH+W28C5LKGDtyhUbmN6kXEz2PwutRYBwobDy4+1tTgz4hZOS2aFmNHdyhgFa
-	1cj6UJrXSwJ67GsEBP73rY341xZ2QvD1aSD0Uazcfi9m1irwBhBjITrA=
-X-Gm-Gg: AZuq6aIyaEA+PJgO3DSIFJNNFGM2Aow8x2N1jLc6oYU4No775+eJVzi0GsA5RwWCdn9
-	pIY6cKuE5aK2vvcWBhL+abpVQzmrCptFen7OOJ3mTvd9iUxJOCbHrLU55H4x89Zva+An3LYDebP
-	pplFc951sqLKM9xMVvcE4ubtOKR+Nx8JdT6HQeO6VeMrPwU59BNNEZLLZjmyHIGW18UtW7CPSfn
-	XE5zRxI9MdwooHby0dBrqhszQ4LDW/88Kaq+Ab+dje+P5tRxi9i2OzKydMxQ5HuoHERvXnGJuvP
-	ikhGO3wD/h2pvE1GbuEqiUQrvHFs983ys5pKHIPt2U2DddswGwrFoaAVXgRRRfI8K9rEFK76
-X-Received: by 2002:a05:6000:2c04:b0:431:5ca:c1a9 with SMTP id
- ffacd0b85a97d-435f3a8b7bcmr16788011f8f.23.1770040653539; Mon, 02 Feb 2026
- 05:57:33 -0800 (PST)
+        d=1e100.net; s=20230601; t=1770041052; x=1770645852;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=ZJZrMpkecMaCQVX2n2yc6VyMBcfrvHzg/Iaf1oG6nxo=;
+        b=Uik0kSogsCwUoLJudRVuOSGHbQ3PbfGELtzwZDJRK2VPLchMWj+K610opSoE8xRuS6
+         nwE8cwmEl8lhmQksG/BOZJFEv90beu9Dw6UjdZlFAToMe9bZSiCic6r3SoYN4nxCq2R0
+         HBK/Z5fesC5sqxTfpYIAfq5GmVgBVXeYOtVCAXZtjArvvptRTyjrgttux9OWZDSK4wP2
+         eRc9k7FrSkaYOmz6snkGCciIdJbIznG6jJIpFbmaT6J0fQbiDddUTFwCIgWwDg9XlsHT
+         Sc98Ueu0VapWPQmh/r3cts5xa1+L1pU9408gDhpIiUuqSJAeFFitURjjpyokbghBSHmR
+         bs/w==
+X-Gm-Message-State: AOJu0YyelYPjIUI3zIVFXnxYPEMXicS9tzT8bEIxN20P90M/E3mk7z6+
+	OGJafozZYcykzwvhcX4tU7pzVMWVyRTRDBf6CTG8bOEeWJpSfQ5qPU4RuTwbcUYdA53uoe2q2b3
+	BjKAfvj/HYkOdzXdLUmudyHblAuWNabajISkrGR+ZelZYJsp3BSTFD52ZnQ==
+X-Gm-Gg: AZuq6aJEipMKXG48KEilJ/aAHYjVzZbX5co+DExOVZ80azDxydgD8FrJ7cSgpJtOPr8
+	ZYfQR8869vrJ23iVk17qzAZDMy7avb6T7O+8gX1ystraabfVxZ+VHtvMLo0GVHXRPrJhKX5oSHP
+	6F570bS5RVme9D3dK3gecV8B5v4K01FXfhggGwz5300NHsAkQ1RUyUejbH/PnDrI9k9T9SMCNRM
+	26sDnSIT2Iayh4sYCzXsx4V4/G7tW/9xn9W0Oe5DW8GezfoHf+x0BXzyHsVeGpeTPnxd+c8hIAt
+	NTJZRdRE02PxCtmtP+FgmTva9FFGzhLypN73zkqqq5d/zNefCZmUYF7YTAOlVfwZYdOFN7PH
+X-Received: by 2002:a17:907:e158:b0:b8a:f2cb:8088 with SMTP id
+ a640c23a62f3a-b8e460d2c09mr278426766b.33.1770041052267; Mon, 02 Feb 2026
+ 06:04:12 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+References: <CAFc1U0tqO9SstMLehsKRhNT89fp0_U-9Q8_nKj4VeD8C5A5ZtQ@mail.gmail.com>
+In-Reply-To: <CAFc1U0tqO9SstMLehsKRhNT89fp0_U-9Q8_nKj4VeD8C5A5ZtQ@mail.gmail.com>
 From: Pierre FICHEUX <pierre.ficheux@smile.fr>
-Date: Mon, 2 Feb 2026 14:58:42 +0100
-X-Gm-Features: AZwV_Qjo0HPl6n9Ko1rJRqC3dCi_0Ui2xgy5CxnnxyKFRB9Jyi5nkbKAMWGP3Xs
-Message-ID: <CAFc1U0tqO9SstMLehsKRhNT89fp0_U-9Q8_nKj4VeD8C5A5ZtQ@mail.gmail.com>
-Subject: /proc/xenomai/irq for Xenomai 3.3
+Date: Mon, 2 Feb 2026 15:05:21 +0100
+X-Gm-Features: AZwV_QhaDUiN92-WOySFe-R_GC5HiDRByA356ELa0ka5a-qVw2XdaVO-X46VtWQ
+Message-ID: <CAFc1U0uojGV4Tg2cD+c-aK3MxjvUnjWgCLrX+dP46hBsi7Nh+Q@mail.gmail.com>
+Subject: Re: /proc/xenomai/irq for Xenomai 3.3
 To: Xenomai <xenomai@lists.linux.dev>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi,
+Forget about my question, found it in /proc/interrupts with oob flag...
 
-I notice /proc/xenomai/irq is not available anymore (?)
+272:         99          0          0          0      GPC  26 Level
+oob  rtser0
 
-What is the way to know the IRQ used by a RTDM driver ?
+Le lun. 2 f=C3=A9vr. 2026 =C3=A0 14:58, Pierre FICHEUX <pierre.ficheux@smil=
+e.fr> a =C3=A9crit :
+>
+> Hi,
+>
+> I notice /proc/xenomai/irq is not available anymore (?)
+>
+> What is the way to know the IRQ used by a RTDM driver ?
+>
+> Regards
+>
+> --
+>
+> Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+>                              http://www.smile.fr
+>                              https://smile.eu/fr/offres/embarque-iot
+> I would love to change the world, but they won't give me the source code
 
-Regards
 
--- 
+
+--=20
 
 Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
                              http://www.smile.fr
