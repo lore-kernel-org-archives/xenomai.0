@@ -1,186 +1,127 @@
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8CB52C3745
-	for <xenomai@lists.linux.dev>; Wed,  4 Feb 2026 11:44:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770205460; cv=none; b=ADBoey2z86naW2XEb3MtBb23E3AFLZgMt4KSiCfALHtO0KWp6CY21VlLzDvUQ5ZIhySaUFnH+8r+h+8+YDkR5lWX3GWpZhRS5U8B83SyJOd7Jevq49gndqLfSGCIdLmS4Rc9WkGDZUx1qKjjilpzujqPOABs9lWlUzzeLiLklgc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770205460; c=relaxed/simple;
-	bh=MTERZMQnSfGsZ0kj8TH6kuEipGEIDW99uZ5aCzGM0Ks=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=KFcg8Ee+InGWla4JFkk11DKt6DOkG04HmPyB9x0e0tM2sVuNBBjZRLLBWEXDIknJ5tU2xdq3OAdjvJ34ppQ0tfI+7k8zP274R4fSO5Q2tyIoekTdd1GUeT7Kzhl9ondNoBcCy+5ibr+pdKeIpFtbXTbTA6B/W0HscZTUhjKsvwY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=UlgAbJxW; arc=none smtp.client-ip=217.70.183.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 048293A1A2E
+	for <xenomai@lists.linux.dev>; Wed,  4 Feb 2026 13:45:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770212718; cv=pass; b=LETB6G70nMkLWCn2D0zelsgOQO7v4+GvIrvR78vVLfHJqktXGUcgZERw4omck1s4O9umcdFMMrxXyMkTZhpkVqsdNQSBntbM9Jd5eZ9XkA2Zu3ZFjRP72nt9BwjfT0XoAWnqqXoSelu3fihcdz9L+XZ8C53bz+JwcjpheLA4d/U=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770212718; c=relaxed/simple;
+	bh=+RbgojPUDwuR/fRI9Rm6oE7szZqw6BjNfdh7Hfuic0c=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Content-Type; b=L5PEZUjbsOVLAxHUsFeYlFjiA+F9ZUTViD957xbNalxykR9XqE0inStfrZW+lhdGT1YkmepXYj1C0RFNE6WNTsvcdeesCo7sA85JIu9ampTuyfG97fD/dkIRrV//UME2Co+1Wacleu4yI9yXnuNN9KXQ2qt05jfGLdkGGgP+pTQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr; spf=pass smtp.mailfrom=smile.fr; dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b=36fHzUxI; arc=pass smtp.client-ip=209.85.221.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=smile.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smile.fr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="UlgAbJxW"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 9FFC643390;
-	Wed,  4 Feb 2026 11:44:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1770205457;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=OIbunZSRsNRu6emjEIJkei7kWErcgTWNL35INMuTHeE=;
-	b=UlgAbJxW6k/go1stcKzCQDhksjjXp+kUTOTxBny/APoNhTbA8/nrrvgpTF/4TJ12IBBlXf
-	Nd7ymHMPKeGzoPFHGP/c23wJDzEvoZu1Q8zCt1EFUW9wqV5x2lh+Sws0e6CunqkFAVNssZ
-	5jT0Rr2xF1J/uK189ou7vPoDtwwYBwkoFVZEkXY6jty1okUi8bGWTKaVkq/lFMI4n87LxJ
-	bg9oYrXMhh95LGlDTzurQ86JYN3K9ROX/dCo02FyDQpGLk1lkiGHIGJQA+dAHn5+JcJjfW
-	VHbX6wch2yWHNdcR5cgif02wmob25hPAQWYWQUswqWbGU4QyFIPoWenZ6yv9Rw==
-From: Philippe Gerum <rpm@xenomai.org>
-To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>,  "xenomai@lists.linux.dev"
- <xenomai@lists.linux.dev>
-Subject: Re: [PATCH Dovetail 6.18 1/3] arm64: irq_pipeline: Fix mapping of
- SGI/LPI IPIs
-In-Reply-To: <776cf4d59124068e8d4ee1976fb3eb00f55c9b86.camel@siemens.com>
-	(Florian Bezdeka's message of "Tue, 3 Feb 2026 22:00:54 +0000")
-References: <20260201-wip-flo-fixes-for-6-18-v1-0-91ea07c7eb7e@siemens.com>
-	<20260201-wip-flo-fixes-for-6-18-v1-1-91ea07c7eb7e@siemens.com>
-	<87o6m6vutd.fsf@xenomai.org>
-	<513ae7f9858f1bc553be3c6fcbbcabf1c89d6b25.camel@siemens.com>
-	<87qzr1ivxz.fsf@xenomai.org>
-	<198ace7718b548735ec0cb3e29b5c4f8129fbe9d.camel@siemens.com>
-	<776cf4d59124068e8d4ee1976fb3eb00f55c9b86.camel@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Wed, 04 Feb 2026 12:44:13 +0100
-Message-ID: <87o6m44tte.fsf@xenomai.org>
+	dkim=pass (1024-bit key) header.d=smile.fr header.i=@smile.fr header.b="36fHzUxI"
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-43596062728so656102f8f.1
+        for <xenomai@lists.linux.dev>; Wed, 04 Feb 2026 05:45:17 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1770212716; cv=none;
+        d=google.com; s=arc-20240605;
+        b=ZEycbTbEwSSkUBU4miMOTnsVYAqkV9Wp7DlMsW+rAAyJYkM6MtcH3oK9pcc8PZoJaU
+         oXLNGZYUnKsO9AFDlXLQwC7erbmWVtCV/jzuLOWXfGu1DNFVnZ76EZCYtTZqR51aa55o
+         2EBaQyyvaVWhiFghU3HqNZMhmomej2fNkZR9n655XK7lqXZ7caQgcQ1YInLh6qJSQWhy
+         eNp8A/ikgtE9SQpPDVq8JTCRLX4m8ZDGAQYP/nW6n/kQI8f8+M+AusL7J6gN3fLABpa4
+         +rCs8Y4804dNom5BM+rEhaen9Eqhm2T8y4bY/o5hCAQfLSAIQBn9T8GiCszId96Z5Odk
+         H/2A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=+BbAnKZCPUQ2OG5fNB/NBKH3ToawiuR+WYTBus4M+ME=;
+        fh=O15oOK5VJ7+HnQyR0P4j8h8E3vdYlzLasLiICAHXHME=;
+        b=idtt66IYURTqnBdjxwj39mqL/AkuqAGvVPFJ25PT6ufPXFlqvAzLwW5e81i2IbwtLi
+         BGcWf0nPSjnVqGc+GaDT13EAOPiFohFMqmP+AR4UYdCbMwv3R3XW7Zz2n9eFT54hQp87
+         Ef+n6drOXxF1ZFriepPvVjbTr8E28nJDCIWW5KxXYn1XaUAagmueYtk0T764O+AeVWUZ
+         gUf1GieaDfER/IEHfEUw1az9Dq4K7ICb4A2ZA6+NeaUxBKy1dyd9Z+7yquLNRNlto0gf
+         s9cCo7Efa/brLwzzbmTkclzVPxS8o4/h5DNNIB32Q3TOBCbqXBPM+KRouLe0PfVq+DWt
+         lqqg==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=smile.fr; s=google; t=1770212716; x=1770817516; darn=lists.linux.dev;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=+BbAnKZCPUQ2OG5fNB/NBKH3ToawiuR+WYTBus4M+ME=;
+        b=36fHzUxIr7dG8NepPAqxCML3gRlayRqFfsyECHx0a25OZKXb//lke9lzyYsLMzUkh+
+         Qxy9IhKLFrMChWds1+FVyfrXBcfy/0IyJhgJ3XgfNLxDc0MJm7qN4OpBRIU9Z82Xnk5U
+         NcILb10vC4C5l9GOWFtAS9588HVAVUOkbHhzE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770212716; x=1770817516;
+        h=content-transfer-encoding:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=+BbAnKZCPUQ2OG5fNB/NBKH3ToawiuR+WYTBus4M+ME=;
+        b=mfESgbthE9ZV0cJPSYhT6Z9Qj1DtWlmvvdzlaGVa/T8pUm5letE+hB5lG9pkUKdpd4
+         /FQnzLmuxsTeqRZNWU503fwWYv7Sz83MqkfWCRQ98hX6X8CqM5NE4/h3lEkBZ8ovAWAv
+         HcJ4H0cdyFadixvXkV0oW1nhGaXZ9j2TKgAa1oD6ZOu8/jGNnEegZPiv0ZPHNQpSrqow
+         +LYw3L0UWyBmQgVlsYN9UO7EcxeQuq+4VSH4+huzfxVodI+dvbVJ6+N/ErjJGYjQKHTP
+         4VfGDeKXzKAXFA32pjOSV1OR8QDrMURwNjknhOLcjStOiFpaQbW8mFP7uPKtje6EiFQX
+         J2Vg==
+X-Gm-Message-State: AOJu0YxkQu/vQGTOfqhLWhdr7RWkpG+DcD6r2lMzEPd8UBDzm2mRfJfw
+	8Pno0PpKjh/X7aDABMjl/L3q2TcazQQb1Pwmx5ES4cIhBDzr4lbFB80q8dhU0O/P5QCFkttKfdj
+	rO+g08Qtv3vcyINkLwbNNcm0IAuERbVoqvkxKHMh+s/xEJEJQ01Dl
+X-Gm-Gg: AZuq6aLFBxTL2x7xY6AIh4xZ4hkx2gtXQvg3ls+GiUU6SRwmDUJXh394d6fm07TXFgZ
+	CNomz2Lhopwo7b+x8Jr4rVMKLbCkUUrOYKcNTOmh3wcH5ZXJ6rOiP4XI4gnzY8UupiDa//YUBE3
+	XEAdtai9r5StillU47oAmKISe57G4AjibQqnyq7HnGCOFk0QiHVuphey85+sQ64N5YBrE+IQXOY
+	iTds1GVch3ManYd43vE1+FBzMhxTdeLiGR8N/p36yDvujOrHapN3MItM8Nn9KsVWnAxSD8Juw9Z
+	GKjTwwVhYM21lICTSpQ0xvPXhJoW2oa3eJnnnLtZNLWLiWkyThoAx7g2WLoESEXOijYV/B0=
+X-Received: by 2002:a05:6000:26c2:b0:436:15d3:ed2e with SMTP id
+ ffacd0b85a97d-43617add15fmr5082339f8f.0.1770212715908; Wed, 04 Feb 2026
+ 05:45:15 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+References: <CAFc1U0tiZrh_GZAahX8_PRJkGPVr8_UAfdtv3GisRn01MqM+cQ@mail.gmail.com>
+In-Reply-To: <CAFc1U0tiZrh_GZAahX8_PRJkGPVr8_UAfdtv3GisRn01MqM+cQ@mail.gmail.com>
+From: Pierre FICHEUX <pierre.ficheux@smile.fr>
+Date: Wed, 4 Feb 2026 14:45:02 +0100
+X-Gm-Features: AZwV_Qj0aeljvZDj4MDzCHZJhXVEqKKP8PtMoPFxr8gZauxem2R2uz5WXPZoRlY
+Message-ID: <CAFc1U0uDm66v-v9N7tM6nbGroJiLOHVH0QJg_O2oy4T7eXO8EQ@mail.gmail.com>
+Subject: Re: RTDM driver for AM64x driver (PhyCORE)
+To: Xenomai <xenomai@lists.linux.dev>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddukedvfeehucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtgfesthhqredttderjeenucfhrhhomheprfhhihhlihhpphgvucfivghruhhmuceorhhpmhesgigvnhhomhgrihdrohhrgheqnecuggftrfgrthhtvghrnhepteeufeejueeuffdufeeggeekgeeltefgkeeigedvjeeifeeggfelieegvdfgkeeinecuffhomhgrihhnpehrvggrughthhgvughotghsrdhiohenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpqhhiugeplefhhfevieegfeefledtpdhmohguvgepshhmthhpohhuthdpnhgspghrtghpthhtohepfedprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepjhgrnhdrkhhishiikhgrsehsihgvmhgvnhhsrdgtohhmpdhrtghpthhtohepfhhlohhrihgrnhdrs
- ggviiguvghkrgesshhivghmvghnshdrtghomh
-X-GND-State: clean
-X-GND-Score: -100
 
-"Bezdeka, Florian" <florian.bezdeka@siemens.com> writes:
+Of course I mean "RTDM driver for AM64x *UART*" as a subject !
 
-> On Tue, 2026-02-03 at 22:48 +0100, Florian Bezdeka wrote:
->> On Tue, 2026-02-03 at 18:22 +0100, Philippe Gerum wrote:
->> > Florian Bezdeka <florian.bezdeka@siemens.com> writes:
->> >=20
->> > > On Tue, 2026-02-03 at 14:08 +0100, Philippe Gerum wrote:
->> > > > -static inline void map_oob_ipis(int cpu)
->> > > > +static inline void map_oob_ipis(int cpu, int offset)
->> > > >  {
->> > > >  	int ipi;
->> > > >=20=20
->> > > >  	for (ipi =3D OOB_IPI_OFFSET; ipi < OOB_NR_IPI + OOB_IPI_OFFSET; =
-ipi++)
->> > > > -		get_ipi_desc(cpu, ipi) =3D irq_to_desc(ipi_irq_base + ipi);
->> > > > +		get_ipi_desc(cpu, ipi) =3D irq_to_desc(ipi_irq_base + cpu * off=
-set + ipi);
->> > > >  }
->> > >=20
->> > > I'm still quite sure that the loop is wrong and should be=20
->> > >=20
->> > > +static inline void map_oob_ipis(int cpu, int offset)
->> > >  {
->> > >         int ipi;
->> > >=20=20
->> > > -       for (ipi =3D OOB_IPI_OFFSET; ipi < OOB_NR_IPI + OOB_IPI_OFFS=
-ET; ipi++)
->> > > -               get_ipi_desc(cpu, ipi) =3D irq_to_desc(ipi_irq_base =
-+ ipi);
->> > > +       offset =3D ipi_irq_base + (cpu * offset);
->> > > +
->> > > +       for (ipi =3D OOB_IPI_OFFSET; ipi < nr_ipi; ipi++)
->> > > +               get_ipi_desc(cpu, ipi) =3D irq_to_desc(offset + ipi);
->> > >  }
->> > >=20
->> >=20
->> > For ipi=3DSGI-0-7, the upstream implementation of ipi_setup_lpi() does:
->> >=20
->> >                 irq =3D ipi_irq_base + (cpu * nr_ipi) + ipi;
->> > 		get_ipi_desc(cpu, ipi) =3D irq_to_desc(irq);
->> >=20
->> > In pipelined mode, we need to do that for ipi=3DSGI0 for in-band IPIs,
->> > then for ipi=3DSGI1-3 for oob ones (see below). All members of
->> > ipi_msg_type become _logical_ IPIs multiplexed over SGI0. That is the
->> > whole point of your fix regarding CPU_BACKTRACE and KGDB_ROUNDUP.
->> >=20
->> >=20
->> > > instead. (Note OOB_NR_IPI + OOB_IPI_OFFSET vs. nr_ipi)
->> >=20
->> > The code above would map the original IPI range from SGI0-7, which we
->> > don't have to in pipelined mode, we only use SGI0-3 here.
->> >=20
->> > >=20
->> > > Example:
->> > >=20
->> > > static void arm64_send_ipi(const cpumask_t *mask, unsigned int nr)
->> > > {
->> > > 	unsigned int cpu;
->> > >=20
->> > > 	if (!percpu_ipi_descs)
->> > > 		__ipi_send_mask(get_ipi_desc(0, nr), mask);
->> > >=20
->> > > How should that work for IPI_IRQ_WORK? IPI_IRQ_WORK is located behind
->> > > the IPIs used for OOB and get_ipi_desc(0, IPI_IRQ_WORK) would return
->> > > NULL as we skipped the mapping in map_oob_ipis().
->> > >=20
->> >=20
->> > Any IPI from IPI_RESCHEDULE to IPI_IRQ_WORK are multiplexed over SGI0 =
-by
->> > smp_cross_call().=C2=A0
->> >=20
->>=20
->> Here we go. I missed that smp_cross_call() calls __smp_cross_call() with
->> ipinr set to 0, unconditionally, not forwarding ipinr. I simply
->> overlooked that. That allows us to only map the oob IPIs as the "wrong"
->> mapping in arm64_send_ipi() can not happen anymore. Sorry for the
->> confusion.
+Le mer. 4 f=C3=A9vr. 2026 =C3=A0 10:07, Pierre FICHEUX <pierre.ficheux@smil=
+e.fr> a =C3=A9crit :
 >
-> That didn't last long. Two ways to fix the problem at the end:
+> Hi,
 >
->   - Only map OOB IPIs as suggested by Philippe.
->     Means we have to modify arm64_backtrace_ipi() and
->     kgdb_roundup_cpus() for the dovetailing case.
->     Calling arm64_send_ipi() with an ipi-nr !=3D 0 is not allowed in the
->     dovetailing case for inband IPIs.
+> I talked about the subject today during the community call. We would
+> like to use the PhyCORE/ARM64x UART (which is 16550 "compatible") with
+> a RTDM driver. The 16550 driver exists for Xenomai but will not work
+> out-of-the-box for the ARM64x. There are several modes for I/O access
+> (Port-based I/O, Memory-mapped I/O,  both) but it's not enough to make
+> it work.
 >
->   - Map all IRQs as suggested by me.
+> Is it possible to get any help about the subject here? I know Richard
+> Weinberger has a very good knowledge of RTDM and maybe he  could help
+> through his company.
 >
-> Hopefully correct now...
+> Thx for your help
 >
-> Which way is the preferred one?
+> Regards
 >
->>
+>
+> --
+> Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+>                              http://www.smile.fr
+>                              https://smile.eu/fr/offres/embarque-iot
+> I would love to change the world, but they won't give me the source code
 
-Excerpt from arch/arm/kernel/smp.c:
 
-enum ipi_msg_type {
-     ...
-	/*
-	 * SGI8-15 can be reserved by secure firmware, and thus may
-	 * not be usable by the kernel. Please keep the above limited
-	 * to at most 8 entries.
-	 */
-	MAX_IPI
-};
-
-This still holds true for ATF [1], so we only have 8 available SGIs
-although GICv3+ do provide 16. Since we have 8 in-band IPI message types
-defined by the arm64 port and we need 3 oob vectors more, we can't have
-a 1:1 mapping between IPIs and SGIs.
-
-So far we are using 4 SGIs as explained above (1 in-band + 3 oob), so we
-have 4 spares ATM. The reason for moving an in-band IPI to its own SGI
-using one of those spares would be to prioritize it over the bulk of
-in-band messages. Therefore, the question would be: do we need such
-prioritization?
-
-[1] https://trustedfirmware-a.readthedocs.io/en/latest/porting-guide.html#f=
-unction-bl31-platform-setup-mandatory
 
 --=20
-Philippe.
+
+Pierre FICHEUX -/- CTO Smile ECS, France -\- pierre.ficheux@smile.fr
+                             http://www.smile.fr
+                             https://smile.eu/fr/offres/embarque-iot
+I would love to change the world, but they won't give me the source code
