@@ -1,248 +1,245 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010025.outbound.protection.outlook.com [52.101.69.25])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2AB733E37B
-	for <xenomai@lists.linux.dev>; Wed,  4 Feb 2026 16:56:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770224182; cv=none; b=fVrVZtsVq+DB8elIFTXHnURAmGdE0bSw8NEnBJDMQ6P0K/PG+erU1da/ihZ7dNAVyQ1cZvehUQL5dpHyOf671HpMo8TVaP7RV6tTyjDWttvQBDzeebYmB3THzv2ymp4YPFUNzZ4MXdxVCWNJ0m//wFIfuQzxT9mxvGlgfBgtdDs=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770224182; c=relaxed/simple;
-	bh=ak3UQ4Zsh/gQDgRMfvh/7MFQj6LetGwZ2axIqYBEeJg=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=qLZDQRDOXf9kxmBjFxqd+qZciBCmq1YLFtveU96ixXuwHesShczxcVqRsUifnuJg1rSPDeUhkst5VZhiy8t1dvx5PCucw4oWiHD7fgSf0cMddSKXszh5IAdBlcW3kXgSSLI8dotZEhRTyhGWhj0eDfejPSXYbBTDN7gn2fYbYK0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=HMP36h76; arc=none smtp.client-ip=185.136.65.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6474533B945
+	for <xenomai@lists.linux.dev>; Wed,  4 Feb 2026 17:28:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.25
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770226087; cv=fail; b=PyhSWqBguf/sJPyIzR1qoei12itPSX55mVSozJLsCR5bA/E4ybG2SknRJVqkU62yfSwhnxXNg4NbsfQM7mPzllZOekUpicWs11yOb7pCOVSmrHySgQ3BcY8tTTZHdaMqpmYEuBsDmcwf7ekIcGhTuL2Mibrw4gOiVf3jkU50Ag0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770226087; c=relaxed/simple;
+	bh=gzLi8B1xcZlDlwEdN1SrjZh6ywOm4ZoE+RgaqbIFA2E=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=RsbD1JD630ZPKcr+djbWyRNy/7Dug+G2McPqBUvHtiXUGXw65vwwvRjhfrZakzUBKCaTQUdQlVJ48/e0y6BlCrhKZbLbIk3lp+e1/p64d8aASyXay0OQ/4aQDdHjiMd6wCii0oCf9VucCHuEwkJ+AzqScvd7jsrRLAGRjxc8hgE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=O5rNpNVp; arc=fail smtp.client-ip=52.101.69.25
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="HMP36h76"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20260204164604089e27b5680002075f
-        for <xenomai@lists.linux.dev>;
-        Wed, 04 Feb 2026 17:46:04 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=fmQFvYM3HyzewEUquu982HHJB8v0w6tHC01wEqx+i1c=;
- b=HMP36h76ZlfT86Vf/EhwQERsMh2IKLBmRzzlqA0la+FYdLFLBvAezKg7D5bklSlrV+2kfe
- 44ObHqA0f6JNIDJlrXZ9eiPw01Q9UimMoUyvKQwJ9SPj6XYXPQhvfHneqF68Vu8EbC7b5Hmk
- 6W2YGL1tFp00+kcy57pavQLNnkOBo6xjz0j8g+UjZ7DNXeGuvFsOOJogSkgrMJtFlPZijfif
- TcM2ZZ+zcW2XHdSBAC74FhW68Y+1Q3oaBGYwbp863ZJReuX0Dan5HGom6Jv/Y44C/3e9wMUW
- ITptzcqVOGZG9eFFtdj1hZiomOaNQC99tLNLmfBzRdUqh7w9Uqom+uqg==;
-Message-ID: <9ceacf21ff7e97ce4c706e782c00803eb25eb1fa.camel@siemens.com>
-Subject: Re: [PATCH Dovetail 6.18 1/3] arm64: irq_pipeline: Fix mapping of
- SGI/LPI IPIs
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>, "xenomai@lists.linux.dev"
-	 <xenomai@lists.linux.dev>
-Date: Wed, 04 Feb 2026 17:46:03 +0100
-In-Reply-To: <87o6m44tte.fsf@xenomai.org>
-References: <20260201-wip-flo-fixes-for-6-18-v1-0-91ea07c7eb7e@siemens.com>
-		<20260201-wip-flo-fixes-for-6-18-v1-1-91ea07c7eb7e@siemens.com>
-		<87o6m6vutd.fsf@xenomai.org>
-		<513ae7f9858f1bc553be3c6fcbbcabf1c89d6b25.camel@siemens.com>
-		<87qzr1ivxz.fsf@xenomai.org>
-		<198ace7718b548735ec0cb3e29b5c4f8129fbe9d.camel@siemens.com>
-		<776cf4d59124068e8d4ee1976fb3eb00f55c9b86.camel@siemens.com>
-	 <87o6m44tte.fsf@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="O5rNpNVp"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=nBf2QUWKjaKSwxcRI0/eQ6uNfevW9oy1Zmk/TWnV4qGkyPlbC2aGkotcobb9AaO5+jiZFO4SwwJfTrIH4Ev4Ioze9rGmEA6szwJfHzcpoXi0Rtu+lcipBJr0QkSmAhlcAeG4ZpKlzr66BFqb5r3oP7d2Yu4HfNe68wUboUNhX2xJCwQf2WoUxTUIwMepqAZWmjrA8CQmxiuf1xj5agjCr2ObztcJxv1oQ4O9SQA1ha4n4gGURftO4nALfb+BniQnDwYYpYtdHv45NMFnMyvK8UBJbW4eQVI788cjQuvzR07Xnyoy2h2iu730lsY9VkQdWDYCG5zvWedT85NxkHU37w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=RLhIAy2TeNVkdE0w/W0+Obc9G4dmlC1UGUwfzLUJyYg=;
+ b=c1fEK0WcY5elLK/Dt+Vu0mWodEIxXu99siVYdlmMIFsu+q+ZFgGD5eaLTqdSnQpzgja0sXXCIpiaqqX2WODBQAXkR3pF8KQEhr9PZRHEr+R4dQHYx7l2rJiQ0/Fm5Tm1F9nvqMOcFP1WHt5WGsUJvetbCSckUSWuJ4UQxrHwTNf/d6UenxSavgN1EbeApS/AEXzYhd7M2BCHQKbicSej3GDqSMC3uvHGrlupQ+DEDoQOopXvUgsWn2Zy7l9ULmv/GMiwQx8SyliEeevaYRPmZuaERATwCDmfaRQoRAKJFAz7UYo11E5LY/iKkckH8qqHZehU2/U+fb6rpqwmJPJ+qQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=RLhIAy2TeNVkdE0w/W0+Obc9G4dmlC1UGUwfzLUJyYg=;
+ b=O5rNpNVpJ0NgOtN8nfWlSJ5D7umx16yN6PVkD6jyH8cH6pgIfUp1nfdYD9mwgWzXdD5Q6pb91OqVIx62zz0l5Btl0lp0u6unPq8WyS2kYsVaCZw+O05ZTHEHSqOylcLSDw3itD028hdgDis+RUxlicGVfTqNkICu1HBUtwvyGWIXSW9qF9FXLmWsGgc3c4lJuG358Xlbgwmeh884QoG/xcMed14FFe1pEfUfiAw7ywDNFazUfHLjBAyFSbbJwpGq17bkinv354IeWC2KKInO2S++2e7TPOksE5DNsSkq1RSP+Vzg7AbQgqyY3QM5lm8S3tImFAwlng6hXusCyluK3w==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:76::15)
+ by PA2PR10MB8451.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:417::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9587.13; Wed, 4 Feb
+ 2026 17:28:03 +0000
+Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::63bc:6561:54d3:94b9]) by GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::63bc:6561:54d3:94b9%5]) with mapi id 15.20.9564.014; Wed, 4 Feb 2026
+ 17:28:03 +0000
+Message-ID: <ee18b4b8-22df-480f-be6d-38e23a3d6c1f@siemens.com>
+Date: Wed, 4 Feb 2026 18:28:01 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] Fix race between RTDM task termination and xnthread_join
+To: Richard Weinberger <richard@sigma-star.at>,
+ Richard Weinberger <richard@nod.at>, xenomai@lists.linux.dev,
+ upstream@sigma-star.at
+Cc: upstream+xenomai@sigma-star.at
+References: <20260127213927.26960-1-richard@nod.at>
+ <9873549.lNWL4n7ouV@nailgun>
+ <1310f7ea-9326-4200-b92f-17a828975328@siemens.com>
+ <5491679.p2sp48Hzj3@nailgun>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Content-Language: en-US
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ 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
+In-Reply-To: <5491679.p2sp48Hzj3@nailgun>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR4P281CA0318.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:eb::18) To GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:150:76::15)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: GV2PR10MB6186:EE_|PA2PR10MB8451:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8c258e56-a9d3-4242-4bab-08de6412c01a
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|366016|376014;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?aGRab0pRUW13L3lySDB5UkNqWDcxS1QxUVhFdWhtREMxSXJkQmM5SjEvVXAv?=
+ =?utf-8?B?bnhuQ3pTRlJZOW1Bb0gxVnlleEhTMXlnbWtRY0tvMlV6WGVLRjVxV21vQUJU?=
+ =?utf-8?B?QjF1b3Z1TXRqNzNrQ2RHekJteHRGRjNhaHZNdlluK1JVaE90a3FuNTc5bnpE?=
+ =?utf-8?B?OTlobFFWZjdBbzFGdk05KzNBbHN0WUJUMG9VNEY2U0xJZEdrREFvRG1INEtk?=
+ =?utf-8?B?TUNzWHdnQTRIa1VMM1hjUHJCQjNBeWp0WmVPUmhBZTdIdDNqK0hrWm5oM2k1?=
+ =?utf-8?B?SVc2TmJQZGpaaHhieERKZVUyWFlORXRieHpKN01vYzJqeUJOSkd2NW5iN0ps?=
+ =?utf-8?B?NnU0RTZXalBFSFluMUdEL2tNbU10UE9kMjFUL1JoU0pmeXpsdmhCK1pzUUJ6?=
+ =?utf-8?B?OWZPOHhPZ1RXb3d3MUFSUExxZ1pUVnVseFhvTmRUc3FKK1JUQVA5amhyRUh2?=
+ =?utf-8?B?RTMzQ0VpWFdidTZFaUtrNXo0RmtpM2F4dW1qeEdGUXNSU3BkeWgra0NwMmNx?=
+ =?utf-8?B?Z0NjN1hGTFZGVUwrWStLL2taaGV0WlhZWU1nQTFVQmlGclcvUWIyTjB5S0Rn?=
+ =?utf-8?B?SlhWcjNHcmxwVUkrT0NEWTVDcDFDVTkzWFlOVmZucXBCdHVYN0FVbndYSTUr?=
+ =?utf-8?B?ZStZdTlFNitYZllselluNXdBQmhnN2xRWW5wc08xbGo3eXFPQm9heDJ2OW9u?=
+ =?utf-8?B?ZE9rNWZidmtQTmpXZHZNQjM5eE4rNWllYS9DN1ZxcjZlVXZmM3U0K2JzQWha?=
+ =?utf-8?B?Z3l1eERhOXlScE9aOUFTd0p2WnZyb2NzQ1huaFVxOVZhYUpURkdXZEpYNzN6?=
+ =?utf-8?B?aDlSZnkxSTRlME5NVGhzTnZya0ttQXJHVVo4UWl2N2hYRWQ0Nm1nam9xb2lw?=
+ =?utf-8?B?ZWlaSEpaT25FYXlrdWZKTnVzKzNTNkZFTHRMOTJCVm1ESVVrMkxkL2NEQ0gr?=
+ =?utf-8?B?Rmx0MkNJNWtabkl4NGR0TWdMQUZpYTNuODRiNkFqWTBuQ2g0UmIyTXplZ3BX?=
+ =?utf-8?B?YmM3U1NtSXNwd3dpd2szSEFPQTlRaG9GLzhRdGRnNmExNk1rMm5KZnZibkxQ?=
+ =?utf-8?B?Uk1BbitRTkdhSHhCR2FjOHU4bGhqTndjSUloaUQxQWwvRFVpcVY0ekZLSjF6?=
+ =?utf-8?B?SEtBZGs0Z0pGQ1l5K3gyQ3UrUHVsUldhVmtIcTVCUGxaK3NaaWVNU3RyTjFJ?=
+ =?utf-8?B?NXl3SFZPN2JTaTFlZkduWFRPWGduaHpkWkZwb2JIVkpLQW1SbW5GWUtLalpE?=
+ =?utf-8?B?N01jbEdLUHlOMTJXNFFyWE1IbHRtOGhkTS84VFJGRjBzODBZTERhUXF5S2N6?=
+ =?utf-8?B?VTlMOFVXQkRic2dRVkhVcGdhZGZ4alg2MVFGQVdxTmVQb0hnVy9wbU1mMWht?=
+ =?utf-8?B?d2xQUFlSakp6cmcvcDZhcng0RVVOM1dwaWRIRFlTT1lWSkdsNUFQV2U4Y0ln?=
+ =?utf-8?B?L2Y1c1djdFBydGZlc2NvYU5wNDZBVTRyZE1yNmFTWGVtK2V1Z0tySk8xY1Q3?=
+ =?utf-8?B?c3lZdVBqeHM1ODZER2dHSlJ4UVhUSFFFZm01TmpXZmFEbzZ6TFJsR2RxanEz?=
+ =?utf-8?B?UHlDVjYxUTA2V2IyNWhLZFZVb2hHUFNEUmdxenZlRC9RcFdsZjA2cnBIVjNL?=
+ =?utf-8?B?ZU1vdWpBZWM5VUtad1BGd1ltNVJQaERmR1FzLzh2eXhUWldrYWpjeGRjS0Vp?=
+ =?utf-8?B?Q1owV0ZBbVllZEgvN0NybEp1Ykl6N2dSUWdrVllzcFdza0FhSDdLeGlwUlgv?=
+ =?utf-8?B?VUFIQ0tLaW1YZ1JPUmVqMWNqdVVjNFRoR2dwNmhRTUlJUHlkOXZVM0dhR1JQ?=
+ =?utf-8?B?VmtPWVNZYm1XV1pyN0t2TFVJUnI4OGtZTDQrdXg2NExjMkdxNEdvRitpVDkv?=
+ =?utf-8?B?djRiQXRyKzZMd21tVWg3NmhRRGs5Yk03aURTcWxjS0tCQVdic1BJdzI5Y0tr?=
+ =?utf-8?B?QmJjZnFSK2FIVWJhL2VsMXljK1BMWUgzeDVrR09OY3ByTjVRYStiZWdWRTZs?=
+ =?utf-8?B?bW9kMDlwV2VEaGhJN3NuSmZlcHZUNDFYVnpBKzNnZThzY0dmNFFqZ1FzWlRu?=
+ =?utf-8?B?U3ZFWWRZbytVVm5XQnpvYzRYY0FjMHpnNUF2WXh5QThEUEJPZDYzWnp3RlNn?=
+ =?utf-8?Q?deV4=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?TkJFV0FFNXhiQkJSdUxUNjJlSEd2WTUvN0lxOTM2TkpZVS9CNldzZUpyYkhl?=
+ =?utf-8?B?dGtJaWxNdE9nd3drYStpQVNORDdhZmoyb00vNnZCQnVvTjc2b3VmRktFSTFn?=
+ =?utf-8?B?TGdmUzhXUzdKQTM5bUJNSzlpNkFtSi9HUWZ4dzFDU3ZzUFY4QU53RitEUUY2?=
+ =?utf-8?B?T3hvWERZLzJCTURKUktwdzI4dDJwc1d3R3k3MDJRbE1VbGhjaVRsQlM4YmJU?=
+ =?utf-8?B?NnA0eVd3Qyt0S2U3dVVYckVJVlBFT1p6TGtJdU5MblZGZDZzcG9jdUVwWEg4?=
+ =?utf-8?B?Z2FiUVN1dWYxQnFtcWhKRy8xclRzSHVVOXhTK3N4SU1zWnNnRDNZMUpSdFVQ?=
+ =?utf-8?B?V0dZNE9ya01xTDJJZm9oMlhjc0J5K3hWNGpjY3U1T0xQUUlENzVUb3pyaTI4?=
+ =?utf-8?B?L1M5S0pUZ3o4NWpPYTdqTzVaekp3eWxkVDBkVVFwdm55aWpxdmdRdkpRV3FE?=
+ =?utf-8?B?L2VrblZLc05PM2JPMTUzMzBrekFFYWxET2prSHJMZDA4UUtYakNEL1RLc0t5?=
+ =?utf-8?B?MU1wZVpyOG9jUEVqbHJmSnliQWxDcEFyaTRXTFBFMkRCd2ZqcGZPMXlqYkxm?=
+ =?utf-8?B?NUhHOXQwR3hmZTF3cCtyNUFlTDVveVpXTTdYZHZLY01rOGJTRUtnd0dGakRY?=
+ =?utf-8?B?bk5YUlJlcmlnc1JQL1kzWlltWkUrb0RvbGpjdTdMY1VsZUp4RlFLWHZ3dTVR?=
+ =?utf-8?B?bmhBMmJHRFVlYXpZd3BCLzZTYmdWNXZpT1pJdUZ6OFdOQTB4RlhsM1RCcFZ3?=
+ =?utf-8?B?aTk5MXVFSWVyUStvcndlSzZuSERqa09SU0x6ZndxVCtlK1hBZTJESmZvcHJD?=
+ =?utf-8?B?OGFENjRjRUdIRWEwcG13akVoQjVseDJZUytrMk45R0ZMUU8zNEU0aFVjeUNl?=
+ =?utf-8?B?Uzc4U3NiKytrREFaQlA3eFZuR0pycVMya2NwZjBRYi8xbmw1UVBkeHpLeENw?=
+ =?utf-8?B?eWp0OEExZWpTS0llVzdkL2h0dDVPZkNmZGxBWTJzSjFCWXJ6TjM3SU5QczJs?=
+ =?utf-8?B?RFRpUkFjZVNZUjRvb3RCSkZyem5aaTVLYUVZdXBhZ1VJUnhueE50bGljd1FM?=
+ =?utf-8?B?MTk2dEI2Nm5ZdjBBTzRlTTZKcnlqZ0tvb0VtQ2xZOU9tTTFjdWpsT2VLdW42?=
+ =?utf-8?B?RVhFZnlBbWM2bkNhcHNKamN4Z0lKUXp3RjZJa1dVNTFTdUtNOFVKNVFCcCt5?=
+ =?utf-8?B?N0RNYzFEd3VsZWxRRW9XeG9JVUlYTXhEMnpobURIN2Z1RlpFdStac3MxM21k?=
+ =?utf-8?B?OTlTYks2RURqUWFaMG9hOVpkT2N0aW9keSt0dDVMTG92ekhYZzNJVnVBcy9Q?=
+ =?utf-8?B?Y3VlWlJreTVaZHc1MmFFRjhLWDZPalRpYmRIbE9Od05ZK2lidnlHelpIb3dn?=
+ =?utf-8?B?R1MwV0Fvbnk4aGRKU3p0bWdKLzliSEZ3cFlQTklqUnNJMXp6ZWVvL0FnQ1hn?=
+ =?utf-8?B?QVBxQkQxZlRacDdIQUtYZWRCdGUwNDhremRNU3JlVGVNdWhKT1UxTXZzRW1k?=
+ =?utf-8?B?U0cwOHRhdnZibXQ3Z2NkbFg1UVpzbjJuLzJmbnV2d2hFUkZhb2ZHdGpnN1Zi?=
+ =?utf-8?B?NkFFc2hwRVZVTVRuOXlmU2lGNEk2dS9xcVRtTzZFek1CNHNWaVlHZDVFMkND?=
+ =?utf-8?B?VHpNWUhLYVN4Zk4zemVMMWlGcHZVazdGWHJWK0UwV1JMdHdLTXIyNXhJc3or?=
+ =?utf-8?B?QmhhWVFXRmw3NndDcUhjTlc3Qm45aFk4eHd0RlRUWVA2SmI3aC9WM0hlbHQ0?=
+ =?utf-8?B?ZkVPaTlmRU9xK2todWlabmFueGE3V3VvdnNwQjB2N0Q1QUZDQlBMYkg3bENB?=
+ =?utf-8?B?azVTTUJVdGcwd216TlRGNmNXUGdHUHJKakcvc1VlRE5rUmFPQVBUNStjc1ZB?=
+ =?utf-8?B?K2lsajJBdjQ0OGdIZjJJOExuVCtRdUVHNlVOMVF6RkVJV0NEQThUeEtpbDlV?=
+ =?utf-8?B?enpWdmY3S3RtemwvVlNiUVJYSlppbXhFYlNQdEJGWEFtQVhVd3YrekdKeGNz?=
+ =?utf-8?B?NE41dENGdUFMS0dOc2xtSmNydFlpR05DeHJyQjhKemNHOGdZMnVKQlVMdm1h?=
+ =?utf-8?B?YmZ1aUdLR3hkY1JQZ0ZQRHp1cEhmN0p1akh6cVZBamNmZndsWTRYdDViMUdK?=
+ =?utf-8?B?RUdWcEFYQ3YvVVZXVVl0QW5TVEw2K3dHUmZQOXdQVUZaTDZMckRkWkZLWi9w?=
+ =?utf-8?B?L3JGZmpqblRHVkVuazlpQ1NnWjBhdGZMcjZFVlFPKzkzNmVVdnRDS0hGc01X?=
+ =?utf-8?B?aGdoY2RKZXFYS245ejRCN2p2NFpoSVkvVFhKUUhCNit5WkRVVUZ1bS81ZjA5?=
+ =?utf-8?B?QlQ5QmEvaEcvWkwzUXRWNmNFMGNiY1F5aGd3ZWdKZE9PMkNnVTJIUT09?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8c258e56-a9d3-4242-4bab-08de6412c01a
+X-MS-Exchange-CrossTenant-AuthSource: GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Feb 2026 17:28:03.0955
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KY7sQQ1QD5qkjxnF+nTjAwu63FZDUPBlhoGHBp7IYugdUT2SCnCZkSuZfDAMhw++yvumOUluKLs8Jzf27gWOhg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA2PR10MB8451
 
-On Wed, 2026-02-04 at 12:44 +0100, Philippe Gerum wrote:
-> "Bezdeka, Florian" <florian.bezdeka@siemens.com> writes:
->=20
-> > On Tue, 2026-02-03 at 22:48 +0100, Florian Bezdeka wrote:
-> > > On Tue, 2026-02-03 at 18:22 +0100, Philippe Gerum wrote:
-> > > > Florian Bezdeka <florian.bezdeka@siemens.com> writes:
-> > > >=20
-> > > > > On Tue, 2026-02-03 at 14:08 +0100, Philippe Gerum wrote:
-> > > > > > -static inline void map_oob_ipis(int cpu)
-> > > > > > +static inline void map_oob_ipis(int cpu, int offset)
-> > > > > >  {
-> > > > > >  	int ipi;
-> > > > > > =20
-> > > > > >  	for (ipi =3D OOB_IPI_OFFSET; ipi < OOB_NR_IPI + OOB_IPI_OFFSE=
-T; ipi++)
-> > > > > > -		get_ipi_desc(cpu, ipi) =3D irq_to_desc(ipi_irq_base + ipi);
-> > > > > > +		get_ipi_desc(cpu, ipi) =3D irq_to_desc(ipi_irq_base + cpu * =
-offset + ipi);
-> > > > > >  }
-> > > > >=20
-> > > > > I'm still quite sure that the loop is wrong and should be=20
-> > > > >=20
-> > > > > +static inline void map_oob_ipis(int cpu, int offset)
-> > > > >  {
-> > > > >         int ipi;
-> > > > > =20
-> > > > > -       for (ipi =3D OOB_IPI_OFFSET; ipi < OOB_NR_IPI + OOB_IPI_O=
-FFSET; ipi++)
-> > > > > -               get_ipi_desc(cpu, ipi) =3D irq_to_desc(ipi_irq_ba=
-se + ipi);
-> > > > > +       offset =3D ipi_irq_base + (cpu * offset);
-> > > > > +
-> > > > > +       for (ipi =3D OOB_IPI_OFFSET; ipi < nr_ipi; ipi++)
-> > > > > +               get_ipi_desc(cpu, ipi) =3D irq_to_desc(offset + i=
-pi);
-> > > > >  }
-> > > > >=20
-> > > >=20
-> > > > For ipi=3DSGI-0-7, the upstream implementation of ipi_setup_lpi() d=
-oes:
-> > > >=20
-> > > >                 irq =3D ipi_irq_base + (cpu * nr_ipi) + ipi;
-> > > > 		get_ipi_desc(cpu, ipi) =3D irq_to_desc(irq);
-> > > >=20
-> > > > In pipelined mode, we need to do that for ipi=3DSGI0 for in-band IP=
-Is,
-> > > > then for ipi=3DSGI1-3 for oob ones (see below). All members of
-> > > > ipi_msg_type become _logical_ IPIs multiplexed over SGI0. That is t=
-he
-> > > > whole point of your fix regarding CPU_BACKTRACE and KGDB_ROUNDUP.
-> > > >=20
-> > > >=20
-> > > > > instead. (Note OOB_NR_IPI + OOB_IPI_OFFSET vs. nr_ipi)
-> > > >=20
-> > > > The code above would map the original IPI range from SGI0-7, which =
-we
-> > > > don't have to in pipelined mode, we only use SGI0-3 here.
-> > > >=20
-> > > > >=20
-> > > > > Example:
-> > > > >=20
-> > > > > static void arm64_send_ipi(const cpumask_t *mask, unsigned int nr=
-)
-> > > > > {
-> > > > > 	unsigned int cpu;
-> > > > >=20
-> > > > > 	if (!percpu_ipi_descs)
-> > > > > 		__ipi_send_mask(get_ipi_desc(0, nr), mask);
-> > > > >=20
-> > > > > How should that work for IPI_IRQ_WORK? IPI_IRQ_WORK is located be=
-hind
-> > > > > the IPIs used for OOB and get_ipi_desc(0, IPI_IRQ_WORK) would ret=
-urn
-> > > > > NULL as we skipped the mapping in map_oob_ipis().
-> > > > >=20
-> > > >=20
-> > > > Any IPI from IPI_RESCHEDULE to IPI_IRQ_WORK are multiplexed over SG=
-I0 by
-> > > > smp_cross_call().=C2=A0
-> > > >=20
-> > >=20
-> > > Here we go. I missed that smp_cross_call() calls __smp_cross_call() w=
-ith
-> > > ipinr set to 0, unconditionally, not forwarding ipinr. I simply
-> > > overlooked that. That allows us to only map the oob IPIs as the "wron=
-g"
-> > > mapping in arm64_send_ipi() can not happen anymore. Sorry for the
-> > > confusion.
-> >=20
-> > That didn't last long. Two ways to fix the problem at the end:
-> >=20
-> >   - Only map OOB IPIs as suggested by Philippe.
-> >     Means we have to modify arm64_backtrace_ipi() and
-> >     kgdb_roundup_cpus() for the dovetailing case.
-> >     Calling arm64_send_ipi() with an ipi-nr !=3D 0 is not allowed in th=
-e
-> >     dovetailing case for inband IPIs.
-> >=20
-> >   - Map all IRQs as suggested by me.
-> >=20
-> > Hopefully correct now...
-> >=20
-> > Which way is the preferred one?
-> >=20
-> > >=20
->=20
-> Excerpt from arch/arm/kernel/smp.c:
->=20
-> enum ipi_msg_type {
->      ...
-> 	/*
-> 	 * SGI8-15 can be reserved by secure firmware, and thus may
-> 	 * not be usable by the kernel. Please keep the above limited
-> 	 * to at most 8 entries.
-> 	 */
-> 	MAX_IPI
-> };
+On 29.01.26 11:34, Richard Weinberger wrote:
+> On Donnerstag, 29. Jänner 2026 11:29 Jan Kiszka wrote:
+>>> Hmm, for userspace I'd expect that Linux frees the task struct only after
+>>> the parent fetched the exit code? So, after zombie state.
+>>>
+>>
+>> But Linux has no idea if we are still holding an xnthread struct reference.
+> 
+> Yes, but Linux does only free the task struct, not xnthread struct.
+> xnthread struct (being rtdm_task_t) ist statically allocated.
+> 
 
-That is now taken from arch/arm instead of arch/arm64. Is that also the
-case for arm64?
+I've looked into that again: Cobalt threads - the other user of
+xnthreads - perform lifecycle management themselves
+(cobalt_thread::magic). Even more important, they do not need to
+synchronize on the thread function to have exited
+(wait_for_rcu_grace_period), thus do not have this race.
 
->=20
-> This still holds true for ATF [1], so we only have 8 available SGIs
-> although GICv3+ do provide 16. Since we have 8 in-band IPI message types
-> defined by the arm64 port and we need 3 oob vectors more, we can't have
-> a 1:1 mapping between IPIs and SGIs.
->=20
-> So far we are using 4 SGIs as explained above (1 in-band + 3 oob), so we
-> have 4 spares ATM. The reason for moving an in-band IPI to its own SGI
-> using one of those spares would be to prioritize it over the bulk of
-> in-band messages. Therefore, the question would be: do we need such
-> prioritization?
+So, your patch would be sufficient as-is, but I still do not like to
+lock the task struct over the whole lifecycle of a kthread. While we
+demand RTDM threads to be closed with an xnthread_join, that was
+technically not needed so far from the perspective of xnthread.
 
-I have no strong opinion on that and tried to restore what we had in the
-past. Looking at 6.12 at [2] now I had to realize that this was way more
-broken regarding IPI_BACKTRACE and IPI_KGDB_ROUNDUP than I had realized
-up to now.
+Thinking about it, I came to the conclusion that it would be nicer to
+keep a copy of the host pid_t in xnthread directly. That nicely solves
+the race and even simplifies existing code. Patches will follow, tests
+still running.
 
->=20
-> [1] https://trustedfirmware-a.readthedocs.io/en/latest/porting-guide.html=
-#function-bl31-platform-setup-mandatory
+Jan
 
-[2] https://gitlab.com/Xenomai/linux-dovetail/-/blob/v6.12.y-dovetail/arch/=
-arm64/kernel/smp.c?ref_type=3Dheads#L1190
-
-What about the following end-result:
-
-enum ipi_msg_type {
-	IPI_RESCHEDULE,			// SGI0, used for inband multiplexing
-					// RESCHDULE set as reason
-
-	IPI_CALL_FUNC,			// SGI1 reserved for OOB
-					// CALL_FUNC via SGI0 with reason set
-
-	IPI_CPU_STOP,			// SGI2 reserved for OOB
-					// CPU_STOP via SGI0 with reason set
-
-	IPI_CPU_STOP_NMI,		// SGI3 reserved for OOB
-					// STOP_NMI via SGI0 with reason set
-
-
-					// SGI4-7 unused
-
-	IPI_TIMER,			// via SGI0 with reason set
-	IPI_IRQ_WORK,			// via SGI0 with reason set
-	NR_IPI,
-	/*
-	 * Any enum >=3D NR_IPI and < MAX_IPI is special and not tracable
-	 * with trace_ipi_*
-	 */
-	IPI_CPU_BACKTRACE =3D NR_IPI,	// via SGI0 with reason set
-	IPI_KGDB_ROUNDUP,		// via SGI0 with reason set
-	MAX_IPI
-};
-
-
-
-Final questions:=C2=A0
-
-Assuming SGI mode: Where are the request_percpu_irq() calls for all the
-OOB SGIs? Or: How is something like irq_send_oob_ipi(2, mask) expected
-to get the right IRQ descriptor in arm64_send_ipi()? Currently the
-descriptor for SGI0 is returned.
-
-Is that all just broken for a long time?
-
-In addition I think that the trace_ipi_raise() in __smp_cross_call() is
-incorrect for OOB SGIs...
-
-Florian
+-- 
+Siemens AG, Foundational Technologies
+Linux Expert Center
