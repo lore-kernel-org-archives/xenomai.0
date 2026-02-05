@@ -1,107 +1,96 @@
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f174.google.com (mail-pg1-f174.google.com [209.85.215.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 987BE30C630
-	for <xenomai@lists.linux.dev>; Thu,  5 Feb 2026 19:03:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770318202; cv=none; b=sf9NRBzVSIkB+dwdVobGjAkx4qYguQLT1PcSpyffPmNyM8G4BGHZ5Z4I1kViniK2U9k+OaoA6jnlbovP+U91L65X5+EjbQ+uuQFnEvj+23xqSTiqtiMAj+zHyF7SYKOCgaVKvplKk6oPGymZoSj3AFIFLv2TZlhJ60LGoTQ2UIQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770318202; c=relaxed/simple;
-	bh=TONuIhonD/gvbTtZtVglHozkJWAWcpi/UEbZqMeh7HU=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=rAu+Zj7ImVmsU6PM0cROndt/1eYj5v5xWw1cokRgN5cN55fAW8KQ/g1w9LP3aH46FExkA9M4I+UTEaY6MVhJ3yTCshTLy5IniwuZN3Zdoz9aP+D1hfAYZGNa/nCkBVP1GivJcClAdv+Q0WrwT/Uuxh8Kpe8oZ7Uz8pKQWM2Kpx8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=MFiogOLh; arc=none smtp.client-ip=217.70.183.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80FE132ED51
+	for <xenomai@lists.linux.dev>; Thu,  5 Feb 2026 22:41:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.215.174
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770331291; cv=pass; b=hqRN/vImzwjFYKH8YAbAiO/9rFK6UTbKZ+waSDyWTXiqMxaGhrnDYpFJwaJ0V0F5qrzL9V1exSmAb3LsWNCr0MhdptLWGuMPTjPjVBzv2iFvDmZRPbuRnfBVnyClLvfwtb789UuQaQhxiWH1KluLgXYUdkOJUbpeG/XlfdjPdew=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770331291; c=relaxed/simple;
+	bh=T0YrgFWYRIIppFjz0RuoahsanSSRttn7wQc/SAmiHZs=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=j20MuOp3JjX2G0VCtvOGcROtNl7JWhhAEWHUZEuKsKR5Fml/DiKqOg4h9JzstkcXVfSlVqfFcsP0eK+1UFdc7ELwdsPyWOg5tfmHyQdC0ZEIyaCkdGEiZNFlVTO2uMtVi3qKn6gZHO1Gn3HPF079WYwDvt2794RfCOo1HUTod0g=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NdjqUUXr; arc=pass smtp.client-ip=209.85.215.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="MFiogOLh"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id AF7BF43B7E;
-	Thu,  5 Feb 2026 19:03:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1770318194;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Fr2x9QTGgFnlS7NU6mcjvjWVilqJN/8SGBq0c2lfbpQ=;
-	b=MFiogOLhx9SwwtzbQbHj/hOxAVdhSkxcV5BLwD5qUfQCTeVo7I7oTFXfXpCp3wCe2RoBaw
-	wHg1GEsqgjvkSmNDgxaaWzS3klMS1Tn289W9AeYe5rxVAurqNWvvgEs2PDfHZeAHYim7R2
-	mbqrncfMvPE3Py4ekJbvxuR09aBjhLN9nglFtKWMJZXHaD3mce3aV8a8rNZfB+JW2AYRQH
-	Mifhls3wAfm+nxdphOuYbBOfcjxEqZX3SR8H+SAo34K0VV2S60P3D/uLu4F27DLhmyaqqI
-	+TUCrc/Rws1WTfsOqSV8BRbScNhr17g5qfQev6cmTRe2bD+Zyp/hIVhWVuzpNA==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@lists.linux.dev,  Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: [PATCH Dovetail 6.18 v2 4/4] arm64: irq_pipeline: Fix
- tracepoint for multiplexed IPIs
-In-Reply-To: <20260201-wip-flo-fixes-for-6-18-v2-4-28b30dbcfdf8@siemens.com>
-	(Florian Bezdeka's message of "Thu, 05 Feb 2026 15:00:15 +0100")
-References: <20260201-wip-flo-fixes-for-6-18-v2-0-28b30dbcfdf8@siemens.com>
-	<20260201-wip-flo-fixes-for-6-18-v2-4-28b30dbcfdf8@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Thu, 05 Feb 2026 20:03:13 +0100
-Message-ID: <87ikcb813i.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NdjqUUXr"
+Received: by mail-pg1-f174.google.com with SMTP id 41be03b00d2f7-c61343f82d7so18420a12.1
+        for <xenomai@lists.linux.dev>; Thu, 05 Feb 2026 14:41:31 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1770331291; cv=none;
+        d=google.com; s=arc-20240605;
+        b=YQUQezZQ163VN4o5nsJvCgosztTjR6R4BXPlOSCQFDVf/XJQs20tQyXhESTsJVFFPk
+         IRtisH7VunDEBr+K064nbjHSFCasJb5UIFehmZkR/fyoSJ840qSmCOkmciOdbCJVlYxK
+         zAn8jPup1I9rAv/WkGy+SOpOL3GEdj3qsyPSm3zbA43LbZYAGH1HTPNjOR+p1yZmVlgi
+         0nhQ3AvzCGme9LJ9D88bMyfPYcORWh5ZvEd1SUw81XWClrKpHMIRLneLXd689N7h3BIx
+         rEkcvSveGPF4GcvwtOcF2uC9X6TLQQ91M93p98aWC6HhvEJOIdejQNGYFy4mLdLlmabi
+         tSxQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=DbNs3AVHySXoWvyVXjPJ93l9TrygcGFOn94Yes+Pl9A=;
+        fh=tgwebcNkoJ2/NGSJumgP9lV3bKs+JVL5OrNDd1IgsQY=;
+        b=BO+mSXe/7IQ48HYV3EtiPJshYSv+eWalLJf00/OQfCHgMVINxwPGTeIH1TUT+o3hni
+         Wnl4zXjb+yTEB9ArvUJfEjqDWjIZ57osFRLyyDy90QH3IpFPV+6Usk52ikONYFLof25c
+         Yryd/+xHBDLRMu923q8o81uMdmPt9XQqogD/oBeq0eyasPVBZdJLVSvCOA+cNICN3Jut
+         lKqAGnce2eiz/dQVt3CUNFLDRPdk45Z7LEDWPweJYmgy46mEpYtvLp9sNXq/YSlRijfD
+         ZgKF4B6nuKWXVawml6QJS5o3Iz1VQpsAMYCRVpIBVutHupWCi1tQk8oK+6gEHXZ0pAXD
+         yVjQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1770331291; x=1770936091; darn=lists.linux.dev;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=DbNs3AVHySXoWvyVXjPJ93l9TrygcGFOn94Yes+Pl9A=;
+        b=NdjqUUXrY/Uaeo93H5/soxIq/YEYJMvPF3oaWZKTHMhT0Axuaxq2McgSqYtJvsvBal
+         x9KXyg5V7c7aE3PywLN29SymSjbSqbbV5Lyf5sbe1Soou3/2hjYCdzzz+eDP6ZJiy+5V
+         T7zCKI9uhsGCrSOORQzksBMMcIB22Lthow3JhLtKzm5v3ETxMCFgiwKQ2Q4VjQojc5po
+         EXHCFpEioYXgzW0WbBQlKEu0IOwHgpaxqu8f76eFs17vwG4KwEWvj/ZVINW0qVmKYyRv
+         ehzfqdge7eNUR4R1iIVSRET+O0ANMuOtLkRgcZH3y52mVMSwm/sKChzPu871s9nrYXn2
+         EMCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770331291; x=1770936091;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=DbNs3AVHySXoWvyVXjPJ93l9TrygcGFOn94Yes+Pl9A=;
+        b=afMoKbfG4enJ68JJqynQLdoM2YekWKxKBMF88FjiTJvSv/LT3fn/qQJJPSTSJ0vXBA
+         9zYtiAncOIyZf5/LXIpi7wjByMZJSRmXM/76fgMrZ6R7CB8yt/kAZsFnUns9/Yc5BlHR
+         P89PuWxK6u+AIYVmFFZEBOJ8+hr1dVhtU9haV6OBIU3L+S0XobY6KfV2uZw40DguRwTS
+         UW0eVf6NCQSCKkrAzalfVmjMjtcUrgJXCBh8NvkzuKreWUTMB9NiLHn8ZiqU1siVXk1P
+         OWGPE5O7bjCCRAnXTYnrc79R/IW2tTrLJ+JkY81QimtvBPbqVoPvwwl7g/TjhSwhm94Y
+         88aA==
+X-Gm-Message-State: AOJu0YwJCzTmFEfz8q6sTC4JsZjb0osjt4+g2WJpUWU1avK5ulorXnQ+
+	N+zsINlii254FDK1IH0k4YT0gyMKkpz4YKhgOEwon3/g+4RUpOwOeFCX537YcLnXcHiHk2lLL8t
+	U4gk0JgD6rCMCeNthrc6eE7mr9+Eq+0On82iz
+X-Gm-Gg: AZuq6aIAclgOuDGIAP4/egizTJbAjIZuGCBpOONHqFde11Bgv+URrxyc4dadVjCjPSx
+	BM8j7ns4O5co1CuI4zgjnsI6xiToxcIYom/YPmAG9u+M2dj4INVlz8zwCHmgYsAFki5C1RqpRoQ
+	oTaS1A5pqEHhkBQoOSTt4hdk0TH8IRAzBSjSXIVjp8CyJeqoh+84p9hzUr3nXYXfTKbnDiHCfp2
+	m841n3US7xn0zEgdamzcXDFWoywZhdwrW/Z/YF8GWU1BD3LKUr77qojIc7WZr30eC4cjmrOHyul
+	qD8k2A==
+X-Received: by 2002:a17:90b:48cd:b0:352:c995:808a with SMTP id
+ 98e67ed59e1d1-354b3c8c4f8mr412049a91.14.1770331290753; Thu, 05 Feb 2026
+ 14:41:30 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddukeeitdelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpedvlefhvdehkeduheevleegiedtueejgfekhfeijeefvdeijeekgeeigfejhfekgeenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpqhhiugeptefhjeeuhfegfeeujefgpdhmohguvgepshhmthhpohhuthdpnhgspghrtghpthhtohepfedprhgtphhtthhopehjrghnrdhkihhsiihkrgesshhivghmvghnshdrtghomhdprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepfhhlohhrihgrnhdrsggviiguvghkrgesshhivghmvghnshdrtghomh
-X-GND-State: clean
-X-GND-Score: -100
+From: Richard Weinberger <richard.weinberger@gmail.com>
+Date: Thu, 5 Feb 2026 23:41:18 +0100
+X-Gm-Features: AZwV_QgBrjH5UvOJo-qa1R9ZiFW5a31YNH6Ag5RjaIcYd105WnCerBBqEKsCOIw
+Message-ID: <CAFLxGvxUmCjBJBrPFWrGDfPimmcL4=xwGGxcLwn3+1W1tUriSw@mail.gmail.com>
+Subject: xnintr_enable() is a no-op on dovetail
+To: Xenomai <xenomai@lists.linux.dev>
+Cc: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
+Content-Type: text/plain; charset="UTF-8"
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+Hi!
 
-> When IRQ pipelining is enabled the reason for an IPI was always set
-> to IPI_RESCHEDULE as this is the IPI used for multiplexing all the
-> inband IPIs via a single SGI/LPI.
->
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
->  arch/arm64/kernel/smp.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
->
-> diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
-> index 53ec370235f93..39499b9797923 100644
-> --- a/arch/arm64/kernel/smp.c
-> +++ b/arch/arm64/kernel/smp.c
-> @@ -1069,9 +1069,10 @@ static void ipi_setup_oob_lpi(int ncpus)
->  		map_oob_ipis(cpu, nr_ipi);
->  }
->  
-> -static void __smp_cross_call(const struct cpumask *target, unsigned int ipinr)
-> +static void __smp_cross_call(const struct cpumask *target, unsigned int ipinr,
-> +			     unsigned int msg)
->  {
-> -	trace_ipi_raise(target, ipi_types[ipinr]);
-> +	trace_ipi_raise(target, ipi_types[msg]);
->  	arm64_send_ipi(target, ipinr);
->  }
->  
-> @@ -1102,7 +1103,7 @@ static void smp_cross_call(const struct cpumask *target, unsigned int ipinr)
->  {
->  	/* regular in-band IPI (multiplexed over SGI0). */
->  	set_ipi_message(target, ipinr);
-> -	__smp_cross_call(target, 0);
-> +	__smp_cross_call(target, 0, ipinr);
->  }
->  
->  static unsigned int get_ipi_count(int ipi, unsigned int cpu)
-> @@ -1120,7 +1121,7 @@ void irq_send_oob_ipi(unsigned int irq, const struct cpumask *cpumask)
->  		return;
->  
->  	/* Out-of-band IPI (SGI1-3). */
-> -	__smp_cross_call(cpumask, sgi);
-> +	__smp_cross_call(cpumask, sgi, sgi);
->  }
->  EXPORT_SYMBOL_GPL(irq_send_oob_ipi);
-
-Given the added complexity, I would rather not factor __smp_cross_call()
-out anymore, open coding it in smp_cross_call() and irq_send_oob_ipi()
-instead.
+I noticed that with dovetail xnintr_enable() is a no-op. Is this on purpose?
+How to mask an interrupt line then?
+Various drivers in Xenomai use the function via rtdm_irq_disable().
 
 -- 
-Philippe.
+Thanks,
+//richard
