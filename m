@@ -1,75 +1,99 @@
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9C1B243956
-	for <xenomai@lists.linux.dev>; Thu,  5 Feb 2026 13:40:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C77663EDADF
+	for <xenomai@lists.linux.dev>; Thu,  5 Feb 2026 14:00:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770298845; cv=none; b=FbYh0wPAhNl2BtjGsyKHfGctzv9BuoCqYlGFzmHmN1xw0yQBl6vKY/id+ych9WOvntqOwPKQo3n1T56tSSvfmJWgXBBd/f3mB5qi3L/arjcVNnCkcgCZl70DUZfg1sfsWEGexl4dRhqTgcF2TqsuT50n01QjMqW9rbRbUfs1Zow=
+	t=1770300019; cv=none; b=OIR8FfEkZSeOBeXq/Ow5qOCdMZ0Ili8XE3XQAawsYSyiQq+z15N+4KxyKw2AAnJhb0TLfUpZlxXcQs51UDEFVPHbVkoFcaQem/EmkEU6SfVV8oDzymx5qX7uD6xfe94PVj2Kb+NNWrNSHCttvzIiUpcK8AD3ExRM68rXQMxlu+c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770298845; c=relaxed/simple;
-	bh=Ve/K2f5iX32ezPuWfS64ssk46Rh7lgJ71NBZ9nJSTuM=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=inD+9FrVCRvx/xVTa+bf6t08NtW/JFV2Vtx0Pb8QJbirMBMfc8Bwi8qFk6xPlXIgBElBLKZZiCI13X5ykLG37ub2L2cGIIOvUv9q0aynY17FLqGGQMCQbGuI6xixRH3IOBwyLDqY7njKxZ2JtzutzOun2LPzTsOkvaiFO9VKNOs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=SL1v7Dc6; arc=none smtp.client-ip=217.70.183.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1770300019; c=relaxed/simple;
+	bh=x0I4Ylcs4gqhhNyi9eomWapplAfNdsy/vpFRtkheSQc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=Qc2ohmk9xYNFVER1vel/zTDK2uZfjJfnvXbRKoUFlQQLO+TfU9SsifKVgAaU/pnnz2Io1g7m9AGO5GMWf3nFEIguj4wVuPVY6tgOgv/BIT57T2aTyGdWxUqu/b3c8GEy/ru90ApjG7LSQk1+EqUQ6q3uwVYKxzQTnRoh+FtYAkU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=AkwP3s3h; arc=none smtp.client-ip=185.136.64.228
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="SL1v7Dc6"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 57E4943B7B;
-	Thu,  5 Feb 2026 13:40:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1770298842;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=5FmmicozCd39emYHwHV+v2Scqs93BaGCn0ZMujOzkqk=;
-	b=SL1v7Dc68Pye1Qweu6pOGrsbD6wqHWYZm3k7uYMC13eI71GjuotMn6Q+uKeutqOemU1HUb
-	6bfX6Y14/AEnD2mUfInqVSJM1FUQd6u5EcnL/0Vpnt566r0MsaCK/hEXZMCb4YJTSYinXU
-	cy6ta2DFW3+WOnXpb45hGZno8n51OS0itS0NAiAF77AHRQfxeJi/8+h6wOKJP9XoV+8yPS
-	35agaGbbe4tg1BNxp1N4F97DyNnQKRqf+Oj4nA8IYJ441ZpkqdgJagm3rR2JpKEdFdwiOS
-	FuRvG0Gp/q+hASrdzj7Go2JLRoisCxC1vCZSYoIIcv8vXHgMHFCoQqtjy3tqag==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Clara Kowalsky <clara.kowalsky@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>,  "Kiszka, Jan (T CED)"
- <jan.kiszka@siemens.com>
-Subject: Re: Trigger xenomai-images CI for linux-evl and libevl
-In-Reply-To: <db8c1dc5-eb36-4f68-969f-c07e408bf03d@siemens.com> (Clara
-	Kowalsky's message of "Thu, 5 Feb 2026 14:32:10 +0100")
-References: <db8c1dc5-eb36-4f68-969f-c07e408bf03d@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Thu, 05 Feb 2026 14:40:37 +0100
-Message-ID: <87a4xnb962.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="AkwP3s3h"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20260205140015b4c1555bfd000207f2
+        for <xenomai@lists.linux.dev>;
+        Thu, 05 Feb 2026 15:00:15 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=S7mt6sCW680jbaG2Sh+Q29GQ4UTT2GX/G1OxhqCPNQE=;
+ b=AkwP3s3hLQ6awVxHqF2dLf+0OCVj00PvkcJT6lroXpcOwM7ly1tlCGMEROo2BR7O+frXJv
+ TMGQpmNs9ojtq4GDsddeN+q5xh2NUKXtmnGhUejJ7lPRW+Jprt7xbsFPGiEHKhHqt6dFdwxm
+ 5Vl0M5FH93w0aCh49WTILfJ0P3J/9EhYU6CuzepmNei73HUjtPfJvE4n+3Ks3R9dSSbcmcTw
+ 6fSh6HjWs12VOpe1WvO04mIRTgvGu+w+KBd08N0xK8yD7iTufrSqxA8US87Pw+LmXVOz+qVM
+ 5Zd1jVf6Sor1jCipTGEFv2lNGvLtpaARIDOtYW7+Bng9pWxPzM4ydp1g==;
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Date: Thu, 05 Feb 2026 15:00:15 +0100
+Subject: [PATCH Dovetail 6.18 v2 4/4] arm64: irq_pipeline: Fix tracepoint
+ for multiplexed IPIs
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddukeehgeegucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpedvlefhvdehkeduheevleegiedtueejgfekhfeijeefvdeijeekgeeigfejhfekgeenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpqhhiugepheejgfegleegfeeujeeupdhmohguvgepshhmthhpohhuthdpnhgspghrtghpthhtohepfedprhgtphhtthhopehjrghnrdhkihhsiihkrgesshhivghmvghnshdrtghomhdprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtoheptghlrghrrgdrkhhofigrlhhskhihsehsihgvmhgvnhhsrdgtohhm
-X-GND-State: clean
-X-GND-Score: -100
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260201-wip-flo-fixes-for-6-18-v2-4-28b30dbcfdf8@siemens.com>
+References: <20260201-wip-flo-fixes-for-6-18-v2-0-28b30dbcfdf8@siemens.com>
+In-Reply-To: <20260201-wip-flo-fixes-for-6-18-v2-0-28b30dbcfdf8@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, 
+ Florian Bezdeka <florian.bezdeka@siemens.com>
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Clara Kowalsky <clara.kowalsky@siemens.com> writes:
+When IRQ pipelining is enabled the reason for an IPI was always set
+to IPI_RESCHEDULE as this is the IPI used for multiplexing all the
+inband IPIs via a single SGI/LPI.
 
-> Hi,
->
-> I am planning to add support for triggering pipelines in
-> xenomai-images on pushes to linux-evl and libevl, as suggested by Jan
-> Kiszka. In this way, they are covered by xenomai images just like
-> xenomai-3 and dovetail.
->
-> I would trigger the xenomai-images pipeline for pushes to:
-> - linux-evl branches: head (6.18), 6.12, 6.1, in combination with
->   libevl next
-> - libevl branches: next, in combination with linux-evl head
->
-> Would that be in line with your thinking, Philippe?
->
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ arch/arm64/kernel/smp.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-Yep, looks good, thanks.
+diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+index 53ec370235f93..39499b9797923 100644
+--- a/arch/arm64/kernel/smp.c
++++ b/arch/arm64/kernel/smp.c
+@@ -1069,9 +1069,10 @@ static void ipi_setup_oob_lpi(int ncpus)
+ 		map_oob_ipis(cpu, nr_ipi);
+ }
+ 
+-static void __smp_cross_call(const struct cpumask *target, unsigned int ipinr)
++static void __smp_cross_call(const struct cpumask *target, unsigned int ipinr,
++			     unsigned int msg)
+ {
+-	trace_ipi_raise(target, ipi_types[ipinr]);
++	trace_ipi_raise(target, ipi_types[msg]);
+ 	arm64_send_ipi(target, ipinr);
+ }
+ 
+@@ -1102,7 +1103,7 @@ static void smp_cross_call(const struct cpumask *target, unsigned int ipinr)
+ {
+ 	/* regular in-band IPI (multiplexed over SGI0). */
+ 	set_ipi_message(target, ipinr);
+-	__smp_cross_call(target, 0);
++	__smp_cross_call(target, 0, ipinr);
+ }
+ 
+ static unsigned int get_ipi_count(int ipi, unsigned int cpu)
+@@ -1120,7 +1121,7 @@ void irq_send_oob_ipi(unsigned int irq, const struct cpumask *cpumask)
+ 		return;
+ 
+ 	/* Out-of-band IPI (SGI1-3). */
+-	__smp_cross_call(cpumask, sgi);
++	__smp_cross_call(cpumask, sgi, sgi);
+ }
+ EXPORT_SYMBOL_GPL(irq_send_oob_ipi);
+ 
 
 -- 
-Philippe.
+2.39.5
+
