@@ -1,103 +1,113 @@
 Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0EDF3446BC
-	for <xenomai@lists.linux.dev>; Mon,  9 Feb 2026 09:33:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3544378D84
+	for <xenomai@lists.linux.dev>; Mon,  9 Feb 2026 14:43:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770629637; cv=none; b=cH4IF/XhSUrVTje2IvXgBGdwhZt9adajJ/HV08XtUutZh3KfvEw+yE+YiFqcXdH69N1mUVBXRiZaPVDM1j8+afF5vy0iBWetFM5m9SzuCG6/ymNdr1oO7Gw8hxk37j2I9zbJnjsb114vB04GBWIdcpcgl4n0bgyRKwBxqJe0Crg=
+	t=1770648237; cv=none; b=C5/DAym4iPL3TqvWv224qpQzaQDagh9XmEBdD+DDEycJAs4An330r9PMSzLIJMphRuAUMtdP5uSBQz/XwymARoG8guByim7G5lqKElKUDBeeMCEFBhd7mCgjv8HbCiUsGzZGT8z1JZBiz0q1hLgNtcrqhR85iGZY2mSMvlvPxm4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770629637; c=relaxed/simple;
-	bh=Fx/6wuy+VdeIaI7p27mEljXPi+sRJ3Pm0NUuzA0saxU=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=DVZFcD4FgG47tAcc15x6WuZztHHpN1kdtI9AowNHGMjEBcVJhCJXK9e8/mDj90vCo2MjptdvLXR9em3dDNzOGBcKLh+dtTJHOcdUrM0OjLgaziiPb/yd4r4uQJlWkRWmLbeVN05Be+q1XNUmIGsdcSZZuR4sEjYWjlebAXRoJ14=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=XwsP64YM; arc=none smtp.client-ip=185.136.65.226
+	s=arc-20240116; t=1770648237; c=relaxed/simple;
+	bh=dZOVhkyaQD9hL7yrMSqnXzxvdDbvBMqTM/4TxOwzeHQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=myQ/5QmXEcY2VT7peX/bXqwmd0oiUZnNFLnHz3ORaDCYpoi2X0Ki5WfE5pnt4392p5gFZwc2XBPhn6M+QHS3ncY694+5C3L1VjC96DCdSyXbcjKx91n5+zTx6GTwymZjy5aPHhvppeJoVLQiG82dAoDVdGUyzkuHBLczzwxNvc8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=JzOHtPfn; arc=none smtp.client-ip=185.136.65.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="XwsP64YM"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202602090933476702e52f1000020700
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="JzOHtPfn"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 202602091443547b4e46cd670002079f
         for <xenomai@lists.linux.dev>;
-        Mon, 09 Feb 2026 10:33:47 +0100
+        Mon, 09 Feb 2026 15:43:54 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=florian.bezdeka@siemens.com;
+ d=siemens.com; i=clara.kowalsky@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=5N8ozPR8EfOZiqcl2DcUsY+qC9Gt1FdurKh3hXBAmO0=;
- b=XwsP64YMBzfWK60oipa4ZC3D3G+ClO9xo3ekSyjsZP7VtTt4Etbn1FsJKA5okQwUDR3tvM
- k9/9KvOEY+UnNQ+YLYyvcyI/86vK/YLMplIWoRWjFCtoMgAoHrxXL3IyKUfSLNuXUHXJzyy0
- jA9DiXcCGVKfdZfD6hq2ivnli8FCDk7wbi++H9N76DdxrTVwdw5yhGcutn372GOVZL6xGWuW
- zuKMrnD6ZHk+U9wmCgFGYXbQKkgRs3hcohjxxa6apAIWMXxFJVCpbwTnvXpSEu7xaQIOCVoA
- adDnHQAaLcpu/zkw/xnla0pDcSYdnbitdIde/Enj0aZn+SZtf0IjXcbw==;
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Mon, 09 Feb 2026 10:33:35 +0100
-Subject: [PATCH Dovetail 6.18 v3 1/3] arm64: irq_pipeline: Fix mapping of
- IPIs in LPI mode
+ bh=vzHx4NuZndYgbscCMgLOOW4bA9pUXQTrnrjNktHK1Lg=;
+ b=JzOHtPfnqL2F6gZFBUb6NYY5t3qAIuppQchQtXkQgc7b4GfClAah1kaVQ76d73JCP5PgJy
+ /07yZ/50YqjBycrdvvyUThnQYaQSY2GfCw7bv5POhNPcFV3n63UrNcdPZ+xPJriBxRcTxM91
+ bZqWMCAtWIK2BabQDCxYVdZ5dYUshujq1MUcrVvV1ozUT+BUCVN2cI/TQ+DVA2s7lYTf5CzR
+ 3ybLk6cuS9c+REdcYmM02tUaf5GzFF41sxWYpKUMvq0il//1CBladRq/z7oi4MyVL1dz53Lx
+ aNgHYvLGaj85t7rXAnSqqrSxCS7uAjG7PzeMdZBeaCH/V2YHIpO/BSNQ==;
+From: Clara Kowalsky <clara.kowalsky@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: jan.kiszka@siemens.com,
+	Clara Kowalsky <clara.kowalsky@siemens.com>
+Subject: [xenomai-images][PATCH 1/4] ci(xenomai-images): Add build job for pipeline triggered by libevl or linux-evl
+Date: Mon,  9 Feb 2026 15:43:43 +0100
+Message-ID: <20260209144346.487179-2-clara.kowalsky@siemens.com>
+In-Reply-To: <20260209144346.487179-1-clara.kowalsky@siemens.com>
+References: <20260209144346.487179-1-clara.kowalsky@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260209-wip-flo-fixes-for-6-18-v3-1-4f980378bbde@siemens.com>
-References: <20260209-wip-flo-fixes-for-6-18-v3-0-4f980378bbde@siemens.com>
-In-Reply-To: <20260209-wip-flo-fixes-for-6-18-v3-0-4f980378bbde@siemens.com>
-To: xenomai@lists.linux.dev
-Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, 
- Florian Bezdeka <florian.bezdeka@siemens.com>
+Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Feedback-ID: 519:519-1047747:519-21489:flowmailer
 
-In LPI mode everything was mapped to the IRQ descriptor of CPU 0,
-which is wrong. Each CPU has its own IRQ/LPI used for multiplexing
-inband IPIs.
-
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
 ---
- arch/arm64/kernel/smp.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ .gitlab-ci.yml       |  8 ++++++++
+ ci/evl_xenomai_4.yml | 29 +++++++++++++++++++++++++++++
+ 2 files changed, 37 insertions(+)
+ create mode 100644 ci/evl_xenomai_4.yml
 
-diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
-index 3a12956580a35b9e31f34c34a3200ad907078df0..52e9d29083fc1d9c2828b3262e5c5db4d2f854ba 100644
---- a/arch/arm64/kernel/smp.c
-+++ b/arch/arm64/kernel/smp.c
-@@ -1020,12 +1020,14 @@ static void do_handle_IPI(int ipinr)
+diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
+index 19d7ddd..955e6a6 100644
+--- a/.gitlab-ci.yml
++++ b/.gitlab-ci.yml
+@@ -73,6 +73,14 @@ xenomai-4/next:
+     include:
+       - local: '/ci/xenomai_4_next.yml'
  
- #ifdef CONFIG_IRQ_PIPELINE
- 
--static inline void map_oob_ipis(int cpu)
-+static inline void map_oob_ipis(int cpu, int ipi_offset)
- {
- 	int ipi;
- 
-+	ipi_offset = ipi_irq_base + (cpu * ipi_offset);
++xenomai-4/evl:
++  extends: .parent
++  trigger:
++    include:
++      - local: '/ci/evl_xenomai_4.yml'
++  rules:
++    - if: '$ONLY_RUN == $CI_JOB_NAME'
 +
- 	for (ipi = OOB_IPI_OFFSET; ipi < OOB_NR_IPI + OOB_IPI_OFFSET; ipi++)
--		get_ipi_desc(cpu, ipi) = irq_to_desc(ipi_irq_base + ipi);
-+		get_ipi_desc(cpu, ipi) = irq_to_desc(ipi_offset + ipi);
- }
- 
- static void ipi_setup_oob_sgi(void)
-@@ -1033,7 +1035,7 @@ static void ipi_setup_oob_sgi(void)
- 	int cpu;
- 
- 	for_each_possible_cpu(cpu)
--		map_oob_ipis(cpu);
-+		map_oob_ipis(cpu, 0);
- }
- 
- static void ipi_setup_oob_lpi(int ncpus)
-@@ -1041,7 +1043,7 @@ static void ipi_setup_oob_lpi(int ncpus)
- 	int cpu;
- 
- 	for (cpu = 0; cpu < ncpus; cpu++)
--		map_oob_ipis(cpu);
-+		map_oob_ipis(cpu, nr_ipi);
- }
- 
- static void __smp_cross_call(const struct cpumask *target, unsigned int ipinr)
-
+ lavacli-container:
+   image: quay.io/buildah/stable:v1.41.4
+   stage: build
+diff --git a/ci/evl_xenomai_4.yml b/ci/evl_xenomai_4.yml
+new file mode 100644
+index 0000000..ea58f0d
+--- /dev/null
++++ b/ci/evl_xenomai_4.yml
+@@ -0,0 +1,29 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2026
++#
++# Authors:
++#  Clara Kowalsky <clara.kowalsky@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++include:
++  - local: '/ci/gitlab-ci-base.yml'
++  - local: '/ci/kernel_6_1.yml'
++    rules:
++      - if: '$KERNEL_VERSION == "6.1"'
++  - local: '/ci/kernel_6_12.yml'
++    rules:
++      - if: '$KERNEL_VERSION == "6.12"'
++  - local: '/ci/kernel_head.yml'
++    rules:
++      - if: '$KERNEL_VERSION == "head"'
++
++variables:
++  XENOMAI_BUILD_OPTION: ":kas/opt/libevl-next.yaml:kas/opt/debug.yaml"
++  XENOMAI_VERSION: "4-next"
++  BUILD_IDENTIFIER: "evl-${XENOMAI_VERSION}_kernel-${KERNEL_VERSION}"
++  CACHE_KERNEL: evl
++  TEST_COMMAND: "evl test -k $(evl test -l | grep -Ev \"${EVL_TESTS_SKIP_PATTERN}\")"
 -- 
-2.53.0
+2.52.0
 
