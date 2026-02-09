@@ -1,232 +1,324 @@
-Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013065.outbound.protection.outlook.com [40.107.159.65])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FCAA2EC0A7
-	for <xenomai@lists.linux.dev>; Fri,  6 Feb 2026 06:52:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.65
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770360746; cv=fail; b=StQuPwnYk/+3MJwPf3gak7jHQWZZajHG7NNqm84V81aDsX71LM8kLxRO4gwalvtBXhyM8WnkG63f9DX46B4qtEILoYVNAku/D3JHBa7mtLiTIm+ID3xf5vA57NdT33nF4fAupbOMOIRbnHKsq4rL1aj09+1yLcP0sHMHtEON1fw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770360746; c=relaxed/simple;
-	bh=T2CD9kCBeN0d+EmwioTy1aiYd1/iZRXaUnxzU/No0r0=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=ZTgnhL+nbE4l3ILxgcI4LiMBTQSvwZlA+ifADluyzXp89Av7EMDRAD3kiZxOIF9priWodlZ6mUHRMVf+2ehkOwI7UYVgj8DUGjFCUrvsJnFPjMmzRgUAhpsw5IM8Uck2X0WQMlmpxc/ujoP0qaZkiw4yjgVKbC0YXfxJL5T+AXg=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=uTysJJOd; arc=fail smtp.client-ip=40.107.159.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5387E344D96
+	for <xenomai@lists.linux.dev>; Mon,  9 Feb 2026 09:33:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770629636; cv=none; b=R5SEPMhLi1X6DuMZdr2gDHeYL4FG/yMpbQUmIuwA53kwYKcd5bBYEFC6dxgFclxbXy4qBnstWNQyRZpCzB5S2/NW49vX0eybGbSbQLOU3b/WLM1VyjINe/nzSnPnU3AZts7nEH51qFQVmRIXvas8oSs5aUyg6aUULhr4oL/DfLw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770629636; c=relaxed/simple;
+	bh=QHtRGfLrdMo0nllbpzp0FMMxDDpjMJciBEnlKZNmEq0=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=AjwWqytbpPK3iWlkIYyxFpe1zIrUOeAkTozIENa7xzZnxxiQ60AUXQDjgpw8EuOF+Zqu8O4YsQkNCke9043onGAuxxVD7W1WzSpFCzpr1TzPg90F+FifMs7Gy/v5EKKjFYy0IWNw2R2NImeqD70ITG4W4Htk6Y9NZOye6AV4JfU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=UYJhVWb9; arc=none smtp.client-ip=185.136.64.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="uTysJJOd"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=AV3eAOVSyUleQTjUCXZZ6FkJdfJ2LNK2PvWiFhIOm0VGH1gj6992laNPDQdkLH1539AVJplLkICZ86hQXKZrquNIfj/+19b5mh/0imUja1HspquzWoAmGLZOpdM3rCKCN2DKI4N9N1TwHLBrIFII3Vsf3h53G2XbvTEhSBC9cW6HS+yuSRZyw9c1j8smkn6xOaikLp3BWv/F7jTfdJqZUFS7O7uqsO3RxG1e+vIjeh3uwM8ZwwOLL0R7CthPf1a7qv4n5rUD3br0VmkUDRi5pClNnJSyyTgM0RGsu4iWoXFyFI45n9yBPEq0AuOho0rdY18sueJ75/Pff/3kG4m8oA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NaEPeUKyfrB4kz+zsDujn6R+UpLWmaWkPHXgzmbMaO0=;
- b=W0CDpxV9RVTnbfayrfcyTd2/XgLSVVun/fAfaKLmD5ncKaw/TawZ8iqE1p4YcvVwkxFDj651/RRkVS+4wxOtdfyE1xYfrKIAo7JzhaFeMH6sbea72x+HTvlrNnysyTM1REl0fH65IjxddizUyRx60JNEDfQqY1DPDhEJEL4soYfeQNNZ6sQZba4fS0oqoeCkyPwoEUT7xo6SwEoHSn33ljOkfNrZi3BvpwXnjdAL4GBRSVcz085vaXuu/uxsm0yiJ2/xw6q3DcN47YV3JwqNEm5ut8yYiMMSLkXj89qFTOBErApI6vUJi/Wy1FV0c1/1oCKrZIvpRk048PPjTRW9jQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NaEPeUKyfrB4kz+zsDujn6R+UpLWmaWkPHXgzmbMaO0=;
- b=uTysJJOdREXgk2/n/krXY/txx7+s4widS1tPeC6T5miInacufyWoJ5Y/G02qTyIHMpzPUQgEwGFa2pNFiadqCT9gy8JJf94fo04JmaY1Vnw2qE1aYK5AwCG38yoML2T132BW28NTs2DrkCM1yQsAI0Uf0DhECzO241TXQqepT0u3qQc7dLcpaVCRwp+1ZdJ0KfhioMTpIWYZvPZapDUEr2jBW8762CwEYaZ4vNV0Rpc4c7+db7VEwzore7dKpH0Gnjb6iA+j385gQLpJa5y09ku+uJwMgR7XsrZ8S8nGHwAMn8dyxBX8REI8w3rVqoUl5uTIYkLkqB9vD+tjx7OTcw==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:76::15)
- by PR3PR10MB4093.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:a3::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9587.14; Fri, 6 Feb
- 2026 06:52:22 +0000
-Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::63bc:6561:54d3:94b9]) by GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::63bc:6561:54d3:94b9%5]) with mapi id 15.20.9564.014; Fri, 6 Feb 2026
- 06:52:22 +0000
-Message-ID: <dcec343a-51e2-4384-93b5-bb20f33ccc81@siemens.com>
-Date: Fri, 6 Feb 2026 07:52:21 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: xnintr_enable() is a no-op on dovetail
-To: Richard Weinberger <richard.weinberger@gmail.com>,
- Xenomai <xenomai@lists.linux.dev>
-Cc: David Oberhollenzer <david.oberhollenzer@sigma-star.at>
-References: <CAFLxGvxUmCjBJBrPFWrGDfPimmcL4=xwGGxcLwn3+1W1tUriSw@mail.gmail.com>
- <CAFLxGvxTeqkQOcKTTTSynJ=1BSCWJNmqgy086nzXPh-ZE_imVw@mail.gmail.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Content-Language: en-US
-Autocrypt: addr=jan.kiszka@siemens.com; keydata=
- xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
- uNUqthIkgLGWzKugodvkcCK8Wbyw+1vxcl4Lw56WezLsOTfu7oi7Z0vp1XkrLcM0tofTbClW
- xMA964mgUlBT2m/J/ybZd945D0wU57k/smGzDAxkpJgHBrYE/iJWcu46jkGZaLjK4xcMoBWB
- I6hW9Njxx3Ek0fpLO3876bszc8KjcHOulKreK+ezyJ01Hvbx85s68XWN6N2ulLGtk7E/sXlb
- 79hylHy5QuU9mZdsRjjRGJb0H9Buzfuz0XrcwOTMJq7e7fbN0QakjivAXsmXim+s5dlKlZjr
- L3ILWte4ah7cGgqc06nFb5jOhnGnZwnKJlpuod3pc/BFaFGtVHvyoRgxJ9tmDZnjzMfu8YrA
- +MVv6muwbHnEAeh/f8e9O+oeouqTBzgcaWTq81IyS56/UD6U5GHet9Pz1MB15nnzVcyZXIoC
- roIhgCUkcl+5m2Z9G56bkiUcFq0IcACzjcRPWvwA09ZbRHXAK/ao/+vPAIMnU6OTx3ejsbHn
- oh6VpHD3tucIt+xA4/l3LlkZMt5FZjFdkZUuAVU6kBAwElNBCYcrrLYZBRkSGPGDGYZmXAW/
- VkNUVTJkRg6MGIeqZmpeoaV2xaIGHBSTDX8+b0c0hT/Bgzjv8QARAQABzSNKYW4gS2lzemth
- IDxqYW4ua2lzemthQHNpZW1lbnMuY29tPsLBlAQTAQoAPhYhBABMZH11cs99cr20+2mdhQqf
- QXvYBQJmWPvXAhsDBQkFo5qABQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJEGmdhQqfQXvY
- zPAP/jGiVJ2VgPcRWt2P8FbByfrJJAPCsos+SZpncRi7tl9yTEpS+t57h7myEKPdB3L+kxzg
- K3dt1UhYp4FeIHA3jpJYaFvD7kNZJZ1cU55QXrJI3xu/xfB6VhCs+VAUlt7XhOsOmTQqCpH7
- pRcZ5juxZCOxXG2fTQTQo0gfF5+PQwQYUp0NdTbVox5PTx5RK3KfPqmAJsBKdwEaIkuY9FbM
- 9lGg8XBNzD2R/13cCd4hRrZDtyegrtocpBAruVqOZhsMb/h7Wd0TGoJ/zJr3w3WnDM08c+RA
- 5LHMbiA29MXq1KxlnsYDfWB8ts3HIJ3ROBvagA20mbOm26ddeFjLdGcBTrzbHbzCReEtN++s
- gZneKsYiueFDTxXjUOJgp8JDdVPM+++axSMo2js8TwVefTfCYt0oWMEqlQqSqgQwIuzpRO6I
- ik7HAFq8fssy2cY8Imofbj77uKz0BNZC/1nGG1OI9cU2jHrqsn1i95KaS6fPu4EN6XP/Gi/O
- 0DxND+HEyzVqhUJkvXUhTsOzgzWAvW9BlkKRiVizKM6PLsVm/XmeapGs4ir/U8OzKI+SM3R8
- VMW8eovWgXNUQ9F2vS1dHO8eRn2UqDKBZSo+qCRWLRtsqNzmU4N0zuGqZSaDCvkMwF6kIRkD
- ZkDjjYQtoftPGchLBTUzeUa2gfOr1T4xSQUHhPL8zsFNBGZY+hkBEADb5quW4M0eaWPIjqY6
- aC/vHCmpELmS/HMa5zlA0dWlxCPEjkchN8W4PB+NMOXFEJuKLLFs6+s5/KlNok/kGKg4fITf
- Vcd+BQd/YRks3qFifckU+kxoXpTc2bksTtLuiPkcyFmjBph/BGms35mvOA0OaEO6fQbauiHa
- QnYrgUQM+YD4uFoQOLnWTPmBjccoPuiJDafzLxwj4r+JH4fA/4zzDa5OFbfVq3ieYGqiBrtj
- tBFv5epVvGK1zoQ+Rc+h5+dCWPwC2i3cXTUVf0woepF8mUXFcNhY+Eh8vvh1lxfD35z2CJeY
- txMcA44Lp06kArpWDjGJddd+OTmUkFWeYtAdaCpj/GItuJcQZkaaTeiHqPPrbvXM361rtvaw
- XFUzUlvoW1Sb7/SeE/BtWoxkeZOgsqouXPTjlFLapvLu5g9MPNimjkYqukASq/+e8MMKP+EE
- v3BAFVFGvNE3UlNRh+ppBqBUZiqkzg4q2hfeTjnivgChzXlvfTx9M6BJmuDnYAho4BA6vRh4
- Dr7LYTLIwGjguIuuQcP2ENN+l32nidy154zCEp5/Rv4K8SYdVegrQ7rWiULgDz9VQWo2zAjo
- TgFKg3AE3ujDy4V2VndtkMRYpwwuilCDQ+Bpb5ixfbFyZ4oVGs6F3jhtWN5Uu43FhHSCqUv8
- FCzl44AyGulVYU7hTQARAQABwsF8BBgBCgAmFiEEAExkfXVyz31yvbT7aZ2FCp9Be9gFAmZY
- +hkCGwwFCQWjmoAACgkQaZ2FCp9Be9hN3g/8CdNqlOfBZGCFNZ8Kf4tpRpeN3TGmekGRpohU
- bBMvHYiWW8SvmCgEuBokS+Lx3pyPJQCYZDXLCq47gsLdnhVcQ2ZKNCrr9yhrj6kHxe1Sqv1S
- MhxD8dBqW6CFe/mbiK9wEMDIqys7L0Xy/lgCFxZswlBW3eU2Zacdo0fDzLiJm9I0C9iPZzkJ
- gITjoqsiIi/5c3eCY2s2OENL9VPXiH1GPQfHZ23ouiMf+ojVZ7kycLjz+nFr5A14w/B7uHjz
- uL6tnA+AtGCredDne66LSK3HD0vC7569sZ/j8kGKjlUtC+zm0j03iPI6gi8YeCn9b4F8sLpB
- lBdlqo9BB+uqoM6F8zMfIfDsqjB0r/q7WeJaI8NKfFwNOGPuo93N+WUyBi2yYCXMOgBUifm0
- T6Hbf3SHQpbA56wcKPWJqAC2iFaxNDowcJij9LtEqOlToCMtDBekDwchRvqrWN1mDXLg+av8
- qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
- 8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
- ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <CAFLxGvxTeqkQOcKTTTSynJ=1BSCWJNmqgy086nzXPh-ZE_imVw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR4P281CA0300.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:e7::11) To GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:150:76::15)
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="UYJhVWb9"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 2026020909334750b17b6c8000020708
+        for <xenomai@lists.linux.dev>;
+        Mon, 09 Feb 2026 10:33:47 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=qzNzuerAbIZUafz71matoL+Om4zwLcELqMLdAwz5aA8=;
+ b=UYJhVWb9TVT4YPTlEVSPTrJ+Qg4LjEpUYsSvJ/mH0abU/dsQCNN9E/rPmLimYkJFjIbxLI
+ 2U+rNUc2MWuPLZnC/s42XoSt45d+VJ9IZ2YhKW3mAjrHgZTkdALIgjgtlq82NUaZBXJ0r3FQ
+ /bvqzlzAeqv1LYaluKnb5yaUrc+D/9b79uRtctYsMbwBdUiYBzM8Id2tDDXgB6PGwmEZu7yM
+ ycA6bNTotXgg0IZvU7StlMVKyex8kr2JpkgtXPvBKp9nzvEOx6aewhis+0ZqNWKNbN/vBxzm
+ Ygc+s/a0sE2hcQAFkoupls8kwScHFRJkftTzAemtvXVPpZD3OpD1wdlA==;
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Date: Mon, 09 Feb 2026 10:33:37 +0100
+Subject: [PATCH Dovetail 6.18 v3 3/3] arm64: irq_pipeline: Fix
+ IPI_KGDB_ROUNDUP and IPI_CPU_BACKTRACE IPIs
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: GV2PR10MB6186:EE_|PR3PR10MB4093:EE_
-X-MS-Office365-Filtering-Correlation-Id: f879eaaf-e1fa-48f9-29e2-08de654c4761
-X-MS-Exchange-AtpMessageProperties: SA
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024|7053199007;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?WnVBaS8ydGlrK0ErMXBpQ05PRERrcm9KaHNtSFgwUzBmMXFXK003ZjNVVnc3?=
- =?utf-8?B?bzdldWU3Zm1kdTRoQUpYU1ZSM1dnNmtlVTZzQURrcU9qUFVFUDhiejA0a1ds?=
- =?utf-8?B?UDhzWE0rMzg5ZXhKMmlRWFowV3l2VnZxL0ppWlVsL0xSa0svTVBjZjF0d3FP?=
- =?utf-8?B?QXBnd2x6S3dhclNCZGxmRmNPM0xyalhZM2w3R3EyekwvVUtDT0lJNFhZUDhE?=
- =?utf-8?B?aEFkOWNDU3JJR0FJdUczZjBtZE5UZ3Y3aitPWm1TM2dwbGlaUG81YlU0Mm4r?=
- =?utf-8?B?RjdWZVNIUmFKUC9vNjhNaER3SktVd0lURXhIT2VXMDlvUXVDc09uVUM1b0RZ?=
- =?utf-8?B?SDl5dUVrQWtWM1JUMEt1eDdQclRJeUVGOE84dlFIQitHc3hHMXpkcDkvMGpl?=
- =?utf-8?B?bGZFSGpIYmdrR0xtUWVObjMweHI5OUNoc0dwNHluVU5HZlZFbjN2bkZuTzlk?=
- =?utf-8?B?NEwyNVBqNjd1UDR4a2JmZGJaQmdFQ0Q0VFJsend6bmwyaXNaMUNmQmdSVVBS?=
- =?utf-8?B?ZmVvSEs3SVluMm52UDlwVnovOW9PS05ScmtmVWRSMkRnMU8wbFIzRXpRNjVL?=
- =?utf-8?B?MDB2ZDcyRVZCTG5GSDFEZWx1K2lKUFhqendiRzNyVXZXSUp3TDdabzQrYlI0?=
- =?utf-8?B?OEw5WUZEQjNMajQ5dHJYYnVJYUVmUU9qTFppYlp3WWJkVXlIMDhnajhLVzNo?=
- =?utf-8?B?bmRxNGhBQ2lUYkdyN2ZWN0pkZ1QxN0JoNFFTUDd3eHBvOHBPSk5xeWg3bGpP?=
- =?utf-8?B?K2sxVEpDNDByalViSFd5YUFVeTFuaTVCM2tES1VMMTdxM3FlbS9rZjlvK1hQ?=
- =?utf-8?B?V0pkUkZQRFZmU1NjYWg5QTNQOHlFMWlmNWVCeXNSZ0FkQ1BXRDYremtaUjF0?=
- =?utf-8?B?c2p2NXNETVRXOGNWL2xoTFhoaHN2UzIzYVUzMGdaVEd4Nk1yTG9aSFpRb3FB?=
- =?utf-8?B?cUZDSjRrVGFGYjlqU2MvUVFHWHhqdTJBaTdWQk1NYjZLUm1SVGlqQzhhem5i?=
- =?utf-8?B?YklUVm5Nd0Q0c1MzRlJqWWJ2WWZxVnc2VDA1WHZsL2xmZnBVcjNaKzA1MmVv?=
- =?utf-8?B?MG5SdUlJTXRpYmI0ZVNWdDRFRzRFYS9QRmFSTjFLcEJrK280dnJUcUNtRlRU?=
- =?utf-8?B?Q2d6ZFNacHRvZm4xbDNtVU14UUFOYWNIY2JMSC9nZ3BCYnNLYVJ0Y05TY21S?=
- =?utf-8?B?a0lIaXh3WmFkYU1ZeDFud0k3SGVXUFE3eFNaejUyUjFRamhVVkRBK0xteUNW?=
- =?utf-8?B?L2dSenZtSzBvaUVFWmhXUkhlVmNGRk9TNFZlSEw5Q3d3SnRKTFV1NUVreE8z?=
- =?utf-8?B?WG9xc2M0YnVHd1pRMVpSUURWSDVBY2hWaHNsbVBEQ0RRd3ROWHBKbUJabXZu?=
- =?utf-8?B?ZWlvQ241N05TampkTkM4Rlo5VkwwSnRUOHdUU2UzM0F2YW1SUnVNL0hQdmFH?=
- =?utf-8?B?UDNad1FVN0lkM2Rha2pHM05VMzBwVW9wWlBFNkkrM2FRM3Z0My9oNElUVVlT?=
- =?utf-8?B?bGlvcUlGSmJVSHoveDVFcDhHUjY1R2R5Z05EaHNsNFVBWnQrRXlvOGhaeWcv?=
- =?utf-8?B?QkVscWQxZmJWN2lHL3orRlhmRlBNWXFRckdvQ0xCbDNWcDlEVS9mVmFYWlV1?=
- =?utf-8?B?bHFyT2I3WVZtbnppZXdPZXdOd09ScUpYT0UxWDJRRlM3Z2x0K0FDVzBnOUd0?=
- =?utf-8?B?aExaZFZ5M1ZTUVNmU2dEV1UzZGZZYUV2endQNUgycFNxR0g1K05uVUVPOUF4?=
- =?utf-8?B?aTlxQ0QrOWlrdnpxTWdJQ2lTTE0vRnlmenVpb2YydndFa3lsM0pyazljZ1FC?=
- =?utf-8?B?OWxDWlFMaU93RzF4aWdBUlM5ZkRSRU9Ob3pNTUpXVks2RG1ub1k2Z012eXVx?=
- =?utf-8?B?eGduZzdMeUVITzZxamtuWWtxaWpDdWFjaHVwRkR1eFA5L3BHUFJnb0tpTldp?=
- =?utf-8?B?TWt0clZGa1RhVlZXaFdvUk5qc05tNG9obWRGcHBtMGFLcGZXZ0RFazNCaFRZ?=
- =?utf-8?B?Rk5oUGJQeWo3c3B6dzJVWUZzQ0xoVXlSakhibnhud0tCTG9TYkdlVHk5cDh2?=
- =?utf-8?B?SFRnaVMyZVI4VWxXRTdWcE00UWNRaFpiQ3Znc2ErOTRzN0xMaGtucjFpMHZy?=
- =?utf-8?Q?0jWbYAhDoZf02bGs6+RaifAK/?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(7053199007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?RTRZNzVvSjFpVHhESWNJNW5qY0JLUVpVVktSbDNWSnp2Ni9obTJ5L3dHUWk2?=
- =?utf-8?B?TWdVMTg1UzZhOENZNzVvREQ2VG9SaUhvQ2lwcjAwRGxZVlFrR2MwdjUybWdB?=
- =?utf-8?B?Zm83RndraHZFTnNIVXM0RU5TVUQ2UzJXaGk3bG1XZVE1RTQzQXRYU3c0RzQw?=
- =?utf-8?B?VUMySmY5YW5sckxtMVBNeUpoU01rSktpYm5NK1kvOTBNUXJlY0NNUjFLVG1B?=
- =?utf-8?B?V1lzUmF2Q0U4RFlsN3NsVjNsUDNSSzFBOUk5dkpRZzFNd1ZjUVVUOVd3TEs3?=
- =?utf-8?B?Q3dQZlpuSGxjNVRORFM0TDdzbFgrWEVPRzVIbFVFbGNLL1I1aDRCTGJjMXgz?=
- =?utf-8?B?YldEYlhNbk9vcWNaV1dobU5oUnRCUEhkV2JDVG1jK2ZocTB6UUxVckYxT016?=
- =?utf-8?B?WlZXOElPVTJSSlZ5cHlPVGh6czIyUjZySVZBZXM2Z3U1VzhXc2t2NTh3VUxs?=
- =?utf-8?B?bEFNclg5SFdnZ0JLekJnY3JZd2NJU3BjdEUyMDNpMEd4WDNzeklsKzJDZnJh?=
- =?utf-8?B?YUdIMDF5VmpWRHVWOEl5VWhDdWZ3VXNCTGcwVXZMUXV3OS9ETHZQQmVNbS9q?=
- =?utf-8?B?UEZ5MlMweHhMdkE3K2Nnck1yaEY1ZmRBL0ZyajdIOTlKamlRM0o4NW1WNWxm?=
- =?utf-8?B?c2RxZ0VVVWEzd0NUTm1GZ2ZwaWtDajZUUDRKZUxTbVY0Ris0bm1kLzVFWml6?=
- =?utf-8?B?WExVNm9yNzhyd0IwdE56VzFoUUpFdlBjWXpTeEhKRWRaL0ZhUFp0NWY4ejRi?=
- =?utf-8?B?TnNnNS9YMzJxZkw2M3laL1JCWStUWUlRd1FKL3R3SEM0S0JmREFINXlsaVNJ?=
- =?utf-8?B?Yy9vNGVpNVZaQ2ZYYWdUekp6QmNwbmVkbDN0NFR2WUxDVkIrTmVid2VKWEl4?=
- =?utf-8?B?dDdaNU14Y0EvdFVpZHd2bFpuODJxNlF3Mndzbm1VUGNGQkJ3ZXZ4RTMrK0tn?=
- =?utf-8?B?dCtXNjRRVXJGUVkwOE1TL0xsaEdaNVppbnYxclI4Z3YxdUEyYUxlSnY5a1lP?=
- =?utf-8?B?UGVVbExZTVk2ODVVcUFnL2NHcHB0VitlRkN6c2F3OVpLeUp2cDZjYzhHeElq?=
- =?utf-8?B?Ni9VN3BFR0VsL25QWUxOeHlkMjk1UERMemFUeGtRbEdOZ2xib2h0d0hoc29v?=
- =?utf-8?B?bW5BVlRVM0RIdTBkcFY5OXFCbmxaNHllcGVZb0RqdVFYNkhaU3RZWUZEMGFY?=
- =?utf-8?B?U3pRY3FncHA2VTBFREVRbkN2TjFMNlFsZXFLOXZIdWpCaENLWGdVK21oTGJj?=
- =?utf-8?B?TEJENEpmVjU0VDdXN1J6THhMbEIraTUvOExGY1dlT1RFUCtxcHAvckxEUXlH?=
- =?utf-8?B?ek1HVU5lS0ZjYXFLOGN0SitXK2JyZDk5NDhGbnJsMHVVekxiQVJtWlpvZlZz?=
- =?utf-8?B?ZkJlb0RaV2pQcmk0MS9BVXdOWTFKY2F2RmJBWFRRdjZiV1NrNHhDditxZHcv?=
- =?utf-8?B?UGRtQVp3eUhUVDgzY3lYcm5OMTNCK3FPdHFIMCs2czRPUExLSHZpTkM5UjBF?=
- =?utf-8?B?TS9WV2ZRUDZkejZLSVpraHlCWEpEOTJ1WEtaU3FrdGJyR29qMm5GVzJ0OUtX?=
- =?utf-8?B?bVRMYkpiNnpLdEpiYkNEYU5uVFFzSktWZkhCY20xQWlFOExpOG5VUzArbEs1?=
- =?utf-8?B?M21PSTV0SHRiNkM2c3JuNGdIb0VUNTlwSWdnNmg5eFNpQ2VMYjU0ZW9heUJm?=
- =?utf-8?B?M0kzL2RscGZ2Q0w0UUtlZk9IaXcxS2cxYmExTDRGS1FJb2hnRUoyMmhtR2V3?=
- =?utf-8?B?WmxlYzNWcDdaOEdlRGJaakFGdGpnV3ptTEhqUjJuQkRlTjFnQ3hNTytDZjkw?=
- =?utf-8?B?TXJHU2picVR5Yk5TNmVWZTRKbGVmZUh0STFCeGVRTTAwM1hyVjFBRCtVbWRO?=
- =?utf-8?B?azI0dDdxWGpaUWJpWEhTZWlLS2U5ZXVlMEYwbGpjMEp1UjhFTTdIb1NJNkxM?=
- =?utf-8?B?dGp1TldqMGV0aGxiSkJILzA5OXFUYkNvTllacDFwS1puSFNJOU1TRWRvem42?=
- =?utf-8?B?cWRRY3JyN3l5YXF0Y0pnVFNHOWN3UXY5OHpkcExObkdTeHpYN3BiTmhVUi9W?=
- =?utf-8?B?cXlGaUl4US9PYmNqWE5HUENNbVVDS1R4SjExalpjR2xkTmNBdmw5V0pmdExQ?=
- =?utf-8?B?VklXaVVkU1dkZXNPT2ZOMHFmVXZld3RRQjVwYWRpRkUzNk1BSHNBZXRhczFU?=
- =?utf-8?B?MnhpYm15TVVUcDI1NksxdTNMNjVnTWNISFBVNEtDNlZMbVpwa2JyNit5WjdQ?=
- =?utf-8?B?Y0ZjUDZSN0Jwb0tIRmphcFhYZjlxRUM3SGRjQmpJc1pKS0Y5NUlCK2U0a1NZ?=
- =?utf-8?B?U0FSVTF2UzZnanZsb1V4OGtVZ2l6ZWJvYzBlSkVueUdLWFNBWjN1Zz09?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f879eaaf-e1fa-48f9-29e2-08de654c4761
-X-MS-Exchange-CrossTenant-AuthSource: GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Feb 2026 06:52:22.4288
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: xGHojS34ocRFwPDnkalGt8TpF9dl/tiGem8pJnTNZ1H/4n41nepZpaOhpWYdudwafZBANBiuhIRVMMUGekUTXw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR10MB4093
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260209-wip-flo-fixes-for-6-18-v3-3-4f980378bbde@siemens.com>
+References: <20260209-wip-flo-fixes-for-6-18-v3-0-4f980378bbde@siemens.com>
+In-Reply-To: <20260209-wip-flo-fixes-for-6-18-v3-0-4f980378bbde@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, 
+ Florian Bezdeka <florian.bezdeka@siemens.com>
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On 05.02.26 23:42, Richard Weinberger wrote:
-> On Thu, Feb 5, 2026 at 11:41 PM Richard Weinberger
-> <richard.weinberger@gmail.com> wrote:
->>
->> Hi!
->>
->> I noticed that with dovetail xnintr_enable() is a no-op. Is this on purpose?
->> How to mask an interrupt line then?
->> Various drivers in Xenomai use the function via rtdm_irq_disable().
-> 
-> s/xnintr_enable/xnintr_disable
-> 
-> But xnintr_enable is a no-op too...
-> 
+Both IPIs (IPI_KGDB_ROUNDUP and IPI_CPU_BACKTRACE) are multiplexed in
+case the IRQ pipelining is enabled, so we have to set an IPI reason
+in both cases.
 
-See
-https://gitlab.com/Xenomai/xenomai3/xenomai/-/commit/b1daf55bdfefee4fa2e10448595abc90eac77eea
+Both cases were directly calling into the IRQ chip implementation and
+forgot to set the reason. IPIs were ignored on the receiving side at
+the end.
 
-Jan
+End result was the following kernel splat:
+
+[  115.357495] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000048
+[  115.358088] Mem abort info:
+[  115.358216]   ESR = 0x0000000096000004
+[  115.358394]   EC = 0x25: DABT (current EL), IL = 32 bits
+[  115.358624]   SET = 0, FnV = 0
+[  115.358762]   EA = 0, S1PTW = 0
+[  115.358910]   FSC = 0x04: level 0 translation fault
+[  115.359117] Data abort info:
+[  115.359254]   ISV = 0, ISS = 0x00000004, ISS2 = 0x00000000
+[  115.359498]   CM = 0, WnR = 0, TnD = 0, TagAccess = 0
+[  115.359718]   GCS = 0, Overlay = 0, DirtyBit = 0, Xs = 0
+[  115.359990] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000042d15000
+[  115.360386] [0000000000000048] pgd=0000000000000000, p4d=0000000000000000
+[  115.361730] Internal error: Oops: 0000000096000004 [#1]  SMP
+[  115.361868] Modules linked in: cfg80211 rfkill drm fuse drm_panel_orientation_quirks ipv6
+[  115.362470] CPU: 1 UID: 0 PID: 15 Comm: rcu_preempt Not tainted 6.18.2 #1 PREEMPT
+[  115.362533] Hardware name: linux,dummy-virt (DT)
+[  115.362561] IRQ stage: Linux
+[  115.362746] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[  115.362794] pc : __ipi_send_mask+0x18/0x108
+[  115.363335] lr : arm64_backtrace_ipi+0xa8/0xc0
+[  115.363372] sp : ffff80008215b840
+[  115.363388] x29: ffff80008215b840 x28: 0000000000000080 x27: ffff800081cfeec0
+[  115.363481] x26: ffff8000818b6000 x25: ffffffffffffffff x24: 0000000000000040
+[  115.363505] x23: 0000000000000001 x22: ffff800080041080 x21: ffff800082089d98
+[  115.363527] x20: ffff800081c72e40 x19: 0000000000000030 x18: 000000000000019b
+[  115.363548] x17: 74666f7320303030 x16: 3030303030303030 x15: 0000000000000001
+[  115.363569] x14: 0000000000000000 x13: 3a30207355504320 x12: ffff800081c8de70
+[  115.363590] x11: 0000000000000058 x10: 0000000000000018 x9 : ffff800081c8de70
+[  115.363633] x8 : 000000000000019c x7 : ffff800081ce5e70 x6 : ffff800081ce5e70
+[  115.363654] x5 : ffff00001fec25c8 x4 : 0000000000000000 x3 : 0000000000000000
+[  115.363674] x2 : ffff7fff9e316000 x1 : ffff800081c72e40 x0 : 0000000000000000
+[  115.363805] Call trace:
+[  115.364002]  __ipi_send_mask+0x18/0x108 (P)
+[  115.364213]  arm64_backtrace_ipi+0xa8/0xc0
+[  115.364266]  nmi_trigger_cpumask_backtrace+0x1e0/0x1f4
+[  115.364295]  arch_trigger_cpumask_backtrace+0x18/0x24
+[  115.364315]  dump_cpu_task+0x74/0x80
+[  115.364337]  rcu_dump_cpu_stacks+0x150/0x1b8
+[  115.364356]  rcu_sched_clock_irq+0xc7c/0xebc
+[  115.364377]  update_process_times+0x7c/0xe0
+[  115.364400]  tick_nohz_handler+0xbc/0x150
+[  115.364420]  __hrtimer_run_queues+0x168/0x2f0
+[  115.364436]  hrtimer_interrupt+0xec/0x258
+[  115.364451]  proxy_irq_handler+0x24/0x40
+[  115.364469]  handle_synthetic_irq+0x94/0x1dc
+[  115.364503]  handle_irq_desc+0x38/0x5c
+[  115.364521]  arch_do_IRQ_pipelined+0x44/0x80
+[  115.364538]  sync_current_irq_stage+0x160/0x200
+[  115.364555]  __inband_irq_enable+0x5c/0x70
+[  115.364572]  inband_irq_restore+0x28/0x40
+[  115.364589]  resched_cpu+0x98/0xc0
+[  115.364606]  force_qs_rnp+0x27c/0x34c
+[  115.364623]  rcu_gp_fqs_loop+0x304/0x4c4
+[  115.364641]  rcu_gp_kthread+0x130/0x15c
+[  115.364659]  kthread+0x144/0x200
+[  115.364677]  ret_from_fork+0x10/0x20
+[  115.364928] Code: 910003fd a90153f3 9100c013 a9025bf5 (f9400e75)
+[  115.365743] ---[ end trace 0000000000000000 ]---
+[  115.366033] Kernel panic - not syncing: Oops: Fatal exception in interrupt
+[  115.366216] SMP: stopping secondary CPUs
+[  116.728391] SMP: failed to stop secondary CPUs 0
+[  116.728668] Kernel Offset: disabled
+[  116.728691] CPU features: 0x082000,04046800,40004000,0400421b
+[  116.728736] Memory Limit: none
+[  116.739224] ---[ end Kernel panic - not syncing: Oops: Fatal exception in interrupt ]---
+
+To address and also catch future calls to amd64_send_ipi() the
+signature of this function has been changed.
+
+In the IRQ pipelining case setting the reason for multiplexed IPIs is
+now done in the newly introduced mkipi_inband(). That allows us to
+remove the pipeline specific version of smp_cross_call().
+
+While at it: Adding some clear trace point descriptions for OOB IPIs.
+
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ arch/arm64/kernel/smp.c | 108 +++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 69 insertions(+), 39 deletions(-)
+
+diff --git a/arch/arm64/kernel/smp.c b/arch/arm64/kernel/smp.c
+index 8d3791ed39e6935a63ba351038e4b685e07c05d3..03cfcf231d8102507f1ebafe805f232d18d22ebe 100644
+--- a/arch/arm64/kernel/smp.c
++++ b/arch/arm64/kernel/smp.c
+@@ -913,20 +913,27 @@ static void __noreturn ipi_cpu_crash_stop(unsigned int cpu, struct pt_regs *regs
+ #endif
+ }
+ 
+-static void arm64_send_ipi(const cpumask_t *mask, unsigned int nr)
++struct ipi_index {
++	unsigned int sgi;
++};
++
++static inline struct ipi_index mkipi_inband(unsigned int ipi,
++					    const struct cpumask *target);
++
++static void arm64_send_ipi(const cpumask_t *mask, struct ipi_index ipi)
+ {
+ 	unsigned int cpu;
+ 
+ 	if (!percpu_ipi_descs)
+-		__ipi_send_mask(get_ipi_desc(0, nr), mask);
++		__ipi_send_mask(get_ipi_desc(0, ipi.sgi), mask);
+ 	else
+ 		for_each_cpu(cpu, mask)
+-			__ipi_send_single(get_ipi_desc(cpu, nr), cpu);
++			__ipi_send_single(get_ipi_desc(cpu, ipi.sgi), cpu);
+ }
+ 
+ static void arm64_backtrace_ipi(cpumask_t *mask)
+ {
+-	arm64_send_ipi(mask, IPI_CPU_BACKTRACE);
++	arm64_send_ipi(mask, mkipi_inband(IPI_CPU_BACKTRACE, mask));
+ }
+ 
+ void arch_trigger_cpumask_backtrace(const cpumask_t *mask, int exclude_cpu)
+@@ -1020,6 +1027,34 @@ static void do_handle_IPI(int ipinr)
+ 
+ #ifdef CONFIG_IRQ_PIPELINE
+ 
++static DEFINE_PER_CPU(unsigned long, ipi_messages);
++
++static DEFINE_PER_CPU(unsigned int [MAX_IPI], ipi_counts);
++
++static inline struct ipi_index mkipi_inband(unsigned int ipi,
++					    const struct cpumask *target)
++{
++	unsigned int cpu;
++
++	WARN_ON(ipi >= MAX_IPI);
++
++	/* regular in-band IPI (multiplexed over SGI0). */
++	for_each_cpu(cpu, target)
++		set_bit(ipi, &per_cpu(ipi_messages, cpu));
++
++	/* Write barrier: Make sure ipi_message is set before raising the IPI */
++	wmb();
++
++	/* Multiplex inband IPIs via SGI0 */
++	return (struct ipi_index){ .sgi = 0 };
++}
++
++static inline struct ipi_index mkipi_oob(unsigned int ipi)
++{
++	WARN_ON(ipi < OOB_IPI_OFFSET || ipi > OOB_IPI_OFFSET + OOB_NR_IPI - 1);
++	return (struct ipi_index){ .sgi = ipi };
++}
++
+ static inline void map_oob_ipis(int cpu, int ipi_offset)
+ {
+ 	int ipi;
+@@ -1046,16 +1081,6 @@ static void ipi_setup_oob_lpi(int ncpus)
+ 		map_oob_ipis(cpu, nr_ipi);
+ }
+ 
+-static void __smp_cross_call(const struct cpumask *target, unsigned int ipinr)
+-{
+-	trace_ipi_raise(target, ipi_types[ipinr]);
+-	arm64_send_ipi(target, ipinr);
+-}
+-
+-static DEFINE_PER_CPU(unsigned long, ipi_messages);
+-
+-static DEFINE_PER_CPU(unsigned int [MAX_IPI], ipi_counts);
+-
+ static irqreturn_t ipi_handler(int irq, void *data)
+ {
+ 	unsigned long *pmsg;
+@@ -1077,39 +1102,44 @@ static irqreturn_t ipi_handler(int irq, void *data)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static void smp_cross_call(const struct cpumask *target, unsigned int ipinr)
+-{
+-	unsigned int cpu;
+-
+-	/* regular in-band IPI (multiplexed over SGI0). */
+-	for_each_cpu(cpu, target)
+-		set_bit(ipinr, &per_cpu(ipi_messages, cpu));
+-
+-	wmb();
+-	__smp_cross_call(target, 0);
+-}
+-
+ static unsigned int get_ipi_count(int ipi, unsigned int cpu)
+ {
+ 	return per_cpu(ipi_counts, cpu)[ipi];
+ }
+ 
+-void irq_send_oob_ipi(unsigned int irq, const struct cpumask *cpumask)
++static const char *oob_ipi_types[OOB_NR_IPI + 1] __tracepoint_string = {
++	[0]	= "Inband IPI (you should not see this!)",
++	[1]	= "OOB timer IPI",
++	[2]	= "OOB reschedule IPI",
++	[3]	= "OOB function call IPI",
++};
++
++void irq_send_oob_ipi(unsigned int irq, const struct cpumask *target)
+ {
+-	unsigned int sgi = irq - ipi_irq_base;
++	unsigned int ipi = irq - ipi_irq_base;
+ 
+-	if (WARN_ON(irq_pipeline_debug() &&
+-		    (sgi < OOB_IPI_OFFSET ||
+-		     sgi >= OOB_IPI_OFFSET + OOB_NR_IPI)))
+-		return;
++	WARN_ON(ipi < OOB_IPI_OFFSET);
+ 
+ 	/* Out-of-band IPI (SGI1-3). */
+-	__smp_cross_call(cpumask, sgi);
++	trace_ipi_raise(target, oob_ipi_types[ipi]);
++	arm64_send_ipi(target, mkipi_oob(ipi));
+ }
+ EXPORT_SYMBOL_GPL(irq_send_oob_ipi);
+ 
+ #else
+ 
++static inline struct ipi_index mkipi_inband(unsigned int ipi,
++					    const struct cpumask *target)
++{
++	WARN_ON(ipi >= MAX_IPI);
++	return (struct ipi_index){ .sgi = ipi };
++}
++
++static inline struct ipi_index mkipi_oob(unsigned int ipi)
++{
++	WARN_ON_ONCE(1);
++}
++
+ static inline void ipi_setup_oob_sgi(void)
+ { }
+ 
+@@ -1124,12 +1154,6 @@ static irqreturn_t ipi_handler(int irq, void *data)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static void smp_cross_call(const struct cpumask *target, unsigned int ipinr)
+-{
+-	trace_ipi_raise(target, ipi_types[ipinr]);
+-	arm64_send_ipi(target, ipinr);
+-}
+-
+ static unsigned int get_ipi_count(int ipi, unsigned int cpu)
+ {
+   	struct irq_desc *desc = get_ipi_desc(cpu, ipi);
+@@ -1138,6 +1162,12 @@ static unsigned int get_ipi_count(int ipi, unsigned int cpu)
+ 
+ #endif /* CONFIG_IRQ_PIPELINE */
+ 
++static void smp_cross_call(const struct cpumask *target, unsigned int ipinr)
++{
++	trace_ipi_raise(target, ipi_types[ipinr]);
++	arm64_send_ipi(target, mkipi_inband(ipinr, target));
++}
++
+ static bool ipi_should_be_nmi(enum ipi_msg_type ipi)
+ {
+ 	/* IRQ pipeline: see the reasoning in set_smp_ipi_range(). */
 
 -- 
-Siemens AG, Foundational Technologies
-Linux Expert Center
+2.53.0
+
