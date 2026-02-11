@@ -1,40 +1,40 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E425635C18A
-	for <xenomai@lists.linux.dev>; Wed, 11 Feb 2026 13:11:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83DB6214813
+	for <xenomai@lists.linux.dev>; Wed, 11 Feb 2026 13:11:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770815465; cv=none; b=eckdWPD+cOI+XXl/rHTnfCmOMclYyEhKW7IVFMqDnvozWmC9vgbsJQ4X/91p7lyUx4RenF9o5yTFOC+FOxxYp5h0v4vkZ8UdL+mj5ktmAv+kct1aLxXJj2KiGzuNRT9K/PS1GR7B8zKb9W8ymib8nGFYOqMk23AHMGG1sXKD54I=
+	t=1770815466; cv=none; b=SDy5NnTmA7+tiwkW+xgTxJVGtw38oZ1PzCM+D9axCYIfkvD423PAkiZzGFvMoSeUs7wk+GoDFp6/qK2sAYmPkWAYvptUzxM0RRfWeV8/j+JkKPueRTw8Fr/yQ96XMdVYN79QQUPUx4FiTLyH6GXUxt7nUsY/pORp55QVqUXlhr0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770815465; c=relaxed/simple;
-	bh=5Gxc6OnX7Ow1pxK4SL5bq61AbdnVDyDuUv0QgQEWDkM=;
+	s=arc-20240116; t=1770815466; c=relaxed/simple;
+	bh=Qj7VqnAMWOgL4c4eC+mV7QF5m20zWCjD1Oc+CDMBfqM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=J+pa7yZBxne1kZpYHT5IXP6REBbaFw5AHVayJV7c/ZJEVKsehmJSinn+AHyoqGIQwXltsD//xrKYBtDNL7JhNmPo4ESbifvIQxtOiOI4Zp61Xx2fsoTwd96v3GdatKgzx0F3og7CiAM66sgfMTOYlkgk9hS2x+NPnXgpiDCxZGQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=SFjh9XYQ; arc=none smtp.client-ip=185.136.64.226
+	 MIME-Version; b=OEqaQR42A2XpH/TSxX7D/536DJt8TySsY4r9ukPfpsjqjB0OvJd5A04mMpP+MOQDjJdun/55pTjAVglciKwlDes5MVH09oNCPBcY75iiBKc0OCpU9Sllvb1EFJF1d76JxsdPO65PB2+/QeY5119mQwfzExZ5z2Swslt3wHZkaUY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=M1aAz2R0; arc=none smtp.client-ip=185.136.65.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="SFjh9XYQ"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 2026021113105358e2bc79af00020754
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="M1aAz2R0"
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 2026021113110261c7086f21000207b4
         for <xenomai@lists.linux.dev>;
-        Wed, 11 Feb 2026 14:10:53 +0100
+        Wed, 11 Feb 2026 14:11:02 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=clara.kowalsky@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=FPNQHRV8CxrCo1g+LC9K5UwDE+Lb38UOVWw/7sncyxE=;
- b=SFjh9XYQ8kNotIpOChTEWXNTRFyCbZhJL745CwwIF42rKTTBT3rLCaTsvFBSkWNHnVDZxh
- LDh33BtITp7XV5DZCbaVF1aGfhlBs59NshZ7BKucnHd6Ohxc4fTINyBTQ6fQJm8R1CFTcNK7
- KHDWc/9JUs9YCxk0ytCoGYdqO8w5UfKFTX9E9tL6d597E2HwXaD4MaJvfitgfVlAhO03lo/s
- Cm+lebgJQyEDTajLwWjbzY641FkEMDT/yxeXqufnHpRHHyuOcCyKRplUlDI7k4Zlzsm1pYce
- WsXUJ26ui5pHyl8f5B1QprtuvNzpuYCFZHqquYbVeFMCl2eYLfYokVzA==;
+ bh=SK9ewYZvHvyVL+6o1OryCBTruaA0o+z7bVldO90tsvc=;
+ b=M1aAz2R0zYs1Ut8+Uy9XUUzEBzTRjJG2jEzqVTJfZ0QPMwBZG1l0vzotReMy64sFzuPlE5
+ MMGAW6Z42X0Z6Oy/M0TZL8CUQTcMYbCF/GgAO3APN2nJ5lFacLJbALR0I0eSDhNy10DPZagc
+ Z1XU7NOpG+jH2NtJDo5PlqDR0esB6aoh0fKJZ7EaBOtaD+NRizBqODEALtWhiy6m80TQ1VuM
+ +j1eMKAC+LSxJ/91fU8ehLNzQgIy03tQw+XeZzWTC7GdWTLAa7F/cH6tAHxkEYaIgQ+Hfhc7
+ 3uOlGiTVzX020Om2OQZTsPZLAgxhSvJs5QV77ERruE0GHZABjMwJOemA==;
 From: Clara Kowalsky <clara.kowalsky@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: jan.kiszka@siemens.com,
 	Clara Kowalsky <clara.kowalsky@siemens.com>
-Subject: [xenomai-images][PATCH v2 1/5] ci: Move third-party config files into separate folder
-Date: Wed, 11 Feb 2026 14:10:38 +0100
-Message-ID: <20260211131043.1185863-2-clara.kowalsky@siemens.com>
+Subject: [xenomai-images][PATCH v2 5/5] ci: Add CI for linux-evl
+Date: Wed, 11 Feb 2026 14:10:42 +0100
+Message-ID: <20260211131043.1185863-6-clara.kowalsky@siemens.com>
 In-Reply-To: <20260211131043.1185863-1-clara.kowalsky@siemens.com>
 References: <20260211131043.1185863-1-clara.kowalsky@siemens.com>
 Precedence: bulk
@@ -47,53 +47,110 @@ Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-1047747:519-21489:flowmailer
 
-The trigger folder contains the yml files that are consumed by
-third-party repositories that trigger the CI of xenomai-images.
+The linux-evl repo uses this CI/CD configuration file, as configured in
+its settings. If new commits are pushed to a supported linux-evl branch
+(that would be kernel version 6.1, 6.12 and head at the moment), a CI
+job is started that triggers the xenomai-images CI in combination with
+the libevl next branch. Build jobs on the physical targets as well as in
+QEMU are run.
 
 Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
 ---
- README.md                                    | 12 +++++++-----
- ci/{ci-dovetail.yml => trigger/dovetail.yml} |  0
- 2 files changed, 7 insertions(+), 5 deletions(-)
- rename ci/{ci-dovetail.yml => trigger/dovetail.yml} (100%)
+ README.md          | 10 ++++++++
+ ci/trigger/evl.yml | 63 ++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 73 insertions(+)
+ create mode 100644 ci/trigger/evl.yml
 
 diff --git a/README.md b/README.md
-index cfe1cf4..00a62e4 100644
+index e6535be..7e6ebeb 100644
 --- a/README.md
 +++ b/README.md
-@@ -53,6 +53,8 @@ This repository utilizes GitLab CI for automated building and testing of Xenomai
+@@ -81,6 +81,16 @@ on the `next` branch trigger a pipeline in this repository. The GitLab CI/CD
+ configuration file for libevl is located in this repository under [ci/trigger/libevl.yml](ci/trigger/libevl.yml),
+ as specified in the libevl settings via `ci/trigger/libevl.yml@Xenomai/xenomai-images:next`.
  
- ### Xenomai 3 CI
- 
-+#### Xenomai 3
++#### Linux-evl
 +
- Pushes to the [Xenomai 3](https://gitlab.com/Xenomai/xenomai3/xenomai)
- repository on the `next` branch or any branch starting with `stable/` trigger a
- pipeline in this repository. Have a look at the `trigger-xenomai-images` job in
-@@ -60,14 +62,14 @@ the Xenomai 3 repository's [`.gitlab-ci.yml`](https://gitlab.com/Xenomai/xenomai
- The pipeline triggered will then build and test images for the corresponding
- Xenomai 3 branch.
- 
--### Linux-dovetail CI
-+#### Linux-dovetail
- 
- For the [linux-dovetail](https://gitlab.com/Xenomai/linux-dovetail) repository,
- pushes to branches that have a corresponding kernel file in [`ci`](ci) trigger
--a pipeline in this repository. The GitLab CI configuration for linux-dovetail
--is located in this repository under [ci/ci-dovetail.yml](ci/ci-dovetail.yml)
--and need to be set as external gitlab-ci configuration, e.g.
--`ci/ci-dovetail.yml@Xenomai/xenomai-images:next`. In the triggered pipeline,
-+a pipeline in this repository. The GitLab CI/CD configuration file for linux-dovetail
-+is located in this repository under [ci/trigger/dovetail.yml](ci/trigger/dovetail.yml),
-+as specified in the settings of linux-dovetail via
-+`ci/trigger/dovetail.yml@Xenomai/xenomai-images:next`. In the triggered pipeline,
- images for the corresponding linux-dovetail branch are built and tested.
- 
++For the [linux-evl](https://gitlab.com/Xenomai/xenomai4/linux-evl) repository,
++pushes to branches that have a corresponding kernel file in [`ci`](ci) trigger
++a pipeline in this repository. The GitLab CI configuration for linux-evl is
++located in this repository under [ci/trigger/evl.yml](ci/trigger/evl.yml), as specified
++in the libevl settings via
++`ci/trigger/evl.yml@Xenomai/xenomai-images:next`. In the triggered pipeline,
++images for the corresponding linux-evl branch are built and tested.
++
  ### Local CI Execution
-diff --git a/ci/ci-dovetail.yml b/ci/trigger/dovetail.yml
-similarity index 100%
-rename from ci/ci-dovetail.yml
-rename to ci/trigger/dovetail.yml
+ 
+ The CI build can be executed locally by
+diff --git a/ci/trigger/evl.yml b/ci/trigger/evl.yml
+new file mode 100644
+index 0000000..fdbd15d
+--- /dev/null
++++ b/ci/trigger/evl.yml
+@@ -0,0 +1,63 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2026
++#
++# Authors:
++#  Clara Kowalsky <clara.kowalsky@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++# This is the CI/CD configuration file of the linux-evl repository,
++# as configured in its CI/CD settings
++#
++
++workflow:
++  rules:
++    - if: '$CI_COMMIT_BRANCH =~ /^v(5\.(10|15)|6\.(1|12))(\.y)?(-cip)?-evl-rebase$/'
++    - if: '$CI_COMMIT_BRANCH =~ /^v6\.[0-9]+\.y(-cip)?-evl-rebase$/'
++
++stages:
++  - set_vars
++  - trigger_xenomai_images
++
++set-vars:
++  stage: set_vars
++  tags:
++   - small
++  image: debian:trixie-slim
++  script:
++    - |
++      apt update -y && apt install git -y
++
++      KERNEL_VERSION=""
++      if [[ "$CI_COMMIT_BRANCH" =~ ^v(6\.(1|12))(\.y)?(-cip)?-evl-rebase$ ]]; then
++          KERNEL_VERSION=$(echo "$CI_COMMIT_BRANCH" | sed -nE 's/^v([0-9]+\.[0-9]+)(\.y)?(-cip)?-evl-rebase$/\1/p')
++      elif [ "$CI_COMMIT_BRANCH" = \
++        "$(git ls-remote --tags --head --refs https://gitlab.com/Xenomai/xenomai4/linux-evl.git | \
++        sed -e "s/.*[[:space:]]refs\/\(tags\|heads\)\///" | \
++        grep "v6\.[0-9].*-evl-rebase" | \
++        sort -r -n -k 1.4 | head -1)" ]; then
++          KERNEL_VERSION="head"
++      fi
++      echo "KERNEL_VERSION: $KERNEL_VERSION"
++      { echo "KERNEL_VERSION=$KERNEL_VERSION"; } > vars.env
++  artifacts:
++    reports:
++      dotenv: vars.env
++
++trigger-xenomai-images:
++  stage: trigger_xenomai_images
++  needs:
++    - set-vars
++  trigger:
++    project: xenomai/xenomai-images
++    branch: next
++    forward:
++      pipeline_variables: true
++  variables:
++    KERNEL_VERSION: $KERNEL_VERSION
++    KERNEL_VERSION_WITH_QEMU: $KERNEL_VERSION
++    ONLY_RUN: xenomai-4/evl
++  rules:
++    - if: '$KERNEL_VERSION != ""'
 -- 
 2.52.0
 
