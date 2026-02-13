@@ -1,41 +1,42 @@
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 406D531986F
-	for <xenomai@lists.linux.dev>; Fri, 13 Feb 2026 11:50:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 355D635FF62
+	for <xenomai@lists.linux.dev>; Fri, 13 Feb 2026 13:46:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770983424; cv=none; b=Pilu2MGGNLrI25L8lgLKM3V9fHx3pczUBX2iAuk1TS/crMoiVx7dFKgu9k2wSXKCH8t7dB97+DeGMJk8MqzGFfuYGDx+g7bpYQzRy/aCzJO45Di5ZLXEqkqRSGWOACnxGJfcbWPAm12uHVhFaQ73Lzu1AwJ9JAfRcF/Os0R0n08=
+	t=1770990398; cv=none; b=GHU+jL+93dqudEAocs0hXXWt8wqzm8fNTPy28YzRB4Rqv7/d3fo8hmOaWp8Ee+QUzTX9eogZziwe9UfhRjPh0jQnJmgVdTtMBH4g97w998gqqywQkgZv8Nr6BjeToBrZScIwkA1UAehyNepLBPCmAWF3yLRiuSmyt4Vt4jJm6Mc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770983424; c=relaxed/simple;
-	bh=eJZ+jVOjJK7miC6tp0s3TnZjhS/j94RWyok28iodSmQ=;
+	s=arc-20240116; t=1770990398; c=relaxed/simple;
+	bh=f4dPNlyxyEaTCkJ5b4XOixQKxEHaK0S+o7iVhhLqSfE=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=AZZXy1/oSpPQ/bf65hIxbgaTadh+8lXOsDsXbRfqDAVlg8T9KEfamo3YUxewg53Uw5BaisxdAlfhCDQ8ny3F3/idilmfD2nOZ5HbP1oxLt6JnBk72Z2mBrJmweKY9fsLYg1mRa7olf5bWehosOA4+FhHOUdX7KV26h4LpVfCvRc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=YpBv4FVX; arc=none smtp.client-ip=185.136.64.225
+	 Content-Type:MIME-Version; b=ZMG65SeArTvK98Qf+Qjyy2GucxqZYojN+h6ofk0p84RNTPG0XbZLVdIEpKV7XlH3uBvNUdJRtIuKgSHoIv0euHWPDh103WzY7RhjIsmeYuUGgw/pV2UgyJ+BTYc/wGnz1JupXwuU8HxotFsd20IqQCDT+B2ZVOFLYfdWidt0+QM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=LgMQIZ3J; arc=none smtp.client-ip=185.136.64.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="YpBv4FVX"
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20260213115017be727ad9bb00020787
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="LgMQIZ3J"
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20260213134624ab45f488b6000207b7
         for <xenomai@lists.linux.dev>;
-        Fri, 13 Feb 2026 12:50:17 +0100
+        Fri, 13 Feb 2026 14:46:24 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=eJZ+jVOjJK7miC6tp0s3TnZjhS/j94RWyok28iodSmQ=;
- b=YpBv4FVXs2irDTPgOq4I0+49MdYoGpMBsY6JNNqBeKGgqLCekhe9zGY8/cvIxUuAE3hYuX
- hQieX11FQMEVkOCKFzcxclgkbdPyYzz+JcpJQDb4rnUJNNDOfYa16USP5gSG01vrAxdksNwM
- wpT/45Sy1XOJmbiFGpXVu0I9VU2DWHhwn2IRfbI4MMrhW2gGlXmIxouFU4gD4EzaspNn12Ab
- NIaY2iO/UBk7dj4vhsDlJIdxgjxuQRxvvtP97qYbr/bjWejdcfTVb8GFAB/FlC/ZGUjamlhz
- Jc+MhfgBFpQEeT88+QMCeEhH8YzjMbjfyilNjJjmLyMmFgS4eW/aU6CQ==;
-Message-ID: <7a955d849a7ec9245543c399ec9673d98ee4d5a3.camel@siemens.com>
-Subject: Re: cobalt-like pthread wrappers for evl
+ bh=f4dPNlyxyEaTCkJ5b4XOixQKxEHaK0S+o7iVhhLqSfE=;
+ b=LgMQIZ3Js17ehFe8Ts4XyUtS8wA2B4FSHwD5OAPfeiO4nGNlhZdj2RWoDx8kk2sZq+DGtv
+ JLAb3EWvoMca+tZUDLqivGGLc1ojSAQ7o1P+nuZZ9YsjsgJ5E1SF1sIuXSNC/wztNu0OYztK
+ 1nlsL6uTmPem3x4NUGdLRL3stq3fs0+9gCxp3lmGvRUMWbSZEW/ba49tX2TUljfaLx51IwSq
+ NET6vT/4OincmvKELCuZekNGcLl029ILWICo9l+e+8sD4IoPDo3XjBNeC6f4AWD67Glmh+d2
+ 99IuItXcLIHvYK4uoqtQKVyFAC9hj0gw66LtniDt/Rykcw29b84IGqkQ==;
+Message-ID: <bc1676399a0535ff5abded03b8dffc87cdb36c45.camel@siemens.com>
+Subject: Re: [xenomai-images][PATCH] ci(libevl): Trigger more kernel
+ combinations
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Giulio Moro <giulio@bela.io>, Xenomai <xenomai@lists.linux.dev>
-Cc: Philippe Gerum <rpm@xenomai.org>
-Date: Fri, 13 Feb 2026 12:50:17 +0100
-In-Reply-To: <8c539987-12ba-912d-f50a-cdaccc2cb7e6@bela.io>
-References: <8c539987-12ba-912d-f50a-cdaccc2cb7e6@bela.io>
+To: Clara Kowalsky <clara.kowalsky@siemens.com>, xenomai@lists.linux.dev
+Cc: jan.kiszka@siemens.com
+Date: Fri, 13 Feb 2026 14:46:24 +0100
+In-Reply-To: <20260213093530.2513546-1-clara.kowalsky@siemens.com>
+References: <20260213093530.2513546-1-clara.kowalsky@siemens.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -47,25 +48,18 @@ MIME-Version: 1.0
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi Giulio,
-
-[ Cc + Philippe ]
-
-On Thu, 2026-02-12 at 22:33 -0500, Giulio Moro wrote:
-> Hi there,
-> I have to port a large-ish C application to EVL. The application uses pth=
-read_mutex, pthread_cond etc. Porting it to Xenomai-3 was straightforward, =
-thanks to libcobalt and linker wrapping.
+On Fri, 2026-02-13 at 10:35 +0100, Clara Kowalsky wrote:
+> The libevl next branch triggers a pipeline in xenomai-images in
+> combination with all available kernels (6.1, 6.12 and head). The
+> physical targets are built for all kernels, the QEMU targets just for
+> the head.
 >=20
-> Is there anything similar to that currently available for EVL? Maybe some=
-one's half-tested branch stashed somewhere? Much appreciate any pointers th=
-at will save me from starting from scratch.
+> Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
 
-That topic is most likely stuck in the design phase. Maybe Philippe can
-comment on the current state. The topic was discussed a few times in the
-past but never got traction.
+Just a minor note to all that CI stuff:
 
-Maybe it's time to revive this topic.
+All Lava jobs are currently titled "xenomai-test-suite". It needs quite
+a view steps to figure out what exactly has been tested. Even "evl" is
+currently labeled as xenomai-test-suite.
 
-Best regards,
 Florian
