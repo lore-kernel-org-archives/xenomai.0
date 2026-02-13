@@ -1,95 +1,99 @@
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+Received: from lavender.cherry.relay.mailchannels.net (lavender.cherry.relay.mailchannels.net [23.83.223.99])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56FAD257459
-	for <xenomai@lists.linux.dev>; Fri, 13 Feb 2026 09:36:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770975376; cv=none; b=S0+OwzZB7XKSBHBX4WtHN2quGHqFN33jIAUpqtr+LXKKr2A2mvzLfu41KHbvkK+8IsEc6s4sdmURz4s9zN+MPxWp4mHtdLO9pCw2VwWepzl9DNOC8mD0lP3hXh7Qs4J/VB9RwPOGNWhzcPdhSDCzpzg7VCr1VlIkwR/9f4MyV5c=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770975376; c=relaxed/simple;
-	bh=LWGYgkIQRA642M/5p+h5V2G+xz74MiQVKXVMGQ4fuFo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=bvlWyYL6ZPM5e0Ur8cueIPGnRrFTuw+Aa4P5B1wGjP5L/XY0tZTQe42RLdbJDQrnLnZm7xuMPWmRRs0WzeFlJjHBppErkUahlh5YebAUM0q8UgWIPiLxehi/GtlvhlpkrXw6Hf8rJ1+O+3q/28pW2cpsSjSJwmdDpF5Sz9UjlQQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=acPyKwxH; arc=none smtp.client-ip=185.136.64.225
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B6ED350298
+	for <xenomai@lists.linux.dev>; Fri, 13 Feb 2026 10:13:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.223.99
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770977597; cv=pass; b=SWU96ys7c/PxbozdOSOtE8evw/6cAq7Tdy94/0eX1a578xTMti49FJ3JRC0JeB4FhUGJ6VAZ0bn955IS1kkaAMss/CYhkGO1ZvUIRyFjzwLduZkE8HashgxUdtBpDZIiU0PAHqU60yY6o3dL35AsbSKgE3zkVlgNG3SkF7wY/Nc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770977597; c=relaxed/simple;
+	bh=pC3idtSj2Z7SFpk5DS8YyCEO6lHPS0uchP8ksIC9XOs=;
+	h=To:From:Subject:Message-ID:Date:MIME-Version:Content-Type; b=O9ToMxo2eZl7sm7nL1KTE1w26EtYiPxE1tprK2rLbfGMEnEO5V3aW/lve5SjrgwJl7neTyyNWb3cL0A3aJoo1vChhqYxz19naNYxm8QasEsA02882nJWGEDz6PMsRm+9t2NRyXDKq6TdYJBdmwVPH2KrLeSvJA1UTwIfg4PWv6k=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bela.io; spf=pass smtp.mailfrom=bela.io; dkim=pass (2048-bit key) header.d=bela.io header.i=@bela.io header.b=Hl4zVH+e; arc=pass smtp.client-ip=23.83.223.99
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bela.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bela.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="acPyKwxH"
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2026021309360369bbdbd5ef00020727
-        for <xenomai@lists.linux.dev>;
-        Fri, 13 Feb 2026 10:36:03 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=clara.kowalsky@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=G60vusucgtS4W8C2e3XyO3SXoBiRbZbj/fBcREKZlkU=;
- b=acPyKwxHjcHHdaRoYE7h6h1NXXnP0yOy1tSxhUY5P+UCyao5MI0LHgES5qLp2BEaj127QX
- xYwsab8wrLP8vLdaqadwoYJzxCgrMU9tGO9fBdIXvy9cIRndyYiRIrD0OJZlHbQxXzx74kwG
- yul9UXgj2OsasAP91mwEoFBjBMXQ/JxQqGCWkBnArriLx2OkJFFWt3Ir2/gXIp3aXG0csAd5
- 9cjzspna/84JQnc+LD+06r4KKpCQjt3cV5cpxJCfYRMZPdHVSPHqHPH8BXX7a/xfDemXKlZW
- 3SQpmnHvApQeUQgND1WUBzVojjOv7dB/v3X6qWTLxVfjnjdI6tjN8XOw==;
-From: Clara Kowalsky <clara.kowalsky@siemens.com>
-To: xenomai@lists.linux.dev
-Cc: jan.kiszka@siemens.com,
-	Clara Kowalsky <clara.kowalsky@siemens.com>
-Subject: [xenomai-images][PATCH] ci(libevl): Trigger more kernel combinations
-Date: Fri, 13 Feb 2026 10:35:30 +0100
-Message-ID: <20260213093530.2513546-1-clara.kowalsky@siemens.com>
+	dkim=pass (2048-bit key) header.d=bela.io header.i=@bela.io header.b="Hl4zVH+e"
+X-Sender-Id: dreamhost|x-authsender|giulio@bela.io
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+	by relay.mailchannels.net (Postfix) with ESMTP id 278FB222201
+	for <xenomai@lists.linux.dev>; Fri, 13 Feb 2026 03:33:05 +0000 (UTC)
+Received: from pdx1-sub0-mail-a246.dreamhost.com (100-98-114-77.trex-nlb.outbound.svc.cluster.local [100.98.114.77])
+	(Authenticated sender: dreamhost)
+	by relay.mailchannels.net (Postfix) with ESMTPA id 87BE02222B5
+	for <xenomai@lists.linux.dev>; Fri, 13 Feb 2026 03:33:04 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; d=mailchannels.net; s=arc-2022; cv=none;
+	t=1770953584;
+	b=ukMdhot3wQ5g2VGlgUgjKz38pNUumLowIwKsfAi/JI5T3Kgm6pN8CkHzHN70o3uRAn2GcS
+	mkbJPJQ+8V6ULGJvLMbaXfzH0LjzPCh1dtphzBOVS1PaMFHwMiG9ASegrCAQapQqbEhu6O
+	mvqL7wKslJe/lnowZeZlKrJk7J8bXL2k5ekksu5TUmNh1Kh2jTaJaqmh0YkxBtceBqNQES
+	Sp/4KPjts6TfKKxoUpgHO6Rhva1zKDBglqIjqhUOE7AtMayFC57sDpkvKDLt6xQ1pUJ6dg
+	cKOBS4NHwV4yd4VpuRDALpQb2Zz/uXt7U4rDtsx5iCgdbXMVv+1ICEXsQSi7gw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+	s=arc-2022; t=1770953584;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:dkim-signature;
+	bh=pC3idtSj2Z7SFpk5DS8YyCEO6lHPS0uchP8ksIC9XOs=;
+	b=v5LnJThuoLQJJYFae8EeHom8GvQvvEkoQd4RWiNSREgEorRDN78Vy4tSC63jyXGafTG8hX
+	y3n+22Ark5MZxZXkMNVSi8fe6z8XY+P2JYS6xSADeilXtKT62nHGbCEhPsNCOZDb6j437B
+	YnWQ5LWqTXrkXILwNKOMGGx8EtWrsrsj5Rt3sNB+vogVEKXvKRHx5Q9lgk4soK0PMYI8J9
+	6wvb3LyfSN2WD24BLhlS5XkWA/oRVwNIgl7zu9huHzFnve7IzJXBQv0EpVNcDYoNhEiNa2
+	IVA2E45HiB0yU48kBBF6ISJlgm8ntmUQjsfbefo48hDumeYJ9vg6523a2gjmcA==
+ARC-Authentication-Results: i=1;
+	rspamd-79bdc9947c-bb5v2;
+	auth=pass smtp.auth=dreamhost smtp.mailfrom=giulio@bela.io
+X-Sender-Id: dreamhost|x-authsender|giulio@bela.io
+X-MC-Relay: Good
+X-MailChannels-SenderId: dreamhost|x-authsender|giulio@bela.io
+X-MailChannels-Auth-Id: dreamhost
+X-Quick-Trouble: 55a3b09650d1634d_1770953584833_2211416555
+X-MC-Loop-Signature: 1770953584833:2812404813
+X-MC-Ingress-Time: 1770953584833
+Received: from pdx1-sub0-mail-a246.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+	by 100.98.114.77 (trex/7.1.3);
+	Fri, 13 Feb 2026 03:33:04 +0000
+Received: from giulios-MacBook-Pro.local (unknown [186.112.184.216])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: giulio@bela.io)
+	by pdx1-sub0-mail-a246.dreamhost.com (Postfix) with ESMTPSA id 4fByRh0xbLz107R
+	for <xenomai@lists.linux.dev>; Thu, 12 Feb 2026 19:33:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bela.io;
+	s=dreamhost; t=1770953584;
+	bh=pC3idtSj2Z7SFpk5DS8YyCEO6lHPS0uchP8ksIC9XOs=;
+	h=To:From:Subject:Date:Content-Type:Content-Transfer-Encoding;
+	b=Hl4zVH+ex11US7RRGfUZOeqm2Y/D/YIXIZZdPUUSbr3DB1iwpCF+LObPncd6d96SF
+	 1mM4HZB8NZCIVeYmX0/PDdzLfq6/gTI3jbzXJDzah7ehv1rpvtAMjs/nAesvxLc98d
+	 anJ8eIdBsjsDVCu/IHtWaKeZ9PKsZDXBX6R8i9fW9WVXs0VgVeKfO+MbVjF6SlaVGd
+	 1FjAQyYX8Bwy8gTSsvkHe98jcT4lvmc2Oe4Sg4vXtqDQ/UEOJWPxWPtElg4GNLlD+r
+	 pAY3N1X6gpMH9EHw5vrOegf+6eN6Z9CJSRcjcUmHaURo9a8YBpzJOpIroKDTH8zT85
+	 kKPVTBom2ho+A==
+To: Xenomai <xenomai@lists.linux.dev>
+From: Giulio Moro <giulio@bela.io>
+Subject: cobalt-like pthread wrappers for evl
+Message-ID: <8c539987-12ba-912d-f50a-cdaccc2cb7e6@bela.io>
+Date: Thu, 12 Feb 2026 22:33:02 -0500
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 14.8; rv:128.0)
+ Gecko/20100101 Firefox/128.0 SeaMonkey/2.53.23
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-1047747:519-21489:flowmailer
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-The libevl next branch triggers a pipeline in xenomai-images in
-combination with all available kernels (6.1, 6.12 and head). The
-physical targets are built for all kernels, the QEMU targets just for
-the head.
+Hi there,
+I have to port a large-ish C application to EVL. The application uses pthread_mutex, pthread_cond etc. Porting it to Xenomai-3 was straightforward, thanks to libcobalt and linker wrapping.
 
-Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
----
- ci/trigger/libevl.yml | 2 +-
- ci/xenomai_4_evl.yml  | 6 +++---
- 2 files changed, 4 insertions(+), 4 deletions(-)
+Is there anything similar to that currently available for EVL? Maybe someone's half-tested branch stashed somewhere? Much appreciate any pointers that will save me from starting from scratch.
 
-diff --git a/ci/trigger/libevl.yml b/ci/trigger/libevl.yml
-index bbd4e13..f9228dd 100644
---- a/ci/trigger/libevl.yml
-+++ b/ci/trigger/libevl.yml
-@@ -19,8 +19,8 @@ trigger-xenomai-images:
-   stage: trigger_xenomai_images
-   variables:
-     ONLY_RUN: xenomai-4/evl
--    KERNEL_VERSION: head
-     KERNEL_VERSION_WITH_QEMU: head
-+    KERNEL_ALL: "true"
-   trigger:
-     project: xenomai/xenomai-images
-     branch: next
-diff --git a/ci/xenomai_4_evl.yml b/ci/xenomai_4_evl.yml
-index 0404ca3..abc1e56 100644
---- a/ci/xenomai_4_evl.yml
-+++ b/ci/xenomai_4_evl.yml
-@@ -13,13 +13,13 @@ include:
-   - local: '/ci/lib/gitlab-ci-base.yml'
-   - local: '/ci/lib/kernel/6_1.yml'
-     rules:
--      - if: '$KERNEL_VERSION == "6.1"'
-+      - if: '$KERNEL_VERSION == "6.1" || $KERNEL_ALL == "true"'
-   - local: '/ci/lib/kernel/6_12.yml'
-     rules:
--      - if: '$KERNEL_VERSION == "6.12"'
-+      - if: '$KERNEL_VERSION == "6.12" || $KERNEL_ALL == "true"'
-   - local: '/ci/lib/kernel/head.yml'
-     rules:
--      - if: '$KERNEL_VERSION == "head"'
-+      - if: '$KERNEL_VERSION == "head" || $KERNEL_ALL == "true"'
- 
- variables:
-   XENOMAI_BUILD_OPTION: ":kas/opt/libevl-next.yaml:kas/opt/debug.yaml"
--- 
-2.52.0
-
+Thanks,
+Giulio
