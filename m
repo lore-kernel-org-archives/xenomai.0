@@ -1,145 +1,181 @@
 Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 850171EDA2B
-	for <xenomai@lists.linux.dev>; Mon, 16 Feb 2026 09:27:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F145301708
+	for <xenomai@lists.linux.dev>; Mon, 16 Feb 2026 10:58:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771234069; cv=none; b=FulruqXyeWa8K8ejaxfGu0GFAIIu0EI5ksQrF2KMiSxCPMe8ukvbKmiL/NT98QI5IrHa8VkVu3Cd/fZ6dYex9X00RPGXquc6FzM6g5urmUjojC5Wo9qOQ8RNcl99RsNy9ZmDteEfcVNg6Ew8bLu1Bu2hxnpihqd17YRI/ytACXM=
+	t=1771239543; cv=none; b=ucNt/UxQJ4rf9yxJBKPrlisbSLU9xyBnneqR3l5nJksjkYhzB8sYMIDY1vFj3us2cvhC4PT6Nn0uKEA9bpyw+MD5Z0I4I4GpY46triLMK3ZQk/nV8lPKc/X+i8N3aSmV4XwWHcMhCyAHiFVbuq4FwVWS2Ito0f3le8X2z4cIE9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771234069; c=relaxed/simple;
-	bh=RbvslvHuNBya37VSUbza3K/QPcGe0kYrZgq/O+z0TVg=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=fhEDmkWVcDUfqVgUhZKFRRu1RNYmFi3/jFAMM452iqOdvdlXKc2sUuw+Xce1lPMz9YiNIHbCSQeU+NmE6haUomTiLdSyZLdl8yfxBibaSG8wZSxLCPtAxe+kKusIzXn4yKBl7d+xeeoiQf4szU9AuxFy0vaE6mpmKvfRfItugn8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=PV2HdHHL; arc=none smtp.client-ip=185.136.64.225
+	s=arc-20240116; t=1771239543; c=relaxed/simple;
+	bh=gpDa/jRw3zy75ND1Mf4hOt2N/wk/bHTevnbnctScnfs=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=DRx5x4Fv/tbL2p/YKP5Nr8kyRL0lAXTOTA4Bh7MpWt5MoqFIoEHzRgooEX+52529qZd56tVdTHkbjaRx4bu8Vw0eMfctpBWqgZc+P3WgNte0odj3piaMtca7kDA1U+Gf2zYhgsA/RIZ5IFSCgN48pkyDwzOipzGvpEy0pda81XI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Zz95AAqI; arc=none smtp.client-ip=185.136.64.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="PV2HdHHL"
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2026021609274137c0829ce90002073e
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Zz95AAqI"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20260216105856c5772dc81a000207f5
         for <xenomai@lists.linux.dev>;
-        Mon, 16 Feb 2026 10:27:41 +0100
+        Mon, 16 Feb 2026 11:58:56 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=fMUvufr2NlaLyQUkHwX/2ymzCMlqdlANjmMpkeJhlGk=;
- b=PV2HdHHLBtNPmt0a12s15R8ZnZeK0Cs2hJ+WaKzCOYSF7OS39MeGWnAHvhFoRHNv0/NvbH
- xjnGUTJqU9/Y2mnMcTeKDSNofZB+3Z/Y4FGYPDjsstFLcxXXfmCMXyWvfYBi1tG4c5dWimrm
- JBlV56rqDiogtS1iGRlf59z1ZePTGnakd7w6lMfSPqQDDrxYaVq/Cy4as+thr2ML2JUrbBqT
- 6yz25Fj0bv8dWur6xCtuBW6IYkqZKWrOgyeRXmXYijBJOye4YzX4AMGhx56vvHFVoSCtXabE
- zSUoKqriP/OMpIxTTlROVmUvh0E0mDFwx4aHVveF4cbCk5Lz1Y7O2ajA==;
-Message-ID: <9596bb75fa20f8f470dbef5cd03d944e7df50c1c.camel@siemens.com>
-Subject: Re: [PATCH dovetail] irq_pipeline: synchronize inband IRQ log in
- exit_to_user_mode_prepare()
+ bh=z0aohrr3op3RCuQ4lhBepRfXdmZuNvJvORUjnoz6NZs=;
+ b=Zz95AAqIno1z+x1Uv1EnPXis2kCnSYyYtayLramGulEnWQO6yitN+TF7SLRonKIC/6X8ra
+ Nku4q30QtW/I/IVj5Vb+eNCc6ml+PY761izWuv7jJdgcky9I2GuIiSDsIzI77D64vpI+xtHQ
+ dGqR6tFtQHCd/IrncwcywffM4HL6TZl0R/VGa8lq7LgRck7DSRe2vtGwpxsex/fGBfDAApdw
+ 1osTnTIBSn3XNwPOdnn1HYniOzo5ZtxR1nw1O1EE4Yeb7On5+TLmlxdkEl4BgtJ+a2kEE6iF
+ ZSlJ66hWlNFy6QQjRW5DEHMUf2eGXpFqtPGrfIfUumTtUQFXoYcPmYbA==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
-Cc: rpm@xenomai.org
-Date: Mon, 16 Feb 2026 10:27:41 +0100
-In-Reply-To: <5b5db336-84f6-4add-a485-6414f7a2f190@siemens.com>
-References: <20260214113941.91453-1-tobias.schaffner@siemens.com>
-	 <5b5db336-84f6-4add-a485-6414f7a2f190@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Date: Mon, 16 Feb 2026 11:58:51 +0100
+Subject: [PATCH 1/3] cobalt: Prepare for new signature of
+ __request_percpu_irq() in 6.19
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260216-wip-flo-prepare-for-6-19-v1-1-f7362cdd2532@siemens.com>
+References: <20260216-wip-flo-prepare-for-6-19-v1-0-f7362cdd2532@siemens.com>
+In-Reply-To: <20260216-wip-flo-prepare-for-6-19-v1-0-f7362cdd2532@siemens.com>
+To: Xenomai <xenomai@lists.linux.dev>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, 
+ Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On Sun, 2026-02-15 at 00:25 +0100, Florian Bezdeka wrote:
-> On 2/14/26 12:39, Tobias Schaffner wrote:
-> > Architectures using the generic handle_irq_pipelined() path do not
->=20
-> arm64 and x86 are not using that, so the only arch left is arm.
-> See below...
->=20
-> > synchronize the inband IRQ log in handle_irq_pipelined_finish()
-> > because inband is still stalled from irqentry_enter() when it gets
-> > called.
->=20
-> I think the real issue / correct wording is:
->=20
-> _TIF_WORK is left pending on IRQ exit.
->=20
-> >=20
-> > As a result, deferred inband IRQs may not be played before the kernel
-> > checks for pending work in exit_to_user_mode_loop(), causing
-> > those IRQs to be missed on the return path to userspace.
-> >=20
-> > Flush the inband IRQ log in exit_to_user_mode_prepare() before
-> > entering the work loop.
-> >=20
-> > Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
-> > ---
-> >  include/linux/irq-entry-common.h | 6 ++++++
-> >  1 file changed, 6 insertions(+)
-> >=20
-> > diff --git a/include/linux/irq-entry-common.h b/include/linux/irq-entry=
--common.h
-> > index b21fb5893a67..e5815511a80a 100644
-> > --- a/include/linux/irq-entry-common.h
-> > +++ b/include/linux/irq-entry-common.h
-> > @@ -8,6 +8,7 @@
-> >  #include <linux/tick.h>
-> >  #include <linux/kmsan.h>
-> >  #include <linux/unwind_deferred.h>
-> > +#include <linux/irq_pipeline.h>
-> > =20
-> >  #include <asm/entry-common.h>
-> > =20
-> > @@ -237,6 +238,11 @@ static __always_inline void exit_to_user_mode_prep=
-are(struct pt_regs *regs)
-> >  	/* Flush pending rcuog wakeup before the last need_resched() check */
-> >  	tick_nohz_user_enter_prepare();
-> > =20
-> > +	/* Synchronize the in-band log before the work loop so that any defer=
-red
-> > +	 * IRQs are played before we check for pending work. */
-> > +	if (running_inband())
-> > +		sync_inband_irqs();
-> > +
->=20
-> I think there is more behind it. Seems your architecture (most likely
-> risc-v) is missing one corner case in the low level IRQ entry code:
->=20
-> Potential stage demotion of the preempted task which originally entered
-> on the oob stage, then left it for the in-band stage as a result of IRQ
-> handling. This should happen in handle_irq_pipeline_finish() - if require=
-d.
->=20
-> So on IRQ entry you are OOB, after the call to
-> handle_irq_pipeline_finish() you might be inband.
->=20
-> In that case you most likely want to call irqentry_exit_to_user_mode()
-> with the inband stage stalled:
->=20
-> Taken from arm64/x86:
-> if (unlikely(running_oob() || irqs_disabled())) {
-> 	...
-> 	handle_irq_pipelined_finish(prevd, regs);
-> 	if (running_inband() && user_mode(regs)) {
-> 		stall_inband_nocheck();
-> 		irqentry_exit_to_user_mode(regs);
-> 	}
-> 	...
-> }
->=20
-> >  again:
-> >  	ti_work =3D read_thread_flags();
-> >  	if (unlikely(ti_work & EXIT_TO_USER_MODE_WORK))
->=20
-> That said, we should double check that this corner case is handled right
-> on arm. If arm suffers from the same problem, this corner case is
-> missing in handle_irq_pipelined().
+Since 6.19 the signature of __request_percpu_irq() got one additional
+affinity parameter.
 
-ARM is doing the right thing on assembly level already by calling into
-do_work_pending() on the way back.
+A new Linux version specific wrapper cobalt_request_percpu_irq() is
+introduced to hide the signature change between different Linux
+versions.
 
->=20
-> I hope all of this makes sense at the end. It's late...
->=20
-> Best regards,
-> Florian
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ include/cobalt/kernel/dovetail/pipeline/irq.h      | 20 ++++++++++++++++++++
+ include/cobalt/kernel/dovetail/pipeline/pipeline.h | 10 +++++-----
+ include/cobalt/kernel/dovetail/pipeline/sirq.h     |  8 +++-----
+ kernel/cobalt/dovetail/tick.c                      |  8 ++++----
+ 4 files changed, 32 insertions(+), 14 deletions(-)
+
+diff --git a/include/cobalt/kernel/dovetail/pipeline/irq.h b/include/cobalt/kernel/dovetail/pipeline/irq.h
+index 55d9b8ff17cd08e5e8c09aec393a1e23736c1b76..ac780a4bb3223889ccf827b5b8cb279035a5dd7b 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/irq.h
++++ b/include/cobalt/kernel/dovetail/pipeline/irq.h
+@@ -5,6 +5,26 @@
+ #ifndef _COBALT_KERNEL_DOVETAIL_IRQ_H
+ #define _COBALT_KERNEL_DOVETAIL_IRQ_H
+ 
++#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
++static inline int cobalt_request_percpu_irq(unsigned int irq,
++					    irq_handler_t handler,
++					    unsigned long flags,
++					    const char *devname,
++					    void __percpu *dev_id)
++{
++	return __request_percpu_irq(irq, handler, flags, devname, dev_id);
++}
++#else
++static inline int cobalt_request_percpu_irq(unsigned int irq,
++					    irq_handler_t handler,
++					    unsigned long flags,
++					    const char *devname,
++					    void __percpu *dev_id)
++{
++	return __request_percpu_irq(irq, handler, flags, devname, NULL, dev_id);
++}
++#endif
++
+ static inline void xnintr_init_proc(void)
+ {
+ 	/* N/A */
+diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+index 2e6e66a2d6d4dbf407d4ce42fff8b84acc2931d0..898f249f3316c6543cdce0b2c2f6e0b72a0a7809 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/pipeline.h
++++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+@@ -11,6 +11,7 @@
+ #include <asm/xenomai/features.h>
+ #include <asm/xenomai/syscall.h>
+ #include <asm/syscall.h>
++#include <pipeline/irq.h>
+ #include <pipeline/machine.h>
+ 
+ typedef unsigned long spl_t;
+@@ -42,11 +43,10 @@ static inline int pipeline_request_resched_ipi(void)
+ 		return 0;
+ 
+ 	/* Trap the out-of-band rescheduling interrupt. */
+-	return __request_percpu_irq(RESCHEDULE_OOB_IPI,
+-			pipeline_reschedule_ipi_handler,
+-			IRQF_OOB,
+-			"Xenomai reschedule",
+-			&cobalt_machine_cpudata);
++	return cobalt_request_percpu_irq(RESCHEDULE_OOB_IPI,
++					 pipeline_reschedule_ipi_handler,
++					 IRQF_OOB, "Xenomai reschedule",
++					 &cobalt_machine_cpudata);
+ }
+ 
+ static inline void pipeline_free_resched_ipi(void)
+diff --git a/include/cobalt/kernel/dovetail/pipeline/sirq.h b/include/cobalt/kernel/dovetail/pipeline/sirq.h
+index 1da9d13b217081ba52ef0444b60d236ddb9c8a9e..784d4213cff4f28b29c76293e61d9a48e74b3bc7 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/sirq.h
++++ b/include/cobalt/kernel/dovetail/pipeline/sirq.h
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/irq_pipeline.h>
+ #include <cobalt/kernel/assert.h>
++#include <pipeline/irq.h>
+ 
+ /*
+  * Wrappers to create "synthetic IRQs" the Dovetail way. Those
+@@ -29,11 +30,8 @@ int pipeline_create_inband_sirq(irqreturn_t (*handler)(int irq, void *dev_id))
+ 	if (sirq == 0)
+ 		return -EAGAIN;
+ 
+-	ret = __request_percpu_irq(sirq,
+-			handler,
+-			IRQF_NO_THREAD,
+-			"Inband sirq",
+-			&cobalt_machine_cpudata);
++	ret = cobalt_request_percpu_irq(sirq, handler, IRQF_NO_THREAD,
++					"Inband sirq", &cobalt_machine_cpudata);
+ 
+ 	if (ret) {
+ 		irq_dispose_mapping(sirq);
+diff --git a/kernel/cobalt/dovetail/tick.c b/kernel/cobalt/dovetail/tick.c
+index 873b62471eac758fba5b86fa36b8265b6284dc87..dd8849ff053bc1629a20f543e38c7cf115a68458 100644
+--- a/kernel/cobalt/dovetail/tick.c
++++ b/kernel/cobalt/dovetail/tick.c
+@@ -8,6 +8,7 @@
+ #include <linux/tick.h>
+ #include <linux/clockchips.h>
+ #include <cobalt/kernel/intr.h>
++#include <pipeline/irq.h>
+ #include <pipeline/tick.h>
+ #include <cobalt/kernel/sched.h>
+ #include <cobalt/kernel/timer.h>
+@@ -153,10 +154,9 @@ int pipeline_install_tick_proxy(void)
+ 	 * CPUs.
+ 	 */
+ 	if (num_possible_cpus() > 1) {
+-		ret = __request_percpu_irq(TIMER_OOB_IPI,
+-					tick_ipi_handler,
+-					IRQF_OOB, "Xenomai timer IPI",
+-					&cobalt_machine_cpudata);
++		ret = cobalt_request_percpu_irq(TIMER_OOB_IPI, tick_ipi_handler,
++						IRQF_OOB, "Xenomai timer IPI",
++						&cobalt_machine_cpudata);
+ 		if (ret)
+ 			return ret;
+ 	}
+
+-- 
+2.53.0
+
