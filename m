@@ -1,77 +1,145 @@
-Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC3DE27A462
-	for <xenomai@lists.linux.dev>; Mon, 16 Feb 2026 08:57:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.228
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 850171EDA2B
+	for <xenomai@lists.linux.dev>; Mon, 16 Feb 2026 09:27:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771232234; cv=none; b=T8pKFYKKNqd1OZzGZihQLb3AqTJ95MwzirMTtkGm0hy2VKDntWrJvAmzu/stGIb4Ju90x4SpbXb1oYLnciY3biNiNTv2nUZXRJMMvivRBrGWPayx3W5DzMMdVg79q/DduPj8H52VxKpx/ShnE2FV0DCg6deuo1M5+mCrzzaeFlU=
+	t=1771234069; cv=none; b=FulruqXyeWa8K8ejaxfGu0GFAIIu0EI5ksQrF2KMiSxCPMe8ukvbKmiL/NT98QI5IrHa8VkVu3Cd/fZ6dYex9X00RPGXquc6FzM6g5urmUjojC5Wo9qOQ8RNcl99RsNy9ZmDteEfcVNg6Ew8bLu1Bu2hxnpihqd17YRI/ytACXM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771232234; c=relaxed/simple;
-	bh=62GKLq4R64MxbPQkTrAehCUDof6w28CmBUhnoE7H5oE=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=s6Qe46CEGwwEvZGEA/XRZDV9AezfVx0PmfvbE7GAxFb7MmhMyqJoRGftFO1Rao1yQ8nk2ktNNxpy7KH49fo3PjqCfJ9QO/ZysIc3E4jEtDhctnvQuKyhrjPStYt6h7PoGKf+EKxz+uA6Vwcxb9SO4HwT38W8Bvoqb6b0QClL52g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=fIpvh72I; arc=none smtp.client-ip=185.136.65.228
+	s=arc-20240116; t=1771234069; c=relaxed/simple;
+	bh=RbvslvHuNBya37VSUbza3K/QPcGe0kYrZgq/O+z0TVg=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=fhEDmkWVcDUfqVgUhZKFRRu1RNYmFi3/jFAMM452iqOdvdlXKc2sUuw+Xce1lPMz9YiNIHbCSQeU+NmE6haUomTiLdSyZLdl8yfxBibaSG8wZSxLCPtAxe+kKusIzXn4yKBl7d+xeeoiQf4szU9AuxFy0vaE6mpmKvfRfItugn8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=PV2HdHHL; arc=none smtp.client-ip=185.136.64.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="fIpvh72I"
-Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 20260216081645cdd7fadd2100020759
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="PV2HdHHL"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2026021609274137c0829ce90002073e
         for <xenomai@lists.linux.dev>;
-        Mon, 16 Feb 2026 09:16:46 +0100
+        Mon, 16 Feb 2026 10:27:41 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=clara.kowalsky@siemens.com;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=AuZUn/iz0gAWMAiFl1OCqAJJM5CQySO/06n2h252eio=;
- b=fIpvh72I1DpTsi3Acu4XDXbUqzAgIVkS09TReXUa3HIGi7Sh7273wCtFAuSZbY22q8t1FK
- GLARTKLXUteCYN+IAdCrNpGkQH7GkzKkINJ53f9bFhaifCq7GzIeK4d9SfsV2HJ3Zt+QKvTe
- FETpYBW7epKNL0gf3vsyaVV6XNqVRoFWcYULphrwa2JkiDzOCFhvXm9LWw4tIDgLsEi4amyM
- i8E4ImLYN9t3TKozrW7NQ5f6rEAiZ9KUXfPgO4Sq8XgMJTo0wBSsjZvF7wMqp9Tl5nZrDSR/
- ngS4EHuZtmFVwmvpvRGAAJxgDl8+q9QOlm9/Gj2+iSC2QpsY+gZDV5kA==;
-From: Clara Kowalsky <clara.kowalsky@siemens.com>
-To: xenomai@lists.linux.dev
-Cc: jan.kiszka@siemens.com,
-	Clara Kowalsky <clara.kowalsky@siemens.com>
-Subject: [xenomai-images][PATCH v3 2/2] ci(libevl): Trigger more kernel combinations
-Date: Mon, 16 Feb 2026 09:16:29 +0100
-Message-ID: <20260216081629.3163713-2-clara.kowalsky@siemens.com>
-In-Reply-To: <20260216081629.3163713-1-clara.kowalsky@siemens.com>
-References: <20260216081629.3163713-1-clara.kowalsky@siemens.com>
+ bh=fMUvufr2NlaLyQUkHwX/2ymzCMlqdlANjmMpkeJhlGk=;
+ b=PV2HdHHLBtNPmt0a12s15R8ZnZeK0Cs2hJ+WaKzCOYSF7OS39MeGWnAHvhFoRHNv0/NvbH
+ xjnGUTJqU9/Y2mnMcTeKDSNofZB+3Z/Y4FGYPDjsstFLcxXXfmCMXyWvfYBi1tG4c5dWimrm
+ JBlV56rqDiogtS1iGRlf59z1ZePTGnakd7w6lMfSPqQDDrxYaVq/Cy4as+thr2ML2JUrbBqT
+ 6yz25Fj0bv8dWur6xCtuBW6IYkqZKWrOgyeRXmXYijBJOye4YzX4AMGhx56vvHFVoSCtXabE
+ zSUoKqriP/OMpIxTTlROVmUvh0E0mDFwx4aHVveF4cbCk5Lz1Y7O2ajA==;
+Message-ID: <9596bb75fa20f8f470dbef5cd03d944e7df50c1c.camel@siemens.com>
+Subject: Re: [PATCH dovetail] irq_pipeline: synchronize inband IRQ log in
+ exit_to_user_mode_prepare()
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
+Cc: rpm@xenomai.org
+Date: Mon, 16 Feb 2026 10:27:41 +0100
+In-Reply-To: <5b5db336-84f6-4add-a485-6414f7a2f190@siemens.com>
+References: <20260214113941.91453-1-tobias.schaffner@siemens.com>
+	 <5b5db336-84f6-4add-a485-6414f7a2f190@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-1047747:519-21489:flowmailer
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-The libevl next branch triggers a pipeline in xenomai-images in
-combination with all available kernels (6.1, 6.12 and head). The
-physical targets are built for all kernels, the QEMU targets just for
-the head.
+On Sun, 2026-02-15 at 00:25 +0100, Florian Bezdeka wrote:
+> On 2/14/26 12:39, Tobias Schaffner wrote:
+> > Architectures using the generic handle_irq_pipelined() path do not
+>=20
+> arm64 and x86 are not using that, so the only arch left is arm.
+> See below...
+>=20
+> > synchronize the inband IRQ log in handle_irq_pipelined_finish()
+> > because inband is still stalled from irqentry_enter() when it gets
+> > called.
+>=20
+> I think the real issue / correct wording is:
+>=20
+> _TIF_WORK is left pending on IRQ exit.
+>=20
+> >=20
+> > As a result, deferred inband IRQs may not be played before the kernel
+> > checks for pending work in exit_to_user_mode_loop(), causing
+> > those IRQs to be missed on the return path to userspace.
+> >=20
+> > Flush the inband IRQ log in exit_to_user_mode_prepare() before
+> > entering the work loop.
+> >=20
+> > Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+> > ---
+> >  include/linux/irq-entry-common.h | 6 ++++++
+> >  1 file changed, 6 insertions(+)
+> >=20
+> > diff --git a/include/linux/irq-entry-common.h b/include/linux/irq-entry=
+-common.h
+> > index b21fb5893a67..e5815511a80a 100644
+> > --- a/include/linux/irq-entry-common.h
+> > +++ b/include/linux/irq-entry-common.h
+> > @@ -8,6 +8,7 @@
+> >  #include <linux/tick.h>
+> >  #include <linux/kmsan.h>
+> >  #include <linux/unwind_deferred.h>
+> > +#include <linux/irq_pipeline.h>
+> > =20
+> >  #include <asm/entry-common.h>
+> > =20
+> > @@ -237,6 +238,11 @@ static __always_inline void exit_to_user_mode_prep=
+are(struct pt_regs *regs)
+> >  	/* Flush pending rcuog wakeup before the last need_resched() check */
+> >  	tick_nohz_user_enter_prepare();
+> > =20
+> > +	/* Synchronize the in-band log before the work loop so that any defer=
+red
+> > +	 * IRQs are played before we check for pending work. */
+> > +	if (running_inband())
+> > +		sync_inband_irqs();
+> > +
+>=20
+> I think there is more behind it. Seems your architecture (most likely
+> risc-v) is missing one corner case in the low level IRQ entry code:
+>=20
+> Potential stage demotion of the preempted task which originally entered
+> on the oob stage, then left it for the in-band stage as a result of IRQ
+> handling. This should happen in handle_irq_pipeline_finish() - if require=
+d.
+>=20
+> So on IRQ entry you are OOB, after the call to
+> handle_irq_pipeline_finish() you might be inband.
+>=20
+> In that case you most likely want to call irqentry_exit_to_user_mode()
+> with the inband stage stalled:
+>=20
+> Taken from arm64/x86:
+> if (unlikely(running_oob() || irqs_disabled())) {
+> 	...
+> 	handle_irq_pipelined_finish(prevd, regs);
+> 	if (running_inband() && user_mode(regs)) {
+> 		stall_inband_nocheck();
+> 		irqentry_exit_to_user_mode(regs);
+> 	}
+> 	...
+> }
+>=20
+> >  again:
+> >  	ti_work =3D read_thread_flags();
+> >  	if (unlikely(ti_work & EXIT_TO_USER_MODE_WORK))
+>=20
+> That said, we should double check that this corner case is handled right
+> on arm. If arm suffers from the same problem, this corner case is
+> missing in handle_irq_pipelined().
 
-Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
----
- ci/trigger/libevl.yml | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ARM is doing the right thing on assembly level already by calling into
+do_work_pending() on the way back.
 
-diff --git a/ci/trigger/libevl.yml b/ci/trigger/libevl.yml
-index bbd4e13..ece5f06 100644
---- a/ci/trigger/libevl.yml
-+++ b/ci/trigger/libevl.yml
-@@ -18,9 +18,7 @@ stages:
- trigger-xenomai-images:
-   stage: trigger_xenomai_images
-   variables:
--    ONLY_RUN: xenomai-4/evl
--    KERNEL_VERSION: head
--    KERNEL_VERSION_WITH_QEMU: head
-+    ONLY_RUN: xenomai-4/${CI_COMMIT_BRANCH}
-   trigger:
-     project: xenomai/xenomai-images
-     branch: next
--- 
-2.52.0
-
+>=20
+> I hope all of this makes sense at the end. It's late...
+>=20
+> Best regards,
+> Florian
