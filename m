@@ -1,37 +1,37 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1BAF2C158D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF6222C11F9
 	for <xenomai@lists.linux.dev>; Tue, 17 Feb 2026 22:54:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771368879; cv=none; b=nnIGKMwBsmtilgFWvAz3jSZRtD7sw27ITwFH3OaOanENbjYUmi5HlqBNzmnNQ4ZhDXz45gdq/TGOp7IzRvxiED7kta4I17C6yvGm1fo7fKRT1+n+3l/to/oHgmzl075Z8hJ2ejpgX8I3KfTASmRkUK4u2I5JX6kPDeI1w5tB8p8=
+	t=1771368879; cv=none; b=GQTd5pNU7iD999ha94hQf6cqGuyNf+OKusK9Waz7t8JRBZTh4YBBfeXUfGGG2Sdo9TgMUae94AmHYapw6Jcs9MP95BMfzfrBrOXh2fQGTaX+Eca1jkl5Q+24yYMX5TLs20t6mqDDfE4vfZ8WxMeFkuA47v9UlywzfSKHk27EIe0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1771368879; c=relaxed/simple;
-	bh=XsT4k0XdrweqtNQo9Kjr9HfF1ZiRTdDA1M6Y/1bC8II=;
+	bh=h/aUpWMdgi5u2MPhJY8CaSkY6qgaBxwKiwBPWaiymDI=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=GJo89jjqYA90qBbHoMzhhlqjSxq5yxr7ZVT2QLmYVQTbnEdOdhQTb145zK//b4PET5HhZ+Na6bac4L3B0cxMC0+4MUyJWLUYjnoNf9hIPvGbjXSXRwJRUV80F+LyqzeLDGf9Tb6y8DbEt2XFavbUu1ocXHE9Fst6+2O4FHRSvMg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=YL2IMV69; arc=none smtp.client-ip=185.136.64.226
+	 In-Reply-To:To:Cc; b=CuqD2kJbJVap4BxHQkKTllPUZSfVTLmP8HCfonvUiPL10IfZH2hDKdsGOFWqoVOAm1fj8ZC/7IcZVLWsfGuJR3SDrngtnN15K0aprsHvmvqo2/evIxbpUORbAVEEFOyfVs3T3b89mqQtM9LUCFYPPwN35c6p+FiHI7R/zEXYQDY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=EUlx4zTa; arc=none smtp.client-ip=185.136.64.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="YL2IMV69"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202602172254273a7a362c9f00020748
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="EUlx4zTa"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20260217225427495319759500020795
         for <xenomai@lists.linux.dev>;
-        Tue, 17 Feb 2026 23:54:27 +0100
+        Tue, 17 Feb 2026 23:54:28 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=BbWna4nWjAKwrgPsN+Tviw+IHqFL+SJOEzPab7xkEUI=;
- b=YL2IMV69AXTDCw2ellZ3odprKJjQRZkLIw46+B99UPm1d0onNd2UhvHeMCNOAbxBTci0qP
- iEEtt5/M1GhKJ842QFkUun1LUCT4oN3s6gOECUVyb+Gyj85N4h7Xj2+F/M4rdycbARMTQkqW
- Zj66bRuQ1zCuLygX7EnKbnQJdl8I2eyk3Z0RN8SJb22vlRkXD9HKKZSvN5tm/ymoel6TCJf2
- DKWRz0LDtRLFTl28XiXRgvOzfypfm/9lRD4pFEHYpEVG/60aJWByaq1QyB/RUP0l6WbSOwwu
- 7IGOTuAZPkvLGQt4FPXQ4+/Sj5wHfPEBfwJkMKowBCS94sIygzX/Em9g==;
+ bh=5C30AkIa3EoPwQ84iqtffRjYVuYO9hchXfDEEkMOg7g=;
+ b=EUlx4zTaJS6a6mhHg3/0JJPiZj00Dx3JJimOXKtfg9al/nJ964B+qtaG+B4WiMRrRZLWb0
+ ck03UEop1pyay9x2xpaf15Mle7zKHDQ2iEJOTGWjwln3MWNatSfHBpU2J6vMb95U8lXHhE5S
+ WshEkdjSH1W2FA75pvHrimh/e7HTdarnhoXvGPbXWpVtsm2iHEoxp0Kvh5jSboDZQASZ4LgB
+ nTto1RWXnXCoOzlCzSeNgzNRe5QX3/W3gGRzVdCZ+PI8VMM1ifa6xoEhb4LlpVhypnDRQ+j/
+ gFM/SZiQ7OJQbri/pVmcpKUA5KNURZmWqyQpCr0MAo1QNMJsDYShl/ig==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Tue, 17 Feb 2026 23:54:27 +0100
-Subject: [PATCH Dovetail v2 1/2] dovetail: genirq: Add
- request_percpu_irq_affinity_flags()
+Date: Tue, 17 Feb 2026 23:54:28 +0100
+Subject: [PATCH Dovetail v2 2/2] arm64: irq_pipeline: Cleanup demotion
+ check for el1
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260217-wip-flo-v6-19-dovetail-rebase-v2-1-45fc326a166a@siemens.com>
+Message-Id: <20260217-wip-flo-v6-19-dovetail-rebase-v2-2-45fc326a166a@siemens.com>
 References: <20260217-wip-flo-v6-19-dovetail-rebase-v2-0-45fc326a166a@siemens.com>
 In-Reply-To: <20260217-wip-flo-v6-19-dovetail-rebase-v2-0-45fc326a166a@siemens.com>
 To: Xenomai <xenomai@lists.linux.dev>
@@ -49,60 +49,36 @@ Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-cobalt / evl are currently using __request_percpu_irq() for setting up
-OOB IRQs. In 6.19 the signature of __request_percpu_irq() has been
-updated and 7.0 will remove the function entirely, so we need a
-replacement.
+While reviewing some of the low level pipeline code I realized that
+the checks for task demotion are confusing on arm64.
 
-All other variants (like the upcoming request_percpu_irq_affinity())
-are missing the flags parameter which we require.
+el0: There is no demotion check as arm6_exit_to_user_mode() will
+     already do the right thing. No need to update that path.
 
-This could be backported to all supported dovetail versions. That
-would allow co-kernels to switch to the new API unconditionally.
+el1: The demotion check was unnecessary and "inactive" as
+     user_mode(regs) is never true on el1, we are serving an IRQ over
+     kernel mode. Removing the check to avoid further confusion.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- include/linux/interrupt.h |  5 +++++
- kernel/irq/manage.c       | 10 ++++++++++
- 2 files changed, 15 insertions(+)
+ arch/arm64/kernel/entry-common.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
-index bf0511b438c65e119af917763ce92a8f3bfb4c4c..6cd8ad02ffbd87f71869d6737fbc8c1ae477c1ee 100644
---- a/include/linux/interrupt.h
-+++ b/include/linux/interrupt.h
-@@ -213,6 +213,11 @@ request_percpu_irq_affinity(unsigned int irq, irq_handler_t handler,
- 				    devname, affinity, percpu_dev_id);
- }
- 
-+int request_percpu_irq_affinity_flags(unsigned int irq, irq_handler_t handler,
-+				      unsigned long flags, const char *devname,
-+				      const cpumask_t *affinity,
-+				      void __percpu *dev_id);
-+
- extern int __must_check
- request_percpu_nmi(unsigned int irq, irq_handler_t handler, const char *name,
- 		   const struct cpumask *affinity, void __percpu *dev_id);
-diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index 2a2991d529e4e21e88b8f15fcd51cdb01b69411c..b2290c7ba087e4e9a4b9e94163be1f45631d7c3f 100644
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -2580,6 +2580,16 @@ struct irqaction *create_percpu_irqaction(irq_handler_t handler, unsigned long f
- 	return action;
- }
- 
-+int request_percpu_irq_affinity_flags(unsigned int irq, irq_handler_t handler,
-+				      unsigned long flags, const char *devname,
-+				      const cpumask_t *affinity,
-+				      void __percpu *dev_id)
-+{
-+	return __request_percpu_irq(irq, handler, flags, devname, affinity,
-+				    dev_id);
-+}
-+EXPORT_SYMBOL_GPL(request_percpu_irq_affinity_flags);
-+
- /**
-  * __request_percpu_irq - allocate a percpu interrupt line
-  * @irq:	Interrupt line to allocate
+diff --git a/arch/arm64/kernel/entry-common.c b/arch/arm64/kernel/entry-common.c
+index 07fa70713ce04eaf3df9223354babcecde923280..2337987b7edd88d36703071ba0ac9880d043b5e5 100644
+--- a/arch/arm64/kernel/entry-common.c
++++ b/arch/arm64/kernel/entry-common.c
+@@ -90,10 +90,6 @@ static noinstr void arm64_pipeline_el1_irq(struct pt_regs *regs,
+ 		prevd = handle_irq_pipelined_prepare(regs);
+ 		do_interrupt_handler(regs, handler);
+ 		handle_irq_pipelined_finish(prevd, regs);
+-		if (running_inband() && user_mode(regs)) {
+-			stall_inband_nocheck();
+-			irqentry_exit_to_user_mode(regs);
+-		}
+ 		instrumentation_end();
+ 		mte_check_tfsr_exit();
+ 		return;
 
 -- 
 2.53.0
