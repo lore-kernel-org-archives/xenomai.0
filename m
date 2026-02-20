@@ -1,74 +1,308 @@
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6759A32ED20
-	for <xenomai@lists.linux.dev>; Fri, 20 Feb 2026 11:20:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.196
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2467E32FA1B
+	for <xenomai@lists.linux.dev>; Fri, 20 Feb 2026 11:27:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771586448; cv=none; b=Vuls0j3tzGhFsgbUJlK6LezCpE79NMLoJDVxE7kDWRO4iwphQdjhBwhzj75T69NkI8xxHCdONaqFzYEb6h9ezJwroS1fvcpKyFh/ZGao5FBCBH8vosQjdl6t4n80WfJQhSPppxvTiIA+w4POJiTgb0m6683b5WEIq7dMZwn8UcY=
+	t=1771586874; cv=none; b=C7H494F3O7zjLjHxYzqtrW3ZEapOFSg4BTzx9cT6qk6L6z8K3bQ4BixuMLNQnq6bX+jivOSJ/EEKbU/gvMSt9flpI6/siZTFsmegq0sQ5kM2aLbgSRcXvmHQbUm87ufaxqGSD34b9Lo3GnSuz7pEqftQsFNOJxcsX+yh98iOruo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771586448; c=relaxed/simple;
-	bh=f2hCV+OJeTlQ+l/Ri6MjQDnNBnA67zV5Ucptz+/Ct8k=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=j21Ek7DIXF8StOThLEEUvqZwFq0EgjGOT1ZDPdbYTyZfwncSpPeHZip13sWuvfkt4d4/zYmDdGecBus67PreZxn8HLVmcyugzfCf0uNyI2lrQRcO+RZYOhA7/xQX+47ljolPTXQ++UdsFmEkWmBgL+MyzYQgTm5Ztuk9VquapBE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=IzokLsYZ; arc=none smtp.client-ip=217.70.183.196
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1771586874; c=relaxed/simple;
+	bh=MW3Y/WtfB/p95cGESjpt5lkE4j1y72PciyLZXm7AUeU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=CqbgoAZjEMNW8Z3s+rbzDwPiu2yxQh9X0uJhkHerLud9jMl0oyuy5YFHs+tCXMK2RLiOa8q4SVFz9MtX1GS0ZzKCt8nWx/XgZ4ICAIEP3dSjgOKcCTAMtxovHeZzPmWhGT4xsXVmZGAU843jC+8DK6HiFH+tGzgAkguGuGBXIII=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=dFlRG1Wv; arc=none smtp.client-ip=185.136.64.225
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="IzokLsYZ"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 752623E9CC;
-	Fri, 20 Feb 2026 11:20:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1771586440;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=jGjwvBCHeLdG5/jXiHm9Zyq/1DS59YkFMWFiAEiaa4s=;
-	b=IzokLsYZQ34Cb9CW51+Wg/4NmeuSnD/WU9yBRcRf5IkPaK3W27v19vQU7EFPGPXK6Vxrcm
-	mzvBuQgXmUukC+jeJyf+4a1Utqex5p8/MFayxyNdgfddIW+IbWjyF4Y6hFbMyxFyV+T97r
-	sLYtbaN+ZZf5j7SPGuEPCIY9C1/j3q+OEMWvNdOWbjCusmeEdYJpNUPxNNGOStjsARgWC7
-	vNXryA9aRQpor2Cv1AXeifFxRjM9gGXoWokV1hfy1MbYrzZxg+1R+Z9iTH5u4+9p0Do+vt
-	Is0NDKbDfP56xx5PjXGJqochl5rGJBoaxXfDZdihWHzThXM6ogUpr5H/0l1lpQ==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Florian Bezdeka <florian.bezdeka@siemens.com>,  Xenomai
- <xenomai@lists.linux.dev>
-Subject: Re: [PATCH 00/20] y2038: libcobalt: Allow both, native + time64_t
- interfaces at the same time
-In-Reply-To: <87cy1zhdob.fsf@xenomai.org> (Philippe Gerum's message of "Fri,
-	20 Feb 2026 12:12:04 +0100")
-References: <20260220-wip-flo-fix-time64-32bit-native-v1-0-731c773e72cc@siemens.com>
-	<87tsvbhigf.fsf@xenomai.org>
-	<faebe432-dddb-453a-91d1-77ee48a784ca@siemens.com>
-	<87cy1zhdob.fsf@xenomai.org>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Fri, 20 Feb 2026 12:20:40 +0100
-Message-ID: <877bs7hd9z.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="dFlRG1Wv"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 202602201127496122b232d800020774
+        for <xenomai@lists.linux.dev>;
+        Fri, 20 Feb 2026 12:27:49 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=3RFDc5OQILV3witAQ7WT/zvPQEyT+T2XEvyBvhgjJVM=;
+ b=dFlRG1WvNs2aqnYndq5cUnLvHYonZh+p3ixXwdJ3BpULUWmJqpIWzBxBzPQsCCVNGYu69D
+ lVsGhW1pTUf1cZMQ2E6U2SRMus4+3gVhm8t4hPVwjG0sRHYq0dqYzpQ6BwBx8xKhg5yrK6YV
+ VDZYNDA798nUQE8XG+L0OaY5XjiE4Msa2598CS5fMQAnH8fCsg0H4KBna0tbdF8SLhfZezkY
+ Oo7OJUFaNXcUBmELTRFS4GigsEYaLB40/1OQYY87Wryzi6iX1VaGwmFKSzkndaBC0kyNF/II
+ Rpn08OHz4FuMdfByHDdnMiETz7fnftuiEsflZDteqP6zzS8WVXvDv02g==;
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Date: Fri, 20 Feb 2026 12:27:50 +0100
+Subject: [PATCH v2 3/3] testsuite/switchtest: Add support for Dovetail >=
+ 6.19
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddvvdekfeduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpedvlefhvdehkeduheevleegiedtueejgfekhfeijeefvdeijeekgeeigfejhfekgeenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpqhhiugepjeehvdeivdefgfelveevpdhmohguvgepshhmthhpohhuthdpnhgspghrtghpthhtohepfedprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepfhhlohhrihgrnhdrsggviiguvghkrgesshhivghmvghnshdrtghomhdprhgtphhtthhopehjrghnrdhkihhsiihkrgesshhivghmvghnshdrtghomh
-X-GND-State: clean
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260220-wip-flo-prepare-for-6-19-v2-3-222effb01976@siemens.com>
+References: <20260220-wip-flo-prepare-for-6-19-v2-0-222effb01976@siemens.com>
+In-Reply-To: <20260220-wip-flo-prepare-for-6-19-v2-0-222effb01976@siemens.com>
+To: Xenomai <xenomai@lists.linux.dev>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, 
+ Florian Bezdeka <florian.bezdeka@siemens.com>
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Philippe Gerum <rpm@xenomai.org> writes:
+The background for this reworking is a recent change to Linux in 6.19:
 
-> some of them for POSIX too. I plan to use this change window for phasing
-> out time32 entirely in the same move, which would simplify the POSIX
+commit 4fa617cc6851 ("arm64/fpsimd: Allocate kernel mode FP/SIMD
+		     buffers on the stack")
 
-As in passing requiring glibc >= 2.34 for enabling -D_TIME_BITS=64
--D_FILE_OFFSET_BITS=64, or requiring musl >= 1.2.0 since time64 has been
-the default since then. The uClibc situation is still unclear to me ATM
-since I saw patches floating around months ago disabling time64 in order
-to pass the test suite, maybe this has improved, need to check
-again. Anyway, since we cannot do without time64 but we do have
-alternatives to uClibc, the choice would be pretty clear if we had to
-make one.
+expects all (non-preemtable) users to provide a buffer that is used
+in case the calling task is scheduled out. NULL is only allowed when
+preemption is disabled.
+
+preempt_disable() has no impact on OOB tasks, so when an OOB task is
+scheduled out the fpsimd code tries to save the FPU regs to NULL, which
+(obviously) triggered a fault.
+
+To be able to provide a struct user_fpsimd_state located on the stack
+the complete FPU usage has to move into one function, now called
+arch_cobalt_in_kernel_fpu_usage() and implemented by all architectures.
+arm64 needs two implementations to stay compatible with older kernels.
+
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ .../cobalt/arch/arm/include/asm/xenomai/fptest.h   | 26 ++++---------
+ .../cobalt/arch/arm64/include/asm/xenomai/fptest.h | 43 ++++++++++++++++++----
+ .../cobalt/arch/x86/include/asm/xenomai/fptest.h   | 41 ++++++++++++---------
+ kernel/drivers/testing/switchtest.c                | 19 +++-------
+ 4 files changed, 70 insertions(+), 59 deletions(-)
+
+diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h
+index fc177fcb53bd259011a4a65f889c236f7c8e115e..f9f61109db07351283612f6e3a69a179c0a51e34 100644
+--- a/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h
++++ b/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h
+@@ -19,29 +19,17 @@
+ #ifndef _COBALT_ARM_FPTEST_H
+ #define _COBALT_ARM_FPTEST_H
+ 
+-#include <linux/errno.h>
+-#include <asm/hwcap.h>
+-
+-#ifdef CONFIG_VFP
+-#define have_vfp (elf_hwcap & HWCAP_VFP)
+-#else /* !CONFIG_VFP */
+-#define have_vfp 0
+-#endif /* !CONFIG_VFP */
+-
+-#include <asm/xenomai/uapi/fptest.h>
+-
+-static inline int fp_linux_begin(void)
+-{
+-	return -ENOSYS;
+-}
+-
+-static inline void fp_linux_end(void)
++static inline int cobalt_arch_fp_detect(void)
+ {
++	/* armhf: in-kernel-fpu-usage does not support preemption */
++	return 0;
+ }
+ 
+-static inline int fp_detect(void)
++static inline unsigned int
++cobalt_arch_in_kernel_fpu_usage(unsigned int expected, rtdm_event_t *rt_synch,
++				int (*report)(const char *fmt, ...))
+ {
+-	return have_vfp ? __COBALT_HAVE_VFP : 0;
++	return 0;
+ }
+ 
+ #endif /* _COBALT_ARM_FPTEST_H */
+diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
+index 520cd38519db66ad25baecedd183d56f92895539..e7f12a9c065a8d239488d90937dac4739c17bdeb 100644
+--- a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
++++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
+@@ -13,21 +13,48 @@
+ 
+ #define have_fp (ELF_HWCAP & HWCAP_FP)
+ 
+-static inline int fp_linux_begin(void)
++static inline int cobalt_arch_fp_detect(void)
+ {
+-	kernel_neon_begin();
+-
+-	return 0;
++	return have_fp ? __COBALT_HAVE_FPU : 0;
+ }
+ 
+-static inline void fp_linux_end(void)
++#if LINUX_VERSION_CODE < KERNEL_VERSION(6,19,0)
++static inline unsigned int
++cobalt_arch_in_kernel_fpu_usage(unsigned int expected, rtdm_event_t *rt_synch,
++				int (*report)(const char *fmt, ...))
+ {
++	int features = cobalt_arch_fp_detect();
++	unsigned int fp_val;
++
++	kernel_neon_begin();
++
++	fp_regs_set(features, expected);
++	rtdm_event_signal(rt_synch);
++	fp_val = fp_regs_check(features, expected, report);
++
+ 	kernel_neon_end();
+-}
+ 
+-static inline int fp_detect(void)
++	return fp_val;
++}
++# else
++static inline unsigned int
++cobalt_arch_in_kernel_fpu_usage(unsigned int expected, rtdm_event_t *rt_synch,
++				int (*report)(const char *fmt, ...))
+ {
+-	return have_fp ? __COBALT_HAVE_FPU : 0;
++	int features = cobalt_arch_fp_detect();
++	struct user_fpsimd_state fpu_state;
++	unsigned int fp_val;
++
++	kernel_neon_begin(&fpu_state);
++
++	fp_regs_set(features, expected);
++	rtdm_event_signal(rt_synch);
++	fp_val = fp_regs_check(features, expected, report);
++
++	kernel_neon_end(&fpu_state);
++
++	return fp_val;
+ }
++#endif
+ 
+ #endif /* !_COBALT_ARM64_FPTEST_H */
+diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h
+index 55818f853c2407eef40f3d1d9a1336bfa7605512..bbb7f3e5f3f9d09ebaf78499a07cc4e48c6dea0f 100644
+--- a/kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h
++++ b/kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h
+@@ -19,13 +19,30 @@
+ #ifndef _COBALT_X86_ASM_FPTEST_H
+ #define _COBALT_X86_ASM_FPTEST_H
+ 
+-#include <linux/errno.h>
+ #include <asm/processor.h>
+ #include <asm/xenomai/wrappers.h>
+ #include <asm/xenomai/uapi/fptest.h>
+ 
+-static inline int fp_linux_begin(void)
++static inline int cobalt_arch_fp_detect(void)
+ {
++	int features = 0;
++
++	if (boot_cpu_has(X86_FEATURE_XMM2))
++		features |= __COBALT_HAVE_SSE2;
++
++	if (boot_cpu_has(X86_FEATURE_AVX))
++		features |= __COBALT_HAVE_AVX;
++
++	return features;
++}
++
++static inline unsigned int
++cobalt_arch_in_kernel_fpu_usage(unsigned int expected, rtdm_event_t *rt_synch,
++				int (*report)(const char *fmt, ...))
++{
++	int features = cobalt_arch_fp_detect();
++	unsigned int fp_val;
++
+ 	kernel_fpu_begin();
+ 	/*
+ 	 * We need a clean context for testing the sanity of the FPU
+@@ -35,25 +52,13 @@ static inline int fp_linux_begin(void)
+ 	 */
+ 	asm volatile("fninit");
+ 
+-	return true;
+-}
++	fp_regs_set(features, expected);
++	rtdm_event_signal(rt_synch);
++	fp_val = fp_regs_check(features, expected, report);
+ 
+-static inline void fp_linux_end(void)
+-{
+ 	kernel_fpu_end();
+-}
+ 
+-static inline int fp_detect(void)
+-{
+-	int features = 0;
+-
+-	if (boot_cpu_has(X86_FEATURE_XMM2))
+-		features |= __COBALT_HAVE_SSE2;
+-
+-	if (boot_cpu_has(X86_FEATURE_AVX))
+-		features |= __COBALT_HAVE_AVX;
+-
+-	return features;
++	return fp_val;
+ }
+ 
+ #endif /* _COBALT_X86_ASM_FPTEST_H */
+diff --git a/kernel/drivers/testing/switchtest.c b/kernel/drivers/testing/switchtest.c
+index f8f6c892076bba729d5d4b536288574df431e344..4a5d2bee7fe4f7ef265e2932e202ef4d8949496a 100644
+--- a/kernel/drivers/testing/switchtest.c
++++ b/kernel/drivers/testing/switchtest.c
+@@ -62,8 +62,6 @@ struct rtswitch_context {
+ 	rtdm_nrtsig_t wake_utask;
+ };
+ 
+-static int fp_features;
+-
+ static int report(const char *fmt, ...)
+ {
+ 	va_list ap;
+@@ -276,7 +274,7 @@ static int rtswitch_to_nrt(struct rtswitch_context *ctx,
+ 
+ 		case RTSWITCH_RT:
+ 
+-			if (!fp_check || fp_linux_begin() < 0) {
++			if (!fp_check || !cobalt_arch_fp_detect()) {
+ 				fp_check = 0;
+ 				goto signal_nofp;
+ 			}
+@@ -284,10 +282,8 @@ static int rtswitch_to_nrt(struct rtswitch_context *ctx,
+ 			expected = from_idx + 500 +
+ 				(ctx->switches_count % 4000000) * 1000;
+ 
+-			fp_regs_set(fp_features, expected);
+-			rtdm_event_signal(&to->rt_synch);
+-			fp_val = fp_regs_check(fp_features, expected, report);
+-			fp_linux_end();
++			fp_val = cobalt_arch_in_kernel_fpu_usage(
++				expected, &to->rt_synch, report);
+ 
+ 			if(down_interruptible(&from->nrt_synch))
+ 				return -EINTR;
+@@ -308,11 +304,8 @@ static int rtswitch_to_nrt(struct rtswitch_context *ctx,
+ 				(ctx->switches_count % 4000000) * 1000;
+ 			barrier();
+ 
+-			fp_linux_begin();
+-			fp_regs_set(fp_features, expected);
+-			rtdm_event_signal(&to->rt_synch);
+-			fp_val = fp_regs_check(fp_features, expected, report);
+-			fp_linux_end();
++			fp_val = cobalt_arch_in_kernel_fpu_usage(
++				expected, &to->rt_synch, report);
+ 
+ 			if (down_interruptible(&from->nrt_synch))
+ 				return -EINTR;
+@@ -725,8 +718,6 @@ static struct rtdm_device device = {
+ 
+ static int __init __switchtest_init(void)
+ {
+-	fp_features = fp_detect();
+-
+ 	return rtdm_dev_register(&device);
+ }
+ 
 
 -- 
-Philippe.
+2.53.0
+
