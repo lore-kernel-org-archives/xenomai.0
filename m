@@ -1,113 +1,113 @@
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B78DD23EAA3
-	for <xenomai@lists.linux.dev>; Fri, 20 Feb 2026 15:05:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 998D81487E9
+	for <xenomai@lists.linux.dev>; Fri, 20 Feb 2026 15:06:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771599938; cv=none; b=hCJ5FoVqFNxUB/RCBHe8NovsYVm7JyhwUw4+umS568ouirZQ67p5pRg/pza1hYxZ6hRvpjwVqlC3hgk3aiCjoetWY3qFBImHdfdv46SdMeB4NHZVNjJc7hzwJOmNLOFTD5WrYEqh4E70TlcLS38Y8KeFfMJo8/vUSpDuxDLWXCY=
+	t=1771599976; cv=none; b=ADIrHDAkqJy1N9lx4+9SwoC3ruLxbTGGyGpg0CrG4yo9ntNo8eJWdtsTFxU5wQnw8OBCiy3jVne1RLTjfc9/jaDdC6WOPVX11kKLEWDVQmNLw0JV3IHghtAxL9uqXGhuQDWENLC6S9bcekHti5iNzoYv3zBkKB5zkeyfW5HRDYs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771599938; c=relaxed/simple;
-	bh=X2kkLrsbCuTP/tsOvDHPRMjng2H6Q+3SBJkAGWCVNFY=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=d9U/fsE2eW6p0haxORkr4r833oiqVrV0qYuUfB2vuZ8nIRvxzRv+ZjHlPlPAyZk+DgTBHLIuTFkXoncFavWpWLrjMI0KfIeiEWSg2bKa05JlVc3c0buhOJ/OGbd6Gd2JdQ60c44eTeFcZg+NUJboqU/8CaDSSRsvYPhGqEKNHQI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=HRBgyoV9; arc=none smtp.client-ip=185.136.64.225
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1771599976; c=relaxed/simple;
+	bh=bNX67wMcS3Xv3SCQ6hnOdw7QfPZK1y2USyWBW2Uacw8=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=PoI23SegMyO9Qfi5W5hETv7V3qrscjCknbsAcftkTaqIPAgSoLVi4tEro+fm4dxpsmdAV7IDMZlF4oGNR9/Z80sx94aOmiu2Eh/rV9T8+TbZbCTOSSm48r7/F+fzHy7hRYdrH0r7BaupSis4+DmTLeJbQVbdVFml8DK5L0OGoWI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=F17KhK1b; arc=none smtp.client-ip=217.70.183.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="HRBgyoV9"
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20260220150530083cf61db000020791
-        for <xenomai@lists.linux.dev>;
-        Fri, 20 Feb 2026 16:05:31 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=8CdPFOIdJj4RVOk+nhtPK/fFhW9gy9oMMO6tFKdJM8k=;
- b=HRBgyoV9hCsiyqBg2wF8wxNz3R8WVWiRHXaOTVZ+z+yjloC9Nv8FA9L+PU7KYcuzT+75no
- VaHFA0y14RBhYr1ES7V/JAsj9bZu+pWHgt+fWYoqODneoRskCcvtIFu9sgAd8+DA088KIMh5
- w9J0xhRbDK3evRBnz63/4dHPvjtBILVCWur59k7DBTkwhyq/Tfki7kB9wDL3IvEYlAekL4ck
- k4tMmucXi4H59kSzpNZob0iHRzle/0DvhVIiMA82VTFkHdAnyZM6PimAOBpbVpfIJOPEez1Z
- s2X6eSQEfjR4NKr4F9NotvsTKOPqMesK65HgAD9gc7QdDhSwAH+/zrsg==;
-Message-ID: <0379be88886cfdb00041c1427113549130ef7b49.camel@siemens.com>
-Subject: Re: [PATCH 20/20] scripts/xeno-config: Allow disabling the y2038 /
- time64_t support
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@lists.linux.dev>
-Date: Fri, 20 Feb 2026 16:05:30 +0100
-In-Reply-To: <420e254e-667f-4799-9e4c-4e4ee2cb4e53@siemens.com>
-References: 
-	<20260220-wip-flo-fix-time64-32bit-native-v1-0-731c773e72cc@siemens.com>
-	 <20260220-wip-flo-fix-time64-32bit-native-v1-20-731c773e72cc@siemens.com>
-	 <420e254e-667f-4799-9e4c-4e4ee2cb4e53@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="F17KhK1b"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 88881443E3;
+	Fri, 20 Feb 2026 15:06:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1771599972;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jl5QE3JmBdkkld8xFy0gseFhjx2f4Rd6nKIDnvgw4wQ=;
+	b=F17KhK1bLv/hGC7zwvMhjm0eOPHX6EAkh47v416XwXXi3n8aCOelEMk0N0VAkG4RjQwVYo
+	cC2Vrkg1YbqiLy72rdEVLHVsiwM1bbYkTh9wwfgwkrlFkKw3dRwDtsiVm6Rgd63IeF39FE
+	T9fUmZ1OLESU8CUYxisJdJ6AlN70NjGMbdQlI0LfuE2PGWavVU9sWgQ/Uu7mB0s3u9qxwE
+	ySwegkRI+T0UFp8PxeNZhDKkCHEK2f0KeTTVBt3HTbXjaAfH+hU93RAPGXK9cubSIfr07E
+	Audv/rN6bePpzs3/2RbMCbONLMblxb/osruPU5NOcD4wGzwi8nGMRdjatQ+4YA==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>,  Xenomai <xenomai@lists.linux.dev>
+Subject: Re: [PATCH 00/20] y2038: libcobalt: Allow both, native + time64_t
+ interfaces at the same time
+In-Reply-To: <fdea742b5c4d6d71d7061bd0421981d13b370022.camel@siemens.com>
+	(Florian Bezdeka's message of "Fri, 20 Feb 2026 12:19:04 +0100")
+References: <20260220-wip-flo-fix-time64-32bit-native-v1-0-731c773e72cc@siemens.com>
+	<87tsvbhigf.fsf@xenomai.org>
+	<faebe432-dddb-453a-91d1-77ee48a784ca@siemens.com>
+	<87cy1zhdob.fsf@xenomai.org>
+	<fdea742b5c4d6d71d7061bd0421981d13b370022.camel@siemens.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Fri, 20 Feb 2026 16:06:12 +0100
+Message-ID: <871pifh2u3.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Content-Type: text/plain
+X-GND-Sasl: rpm@xenomai.org
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddvvdekjeehucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpeffffekleffvdfhffejudethedufedtheduffffvdduudejvdehvdehjeejleehgfenucffohhmrghinhepkhgvrhhnvghlrdhorhhgnecukfhppedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepihhnvghtpedvrgdtudemvgdtrgemudelsgemfegtugdtmeelkeelrgemhegtgegsmegsjehffhemsggrfhdphhgvlhhopehphihrohdpmhgrihhlfhhrohhmpehrphhmseigvghnohhmrghirdhorhhgpdhqihgupeekkeekkedugeegfefgfedpmhhouggvpehsmhhtphhouhhtpdhnsggprhgtphhtthhopeefpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehjrghnrdhkihhsiihkrgesshhivghmvghnshdrtghomhdprhgtphhtthhopehflhhorhhirghnrdgsvgiiuggvk
+ hgrsehsihgvmhgvnhhsrdgtohhm
+X-GND-State: clean
+X-GND-Score: -100
 
-On Fri, 2026-02-20 at 15:50 +0100, Jan Kiszka wrote:
-> On 20.02.26 10:09, Florian Bezdeka wrote:
-> > xeno-config got a new cmdline option --disable-y2038 that will disable
-> > the time64_t or (year 2038) support inside the application that is
-> > being build against libcobalt.
-> >=20
-> > libcobalt provides both interfaces, so for native time_t and for
-> > time64_t at the same time. By default, the time64_t based interfaces
-> > will be used. If an application does really want to go back to native
-> > time_t --disable-y2038 has to be specified before the --cflags option.
-> >=20
-> > The new parameter is only useful for (old) 32 bit applications.
-> >=20
-> > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> > ---
-> >  scripts/xeno-config-cobalt.in | 5 +++++
-> >  1 file changed, 5 insertions(+)
-> >=20
-> > diff --git a/scripts/xeno-config-cobalt.in b/scripts/xeno-config-cobalt=
-.in
-> > index 46b6c11b92fe20e4474e0173a211b18dc5cd7e3b..ecbfefb8f0a9f7ea99864d0=
-7e5f717841ef5da4e 100644
-> > --- a/scripts/xeno-config-cobalt.in
-> > +++ b/scripts/xeno-config-cobalt.in
-> > @@ -62,6 +62,7 @@ Options :
-> >          --core
-> >          --info
-> >          --compat
-> > +        --disable-y2038
-> >  EOF
-> >      exit $1
-> >  }
-> > @@ -173,6 +174,9 @@ while test $# -gt 0; do
-> >  	--posix|--cobalt|--vxworks|--psos|--alchemy|--rtdm|--smokey)
-> >  	    skin_list=3D"$skin_list `expr "$1" : '--\(.*\)'`"
-> >  	    ;;
-> > +	--disable-y2038)
-> > +	    disable_y2038=3Dy
-> > +	    ;;
-> >  	--cflags)
-> >  	    do_cflags=3Dy
-> >  	    ;;
-> > @@ -233,6 +237,7 @@ if test x$do_cflags =3D xy; then
-> >  		;;
-> >  	esac
-> >      done
-> > +    test x$disable_y2038 =3D xy && cflags=3D"$cflags -U_TIME_BITS -U_F=
-ILE_OFFSET_BITS"
->=20
-> I did that undef in my mmap patch as well, but I wonder if - at least
-> here - we couldn't filter out both defines from the given cflags.
->=20
+Florian Bezdeka <florian.bezdeka@siemens.com> writes:
 
-In case libcobalt itself was build with time64_t support those flags are
-part of all cflags variables. Might be that there is a more elegant way
-to remove flags but that didn't come to mind yet...
+> On Fri, 2026-02-20 at 12:12 +0100, Philippe Gerum wrote:
+>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>> 
+>> > On 20.02.26 10:28, Philippe Gerum wrote:
+>> > > Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+>> > > 
+>> > > > Hi all,
+>> > > > 
+>> > > > The current time64_t / y2038 support switched libcobalt to time64_t
+>> > > > only, removing the interfaces for the native time_t type.
+>> > > > 
+>> > > > With that series applied both worlds can live together in one libcobalt
+>> > > > build which should hopefully increase the backward compatibility a bit.
+>> > > > 
+>> > > 
+>> > > Is this series re-enabling time32 in a way?
+>> > > 
+>> > 
+>> > It's allowing to keep the time32 ABIs around without having to use
+>> > --disable-y2038 for configure. It also resolves that we were changing
+>> > existing time32-only functions to time64 where glibc actually added a
+>> > separate one (see also
+>> > https://lore.kernel.org/xenomai/cd03fe98-7237-426d-91c7-c6eae63a617e@siemens.com/T/#u
+>> > - which probably needs a rework to align with this series).
+>> > 
+>> 
+>> Ok, so this is merely to keep the legacy applications building over the
+>> latest x3 releases as transparently as possible.
+>> 
+>> x4 is unlikely to support time32 for much longer though. With the
+>> upcoming support for a POSIX API, we can't make a pledge for a stable
+>> ABI yet - timeouts on syscalls have to be handled differently on the
+>> whole user->kernel path in the evl core services, in order to enable
+>> some of them for POSIX too. I plan to use this change window for phasing
+>> out time32 entirely in the same move, which would simplify the POSIX
+>> implementation significantly compared to x3, not to speak of the fact
+>> that using time32 for new applications in this day and age would be
+>> obviously wrong anyway.
+>> 
+>
+> I see no problem here. If possible - and that seems to be the case - x4
+> should not deal with time32 anymore.
+>
 
-A different approach might be to skip writing the time64_t enablement
-flags into XENO_USER_APP_CFLAGS (configure). Side effect might be that
-every (testsuite) application has to enable the support on it's own,
-doing all the glibc support checks...
+Yes, moving to time64-only would be straightforward for x4, and would
+not even break the ABI. libevl is currently converting time32 requests
+to time64 by using bounce buffers for (i)time(r)specs internally, we
+only need to drop the latter - which we need to in order to meet a
+particular POSIX requirement about deferred timeout handling.
+
+-- 
+Philippe.
