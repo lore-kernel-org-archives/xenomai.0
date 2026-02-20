@@ -1,37 +1,37 @@
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2467E32FA1B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D27133031F
 	for <xenomai@lists.linux.dev>; Fri, 20 Feb 2026 11:27:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771586874; cv=none; b=C7H494F3O7zjLjHxYzqtrW3ZEapOFSg4BTzx9cT6qk6L6z8K3bQ4BixuMLNQnq6bX+jivOSJ/EEKbU/gvMSt9flpI6/siZTFsmegq0sQ5kM2aLbgSRcXvmHQbUm87ufaxqGSD34b9Lo3GnSuz7pEqftQsFNOJxcsX+yh98iOruo=
+	t=1771586873; cv=none; b=aXtUtXIo9vspUmqxTF0H2RseCmL07fk5jUedxmUUW+LoCuWkBQBrGjkYdVIS+l5he2HCWxnQHOgXrXDxtUnaoZ9Jx+TKnGRs6T05QnUuKVSawwvpkFUvwsrpkMBK9+DqojbCS2gFupy3FWZMEV2JEHjQmtZs9kfbcOdIi24QUqU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771586874; c=relaxed/simple;
-	bh=MW3Y/WtfB/p95cGESjpt5lkE4j1y72PciyLZXm7AUeU=;
+	s=arc-20240116; t=1771586873; c=relaxed/simple;
+	bh=ZdUTi/BZnUIK3+XUumXid1Vcdkp4klz8VEtMSYx3tZ4=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=CqbgoAZjEMNW8Z3s+rbzDwPiu2yxQh9X0uJhkHerLud9jMl0oyuy5YFHs+tCXMK2RLiOa8q4SVFz9MtX1GS0ZzKCt8nWx/XgZ4ICAIEP3dSjgOKcCTAMtxovHeZzPmWhGT4xsXVmZGAU843jC+8DK6HiFH+tGzgAkguGuGBXIII=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=dFlRG1Wv; arc=none smtp.client-ip=185.136.64.225
+	 In-Reply-To:To:Cc; b=or3mH3i03uUjYV5ClLHoRhInpGgvAeA2jAXJXJU0S502sPAfNGaoca2SdsB6w/ZjkU1Ci7Y5gl+h5MOPwfUuD1QuReNbh6p0Z5CJ0i7QLTUTMAuwX0i7BZ8hhn9u/5W8sNJ1kX+yHnS81JJgblsIyzmbLRe7FdX2a9RH7Le3z+c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=RB3DZEgS; arc=none smtp.client-ip=185.136.65.228
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="dFlRG1Wv"
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 202602201127496122b232d800020774
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="RB3DZEgS"
+Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 20260220112748d60df03cce000207d0
         for <xenomai@lists.linux.dev>;
-        Fri, 20 Feb 2026 12:27:49 +0100
+        Fri, 20 Feb 2026 12:27:48 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=3RFDc5OQILV3witAQ7WT/zvPQEyT+T2XEvyBvhgjJVM=;
- b=dFlRG1WvNs2aqnYndq5cUnLvHYonZh+p3ixXwdJ3BpULUWmJqpIWzBxBzPQsCCVNGYu69D
- lVsGhW1pTUf1cZMQ2E6U2SRMus4+3gVhm8t4hPVwjG0sRHYq0dqYzpQ6BwBx8xKhg5yrK6YV
- VDZYNDA798nUQE8XG+L0OaY5XjiE4Msa2598CS5fMQAnH8fCsg0H4KBna0tbdF8SLhfZezkY
- Oo7OJUFaNXcUBmELTRFS4GigsEYaLB40/1OQYY87Wryzi6iX1VaGwmFKSzkndaBC0kyNF/II
- Rpn08OHz4FuMdfByHDdnMiETz7fnftuiEsflZDteqP6zzS8WVXvDv02g==;
+ bh=RpHqvkO+Epp/xwKKUWnJspJ6AG7AtTA59GTuYgcSkcM=;
+ b=RB3DZEgSKEWI0sAd7pJSdF5u2PC+vKYg98ls6Xl6MUYvbrMYVN9f7z9ENVFjyMZzaEDBoo
+ rVIvr2nA3VgMbmxuedRG83fFGW1vN4ZwN61lbz1qdSfZHo5NfjXaDoKtMuz+OpO9depw0D5G
+ RKwJtrihK04SySbUqlYieHH/Dl4+/Te2XNsmC4w1ZZI8mvjgj9a+VCJ+kYMI/ChcPUoK0dMT
+ s5TYJ0TLYRjLJOb7JFn7BlDDfvJ0p8atbI9OUZOghGV5+7L8ChzbS0tVeDvQ4OWLjLvueAhF
+ Zst+xkLrkCG170fYbjK4qL1Ws0jcYcK7vhlK21UXg6WN5/xesLjDWuwQ==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 20 Feb 2026 12:27:50 +0100
-Subject: [PATCH v2 3/3] testsuite/switchtest: Add support for Dovetail >=
- 6.19
+Date: Fri, 20 Feb 2026 12:27:48 +0100
+Subject: [PATCH v2 1/3] cobalt: Prepare for new signature of
+ __request_percpu_irq() in 6.19
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260220-wip-flo-prepare-for-6-19-v2-3-222effb01976@siemens.com>
+Message-Id: <20260220-wip-flo-prepare-for-6-19-v2-1-222effb01976@siemens.com>
 References: <20260220-wip-flo-prepare-for-6-19-v2-0-222effb01976@siemens.com>
 In-Reply-To: <20260220-wip-flo-prepare-for-6-19-v2-0-222effb01976@siemens.com>
 To: Xenomai <xenomai@lists.linux.dev>
@@ -49,259 +49,122 @@ Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-The background for this reworking is a recent change to Linux in 6.19:
+The signature of __request_percpu_irq() got one additional affinity
+parameter in 6.19 and 7.0 will remove the function entirely.
 
-commit 4fa617cc6851 ("arm64/fpsimd: Allocate kernel mode FP/SIMD
-		     buffers on the stack")
+Dovetail 6.19 will introduce a new dovetail specific service called
+request_percpu_irq_affinity_flags() that allows us to set flags and
+affinity at the same time.
 
-expects all (non-preemtable) users to provide a buffer that is used
-in case the calling task is scheduled out. NULL is only allowed when
-preemption is disabled.
-
-preempt_disable() has no impact on OOB tasks, so when an OOB task is
-scheduled out the fpsimd code tries to save the FPU regs to NULL, which
-(obviously) triggered a fault.
-
-To be able to provide a struct user_fpsimd_state located on the stack
-the complete FPU usage has to move into one function, now called
-arch_cobalt_in_kernel_fpu_usage() and implemented by all architectures.
-arm64 needs two implementations to stay compatible with older kernels.
+It might happen that older Dovetail versions get the new API via
+backports, so the re-#definement for older kernels might get
+obsolete earlier than dropping support for Dovetail < 6.19.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- .../cobalt/arch/arm/include/asm/xenomai/fptest.h   | 26 ++++---------
- .../cobalt/arch/arm64/include/asm/xenomai/fptest.h | 43 ++++++++++++++++++----
- .../cobalt/arch/x86/include/asm/xenomai/fptest.h   | 41 ++++++++++++---------
- kernel/drivers/testing/switchtest.c                | 19 +++-------
- 4 files changed, 70 insertions(+), 59 deletions(-)
+ include/cobalt/kernel/dovetail/pipeline/irq.h      | 6 ++++++
+ include/cobalt/kernel/dovetail/pipeline/pipeline.h | 9 ++++-----
+ include/cobalt/kernel/dovetail/pipeline/sirq.h     | 9 ++++-----
+ kernel/cobalt/dovetail/tick.c                      | 8 ++++----
+ 4 files changed, 18 insertions(+), 14 deletions(-)
 
-diff --git a/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h
-index fc177fcb53bd259011a4a65f889c236f7c8e115e..f9f61109db07351283612f6e3a69a179c0a51e34 100644
---- a/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h
-+++ b/kernel/cobalt/arch/arm/include/asm/xenomai/fptest.h
-@@ -19,29 +19,17 @@
- #ifndef _COBALT_ARM_FPTEST_H
- #define _COBALT_ARM_FPTEST_H
+diff --git a/include/cobalt/kernel/dovetail/pipeline/irq.h b/include/cobalt/kernel/dovetail/pipeline/irq.h
+index 55d9b8ff17cd08e5e8c09aec393a1e23736c1b76..df0b8ceb05c25d655a331d238e7ef8ac8a6afeea 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/irq.h
++++ b/include/cobalt/kernel/dovetail/pipeline/irq.h
+@@ -5,6 +5,12 @@
+ #ifndef _COBALT_KERNEL_DOVETAIL_IRQ_H
+ #define _COBALT_KERNEL_DOVETAIL_IRQ_H
  
--#include <linux/errno.h>
--#include <asm/hwcap.h>
--
--#ifdef CONFIG_VFP
--#define have_vfp (elf_hwcap & HWCAP_VFP)
--#else /* !CONFIG_VFP */
--#define have_vfp 0
--#endif /* !CONFIG_VFP */
--
--#include <asm/xenomai/uapi/fptest.h>
--
--static inline int fp_linux_begin(void)
--{
--	return -ENOSYS;
--}
--
--static inline void fp_linux_end(void)
-+static inline int cobalt_arch_fp_detect(void)
- {
-+	/* armhf: in-kernel-fpu-usage does not support preemption */
-+	return 0;
- }
- 
--static inline int fp_detect(void)
-+static inline unsigned int
-+cobalt_arch_in_kernel_fpu_usage(unsigned int expected, rtdm_event_t *rt_synch,
-+				int (*report)(const char *fmt, ...))
- {
--	return have_vfp ? __COBALT_HAVE_VFP : 0;
-+	return 0;
- }
- 
- #endif /* _COBALT_ARM_FPTEST_H */
-diff --git a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-index 520cd38519db66ad25baecedd183d56f92895539..e7f12a9c065a8d239488d90937dac4739c17bdeb 100644
---- a/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-+++ b/kernel/cobalt/arch/arm64/include/asm/xenomai/fptest.h
-@@ -13,21 +13,48 @@
- 
- #define have_fp (ELF_HWCAP & HWCAP_FP)
- 
--static inline int fp_linux_begin(void)
-+static inline int cobalt_arch_fp_detect(void)
- {
--	kernel_neon_begin();
--
--	return 0;
-+	return have_fp ? __COBALT_HAVE_FPU : 0;
- }
- 
--static inline void fp_linux_end(void)
-+#if LINUX_VERSION_CODE < KERNEL_VERSION(6,19,0)
-+static inline unsigned int
-+cobalt_arch_in_kernel_fpu_usage(unsigned int expected, rtdm_event_t *rt_synch,
-+				int (*report)(const char *fmt, ...))
- {
-+	int features = cobalt_arch_fp_detect();
-+	unsigned int fp_val;
-+
-+	kernel_neon_begin();
-+
-+	fp_regs_set(features, expected);
-+	rtdm_event_signal(rt_synch);
-+	fp_val = fp_regs_check(features, expected, report);
-+
- 	kernel_neon_end();
--}
- 
--static inline int fp_detect(void)
-+	return fp_val;
-+}
-+# else
-+static inline unsigned int
-+cobalt_arch_in_kernel_fpu_usage(unsigned int expected, rtdm_event_t *rt_synch,
-+				int (*report)(const char *fmt, ...))
- {
--	return have_fp ? __COBALT_HAVE_FPU : 0;
-+	int features = cobalt_arch_fp_detect();
-+	struct user_fpsimd_state fpu_state;
-+	unsigned int fp_val;
-+
-+	kernel_neon_begin(&fpu_state);
-+
-+	fp_regs_set(features, expected);
-+	rtdm_event_signal(rt_synch);
-+	fp_val = fp_regs_check(features, expected, report);
-+
-+	kernel_neon_end(&fpu_state);
-+
-+	return fp_val;
- }
++#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 19, 0)
++#define request_percpu_irq_affinity_flags(irq, handler, flags, devname,        \
++					  affinity, dev_id)                    \
++	__request_percpu_irq(irq, handler, flags, devname, dev_id)
 +#endif
- 
- #endif /* !_COBALT_ARM64_FPTEST_H */
-diff --git a/kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h b/kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h
-index 55818f853c2407eef40f3d1d9a1336bfa7605512..bbb7f3e5f3f9d09ebaf78499a07cc4e48c6dea0f 100644
---- a/kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h
-+++ b/kernel/cobalt/arch/x86/include/asm/xenomai/fptest.h
-@@ -19,13 +19,30 @@
- #ifndef _COBALT_X86_ASM_FPTEST_H
- #define _COBALT_X86_ASM_FPTEST_H
- 
--#include <linux/errno.h>
- #include <asm/processor.h>
- #include <asm/xenomai/wrappers.h>
- #include <asm/xenomai/uapi/fptest.h>
- 
--static inline int fp_linux_begin(void)
-+static inline int cobalt_arch_fp_detect(void)
++
+ static inline void xnintr_init_proc(void)
  {
-+	int features = 0;
-+
-+	if (boot_cpu_has(X86_FEATURE_XMM2))
-+		features |= __COBALT_HAVE_SSE2;
-+
-+	if (boot_cpu_has(X86_FEATURE_AVX))
-+		features |= __COBALT_HAVE_AVX;
-+
-+	return features;
-+}
-+
-+static inline unsigned int
-+cobalt_arch_in_kernel_fpu_usage(unsigned int expected, rtdm_event_t *rt_synch,
-+				int (*report)(const char *fmt, ...))
-+{
-+	int features = cobalt_arch_fp_detect();
-+	unsigned int fp_val;
-+
- 	kernel_fpu_begin();
- 	/*
- 	 * We need a clean context for testing the sanity of the FPU
-@@ -35,25 +52,13 @@ static inline int fp_linux_begin(void)
+ 	/* N/A */
+diff --git a/include/cobalt/kernel/dovetail/pipeline/pipeline.h b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+index 2e6e66a2d6d4dbf407d4ce42fff8b84acc2931d0..f5ee443ada3788b8b0261f77ae7da5d5f69ef9f2 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/pipeline.h
++++ b/include/cobalt/kernel/dovetail/pipeline/pipeline.h
+@@ -11,6 +11,7 @@
+ #include <asm/xenomai/features.h>
+ #include <asm/xenomai/syscall.h>
+ #include <asm/syscall.h>
++#include <pipeline/irq.h>
+ #include <pipeline/machine.h>
+ 
+ typedef unsigned long spl_t;
+@@ -42,11 +43,9 @@ static inline int pipeline_request_resched_ipi(void)
+ 		return 0;
+ 
+ 	/* Trap the out-of-band rescheduling interrupt. */
+-	return __request_percpu_irq(RESCHEDULE_OOB_IPI,
+-			pipeline_reschedule_ipi_handler,
+-			IRQF_OOB,
+-			"Xenomai reschedule",
+-			&cobalt_machine_cpudata);
++	return request_percpu_irq_affinity_flags(
++		RESCHEDULE_OOB_IPI, pipeline_reschedule_ipi_handler, IRQF_OOB,
++		"Xenomai reschedule", NULL, &cobalt_machine_cpudata);
+ }
+ 
+ static inline void pipeline_free_resched_ipi(void)
+diff --git a/include/cobalt/kernel/dovetail/pipeline/sirq.h b/include/cobalt/kernel/dovetail/pipeline/sirq.h
+index 1da9d13b217081ba52ef0444b60d236ddb9c8a9e..00c08af784588d5239cf399d69800c914221b210 100644
+--- a/include/cobalt/kernel/dovetail/pipeline/sirq.h
++++ b/include/cobalt/kernel/dovetail/pipeline/sirq.h
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/irq_pipeline.h>
+ #include <cobalt/kernel/assert.h>
++#include <pipeline/irq.h>
+ 
+ /*
+  * Wrappers to create "synthetic IRQs" the Dovetail way. Those
+@@ -29,11 +30,9 @@ int pipeline_create_inband_sirq(irqreturn_t (*handler)(int irq, void *dev_id))
+ 	if (sirq == 0)
+ 		return -EAGAIN;
+ 
+-	ret = __request_percpu_irq(sirq,
+-			handler,
+-			IRQF_NO_THREAD,
+-			"Inband sirq",
+-			&cobalt_machine_cpudata);
++	ret = request_percpu_irq_affinity_flags(sirq, handler, IRQF_NO_THREAD,
++						"Inband sirq", NULL,
++						&cobalt_machine_cpudata);
+ 
+ 	if (ret) {
+ 		irq_dispose_mapping(sirq);
+diff --git a/kernel/cobalt/dovetail/tick.c b/kernel/cobalt/dovetail/tick.c
+index 873b62471eac758fba5b86fa36b8265b6284dc87..fa7ef09eaf39cdc1fca5c68f22f57da0c1320789 100644
+--- a/kernel/cobalt/dovetail/tick.c
++++ b/kernel/cobalt/dovetail/tick.c
+@@ -8,6 +8,7 @@
+ #include <linux/tick.h>
+ #include <linux/clockchips.h>
+ #include <cobalt/kernel/intr.h>
++#include <pipeline/irq.h>
+ #include <pipeline/tick.h>
+ #include <cobalt/kernel/sched.h>
+ #include <cobalt/kernel/timer.h>
+@@ -153,10 +154,9 @@ int pipeline_install_tick_proxy(void)
+ 	 * CPUs.
  	 */
- 	asm volatile("fninit");
- 
--	return true;
--}
-+	fp_regs_set(features, expected);
-+	rtdm_event_signal(rt_synch);
-+	fp_val = fp_regs_check(features, expected, report);
- 
--static inline void fp_linux_end(void)
--{
- 	kernel_fpu_end();
--}
- 
--static inline int fp_detect(void)
--{
--	int features = 0;
--
--	if (boot_cpu_has(X86_FEATURE_XMM2))
--		features |= __COBALT_HAVE_SSE2;
--
--	if (boot_cpu_has(X86_FEATURE_AVX))
--		features |= __COBALT_HAVE_AVX;
--
--	return features;
-+	return fp_val;
- }
- 
- #endif /* _COBALT_X86_ASM_FPTEST_H */
-diff --git a/kernel/drivers/testing/switchtest.c b/kernel/drivers/testing/switchtest.c
-index f8f6c892076bba729d5d4b536288574df431e344..4a5d2bee7fe4f7ef265e2932e202ef4d8949496a 100644
---- a/kernel/drivers/testing/switchtest.c
-+++ b/kernel/drivers/testing/switchtest.c
-@@ -62,8 +62,6 @@ struct rtswitch_context {
- 	rtdm_nrtsig_t wake_utask;
- };
- 
--static int fp_features;
--
- static int report(const char *fmt, ...)
- {
- 	va_list ap;
-@@ -276,7 +274,7 @@ static int rtswitch_to_nrt(struct rtswitch_context *ctx,
- 
- 		case RTSWITCH_RT:
- 
--			if (!fp_check || fp_linux_begin() < 0) {
-+			if (!fp_check || !cobalt_arch_fp_detect()) {
- 				fp_check = 0;
- 				goto signal_nofp;
- 			}
-@@ -284,10 +282,8 @@ static int rtswitch_to_nrt(struct rtswitch_context *ctx,
- 			expected = from_idx + 500 +
- 				(ctx->switches_count % 4000000) * 1000;
- 
--			fp_regs_set(fp_features, expected);
--			rtdm_event_signal(&to->rt_synch);
--			fp_val = fp_regs_check(fp_features, expected, report);
--			fp_linux_end();
-+			fp_val = cobalt_arch_in_kernel_fpu_usage(
-+				expected, &to->rt_synch, report);
- 
- 			if(down_interruptible(&from->nrt_synch))
- 				return -EINTR;
-@@ -308,11 +304,8 @@ static int rtswitch_to_nrt(struct rtswitch_context *ctx,
- 				(ctx->switches_count % 4000000) * 1000;
- 			barrier();
- 
--			fp_linux_begin();
--			fp_regs_set(fp_features, expected);
--			rtdm_event_signal(&to->rt_synch);
--			fp_val = fp_regs_check(fp_features, expected, report);
--			fp_linux_end();
-+			fp_val = cobalt_arch_in_kernel_fpu_usage(
-+				expected, &to->rt_synch, report);
- 
- 			if (down_interruptible(&from->nrt_synch))
- 				return -EINTR;
-@@ -725,8 +718,6 @@ static struct rtdm_device device = {
- 
- static int __init __switchtest_init(void)
- {
--	fp_features = fp_detect();
--
- 	return rtdm_dev_register(&device);
- }
- 
+ 	if (num_possible_cpus() > 1) {
+-		ret = __request_percpu_irq(TIMER_OOB_IPI,
+-					tick_ipi_handler,
+-					IRQF_OOB, "Xenomai timer IPI",
+-					&cobalt_machine_cpudata);
++		ret = request_percpu_irq_affinity_flags(
++			TIMER_OOB_IPI, tick_ipi_handler, IRQF_OOB,
++			"Xenomai timer IPI", NULL, &cobalt_machine_cpudata);
+ 		if (ret)
+ 			return ret;
+ 	}
 
 -- 
 2.53.0
