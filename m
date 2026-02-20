@@ -1,37 +1,36 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 338F231AF25
-	for <xenomai@lists.linux.dev>; Fri, 20 Feb 2026 09:08:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39FF731AAAF
+	for <xenomai@lists.linux.dev>; Fri, 20 Feb 2026 09:08:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771578542; cv=none; b=eUol+I9pzW5XUaD3ALxHHx7I0zPTROxQZQSWb49PS+KNeUKPPAHHJad1qeT31/XZuc8P4FUWFluyX57v63AGk1Hb7RotIJHNjSVgmT9Ndeo/OGasfPMsm10++Hoy7dzUyTHI5/9WSfegrKYNEmjf7bg15lt/llhp9osPHLQnPgQ=
+	t=1771578543; cv=none; b=GXdBXekP7t9e62m75h0Kbnm7zdlOaB/otwNCClSJCW8IoEJXTo7Y7cXUpTYWu1Q7RZa7OLJgzBkwZCydkE7QDSSK5pbO+fWD3/MHvAHcGkCUB3fdMyCkTCtBMVAdhFnNNvZQTdxrRrT8m0eGdv7EPToI72YUrs2S7gUfqws4jn0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771578542; c=relaxed/simple;
-	bh=0GN/k4fMKZYiwOgEuyuGE+d2k2erun/HsIqp+2rj6B8=;
+	s=arc-20240116; t=1771578543; c=relaxed/simple;
+	bh=RbcBuhYiGMvlnPlo3ZZngFfLZbuBFSAi+kBZYZOqK0Y=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=cKVmggFzo2VZ0O/akOLx+Z+LWoLBOiTIMx4e7HgsgiJ1NGFzjHz9tlSI4ShN2OUe3OBgFQ7G5yFU3QI63ZU74zXTRzYZ2Y4kwZqsS79XGmQPxhxUNuJWX8yiibEBnwIY684PRQoMUfgUOnhwfOzqTM2MXMlb6dPaR5hqAZCsa2w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=MSYl5KzZ; arc=none smtp.client-ip=185.136.64.227
+	 In-Reply-To:To:Cc; b=urPPEQJbJYPx4421UbW09HuoqspnFESi/aQ8E0ooOPZqrD/Z8TP0NtcRBwNMz40pgEpeS/1xEPVd/Vs1IF5K97tfhtG6qYoqciiMq1H0OKEnDeTB7QDarz4Wh6j+KrvdIr7/XDMXNC1j+emLcv4612IXZJwDD5qjSGjq4bOAcIA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=X+Yw1TvV; arc=none smtp.client-ip=185.136.64.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="MSYl5KzZ"
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20260220090846078b8e731800020797
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="X+Yw1TvV"
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202602200908450914dd51d90002075f
         for <xenomai@lists.linux.dev>;
-        Fri, 20 Feb 2026 10:08:46 +0100
+        Fri, 20 Feb 2026 10:08:45 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=AtiJCecL4DO8HfM1VJ+/jQPdSplHxx5XDBrSev816Ow=;
- b=MSYl5KzZPjLZJikkVafVq/FrKPImed3UxCcGBdaChBukWO+K55AlWDEaDqv449sGyWYo98
- N2TDHIl8sV6nvV6BKAl5kY2jq/P6JbyXYRR2l9yIm+zpBXG+3Wn6Ifc/oPisfqQ5qiN+HHuz
- 0EhIBCs/IqjGDsjP4pRNG1yoHjHIs5CnU/jYvBUCTyvfuSZo1o9jLieDBg83ZQLXUD9fqyE+
- FsLOzdB1AX1yXAKmw0RFIHTJHfpdg+gS36U5jmQfBjlM5CBHTo/qjcAfTssen3wUV1SOnZTo
- VRTlJhEhcWncbpwxYQLbNi998BDNavS+4s8MJwcpp7d+XfxIXEvcC9wQ==;
+ bh=LyG5hv/A1T5aZkZGVoSc5u/vXBUmTTN4C1aLZ/jVvyw=;
+ b=X+Yw1TvVn7cGtemh8O9hU6NufqDTaJpRPj0T4ILdtYUju+chBh1V9IWegyzxjsHKcWvStI
+ fXePBr5VxwpC1WDAbQFbb5TWbm/4VREQegrh/A8aTq/TGuqTXVjuSrm8rhnNZkJ0UflM3CHI
+ WiUxzLfpdktcKan8T8N2bhI4tVnjuGTxtuoty3D1IT5lc8auXavN5Ljv214o3mFX2/qSt6nW
+ byg4mD+x397pCVU7Cxcohhd2F1NVxBcsbpzQf9Wr+Q4ohoIJ6HEXxGwmBZ/DWWVvuOUnpD4d
+ GkVfjpsklgfMvjr7I5gci+WJj6jucxhv6Jzbl1sNXU7SGm+PgS/svztQ==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 20 Feb 2026 10:08:49 +0100
-Subject: [PATCH 06/20] lib/cobalt: clock: Move all time64 related services
- to wrappers_time64.c
+Date: Fri, 20 Feb 2026 10:08:44 +0100
+Subject: [PATCH 01/20] lib/cobalt: Introduce cond.h
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -40,7 +39,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260220-wip-flo-fix-time64-32bit-native-v1-6-731c773e72cc@siemens.com>
+Message-Id: <20260220-wip-flo-fix-time64-32bit-native-v1-1-731c773e72cc@siemens.com>
 References: <20260220-wip-flo-fix-time64-32bit-native-v1-0-731c773e72cc@siemens.com>
 In-Reply-To: <20260220-wip-flo-fix-time64-32bit-native-v1-0-731c773e72cc@siemens.com>
 To: Xenomai <xenomai@lists.linux.dev>
@@ -49,686 +48,206 @@ Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Code movement with some minor adjustments to the doxygen headers.
-All services should remain in the cobalt_api_time group.
+Some code will be re-used later by the time64_t compile unit. Move that
+code into cond.h, so code duplication is avoided.
 
-Some comments have been changed from /* to /** to reflect the doxygen
-style. I think those doc information was not properly processed in the
-past.
+No modifications to the code itself.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- lib/cobalt/clock.c           | 309 +---------------------------------------
- lib/cobalt/wrappers_time64.c | 327 +++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 328 insertions(+), 308 deletions(-)
+ lib/cobalt/Makefile.am |  1 +
+ lib/cobalt/cond.c      | 67 ++-----------------------------------------
+ lib/cobalt/cond.h      | 78 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 81 insertions(+), 65 deletions(-)
 
-diff --git a/lib/cobalt/clock.c b/lib/cobalt/clock.c
-index 65abf5eacf5185e944915fecc44ff7760202ab19..9551bd5f1a5be21eaec1f5c611396f545eb84eb2 100644
---- a/lib/cobalt/clock.c
-+++ b/lib/cobalt/clock.c
-@@ -20,9 +20,7 @@
- #include <errno.h>
+diff --git a/lib/cobalt/Makefile.am b/lib/cobalt/Makefile.am
+index ed7e503899f4852388fb3bf204bfe91936009d74..b1098413fbf3a8f6a5f0a85d6aceb9916b14149a 100644
+--- a/lib/cobalt/Makefile.am
++++ b/lib/cobalt/Makefile.am
+@@ -1,6 +1,7 @@
+ pkgconfigdir = $(libdir)/pkgconfig
+ 
+ noinst_HEADERS =	\
++	cond.h		\
+ 	current.h	\
+ 	umm.h		\
+ 	internal.h
+diff --git a/lib/cobalt/cond.c b/lib/cobalt/cond.c
+index 2d11f768edc0fe4e89944a96333d2dd76d174172..7be7fca01f53930f8504945206b2ee6ba6be1ba5 100644
+--- a/lib/cobalt/cond.c
++++ b/lib/cobalt/cond.c
+@@ -20,6 +20,8 @@
+ #include <string.h>
  #include <pthread.h>
- #include <unistd.h>
--#include <time.h>
--#include <sys/time.h>
--#include <asm/xenomai/syscall.h>
+ #include <asm/xenomai/syscall.h>
 +
++#include "cond.h"
+ #include "current.h"
  #include "internal.h"
  
- /**
-@@ -65,284 +63,6 @@
-  *@{
-  */
- 
--/**
-- * Get the resolution of the specified clock.
-- *
-- * This service returns, at the address @a res, if it is not @a NULL, the
-- * resolution of the clock @a clock_id.
-- *
-- * For both CLOCK_REALTIME and CLOCK_MONOTONIC, this resolution is the duration
-- * of one system clock tick. No other clock is supported.
-- *
-- * @param clock_id clock identifier, either CLOCK_REALTIME or CLOCK_MONOTONIC;
-- *
-- * @param tp the address where the resolution of the specified clock will be
-- * stored on success.
-- *
-- * @retval 0 on success;
-- * @retval -1 with @a errno set if:
-- * - EINVAL, @a clock_id is invalid;
-- *
-- * @see
-- * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/clock_getres.html">
-- * Specification.</a>
-- *
-- * @apitags{unrestricted}
-- */
--COBALT_IMPL_TIME64(int, clock_getres, __clock_getres64,
--		   (clockid_t clock_id, struct timespec *tp))
--{
--	int ret;
--
--#ifdef __USE_TIME_BITS64
--	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_getres64, clock_id, tp);
--#else
--	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_getres, clock_id, tp);
--#endif
--
--	if (ret) {
--		errno = ret;
--		return -1;
--	}
--
--	return 0;
--}
--
--static int __do_clock_gettime(clockid_t clock_id, struct timespec *tp)
--{
--#ifdef __USE_TIME_BITS64
--	return -XENOMAI_SYSCALL2(sc_cobalt_clock_gettime64, clock_id, tp);
--#else
--	return -XENOMAI_SYSCALL2(sc_cobalt_clock_gettime, clock_id, tp);
--#endif
--}
--
--/**
-- * Read the specified clock.
-- *
-- * This service returns, at the address @a tp the current value of the clock @a
-- * clock_id. If @a clock_id is:
-- * - CLOCK_REALTIME, the clock value represents the amount of time since the
-- *   Epoch, with a precision of one system clock tick;
-- * - CLOCK_MONOTONIC or CLOCK_MONOTONIC_RAW, the clock value is given
-- *   by an architecture-dependent high resolution counter, with a
-- *   precision independent from the system clock tick duration.
-- * - CLOCK_HOST_REALTIME, the clock value as seen by the host, typically
-- *   Linux. Resolution and precision depend on the host, but it is guaranteed
-- *   that both, host and Cobalt, see the same information.
-- *
-- * @param clock_id clock identifier, either CLOCK_REALTIME, CLOCK_MONOTONIC,
-- *        or CLOCK_HOST_REALTIME;
-- *
-- * @param tp the address where the value of the specified clock will be stored.
-- *
-- * @retval 0 on success;
-- * @retval -1 with @a errno set if:
-- * - EINVAL, @a clock_id is invalid.
-- *
-- * @see
-- * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/clock_gettime.html">
-- * Specification.</a>
-- *
-- * @apitags{unrestricted}
-- */
--COBALT_IMPL_TIME64(int, clock_gettime, __clock_gettime64,
--		   (clockid_t clock_id, struct timespec *tp))
--{
--	int ret;
--
--	switch (clock_id) {
--	case CLOCK_REALTIME:
--	case CLOCK_HOST_REALTIME:
--		ret = __cobalt_vdso_gettime(CLOCK_REALTIME, tp);
--		break;
--	case CLOCK_MONOTONIC:
--	case CLOCK_MONOTONIC_RAW:
--		ret = __cobalt_vdso_gettime(clock_id, tp);
--		break;
--	default:
--		ret = __do_clock_gettime(clock_id, tp);
--	}
--
--	if (ret) {
--		errno = ret;
--		return -1;
--	}
--
--	return 0;
--}
--
--/**
-- * Set the specified clock.
-- *
-- * Set the CLOCK_REALTIME or Cobalt-specific clocks.
-- *
-- * @param clock_id the id of the clock to be set. CLOCK_REALTIME,
-- * and Cobalt-specific clocks are supported.
-- *
-- * @param tp the address of a struct timespec specifying the new date.
-- *
-- * @retval 0 on success;
-- * @retval -1 with @a errno set if:
-- * - EINVAL, @a clock_id is undefined;
-- * - EINVAL, the date specified by @a tp is invalid.
-- *
-- * @see
-- * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/clock_settime.html">
-- * Specification.</a>
-- *
-- * @note Setting CLOCK_REALTIME may cause the caller to switch to
-- * secondary mode.
-- *
-- * @apitags{unrestricted, switch-secondary}
-- */
--COBALT_IMPL_TIME64(int, clock_settime, __clock_settime64,
--		   (clockid_t clock_id, const struct timespec *tp))
--{
--	int ret;
--
--	if (clock_id == CLOCK_REALTIME)
--		return __STD(clock_settime(CLOCK_REALTIME, tp));
--
--#ifdef __USE_TIME_BITS64
--	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime64, clock_id, tp);
--#else
--	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime, clock_id, tp);
--#endif
--	if (ret) {
--		errno = ret;
--		return -1;
--	}
--
--	return 0;
--}
--
--/* @apitags{unrestricted} */
--
--COBALT_IMPL_TIME64(int, clock_adjtime, __clock_adjtime64,
--		   (clockid_t clock_id, struct timex *tx))
--{
--	int ret;
--
--#ifdef XN_USE_TIME64_SYSCALL
--	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_adjtime64, clock_id, tx);
--#else
--	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_adjtime, clock_id, tx);
--#endif
--
--	if (ret < 0) {
--		errno = ret;
--		return -1;
--	}
--
--	return ret;
--}
--
--/**
-- * Sleep some amount of time.
-- *
-- * This service suspends the calling thread until the wakeup time specified by
-- * @a rqtp, or a signal is delivered to the caller. If the flag TIMER_ABSTIME is
-- * set in the @a flags argument, the wakeup time is specified as an absolute
-- * value of the clock @a clock_id. If the flag TIMER_ABSTIME is not set, the
-- * wakeup time is specified as a time interval.
-- *
-- * If this service is interrupted by a signal, the flag TIMER_ABSTIME is not
-- * set, and @a rmtp is not @a NULL, the time remaining until the specified
-- * wakeup time is returned at the address @a rmtp.
-- *
-- * The resolution of this service is one system clock tick.
-- *
-- * @param clock_id clock identifier, either CLOCK_REALTIME or CLOCK_MONOTONIC.
-- *
-- * @param flags one of:
-- * - 0 meaning that the wakeup time @a rqtp is a time interval;
-- * - TIMER_ABSTIME, meaning that the wakeup time is an absolute value of the
-- *   clock @a clock_id.
-- *
-- * @param rqtp address of the wakeup time.
-- *
-- * @param rmtp address where the remaining time before wakeup will be stored if
-- * the service is interrupted by a signal.
-- *
-- * @return 0 on success;
-- * @return an error number if:
-- * - EPERM, the caller context is invalid;
-- * - ENOTSUP, the specified clock is unsupported;
-- * - EINVAL, the specified wakeup time is invalid;
-- * - EINTR, this service was interrupted by a signal.
-- *
-- * @see
-- * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/clock_nanosleep.html">
-- * Specification.</a>
-- *
-- * @apitags{xthread-only, switch-primary}
-- */
--COBALT_IMPL_TIME64(int, clock_nanosleep, __clock_nanosleep_time64,
--		   (clockid_t clock_id, int flags, const struct timespec *rqtp,
--		    struct timespec *rmtp))
--{
--	int ret, oldtype;
--
--	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
--
--#ifdef __USE_TIME_BITS64
--	ret = -XENOMAI_SYSCALL4(sc_cobalt_clock_nanosleep64,
--				clock_id, flags, rqtp, rmtp);
--#else
--	ret = -XENOMAI_SYSCALL4(sc_cobalt_clock_nanosleep,
--				clock_id, flags, rqtp, rmtp);
--#endif
--
--	pthread_setcanceltype(oldtype, NULL);
--
--	return ret;
--}
--
--/**
-- * Sleep some amount of time.
-- *
-- * This service suspends the calling thread until the wakeup time specified by
-- * @a rqtp, or a signal is delivered. The wakeup time is specified as a time
-- * interval.
-- *
-- * If this service is interrupted by a signal and @a rmtp is not @a NULL, the
-- * time remaining until the specified wakeup time is returned at the address @a
-- * rmtp.
-- *
-- * The resolution of this service is one system clock tick.
-- *
-- * @param rqtp address of the wakeup time.
-- *
-- * @param rmtp address where the remaining time before wakeup will be stored if
-- * the service is interrupted by a signal.
-- *
-- * @retval 0 on success;
-- * @retval -1 with @a errno set if:
-- * - EPERM, the caller context is invalid;
-- * - EINVAL, the specified wakeup time is invalid;
-- * - EINTR, this service was interrupted by a signal.
-- *
-- * @see
-- * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/nanosleep.html">
-- * Specification.</a>
-- *
-- * @apitags{xthread-only, switch-primary}
-- */
--COBALT_IMPL_TIME64(int, nanosleep, __nanosleep64,
--		   (const struct timespec *rqtp, struct timespec *rmtp))
--{
--	int ret;
--
--	ret = __WRAP(clock_nanosleep(CLOCK_REALTIME, 0, rqtp, rmtp));
--	if (ret) {
--		errno = ret;
--		return -1;
--	}
--
--	return 0;
--}
--
- /* @apitags{thread-unrestricted, switch-primary} */
- 
- COBALT_IMPL(unsigned int, sleep, (unsigned int seconds))
-@@ -376,31 +96,4 @@ COBALT_IMPL(int, usleep, (useconds_t usec))
- 	return __WRAP(clock_nanosleep(CLOCK_MONOTONIC, 0, &rqt, NULL));
+@@ -147,32 +149,6 @@ COBALT_IMPL(int, pthread_cond_init, (pthread_cond_t *cond,
+ 	return 0;
  }
  
--/* @apitags{unrestricted} */
--
--COBALT_IMPL_TIME64(int, gettimeofday, __gettimeofday64,
--		   (struct timeval *tv, struct timezone *tz))
+-static int __attribute__((cold))
+-	cobalt_cond_autoinit_type(const pthread_cond_t *cond)
 -{
--	struct timespec ts;
--	int ret = __WRAP(clock_gettime(CLOCK_REALTIME, &ts));
--	if (ret == 0) {
--		tv->tv_sec = ts.tv_sec;
--		tv->tv_usec = ts.tv_nsec / 1000;
--	}
--	return ret;
+-	static const pthread_cond_t cond_initializer =
+-		PTHREAD_COND_INITIALIZER;
+-
+-	return memcmp(cond, &cond_initializer, sizeof(cond_initializer)) == 0 ?
+-		0 : -1;
 -}
 -
--/* @apitags{unrestricted} */
--
--COBALT_IMPL_TIME64(time_t, time, __time64, (time_t *t))
+-static int __attribute__((cold))
+-	cobalt_cond_doautoinit(union cobalt_cond_union *ucond)
 -{
--	struct timespec ts;
--	int ret = __WRAP(clock_gettime(CLOCK_REALTIME, &ts));
--	if (ret)
--		return (time_t)-1;
+-	if (cobalt_cond_autoinit_type(&ucond->native_cond) < 0)
+-		return EINVAL;
 -
--	if (t)
--		*t = ts.tv_sec;
--	return ts.tv_sec;
+-	return __COBALT(pthread_cond_init(&ucond->native_cond, NULL));
 -}
- /** @} */
-diff --git a/lib/cobalt/wrappers_time64.c b/lib/cobalt/wrappers_time64.c
-index 4c4e0db0650b49f46cbd6d9ecf7cd656bb04bbe4..b50599b066f7e1141422e059dd9912307242d0af 100644
---- a/lib/cobalt/wrappers_time64.c
-+++ b/lib/cobalt/wrappers_time64.c
-@@ -4,3 +4,330 @@
-  * and requested. The first time with time64_t and a second time with native
-  * time_t.
-  */
+-
+-static inline int cobalt_cond_autoinit(union cobalt_cond_union *ucond)
+-{
+-	if (ucond->shadow_cond.magic != COBALT_COND_MAGIC)
+-		return cobalt_cond_doautoinit(ucond);
+-	return 0;
+-}
+-
+ /**
+  * @fn int pthread_cond_destroy(pthread_cond_t *cond)
+  * @brief Destroy a condition variable
+@@ -208,45 +184,6 @@ COBALT_IMPL(int, pthread_cond_destroy, (pthread_cond_t *cond))
+ 	return -XENOMAI_SYSCALL1( sc_cobalt_cond_destroy, _cond);
+ }
+ 
+-struct cobalt_cond_cleanup_t {
+-	struct cobalt_cond_shadow *cond;
+-	struct cobalt_mutex_shadow *mutex;
+-	unsigned count;
+-	int err;
+-};
+-
+-static void __pthread_cond_cleanup(void *data)
+-{
+-	struct cobalt_cond_cleanup_t *c = (struct cobalt_cond_cleanup_t *)data;
+-	xnhandle_t cur = cobalt_get_current();
+-	int err;
+-
+-	/* if we still own the mutex, cond_wait_prologue wasn't called yet */
+-	if (xnsynch_fast_owner_check(mutex_get_ownerp(c->mutex), cur) == 0)
+-		return;
+-
+-	do {
+-		err = XENOMAI_SYSCALL2(sc_cobalt_cond_wait_epilogue,
+-				       c->cond, c->mutex);
+-	} while (err == -EINTR);
+-
+-	c->mutex->lockcnt = c->count;
+-}
+-
+-static inline int do_sc_cond_wait_prologue(struct cobalt_cond_shadow *cnd,
+-					   struct cobalt_mutex_shadow *mx,
+-					   int *err, int timed,
+-					   const struct timespec *abstime)
+-{
+-#ifdef __USE_TIME_BITS64
+-	long sc_nr = sc_cobalt_cond_wait_prologue64;
+-#else
+-	long sc_nr = sc_cobalt_cond_wait_prologue;
+-#endif
+-
+-	return XENOMAI_SYSCALL5(sc_nr, cnd, mx, err, timed, abstime);
+-}
+-
+ /**
+  * Wait on a condition variable.
+  *
+diff --git a/lib/cobalt/cond.h b/lib/cobalt/cond.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..fbb7a02149ddfa0858def5e8741d5b044afc17b7
+--- /dev/null
++++ b/lib/cobalt/cond.h
+@@ -0,0 +1,78 @@
++#ifndef _LIB_COBALT_COND_H
++#define _LIB_COBALT_COND_H
 +
++#include "current.h"
 +#include "internal.h"
 +
 +#include <asm/xenomai/syscall.h>
-+#include <cobalt/uapi/syscall.h>
++#include <cobalt/uapi/cond.h>
 +
-+#include <errno.h>
++#include <string.h>
 +#include <pthread.h>
-+#include <sys/time.h>
-+#include <time.h>
 +
-+/**
-+ * Get the resolution of the specified clock.
-+ * @ingroup cobalt_api_time
-+ *
-+ * This service returns, at the address @a res, if it is not @a NULL, the
-+ * resolution of the clock @a clock_id.
-+ *
-+ * For both CLOCK_REALTIME and CLOCK_MONOTONIC, this resolution is the duration
-+ * of one system clock tick. No other clock is supported.
-+ *
-+ * @param clock_id clock identifier, either CLOCK_REALTIME or CLOCK_MONOTONIC;
-+ *
-+ * @param tp the address where the resolution of the specified clock will be
-+ * stored on success.
-+ *
-+ * @retval 0 on success;
-+ * @retval -1 with @a errno set if:
-+ * - EINVAL, @a clock_id is invalid;
-+ *
-+ * @see
-+ * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/clock_getres.html">
-+ * Specification.</a>
-+ *
-+ * @apitags{unrestricted}
-+ */
-+COBALT_IMPL_TIME64(int, clock_getres, __clock_getres64,
-+		   (clockid_t clock_id, struct timespec *tp))
++struct cobalt_cond_cleanup_t {
++	struct cobalt_cond_shadow *cond;
++	struct cobalt_mutex_shadow *mutex;
++	unsigned count;
++	int err;
++};
++
++static int __attribute__((cold))
++cobalt_cond_autoinit_type(const pthread_cond_t *cond)
 +{
-+	int ret;
++	static const pthread_cond_t cond_initializer = PTHREAD_COND_INITIALIZER;
 +
-+#ifdef __USE_TIME_BITS64
-+	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_getres64, clock_id, tp);
-+#else
-+	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_getres, clock_id, tp);
-+#endif
++	return memcmp(cond, &cond_initializer, sizeof(cond_initializer)) == 0 ?
++		       0 :
++		       -1;
++}
 +
-+	if (ret) {
-+		errno = ret;
-+		return -1;
-+	}
++static int __attribute__((cold))
++cobalt_cond_doautoinit(union cobalt_cond_union *ucond)
++{
++	if (cobalt_cond_autoinit_type(&ucond->native_cond) < 0)
++		return EINVAL;
 +
++	return __COBALT(pthread_cond_init(&ucond->native_cond, NULL));
++}
++
++static inline int cobalt_cond_autoinit(union cobalt_cond_union *ucond)
++{
++	if (ucond->shadow_cond.magic != COBALT_COND_MAGIC)
++		return cobalt_cond_doautoinit(ucond);
 +	return 0;
 +}
 +
-+static int __do_clock_gettime(clockid_t clock_id, struct timespec *tp)
++static void __pthread_cond_cleanup(void *data)
++{
++	struct cobalt_cond_cleanup_t *c = (struct cobalt_cond_cleanup_t *)data;
++	xnhandle_t cur = cobalt_get_current();
++	int err;
++
++	/* if we still own the mutex, cond_wait_prologue wasn't called yet */
++	if (xnsynch_fast_owner_check(mutex_get_ownerp(c->mutex), cur) == 0)
++		return;
++
++	do {
++		err = XENOMAI_SYSCALL2(sc_cobalt_cond_wait_epilogue, c->cond,
++				       c->mutex);
++	} while (err == -EINTR);
++
++	c->mutex->lockcnt = c->count;
++}
++
++static inline int do_sc_cond_wait_prologue(struct cobalt_cond_shadow *cnd,
++					   struct cobalt_mutex_shadow *mx,
++					   int *err, int timed,
++					   const struct timespec *abstime)
 +{
 +#ifdef __USE_TIME_BITS64
-+	return -XENOMAI_SYSCALL2(sc_cobalt_clock_gettime64, clock_id, tp);
++	long sc_nr = sc_cobalt_cond_wait_prologue64;
 +#else
-+	return -XENOMAI_SYSCALL2(sc_cobalt_clock_gettime, clock_id, tp);
-+#endif
-+}
-+
-+/**
-+ * Read the specified clock.
-+ * @ingroup cobalt_api_time
-+ *
-+ * This service returns, at the address @a tp the current value of the clock @a
-+ * clock_id. If @a clock_id is:
-+ * - CLOCK_REALTIME, the clock value represents the amount of time since the
-+ *   Epoch, with a precision of one system clock tick;
-+ * - CLOCK_MONOTONIC or CLOCK_MONOTONIC_RAW, the clock value is given
-+ *   by an architecture-dependent high resolution counter, with a
-+ *   precision independent from the system clock tick duration.
-+ * - CLOCK_HOST_REALTIME, the clock value as seen by the host, typically
-+ *   Linux. Resolution and precision depend on the host, but it is guaranteed
-+ *   that both, host and Cobalt, see the same information.
-+ *
-+ * @param clock_id clock identifier, either CLOCK_REALTIME, CLOCK_MONOTONIC,
-+ *        or CLOCK_HOST_REALTIME;
-+ *
-+ * @param tp the address where the value of the specified clock will be stored.
-+ *
-+ * @retval 0 on success;
-+ * @retval -1 with @a errno set if:
-+ * - EINVAL, @a clock_id is invalid.
-+ *
-+ * @see
-+ * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/clock_gettime.html">
-+ * Specification.</a>
-+ *
-+ * @apitags{unrestricted}
-+ */
-+COBALT_IMPL_TIME64(int, clock_gettime, __clock_gettime64,
-+		   (clockid_t clock_id, struct timespec *tp))
-+{
-+	int ret;
-+
-+	switch (clock_id) {
-+	case CLOCK_REALTIME:
-+	case CLOCK_HOST_REALTIME:
-+		ret = __cobalt_vdso_gettime(CLOCK_REALTIME, tp);
-+		break;
-+	case CLOCK_MONOTONIC:
-+	case CLOCK_MONOTONIC_RAW:
-+		ret = __cobalt_vdso_gettime(clock_id, tp);
-+		break;
-+	default:
-+		ret = __do_clock_gettime(clock_id, tp);
-+	}
-+
-+	if (ret) {
-+		errno = ret;
-+		return -1;
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * Set the specified clock.
-+ * @ingroup cobalt_api_time
-+ *
-+ * Set the CLOCK_REALTIME or Cobalt-specific clocks.
-+ *
-+ * @param clock_id the id of the clock to be set. CLOCK_REALTIME,
-+ * and Cobalt-specific clocks are supported.
-+ *
-+ * @param tp the address of a struct timespec specifying the new date.
-+ *
-+ * @retval 0 on success;
-+ * @retval -1 with @a errno set if:
-+ * - EINVAL, @a clock_id is undefined;
-+ * - EINVAL, the date specified by @a tp is invalid.
-+ *
-+ * @see
-+ * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/clock_settime.html">
-+ * Specification.</a>
-+ *
-+ * @note Setting CLOCK_REALTIME may cause the caller to switch to
-+ * secondary mode.
-+ *
-+ * @apitags{unrestricted, switch-secondary}
-+ */
-+COBALT_IMPL_TIME64(int, clock_settime, __clock_settime64,
-+		   (clockid_t clock_id, const struct timespec *tp))
-+{
-+	int ret;
-+
-+	if (clock_id == CLOCK_REALTIME)
-+		return __STD(clock_settime(CLOCK_REALTIME, tp));
-+
-+#ifdef __USE_TIME_BITS64
-+	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime64, clock_id, tp);
-+#else
-+	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_settime, clock_id, tp);
-+#endif
-+	if (ret) {
-+		errno = ret;
-+		return -1;
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * @ingroup cobalt_api_time
-+ * @apitags{unrestricted}
-+ */
-+COBALT_IMPL_TIME64(int, clock_adjtime, __clock_adjtime64,
-+		   (clockid_t clock_id, struct timex *tx))
-+{
-+	int ret;
-+
-+#ifdef XN_USE_TIME64_SYSCALL
-+	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_adjtime64, clock_id, tx);
-+#else
-+	ret = -XENOMAI_SYSCALL2(sc_cobalt_clock_adjtime, clock_id, tx);
++	long sc_nr = sc_cobalt_cond_wait_prologue;
 +#endif
 +
-+	if (ret < 0) {
-+		errno = ret;
-+		return -1;
-+	}
-+
-+	return ret;
++	return XENOMAI_SYSCALL5(sc_nr, cnd, mx, err, timed, abstime);
 +}
 +
-+/**
-+ * Sleep some amount of time.
-+ * @ingroup cobalt_api_time
-+ *
-+ * This service suspends the calling thread until the wakeup time specified by
-+ * @a rqtp, or a signal is delivered to the caller. If the flag TIMER_ABSTIME is
-+ * set in the @a flags argument, the wakeup time is specified as an absolute
-+ * value of the clock @a clock_id. If the flag TIMER_ABSTIME is not set, the
-+ * wakeup time is specified as a time interval.
-+ *
-+ * If this service is interrupted by a signal, the flag TIMER_ABSTIME is not
-+ * set, and @a rmtp is not @a NULL, the time remaining until the specified
-+ * wakeup time is returned at the address @a rmtp.
-+ *
-+ * The resolution of this service is one system clock tick.
-+ *
-+ * @param clock_id clock identifier, either CLOCK_REALTIME or CLOCK_MONOTONIC.
-+ *
-+ * @param flags one of:
-+ * - 0 meaning that the wakeup time @a rqtp is a time interval;
-+ * - TIMER_ABSTIME, meaning that the wakeup time is an absolute value of the
-+ *   clock @a clock_id.
-+ *
-+ * @param rqtp address of the wakeup time.
-+ *
-+ * @param rmtp address where the remaining time before wakeup will be stored if
-+ * the service is interrupted by a signal.
-+ *
-+ * @return 0 on success;
-+ * @return an error number if:
-+ * - EPERM, the caller context is invalid;
-+ * - ENOTSUP, the specified clock is unsupported;
-+ * - EINVAL, the specified wakeup time is invalid;
-+ * - EINTR, this service was interrupted by a signal.
-+ *
-+ * @see
-+ * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/clock_nanosleep.html">
-+ * Specification.</a>
-+ *
-+ * @apitags{xthread-only, switch-primary}
-+ */
-+COBALT_IMPL_TIME64(int, clock_nanosleep, __clock_nanosleep_time64,
-+		   (clockid_t clock_id, int flags, const struct timespec *rqtp,
-+		    struct timespec *rmtp))
-+{
-+	int ret, oldtype;
-+
-+	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
-+
-+#ifdef __USE_TIME_BITS64
-+	ret = -XENOMAI_SYSCALL4(sc_cobalt_clock_nanosleep64, clock_id, flags,
-+				rqtp, rmtp);
-+#else
-+	ret = -XENOMAI_SYSCALL4(sc_cobalt_clock_nanosleep, clock_id, flags,
-+				rqtp, rmtp);
-+#endif
-+
-+	pthread_setcanceltype(oldtype, NULL);
-+
-+	return ret;
-+}
-+
-+/**
-+ * Sleep some amount of time.
-+ * @ingroup cobalt_api_time
-+ *
-+ * This service suspends the calling thread until the wakeup time specified by
-+ * @a rqtp, or a signal is delivered. The wakeup time is specified as a time
-+ * interval.
-+ *
-+ * If this service is interrupted by a signal and @a rmtp is not @a NULL, the
-+ * time remaining until the specified wakeup time is returned at the address @a
-+ * rmtp.
-+ *
-+ * The resolution of this service is one system clock tick.
-+ *
-+ * @param rqtp address of the wakeup time.
-+ *
-+ * @param rmtp address where the remaining time before wakeup will be stored if
-+ * the service is interrupted by a signal.
-+ *
-+ * @retval 0 on success;
-+ * @retval -1 with @a errno set if:
-+ * - EPERM, the caller context is invalid;
-+ * - EINVAL, the specified wakeup time is invalid;
-+ * - EINTR, this service was interrupted by a signal.
-+ *
-+ * @see
-+ * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/nanosleep.html">
-+ * Specification.</a>
-+ *
-+ * @apitags{xthread-only, switch-primary}
-+ */
-+COBALT_IMPL_TIME64(int, nanosleep, __nanosleep64,
-+		   (const struct timespec *rqtp, struct timespec *rmtp))
-+{
-+	int ret;
-+
-+	ret = __WRAP(clock_nanosleep(CLOCK_REALTIME, 0, rqtp, rmtp));
-+	if (ret) {
-+		errno = ret;
-+		return -1;
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * @apitags{unrestricted}
-+ * @ingroup cobalt_api_time
-+ */
-+COBALT_IMPL_TIME64(int, gettimeofday, __gettimeofday64,
-+		   (struct timeval *tv, struct timezone *tz))
-+{
-+	struct timespec ts;
-+	int ret = __WRAP(clock_gettime(CLOCK_REALTIME, &ts));
-+	if (ret == 0) {
-+		tv->tv_sec = ts.tv_sec;
-+		tv->tv_usec = ts.tv_nsec / 1000;
-+	}
-+	return ret;
-+}
-+
-+/**
-+ * @apitags{unrestricted}
-+ * @ingroup cobalt_api_time
-+ */
-+COBALT_IMPL_TIME64(time_t, time, __time64, (time_t *t))
-+{
-+	struct timespec ts;
-+	int ret = __WRAP(clock_gettime(CLOCK_REALTIME, &ts));
-+	if (ret)
-+		return (time_t)-1;
-+
-+	if (t)
-+		*t = ts.tv_sec;
-+	return ts.tv_sec;
-+}
++#endif //_LIB_COBALT_COND_H
 
 -- 
 2.53.0
