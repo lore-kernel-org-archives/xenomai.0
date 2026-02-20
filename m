@@ -1,106 +1,74 @@
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 450CB29B79B
-	for <xenomai@lists.linux.dev>; Fri, 20 Feb 2026 11:19:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6759A32ED20
+	for <xenomai@lists.linux.dev>; Fri, 20 Feb 2026 11:20:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.196
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771586353; cv=none; b=mJfh00vK6Xyz7ntUzK7JmTdLZrxz5GXCbqpyUBhUFzQc1DYZVp7uZw0mOlmlXDDC88OW0WvSIfyD/GNrODzm17rGzAxjw7eJ5TxVh8Dqgx33Sa0kqJ7NIeVSuLVzmervKBQT0gE9A1i7DPiTuk1arSYnOuBhMZk9IFY0ghTRCzA=
+	t=1771586448; cv=none; b=Vuls0j3tzGhFsgbUJlK6LezCpE79NMLoJDVxE7kDWRO4iwphQdjhBwhzj75T69NkI8xxHCdONaqFzYEb6h9ezJwroS1fvcpKyFh/ZGao5FBCBH8vosQjdl6t4n80WfJQhSPppxvTiIA+w4POJiTgb0m6683b5WEIq7dMZwn8UcY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771586353; c=relaxed/simple;
-	bh=loGDeK7kZffZAIutYDKLut34k8iq8yvQ7mcKWYMh/ys=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=MILs2RT+bgo6GBGnQxeRLnBmKu0wfTbiWzAHic52BHas9pXTP+AgVMXjh8jYMicD0z1iTkZp741ARb6XqVzuZv+C3eZif7OkY0ZVGDXgLruEyPfX/DxcW0lRv7RF2vOIu5EJaX7qcyaExwx2ETCtVhcjX3hKaxhokqYkRwU74Sg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=QnF1i6B0; arc=none smtp.client-ip=185.136.65.227
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1771586448; c=relaxed/simple;
+	bh=f2hCV+OJeTlQ+l/Ri6MjQDnNBnA67zV5Ucptz+/Ct8k=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=j21Ek7DIXF8StOThLEEUvqZwFq0EgjGOT1ZDPdbYTyZfwncSpPeHZip13sWuvfkt4d4/zYmDdGecBus67PreZxn8HLVmcyugzfCf0uNyI2lrQRcO+RZYOhA7/xQX+47ljolPTXQ++UdsFmEkWmBgL+MyzYQgTm5Ztuk9VquapBE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=IzokLsYZ; arc=none smtp.client-ip=217.70.183.196
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="QnF1i6B0"
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20260220111905d15470f1fc0002073e
-        for <xenomai@lists.linux.dev>;
-        Fri, 20 Feb 2026 12:19:05 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=fDUIl1wOiLO0Mzx3IBTte25maYujQOtttqadhKZS1vM=;
- b=QnF1i6B0AR0RpaQDKSLe4ErKXFJWRipoms5yEFk6Vvboi66qGD+gdanOVu+Ww3dzPTWi3q
- Eyfkb5QFW32kFPIcHvSXg0Y2ha3RdTvtuKs5A98KkOTfzTcmYztmhmLrMDldnvG3Mzsc6/yH
- E6bRTqDPsD59hp4nVCtIMZ4fj5jYIeg8xQasYAxqGxhjP7f5Jdod0fjpnxXMV1xgAX8YvR+y
- zqCaJmfX9Lg4cNrKdJWzopU9GDOAZx0BhrcPswOt9SnKu+KVU/oJWMb7/ncYkdWUPHwCSgkk
- X/Jvnsrr0wWik3vZmJKYD1vWiwg906VbgrpJsrGCeteSpXJZnMvRZyhw==;
-Message-ID: <fdea742b5c4d6d71d7061bd0421981d13b370022.camel@siemens.com>
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="IzokLsYZ"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 752623E9CC;
+	Fri, 20 Feb 2026 11:20:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1771586440;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=jGjwvBCHeLdG5/jXiHm9Zyq/1DS59YkFMWFiAEiaa4s=;
+	b=IzokLsYZQ34Cb9CW51+Wg/4NmeuSnD/WU9yBRcRf5IkPaK3W27v19vQU7EFPGPXK6Vxrcm
+	mzvBuQgXmUukC+jeJyf+4a1Utqex5p8/MFayxyNdgfddIW+IbWjyF4Y6hFbMyxFyV+T97r
+	sLYtbaN+ZZf5j7SPGuEPCIY9C1/j3q+OEMWvNdOWbjCusmeEdYJpNUPxNNGOStjsARgWC7
+	vNXryA9aRQpor2Cv1AXeifFxRjM9gGXoWokV1hfy1MbYrzZxg+1R+Z9iTH5u4+9p0Do+vt
+	Is0NDKbDfP56xx5PjXGJqochl5rGJBoaxXfDZdihWHzThXM6ogUpr5H/0l1lpQ==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Florian Bezdeka <florian.bezdeka@siemens.com>,  Xenomai
+ <xenomai@lists.linux.dev>
 Subject: Re: [PATCH 00/20] y2038: libcobalt: Allow both, native + time64_t
  interfaces at the same time
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Date: Fri, 20 Feb 2026 12:19:04 +0100
-In-Reply-To: <87cy1zhdob.fsf@xenomai.org>
-References: 
-	<20260220-wip-flo-fix-time64-32bit-native-v1-0-731c773e72cc@siemens.com>
-		<87tsvbhigf.fsf@xenomai.org>
-		<faebe432-dddb-453a-91d1-77ee48a784ca@siemens.com>
-	 <87cy1zhdob.fsf@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <87cy1zhdob.fsf@xenomai.org> (Philippe Gerum's message of "Fri,
+	20 Feb 2026 12:12:04 +0100")
+References: <20260220-wip-flo-fix-time64-32bit-native-v1-0-731c773e72cc@siemens.com>
+	<87tsvbhigf.fsf@xenomai.org>
+	<faebe432-dddb-453a-91d1-77ee48a784ca@siemens.com>
+	<87cy1zhdob.fsf@xenomai.org>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Fri, 20 Feb 2026 12:20:40 +0100
+Message-ID: <877bs7hd9z.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Content-Type: text/plain
+X-GND-Sasl: rpm@xenomai.org
+X-GND-Score: -100
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddvvdekfeduucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpedvlefhvdehkeduheevleegiedtueejgfekhfeijeefvdeijeekgeeigfejhfekgeenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpqhhiugepjeehvdeivdefgfelveevpdhmohguvgepshhmthhpohhuthdpnhgspghrtghpthhtohepfedprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepfhhlohhrihgrnhdrsggviiguvghkrgesshhivghmvghnshdrtghomhdprhgtphhtthhopehjrghnrdhkihhsiihkrgesshhivghmvghnshdrtghomh
+X-GND-State: clean
 
-On Fri, 2026-02-20 at 12:12 +0100, Philippe Gerum wrote:
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
->=20
-> > On 20.02.26 10:28, Philippe Gerum wrote:
-> > > Florian Bezdeka <florian.bezdeka@siemens.com> writes:
-> > >=20
-> > > > Hi all,
-> > > >=20
-> > > > The current time64_t / y2038 support switched libcobalt to time64_t
-> > > > only, removing the interfaces for the native time_t type.
-> > > >=20
-> > > > With that series applied both worlds can live together in one libco=
-balt
-> > > > build which should hopefully increase the backward compatibility a =
-bit.
-> > > >=20
-> > >=20
-> > > Is this series re-enabling time32 in a way?
-> > >=20
-> >=20
-> > It's allowing to keep the time32 ABIs around without having to use
-> > --disable-y2038 for configure. It also resolves that we were changing
-> > existing time32-only functions to time64 where glibc actually added a
-> > separate one (see also
-> > https://lore.kernel.org/xenomai/cd03fe98-7237-426d-91c7-c6eae63a617e@si=
-emens.com/T/#u
-> > - which probably needs a rework to align with this series).
-> >=20
->=20
-> Ok, so this is merely to keep the legacy applications building over the
-> latest x3 releases as transparently as possible.
->=20
-> x4 is unlikely to support time32 for much longer though. With the
-> upcoming support for a POSIX API, we can't make a pledge for a stable
-> ABI yet - timeouts on syscalls have to be handled differently on the
-> whole user->kernel path in the evl core services, in order to enable
+Philippe Gerum <rpm@xenomai.org> writes:
+
 > some of them for POSIX too. I plan to use this change window for phasing
 > out time32 entirely in the same move, which would simplify the POSIX
-> implementation significantly compared to x3, not to speak of the fact
-> that using time32 for new applications in this day and age would be
-> obviously wrong anyway.
->=20
 
-I see no problem here. If possible - and that seems to be the case - x4
-should not deal with time32 anymore.
+As in passing requiring glibc >= 2.34 for enabling -D_TIME_BITS=64
+-D_FILE_OFFSET_BITS=64, or requiring musl >= 1.2.0 since time64 has been
+the default since then. The uClibc situation is still unclear to me ATM
+since I saw patches floating around months ago disabling time64 in order
+to pass the test suite, maybe this has improved, need to check
+again. Anyway, since we cannot do without time64 but we do have
+alternatives to uClibc, the choice would be pretty clear if we had to
+make one.
 
-A possible update path from x3 to x4 would be:
-  - x3 no time64
-  - x3 enable time64
-  - move to x4
-
-That should be doable.
+-- 
+Philippe.
