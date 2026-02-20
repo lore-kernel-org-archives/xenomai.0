@@ -1,37 +1,37 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4775C31B10D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DC8031B111
 	for <xenomai@lists.linux.dev>; Fri, 20 Feb 2026 09:08:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771578544; cv=none; b=o9n//xFQB0npfz0oyyxGpvoM1bgsrYg1Mtm1PmGbrhjFA0WxB8qohGYfXtomVpgfoJHOA7wiOFoaeCAjGq75naNVHERbqwVDH7SBMKhyUSFo9SG83vja0nwvbKeOn9azUfSBpdEAiILWp6T8TNiSb3KJcmeIJ8UDcn2fwX833tM=
+	t=1771578544; cv=none; b=FtWLYrfQxoArl2gzee9mNktmgbtyTTMrLitpSH1qY3lvwxQgnZJH3fAaC1aojjk9vLsyWAVRdUrlsHZaYyxPdennQRrycqKu5hGUpH3ayVbmSKNvQgM7H/WC4CJ2mWsUXPVXHmvHLKJwmPv8HEMAuzCCXHhbjueMmT1eBm4fJ7k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1771578544; c=relaxed/simple;
-	bh=rUukH7Q8GkaP6rGAW1bhhoXldpJxv8JKKHk8PYt9zYY=;
+	bh=0fnzWNtRaemhnfHjdZwymPbl3AW7jQrOKasugYtKEOQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=g6XVtxRnHzZNgas9R54/FhS1BxmyWwK81Am+e7ly9gLcFfMWkaHpLtKhcImAMSbC8au85yHWW22PSJzlKCHPPUwMMGdq9t/MmXDei0gp3j0AQXtc728xB/1yYbpyiSVA0/uKSdtpfIBw70YbPW8zkYvOy9rivXcttE2Wmmvro7g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=FubznjcY; arc=none smtp.client-ip=185.136.65.225
+	 In-Reply-To:To:Cc; b=cwC+mZL3N+Ep2wBxorJXBOAl0V0rlYi5bxVsoW8oPmxc7Fkq/hDf/GzeEuvgv2Fx9vv54PxKzv5rsla2X8yB5pErzz1jqJg30BVdHbjxhWILs7Ra7JA15/SUN6bZzCdtrAf1qy70Brzt1PUe/LwopZ95M/wDHDkQ1W3Z/EAmJ4U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=bnbDnU1R; arc=none smtp.client-ip=185.136.65.228
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="FubznjcY"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 2026022009084743cdafb5ba00020714
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="bnbDnU1R"
+Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 20260220090847c629ee6709000207e5
         for <xenomai@lists.linux.dev>;
         Fri, 20 Feb 2026 10:08:47 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=rBoeKLfsr6iSgENCRwYzWy8e7X1s950c+JMuriNq9JQ=;
- b=FubznjcYWMEd4bZGcNWRFS9ocZnFb4HBPpOyAIhLTqu8SOfA0dRpdVphQ77SJQpwKeo+um
- GQDvgfqpEzdDzBMii9Y9YVfg1l58t7vPCxdAiFuZqsntzHA4SuVI8MeHoWvGg02XGpVQwu8Q
- LexMBI9LtY4Qh5aiD/o3bPxnSd8oOi9SNSIhvtgRcPieC1NHYYdEFf3ff3OfFJT8QfWC+P91
- K0slUXaeZI5fKLOYJflqLzyefUyk94m17JTjw7K4vn0YbyUNeW7D1f2U/HxQQBmHTJKBb3SF
- 9yn9AwPLerD5uq5pyIRFjvtQ0rOJxybTjCFXpHvjnL+cCZj888wBoXtA==;
+ bh=afLcFcYHciWlO/b42g1z4M/6ZOXdcxJK/8378CjHGLM=;
+ b=bnbDnU1R5RalKXDnZo6ZC8YxL5/8wGHy4R3ehJnESYsM8bi73kJ/0ZBMB+NyPRPgLzUzzE
+ 0TaQHJtUE+BUD1o9pcXDdlG9XecUPgZLuZceFZYGK6pLez9ryd/VK611jOKrgMgo8NeKIDqz
+ rEP2zfXha7hzcuSZEN2vnCugu31KFAyhKCm+UQByc/FdP2p/D/IT1QB81Mdoov7lQdxFd32E
+ vzswePqDUZQDb6RuKTlYuo+Wi+WQyOFVnPS5RPJKurl1gpuYWVDZIqvNl3GonZmP/Y9Tj8S1
+ x/qQUWghpqGRARAFl8Pb3ipPItPnoVCl8D3c0UNZxL/hUC+jDjNMEr8w==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 20 Feb 2026 10:08:54 +0100
-Subject: [PATCH 11/20] lib/cobalt: rtdm: Move all time64 related services
- to wrappers_time64.c
+Date: Fri, 20 Feb 2026 10:08:55 +0100
+Subject: [PATCH 12/20] lib/cobalt: select: Move select services into
+ wrappers_time64.c
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260220-wip-flo-fix-time64-32bit-native-v1-11-731c773e72cc@siemens.com>
+Message-Id: <20260220-wip-flo-fix-time64-32bit-native-v1-12-731c773e72cc@siemens.com>
 References: <20260220-wip-flo-fix-time64-32bit-native-v1-0-731c773e72cc@siemens.com>
 In-Reply-To: <20260220-wip-flo-fix-time64-32bit-native-v1-0-731c773e72cc@siemens.com>
 To: Xenomai <xenomai@lists.linux.dev>
@@ -49,205 +49,234 @@ Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Code movement only.
+select.c is no longer needed as everything inside is time64_t affected.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- lib/cobalt/rtdm.c            | 71 ------------------------------------------
- lib/cobalt/wrappers_time64.c | 74 ++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 74 insertions(+), 71 deletions(-)
+ lib/cobalt/Makefile.am       |   1 -
+ lib/cobalt/select.c          | 108 -------------------------------------------
+ lib/cobalt/wrappers_time64.c |  86 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 86 insertions(+), 109 deletions(-)
 
-diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
-index ec950e15db921b32458d746d300ff6c542a8b23b..df7aa7eb69904f0953be2d324f29d60913916a4a 100644
---- a/lib/cobalt/rtdm.c
-+++ b/lib/cobalt/rtdm.c
-@@ -169,24 +169,6 @@ COBALT_IMPL(int, fcntl, (int fd, int cmd, ...))
- 	return __STD(fcntl(fd, cmd, arg));
- }
- 
--COBALT_IMPL_TIME64(int, ioctl, __ioctl_time64,
--		   (int fd, unsigned int request, ...))
+diff --git a/lib/cobalt/Makefile.am b/lib/cobalt/Makefile.am
+index 17e203f9015fe2bb5306609e4d51c62f3a725780..c31f030117dfc3ddf5ae386897fbc8a2435912a8 100644
+--- a/lib/cobalt/Makefile.am
++++ b/lib/cobalt/Makefile.am
+@@ -33,7 +33,6 @@ libcobalt_la_SOURCES =		\
+ 	printf.c		\
+ 	rtdm.c			\
+ 	sched.c			\
+-	select.c		\
+ 	semaphore.c		\
+ 	signal.c		\
+ 	sigshadow.c		\
+diff --git a/lib/cobalt/select.c b/lib/cobalt/select.c
+deleted file mode 100644
+index 5472e991e126c2f521b346a7cf3c884bbf6f6317..0000000000000000000000000000000000000000
+--- a/lib/cobalt/select.c
++++ /dev/null
+@@ -1,108 +0,0 @@
+-/*
+- * Copyright (C) 2010 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
+- *
+- * This library is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2 of the License, or (at your option) any later version.
+- *
+- * This library is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+-
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with this library; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+- */
+-
+-#include <errno.h>
+-#include <pthread.h>
+-#include <sys/select.h>
+-#include <asm/xenomai/syscall.h>
+-
+-#if __USE_TIME_BITS64 && __TIMESIZE == 32
+-
+-#define USEC_PER_SEC	1000000L
+-#define NSEC_PER_USEC	1000L
+-
+-/*
+- * The time64 wrapper for select() is a little different:
+- * There is no y2038 safe syscall for select() itself, but we have pselect()
+- * without signal support.
+- */
+-static inline int do_select(int __nfds, fd_set *__restrict __readfds,
+-			      fd_set *__restrict __writefds,
+-			      fd_set *__restrict __exceptfds,
+-			      struct timeval *__restrict __timeout)
 -{
--	va_list ap;
--	void *arg;
--	int ret;
+-	struct timespec to;
+-	int err, oldtype;
 -
--	va_start(ap, request);
--	arg = va_arg(ap, void *);
--	va_end(ap);
--
--	ret = do_ioctl(fd, request, arg);
--	if (ret != -EADV && ret != -ENOSYS)
--		return set_errno(ret);
--
--	return __STD(ioctl(fd, request, arg));
--}
--
- COBALT_IMPL(ssize_t, read, (int fd, void *buf, size_t nbyte))
- {
- 	int ret, oldtype;
-@@ -243,29 +225,6 @@ COBALT_IMPL(ssize_t, recvmsg, (int fd, struct msghdr *msg, int flags))
- 	return __STD(recvmsg(fd, msg, flags));
- }
- 
--COBALT_IMPL_TIME64(int, recvmmsg, __recvmmsg64,
--		   (int fd, struct mmsghdr *msgvec, unsigned int vlen,
--		    unsigned int flags, struct timespec *timeout))
--{
--	int ret, oldtype;
+-	if (__timeout) {
+-		to.tv_sec =
+-			__timeout->tv_sec + (__timeout->tv_usec / USEC_PER_SEC);
+-		to.tv_nsec =
+-			(__timeout->tv_usec % USEC_PER_SEC) * NSEC_PER_USEC;
+-	}
 -
 -	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
 -
--#ifdef __USE_TIME_BITS64
--	ret = XENOMAI_SYSCALL5(sc_cobalt_recvmmsg64, fd, msgvec,
--				vlen, flags, timeout);
--#else
--	ret = XENOMAI_SYSCALL5(sc_cobalt_recvmmsg, fd, msgvec, vlen, flags, timeout);
--#endif
+-	/*
+-	 * Note: No sigmask here, we already reached the limit of 5
+-	 * syscall parameters
+-	 */
+-	err = XENOMAI_SYSCALL5(sc_cobalt_pselect64, __nfds, __readfds,
+-			       __writefds, __exceptfds, __timeout ? &to : NULL);
 -
 -	pthread_setcanceltype(oldtype, NULL);
 -
--	if (ret != -EADV && ret != -ENOSYS)
--		return set_errno(ret);
+-	if (err == -EADV || err == -EPERM || err == -ENOSYS) {
+-		err = __STD(__select64(__nfds, __readfds, __writefds,
+-				       __exceptfds, __timeout));
+-	} else if (__timeout) {
+-		__timeout->tv_sec = to.tv_sec;
+-		__timeout->tv_usec = to.tv_nsec / 1000;
+-	}
 -
--	return __STD(recvmmsg(fd, msgvec, vlen, flags, timeout));
+-	if (err >= 0)
+-		return err;
+-
+-	errno = -err;
+-	return -1;
 -}
--
- static ssize_t do_sendmsg(int fd, const struct msghdr *msg, int flags)
- {
- 	int ret, oldtype;
-@@ -408,36 +367,6 @@ COBALT_IMPL(ssize_t, send, (int fd, const void *buf, size_t len, int flags))
- 	return __STD(send(fd, buf, len, flags));
- }
- 
--COBALT_IMPL_TIME64(int, getsockopt, __getsockopt64,
--		   (int fd, int level, int optname, void *optval,
--		    socklen_t *optlen))
+-#else
+-static inline int do_select(int __nfds, fd_set *__restrict __readfds,
+-			    fd_set *__restrict __writefds,
+-			    fd_set *__restrict __exceptfds,
+-			    struct timeval *__restrict __timeout)
 -{
--	struct _rtdm_getsockopt_args args = { level, optname, optval, optlen };
--	int ret;
+-	int err, oldtype;
 -
--	ret = do_ioctl(fd, _RTIOC_GETSOCKOPT, &args);
--	if (ret != -EADV && ret != -ENOSYS)
--		return set_errno(ret);
+-	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
 -
--	return __STD(getsockopt(fd, level, optname, optval, optlen));
+-	err = XENOMAI_SYSCALL5(sc_cobalt_select, __nfds,
+-			       __readfds, __writefds, __exceptfds, __timeout);
+-
+-	pthread_setcanceltype(oldtype, NULL);
+-
+-	if (err == -EADV || err == -EPERM || err == -ENOSYS)
+-		return __STD(select(__nfds, __readfds,
+-				    __writefds, __exceptfds, __timeout));
+-
+-	if (err >= 0)
+-		return err;
+-
+-	errno = -err;
+-	return -1;
 -}
+-#endif
 -
--COBALT_IMPL_TIME64(int, setsockopt, __setsockopt64,
--		   (int fd, int level, int optname, const void *optval,
--		    socklen_t optlen))
+-COBALT_IMPL_TIME64(int, select, __select64,
+-		   (int __nfds, fd_set *__restrict __readfds,
+-		    fd_set *__restrict __writefds,
+-		    fd_set *__restrict __exceptfds,
+-		    struct timeval *__restrict __timeout))
 -{
--	struct _rtdm_setsockopt_args args = {
--		level, optname, (void *)optval, optlen
--	};
--	int ret;
--
--	ret = do_ioctl(fd, _RTIOC_SETSOCKOPT, &args);
--	if (ret != -EADV && ret != -ENOSYS)
--		return set_errno(ret);
--
--	return __STD(setsockopt(fd, level, optname, optval, optlen));
+-	return do_select(__nfds, __readfds, __writefds, __exceptfds, __timeout);
 -}
--
- COBALT_IMPL(int, bind, (int fd, const struct sockaddr *my_addr, socklen_t addrlen))
- {
- 	struct _rtdm_setsockaddr_args args = { my_addr, addrlen };
 diff --git a/lib/cobalt/wrappers_time64.c b/lib/cobalt/wrappers_time64.c
-index fbd644bef485b4ec9d319373ffa702bc1927a75d..ded0232824fade9b2f656c03ac3e5515fb5f8b38 100644
+index ded0232824fade9b2f656c03ac3e5515fb5f8b38..7b634976eb07d7ae143b4567983dbea7f4ddebea 100644
 --- a/lib/cobalt/wrappers_time64.c
 +++ b/lib/cobalt/wrappers_time64.c
-@@ -9,13 +9,16 @@
- #include "internal.h"
- #include "mutex.h"
- #include "mq.h"
-+#include "rtdm.h"
+@@ -754,3 +754,89 @@ COBALT_IMPL_TIME64(int, setsockopt, __setsockopt64,
  
- #include <asm/xenomai/syscall.h>
- #include <cobalt/uapi/syscall.h>
-+#include <rtdm/rtdm.h>
- 
- #include <errno.h>
- #include <mqueue.h>
- #include <pthread.h>
-+#include <sys/socket.h>
- #include <sys/time.h>
- #include <time.h>
- 
-@@ -680,3 +683,74 @@ int pthread_timedmutex_lock_interruptible_np(pthread_mutex_t *mutex,
- 	return __pthread_mutex_timedlock(mutex, to);
+ 	return __STD(setsockopt(fd, level, optname, optval, optlen));
  }
- #endif
 +
-+COBALT_IMPL_TIME64(int, ioctl, __ioctl_time64,
-+		   (int fd, unsigned int request, ...))
++#if __USE_TIME_BITS64 && __TIMESIZE == 32
++
++#define USEC_PER_SEC	1000000L
++#define NSEC_PER_USEC	1000L
++
++/*
++ * The time64 wrapper for select() is a little different:
++ * There is no y2038 safe syscall for select() itself, but we have pselect()
++ * without signal support.
++ */
++static inline int do_select(int __nfds, fd_set *__restrict __readfds,
++			      fd_set *__restrict __writefds,
++			      fd_set *__restrict __exceptfds,
++			      struct timeval *__restrict __timeout)
 +{
-+	va_list ap;
-+	void *arg;
-+	int ret;
++	struct timespec to;
++	int err, oldtype;
 +
-+	va_start(ap, request);
-+	arg = va_arg(ap, void *);
-+	va_end(ap);
-+
-+	ret = do_ioctl(fd, request, arg);
-+	if (ret != -EADV && ret != -ENOSYS)
-+		return set_errno(ret);
-+
-+	return __STD(ioctl(fd, request, arg));
-+}
-+
-+COBALT_IMPL_TIME64(int, recvmmsg, __recvmmsg64,
-+		   (int fd, struct mmsghdr *msgvec, unsigned int vlen,
-+		    unsigned int flags, struct timespec *timeout))
-+{
-+	int ret, oldtype;
++	if (__timeout) {
++		to.tv_sec =
++			__timeout->tv_sec + (__timeout->tv_usec / USEC_PER_SEC);
++		to.tv_nsec =
++			(__timeout->tv_usec % USEC_PER_SEC) * NSEC_PER_USEC;
++	}
 +
 +	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
 +
-+#ifdef __USE_TIME_BITS64
-+	ret = XENOMAI_SYSCALL5(sc_cobalt_recvmmsg64, fd, msgvec, vlen, flags,
-+			       timeout);
-+#else
-+	ret = XENOMAI_SYSCALL5(sc_cobalt_recvmmsg, fd, msgvec, vlen, flags,
-+			       timeout);
-+#endif
++	/*
++	 * Note: No sigmask here, we already reached the limit of 5
++	 * syscall parameters
++	 */
++	err = XENOMAI_SYSCALL5(sc_cobalt_pselect64, __nfds, __readfds,
++			       __writefds, __exceptfds, __timeout ? &to : NULL);
 +
 +	pthread_setcanceltype(oldtype, NULL);
 +
-+	if (ret != -EADV && ret != -ENOSYS)
-+		return set_errno(ret);
++	if (err == -EADV || err == -EPERM || err == -ENOSYS) {
++		err = __STD(__select64(__nfds, __readfds, __writefds,
++				       __exceptfds, __timeout));
++	} else if (__timeout) {
++		__timeout->tv_sec = to.tv_sec;
++		__timeout->tv_usec = to.tv_nsec / 1000;
++	}
 +
-+	return __STD(recvmmsg(fd, msgvec, vlen, flags, timeout));
++	if (err >= 0)
++		return err;
++
++	errno = -err;
++	return -1;
 +}
-+
-+COBALT_IMPL_TIME64(int, getsockopt, __getsockopt64,
-+		   (int fd, int level, int optname, void *optval,
-+		    socklen_t *optlen))
++#else
++static inline int do_select(int __nfds, fd_set *__restrict __readfds,
++			    fd_set *__restrict __writefds,
++			    fd_set *__restrict __exceptfds,
++			    struct timeval *__restrict __timeout)
 +{
-+	struct _rtdm_getsockopt_args args = { level, optname, optval, optlen };
-+	int ret;
++	int err, oldtype;
 +
-+	ret = do_ioctl(fd, _RTIOC_GETSOCKOPT, &args);
-+	if (ret != -EADV && ret != -ENOSYS)
-+		return set_errno(ret);
++	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
 +
-+	return __STD(getsockopt(fd, level, optname, optval, optlen));
++	err = XENOMAI_SYSCALL5(sc_cobalt_select, __nfds,
++			       __readfds, __writefds, __exceptfds, __timeout);
++
++	pthread_setcanceltype(oldtype, NULL);
++
++	if (err == -EADV || err == -EPERM || err == -ENOSYS)
++		return __STD(select(__nfds, __readfds,
++				    __writefds, __exceptfds, __timeout));
++
++	if (err >= 0)
++		return err;
++
++	errno = -err;
++	return -1;
 +}
++#endif
 +
-+COBALT_IMPL_TIME64(int, setsockopt, __setsockopt64,
-+		   (int fd, int level, int optname, const void *optval,
-+		    socklen_t optlen))
++COBALT_IMPL_TIME64(int, select, __select64,
++		   (int __nfds, fd_set *__restrict __readfds,
++		    fd_set *__restrict __writefds,
++		    fd_set *__restrict __exceptfds,
++		    struct timeval *__restrict __timeout))
 +{
-+	struct _rtdm_setsockopt_args args = { level, optname, (void *)optval,
-+					      optlen };
-+	int ret;
-+
-+	ret = do_ioctl(fd, _RTIOC_SETSOCKOPT, &args);
-+	if (ret != -EADV && ret != -ENOSYS)
-+		return set_errno(ret);
-+
-+	return __STD(setsockopt(fd, level, optname, optval, optlen));
++	return do_select(__nfds, __readfds, __writefds, __exceptfds, __timeout);
 +}
 
 -- 
