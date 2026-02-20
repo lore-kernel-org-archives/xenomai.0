@@ -1,44 +1,44 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 001242C15B5
-	for <xenomai@lists.linux.dev>; Fri, 20 Feb 2026 14:57:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B78DD23EAA3
+	for <xenomai@lists.linux.dev>; Fri, 20 Feb 2026 15:05:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771599445; cv=none; b=hcp2t3ILVUyYtolH/YI3tUriED2WePNJmGUZWo0uQDWnf7QDo29aBWerXtUB8jWeVYorEb6Kw5GH5zmZYDXfkSHOkJYd0TIho2rCwNv78Q55gRgEG6zx8XjQvSlSotR3r3jsu5DXTrEqN6U4oRJO1YRbDn1moeM/mK8AP5cR8nU=
+	t=1771599938; cv=none; b=hCJ5FoVqFNxUB/RCBHe8NovsYVm7JyhwUw4+umS568ouirZQ67p5pRg/pza1hYxZ6hRvpjwVqlC3hgk3aiCjoetWY3qFBImHdfdv46SdMeB4NHZVNjJc7hzwJOmNLOFTD5WrYEqh4E70TlcLS38Y8KeFfMJo8/vUSpDuxDLWXCY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771599445; c=relaxed/simple;
-	bh=0KUVTmy9Lzrano9rgrKu+CU+k7lw/EQ7oBMm2msVOA0=;
+	s=arc-20240116; t=1771599938; c=relaxed/simple;
+	bh=X2kkLrsbCuTP/tsOvDHPRMjng2H6Q+3SBJkAGWCVNFY=;
 	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=uBvojqwtlz5jqVL8ELQeYKKlXfZ+90Hwhd+WamXosrX+ht4hZFC6VGIuVf1X+RUik+ARCXchP2HLzVvbk5cC71RQMcbW2KTzOKHg59BevVjw9IT4vlq4xbYwHM2fBL4yzs3izGTrwfbodOWmSvRoAXeXxw1G4hQD8X01WZsb3wI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=aA0Ly2cW; arc=none smtp.client-ip=185.136.65.226
+	 Content-Type:MIME-Version; b=d9U/fsE2eW6p0haxORkr4r833oiqVrV0qYuUfB2vuZ8nIRvxzRv+ZjHlPlPAyZk+DgTBHLIuTFkXoncFavWpWLrjMI0KfIeiEWSg2bKa05JlVc3c0buhOJ/OGbd6Gd2JdQ60c44eTeFcZg+NUJboqU/8CaDSSRsvYPhGqEKNHQI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=HRBgyoV9; arc=none smtp.client-ip=185.136.64.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="aA0Ly2cW"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 2026022014571892f8d4668d0002070f
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="HRBgyoV9"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 20260220150530083cf61db000020791
         for <xenomai@lists.linux.dev>;
-        Fri, 20 Feb 2026 15:57:18 +0100
+        Fri, 20 Feb 2026 16:05:31 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=0KUVTmy9Lzrano9rgrKu+CU+k7lw/EQ7oBMm2msVOA0=;
- b=aA0Ly2cWhOwclkw/0IEgzhSi5JHuSLlQo/mhWUetfxhKSKXHRrfZA7Bn8oMaXYT5FNu5Vg
- BQTUgvS7IT4vJaexfz2OZkrz/sRzuunDswntG1YRm+0gCg2hv72fj1TWRSChj6W34uK5Ahbb
- ebvNwOEYAPWAzeeWok1YNv3+UrHh23+zRZTfbwZhMlC2e8HbD1hlz9qfNKexXF/hZHdqD3XW
- 3ba0/mk45Z+5k/MCDLlbwqKdf+c6ACt7k21hn0Tz7hS0Xicp2a35rBtwHzds/iMhQ02BGPF/
- zoeZ52o2UvlGE1b9WOSzDwK/qfQjUQUZLyO7FLtsVgB0aLlGs8xYs6PA==;
-Message-ID: <3f035a32cfc26d2b31047099990f8cb5d5059d4e.camel@siemens.com>
-Subject: Re: [PATCH 12/20] lib/cobalt: select: Move select services into
- wrappers_time64.c
+ bh=8CdPFOIdJj4RVOk+nhtPK/fFhW9gy9oMMO6tFKdJM8k=;
+ b=HRBgyoV9hCsiyqBg2wF8wxNz3R8WVWiRHXaOTVZ+z+yjloC9Nv8FA9L+PU7KYcuzT+75no
+ VaHFA0y14RBhYr1ES7V/JAsj9bZu+pWHgt+fWYoqODneoRskCcvtIFu9sgAd8+DA088KIMh5
+ w9J0xhRbDK3evRBnz63/4dHPvjtBILVCWur59k7DBTkwhyq/Tfki7kB9wDL3IvEYlAekL4ck
+ k4tMmucXi4H59kSzpNZob0iHRzle/0DvhVIiMA82VTFkHdAnyZM6PimAOBpbVpfIJOPEez1Z
+ s2X6eSQEfjR4NKr4F9NotvsTKOPqMesK65HgAD9gc7QdDhSwAH+/zrsg==;
+Message-ID: <0379be88886cfdb00041c1427113549130ef7b49.camel@siemens.com>
+Subject: Re: [PATCH 20/20] scripts/xeno-config: Allow disabling the y2038 /
+ time64_t support
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@lists.linux.dev>
-Date: Fri, 20 Feb 2026 15:57:18 +0100
-In-Reply-To: <e98cce6f-f488-4ff0-8034-4f09365032e5@siemens.com>
+Date: Fri, 20 Feb 2026 16:05:30 +0100
+In-Reply-To: <420e254e-667f-4799-9e4c-4e4ee2cb4e53@siemens.com>
 References: 
 	<20260220-wip-flo-fix-time64-32bit-native-v1-0-731c773e72cc@siemens.com>
-	 <20260220-wip-flo-fix-time64-32bit-native-v1-12-731c773e72cc@siemens.com>
-	 <e98cce6f-f488-4ff0-8034-4f09365032e5@siemens.com>
+	 <20260220-wip-flo-fix-time64-32bit-native-v1-20-731c773e72cc@siemens.com>
+	 <420e254e-667f-4799-9e4c-4e4ee2cb4e53@siemens.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -50,22 +50,64 @@ MIME-Version: 1.0
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On Fri, 2026-02-20 at 15:38 +0100, Jan Kiszka wrote:
-> > diff --git a/lib/cobalt/select.c b/lib/cobalt/select.c
-> > deleted file mode 100644
-> > index 5472e991e126c2f521b346a7cf3c884bbf6f6317..00000000000000000000000=
-00000000000000000
-> > --- a/lib/cobalt/select.c
-> > +++ /dev/null
-> > @@ -1,108 +0,0 @@
-> > -/*
-> > - * Copyright (C) 2010 Gilles Chanteperdrix <gilles.chanteperdrix@xenom=
-ai.org>
+On Fri, 2026-02-20 at 15:50 +0100, Jan Kiszka wrote:
+> On 20.02.26 10:09, Florian Bezdeka wrote:
+> > xeno-config got a new cmdline option --disable-y2038 that will disable
+> > the time64_t or (year 2038) support inside the application that is
+> > being build against libcobalt.
+> >=20
+> > libcobalt provides both interfaces, so for native time_t and for
+> > time64_t at the same time. By default, the time64_t based interfaces
+> > will be used. If an application does really want to go back to native
+> > time_t --disable-y2038 has to be specified before the --cflags option.
+> >=20
+> > The new parameter is only useful for (old) 32 bit applications.
+> >=20
+> > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> > ---
+> >  scripts/xeno-config-cobalt.in | 5 +++++
+> >  1 file changed, 5 insertions(+)
+> >=20
+> > diff --git a/scripts/xeno-config-cobalt.in b/scripts/xeno-config-cobalt=
+.in
+> > index 46b6c11b92fe20e4474e0173a211b18dc5cd7e3b..ecbfefb8f0a9f7ea99864d0=
+7e5f717841ef5da4e 100644
+> > --- a/scripts/xeno-config-cobalt.in
+> > +++ b/scripts/xeno-config-cobalt.in
+> > @@ -62,6 +62,7 @@ Options :
+> >          --core
+> >          --info
+> >          --compat
+> > +        --disable-y2038
+> >  EOF
+> >      exit $1
+> >  }
+> > @@ -173,6 +174,9 @@ while test $# -gt 0; do
+> >  	--posix|--cobalt|--vxworks|--psos|--alchemy|--rtdm|--smokey)
+> >  	    skin_list=3D"$skin_list `expr "$1" : '--\(.*\)'`"
+> >  	    ;;
+> > +	--disable-y2038)
+> > +	    disable_y2038=3Dy
+> > +	    ;;
+> >  	--cflags)
+> >  	    do_cflags=3Dy
+> >  	    ;;
+> > @@ -233,6 +237,7 @@ if test x$do_cflags =3D xy; then
+> >  		;;
+> >  	esac
+> >      done
+> > +    test x$disable_y2038 =3D xy && cflags=3D"$cflags -U_TIME_BITS -U_F=
+ILE_OFFSET_BITS"
 >=20
-> Make sure to not lose copyright notices...
->=20
+> I did that undef in my mmap patch as well, but I wonder if - at least
+> here - we couldn't filter out both defines from the given cflags.
 >=20
 
-That is the only file that gets removed. I will add Gilles' copyright
-back to the select() part in wrappers_time64.c as I'm quite sure that
-not all time64 services go back to Gilles. I will double check, though.
+In case libcobalt itself was build with time64_t support those flags are
+part of all cflags variables. Might be that there is a more elegant way
+to remove flags but that didn't come to mind yet...
+
+A different approach might be to skip writing the time64_t enablement
+flags into XENO_USER_APP_CFLAGS (configure). Side effect might be that
+every (testsuite) application has to enable the support on it's own,
+doing all the glibc support checks...
