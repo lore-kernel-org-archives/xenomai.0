@@ -1,99 +1,140 @@
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+Received: from flamingo.ash.relay.mailchannels.net (flamingo.ash.relay.mailchannels.net [23.83.222.60])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6893B3A641E
-	for <xenomai@lists.linux.dev>; Tue, 24 Feb 2026 16:02:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771948942; cv=none; b=hmFIlw17Zs2N0JrQLFUcoVk50MZEEVphqn6rR+pSx1v+iO/iPhTiXQXtS0klgwNAIJ2qW3LMgCdaWMWjtuy0HAq0H0SAmTI7xfB4KU/w77f/+33msQxUe2oM2LJM1sQ55zQPzjKfmaW19a3YgK3bdO49U5CEBx8jAcFDrCbmIK8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771948942; c=relaxed/simple;
-	bh=FcDETi7RpLpGzQ3HM4qEpJzo+Z82GXjh0YDF9s/+fHQ=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=s3M5osDKb1suFw24UNOPFgWmTNp2cIGhJztOIRJDTEANqdtPBJ2GGP3Alv12Z/lXbrpTDX7looEJM1KvIyKj+npaSEAG6aDlp7QO8vnDtQibTRD40tEkM6fIza0GAxCRBwelogyDKezU38Ho6qLLPuxCL1QwR5UjVFIeyDpBlw4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=bL0pZqeZ; arc=none smtp.client-ip=185.136.65.227
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DEB13A7845
+	for <xenomai@lists.linux.dev>; Tue, 24 Feb 2026 16:12:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.222.60
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771949552; cv=pass; b=Z7qjGXTozJgTOPn3OmSYx54z8iit3hdNhQiuenRZxC7XT2wLRFSeGc9yioNb3pRC0nFQBkpFIlQZkL9sPAvBbIW8vVFv2uthYj5QL3VpHDknuGcYTnIpp2U/Pq/pEIJVYSjNDhHKvUC+mONUyfDsmijwrQrk6CbrODY40Gcth4g=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771949552; c=relaxed/simple;
+	bh=YqjZYku/e6JmGVZAn0o9uo+ujjcYTUMvEPVFGxHhDn4=;
+	h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:
+	 In-Reply-To:Content-Type; b=jtognM/z9y4ZU1gWKuwBvWc1AiODebQui+I0LPiR6rhOm0u7OC/8QuewIcFPThikxljoXxsBKKaBENEW/IipBYjXZxxShSos/DZn9fthONEcai3WbGaTtAOQM5beCe5xqaX/IelCJT/i/B3fnroXxgHSGhFLv7DgN+5IwGrogIk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bela.io; spf=pass smtp.mailfrom=bela.io; dkim=pass (2048-bit key) header.d=bela.io header.i=@bela.io header.b=cBmPaEh9; arc=pass smtp.client-ip=23.83.222.60
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bela.io
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bela.io
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="bL0pZqeZ"
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202602241602090e6f8732b9000207a4
-        for <xenomai@lists.linux.dev>;
-        Tue, 24 Feb 2026 17:02:09 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=90KtibBTQdHlt0NltlvRbtc8YVuba32mzKoQ6l5G4VQ=;
- b=bL0pZqeZGE+S7m/4FBQnqnUyDzCevBoTv2omO0gr8yKvsaKOG44DpEspDcPxTBg1BpvDGJ
- n6nfrSc3V8RA4duMdqO2xDbiPhZ9gzvOWdOPVxdvFvgsuBsO2KP+TtKM/NdpmTglgxy7ub4D
- 07et5bCMo4n/gVzZIFwhsMrtITvVGBGHJA0qBmPKfkl7Pw6EfoyPkGAOJkD6eJBwyo8lzZUg
- aXQB6xwNqPLho4axRCIXJhMwiElBKE9FY+dcWLDNPaUdAF6Fp5tF6HpBHLcene6vqjw8UU9d
- ghC3TfQN9tFSzCFOxNb6WCzOsNIu5LOpGJAkVEEZHpQcVSoj1F+bUCQQ==;
-Message-ID: <4e89f7e28939cf5b8c699633a87c82012c43593d.camel@siemens.com>
-Subject: Re: [PATCH v2 2/3] cobalt/rtdm: Prepare for new signature of
- mm_get_unmapped_area() in 6.19
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@lists.linux.dev>
-Date: Tue, 24 Feb 2026 17:02:09 +0100
-In-Reply-To: <918f3284-3b30-40a5-9db5-19222ab74f8c@siemens.com>
-References: 
-	<20260220-wip-flo-prepare-for-6-19-v2-0-222effb01976@siemens.com>
-	 <20260220-wip-flo-prepare-for-6-19-v2-2-222effb01976@siemens.com>
-	 <918f3284-3b30-40a5-9db5-19222ab74f8c@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=bela.io header.i=@bela.io header.b="cBmPaEh9"
+X-Sender-Id: dreamhost|x-authsender|giulio@bela.io
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+	by relay.mailchannels.net (Postfix) with ESMTP id 731D0163FA7;
+	Tue, 24 Feb 2026 16:12:24 +0000 (UTC)
+Received: from pdx1-sub0-mail-a251.dreamhost.com (trex-green-3.trex.outbound.svc.cluster.local [100.104.88.134])
+	(Authenticated sender: dreamhost)
+	by relay.mailchannels.net (Postfix) with ESMTPA id C7047161F5D;
+	Tue, 24 Feb 2026 16:12:23 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; d=mailchannels.net; s=arc-2022; cv=none;
+	t=1771949543;
+	b=dvEaGn00pFtsSffYXA0NP1AFzicCn6GoueuMHnAjzwDWB9GSiXo9BxQxsyDCMlC7VVBr7o
+	P0ucW3+yFvjK9PUBMg+B20DoRZEWDItzftVcYwtZaichtdnevX8RS85pUgv+e8PaaFywIA
+	cC7mDfxmUelgK/kVjmlfdMVRjKpT7xqo/N/rFDqRPOFOaztBSsS6TDTxF16t2sgtYSywE3
+	0gw4Ts2B/riZUNBoUAWh+0ObMqD2/6xfZYd3rqTfObuenyqf+g9ebZwvpR2MHJplgYFWwK
+	6I10/dYaROwsLmGIYheucC5U7XGTIH0H/VjxS0RL5YAiqfhBeZICHTgw3AlXZQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+	s=arc-2022; t=1771949543;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:dkim-signature;
+	bh=YqjZYku/e6JmGVZAn0o9uo+ujjcYTUMvEPVFGxHhDn4=;
+	b=ND0FjA9cmrlCJCii1JWmX3YbWudosnRpKJFd7b1tDK29C9s/ztV1PZ/ER/xEGmXuIuh0xA
+	zBsHueX4aiGTKS0xFaLoilJzGLnayYbbSAWhh5+pLSERfO5ME6h8BUcjYeccxBozsBQlTU
+	UZSFAx2KU1uG9CmOPGFSOyTgB6Wy8ERDV/HgdJQ7gXd2Ao4OIbf7RR7jCKtI8l/hVtwd7m
+	zBaCekcSLs8DbaY63fT/ErjmtkwV35dNzMrwDbIKkNdmrNd9oQ9b+lZNjKgW57aiHPwzkj
+	q3QNuVBIhUe5QedIQa3Apwe7EoaAaxXVksqHRAQxn1PkIxRHln3gOdpXqiRzbg==
+ARC-Authentication-Results: i=1;
+	rspamd-6fbd58c58b-9zbl8;
+	auth=pass smtp.auth=dreamhost smtp.mailfrom=giulio@bela.io
+X-Sender-Id: dreamhost|x-authsender|giulio@bela.io
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: dreamhost|x-authsender|giulio@bela.io
+X-MailChannels-Auth-Id: dreamhost
+X-Suffer-Harbor: 1e719841053c77c3_1771949544157_2209291218
+X-MC-Loop-Signature: 1771949544157:476075137
+X-MC-Ingress-Time: 1771949544157
+Received: from pdx1-sub0-mail-a251.dreamhost.com (pop.dreamhost.com
+ [64.90.62.162])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+	by 100.104.88.134 (trex/7.1.3);
+	Tue, 24 Feb 2026 16:12:24 +0000
+Received: from giulios-MacBook-Pro.local (unknown [186.170.59.35])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: giulio@bela.io)
+	by pdx1-sub0-mail-a251.dreamhost.com (Postfix) with ESMTPSA id 4fL2ml1k38z107X;
+	Tue, 24 Feb 2026 08:12:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bela.io;
+	s=dreamhost; t=1771949543;
+	bh=YqjZYku/e6JmGVZAn0o9uo+ujjcYTUMvEPVFGxHhDn4=;
+	h=Subject:To:Cc:From:Date:Content-Type:Content-Transfer-Encoding;
+	b=cBmPaEh9bjxcAF/76OQCAvphtqaUTR9/2/zYxMbJBioyw0/85qDd+2lA2Ngvck/iB
+	 GEAIu9dQQz5SSAnM4le80Ti83p+5M5rAUJeiJc32CdmGlUeqABlVDOX+WbeAHYf+us
+	 aAxlv/YRqMYbquFziLZmmFS08ikVM9f4nH9gqNgQqaPuL2LpX51Q2q+JMqAt79yZ6/
+	 Cr8YW1hL82HZjb/wl6wWOlkmXLfoah2Dl0eT3C30TwSXke+sx+lUY7A4pFghfAB8a6
+	 SiadinyRCI85a+dY2ErjhK//GAGmi2lLnRaUbKq5qsQlZH6UOeMBAAJNb8Mnonq7q/
+	 D8bpwzI6MHoRA==
+Subject: Re: evl ps cpu time reporting issue
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev
+References: <21b140ef-69b2-6dbe-f12c-c4c46a28a67e@bela.io>
+ <ae5e9ded-d9c9-92f2-7652-22d63340c988@bela.io> <87wm02s0jr.fsf@xenomai.org>
+From: Giulio Moro <giulio@bela.io>
+Message-ID: <1043650e-6cee-00b0-c44e-35fcdfc6b892@bela.io>
+Date: Tue, 24 Feb 2026 11:12:21 -0500
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 14.8; rv:128.0)
+ Gecko/20100101 Firefox/128.0 SeaMonkey/2.53.23
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+In-Reply-To: <87wm02s0jr.fsf@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Fri, 2026-02-20 at 16:25 +0100, Jan Kiszka wrote:
-> On 20.02.26 12:27, Florian Bezdeka wrote:
-> > Since 6.19 the signature of mm_get_unmapped_area() has one parameter
-> > less. The (previously) first struct mm_struct *mm parameter has been
-> > removed.
-> >=20
-> > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> > ---
-> >  kernel/cobalt/rtdm/drvlib.c | 8 ++++++--
-> >  1 file changed, 6 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
-> > index 86788743fe47b228662ef16831b4281ddefd04ff..0258100db5bbcc04880ddc7=
-1632b7992e50168dc 100644
-> > --- a/kernel/cobalt/rtdm/drvlib.c
-> > +++ b/kernel/cobalt/rtdm/drvlib.c
-> > @@ -1907,8 +1907,12 @@ driver_get_unmapped_area(struct file *filp,
-> > =20
-> >  #ifdef CONFIG_MMU
-> >  	/* Run default handler. */
-> > -	return mm_get_unmapped_area(current->mm, filp, addr, len, pgoff,
-> > -				    flags);
-> > +#if LINUX_VERSION_CODE < KERNEL_VERSION(6,19,0)
-> > +	return mm_get_unmapped_area(current->mm, filp, addr, len, pgoff, flag=
-s);
-> > +#else
-> > +	return mm_get_unmapped_area(filp, addr, len, pgoff, flags);
-> > +#endif
->=20
-> -> wrappers.h, extending the existing logic there, using the latest
-> pattern here.
->=20
+Philippe Gerum wrote on 24/02/2026 09:01:
 
-Just realized that=C2=A0this function has more history in wrapping:
+> Can you please add this patch to your kernel? This may help in figuring
+> out which input to the calculation is wrong.
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6,10,0)
-#define mm_get_unmapped_area(__mm, __filp, __addr, __len, __pgoff, __flags)=
- \
-	(__mm)->get_unmapped_area(__filp, __addr, __len, __pgoff, __flags)
-#endif
+Thanks, here's a sample:
 
-Kernel versions < 6.19 will need 6 parameters, >=3D 6.19 will need 5. The
-callers of the wrapper macro must agree in the number of parameters.
+while sleep 0.1; do cat /sys/devices/virtual/thread/thread\:2597\:0xffffb417fe30\:2966408512/stats ; done
+...
+286 1230 1511 922 23489998 0 25909 92772685
+287 1232 1514 923 23531006 0 41008 93137397
+287 1233 1515 924 23559820 0 28814 92637646
+287 1234 1516 925 23585834 0 26014 92881291
+288 1237 1520 927 23656565 788211 23656565 30013
+288 1238 1521 928 23684279 0 27714 92538624
+288 1239 1522 929 23711753 0 27474 92913295
+288 1240 1523 930 23737566 0 25813 92877151
+289 1242 1526 931 23775363 0 37797 93009590
+289 1244 1528 933 23862059 0 27904 92771007
+289 1245 1529 934 23889157 0 27098 92878781
+290 1247 1532 935 23925820 0 36663 93076817
+290 1248 1533 936 23951423 0 25603 92655744
+290 1250 1535 938 24013939 0 62516 185803244
+291 1252 1538 939 24066786 1 52847 93163049
+291 1253 1539 940 24086170 0 19384 92564594
+291 1254 1540 941 24114369 0 28199 92882843
+291 1255 1541 942 24146957 0 32588 92868913
+292 1258 1545 944 24209654 0 25559 92716216
+292 1259 1546 945 24244103 0 34449 92941370
+292 1260 1547 946 24272996 0 28893 92816177
+293 1262 1550 947 24311504 0 38508 93060111
+293 1263 1551 948 24338783 0 27279 92701893
+293 1265 1553 950 24394686 0 55903 185748119
+294 1267 1556 951 24432533 0 37847 93039946
+294 1268 1557 952 24456816 0 24283 92702343
+294 1269 1558 953 24485695 0 28879 92879370
+295 1272 1562 955 24575185 545061 24575185 45087
+295 1273 1563 956 24600363 0 25178 92046991
+295 1274 1564 957 24627141 0 26778 92884865
+295 1275 1565 958 24654509 0 27368 92847752
 
-As we cannot touch other callers (Linux code), we have to align the
-caller to the kernel version. I'm running out of ideas here...
 
