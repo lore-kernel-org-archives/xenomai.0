@@ -1,52 +1,52 @@
-Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010033.outbound.protection.outlook.com [52.101.69.33])
+Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011024.outbound.protection.outlook.com [40.107.130.24])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09B903A9DA4
-	for <xenomai@lists.linux.dev>; Tue, 24 Feb 2026 18:37:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B111C3A7F7A
+	for <xenomai@lists.linux.dev>; Tue, 24 Feb 2026 18:37:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.24
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771958249; cv=fail; b=tPhUocmRp6/bjV3JATwFUcU7O63UTBcgE/0ARQPw6HQ6jSXU6YpROdt+DncIkjl1ZaaRehS1/qyMI/Zh9K8v7hpMavLNo60eXCsgEKZBG+a7ggSJHbRKBg8Pnbfev18SgLGAfLzeODqM6nhrwz/8WBXt5HynLzydb5ygjaGNJwk=
+	t=1771958262; cv=fail; b=fER59B5gHt9y1P18dPq8wQGBLuHE4scUlhDQVc0NWDgJvSX6AA7zzI1j6TgjDumsykNFxXcRBnTLiXU3bC2RpLjpbZdWA8TQ+Z+g9xm1H/LHgznDAtShwRDnFeDx1XaAOjDeSQIFsbvH+6bk6qs3w5HfhGaKNvj4jjAfl7ukfx4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771958249; c=relaxed/simple;
-	bh=4L+2zouPOzYCUhx4x88PiQtbZvW2hs34B0fqq8VIuq8=;
-	h=Message-ID:Date:From:To:Subject:Content-Type:MIME-Version; b=Tcy83V1h9cUwC2tV3AIgyGTqR/+QMB7GLO6Jx4FRoCANGwC9TTIu58S4DC9jGP4TCc42nFKnvRUmw9pLIZV1p1x0wJ2fun/PoTd0Ybl32JkmSeAPsFttRN0NDpD51QQoCK1L2WejVOvL9JYRFLQshRZd93aeo9lsH/8m90ewkII=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=j5VDWGkm; arc=fail smtp.client-ip=52.101.69.33
+	s=arc-20240116; t=1771958262; c=relaxed/simple;
+	bh=Ji5HE9Cotp3zlpinKiq67ekrNk3Ax+piPs5FQdZZ0y8=;
+	h=Message-ID:Date:From:To:Subject:Content-Type:MIME-Version; b=snhZkrQexY+CMT+CnUrDHyg9wQuC3lLkRo3Is/KV45lzSTHF/2xpcjTtPfLcHZ7+KFrRlIPc1d0zE6fZAAwyOp8Y8Zvxy2Xf0K65urHUUfhy6oNb71Vt6EfHBb46D7shWepWkr4XsUER5NLPf4dQliccsHV/+2yNf4YfkCkAL7k=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=UOH74rks; arc=fail smtp.client-ip=40.107.130.24
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="j5VDWGkm"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="UOH74rks"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Px8semfBhtoxdl8zWEaiUedQHSAa9K5au/hRUZ0MHq5LwPIA7BPItnks6fyMPX/5oGWiP0igMw1myxgH4ugoOH+P6a1uLhtSn8PwrxDCVS7EWEYZvhN7+bZsp6Ak70sNMi1QlSVzRwaHlTJ5WSi+FwMvMFQgq4amUJaX44zDZ60ZTragjtJnGhcmJetdsW5rysETkoWcFI0tsLOzA/aZF5mrQ8QcAYoqnUKF07MhfZYNftfkpYKbAnnkvqsu/FTnqMRnkbWTXT28r6cHneJTaRjH+ZnrtZUPdVaPnvgQpR+wPRKMOXiVIG5mx7WjSR4wDZJTwc1APZzr2Wz6p3K1fQ==
+ b=isl+jF1EtCg9nqurffHTgZRP4rYf8svf7Bk6+9bPHM+rFmALoJ0lCw+6DaqvrwgQyIY1bSYijF+9yG+rdzkGCc82U0hCFFWy7cQs0PYpF0VHtZbGho/XhWJyU2/GEb7YFGdv8KfLScbTwMQUrstDGhm5jZjZI1PnHqfiFusAPCf9QqMBRoW2JKv6pqwrKpfxJ++l1TYyLhnJjZBvIbqDkRtOHkjGqJEdB8rrd6Y3uQmkN8MctEF48LH89xFqNs7R/QaaFUUgNdReEB2SnbDYbREpnBMMXRnRu/1AfpiGXkcAS4G2PHJjPEi2rGjWJLLGPR/G470So4x4CjyWF/03OQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=CQrH5zIHkbofIrmwmRTTNFn4O5m1ZBzTdfnuaZcuIwA=;
- b=VKw5kriC2ej432vaPqtqBhfwOyYgPAUjfa9H7b/1UrWOcPdl05CXRnIBbiitBVckuCwPZeTsF1n40yuYw+3frWflZJQL8E0J2gDCw/88iopDvmN3hcp+rQlBcs5l2juA6CowJiDX3Gne5S+JRXoZm0XXPnqEl1cff7mZPbjGTST8KIiMUp4x/U0spjcJkxV1QdqrOHB616ZhO6j+NnUE00DCVXnlZNSZQjYGoejJotcixQS5m/dlnq/cAzFvsUjAbhCGajH3bFjRRICBRia4UUENyQr5MxLfrBGZyZ8PNnt5kAKWTI4XgGEPhnlkwXYze8qzUjnnu2Y9xP1Viys5FA==
+ bh=VXgLh9BLPaFZP9APYVBjuBpZaxrne3ihZbyKmqbxD+Q=;
+ b=G+tg+8dsS8o+d+g9KFnqP1eAjoPQptaFikGzmTupQj8Fc/pkf3PtdNbfIVdJlTsDsyI/yG3fNHVZb/VjfEXdbP6Z25S5uWWt0YbFmCn2iUbb8+Ez47TwpLMIPkqo7bP/RMGutLUaYFnUzujI78j/8Eo6uVEFr+BPDdcK9/akjLfSiGL9dwn/nqnlAd0leNWFtZ+aQGnjx5Oc8yKdzbimk8umWK7FYIydANoHPEOd+RZyBiIb5tIg7LOdNOSxZ8Wu4pnHGfkjMfB4QVeREvT3pPzvmbiCUjqM3KU0EiVjcAHXbgnGTCq44JT9LDGbNT6JIDiwRy1evMXB7Ju5TEELFg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CQrH5zIHkbofIrmwmRTTNFn4O5m1ZBzTdfnuaZcuIwA=;
- b=j5VDWGkmtv28rpKeYV9WW4GzPlfKS7wtguikUeyQw3K8Vddl7mxu+B0oDULRt0jiAAtnaPX/DLTgO2k/2rOqrKigDHVOUSho9cOFW4ZlKNIabR2BkLixfJelpHVu44I5mAuspo4sHxGVBBtodJVa+f4ycyIq40nwnuhYhuMlJqY4NoQrMro20qYULdgtBxzGB/mHp9vTCoJABXS5BqkMhjrU/WIJYdz3AjlqzLijWB4yZC+tg5CQuYwLHCP8/swMSLH1yI/Nc2YAtD+7rpBjU/xp6a1mcfAGUgiSvzpvnV9t2vDll4DbHVjw0Fju6z6GOFPZE+nVSbSrK2yuoIYMPQ==
+ bh=VXgLh9BLPaFZP9APYVBjuBpZaxrne3ihZbyKmqbxD+Q=;
+ b=UOH74rks38xUr6colhHWbQ9Rgk+5k0Xrskxiz8D42nE4dZvdoR8a6ecjXFMea7ql51vt65RN7It/mTw1En1MrxPcsFKSonaafdBtdSWTXRZ9mo8rOW9dBwFJHRaAqLS/rV26JZ+VyPLvmsvTm/4n/CFlrF+YJbL4z8ZbQDmf1tsYosZANIIkDifRXXj6oB7kF+W56NZMI1Q0I6c2+LaHadI+myMIibeDriKREnlWGshvSk5BUDKzTDpP4Lqy8OKuwfzZHOWuTksw36UBnR3JCNaXB13N4EpKZBiPsx3uaPuPi1zDreZUWntwY39yv5p66mZ7r5s613RkqhFNCej6GA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
  by PAWPR10MB7652.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:35a::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.22; Tue, 24 Feb
- 2026 18:37:24 +0000
+ 2026 18:37:37 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1%6]) with mapi id 15.20.9632.017; Tue, 24 Feb 2026
- 18:37:24 +0000
-Message-ID: <21782436-df95-45ef-890f-c46d943ccd5b@siemens.com>
-Date: Tue, 24 Feb 2026 19:37:20 +0100
+ 18:37:37 +0000
+Message-ID: <10114da2-8616-498b-8b08-6a4d0c7505c5@siemens.com>
+Date: Tue, 24 Feb 2026 19:37:33 +0100
 User-Agent: Mozilla Thunderbird
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: Xenomai <xenomai@lists.linux.dev>
-Subject: [xenomai-images][PATCH] ci: Give pipelines a name
+Subject: [xenomai-images][PATCH] Add official support for 6.18 kernels
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
@@ -93,8 +93,8 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: CH2PR12CA0027.namprd12.prod.outlook.com
- (2603:10b6:610:57::37) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: CH2PR12CA0017.namprd12.prod.outlook.com
+ (2603:10b6:610:57::27) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -104,191 +104,490 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|PAWPR10MB7652:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9049089a-3ed7-4ee3-30fe-08de73d3c0a1
+X-MS-Office365-Filtering-Correlation-Id: 3e1e3207-b647-41d6-06d1-08de73d3c89a
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|376014|366016|1800799024;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?Yjg3R2VUTnVPR3ZOQ0dmemJET1VOUTVFRjcvTCtTYS9ZZURNVzR2UkZXUGdY?=
- =?utf-8?B?eitpbTlhc2RSM2l3QU5lSENVZEJrYmNQOTN4M3ZPVE5WcXpWQWRZL2UwSFZ0?=
- =?utf-8?B?eE8yQTZjZWxTd21qaUhUdHRxRVlkZW1hZGVRTUcrV0VBWi9BMUFvTmtNa1F4?=
- =?utf-8?B?UzFhcnBIOFkyT3RmY2JYd3prV0l5aVhVUVhoWmZ1VC9RVTN4MUFBV1VNNUJs?=
- =?utf-8?B?Z0Y3azZXUEFJbVJUMU80VGFqSk9XZEZiUEkzSitVa0ZyQStHYk5pRDJic2pR?=
- =?utf-8?B?NWMycTB3L3JiRi9JRDh5VHNTTHdqQjRhdVhkWW5aRVhXSHlHM21jQnpZVENt?=
- =?utf-8?B?MEhJUkdNUDZYZS9zbGVUaEFjSlJnNkVXcXJjeDYxVzdWSmRjbkVTODZiK0hr?=
- =?utf-8?B?WHFEYjV1OXhGcXNpVk1zREY2TTcrcnJlT2dER3NsYm5tS1FET2p3VGkrUGZr?=
- =?utf-8?B?UitaUktBZ0lNaks0T0Izc2ErMHUzNitid2h1Zk1PTGZ4K1dtSzBvY1F6SDNE?=
- =?utf-8?B?UlRBa000c2pTZEs3VG9FQjh5dENKMFdibGtGa0l0UmhtN2d4eEdQTzg0b205?=
- =?utf-8?B?OVA0QmJ6bmUxOFNMU2pobzByUzdRb095L1puTWU4N3NpMXpuTm52VFR2UHNR?=
- =?utf-8?B?V3ZTbjZnMGxxMmVXS0VZZkt3M3NPYythZ2J5UFM2dm1vUjNYRXcwZUVkNHpL?=
- =?utf-8?B?eVFUWHJRQWlXallEOVhMQU1Oc0ZXaXFyYkErV3RWUDJwa21RQmlCSXRCMGVj?=
- =?utf-8?B?dVdhMC8vNTkxYlpQRkZwYjNVeFFhN1NHV1dTYXlhQm14Um14RllnbXNOVTB4?=
- =?utf-8?B?dWpOV000UGY1VzNoTHBoeGJ3R3JaNWUxZ0JUc1VvbDhVZTdJREdsU0J4akl5?=
- =?utf-8?B?WjZFV0Z3Smt4NmtDN2RkWGl4UnViTkdqVjluSXVxZGc0cFZTMnluWHZzeEY5?=
- =?utf-8?B?eW1wUWRPSDJnN094TmxDWGdHWVdocHRBUWpuamlXRWdpRHV6K3lKT2J3SFhp?=
- =?utf-8?B?V1k5dno5ZlVid3BBT0xRVDB1NEZZcm93d01obU9sdlJpV1dhZnRRT3lZa3RC?=
- =?utf-8?B?N3J1SGJUN0JoYUhFNW1ZVFJielZEbXBsbHFiejVwMU0yNWM3eC9sOTYzUFVh?=
- =?utf-8?B?TFlRY290aDNPWktNSHBwRDNKWWhoV2lxYkh2OHhsSi9oMXFZZVNhdW43N0lk?=
- =?utf-8?B?QWJESHFZUk1NR0xzWk1tOGVQTllNcEllc3FDT25Tc0JXemJVRUk2NEpvMi94?=
- =?utf-8?B?VFJjcDZXT292dVVwdnU5OTI0dlhFU1B1RXc3RXBMREdCZnIxM0F2RWVPNmFs?=
- =?utf-8?B?YVE0L3ZEeHBpWHNQMDJ1WXhKL3QrdWVKd1pubU44TXdoWVFnQkVwWTdTYm9X?=
- =?utf-8?B?a0xoRndVU0dyeXpkRkdEVzdwWUdxTXJMc1h0UE1DWVJzOXlCMUYvMU1rZ2RP?=
- =?utf-8?B?SGVvWE9GSkFkN1pmYkh4cmJiMDNSVmJPV1JzWlVXQ2F1Y3RROS9LQXppQnk5?=
- =?utf-8?B?em5PazZQTkg3aDVNbzI2RXd5NnBEV0MzREg4RlppWFFJZzlxVlB3eWdKWDF4?=
- =?utf-8?B?dVgrK2luVVNrY1dUSDdhWDhPVXZrZUpVQU1NVzhTcXVtY1R3ZjgvWFdlNkIy?=
- =?utf-8?B?MTRBeW5aUFRIZUlocWZ0clpGbE1CeFdpN0Q3dnFmS0tFUUViMm1UYVZlakVN?=
- =?utf-8?B?QUtvSDh6aFI5RDdycG9WNHFLSVZvdktaWTN1VXJFU1U4b2VQQ3piR1B1c1Vo?=
- =?utf-8?B?QTNKK0R0WSt0TU1zbVpwQUxBcmxWQVI1a3QvT3dqRFdOVUtVdEFscFpBWGdz?=
- =?utf-8?B?NERKTEZ3MmlBUVdBZUJVUlp1dGx3Vk12MW5uYXhoQmdxT05XS1FVUi9Xa2F6?=
- =?utf-8?B?L1haREQ1L1EvWk5OSkwxcWhweW9UcS91NS83SU1pOUc3MC9MNEdSbnFka0Fl?=
- =?utf-8?B?SXoxUnAyYVV3RXNYelV6bE5mVWlEazRQVUVYbkNMNFBBQzRXRFZqamtoenFq?=
- =?utf-8?B?Tk1DSDBJdU5zRHo1K3FKWCtQQXh6MGJZR3A2VzlvRXBOeUlWeFJsVDZ5T0c0?=
- =?utf-8?B?VWNTVFJ5QlBqVDFRcFc4YnJFZ2o5U3JpYWJFWnRJK2NROU04N0dEaGtOUHZi?=
- =?utf-8?Q?hkyQ=3D?=
+	=?utf-8?B?dXdsRFREMGNMNG1mb2VuRFFkSythb2NBYkJYL2RrNWdpbFpyZ3hOVFUxOG9X?=
+ =?utf-8?B?TXZ3em5aRVlYSExLZ3R4a2lTVmExOFRGSEpuZG1sTW43S25JM3BoZjVvTnJJ?=
+ =?utf-8?B?Rkh1U1h5clphcnRkUzVIaS8vOURtUEZsR3hHTmNuQW41amtjUytUZlE3S2p2?=
+ =?utf-8?B?UnRKM3pvL3FCaDlDTFJWT1Fwb1RWeXVlak9IQUpPMnlJVDNaL3pXaEtGTTVH?=
+ =?utf-8?B?dDM5MkxKdUoxWEY0eEt3SmhXY2lLVzd4RERTc2VsUWRmRS9acEJCSXZTZUJT?=
+ =?utf-8?B?NXJFY0ZsVmFUd0Q4U3FVVXc1b01GbVFkWFltc0IwWHlpOExFb2YxSm50eTJE?=
+ =?utf-8?B?K3IzTGlJNUVRUVp0ZGFHV0ZqL3ZXa0xnbnFyZXJMcUVmak5vTTk5RmxKZ2dH?=
+ =?utf-8?B?UWRvWE4wT3VrNW04OUFocktkT2s4VWZrNUhROEllcC9BODI2ei85VTRqQkll?=
+ =?utf-8?B?b1o5Z1dQeENLSGpueXBNMy90UEREK2NWQmJxU3c4ZFA0VUp5T2U3bHkvU2RU?=
+ =?utf-8?B?L2dVRVRMY2ZLK21RSXRtQWQzbmpkdjJ0L2xHU2wzNERJYUdrZ0psSVc2b0kr?=
+ =?utf-8?B?MlBHU1ZmOFlDZ3dOUWRCaTFJZDllNk9WaW1nSU8ycHBxTEYrNGg0dEF2RmNw?=
+ =?utf-8?B?bENQYXRPVys5eDgxTFUyRTRzMUFEK3JSVkRhUm8wSE1wVFhXMTRBZFBhRzRK?=
+ =?utf-8?B?ODFFd0xiMWcramZUQVlTTkM2SmZHekVIZDErVkRvc3IrNnFlWExiT0gwcitm?=
+ =?utf-8?B?OURIWXQxSVRZUlFWVnJPSHFBdmx6WVFPZ2k1NEIyQW1xdEtsTmRsTTNEcmpv?=
+ =?utf-8?B?dzV0dkhNb3NwTEMrbXBZd3pFMko2L09DOXRLWmdvSjgwTkdMTWhQUWVJY2Jr?=
+ =?utf-8?B?Mis1MHEzbUV4UGQvcXl0cktKVE1ERW9EUG01VjNOMGtEUklpeHJKRUlpSVVK?=
+ =?utf-8?B?Mm1XYXFWVEJITUZBc2VJeFhKeTlTMGp1bzRJMlo3Y1lTSmtmQ0tlVzhUM3gw?=
+ =?utf-8?B?THg2cGlseG5sMFFoNUI0aUpDVmI0REExTlNSUVdzYy9Vai93azJlL0hQbVFF?=
+ =?utf-8?B?UDZqWm9SSHFQSjAvTGw5SmlWVm5VZlQrMUlOdXRnQXAxS2EzUytUc1U4S0Qr?=
+ =?utf-8?B?Z3JTK1pYakVmWEo3NmdjYTk2U25HQjZXbXIra3hDTXk4QzA4Z3l6SFlWOWpy?=
+ =?utf-8?B?Wms2WUM4by9KZkxqbUlONW1Zc2lrSmFBSnJ2ZzFla3BlYVpSY2RIZWM4cmMx?=
+ =?utf-8?B?Mmc1eWxsQ2Nzb3JqVG5VdlJqOEdBaFEzdzU3SFFHSDVnWUVJWTFoS1pUdTZC?=
+ =?utf-8?B?ZlI3Znd5cjZRMGVmQlZQWkVvcDFkY0N0MDAyTHpLVVhNeTY4SVI4UzVRTFVO?=
+ =?utf-8?B?WWhYSGgvT2h6VFpyRGdHRnY5VlNVWlAwTkZDODhZVk81YW5kcHFydmwzZ05q?=
+ =?utf-8?B?NVZyZ2xXZVAwTk91cnFxSWpKUWVhMkU3bDJRSGJ6aUNXSlpjUitoQUkrdkxP?=
+ =?utf-8?B?MmkvK1ZGYWtady81SDlWcU9OVWhCbXlRbksxb0Y5V09WOWhUSHFBMjdaQncv?=
+ =?utf-8?B?ZHNrTS9ZakduOUF4QmcxVVJhZ0Fja3llWnRvUzk0elp6Sk5mbmNiR2UxRm0z?=
+ =?utf-8?B?dWdULzRUbm5uVzRJdExFaFcvTkY2M0toeGxqbTBhaXh4N3ByTHFKNHdTQVpq?=
+ =?utf-8?B?V3RwNXFGRm4zWENTYmZEUmRBZnB1dGQ4b2Z1NVA1M0w5eEJhY3luSDBLQk5q?=
+ =?utf-8?B?NlY2VUlrR2RCOEUxdkgwRU9ibEp6N3JodUR2WklXcktyM09TNmlJVGpZaStz?=
+ =?utf-8?B?T1QwSElGcHkyY0R6UU5CL0h0SHk4VHpqZFBMbFZvZXVLWmVvVUh4Qi93Qy9B?=
+ =?utf-8?B?QXZRWHNZODlCOGVCUTIzWklEdG5tVEd6aFZnTXo4NDE2bTluT0RtMFFhUlJU?=
+ =?utf-8?B?YzdtMVBRT1RnWStSSzZISzMxT2xIWndCVjF3c0RsSVVBQTYySTdpOVU0NEow?=
+ =?utf-8?B?TmNtdzNaZE1RZTNFSis5eXhQa3hIa0pVNWhiNEI5b3I5ckhkNnVOUmFPdHdl?=
+ =?utf-8?B?RThqWmJSUnlmSzB3emRLK3JRWkozSE9KOWlxakdOK1FkZkNzNEUrYXMramRD?=
+ =?utf-8?Q?e+L0=3D?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WXhBaXFPZ3VWMDFaTGhoWnR1bkJpdUc3L1ZIa0dtTDNvb1lDVDd2MFloc1hy?=
- =?utf-8?B?NUN3OHBLdkFVaGJVWkZucDNOcDVQZmI5cEJHUGZwdkJ1RlZOMFdzeVhOYmFI?=
- =?utf-8?B?ekJtYVA2VVg1YTRHUDRBSFdhNGsxY0dKVHY2U2hvRExSc3pQd1BITXZDWmhO?=
- =?utf-8?B?S0h1bGo0OGJQQzA5TTZyN3ZwcHljeURzMXFkT2ZNL3Nud2xVaHNteEJiMC8w?=
- =?utf-8?B?ZkhoT1Fka2ZJVWloRmdCMFNBVzlrbmtJNkJrc0ozeVVIWHdlQ2hTYnRHYmtp?=
- =?utf-8?B?Q3ZYWHgrSTFQbnVDMkJ6Wk5nRERnR2lDTWVGeHRvMSt0Z1BrRHoyNXRaWEJj?=
- =?utf-8?B?NmtISnA5bDE1anEvVmJEckMzelh6QnlmZkVaMTl6OUMxMjdxMUFuU0tMbTd4?=
- =?utf-8?B?NHFKYk1JOGFoajlUVjJCb2xtL09RMDBGVExjc3FQV0tVNEtrU0VEaXVUa3ox?=
- =?utf-8?B?TUs3Q3E4YWpSMzF4N3ZCeG1tNGg4ZXBtSXJJY0pidVc2cTNRcDJ3QU5xQ25J?=
- =?utf-8?B?bCtKVEhXZ3JCWFN6YTBQMTBzeEViTElIeXFKYWNjSHlzbU9qRGw2NE9BTEVl?=
- =?utf-8?B?bmVFU2ZGUlhXZ1pzUEhINWxic0NhU2ErMFIweTQvWm44UWx5NGJTRSs2Witn?=
- =?utf-8?B?UDc4czk1YkRHRys4QmV2NjgyVjhES0RBeCtpeEN3eUI5MTE1cDQrVGp4cWZ2?=
- =?utf-8?B?V3dPQTd1aE9McDRabm1mdWlBbGpsUDVFeUJxcmtYK3lqWnpwU0tMTVRTOVRo?=
- =?utf-8?B?UjJIaVJWS0toUEFLY1czYjJKaHJ3NWJUbzYyRTVJNGhzZEVsaFcxY1VDNjZm?=
- =?utf-8?B?ZlhobVBDQUpBWkkrNWl6OVhsYnI5QjRSSlJUdW5FajNuQTVDd1NueVBURWp4?=
- =?utf-8?B?a1ppWUhGeDJpLzR5ZjkxWkJnUjA5V2JCVGphWnpDTlZxZzZYVDE5M2tTMDYz?=
- =?utf-8?B?cTU0YWw0NGxTMmtDNWowbU16aFJ2WHAvcHYrSG1iOXd4S1N0ZkVvaE16VmZw?=
- =?utf-8?B?VFo3NXFtWE96c2t5VEdnMGQreGY2NkpIclA0U2l5K0gweFgwV3dnanBpejJk?=
- =?utf-8?B?Q09aVU5qd0QxNEJhbVJlUzFqTEs5K2dkMGVxUkwvNnlVbVFDc3JjMHJGTWZK?=
- =?utf-8?B?TWNNVGN2WVdCNHRxeWI0Z1dsaWZIMHZzYjdqZklISXFsVWRGWVY4YklGT0w2?=
- =?utf-8?B?MEFaVzRYcUkxbnZTYzEvcVVPUG9aUFRsTzh0bkRpZ2k5bG1IYXZ1bTZJRGcr?=
- =?utf-8?B?alQrVFdzZzlPcDdPbmlhTFhwYXlJUW1PS0pQcDg5ajNOVFdNSkZYbXRoMVh2?=
- =?utf-8?B?UE5pVFl0YithVi9uU0hWTEZYOHR2V3BFeGRsUWRHV3lYemRUcW1naHFKZGE1?=
- =?utf-8?B?NXplVTZhTDZFNityZG9vOHN2cHFOS1JGaTV3MWp2WFRISnh1ZVlLdXQzczc4?=
- =?utf-8?B?eWd1WjlsVUlSenQ5eWFMNXlUamdQS0ErK25DK0hOU2ZNTHJxS2FZRUI5YmY4?=
- =?utf-8?B?b2trdWR2R00rSnRnLzhKazBnMVhIZW9TRk44aFlsMjl5d3pxcXFENE81MmRU?=
- =?utf-8?B?V1BTWVVheDNnQXNSalA2WXJrZkNFQlBZZ3ZWUHNsWjA0L3d6cUE1eERJRmhT?=
- =?utf-8?B?UjlQT3lIWmpFNnIxTnVKcjNtbThhK1Z4Sy9ZamJvVlZVVjl1TkdZNE9OT1R1?=
- =?utf-8?B?NXNnazdZdE9ZUVhyTFp6aXpJNllFd1g4c1FwWGRXSEFWc2d4V01zV2JqREJs?=
- =?utf-8?B?L1ZrZEFoci9NVzZXdDRwRDFCdk9KSU1NQzhYMHc0ZllFeXZZOWI0bEorOE5h?=
- =?utf-8?B?QjBlY1BpQzNONVZiVjNHVVVzVU9qNTNDa2RlZm0wNlZtQW1wZitVY0tQelNI?=
- =?utf-8?B?TTRkaDVqZVBGOWpUbzlhNitORmdiYWFsL0R1YUx2NjR2dmJwQ3RBYnFBZVJq?=
- =?utf-8?B?NlJLNTU4SWRXcnNUTlpOM2JCTEtoL1JTRWtLaEZGYlo4dTkvVGg3NWxtN2pI?=
- =?utf-8?B?ekNDd2dSdExGbmVUTHM1aENKOHVZRFBhWjk0TXFoam9Rb0sxQzVkK29abkV4?=
- =?utf-8?B?OXJ4SkxKcTZhcWJ3Mk00RFlDSEc1dEE3bm16cmhodTFVWHY5cVFmNUtuZmdJ?=
- =?utf-8?B?ZWk3QXdEbWZMbldNUVZSZ0w3ZEdLakpUWU04T1Rpa29iVCtUanA1S2pKV0lD?=
- =?utf-8?B?UC9KUlgycGZSZVdFWG90UVlqdEJCMnQwdE1SQXZmZVNiU2tVakMzTDNYZ1VY?=
- =?utf-8?B?bjJkVVhTbW5NQlB6eWRvNzZzYTRnSmc5aE04WVdtenR1MkZoV1BDSWQ1RzZy?=
- =?utf-8?B?Ykp3Q2FpUWRhL3lObTZRcFh5UFU5OXk1NENnbkNocnpsK3E3QS91bTV2bXNz?=
- =?utf-8?Q?iMnvzF+z3CWKJ8g4=3D?=
+	=?utf-8?B?eGpCQTUwWWRKRWhqRzJJNzdHYmxMejFPS25mYUpFemZRM1JNUmpRQ3FDek1k?=
+ =?utf-8?B?TjBCTXlHaThpVllHWGZWWXBsVmVyYm1Da1hzY01ONzBldnlZS3JuaERIdVBu?=
+ =?utf-8?B?WHFFeTVJYys0cW5kamdwSW40ZGFkcGx6L3FxS3RXMXR0YjArWWhzUDc2dU1G?=
+ =?utf-8?B?aE9LOEtvQUlGeWt5bjB3VkV0M2IzUGdzUis3dk5FdStUQUlBT3JiT04weVAr?=
+ =?utf-8?B?MEJHZGMwUUNNZWI3bkNHZkRXeEpXSkdkZzBkR1V1dXAxRUtLcm81d1Q5Ykpq?=
+ =?utf-8?B?MUc5M3VpQVMvaXdkNUFnMHhCRmRxUHNxOGRneW11TGUveFFwRjA1Y01hT0xx?=
+ =?utf-8?B?YVNXQzV1dGlIK2FlTk9ndWNiL3BxYkNPc3JkcndnV0duZTRseFlkNzhMUzlQ?=
+ =?utf-8?B?OFp5M2dSdHBvWStXYlYzN3hha20wVFNzajEwSEFabUpjMlkrczJTNXhPTjhI?=
+ =?utf-8?B?SS9CeUJQVmh2c2xNYzZZNWRaS0FHa05VSWdOWTZVWlRMN3MyT2dRNWV0bWpC?=
+ =?utf-8?B?ZW1iakp6SkU2WllLUUo4RHpheUc1RHhBVlBzZk9zclVZSndtOWpXVllGdFFk?=
+ =?utf-8?B?a3BPczJGOEJnWjFLK0tVY3Z1Qjc2K2Y4TWx2eCtJVk56NUl5NHAzZnUvaWFx?=
+ =?utf-8?B?d3VXNmhjRWtSTjFpekE5WUV4ZHNKeDI3dXN4T3RERnR4UFU2VUk1UTAvd2sx?=
+ =?utf-8?B?UlVSazdhTDR1SUZtV2Vzbjhzc1RiU3NNNTJrRzB6ZFJMYW9BY0VUVWw3WXNq?=
+ =?utf-8?B?akxuR1pqclpZYzgyUUE4TVo1WCtWRkh2OEZuQVBpOEN5SXN3VFdYMmZQOU1a?=
+ =?utf-8?B?VHE5cFhTWFVyMFVtR0tTRDFzRUZHYS9pYVBmRVNjcjkwcTVSalhBeTJmb2po?=
+ =?utf-8?B?VnZLMmFXZTQ0TjlzRlBXVC9nSUE1K1JucE92cVZWQ2Vqc3JhL2ZZdmhBQXR5?=
+ =?utf-8?B?WnB1WWxqUm1oU2lGRnduMFl0VkVtN25VdEJvR1NPUTRXKzZPVXY3dmhlVm9p?=
+ =?utf-8?B?Vm9lR0w3azhFbm5HbjdSTXBTdG50VTFJUjl3WnFVSXFkTEdKNWJ6eEoyYzNa?=
+ =?utf-8?B?c1NaMTZwdEY1aWZwcmRQandnTUlwNlRvNkMvWFBXRFkxSWhuVGhZcGFSNkdP?=
+ =?utf-8?B?MklhU1JsKzdCUUZwZmp6RFVNdVhJK1dZYTVrbXNpSjRxaU5qTFZLaTgyRDYw?=
+ =?utf-8?B?RGJvTEVRZEhBZm9ieHlLTndTN0txbEFLT29EV0NwWk9FVE5OR3lMYWs4cmN6?=
+ =?utf-8?B?OEFRcWNGT0JnNGVWZGxqMlRRSHpvZTMrWDdxV0lMT2d4QVJkYUlnbVc3SlJl?=
+ =?utf-8?B?bVFLSE1QTmF1WnZPZUpPYkMzbVowOU93Umg2ZlVZUUx4aHdQeDRwWTZSTFlh?=
+ =?utf-8?B?eTkyOUMxYTB3c0MvbEp0Qnl3bnlqdXFSbENlYVJoWVRFbVdGQm54Nkttbksw?=
+ =?utf-8?B?R1VwMzhUbTl3YWUxc3Z5eEJqYUVuZGJSS050N1VYeVdqcGh5RGEySkxmNlMz?=
+ =?utf-8?B?ZjR3YUhyNlkxWHdzbVNuVkFBSUFjSDhFSFZFSjhWdTFmY053MStGL0g2WlhN?=
+ =?utf-8?B?cjgrZkFjdm40YlFrNmdQT1FVOFZ1bmoxVjVsR3BwNk1hSHZLWkFBUWV1YU51?=
+ =?utf-8?B?Tzc0SUNGYWZVMHVscjJISEdkZURoY1FaQmNpeC9YZzJaTmlaUm5iU1FjbTdU?=
+ =?utf-8?B?N21ndnlYMUIyL01PeXBMZFA4d25kbDAyZ050TURoL0t6U0pkQURLaFVYOENZ?=
+ =?utf-8?B?MDEyUWdncnFaSmNobjNnWFc4OFl5bytmUFdkY3JkRWRGVHNpbkFWL21pd25R?=
+ =?utf-8?B?TnhkTmFjcU1Bd25NQzQzc25OVEh1TG45dU4vT21Kb0d4ZFBlclFoMFZ5TXRM?=
+ =?utf-8?B?WExyV0NBWGpBSnhFbktIMGVKc0Z2TmFWTURoUlV4NCsxSTY5Ym9KbWZpeDhS?=
+ =?utf-8?B?WDVTZUdRdW4wbkE0d1AveVJvUHo4bUpuZ1JpWm5WUnNoclJPRVF1WUJiUUFI?=
+ =?utf-8?B?djRZTjgxc0VjenlSdCttdGhWbFFkVTA0NDNMd3dXTkFMc0djMVMyMEt4cndr?=
+ =?utf-8?B?TXFPZUNSdm9uNEhBSUswa1VFeDdlYis3RUxsTytDTy90N0EvYmVLUStrSXBp?=
+ =?utf-8?B?dTgyYjh1aXk1cDhlL09oeCtUY1FqSXp1RDVxeUhUOWkvTVlIU3NZUE56ZnNE?=
+ =?utf-8?B?RXlXVFhxNlg0elQxb085WjJIS04zeGxaU1VsYVJrdVdjemVwNXAwQk8ya1hm?=
+ =?utf-8?B?WGJzbE1VZU52M3hTcXpITXVEbFA2QWVNVjZaOGZ1T0owWEI4VkhCcE5DeitW?=
+ =?utf-8?B?VVpvYW9HT2hOT1hYbEV5dGh2bmhMditSTUx0V2pmR2JYOTJ2WHB5bXlsVlBU?=
+ =?utf-8?Q?vC+t9Kx2Rc+u3yxI=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9049089a-3ed7-4ee3-30fe-08de73d3c0a1
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3e1e3207-b647-41d6-06d1-08de73d3c89a
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2026 18:37:24.2142
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Feb 2026 18:37:37.5179
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WbFnszInr0SjPq3ok5xMsQIzy1dAeRcAQMTTf7FNyXgBxbl3lIF386W7pzXAN6373eUxcgWfuyAlKCK7gDKrxg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: fZk9x9fPi2Q5gRmNpqiAkHlNwjwDolEenxs+KsEhkEcEI84/p59C0+HUOu7a65LJKZePaIKaV6fRlq1gcSkApw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR10MB7652
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This should help to identify why a pipeline was started here, regular
-push, external repo trigger, schedule.
-
-Requires that the xenomai 3 CI sets the TRIGGER_SOURCE variable before
-issuing the trigger.
+So far, we covered this via "head", but this slot is now used by 6.19.
+The 6.18 kernel is LTS, thus we should add it properly in recipes and
+CI, both for Xenomai 3 and 4.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- .gitlab-ci.yml          | 20 +++++++++++++++++++-
- ci/trigger/dovetail.yml |  1 +
- ci/trigger/evl.yml      |  1 +
- ci/trigger/libevl.yml   |  1 +
- 4 files changed, 22 insertions(+), 1 deletion(-)
+ Kconfig                                       | 20 +++++
+ ci/lib/kernel/6_18.yml                        | 88 +++++++++++++++++++
+ ci/xenomai_3_dovetail.yml                     |  5 +-
+ ci/xenomai_3_next.yml                         |  1 +
+ ci/xenomai_4_evl.yml                          |  3 +
+ ci/xenomai_4_next.yml                         |  3 +-
+ kas/opt/linux-6.18-head.yaml                  | 19 ++++
+ kas/opt/linux-6.18.yaml                       | 18 ++++
+ recipes-kernel/linux/linux-xenomai-3_6.18.bb  | 14 +++
+ .../linux/linux-xenomai-3_latest.bb           |  5 +-
+ recipes-kernel/linux/linux-xenomai-4_6.18.bb  | 14 +++
+ .../linux/linux-xenomai-4_latest.bb           |  3 +-
+ 12 files changed, 189 insertions(+), 4 deletions(-)
+ create mode 100644 ci/lib/kernel/6_18.yml
+ create mode 100644 kas/opt/linux-6.18-head.yaml
+ create mode 100644 kas/opt/linux-6.18.yaml
+ create mode 100644 recipes-kernel/linux/linux-xenomai-3_6.18.bb
+ create mode 100644 recipes-kernel/linux/linux-xenomai-4_6.18.bb
 
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index f810dd7..ffda862 100644
---- a/.gitlab-ci.yml
-+++ b/.gitlab-ci.yml
+diff --git a/Kconfig b/Kconfig
+index dec7458..93958b2 100644
+--- a/Kconfig
++++ b/Kconfig
+@@ -130,6 +130,14 @@ config KERNEL_HEAD
+ 	bool "Head of latest Dovetail branch"
+ 	depends on XENOMAI_HEAD
+ 
++config KERNEL_6_18_HEAD
++	bool "Head of 6.18 Dovetail branch"
++	depends on XENOMAI_HEAD
++
++config KERNEL_6_18
++	bool "Latest 6.18 Dovetail release"
++	depends on XENOMAI_HEAD
++
+ config KERNEL_6_12_HEAD
+ 	bool "Head of 6.12 Dovetail branch"
+ 	depends on XENOMAI_HEAD || XENOMAI_3_3_HEAD || XENOMAI_3_3
+@@ -175,6 +183,8 @@ endchoice
+ config KAS_INCLUDE_KERNEL
+ 	string
+ 	default "kas/opt/linux-head.yaml" if KERNEL_HEAD
++	default "kas/opt/linux-6.18-head.yaml" if KERNEL_6_18_HEAD
++	default "kas/opt/linux-6.18.yaml" if KERNEL_6_18
+ 	default "kas/opt/linux-6.12-head.yaml" if KERNEL_6_12_HEAD
+ 	default "kas/opt/linux-6.12.yaml" if KERNEL_6_12
+ 	default "kas/opt/linux-6.1-head.yaml" if KERNEL_6_1_HEAD
+@@ -222,6 +232,14 @@ choice
+ config EVL_KERNEL_HEAD
+ 	bool "Head of latest EVL branch"
+ 
++config EVL_KERNEL_6_18_HEAD
++	bool "Head of 6.18 EVL branch"
++	depends on !ARCH_RISCV64
++
++config EVL_KERNEL_6_18
++	bool "Latest 6.18 EVL release"
++	depends on !ARCH_RISCV64
++
+ config EVL_KERNEL_6_12_HEAD
+ 	bool "Head of 6.12 EVL branch"
+ 	depends on !ARCH_RISCV64
+@@ -243,6 +261,8 @@ endchoice
+ config KAS_INCLUDE_EVL_KERNEL
+ 	string
+ 	default "kas/opt/linux-head.yaml" if EVL_KERNEL_HEAD
++	default "kas/opt/linux-6.18-head.yaml" if EVL_KERNEL_6_18_HEAD
++	default "kas/opt/linux-6.18.yaml" if EVL_KERNEL_6_18
+ 	default "kas/opt/linux-6.12-head.yaml" if EVL_KERNEL_6_12_HEAD
+ 	default "kas/opt/linux-6.12.yaml" if EVL_KERNEL_6_12
+ 	default "kas/opt/linux-6.1-head.yaml" if EVL_KERNEL_6_1_HEAD
+diff --git a/ci/lib/kernel/6_18.yml b/ci/lib/kernel/6_18.yml
+new file mode 100644
+index 0000000..88e3915
+--- /dev/null
++++ b/ci/lib/kernel/6_18.yml
+@@ -0,0 +1,88 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2026
++#
++# Authors:
++#  Jan Kiszka <jan.kiszka@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++build-6.18:qemu-amd64:
++  extends: .build:qemu-amd64
++  variables:
++    LINUX_BUILD_OPTION: ":kas/opt/linux-6.18-head.yaml"
++    KERNEL_VERSION: "6.18"
++    CACHE_KERNEL: dovetail
++
++lava-test-6.18:qemu-amd64:
++  needs: [ "build-6.18:qemu-amd64" ]
++  extends: .lava-test:qemu-amd64
++  variables:
++    KERNEL_VERSION: "6.18"
++
++build-6.18:qemu-armhf:
++  extends: .build:qemu-armhf
++  variables:
++    LINUX_BUILD_OPTION: ":kas/opt/linux-6.18-head.yaml"
++    KERNEL_VERSION: "6.18"
++    CACHE_KERNEL: dovetail
++
++lava-test-6.18:qemu-armhf:
++  needs: [ "build-6.18:qemu-armhf" ]
++  extends: .lava-test:qemu-armhf
++  variables:
++    KERNEL_VERSION: "6.18"
++
++build-6.18:qemu-arm64:
++  extends: .build:qemu-arm64
++  variables:
++    LINUX_BUILD_OPTION: ":kas/opt/linux-6.18-head.yaml"
++    KERNEL_VERSION: "6.18"
++    CACHE_KERNEL: dovetail
++
++lava-test-6.18:qemu-arm64:
++  needs: [ "build-6.18:qemu-arm64" ]
++  extends: .lava-test:qemu-arm64
++  variables:
++    KERNEL_VERSION: "6.18"
++
++build-6.18:rpi4:
++  extends: .build:rpi4
++  variables:
++    LINUX_BUILD_OPTION: ":kas/opt/linux-6.18-head.yaml"
++    KERNEL_VERSION: "6.18"
++    CACHE_KERNEL: dovetail
++
++lava-test-6.18:rpi4:
++  needs: [ "build-6.18:rpi4" ]
++  extends: .lava-test:rpi4
++  variables:
++    KERNEL_VERSION: "6.18"
++
++build-6.18:beagle-bone-black:
++  extends: .build:beagle-bone-black
++  variables:
++    LINUX_BUILD_OPTION: ":kas/opt/linux-6.18-head.yaml"
++    KERNEL_VERSION: "6.18"
++    CACHE_KERNEL: dovetail
++
++lava-test-6.18:beagle-bone-black:
++  needs: [ "build-6.18:beagle-bone-black" ]
++  extends: .lava-test:beagle-bone-black
++  variables:
++    KERNEL_VERSION: "6.18"
++
++build-6.18:x86-64-efi:
++  extends: .build:x86-64-efi
++  variables:
++    LINUX_BUILD_OPTION: ":kas/opt/linux-6.18-head.yaml"
++    KERNEL_VERSION: "6.18"
++    CACHE_KERNEL: dovetail
++
++lava-test-6.18:x86-64-efi:
++  needs: [ "build-6.18:x86-64-efi" ]
++  extends: .lava-test:x86-64-efi
++  variables:
++    KERNEL_VERSION: "6.18"
+diff --git a/ci/xenomai_3_dovetail.yml b/ci/xenomai_3_dovetail.yml
+index 916d191..ffb903a 100644
+--- a/ci/xenomai_3_dovetail.yml
++++ b/ci/xenomai_3_dovetail.yml
+@@ -25,6 +25,9 @@ include:
+   - local: '/ci/lib/kernel/6_12.yml'
+     rules:
+       - if: '$KERNEL_VERSION == "6.12"'
++  - local: '/ci/lib/kernel/6_18.yml'
++    rules:
++      - if: '$KERNEL_VERSION == "6.18"'
+   - local: '/ci/lib/kernel/head.yml'
+     rules:
+       - if: '$KERNEL_VERSION == "head"'
+@@ -35,4 +38,4 @@ include:
+       - if: '$KERNEL_VERSION == "5.10" || $KERNEL_VERSION == "5.15"'
+   - local: '/ci/lib/dovetail/xenomai_3_next.yml'
+     rules:
+-      - if: '$KERNEL_VERSION == "6.1" || $KERNEL_VERSION == "6.12" || $KERNEL_VERSION == "head"'
++      - if: '$KERNEL_VERSION == "6.1" || $KERNEL_VERSION == "6.12" || $KERNEL_VERSION == "6.18" || $KERNEL_VERSION == "head"'
+diff --git a/ci/xenomai_3_next.yml b/ci/xenomai_3_next.yml
+index b1771f6..74803ed 100644
+--- a/ci/xenomai_3_next.yml
++++ b/ci/xenomai_3_next.yml
+@@ -13,6 +13,7 @@ include:
+   - local: '/ci/lib/gitlab-ci-base.yml'
+   - local: '/ci/lib/kernel/6_1.yml'
+   - local: '/ci/lib/kernel/6_12.yml'
++  - local: '/ci/lib/kernel/6_18.yml'
+   - local: '/ci/lib/kernel/head.yml'
+   - local: '/ci/lib/compat/xenomai_3_next.yml'
+ 
+diff --git a/ci/xenomai_4_evl.yml b/ci/xenomai_4_evl.yml
+index 0404ca3..283a1fd 100644
+--- a/ci/xenomai_4_evl.yml
++++ b/ci/xenomai_4_evl.yml
+@@ -17,6 +17,9 @@ include:
+   - local: '/ci/lib/kernel/6_12.yml'
+     rules:
+       - if: '$KERNEL_VERSION == "6.12"'
++  - local: '/ci/lib/kernel/6_18.yml'
++    rules:
++      - if: '$KERNEL_VERSION == "6.18"'
+   - local: '/ci/lib/kernel/head.yml'
+     rules:
+       - if: '$KERNEL_VERSION == "head"'
+diff --git a/ci/xenomai_4_next.yml b/ci/xenomai_4_next.yml
+index 5a248e5..ffb1ebb 100644
+--- a/ci/xenomai_4_next.yml
++++ b/ci/xenomai_4_next.yml
 @@ -1,7 +1,7 @@
  #
  # Xenomai Real-Time System
  #
--# Copyright (c) Siemens AG, 2019 - 2025
-+# Copyright (c) Siemens AG, 2019 - 2026
+-# Copyright (c) Siemens AG, 2023-2025
++# Copyright (c) Siemens AG, 2023-2026
+ #
+ # Authors:
+ #  Clara Kowalsky <clara.kowalsky@siemens.com>
+@@ -13,6 +13,7 @@ include:
+   - local: '/ci/lib/gitlab-ci-base.yml'
+   - local: '/ci/lib/kernel/6_1.yml'
+   - local: '/ci/lib/kernel/6_12.yml'
++  - local: '/ci/lib/kernel/6_18.yml'
+   - local: '/ci/lib/kernel/head.yml'
+ 
+ variables:
+diff --git a/kas/opt/linux-6.18-head.yaml b/kas/opt/linux-6.18-head.yaml
+new file mode 100644
+index 0000000..1372dda
+--- /dev/null
++++ b/kas/opt/linux-6.18-head.yaml
+@@ -0,0 +1,19 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2026
++#
++# Authors:
++#  Jan Kiszka <jan.kiszka@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++header:
++  version: 14
++
++local_conf_header:
++  linux-xenomai-version: |
++    PREFERRED_VERSION_linux-xenomai-3 = "9999-%"
++    PREFERRED_VERSION_linux-xenomai-4 = "9999-%"
++    LATEST_GIT_BRANCH = "6.18"
+diff --git a/kas/opt/linux-6.18.yaml b/kas/opt/linux-6.18.yaml
+new file mode 100644
+index 0000000..99d958c
+--- /dev/null
++++ b/kas/opt/linux-6.18.yaml
+@@ -0,0 +1,18 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2026
++#
++# Authors:
++#  Jan Kiszka <jan.kiszka@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++header:
++  version: 14
++
++local_conf_header:
++  linux-xenomai-version: |
++    PREFERRED_VERSION_linux-xenomai-3 = "6.18%"
++    PREFERRED_VERSION_linux-xenomai-4 = "6.18%"
+diff --git a/recipes-kernel/linux/linux-xenomai-3_6.18.bb b/recipes-kernel/linux/linux-xenomai-3_6.18.bb
+new file mode 100644
+index 0000000..e6d91ab
+--- /dev/null
++++ b/recipes-kernel/linux/linux-xenomai-3_6.18.bb
+@@ -0,0 +1,14 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2026
++#
++# Authors:
++#  Jan Kiszka <jan.kiszka@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++require recipes-kernel/linux/linux-xenomai-3-dovetail.inc
++
++SRCREV ?= "v6.18.7-dovetail1"
+diff --git a/recipes-kernel/linux/linux-xenomai-3_latest.bb b/recipes-kernel/linux/linux-xenomai-3_latest.bb
+index 0a68d11..ce497d6 100644
+--- a/recipes-kernel/linux/linux-xenomai-3_latest.bb
++++ b/recipes-kernel/linux/linux-xenomai-3_latest.bb
+@@ -1,7 +1,7 @@
+ #
+ # Xenomai Real-Time System
+ #
+-# Copyright (c) Siemens AG, 2019-2025
++# Copyright (c) Siemens AG, 2019-2026
  #
  # Authors:
  #  Quirin Gylstorff <quirin.gylstorff@siemens.com>
-@@ -13,6 +13,24 @@ variables:
-   LAVA_TESTS_ENABLED: "true"
-   ALL_QEMU_JOBS: "false"
-   CONTAINER_REGISTRY: "registry.gitlab.com"
-+  PIPELINE_NAME: "Branch changed: $CI_COMMIT_BRANCH"
-+
-+workflow:
-+  name: "$PIPELINE_NAME"
-+  rules:
-+    - if: '$CI_PIPELINE_SOURCE == "pipeline"'
-+      variables:
-+        PIPELINE_NAME: "Trigger: $TRIGGER_SOURCE"
-+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
-+      variables:
-+        PIPELINE_NAME: "Schedule: '$ONLY_RUN'"
-+    - if: '$CI_PIPELINE_SOURCE == "web" && $ONLY_RUN != ""'
-+      variables:
-+        PIPELINE_NAME: "Manual: $ONLY_RUN"
-+    - if: '$CI_PIPELINE_SOURCE == "web"'
-+      variables:
-+        PIPELINE_NAME: "Manual run"
-+    - when: always
+@@ -41,6 +41,7 @@ GIT_BRANCH = "${@ \
+     else 'v5.15.y-dovetail-rebase' if is_kernel(d, '5.15') \
+     else 'v6.1.y-cip-dovetail-rebase' if is_kernel(d, '6.1') \
+     else 'v6.12.y-cip-dovetail-rebase' if is_kernel(d, '6.12') \
++    else 'v6.18.y-dovetail-rebase' if is_kernel(d, '6.18') \
+     else d.getVar('LATEST_KERNEL_BRANCH') }"
  
- stages:
-   - parent
-diff --git a/ci/trigger/dovetail.yml b/ci/trigger/dovetail.yml
-index 633ebc4..b904c1a 100644
---- a/ci/trigger/dovetail.yml
-+++ b/ci/trigger/dovetail.yml
-@@ -59,5 +59,6 @@ trigger-xenomai-images:
-     KERNEL_VERSION: $KERNEL_VERSION
-     KERNEL_VERSION_WITH_QEMU: $KERNEL_VERSION
-     ONLY_RUN: xenomai-3/dovetail
-+    TRIGGER_SOURCE: linux-dovetail/$KERNEL_VERSION
-   rules:
-     - if: '$KERNEL_VERSION != ""'
-diff --git a/ci/trigger/evl.yml b/ci/trigger/evl.yml
-index fdbd15d..fe87bcb 100644
---- a/ci/trigger/evl.yml
-+++ b/ci/trigger/evl.yml
-@@ -59,5 +59,6 @@ trigger-xenomai-images:
-     KERNEL_VERSION: $KERNEL_VERSION
-     KERNEL_VERSION_WITH_QEMU: $KERNEL_VERSION
-     ONLY_RUN: xenomai-4/evl
-+    TRIGGER_SOURCE: linux-evl/$KERNEL_VERSION
-   rules:
-     - if: '$KERNEL_VERSION != ""'
-diff --git a/ci/trigger/libevl.yml b/ci/trigger/libevl.yml
-index ece5f06..bb996b4 100644
---- a/ci/trigger/libevl.yml
-+++ b/ci/trigger/libevl.yml
-@@ -19,6 +19,7 @@ trigger-xenomai-images:
-   stage: trigger_xenomai_images
-   variables:
-     ONLY_RUN: xenomai-4/${CI_COMMIT_BRANCH}
-+    TRIGGER_SOURCE: libevl/next
-   trigger:
-     project: xenomai/xenomai-images
-     branch: next
+ GIT_REPO:armhf = "${@ \
+@@ -52,6 +53,7 @@ GIT_BRANCH:armhf = "${@ \
+     else 'v5.15.y-dovetail-rebase' if is_kernel(d, '5.15') \
+     else 'v6.1.y-cip-dovetail-rebase' if is_kernel(d, '6.1') \
+     else 'v6.12.y-cip-dovetail-rebase' if is_kernel(d, '6.12') \
++    else 'v6.18.y-dovetail-rebase' if is_kernel(d, '6.18') \
+     else d.getVar('LATEST_KERNEL_BRANCH') }"
+ 
+ GIT_REPO:arm64 = "${@ \
+@@ -63,6 +65,7 @@ GIT_BRANCH:arm64 = "${@ \
+     else 'v5.15.y-dovetail-rebase' if is_kernel(d, '5.15') \
+     else 'v6.1.y-cip-dovetail-rebase' if is_kernel(d, '6.1') \
+     else 'v6.12.y-cip-dovetail-rebase' if is_kernel(d, '6.12') \
++    else 'v6.18.y-dovetail-rebase' if is_kernel(d, '6.18') \
+     else d.getVar('LATEST_KERNEL_BRANCH') }"
+ 
+ SRC_URI += "${GIT_REPO};protocol=https;branch=${GIT_BRANCH}"
+diff --git a/recipes-kernel/linux/linux-xenomai-4_6.18.bb b/recipes-kernel/linux/linux-xenomai-4_6.18.bb
+new file mode 100644
+index 0000000..3182404
+--- /dev/null
++++ b/recipes-kernel/linux/linux-xenomai-4_6.18.bb
+@@ -0,0 +1,14 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2026
++#
++# Authors:
++#  Jan Kiszka <jan.kiszka@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++require recipes-kernel/linux/linux-xenomai-4-evl.inc
++
++SRCREV ?= "v6.18.7-evl1-rebase"
+diff --git a/recipes-kernel/linux/linux-xenomai-4_latest.bb b/recipes-kernel/linux/linux-xenomai-4_latest.bb
+index 20fa03f..3be54fe 100644
+--- a/recipes-kernel/linux/linux-xenomai-4_latest.bb
++++ b/recipes-kernel/linux/linux-xenomai-4_latest.bb
+@@ -1,7 +1,7 @@
+ #
+ # Xenomai Real-Time System
+ #
+-# Copyright (c) Siemens AG, 2024-2025
++# Copyright (c) Siemens AG, 2024-2026
+ #
+ # Authors:
+ #  Jan Kiszka <jan.kiszka@siemens.com>
+@@ -33,6 +33,7 @@ python () {
+ GIT_BRANCH = "${@ \
+     'v6.1.y-cip-evl-rebase' if is_kernel(d, '6.1') \
+     else 'v6.12.y-cip-evl-rebase' if is_kernel(d, '6.12') \
++    else 'v6.18.y-evl-rebase' if is_kernel(d, '6.18') \
+     else d.getVar('LATEST_KERNEL_BRANCH') }"
+ GIT_BRANCH:riscv64 = "wip/evl-riscv"
+ 
 -- 
 2.47.3
