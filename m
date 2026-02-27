@@ -1,84 +1,100 @@
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE83342EEBD
-	for <xenomai@lists.linux.dev>; Thu, 26 Feb 2026 17:00:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.193
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E93EA279DC3
+	for <xenomai@lists.linux.dev>; Fri, 27 Feb 2026 12:07:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772125254; cv=none; b=WJG+7jOp+ddkuriWCNKGG0SheQ6uU3hV/xPstMVbVfN8qb1odh0RWhEPF5Q2dzc0Dd1mmm1AhZLOde4g4bB2wlWrn7Qrza2Ky75fRIOvh2Rynnq7JKOSM7zlubWN4IEsdplgug+4BXYlxw8Yg2fDs8jHDuDKpfLL8wy8GF/zF04=
+	t=1772194032; cv=none; b=ixVJV9YZjiSxzFkbjkF3BaV6i0zlWjAAcv1HYqH6GU6E2lg71qIAQ9vl0YBabFSqLro6tc7my+OvMgLeNirew3H+hkPS0SriSHlPg4Uk0W3EnzvyZdf4l/9xw3RxI3dZ7HJWCYr7i8/LBc88Yd7/YNNmj7n/CfnUzzlbAxYpvRY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772125254; c=relaxed/simple;
-	bh=8YjJx0kgGwC+DgD5aS38GUgyKTavl+1ciSdIc/s1eWw=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=k7GIL3UxFFfEZxAe+H4WfYKeFCN9X5a4tBKq+IoIw05RXFYxPrD1kL5NoM1VI4Vz0wHvs4OTHoweVLvdv0JqjpgAloX8gmiW9OKhNDUEZ5hONKE5wa9slKFXFvhN+cKD2HqwZRNo15gV8WtqU0uynvw3dsoj0/2YJDPhYaillgA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=UGTdM2cv; arc=none smtp.client-ip=217.70.183.193
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1772194032; c=relaxed/simple;
+	bh=3yuDCOKS6X6G1EflSnwnOCRWpDQVZ1ySq+HGzw+3zhY=;
+	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=p0cTTGpiCTDb2PAusTW60gg5V68yD0JQ5Dux6OCXBkGd0GSXeEkM38oRsrRjZ2u6NnvjSFECk2GbH2+HSoNu7jnTOL7A9z36DEiwOrT892cOSxLE/UEq5V3+gQrE76c7xaYPcaFCb5MQ+e0maNjBo0MtwyuusEUQU/t6DjzFGaQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=IRHBSrci; arc=none smtp.client-ip=185.136.64.226
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="UGTdM2cv"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 90AAA44478;
-	Thu, 26 Feb 2026 17:00:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1772125243;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=w6SaaZ6YdoRvevtNz25gvMkzSlGyiM2OQfrZdcSOLTw=;
-	b=UGTdM2cv41VOELetGZAttNUDlzaX1FCwUyBDOZ1wFbonw2C3h2vnhWD44qFeAq0hyjUEc/
-	7ruBMMDPhZ31TqCJEXze2uyS6pXYwAErQVsXJb5Q1EX1u35+IzGsDJtSoU9UAmpYqvS4+R
-	0yUAov97wWenEQ8tWCN2Pr1RBkxR4jk5EmQYSvCJ+4QazihLjkSx26tXhBjKyRx5I6Ntm2
-	3IU8EyW9W3AKsl/CITHydN0I7ooLqG9FoxMEpqqtawQFiZ3WekBM1l/fiNTAaK0nm+B69L
-	h5wappZ7sztbbs/gG8FeUBnD8OUNEk56zkGwzDxr2iED+tnqFu1DeElHYCOW0g==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@lists.linux.dev,  Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: [PATCH Dovetail 6.19] e1000e: Fix merge mistake, reintroduce
- FLAG2_IN_NETPOLL
-In-Reply-To: <20260225151413.1929834-1-florian.bezdeka@siemens.com> (Florian
-	Bezdeka's message of "Wed, 25 Feb 2026 16:14:13 +0100")
-References: <20260225151413.1929834-1-florian.bezdeka@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Thu, 26 Feb 2026 18:00:43 +0100
-Message-ID: <87ikbjwibo.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="IRHBSrci"
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202602271156563bd08b051b00020767
+        for <xenomai@lists.linux.dev>;
+        Fri, 27 Feb 2026 12:56:56 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
+ bh=H6zL+lgUXI4hr4RsYPrdqkYRvLJ65OOJFf+5gRxUCn4=;
+ b=IRHBSrci7rUdJxTk4au0/ilMW+BmmPGMPNWqDth/oBZhUuZftz/8sHU9FU+K/hE7GJZHZR
+ U+BWRVVmmXbzgTRCKeODw5eEKXojSB9/YTuUP3tir6cYerrFDM5mqotjBAySxEofYhZNwE3a
+ HacNO0x/fJbOLbDd9rY7BEavZVq6YoTVaGqIP2nHTV2Y7jW6x9oarM7yP61k6GYomzNp77Zn
+ 2CpYFW7ufGkkHvXa1zKkI+xUfNwRByqqnVkV8tbmPPP4xC4jQlJltjYMq6hf5tfL4BVsnmwP
+ eYKE+6lHv105ILatKhNQ8Wyia4fwm6PEhfEDc9CfychoklF7wY6B/KRw==;
+Message-ID: <9b25b03bc5f4ab827d94edd9bafbb2d84561fdbe.camel@siemens.com>
+Subject: Re: [PATCH 05/20] lib/cobalt: Introduce wrappers_time64.c
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@lists.linux.dev>
+Date: Fri, 27 Feb 2026 12:56:56 +0100
+In-Reply-To: <91cc0a1f-e1f7-4ce0-9607-606839d0c01c@siemens.com>
+References: 
+	<20260220-wip-flo-fix-time64-32bit-native-v1-0-731c773e72cc@siemens.com>
+	 <20260220-wip-flo-fix-time64-32bit-native-v1-5-731c773e72cc@siemens.com>
+	 <91cc0a1f-e1f7-4ce0-9607-606839d0c01c@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgddvgeeiheelucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpedvlefhvdehkeduheevleegiedtueejgfekhfeijeefvdeijeekgeeigfejhfekgeenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpqhhiugepledtteetteeggeegjeekpdhmohguvgepshhmthhpohhuthdpnhgspghrtghpthhtohepfedprhgtphhtthhopehjrghnrdhkihhsiihkrgesshhivghmvghnshdrtghomhdprhgtphhtthhopeigvghnohhmrghisehlihhsthhsrdhlihhnuhigrdguvghvpdhrtghpthhtohepfhhlohhrihgrnhdrsggviiguvghkrgesshhivghmvghnshdrtghomh
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+On Fri, 2026-02-20 at 15:36 +0100, Jan Kiszka wrote:
+> On 20.02.26 10:08, Florian Bezdeka wrote:
+> > All COBALT_IMPL_TIME64() services will be moved afterwards - step by
+> > step - into the newly introduced wrappers_time64.c. At the end that
+> > should allow us to compile libcobalt with time64_t support leaving
+> > the native time_t services in place.
+> >=20
+> > Currently, all native time_t services are replaced by the 64 bit
+> > variants. That is OK as long as applications are rebuild after
+> > libcobalt, but we try to remove this limitation now.
+> >=20
+> > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> > ---
+> >  lib/cobalt/Makefile.am       | 3 ++-
+> >  lib/cobalt/wrappers_time64.c | 6 ++++++
+> >  2 files changed, 8 insertions(+), 1 deletion(-)
+> >=20
+> > diff --git a/lib/cobalt/Makefile.am b/lib/cobalt/Makefile.am
+> > index f461e570ed42a0d5cbc43eabb373c3c9edd83bad..17e203f9015fe2bb5306609=
+e4d51c62f3a725780 100644
+> > --- a/lib/cobalt/Makefile.am
+> > +++ b/lib/cobalt/Makefile.am
+> > @@ -43,7 +43,8 @@ libcobalt_la_SOURCES =3D		\
+> >  	timerfd.c		\
+> >  	trace.c			\
+> >  	umm.c			\
+> > -	wrappers.c
+> > +	wrappers.c		\
+> > +	wrappers_time64.c
+>=20
+>=20
+> So, a should we do a wrapper_off64 for mmap, or put both into the same
+> one? I don't have a good name for common one yet, though.
+>=20
 
-> Seems I miss-interpreted the change while forward porting as a rename.
-> But: It's two flags using the same bit().
->
-> Reintroducing FLAG2_IN_NETPOLL to make the e1000e driver buildable
-> again.
->
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
->  drivers/net/ethernet/intel/e1000e/e1000.h | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/net/ethernet/intel/e1000e/e1000.h b/drivers/net/ethernet/intel/e1000e/e1000.h
-> index 200ab51b07c8e..7e08444efd932 100644
-> --- a/drivers/net/ethernet/intel/e1000e/e1000.h
-> +++ b/drivers/net/ethernet/intel/e1000e/e1000.h
-> @@ -501,6 +501,7 @@ s32 e1000e_get_base_timinca(struct e1000_adapter *adapter, u32 *timinca);
->  #define FLAG2_CHECK_SYSTIM_OVERFLOW       BIT(14)
->  #define FLAG2_ENABLE_S0IX_FLOWS           BIT(15)
->  #define FLAG2_DISABLE_K1		   BIT(16)
-> +#define FLAG2_IN_NETPOLL                  BIT(17)
->  
->  #define E1000_RX_DESC_PS(R, i)	    \
->  	(&(((union e1000_rx_desc_packet_split *)((R).desc))[i]))
+Assuming we want to follow the same pattern as we do for the time64
+series - both worlds provided within one libcobalt build:
 
-Merged, thanks.
+At the end libcobalt has to provide two wrappers / symbols. One for
+native and one for off64.
 
--- 
-Philippe.
+Linker magic (needed for __STD() and __RT() anyway) should do the
+necessary routing.
+
+As mmap() already resides in its own compile unit (which is fine, it's
+not related to time64_t) we might follow the same implementation
+pattern: Compile mmap.c twice, with different flags. Something similar
+to the COBALT_IMPL_TIME64() macro would be needed - based on different
+glibc / compile flag checks.
