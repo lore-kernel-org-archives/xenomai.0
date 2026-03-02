@@ -1,37 +1,37 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D63A38F62A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 875E872631
 	for <xenomai@lists.linux.dev>; Mon,  2 Mar 2026 09:38:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772444300; cv=none; b=hXamuMIclPCgUpAfFXb0Grdt4Bbtp37JvuPCc7S+b0vS1k0I+RUBK9aAJKqSLGowD7pZtr3benbICSNTO+pUJNB6Z01BjoBPC6oCsDY0UkGvCRagj3LCrtdCqT28HXMTqGD7iY6Afs5HinbRHvs3zzsEFpKyF6SOYD8JIRrbHkg=
+	t=1772444300; cv=none; b=oe/fOOi8fmsUZyQ98HHr7ZlwTMx4fHQRb4XAso+h1kO43ivx7gGhzD5XUnevIrvp6fRtOg4LMIhuDvUgzdTUy0jhZkGidN2EvlsNZfTK9pP0qKGRO9OOmHgTVmOKQ1sS/zqkdf4/QBsnZUgms+Z9Fbomws/Ze5KmkuOIAV0nb2k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1772444300; c=relaxed/simple;
-	bh=Lk98MqifRlxBB3a7Y5uRmb8O0ebLGIptLK/nzKiLvqs=;
+	bh=oQv/QPZeB51zyLyqka4hHnxF1AqOKW3YtB2u9+n9lDE=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=FwK/sVJxlemy6kQuC0aQ5pUQQq/X3pxNbWPD6XYGW9Y5lkOnFulnB1fIwv5hNPap1NG4x/8Fz/igXSyIENAiWiX2pDfdT9zMvtXUaU3J605Rmn+ev9k0is2LZr05XDhiTWX7TMQiIiySIhBU5qUWw/SPRVvI4EKsNF7MxYMxnTk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=KOwqbfQf; arc=none smtp.client-ip=185.136.64.226
+	 In-Reply-To:To:Cc; b=M0W1ImAXdkogSR4v/WqfHaw6aORUD5OkLbrAQC9BZrD0r7weCFqnHJ/Q2rL/rgBPGm+Otq092Qd5I3V31500wbhlrLxg4/LQBgrLKgXhSXj3+DEGpEP3eB4AJU04mKmQADobhlvOdQ+n86NsUgQGhibiS2YxNxDaKtXtC7JH8hM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=dcOF5rb7; arc=none smtp.client-ip=185.136.65.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="KOwqbfQf"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202603020938082327c515ab000207ae
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="dcOF5rb7"
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20260302093809069057cc37000207a0
         for <xenomai@lists.linux.dev>;
-        Mon, 02 Mar 2026 10:38:08 +0100
+        Mon, 02 Mar 2026 10:38:09 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=IRQbu34c+51i+grNJEM/5ap32UekwccNUHU/+9Wq29Y=;
- b=KOwqbfQfT+qcDG+c6yCcGLZ1TF0M/UwLgHm/2TRZ4Wt2dPk0VayOJ03+EGscNsMZC84nlN
- t4xsD+g0xw0AjWNp2556m9giGse7mQZS9lCSYY1mYB45WLZqUL1SEs2ivHg7J8pCeHUI48+p
- crwBEqR46JuV17qtydugqtHdhLNhV0n6jbTZbPjOVse3ZguHitcydsFsEg/TNXFW/JLpKgpn
- TRbgA4CMf2RX1f0xQStHMXsxyNDEXqC9VVE1Ew+vWVjOyl0be40VTljjf8ZHkKEE15dl56rd
- mLoQgFlPSctuFTciQN6bgLqDCyolnBq/qnJwsnuqtUHtwM83jKrrWNKw==;
+ bh=ZtQkjaOi5slamAc+hxZuYkfHH5Av4VEoYAZkyiNa3u4=;
+ b=dcOF5rb7jtuRbXpEGiJTL/Dc3wXmGA4lGAcq/EeIjZPKTU5V0MoT7ItIKJoXQjc1xLv3hx
+ mLYVRCC6Re8+cSsJhrBiJnOTbTNOoPizwphz3kjl/fNaeYeCziiHree+O2waJ3zddjUitQrK
+ pwdAPUGt23d0R9CpLrB1ng2YWZdtgr5sYHIgipCF/VHJakJu9qiGdbZ+JbPRkUHs8DipcVPx
+ QymuZW8FvCH9vUh2V1bnXfpsVP61qNzKtWTANeZrVtv93mlwo/DHk7LJkNT4HsPfe1uEM46V
+ mf/LyxVQuJjXjyz3j+gWGWaqhIqaSMhv/E62C43czxNm4tFiPc7qc4OA==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Mon, 02 Mar 2026 10:38:07 +0100
-Subject: [PATCH v2 08/20] lib/cobalt: mq: Move all time64 related services
- to wrappers_time64.c
+Date: Mon, 02 Mar 2026 10:38:11 +0100
+Subject: [PATCH v2 12/20] lib/cobalt: select: Move select services into
+ wrappers_time64.c
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260302-wip-flo-fix-time64-32bit-native-v2-8-7caefce29bcd@siemens.com>
+Message-Id: <20260302-wip-flo-fix-time64-32bit-native-v2-12-7caefce29bcd@siemens.com>
 References: <20260302-wip-flo-fix-time64-32bit-native-v2-0-7caefce29bcd@siemens.com>
 In-Reply-To: <20260302-wip-flo-fix-time64-32bit-native-v2-0-7caefce29bcd@siemens.com>
 To: Xenomai <xenomai@lists.linux.dev>
@@ -49,298 +49,242 @@ Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Code movement with some minor adjustments to the doxygen headers.
-All services should remain in the cobalt_api_mq group.
+select.c is no longer needed as everything inside is time64_t affected.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- lib/cobalt/mq.c              | 121 -----------------------------------------
- lib/cobalt/wrappers_time64.c | 125 +++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 125 insertions(+), 121 deletions(-)
+ lib/cobalt/Makefile.am       |   1 -
+ lib/cobalt/select.c          | 108 -------------------------------------------
+ lib/cobalt/wrappers_time64.c |  87 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 87 insertions(+), 109 deletions(-)
 
-diff --git a/lib/cobalt/mq.c b/lib/cobalt/mq.c
-index 72d419d6cfac0097ba7ed61941e7b8a92e3bc673..0997d396d06e08407741f4b5d6b373284f219f97 100644
---- a/lib/cobalt/mq.c
-+++ b/lib/cobalt/mq.c
-@@ -345,64 +345,6 @@ COBALT_IMPL(int, mq_send, (mqd_t q, const char *buffer, size_t len, unsigned pri
- 	return -1;
- }
- 
--/**
-- * Attempt, during a bounded time, to send a message to a message queue.
+diff --git a/lib/cobalt/Makefile.am b/lib/cobalt/Makefile.am
+index 68900c35104ff9bd94d1cb7534dfdc10b9795a18..be678eedf18f2d8a60afbf36060e27f2511383ec 100644
+--- a/lib/cobalt/Makefile.am
++++ b/lib/cobalt/Makefile.am
+@@ -33,7 +33,6 @@ libcobalt_la_SOURCES =		\
+ 	printf.c		\
+ 	rtdm.c			\
+ 	sched.c			\
+-	select.c		\
+ 	semaphore.c		\
+ 	signal.c		\
+ 	sigshadow.c		\
+diff --git a/lib/cobalt/select.c b/lib/cobalt/select.c
+deleted file mode 100644
+index 5472e991e126c2f521b346a7cf3c884bbf6f6317..0000000000000000000000000000000000000000
+--- a/lib/cobalt/select.c
++++ /dev/null
+@@ -1,108 +0,0 @@
+-/*
+- * Copyright (C) 2010 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>
 - *
-- * This service is equivalent to mq_send(), except that if the message queue is
-- * full and the flag @a O_NONBLOCK is not set for the descriptor @a fd, the
-- * calling thread is only suspended until the timeout specified by @a
-- * abs_timeout expires.
+- * This library is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU Lesser General Public
+- * License as published by the Free Software Foundation; either
+- * version 2 of the License, or (at your option) any later version.
 - *
-- * @param q message queue descriptor;
-- *
-- * @param buffer pointer to the message to be sent;
-- *
-- * @param len length of the message;
-- *
-- * @param prio priority of the message;
-- *
-- * @param timeout the timeout, expressed as an absolute value of the
-- * CLOCK_REALTIME clock.
-- *
-- * @return 0 and send a message on success;
-- * @return -1 with no message sent and @a errno set if:
-- * - EBADF, @a fd is not a valid message queue descriptor open for writing;
-- * - EMSGSIZE, the message length exceeds the @a mq_msgsize attribute of the
-- *   message queue;
-- * - EAGAIN, the flag O_NONBLOCK is set for the descriptor @a fd and the message
-- *   queue is full;
-- * - EPERM, the caller context is invalid;
-- * - ETIMEDOUT, the specified timeout expired;
-- * - EINTR, the service was interrupted by a signal.
-- *
-- * @see
-- * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/mq_timedsend.html">
-- * Specification.</a>
-- *
-- * @apitags{xthread-only, switch-primary}
+- * This library is distributed in the hope that it will be useful,
+- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+- * Lesser General Public License for more details.
+-
+- * You should have received a copy of the GNU Lesser General Public
+- * License along with this library; if not, write to the Free Software
+- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 - */
--COBALT_IMPL_TIME64(int, mq_timedsend, __mq_timedsend_time64,
--		   (mqd_t q, const char *buffer, size_t len, unsigned prio,
--		    const struct timespec *timeout))
+-
+-#include <errno.h>
+-#include <pthread.h>
+-#include <sys/select.h>
+-#include <asm/xenomai/syscall.h>
+-
+-#if __USE_TIME_BITS64 && __TIMESIZE == 32
+-
+-#define USEC_PER_SEC	1000000L
+-#define NSEC_PER_USEC	1000L
+-
+-/*
+- * The time64 wrapper for select() is a little different:
+- * There is no y2038 safe syscall for select() itself, but we have pselect()
+- * without signal support.
+- */
+-static inline int do_select(int __nfds, fd_set *__restrict __readfds,
+-			      fd_set *__restrict __writefds,
+-			      fd_set *__restrict __exceptfds,
+-			      struct timeval *__restrict __timeout)
 -{
+-	struct timespec to;
 -	int err, oldtype;
 -
--	if (timeout == NULL)
--		return -EFAULT;
+-	if (__timeout) {
+-		to.tv_sec =
+-			__timeout->tv_sec + (__timeout->tv_usec / USEC_PER_SEC);
+-		to.tv_nsec =
+-			(__timeout->tv_usec % USEC_PER_SEC) * NSEC_PER_USEC;
+-	}
 -
 -	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
 -
--	err = __do_mq_timesend(q, buffer, len, prio, timeout);
+-	/*
+-	 * Note: No sigmask here, we already reached the limit of 5
+-	 * syscall parameters
+-	 */
+-	err = XENOMAI_SYSCALL5(sc_cobalt_pselect64, __nfds, __readfds,
+-			       __writefds, __exceptfds, __timeout ? &to : NULL);
 -
 -	pthread_setcanceltype(oldtype, NULL);
 -
--	if (!err)
--		return 0;
+-	if (err == -EADV || err == -EPERM || err == -ENOSYS) {
+-		err = __STD(__select64(__nfds, __readfds, __writefds,
+-				       __exceptfds, __timeout));
+-	} else if (__timeout) {
+-		__timeout->tv_sec = to.tv_sec;
+-		__timeout->tv_usec = to.tv_nsec / 1000;
+-	}
+-
+-	if (err >= 0)
+-		return err;
 -
 -	errno = -err;
 -	return -1;
 -}
--
- /**
-  * Receive a message from a message queue.
-  *
-@@ -461,69 +403,6 @@ COBALT_IMPL(ssize_t, mq_receive, (mqd_t q, char *buffer, size_t len, unsigned *p
- 	return -1;
- }
- 
--/**
-- * Attempt, during a bounded time, to receive a message from a message queue.
-- *
-- * This service is equivalent to mq_receive(), except that if the flag @a
-- * O_NONBLOCK is not set for the descriptor @a fd and the message queue is
-- * empty, the calling thread is only suspended until the timeout @a abs_timeout
-- * expires.
-- *
-- * @param q the queue descriptor;
-- *
-- * @param buffer the address where the received message will be stored on
-- * success;
-- *
-- * @param len @a buffer length;
-- *
-- * @param prio address where the priority of the received message will be
-- * stored on success.
-- *
-- * @param timeout the timeout, expressed as an absolute value of the
-- * CLOCK_REALTIME clock.
-- *
-- * @return the message length, and copy a message at the address @a buffer on
-- * success;
-- * @return -1 with no message unqueued and @a errno set if:
-- * - EBADF, @a fd is not a valid descriptor open for reading;
-- * - EMSGSIZE, the length @a len is lesser than the message queue @a mq_msgsize
-- *   attribute;
-- * - EAGAIN, the queue is empty, and the flag @a O_NONBLOCK is set for the
-- *   descriptor @a fd;
-- * - EPERM, the caller context is invalid;
-- * - EINTR, the service was interrupted by a signal;
-- * - ETIMEDOUT, the specified timeout expired.
-- *
-- * @see
-- * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/mq_timedreceive.html">
-- * Specification.</a>
-- *
-- * @apitags{xthread-only, switch-primary}
-- */
--COBALT_IMPL_TIME64(ssize_t, mq_timedreceive, __mq_timedreceive_time64,
--		   (mqd_t q, char *__restrict__ buffer, size_t len,
--		    unsigned *__restrict__ prio,
--		    const struct timespec *__restrict__ timeout))
+-#else
+-static inline int do_select(int __nfds, fd_set *__restrict __readfds,
+-			    fd_set *__restrict __writefds,
+-			    fd_set *__restrict __exceptfds,
+-			    struct timeval *__restrict __timeout)
 -{
--	ssize_t rlen = (ssize_t) len;
 -	int err, oldtype;
--
--	if (timeout == NULL)
--		return -EFAULT;
 -
 -	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
 -
--	err = __do_mq_timedreceive(q, buffer, &rlen, prio, timeout);
+-	err = XENOMAI_SYSCALL5(sc_cobalt_select, __nfds,
+-			       __readfds, __writefds, __exceptfds, __timeout);
 -
 -	pthread_setcanceltype(oldtype, NULL);
 -
--	if (!err)
--		return rlen;
+-	if (err == -EADV || err == -EPERM || err == -ENOSYS)
+-		return __STD(select(__nfds, __readfds,
+-				    __writefds, __exceptfds, __timeout));
+-
+-	if (err >= 0)
+-		return err;
 -
 -	errno = -err;
 -	return -1;
 -}
+-#endif
 -
- /**
-  * @brief Enable notification on message arrival
-  *
+-COBALT_IMPL_TIME64(int, select, __select64,
+-		   (int __nfds, fd_set *__restrict __readfds,
+-		    fd_set *__restrict __writefds,
+-		    fd_set *__restrict __exceptfds,
+-		    struct timeval *__restrict __timeout))
+-{
+-	return do_select(__nfds, __readfds, __writefds, __exceptfds, __timeout);
+-}
 diff --git a/lib/cobalt/wrappers_time64.c b/lib/cobalt/wrappers_time64.c
-index ef2fb9869976fa9a60f45dab0a6ded1606ebf21d..09930ab018104dcc2a54c354b4b756230cfda029 100644
+index 1e830945f381117ac6180476dd95a3608b5596b6..524d2774d3dad551e599de30aea4919967719bab 100644
 --- a/lib/cobalt/wrappers_time64.c
 +++ b/lib/cobalt/wrappers_time64.c
-@@ -14,11 +14,13 @@
+@@ -2,6 +2,7 @@
  
- #include "cond.h"
- #include "internal.h"
-+#include "mq.h"
+ /*
+  * Copyright (C) 2026 Florian Bezdeka <florian.bezdeka@siemens.com>.
++ * Copyright (C) 2010 Gilles Chanteperdrix <gilles.chanteperdrix@xenomai.org>.
+  * Copyright (C) 2005 Philippe Gerum <rpm@xenomai.org>.
+  */
  
- #include <asm/xenomai/syscall.h>
- #include <cobalt/uapi/syscall.h>
+@@ -761,3 +762,89 @@ COBALT_IMPL_TIME64(int, setsockopt, __setsockopt64,
  
- #include <errno.h>
-+#include <mqueue.h>
- #include <pthread.h>
- #include <sys/time.h>
- #include <time.h>
-@@ -428,3 +430,126 @@ COBALT_IMPL_TIME64(int, pthread_cond_timedwait, __pthread_cond_timedwait64,
- 
- 	return -err ?: -c.err;
+ 	return __STD(setsockopt(fd, level, optname, optval, optlen));
  }
 +
-+/**
-+ * Attempt, during a bounded time, to send a message to a message queue.
-+ * @ingroup cobalt_api_mq
-+ *
-+ * This service is equivalent to mq_send(), except that if the message queue is
-+ * full and the flag @a O_NONBLOCK is not set for the descriptor @a fd, the
-+ * calling thread is only suspended until the timeout specified by @a
-+ * abs_timeout expires.
-+ *
-+ * @param q message queue descriptor;
-+ *
-+ * @param buffer pointer to the message to be sent;
-+ *
-+ * @param len length of the message;
-+ *
-+ * @param prio priority of the message;
-+ *
-+ * @param timeout the timeout, expressed as an absolute value of the
-+ * CLOCK_REALTIME clock.
-+ *
-+ * @return 0 and send a message on success;
-+ * @return -1 with no message sent and @a errno set if:
-+ * - EBADF, @a fd is not a valid message queue descriptor open for writing;
-+ * - EMSGSIZE, the message length exceeds the @a mq_msgsize attribute of the
-+ *   message queue;
-+ * - EAGAIN, the flag O_NONBLOCK is set for the descriptor @a fd and the message
-+ *   queue is full;
-+ * - EPERM, the caller context is invalid;
-+ * - ETIMEDOUT, the specified timeout expired;
-+ * - EINTR, the service was interrupted by a signal.
-+ *
-+ * @see
-+ * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/mq_timedsend.html">
-+ * Specification.</a>
-+ *
-+ * @apitags{xthread-only, switch-primary}
++#if __USE_TIME_BITS64 && __TIMESIZE == 32
++
++#define USEC_PER_SEC	1000000L
++#define NSEC_PER_USEC	1000L
++
++/*
++ * The time64 wrapper for select() is a little different:
++ * There is no y2038 safe syscall for select() itself, but we have pselect()
++ * without signal support.
 + */
-+COBALT_IMPL_TIME64(int, mq_timedsend, __mq_timedsend_time64,
-+		   (mqd_t q, const char *buffer, size_t len, unsigned prio,
-+		    const struct timespec *timeout))
++static inline int do_select(int __nfds, fd_set *__restrict __readfds,
++			      fd_set *__restrict __writefds,
++			      fd_set *__restrict __exceptfds,
++			      struct timeval *__restrict __timeout)
 +{
++	struct timespec to;
 +	int err, oldtype;
 +
-+	if (timeout == NULL)
-+		return -EFAULT;
++	if (__timeout) {
++		to.tv_sec =
++			__timeout->tv_sec + (__timeout->tv_usec / USEC_PER_SEC);
++		to.tv_nsec =
++			(__timeout->tv_usec % USEC_PER_SEC) * NSEC_PER_USEC;
++	}
 +
 +	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
 +
-+	err = __do_mq_timesend(q, buffer, len, prio, timeout);
++	/*
++	 * Note: No sigmask here, we already reached the limit of 5
++	 * syscall parameters
++	 */
++	err = XENOMAI_SYSCALL5(sc_cobalt_pselect64, __nfds, __readfds,
++			       __writefds, __exceptfds, __timeout ? &to : NULL);
 +
 +	pthread_setcanceltype(oldtype, NULL);
 +
-+	if (!err)
-+		return 0;
++	if (err == -EADV || err == -EPERM || err == -ENOSYS) {
++		err = __STD(__select64(__nfds, __readfds, __writefds,
++				       __exceptfds, __timeout));
++	} else if (__timeout) {
++		__timeout->tv_sec = to.tv_sec;
++		__timeout->tv_usec = to.tv_nsec / 1000;
++	}
++
++	if (err >= 0)
++		return err;
 +
 +	errno = -err;
 +	return -1;
 +}
-+
-+/**
-+ * Attempt, during a bounded time, to receive a message from a message queue.
-+ * @ingroup cobalt_api_mq
-+ *
-+ * This service is equivalent to mq_receive(), except that if the flag @a
-+ * O_NONBLOCK is not set for the descriptor @a fd and the message queue is
-+ * empty, the calling thread is only suspended until the timeout @a abs_timeout
-+ * expires.
-+ *
-+ * @param q the queue descriptor;
-+ *
-+ * @param buffer the address where the received message will be stored on
-+ * success;
-+ *
-+ * @param len @a buffer length;
-+ *
-+ * @param prio address where the priority of the received message will be
-+ * stored on success.
-+ *
-+ * @param timeout the timeout, expressed as an absolute value of the
-+ * CLOCK_REALTIME clock.
-+ *
-+ * @return the message length, and copy a message at the address @a buffer on
-+ * success;
-+ * @return -1 with no message unqueued and @a errno set if:
-+ * - EBADF, @a fd is not a valid descriptor open for reading;
-+ * - EMSGSIZE, the length @a len is lesser than the message queue @a mq_msgsize
-+ *   attribute;
-+ * - EAGAIN, the queue is empty, and the flag @a O_NONBLOCK is set for the
-+ *   descriptor @a fd;
-+ * - EPERM, the caller context is invalid;
-+ * - EINTR, the service was interrupted by a signal;
-+ * - ETIMEDOUT, the specified timeout expired.
-+ *
-+ * @see
-+ * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/mq_timedreceive.html">
-+ * Specification.</a>
-+ *
-+ * @apitags{xthread-only, switch-primary}
-+ */
-+COBALT_IMPL_TIME64(ssize_t, mq_timedreceive, __mq_timedreceive_time64,
-+		   (mqd_t q, char *__restrict__ buffer, size_t len,
-+		    unsigned *__restrict__ prio,
-+		    const struct timespec *__restrict__ timeout))
++#else
++static inline int do_select(int __nfds, fd_set *__restrict __readfds,
++			    fd_set *__restrict __writefds,
++			    fd_set *__restrict __exceptfds,
++			    struct timeval *__restrict __timeout)
 +{
-+	ssize_t rlen = (ssize_t) len;
 +	int err, oldtype;
-+
-+	if (timeout == NULL)
-+		return -EFAULT;
 +
 +	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
 +
-+	err = __do_mq_timedreceive(q, buffer, &rlen, prio, timeout);
++	err = XENOMAI_SYSCALL5(sc_cobalt_select, __nfds,
++			       __readfds, __writefds, __exceptfds, __timeout);
 +
 +	pthread_setcanceltype(oldtype, NULL);
 +
-+	if (!err)
-+		return rlen;
++	if (err == -EADV || err == -EPERM || err == -ENOSYS)
++		return __STD(select(__nfds, __readfds,
++				    __writefds, __exceptfds, __timeout));
++
++	if (err >= 0)
++		return err;
 +
 +	errno = -err;
 +	return -1;
++}
++#endif
++
++COBALT_IMPL_TIME64(int, select, __select64,
++		   (int __nfds, fd_set *__restrict __readfds,
++		    fd_set *__restrict __writefds,
++		    fd_set *__restrict __exceptfds,
++		    struct timeval *__restrict __timeout))
++{
++	return do_select(__nfds, __readfds, __writefds, __exceptfds, __timeout);
 +}
 
 -- 
