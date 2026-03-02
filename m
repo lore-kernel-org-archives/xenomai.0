@@ -1,36 +1,36 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5200D38F625
-	for <xenomai@lists.linux.dev>; Mon,  2 Mar 2026 09:38:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E523338F633
+	for <xenomai@lists.linux.dev>; Mon,  2 Mar 2026 09:38:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772444302; cv=none; b=iOjvOLKvv2GVb5nQ2veofU5pROwyANEQdLbXHXgGf07YwSLbwTdPaNpwPy3id3l7GZrKWWgMrWA4y0fLAIKN40uHo3GVt1OK2NL4FDBB3XBIuqs8yOsEd7yOqisiEGugkVqHMqV89SmwSqHPHyAELLyfcJzljjD/LNwwpnW+CB4=
+	t=1772444302; cv=none; b=Q+RNiXgdfZNFXMX7jSf5okiNbLXa6L0n7Uj1yrAn/XFsPh/DjffAOQLr2oQrygB0bu+ngmLrhqfLU4UKlpHNxsYh0xc83XmRfJEbTwEFI+91LSKiCEoKXTjUF9VOlV11cs+KDWFx3UNgUJ+ds9GMVn0z0GaQgkyB468NS/i0KeQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1772444302; c=relaxed/simple;
-	bh=H8iS1xJ+XwVISdhadbf+obBxK/RUPlyLK++jL0dnSR8=;
+	bh=aURKLpI+9xD9cQEIHAeWUgdUmRnaGH7H+3mdxvU/Edc=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=m3g2SzsIiM8YIh9EsdqngzYQ0+riWIzUgd57/Ymld3vMAKr/ZPwxOHUIYUIk2UYj06gJoSPsdnEoNA1iDnsKxkjLbuTdbrc7GNiXd5z9DcEJDfg9rnCVmvkX9hR9aBPVkYRjVtLR7mO4VT+g4o7DraEm17Hp8SXknAEJzJiAR6s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=EuRkIrMk; arc=none smtp.client-ip=185.136.64.227
+	 In-Reply-To:To:Cc; b=kzxr8eOSyejkpR+K4bOFPmuOMXExJ69vcu+dv7sd/INp8mXK+Q+TSdbhy3TI2peCHx0rtOVQ6C+WBjKCjgJsKGhuYI2SzZUz5JErWUCIB0+9ZTJtzSAyeWax+xR2G95pFqIX96Gza3IVjBKHur4YK9/SSm7fBnp64fz/Qkes0Bk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Jad4qdkD; arc=none smtp.client-ip=185.136.64.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="EuRkIrMk"
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 2026030209380854c789e2050002079f
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Jad4qdkD"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2026030209380902dedab2df0002074d
         for <xenomai@lists.linux.dev>;
-        Mon, 02 Mar 2026 10:38:08 +0100
+        Mon, 02 Mar 2026 10:38:09 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=6C/xWXx6TVAIWvzg/PEHUKIIshAJLEHit3eSda+LO+c=;
- b=EuRkIrMkhdt9g6HfyT+CzJBXlDvTzt3gKKatKs/zhJZ4wbzuFDTyjpV4pXZkEwMKgNe3wd
- FrG2zGfpwUdOp2rB+c9N4VI8UQVHBYCnX2zdBK2AG/hfaW8P9vFzZiqjRu3Kyy/d36yWAPWR
- HXT3aVGF4zI0vEdu5jpqz2IWq2N942QJmxkYx1nWeTy7LBzG1fRVY+zQgTik+Kcrz7HjxKef
- p9wgR0GkCUg7saKRi8r+UNSTq4UdmGKSU7kB7QATSKtHBPuc6ztt7ABcHXOBcdwA5TThosFZ
- pCyq8RnA0AnIcs06h5wDlzqsz+YilrG46phnhqVMD9QVRfOonB7aWUTQ==;
+ bh=bFiGxkcqDU3vuw3rKyiBFfJ3fH20ZUgfUrJEqqnbmVw=;
+ b=Jad4qdkD/I5GeJAmo8vY6mmUFaDUqbdXb3CbmLnaaDg3gm0LMPE3mD7D6bbMLZm5wuo44k
+ s5K/S9cgEiLwsm368apQUOZeHcx6ecrYL6EpipB6wINHWuBrttCtqriVRyxnFQACw29igh8E
+ tLY0uY72zeUGFOkYawW6L6yBsC1izLLDwcN97O+4ctIffkv3FQ33sgHdVEJgioduNcpFXkN3
+ aTknH4YdIQ+wiYUDWGzoi0kkAXzEf1SqHcpcwe8ulGCZMweOmyApExbsVC+5G6888Jy2pk5V
+ IYU2HdB3MoRVHgw23+KEFnHGZCyZeRNbKrGLg/gIJjKLKKuZVH5/IJ+A==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Mon, 02 Mar 2026 10:38:06 +0100
-Subject: [PATCH v2 07/20] lib/cobalt: cond: Move all time64 related
+Date: Mon, 02 Mar 2026 10:38:12 +0100
+Subject: [PATCH v2 13/20] lib/cobalt: semaphore: Move time64 related
  services to wrappers_time64.c
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260302-wip-flo-fix-time64-32bit-native-v2-7-7caefce29bcd@siemens.com>
+Message-Id: <20260302-wip-flo-fix-time64-32bit-native-v2-13-7caefce29bcd@siemens.com>
 References: <20260302-wip-flo-fix-time64-32bit-native-v2-0-7caefce29bcd@siemens.com>
 In-Reply-To: <20260302-wip-flo-fix-time64-32bit-native-v2-0-7caefce29bcd@siemens.com>
 To: Xenomai <xenomai@lists.linux.dev>
@@ -50,216 +50,174 @@ X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
 Code movement with some minor adjustments to the doxygen headers.
-All services should remain in the cobalt_api_cond group.
+All services should remain in the cobalt_api_sem group.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- lib/cobalt/cond.c            | 87 ------------------------------------------
- lib/cobalt/wrappers_time64.c | 90 ++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 90 insertions(+), 87 deletions(-)
+ lib/cobalt/semaphore.c       | 67 +++-----------------------------------------
+ lib/cobalt/wrappers_time64.c | 62 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 66 insertions(+), 63 deletions(-)
 
-diff --git a/lib/cobalt/cond.c b/lib/cobalt/cond.c
-index 7be7fca01f53930f8504945206b2ee6ba6be1ba5..fb700f4500a6f1e7a0331954f7a5f5a8a3bf1052 100644
---- a/lib/cobalt/cond.c
-+++ b/lib/cobalt/cond.c
-@@ -282,93 +282,6 @@ COBALT_IMPL(int, pthread_cond_wait, (pthread_cond_t *cond, pthread_mutex_t *mute
- 	return -err ?: -c.err;
+diff --git a/lib/cobalt/semaphore.c b/lib/cobalt/semaphore.c
+index 0c1a245cd40f7e2b0e0c883f317a3bbccde5187d..1fe3581df1cb30748ed780e57cd212827dd0f4c9 100644
+--- a/lib/cobalt/semaphore.c
++++ b/lib/cobalt/semaphore.c
+@@ -16,14 +16,16 @@
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
+ 
++#include "internal.h"
++
++#include <asm/xenomai/syscall.h>
++
+ #include <stdlib.h>		/* For malloc & free. */
+ #include <stdarg.h>
+ #include <errno.h>
+ #include <fcntl.h>		/* For O_CREAT. */
+ #include <pthread.h>		/* For pthread_setcanceltype. */
+ #include <semaphore.h>
+-#include <asm/xenomai/syscall.h>
+-#include "internal.h"
+ 
+ /**
+  * @ingroup cobalt_api
+@@ -329,67 +331,6 @@ COBALT_IMPL(int, sem_wait, (sem_t *sem))
+ 	return 0;
  }
  
 -/**
-- * Wait a bounded time on a condition variable.
+- * @fn int sem_timedwait(sem_t *sem, const struct timespec *abs_timeout)
+- * @brief Attempt to decrement a semaphore with a time limit
 - *
-- * This service is equivalent to pthread_cond_wait(), except that the calling
-- * thread remains blocked on the condition variable @a cnd only until the
-- * timeout specified by @a abstime expires.
+- * This service is equivalent to sem_wait(), except that the caller is only
+- * blocked until the timeout @a abs_timeout expires.
 - *
-- * The timeout @a abstime is expressed as an absolute value of the @a clock
-- * attribute passed to pthread_cond_init(). By default, @a CLOCK_REALTIME is
-- * used.
+- * @param sem the semaphore to be decremented;
 - *
-- * @param cond the condition variable to wait for;
+- * @param abs_timeout the timeout, expressed as an absolute value of
+- * the relevant clock for the semaphore, either CLOCK_MONOTONIC if
+- * SEM_RAWCLOCK was mentioned via sem_init_np(), or CLOCK_REALTIME
+- * otherwise.
 - *
-- * @param mutex the mutex associated with @a cnd;
-- *
-- * @param abstime the timeout, expressed as an absolute value of the clock
-- * attribute passed to pthread_cond_init().
-- *
-- * @return 0 on success,
-- * @return an error number if:
+- * @retval 0 on success;
+- * @retval -1 with @a errno set if:
 - * - EPERM, the caller context is invalid;
-- * - EPERM, the specified condition variable is not process-shared and does not
-- *   belong to the current process;
-- * - EINVAL, the specified condition variable, mutex or timeout is invalid;
-- * - EINVAL, another thread is currently blocked on @a cnd using another mutex
-- *   than @a mx;
-- * - EPERM, the specified mutex is not owned by the caller;
-- * - ETIMEDOUT, the specified timeout expired.
+- * - EINVAL, the semaphore is invalid or uninitialized;
+- * - EINVAL, the specified timeout is invalid;
+- * - EPERM, the semaphore @a sm is not process-shared and does not belong to the
+- *   current process;
+- * - EINTR, the caller was interrupted by a signal while blocked in this
+- *   service;
+- * - ETIMEDOUT, the semaphore could not be decremented and the
+- *   specified timeout expired.
 - *
 - * @see
-- * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/pthread_cond_timedwait.html">
+- * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/sem_timedwait.html">
 - * Specification.</a>
 - *
 - * @apitags{xthread-only, switch-primary}
 - */
--COBALT_IMPL_TIME64(int, pthread_cond_timedwait, __pthread_cond_timedwait64,
--		   (pthread_cond_t *cond, pthread_mutex_t *mutex,
--		    const struct timespec *abstime))
+-COBALT_IMPL_TIME64(int, sem_timedwait, __sem_timedwait64,
+-		   (sem_t *sem, const struct timespec *abs_timeout))
 -{
--	struct cobalt_cond_shadow *_cnd = &((union cobalt_cond_union *)cond)->shadow_cond;
--	struct cobalt_mutex_shadow *_mx =
--		&((union cobalt_mutex_union *)mutex)->shadow_mutex;
--	struct cobalt_cond_cleanup_t c = {
--		.cond = _cnd,
--		.mutex = _mx,
--	};
--	int err, oldtype;
+-	struct cobalt_sem_shadow *_sem = &((union cobalt_sem_union *)sem)->shadow_sem;
+-	int ret, oldtype;
 -
--	if (_mx->magic != COBALT_MUTEX_MAGIC)
--		return EINVAL;
--
--	err = cobalt_cond_autoinit((union cobalt_cond_union *)cond);
--	if (err)
--		return err;
--
--	if (_mx->attr.type == PTHREAD_MUTEX_ERRORCHECK) {
--		xnhandle_t cur = cobalt_get_current();
--
--		if (cur == XN_NO_HANDLE)
--			return EPERM;
--
--		if (xnsynch_fast_owner_check(mutex_get_ownerp(_mx), cur))
--			return EPERM;
--	}
--
--	c.count = _mx->lockcnt;
--
--	pthread_cleanup_push(&__pthread_cond_cleanup, &c);
+-	ret = __RT(sem_trywait(sem));
+-	if (ret != -1 || errno != EAGAIN)
+-		return ret;
 -
 -	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
 -
--	err = do_sc_cond_wait_prologue(_cnd, _mx, &c.err, 1, abstime);
+-#ifdef __USE_TIME_BITS64
+-	ret = XENOMAI_SYSCALL2(sc_cobalt_sem_timedwait64, _sem,
+-			       abs_timeout);
+-#else
+-	ret = XENOMAI_SYSCALL2(sc_cobalt_sem_timedwait, _sem, abs_timeout);
+-#endif
 -
 -	pthread_setcanceltype(oldtype, NULL);
 -
--	pthread_cleanup_pop(0);
--
--	while (err == -EINTR) {
--		err = XENOMAI_SYSCALL2(sc_cobalt_cond_wait_epilogue, _cnd, _mx);
--		pthread_testcancel();
+-	if (ret) {
+-		errno = -ret;
+-		return -1;
 -	}
 -
--	_mx->lockcnt = c.count;
--
--	return -err ?: -c.err;
+-	return 0;
 -}
 -
  /**
-  * Signal a condition variable.
-  *
+  * @fn int sem_getvalue(sem_t sem, int *sval_r)
+  * @brief Get the value of a semaphore.
 diff --git a/lib/cobalt/wrappers_time64.c b/lib/cobalt/wrappers_time64.c
-index a42302d674388fd7de5930ef9d99c6b9f0597279..ef2fb9869976fa9a60f45dab0a6ded1606ebf21d 100644
+index 524d2774d3dad551e599de30aea4919967719bab..fd5ee105aa03c1e9d5b3c80236aa3a789656bfda 100644
 --- a/lib/cobalt/wrappers_time64.c
 +++ b/lib/cobalt/wrappers_time64.c
-@@ -12,6 +12,7 @@
-  * time_t.
-  */
- 
-+#include "cond.h"
- #include "internal.h"
- 
- #include <asm/xenomai/syscall.h>
-@@ -338,3 +339,92 @@ COBALT_IMPL_TIME64(time_t, time, __time64, (time_t *t))
- 		*t = ts.tv_sec;
- 	return ts.tv_sec;
+@@ -848,3 +848,65 @@ COBALT_IMPL_TIME64(int, select, __select64,
+ {
+ 	return do_select(__nfds, __readfds, __writefds, __exceptfds, __timeout);
  }
 +
 +/**
-+ * Wait a bounded time on a condition variable.
-+ * @ingroup cobalt_api_cond
++ * @fn int sem_timedwait(sem_t *sem, const struct timespec *abs_timeout)
++ * @brief Attempt to decrement a semaphore with a time limit
++ * @ingroup cobalt_api_sem
 + *
-+ * This service is equivalent to pthread_cond_wait(), except that the calling
-+ * thread remains blocked on the condition variable @a cnd only until the
-+ * timeout specified by @a abstime expires.
++ * This service is equivalent to sem_wait(), except that the caller is only
++ * blocked until the timeout @a abs_timeout expires.
 + *
-+ * The timeout @a abstime is expressed as an absolute value of the @a clock
-+ * attribute passed to pthread_cond_init(). By default, @a CLOCK_REALTIME is
-+ * used.
++ * @param sem the semaphore to be decremented;
 + *
-+ * @param cond the condition variable to wait for;
++ * @param abs_timeout the timeout, expressed as an absolute value of
++ * the relevant clock for the semaphore, either CLOCK_MONOTONIC if
++ * SEM_RAWCLOCK was mentioned via sem_init_np(), or CLOCK_REALTIME
++ * otherwise.
 + *
-+ * @param mutex the mutex associated with @a cnd;
-+ *
-+ * @param abstime the timeout, expressed as an absolute value of the clock
-+ * attribute passed to pthread_cond_init().
-+ *
-+ * @return 0 on success,
-+ * @return an error number if:
++ * @retval 0 on success;
++ * @retval -1 with @a errno set if:
 + * - EPERM, the caller context is invalid;
-+ * - EPERM, the specified condition variable is not process-shared and does not
-+ *   belong to the current process;
-+ * - EINVAL, the specified condition variable, mutex or timeout is invalid;
-+ * - EINVAL, another thread is currently blocked on @a cnd using another mutex
-+ *   than @a mx;
-+ * - EPERM, the specified mutex is not owned by the caller;
-+ * - ETIMEDOUT, the specified timeout expired.
++ * - EINVAL, the semaphore is invalid or uninitialized;
++ * - EINVAL, the specified timeout is invalid;
++ * - EPERM, the semaphore @a sm is not process-shared and does not belong to the
++ *   current process;
++ * - EINTR, the caller was interrupted by a signal while blocked in this
++ *   service;
++ * - ETIMEDOUT, the semaphore could not be decremented and the
++ *   specified timeout expired.
 + *
 + * @see
-+ * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/pthread_cond_timedwait.html">
++ * <a href="http://www.opengroup.org/onlinepubs/000095399/functions/sem_timedwait.html">
 + * Specification.</a>
 + *
 + * @apitags{xthread-only, switch-primary}
 + */
-+COBALT_IMPL_TIME64(int, pthread_cond_timedwait, __pthread_cond_timedwait64,
-+		   (pthread_cond_t *cond, pthread_mutex_t *mutex,
-+		    const struct timespec *abstime))
++COBALT_IMPL_TIME64(int, sem_timedwait, __sem_timedwait64,
++		   (sem_t *sem, const struct timespec *abs_timeout))
 +{
-+	struct cobalt_cond_shadow *_cnd =
-+		&((union cobalt_cond_union *)cond)->shadow_cond;
-+	struct cobalt_mutex_shadow *_mx =
-+		&((union cobalt_mutex_union *)mutex)->shadow_mutex;
-+	struct cobalt_cond_cleanup_t c = {
-+		.cond = _cnd,
-+		.mutex = _mx,
-+	};
-+	int err, oldtype;
++	struct cobalt_sem_shadow *_sem =
++		&((union cobalt_sem_union *)sem)->shadow_sem;
++	int ret, oldtype;
 +
-+	if (_mx->magic != COBALT_MUTEX_MAGIC)
-+		return EINVAL;
-+
-+	err = cobalt_cond_autoinit((union cobalt_cond_union *)cond);
-+	if (err)
-+		return err;
-+
-+	if (_mx->attr.type == PTHREAD_MUTEX_ERRORCHECK) {
-+		xnhandle_t cur = cobalt_get_current();
-+
-+		if (cur == XN_NO_HANDLE)
-+			return EPERM;
-+
-+		if (xnsynch_fast_owner_check(mutex_get_ownerp(_mx), cur))
-+			return EPERM;
-+	}
-+
-+	c.count = _mx->lockcnt;
-+
-+	pthread_cleanup_push(&__pthread_cond_cleanup, &c);
++	ret = __RT(sem_trywait(sem));
++	if (ret != -1 || errno != EAGAIN)
++		return ret;
 +
 +	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
 +
-+	err = do_sc_cond_wait_prologue(_cnd, _mx, &c.err, 1, abstime);
++#ifdef __USE_TIME_BITS64
++	ret = XENOMAI_SYSCALL2(sc_cobalt_sem_timedwait64, _sem, abs_timeout);
++#else
++	ret = XENOMAI_SYSCALL2(sc_cobalt_sem_timedwait, _sem, abs_timeout);
++#endif
 +
 +	pthread_setcanceltype(oldtype, NULL);
 +
-+	pthread_cleanup_pop(0);
-+
-+	while (err == -EINTR) {
-+		err = XENOMAI_SYSCALL2(sc_cobalt_cond_wait_epilogue, _cnd, _mx);
-+		pthread_testcancel();
++	if (ret) {
++		errno = -ret;
++		return -1;
 +	}
 +
-+	_mx->lockcnt = c.count;
-+
-+	return -err ?: -c.err;
++	return 0;
 +}
 
 -- 
