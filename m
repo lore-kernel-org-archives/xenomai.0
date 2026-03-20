@@ -1,36 +1,36 @@
-Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11012070.outbound.protection.outlook.com [52.101.66.70])
+Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013030.outbound.protection.outlook.com [40.107.159.30])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E9883BD23C
-	for <xenomai@lists.linux.dev>; Fri, 20 Mar 2026 21:37:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.70
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A90E1359A7E
+	for <xenomai@lists.linux.dev>; Fri, 20 Mar 2026 21:37:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.30
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774042640; cv=fail; b=EgNMyCYqM41RyMTMio4uKmfsTGaB6tWKzH31l3uSNIzpFUT8T1XHlR9izjlfCop0qJRPl2IS9fCPZ0lwaaNDpUO/d11osLyZFa3HfoFlDiIZihTd5XOz/HifOvncZHEGW3wKBfBCdvcDJj+Hr9TSsANw4UGhP21/xQ2BFOiz9bY=
+	t=1774042642; cv=fail; b=PFsEPKskTQ9oaQyu1PlQ20e1HYJ2LUpS81P07gtkVUnEQUyZ0yi8qf6++xxYRpgbz6Ab99zIpGFY8OvCu/rTcfDxZOi4B9KX8XJp2OHdmPXbz7suTisaT1u25LVJCTmWZ6IIq1KY3AVEGdeNBoolWuhMNcTKZ017ndxTaPVSDU4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774042640; c=relaxed/simple;
-	bh=CqdJ1/tDR/GAgIBV9Rts001tLIVxnwUXj66Un2DH2lE=;
+	s=arc-20240116; t=1774042642; c=relaxed/simple;
+	bh=OogYQMa+kEGQvR74DOx9XEtIkWr0I22EoESxxGMC058=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=RNw8KwidI7wnn+X+5KDyfz75BufFVFlyVUuE9hMcpBEWJLX54mmy5hX1JIM9p0Jxkjuwsl4km07YRAHaGqY4PXYooKKmvcNw1MM99h2DFGHmGUqkeiThjqu/Y9hdBtpsOsV2zP9qcDR/Xzd9gzGt+PsKf9Plln8hMpzjOtUOQFU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=Zxkay53Z; arc=fail smtp.client-ip=52.101.66.70
+	 Content-Type:MIME-Version; b=SfqePkOCBBOsBvlHkJ5XHJefevyiwHXolNBB+Gh5fWdMEOpsh5b9YdzfpXlrU57Wk+5TJXGgVMKMK5odmv/6gb2tms0IAVeUbDs8c0tx5eA1pkVDgX6DMBlIMU36YkDK23RNcFt02lN9cMEO7aDqAZrOgGHH5MtCbzGni0MDVLs=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=zHtKA0tc; arc=fail smtp.client-ip=40.107.159.30
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="Zxkay53Z"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="zHtKA0tc"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=nbdceqnCNBvR8XWE9cHYFfuSMR2J5O0pNutUB8d1fqCFAGYv4YWPGKOgBBkrTuA9O8a1bHv02C3rcbj6qU6StuQCWj5erHpbiX7ndywX/Ecsqp/MsvYH3sFBP4sJSKN27hFCJKu3yCsx/9ripvMud+vLA9ONOLcUxeJoxfRwOV4g71qo4zQf0rtSG5niONdmAKA7KKcCR1OuSV2sp9zjq0mIqzy/NHP1tj37leVAm7aOWPiZ+IKQ3W2s862t86we2gHD7CEuv5Kwypo4UBU8GpOh5wSDfa5ZC8u34q8wvvHgTW/weSfqtuNVj+RpS4W/sIHwL1XFuy3cb3VD0BF0JA==
+ b=sokZIw07fsycLdiIeGa0eGNgltrlnEXUBPsa/vp6Q0Shn/xbcho8ErZ4elMrWIOdPs58uPGLCUbCcno4lzrlEMaDy5Gt8PwRchCIZL4tRKucKblkMZQZ1Ffxw2/VGPYvzWAndgyojzCyA99yeQ+SLCqfBd6lsmFP0UmdAg1XS3WuFEjVSvth8XDUz5qp8AI97HAi5w0jFmjbkuo6D4vKq87qggaY7Ps0ztOVElamyy0KPpnHRjf6WyRI0zoxHjYws8yAnGIGN3CEeZB0yzZHfQB7waaKOy1f2F3bLH9RbrnKgX5vR686EtaZJCt+UzyuQ27RNqZbSlvQGbja3Mhglw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7m+YrcMzTwWRhg3ijJKx7cOAQaBHZw0Anc6+w9QE9dQ=;
- b=IQEowgP88iPYEbrv4mgInxv2yxNL/nEiQsuq2nj8HBX0XI/lSyMtKiFT5YpoCbQXCGiW/b++b/62zUdG9virrPZIeJ2fS1Qf8QjuoiCeKNhTDRco+QrI1VN+DGuJqd5cBkL12SqWbm7ZLt6j8PxwbYyZ0WEVZSXsltTiVa+S8Db6xKGYHHNtC8DEJlgDg9bRXOMWpSQwy8JtwR7ANv3ejwKLi+JGzl32e/DXbx/lCzWsXeoKtSy2MYf4Yfdtiycao97UdFdOTYm4jckgrFthfHCzQHPS8Hf+26eGy3CX7EYNrHN4yU6Iq/cznMsuJRHpB2A2vI7h4nZZ3mMTl2JRjA==
+ bh=WDXwJ5gb3H+8UAfeEhl67/tyPyTigDpHaewTnLz/G80=;
+ b=NalkWVTiVnKS1xdS/3kwBgaFV926s684nowJ5sQcr2xiYP+qLLwY2BY7pLN0n8stk+UgZrQlREM6ZPQNlNlBXYAlfcbXWnelEh2opXlF9GXpmLynuxvgrAHtQsh9i7V2C6wnysxb6lsK56z4ha7kfd9U6+2SmquRzIGwzHLPHKCTo055zq2ARJhUYNc0R1LBRybKd2e3C4E9xZj6s9dkG/nCHFm4Bs4tDgbtpJIeK6VHJ8HKZ/aP9YdYPlAn0+utaJsZQDy91UaMW8yvaBjtA0BzKaUIuUfQ4WgV6559Ag9qdumlN7wohem4ELte1DQhgMU+Gj4UNTAdKNTAgu8oBQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7m+YrcMzTwWRhg3ijJKx7cOAQaBHZw0Anc6+w9QE9dQ=;
- b=Zxkay53ZI4CkREq4kQC4+uovvKZsmIUT+tZ8sCOR+lO4ZQwPCsVGtPzvkcv9b5oJBe0ujBJXo5fis0GtJ0Ih6/w247ZBorO+3fLlp9YeRANyPaBCAbpcdmxwOxYTb+dMzodbHMyYrITQLMmUIF+GNnAJg1eEh9nOiVyrzyBfs7lGCuDpJUaRbn5PlMNQyyOd+1YH6qpCsowewSBzeY+WE1sVTXs4AO+VgiYoJy02rLy55KhA5l9DRk0wNxEPnGbKwsWwSfYQZD95pP1FZRrsrDxsXQjtaNLcFHc2ubs0jvu82Bo+Vxt1bbM8PNyv/kGEG1NWsjAZgvOhf1yB60DGgQ==
+ bh=WDXwJ5gb3H+8UAfeEhl67/tyPyTigDpHaewTnLz/G80=;
+ b=zHtKA0tcIJPetdPLdT/LC9toDQeNhUZWbogxKdCQLtsa+MFDQVC3uAbmnnpfOxzHhRZpvsH1gSTVTqGit/NDQsOEaGfCTVCPLpzk8UQv040AbGr0iAHVt4YpqzvdEeAIW4OHEiuSUAVDFb1yBjW7NCbpB/snZjFEjZ0VyLOAo2moYPQI8l/ua1oN6wYprnzQFR0pwl0kUzz+uzZ0gZE9IJgnYawzu/Ul2w97fy9f1GYIQpeImhJKKmQrqFQHlKjIvmafKYC+w+Jp/KiSmL+/7Xy94KSXsfp4hwmHn21VCIlyNQftMdwHz4xLWtcnWmTTUm+ENBULO1C6LAF3CtDOkA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:3dd::5)
@@ -48,9 +48,9 @@ Cc: rpm@xenomai.org,
 	florian.bezdeka@siemens.com,
 	jan.kiszka@siemens.com,
 	Tobias Schaffner <tobias.schaffner@siemens.com>
-Subject: [PATCH dovetail v5 09/12] clocksource/timer-riscv: irq_pipeline: enable pipelined clock events
-Date: Fri, 20 Mar 2026 22:36:54 +0100
-Message-ID: <20260320213657.2210419-10-tobias.schaffner@siemens.com>
+Subject: [PATCH dovetail v5 10/12] pinctrl: starfive: irq_pipeline: enable pipelined interrupt control
+Date: Fri, 20 Mar 2026 22:36:55 +0100
+Message-ID: <20260320213657.2210419-11-tobias.schaffner@siemens.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260320213657.2210419-1-tobias.schaffner@siemens.com>
 References: <20260320213657.2210419-1-tobias.schaffner@siemens.com>
@@ -67,101 +67,92 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|AS8PR10MB7827:EE_
-X-MS-Office365-Filtering-Correlation-Id: 1257d521-a622-4116-e942-08de86c8d886
+X-MS-Office365-Filtering-Correlation-Id: e57fc1be-c08d-4c48-12ee-08de86c8d8eb
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
 	BCL:0;ARA:13230040|376014|1800799024|366016|18002099003|56012099003|22082099003|55112099003;
 X-Microsoft-Antispam-Message-Info:
-	TSeNDFdezvVLYdDpSYq/UfGUWwi9Z6CrDZbZCRukCTPCBiljhBSk0SPyWzCyQb8Pow17mweoO1fPcQhFUT6KFOj/0SidaAly7wKy0XVZI1skrlWOf0Z0sJ1d7tdSy61RaDRezZWV6tjTSz/lUlU7YWkcAAn8ZGj+Jc9g0CMk6DzkqRX2JXL9zX95AyGilfXDhFrNkQk0cYXv+UZ2ps2bBmy5sL4w4Ru1mpyzOB2FmeMnhQ1E3B5LeqNvXd0MiCaLBCiZchZwsEL4KMMwrZRcyOPUq0wW4NPETU+1nRimeFMT2DTj20wrgCPiPXCvqTAy2kaIeDy+qplAkns+ro4hX16Gg0vTL9JWcNGNdyniPLBc/hxRlRqgJmScJRo0VIJPWICu8EshQSfCzi0+JCjUaxOXnWLUuVkuLpgOaLFG8gMYtwBCjnUCImzA2fmGZ5j0/RuYautfiPszE5nV2CPr9FMOWFkt+8iRw1LWtCel7+xrlBTSX6MFyYNyzH5b6XV933ulH3d9AUJzN7yuNpnHeaMM/f7lrn/maUSv2xGQvYvHTTzttJNY1poKtW1tWX0kFLYOrMZwpQuCSsLXyym/Qr748cAdKtaWYsCOr/2k68RJDkj1ioQEULfh9NyszfYKmM0sjcx53nBpKF3GvDkBxRDS7UkvAGxAYaIyYIBn+SMaMzxyL/3YBAN1r7oK1Z/Mj0ls5F+OKonh2nC3byxewPjM/nNhkLNDLAAt23etwvM=
+	dmtTqVXFvMwbvNLeBuY4axcCNhQxFfJcOFIOSRWhJfOHnLNw5ndIuLGGn2dFY4PHZMBbQVD1JDGlYy4KW89k2LrNoUWFdv5d3qAWOiiJCtGcGnuM0HNMVXSjlbp2b2PxYhiekqGuWOEIyewbSEDWaysohwQzFYO6NdmysUMowMW1zkdKLlPnafZ3J6wZNrz/PUFLOL0M0k5PS0YXcKhyxZZhJh2Og3V3CgKYJK8TpC2DvUC1fGH29psbETsJPlaTpXxlHbIYbiZvqW32fxCfWfsk5TDcnos4JNb55WPUkTNsPNO+99Q8p5UGAQe+StXwZ2834jDT4mCXYATi3QsIGLMP6SvfnUXQaxw2VO6+QW8HTRvVFZ4Pp9eDaODj1FI2BW9nrAJZbdX3m6iyXWk1m43/YjEDg+gX6i/0kymHrIcNfRZA1HkHnqvyM1cH6Oi0HqWJGDs6A2t4wfTGkh8/APYHrp3WCQMqdAPDQkMXpSsKdos8RFBJPP1xQ9rpUXR169Dv3U8wPyYyljF+e+mU8w713/sYNKUByA7Y8R0DtR5GA7ypm1sUzFkqaMtaVv25LW52Jr0vAs4WjcONWivRgHJtuX7t8JbkhIPI5gGtO2mgiKZfTyBBBv/ZP6L6mJ8eZHv/QNvbxJB9kO/x/RfMk37l5LcULFVs1KYxFnhDXl5+8hvd6Xxevxec//WYIRXwhbfmG0j8Lw2/xd3g2RdCOxoQzT8B/C+n7Avm9Ma6hUU=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(18002099003)(56012099003)(22082099003)(55112099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?CyDtqD5Q0Z489N7ofjq7PspH6maXKPhuS/tsLYd0eMF3G6PXnRpLiCw62GWf?=
- =?us-ascii?Q?TfkCHfXuBXLIIHXSL4E1MH2r4BX+RzFAj2va9Sra3AZfMm4wzOB1VY/0H0YX?=
- =?us-ascii?Q?pmgPdNS5FAfM2GJ8ss6MzkR1IFGwdRvlVIJ54zewJda6+GRo4XWDPCBpTx9+?=
- =?us-ascii?Q?iCr9HLwF7hmsjN+kC8TP6eGt4lRnH6kh5xWHL1ritbF59rnuNqs6A1rIGN+W?=
- =?us-ascii?Q?HfuGyWdHyah1rb9vxiq4jz5YtOfG7UaeDsCVu8qG7XBeS18lue0jN/xnylXi?=
- =?us-ascii?Q?NTHafcPpfvzdbkixrOFRyjvMAwrIk7LRjMRA05vtgjMVXVz2PKvC9mMjqgZK?=
- =?us-ascii?Q?ka5C5mT/yinzwn0qoNW30XjSEPTyxRlU4FFX+q7SUVliZJAcK94WqcWr+6KT?=
- =?us-ascii?Q?JgbjAomSO++5Sqa3DxAtJy6/fA8z1Cb3ya1pOuRl4NvOwcgxr8Fn7KEjR2Kh?=
- =?us-ascii?Q?YgrtPitCSuPzld13TkDT700yLnU2DsVDLN+Dm2ZeH0d8WbRGUh/cGarDXMet?=
- =?us-ascii?Q?+Hd1UgLjzpKkx26Uoudzz5gMkz5yF5HEL4L3GAlZW10JH4RsFRtkv0hX6AJC?=
- =?us-ascii?Q?ER/2bYMG7qhP3KzHVa8BV/Qr/gX3Ooj1UKiifQks07HI01MmbuehZquDTjNK?=
- =?us-ascii?Q?8Z5HRpJn/ByKxRwYMo45z0HqBhx71A6nVyShQwhGBEvf7QaalY67VHC3tm+3?=
- =?us-ascii?Q?wBxBFbXldyjHf8Qzn1IbgNKhAK/ii685VGSLaXr5poHNohZjRixDzx7olxVl?=
- =?us-ascii?Q?41M1GFvj7jcWsc7XBqFC/LiCbCkKaMqxMNvKSysDthe0CK+BndxDoSv1UwKi?=
- =?us-ascii?Q?irEt0HnkC/zOlzeZzD0bbqjyUNMaEeAb8D+5kpoL2Cko4bjMhYh+FUw3tCa1?=
- =?us-ascii?Q?ubVzdqcYEkgpggCIew8bLIhCCWldfGIRl6she+HKCrmDWQV4KsWvC+ROBfN5?=
- =?us-ascii?Q?bACDCJkPMk2DlPGhPYtU0sh3v6CeT1r8gSZSujSTshkqLvSVWLlkT6IhgVjR?=
- =?us-ascii?Q?fu0LDYumJ7RKz3A2ZHPU52PUyxVBOsRH9nZY6WwjnxKrclFdMhkfc91M2jVE?=
- =?us-ascii?Q?nh2rKkSKtd4tJXKGAJWxvzNMe14fI+6SPANnMWXY3muZ4NC3qDQ2gP7FibKs?=
- =?us-ascii?Q?+VL/9diec1X8ntYanZXUp5jU5tAqJEsx1yzFT61eisH+ulinG5aMQvjFYaZO?=
- =?us-ascii?Q?YZW3PcKtUBIulhDUgBFhRIqxNlri82O6tjNhpOu+x8xonsWHJmOqRhvsushK?=
- =?us-ascii?Q?m1kustlipNn94OAvsWHSJjd2fKlUi8eFs6/b55KoMYA92EAfvQP7YCCvvn+f?=
- =?us-ascii?Q?dDtzWtwvNr6gzhWXSyxHf1LOOorLb3+ktIpEWGMIq+WNKTVA85TZ/dKadB6l?=
- =?us-ascii?Q?oAKr/LCb211a/unhdhbWcFR5InpyStlvu+LrBJJ8nATIvnc71RUVvWvxRYLK?=
- =?us-ascii?Q?qEz7HQNjH+LVjS4h6gIzaPhEde8+D6jzS9U0PoL0kbeTFdvvK+QjL6WxYYbT?=
- =?us-ascii?Q?HfOno419uOLgbomXHt+PJGEPQkDlm6mDB7DTl/d5952Dp9AwiW7X/cPoahFS?=
- =?us-ascii?Q?O2nQj6Zxu7tZ+6Ln31QI1wwiFv4Ue9o58PkrB+IEk+3Ccs2utEpbmbeyBD05?=
- =?us-ascii?Q?wE++nhXiedwDaJ5IGroPoUuFoZpU5iwhfPKsF8o8Qlay8ih0rk1LKgSBBuVC?=
- =?us-ascii?Q?1/D2H4LSmyG5dRyJAZKvvabighUlv4scV+vvvkMJD1rwzAY3s+/wEN+n7dgZ?=
- =?us-ascii?Q?GWEsT3iXkvuoTHpXPGKdmRK0ssvmz6I=3D?=
+	=?us-ascii?Q?88Q2Yc2IClmZIqvfA1mTi0v0ccwjkfKbY1NsgwylT4XNgYUViedcCKSBX2qQ?=
+ =?us-ascii?Q?bSxHZDywJcirEWBVe+jGpWxnr37kdPDKp1z8mfzljbGVid4h26oQeZbcXqbx?=
+ =?us-ascii?Q?PnTnCwmq19aEDKOAkr3pdETqYyg4q7IoyIvf0UGHxQwM+gn+yQ41lSb5OPTy?=
+ =?us-ascii?Q?RphvXdtfX1oWw/fYzRlRInMOmL7Ovx3bsxpR5n+U5O48X1LBbGzcPIWn2epc?=
+ =?us-ascii?Q?EdAlX7iSQHIAw/s7eVogaMS+BFTytpAESXWJRWvE1u6inBFRoG3OrGLHy/lO?=
+ =?us-ascii?Q?IIZQ+eUOaJul65qAJMXMzLm3hKAfQq0OLw1d2RLXW+G9tEU5rqO4Zy4XxBno?=
+ =?us-ascii?Q?7M5TdDR8kis3yfL0omvqkSDKmkpV4oDqc4P4nb957w3ga3v18J+cxfPbgpmG?=
+ =?us-ascii?Q?V/V0bCBrcDhvqtVP7CQiKkspAa5XIstp3u/AGdcP5wDUhVaFtUbvHz3kN5/Y?=
+ =?us-ascii?Q?b0n3k6BPjbbbtX2M3t0XZ9y80vn2F4KZ1Z85Je46B4FgqS9qy5lEOaN2rFWl?=
+ =?us-ascii?Q?yGsN9LF459nhMQV9+GSYMkj7o6momfnri0Fq+/pfZvc7znAXpSzn5/tCu46y?=
+ =?us-ascii?Q?2z4ZoptOiba56aCzS8879UI+Ofovt5SBFiBaug5XaYMqkez6PAQL2GCsBKTa?=
+ =?us-ascii?Q?MSfnpCgawGDgtrC9blynzefBOLVMen+OAbGp6X7FbPHLjJ6X6nHWmBQoC9pt?=
+ =?us-ascii?Q?3+Jl3X5szow5uG72sTlLoM5XEf1LCOIOy88niWxVJa/e+kR9cKdB8wL26ZQe?=
+ =?us-ascii?Q?/paRrU+cWw8XY8W6XyM9525JDZePwaRxdJuf0INAn3oSzHomzYNfk8mkv7uT?=
+ =?us-ascii?Q?A58ROQ/LsUxr20V+BHaBRPC7+9qby2d4hFaCO8cnnxwMYlRriQtLzpo9EoXr?=
+ =?us-ascii?Q?qK24kGwrmB6k+o/dN4XVcGz+AIpIfQvHb79vTcwoslmejqsbA74Vnijz8fcv?=
+ =?us-ascii?Q?52/GBl3l4DEcTceI0qB32WXpf9Qk59p9nGyTSWwtbxCFAlABVG6IkrQUbdnK?=
+ =?us-ascii?Q?fDjaR4w15JUny43JmoTJiLnMb2YayTPcxBXB1Glwk0T3TYe1UK3I6OA8bzvX?=
+ =?us-ascii?Q?OdcRNXP027sTIPL+nnzti2yN1vpUa/jO+gR6xrTqhcyCgMiKdm5FcfKFv7IO?=
+ =?us-ascii?Q?4yclPIWOs0LKIejd9JR9N9UfP/3zb7sDtYmcdapEO3/9vZVPEKryx0+03nc9?=
+ =?us-ascii?Q?s782b9YAmTP9Xz27+DTt6hmPdiLyHxFg6m5fa+3BJIPue+PjejufGoJr8Wai?=
+ =?us-ascii?Q?DL3YdAozqLV2+Zjq7Mx+y/C189+xFRNREgWjtsnrtjXa6B/eOPpIq6VbN4A2?=
+ =?us-ascii?Q?/Cj6MQ5GjkQRYoi4dc8r+oltXPzptA0Fe2geCf0kYkhQ0OvoXHD7fCLn5qxN?=
+ =?us-ascii?Q?rLYFpHhJWec8RmGxgO3+/a8k4BHo0FodbrvCPmWLQqT1CsiUU7VW0F+wlQux?=
+ =?us-ascii?Q?tYIhg5eibyuGZZdgYjn1B5yHXZ0fgf75r/duDhLV0iNcAXbRlCmcdrOCuIY1?=
+ =?us-ascii?Q?/IkufkY9W92CghOCTgHjyrlKRx6C29SZVOgQhuWa6rmrnyuUzuikdg152KQq?=
+ =?us-ascii?Q?CR8rlBDsfDn+Pyup6b4oEsHK+xJ2cShoVsofvOxQcawIdyzYK+M2PajZnlF0?=
+ =?us-ascii?Q?xSdj9oWew9nm/lqDibaxccrhMBoldNaf/S2+LZa/MuZI8qUeIxFlsiySYa6s?=
+ =?us-ascii?Q?R/sKr/glsuhzu1P4I1DRZ7MCpHQCXhB58haZVi3tAgf9MV6IfrObAFOU+88Y?=
+ =?us-ascii?Q?rMSf+e2zOamCVKIYv1/5QCG9qsWX8X4=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1257d521-a622-4116-e942-08de86c8d886
+X-MS-Exchange-CrossTenant-Network-Message-Id: e57fc1be-c08d-4c48-12ee-08de86c8d8eb
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2026 21:37:11.9328
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2026 21:37:12.5380
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: N6rqeSr+8vLYeYp9dxpKk7h/vXm89W/rx9/Elk4gIK+sPI2kI3NHYgbCuNBACnpmITGHe3KriDbFgiGa5AWXInYhBsE7CHD2euYs1F9EeyM=
+X-MS-Exchange-CrossTenant-UserPrincipalName: dIXHfwCFiefm13UerRkcIi1yupGqXCx/edRD1KcFyStfEPDvNhyUpRrGLVo56q09EeiYiC7aQKsu5EhjUSuzqO9uEXDq8Rw8wtrRLC2PxAM=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB7827
 
 Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
 ---
- drivers/clocksource/timer-riscv.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/pinctrl/starfive/pinctrl-starfive-jh7110.c | 2 +-
+ drivers/pinctrl/starfive/pinctrl-starfive-jh7110.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/clocksource/timer-riscv.c b/drivers/clocksource/timer-riscv.c
-index cfc4d83c42c0..fceebef28978 100644
---- a/drivers/clocksource/timer-riscv.c
-+++ b/drivers/clocksource/timer-riscv.c
-@@ -71,7 +71,8 @@ static int riscv_clock_shutdown(struct clock_event_device *evt)
- static unsigned int riscv_clock_event_irq;
- static DEFINE_PER_CPU(struct clock_event_device, riscv_clock_event) = {
- 	.name			= "riscv_timer_clockevent",
--	.features		= CLOCK_EVT_FEAT_ONESHOT,
-+	.features		= CLOCK_EVT_FEAT_ONESHOT |
-+				  CLOCK_EVT_FEAT_PIPELINE,
- 	.rating			= 100,
- 	.set_next_event		= riscv_clock_next_event,
- 	.set_state_shutdown	= riscv_clock_shutdown,
-@@ -150,7 +151,7 @@ static irqreturn_t riscv_timer_interrupt(int irq, void *dev_id)
- 	struct clock_event_device *evdev = this_cpu_ptr(&riscv_clock_event);
+diff --git a/drivers/pinctrl/starfive/pinctrl-starfive-jh7110.c b/drivers/pinctrl/starfive/pinctrl-starfive-jh7110.c
+index e44480e71ea8..88c8940fd975 100644
+--- a/drivers/pinctrl/starfive/pinctrl-starfive-jh7110.c
++++ b/drivers/pinctrl/starfive/pinctrl-starfive-jh7110.c
+@@ -829,7 +829,7 @@ static struct irq_chip jh7110_irq_chip = {
+ 	.irq_mask_ack = jh7110_irq_mask_ack,
+ 	.irq_unmask   = jh7110_irq_unmask,
+ 	.irq_set_type = jh7110_irq_set_type,
+-	.flags	      = IRQCHIP_IMMUTABLE | IRQCHIP_SET_TYPE_MASKED,
++	.flags	      = IRQCHIP_IMMUTABLE | IRQCHIP_SET_TYPE_MASKED | IRQCHIP_PIPELINE_SAFE,
+ 	GPIOCHIP_IRQ_RESOURCE_HELPERS,
+ };
  
- 	riscv_clock_event_stop();
--	evdev->event_handler(evdev);
-+	clockevents_handle_event(evdev);
- 
- 	return IRQ_HANDLED;
- }
-@@ -182,9 +183,9 @@ static int __init riscv_timer_init_common(void)
- 
- 	sched_clock_register(riscv_sched_clock, 64, riscv_timebase);
- 
--	error = request_percpu_irq(riscv_clock_event_irq,
--				    riscv_timer_interrupt,
--				    "riscv-timer", &riscv_clock_event);
-+	error = request_percpu_irq_affinity_flags(riscv_clock_event_irq,
-+				     riscv_timer_interrupt, IRQF_TIMER,
-+				     "riscv-timer", NULL, &riscv_clock_event);
- 	if (error) {
- 		pr_err("registering percpu irq failed [%d]\n", error);
- 		return error;
+diff --git a/drivers/pinctrl/starfive/pinctrl-starfive-jh7110.h b/drivers/pinctrl/starfive/pinctrl-starfive-jh7110.h
+index 2da2d6858008..959578765cba 100644
+--- a/drivers/pinctrl/starfive/pinctrl-starfive-jh7110.h
++++ b/drivers/pinctrl/starfive/pinctrl-starfive-jh7110.h
+@@ -15,7 +15,7 @@ struct jh7110_pinctrl {
+ 	struct device *dev;
+ 	struct gpio_chip gc;
+ 	struct pinctrl_gpio_range gpios;
+-	raw_spinlock_t lock;
++	hard_spinlock_t lock;
+ 	void __iomem *base;
+ 	struct pinctrl_dev *pctl;
+ 	/* register read/write mutex */
 -- 
 2.43.0
 
