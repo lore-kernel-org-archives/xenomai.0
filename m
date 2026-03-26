@@ -1,50 +1,47 @@
-Received: from mslow3.mail.gandi.net (mslow3.mail.gandi.net [217.70.178.249])
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17137410D3A
-	for <xenomai@lists.linux.dev>; Thu, 26 Mar 2026 16:30:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.249
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE7B92DA755
+	for <xenomai@lists.linux.dev>; Thu, 26 Mar 2026 16:31:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774542662; cv=none; b=TWrMnlYaTHpWj06AsFtCZj6FiK5kVmV3yYzAGOM8SOzx5M7HDuUr6UBeJDR05jX99LP8sDtZIWVjH3TCMgRzx3O7pvhe15oeVXVu/V1R+u7MOtx6VnEhc9xvRGLsLTExmqMsK6onSdjMFpYkLGI7t39A2hmINYOvFkfnpxpeR2E=
+	t=1774542721; cv=none; b=H/tp+l2kTUyYsbRxGBgVOIXiJtGNpTzf8JQY1+dNJvYOZRfmRH9tV8dfzpHMbnxXah6jgUzFxFL9/sXjZMN1iILHmqUFWwIsTTjkJdGvTGTsgW38hTMKHtKJQVwUlbh6cYffvmR5GhKX6FQA9kZTbLLI8BOX+c7L/IaJEsO9mVY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774542662; c=relaxed/simple;
-	bh=qhrrbUdMu0aSP2M3KWhh4Alw2mJEr1cMXtVVrOE6GJo=;
+	s=arc-20240116; t=1774542721; c=relaxed/simple;
+	bh=g2O9gnwz361zwck3JaXk2KHhWkspAbB1T8Q/TQ3CMNk=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=QVkQTD0EmgTUowBz6zlaAOIp3Pd7x0Xn+0NbvEJ3sEySl3IOsrJfED1cRLr4bZARaYvHIKJkv9IPRrm5ZP7GWQ5aKYU4dBD+4mv5NQZ4jDddG5katuqKgdQKuUdi3D9XB32jPo0hmC/7f7Mvfe56bSQmN4js01smYrzeDu7NFeI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=f2d6pYp6; arc=none smtp.client-ip=217.70.178.249
+	 MIME-Version:Content-Type; b=QQKQs+lUtSj+aDqxUqPO8byukQe9jhAqX/SyLtAruRszlqcReF/qHJZp3phstDIf+Cziq2GJu47efmwPZ49YYWP+QAArrfEvAIt/X5PbLvns6Lj3ZDgDFv1+Z0rUecK8LqITCFkNrGowiZgS570Ep7/rpudwFF6bIKKlYYjFlbk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=DkK4EyYr; arc=none smtp.client-ip=217.70.183.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="f2d6pYp6"
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
-	by mslow3.mail.gandi.net (Postfix) with ESMTP id 751FD581596
-	for <xenomai@lists.linux.dev>; Thu, 26 Mar 2026 16:27:48 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id EB0403ED33;
-	Thu, 26 Mar 2026 16:27:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="DkK4EyYr"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 66EFF3EBFD;
+	Thu, 26 Mar 2026 16:31:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1774542461;
+	t=1774542711;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=gjAihsMdG6qBs6O16pTuR6pUz0zauiQJF4E6mT3cqdk=;
-	b=f2d6pYp6pcznpgkXJETEXyGynWuy8a9SmdkAqwqWwXQq2sFrWGVk7MVAGV+nkv0EDvVWPN
-	MW60iDri39MnuBlrDyffSve0TNA9qIOI8CI1vne+d1+MNwXVgRPjCqxKxHY/x0TDiuWx7e
-	O972H9evvl/P8wEXebxiEw0COPkqhElQ3ztXNfqhQptL3fUq3tu2ZDf98vbG4PvHZBehrI
-	Z44Kz3z+inC96OXj/WWPcuIiYtvh9V/n1CCoGrTBqaDDat9uWAj7Un+RY5sE5BtJBOSZ8j
-	sOETahh9mSRdUZb0vcDZjmgUZ17ukC408G0oUqcg6V+rKWlloGkZ6hrDCQ23aQ==
+	bh=7H1utYGqm01pM4Y163nRPqLB1lPZVMzts45oVNIBxaI=;
+	b=DkK4EyYr+womy9/ve64OFkDtocsUIj4tudE4Qm8wI+w2idZDJP/RplPBAmfgWbTqZmPHs2
+	TBd3quARf3HzpBO06BGsm1b5QpAuDYLFR6P6zdJXSuv+MoALrCXOAXMh1J+dUuSG+el4WV
+	YoJL036CoYn5J0gcM/7IK1/KNlLawzhr6dU6nSEcBg1pBOUQMHH+lhlslIW0S3GzPLPAfG
+	1V/olYEKS9Vet0qLnD3j9xg/K7kPDt3tblqDsjTyCo2iiCay2iFdDC52JTW37IYrHgdg7G
+	dHH9lGvPJJMNVEvynAlWjghSbqVLJHg0xcveTf0MUnIF7swjnbs1gVL3qbV4WA==
 From: Philippe Gerum <rpm@xenomai.org>
 To: Tobias Schaffner <tobias.schaffner@siemens.com>
 Cc: xenomai@lists.linux.dev,  florian.bezdeka@siemens.com,
-  jan.kiszka@siemens.com,  shannmu <shanmu1901@gmail.com>
-Subject: Re: [PATCH dovetail v5 02/12] riscv: irq_pipeline: add IRQ
- pipelining core
-In-Reply-To: <20260320213657.2210419-3-tobias.schaffner@siemens.com> (Tobias
-	Schaffner's message of "Fri, 20 Mar 2026 22:36:47 +0100")
+  jan.kiszka@siemens.com
+Subject: Re: [PATCH dovetail v5 03/12] riscv: irq_pipeline: enable hard IRQs
+ during in-band trap handling
+In-Reply-To: <20260320213657.2210419-4-tobias.schaffner@siemens.com> (Tobias
+	Schaffner's message of "Fri, 20 Mar 2026 22:36:48 +0100")
 References: <20260320213657.2210419-1-tobias.schaffner@siemens.com>
-	<20260320213657.2210419-3-tobias.schaffner@siemens.com>
+	<20260320213657.2210419-4-tobias.schaffner@siemens.com>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Thu, 26 Mar 2026 17:27:35 +0100
-Message-ID: <875x6ih7yg.fsf@xenomai.org>
+Date: Thu, 26 Mar 2026 17:31:50 +0100
+Message-ID: <87zf3uft6x.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -53,114 +50,84 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-GND-Sasl: rpm@xenomai.org
-X-GND-Score: -100
-X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgdefvdejkeeiucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpedvlefhvdehkeduheevleegiedtueejgfekhfeijeefvdeijeekgeeigfejhfekgeenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpqhhiugepgfeutdegtdefgffffeefpdhmohguvgepshhmthhpohhuthdpnhgspghrtghpthhtohephedprhgtphhtthhopehshhgrnhhmuhduledtudesghhmrghilhdrtghomhdprhgtphhtthhopehjrghnrdhkihhsiihkrgesshhivghmvghnshdrtghomhdprhgtphhtthhopehflhhorhhirghnrdgsvgiiuggvkhgrsehsihgvmhgvnhhsrdgtohhmpdhrtghpthhtohepg
- igvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehtohgsihgrshdrshgthhgrfhhfnhgvrhesshhivghmvghnshdrtghomh
 X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgdefvdejkeejucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpedvlefhvdehkeduheevleegiedtueejgfekhfeijeefvdeijeekgeeigfejhfekgeenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpqhhiugepieeigffhhfefgfeuhfffpdhmohguvgepshhmthhpohhuthdpnhgspghrtghpthhtohepgedprhgtphhtthhopehjrghnrdhkihhsiihkrgesshhivghmvghnshdrtghomhdprhgtphhtthhopehflhhorhhirghnrdgsvgiiuggvkhgrsehsihgvmhgvnhhsrdgtohhmpdhrtghpthhtohepgigvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtt
+ hhopehtohgsihgrshdrshgthhgrfhhfnhgvrhesshhivghmvghnshdrtghomh
+
+
+Until mark_trap_entry/exit do call oob_trap_notify/unwind to forward the
+event to the companion core, this code can be merged into the previous
+patch introducing the interrupt pipeline.
 
 Tobias Schaffner <tobias.schaffner@siemens.com> writes:
 
-> +extern int NR_CALL_FUNCTION_OOB_IPI;
-> +extern int NR_RESCHEDULE_OOB_IPI;
-> +extern int NR_TIMER_OOB_IPI;
-
-Instead of defining these pseudo-variables which are basically
-duplicating the out-of-band IPI indices, couldn't we move the definition
-of ipi_message_type to <asm/smp.h>?
-
+> When running with interrupt pipelining, re-enable hard interrupts
+> while handling traps on the in-band stage so that out-of-band events
+> can be delivered promptly.
+>
+> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+> ---
+>  arch/riscv/kernel/traps.c | 28 ++++++++++++++++++++++++++++
+>  1 file changed, 28 insertions(+)
+>
+> diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
+> index 267b8ec5a1bf..5b84e1ff0eeb 100644
+> --- a/arch/riscv/kernel/traps.c
+> +++ b/arch/riscv/kernel/traps.c
+> @@ -112,10 +112,30 @@ void die(struct pt_regs *regs, const char *str)
+>  		make_task_dead(SIGSEGV);
+>  }
+>  
+> +static __always_inline
+> +bool mark_trap_entry(int signo, struct pt_regs *regs)
+> +{
+> +	if (likely(running_inband())) {
+> +		hard_cond_local_irq_enable();
+> +		return true;
+> +	}
 > +
->  int riscv_hartid_to_cpuid(unsigned long hartid)
+> +	return false;
+> +}
+> +
+> +static __always_inline
+> +void mark_trap_exit(int signo, struct pt_regs *regs)
+> +{
+> +	hard_cond_local_irq_disable();
+> +}
+> +
+>  void do_trap(struct pt_regs *regs, int signo, int code, unsigned long addr)
 >  {
->  	int i;
-> @@ -95,7 +134,7 @@ static inline void ipi_cpu_crash_stop(unsigned int cpu, struct pt_regs *regs)
+>  	struct task_struct *tsk = current;
 >  
->  	atomic_dec(&waiting_for_crash_ipi);
+> +	if (!mark_trap_entry(signo, regs))
+> +		return;
+> +
+>  	if (show_unhandled_signals && unhandled_signal(tsk, signo)
+>  	    && printk_ratelimit()) {
+>  		pr_info("%s[%d]: unhandled signal %d code 0x%x at 0x" REG_FMT,
+> @@ -127,6 +147,8 @@ void do_trap(struct pt_regs *regs, int signo, int code, unsigned long addr)
+>  	}
 >  
-> -	local_irq_disable();
-> +	hard_local_irq_disable();
->
-
-local_irq_disable_full() may be safer in case hotplug handlers have
-assertions checking for irqs_disabled().
-
-> @@ -176,9 +176,19 @@ asmlinkage __visible __trap_section void do_trap_insn_illegal(struct pt_regs *re
+>  	force_sig_fault(signo, code, (void __user *)addr);
+> +
+> +	mark_trap_exit(signo, regs);
+>  }
 >  
+>  static void do_trap_error(struct pt_regs *regs, int signo, int code,
+> @@ -137,6 +159,12 @@ static void do_trap_error(struct pt_regs *regs, int signo, int code,
 >  	if (user_mode(regs)) {
->  		irqentry_enter_from_user_mode(regs);
-> -		local_irq_enable();
-> +
-> +		if (running_inband())
-> +			local_irq_enable_full();
-> +		else
-> +			hard_local_irq_enable();
->
-
-This is basically what local_irq_enable_full() does, keeping
-CONFIG_TRACE_IRQFLAGS happy too.
-
-This said, I'm unsure that we really want the in-band stage to be
-unstalled in the illegal instruction handler, although we do want the
-oob stage to keep receiving interrupts as long as possible while
-handling such trap. As a rule of thumb, unless the in-band code
-explicitly enables interrupts (e.g. on page fault), we should assume
-that it might expect not to receive any interrupt while handling such
-trap.
-
-Would hard_local_irq_enable() unconditionally suffice here?
-
->  		handled = riscv_v_first_use_handler(regs);
-> +
-> +		if (running_inband())
-> +			local_irq_disable_full();
-> +		else
-> +			hard_local_irq_disable();
-> +
-
-Ditto (local_irq_disable_full()).
-
->  		if (!handled)
->  			do_trap_error(regs, SIGILL, ILL_ILLOPC, regs->epc,
->  				      "Oops - illegal instruction");
-> @@ -308,11 +318,19 @@ asmlinkage __visible __trap_section void do_trap_break(struct pt_regs *regs)
->  {
->  	if (user_mode(regs)) {
->  		irqentry_enter_from_user_mode(regs);
-> -		local_irq_enable();
-> +
-> +		if (running_inband())
-> +			local_irq_enable_full();
-> +		else
-> +			hard_local_irq_enable();
->
-
-Ditto.
-
->  		handle_break(regs);
->  
-> -		local_irq_disable();
-> +		if (running_inband())
-> +			local_irq_disable_full();
-> +		else
-> +			hard_local_irq_disable();
-> +
-
-Ditto.
-
->  		irqentry_exit_to_user_mode(regs);
+>  		do_trap(regs, signo, code, addr);
 >  	} else {
->  		irqentry_state_t state = irqentry_nmi_enter(regs);
-> @@ -429,12 +447,72 @@ asmlinkage __visible noinstr void do_page_fault(struct pt_regs *regs)
->  
->  	handle_page_fault(regs);
->  
-> -	local_irq_disable();
-> +	if (running_inband())
-> +		local_irq_disable_full();
-> +	else
-> +		hard_local_irq_disable();
->  
-
-Ditto.
+> +		/*
+> +		 * Dovetail: If we trapped from kernel space, either
+> +		 * we can fix up the situation, or we can't and we may
+> +		 * happily crash with hard irqs off. Either way, don't
+> +		 * bother.
+> +		 */
+>  		if (!fixup_exception(regs))
+>  			die(regs, str);
+>  	}
 
 -- 
 Philippe.
