@@ -1,186 +1,166 @@
-Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013019.outbound.protection.outlook.com [40.107.159.19])
+Received: from mslow3.mail.gandi.net (mslow3.mail.gandi.net [217.70.178.249])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8A413BB9F7
-	for <xenomai@lists.linux.dev>; Thu, 26 Mar 2026 09:03:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.19
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774515822; cv=fail; b=GVP9wqS6levG9BflkVNSf1bqgj7QGAkJBUnD9jp2VuT7RIZgKyGcNm4YmkSFrH1SppkC/qU7zBjTr17H+yh1w5cqnVIEq36WMmV4v8JEyBwsqXyy2ziQky/oLWdSU9KByo2YfV6Wm5mbf/ARgJdmQPPkNKKKcQFrR5C1O60jSWY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774515822; c=relaxed/simple;
-	bh=Op+voJythMQTcqfZQr+6mpyi4E/BjiV+b8P395IlpkA=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=AFCb927np75o+5mAjf9ab9whqb0dT2xCLqgv33rupC+vmj/8RanbsAFHOlqhJkjqLvNurHAtwgVDst7oSJsQxSxr/tccB7K+5fvKquo+LudlD2iAB4xeujOSQmK+FsIGKchOcp8fIDE3R6fRRsjSIumUX9c0WPaVby1jMYZ2oK8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=SY5p/4Ll; arc=fail smtp.client-ip=40.107.159.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17137410D3A
+	for <xenomai@lists.linux.dev>; Thu, 26 Mar 2026 16:30:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.249
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774542662; cv=none; b=TWrMnlYaTHpWj06AsFtCZj6FiK5kVmV3yYzAGOM8SOzx5M7HDuUr6UBeJDR05jX99LP8sDtZIWVjH3TCMgRzx3O7pvhe15oeVXVu/V1R+u7MOtx6VnEhc9xvRGLsLTExmqMsK6onSdjMFpYkLGI7t39A2hmINYOvFkfnpxpeR2E=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774542662; c=relaxed/simple;
+	bh=qhrrbUdMu0aSP2M3KWhh4Alw2mJEr1cMXtVVrOE6GJo=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=QVkQTD0EmgTUowBz6zlaAOIp3Pd7x0Xn+0NbvEJ3sEySl3IOsrJfED1cRLr4bZARaYvHIKJkv9IPRrm5ZP7GWQ5aKYU4dBD+4mv5NQZ4jDddG5katuqKgdQKuUdi3D9XB32jPo0hmC/7f7Mvfe56bSQmN4js01smYrzeDu7NFeI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=f2d6pYp6; arc=none smtp.client-ip=217.70.178.249
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="SY5p/4Ll"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=LeiKkV1cV//ISWvpr5fOMhD+D9EXiRERJdtb/U3R9Z48zqKn4TJNmr1ZCXi+uVxofo+OqEGPv5kfv0ujd75xEgbi6MYAbew8ZAnkrpvPM/VFxE4H+xYsA7cDpg1d4Fmp+dYVWF5VN16CPmnpNg2JPs0VRPly2zi/n7hxljUVMrGtpCC+/O7Nfe11cZQt8a60qpI1ItHRt7RUUngXdagR8h/wNeqqNIeEJKcuzptpf8uvl8iZBBCM4/1wcFzlZwY/V2Yn7KCGsnj1PhZwtimgEqF6IE1I35opftWFUcZUlNuRhX9OegUqhZlyK/D+Xts8dD3xYesh91JkY6CQDy6v7A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=al5XFrCq/ZdHtACAbOOXFu5x/k1xjrfswhZtWNVpTyM=;
- b=KlXaOGEP338ZgYF0KjzyVqxW3tQV05gq5dgYGjfruq/sZ8K8Z3jIt9ps9VGd/4NetyXd2PhN6xpSQnWLPSG1CvJBTvSqA3ke50FcgwCzKRLU7bbCTGwz7JWaBCDjJnA2nXtWpQQz2r7ej1wR3q+ALqkGUeefKv9fOthQdaDqJzO++Lyc1Ga4jz+Ce66ujt6Xb4xtzkko8eUZ32p4v5XVc8VPBtRzVh7TgqOVXULVg+QI6uozv/ZmzJnk8ikqGrSUXBVavmoJ4FkjgxNQyOMUZzDVQO/AJ33i/gESKoIPzGaiAtC9EE1/xnT4O0Tq6x7jhV5IKQHVdgn4zQ7H0AC3Mw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=al5XFrCq/ZdHtACAbOOXFu5x/k1xjrfswhZtWNVpTyM=;
- b=SY5p/4LlaSYDsJWYhOagcs5QuGPiHG3i9LB8GKVMSxlNbkRo3xPpAG7hzJj/HPo3CyiQpVpAoorybH/DlvP+LFzJKP/+OkAp3uBrARWSL/dPaEIPRCk99l4aSHIkr5pbu9tdTLVQJ7hkAtWkXdMEZPAl5ZEAZDRL217lCUy8QeVq1jdcrCBep67GjF4KIFF9M8Td4raYE1oMFp4h8+oi8+ZCh3h3avreXPfmShYsJu66GwwUVx1IAm3scT667Rokl7T5PIybDAZ7LoBgkvTavAOLLe/En2nOHDm412D3zsLf7k7nY9+VaraLFn4pqKodH0U41BrfSiDpZOiLcpIoHA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:3dd::5)
- by PA1PR10MB8540.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:446::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.20; Thu, 26 Mar
- 2026 09:03:37 +0000
-Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::5f49:b0e9:d295:22d8]) by AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::5f49:b0e9:d295:22d8%5]) with mapi id 15.20.9723.030; Thu, 26 Mar 2026
- 09:03:36 +0000
-Message-ID: <5d2efb94-81c2-4243-9801-3ccb7a4a29a7@siemens.com>
-Date: Thu, 26 Mar 2026 10:03:35 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH dovetail] net: skbuff: add missing OOB stubs for
- !CONFIG_NET_OOB
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@lists.linux.dev
-References: <20260320211911.2151219-1-tobias.schaffner@siemens.com>
- <877br0j725.fsf@xenomai.org>
-From: Tobias Schaffner <tobias.schaffner@siemens.com>
-Content-Language: en-US
-In-Reply-To: <877br0j725.fsf@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: AM0PR10CA0049.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:150::29) To AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:3dd::5)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="f2d6pYp6"
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+	by mslow3.mail.gandi.net (Postfix) with ESMTP id 751FD581596
+	for <xenomai@lists.linux.dev>; Thu, 26 Mar 2026 16:27:48 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id EB0403ED33;
+	Thu, 26 Mar 2026 16:27:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1774542461;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=gjAihsMdG6qBs6O16pTuR6pUz0zauiQJF4E6mT3cqdk=;
+	b=f2d6pYp6pcznpgkXJETEXyGynWuy8a9SmdkAqwqWwXQq2sFrWGVk7MVAGV+nkv0EDvVWPN
+	MW60iDri39MnuBlrDyffSve0TNA9qIOI8CI1vne+d1+MNwXVgRPjCqxKxHY/x0TDiuWx7e
+	O972H9evvl/P8wEXebxiEw0COPkqhElQ3ztXNfqhQptL3fUq3tu2ZDf98vbG4PvHZBehrI
+	Z44Kz3z+inC96OXj/WWPcuIiYtvh9V/n1CCoGrTBqaDDat9uWAj7Un+RY5sE5BtJBOSZ8j
+	sOETahh9mSRdUZb0vcDZjmgUZ17ukC408G0oUqcg6V+rKWlloGkZ6hrDCQ23aQ==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Tobias Schaffner <tobias.schaffner@siemens.com>
+Cc: xenomai@lists.linux.dev,  florian.bezdeka@siemens.com,
+  jan.kiszka@siemens.com,  shannmu <shanmu1901@gmail.com>
+Subject: Re: [PATCH dovetail v5 02/12] riscv: irq_pipeline: add IRQ
+ pipelining core
+In-Reply-To: <20260320213657.2210419-3-tobias.schaffner@siemens.com> (Tobias
+	Schaffner's message of "Fri, 20 Mar 2026 22:36:47 +0100")
+References: <20260320213657.2210419-1-tobias.schaffner@siemens.com>
+	<20260320213657.2210419-3-tobias.schaffner@siemens.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Thu, 26 Mar 2026 17:27:35 +0100
+Message-ID: <875x6ih7yg.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|PA1PR10MB8540:EE_
-X-MS-Office365-Filtering-Correlation-Id: d4671bdf-06c4-486a-385a-08de8b169031
-X-MS-Exchange-AtpMessageProperties: SA
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|376014|55112099003|18002099003|22082099003|56012099003;
-X-Microsoft-Antispam-Message-Info:
-	Ue/93QjsT3YrrhML8dnjvHvuAknZXCrM0CTLG2pWuzqdZbHKc54quYMMzTVqkj4vYNPOh88aCz9VXp6hxo60YbsE1xjxBuSdw/nmPPSZyofPTBwqzzsM07C4cuq5oY3yRxSg6xk2HxUkdH4VDnG2g61ezlhTsMKHmVglblJN9VBUOYhzLayA8uQe7zUgeoJTnLWqsHJU6TGAC3k/MtFkSDL5Nn48RrhFanPG06PR8FTrozROIe5yZ2imzdjkeTJhwnTx25RxTjYPdHQaKDMimN7KYsUKNuzcrFe/9ku/fpvBxMW6PXRVPIdDfYRwSdDFm7PLyfboHyJOY9s9IXjmKYPVAYkK7WS3TKEBHkDwO0D5hJjZCSr0XUgvB7okXz7VQOeJ7/UyLZr4RpAhD+wVeER1kt6RN4IeIZlY25SPHevGU9WAxp4K+WzU9yKcPbix+GhEcPylY6t+UfRWxe6kg2wZ8r6gLI1ylI4KE8cR1dHg3He8O236E10y+FryBPrJIqwGhLVWgQ/iVs6nVLUwvB87H6uHr+F0qav8t4uvzS+Mw1o/K6F+VfRT6XUiBBYA3S0Omv5U5u6chk7471OjzxD/tWWPU4Y28FNAZsfjgMwEyGCNPz/i4qYvy9npBw1WUNqUcLWSicc7C7L76pwJWzAeO7ZrEa5beph8V8JYxLXiXwTvVAQCCcFIyw7NLOEB3zxRyRB78TLUG3BpKP/GopUyYWBgFU5fV2c4SbRNPGU=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(55112099003)(18002099003)(22082099003)(56012099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?M1E3alVGMGlOaDR4RDRGQXRnUUs5VHVhc0h6RnZFejhpbkJpbERWZ2FhUENV?=
- =?utf-8?B?RHVrMGRzVG5oZHJlcDcySjlvSElmMkpvbW40STRpYXI3ZXB0ejNFQ2pPTFV4?=
- =?utf-8?B?U3FyZXVwY0tuVzJyRTJaVnhDR1JTcVI0eUZZYkNKRUtsT1dIakdZaXhISnRQ?=
- =?utf-8?B?UkZxeVJEcXhkS3liNktZOGJQbTU1MlJhYXZYK05sMUVaQjBFUlMzbkl2YzlW?=
- =?utf-8?B?ckg1Q0s0TUgzUXAwQXd6YUhqVVAreVdrTEhKa214YzFDN2tRLyt6ZVkxWHhF?=
- =?utf-8?B?Z2NlRE5vSWhMeDRVZ21wQU1hSXo2bk5rRVFJSGg3VWRHVXdvcVlVMnZqMGJN?=
- =?utf-8?B?eWNsQ1BNUUtoMVBleDRBT3h6cVZMVmYzV2xONG10cHltYlVaT203MzZNZTRu?=
- =?utf-8?B?bldvR3U0aExsSUlrbDM3UXFvS0lHd2h2K1ZyNUJ2R2pwdTB3ZTFzUnNrTTZq?=
- =?utf-8?B?TGxCMkEvNUhHNDBHbkcyWVhpdHpRU1RPQVM3NS81cmdsZmFxcjVFaGtud29B?=
- =?utf-8?B?Vkl4Q0dBZzNuSDM5K1pSMW9MWWNvRFNobFFKQW90Tk5lNVU1RmZWZWJxVGx0?=
- =?utf-8?B?d3VnSThQYnU3c0dqZG9XMVNveExKSTEwQUh0SjcxL1F2cHAvR1hWWXorNzJh?=
- =?utf-8?B?dnlRQ3BIR1R4Q0xKOGxaVjI4ZW0wYWZMV1MwSjNseXVWazdJKzBGK0NBdjZm?=
- =?utf-8?B?NWJjL0NIeldqejlsdFJmdWZaSktHVmN4UEZMaFdkTjJ4R1FCcDBWQUw5V0xr?=
- =?utf-8?B?VUFwQnRmUlZyZVdrYU9ZVUt1aEVUcnJUNW13elE4eDJvdHIzVnBISCt2aGIv?=
- =?utf-8?B?WnBHMlZxOXZ3SEtjVWhSd0R4cm40Z2lpVVJ0MFh5R1NLL2ExazBsVEcwZmZD?=
- =?utf-8?B?bnpDMlJ4MkNET1EvVklOK3lZRTdHRU5ROTNmRndHN1d3dW1hSXVsMDFFdUl0?=
- =?utf-8?B?eVZVQnIwL3RIRmUrVzFYWTdQcjJTZ2gvTEtUUXR3eVJpQTBTS1NyNDJIdkow?=
- =?utf-8?B?dHUxMTV0dVVxanlMY0tydEdoYWNxWkdJejdKdHp5d3Y1b2xnbE5QWlNEMDRR?=
- =?utf-8?B?N0J6clREOU95d0NPNmN2RHZ4ajh0ZUZmUlRNbXoySTRSSldmbk1lTGJxSitL?=
- =?utf-8?B?WHBxVURMQnZRdGtYaEpIejdGZ3Jxdm0wRXY0aTZnYmVVU3pGWjBCL05sSm9W?=
- =?utf-8?B?UVBUeUFoSUd1VU9oaFNhVlVmTW5wTldYS24xNXYvTUV0aExyMFB6R3BPdk1r?=
- =?utf-8?B?Z084VFlxTU5EM3ZaQTRWMlBMa0RoSVU4MmJsUloza281VTFIcnlsSXpKZndo?=
- =?utf-8?B?bVl5TzJRVXpYTTFaODdkdlpmbmhUSFAwKzE3YVBNUlFCT2tpTTVZNkVsVVZq?=
- =?utf-8?B?bkJSb0xmYWpncUU0cm1OR3ZWYk9CNVppdnNMMUxwdWlUUW4vaFhUbmJNMHFz?=
- =?utf-8?B?OVpsYXJ3czM1SCswd21aMEVTbFNEcCtkaHpWT2NMVGhScDNyYzV6RURiWjQ0?=
- =?utf-8?B?RC9NbFJvNzJhQTA5TVlRMkMwekJuSDQ1TERkZEt0ZkdVTXlTUHJzNUZJT01r?=
- =?utf-8?B?TWpXc1RvNWhkaHNKbkhMN3R0S2xoNjVSUHF5V2JLUHpaN0ZMbFRLZVhXNmND?=
- =?utf-8?B?VGdVeGx6ZkdMSW05V3JPUXQ1ZHJHa1R2NFJDSDh1RStqRElYMEZOY2xFV1dB?=
- =?utf-8?B?RFVhRHVZRldFQkRBcXlkdFVaYkRvL0ZTd0NiUVQrSEMwSHJFdW10K2pXNHFB?=
- =?utf-8?B?bGxEK2MvN2diMWN2TDBHSGszVkNESzNxd25ZSk9HMU5USmVHN2w4dnVxQ21n?=
- =?utf-8?B?bkhHNUdoS2x4S09vN3Yyd2pTb005Q1BxR2U5VGVieTRBZ2kvZ1BKcHFIRmE4?=
- =?utf-8?B?YmpjeURtRjM3cTlNWDdPbnVHak5BWE9RelFjcndFcFRHVGhYM1QyQnlnOVI5?=
- =?utf-8?B?bWcvV0ZMZ3dKY0hWM1AwQktIY0NzTlZ6UlJIVXZDTlVibXVnZkYzZGIrcUNn?=
- =?utf-8?B?Vm5EVDNxRlppQWdkcDBNa2dtcEY2R254Q0NJOXppZkZTQWswSm5LeUxLS1ZK?=
- =?utf-8?B?S1oyeXNFNFFwV3g4QTlXTTRXN3lPQlV4RkErdkxhUUZueXlHbEdkWGZuTDNl?=
- =?utf-8?B?OE93QkdGalJLaG04alMvOUEyR1Y0ZXBhV2c2QmFST2J2bzJENyt5WGhyemNw?=
- =?utf-8?B?MUhQQzFOQ0lYaERTb1JUM0tDc3hTNitzM0VudXFxdVpZMHlBayt4c3JKazhu?=
- =?utf-8?B?QkNlVm9nVFFVaDJmVEQvVzVnSTVuanRvUU5EVC9SWFR3aUxIZE5xMUhmL0pN?=
- =?utf-8?B?bmRrTzdrK3BGWlE0dEtWS2ttdkdGbVlnUnNuM0ZXRWtQQzBFMEhkMzcxYzYw?=
- =?utf-8?Q?kzwIQql584ns0wgA=3D?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4671bdf-06c4-486a-385a-08de8b169031
-X-MS-Exchange-CrossTenant-AuthSource: AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2026 09:03:35.9461
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Pr5fZS/yy3k8AQ5y3xYPAQ2GtKzjXHP/tZ4UK2ukNTMRd4samKkEmeMUIU7FNb1x32nKruH7PK3hkaDDkTkwGZk14BN0ChICmNexp2qr4Hc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA1PR10MB8540
+Content-Type: text/plain
+X-GND-Sasl: rpm@xenomai.org
+X-GND-Score: -100
+X-GND-Cause: gggruggvucftvghtrhhoucdtuddrgeefgedrtddtgdefvdejkeeiucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuifetpfffkfdpucggtfgfnhhsuhgsshgtrhhisggvnecuuegrihhlohhuthemuceftddunecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpefhvfevufgjfhgffffkgggtsehttdertddtredtnecuhfhrohhmpefrhhhilhhiphhpvgcuifgvrhhumhcuoehrphhmseigvghnohhmrghirdhorhhgqeenucggtffrrghtthgvrhhnpedvlefhvdehkeduheevleegiedtueejgfekhfeijeefvdeijeekgeeigfejhfekgeenucfkphepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehinhgvthepvdgrtddumegvtdgrmedulegsmeeftggutdemleeklegrmeehtgegsgemsgejfhhfmegsrghfpdhhvghlohepphihrhhopdhmrghilhhfrhhomheprhhpmhesgigvnhhomhgrihdrohhrghdpqhhiugepgfeutdegtdefgffffeefpdhmohguvgepshhmthhpohhuthdpnhgspghrtghpthhtohephedprhgtphhtthhopehshhgrnhhmuhduledtudesghhmrghilhdrtghomhdprhgtphhtthhopehjrghnrdhkihhsiihkrgesshhivghmvghnshdrtghomhdprhgtphhtthhopehflhhorhhirghnrdgsvgiiuggvkhgrsehsihgvmhgvnhhsrdgtohhmpdhrtghpthhtohepg
+ igvnhhomhgriheslhhishhtshdrlhhinhhugidruggvvhdprhgtphhtthhopehtohgsihgrshdrshgthhgrfhhfnhgvrhesshhivghmvghnshdrtghomh
+X-GND-State: clean
 
-Hi!
+Tobias Schaffner <tobias.schaffner@siemens.com> writes:
 
-On 3/25/26 15:51, Philippe Gerum wrote:
-> Tobias Schaffner <tobias.schaffner@siemens.com> writes:
-> 
->> skbuff.c calls skb_mark_oob() and variants behind runtime running_oob()
->> checks but these are only implemented in the CONFIG_NET_OOB section.
->>
->> Add the missing stubs to the !CONFIG_NET_OOB section.
->>
->> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
->> ---
->>   include/linux/skbuff.h | 16 ++++++++++++++++
->>   1 file changed, 16 insertions(+)
->>
->> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
->> index 73dd4a58d181..1278d0a58677 100644
->> --- a/include/linux/skbuff.h
->> +++ b/include/linux/skbuff.h
->> @@ -5630,6 +5630,22 @@ static inline struct sk_buff *get_oob_skb(void)
->>   	return __get_oob_skb();
->>   }
->>   
->> +static inline void skb_mark_oob(struct sk_buff *skb)
->> +{
->> +}
->> +
->> +static inline void skb_mark_oob_released(struct sk_buff *skb)
->> +{
->> +}
->> +
->> +static inline void skb_mark_oob_timestamped(struct sk_buff *skb)
->> +{
->> +}
->> +
->> +static inline void skb_mark_oob_managed(struct sk_buff *skb)
->> +{
->> +}
->> +
->>   #endif	/* !CONFIG_NET_OOB */
->>   
->>   #endif	/* __KERNEL__ */
-> 
-> All current users of skb_oob_mark_*() calls are currently guarded by
-> CONFIG_NET_OOB sections, or enable CONFIG_NET_OOB, like the evl
-> core. Did you observe a build failure with CONFIG_NET_OOB=n, or is it
-> preventive fixup?
+> +extern int NR_CALL_FUNCTION_OOB_IPI;
+> +extern int NR_RESCHEDULE_OOB_IPI;
+> +extern int NR_TIMER_OOB_IPI;
 
-I am building without CONFIG_NET_OOB at the moment and the build fails 
-because of the unguarded skb_mark_oob calls in net/core/skbuff.c.
+Instead of defining these pseudo-variables which are basically
+duplicating the out-of-band IPI indices, couldn't we move the definition
+of ipi_message_type to <asm/smp.h>?
 
-Best,
-Tobias
+> +
+>  int riscv_hartid_to_cpuid(unsigned long hartid)
+>  {
+>  	int i;
+> @@ -95,7 +134,7 @@ static inline void ipi_cpu_crash_stop(unsigned int cpu, struct pt_regs *regs)
+>  
+>  	atomic_dec(&waiting_for_crash_ipi);
+>  
+> -	local_irq_disable();
+> +	hard_local_irq_disable();
+>
+
+local_irq_disable_full() may be safer in case hotplug handlers have
+assertions checking for irqs_disabled().
+
+> @@ -176,9 +176,19 @@ asmlinkage __visible __trap_section void do_trap_insn_illegal(struct pt_regs *re
+>  
+>  	if (user_mode(regs)) {
+>  		irqentry_enter_from_user_mode(regs);
+> -		local_irq_enable();
+> +
+> +		if (running_inband())
+> +			local_irq_enable_full();
+> +		else
+> +			hard_local_irq_enable();
+>
+
+This is basically what local_irq_enable_full() does, keeping
+CONFIG_TRACE_IRQFLAGS happy too.
+
+This said, I'm unsure that we really want the in-band stage to be
+unstalled in the illegal instruction handler, although we do want the
+oob stage to keep receiving interrupts as long as possible while
+handling such trap. As a rule of thumb, unless the in-band code
+explicitly enables interrupts (e.g. on page fault), we should assume
+that it might expect not to receive any interrupt while handling such
+trap.
+
+Would hard_local_irq_enable() unconditionally suffice here?
+
+>  		handled = riscv_v_first_use_handler(regs);
+> +
+> +		if (running_inband())
+> +			local_irq_disable_full();
+> +		else
+> +			hard_local_irq_disable();
+> +
+
+Ditto (local_irq_disable_full()).
+
+>  		if (!handled)
+>  			do_trap_error(regs, SIGILL, ILL_ILLOPC, regs->epc,
+>  				      "Oops - illegal instruction");
+> @@ -308,11 +318,19 @@ asmlinkage __visible __trap_section void do_trap_break(struct pt_regs *regs)
+>  {
+>  	if (user_mode(regs)) {
+>  		irqentry_enter_from_user_mode(regs);
+> -		local_irq_enable();
+> +
+> +		if (running_inband())
+> +			local_irq_enable_full();
+> +		else
+> +			hard_local_irq_enable();
+>
+
+Ditto.
+
+>  		handle_break(regs);
+>  
+> -		local_irq_disable();
+> +		if (running_inband())
+> +			local_irq_disable_full();
+> +		else
+> +			hard_local_irq_disable();
+> +
+
+Ditto.
+
+>  		irqentry_exit_to_user_mode(regs);
+>  	} else {
+>  		irqentry_state_t state = irqentry_nmi_enter(regs);
+> @@ -429,12 +447,72 @@ asmlinkage __visible noinstr void do_page_fault(struct pt_regs *regs)
+>  
+>  	handle_page_fault(regs);
+>  
+> -	local_irq_disable();
+> +	if (running_inband())
+> +		local_irq_disable_full();
+> +	else
+> +		hard_local_irq_disable();
+>  
+
+Ditto.
+
+-- 
+Philippe.
