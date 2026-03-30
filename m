@@ -1,121 +1,103 @@
-Received: from mslow3.mail.gandi.net (mslow3.mail.gandi.net [217.70.178.249])
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E13913B5AE
-	for <xenomai@lists.linux.dev>; Sat, 28 Mar 2026 10:30:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.249
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFB542FD7D3
+	for <xenomai@lists.linux.dev>; Mon, 30 Mar 2026 18:37:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.196
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774693852; cv=none; b=hsWUqn9Z7TwwUW6vHdR1hi2iNqHac/xDrcydrI3cIdYhv9HzRsIOEzW5O9IyACmcQh/sYwn7n7QGo4x8Uu/z6sZd1g+5QVqfyp4MnhUW1M39Q+3PCfOiUIqeHLoANpcb0s1XsLdWQDO3Vv6LWnKbJWMZZkpfn/thDvHEQwFq1VI=
+	t=1774895830; cv=none; b=iLwCuMwKtEmsQpzf+yOeSlmMgA0n18DairbD3R8ACIr79IaVukGVD6WUvvNPVJCB0ISOG2L0PEaoQvmC7SvCUto36eGDDEINBDfSggMeIWxAteXYjYF0H1sMy6TPJjZrV1acC1wMgvsveWHEBSGGstaVtyz6bFEIUA4FMcvyyAc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774693852; c=relaxed/simple;
-	bh=ivZ6WyAGQXe/i32TeirJAIxrQMy8C6c2QfytdC3LTt0=;
+	s=arc-20240116; t=1774895830; c=relaxed/simple;
+	bh=G/SNqdV6mpdloLeIW3l4H3F93CCWFdZqvWdIMzcHQSI=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=rSJjGI0maJXOdJC+WHUNWn0zV6AVoSqc80VyJYsYQJJ5zH5j6tnRcv4MnRkys0sI0MZl+FcnaATqJwyBAXpUvHX7nkDkDPsSxLyLvpo0YEZ9E36KUT5o2wxYqfU0JBjocFCIu6HRqldFvff8MTNYaBL7mzFcvPld81KxDQg8K/k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=E+CXM7H8; arc=none smtp.client-ip=217.70.178.249
+	 MIME-Version:Content-Type; b=td/qqvxSyK5ycMvSBiojyXhQ8joOvddqgoewfvqlM+VWvw9zo0VH48VXuETzMLLkoohjmIBO20fIT2z1K0jBT4A3qSPtE+JTk+oTgTQGCB9i7sZvsF8X5QBCJAE67OUBc+Fd2ZkU0UqpFMeUGu3EOe3kK/gRSuoDB86YwRikpHE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=A7UzawKK; arc=none smtp.client-ip=217.70.183.196
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="E+CXM7H8"
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
-	by mslow3.mail.gandi.net (Postfix) with ESMTP id 9E0B5580CC2
-	for <xenomai@lists.linux.dev>; Sat, 28 Mar 2026 09:50:15 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 412DD3EC03;
-	Sat, 28 Mar 2026 09:50:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="A7UzawKK"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 7C7233EE78;
+	Mon, 30 Mar 2026 18:36:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1774691408;
+	t=1774895819;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=krRW6nZfUH+9of74nZCYvRpBsEQgCOrbSUqilpdtIJg=;
-	b=E+CXM7H8Myg727kDSupXa+GZaAi4GtwB2gcMQgnW2Xi4uMbYf7ApwJ1/WhNyp6f12FSsQZ
-	QQ+U8jlP2VGCMHu2eqXhVLpzl47aT3PbNC9awEd62PUSXE4YKyxGFWkruh3JKxpGZmkhQp
-	ZGsiprz/0/bk2QMimtihOsodgxIdiCc04eX8UR+ZQ9iVOZ+WAEoaJe21BWGjBKg/nnUFIs
-	cBibU7TUacp+Bgyh9ybwZ1NsKE86x3mhbD0GYYMKWoZ9urK+jN5P63b60Y4nuI4UsiWgMi
-	TL3Lk0KbdEvaNbjZR3Wh3dm9xnONxibzUe+ffQZnPsO6CwvvnlKwmQ2JVuF5IA==
+	bh=o4PM5lWW/AMsMBecNDzY7V6gNLUJZJy1mldsBnQ+68k=;
+	b=A7UzawKKG0s2UsycgCAm4dODiMKun2daV8LsJpuWjreiEhhVNfDy6657Waa1XEHgtcGocW
+	t3KPK55JUHxYhEektb3mIT89A77vt5Ym58tH0OVDkfOHp7OquW3gdD08YQS3E0JSoT5Pzj
+	DLhEG3PKAg1AJQslZmdTCIn0ROx471IZ+InsrBXW12GQLhabp9Iq6VcS3+qqk2KaY5QYWS
+	cWeyJ47r6qsDuSyxTIZgrmBqd4rqw9f8C0Xn5BuHPM5tutePS9rUxwtwamZzqAxT8QR07V
+	KJNWBeMgTnN0PzOaF/FXV/bD7FfDK3wCAymeihOkw8Sa9L1nvi4fBjJ4+1r7mA==
 From: Philippe Gerum <rpm@xenomai.org>
-To: Brandon Ho <brandonho667@gmail.com>
-Cc: xenomai@lists.linux.dev,  Brandon Ho <brho@relativityspace.com>
+To: Brandon Ho <brho@relativityspace.com>
+Cc: Brandon Ho <brandonho667@gmail.com>,  "xenomai@lists.linux.dev"
+ <xenomai@lists.linux.dev>
 Subject: Re: [PATCH] release oob skb when received in-band and fix
  setsockopt ret
-In-Reply-To: <20260327184718.580694-1-brho@relativityspace.com> (Brandon Ho's
-	message of "Fri, 27 Mar 2026 11:47:10 -0700")
+In-Reply-To: <SA1P110MB12788B81A19D6618E2ADA984D352A@SA1P110MB1278.NAMP110.PROD.OUTLOOK.COM>
+	(Brandon Ho's message of "Mon, 30 Mar 2026 17:11:40 +0000")
 References: <20260327184718.580694-1-brho@relativityspace.com>
+	<874im0b7w0.fsf@xenomai.org>
+	<SA1P110MB12788B81A19D6618E2ADA984D352A@SA1P110MB1278.NAMP110.PROD.OUTLOOK.COM>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Sat, 28 Mar 2026 10:50:07 +0100
-Message-ID: <874im0b7w0.fsf@xenomai.org>
+Date: Mon, 30 Mar 2026 20:36:54 +0200
+Message-ID: <87y0j9nozd.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 X-GND-Sasl: rpm@xenomai.org
 X-GND-State: clean
 X-GND-Score: -100
-X-GND-Cause: dmFkZTEvjpq+PlYmRN/eaR0LfjOxBwaV1Da+rnqCYy7r+3A+eN8nXmpJJL3Ut1HJI8Km1HHkf3s19Bc2WsgS7kPvaNjJqMA1LGZoe6ZeesRFHFWr3hLD4/mxrjQGVQ9p8N2InJInkY2A9hFfmS6N3y0SDMRBnMQflKQ3wBby45T1heocfypG2qHaoC7U3OYT1TD2Y+Su4o0L82+O9SBDHQnva48EL5Xnin8U1puZImANbz/SQQ/K4lR+HbgdjsCLtyw73phygas3uvGBW62jKuhdmoZS7mKpb6BlZLw7sQ8tTu0/OyZB3n/8dEdgu4mICg0NsL9Q4c0ysecGeyfupxcHjP7+jqVdaRv38no77qeNodh+7KH5sgNJLKnDXIsAsM8zPKDYh5gpvQxRrMm0b/GGh9EX+3yIDcfE1l/fcTYpykmaQ8Yzya8iGBLvAEMNgFHmqHgAvQrJZDQUrDlUbd0/QSrtYwGX24Jw0KDJ/D3WGYdSMo05F/AVWYmeLFhB0TgHm9It4nmeQhy6aT0u7d0NMM3DHQZl4HjFWNUBNKVcSH2YD24eth+Zj30zk+dW9nVSJKJIakCip65HrFzYy7JRevaNn9f815XoGY3rIptqhG5+04XYexWw8HYrcSyepJzCcrIqLma/RtnZQ8sIG0Js32isbrbLEmY5R3i9qlUK6Ro28A
+X-GND-Cause: dmFkZTFllAjGWAoALDrgKODt6kAEhNeegufPKTdk64NoLHLr9TXmD5kJoka9d16tZE3bfj6Qv1E7Ng5SDII3c+Ueeymf7P5m9Zbq3wYIUMmTkMCXIjuwvPm0LqQ8l798dstC8F4A7zHKPBwBj/pRgUyroqdVUATt34gKSy/cmPKQqkt6b6HDKtxvP1WsRvNRwmgmfrWUFjs65hq4NOCsqFBOj6QakUs8s45OrTgwwiFsPaQoqi6ZPNmnQ5WBCG2x6Jt8T80i+8+wlh/nyoGXqPidGpV0H1mhGQLPm8/lwQ+oouV5Xcalat/jspig+Mw8hH0Ek+41VzH02IsuFui5tbG10hWntlQy9RFcShhE38HDWwcRqhimEv3QNXzLAO5TjuemRgY/5QXAQKloGcVckwgI9t+sAGd3Xd1AcP/ygzHzYFWAwUQb4nPVpfKonRCUbuJlWzSVqyagQnVS+/esuiXjSvWVXlPbdGazWGX1+e56g9VG/XPF7BS0Wih07zR2KZGLQQIIbgL/5VTFoJs/Z7C0jXb+3mp6zMSoQu+RdJwQX3WhOpC3l4DLedN+PVcLgs0elthm1oTbQaUbGyn9EO5V+C62d8GsJrAODkuNN8VkLpj2LVHMEahQjUY93JXKWIhD45Q1si3Zta6RroIqx3yEunNWjlJ59WboAMQPcC46SWaYUA
 
-Brandon Ho <brandonho667@gmail.com> writes:
+Brandon Ho <brho@relativityspace.com> writes:
 
-> Signed-off-by: Brandon Ho <brho@relativityspace.com>
-> ---
->  kernel/evl/net/skb.c | 3 +++
->  net/core/skbuff.c    | 2 ++
->  net/core/sock.c      | 1 +
->  3 files changed, 6 insertions(+)
+>> __consume_stateless_skb() should never be called from the oob stage, or
+>> receive any oob-managed skb, which makes the redirection via
+>> skb_release_oob() pointless. Did you identify any code path which would
+>> hand over oob skbs to skb_consume_udp() for release?
 >
-> diff --git a/kernel/evl/net/skb.c b/kernel/evl/net/skb.c
-> index 50090c181..9cd52e3e7 100644
-> --- a/kernel/evl/net/skb.c
-> +++ b/kernel/evl/net/skb.c
-> @@ -55,6 +55,9 @@
->   *                                                -> free_skb_oob(skb)
->   *                        -> dev_kfree_skb(skb)
->   *                                -> consume_skb(skb) [1]
-> + * 			   |
-> + * 			     __consume_stateless_skb(skb)
-> + * 						  -> free_skb_oob(skb)
->   */
->  
->  #define SKB_RECYCLING_THRESHOLD 32
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index e532fd636..b4dc5e1c9 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -1621,6 +1621,8 @@ EXPORT_SYMBOL(consume_skb);
->  void __consume_stateless_skb(struct sk_buff *skb)
->  {
->  	trace_consume_skb(skb, __builtin_return_address(0));
-> +	if (skb_release_oob(skb))
-> +		return;
->  	skb_release_data(skb, SKB_CONSUMED);
->  	kfree_skbmem(skb);
->  }
+> The code path I found was udp_recvmsg->skb_consume_udp->__consume_statele=
+ss_skb =E2=80=94 I would run into ENOMEM without the
+> skb_release_oob.
+>
 
-__consume_stateless_skb() should never be called from the oob stage, or
-receive any oob-managed skb, which makes the redirection via
-skb_release_oob() pointless. Did you identify any code path which would
-hand over oob skbs to skb_consume_udp() for release?
+Ok, I better understand the issue now. You likely have an oob-enabled
+driver receiving packets, in which case some skbs left by the evl core
+to the regular netstack for handling may indeed be pulled from oob pools
+and never released back. So your patch does make sense.
 
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index 3321ff386..70a313c1f 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -1721,6 +1721,7 @@ int sk_getsockopt(struct sock *sk, int level, int optname,
->  			goto lenout;
->  		if (ret != -ENOIOCTLCMD)
->  			return ret;
-> +		ret = 0;
->  	}
->  
->  	memset(&v, 0, sizeof(v));
+>> We don't need this, all following code paths either assign this variable
+>> prior to using it, or simply return an immediate value. The original
+>> code does not initialize this variable on entry, which confirms the
+>> latter.
+>
+> Oops sorry I meant to make the patch in sk_setsockopt =E2=80=94 that one =
+returns ret at the end. I was getting ENOIOCTLCMD when calling
+> setsockopt for SO_REUSEADDR.
+>
 
-We don't need this, all following code paths either assign this variable
-prior to using it, or simply return an immediate value. The original
-code does not initialize this variable on entry, which confirms the
-latter.
+Ok, got it. You must be working with the v6.1.y-cip kernel series,
+right? v6.12.y-cip, v6.18 and v7.0 don't have this issue (anymore). Word
+of caution: v6.1.y-cip+{dovetail/evl} is semi-EOL, some kind zombie
+state. v6.12.y-cip is the current SLTS for us, you may want to upgrade
+if possible.
 
-PS: on a general note, please split patches addressing unrelated topics.
+>>  PS: on a general note, please split patches addressing unrelated topics.
+>
+> Sorry I'll make new patches
+>
 
--- 
+Np, you are welcome.
+
+PS: mentioning the target kernel release for those patches may help.
+
+--=20
 Philippe.
