@@ -1,103 +1,122 @@
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dy1-f170.google.com (mail-dy1-f170.google.com [74.125.82.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFB542FD7D3
-	for <xenomai@lists.linux.dev>; Mon, 30 Mar 2026 18:37:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.196
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 142913EF0CD
+	for <xenomai@lists.linux.dev>; Tue, 31 Mar 2026 22:39:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774895830; cv=none; b=iLwCuMwKtEmsQpzf+yOeSlmMgA0n18DairbD3R8ACIr79IaVukGVD6WUvvNPVJCB0ISOG2L0PEaoQvmC7SvCUto36eGDDEINBDfSggMeIWxAteXYjYF0H1sMy6TPJjZrV1acC1wMgvsveWHEBSGGstaVtyz6bFEIUA4FMcvyyAc=
+	t=1774996788; cv=none; b=dVOSrpOFFNwgCtDZ+e3HcgSQQ00urOw4lZnFSpXtx0hp02e4IivGHQdNjWDkVJAggAVHJlriSR/Bij1FMxE0u8BZq9g3zp8Ol9oChGVU0ph37Ebs5aOuuhu6Gr9p958r6GbsV7VNXB+UomOvSuVRrS41zxCwAuyDi4/y8Wg+jSU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774895830; c=relaxed/simple;
-	bh=G/SNqdV6mpdloLeIW3l4H3F93CCWFdZqvWdIMzcHQSI=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=td/qqvxSyK5ycMvSBiojyXhQ8joOvddqgoewfvqlM+VWvw9zo0VH48VXuETzMLLkoohjmIBO20fIT2z1K0jBT4A3qSPtE+JTk+oTgTQGCB9i7sZvsF8X5QBCJAE67OUBc+Fd2ZkU0UqpFMeUGu3EOe3kK/gRSuoDB86YwRikpHE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=A7UzawKK; arc=none smtp.client-ip=217.70.183.196
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1774996788; c=relaxed/simple;
+	bh=QZwZFgmcdGq7WJsbyjmtPWUTvqTY6HOfjYYQIhL9o2M=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=LD/g3L6qBcUS6VXg4GBzKcL08KwDYweueYLXV3KtxZQLF6kLUxE6tG2N3Rs8xwo61WLXjQQRJoN8Eyoo/beX3n6+V+fgoG2zxfcK1PW95cnWyJh6S8/gI8A1piyNK98YJMYllcHSQ8LkJbwFbhe0SkB4DaQ8Eq/d0Oq3vlHZQ2M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YLHhYl8z; arc=none smtp.client-ip=74.125.82.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="A7UzawKK"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 7C7233EE78;
-	Mon, 30 Mar 2026 18:36:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1774895819;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=o4PM5lWW/AMsMBecNDzY7V6gNLUJZJy1mldsBnQ+68k=;
-	b=A7UzawKKG0s2UsycgCAm4dODiMKun2daV8LsJpuWjreiEhhVNfDy6657Waa1XEHgtcGocW
-	t3KPK55JUHxYhEektb3mIT89A77vt5Ym58tH0OVDkfOHp7OquW3gdD08YQS3E0JSoT5Pzj
-	DLhEG3PKAg1AJQslZmdTCIn0ROx471IZ+InsrBXW12GQLhabp9Iq6VcS3+qqk2KaY5QYWS
-	cWeyJ47r6qsDuSyxTIZgrmBqd4rqw9f8C0Xn5BuHPM5tutePS9rUxwtwamZzqAxT8QR07V
-	KJNWBeMgTnN0PzOaF/FXV/bD7FfDK3wCAymeihOkw8Sa9L1nvi4fBjJ4+1r7mA==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Brandon Ho <brho@relativityspace.com>
-Cc: Brandon Ho <brandonho667@gmail.com>,  "xenomai@lists.linux.dev"
- <xenomai@lists.linux.dev>
-Subject: Re: [PATCH] release oob skb when received in-band and fix
- setsockopt ret
-In-Reply-To: <SA1P110MB12788B81A19D6618E2ADA984D352A@SA1P110MB1278.NAMP110.PROD.OUTLOOK.COM>
-	(Brandon Ho's message of "Mon, 30 Mar 2026 17:11:40 +0000")
-References: <20260327184718.580694-1-brho@relativityspace.com>
-	<874im0b7w0.fsf@xenomai.org>
-	<SA1P110MB12788B81A19D6618E2ADA984D352A@SA1P110MB1278.NAMP110.PROD.OUTLOOK.COM>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Mon, 30 Mar 2026 20:36:54 +0200
-Message-ID: <87y0j9nozd.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YLHhYl8z"
+Received: by mail-dy1-f170.google.com with SMTP id 5a478bee46e88-2b6b0500e06so8416732eec.1
+        for <xenomai@lists.linux.dev>; Tue, 31 Mar 2026 15:39:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1774996786; x=1775601586; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=IdfzM8qbHycbxmKJ2xn8YMKCOZglAfEnyt+4t7Z+rRQ=;
+        b=YLHhYl8zW7ADBHHXXSNTItj4iiM+T3RnfvWE8Ax2Yn5Li7DXc3oJXa60skDe9+RwiM
+         NTtDtbtqCbYD/a+tjWSoTLeOBhn1gnOBNrhOM0mVjtWehFFNaMM9Y/8RQKGE+yfnuveN
+         jZcQqGJT7SlNm1UJ7XkPsmEGS6ZmQU9bI228KRs9t4LsP7rGEULOUPjVrqtNpId2M4Le
+         rdnVGD4jRc8kjvR/aT7XHl2SNwT2+r/78zvmkD7TOTiH+FbRl90aDoM2YI2EDF23jo7n
+         wcOeqkHVuf4vxaHnbyfM77eMa7sffzsQBehcBVzCLSbfGmIDB1GweNH8sbyPdvf+b2V/
+         zPoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774996786; x=1775601586;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IdfzM8qbHycbxmKJ2xn8YMKCOZglAfEnyt+4t7Z+rRQ=;
+        b=C/jGHEOj+9TESkfS2RG7XQMfVjpNI6mLTyfgzooCAiiaqoFhr/2NrXqQMvOuN3Pj48
+         T3W5XUZNfDIJpFDFF8Wr8g5rpHvaM2tJeFNP8cdHss8XZ8UELUc5RMTspeccnhd39akX
+         fADQiGEsKZ+fAxiTnT53i55ttXOcnYIwqLx5lieiRBmFPstfYgK+ijgImTIWFf3kKZSL
+         h5JPvjaL+t7ZHB/Ko85N4hLXFj6eRpuqpVT9hmFjMyCvh1UV/B0cfS3DPbTjogrqcqaq
+         y6cz/eAr434eVoWcnOBWHz1mI/s9zCmZgziJ2yM83Y3FGdrqu+dYB2JUck8vr8CcaYLS
+         kRUg==
+X-Gm-Message-State: AOJu0YygFJO0NS3kJ9mys3TP/5mXrujSNc8abkcsRx50ZSvr4J+crrX+
+	CD/sC5MylshK89QcAd/KkB0Mn39eNt3OKktjtkcYpva0+36uFbvePBskq3S7dA==
+X-Gm-Gg: ATEYQzwcSBdCfMR1H09BUC3/4i7zon6uCvok3BY9u2YBZkrEtGHs5uPP1Z5SfT4V1ls
+	CJ3WK7LdmR2RriDeCC++jXOpaR1TK5m+FKrzojhSHcysooXPvTLQuD7t3RePn4Pv92mHm2DsfIb
+	84BwfX9l+as6VEoxIcy2WXlARnReMAz3Yo0mNleVXIIwWUYYicQaKfLWFoYZ985fgXZXWsGRm0f
+	xzcNPdIByoreLa6V1oZbniYjUFTe+blHahyymxcw8YxDUjmXnKf15CWHwoY25nUItuSwgWJpHbw
+	2se2UK7I8uyaEebZULIZY/yLeUNGP2V4I8tb89Uyk8VKOUn25Iv+6yBnCFX1h5CN1hPRnoHrjlM
+	MCMvRUDJGKjTPkac2GjHGTt4fGapI1d9jGQxBHe5OMaW3Gk4rjyePo8EMcArrFl/vxVlh3SWYKl
+	Ohh2ZWlhj1LseDK7kr9g50ib9BowZ8QfcgBJCTGVlXegUkFoTy2WwvOYNh9680fMM=
+X-Received: by 2002:a05:7300:ed18:b0:2c5:b23e:48ab with SMTP id 5a478bee46e88-2c9321b76b5mr629685eec.21.1774996785672;
+        Tue, 31 Mar 2026 15:39:45 -0700 (PDT)
+Received: from brho-desktop.RELATIVITY.company ([136.226.6.69])
+        by smtp.googlemail.com with ESMTPSA id 5a478bee46e88-2c89135747csm2962679eec.12.2026.03.31.15.39.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 Mar 2026 15:39:45 -0700 (PDT)
+From: Brandon Ho <brandonho667@gmail.com>
+X-Google-Original-From: Brandon Ho <brho@relativityspace.com>
+To: xenomai@lists.linux.dev
+Cc: Brandon Ho <brho@relativityspace.com>
+Subject: [PATCH] release oob skb in __consume_stateless_skb
+Date: Tue, 31 Mar 2026 15:37:39 -0700
+Message-ID: <20260331223817.136912-1-brho@relativityspace.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-GND-Sasl: rpm@xenomai.org
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: dmFkZTFllAjGWAoALDrgKODt6kAEhNeegufPKTdk64NoLHLr9TXmD5kJoka9d16tZE3bfj6Qv1E7Ng5SDII3c+Ueeymf7P5m9Zbq3wYIUMmTkMCXIjuwvPm0LqQ8l798dstC8F4A7zHKPBwBj/pRgUyroqdVUATt34gKSy/cmPKQqkt6b6HDKtxvP1WsRvNRwmgmfrWUFjs65hq4NOCsqFBOj6QakUs8s45OrTgwwiFsPaQoqi6ZPNmnQ5WBCG2x6Jt8T80i+8+wlh/nyoGXqPidGpV0H1mhGQLPm8/lwQ+oouV5Xcalat/jspig+Mw8hH0Ek+41VzH02IsuFui5tbG10hWntlQy9RFcShhE38HDWwcRqhimEv3QNXzLAO5TjuemRgY/5QXAQKloGcVckwgI9t+sAGd3Xd1AcP/ygzHzYFWAwUQb4nPVpfKonRCUbuJlWzSVqyagQnVS+/esuiXjSvWVXlPbdGazWGX1+e56g9VG/XPF7BS0Wih07zR2KZGLQQIIbgL/5VTFoJs/Z7C0jXb+3mp6zMSoQu+RdJwQX3WhOpC3l4DLedN+PVcLgs0elthm1oTbQaUbGyn9EO5V+C62d8GsJrAODkuNN8VkLpj2LVHMEahQjUY93JXKWIhD45Q1si3Zta6RroIqx3yEunNWjlJ59WboAMQPcC46SWaYUA
+Content-Transfer-Encoding: 8bit
 
-Brandon Ho <brho@relativityspace.com> writes:
+When an oob-enabled driver receives packets, those skbs are allocated
+from oob pools. The evl core may leave some of these packets to the
+regular network stack for handling based on eBPF filter criteria.
+When the regular netstack eventually consumes these skbs via
+__consume_stateless_skb, the current implementation does not release
+them back to their oob pools, causing a resource leak.
 
->> __consume_stateless_skb() should never be called from the oob stage, or
->> receive any oob-managed skb, which makes the redirection via
->> skb_release_oob() pointless. Did you identify any code path which would
->> hand over oob skbs to skb_consume_udp() for release?
->
-> The code path I found was udp_recvmsg->skb_consume_udp->__consume_statele=
-ss_skb =E2=80=94 I would run into ENOMEM without the
-> skb_release_oob.
->
+This patch adds a call to skb_release_oob() in __consume_stateless_skb
+to properly return oob skbs to their pools before the standard skb
+cleanup occurs.
 
-Ok, I better understand the issue now. You likely have an oob-enabled
-driver receiving packets, in which case some skbs left by the evl core
-to the regular netstack for handling may indeed be pulled from oob pools
-and never released back. So your patch does make sense.
+Target kernel series v6.12.y-cip-evl-rebase.
 
->> We don't need this, all following code paths either assign this variable
->> prior to using it, or simply return an immediate value. The original
->> code does not initialize this variable on entry, which confirms the
->> latter.
->
-> Oops sorry I meant to make the patch in sk_setsockopt =E2=80=94 that one =
-returns ret at the end. I was getting ENOIOCTLCMD when calling
-> setsockopt for SO_REUSEADDR.
->
+Signed-off-by: Brandon Ho <brho@relativityspace.com>
+---
+ kernel/evl/net/skb.c | 3 +++
+ net/core/skbuff.c    | 2 ++
+ 2 files changed, 5 insertions(+)
 
-Ok, got it. You must be working with the v6.1.y-cip kernel series,
-right? v6.12.y-cip, v6.18 and v7.0 don't have this issue (anymore). Word
-of caution: v6.1.y-cip+{dovetail/evl} is semi-EOL, some kind zombie
-state. v6.12.y-cip is the current SLTS for us, you may want to upgrade
-if possible.
+diff --git a/kernel/evl/net/skb.c b/kernel/evl/net/skb.c
+index 8efdca1da..302f79dfd 100644
+--- a/kernel/evl/net/skb.c
++++ b/kernel/evl/net/skb.c
+@@ -55,6 +55,9 @@
+  *                                                -> free_skb_oob(skb)
+  *                        -> dev_kfree_skb(skb)
+  *                                -> consume_skb(skb) [1]
++ * 			  |
++ * 			    __consume_stateless_skb(skb)
++ * 						  -> free_skb_oob(skb)
+  */
+ 
+ #define SKB_RECYCLING_THRESHOLD 32
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index e297781da..e08d0bc54 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -1645,6 +1645,8 @@ EXPORT_SYMBOL(consume_skb);
+ void __consume_stateless_skb(struct sk_buff *skb)
+ {
+ 	trace_consume_skb(skb, __builtin_return_address(0));
++	if (skb_release_oob(skb))
++		return;
+ 	skb_release_data(skb, SKB_CONSUMED);
+ 	kfree_skbmem(skb);
+ }
+-- 
+2.43.0
 
->>  PS: on a general note, please split patches addressing unrelated topics.
->
-> Sorry I'll make new patches
->
-
-Np, you are welcome.
-
-PS: mentioning the target kernel release for those patches may help.
-
---=20
-Philippe.
