@@ -1,160 +1,97 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF2A7343D7F
-	for <xenomai@lists.linux.dev>; Fri, 10 Apr 2026 23:10:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F88978F4F
+	for <xenomai@lists.linux.dev>; Fri, 10 Apr 2026 23:18:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775862606; cv=none; b=eQ+xl1KWFhwHusRgZSDr3uqWcDiCLTQbnXYpqxUBqucudWYkaed61kA/eAAQKreg16DXG3ceF0fuEcNZobv+3n56Ssj3giN+msC/KKLQd2ONzWO/XPVPp0e0ijYvJa+J3zmzLd96zVK7jZs0WeyJIcwWxnL56WWnoTWkIX0p+OY=
+	t=1775863135; cv=none; b=UBF/LEZNBlCvrhhQMXi+66ZFzyTntakRdawP/bC7unPUIPjUEkShThSDfxoa9/Ng44ZSpB5It6q5+gNhXe86A/EjlMAPMsgRdzwa1BAYvGLX6J1I8i9UaNkCDM6WYYEGiuE3WBg2x7sFrRj5BqWxFfDTKmtVUx7haUGxeAjvuQM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775862606; c=relaxed/simple;
-	bh=R37gN+38hytIurLeCcWcY0ZWkrripDujDCh11aRMoMw=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=fKTHQFV7ZWaiE0piwlM4PWd/vJBm3beIPe1u50J9s/U0YiBMmDKab0a1ntOKGurCXsQxYTDXZtxSijxbPvUHTwEAGH57N8xbHr2nj982B3yJQJIHmVx8JCO8OU0l03F5w0YChnzjLN8RsP3YcctfxOaPQeh4OUncLL2JOAJyj5I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Z85AVR1c; arc=none smtp.client-ip=209.85.128.41
+	s=arc-20240116; t=1775863135; c=relaxed/simple;
+	bh=2wIAWqB6OadsDfpeMwkJ9Kjr7ObsXAPtG/XpcTLsSck=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Ol5/gBz4GXpLfIiQljzN1GIzH31OZzgCQkCdNogdsfyMZPgEDIdwXwB+34eZH2n3yLsY4qOpy9CHpEwdvwXl/HdvQSgVqQ108HSIr/4FZn82naVvu8lYh1fPsui66OC6peP3f1aIl4CrtGjguilZMU6OwEbrO6yDCvNxHdWg6/c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lHn9jGe9; arc=none smtp.client-ip=209.85.128.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Z85AVR1c"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-488a4bc360bso14256235e9.0
-        for <xenomai@lists.linux.dev>; Fri, 10 Apr 2026 16:10:04 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lHn9jGe9"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-488b150559bso19759985e9.1
+        for <xenomai@lists.linux.dev>; Fri, 10 Apr 2026 16:18:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775862603; x=1776467403; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:to:subject:user-agent:mime-version:date:message-id:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=llEfObjG1LH5gHgZqILSDqrfpdu401iVChTNKfkAMbo=;
-        b=Z85AVR1c0Myd2Q/1IcmN7J9D32z7j3XcQIi71zVDvmazHxjPcbFVIx06rmK/4iu837
-         BGLmbh2bY3CmqvyN41zPTKNgR/5ZF+qF6HNbcL1g3XzmkfS2xFjhXX++KR1MmViS3vrj
-         EKQXOxTVp/aVcKBK5+tbP3OZ1QtnBk/LqqjLWVeAPQ4g3fhMOg+DAcYIqRmWnPYF1Ad4
-         m2rqJ6GznNsyA7b6nBacMbMyeH6c3b3SoV07x4GChIbLXQrkLw+pLg5M/1N+E3lf9YWP
-         H5oZWKMTy7roZJSs+IV7v5PUDRya3KXMC2bbrvecdhNmB8pFcbqPD86qSWZi7TSSSwg9
-         OzDw==
+        d=gmail.com; s=20251104; t=1775863132; x=1776467932; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Bc7DO0SblATURIInqMQzfUhGAsNxg+E9Ry2wUqUHNPg=;
+        b=lHn9jGe9FFH11csQ/P728cuX/0gFDMcNA6NO/hocaBvtuDT5EuTYp0ptLPfqNxczlX
+         l7sR6ejAv5/Xdabk/IwEcAZVvdWMGO7SNZxklfXnIaRASpkk0xJSRwTZTFxdU8Acjjj/
+         AT6kBL2JZ66Tyj8ehX556g58sb9459fGjsi49IghR0SNl9dBXGggxbXopicB+jpSJI7p
+         IPjwVzL4iX4KVAUzQ4YSXIdVeE8ubOQIE21K+odB3hAMfv42uf9agf7C3p7ngY63lNRP
+         Luf+GLKvRqZgium6D/84c05VIB2nputjMHSlIRkmn+vyslvVj5k7dv7VamrUBuB/HJ1O
+         8MbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775862603; x=1776467403;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=llEfObjG1LH5gHgZqILSDqrfpdu401iVChTNKfkAMbo=;
-        b=aZSvrCpBwU3z04dDNhH+/PfgpTvgJChitwt4SYlnFdGkkPgRP9hseKN7xBjduBdNn6
-         si96eIofpaOgxcq5wcPNfGX0HYIyo1M+saavsSoFZ5OLewv+FuOFgfsolGiNAuRZu7Zg
-         tCSSTNlyRK2sRdTqpXXYQ/u23Uv10M+XCMBPWACBVp1C1nvhgdw8yq0INDZGqAxPgVBI
-         K5BzhJmt/0J66Uw6n8Ar2acJ3y/Igo8WbX3VYvHuTxQ5R78/tu1d6uVVoSLXLbHXoGRM
-         7IGNJkAvUwwn7iyQCpR/au4+ryexYDH1C0APpu9NfO7A59nlrclitFdreOozOMlCncxO
-         njBg==
-X-Forwarded-Encrypted: i=1; AJvYcCUlrQUVCYr9SJQf7q9voPPWAtpPJb1XmPelJrnJTbP4YWqCTSa3j7ir1zyc71v3hXYot7Wr7ei0@lists.linux.dev
-X-Gm-Message-State: AOJu0YwT2B1JAbcXTzwgIbUQmKMMsXCghoMg7TQYxLC5nUNh3i2E70yi
-	+UZ6ha1md4HC8wAWOhTedz/zfr+6zNyXys6svHN9z7nC7RldeoUz60qa
-X-Gm-Gg: AeBDievDSNFUJM3nIhPxjMk29QVzelxzeyJwLNaBM6TJfqwpbxbtxWI77/iFK3Htavl
-	zXAzOHKdzxrxxQ5Zm4z8XeKWP7Fr1LEhSSP7sXGVAAaOiiMFXNJrfnzpxO3H0V+TKxdPeL3smhV
-	KaXkK0UnNJNsHyqcJ2e9idx3Q+pGfOEdBK6TrNaHckjcY8xuZg29nFbooVRHFeijzXMgARi1Ayc
-	G82jfEeMVqQJ5XcK9t1xmmPCgBMdyZrZj7pDC11ItLrGFwG+GrMRNrbwPaNHM6bW5Bl3ah5it1d
-	ecwaajq+yA/RhzK5FTNncPyljuHCuknCUPwasenP9Wm3B6VEwHv7jxgmwEKbKWTGF5LZg0uTrcI
-	WFghSzKkicik1GxmteLCykgISlFlGqK+SoKEi/IKrRU8k8K9z9MlqDfnW9a96Q6HDbHjOmz7H2l
-	ZBp8gr6KWQVVdJbG2Yf0ONrPkYBbek9l8=
-X-Received: by 2002:a05:600d:d:b0:485:4eaf:eb54 with SMTP id 5b1f17b1804b1-488d684b88amr51218075e9.20.1775862602919;
-        Fri, 10 Apr 2026 16:10:02 -0700 (PDT)
-Received: from [192.168.1.3] ([213.55.168.64])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43d63de2a74sm11626375f8f.3.2026.04.10.16.10.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 10 Apr 2026 16:10:02 -0700 (PDT)
-Message-ID: <c1579ac9-c67e-42f0-a50c-062ce76666eb@gmail.com>
-Date: Sat, 11 Apr 2026 01:10:01 +0200
+        d=1e100.net; s=20251104; t=1775863132; x=1776467932;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Bc7DO0SblATURIInqMQzfUhGAsNxg+E9Ry2wUqUHNPg=;
+        b=r0IBfh0+QKueR6OqefORHc+4jzwF1GpPikTsE5+cE6/ozBuWcnasu9y0J7Yb9lljE6
+         ++yafdrgmWMSi/vJRf+MsfMO3skD2GNjDjBwf6PRU1TAa9argpuNt/0/NEPEA/bzvGm2
+         L/BNvVcM4uTX91xtnOnlALbM4LB+Q9RjsuVAKG3pPR36TQUkXu9gq7gBIuO1jPBmY+yB
+         spGf+g4cNeKGQCN8FYiIhpiew72gjBRLJ5BiVmcAaZSU8HYq/It/ESvQQSIlE+xwWld1
+         gSU5XTGVybgZq2qwtQT+i4sl4jQoDYlKYVVHDHtjiV2wbggzdcN1066p/qhLT7Zzq+kI
+         YojQ==
+X-Gm-Message-State: AOJu0YwWQA+7eo/AorFXfkcWZCG6A3PK9RNm/t7TZX376hQTKH9yPy4c
+	EiVw8rtmsZWTAbo4C53pRvIpidYf8M9oGjvha9b7RFfn+/psZAKC4XmXTs1gSV2o
+X-Gm-Gg: AeBDieuyl3GClD6xP+E69jc1059o6khTHaxZgbXzWOhkH2AQ+Oi5lAR1ypwqGlIcmvN
+	IrzMIyWUvs+0qbymBQ4I/l2ikjDNs8zto0ru6DMH1Uhi8kRuIfw6EHy0ip1Q3bZdJ2WgHITwtFd
+	MdOxFexFOtu7ztrhfK8C+PkyPbI5kL7QkxYyMNkzOa+yUdLsK/u+8oBHFVZ6FxqI0OsKA4GSiIc
+	9Fp/qyaz36D2CE2gjjLVYIcQicdqiOdxLUB8r9VGD/QU4arCblzmEC1k6Lhc0qKeF66c7PmF8lG
+	DDZIB3jiuPardodZxJYbVdkASh33jEHA+9JMpDNd+n8bHQ1Erm+9ChlWSolgKKQynj2L0nvA5Rb
+	VKTkGNfyJnFAkLS1YGKtymNILrNn096Llh6FEmm3r/BhVFbkVfEmFSsfA+XOO/JKNvTBvI0BUDS
+	Nwq+AsjHfG89H5fvatboyf1SpTVg==
+X-Received: by 2002:a5d:698b:0:b0:43d:68c4:df0 with SMTP id ffacd0b85a97d-43d68c40e82mr2199938f8f.10.1775863132465;
+        Fri, 10 Apr 2026 16:18:52 -0700 (PDT)
+Received: from localhost ([213.55.168.64])
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-43d63e5061fsm10883649f8f.30.2026.04.10.16.18.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 10 Apr 2026 16:18:52 -0700 (PDT)
+From: Hannes Diethelm <hannes.diethelm@gmail.com>
+To: xenomai@lists.linux.dev,
+	jan.kiszka@siemens.com
+Cc: Hannes Diethelm <hannes.diethelm@gmail.com>
+Subject: [PATCH] drivers/net/stack: Migrate struct rt_proc_call to flexible array member
+Date: Sat, 11 Apr 2026 01:17:20 +0200
+Message-ID: <20260410231830.4576-1-hannes.diethelm@gmail.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] Fix memcpy WARNING in kernel
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
-References: <b3a7cb51-870c-4856-86a9-f8714aa09e6a@gmail.com>
- <989b39fccc6fb102ddc938bbae87f476b2eced11.camel@siemens.com>
-From: Hannes Diethelm <hannes.diethelm@gmail.com>
-Content-Language: de-CH
-In-Reply-To: <989b39fccc6fb102ddc938bbae87f476b2eced11.camel@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-Am 10.04.26 um 23:14 schrieb Florian Bezdeka:
-> Hi Hannes,
-> 
-> On Fri, 2026-04-10 at 22:21 +0200, Hannes Diethelm wrote:
->> Related to https://lore.kernel.org/xenomai/f10afb4e-2aaf-4a3a-8bc7-893c1a09cdd1@siemens.com/T/#t I try my first
->> patch submit on a mailing list. I hope this is all right.
->>
->>   From 34d65bcc3343b5323f19cd73561bf39d2652481c Mon Sep 17 00:00:00 2001
->> From: Hannes Diethelm <hannes.diethelm@gmail.com>
->> Date: Fri, 10 Apr 2026 21:56:16 +0200
->> Subject: [PATCH] Fix memcpy WARNING in kernel
-> 
-> Close... Looks like you copied the file content of the generated .patch
-> file into your mail client.
-> 
-> Just send the patch using git send-email [1] or remove the lines above.
-> In case you like some more tooling around patch submission you might
-> have a look at b4 [2] , which can be used easily for Xenomai as the
-> mailing list is hosted on lore.kernel.org.
-> 
-> All of that might be fixed on merge by Jan, but maybe you want to give
-> it a second try as there is one possible improvement:
-> 
-> Proposal for the v2 patch/mail subject:
-> 
-> drivers/net/stack: Migrate struct rt_proc_call to flexible array member
-> 
-> Proposal for To, Cc:
-> The patch made it to the list, all good, feel free to add the Maintainer
-> (=Jan) to To or Cc.
+This fixes the following WARNING:
+memcpy: detected field-spanning write (size 80) of single field "call->priv_data" at drivers/xenomai/net/stack/rtnet_rtpc.c:93 (size 0)
 
-Thanks. I allready found git-send-email but I it looked a bit complicated, so I followed the guide
-on Thunderbird in git-format-patch. However, what I did not figured out is how to give additional context. But I have
-to admit, I did not read all of the man pages, it's a lot.
+Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
+---
+ kernel/drivers/net/stack/include/rtnet_rtpc.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-As I have seen now on [1], you use the ‘Link:’ tag.
-This would be added in the git commit message, right?
-
-However, due to Jan already responded to my last mail, I think this is not needed.
-
-Now I got git send-email working with [2], patch will follow soon. b4 seams to be a bit overkill right now but I will
-look into it.
-
-[1] https://www.kernel.org/doc/html/latest/process/submitting-patches.html
-[2] https://billauer.se/blog/2022/10/git-send-email-with-oauth2-gmail/
-
-> 
-> Thanks for your contribution!
-> 
-> Best regards,
-> Florian
-> 
-> [1] https://git-scm.com/docs/git-send-email
-> [2] https://b4.docs.kernel.org/en/latest/
-> 
->>
->> Warning was:
->> memcpy: detected field-spanning write (size 80) of single field "call->priv_data" at drivers/xenomai/net/stack/rtnet_rtpc.c:93 (size 0)
->>
->> Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
->> ---
->>    kernel/drivers/net/stack/include/rtnet_rtpc.h | 2 +-
->>    1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/kernel/drivers/net/stack/include/rtnet_rtpc.h b/kernel/drivers/net/stack/include/rtnet_rtpc.h
->> index 01d7ab152..f4ad47306 100644
->> --- a/kernel/drivers/net/stack/include/rtnet_rtpc.h
->> +++ b/kernel/drivers/net/stack/include/rtnet_rtpc.h
->> @@ -43,7 +43,7 @@ struct rt_proc_call {
->>    	atomic_t ref_count;
->>    	wait_queue_head_t call_wq;
->>    	rtpc_cleanup_proc cleanup_handler;
->> -	char priv_data[0] __attribute__((aligned(8)));
->> +	char priv_data[] __attribute__((aligned(8)));
->>    };
->>    
->>    #define CALL_PENDING 1000 /* result value for blocked calls */
->> -- 
->> 2.47.3
+diff --git a/kernel/drivers/net/stack/include/rtnet_rtpc.h b/kernel/drivers/net/stack/include/rtnet_rtpc.h
+index 01d7ab152..f4ad47306 100644
+--- a/kernel/drivers/net/stack/include/rtnet_rtpc.h
++++ b/kernel/drivers/net/stack/include/rtnet_rtpc.h
+@@ -43,7 +43,7 @@ struct rt_proc_call {
+ 	atomic_t ref_count;
+ 	wait_queue_head_t call_wq;
+ 	rtpc_cleanup_proc cleanup_handler;
+-	char priv_data[0] __attribute__((aligned(8)));
++	char priv_data[] __attribute__((aligned(8)));
+ };
+ 
+ #define CALL_PENDING 1000 /* result value for blocked calls */
+-- 
+2.47.3
 
