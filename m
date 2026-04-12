@@ -1,97 +1,178 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from lithops.sigma-star.at (mailout.nod.at [116.203.167.152])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F88978F4F
-	for <xenomai@lists.linux.dev>; Fri, 10 Apr 2026 23:18:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8549342AA9
+	for <xenomai@lists.linux.dev>; Sun, 12 Apr 2026 07:41:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=116.203.167.152
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1775863135; cv=none; b=UBF/LEZNBlCvrhhQMXi+66ZFzyTntakRdawP/bC7unPUIPjUEkShThSDfxoa9/Ng44ZSpB5It6q5+gNhXe86A/EjlMAPMsgRdzwa1BAYvGLX6J1I8i9UaNkCDM6WYYEGiuE3WBg2x7sFrRj5BqWxFfDTKmtVUx7haUGxeAjvuQM=
+	t=1775979713; cv=none; b=mXcDe2Pv54kojRUUy0hFXRRKBdMj6gG99Vk1XimtxCFxwOy5uZ7PdllbhYZxMpIClTqhs8qS6WkXC0V8tG7v0GeWWu9HC1GdDg0Pf/kd3+Gvq4D7NAXnL9+IXc3/VneHTjl9ORvbfzuq1NL3Zx09aYSty9Rt8b/2HOhZzg+N8U4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1775863135; c=relaxed/simple;
-	bh=2wIAWqB6OadsDfpeMwkJ9Kjr7ObsXAPtG/XpcTLsSck=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Ol5/gBz4GXpLfIiQljzN1GIzH31OZzgCQkCdNogdsfyMZPgEDIdwXwB+34eZH2n3yLsY4qOpy9CHpEwdvwXl/HdvQSgVqQ108HSIr/4FZn82naVvu8lYh1fPsui66OC6peP3f1aIl4CrtGjguilZMU6OwEbrO6yDCvNxHdWg6/c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lHn9jGe9; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lHn9jGe9"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-488b150559bso19759985e9.1
-        for <xenomai@lists.linux.dev>; Fri, 10 Apr 2026 16:18:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1775863132; x=1776467932; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Bc7DO0SblATURIInqMQzfUhGAsNxg+E9Ry2wUqUHNPg=;
-        b=lHn9jGe9FFH11csQ/P728cuX/0gFDMcNA6NO/hocaBvtuDT5EuTYp0ptLPfqNxczlX
-         l7sR6ejAv5/Xdabk/IwEcAZVvdWMGO7SNZxklfXnIaRASpkk0xJSRwTZTFxdU8Acjjj/
-         AT6kBL2JZ66Tyj8ehX556g58sb9459fGjsi49IghR0SNl9dBXGggxbXopicB+jpSJI7p
-         IPjwVzL4iX4KVAUzQ4YSXIdVeE8ubOQIE21K+odB3hAMfv42uf9agf7C3p7ngY63lNRP
-         Luf+GLKvRqZgium6D/84c05VIB2nputjMHSlIRkmn+vyslvVj5k7dv7VamrUBuB/HJ1O
-         8MbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1775863132; x=1776467932;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Bc7DO0SblATURIInqMQzfUhGAsNxg+E9Ry2wUqUHNPg=;
-        b=r0IBfh0+QKueR6OqefORHc+4jzwF1GpPikTsE5+cE6/ozBuWcnasu9y0J7Yb9lljE6
-         ++yafdrgmWMSi/vJRf+MsfMO3skD2GNjDjBwf6PRU1TAa9argpuNt/0/NEPEA/bzvGm2
-         L/BNvVcM4uTX91xtnOnlALbM4LB+Q9RjsuVAKG3pPR36TQUkXu9gq7gBIuO1jPBmY+yB
-         spGf+g4cNeKGQCN8FYiIhpiew72gjBRLJ5BiVmcAaZSU8HYq/It/ESvQQSIlE+xwWld1
-         gSU5XTGVybgZq2qwtQT+i4sl4jQoDYlKYVVHDHtjiV2wbggzdcN1066p/qhLT7Zzq+kI
-         YojQ==
-X-Gm-Message-State: AOJu0YwWQA+7eo/AorFXfkcWZCG6A3PK9RNm/t7TZX376hQTKH9yPy4c
-	EiVw8rtmsZWTAbo4C53pRvIpidYf8M9oGjvha9b7RFfn+/psZAKC4XmXTs1gSV2o
-X-Gm-Gg: AeBDieuyl3GClD6xP+E69jc1059o6khTHaxZgbXzWOhkH2AQ+Oi5lAR1ypwqGlIcmvN
-	IrzMIyWUvs+0qbymBQ4I/l2ikjDNs8zto0ru6DMH1Uhi8kRuIfw6EHy0ip1Q3bZdJ2WgHITwtFd
-	MdOxFexFOtu7ztrhfK8C+PkyPbI5kL7QkxYyMNkzOa+yUdLsK/u+8oBHFVZ6FxqI0OsKA4GSiIc
-	9Fp/qyaz36D2CE2gjjLVYIcQicdqiOdxLUB8r9VGD/QU4arCblzmEC1k6Lhc0qKeF66c7PmF8lG
-	DDZIB3jiuPardodZxJYbVdkASh33jEHA+9JMpDNd+n8bHQ1Erm+9ChlWSolgKKQynj2L0nvA5Rb
-	VKTkGNfyJnFAkLS1YGKtymNILrNn096Llh6FEmm3r/BhVFbkVfEmFSsfA+XOO/JKNvTBvI0BUDS
-	Nwq+AsjHfG89H5fvatboyf1SpTVg==
-X-Received: by 2002:a5d:698b:0:b0:43d:68c4:df0 with SMTP id ffacd0b85a97d-43d68c40e82mr2199938f8f.10.1775863132465;
-        Fri, 10 Apr 2026 16:18:52 -0700 (PDT)
-Received: from localhost ([213.55.168.64])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-43d63e5061fsm10883649f8f.30.2026.04.10.16.18.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Apr 2026 16:18:52 -0700 (PDT)
-From: Hannes Diethelm <hannes.diethelm@gmail.com>
-To: xenomai@lists.linux.dev,
-	jan.kiszka@siemens.com
-Cc: Hannes Diethelm <hannes.diethelm@gmail.com>
-Subject: [PATCH] drivers/net/stack: Migrate struct rt_proc_call to flexible array member
-Date: Sat, 11 Apr 2026 01:17:20 +0200
-Message-ID: <20260410231830.4576-1-hannes.diethelm@gmail.com>
-X-Mailer: git-send-email 2.47.3
+	s=arc-20240116; t=1775979713; c=relaxed/simple;
+	bh=QXarwHgGKGkCMLmHbsAtMbvugRVusABs1qZVlaJ95gY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=sFM9pqGqM3hrvG6NT3GIjoNEmXHd4BMKJ6d8I1PDYVrl2AxBAHD5/Uu8zrrhtJPGe3ycuhZnZ1cm8TnkX6gyl7HE5abFzhJq9Z5k4P1dLtz/W8NGe40IfltS7jFqHylVsFJcC+6uT84MIwqOz5krSiHRYHczznLvQuUKd2qm/w8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at; spf=fail smtp.mailfrom=nod.at; arc=none smtp.client-ip=116.203.167.152
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
+Received: from localhost (localhost [127.0.0.1])
+	by lithops.sigma-star.at (Postfix) with ESMTP id 69761298599;
+	Sun, 12 Apr 2026 09:34:39 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
+	with ESMTP id rkPo6Q3hMhFr; Sun, 12 Apr 2026 09:34:38 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+	by lithops.sigma-star.at (Postfix) with ESMTP id 8C92629859E;
+	Sun, 12 Apr 2026 09:34:38 +0200 (CEST)
+Received: from lithops.sigma-star.at ([127.0.0.1])
+	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
+	with ESMTP id ZNgTYBsKpaiB; Sun, 12 Apr 2026 09:34:38 +0200 (CEST)
+Received: from nailgun.corp.sigma-star.at (089144206134.atnat0015.highway.bob.at [89.144.206.134])
+	by lithops.sigma-star.at (Postfix) with ESMTPSA id EC74B298599;
+	Sun, 12 Apr 2026 09:34:37 +0200 (CEST)
+From: Richard Weinberger <richard@nod.at>
+To: xenomai@lists.linux.dev
+Cc: upstream+xenomai@sigma-star.at,
+	Richard Weinberger <richard@nod.at>
+Subject: [PATCH] xnsynch_requeue_sleeper: Return early when !XNSYNCH_PRIO
+Date: Sun, 12 Apr 2026 09:34:25 +0200
+Message-ID: <20260412073425.956320-1-richard@nod.at>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
 
-This fixes the following WARNING:
-memcpy: detected field-spanning write (size 80) of single field "call->priv_data" at drivers/xenomai/net/stack/rtnet_rtpc.c:93 (size 0)
+If the synch object is not of type XNSYNCH_PRIO, this function needs to r=
+eturn
+before it manipulates the pend queue.
+Otherwise we face subtle follow up issues due to linked list corruptions.
+With CONFIG_XENO_OPT_DEBUG_COBALT enabled, the issue can get caught earli=
+er.
 
-Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- kernel/drivers/net/stack/include/rtnet_rtpc.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Here you can find a modified version of xddp-echo to reproduce the issue.=
+:
 
-diff --git a/kernel/drivers/net/stack/include/rtnet_rtpc.h b/kernel/drivers/net/stack/include/rtnet_rtpc.h
-index 01d7ab152..f4ad47306 100644
---- a/kernel/drivers/net/stack/include/rtnet_rtpc.h
-+++ b/kernel/drivers/net/stack/include/rtnet_rtpc.h
-@@ -43,7 +43,7 @@ struct rt_proc_call {
- 	atomic_t ref_count;
- 	wait_queue_head_t call_wq;
- 	rtpc_cleanup_proc cleanup_handler;
--	char priv_data[0] __attribute__((aligned(8)));
-+	char priv_data[] __attribute__((aligned(8)));
- };
- 
- #define CALL_PENDING 1000 /* result value for blocked calls */
--- 
-2.47.3
+https://gitlab.com/Xenomai/legacy/xenomai-hacker-space/-/tree/rw/xnsynch_=
+pi
+
+$ /usr/xenomai/demo/xddp-echo
+[   15.888383] ------------[ cut here ]------------
+[   15.889018] kernel BUG at kernel/xenomai/synch.c:966!
+[   15.889021] [Xenomai] switching xddp-echo to secondary mode after exce=
+ption #6 in kernel-space at xnsynch_requeue_sleeper+0x18f/0x1a0 (pid 290)
+[   15.892919] Oops: invalid opcode: 0000 [#1] SMP PTI IRQ_PIPELINE
+[   15.892927] CPU: 3 UID: 0 PID: 290 Comm: xddp-echo Not tainted 6.19.0-=
+g2fa4f147d5ae-dirty #115 PREEMPT(voluntary)
+[   15.892930] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIO=
+S rel-1.16.2-3-gd478f380-rebuilt.opensuse.org 04/01/2014
+[   15.892931] IRQ stage: Linux
+[   15.892934] RIP: 0010:xnsynch_requeue_sleeper+0x18f/0x1a0
+[   15.892940] Code: 49 28 e9 20 ff ff ff 49 8b 81 88 00 00 00 4c 89 50 0=
+8 48 89 79 10 4c 89 cf 48 89 41 08 4d 89 91 88 00 00 00 e9 02 fd ff ff 90=
+ <0f> 0b 0f 1f 40 00 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90
+[   15.892943] RSP: 0018:ffff976f00b17d78 EFLAGS: 00010046
+[   15.892956] RAX: ffff8f233bce6bc0 RBX: ffff976f006cf830 RCX: ffffffffb=
+b83c290
+[   15.892958] RDX: ffff8f233bce6bc0 RSI: ffff976f006cee08 RDI: ffff976f0=
+06cee08
+[   15.892959] RBP: 000000000000000e R08: 00000003c88a9ddc R09: ffffffffb=
+a421a40
+[   15.892961] R10: ffff976f006cda08 R11: 0000000000000000 R12: ffff976f0=
+06cf808
+[   15.892963] R13: ffff976f00ba4e20 R14: 000000000000000c R15: ffff976f0=
+06cee08
+[   15.892968] FS:  00007f5f4f41e6c0(0000) GS:ffff8f2380525000(0000) knlG=
+S:0000000000000000
+[   15.892970] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   15.892971] CR2: 00007f5f4ff28000 CR3: 0000000108832000 CR4: 000000000=
+00006f0
+[   15.892973] Call Trace:
+[   15.893671]  <TASK>
+[   15.893674]  xnsynch_acquire+0x4b0/0x8e0
+[   15.893680]  __cobalt_mutex_acquire_unchecked+0x6f/0x80
+[   15.893686]  __cobalt_mutex_timedlock_break+0x392/0x3c0
+[   15.893690]  ? __pfx_CoBaLt_mutex_lock+0x10/0x10
+[   15.893694]  CoBaLt_mutex_lock+0xd/0x20
+[   15.893698]  handle_head_syscall+0x147/0x4a0
+[   15.893703]  pipeline_syscall+0x89/0xf0
+[   15.893707]  do_syscall_64+0x96/0x3f0
+[   15.894348]  entry_SYSCALL_64_after_hwframe+0x77/0x7f
+[   15.894352] RIP: 0033:0x7f5f4ff02a8b
+[   15.894355] Code: 45 e8 8b 40 04 8d 50 01 48 8b 45 e8 89 50 04 b8 00 0=
+0 00 00 eb 6a 90 48 8b 45 e8 48 89 45 d8 48 8b 7d d8 b8 1d 00 00 10 0f 05=
+ <48> 89 45 d0 48 8b 45 d0 89 45 f4 83 7d f4 00 75 0b 48 8b 45 e8 c7
+[   15.894358] RSP: 002b:00007f5f4f41dd40 EFLAGS: 00000206 ORIG_RAX: 0000=
+00001000001d
+[   15.894361] RAX: ffffffffffffffda RBX: 00007ffc37f4aa20 RCX: 00007f5f4=
+ff02a8b
+[   15.894362] RDX: 00007f5f4fceee20 RSI: 000000000000000e RDI: 000055d87=
+35f0260
+[   15.894364] RBP: 00007f5f4f41dd80 R08: 00007f5f4f41de08 R09: 00007f5f4=
+f41e6c0
+[   15.894365] R10: 0000000000000000 R11: 0000000000000206 R12: 000000000=
+0000020
+[   15.894367] R13: 0000000000000000 R14: 00007ffc37f4a4b0 R15: 00007f5f4=
+f40e000
+[   15.894369]  </TASK>
+[   15.894370] Modules linked in:
+[   15.894374] ---[ end trace 0000000000000000 ]---
+[   15.894376] RIP: 0010:xnsynch_requeue_sleeper+0x18f/0x1a0
+[   15.894382] Code: 49 28 e9 20 ff ff ff 49 8b 81 88 00 00 00 4c 89 50 0=
+8 48 89 79 10 4c 89 cf 48 89 41 08 4d 89 91 88 00 00 00 e9 02 fd ff ff 90=
+ <0f> 0b 0f 1f 40 00 66 66 2e 0f 1f 84 00 00 00 00 00 90 90 90 90 90
+[   15.894384] RSP: 0018:ffff976f00b17d78 EFLAGS: 00010046
+[   15.894386] RAX: ffff8f233bce6bc0 RBX: ffff976f006cf830 RCX: ffffffffb=
+b83c290
+[   15.894387] RDX: ffff8f233bce6bc0 RSI: ffff976f006cee08 RDI: ffff976f0=
+06cee08
+[   15.894389] RBP: 000000000000000e R08: 00000003c88a9ddc R09: ffffffffb=
+a421a40
+[   15.894390] R10: ffff976f006cda08 R11: 0000000000000000 R12: ffff976f0=
+06cf808
+[   15.894391] R13: ffff976f00ba4e20 R14: 000000000000000c R15: ffff976f0=
+06cee08
+[   15.894395] FS:  00007f5f4f41e6c0(0000) GS:ffff8f2380525000(0000) knlG=
+S:0000000000000000
+[   15.894397] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   15.894398] CR2: 00007f5f4ff28000 CR3: 0000000108832000 CR4: 000000000=
+00006f0
+[   15.894400] note: xddp-echo[290] exited with irqs disabled
+
+---
+ kernel/cobalt/synch.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/cobalt/synch.c b/kernel/cobalt/synch.c
+index 70c05c1f4..0a0b8e80f 100644
+--- a/kernel/cobalt/synch.c
++++ b/kernel/cobalt/synch.c
+@@ -963,7 +963,9 @@ void xnsynch_requeue_sleeper(struct xnthread *thread)
+ 	struct xnsynch *synch =3D thread->wchan;
+ 	struct xnthread *owner;
+=20
+-	XENO_BUG_ON(COBALT, !(synch->status & XNSYNCH_PRIO));
++	/* Only PI-enabled objects are of interest here. */
++	if ((synch->status & XNSYNCH_PI) =3D=3D 0)
++		return;
+=20
+ 	/*
+ 	 * Update the position in the pend queue of a thread waiting
+@@ -974,10 +976,6 @@ void xnsynch_requeue_sleeper(struct xnthread *thread=
+)
+ 	list_add_priff(thread, &synch->pendq, wprio, plink);
+ 	owner =3D synch->owner;
+=20
+-	/* Only PI-enabled objects are of interest here. */
+-	if ((synch->status & XNSYNCH_PI) =3D=3D 0)
+-		return;
+-
+ 	synch->wprio =3D thread->wprio;
+ 	if (synch->status & XNSYNCH_CLAIMED)
+ 		list_del(&synch->next);
+--=20
+2.51.0
 
