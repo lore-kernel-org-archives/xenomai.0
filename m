@@ -1,59 +1,56 @@
-Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011037.outbound.protection.outlook.com [52.101.65.37])
+Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11013061.outbound.protection.outlook.com [52.101.83.61])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFA212BEFFF
-	for <xenomai@lists.linux.dev>; Fri, 17 Apr 2026 21:02:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.37
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 243CA2E1722
+	for <xenomai@lists.linux.dev>; Fri, 17 Apr 2026 21:02:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.83.61
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776459731; cv=fail; b=YCFxbheIbAOJqzeAxVdTVoO8NYW7g+JTKP19SC5KT4N1sDjoMrwOnYHae3f1j5SY23MMYEYgjbxr/6z7DwmLx4YF3vchNAW3ZDzhxP+NN/DiLsoAHj6RVb/gwVT856NvSd4p3UqoN4mqWx0T38pFmyP4EZB77d8plpj0hRGwmX0=
+	t=1776459731; cv=fail; b=U6ukyXLiHCnDqyZoCb9sHex1J31LRIKeEiXXfLenIvVIiNlHhJ4kMxCHe9oYxhC3YV3vidS+Y0fVZevY67IwfXdXhftAauJTQbSs2ANjXiNUUHHrnn0VSrfH+7Q6t5bx1sx5YZCvahmlGfiZGnGr4OXDl5VdiPVasj/Y9xq1cQQ=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1776459731; c=relaxed/simple;
-	bh=39GCOayIqybswVpLcSNY6Z+YPpxGL4s38r71MQk6sMY=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=MNhFTtn4NtgTR2VITzQ7qyOaKx1gNvhq4snSLr0AFXgBwI1uTqorQ1GUwmOOq0GA2C6hIGtBSpri1nKO2+PCigHzaT89iVO4Nf9MclkCRsCKsHhRRl7LuacA2OaJLdbOom38x3XCwe2W2yl0555YINSbhJT7vWIYMpxF6iNPYMI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=BhdX0doB; arc=fail smtp.client-ip=52.101.65.37
+	bh=QZQHBPpKYR6BMtBrAMpbhdbMQTKt2DZfd0PSllJRLfk=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=JV8yzQ7AejCnfJs58eRZxs2V116IuilIH2PbEz5FMfxoGDzND129aojt+YF2XB+bwxCm3ttgV2Ka9s917aK88d+A8Rqx3AL6rpYzsUIiNdIm/xrR2rlBoVqpBO1MZwGbCeq887dlc0dXezJQGaGxnZXlbT9oC4yI0DlQI6XKzd0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=t/830HPm; arc=fail smtp.client-ip=52.101.83.61
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="BhdX0doB"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="t/830HPm"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=qsDp+bPFc4qD+DjotVSIrtmlfvD4+byxLBRevWF1Xf1fT/MkdBjAKCZwYEuru5GlDNyu0RqHJitjY23rDT4DX8VvSPu64GPm4MUwxufPpAU3GMikNI1Ip1IJjwHFAK7WHjLMRIZmoviBvNMwPDgRZ3uP1uY7hh6HcpiBpKj57QyxB0kmDDz0pdd7AZOuTYqGpoq8k2/0Ye1XNXCzK+Xwh4nmotAFK+/IU4gn6QpwZIOH8SBT25ktxMFa/nS/Vfgs+FoJENgLYH1cY0tgN/sNn3RKnWbzihc5MCSOulALqr3XTp5GEXbFBesOAxD62i/utkDn+lxdlBivn3sTPPyzKw==
+ b=lNQm6yv0dow9v2/qaE9v0ap5RBCtNTNfEEzo3DGIy14MREj8HlO90MlRO6sADGiomyschGUJOkzZAYTbqG4Mcldn2ZXIXm1AO8lqoKcwx/b23A526SfuVxtPaXMarAgvl6aVWARJqDgACm26O+afgW9W1VSAjiagVt93sQtBdyJiMvKKKThI79bSEhcGJjsyBOrPO9OEMbQ+ziShDNaig+k+ZLKDmqTBLFE8goBuVrwqCx78DQWh9IxTp4aLhVWlg1KcDtanQ3UyvlZBkSBcBM11641aiNXYO0Pl0gf0XCswk0xKIC0kZGTZYKMIoD/DkLJ9n3LkyYPDhhRhBqwoxw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YQXEJbUEMkZhOBDwWHD4F10QLN4h9DBdEX12kGS7TzM=;
- b=ARGRBhBJKooBvn4L68gfyAMT70t7PK6gWvXG1jbDGJJUzkfnKDm/0qVCMHFMKaEGVxrZRSQt2ivusG08EXtLMuM2O/i62VEy4ysIyRBScRZNXw4QrRXFkGHsvU1khAdu6CJk/IjFXOwhTv007CMXoFAkfn/llqSAihLcrZfUuYRUgkRoYkunw3S8uJ8ZFYKOzM3rfX3QUyB5gJZH6UcA9HrPVMoULPwvXqSM40uGqrQC0wAe9Ru07ObiezacDtBUpXEGhdkJWlk47xNbqMqmfpg8zF53CqXoOYlfQh49j9bhFIz4KAhCVXXAod4X7nb6U1MGy4iiV/iBO3N74NLnPA==
+ bh=rNdDfAGpc6bPFxix3xVCWDQx9SpaLy1+qdxvPUjAPPY=;
+ b=lOBA87PLBE3y6qmcGh5Ze+h1HrmsB1RbUE82BjgI9deW51NaIaWtik8Ne2n6KuINv2nSt/rsXh7/Mj7MytWVEa/Jxq1Zsyu/ufGCrN/9NXnMfammucy003Khv5oGmqZMRj3IHcSMyGGTe4grAy0EVRKHZqaxUm5HHYF/ncmW7ekZEr6R5An8gwQKgFElLb26DzsClLqfXq7O3mUNW30hqnn4K6fFcrwdkb1bg4k+qhnbPSpqJT5pcZIcf7sReKZL7Irn3LlSb2ShXGeUB+MkXniYnouepctSPUIowcsx6XnDtKH3Vlv9ID4OFKhxr04H9dubVL+QxxMZnuDcbei7Zw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YQXEJbUEMkZhOBDwWHD4F10QLN4h9DBdEX12kGS7TzM=;
- b=BhdX0doBwLCQ2ZdTu4OAHIpvGxo9HsCNiRbf9kFYcRotNGGFMmTPv3PR6kDYupjOOmsxKy3Z8JweAiJHbjvHMe9JB/j4TQm5u9Uh+y+PVFEoI3qrIEztUBLm7Dd+C+KVklLMLcB3wwT26RbHqY6rjuRjrlCHTqtgo7AryXmDlB3PIxVvyCtENXSlx4rrh7q1biSe8GgZ0uq573FiY9Kj0jEU088kgo05LHF0GRH6cHOtEPckDBvMw6MrtKYGTps6gLLAgclrn47XoCpb2ZDtIxZ0C1BVCL5JnoHGupJdxxCACCcTza/t36yOM5TZpv9ejVfUjMNB7z7w/90+YA6HSA==
+ bh=rNdDfAGpc6bPFxix3xVCWDQx9SpaLy1+qdxvPUjAPPY=;
+ b=t/830HPmJofHj3X/bLEJxTyQTEaC9GkkNd4NHqpv9hwfDWldjrjcDPLgTdKmIMXKA6uMYrL6dlJG/XQ4sc55CQj6H8fy++5EzNEOVkrhBQ+1sD5KKXS30qCerQ8zcnoPaxmC5NjqRQf8EkQxoknTSH++kzHsQYvOJ8HvnU1chZs4Gp++8FVGtNjFZHFiv8eAJFAN4BWOEak1Y/UjJIkyudt8tZio1/xc7Zl4eL16bbzOEeX85eL4r0HF8e0rPFVp799jkBTimqp3LntjWtl2fchQbvssUl9ckVCEdSOhG8TyWYddOCmeIxB3vYohLA6/pp4VqJyz8/FpuHC3cg54lA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:3dd::5)
- by GVXPR10MB5981.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:1::7) with
+ by AS8PR10MB7898.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:63c::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9818.25; Fri, 17 Apr
- 2026 21:02:03 +0000
+ 2026 21:02:01 +0000
 Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::5f49:b0e9:d295:22d8]) by AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::5f49:b0e9:d295:22d8%5]) with mapi id 15.20.9818.023; Fri, 17 Apr 2026
- 21:02:03 +0000
+ 21:02:01 +0000
 From: Tobias Schaffner <tobias.schaffner@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: rpm@xenomai.org,
 	florian.bezdeka@siemens.com,
 	jan.kiszka@siemens.com,
 	Tobias Schaffner <tobias.schaffner@siemens.com>
-Subject: [PATCH dovetail 04/11] irqchip/irq-riscv-aplic-msi: enable pipelined interrupt control
-Date: Fri, 17 Apr 2026 23:01:47 +0200
-Message-ID: <20260417210154.2290819-5-tobias.schaffner@siemens.com>
+Subject: [PATCH dovetail 00/11] riscv: Add dovetail support
+Date: Fri, 17 Apr 2026 23:01:43 +0200
+Message-ID: <20260417210154.2290819-1-tobias.schaffner@siemens.com>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260417210154.2290819-1-tobias.schaffner@siemens.com>
-References: <20260417210154.2290819-1-tobias.schaffner@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: FR2P281CA0111.DEUP281.PROD.OUTLOOK.COM
@@ -66,80 +63,146 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|GVXPR10MB5981:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8e57d729-0887-476e-ea5c-08de9cc4937c
+X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|AS8PR10MB7898:EE_
+X-MS-Office365-Filtering-Correlation-Id: 725c5dbd-3183-41c3-d867-08de9cc49241
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|366016|18002099003|56012099003|22082099003|55112099003;
+	BCL:0;ARA:13230040|376014|1800799024|366016|56012099003|18002099003|55112099003;
 X-Microsoft-Antispam-Message-Info:
-	FBrBV0aME5F/vAYSUL4sAxSLt8WJ6yQHZVx2xP5xlrqLg9etCkqdIl++BwDhbixb79V/vnGSFd1XVPYsYd/lGARNNFSyIaObv0wQNwTegZXN+OZ+jLnqqKfBIWiMGs7IM6j9FE+hn2WtUmFMZI7YgM142pC7LOLkazxH6ZPpAl8QJ82R/wlZT1AE1QFSTzPjAsw23yJTQFn5uIlVtZrN4/XvS4YbggjXsBfKCFwvGGsRPYui/c9I4rKX6EW/YZIi76i2SMLK6aFDWZWkmQL7khEbG3W2fUv2vvudFhuHXMvIG6GYl5ek3vgpUGUW2Gj/OqiA8ef4E7o121IbqnzcmHQeAPRF2LF05eYzx4fqILVP4l3Kvu00PbfDuqJwJj6IkFUpNQoFkHYPKrGXZRZg6rv+sJq/LRMXqVnGy4pTY1QqzLVgHFAIxqUFjd9cP/6BMqWtwoX2DKfsmZ8Wg4De/OsG8VrICcF8ONDu3zQoFLdfpXhv9SCXHc3f17YkdIvYEhFWoBh9Rf+yv2jN5YdaaSQ+TSIbHfnqYgDgXEwliu/dITO7nqn7tkxe1iWXo818u3dd2XXmaK89KXXvQ4D3CB09tPrAswU8Crem9FrYNMsTjDwoyHF8ru3+sWEPoJDztviQnltgIIeoH7KQ5Vz2bkOLtSA6hWN3NaDCzywp5ND8eae4pAbOXaJLtt0Q4AoG7dWsxuP4uPexEla2vJnY5/lPcvd7NXQr5B3pFPT+yeQ=
+	NeMjjylgEQhVSlbcOsBnDdjHZDfNYTQh53CPUHddF9ZoSj54W4Zvxymyi3xl27dFxVy3AfskDyQZWj+mARmw8R6F+rknCcJvJYArInzx32CpNkKh/u1DdlkoIy4Fk16NQlKqhsB0gm+IrnWJEjqhid1qHvrUzQ1W6tPLPkk05h5VTE9SmLCG3FEb270nwBIl6GMK0JKGM7bUhDnX/iJK+zh2jco2dB+QsQ9vrrvTS9TK7CCJ0ZAAPu9ixoHqTKnipDtVFUOkbUhuwGB9ryjhACyomMXLLC6JK7GNu/4T6Qy8k5pRbzbsiKnoaKqZ/1xCp4LWRZfhAr9XNa8EGYycQi9b2ASbMoU9lKCVdkrA1qkDA7bLSEF/DmIgfk21iTOtoJ1nZZVxWHJyEBem/yufbMpAUw5sjV4iSPiHfuzHaiN64Bv+/ynTU2wj8slDu9AqRGp6LBgIpuP2b83pIvL8/yux9PVJ1welArUMiEKu7pcrrNsqCHlwrL4PEFt7WeBzqRqHNbTPrCW6TG92BqzHET6OqnL+E5g+qADrhze+46ICPxaEAqSz4KeKhG1L483gwkdqrvKQfTtcUtFio4G0LMoYDk5y5agIN7fVwrAvzoaXR+AbO2l8qLEWXW+Los1+q4mfUrFXQw+ApRAy37/64KF+AHwdEXgku8Cnh4D3pjkSLX9Ag0X5gmtZk69yPuZ262QGMuEtXqSUs7vNsxtjNrQ0y68xzlq3eB22xV4YLjk=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(18002099003)(56012099003)(22082099003)(55112099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(56012099003)(18002099003)(55112099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?iPbCcehkhcu8uj64+IVbUzuOkFg/TxjiTr21SRrfJW1/pJC5u/NF7tZbRcSt?=
- =?us-ascii?Q?Mmcc64DXCoFAkO8xX+PW5dSYQc1rDtGvziHEP3Ktaj7JEji4oc2LwNIE8r/9?=
- =?us-ascii?Q?WmidQuzia4bPrb4ZNI22Ti7xw0Jv+DXeVERQCc43K9alnyunIy5GlwvlJpCZ?=
- =?us-ascii?Q?Haa+qBOcDw62jGwTOj/OMkLFJpH5Np9HUPA33tFtl/R14BMqrmu59pVx1v7r?=
- =?us-ascii?Q?4RpFNTpVmZClvt/j0p3Uw4+gdcdueQv/gclgu0eZZC6aVOqioidwF+DS23pL?=
- =?us-ascii?Q?v1m+ws2EQkLdLVDTrNiGy+SY3AhInFoszfWbgco+SMC1tzkh+Cb5qoqkcKNn?=
- =?us-ascii?Q?gTHfGAKJImlfudQNW7rKyXjziWoB2UGvj/XVQXIfrZyC9JbTfwJojTCVBEt7?=
- =?us-ascii?Q?gsQR6r3vhC84Sf3jlhZpl1hhgDOXwSyc2H0VXHfMbRIf+WM+wJbp0CgIS9+T?=
- =?us-ascii?Q?zJtd2JAXQGgK2sRPHBNM+QIhyQcy76REN67fe0bz3lW9wIoc/H1QegOJSQvZ?=
- =?us-ascii?Q?5IfCFtkPAOP8YCY74QnXSUDInCBef+QUD0fNo27KD73zpR1OzjxUjMAF0lKO?=
- =?us-ascii?Q?dVoOBBkhBC8Am1gdh0o4h1IYJxfikuEWoGPoMehoBeWwP8wjNKVHA2g7b70J?=
- =?us-ascii?Q?GxjYcxrq1qlMkloeEKR0SP9yW16l074/Y/sgXoGA7u3rvjxT4jkS3uF2Hsez?=
- =?us-ascii?Q?wOOKAPJvp7q3NSsTwOMIuqfyjtKMloDuiJgjMfc2VVy8L5hDAkFl9n/FfXbh?=
- =?us-ascii?Q?5Zz/XR3n8HUnVUol8/BP4/u247SEMNUgeNb5309KIwbcqPnn6AWHyNpzA9yS?=
- =?us-ascii?Q?aGHjoE/qp5kWzBHM5prYeF5/NYyWKf3mIVgXpslBfp6nyfULU67sh57g0NB0?=
- =?us-ascii?Q?hmdrKYzGAyGKlUXvWrbazBObvqwO6jRLPHD0NIY8w3trNNL0HJr2hFm+NXrW?=
- =?us-ascii?Q?G2yX61Z+fnySIzrk4VfjdEIzQUdXpM5Df+bMdZGyYNuKIHdmXB6tpIS2GMw4?=
- =?us-ascii?Q?H+hQnwtlTvcyhsoxzWswA+GQKWXZh6Of+jG1YKNRa0JSTx7O+jU6EbwbYBWi?=
- =?us-ascii?Q?frl95fG2jU2wSIy2IpIptYheHHm6ygIprPe6m6JgFIx9JDtnXE/cY3ZbmoYL?=
- =?us-ascii?Q?DJTSzSY2PA6ncqfkSEzK48ghmG71A+eC+xIzEsSfVaEOONnbV1uwPQBn5mrP?=
- =?us-ascii?Q?HaMh/d2vpcS1X01zzInOUot0ynl4qRHj28qpJuSTxXvf6XspnyU9PaQFKRNC?=
- =?us-ascii?Q?7dlVRItmefvg0QvZDYJBtRGbuxYBrrckY35c+QHiDaVfM5Z573xO4Z3O80at?=
- =?us-ascii?Q?332JIIawsU3WZm21dOSA3G58xaFrmLBwT5rLkNZ36yO9slFzEOhWi5pI0RDc?=
- =?us-ascii?Q?nZc+VRtYZqejNMEQeJ3u7WXgLZPE8zzZKy241sZh79q8BVgT2QofeoLuWf9j?=
- =?us-ascii?Q?dYZ/kWlicmO4O8RBSg4zjzdZyjb1bdYtrtyLbWwZxjhZ4VFzO+XX43obBKme?=
- =?us-ascii?Q?IQ62DoOETf/f2j1olwlj+rY7xeAsStSIrHvzE7OhzR1RYDpgy658FQPuD+Aj?=
- =?us-ascii?Q?Z/WwjhhF1+1B+nUpjxZAjpHFSnakFG4g7Y49as/1TQtkwc/xgt/IpybVq5Lg?=
- =?us-ascii?Q?gki2dlTzYI82byIx/aSQi9kOoAbHeBFa49gFmJCqOppfDlqzLl3ZK2gfIvVj?=
- =?us-ascii?Q?eO4dyGm7vq4/7ilxuxeDChf7CZJWRy/V1CsSaSMHnwl7M0IdwjkmqkOH551y?=
- =?us-ascii?Q?vDc/VrFIo4l82lMooOGIduqtKsa7MtM=3D?=
+	=?us-ascii?Q?tTrSZSK/DVCfe/RYLVlcB8noq7lwfdUhFs4bkSK/r9ns+CnJ0zKSZfMeBTi+?=
+ =?us-ascii?Q?Xkab6txVtL9k1DG9FUeBZqynSslpOh1XqEaAZ2m16rwlyNjh5aLVqzsSeGHG?=
+ =?us-ascii?Q?5t1llb+jB+4DkoVKcmrQtFTpFui+vYkmDFg7/3Bvdpr8/QYiekaSXnp1bKeX?=
+ =?us-ascii?Q?trDYJDJH5s/nEhxrLMeuUJdLh1pqYrFIbTvkeAi/TwZzSeC4uI97L8AlZPGW?=
+ =?us-ascii?Q?99JiDOyEWr9ivb3TA3WRoc45N4vY0iaMv1kIy3xwMoVXabJNYzjpWg9gduQO?=
+ =?us-ascii?Q?YGcJc5Nc/KA5ceznOHse8vHur7EURFby7W9e7LeWwPZoWT22OMwAhG8Ek0+z?=
+ =?us-ascii?Q?tIFyLVZ0hheFiPgocKibvT5n75MTxFUiIFRqS7yc8vRGqIC8cqE2CZEC37Pd?=
+ =?us-ascii?Q?S2AXy1PdhYh/Hy9wso0ncuncoIb30Pj8i49Gsm6OoT82sVRL1nA+r3K5YSFW?=
+ =?us-ascii?Q?TCH8Pfa0RPnm7gjGs8cID3L/9ynXXzFf6a4dS/j7sotWi9QXkHVOSz1BMq+L?=
+ =?us-ascii?Q?i6aWwPoQfK04hYxBxk8MpgXb/U/CjycrGdQTju7a9pcXS1+KRZ3U5P0XmzmM?=
+ =?us-ascii?Q?+MwUoJ+vrz/JkPZ0AXixFSd9SAuwCcjdREB96uHNTw7yV/BN3briceT4xhlp?=
+ =?us-ascii?Q?MbZ0Mtg76vrwsMTaDau7BGs1R/CyXgKcRVemT1Fqr8MPLhWoALcUj4hAqWfd?=
+ =?us-ascii?Q?O7fOI2DUjYLUfQ3MvaHbQ0nu021aEwHzyRMk8tbhfzd9tN+MdwG+PRwgsUyC?=
+ =?us-ascii?Q?p3DSOEUWfG+WtfBGl9qeuWOe8NrrbtofDVOYBESKdmp1HAb6rfc2puZr9+C2?=
+ =?us-ascii?Q?0F+CQwaRgWaSLBAlGYedHZYuNA1CMSeMJLehZpTeKF2UCJopdW4q0t+5AFZo?=
+ =?us-ascii?Q?4TH71AB+dstCViHbnwaZSZiPwIsvviukpEp+PX3Lzc69J+mmoAtTAIy8d7db?=
+ =?us-ascii?Q?SANCRP6iSaXGoVUjeansHrFSkJp3tXMIEHN4yjfdvdzou6UX1aJTKQzR3Prm?=
+ =?us-ascii?Q?BGkQ9bHq/cnhtmu6Uc+tHpYk5Xz7BHoD8U6EhT3/jw1xE+0h89fOyFbKcSrz?=
+ =?us-ascii?Q?5Jn6yk3Qpmd8Oppa4LlX6goZ5WlS7M5jKQxOCD42veat0TgF/dmS5T554UIO?=
+ =?us-ascii?Q?GU/IzVKVgSDI1ISoAN7XpsEKZ6IGkCzVJ8nKXV7vP9yzxQC5p6b4MJhkGafI?=
+ =?us-ascii?Q?O+CGb/AKUeiwpP9DDT3PEuFJFMOZ5j/a1R7ZS+x+gBprl44MpAHtBaiWRiNn?=
+ =?us-ascii?Q?nECGWUI6S94CMdOe+IbMYYrtNWX1359CyvjShFtIKgr7yCf3qGNNuUNsQ5hX?=
+ =?us-ascii?Q?kY5KB51ePy5Yh+TRB1MzlB9KlOGob3AdOgxnJa/5PkZTHenSfqs5WhZno2Jk?=
+ =?us-ascii?Q?PEzsoUaz2l84V84EaVS5EYGrkBf2tSf/B5eyCCadRqiDRt3tUF3N+w0oRqiX?=
+ =?us-ascii?Q?zu0X7RByWLpMWVQfhw3vYJfMZgcRGttJEMgro11XoqT+Y3IH6E875+XUAryt?=
+ =?us-ascii?Q?CDEAml6/Rnd6NHqokPP06ZrU20b/XjeRdwO6dH2uguvrpmVAvJWBoewoEckT?=
+ =?us-ascii?Q?7dbgTPXC3cL3Fskq0FP/qh5CUrtgGvj4H3hO1HDcQYXDsEYpEOMdVYak7TPe?=
+ =?us-ascii?Q?PIkD3vtgeiiN0UJSUEDffGkqNoUAz3NGNOrCbDgdN2prhOJuiOLR1tDVqkfp?=
+ =?us-ascii?Q?NDqNZdhADMtWz8FWDONRnNewEmHfwzrCFXluUmzH2NStTOv8SW2hItvRU13B?=
+ =?us-ascii?Q?rGZs84qBrVnbZXTv7KHSYYREGDzvB3o=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8e57d729-0887-476e-ea5c-08de9cc4937c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 725c5dbd-3183-41c3-d867-08de9cc49241
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Apr 2026 21:02:03.6573
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Apr 2026 21:02:01.5992
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eh8LM/56baT/SoChlKDj2JNyYQ4XXah8m2BM4DJP7eRykc6vWTBvkTPnvZivHHjYa/3+Hmxpt3qcKn8xvuRD4eTKahpTNCtdcEbx7jADnRU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR10MB5981
+X-MS-Exchange-CrossTenant-UserPrincipalName: bnJ8l96bvyMz0bJLoI28T62oyHB/FacbdE8uEUKC0wyX45u7Ty50w9OgyNk2CyPUwGRjyWxbJHUy8asJMy47Mz1WVzEqZCRynh7BnZ3Ov7w=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB7898
 
-Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
----
- drivers/irqchip/irq-riscv-aplic-msi.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Hi all,
 
-diff --git a/drivers/irqchip/irq-riscv-aplic-msi.c b/drivers/irqchip/irq-riscv-aplic-msi.c
-index fb8d1838609fb..25de8929ea374 100644
---- a/drivers/irqchip/irq-riscv-aplic-msi.c
-+++ b/drivers/irqchip/irq-riscv-aplic-msi.c
-@@ -156,7 +156,8 @@ static const struct msi_domain_template aplic_msi_template = {
- 		.irq_write_msi_msg	= aplic_msi_write_msg,
- 		.flags			= IRQCHIP_SET_TYPE_MASKED |
- 					  IRQCHIP_SKIP_SET_WAKE |
--					  IRQCHIP_MASK_ON_SUSPEND,
-+					  IRQCHIP_MASK_ON_SUSPEND |
-+					  IRQCHIP_PIPELINE_SAFE,
- 	},
- 
- 	.ops = {
+this series introduces initial support for Dovetail on RISC-V.
+
+Feedback, suggestions, and especially reviews are very welcome.
+
+Changes since v1:
+ * Disable independent irq/softirq stack usage when pipelining
+ * Drop KVM changes as long as they can not be properly tested
+
+Changes since v2:
+ * Rework trap handling
+
+Changes since v3:
+ * Included the IRQ pipelining patches to have all riscv specific
+   patches included
+ * Rebased to dovetail/v6.18.y-dovetail-rebase
+ * Merged most of the fixes
+ * Fixed IRQ Stack handling and enabled IRQ_STACKS again
+
+Changes since v4:
+ * Rebased to dovetail/v7.0.y-dovetail-rebase
+ * Applied suggestions from the last patch set
+ * Added starfive-visionfive2 board support
+ * Introduced raw console device based on sbi debug console
+ * Reworked pipelined irq handling
+
+Changes since v5:
+ * Rebased to tip of dovetail/v7.0.y-dovetail-rebase
+ * Applied suggestions from the last patch set
+ * Use mark_trap_entry/exit_raw for kernel mode exception paths which
+   use irq_nmi_entry/exit for now, as the nmi irq handlers expect hard
+   irqs to stay off. This may be be subject to further optimization at
+   a later stage, but I do not see any negative impact latency wise in
+   my tests.
+
+Best,
+Tobias
+
+Tobias Schaffner (11):
+  riscv: introduce raw console device
+  riscv: irq_pipeline: add IRQ pipelining core
+  irqchip/riscv-aplic-direct: enable pipelined interrupt control
+  irqchip/irq-riscv-aplic-msi: enable pipelined interrupt control
+  irqchip/irq-riscv-imsic-platform: enable pipelined interrupt control
+  irqchip/irq-riscv-intc: enable pipelined interrupt control
+  irqchip/irq-sifive-plic: enable pipelined interrupt control
+  clocksource/timer-riscv: irq_pipeline: enable pipelined clock events
+  pinctrl: starfive: irq_pipeline: enable pipelined interrupt control
+  PCI: plda: irq_pipeline: enable pipelined interrupt control
+  riscv: dovetail: add core support
+
+ arch/riscv/Kconfig                            |   3 +
+ arch/riscv/include/asm/dovetail.h             |  23 ++
+ arch/riscv/include/asm/irq_pipeline.h         | 143 +++++++++++++
+ arch/riscv/include/asm/irqflags.h             |  32 ++-
+ arch/riscv/include/asm/mmu_context.h          |   2 +
+ arch/riscv/include/asm/smp.h                  |  25 +++
+ arch/riscv/include/asm/syscall.h              |   6 +
+ arch/riscv/include/asm/thread_info.h          |  17 ++
+ arch/riscv/kernel/Makefile                    |   2 +
+ arch/riscv/kernel/irq_pipeline.c              |  26 +++
+ arch/riscv/kernel/kernel_mode_vector.c        |   2 +-
+ arch/riscv/kernel/raw_printk.c                |  33 +++
+ arch/riscv/kernel/sbi-ipi.c                   |  12 +-
+ arch/riscv/kernel/smp.c                       |  56 +++--
+ arch/riscv/kernel/smpboot.c                   |   2 +-
+ arch/riscv/kernel/traps.c                     | 196 ++++++++++++++++--
+ arch/riscv/mm/context.c                       |  20 +-
+ arch/riscv/mm/fault.c                         |  29 ++-
+ drivers/clocksource/timer-riscv.c             |  11 +-
+ drivers/irqchip/irq-riscv-aplic-direct.c      |   3 +-
+ drivers/irqchip/irq-riscv-aplic-msi.c         |   3 +-
+ drivers/irqchip/irq-riscv-imsic-platform.c    |   4 +-
+ drivers/irqchip/irq-riscv-intc.c              |   2 +
+ drivers/irqchip/irq-sifive-plic.c             |  10 +-
+ drivers/pci/controller/plda/pcie-plda-host.c  |   2 +
+ .../starfive/pinctrl-starfive-jh7110.c        |   2 +-
+ .../starfive/pinctrl-starfive-jh7110.h        |   2 +-
+ 27 files changed, 589 insertions(+), 79 deletions(-)
+ create mode 100644 arch/riscv/include/asm/dovetail.h
+ create mode 100644 arch/riscv/include/asm/irq_pipeline.h
+ create mode 100644 arch/riscv/kernel/irq_pipeline.c
+ create mode 100644 arch/riscv/kernel/raw_printk.c
+
 -- 
 2.43.0
 
