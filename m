@@ -1,64 +1,64 @@
-Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011032.outbound.protection.outlook.com [40.107.130.32])
+Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010027.outbound.protection.outlook.com [52.101.69.27])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44646385525
-	for <xenomai@lists.linux.dev>; Mon, 20 Apr 2026 12:09:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AAA62264A9
+	for <xenomai@lists.linux.dev>; Mon, 20 Apr 2026 15:36:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.27
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1776686989; cv=fail; b=iHRGV4bopo+fvnnmXQ1qWn3OTlahC1G2k0f9Rd+ueUZCguIx7v5C/DG7pGXTM40sNA3IBpgvgrrdnkxF3NRzUkQFCQ9SH58LdoG2BC7XTnlX05gaT5HVYsBN/3M6+SG1FmiW+fi4aZebeURQ87ZSHFq1eQDgEhURkfsyn9+SL9E=
+	t=1776699368; cv=fail; b=FVYTWNzkUHfaCFRRFnA1bsQljubzYC4RccZaekIccGQXkZszB7u+tKIGBhr9XL4ETYYqce4seXFV0ryClmldIL/H7AJmzrxPbRqawhjv7d8bu54SHzesSLVeV2169biL2G1NRYyuJ3GkrbgWeDnL8AR2gFkue1tdcsS3Fj4kJMA=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1776686989; c=relaxed/simple;
-	bh=TSeUj8h238f/8mN7vVWzf6tcib8NK7B0AE7oEHIEnGc=;
+	s=arc-20240116; t=1776699368; c=relaxed/simple;
+	bh=slIbwOUF9KFSIqberFZwQRrbA62wHOrP4FUS4atRLM8=;
 	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=otCgD6SFX8tb0zP95aq+KSTtREoyabxm5VndsJY/k1npz8JYGY19fszwYZZ25Sc9NrZquzA+1zzHBjSZfgrPMUCW7HZBofNssRoZRdguplYOkx+e2AeF/+QQ8Bp/DtUwEZ5laUKF9rsjB6iNAISLYVOnKXGUvrEjhd2CnhKdX0A=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=psqzkd7t; arc=fail smtp.client-ip=40.107.130.32
+	 Content-Type:MIME-Version; b=FgI0gwKKFifHlFoAZoXGVDUWW3lddl4MpHPR90IsTtNiL2uhlT8YBKho+VB/kLQ8N72UKjKlX4n4Fn7BveApQK5KKJIEERde+NJ7Mmpsv/1IsqvRxqd4xjBlf3xTtlypbZKALjdTgMJI879NjduU029nQIo/MsGO9r38ZWUZdMw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=UKpwDSov; arc=fail smtp.client-ip=52.101.69.27
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="psqzkd7t"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="UKpwDSov"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=g9HuYHShFxI/KGFnNihkrJY6nyLGxnZn/gbGo7/ozb3K/6giG/cFxfPxrMJ/FNNx7jXQ4+dtUUP5PJvXcqggVuYKWu1J4Wrq6LBJqTghx/qvJ2gM3SurIiWJHuaJ5TuxTPP0IUL4jdInsbDtNQT92mnWXNNIn8yTo0MogdSdYsVzZjLpFVj+IUn5AQmN/NqFOdtuOtA9RXePMoiWzSUUfA1mhU+EScqON4lgRzk/HPl/GmnrXhbowPp2ptPkvqZU8BfQ5t86Wh0u56IyMUGAJP4aKjNdLIDPMIKd4SLkVlqxMYEOWawFjOJ7HMGqXFayYYlyqy47XGv8Qwr2+ZhUtQ==
+ b=cLvsD4MXzeuhdElSD0wFnSxTZoy2vdhDmmcL4MryymH0raBsbSteJ8++Qvbtt9Q/dRMNxa1cZfAy30tVr2rstKy7r6IbLeu2N/K24oZCyWwvka7uQylCYHeYWWdVMjVREIjLSzYDHIL0d5MJmTc1leYSxrMS2r2gM60Z/V23vOhCI7XRQa4MOxAp6PKhZl9/YLEikmIl/Leh7s91j9xYT+p39c0Ar4sX/tigmZB52Eg3k4vBmhuMO+aWIlzjABSzvLR3G2NCLaubQaGhOxjRog06Rai9F7XYLmltoDWXiwxnjB668tqKHqwFUUwmy8XOVHTjpgXkgeZk7bdyrn2MCQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=27zoAi4V6n8tO/7u42mALkARWo4a0yqJdQP+X+zppvs=;
- b=FtI4GUJEXodWdRyPhEoJY32CNe9r5BAgAAhahjIULZUwHSVAhtnppQjGCoMZ0mLlOQTiqoVy4gFLjgWe9He2z1Wcpd0T/UN4POm6v4AP3yA0/KbN+JPrs8CxUqOzLz5vS/J0oL+i75LE0fBBieCK0omPEBQ79x+VXt6g2ulFUBpDWeBdg9c9y3gtix69rg9JUqBaI/Xie19xdPA/NTUEZlvh4QS5cLGkSkcNSxsOLNPJTi3pJWARhITtk0/nr6lZrfatANFSJTtKfU7voWxqqDlSV+ucNRRd+qrwriP6KW27HhFK7wgyxXz1QMPnSORGtPGCr5GQbTMdT7DNguRP+g==
+ bh=4DMFwh9MZkl4ue8lwGZylcgTsDVFP4cIzNzQP0rTGSQ=;
+ b=S35hHl2EP3rlOEK7Y/zrMIplunUfF8ie4Wq4+RezgO+vOnAZlGrGEEbsx8XuzmcIfuM4nRa/NGZaclghba3nZ63yyihoAZi8nSnuc7U+rTpvqNp8sPoKAA5Px51U471mtOVc7c5wvp2/JiMy58pDhZK7J2EdSuD5V+X122aA7M8PM+kNTJJ3NFHJG0+g6SKM0TEEZB+J8pxEWc5BeR/iATk48F4Y8yekzwZ1PpsDyZrNpIPoFtQTdfXIrtWDX6YuWowEyPtuneA01WCg6o52uzc6M1gHwrZjYPO5G9DcVwbaWdgMg5dHGyRgUC0LG6hjsE8BjCbTjTOD/NyXXTigJg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=27zoAi4V6n8tO/7u42mALkARWo4a0yqJdQP+X+zppvs=;
- b=psqzkd7tq85GbAa+xjEuD9UjImashuMn7AuHGNEv0NMf+D12IcrZtGrmhFP0j80Bkxsk9HP2hT/dFWlZKnvMVqP27tiLirswlGFj9M86F5URa73OxVhvfvnJ/iUcILfoqwHeZr1j6aeiuunRYIGYDabFqy+e9nN3x9xe0JJUJKxcUqbfGcEMznbvYSmecLYTKm31LJSDb7Xz6bZS1NPxkFeYXtSWQeHoORGD1Yr9bClGzZgMyt1zTayFcsmIci61+sVYNppAYRP5scp/n0sJ3A0yMeWbthxxj3LY2BVHeeI/pVryixj94vD3HtXZ3n1v8+77ocRDgdqpjMjoBGiUSA==
+ bh=4DMFwh9MZkl4ue8lwGZylcgTsDVFP4cIzNzQP0rTGSQ=;
+ b=UKpwDSov4uJuiIqe0Ar+kJoGtocqXmyvOxwd2EVm2FMLCkO1zfRVVi+eeA7toIYB7Ku4+JqrWZMaoClpHYiQTYbZJwseECh3a/eXWhK4Oc4J9plQZqoWHd5VnGQh7Ve//xcqCsRy8BMFvHx/5IHF5Sgh+aBiaahg6fMZhE2ttzGbfOB1vgs2+thjD0I8C4qIS7ZQ2oPJqLn7IyYq3T2cnDNca8Lwg7o5m7AWbbUkAXt//ZJZOWCbj1xSNqg9HrwkozzBXlAX9Vrv7gbuSWXuFiZTU1Uw673c6CPchxs78sznbT/q5zeBNtxyDVDdwVs4R3/gpxQNHXF47G7ZHgSmUA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:3dd::5)
- by AS8PR10MB7018.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:5a5::13) with
+ by AM0PR10MB3330.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:17e::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9818.32; Mon, 20 Apr
- 2026 12:09:44 +0000
+ 2026 15:36:03 +0000
 Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::5f49:b0e9:d295:22d8]) by AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::5f49:b0e9:d295:22d8%5]) with mapi id 15.20.9818.032; Mon, 20 Apr 2026
- 12:09:44 +0000
-Message-ID: <2c20870d-12d6-4f7b-bf38-cb165360835d@siemens.com>
-Date: Mon, 20 Apr 2026 14:09:43 +0200
+ 15:36:03 +0000
+Message-ID: <2ffe3eda-5d10-448a-a6a4-eaab6a7564a5@siemens.com>
+Date: Mon, 20 Apr 2026 17:36:02 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC xenomai-images 4/5] recipes-kernel: Move nfs boot
- configs to own snippet
+Subject: Re: [PATCH RFC xenomai-images 5/5] recipes-kernel: add debug
+ additions to riscv64_defconfig
 To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
 Cc: florian.bezdeka@siemens.com, rpm@xenomai.org
 References: <20260417205713.2290350-1-tobias.schaffner@siemens.com>
- <20260417205713.2290350-5-tobias.schaffner@siemens.com>
- <3885a21c-b57c-435c-be76-ea246dc588a4@siemens.com>
+ <20260417205713.2290350-6-tobias.schaffner@siemens.com>
+ <33746f3c-becc-488c-a2c1-22b52614107d@siemens.com>
 From: Tobias Schaffner <tobias.schaffner@siemens.com>
 Content-Language: en-US
-In-Reply-To: <3885a21c-b57c-435c-be76-ea246dc588a4@siemens.com>
+In-Reply-To: <33746f3c-becc-488c-a2c1-22b52614107d@siemens.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR2P281CA0085.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:9b::12) To AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR0P281CA0098.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a9::8) To AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:3dd::5)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -67,207 +67,152 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|AS8PR10MB7018:EE_
-X-MS-Office365-Filtering-Correlation-Id: 802471ac-126f-4997-3d7f-08de9ed5b59f
+X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|AM0PR10MB3330:EE_
+X-MS-Office365-Filtering-Correlation-Id: b4418f85-4eeb-4c58-cc62-08de9ef2881e
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|1800799024|376014|56012099003|22082099003|18002099003|55112099003;
+	BCL:0;ARA:13230040|376014|366016|1800799024|18002099003|22082099003|56012099003|55112099003;
 X-Microsoft-Antispam-Message-Info:
-	6EL1YP2Mv27ZMgp4rCotGdE2l/Wk0JTXZmSGjFTjsBAIWjsfdi/jeMTDLUovwlxhjUiLLAm65bPYuBRIVXBYn5zT+51KC3U1sJjUe0H+aljbXXIpT8aWBkJaL0TWIzjRDZsK9NkbNwCyg5LAhyCo4mGKh8FNkxpJfAuidPnEcI/DAP4948czEqHKtBx1zQr7lgvhDJBWFsWvj643T4WMBUEmE6VcSicn3nLKS0ladqX7czsxNL0r2OtEjj/BMrozwsODN7CijEQm1SfeaU7/1xAPY+bzBOE/EvGrVr8wLSVz2KHYpTZ0eWxtISX/xFxb02Gt3/2PBYdz5WhYpE+89TUJP4CKQU0zy/3dtiIN5dMA8x9jElRbNoTbFCXbujLnevSaeQFMoaG3lzOtfgMpjktGM4hYt4uJPPWZTJeiM8fiEF1CThgttyy2uhct14Xkuzb67orIDpeewzZKz4bJ1Jv28ol6n4OrBHD9wgcedB12JU09wIeCn+vUCvlFJIlx03kXSyQ2LNVce1L6RpVOUp0ox4txuS7dvND8CzCves4A/sP/f8sTtaw4brfBctbnGsLcyQifvfoXaOhCkXuzXaAoC+JDtNfeXw6owRY7JuoXmmAtNvAMlszgUSPCAuhNaiYLLqUTXght+GaP5Vtp3l7FDJ8P/lMMuuyKUkX4lJY6A+m+vjO7ZzUkYAZLaac67eTBDD88gVKUB5NQ7ZP3op+CvKCLrUu/vCrZp/Pc4ko=
+	qSkYpxyp4WV1N9yDR5/eF4TWdurYjkmT3lfIDEsv+bnq5E2hw5vSbrRi1OC3/0PahpBiJ181dQgsLmfeO1xVpKTNzFEpE9kiOpT7xXNdYVFnsWmrQ37ZFTDxc5CxwJiqAU1/q2T2YFlS/QFMiuBwDZ8Gv1BkYfsje8pmdiHihmISAlrQD/BGpdsSKvfwE5ZoqUKIIAk8AqNGYRKfP8vb2aizJtVSZqHovDPd6kMzyF27Q+BOwdloTch4z+RdwvZw7pHexdJpklZjxTyp7Xtwm4XzPBaLKJfhQmHTl6CJKtGsI+37ViseJ0nuOkrvN8Z/h+ZuZshRMrEydfK+OBXzcZka6I2hgZP3h/pO6V3ZnElvJk6eYyH1XZ2/Pn+Ewh4P/PL1/u9QL/t8Qbw7z6i5mqFNooEyV41P4Rj5BsCaO30ivCytIC97gpfifhBhEFckqXNNAWNc3GvO/ffnFC3BCFU3VtQ0Q/lmwrXh5OGP/vvunYKGwOeQnI4wEHAJRQexQc3+By1UcP4lyy+ypCWTrCl/hOLzVyi49ejZLEa9p69SYtQMS9yMHm3RrTkL17fvDPjHdUUfudVE+DyiyRAdWTnw3KcQwXUBVSpMqSXWJCQhWh8cx3vLYGIYb1Q4imtGeGt8wfDBlzahcBJYhnsIfzZKvabbkVjviIEVS6nNNXdX4U76iw1j/yE332wqpMvBlZzjZzdNcCFR76rbLzK2Dv2msTilMKxJF3TTvpDR/lY=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(56012099003)(22082099003)(18002099003)(55112099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(18002099003)(22082099003)(56012099003)(55112099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?MkpwRUQ2byt3R1ZpRTV1TGorcXh6SzdXU2lwY1FpeFJ0U2N5RG1ueWM3QWl4?=
- =?utf-8?B?VWJNUEovc2VQdytJeXBvMkFoY1c4bFdDNTF4MEczamVyVWVOVFlWS0UyWEw4?=
- =?utf-8?B?YzBTeElFcU9xUWZqSlhBU05iNEpCR2VsbStvdEhOczJOZjFqT2ZmUnlGZllK?=
- =?utf-8?B?eWd4dzNxQTR2eTU3TVUvNnoxaHVxNnZZSCtCSTIyOVpHL1BEbHdURzJncVZZ?=
- =?utf-8?B?NHFEUEpuZng3N1pzc240T2ZYWmZCYXI2cGxTWDN4WmoyaGdLSTBpRmxhZTQv?=
- =?utf-8?B?aU1XdjhWeEtzT3ZMaWNQVHIrNDNKZFg4VmFicDkzTDJDQkgxTWtLM1QvY1Jx?=
- =?utf-8?B?Sk9oSGlhbHFOcHJ2L3pGb3k3UGVFLzFlNU1uNHBKaTg1cWJHR3RBYzJaSERu?=
- =?utf-8?B?WDUwc0Q5bEdPMkNlb3FTdVN1eHVMUzVBL0NsQmVoSldPSFhDZ0dFOXpqT3lV?=
- =?utf-8?B?dUh2cWtFMDM3RVFNazVtL1BoRmwweE41QzRjYnVkckl4MnpZWFB0STVSMzY2?=
- =?utf-8?B?QWdBQkJORDJuTTNXdUNPeFN1M3gxRVpYaEF5N2FEekJWQS9EQ3NDSGNtQlBC?=
- =?utf-8?B?THlDY1BUUXZ3M09GK1pmKzdaWkFEM2pINFROZFEyZElRV28rV0V6UzlDOG1u?=
- =?utf-8?B?ZkpKVjRxbXdLRzI2R0RZWmNqK1B6c1VwU21aaUlFbWEyQkVPMlVQc3dMbEsv?=
- =?utf-8?B?YlFEN1F1dTFid0tzcFdwaDhxS1ZvUHhwVDQ0WXVuNzgwTGtqSTByN1VJK2sx?=
- =?utf-8?B?b281VnhRbFFUK3EySHhBZ2FIdHRTd3o0T00wZGErYUNGK0RiNEZqS3JDNy9K?=
- =?utf-8?B?TWZ6Zk9HZ1pMeWlxNTFYelYwVDN1OFlLZzVlTy9HQVJZcFM2MVUzcGE4NktB?=
- =?utf-8?B?WG9TQ3NxMFQzRFJheWpJMFQ3eFB4QnFOZU5HVGJZdU0wZWFQRGRHYVpiT0hC?=
- =?utf-8?B?dlI1Q3ByRWpBNkwzYURsOUdrU1h2NExpbEM2aFRqSFhTRjlFS04za2NWZG1Z?=
- =?utf-8?B?SGh0UzNIREIxWjVwZFh3aURVSTRBK25HTWpQS01HdnN5SUdLV0VXS0dpVktD?=
- =?utf-8?B?Qy9zUHQzOHF3OXJtelpLTndqeVMyZEtLYS82TEU1OHRUQTlzSzYzbkdLdzZt?=
- =?utf-8?B?SEI0WDJIQ2RSMTZTT1dLWmI3YjUxdS80ckgyR25pVHRqMmFuQXVUTS9mdGNF?=
- =?utf-8?B?TjJxSjU4UVV5ZUdRMnNBSG9jby8xMFY1TVFUcHB5My95dnN6TjUzcEhRYlE1?=
- =?utf-8?B?SW9TakNPVnVySkYwMFpqSE12c0RXczlYOWtSaGFvNDlsaGdpU2RhNzVIdnRx?=
- =?utf-8?B?eU82K3JydU9iclEvYnp0OWRReDQ3QnVtVkgxVFF6cVlHaklTVGZOT216cjF0?=
- =?utf-8?B?NWxnamtzZXFRa2RlZzNvL3VRUU9TcE82eU5JL2d0VDJyL20rY25ZUTIwNGdU?=
- =?utf-8?B?R2lOSkZNd2t3amovTUdWY0luU0hLK3F4MGZsRU5Pc0pIUWhGc3ZqcnFSWG9U?=
- =?utf-8?B?WXp1MVhNM3pOOEZ5ZWpjUUgxVU5YTitvTUwrTjQ1ZGQ1UUc1YmhYeUkvaXps?=
- =?utf-8?B?ZjJ1UWlBTVBtcEp0ajJPSGNnZm5OWGt0REhyck00MjJCeGVDMzBOYi9LYTN0?=
- =?utf-8?B?ZzJZTy8zSHlkRmFIdEhEMFAzQ3phTUMzdXplZ1dsZHE4ZFpiaVJHMlB1cG9K?=
- =?utf-8?B?OU5aUUVjV2h2VHhtL1Ywc0JpVVlrNVlnYjk2TDB3NE5xOWRmaUcwaWRMb3FM?=
- =?utf-8?B?Wnc5L05NR2lyVFZwZ2JKVnhPY1ZsUVBtZmNPTWMwemZqV25aMi9UU3p2Wjg3?=
- =?utf-8?B?SWQvMlRwK1pwbFJnV0I3Y1RnKytSUUt1b2RtQU5mc21UN3hZeCt0WngvV3ZB?=
- =?utf-8?B?M2hXZjY5RVV0amdQdVAzM1VBSFFhSWdJS1M2VFAvTzMrRHU1blp0dCs3WUFr?=
- =?utf-8?B?Y3VjeElCWUpCaTNCWVg2Q1c0dmMvbTBMUENaNHF0b0llRjZUbytSMUR6QW42?=
- =?utf-8?B?SGg0YjMxSkdSMkdTMUM4anZkVjlvUGtwRE1SelU3OVZ6Z0Z6VG1oUEpuQXp6?=
- =?utf-8?B?dnkrS25MWERvSllVcmkvd3hBRFZRaVAvSEtxeGpRc09OcnNRZjlwaTFtdXo0?=
- =?utf-8?B?N2NFQnUyZDA4cnd4VlVTTWJKN0pkcitDMkcvMG9VWWtYV0xEMkp3VWxqTHpk?=
- =?utf-8?B?TUdya25HWkViUTBpbGJ5a1dndUhiU21jcUVkdzFJVUZjaHV0NkF1UW8xOFha?=
- =?utf-8?B?aWVPQmUramtleVZ2R0w1azhxdmg3cUE0NmZTcDI4SGtzNUl5d0g2ZWQvMGRN?=
- =?utf-8?B?VkhkRW5wd0VTS2JqdmVpOE5Ra2REWmdTZEtrOWdqSnZRTzZXTDYxODNWNHJ6?=
- =?utf-8?Q?rZoS3Af8ZBixv0UM=3D?=
+	=?utf-8?B?VTN3NTVBS2dTRFMyL0t0aENqRi91N3VEcy9OcG9vYUtTK0hKNkJSL3pvR0dK?=
+ =?utf-8?B?cXg1eXZRYldBMTk2bmtINkplazJXWEVOeUovTStjTlRTalI4Szdzd3ExeUV6?=
+ =?utf-8?B?SlBJL3gvenV6aXlUOUxVeWxvVTlmS1RYWmcyWEFHa01hS3NmZEQ4cXE4RkhJ?=
+ =?utf-8?B?c2FpKzVUaDdzd0pJZnVKRkZRZVlpekNjRnlSR0wwSC9ibjZNajhQVXFZMk5C?=
+ =?utf-8?B?WFE0SThFbHl5QUREMEJuc0NVZ09NRXFFNEQrNXJ6Tk9SYkVaM08wY2l6aEIz?=
+ =?utf-8?B?RTRHQ2RUTVlOU2FLc0grb0RWNDl4c0NEbUFGQjR5SlRMck96TGhFVG0zbHpP?=
+ =?utf-8?B?RkYxTU13ZDRCK3dVSFRWMEo5Y0lyUzBCQU15ejBqNUNkKy90aG14Q3JuajVM?=
+ =?utf-8?B?c3Y2NlJTZUVCd0NndE5jdGxEeGJvcEZWNVBZOGIzUVdjcTA4R0ZYanVHdVRv?=
+ =?utf-8?B?RnBEbUZIY1dWVVJrQTA1UXh0dkNjTCtUTStxK1c0eTF3bTkvUS91ZnhwNTM3?=
+ =?utf-8?B?SVBqNVhFWGRwVVRvcjJTSVluem1RNUxNOHdldEd6QW9OdngyMUZ6U3I3cEJK?=
+ =?utf-8?B?c2RqaCtQTXZuOG04bW8xUU5hTW10ZEQ5cGhKNzlSeVBjcGEvOTMxaHJEL0FF?=
+ =?utf-8?B?OWQ0VkltK1lMRlJhY1VsVFVxV0dCYnloMGQ0M0gveHNKZ244aW5ZaVFjcGxa?=
+ =?utf-8?B?MkRVRWYrc3NLcktoaitDRVZBaVFQUG4zRlVyTHpTSXNrcFpvaXlSbG5JMVR6?=
+ =?utf-8?B?TWdmdzd6YnhxNkUxQXNpS25LQWJqL2ZtMHAyK0dSUWpubFE1VjRma1VBdEhP?=
+ =?utf-8?B?c1FxazhEZTIxWUJZL0ZudUxTdU9vek03cU1FN090bHZkOGJhU3YybmlsT05r?=
+ =?utf-8?B?bXAxR283MkJ6dGJ6cVhQRmFYTUdGTGZ2cytBYzhYSWpPMmVNbmdVb2R5bTkx?=
+ =?utf-8?B?aWRISHRqWExTdElCbXBSUDJ5UDBUaW1oM1JWYlJ3UXFFU3RsdXN3TzZBZ0k0?=
+ =?utf-8?B?cnRkS1RTVnBGY0UyMm1MM3I1TFNyLzR6ZXk2cE1vZjJQYkx0MEtTS0kwNkxX?=
+ =?utf-8?B?MUZjTmxhVVJMYVNocVdhVmU0WmdmK1pNYlBKT3AwN2sxREJwMjJVSWRxZmVK?=
+ =?utf-8?B?YnhaTnRIbTZrR3dHWFBlMTgvUEFvYlhSVzhyRXRyOUR3RW15aWRuemY1QU5I?=
+ =?utf-8?B?UW9kdWRLZjlOdS9XRGFOaWtUR0s0eU5HOWE3S1c2V01nYW83am83RS94UW5L?=
+ =?utf-8?B?dnhVUkZUNFFlbEl4QkVldjAwWlhCNDhsZFpPWWtOeVZUZzgzUmRoQ3JsNUxh?=
+ =?utf-8?B?Q28xNFdnNzNyQ1Jrei9XakovaklDamEvd0k5aDdRN1U4eDF2Tm9kM2toblRt?=
+ =?utf-8?B?c29KODlpWjZYTThHRGdJR0F4RklEQ0crKzlQSGpybExoTHZCdlJDa1l2TnVm?=
+ =?utf-8?B?NWxCUncrUTFQS1JxNTBDVW1HZ1FJY0d5UU9iTTZUakxmWFcvcXVtS0RIekNj?=
+ =?utf-8?B?NnRaOVNRM0pPaldDQ0dja0FQQVJJNXYvQWIreXRjcTk3dlgwdW9tYndFZWs2?=
+ =?utf-8?B?ZTM0Z2lCRXg1Sm5jMFdRQ0JFUVorckhvQjNQRzNrdWxobmN2RzRvMTVpaEdM?=
+ =?utf-8?B?bmRnaDlaelhLblNkVFNFSnllTkk5cVVWWGJDSHdyOWQxc0pHcVhsU3p0clli?=
+ =?utf-8?B?YVZZMkpVdzBuSEgvbWxhaTF2VXR5emFCbUVGUjV5aGNmd1NveVNPVWFLRGZC?=
+ =?utf-8?B?TFNvM2RJY1ZZNEdIOTFGRnRjYmU2dnNTZDgzN2IzNEMzZnFnb2lDeThISjVR?=
+ =?utf-8?B?SW5lUS9wNkJjNENIaUtJbWVJTzZjTmE4NDdtbFU4elQramtRaU5kcVhwd1kr?=
+ =?utf-8?B?eWxlNDFRNVplZ2dWczA3L1ZsR1hRbkxkTytzRlpFemNIYzJIdVRZczJ1TGhN?=
+ =?utf-8?B?bkJKcGZscnNFT05vcGFiYmRqMjRvOWZ4cG5xVU1mTE9rZW9QWmQzS0xBTm9r?=
+ =?utf-8?B?Y1U3azgyTGV6bHJ4NmxPMGMyU1hTbDRLc21kUXRzUEZNdTNDRnhjVG5BdVdB?=
+ =?utf-8?B?cldrZ1htc1V6UTUyRXlQZ1BTSGtiWUNjTHlVMnVNb0IzNk41SVNQQlpuNDE5?=
+ =?utf-8?B?Q2doaVJSbExvc3dMSjNCYjdKdjhqUm1mVXkzMGdSdEVVa1hCK0toaWxZNkFj?=
+ =?utf-8?B?RVRTWkFHSVkwdU8vSThvK0dsTGc5cU9hRnVFSnFHQUNodktFS2pDbzBjTWQw?=
+ =?utf-8?B?MXk5QlRaRS9RUmxIS1hKQTdBK3UxaWU0LzdyNFRQd1UrTi9RQ1dxQ3VQZVNR?=
+ =?utf-8?B?UWMwU0RCQ0hwME1hUXlZajhPZDI5QkhpTDBaeVhRSDhVV3ZnelZqdXM2RnJu?=
+ =?utf-8?Q?BQnZiDBSZI98iwVk=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 802471ac-126f-4997-3d7f-08de9ed5b59f
+X-MS-Exchange-CrossTenant-Network-Message-Id: b4418f85-4eeb-4c58-cc62-08de9ef2881e
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2026 12:09:44.7565
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2026 15:36:03.7443
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: N+q2i0gzxjBdHEr/9AkfQTKNqTtfQW2FXgxkowPtjHveS9HwAD5n1iD3Y0UoPuRG3DRyLG7bSOapUH0yhyXe51K8Pkf/TA/QIOqmBvW0VEY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB7018
+X-MS-Exchange-CrossTenant-UserPrincipalName: IrqspO60peN5/2BkACwbhuDlupGBUKmPG4OxwGSr0zWkDqnKQiZT8ZFABOSqy351dhTnj61vB24PinPUIGBnKn6ZFBl0dUAhAuDZIguQV4U=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB3330
 
 Hi Jan,
 
-On 4/20/26 07:45, Jan Kiszka wrote:
+On 4/20/26 07:47, Jan Kiszka wrote:
 > On 17.04.26 22:57, Tobias Schaffner wrote:
->> Move the kernel config switches that are needed for nfs boot to its own
->> snippet. This way they do not have to be maintained individually and are
->> also enabled for riscv.
+>> Added to the defconfig to support the current workflow with a debug
+>> disablement snippet.
+>>
+>> Added as a section in the end of the file to make factoring out debug
+>> configs at a later stage easier.
 >>
 >> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
 >> ---
->>   recipes-kernel/linux/files/amd64_defconfig | 6 ------
->>   recipes-kernel/linux/files/arm64_defconfig | 6 ------
->>   recipes-kernel/linux/files/armhf_defconfig | 6 ------
->>   recipes-kernel/linux/files/nfs.cfg         | 6 ++++++
->>   recipes-kernel/linux/linux-xenomai.inc     | 1 +
->>   5 files changed, 7 insertions(+), 18 deletions(-)
->>   create mode 100644 recipes-kernel/linux/files/nfs.cfg
+>>   recipes-kernel/linux/files/common_nodbg.cfg  |  2 ++
+>>   recipes-kernel/linux/files/riscv64_defconfig | 15 +++++++++++++++
+>>   2 files changed, 17 insertions(+)
 >>
->> diff --git a/recipes-kernel/linux/files/amd64_defconfig b/recipes-kernel/linux/files/amd64_defconfig
->> index 590a1d5..d46064e 100644
->> --- a/recipes-kernel/linux/files/amd64_defconfig
->> +++ b/recipes-kernel/linux/files/amd64_defconfig
->> @@ -1040,8 +1040,6 @@ CONFIG_IP_ADVANCED_ROUTER=y
->>   CONFIG_IP_MULTIPLE_TABLES=y
->>   CONFIG_IP_ROUTE_MULTIPATH=y
->>   CONFIG_IP_ROUTE_VERBOSE=y
->> -CONFIG_IP_PNP=y
->> -CONFIG_IP_PNP_DHCP=y
->>   CONFIG_IP_PNP_BOOTP=y
->>   CONFIG_IP_PNP_RARP=y
->>   # CONFIG_NET_IPIP is not set
->> @@ -3664,14 +3662,10 @@ CONFIG_PSTORE_ZLIB_COMPRESS=y
->>   # CONFIG_SYSV_FS is not set
->>   # CONFIG_UFS_FS is not set
->>   CONFIG_NETWORK_FILESYSTEMS=y
->> -CONFIG_NFS_FS=y
->>   CONFIG_NFS_V2=y
->> -CONFIG_NFS_V3=y
->>   CONFIG_NFS_V3_ACL=y
->> -CONFIG_NFS_V4=y
->>   CONFIG_NFS_V4_1=y
->>   CONFIG_NFS_V4_2=y
->> -CONFIG_ROOT_NFS=y
->>   CONFIG_NFS_ACL_SUPPORT=y
->>   CONFIG_NFS_COMMON=y
->>   # CONFIG_NFSD is not set
->> diff --git a/recipes-kernel/linux/files/arm64_defconfig b/recipes-kernel/linux/files/arm64_defconfig
->> index 1dc8b69..84802a3 100644
->> --- a/recipes-kernel/linux/files/arm64_defconfig
->> +++ b/recipes-kernel/linux/files/arm64_defconfig
->> @@ -981,8 +981,6 @@ CONFIG_XFRM=y
->>   CONFIG_INET=y
->>   CONFIG_IP_MULTICAST=y
->>   # CONFIG_IP_ADVANCED_ROUTER is not set
->> -CONFIG_IP_PNP=y
->> -CONFIG_IP_PNP_DHCP=y
->>   CONFIG_IP_PNP_BOOTP=y
->>   # CONFIG_IP_PNP_RARP is not set
->>   # CONFIG_NET_IPIP is not set
->> @@ -5768,11 +5766,8 @@ CONFIG_PSTORE_ZLIB_COMPRESS=y
->>   # CONFIG_SYSV_FS is not set
->>   # CONFIG_UFS_FS is not set
->>   CONFIG_NETWORK_FILESYSTEMS=y
->> -CONFIG_NFS_FS=y
->>   CONFIG_NFS_V2=y
->> -CONFIG_NFS_V3=y
->>   # CONFIG_NFS_V3_ACL is not set
->> -CONFIG_NFS_V4=y
->>   # CONFIG_NFS_SWAP is not set
->>   CONFIG_NFS_V4_1=y
->>   CONFIG_NFS_V4_2=y
->> @@ -5781,7 +5776,6 @@ CONFIG_PNFS_FLEXFILE_LAYOUT=m
->>   CONFIG_NFS_V4_1_IMPLEMENTATION_ID_DOMAIN="kernel.org"
->>   # CONFIG_NFS_V4_1_MIGRATION is not set
->>   CONFIG_NFS_V4_SECURITY_LABEL=y
->> -CONFIG_ROOT_NFS=y
->>   # CONFIG_NFS_USE_LEGACY_DNS is not set
->>   CONFIG_NFS_USE_KERNEL_DNS=y
->>   # CONFIG_NFSD is not set
->> diff --git a/recipes-kernel/linux/files/armhf_defconfig b/recipes-kernel/linux/files/armhf_defconfig
->> index ff8908d..c8b46e1 100644
->> --- a/recipes-kernel/linux/files/armhf_defconfig
->> +++ b/recipes-kernel/linux/files/armhf_defconfig
->> @@ -1250,8 +1250,6 @@ CONFIG_XFRM_IPCOMP=m
->>   CONFIG_INET=y
->>   # CONFIG_IP_MULTICAST is not set
->>   # CONFIG_IP_ADVANCED_ROUTER is not set
->> -CONFIG_IP_PNP=y
->> -CONFIG_IP_PNP_DHCP=y
->>   CONFIG_IP_PNP_BOOTP=y
->>   CONFIG_IP_PNP_RARP=y
->>   # CONFIG_NET_IPIP is not set
->> @@ -6723,14 +6721,10 @@ CONFIG_PSTORE_RAM=y
->>   # CONFIG_SYSV_FS is not set
->>   # CONFIG_UFS_FS is not set
->>   CONFIG_NETWORK_FILESYSTEMS=y
->> -CONFIG_NFS_FS=y
->>   CONFIG_NFS_V2=y
->> -CONFIG_NFS_V3=y
->>   CONFIG_NFS_V3_ACL=y
->> -CONFIG_NFS_V4=y
->>   # CONFIG_NFS_SWAP is not set
->>   # CONFIG_NFS_V4_1 is not set
->> -CONFIG_ROOT_NFS=y
->>   # CONFIG_NFS_USE_LEGACY_DNS is not set
->>   CONFIG_NFS_USE_KERNEL_DNS=y
->>   # CONFIG_NFSD is not set
->> diff --git a/recipes-kernel/linux/files/nfs.cfg b/recipes-kernel/linux/files/nfs.cfg
->> new file mode 100644
->> index 0000000..23d9357
->> --- /dev/null
->> +++ b/recipes-kernel/linux/files/nfs.cfg
->> @@ -0,0 +1,6 @@
->> +CONFIG_NFS_FS=y
->> +CONFIG_NFS_V3=y
->> +CONFIG_NFS_V4=y
->> +CONFIG_ROOT_NFS=y
->> +CONFIG_IP_PNP=y
->> +CONFIG_IP_PNP_DHCP=y
->> diff --git a/recipes-kernel/linux/linux-xenomai.inc b/recipes-kernel/linux/linux-xenomai.inc
->> index db0abb6..a07811d 100644
->> --- a/recipes-kernel/linux/linux-xenomai.inc
->> +++ b/recipes-kernel/linux/linux-xenomai.inc
->> @@ -22,5 +22,6 @@ XENOMAI_DEBUG ?= "0"
->>   
->>   SRC_URI += "${@'file://${KERNEL_DEFCONFIG}' if d.getVar('KERNEL_DEFCONFIG') == d.getVar('XENOMAI_DEFCONFIG') else ''}"
->>   SRC_URI += "${@'file://common_nodbg.cfg' if d.getVar('XENOMAI_DEBUG') == '0' else ''}"
->> +SRC_URI += "file://nfs.cfg"
->>   
->>   S = "${WORKDIR}/git"
+>> diff --git a/recipes-kernel/linux/files/common_nodbg.cfg b/recipes-kernel/linux/files/common_nodbg.cfg
+>> index a57463b..6637d16 100644
+>> --- a/recipes-kernel/linux/files/common_nodbg.cfg
+>> +++ b/recipes-kernel/linux/files/common_nodbg.cfg
+>> @@ -1,5 +1,7 @@
+>>   # CONFIG_IPIPE_DEBUG is not set
+>>   # CONFIG_XENO_OPT_DEBUG is not set
+>> +# CONFIG_EVL_DEBUG is not set
+>> +# CONFIG_EVL_DEBUG_CORE is not set
+>>   # CONFIG_DEBUG_VM is not set
+>>   # CONFIG_DEBUG_LIST is not set
+>>   # CONFIG_BUG_ON_DATA_CORRUPTION is not set
+>> diff --git a/recipes-kernel/linux/files/riscv64_defconfig b/recipes-kernel/linux/files/riscv64_defconfig
+>> index 8f9e852..6b991ae 100644
+>> --- a/recipes-kernel/linux/files/riscv64_defconfig
+>> +++ b/recipes-kernel/linux/files/riscv64_defconfig
+>> @@ -311,3 +311,18 @@ CONFIG_DEBUG_KERNEL=y
+>>   CONFIG_DEBUG_FS=y
+>>   # CONFIG_RUNTIME_TESTING_MENU is not set
+>>   CONFIG_MEMTEST=y
+>> +
+>> +
+>> +# Debug additions
+>> +CONFIG_BUG_ON_DATA_CORRUPTION=y
+>> +CONFIG_DEBUG_ATOMIC_SLEEP=y
+>> +CONFIG_DEBUG_LIST=y
+>> +CONFIG_DEBUG_LOCK_ALLOC=y
+>> +CONFIG_DEBUG_VM=y
+>> +CONFIG_DYNAMIC_FTRACE=y
+>> +CONFIG_EVL_DEBUG=y
+>> +CONFIG_EVL_DEBUG_CORE=y
+>> +CONFIG_FTRACE=y
+>> +CONFIG_FUNCTION_TRACER=y
+>> +CONFIG_PROVE_LOCKING=y
+>> +CONFIG_STACKTRACE=y
 > 
-> I assume you checked all configs for being identical before & after, right?
+> I vaguely recall an attempt to invert this logic to "base config +
+> common_debug.cfg" - what happened to it? But that's independent, no
+> comments on this change.
 
-Yes. But this case is way simpler compared to the opt-(no)debug case as 
-we always apply that snippet and the switches are all enable for the 
-other architectures.
+That is one of the reasons I tagged this as RFC, and I tried to start a 
+discussion about that in the cover letter.
+
+The RFC for debug config snippet logic inversion was: "Rework 
+linux-xenomai debug configuration".
+
+When I started the rework, I tried to invert the logic without any 
+changes to the resulting debug and nodebug configs. The idea was to make 
+sure not to change the build behavior for any users of this layer.
+
+But the "defconfigs" of the other architectures are not defconfigs but 
+large configs that grew over time. For a lot of the switches, it is 
+unknown why they were added and if they are still needed, right?
+
+With a common debug snippet that makes sure all of these are set exactly 
+as before in the debug and nodebug case, the debug snippet gets huge 
+(check the RFC for reference), like 450 lines big (including comments 
+but still...).
+
+Now that I want to create the snippets for RISC-V, I am unwilling to 
+pull in all of that into the riscv config. Even if we find ways to 
+optimize this to <100 switches, it is still too much.
+
+Best,
+Tobias
 
 > 
 > Jan
