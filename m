@@ -1,211 +1,208 @@
-Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11023116.outbound.protection.outlook.com [40.107.159.116])
+Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010060.outbound.protection.outlook.com [52.101.84.60])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4498E35A3BE
-	for <xenomai@lists.linux.dev>; Fri, 24 Apr 2026 09:59:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.116
-ARC-Seal:i=3; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777024787; cv=fail; b=HCUdxj7AYwtr76hx5otPMC4RLhYzGa9OJ0dXBcvmsc4QaQe5Ex5RlZMCxF3EFfdPaVG5wzoB9qf7kI7YRitKgg8jPGdNmUNBuGgX/a7+p4BEuiDwESVbCx1K4Z6z5zAps5RnqTwKVasv4Pc/laGCVZaEigA6jjsABYEKxt9mGIg=
-ARC-Message-Signature:i=3; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777024787; c=relaxed/simple;
-	bh=TzNM+lN4N4hY8wiiPmlDr3auldKeqG3haHafT/8Di2c=;
-	h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version; b=r3+nl4jfA7YXEurl+86+dYT6mJTBY42pn5NgRPp0gjpRDyUzq4rrtr66iHvOAxwSlY+EzH3VTx3C6PmQNJ3tt+7SEoP4eSlfQip3TBBGs/rCSnlYP8Fsp7+lT+/K21nh6PooqydCZtarSf+/DV+teg9mKV9YEJ/VK58xBE2A76k=
-ARC-Authentication-Results:i=3; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ecler.com; spf=pass smtp.mailfrom=ecler.com; dkim=pass (2048-bit key) header.d=ecler.com header.i=@ecler.com header.b=h7sWndtp; dkim=fail (2048-bit key) header.d=ecler.com header.i=@ecler.com header.b=UaVAE/kr reason="signature verification failed"; arc=fail smtp.client-ip=40.107.159.116
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ecler.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ecler.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6069935AC16
+	for <xenomai@lists.linux.dev>; Fri, 24 Apr 2026 10:28:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.84.60
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1777026507; cv=fail; b=RUtyYPjBCtSSjKUgKixYVItrb4snTfPnYkKHo0xOigOchCX94bJIGyXNEl5MUD1AghaQw0mz2/JLsE2lr1XL92FXGcg/+kzbzfdMqaGkjElRTVh+tANrjSJqhFjZRY0R42qf/F+Vyq0Gar1+hIbkHqyQR13PyHy7I83lRz+1L5A=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1777026507; c=relaxed/simple;
+	bh=JHvtCichUaX3fZ7zsNfNwhgQb33FJ+2MQhYL2ppxp0Q=;
+	h=Message-ID:Date:From:Subject:To:Content-Type:MIME-Version; b=ntAAnbnggBUMti821lstdE8seInY7n8FIF+KutIvjLDTiiTqKChU8rcCUqghzyZV40t3Se6ccM+hW9ZfGtz4pNYuwKoaH8AGSe/Q3DsLVg9gUshwemHQthsqszFcLqIk+KNgQvtVBjRYFHZSboPWuUWnWn+avYmhE9TiQJ8roYQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=sqzy3uLP; arc=fail smtp.client-ip=52.101.84.60
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=ecler.com header.i=@ecler.com header.b="h7sWndtp";
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ecler.com header.i=@ecler.com header.b="UaVAE/kr"
-ARC-Seal: i=2; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=pass;
- b=TUFaI/vFnj6XoBil0xEleCpWOVFFScF5je6SRVfL2/uDLnvrf0FgV7RD6EIhJp6MLVJ1BTNHxqcLZvTVoQd2DzZGu9194eHy74frUHMwBXq69+dzz+B23FhBimnHmjSvtPrWPpUxA1GMkv5rpqRP755mexlv5pG645OgXE+A7b/X7RY9Qq0IobZpEnzum021+VzvLDbkPl35QvRgWbLzmjcHY8Mldj1kHWHXGgBxB4Qz4VPmvYxQOtXbRTvQpJASKnY1wlLoXKWlcnhha+UXNxs6Clh6hyGefeQqnebcNiLUsANsrXhJ0YsAc8kHUrCB0a/NpgtZX2oJedIWs9zlPg==
-ARC-Message-Signature: i=2; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=s46HjEebC6MJRvTpujcFor4nOfN7dOLGhJdawBRnnXo=;
- b=JiWp0vAkkcM0BLVBiJXrGjwayMEeQAhfWQY5aD6CUuW70ly3muJwaH/W0EtrBCMof616MzuLFZSrxMRRE/bbJ7FDlsVT17ItpHKVoyQ9r5P7b2oF00smgGVPuoHTTAg5cfi3nRSMNbtCrgE6fnNq6+5A4+A1qHmIMiC1uTGjeRGvzoCiZuE1nSJGEz4isblZgccHC90m3Q0gDIp7Vu7/01vmi+uO4YKVS3UGHtUlT6dCEvN+lSMKA1EnCKVSt9EXf+gfcE7xkn+lyb2XL0BWC4n684jdL4yJIqNcIEJCLZiAHKZj6t50Vqbz1SZJgbWdKvDpstdpsODcx4V2E2M5TA==
-ARC-Authentication-Results: i=2; mx.microsoft.com 1; spf=softfail (sender ip
- is 104.40.229.156) smtp.rcpttodomain=lists.linux.dev smtp.mailfrom=ecler.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=ecler.com; dkim=pass (signature was verified) header.d=ecler.com;
- arc=pass (0 oda=1 ltdi=1 spf=[1,1,smtp.mailfrom=ecler.com]
- dkim=[1,1,header.d=ecler.com] dmarc=[1,1,header.from=ecler.com])
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ecler.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=s46HjEebC6MJRvTpujcFor4nOfN7dOLGhJdawBRnnXo=;
- b=h7sWndtpp59njk+Si1OQpy0jikOpUnz4aXia0OU+ijSfJeUt6syih1g7bJGDv21sKmQlOvp6vKMqCThCmlMJarQpEIwACaDPqP+UsolD1Y5O3kp13pf+vwAht/ORd9Ccq9ZK6VIIMEaOdLkpKIT7LQcvHHknkzJNC9PpkhdHHNaUAp0yGtz7epW4GhtthiP0xCQ5tJxYX/xAaWdS0A+utW90hhP1qH0HWXUxqEXTEav/70u1CdBVCQsX1obZ9RJIPLgGb8e7pn81yFQbp3MzI2GKAm3rD4Bebvl+/XO6IfU6rmiWcAID/qTwgtYkh200N3wqMspmqGc+Ex6HlQW9nw==
-Received: from AS9PR06CA0135.eurprd06.prod.outlook.com (2603:10a6:20b:467::22)
- by AS5PR10MB8101.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:672::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9846.22; Fri, 24 Apr
- 2026 09:59:39 +0000
-Received: from AM4PEPF00027A6A.eurprd04.prod.outlook.com
- (2603:10a6:20b:467:cafe::50) by AS9PR06CA0135.outlook.office365.com
- (2603:10a6:20b:467::22) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9846.22 via Frontend Transport; Fri,
- 24 Apr 2026 09:59:39 +0000
-X-MS-Exchange-Authentication-Results: spf=softfail (sender IP is
- 104.40.229.156) smtp.mailfrom=ecler.com; dkim=pass (signature was verified)
- header.d=ecler.com;dmarc=pass action=none header.from=ecler.com;
-Received-SPF: SoftFail (protection.outlook.com: domain of transitioning
- ecler.com discourages use of 104.40.229.156 as permitted sender)
-Received: from eu1.smtp.exclaimer.net (104.40.229.156) by
- AM4PEPF00027A6A.mail.protection.outlook.com (10.167.16.88) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9846.18 via Frontend Transport; Fri, 24 Apr 2026 09:59:38 +0000
-Received: from DB3PR08CU002.outbound.protection.outlook.com (40.93.64.87) by
-	 eu1.smtp.exclaimer.net (104.40.229.156) with Exclaimer Signature Manager
-	 ESMTP Proxy eu1.smtp.exclaimer.net (tlsversion=TLS12,
-	 tlscipher=TLS_DIFFIEHELLMAN_WITH_AES256_NONE); Fri, 24 Apr 2026 09:59:39
-	 +0000
-X-ExclaimerHostedSignatures-MessageProcessed: true
-X-ExclaimerProxyLatency: 3068744
-X-ExclaimerImprintLatency: 760240
-X-ExclaimerImprintAction: 557e54c077af410fb3bad522a9611e4e
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="sqzy3uLP"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ZMgVIdNvxxCiWfI1wpS6iysxjjmoJgkP0aE4+V9WAlzPXKqNx9YYEAZYHGimw3paaauckljVQfalJgOk6tJDAFrV9PYCh4NFs6kDRaoqPO12fkrlqBWNnWtaZpycktJKim6/xf48DIsa2tDyebVCtYgqNitVnkN3C+Il/HOetosbq63j0HxRJsmxyAlKbzT1KVEANVyyH16Y1yiBWC9zsFflJ+Y1BwhV1hOD8ob40wpDfUX8bDq5TqHrnHXso5RH2EsI6y+V8P45bpDb76scItolC2g6Z/7asW4iqnd/qeZzbYKT1pyTAgWgCQ7rOPCOpNM31KHduTZGKEAeGmFv5A==
+ b=bO1R/+Bj6JjB5xqoSV+hhS056yl9hEqHuew3y2y24ZA5eE4EmOupcWuVAABJG9TEFtvhUGmpn5a5wAmtKy/p9HtTE0G3lUmXXqZEI4RvpEJhEGUXnNAHYoGLVfAymS5ecYidNzwXhFulPuuSy1te2Sy1ZAVlieMCs/bJNXOZSjnyBmV/pclRYD6Oxy83p67I1XioswYzYnzf1JXeFExbxdgMgpJGcK8hjgsxh/p1308PZBK6b2rIL0uzqxm6Fj0Ty0dwnYuzuJqm+Lqly5GlSvFxmL+v+yNJpMZaVfwkMaPWvYpOehqhb+lFf6xqjCisIVf5b1rtD97xrI+JRXFqjg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=crImr74oxjIBa0BM8A70Hxwj7oHfzPbZ4y0ld+NPga8=;
- b=slDX4MTlzRTfL1Nvm2b5uy06wrTpOlCte0U88CYVFlWIfmkSCYw20gAQ6v2FBwbIKlWTdFZDHeDwhW3ogaAJjMW3WDdclw7nzEqJc6AdCIx5NxRkTj9USVuPSaW04s3h+mWXf9kRVPcqB+wYvTd4ikFhtu85JmOqDb4M7KK6FQwsIRPclLTN8eV07VInsRvcaeMBFvgxl+rZ5Dm26KwVpXyfIqoq1Bw1H48GQg0DXNOTLzM6JDSL/J6jiVRsDOuj+ZckdWAnQ/a8y5USykupy4Eg/0Kky8sXo01uxEIYcqEopdHXznF5/4HKo6th+BMaPnrK6J0ZjM8ii5fiuqUSSQ==
+ bh=8lWvhzJ2f+ljDKW1IOLvG3akSKCNZW6XZjYX13Do2/Y=;
+ b=ZG4qF9LdV2XCZns9GpHC6vQRS1rvq5RSv9meeDTXVKF5ZBZUnvwIfW8WGoiJ/tyhRFqtoxux3KZpcFk+bMQECU6HniU0vi0jO1MZdXe4pCze+hmVsqN2/BseRwHp5kjXNvsixAXC+Oo4u+BXnzIAhoTjQbq9sAtkeEmZmYD8C18MPxe3oXNAokJ1i61B203vYNLZTxUgjL5PetoDy1yqfxRc+VZI6TQZNA4Jnpkphf5HFS93QD86UAp/nd3NBjYkG+i4Z5xBnEZh1jFC1fFAPXKqBnKIzeZsYfZaRNUaWPH8vrJ7YdVNKEysOa41YASAYHq//u366MI9RNH7NR6p8Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=ecler.com; dmarc=pass action=none header.from=ecler.com;
- dkim=pass header.d=ecler.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ecler.com;
- s=selector1;
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=crImr74oxjIBa0BM8A70Hxwj7oHfzPbZ4y0ld+NPga8=;
- b=UaVAE/krneK+2a5bPMrgw7nD2AG7jYVQZlkvju/JzS4/b3ZSldREl45jW1/kKXDuNspOlGtrCrHDMvS1y52Ofj+dMbuiUwBaKXnJoWTZVrAnisbZhL7AnY7aUMdqL7wE3UNyFGV7ijHJpz+A33UsPmF0jKsqPCP9F2WYmGMXCGCpfQoRDRQG7HQTIMGlDV9nNuqDAjBEbcxHeQ/mR/XY8pDAEjQsBduCtwed8dlwrzXBNMhah6k/K5g2MqnY/KSBckGfK/rEa5cxvluFanMJqLmaXyHDquVNQfLSXzDqBgQXZex/3xowryvQDUZM9eo1I+zZAgtfCq2bPpbb2Ow9SA==
-Received: from AS8PR10MB7731.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:629::22)
- by PAWPR10MB7674.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:35e::18) with
+ bh=8lWvhzJ2f+ljDKW1IOLvG3akSKCNZW6XZjYX13Do2/Y=;
+ b=sqzy3uLPmvJYjvVuKkCji/HIVo2P7agf05aDLbt1yuUPGAaKM1SpVbIIXI+r6TvvGDG3Yqddbwz+dRTkoXKFYdxbSWKUPNSBrvhaTvrrh6CEjO418cxPL5akVxWPbDHS+0yN2K4EQvYLsK5zooo3xhXlu8HngbX4ttftkX6H8mdyRIXTH7u6DmRyNzfUeJ9ZizlGEVsLvVBeyOePjP1vfVjda+N9WBf8yqoyNxgD56p/CvHGGfh/shMu9OoLw+UA9JA0B2SKzhgb214hwHj/iDVs/lvuzacArl4Te/uoSI2yOP4/OVgErMUmDY9geYcHylmg8npa1FKE+J75GL6oWw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by DB9PR10MB5258.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:33c::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9846.21; Fri, 24 Apr
- 2026 09:59:36 +0000
-Received: from AS8PR10MB7731.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::7c03:58fb:66f4:7121]) by AS8PR10MB7731.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::7c03:58fb:66f4:7121%5]) with mapi id 15.20.9846.016; Fri, 24 Apr 2026
- 09:59:36 +0000
-From: Jesus Villena <j.villena@ecler.com>
-To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: [EVL] element-visibility BROKEN
-Thread-Topic: [EVL] element-visibility BROKEN
-Thread-Index: AdzT0P3ZJTrKIN13RYmROlDmWMJ4BA==
-Date: Fri, 24 Apr 2026 09:59:36 +0000
-Message-ID:
- <AS8PR10MB7731181CFB7CA13EB3A8C4F7F92B2@AS8PR10MB7731.EURPRD10.PROD.OUTLOOK.COM>
-Accept-Language: es-ES, en-US
-Content-Language: es-ES
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-Authentication-Results-Original: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=ecler.com;
-x-ms-traffictypediagnostic:
-	AS8PR10MB7731:EE_|PAWPR10MB7674:EE_|AM4PEPF00027A6A:EE_|AS5PR10MB8101:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2167a2c3-e104-4f24-8502-08dea1e832dd
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam-Untrusted:
- BCL:0;ARA:13230040|376014|366016|1800799024|38070700021|56012099003|18002099003;
-X-Microsoft-Antispam-Message-Info-Original:
- Yy3NTK2qGBwGWL8MpizCUNB3pASRuTkF59QxfTdBkYS3WYgBNFJVMmudf5OeMAU0SZcb/KcJQVTcXqqL73Ejv+5wzkpNDy7nvbSL6rcaNOcSfcdFbukmpWD33g65nE9C9aV9d+gVdMxmOYrFurka7lcMPAfdM3qnJg+2qyTS+R3im9Shn4da3LVQ+aUQ4lcp0GzkBGj+yC7Z+3BBcGHFEDdV9F4qbF7/oZ2hdbINaFwp4+XpEq81a2XqleRC4An9lbOBagSrRV3mJiubg/i52Vp+f6UFHFco5A7zWjkObzIzyOwif+pYUaV9npUg87uTuxQtbv1bsSNVCv0ESGT6TJ9SgCw7oruUFd3MrEmObb59XGBdADBemljqE3cTyfrWaqRtzxr6qGHuG4+W0c0neLik0+RqMwTv5EqaBN83mq7PJ0QMJHoY2rPPiPDJHdLiy/zRdchqnregIbv+6QgNCZx4dFkEGsyR6fbvumjYbrc78aP0ACG5vcUhxboMeg9JxPm9oVauTBOS5jN17R/7ktvu/zJAp4Gwp/ct2EgdAV0YzynsBOuBmWM6YLKfEeSjdU9H2J1xMOpAyzIEtiQlpYNus8ruke4OTU2kD70kqCDDRjHf1QTCJ8mEHirDEpFgmhXWts9r1pQrHGl6gtoNWsjIdcRI/hL/BUjIwCPBzzcLM+6XoSWYd6Fl89c73A7fY31VLfPAi49hp0IxiROCBFfI61p5Yp/1bUsTIT5MS4I4TX7rnNENTCAIUjFioAiZMs2nG3YSq1A4dh5Y+HzgtSS1E/mti8usAr2v4Gn4tPg=
-X-Forefront-Antispam-Report-Untrusted:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS8PR10MB7731.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(38070700021)(56012099003)(18002099003);DIR:OUT;SFP:1102;
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9846.16; Fri, 24 Apr
+ 2026 10:28:23 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::be9f:e8ca:ee9:83e1%3]) with mapi id 15.20.9846.021; Fri, 24 Apr 2026
+ 10:28:23 +0000
+Message-ID: <12f73c9f-9fec-4d8e-86b3-367dfcc6fff2@siemens.com>
+Date: Fri, 24 Apr 2026 12:28:22 +0200
+User-Agent: Mozilla Thunderbird
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [ANNOUNCE] Xenomai 3.3.3 released
+To: Xenomai <xenomai@lists.linux.dev>
+Content-Language: en-US
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
+ uNUqthIkgLGWzKugodvkcCK8Wbyw+1vxcl4Lw56WezLsOTfu7oi7Z0vp1XkrLcM0tofTbClW
+ xMA964mgUlBT2m/J/ybZd945D0wU57k/smGzDAxkpJgHBrYE/iJWcu46jkGZaLjK4xcMoBWB
+ I6hW9Njxx3Ek0fpLO3876bszc8KjcHOulKreK+ezyJ01Hvbx85s68XWN6N2ulLGtk7E/sXlb
+ 79hylHy5QuU9mZdsRjjRGJb0H9Buzfuz0XrcwOTMJq7e7fbN0QakjivAXsmXim+s5dlKlZjr
+ L3ILWte4ah7cGgqc06nFb5jOhnGnZwnKJlpuod3pc/BFaFGtVHvyoRgxJ9tmDZnjzMfu8YrA
+ +MVv6muwbHnEAeh/f8e9O+oeouqTBzgcaWTq81IyS56/UD6U5GHet9Pz1MB15nnzVcyZXIoC
+ roIhgCUkcl+5m2Z9G56bkiUcFq0IcACzjcRPWvwA09ZbRHXAK/ao/+vPAIMnU6OTx3ejsbHn
+ oh6VpHD3tucIt+xA4/l3LlkZMt5FZjFdkZUuAVU6kBAwElNBCYcrrLYZBRkSGPGDGYZmXAW/
+ VkNUVTJkRg6MGIeqZmpeoaV2xaIGHBSTDX8+b0c0hT/Bgzjv8QARAQABzSNKYW4gS2lzemth
+ IDxqYW4ua2lzemthQHNpZW1lbnMuY29tPsLBlAQTAQoAPhYhBABMZH11cs99cr20+2mdhQqf
+ QXvYBQJmWPvXAhsDBQkFo5qABQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJEGmdhQqfQXvY
+ zPAP/jGiVJ2VgPcRWt2P8FbByfrJJAPCsos+SZpncRi7tl9yTEpS+t57h7myEKPdB3L+kxzg
+ K3dt1UhYp4FeIHA3jpJYaFvD7kNZJZ1cU55QXrJI3xu/xfB6VhCs+VAUlt7XhOsOmTQqCpH7
+ pRcZ5juxZCOxXG2fTQTQo0gfF5+PQwQYUp0NdTbVox5PTx5RK3KfPqmAJsBKdwEaIkuY9FbM
+ 9lGg8XBNzD2R/13cCd4hRrZDtyegrtocpBAruVqOZhsMb/h7Wd0TGoJ/zJr3w3WnDM08c+RA
+ 5LHMbiA29MXq1KxlnsYDfWB8ts3HIJ3ROBvagA20mbOm26ddeFjLdGcBTrzbHbzCReEtN++s
+ gZneKsYiueFDTxXjUOJgp8JDdVPM+++axSMo2js8TwVefTfCYt0oWMEqlQqSqgQwIuzpRO6I
+ ik7HAFq8fssy2cY8Imofbj77uKz0BNZC/1nGG1OI9cU2jHrqsn1i95KaS6fPu4EN6XP/Gi/O
+ 0DxND+HEyzVqhUJkvXUhTsOzgzWAvW9BlkKRiVizKM6PLsVm/XmeapGs4ir/U8OzKI+SM3R8
+ VMW8eovWgXNUQ9F2vS1dHO8eRn2UqDKBZSo+qCRWLRtsqNzmU4N0zuGqZSaDCvkMwF6kIRkD
+ ZkDjjYQtoftPGchLBTUzeUa2gfOr1T4xSQUHhPL8zsFNBGZY+hkBEADb5quW4M0eaWPIjqY6
+ aC/vHCmpELmS/HMa5zlA0dWlxCPEjkchN8W4PB+NMOXFEJuKLLFs6+s5/KlNok/kGKg4fITf
+ Vcd+BQd/YRks3qFifckU+kxoXpTc2bksTtLuiPkcyFmjBph/BGms35mvOA0OaEO6fQbauiHa
+ QnYrgUQM+YD4uFoQOLnWTPmBjccoPuiJDafzLxwj4r+JH4fA/4zzDa5OFbfVq3ieYGqiBrtj
+ tBFv5epVvGK1zoQ+Rc+h5+dCWPwC2i3cXTUVf0woepF8mUXFcNhY+Eh8vvh1lxfD35z2CJeY
+ txMcA44Lp06kArpWDjGJddd+OTmUkFWeYtAdaCpj/GItuJcQZkaaTeiHqPPrbvXM361rtvaw
+ XFUzUlvoW1Sb7/SeE/BtWoxkeZOgsqouXPTjlFLapvLu5g9MPNimjkYqukASq/+e8MMKP+EE
+ v3BAFVFGvNE3UlNRh+ppBqBUZiqkzg4q2hfeTjnivgChzXlvfTx9M6BJmuDnYAho4BA6vRh4
+ Dr7LYTLIwGjguIuuQcP2ENN+l32nidy154zCEp5/Rv4K8SYdVegrQ7rWiULgDz9VQWo2zAjo
+ TgFKg3AE3ujDy4V2VndtkMRYpwwuilCDQ+Bpb5ixfbFyZ4oVGs6F3jhtWN5Uu43FhHSCqUv8
+ FCzl44AyGulVYU7hTQARAQABwsF8BBgBCgAmFiEEAExkfXVyz31yvbT7aZ2FCp9Be9gFAmZY
+ +hkCGwwFCQWjmoAACgkQaZ2FCp9Be9hN3g/8CdNqlOfBZGCFNZ8Kf4tpRpeN3TGmekGRpohU
+ bBMvHYiWW8SvmCgEuBokS+Lx3pyPJQCYZDXLCq47gsLdnhVcQ2ZKNCrr9yhrj6kHxe1Sqv1S
+ MhxD8dBqW6CFe/mbiK9wEMDIqys7L0Xy/lgCFxZswlBW3eU2Zacdo0fDzLiJm9I0C9iPZzkJ
+ gITjoqsiIi/5c3eCY2s2OENL9VPXiH1GPQfHZ23ouiMf+ojVZ7kycLjz+nFr5A14w/B7uHjz
+ uL6tnA+AtGCredDne66LSK3HD0vC7569sZ/j8kGKjlUtC+zm0j03iPI6gi8YeCn9b4F8sLpB
+ lBdlqo9BB+uqoM6F8zMfIfDsqjB0r/q7WeJaI8NKfFwNOGPuo93N+WUyBi2yYCXMOgBUifm0
+ T6Hbf3SHQpbA56wcKPWJqAC2iFaxNDowcJij9LtEqOlToCMtDBekDwchRvqrWN1mDXLg+av8
+ qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
+ 8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
+ ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR4P281CA0143.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:b8::14) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Exchange-RoutingPolicyChecked:
- FZB+xSmsRw+5H8AdnhBTn5j6/y4dTqOr21Yf1jEaP5FUwKGBUoUCjY6X/kmXEMHUdc3Bwp0RGZ4x5GzQKof6jSJVpWfw2uHugy068GPmjDYiFf6o+g1v+b1uHW4dAO74T+opJj+mcHl9YhMBaSjvR2YTunzCNmWCewKYfKpv4BQco4DMpNlAoEk6AT5P9WrFJgqxCTyRGmTggekZRRKJYZd+UoejApE+9Qn8n7cdmvpyn7fc7V3HC1mKxXxHrV91D0HQlwEByi0ob6Bb+/s9qLs2epRgTmEmu/UlLbAb4B1cS95sLb+gElJzlS6igs4hohfjw144086jjrEwP8PTsA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAWPR10MB7674
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped:
- AM4PEPF00027A6A.eurprd04.prod.outlook.com
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id-Prvs:
-	a3892a7b-3205-4685-1dd6-08dea1e83141
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DB9PR10MB5258:EE_
+X-MS-Office365-Filtering-Correlation-Id: fdebfd69-f5d3-48ee-498d-08dea1ec36a3
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|82310400026|1800799024|14060799003|35042699022|376014|36860700016|18002099003|56012099003;
+	BCL:0;ARA:13230040|366016|376014|1800799024|56012099003|18002099003|55112099003;
 X-Microsoft-Antispam-Message-Info:
-	/2pFjHE+pAX0QixvJa9b/VHXdleZ4hI6njj2Y3f13Jd+JN2cXMnJIM5O8QGViXCyX6B1TzQUAHB91plkUdGlG1KV5FkpUUewWKjzgGMLIOA56qXvfneN8dtSxMP5ZVev+sbbAdAg6IRYqZbJlIx+bpLBM/ZPczJF42Py1b+L3aEQq+/WKyahKARvwuZ+ZAd7YSeVV7mnQwJc9mJH4npd43eKvsoQGhmw/PUAfqDd48KyGMxDTFGbqhIH8Gw7BzE8IotX7UXzjLPIxyc2WXAM7oOOMmTzJEYgfXGUCxu4k8wkC6vrClEACzmFWaZDr+eYZeL4ghXW2sHVAf+outNZC5MEpEwz0PuGf0Fnf/elvCaPMBBMUd6tU/jj+hN2H1gH+wKf6Uq060CZP7DkyWpavfBeNWiZ7zUszD6pwrlQfjxrb87rv2YchFUu3i7CLZWRw7S45yy1HvNn0vvcJ3EuUzA9ZyL9wKe0SJe2JOQMF6EOu8vlUPNZZbh0brC+44wfgWPpjD4y7ab1nUaJqaCYYfgL5QMx3UvalBYNPcXnbgWVMT56s/OBiAe9Qo1nHNjxwEDDejwaQ68ytlwbX6POQg0OPP/F0D8p9+9XLrMm2S2qjnEwkoDa2KUWBckytfXzPLMf9jwf+C8JCtxWNj+mVXiRri06Y1LBZrFtNX5qEJor+LQ25cI29r2z6om/HRxBg4rhZ0zEyuczbhEY5Il26VqXVuKB4hLjIcVWTM9atu+zV/il2UhAU4w4N3SaY9qDwPJyTchS3E+luBVSBMwNHg==
+	LLVmCWecN8KH5kheoqIhHONKN4ImxFDxuUOkEFxVMpe+hv43/YTKm0KhxSYMWFaU/f02fZUTvhUwA1hi29A3e+99mLRtvmRcIRIUx4+21DnHGu42ub6XQGNeZz+iIP13BAie+R2XXPtO4JHc/boCjiOQMAaZEsCaedLG3w+NhTrlnCnZwjHDGpnnALwCbo4pxQc4KVHfFthSBQCx1NV6yKfWFf4mxFyJ5Ha0LoDRNSKxwvkvnbtX5k3tbzDZvkQ0SttlXmvtO9K7tZg0sWM6zQDwlZ9HFpaGJ5CW5YHILGgSJEC0rITcDFYGqtUmo9E62lqCGezqXH/kL8CPvdwHDUlUNxKP01Kwrh2h8YH7yc9cbpC96l9RNSegkqVbpRBPOxISme9ZmIRs2xPYetKzsZJ1klEvuJE8h5Z0JOYHAShMf0j9xgRn69IdBdDI0cRqZL3f7d4CKfoIVbsT+G1SPzeE9P4hjSF0UEqOKLCY3d0eN3KRb1dqnOu01uoPQsEKeanNO8H4A+Cd2cz5lYjRq3bnJW+ojJgY/u3qNJ+SKSFuvaEuHuUNXHjXFKiUbuWMa72AuTrNVG4n3D9/VJ4LpxI0CQBY6ZbSvnZUHoFIB67ob4qDcNA+n5t1cJYUBO857kuQt0MHMW2EjHYwsnNNDMbLYndE+p/NJkTbPH58qZ8s2kGX7uuusIw/NV0dPRVF
 X-Forefront-Antispam-Report:
-	CIP:104.40.229.156;CTRY:NL;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:eu1.smtp.exclaimer.net;PTR:eu1.smtp.exclaimer.net;CAT:NONE;SFS:(13230040)(82310400026)(1800799024)(14060799003)(35042699022)(376014)(36860700016)(18002099003)(56012099003);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(56012099003)(18002099003)(55112099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	KrMqqdK2yvyNDDAqNwf+b17QSPiaPMbLhoBYQjpi9OpXIDWIvZMs/sFTATjo2igQ3yUxHX3XqgxEXw2pwrJQpPeOaGHib42vqPwchMXK0Azy+ilbNa2derEu056kvaV0SpIj2ICSjR3MlB1SeL7ynTT4OtJrpeCufn8S166yyEkyFN5FaM8Jo25UkAToAE17XT3dimcIRcqty2oYOW1RmWuxIhUINAhC5hthZSCxsbiHoGnLKv7wnwW7qQTrTZdtde5gcQSkLXuyNucravHopSEnf7/pPEMV1dTAPtbIun9Rn6f5Lg7pRJ6BqNMsvWE/voNzTpwdF8wiINwxIMXexwLoO1/scg3s9GpDF9pz9ZDE1c4+CWlndUVZQwdobvZ11uKZukGG+kraeDAXVYpmfPfGhiRs4VdzYkr/1WTIX0XaF5lJhkvwuFaRO6nGFGmn
-X-OriginatorOrg: ecler.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2026 09:59:38.9869
+	=?utf-8?B?RVNyU3FkcTNpYXBBTjY2T1dTSVhGV0F6SHVaWGtmdktZUWJEbUkycVVsTkhO?=
+ =?utf-8?B?bUlreUNoQVhaRVVCZUZrUXVsSHJQRWJOd3d3TVA5cEg0OWRCdzlNRVZqWHZJ?=
+ =?utf-8?B?dHNtUzBTcTcwOVorSFlEMEgzbFpMdUs2RXVXTTVJMWkxMW5BQjJsNDNwT00x?=
+ =?utf-8?B?aTd0UFF2SEhybDV4L2lhcHZ3UEpwdGdkTFVTK0E3Nm1nenNybm9FSWU0WmFo?=
+ =?utf-8?B?UzJnY240NUdkWDZDWjA1dHdsMm9OdHR6VlBPMER2OFBsQytpMXNoZ2xHZWVS?=
+ =?utf-8?B?cE9KOWU1OUZITFZScENXOVVkVnFpd29MbVpETmd4YmtLcjEyaGxGOFl0eTZM?=
+ =?utf-8?B?bERXVXRvQmQ1RitzM3ptM0djWVpjOFFaQXFjZ0JrVEFnZHU4aklFZ25hdWgw?=
+ =?utf-8?B?RVJWQmxjYXAvR1l0Q05ES0dIMjQrajdrbUUyZ0VPTGdhaWdESXEra1c4RE81?=
+ =?utf-8?B?eW9tMGEvY0w3UkxqcEM0Z29PTDhGUWk1ZENUQnhaVGx2cFlGSE9sSE0yTStx?=
+ =?utf-8?B?RGJLL3hqQy9QdkxhL3NZQzZvVTREVTcvSnRuZ1I1cW1zWjRvdjdta1RFMWU0?=
+ =?utf-8?B?NndzVHhGZ1M0QzhyeUVDYjkwTEttbHIxNzVCQXhzeVdlRGpXVDJFekphUlBh?=
+ =?utf-8?B?NTBJbllNaEdVYUYwQ2xJRDB5UlJocTFNYTQvSzlTalIreXZ3QUIxdGtUYTBY?=
+ =?utf-8?B?Q0lmM3RQOXpiUWdMUzJQaFNhZ3BFaEViMmUrUnk0QlRYSXJUKzRKVkcvQ0sw?=
+ =?utf-8?B?ekI5MDNkWUM4TkxjbUljVmJiSUY4RG9KdDArRlNWUkhWZ0dCd1pUYmx1QmxG?=
+ =?utf-8?B?UlJuV055OWF6empBRUVhWjQyT1dJdWtReG9KSlZXc1dSSWE0VXBsdkFHeGlC?=
+ =?utf-8?B?bFNBUDFFdndDNTF3aFNWMmhNQ0U1U3RmNkJuY1BiWndKcWdxeURjMGhrYm5S?=
+ =?utf-8?B?eDZ3L1g4dUlYbVZPRjBzbHFBcnJLc3FGcXN6TDNSQWg0Zmt3N2pWZlFSWHg2?=
+ =?utf-8?B?SDJzVWdFTS9nVVlGaU8yTmR0M3B5eDM2QXZNaDgrcXc5V2Q3S1QyRzFmK1RK?=
+ =?utf-8?B?UUJVbldTc3oxTUVTVEtkUTVialQvajhVS0FnU295OUk4RTBTdS95R2RyTXNT?=
+ =?utf-8?B?cG9MWlk2N2ZQRGdDdmhScGhTZy8yTFgwUmpSL2FjcXJKMFkyR0xHNTFYZkw4?=
+ =?utf-8?B?SklGeDJiQVJYNXNzeTVrbFF5M0RYNEpwMDBLN1FrL3JoMUwydW5xZTZUUXU4?=
+ =?utf-8?B?MExBUXc2VDhaTTUwZGI4VjM1N3F5S05nQ2JBQnlnYmdRT25hQkZPclplemd0?=
+ =?utf-8?B?SG1mSS81eFhqNjRjWVFpQldUNGFSZTNiUTNYSHJyVDRFUm5WNVBDM1BTWnBV?=
+ =?utf-8?B?YkpidGd0ejRxUGxhQjBPN0gxSHhBUjU3bkxrTmN4Z2hET1hIT1gxVUFTM2h0?=
+ =?utf-8?B?SHJ5b294Ky9LL2lyUmlyZ2tnYW5ybWcwZjJHZU0rdkpadExrYlRDY0pLSUMz?=
+ =?utf-8?B?TisxaFN3Q3JlaVB2Ykw3bi9sSVBFZGFVK0tWWGNMMzJhNm1nYXBEK0dvWkxR?=
+ =?utf-8?B?YzhlVTQzRDcrOElwMWtKTW9Wc0tDSXpkVkJSNk10dk95SmlMOTZPNnp1R2o4?=
+ =?utf-8?B?NkNkcko2ZFI3YklJL2dtUXE2NEEwWlhrbGZXV2h4S0ZRQXBpV3BOVEM0S0tu?=
+ =?utf-8?B?bW8xOWV1MHhIRGZLOHcyMXRlUW5pN1I5NzZPVFB5WFZ3dDlyMWY5eCt5NzRv?=
+ =?utf-8?B?L1h5T0E0cDVDZnpZUUJacTZqSTQ0OEgwZGtFV1hYeloybGZoTTkyNFM3ZWhL?=
+ =?utf-8?B?eUM0aW5SQjhyZy9Pb0NzY1BqODBuRmZNQzZVV2t1ZmdZd1NVdU9nT3RyQk9H?=
+ =?utf-8?B?d2dLQ2FVeHZ0MU1yVHJFbGMwcGF2bEkxOUJucnNUWlNrRFh1WlZ2Y1lUd0ov?=
+ =?utf-8?B?MER3TEd2R1RlQ3N3WVpxR0RTVHJpc2w4UmZiaWs5WEcrSjNZMDJjVWQ5bFpm?=
+ =?utf-8?B?WHFzcUtZZkFnenZtcUdSQ2hDcWJyTjEwYUJOTHVtdjdQYjRqL0dQZ0YxckdW?=
+ =?utf-8?B?YWdXOSt0Wm1VMWpNa2NWNWlRL0d3VVdOb1RiVHFlOWtTWjl1WHBWQnVzRXds?=
+ =?utf-8?B?TmFDM0l1MlhncnBCbStjWHV4QlVxVWwxOWNSYXNjSnhDSE5vNnZGaFhsbHdP?=
+ =?utf-8?B?ZVFpcEpIOVpBZTRvQW5QcWdna1p0MEthcEdVZlowNWxSS1BKRVYrV2JzNk1K?=
+ =?utf-8?B?RnRPTFRJanFwRjJaZXhjcXo5OGRTZ1VwUVlqTzRydEhIRGdiSm5FR3o5WmJY?=
+ =?utf-8?B?YTNmSEI0Mi9oME1YUTJIWERMRW40Ni8vbHl6bzdXY0xaM2xFcjFBUT09?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fdebfd69-f5d3-48ee-498d-08dea1ec36a3
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Apr 2026 10:28:23.5629
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2167a2c3-e104-4f24-8502-08dea1e832dd
-X-MS-Exchange-CrossTenant-Id: 6f9193a3-7ddb-4a6c-9664-df2759e0e5ac
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=6f9193a3-7ddb-4a6c-9664-df2759e0e5ac;Ip=[104.40.229.156];Helo=[eu1.smtp.exclaimer.net]
-X-MS-Exchange-CrossTenant-AuthSource:
-	AM4PEPF00027A6A.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS5PR10MB8101
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: S8iRy9xwux42Igy1Cb4QyStV6FNd8z6eGLVFsJyKQgaBVm9+00o9xMidSFL0vV7FW6st/FrKvv4WCkgC/xHGMA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB5258
 
-Hello,
+This is a smaller stable update for 3.3. Still it contains a couple of 
+corner-case fixes, so it might be worth to check the list below.
 
-Trying to validate the latest evl linux kernel version 6.12 on a RPI CM4 ba=
-sed board (the v6.12.78-cip19-evl3-rebase) with the latest libevl revision =
-(r56), I have found a test case with problems. Running the following comman=
-d line:
+Download: https://gitlab.com/Xenomai/xenomai3/xenomai/-/archive/v3.3.3/xenomai-v3.3.3.tar.bz2
 
-        evl test element-visibility
+Changes since 3.3.2:
 
-The results are OK or BROKEN in an arbitrary way: sometimes it ends with OK=
-:
+Florian Bezdeka (2):
+      y2038: lib/cobalt: select: Normalize timeout value in the y2038 case
+      y2038: lib/cobalt: select: Fix timeout writeback of the compat time64_t case
 
-        element-visibility: OK
+Hannes Diethelm (1):
+      drivers/net/stack: Migrate struct rt_proc_call to flexible array member
 
-other with FAILED:
+Jan Kiszka (11):
+      lib/cobalt: Update vdso parser to latest Linux version
+      testsuite/smokey/alchemytests: Make task-2 test more robust
+      arm: fptest: Ensure that fp_regs_set/check functions are truly inline
+      lib/cobalt: arm: Skip SIGSHADOW_ACTION_BACKTRACE over asynchronous signals
+      testsuite/smokey/sched-quota: Make workload more predictable
+      alchemy/task: Initialize thread handle on rt_task_bind
+      alchemy/task: Match thread handle on task lookup as well
+      README: Drop reference to no longer existing arch READMEs
+      cobalt/thread: Keep host task PID in xnthread struct as well
+      ci: Define our trigger source for downstream
+      config: Bump version number
 
-        ../libevl-r56/tests/element-visibility.c:60: FAILED: !element_is_pu=
-blic(path) (=3Dfalse)
-        ** element-visibility: BROKEN
+Markus Kurz (3):
+      docs(xeno3): change to client-side search
+      docs(xeno3): adjust the size of the search bar
+      docs(xeno3): fix warnings in doxygen build
 
-Has someone discovered the cause of this wrong behavior?
+Jan
 
-Regards.
+-- 
+Siemens AG, Technology
+Linux Expert Center
 
-Jesus Villena
 
-Jesus Villena
-Software Engineer
-607198846       / 3025
-
-[Ecler] <https://www.ecler.com>
-Neec Audio Barcelona SL
-Carrer dels Motors, 166-168
-08038 Barcelona
-ES
-www.ecler.com <https://www.ecler.com/es/>
-
-[Twitter] <https://twitter.com/eclerofficial> [Facebook]  <https://www.face=
-book.com/ecler/> [LinkedIn]  <https://www.linkedin.com/company/ecler/> [You=
-Tube]  <https://www.youtube.com/ECLER>    [Ecler Brochure ISE 2026]  <https=
-://media.ecler.com/1768915806-ecler-brochure-ise-2026.pdf>
-Your data processing is under the responsability of the company NEEC AUDIO =
-BARCELONA, S.L. registered in Barcelona, Calle Motors 166-168, VAT number B=
--55210645, telephone number 93.223.84.00, and e-mail address information@ec=
-ler.com. The aim of the data processing is to forward news bulletins and th=
-ese data will be stored as long as unsubscribing from the newsletter is not=
- requested. The legal basis for the data processing is consent. Data will n=
-ot be handed over to third parties with the exception of being authorized b=
-y the person concerned or under legal requirement. You have the right to ob=
-tain confirmation on whether data are being processed by NEEC AUDIO BARCELO=
-NA, S.L. , as well as the access, amendment of incorrect data, or the reque=
-st of deletion when, for instance, the data are no longer needed towards th=
-e aim for which they were collected. Under certain circumstances, you will =
-be able to request the restraint of data processing and data will only be s=
-tored in order to lodge or argue a complaint. Under certain circumstances, =
-you could object to your personal data processing and NEEC AUDIO BARCELONA,=
- S.L. shall cease to process them, unless there are legal and imperative re=
-quirements or the lodge or arguing of prospective complaints. In addition, =
-you can review our full Privacy Policy at https://www.ecler.com/en/privacy-=
-policy/
