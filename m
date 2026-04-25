@@ -1,86 +1,107 @@
-Received: from mslow3.mail.gandi.net (mslow3.mail.gandi.net [217.70.178.249])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D51F835BDC9
-	for <xenomai@lists.linux.dev>; Sat, 25 Apr 2026 14:35:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.249
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB8043491D6
+	for <xenomai@lists.linux.dev>; Sat, 25 Apr 2026 15:36:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777127706; cv=none; b=u2u9eMFa2mygeQJjGoRYogRqtX8zK0Y6RBTlWQWPTws+FKnHJTYeSv6oB8VdqFEhHI1R4Yr5Qo5XawaaTW236Z9hNmvx4Gij2tLWBdUum+T5jWPwV2n8y3M972NqQY5ac8ATDE+8EbEF6MlOkQT7wyu9UlH7AjP1ecJaOcmRR60=
+	t=1777131364; cv=none; b=KrZi1Hq1pN+kMgsVJDaOPEpklFmPyitGV7dUHGLQ2bujtZ3VVZTjzZzSFVy6+lwST/ky/zn1wL/aRTaczwvmU/NpDiC1DIfDXzm7FWvhJuw5cY8MEcQQ+0bf3nDrQUNn1IiaU917t/vmK4AJYMjNd7jc3NGRYUazDCCWxY7vtJw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777127706; c=relaxed/simple;
-	bh=UFOG1B5PXSxA+SLIFku/E2TqiEWHwKA958hR8RUfU6A=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=poO2+5MLyamIABd1hLUpS9UX9Dd2diUxn1dxOtGqtevL0XC+v3u+meI2NE6kN3kYfI9XGeq4cAmsIvSTGkmy28itz4d9v3uvYd4WZwQdwc9Pak6ebAd3RcJC4iYP3GYQyd7ZhJ7eM73b99f4a1EvrNKBgLl6ROZwpCUiq7qfFFw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=PiNOSFlI; arc=none smtp.client-ip=217.70.178.249
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1777131364; c=relaxed/simple;
+	bh=fO8vSFP8pVeet+3SB9fadiya4vVQ+LC1fmXxtWjlbjY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=OYrbBUGv8dzw7FR6i1m7DAc2CzSWmp3ir7Ue036DcUXI3v8taz140rNBNOggdVPoa8lbnvGzGY868Vw84K/lCUTD/ntyzIp4omPNMn8CrG0vz6L8NMQ765049clsV72r26lCLybuk7oanM5x5M1PAstRDpsjj9ud2VD7VaYSmvI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=K/YRC9P1; arc=none smtp.client-ip=209.85.221.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="PiNOSFlI"
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-	by mslow3.mail.gandi.net (Postfix) with ESMTP id 0FBB358009A
-	for <xenomai@lists.linux.dev>; Sat, 25 Apr 2026 14:22:30 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 8F5C33EC47;
-	Sat, 25 Apr 2026 14:22:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1777126941;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=o28T8Ijz2zSDTGPJF3ONRs8Cbh8gmDd3JibEBOw9oyI=;
-	b=PiNOSFlITNrrHXt1oCI1jTOez8MTuNeTzDetlclgn+/IhDW1W6vEvzBy47ZA7GoMygW9/9
-	r7h35RpaeMLuTjyk5QHTHmt2L5ZHUqcILuyjh+xuO0imiH9EXzj3ZUONtd959pYUgNVMJM
-	CDFUN9JddRxQofij4uziScR5nh/E6M8w6C39+K3Q9NA4Ppf5oFM1+ndd7bwcREdGD6UbqP
-	m6bo2ovmZU3jq4aXsCYnoHuSyVnmKJ8/kbVrLOhrussHsj8lwtvy3qNKvUATNpiKxovLVD
-	ZRrAissKIXlFCEQVRung6L5M3W9xlUSANEjTA31lAyUV56rUBUtjy3S0pWanmA==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jesus Villena <j.villena@ecler.com>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: Re: [EVL] element-visibility BROKEN
-In-Reply-To: <AS8PR10MB7731A9654F34FD23F029A58DF9282@AS8PR10MB7731.EURPRD10.PROD.OUTLOOK.COM>
-	(Jesus Villena's message of "Sat, 25 Apr 2026 10:58:13 +0000")
-References: <AS8PR10MB7731181CFB7CA13EB3A8C4F7F92B2@AS8PR10MB7731.EURPRD10.PROD.OUTLOOK.COM>
-	<87fr4kqu4b.fsf@xenomai.org>
-	<AS8PR10MB7731A9654F34FD23F029A58DF9282@AS8PR10MB7731.EURPRD10.PROD.OUTLOOK.COM>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Sat, 25 Apr 2026 16:22:16 +0200
-Message-ID: <878qabi0h3.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K/YRC9P1"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-44136f7a169so738131f8f.3
+        for <xenomai@lists.linux.dev>; Sat, 25 Apr 2026 08:36:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1777131361; x=1777736161; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=BiEnrn6T7VfECyRj7r9c9OeQwq26mNvUklnmePZH9Cs=;
+        b=K/YRC9P1QvlCJWsvJBe0MZqvt0CuI3EbwnvYW2OmxjeaNlrjgLHvs98suIBOfd22oa
+         Q2kPYQy4ukJisAcbU9bbkz5uabXpGKYuCIgAVdBaSpHx8uPjSxaUZ+PYs45eMtOf0u4q
+         bw7g6fk2/dRvV1s3WzIutTmD8AMw6CGEfGpONDpqmi/e7OeXOx8e6aJJ2hyrH74BC3B6
+         qo34hrO3d80FKn3dlOp2l/S1hbDObMOD7ph/EfQ2YV7JxUh6O1ZZTpvbjf6bhY05bPkF
+         c10rY8+a0IVDrHR6gDJFb0stPy/TITSOWBrcq2h0Dwo4hs5n2/fPLGqHyN9AadWcfmp8
+         yA7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1777131361; x=1777736161;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=BiEnrn6T7VfECyRj7r9c9OeQwq26mNvUklnmePZH9Cs=;
+        b=WGzr4QlAmh3m+Ge/UCsURAIqawqD00AAZdS5f2EesDFCAUH7oVtHrek7sFT4mc5253
+         8MZu9+0rimcaDBYeBOgWG6KOgiUnyfdvyJr0ga7vDDZbQq5yAcBV2W5W4xQRWtYFiMHn
+         veX7Kch2881UXMWI/AdXQKSy+tEVhn5g/3diWoTURa5Iy1uWw9KlJyNrwtxsQBqnMCvc
+         nB1s90DhwMV+g3EsQ0aDc3M4VIIch5HioDmbUDbNJUEHGSSy7ZGTbkB641zahB/r23vD
+         y2KnKZwyv7IyuRq5kxiLD+OA2+HafHh7ZTYATYNL1M3/1SdAGOj1uKw71W/BKJnObr64
+         ffuQ==
+X-Gm-Message-State: AOJu0Yz6Wy5fQbvcaYWYMeE+l30vymxtuVdAmoItQ+OjyCBsB7jPforb
+	CMnvIa6+P5+pK7RTQwvNRlzmOTpopP3l4z0StnC8vANfy1nbkRJ10fY/xl3ENbs8
+X-Gm-Gg: AeBDievh/BftV6u/5TtIv8FrBq38lBPI86kI48lSYaXIotaT98V5rBhSwARQtvmEss0
+	QcTu3Uibf/Ii0q2yyT4R0pBvRRUapXK/9sJTdNU2u00kbdXgvVSi8JzzDLOXLldO452E0IKol4g
+	qqYkJvjhgdcTe0PkNGXe5yqLrofwC1dAJHnXQrXG1QbTYGf9cPEZ6uCcnZjKX8PuHVNqqUu/GFg
+	pYjwK63Z5OZkW8+sOF10jT98JFvvO1EN0fwMloKNqIVKhw0zydjXZAmgDC00gncC5R3qHNRH8o0
+	o9B87geFw0t8U53cPzKr5Cwm7Zylncaj4oSvXlB9DZi4Bzk4IIyxqa+FEbk3sWbUu7W7MKOB6d3
+	HLS4ePrYsQPu3/JV0ax0bS7/zKbUT08FeX0Q7G/fvQYbcH3bp44GykvNjTqtf/c4PqATc76hEJX
+	zrZ5Y8irTJZl4YKCs2/vruQeiiM485aUUULAXh
+X-Received: by 2002:a05:6000:2303:b0:43d:73d4:b34 with SMTP id ffacd0b85a97d-43fe3dcb1e9mr56180694f8f.16.1777131360840;
+        Sat, 25 Apr 2026 08:36:00 -0700 (PDT)
+Received: from localhost ([213.55.168.64])
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-43fe4e3a166sm66567273f8f.19.2026.04.25.08.35.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 25 Apr 2026 08:35:59 -0700 (PDT)
+From: Hannes Diethelm <hannes.diethelm@gmail.com>
+To: xenomai@lists.linux.dev
+Cc: jan.kiszka@siemens.com,
+	Hannes Diethelm <hannes.diethelm@gmail.com>
+Subject: [PATCH] debian: Add rtnet.conf / tdma.conf to package
+Date: Sat, 25 Apr 2026 17:35:23 +0200
+Message-ID: <20260425153523.4935-1-hannes.diethelm@gmail.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Cause: dmFkZTGXQKTd8tcFIuPp+4fSvc1wjdx2zGCy/8SedguDxJLaL+ppgeal66Y7p514AajubZBBppLvxFCmnharGgeQar16tOs2YXk8O43CqCjVNb/gAwg3zcVmUyw/T0TsyuMIzVuNz4fbsobk/ED1DWTrQnWC13D2dNuG+TKWaOnJ4TfhU4zToHpWpaal1QARSMxMyBQUzs5I+dZgIaopio9GALQ6hqqndBwlZyfXT3Uv+OSuyB7Q4lLP5DMY5ebicqJZTdBMcPINcoBQWu2kvY4s2smzTitaJG+tiTRhE9sPPwWIJMa8jfVgk7etSFmj/W1G9Uu8Ni8Kch81QeKmpdw87Mt1BgAAVrhqOAcCwAXvgguPB7XVrJuRH6f/JB7zCDB+HYo4ePVrSmjqrWwbbInnwlZ+DRWdDpx68n8C31P1ph8DfSzkkJt99O8QvLuQCgAeSU2bhr0lA0Lwn6KYejRSJnNeLsOZU0gqg7QrVm4g7ORc2+7ffZYmwmM6B34BnBcPshMX6VWfJzCjCTgrULOTr7UQ9JSDZzXs6EYz7JdYxi7n+cTu0DFbDUaBCMXLnHeS6HE0/5bJMf24ZJbDlEFPvbOkKSDbOJppLINGgDe2uLx9cOSmxZOsPAzZQDeYCs909IUCaDtG3dBvBEsI3BsjmnyN4waI6E1el59Y162X2EDN+Q
-X-GND-State: clean
-X-GND-Score: -100
+Content-Transfer-Encoding: 8bit
 
-Jesus Villena <j.villena@ecler.com> writes:
+The two config files rtnet.conf / tdma.conf where missing in the Debian
+package and --sysconfdir=/etc was missing in rules.
 
-> Sorry Philippe, but I have applied the commit #3ddfd3f and I still get different errors with several consecutive executions of "evl test element-visibility":
->
-> / # evl test element-visibility
-> element-visibility: OK
-> / # evl test element-visibility
-> ../libevl-r56/tests/element-visibility.c:89: FAILED: evl_create_observable((0 << 16), "%s", name) (=No such file or directory)
-> ** element-visibility: BROKEN
-> / # evl test element-visibility
-> element-visibility: OK
-> / # evl test element-visibility
-> element-visibility: OK
-> ../libevl-r56/tests/element-visibility.c:50: FAILED: evl_create_sem(&sem, (-1), 0, (0 << 16), "%s", name) (=No such file or directory)
-> ** element-visibility: BROKEN
-> / # evl test element-visibility
-> element-visibility: OK
-> / # evl test element-visibility
-> element-visibility: OK
-> / # evl test element-visibility
-> ../libevl-r56/tests/element-visibility.c:89: FAILED: evl_create_observable((0 << 16), "%s", name) (=No such file or directory)
-> ** element-visibility: BROKEN
+Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
+---
+ debian/rules                   | 1 +
+ debian/xenomai-runtime.install | 2 ++
+ 2 files changed, 3 insertions(+)
 
-Ok, I need to reproduce this issue since it seems to be caused by some
-race. Can you please share the .config file for building the pi4 kernel?
-
+diff --git a/debian/rules b/debian/rules
+index 225c743c5..9e56de260 100755
+--- a/debian/rules
++++ b/debian/rules
+@@ -15,6 +15,7 @@ DEB_BUILD_GNU_TYPE=$(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+ 
+ CONFIG_OPTS = --prefix=/usr \
+             --includedir=/usr/include/xenomai \
++            --sysconfdir=/etc \
+             --mandir=/usr/share/man \
+             --with-testdir=/usr/lib/xenomai/testsuite \
+             --enable-lazy-setsched \
+diff --git a/debian/xenomai-runtime.install b/debian/xenomai-runtime.install
+index 77a4c445a..a9effa984 100644
+--- a/debian/xenomai-runtime.install
++++ b/debian/xenomai-runtime.install
+@@ -5,3 +5,5 @@ usr/bin/wf_generate
+ usr/bin/wrap-link.sh
+ usr/bin/xeno
+ usr/sbin
++etc/rtnet.conf
++etc/tdma.conf
 -- 
-Philippe.
+2.47.3
+
