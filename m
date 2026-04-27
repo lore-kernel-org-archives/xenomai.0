@@ -1,55 +1,55 @@
-Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011039.outbound.protection.outlook.com [52.101.70.39])
+Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11013070.outbound.protection.outlook.com [52.101.83.70])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F192B274B28
-	for <xenomai@lists.linux.dev>; Mon, 27 Apr 2026 15:19:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.39
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2B1C3382C8
+	for <xenomai@lists.linux.dev>; Mon, 27 Apr 2026 15:44:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.83.70
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777303170; cv=fail; b=BgGXOlLF8Ld8oCJMAZYOa8DSjRYkj4ZZLPMxd5llIUfspo7dWvhmq8A/0Pu8tgPCFbCu3ieK6WQuR/ikXhD1sHm70cNwIxt689xfnTqFpeQUAAPFZjhWd02HYMPzLuEvvFZ2LG1xcHERhyDmYXQYdjkZVVVEYQ6YGYviBPOXnWc=
+	t=1777304644; cv=fail; b=FGzpDnPDLCdAGGjWD8TC/38oCvzoUnU126Z40l9EsuOKIP7jrm0Vet4TLVc9XeeTTSz2yoSM9IkdsLhAhUoe05Np6wkEgpol86zEi7mC4/BJnsUJ9loFXCA8djQ3454JMY2yZjrkfrDV5FVc3vhqWtvXE83S4vsvryuGSmXvfzE=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777303170; c=relaxed/simple;
-	bh=Ldpx/3kzsYvZ2YDHVjw3ooXqJX9BbvDTowBPtVUnlsQ=;
-	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=NAIu0qwvBQwd0+Bg/rexGK17B1r3qmIU3Wyb36dTACKB059ZTdsADj/w5S4P4DjdiXGhVMPpqutPHssC0uXcy6T/9EnP6vo4qDvn53EwSWAqleHhQ46IPhEtlweLvXzUGaRiiIFuBWJhdTpmfx2pBd3SwWEJzZJVASlIIJxncS0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=bQFjORBa; arc=fail smtp.client-ip=52.101.70.39
+	s=arc-20240116; t=1777304644; c=relaxed/simple;
+	bh=wlN4g7AmBVyHjLb5YSoY114qO9gdKymQ0BA4nG07RrQ=;
+	h=Message-ID:Date:From:To:Subject:Cc:Content-Type:MIME-Version; b=UcAtE64Gg+7zyOFgjBbp4J7npLS+OkGOJsX9aN/o5OTB0n1Pniv2ml9pUGXveq5V55ethpEoY4hpy2AVv+bDXiyOtEXlgGWvh8WnPTEKUGAFHqlmU4/KWST2neH7i2SXNNVDvQ7Mk8GR2DPOaJW3K4z/tYBb6HobF3wfZT0X7zg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=ouden8vB; arc=fail smtp.client-ip=52.101.83.70
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="bQFjORBa"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="ouden8vB"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=hRt3RED72ofA6857fWxZDfZlfP0Z7qkkoh6DIIJb93rRTdln0ujr6Po83mrtBeu3GwlF+EmJ1oNX3/wyDplnK6vk2S9i5P+xei265fnaTxrYjsEAYSXyowHlX/m9CTdw2GElUU5UQ972yOnPyN8CySTEYckP+y7BL3TXK26iyo+/0ByWsTIYNAsyPsxcOI/90GrfwxCONWq1IdCbWl0emgskCX0bczzHWIHeDabqlZKz14C0mqzw1sJXYndAecnKSTDxs955vW35perVMQwm2rz2Q9ynQT9KKM3YhC2JjtXk26XX24TTYiwVGuM1cTtMP2uukpZTkgWz6e4V6VuuRg==
+ b=Iki7HuHQE+sJbqSbhGQAanih1WmszZjND8lEISzNCZeR55ZEU33ilj9tjDKmYoCoIolaBS/AObteUjOmVvpSW4qbJBoWxxl+mzCOy5HDUW966bf+gtYSt3R3uSyAiw0LNY0Yn4CN61QSPpnHYk2m0zY2oFhsi2Hg/AZAiFzKjQof5KLWWm8/34ctQ6HCPFObbn5/wL5YWbaYqvXYfZ95egYWKmVh6hj3OQ0l6R86TYhSg6d4tdjxCfnWePhoMmkMr54bE2OJKi0Idm+OyDN3Id0jASa5OysqOQJVR1lTMpwH61ubF5SCXZ0919+aCIzZupb3m9dt/zl382KRIeaeMA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xTNLftcuhJ43sGsvXHwi7GdAeJmS/M26nlhtQUtby08=;
- b=DXwCbw0G4ZLuX4ZcnjDxvEpys2ZHogDiAKEk26iSD1eWAIKGc+PrdDIOCRNdKGBqhbTR3B2VWSQngOqa+gAdPt2RPoKvds/aLa3ssfZoa04C3EzGUVydAvVC3OCQlYvn0oCD5Ssx1yB2dCLYIoVYvnfFr0LQfYX0zkL/9GVVxmLx/nxR8Amqw4FoPXmNGD5EywehIownjGIKJ7uCghAjgJ0xjYfB/DV0VnlkKZdENSVqouGhWnvBxmyov5hddpueQsjClg0JCUqKy4n/x3+6Jl963baJ/n7EEJLl1cLczzDK69HoRQeokzSwf+MUKgwB5KcXmscIjsNUgWKjHQAKWw==
+ bh=PdbxZw9sMpoB5mxBSq8+WIXneQOP5j3/H4skYDdMagI=;
+ b=Rt17KsVTR2brZ3gXw/5bTxLjPZKguv3SQenxJWRVk6xdMlZN8H0JDUV7LUvQTHPghCSnPHvqIYVcTD84TdP1Uf0bFZiqkaAT03+xzu2ZpfCBaUQETeuiAGBA10+3bFJaFiWDKD0ZbQBdJ9Be+xfz6otn7pINXtNSktfknnOC5ruTP2cooD8kz1RIyrcv7c3Puhas3o+FmngA5ezLsoiiZ+1Zl7YDnFbRytUPVqFd9eDcGGDszB2MPSBfmBXEpJ2yQklVWwS9LHonZ4qNjNHDk0397l0jG5LLu7iLJs3q5h5SqjpWmCfto+6WjhAK8PoWa0TR/a+wCsql7qsf7dieow==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xTNLftcuhJ43sGsvXHwi7GdAeJmS/M26nlhtQUtby08=;
- b=bQFjORBawZ/L237yQggQRHWuPRQhl5dgcPX5ENC4OZvsA6kAyJxqm1xLNaFiWPqugT/FkG3vljmfUdp6jw9eDY+o7OS7UntdYqgV9DsnQJvTba8yl6V7rpnMF18eLxx7rf7GiIh1homYALL1Qx5FlZUA3U4/ng7GQApgu0QrFLDTo3iQl6gbvvjT7l1Xq4UyuESuSVNjAtJfRiC2DVF6q98ZLve9wQ1D8HNu1YdGGN5cbOKCmj7G/VOSrOqqzTrDumhvRhbv6kvBrxeVsghpeZDZ6Ec297lSAaG61Lria54Wk7wVx7MIWUsSOKkxKPNAMKmGJAKp4pD4wkZYUVo7+Q==
+ bh=PdbxZw9sMpoB5mxBSq8+WIXneQOP5j3/H4skYDdMagI=;
+ b=ouden8vBNI0P3Ffr8LZvd/E5n2dbxb3KjnHeqQiW9F+AOHmN9zfZHUK/nuorORiJBw236fHStkXMC3VzxW5TfwCwfmPIxdqUHD2opIpZsUD5iw6XT+a87UUBixoDqohBdm3VHv4wN5eYTO5g5vur/V7dh94KNmtk3ot2oOP0goOtuHXvnwSSYeIDF2jNAkUyTEnNsMF+chly9RgJn0sYoVF1qqehdNzXAwqBMq0aYseoLQgEo/vpUsHuAzYGtRmqtj7+kTjdmAGGvbz9XLRCfI0nqKc8Sk8KqUl4Y60PCOacqqFRUr6c51TFSsppphIrbBUbwTQbz6PfuoaCVFdDQw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by AS8PR10MB5806.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:509::7) with
+ by PA1PR10MB9202.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:4eb::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9846.26; Mon, 27 Apr
- 2026 15:19:24 +0000
+ 2026 15:43:59 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1%3]) with mapi id 15.20.9846.025; Mon, 27 Apr 2026
- 15:19:24 +0000
-Message-ID: <3861418f-90af-460f-9899-98a07c64e08b@siemens.com>
-Date: Mon, 27 Apr 2026 17:19:20 +0200
+ 15:43:59 +0000
+Message-ID: <8ef3bdf4-90dc-44e2-a972-347874209b57@siemens.com>
+Date: Mon, 27 Apr 2026 17:43:57 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] Update the e-mail address of the Xenomai mailing list
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
-References: <20260427-wip-flo-update-ml-addr-v1-1-624b1c285126@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
+To: Xenomai <xenomai@lists.linux.dev>
+Subject: [xenomai-images][PATCH] ci: Switch to Raspberry Pi 4 with kernel
+ 5.10, 5.15, and 6.1
 Content-Language: en-US
+Cc: Quirin Gylstorff <quirin.gylstorff@siemens.com>
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
  uNUqthIkgLGWzKugodvkcCK8Wbyw+1vxcl4Lw56WezLsOTfu7oi7Z0vp1XkrLcM0tofTbClW
@@ -93,11 +93,10 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <20260427-wip-flo-update-ml-addr-v1-1-624b1c285126@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MN2PR05CA0014.namprd05.prod.outlook.com
- (2603:10b6:208:c0::27) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: DU6P191CA0009.EURP191.PROD.OUTLOOK.COM
+ (2603:10a6:10:540::9) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -106,253 +105,164 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS8PR10MB5806:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7115a3ff-4fce-4245-c243-08dea4705d6b
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|PA1PR10MB9202:EE_
+X-MS-Office365-Filtering-Correlation-Id: 421e81b3-0bee-41ed-ce5a-08dea473cc8c
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|366016|1800799024|22082099003|18002099003|56012099003|55112099003;
+	BCL:0;ARA:13230040|376014|1800799024|366016|18002099003|56012099003|55112099003;
 X-Microsoft-Antispam-Message-Info:
-	BobDVtiW/7AkQmcGH7d2lTSd5QmNC05zjRWPWYxa55e9/aAu7SmVBf1S33uhQS3D5XmEYp7lGwdsqyyTXKV8NQDX9AyG3qAB718cX32/2xLOxp94yVqDyi6ewd3IK47k8IlqckXBGwuUGfNAhx0rKDtBDjFEQd0EHZ8YxqsOC+Yp/BxpI5OZh4rLkY+O6UaQmnjR1YHcbi5014BZZjW1nVwcgAonXEM3TEAhGytQktez1+2mZqTqtYLW9G80BeU8K6iMWguoSU/nxIe0wjTwy/HSePloGleXEfWOSje17Dv18mE0Hh43UdnZAi0n4wjPXyaI1OQGR7yIUZke1UD9cIABpZsU8Rc7UoOcJQFbbc+j7MiwjecDQV35J/kOB3hCrwXAGCwJOpOBY3xXrE0ZKxbcFf+XkeEGT3COBN0a2Ij4Q1OrwPiHIZEozsC08UKLnFvuQeMlogSYy/q5biiaV3G2nD0T+ThQB3xUwfZz18JI5eNPXw5XGGDUovlu4VqhkEh2g+kkgkj8lcHmRb8Nfaszmre8AX5cWH5eN6IMfRMsejnE27cxkAXWzPl9Kq24iHb4ryKVU7N2dP0lBh/F5JupH7dEQA3h8BMugL/iRqPV6MyGBiCY1wyAh8mb12z0ptq8Nc6Ky5PFkAHGJTM9+Hsn2Xr3c+AZLmtm4Amhq5WK/JFt60ZJJD7K32bXGWl8
+	xm5vpzBdXCJTs9fgiy7MY/7PAKxiW+NLsGIDvOJH9e9eQqd5Zrg4wvg6eJ3GKgfhmcPLnHiZi8xtwCkOR+uzd7fQN/ycdRUl7RQZXXjeMOzzNB42OR7OqSCQbapULfW86ikcBIjKH2O5vEcc74mC10xYjopuUc6WlsTYsGeLCfRl0DhM5eEAnzjYyLW8kOhfQ1xFfAvGVAUIcxCiWqyreiEBh6met0OuB0WRS+CSZvT+avqS4tbUwJBRs0RZlb0gdw/EvBY+1CqVjV0DzOdwlDcOmQ8PuBHzR/q0lQG6/y0fE+FKPqpxBrmK84+YFjUHIWS6z8X6Ty+H2QGSnQ+S+pH6fJw6iNtM/Q1zfWNrLd/NwIY9D6wEoRVh7o+aULqxB9CAgbzQEpmRaVUcaVWt6cZq/ndoS+m94CZ8U6iumwLZwPQoBk/MuU97TJC9qKZ0IFshv5YLko0S4LbV8bKm/M6b1YQoQ2pJEoOFde7XULuhe41SL83oAtHXYVPyry4SYkbwnyP6hXjB82Hj8V3DXm9YfJNetMf73cztQx8VaGc/gacxAcwen7vP485HvRcUxeY8B6ASSPf4fLiQgBXWwrSpehxDnAw07uyPfderHqw9A7MQrhm+OZsblwfjFtyLnZu/H9Jdb9AwYDEo5kMvuAzZLbFye+bYQz9YpE3K5vCrQqmbu6r+DP6A3b84On/jae6huYT+6PtIQJBK+CqdU6eB3kwCCgBk9mEJZTUhD8A=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(22082099003)(18002099003)(56012099003)(55112099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(18002099003)(56012099003)(55112099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?NTV3S2tvdWFvTFFFbGRTMVgyV0Q4YVJFTTY3QUJ6U3I2aW8wQTVXRCs3Y2k3?=
- =?utf-8?B?bWV6elNzWnhLZUI1Y1EwdXZGWVlRK0ZRYVl0SDFURlN2Nmc5MGJ1cUdodDk2?=
- =?utf-8?B?Ui9DS2FRaFdDNFIvNlRONVYyZ2tnQkpSLzBYc2QyVkNNb1FBNUVvemVOVnRX?=
- =?utf-8?B?TkhxQmU3NDBnWVFYVERaVzBqWU5ndVNZSDZUbkFhbW9EVlpJSVFHTEJ1eFFT?=
- =?utf-8?B?MjdkREpibWl2MFRrNlFkcWxkbXhxd2JxUVBzWStTT0Evb0xDYVFVTmhvVmJI?=
- =?utf-8?B?Vkx6MWZHQjd0L2dEU2FiUjZubGhUUFVXeVA2SDdKTWo1QjZlSjBGUU42ZzBO?=
- =?utf-8?B?NElWNnQ5dmcvZ2J5SExLNGNiL3F4aGhpNm1tenB1bzZTVC9ZS3Ezc2dzdmJv?=
- =?utf-8?B?VDBFMi93dnpuN0V6WGovaWF1RE1nak1QR1VFSHBzclVEazVjZ1g2b3BDU2F6?=
- =?utf-8?B?bXUxOHdoeU9TZkNYNjZQbndPTExma3JRaHhwZDRnMVJaMmFFU3d0UkpIUHFw?=
- =?utf-8?B?VVlmSjh4bkRoSEUzaHVVb2dIclJJMjVWZGdCY1ZFRnZIaTVMS0lMeHRiQkR5?=
- =?utf-8?B?eFY4eXdnby9VWnZ1RG5la2EvS3QxdlFwQTI4cnVuSjYwTWhZbUpES1Z3VC9Q?=
- =?utf-8?B?QngwZUFDdmNvN3A4eHhFaC9HQVNad2ZLVDQvL0p0dHBycUs0YktIbG9JcG1z?=
- =?utf-8?B?RjlWZUwrVDhkY2xjZlZiUWhqVWhabmd5Q0k3cXVaZlpiSS9uSHI4c2NTVGdM?=
- =?utf-8?B?bGRVZHpSYyttaitoZFhOSGxaQmthNmhFRVZsdG1uT1NKTllPTHNwb05yQ3kr?=
- =?utf-8?B?M2pGZWxNbUVaTDhwQXpLREJtakRocG9YTk82MjYydThsdjJ3UkY4bXVWYUFO?=
- =?utf-8?B?dVI0U0ZXUE5MQ1NGUFZJM1lkWklkUGMza3lpUEV1aC9YM1JlY0l5L2JZNDFM?=
- =?utf-8?B?d3NRWXorME56Ty80ekV2a21VVzNHQXZicm5WRWNKY0NTUFNza1VnQ0ZacGJk?=
- =?utf-8?B?QkZSVTN3MGlBVjYzWTJQdzJmdmVBVnE0QTN0eUNmcmgzdkJUdTlBNDI5TENP?=
- =?utf-8?B?S0pJbW10ektJcitkNmNmZUc3U0hObmJ2SHlYR3N1NnVCSXdOZTBicnVmWEhT?=
- =?utf-8?B?WGNvUmM3bUZMVEdDM29Bdi9kd09xdEFNc3dTVjI4VEpJU2ZCRml2dTJPd1RH?=
- =?utf-8?B?OHRReWJNK29oTTJNeHBya0YyTzRxbkxXWktlNFcxa2psUTBGWkxkbXhIdVZP?=
- =?utf-8?B?dnp0WDVMN05kYUN6TEVRSlRYMGczNnkzUFNNODdqcDRBcU9ScjVWd3ZERWFU?=
- =?utf-8?B?bmtTdm5SQS9DNmRESHJRc0V0MXN4V2xyNTZpaUYxa1Zxc3pBN3NyZzhZb3FX?=
- =?utf-8?B?VW5ub0dsMk5qL04zR0FmYU1uOHNXZ1BGb2FYV1VFa3ZkYlp2N2o3RTBNaEcx?=
- =?utf-8?B?U0paT2YvalNVS0tpbmp3dUNxU0NDdDZ3Nk1aT3l0SVFSemtOa2ZReHVJeTdY?=
- =?utf-8?B?K0hqOVdJK3phOUcwa0UvdWZsV1F3VFdMVmJQdm5vcHNBUVVJUDdNZGEvUWVI?=
- =?utf-8?B?cjMwTllDZEJjQnFZSVkwbmVOenlzdHpuRHFzS1JJY3Z4UHVwQWtWaHIyQS93?=
- =?utf-8?B?QmlBUWxIM1FyTkQ0a1JDTHZmNnZYWm56aFFucHZlMk1FUTVuUTN4Q3RBV2gz?=
- =?utf-8?B?Q2pwdUdJNDBhZVVBVm90TjJjVXBHdC9FeEdGMmQzUDdydmxWVmFxdCtSRHBT?=
- =?utf-8?B?RFNsMllpcEQ5UTJmaDAwdHJZYWFnOU1BZmJvcE5Id3pTbGZqNXZvQ1UvY1Fz?=
- =?utf-8?B?VC9yY042NzdJZXhSY21qbG1PTHVqR3RTNlJaZ01vSWtUZytWUCtIbVZuOGhr?=
- =?utf-8?B?QnVvdzI2MlNpcEpOalFSQk91TXNBYmtqSG84WWFtU0FPNjlWRERyN2FUTkpE?=
- =?utf-8?B?N1lVTi9jeGlCdjVsNnp6cTlLZDZzNEY0aUFDNTlPanpaTHhmUlRha3YwSFM5?=
- =?utf-8?B?WFQzdWVsYThUT3Z6eEtMY2JsaGFNaElEOENmTUtHKzdZbnNqc3hEbWs3TXhC?=
- =?utf-8?B?bnQ1Ukp3S3Z1MUN4YkVyMjZlSCt6Njk5T0xwREV1eXJ3Sk9VanJmT09OYWZs?=
- =?utf-8?B?T3hFdmF3WWIwSEdaQXAyc1FLK0prS3p2cjFtNUh3L25PMWk5Vko2TW1TK0dh?=
- =?utf-8?B?ZGs4VjJlUXAvcWIwU0RrRHRlSDJuK1BXV1N1TllmMDlNMDlkQi92bGdkMkUy?=
- =?utf-8?B?R3lGREhYK1NMcnVjZ2luL1NvNFpnMGt6VU5vaThMOTh2OW5RaXhXRmlqNmxF?=
- =?utf-8?B?bHZHMXNNaVl4MHZScUhRTnFBN3lid2syRDhYRElTb25QSWJRV0V5dz09?=
+	=?utf-8?B?aFB3WWtTeU0zbTIxdmVMckVOWVYvS2lyNE52WlNNRWxNWFNsc1VCRDFBZ0R1?=
+ =?utf-8?B?RWxWSFlBcXo2YXVnK1BFNi8xeXpFQ0lMeUNCdjFubmtsTWE2dXF3bFBHK2Jr?=
+ =?utf-8?B?cXd2RzdxaWI3emQybXQ5S0FHVVI2YTBub3ZuQmJZUWthL3lkUDR4bzlMdEpr?=
+ =?utf-8?B?ZjM5eDlSekJCK1dPdWN5S1VLaDBKZ21yL05oUlFDeExTVzIrNkhzZXpYcExu?=
+ =?utf-8?B?NWJOcFkwdGhuQTcyUEZoaG1OSmdTOUhKYTZ4NG9WWGlIcUhnb2JnRE5ITzBV?=
+ =?utf-8?B?bTR3OWErRWYvVTA5ZnZmY09UM1JTdGRZYTh1aDA1NG5CTW5pYkJRTkd4SUt3?=
+ =?utf-8?B?V1ZGRlFxOGZMVkhOUWlia3I3S2RFODFGWmk5ZmVoNjBuREo1dGl4aHA2N3I2?=
+ =?utf-8?B?am4yK0NTdzY3SzJJTWw2N3lDdmdIejIwb0JmbEVRRG4xU09YQzJtSjVtL2d1?=
+ =?utf-8?B?c3lXUUdEamc4cTRvbzlEYmR5aUdsS3R3am9JRDRXNUl5bVh4WXBDQjR2Rmpm?=
+ =?utf-8?B?NjkrTTNFM00vOXhkelAvK3h1QVZ6WGdqV2Z2UHVZK0pGZndZZmp2MU9tWFk1?=
+ =?utf-8?B?bGdIb21zM1QrTitEbFRxMmN0ekJLTkFVWXF2STh5aFFldmFOSThFdjVCa0tQ?=
+ =?utf-8?B?V2FXRWx0UENqc1VIVFA5U3RoU1JiUDBzRldmNUVOS0ozSkFMc2VNQ3hRQnJW?=
+ =?utf-8?B?dFNzcG0zd0pIa2VrRkN5dDBtVUltbk5nOE9nS014UGdsRUtSS2NmZHptb1pL?=
+ =?utf-8?B?MG1vQjF3TFFGUWVJSkdmclFFUjk4NzdERXVJbkVqWGZGbzlvUlJuZjlpaC9Z?=
+ =?utf-8?B?ZHNGZ2txek1UVS9PT0tZT2hRc09VWGhSV1o4QVpFZkREVjFnOUxJemwwWUNH?=
+ =?utf-8?B?OW1rcEg0YTRENTQ3NjFzMGxzVk12cmhOQ2Jod3lxRFM2MDJMSytwY3c1dFF0?=
+ =?utf-8?B?eVV4b3c4Rk5wclhJQkxiOWhZSFFIMWE1WU1uRmhjdFhodUhkS3NJem4wZWI5?=
+ =?utf-8?B?VzZGUWZhY21xMHJYd3h5alkxbE1YZWd2UjZYZzBvMVpTb2VBcU80aXNFS3R4?=
+ =?utf-8?B?aEU5dERiQVUyMUYyMFgwbzNzL0xEdHpUSWlnRWw4M0JRRkRQYlh6cjVid3NW?=
+ =?utf-8?B?RHBTVEpZSHhiZGFoMmxIdUVhQVVsWjQ1RzQvWS9OZzZleVFValU0cjhiUk8r?=
+ =?utf-8?B?c1RBU3J0V2haNUN6Lzk2YWo0TkdoZU4vN3Z3TXgzU0poK3NmYUJQbGl3aDlo?=
+ =?utf-8?B?VVFTVzkrSXJSK1BaQ1ZoL202dzdhbEFrN0JidjBlN25CQmtCV1IrYTNqWmI5?=
+ =?utf-8?B?NWY0Q0I5b284S3BYRG5RMWRFeHBob2lKbUpUMTRyam01ZW1xV3FRYTU4MSt3?=
+ =?utf-8?B?T09nY1hkakN2RUJRUGRBVTBLd3FLNHhzT3l3UWJRNnZzVEhFK1YvMXlHT1gz?=
+ =?utf-8?B?SFdPZkR1MEJqalRJNEVTN2Z0c21ENVlYMnFQajRFWmdYYjE4cE5FVmdBTG1P?=
+ =?utf-8?B?SkQxdS9NZHFJNnRhaVRSYzBONlB6VVUyZWZKd09LTXdYelNKSTAyM3hPejlD?=
+ =?utf-8?B?OEtYV1lQbWR4d1dHMzc2STVNY0k5SEhtby8xcXU5ZklUN2p3TUFtOEtaWktl?=
+ =?utf-8?B?eW1lbC9mbU1TSVh0alQ2NWtLTWFvbGpDbW9mcVJFUjRjYWh4elFIN3RWbXZO?=
+ =?utf-8?B?MzlQK1RFbmtsZzZ3VWx5UTl6dDRYbElhK3p0RW9wRzJyYXFoVjdzV1hJZEFM?=
+ =?utf-8?B?M2xoUWxpaXVibzFMcnNtRFNhR1hDSTVTeUQ5T3dCREcwZE0xYkpZOC9iM3Ro?=
+ =?utf-8?B?TDEwNVZkeTZNWHBrdFdTMDVhTWRrTFQrMTgzbUJTandvMmoxQ3FiS21kTXJI?=
+ =?utf-8?B?Tm8wNlJmSG5PZUlKT1pHQzQ1ZDZjRUNzYjRjVGFodnBES3EyS210SVNKa3J1?=
+ =?utf-8?B?Z2Uxck02V2N0SFZGT1J0U01oWTEvWWd3QjFnbXRuS2dnem80UlJBSXYrWXZC?=
+ =?utf-8?B?UW1oaW1LL0wyd0NwMllZZUVBelUzWmlOa1dqSHo5d3RtcXIxeVVjSWRnWERD?=
+ =?utf-8?B?d2J0MXRZK1pBV1BVeVFPei8vdjZZT2ZXTlRsTXBNaWx4S1dNUHB6VHpIM1pE?=
+ =?utf-8?B?eklpczZST0VLQmFTZXQzb3lYS0pzY0EzamtTN3NsMTgyazJJY1J3WWoyc3dk?=
+ =?utf-8?B?NWsrRUlrbW9id0pacVVyWjZpZlNqeUVYSmp6SHRGdGgxSWFpbzhhdUhhVUNz?=
+ =?utf-8?B?UEVxOUY0WkFReVl4cVBxT3dUWEVEN01nNGh5ZHRmd0pRN0NGTmZLVllzOW9C?=
+ =?utf-8?B?VHVDUzFpT2dQQlppMWhjZEREeXVCcTZCenJ1MWhkanNuS2ozSklFUT09?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7115a3ff-4fce-4245-c243-08dea4705d6b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 421e81b3-0bee-41ed-ce5a-08dea473cc8c
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2026 15:19:24.7604
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Apr 2026 15:43:59.4838
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tP2/8Z4vGkMn3RADUgj6LB5AgOIW1FJ+bYJH5xkz7ND8E6z+F3LHx5zxQaGdTLI3YYuoA6F70zqnrHVrtj8bZw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB5806
+X-MS-Exchange-CrossTenant-UserPrincipalName: W5f+QQadbKFerhfe0/gKQdMhzByVe7y5Vi/XSn5UwmKAR4uMVC5HCGfEO+zvp/oUO0U4i4VsGLpAK2K14QKpgA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA1PR10MB9202
 
-On 27.04.26 17:13, Florian Bezdeka wrote:
-> We have two working mail addresses for the Xenomai mailing list:
-> 
->   - Historical: xenomai@xenomai.org, still working and forwarding
->                 mails to
->   - Current:    xenomai@lists.linux.dev
-> 
-> The historical address is still working, yes, but we're not sure if
-> the forwarding is properly working in all cases. linux.dev has strict
-> anti-spam rules, SPF and friends. Moving to the lists.linux.dev
-> address should provide better reliability.
-> 
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
-> Cc: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  configure.ac                             | 2 +-
->  debian/control                           | 2 +-
->  demo/alchemy/altency.c                   | 2 +-
->  doc/asciidoc/TROUBLESHOOTING.COBALT.adoc | 2 +-
->  doc/asciidoc/man1/xeno-config.adoc       | 2 +-
->  include/rtdm/serial.h                    | 2 +-
->  include/rtdm/testing.h                   | 2 +-
->  kernel/drivers/can/README                | 2 +-
->  lib/psos/README                          | 2 +-
->  lib/vxworks/README                       | 2 +-
->  testsuite/latency/latency.c              | 2 +-
->  11 files changed, 11 insertions(+), 11 deletions(-)
-> 
-> diff --git a/configure.ac b/configure.ac
-> index a9da072877658382cdd54a5ecb42cff4c5d0e018..22823756dfe907c3b0df4dd8f6cef88d22854088 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -7,7 +7,7 @@ AC_PREREQ([2.69])
->  # implement (which actually expresses the revision level of the
->  # Copperplate library).  The kernel ABI is Cobalt-specific and is
->  # defined for each architecture in the asm/features.h file.
-> -AC_INIT([Xenomai],[m4_normalize(m4_include([config/version-label]))],[xenomai@xenomai.org])
-> +AC_INIT([Xenomai],[m4_normalize(m4_include([config/version-label]))],[xenomai@lists.linux.dev])
->  
->  AC_CONFIG_HEADERS(include/xeno_config.h)
->  AC_CONFIG_AUX_DIR(config)
-> diff --git a/debian/control b/debian/control
-> index 9855de1982008ce4b7707cb60f16504a25a67940..fb54392e206ef39742a321b2b3970ca4573e902d 100644
-> --- a/debian/control
-> +++ b/debian/control
-> @@ -1,7 +1,7 @@
->  Source: xenomai
->  Section: devel
->  Priority: extra
-> -Maintainer: Xenomai <xenomai@xenomai.org>
-> +Maintainer: Xenomai <xenomai@lists.linux.dev>
->  Build-Depends: debhelper (>= 8), findutils (>= 4.2.28), autotools-dev, autoconf, automake, libtool, pkg-config, libltdl-dev
->  Standards-Version: 3.9.3
->  Homepage: http://www.xenomai.org/
-> diff --git a/demo/alchemy/altency.c b/demo/alchemy/altency.c
-> index 072d68f8e86bfe66d407b42bd450e8045707932d..43ce8ea4a890ef0446dde1a02e9208af00d7fe6a 100644
-> --- a/demo/alchemy/altency.c
-> +++ b/demo/alchemy/altency.c
-> @@ -423,7 +423,7 @@ static void cleanup(void)
->  	if (max_relaxed > 0)
->  		printf(
->  "Warning! some latency peaks may have been due to involuntary mode switches.\n"
-> -"Please contact xenomai@xenomai.org\n");
-> +"Please contact xenomai@lists.linux.dev\n");
->  
->  	if (histogram_avg)
->  		free(histogram_avg);
-> diff --git a/doc/asciidoc/TROUBLESHOOTING.COBALT.adoc b/doc/asciidoc/TROUBLESHOOTING.COBALT.adoc
-> index 6e9550aadfae5b64380a3dff67e220eb0a8f7e35..fb11f7f3f45f9a2a14350cedd05abb8ac6f50080 100644
-> --- a/doc/asciidoc/TROUBLESHOOTING.COBALT.adoc
-> +++ b/doc/asciidoc/TROUBLESHOOTING.COBALT.adoc
-> @@ -59,7 +59,7 @@ first.
->  
->  If nothing seems wrong there, try capturing the OOPS information using
->  a _serial console_ or _netconsole_, then post it to the
-> -mailto:xenomai@xenomai.org[xenomai mailing list], along with the
-> +mailto:xenomai@lists.linux.dev[xenomai mailing list], along with the
->  kernel configuration file (aka `.config`) matching the kernel build.
->  
->  === Kernel boots but does not print any message
-> diff --git a/doc/asciidoc/man1/xeno-config.adoc b/doc/asciidoc/man1/xeno-config.adoc
-> index 0416a7fa5f34ca7a2c46aaab4231ea36560c7079..79474db156320a8255fd74f7164bb6476be2c319 100644
-> --- a/doc/asciidoc/man1/xeno-config.adoc
-> +++ b/doc/asciidoc/man1/xeno-config.adoc
-> @@ -175,7 +175,7 @@ Dump information about the running Xenomai-enabled system. Unlike most
->  other options, *--info* is aimed at being used on the target system
->  running Xenomai, for retrieving the current setup information. The
->  output of such command is valuable information when reporting any
-> -runtime issue to mailto:xenomai@xenomai.org[the Xenomai mailing
-> +runtime issue to mailto:xenomai@lists.linux.dev[the Xenomai mailing
->  list]. The command exits immediately after completion.
->  
->  ENVIRONMENT VARIABLES
-> diff --git a/include/rtdm/serial.h b/include/rtdm/serial.h
-> index 232e96dcc10c519a760f2c30de5851b632fc4b4d..2068bc9ddb8ac43ef93f68c74a20f50c61ac68f3 100644
-> --- a/include/rtdm/serial.h
-> +++ b/include/rtdm/serial.h
-> @@ -30,7 +30,7 @@
->   *
->   * This is the common interface a RTDM-compliant serial device has to
->   * provide.  Feel free to comment on this profile via the Xenomai
-> - * mailing list <xenomai@xenomai.org> or directly to the author
-> + * mailing list <xenomai@lists.linux.dev> or directly to the author
->   * <jan.kiszka@web.de>.
->   *
->   * @b Profile @b Revision: 3
-> diff --git a/include/rtdm/testing.h b/include/rtdm/testing.h
-> index 2eb813555fb5e10c993cbb790b1175818b7c0522..be629f4fa0f326e8fe2fd1162f8e738b4e2217cf 100644
-> --- a/include/rtdm/testing.h
-> +++ b/include/rtdm/testing.h
-> @@ -30,7 +30,7 @@
->   *
->   * This group of devices is intended to provide in-kernel testing
->   * results.  Feel free to comment on this profile via the Xenomai
-> - * mailing list <xenomai@xenomai.org> or directly to the author
-> + * mailing list <xenomai@lists.linux.dev> or directly to the author
->   * <jan.kiszka@web.de>.
->   *
->   * @b Profile @b Revision: 2
-> diff --git a/kernel/drivers/can/README b/kernel/drivers/can/README
-> index 44aff9b1cde5c00f09b2ecfa92c3216b2d993fa9..54a9d5bba84ad08f2dca15a2eb71901ae26f25dc 100644
-> --- a/kernel/drivers/can/README
-> +++ b/kernel/drivers/can/README
-> @@ -122,7 +122,7 @@ Feedback:
->  --------
->  
->  Please report Xenomai related bugs and comments to the Xenomai mailing 
-> -list (xenomai@xenomai.org).
-> +list (xenomai@lists.linux.dev).
->  
->  Please report CAN related bugs and comments to the "Socketcan" mailing 
->  list (Socketcan-users@lists.berlios.de) or directly to the main authors 
-> diff --git a/lib/psos/README b/lib/psos/README
-> index a76170e83ed4a888730aba17aa590f907d04b62d..d548a822485f83557099ab8f2afe7419f12b768b 100644
-> --- a/lib/psos/README
-> +++ b/lib/psos/README
-> @@ -10,7 +10,7 @@ Known variations from pSOS
->  
->  You may observe some variations from pSOS. If you find such a
->  variation and you think it would be easy to correct, please mail to
-> -the Xenomai mailing list at <xenomai@xenomai.org>.  Here are the known
-> +the Xenomai mailing list at <xenomai@lists.linux.dev>.  Here are the known
->  variations:
->  
->  - pSOS task priorities are restricted to [1..97] in the current
-> diff --git a/lib/vxworks/README b/lib/vxworks/README
-> index 0d0dcefe7a692f531b41f40730240cb0ab32a556..4b018a49050fa2bff420e8097c47de46eb726391 100644
-> --- a/lib/vxworks/README
-> +++ b/lib/vxworks/README
-> @@ -9,7 +9,7 @@ Known variations from VxWorks/WIND
->  
->  You may observe some variations from VxWorks. If you find such a
->  variation and you think it would be easy to correct, please mail to
-> -the Xenomai mailing list at <xenomai@xenomai.org>.  Here are the known
-> +the Xenomai mailing list at <xenomai@lists.linux.dev>.  Here are the known
->  variations:
->  
->  - VxWorks task priorities are restricted to [97..0] in the current
-> diff --git a/testsuite/latency/latency.c b/testsuite/latency/latency.c
-> index 0b6964bb97bd79d140a96458a8bb48ee4d6f8737..bb97711a42db212f761b6cc02bebb51ea69d2366 100644
-> --- a/testsuite/latency/latency.c
-> +++ b/testsuite/latency/latency.c
-> @@ -529,7 +529,7 @@ static void cleanup(void)
->  	if (max_relaxed > 0)
->  		printf(
->  "Warning! some latency peaks may have been due to involuntary mode switches.\n"
-> -"Please contact xenomai@xenomai.org\n");
-> +"Please contact xenomai@lists.linux.dev\n");
->  
->  	if (histogram_avg)
->  		free(histogram_avg);
-> 
-> ---
-> base-commit: d4929cf0ee285dea62ba697f2729c6d3a2ab1639
-> change-id: 20260427-wip-flo-update-ml-addr-36cf20598d06
-> 
-> Best regards,
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Thanks, applied.
+The HiKey is causing troubles right now. Let's see if the RPi4 does
+better, at least down to 5.10. 4.19 remains broken but is unmaintained
+for arm64 by now anyway.
 
-Jan
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
+We will check once more if the HiKey can be motivated to work again, 
+then leave it for 4.19, otherwise switch to qemu-arm64 for that kernel. 
+
+ ci/lib/kernel/5_10.yml | 10 +++++-----
+ ci/lib/kernel/5_15.yml | 10 +++++-----
+ ci/lib/kernel/6_1.yml  | 10 +++++-----
+ 3 files changed, 15 insertions(+), 15 deletions(-)
+
+diff --git a/ci/lib/kernel/5_10.yml b/ci/lib/kernel/5_10.yml
+index 0d44681..5561e6b 100644
+--- a/ci/lib/kernel/5_10.yml
++++ b/ci/lib/kernel/5_10.yml
+@@ -48,16 +48,16 @@ lava-test-5.10:qemu-arm64:
+   variables:
+     KERNEL_VERSION: "5.10"
+ 
+-build-5.10:hikey:
+-  extends: .build:hikey
++build-5.10:rpi4:
++  extends: .build:rpi4
+   variables:
+     LINUX_BUILD_OPTION: ":kas/opt/linux-5.10-head.yaml"
+     KERNEL_VERSION: "5.10"
+     CACHE_KERNEL: dovetail
+ 
+-lava-test-5.10:hikey:
+-  needs: [ "build-5.10:hikey" ]
+-  extends: .lava-test:hikey
++lava-test-5.10:rpi4:
++  needs: [ "build-5.10:rpi4" ]
++  extends: .lava-test:rpi4
+   variables:
+     KERNEL_VERSION: "5.10"
+ 
+diff --git a/ci/lib/kernel/5_15.yml b/ci/lib/kernel/5_15.yml
+index 4f86d10..768200c 100644
+--- a/ci/lib/kernel/5_15.yml
++++ b/ci/lib/kernel/5_15.yml
+@@ -48,16 +48,16 @@ lava-test-5.15:qemu-arm64:
+   variables:
+     KERNEL_VERSION: "5.15"
+ 
+-build-5.15:hikey:
+-  extends: .build:hikey
++build-5.15:rpi4:
++  extends: .build:rpi4
+   variables:
+     LINUX_BUILD_OPTION: ":kas/opt/linux-5.15-head.yaml"
+     KERNEL_VERSION: "5.15"
+     CACHE_KERNEL: dovetail
+ 
+-lava-test-5.15:hikey:
+-  needs: [ "build-5.15:hikey" ]
+-  extends: .lava-test:hikey
++lava-test-5.15:rpi4:
++  needs: [ "build-5.15:rpi4" ]
++  extends: .lava-test:rpi4
+   variables:
+     KERNEL_VERSION: "5.15"
+ 
+diff --git a/ci/lib/kernel/6_1.yml b/ci/lib/kernel/6_1.yml
+index 5d9ca64..e79365e 100644
+--- a/ci/lib/kernel/6_1.yml
++++ b/ci/lib/kernel/6_1.yml
+@@ -48,16 +48,16 @@ lava-test-6.1:qemu-arm64:
+   variables:
+     KERNEL_VERSION: "6.1"
+ 
+-build-6.1:hikey:
+-  extends: .build:hikey
++build-6.1:rpi4:
++  extends: .build:rpi4
+   variables:
+     LINUX_BUILD_OPTION: ":kas/opt/linux-6.1-head.yaml"
+     KERNEL_VERSION: "6.1"
+     CACHE_KERNEL: dovetail
+ 
+-lava-test-6.1:hikey:
+-  needs: [ "build-6.1:hikey" ]
+-  extends: .lava-test:hikey
++lava-test-6.1:rpi4:
++  needs: [ "build-6.1:rpi4" ]
++  extends: .lava-test:rpi4
+   variables:
+     KERNEL_VERSION: "6.1"
+ 
 -- 
-Siemens AG, Foundational Technologies
-Linux Expert Center
+2.47.3
