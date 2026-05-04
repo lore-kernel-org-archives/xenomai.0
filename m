@@ -1,56 +1,54 @@
-Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011037.outbound.protection.outlook.com [40.107.130.37])
+Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010006.outbound.protection.outlook.com [52.101.84.6])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAB54239562
-	for <xenomai@lists.linux.dev>; Mon,  4 May 2026 07:22:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.37
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 398512D877D
+	for <xenomai@lists.linux.dev>; Mon,  4 May 2026 07:33:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.84.6
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777879379; cv=fail; b=feOFhy/Pt9LAozyve27q5YVs71QvTTL7YRtFkxkItpD3e+PUREkVV7aaT2O6dhLcfsE683vepuIZoGy0gecBXBwA8XLGnOPUOKRE8RnyZ+PeZaFN7bRIFmQ0dNaw/mTqNz/gHNEkXEF1pGpHaCimcW/1BZmfdqZhjP+RTWBzFSk=
+	t=1777879997; cv=fail; b=NEyvnDiiw3jcTchckkCOujGfoplMKrjGx8MFoBIvZEjZWHJ+E0M/GLsknzFszUlRe5zDYeRBsmP7QfKEd+5Xa5fdLbDD3yWcrYveQqPYaycxD0kNZyGIPxb6N+vjzo2wpkAheflV6A9v6vRAWWOHw+V3k5Ntb1lYCyOclFKmY6E=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777879379; c=relaxed/simple;
-	bh=RbHgakIVBVr4vVUelnrEwBCTLTeKA9EDlAE1wa8Paak=;
-	h=Message-ID:Date:From:To:Subject:Cc:Content-Type:MIME-Version; b=XU2BA4VvZrqFfJi5kO5npybxXhWwARHag9VeWe+5EImg657OULngVUG9fQcSyiiM/1HPRz3tOA7sXcoW3V8zg4n2rUBQRZpCACAezr7HZaD6UM2tPcIYpnEar6qp7q6pQZb9dF5h7nBASC4m4JUKXih5TfQX+nJv/IqZEZB7jOk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=C7whnTbw; arc=fail smtp.client-ip=40.107.130.37
+	s=arc-20240116; t=1777879997; c=relaxed/simple;
+	bh=lngpI25UuGFa3/NLeGnr8CTLTbEETTCmx7qRvMwH0zI=;
+	h=Message-ID:Date:From:To:Subject:Content-Type:MIME-Version; b=CiOmrz3jEySaD+YOuEz4Lrd5GsUxcftxeVnxr49gk64qLCtnLEup+uzhBanMFKlPuf51yPROdpdHB83XwFLIPoNcJQtzf0QeedhP/hqbR+A3TT2mrUlsHDb31ri/W08g32vpoWVTEgdV8qVWgTBtBVNFr1do2NW1qpaKQMA3Vpk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=fbZyzJpK; arc=fail smtp.client-ip=52.101.84.6
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="C7whnTbw"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="fbZyzJpK"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=hDeCopA76aIjY7/UqEtepT24o9g8BTQhjJPi6nWmaeg+ZgtKudt42MWpLQB+KrR52Htvms9HVFtdWMwNuz61zL2ch0Ho6Z14Yh4xLrulFiKHSyb6fpV5GWRUg9TsQFw+PTPc7llTHy48WlKW9rMXHpeELxz1OfrEL8SctyBvDFkaSHPQltLXVUArT40x7xxpmNZCRGw4oCtfBrznbhCnog7h+StfMGST9jAOtPoYYB+vuw5J/PkCT8AVYonn33TVsbMF3fumq0lobJNVnpfd6xdJn/D7uRWTSh0HfAR13mbczQNQFC7nFSd6AQvQkFpnFsQ3DWVj57P+iRE7EEyfTw==
+ b=rSVslWp/ReXOV6FjkSqkCe8bheQnBgo7bBQ/7hi8W4VOcE9UgU56ELecX48NV5Pt/zStdfbXgVn9V9lryEkJMJAiMzwEY16qUpGgMvibHhXkVFfaS1zsZv0fK2wI/WwJfIgrX5Ij4Tc1QoEmyd6kHvbKpnzVBbSU8sKF3FaoEKZdE6IYYlETuZikpNQfF+JDv6abE6m9S6Ca9UK3MBfmZNm15tvJRE69nGKCF8RjpsrSRN8dd/pg38H23/sofd2VkUZyTgdHSkqlpOxjQWTKuZ5LnILXmkWcxa3veF3Uq9AxJ3pLNJQbNgPogkzily6voLQ7EtpQmSV4CNXmtEOrwg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7EF2EWWHulpUextoZ9pEGNc73EWU7x/fpKnDOJGvVdU=;
- b=ov1R9ldEN4zfGpcH0068Vm+jxsB+YaGCIONjso8c/EAFNgkO1glY1MGD773q3Ac+TlKnF3sTvmRu39aYewuH5hdF9NP9cdNDN31lVW8SVwOmt3M5em8TLWOs5LVANhCVS0FNwKx7dgXAD5q2SGNIfLmjxcP4zBfKANny7m0eM4eicdRpbGUfM8g75RgSF9cu2kFAL/z58uHeTE/MraCypUdtGb/y8D7S/qSq8LryKeHY2Mk3gK1nX87xsVHq0sNAmmJrH9Y4lQIyteDd1kQPiF6tmbGsXgWu7AL9rUUZQnM058PuOPmxyYEXNRc3zSPW2t0ZZSpmS5FHrp0wuDKd4w==
+ bh=aNEoZRx8SbCNbHXu1CLX5+cdeb9m8wjyxBO45yxGX/c=;
+ b=mES0U/QMyzPt9nfMT6EMiwCI4PhA4zp5aA4HFhvoDy1nyNQIdIO6jw+YNe1YSX6HctSVOSp6W6EAqhyDVpuWk7go0TpDRyqXLiAidC/XKcWYFICtQsAvwSPUf3BUlk0rrfvAc7VvVWSyHSLJ9o7d3K4hIpBHhW/Tql5TCmprhgWzPNn66cyhS/lomS3RMkL272VGX+bjZ9Raody4F4tm4J9IanKnhPev9rfShE7A8TYBDSFpCRHzbM2RhblWsYliTmBN93k8n6DVbRG0Wd73o3XZQE1Y6KTjteV3FUyxTjmoIrG28M5+ohoge0j8lKLa50f5UIsoglacqnnTCbC0EQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7EF2EWWHulpUextoZ9pEGNc73EWU7x/fpKnDOJGvVdU=;
- b=C7whnTbwBh1g6AGHRdO3J/GqYaJat4YSA7v8evSVC5j05UzjSVELv+KTGaNJDo26fqURXyG+IaPqowR/xTOErV4+DkGWDoKmdNIXefUY1JNrNAA2lgzleXN0ig6WTz0Qs+Cyn4ooZmnTausiSDnd45VCkbEbIkqx9p867W6WaFye011Vuxe0lU4af5DZff4Mjhw35W5vfWjzAeBcMf6bfGAwyrGYpJvy9B0QxkPCnjHPzzOltzX2/liJ5NoOL6wvsem+IMOmOSPwGXEmPaAnS/9l9YEzU9BX9FVzl6Zl1mxBZ++Erkw3LWI4d/cEMXyrOd9G0MJZbAEtFL53mrOmlw==
+ bh=aNEoZRx8SbCNbHXu1CLX5+cdeb9m8wjyxBO45yxGX/c=;
+ b=fbZyzJpKjYRCEmSYdN5C2QbY+EHb9TgtTH3Zt4IutzH4Wg1KipFAE0GRtmBLWPZSnogVQzfXUY583tFktryIZNFZ6e5NZyNQk4GOVbD79M7OIsmWDcb7qwMbmcvQYIYqSIPDvl2unRzfd1h5IUNj8fh9joRXUzdVvKfinruAFhbtub3G0YEmOs/dzxX2kbXjyVTf9qLNfWpbul+v5CvYwXBg58TPe/sEQ0X3eIkf7CT9u6onxVp2tVmC0RSpwTduAMnMt6x2Aadc4Zo98yPcCDq5DgV8EwYQGe7ZBB4+2/q+8Ywrq2o80GsYhOPPFuqsZaLCqLlOCcKv2eQW1zcU4A==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by AM0PR10MB3203.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:184::15) with
+ by GV1PR10MB6169.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:97::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9870.25; Mon, 4 May
- 2026 07:22:54 +0000
+ 2026 07:33:11 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1%3]) with mapi id 15.20.9870.023; Mon, 4 May 2026
- 07:22:54 +0000
-Message-ID: <6263dc31-37b1-4c5a-9714-7db1c38e83f9@siemens.com>
-Date: Mon, 4 May 2026 09:22:52 +0200
+ 07:33:11 +0000
+Message-ID: <a256fa26-71db-46a8-88bd-c4df74d28363@siemens.com>
+Date: Mon, 4 May 2026 09:33:10 +0200
 User-Agent: Mozilla Thunderbird
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: Xenomai <xenomai@lists.linux.dev>
-Subject: [PATCH] testsuite/smokey/alchemytests: Account for race condition
- inside QEMU
+Subject: [PATCH] testsuite/smokey/psostests: Avoid timeouts in over virtual
+ environments
 Content-Language: en-US
-Cc: Richard Weinberger <richard.weinberger@gmail.com>,
- "Kowalsky, Clara (T CED SES-DE)" <clara.kowalsky@siemens.com>
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
  uNUqthIkgLGWzKugodvkcCK8Wbyw+1vxcl4Lw56WezLsOTfu7oi7Z0vp1XkrLcM0tofTbClW
@@ -95,9 +93,9 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR4P281CA0359.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:f4::19) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR4P281CA0374.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:f8::6) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -106,167 +104,140 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AM0PR10MB3203:EE_
-X-MS-Office365-Filtering-Correlation-Id: 33d7d43d-b2a4-43fa-c7bc-08dea9adf50c
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GV1PR10MB6169:EE_
+X-MS-Office365-Filtering-Correlation-Id: 56772560-4ede-4230-a0e3-08dea9af650e
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|1800799024|376014|18002099003|56012099003|55112099003;
+	BCL:0;ARA:13230040|376014|1800799024|366016|55112099003|56012099003|18002099003;
 X-Microsoft-Antispam-Message-Info:
-	q51/TCtcEysLjBReTn1bqm4HFvL0/W9c9oz1oQ/neLsANxzQaNg5CQbFNzG+1ZM7DTUSJQtay/FNulr8sPOlMrejVy7RmCNibRUyUeZ+kIiIKmWNHPuzndDiLvrcuLxPXjWnP4NhLvsTbwW46gMN+HWDoPk9k8Xs7u2ZWkSy76sYZ8fU4DFuEtbMcwLU1qUTaTyMFUlshDRGpNPbWn19BdQBQDVNfiEiDm3r0JBU1QVA+o0TOuXQp/h4x7g/eRaEOWp8xOZG5JOIcGB6Sxo+pCVe7ZmRUpBZxN8Mvw60ypLMM8UVN+ay7rnxAB9S43Q2nuY0q369daZtMhQURHNsaD20EAgS0mheKzDQotLhBLARYca3jAF4QmtSVH+AkTWRvAbD10utTTdDzGL9Oa48flnddmHwVrVTZIfEIuaKER7kKxoRYIFHuUtr5Ac17DNs2LUwukWXi3WDyZI1GLJ9Zs6l1bvatCi6xrmqENp/rU31fcrxTNXIe2gqXJEJYVEBMp+dwU+r60ssUt+wW1errZ5TOiAMDcddCF+V7ez7T+NKlCjgCSYQCKhHV9mWGwWY7RclzCW62W1IlYALPDpGF7G577awA4ZX9gxY0/HkYpDhhD2DO1+Q2gT7xlsMqKUH+MyQXGU8rIuK0Br0qJqXGdZ1cDd7jr0NQIwEQethsqzIy1JRggHf34CupFEiOOfqnS8pYott1st2FyQjvWF56w==
+	JOIdjAYCgv5pP/E/E8O86S8gOHAxSVOd/9ouODcHiHmNNnpFJTPOmd+662AI9iT1rD3FTvwxNMmV4HmdoRYBJp+VHCJoLSWVwYqeaeFq+xYJ3O7klz+4RdjSaPVFAX/J/p97vem6OrBRytnxdaQJklEMIhoWoXRj0WAKYCoKv/haMkeaSZ6YrCYQ2e3FgJubin684dAZ1oDz41YHarvbmuqYwEsiD38PlxCvJHSfd72E4GuwtHso7xpLCPD7URBndT7j0s453QUrqNy903o7wZ5B69SquT4Wlya1m/CLDKld3JAu2WrsrdIwCM+20B5YB+bX4FsrwZ+YwbbVLO4DhdIWZ89s6I6S8zrHH4hpywCLdhrHaMX0HFxQsVorKma2c4iO6xnfTB5fBhwCNprZ62rsHhVuwIgLEIuX/lK3Aj2k0WLtXDO1pFxg4WtlLqhLDLgouxWgj1A/yQwHwhtqeUwRV7DUzYz5ZbkSr76wbL9wZIIdj2Rgf98xEGfvHR4UBDgYcCtnfHn4UsbXp7Bte8APY6aZ5EbgQBeFbASASn3RGjRz8KrAblpCvMttoC+B6MdMngGa9tiIDG5Uge+HBvH5N9tuQiwhCc2LPPI5ttTuY0RdOcAMWB7DbsrPRpogQNzpLGve9IvyYIcE50AAaHUs51smJb0wDM52JJqSuCKgStrC6kV1IB25PgxfZuBN
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(18002099003)(56012099003)(55112099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(55112099003)(56012099003)(18002099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WlFtUENMYkJEcHFTV3NodE5vRUZ6UmJBb2JpZ29FZ0VFSzljaG1VNGZoM3hz?=
- =?utf-8?B?NmRIb2thWFZBZzM4dTY3M3JCY2xlY2JuYituVEtWV2ZSbWc0K2JjQ0tEZkth?=
- =?utf-8?B?OTluQXVRT0QvMUhDRTlFcXVhbVBJNFB4bVZVeUpHeVZQQTQzeG1KRDB0eDhv?=
- =?utf-8?B?eG9HcVRnb2VSSGRhRXRhL0dTeTVtTTUvZXdoY2pFUUNvUWtUclpkeWZrQ2VN?=
- =?utf-8?B?anB5V3oyTXQvR2pqWEFlZ29zczNoSlZ6MWdMSjJyTnZXR0dmM2dDZjgxOU9K?=
- =?utf-8?B?eUMzQmVuZVZuWm0rTTlWcWFyRG5vV2VFcnhna2FCRDhvN0VYeEJzaWN4cEJQ?=
- =?utf-8?B?bEkvaGtCcEVWeEFqdHMzakM2ZGdGU25MQ3hKNlBtaHJ1SjEzWnRsU3RTejcr?=
- =?utf-8?B?OHRNUk8yb1ZSdDJjVUZaUGZqQzF4ZjNwQmQra1d1Y3JKT2R4cnd4alJMQ0gr?=
- =?utf-8?B?dmc2WkdaeS9zcWtWZURORFBSTE5IU3FJanBEMWhWVjVOSlpCZUo0bVRPenhQ?=
- =?utf-8?B?OHlPNUFwSFcxQUFkYzFIc3lyUTlQVGFKNzNVMXRsSGRTWk5XWVhvbDJUeUZB?=
- =?utf-8?B?dFlkN0N5NnBKT2VSTFg0dzkxUXYzbzZ0Tk9KeWRJdURpdzdyVDhIM2xyeXRq?=
- =?utf-8?B?eDR0RmIzcnlsOXJwYlp0T05mVG9iWm9NdjZmZytNWElXaURQVGZ4UlovWWZo?=
- =?utf-8?B?WGVYVEsxaVphSUhVMVk5bFlPWElqdzhvUTZiellzWVFBQmhMVWVmY28zbjNt?=
- =?utf-8?B?ZmhzRDdwSWZoYTRaWTdURlNVS0oxUnkwS3Ixb2xxMWdLSWdkODBvditlYlNO?=
- =?utf-8?B?c2JzVkoxZENibUNZdENCZTNjSVdSelZVclBUbGFEMDNVQkNQWWNML0pORjYw?=
- =?utf-8?B?Rmo4TDVFUVBUSHFjSVNYU2JCUXp2Mi8xTytrcTJIVnpwbjNVUlM1dWRkZ3VX?=
- =?utf-8?B?cGRiS0NuSW0zRWt6NW8rckNIbTFpbkVWU3dNbkkrZ0JrRVBoRW5TSUFhaVpk?=
- =?utf-8?B?WWZUUjJLU0VPQjJwMXFPMVAzNk5UZnFpbEpSdEtTbks2U3VTZE1SRWc1UmFw?=
- =?utf-8?B?ZnNVWUtzRnFPYXg2aXY1KzluMmtjd25uOVNRdWl4ZkJITmhzYXhPa3VZREs0?=
- =?utf-8?B?L0MweFhsNC9MbnI1YzJNQzh6NjRoL0pEVlZCSmNiRlpjVXhmK3VpdHpIMVlt?=
- =?utf-8?B?T0dNWjc3YURsakFTZnE0bzNLY2xJRVB5QzdvNzZLN0g1V1VVY2NGeWVub05Q?=
- =?utf-8?B?Q3k1NEtKMWtoL1Z4czJMeUFvMXRKMWFuUDJKSkg2K25ObFNXZ1U5RjQyT1Mz?=
- =?utf-8?B?S1h0MDR4V2l5Mk5BOWV3aFV6QnZSbVVaV0IzOFVRUnFOeTFMdmdUdkd5WG1D?=
- =?utf-8?B?ODZ2UlhlaUxqd25KQlVxRGM5Q09rOU10RTU3bG1IT1luVEFQRkg5Y1dmOTBt?=
- =?utf-8?B?VmJNVHdyYUxaVXZMTUkrc1lQamJteFlRREFnR1NsclluQ3ZkV2l5a24wTzJZ?=
- =?utf-8?B?czg4VVpBYUFYcXh5WFlpNkIya2ZYL1NtNmcwUk9OL3JaZVFjUEpqTVdMK1A2?=
- =?utf-8?B?bE9BQU85V2d0SE1veHJBOW1pNDh4cUcvdjg4cFp3S0drbFlvcVd0ZS9IOHV5?=
- =?utf-8?B?bWhmdS9sTXNVRXdPMG16WkhZbTlFV3BJck5vVG5Eb2lWZk9pdjBITUVxK0wx?=
- =?utf-8?B?cEpDc2JzaUZveFRMdFcrRWhRaGF2VXZlMDNIcDNMV1pFMERNaDZqdE9kdGpF?=
- =?utf-8?B?dHZ5S1hWVitwRG05RzZrUlNOSmNOMnNiS2FxRi9zS0tpQ3QvSjV4K0FFUTE0?=
- =?utf-8?B?QmlYQnVQeXhRb1pSeGxTdGExOGdENGVUdkdYaDU1TDJnQXRsb083b3BuaG9X?=
- =?utf-8?B?c09YYmp0bU15S1g2QlBCakt3eEFaQTduRHNGblJPUkVLWkU2QXpJcExwMnRD?=
- =?utf-8?B?WDRiK3RLZXBDZGxjY05lR0hwa1huRTR6cHVUSjFja3ltVEdYWkE4akM1aXc0?=
- =?utf-8?B?K3l3SHI5V0JhQjI5Qm1HQVNGVDF1UkxDNjBhWmM0cG5Sb25SUGt1T244WW44?=
- =?utf-8?B?QXBDYVZWblJWS3ljSnFBYmdlelBhS2N3Zkx1SFFrOWp5LzJjTEtDemlsQTFy?=
- =?utf-8?B?dk56OE1XaDNtSko1eUdSYmpWVUlFZjNjTllleVA4bUhSSHlTYjdpcThacmY3?=
- =?utf-8?B?dmxOOU16M1RGOFJVM2FUTmM0WUVFY000dzdFZ1o2Si9yS1JMMndEbThXTmVG?=
- =?utf-8?B?K3ZoN0JQNTIxSWdhTENLbkVqemE4SzVEQktEV3pBd2pDbE5zYUN0b24rSkFx?=
- =?utf-8?B?NjB3ZFdyRUxHQUIxRXJhUWZheUF6SFl6WWJsdnBHaEx0Z2NkZ1IwZz09?=
+	=?utf-8?B?ZDMvOFF4bktUZ1BaNHdiQUp0YzQyY2Zqekg3d2haSy9hbXRIbWovUUgrb3Jk?=
+ =?utf-8?B?RWphZE50dTg3UFlwYnMveVBkVFVvekt3RjUxWXB5dVZGYndCZVBlTk1tMldh?=
+ =?utf-8?B?ZlJpNzc2R25xalp3aXg2Q3V4ZENrcVVFdU9PZENtQVhUYXpVM3djV1pEUTJR?=
+ =?utf-8?B?Snh6UXluSXBlS05hU1VmQno2bXg0eWU1NENHMS91czRoSmJZcVVOa25BYkhC?=
+ =?utf-8?B?YnpZV09DSUhxcWJxN0F2c3FmbzhmbU9RTkV6b2N6eEpicnlkejFYU2tTZG9U?=
+ =?utf-8?B?eXVZMStPWTJTZ3dQZnN0WURxeFJPOURBR01rSWdvV3llQU40SzM0cU5BYkYv?=
+ =?utf-8?B?U1FOWTdPc3dLZnFJbG0xSk9iUnMyVXlKZXF3ME1lT0NCRDM5eDBMYWFvNU9l?=
+ =?utf-8?B?eDBqOXh2N0FZZk40Tmcvb3NTMTQ3bVdJSmRJSVhJWVZHU0czSFlLd1o1TWxz?=
+ =?utf-8?B?Y095djJXRHB4QWtJZDZpbzEvT0ZtZHQ0TElTT1NQdWgxa0RaL0xvOER2WFQ5?=
+ =?utf-8?B?eXlGVEg5SXltRlJxalYvU25xSnl4RUVHZm9oekRQdnA0dDNlS1gwRXJnLzZo?=
+ =?utf-8?B?c0RCdUc4U1BzQmo5eVlmazhhQ1FZRTlub1FaUlJSUlVUK0hMTTRtd01SOXpF?=
+ =?utf-8?B?S3hWNW9kc2NkR1lvVE9VT25BZnlaa2lvc0piOUcxdmZZOHZGeHYwdXY2USt5?=
+ =?utf-8?B?Z1BmYk1aUW8zWEF4NFNjOVlJVnQrbVZ6TktJVVk2S0d0MVZuSmllOHFJZi9o?=
+ =?utf-8?B?VHlVM0tiVlIrVWJaL3NuV0x5clY0S2xkY2VWTmorOGtiUE1lSDYrelA1Mkoz?=
+ =?utf-8?B?UitpY1EzSVdzUURWdlphcWhiZU9YUDRnRzQrN0JrMlhiTXJmdFh0Vk4rRExV?=
+ =?utf-8?B?eTkxRVB0NlVHbHlPSVZab0JWR1UyUDlvbTdkaEZwbGp3SmdlNDRQeWRCdzNr?=
+ =?utf-8?B?eG9lVm5ZSEZaYk9FaDlLR0JwUG1xZXJXVlh0eEpteXBVSXdvNHJwMDVTRER1?=
+ =?utf-8?B?Smh4bzQ1cTBjdVBsa1lhN3VrYzRxRmJnbjhPcWY1M1BkUG1RdzJuR2wzYU1Y?=
+ =?utf-8?B?WlpyTzlBY25zRXcvV0pUYVp1ajJyK0R2cWV0cGljVDU2ZHlJTXVvZVoxSUhY?=
+ =?utf-8?B?anNSQytHQTRFY0RRb2hVdHhSbkg4YjdqK1VxdDUxNFJUS3hlVHNudHVoM2xj?=
+ =?utf-8?B?RnEzLzRmQmpuOWNEek5LM3VpQ1pNRGw0WjJ2RGJORkY4RHRjcWJtNXFsZGZZ?=
+ =?utf-8?B?aDhjeWFKMEo1dUt3QzFRUEVoSU9mZ3RUbUNTalRoN1N6Z2VIWkg2RDQ2WWEz?=
+ =?utf-8?B?R0poRmwzazVVcmJxTnRPY2JIQXFvQm92b1BJY204bDdqaFhONEFFN3BSMnpO?=
+ =?utf-8?B?bU84L3lpVmNPVmc5aWRWNG45MXNRTkI3NS9PNkVlZFFmemZhS3NaTmJOQ1pW?=
+ =?utf-8?B?QnUvUFhBYVR6eUFDbGFWUnp0cDhmZ21OVmN4L1VMOEVROXN0SDJaNVlJb0Fj?=
+ =?utf-8?B?d0Z1a3R4dVI5UUlSVlEvTW50YzJyMzJoSmhTNHVGQjNqTTRpOGd1bkdvMVlM?=
+ =?utf-8?B?ZTM0QnBuak5HRmtQYmhjTHNkZ0ZpbXZ2emNEOG8wTWRkUmdlWVJ6SXh3Q3do?=
+ =?utf-8?B?YlYrcU5OM1RDZ2RqMkZsUVJLZG1VMjBRSWFMKzFraDB0V3cvWHU1WjZIOGFB?=
+ =?utf-8?B?TTlGMDIrQ3JTTk5ZTDZUT2tMQjRxOXRuanB3ZnJsWGtVMXVXSUdSRkF2eHdw?=
+ =?utf-8?B?UG1VeDg5Z21pT29JcFBjaEttdzJkNlEydVc4b1NUdUtwVnNsaGhkWGQ5ZEwy?=
+ =?utf-8?B?U1lRQnlkc2oyamVGaVhIYkVvYlBocTVWYmtRVFZldk5SelZKaCs1OEcrMEpL?=
+ =?utf-8?B?dUJBdWN0aXQ2N2xGNllralM0K00wZzRiL2lKYUhqclpuMGZVekRhQzRGczlQ?=
+ =?utf-8?B?NzdRN2dTeHBzYllzQTV2TzZFRGRFVUFNUGhYVmNNZ2owdmtOcURJdVk2bVJR?=
+ =?utf-8?B?a2phcUFXSVRQbmNQbXRGdWdQM3RIeDJtSHc1SDlkNWIzQUtFQlg4S2JwbTBP?=
+ =?utf-8?B?NGJRY1F2d2FrZVBzTTVMMGdCN0J4aTlObVhOTm1QQWhVSDNXQ0lHMzBQN3JN?=
+ =?utf-8?B?dTFXOE1IS1NEdHhONWJUSGFUZExCNmx6NEV4UWNCVE9renFQRUU1K0pCcnpI?=
+ =?utf-8?B?VUhIK3JNQWxxR2VjSitZSTJ6Si9uY0FYZFlhYlF6eHlqSUhhWU5HVm9COVZa?=
+ =?utf-8?B?VXZFYzcyei8ySW1vODZzdERyM3BnamFuaEdXdkYrUTl5L2Rva1RLMk9JWlhZ?=
+ =?utf-8?B?cUxudzFyWnZ2a3dFS0pSVnV5dVVvaC9zbUkxcGxZK3BaSUFrM2FaZz09?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 33d7d43d-b2a4-43fa-c7bc-08dea9adf50c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 56772560-4ede-4230-a0e3-08dea9af650e
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2026 07:22:54.2084
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2026 07:33:11.4569
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: drrS87GbzgDj2J/a95dZH+5FqrWQjAexY2f9aatgLOYscokDHXXnw+OrLHuoSQ8qAYpJPWAMEVvMW1bSAhuNgQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB3203
+X-MS-Exchange-CrossTenant-UserPrincipalName: qpGHvWZVIqih18UrXHc5RvlwW0i0D5f3aOV184m7FuKQZJxtDATOveVxgIENSmMLz+wEDN1pd2f3LckUcjpvFg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR10MB6169
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-Let's cite claude on this which I used here to check its quality for
-explaining such issues:
+This was seen over QEMU:
 
-  Looking at the end of each task:
+2026-05-03T09:42:36 [2] at mq-3.c:31
+2026-05-03T09:42:36    0\"071.079| BUG in __traceobj_assert_failed(): [TSKA] trace assertion failed:
+2026-05-03T09:42:36               mq-3.c:32 => \"ret == 0\"
+2026-05-03T09:42:36 [1] at mq-3.c:27
+2026-05-03T09:42:36 test psostests_mq3 failed: 256
 
-  - BGND (prio 20, line 28-32): signals 2<<18, loops back, exits loop,
-    calls rt_event_wait at line 32.
-  - FGND (prio 21, line 56-59): exits loop, calls
-    rt_task_sleep(1000000ULL) (1 ms), then rt_event_delete.
-
-  The intended ordering relies on two assumptions:
-
-  1. After BGND signals at iteration 9, FGND preempts and runs its tail,
-     then sleeps 1 ms.
-  2. Within that 1 ms, BGND returns from the signal syscall, exits the
-     loop, and re-enters the kernel via rt_event_wait — i.e., gets onto
-     the wait queue.
-
-  Both assumptions are usually true on real hardware but fragile in
-  QEMU: virtualization adds large, jittery scheduling latency. Anything
-  that delays BGND between line 28 (return from signal) and line 32
-  (entry to wait) by more than ~1 ms — e.g., host scheduler preemption,
-  timer-tick-driven simulated timekeeping, demand paging the
-  libc/alchemy code — pushes the delete ahead of the wait, producing
-  exactly EINVAL.
-
-  Most likely explanations (in order)
-
-  1. Scheduling race amplified by QEMU. The 1 ms guard in FGND is too
-     tight under virtualized timing. BGND doesn't reach rt_event_wait
-     before rt_event_delete runs, so find_alchemy_event fails and
-     returns -EINVAL instead of the post-block -EIDRM. The error code
-     itself is the smoking gun — EINVAL from the wait path can
-     essentially only come from the pre-block lookup.
-  ...
-
-Claude was only given the Xenomai code in next and the extract of the
-error log:
-
-2026-04-27T17:06:37 alchemytests_buffer1 OK
-2026-04-27T17:06:37    0"078.764| BUG in __traceobj_check_abort(): [BGND] wrong return status:
-2026-04-27T17:06:37               event-1.c:33 => EINVAL (want EIDRM)
-2026-04-27T17:06:37 test alchemytests_event1 failed: 256
-
-Not bad. Mitigation was not vibe-coded to avoid arguing over copyright.
-
-It's hard to ensure that BGND is actually blocked on the event before
-deleting it, so do not bother raising the delay, just address the effect
-and avoid a test failure.
-
-See also #52, https://gitlab.com/Xenomai/xenomai-images/-/jobs/11416004714.
+It's most likely that we ran into a timeout here due to QEMU not being
+able to deliver the messages to all receivers in time. Just wait
+infinitely in such cases to avoid spurious testsuite errors.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
 
-"Baked for 1m 53s" with opus-4.7.
+Was not worth to bother the AI in this case.
 
-If someone wants to try out different models or play with giving models 
-more context, this could be a reference. Or the other issues we have 
-open around #52. Still low-hanging fruits for AI - but maybe a chance to 
-validate less frontier'ish options.
+ testsuite/smokey/psostests/mq-3.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
- testsuite/smokey/alchemytests/event-1.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/testsuite/smokey/alchemytests/event-1.c b/testsuite/smokey/alchemytests/event-1.c
-index 9ce679c717..d691192ec9 100644
---- a/testsuite/smokey/alchemytests/event-1.c
-+++ b/testsuite/smokey/alchemytests/event-1.c
-@@ -11,6 +11,8 @@ static RT_TASK t_bgnd, t_fgnd;
+diff --git a/testsuite/smokey/psostests/mq-3.c b/testsuite/smokey/psostests/mq-3.c
+index 1171a70544..4b6f2dcf35 100644
+--- a/testsuite/smokey/psostests/mq-3.c
++++ b/testsuite/smokey/psostests/mq-3.c
+@@ -1,6 +1,8 @@
+ // SPDX-License-Identifier: GPL-2.0
++#include <stdbool.h>
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <string.h>
+ #include <copperplate/traceobj.h>
+ #include <psos/psos.h>
  
- static RT_EVENT event;
+@@ -12,6 +14,8 @@ static int tseq[] = {
+ 
+ static u_long tidA, tidB, qid;
  
 +static bool on_vm;
 +
- static void background_task(void *arg)
+ static void task_A(u_long a0, u_long a1, u_long a2, u_long a3)
  {
- 	unsigned int flags;
-@@ -30,7 +32,7 @@ static void background_task(void *arg)
- 	}
+ 	u_long msgbuf[4];
+@@ -27,7 +31,7 @@ static void task_A(u_long a0, u_long a1, u_long a2, u_long a3)
+ 	traceobj_mark(&trobj, 1);
  
- 	ret = rt_event_wait(&event, 0x55555, &flags, EV_ANY, TM_INFINITE);
--	traceobj_check(&trobj, ret, -EIDRM);
-+	traceobj_assert(&trobj, ret == -EIDRM || (on_vm && ret == -EINVAL));
+ 	for (n = 0; n < 3; n++) {
+-		ret = q_receive(qid, Q_WAIT, 10, msgbuf);
++		ret = q_receive(qid, Q_WAIT, on_vm ? 0 : 10, msgbuf);
+ 		traceobj_mark(&trobj, 2);
+ 		traceobj_assert(&trobj, ret == SUCCESS);
+ 		traceobj_assert(&trobj, msgbuf[0] == n + 1);
+@@ -56,7 +60,7 @@ static void task_B(u_long a0, u_long a1, u_long a2, u_long a3)
+ 	traceobj_mark(&trobj, 4);
  
- 	traceobj_exit(&trobj);
- }
-@@ -67,6 +69,8 @@ int main(int argc, char *const argv[])
- 	unsigned int flags;
- 	int ret;
+ 	for (n = 0; n < 3; n++) {
+-		ret = q_receive(qid, Q_WAIT, 10, msgbuf);
++		ret = q_receive(qid, Q_WAIT, on_vm ? 0 : 10, msgbuf);
+ 		traceobj_mark(&trobj, 5);
+ 		traceobj_assert(&trobj, ret == SUCCESS);
+ 		traceobj_assert(&trobj, msgbuf[0] == n + 1);
+@@ -75,6 +79,8 @@ int main(int argc, char *const argv[])
+ 	u_long args[] = { 1, 2, 3, 4 }, msgbuf[4], count;
+ 	int ret, n;
  
 +	on_vm = argc > 1 && strcmp(argv[1], "--vm") == 0;
 +
- 	traceobj_init(&trobj, argv[0], 0);
+ 	traceobj_init(&trobj, argv[0], sizeof(tseq) / sizeof(int));
  
- 	ret = rt_event_create(&event, "EVENT", 0, EV_FIFO);
+ 	ret = q_create("QUEUE", Q_NOLIMIT, 0, &qid);
 -- 
 2.47.3
