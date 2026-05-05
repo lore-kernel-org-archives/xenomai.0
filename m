@@ -1,56 +1,56 @@
 Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010063.outbound.protection.outlook.com [52.101.69.63])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C39C386440
-	for <xenomai@lists.linux.dev>; Tue,  5 May 2026 09:06:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25E5E3D5649
+	for <xenomai@lists.linux.dev>; Tue,  5 May 2026 09:06:48 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.63
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1777972007; cv=fail; b=WTS9UiCBlmpyG8WW5gguAWADj9Q1hypWAbGE4nj+hoTl2+W5U9MNePAfChQXba478E0NkGaOdeFjIQitaaDg4DwiLN1zMEGI0O15/213lNab+dxTkxV/fvlMG9LxNe6affF1SQ89wfwf1KVeVeXsGo898hUb4PWzanNMGNBE11Y=
+	t=1777972009; cv=fail; b=tEK1cfn7OXThHmupSIxTaHc5yk7iu9T6HviobrVsc29q3snGVkkmUDmc1RDeRMfw6rG4w3BkbERTuxuUBygovpZGUjc9hE4w/SGKnYF2q/WED7ZqRjkV5Pon/4hiCij4u0HFj7zTaaCeeN1bwPHj+sRso51xrNItJk6CNKYnyPg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1777972007; c=relaxed/simple;
-	bh=Zpiv3LiebO4dnUly/sXdwrXkVRG6PaZvwMIeTEirobg=;
+	s=arc-20240116; t=1777972009; c=relaxed/simple;
+	bh=3x4MrHmfx9wgVsPbsf8UGBgQXj49Gm46dKHVA8ontw0=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=eNXAX+lyzy8btfZaEW2Rc9q3pdQs6uA2fu1HZi8Ez4ZIVU2Juh/t4lpGLCIxOSSab4L/jwn7+uiqD2Q4BVSer+JpVWeTzG74FyyCINJq4U4ZevWLZ+GZoaK9KGasUzjxfdRQmjWeVTBbiau/g8VfHJO+UuZLG0s//95cAOujuZY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=D95Npf+e; arc=fail smtp.client-ip=52.101.69.63
+	 Content-Type:MIME-Version; b=GdFHLUvHWdF9lZADpe3JsRUxgtbGlKYsoxKOJTvaxLpCCWFAyvgLd8Si/0pxR0xOvCIzASVbv5PizbFbvl5R2h0tngLiNci0oTBR8TtAgVm9zvl/PqagYS/4YRsQWk2oPmQPpkdHAR5DrpT/3DUtuf6VMhMOAW6uJPlQ3d9OYS0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=N2ZpANeO; arc=fail smtp.client-ip=52.101.69.63
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="D95Npf+e"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="N2ZpANeO"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=okbUwAPtDA1nlFEmE+yvqhjr4PjrxEOhhSKx7WXRjwoPErKUKhDKl4B5vPXROIrEg7TSE0OeO1Gi8LXC3Lxwcn2q2wfuLCOn2+OB9nFh/nct201wYqFlBbDcEDiEVW0R04r+Z5FtyzPQJUXQovl1dhiR/HONyGUr3UFvcXirD4uHB8VWSykMn+oz4w8/xIXwYXyVZNkd9JKVszLEOTMooit8c+mC5acndPe5Cc2X50Vw/etld+7ODJKOEIB1+h16TXFbEuGMu3yjBoi3zdmAavI3AzSdEeUXXEJjTleKBOwiIapBJDeKEjdW1dJRlz3TeZo/6dS/XbGT1zMWrNc1AQ==
+ b=oRDoJ/7bNpP1Rnv2CqAAcDGzwJ1mstv2rxMu3A4ssh/J3DYfPg0fl5Q3irsOlRARlt00FFPwoCWZv/5ABqKxOFsMKT+My7jN6MYrGZuKGQmqIpn+Yy2otnxmqvNCU/lg0tC6hXX1988TNn/nXNH6XYuoQ8/82NF9YcAZzu9Fo1nZW11hzCXOUIoYb/m+ubBOimdtGqlbhoPrrhyEY7az4DQXZxXcw99N1l3s3oLY69tMx4qYy6BGem31+uUmU8Nmdbo6cCw+WvthD7RliY7tXJegNUjVP9B/FPYCzUj6HyTSvL99TeBNt0jf/lFtiVp8ZmS9YNuqJ4xHgCrY83ZAug==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=w+9BvQ0QFd7rJiaMxW8GprZOGhGhTZajnWuGAroSxTc=;
- b=ihISBF2I/6hEPT/QL+sS0nQdNpDFhljqSKXs5TsQAnSz0Fx6HyMWB4fmY15azuVWCvBI71WBqXwrMl7tQaLdzJssvICi1iAzjRf2e2b/l9BXN8eIQf2HyzyE5jVmLsA2xKAjKMPim3XTwX9Ewi9g8dvEpw///a/xgibfm+UGMyolNRMIhh0mi2pXOs8dC5WF55xf8oY7cqtokAZFHz7WICDafPHCbtqaE7BMWIZH0Sl73WNzcIXSipSoYdomt0PMyadJp2BfiF1s5ImYdQDevJ6B2/XZaTVp8rA1VcCY+6dWSV79LssbamB5eQymQyvq2ddI8TvdbAGp2JbWoNttig==
+ bh=uwxU5pQcSueua4p6z/GZ1EJNqkZ2K+XemZP+ZF02hgI=;
+ b=bjQV9hVr7ELUTobm/cycl9R4+WWc4X+a78quVUZc3gjjOXvKutsRfKE20Jq9/XhqErjRbYzKn4zgSqE+g5KR7eF3fDc0q8b05qwksjxg4+xi6+qajXZLrQyQwFEc9mNE3A9sFph/DD23nxNfDoysPsldA17EtyoAjIM1bBXC/S0KeKuqVKE6j3VQDjvXIV96bNSq92OUFxGgEHbwu3llCG+5XrcTJr4XmTHz6UKedKKmTGGW/vHUCIamf+6THXh+dUcglrgNzr7HysCLOvvxAKc3+J2TmpV+iDWFrOWeYXnZPmbBAWXisFTDucsv5QMxpy8yImWy0E8SwUlyGzal4Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w+9BvQ0QFd7rJiaMxW8GprZOGhGhTZajnWuGAroSxTc=;
- b=D95Npf+etQg5yX0A1LGXmbZNhlRzoICp6IAZKdxO2l/TqZPjn8NbX1OOx0KZHMyis8CYnXsyLQFgSb+obeDZzW4MfWW4A2r9HNfnpkVHRPEkckmrsnPR+tLEphs0/W0907WwsyPqrtnJ5YjtM05CzhSTbNOPcJ7r0EbR/bDFN5SBEU6YMuc7rVMzzL6p7Pje5cTTb7oX5EGF8Gf3JlRvQNuZ3kjOqw+eAy472IzD9PRUJQhUTzVeW46R4Wa4cMpU7HYwmKWoXSUSSMS2EK4GGmYIEXS/nhtBRRf+6L4SJ4mbTeAaVAuij3sWve+zf9dxoNiHUznoPyQ5+tmkXttG8A==
+ bh=uwxU5pQcSueua4p6z/GZ1EJNqkZ2K+XemZP+ZF02hgI=;
+ b=N2ZpANeOZfKlEHUi5NHhd7NjxBD26ay9+Cn4xPnPXrjVCdrQX6ohB1dmS6K4wrTqfqIUxbBB1VsXHPcXEyfYcfrdTQ/6oCx58wFmGds9Zr1Eb3c9B+QJB50SGS4rfd/keVQeVWIuL/8DWBhTQkyEcc0qzZIj71A5vuYDPbcyd384twsImcPIpIihBtGgXUZOaoCap2kBMFTP6f8ApYIlYmnKpoqnzCaT4P34TzV6Lr3ZiYVFLjBimKPONEqOoSNLGqX2XmAB8tnfXBhSjdSfAK5JsxegMNCHu4QobEw3IT1GYxqZxqXTfUCQzOduhb1jg5l1KRyME1rRBKWjaAcY2w==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:3dd::5)
  by DB8PR10MB3942.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:16f::16) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9870.25; Tue, 5 May
- 2026 09:06:44 +0000
+ 2026 09:06:46 +0000
 Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::5f49:b0e9:d295:22d8]) by AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::5f49:b0e9:d295:22d8%5]) with mapi id 15.20.9870.023; Tue, 5 May 2026
- 09:06:44 +0000
+ 09:06:46 +0000
 From: Tobias Schaffner <tobias.schaffner@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: rpm@xenomai.org,
 	florian.bezdeka@siemens.com,
 	jan.kiszka@siemens.com,
 	Tobias Schaffner <tobias.schaffner@siemens.com>
-Subject: [PATCH xenomai-images v2 2/4] ci: Fix deploy script to handle multiple DTB files
-Date: Tue,  5 May 2026 11:06:25 +0200
-Message-ID: <20260505090627.65515-3-tobias.schaffner@siemens.com>
+Subject: [PATCH xenomai-images v2 3/4] riscv: Add StarFive VisionFive2 board support
+Date: Tue,  5 May 2026 11:06:26 +0200
+Message-ID: <20260505090627.65515-4-tobias.schaffner@siemens.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260505090627.65515-1-tobias.schaffner@siemens.com>
 References: <20260505090627.65515-1-tobias.schaffner@siemens.com>
@@ -67,84 +67,214 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|DB8PR10MB3942:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3a1e9798-79a8-42fe-78e6-08deaa85a092
+X-MS-Office365-Filtering-Correlation-Id: 21524198-dd63-4f4a-2608-08deaa85a201
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|376014|1800799024|55112099003|56012099003|22082099003|18002099003;
+	BCL:0;ARA:13230040|366016|376014|1800799024|55112099003|56012099003|12006099003|22082099003|18002099003|10063799003;
 X-Microsoft-Antispam-Message-Info:
-	IV8BKotjcHB5lGoRXR8CvKPReL/OfVRUmT0mWzAwtmadLBju3gs9YUJ35bwKlcGXBGcD5nRz77BQbr3pZmNeSw7mySfa0plwPD21PBXSmQ57kaXWJv0WhAp63P7XONrlWjSBpSp9JAEkGK1G/5MTOBc7UaPErMLseNMd1xMJcnWyDzwspNpe7//1uzqvsAnjkuom+997M7MMbWZP05mUwG7Q0ixcfGwI3sFMvZGqrwofOG4wexrcTz7Bf+RF+yhOr5sIyvADyGlCsMuTJ8LA6kdm9N6siOd5xAIDVTe5cDMQGg3XdffMtSngDrnzKA7aCuHsizQDMdnqALXKsjnX9OKs4qZYIG/6g+uFmDbZSVFZOTnjdCC2ToUVrgoyzL4IAKEqHmTuHJHRWEGEatnRnxmlqaavlZllXhawsYdZKESZK1TVex8kJvYiJqpqEH0k+3votLRRupwSLSrDMQ5t6dgMmIvFY0BJiUj9Ytxex+J+7a4FqBKky0CF3zGiCSpGG9PaUG083xmvkKx2a0ZT8lu9myr3+wYt1S0Pokya/haNpQi0qbY8HvyQmJ6mkFxiFtW+Hsk95MVu7/shVp9pQZeb3aCQ+RTItG6l9/G+XGWfuIXlmT2Z31z6GoSvt1hpFvlol4fhetqri+3e5LZRAzuWxAxMfx4Jy6zbufQDXIVzoa1ZzQeFmyRVXg/7WThI
+	wp8e8XsOOOYOi3Rk262HXlLDB6E9B8qziVBvJAVvucXSFt+ZayLJlcJOFR0IROsgAulYjEgsZvh4c+ufk2I3i2w7BTneNQoygl52Eo+gZpvL32keo7eZgB422oUG5fBMM2F8RehQ9A5oMw2VmRd0ohUU3sudrfr2urIrcAgtcHiH7Y2tuFwSWezKX3Ei6Q63dUEyHCnjnoME/qhO7hEKEh20Xk9J+hOLZkbzDK7XWgPLD56Z8YDfgZagW0RDPkqTI+ug+ELsWyinXOlL6U8z7tL/nKaXfqg7Veq8R97YcGVOTMdKleSeJ1qwHHM6YQItMr/B6wuA6VCGVV19m/DyzL4G/AiW9B2Ql67BRG9q5rCs8IBjRiNsC66hqw4SvxSxP4qy7MGc4HqTQSe4Gzq+9SRUQvsntdf87YkW7oq/DQ5MrNA58dVEyx+daiszRUdQ5oTTUFfd9VCknwV2P9stoFKAChKB5KUdH7/X3cHA+qC7ol4f2Bw943Zn5D+xEtM6EjkfWi/YHkKkLmP/H/zhgQpdCUKukOxV6DifGuegP9igyXqwjyexN8y9YhFzMm8E3udEc+ykckZ2F9Y804l2krdNXKW4KM14aVkiVxsabxZzOGF3Bn28wazF2oTKtJRbZt0ubTI4b2mhBhWIR3/a/Q==
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(55112099003)(56012099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(55112099003)(56012099003)(12006099003)(22082099003)(18002099003)(10063799003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?ViPeOzSXLsOs0k4lQMy0z+0T3tQZfLPDKQ4ueW+jqh3dpc3QRCuOYtEz+RBf?=
- =?us-ascii?Q?vXFN9lHWiOQJxlf7iHTJxBIJqzjXgIKMXQY2BcmcbmAzMcNPJ/SDd0iSDt7m?=
- =?us-ascii?Q?ykaqW79JNpfgdaa/Sjf1aU6hNfHBslvd2PFpRTIU3v77YwV2zOvCTdde9Q3a?=
- =?us-ascii?Q?pDqyLYJWXmTiSTInnZFiQmrCO81BH3Z7baYSSGRxLAOOvzvAAtXTgq7Peo5F?=
- =?us-ascii?Q?sSrYriT9lBYG2rjw/UN6iy7pqEo6I94Yu+42Y1uyOn9Mq0ZfhJR/s+9PzJ/r?=
- =?us-ascii?Q?k+VrCD+f9ZoaNFqCb+TcchAyDXq6OQ2zFO4jB9kt7l4WTbGDxMswHCXsLF7z?=
- =?us-ascii?Q?8h3dp93limZ97mdUGlX3AHaU8ivplzXSgXD23FZCcRaENuptQV+dWG/6wLqA?=
- =?us-ascii?Q?yMejWJzpCz5LQS3aVe7mHKn2AQBHHh3ni31MYF/vtBWmBWtE4gc84XDDWVun?=
- =?us-ascii?Q?XVEfa8xOiY4uYNPBTzOGeh3gA29+A5PKHWQwOCoHW87/xHV+0HC3VY0jXdmV?=
- =?us-ascii?Q?d6lZQKx+RH+00jpYqaoafrlUlzm1YZHct/npBzblh53dk3vGwNj4HuRlrZ5f?=
- =?us-ascii?Q?G3WRfRNW7IOHmo/KnCimkjCmNoLTA8ujZL7juNVVn8A/FqxsGqzm8Xq7qE40?=
- =?us-ascii?Q?cI8XA0eZBGyVHz5ez7hFwLKm62GdkQ2SK37uixr6JBZkkhMcdSY2Q5/sF8Z9?=
- =?us-ascii?Q?QuP+e1OfPr9AMJ0wYlUNTXzCoEWwWSRnljfBAMOvmamaI21MT0yp3O4Dj6de?=
- =?us-ascii?Q?6E+hDWI6sRMys7sjlF1fXM/f5zuYyGCf7LL27yNkGWhuxC8/FUD8mzBhhaa1?=
- =?us-ascii?Q?7/tbQp5Owu89o3gfnpc9zeeHmRaxvYkgpaStSN13eabYoj452R9o+KkbXCuk?=
- =?us-ascii?Q?OkVtjwK7B0CD0mixnkY80tPE2jT5R9QGq5qIjKjqALWbAKuoKNY0xZfrDp+H?=
- =?us-ascii?Q?Kk57oSrmDFYt+3Jwb97WQAijWyjWq1OB2ojP8C3I7m+pH2LsybmX4VRdTPIU?=
- =?us-ascii?Q?3446878Ka+wkfVg8dr0WII2S+GuwIDC7pZy3UMW7aoBdPdhfq5hks0mQSruJ?=
- =?us-ascii?Q?C8VJokju2EOWlDgB+qzFGS6zVgg1nWTOA9F+MsCMHIXq86JuDeYvw4rLoYDG?=
- =?us-ascii?Q?QLu2oNAas8s0YkbKewT1kqkfcdU4pfc+l6YtKtyTxaX6/0c6qqToDvb2gnBr?=
- =?us-ascii?Q?e+Sb8MHrQxA7EGtNqAwUhhyMK6Rv9++ntUK9PKKlWSU5A/so7OmCAbvZW5Of?=
- =?us-ascii?Q?7mtfdkPffvq9oAli6923JWr9fkcTjAxDw+aUJLI6VipNRF1aY5XR8UwzZC8q?=
- =?us-ascii?Q?DiY4yhnPW0c3N6LHV4ZC7FHafqHbUYS6/vd+0Cp9DLwIXs+tFCZUjbLJZR/b?=
- =?us-ascii?Q?Mgcrz6DREZWV+tBaEitky18KG7VrafTc2ndhsJXw7BhRsQHC+6XvqMFKZ/XZ?=
- =?us-ascii?Q?us/Epoj713r0cN7NLwOjk92LW+lWKMLvLQeRXLQsuv6sbD+QN6O2GQMwuP9p?=
- =?us-ascii?Q?kXkEjwUGtoAe+wpENsfXMBopTMP+bddI6cvt1QvG5jZHbDB6ILNXa2pr3dWN?=
- =?us-ascii?Q?t9uQEswP0HsnK3m9QnMd+0QYo+Q1j403/ZQgJhkF+vNiK6QLrmjjsV+iDro8?=
- =?us-ascii?Q?co0hjP2NXemiymvNnoPdhIpPKzdVNWn4XN6pGfZGLFJvJH27IUtp8HAfIaON?=
- =?us-ascii?Q?qBkrOAKvXSlJF/RzusuWWP/d6VfrAmxo1Wt5tflMg3RIGOjx9F5CE04+dX1k?=
- =?us-ascii?Q?skAR4TxkkbvuOVGQfv8bu2WTUszBXQc=3D?=
+	=?us-ascii?Q?5v/Ym32mtJjtXPmnFAIGKRB4/TgOcPCi2hEQOHnkNYgM+MoB53sB3HIIVWkA?=
+ =?us-ascii?Q?A4nS6vrX4VOj8qmac3iQfpLCPoevA5UFWLLArjHOMxu65yb4qAQ0GRk1KXAo?=
+ =?us-ascii?Q?U+z7OO/afouCbvNHZeEkYD2AW0fF+la72yiae5/Luq/DUHwWuLX3fXUOSc+H?=
+ =?us-ascii?Q?XZfTMaXSWIp3XHgcv9j0Z1BvymEKDLI9V2u7pNVuVXkeGBCj9gDbBpWrFtau?=
+ =?us-ascii?Q?mp/ESlkwyTkHfUPdztpbzKkaqDKaK3d/mLh5Hy3PPU06n/XONcZDdvampVQ+?=
+ =?us-ascii?Q?2ceaYH1bdN2d0URZoyqds0CLn644IMS+XUU5HIK7xJuh/xQE0mC3Wp9Pb5MW?=
+ =?us-ascii?Q?8L1S4vSdsjM0pHdpm5PDJzztVQaclzCzgvQD5/2oQ+sqQ7MMD93eRIa7QzqI?=
+ =?us-ascii?Q?o4FsEZlfn/E9+ai14ASNMZqTMX9+m/ValOIp5zI4h0jt2XhHyNUYjR6VgBSM?=
+ =?us-ascii?Q?heVV94CXhloXBfUpcMhvkfwG2UmNIhRN61ZXQLzgQIS0Krn4CQY+gMsXfFgh?=
+ =?us-ascii?Q?951/rhnfflRSo4AxBEP24BXeR3asXa4VAePsPwbGhp9HNYHipSEq4fqbcMR0?=
+ =?us-ascii?Q?OmvU7sdg9066aHYkJ8w9MBUC/bP6nvf5/zHXc3z0sy3UbTbnc6I2QS+Qlvj1?=
+ =?us-ascii?Q?fn3jI7Swm0p/Bv1QFwDo0VTvnFZCWLjVfw61sEljyfCQ89VYs1XESt2A7Lhr?=
+ =?us-ascii?Q?SRlaunKydqpkzV68vaE7l9TGi0V1l4lZ2LEXTfWOU18x/HQqOmnRjOMTzRYA?=
+ =?us-ascii?Q?guuRhmT3ox8YNMhIyFtjJiuy55Qou90UXSwsYJWVEHGIh4wMsvaG2to/0+vm?=
+ =?us-ascii?Q?GXP1+kKuj+cguwAyAndl/Su1QWzCfxC1a4/+KH4lwE41ECS9W0Ax4uThtcrI?=
+ =?us-ascii?Q?zNjAWSykeCHdp32+bACN7fSfMol27izry7qxKRhzMfwEBGGhXmh50b2PaqH6?=
+ =?us-ascii?Q?YfTVd8xBBwl18nW6oeuegFiZFvbFMIa2y/uo4CnIoGbXX672SNQA58GX7WRs?=
+ =?us-ascii?Q?xJEnzS3b6jZ7J7ZjH6k6bb8fp5CnNENMpOWa2uIztqWL1/ljGgZW/7cG4GtV?=
+ =?us-ascii?Q?9ghPNdNjnYTQLe4sthOSXcuxq2Lay106ZaJNZKzZYIPQYbqT9hhkjyMqvbhv?=
+ =?us-ascii?Q?7pi5AJgmRh8N85XI0ikOkpID4Fn2HgwMULsz5RT2SlebnG94oDyybjCam8lo?=
+ =?us-ascii?Q?hQhph88yyNXFxYAdtOOwht2HVbyvKlVPz8NHc5dgdwTdFBR73czw1Bx+pu1N?=
+ =?us-ascii?Q?LlGCZ8PhsKgK4sHEwPIC+hMKqyb8MLlF0w13PRkIq2kHqsz44NtzXymIN3wx?=
+ =?us-ascii?Q?hgwSaZb1saXIyPgE07xaMlYHtM0DXXOb1A2xwNCc2AJxbNpemRYh5kRQ4iYc?=
+ =?us-ascii?Q?PUdpiBViWk6izQl/Ou77HGIraN6nvOSuB60fuDX0xSTFwAmMxFZXGBGs3tsN?=
+ =?us-ascii?Q?DdrKcIO/M48geZx7h2KahrukDt0hyPlQUw7M8Oo9cslwl8fgk2AGHdwXa413?=
+ =?us-ascii?Q?jAivhGnP35n4lEgTNpIMtQFjh0zekf07Xx6d+Z9+WsXNFhzgfPqCt0iXm1U0?=
+ =?us-ascii?Q?rlOSPek+sMCbDXS7FOBEyNvCRHSzD0ORsUyhpVfM7DN3a+y6Xk/LzLahUR11?=
+ =?us-ascii?Q?DeelTlnj2qazsHZeNJ+4i+nPe5QNiotzolGwn0TAYu7mz5ChBjuOWUQDPtwK?=
+ =?us-ascii?Q?19rty1ZzIWE+BU6CnyD5bJN+BWuU3Uu8WDmcjDfvIIM9MNWHm1nMWLaezOni?=
+ =?us-ascii?Q?1GbDMiVKAKdEJU+sB+AUHrDTsOxasok=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3a1e9798-79a8-42fe-78e6-08deaa85a092
+X-MS-Exchange-CrossTenant-Network-Message-Id: 21524198-dd63-4f4a-2608-08deaa85a201
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2026 09:06:43.9408
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2026 09:06:46.1355
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ieupijQ6HlOxuqKLu4KtthbFRRVK1Fzag+lRjbPoWaQh9cXuyJmwImcFZs95y+INCjBnVoI3XFg8ZF6SjW4CWGMH0GtYCcVNRkhyGMo0e68=
+X-MS-Exchange-CrossTenant-UserPrincipalName: TH+bFy88jqIZ2TaVrcoTLXry9rPzCqCQfbHUsB51RS35HbBh2Ox/aTY72jOFN2O+VvdZnL4H0jSZbfqMkcfa5jOQRW4o8YsCCYJ4N/hZd+s=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR10MB3942
 
-Loop over DTB files individually instead of treating them as one path.
+Add machine config, U-Boot 2025.07, OpenSBI 1.8.1, and WIC layout for
+StarFive VisionFive2 RISC-V board.
 
 Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
 ---
- scripts/deploy_to_aws.sh | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ conf/machine/starfive-visionfive2.conf        | 21 +++++++++++++
+ kas/board/starfive-visionfive2.yaml           | 15 ++++++++++
+ .../opensbi-starfive-visionfive2_1.8.1.bb     | 18 +++++++++++
+ .../u-boot-starfive-visionfive2_2025.07.bb    | 30 +++++++++++++++++++
+ wic/starfive-visionfive2.wks                  | 23 ++++++++++++++
+ 5 files changed, 107 insertions(+)
+ create mode 100644 conf/machine/starfive-visionfive2.conf
+ create mode 100644 kas/board/starfive-visionfive2.yaml
+ create mode 100644 recipes-bsp/opensbi/opensbi-starfive-visionfive2_1.8.1.bb
+ create mode 100644 recipes-bsp/u-boot/u-boot-starfive-visionfive2_2025.07.bb
+ create mode 100644 wic/starfive-visionfive2.wks
 
-diff --git a/scripts/deploy_to_aws.sh b/scripts/deploy_to_aws.sh
-index 2e0ee41..6c9d8dd 100755
---- a/scripts/deploy_to_aws.sh
-+++ b/scripts/deploy_to_aws.sh
-@@ -53,7 +53,8 @@ image=$(ls "${images_dir}/${target}/${isar_base_name}".*.gz)
- aws s3 cp "${image}" "${deploy_dir}/$(basename "${image}")"
- 
- # DTB
--dtb=$(ls "${images_dir}/${target}/"*.dtb 2> /dev/null || true )
--if [ -n "${dtb}" ] ; then
--    aws s3 cp  "${dtb}" "${deploy_dir}/$(basename "${dtb}")"
--fi
-+for dtb in "${images_dir}/${target}/"*.dtb ; do
-+    if [ -f "${dtb}" ]; then
-+        aws s3 cp "${dtb}" "${deploy_dir}/$(basename "${dtb}")"
-+    fi
-+done
+diff --git a/conf/machine/starfive-visionfive2.conf b/conf/machine/starfive-visionfive2.conf
+new file mode 100644
+index 0000000..9f8b67d
+--- /dev/null
++++ b/conf/machine/starfive-visionfive2.conf
+@@ -0,0 +1,21 @@
++#
++# Copyright (c) Siemens AG, 2023-2026
++#
++# SPDX-License-Identifier: MIT
++#
++
++DISTRO_ARCH = "riscv64"
++
++DTB_FILES = " \
++    starfive/jh7110-starfive-visionfive-2-v1.2a.dtb \
++    starfive/jh7110-starfive-visionfive-2-v1.3b.dtb"
++
++IMAGE_FSTYPES ?= "wic"
++WKS_FILE ?= "starfive-visionfive2.wks"
++IMAGER_INSTALL:wic += " \
++    u-boot-starfive-visionfive2 \
++    ${SYSTEMD_BOOTLOADER_INSTALL}"
++IMAGER_BUILD_DEPS += "u-boot-starfive-visionfive2"
++
++PREFERRED_PROVIDER_u-boot-${MACHINE} = "u-boot-starfive-visionfive2"
++
+diff --git a/kas/board/starfive-visionfive2.yaml b/kas/board/starfive-visionfive2.yaml
+new file mode 100644
+index 0000000..406ed07
+--- /dev/null
++++ b/kas/board/starfive-visionfive2.yaml
+@@ -0,0 +1,15 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2026
++#
++# Authors:
++#  Tobias Schaffner <tobias.schaffner@siemens.com>
++#
++# SPDX-License-Identifier: MIT
++#
++
++header:
++  version: 14
++
++machine: starfive-visionfive2
+diff --git a/recipes-bsp/opensbi/opensbi-starfive-visionfive2_1.8.1.bb b/recipes-bsp/opensbi/opensbi-starfive-visionfive2_1.8.1.bb
+new file mode 100644
+index 0000000..bef5b04
+--- /dev/null
++++ b/recipes-bsp/opensbi/opensbi-starfive-visionfive2_1.8.1.bb
+@@ -0,0 +1,18 @@
++#
++# Copyright (c) Siemens AG, 2023-2026
++#
++# SPDX-License-Identifier: MIT
++
++inherit opensbi
++
++DESCRIPTION = "OpenSBI firmware for StarFive VisionFive 2"
++
++SRC_URI += "https://github.com/riscv-software-src/opensbi/archive/refs/tags/v${PV}.tar.gz;downloadfilename=opensbi-${PV}.tar.gz"
++SRC_URI[sha256sum] = "fb1ae61a85e966322101acb1c982f84d9eaafc4de7dd474a7d7546d9bb321c6f"
++
++S = "${WORKDIR}/opensbi-${PV}"
++
++OPENSBI_EXTRA_BUILDARGS = "FW_TEXT_START=0x40000000 FW_OPTIONS=0"
++OPENSBI_BIN = "fw_dynamic.bin"
++
++COMPATIBLE_MACHINE = "^(starfive-visionfive2)$"
+diff --git a/recipes-bsp/u-boot/u-boot-starfive-visionfive2_2025.07.bb b/recipes-bsp/u-boot/u-boot-starfive-visionfive2_2025.07.bb
+new file mode 100644
+index 0000000..d5c8d92
+--- /dev/null
++++ b/recipes-bsp/u-boot/u-boot-starfive-visionfive2_2025.07.bb
+@@ -0,0 +1,30 @@
++#
++# Copyright (c) Siemens AG, 2023-2026
++#
++# SPDX-License-Identifier: MIT
++
++inherit u-boot
++
++DESCRIPTION = "U-Boot for StarFive VisionFive 2"
++
++COMPATIBLE_MACHINE = "^(starfive-visionfive2)$"
++
++SRC_URI += "https://ftp.denx.de/pub/u-boot/u-boot-${PV}.tar.bz2"
++SRC_URI[sha256sum] = "0f933f6c5a426895bf306e93e6ac53c60870e4b54cda56d95211bec99e63bec7"
++
++S = "${WORKDIR}/u-boot-${PV}"
++
++DEPENDS += "opensbi-starfive-visionfive2"
++DEBIAN_BUILD_DEPENDS .= ", opensbi-starfive-visionfive2, \
++    python3-dev:native, python3-setuptools, swig, \
++    libssl-dev:${DISTRO_ARCH}, libssl-dev:native, \
++    libgnutls28-dev:${DISTRO_ARCH}, libgnutls28-dev:native"
++
++U_BOOT_CONFIG = "starfive_visionfive2_defconfig"
++U_BOOT_BIN = "all"
++U_BOOT_EXTRA_BUILDARGS = "OPENSBI=/usr/lib/opensbi/starfive-visionfive2/fw_dynamic.bin"
++
++do_prepare_build:append() {
++    echo "u-boot.itb spl/u-boot-spl.bin.normal.out /usr/lib/u-boot/${MACHINE}" > \
++        ${S}/debian/u-boot-${MACHINE}.install
++}
+diff --git a/wic/starfive-visionfive2.wks b/wic/starfive-visionfive2.wks
+new file mode 100644
+index 0000000..4b0fd69
+--- /dev/null
++++ b/wic/starfive-visionfive2.wks
+@@ -0,0 +1,23 @@
++#
++# Copyright (c) Siemens AG, 2023-2026
++#
++# SPDX-License-Identifier: MIT
++
++# The partition layout is based on the VisionFive2 example image:
++# https://github.com/starfive-tech/VisionFive2/blob/JH7110_VisionFive2_devel/Makefile#L394
++# However, instead of booting via ubootenv + fit, we boot fit + efi
++#
++# When booting from the SD card, make sure that the DIP switches are set to SD card.
++# By that, the board reads the u-boot firmware from the SD instead of the internal flash.
++# This is required to boot efi with the correct device tree, which is included in the fit image.
++
++# SPL
++part --source rawcopy --sourceparams "file=/usr/lib/u-boot/starfive-visionfive2/u-boot-spl.bin.normal.out" --fixed-size 2M --part-type 2E54B353-1271-4842-806F-E436D6AF6985
++# U-Boot FIT
++part --source rawcopy --sourceparams "file=/usr/lib/u-boot/starfive-visionfive2/u-boot.itb" --fixed-size 4M --part-type BC13C2FF-59E6-4262-A352-B275FD6F7172
++# EFI - DTB comes from U-Boot, not hardcoded in loader entry
++part /boot --source bootimg-efi-isar --sourceparams "loader=systemd-boot" --use-uuid --label efi --part-type EF00 --align 1024
++# rootfs
++part / --source rootfs --use-uuid --fstype ext4 --mkfs-extraopts "-T default" --label image --active --align 1024 --exclude-path=boot/
++
++bootloader --ptable gpt --timeout=0 --append "console=tty0 console=ttyS0,115200 earlycon rootwait"
 -- 
 2.43.0
 
