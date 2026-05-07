@@ -1,86 +1,102 @@
-Received: from lithops.sigma-star.at (mailout.nod.at [116.203.167.152])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E269838B7D9
-	for <xenomai@lists.linux.dev>; Thu,  7 May 2026 12:32:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=116.203.167.152
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FF5D3F076C
+	for <xenomai@lists.linux.dev>; Thu,  7 May 2026 12:44:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778157175; cv=none; b=NahM8jIJwt3rRLlM9c4dKdyzKG4yw5YDSNJeo30jOU/COM27x4WtxW9cwDKRxeCOZeBxoUIzsTDMWKwRTN0L7uddV06qzkYgxSuwGZxkvGsk8qT4hP+QXPQi4OJWy97LSFHfzrSyxhkZLcqy9fAuZgv0IqTUIN0d5OM+0a9Se5w=
+	t=1778157845; cv=none; b=XqLAElL+uM0eRhqm4z9G0d5za5MJwgwLha/1uuVsLtUd8mtqr5rAkJq9WQlwbKabszDqQSsAtwhaSehOaGDQ0w9l2qu5f4TtdHvHuumKVkFldPmUyOB4xj8qhJdv9ohEHOFuJGXvCaJtYrW82NskwBxig8ZTgVEuz7KSr/hROq4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778157175; c=relaxed/simple;
-	bh=/NskADcCTMlH6sYxwsFKQPN6UWmEi/Q7EmfrSAslQGA=;
-	h=Date:From:To:Cc:Message-ID:In-Reply-To:References:Subject:
-	 MIME-Version:Content-Type; b=UsC8JoMAdbuomCkjRoy/+AVtGb8RZzXDZmke0LDY88NDUAGSSMgSyNC1DDSRj18opcewwEPobtolf2fg3oeOoH/zcLcSWZ1iXclneWqDAfVsQj8Jd/0WKMXpZBX1V/Vm9LrPXNPFMt323/45zu27r4dh/ldjpERjv/RNV8pn20Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at; spf=fail smtp.mailfrom=nod.at; arc=none smtp.client-ip=116.203.167.152
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=nod.at
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=nod.at
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 40D28298580;
-	Thu,  7 May 2026 14:32:52 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10032)
-	with ESMTP id raGIspHa6ujL; Thu,  7 May 2026 14:32:51 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
-	by lithops.sigma-star.at (Postfix) with ESMTP id B9B5C298599;
-	Thu,  7 May 2026 14:32:51 +0200 (CEST)
-Received: from lithops.sigma-star.at ([127.0.0.1])
-	by localhost (lithops.sigma-star.at [127.0.0.1]) (amavisd-new, port 10026)
-	with ESMTP id ChOh2fOzSsXA; Thu,  7 May 2026 14:32:51 +0200 (CEST)
-Received: from lithops.sigma-star.at (lithops.sigma-star.at [195.201.40.130])
-	by lithops.sigma-star.at (Postfix) with ESMTP id 9104F298580;
-	Thu,  7 May 2026 14:32:51 +0200 (CEST)
-Date: Thu, 7 May 2026 14:32:51 +0200 (CEST)
-From: Richard Weinberger <richard@nod.at>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: xenomai <xenomai@lists.linux.dev>
-Message-ID: <1863085876.2350.1778157171370.JavaMail.zimbra@nod.at>
-In-Reply-To: <945cb32c-88ea-41fa-8223-f3d1e639e9d9@siemens.com>
-References: <20260507122357.2463483-1-richard@nod.at> <945cb32c-88ea-41fa-8223-f3d1e639e9d9@siemens.com>
-Subject: Re: [PATCH] Add build time guard to detect off_t mismatch
+	s=arc-20240116; t=1778157845; c=relaxed/simple;
+	bh=8elT1Knu1iLy1dBEPk6JIv3jnrtsMeWgS6X5KBaP0Y0=;
+	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=WbZQm/4nAN2xopkGjHO6QEsNex0+04MoQINgjMboZMxQ1Nwzm5tKvQxrHbNyrjXvjSusJe6SgN3a+DLTd1qh6glSojJyY3GBSIxLwKCOt/b179AKttsklzj980TB0JR28EsP5yny7bdNZsQG8DZw2jwldoKyyHRWD5chJYJG+LU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=PIpUMuH1; arc=none smtp.client-ip=185.136.65.226
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="PIpUMuH1"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20260507110322ad5154cace00020702
+        for <xenomai@lists.linux.dev>;
+        Thu, 07 May 2026 13:03:22 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
+ bh=zneQGKvyTtFAZkkAvDzDjDCg96oDUFSxqRr3kGoX0cQ=;
+ b=PIpUMuH1d+7V8FJnq9TmZwqP1ugqiW7D7QKJtbeZASysTkpfDyMSLxn91JALLguZgzfaqa
+ /vBEhBiWOjfE5n57LKQj3cXmHC/6l5Y+RJ2ftXkRW5/562tphtlcHIbRN72aqrZ6QkgZnA4Z
+ J+oQ8jNdeipm9Vd63nIcWRo+uLKEMx9icSgXjDIJaedBWVkJ/l5MZViX1TMEgdkiDSUriBvG
+ uVXKWzrkAxv4BAZ2bFRHKO8Yrh23PXpHjqgzU8s1tXxUN4YoxWxlbtHEkvgzIfkP3nl5PdSj
+ zslUbmnFFdHlImn8Sl9Nj1nz9oty0kt9+yJvmsvoJBy//iF/lCGWT4Eg==;
+Message-ID: <dc069eaf339d470fecc3bae1d1f6e2d299c0cafb.camel@siemens.com>
+Subject: Re: [PATCH] testsuite/smokey/alchemytests: Relax mq-2 test over VM
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@lists.linux.dev>
+Date: Thu, 07 May 2026 13:03:21 +0200
+In-Reply-To: <f5c42b11-56c8-4a87-be41-e1b73172425e@siemens.com>
+References: <f5c42b11-56c8-4a87-be41-e1b73172425e@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Zimbra 8.8.12_GA_3807 (ZimbraWebClient - FF150 (Linux)/8.8.12_GA_3809)
-Thread-Topic: Add build time guard to detect off_t mismatch
-Thread-Index: lAkZcxnN9ez55HTOXs55ihYCtEQM3w==
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
------ Urspr=C3=BCngliche Mail -----
-> Von: "Jan Kiszka" <jan.kiszka@siemens.com>
-> An: "richard" <richard@nod.at>, "xenomai" <xenomai@lists.linux.dev>
-> Gesendet: Donnerstag, 7. Mai 2026 14:26:37
-> Betreff: Re: [PATCH] Add build time guard to detect off_t mismatch
-
-> On 07.05.26 14:23, Richard Weinberger wrote:
->> When Xenomai is built without _FILE_OFFSET_BITS=3D64 on a 32 bit system,
->> which is the default, but the Xenomai application itself is built later
->> with _FILE_OFFSET_BITS=3D64, we get a nasty ABI mismatch. Since only ver=
-y
->> few cobalt syscalls use off_t, the mismatch goes undiscovered for a
->> surprisingly long time. In my case it surfaced only after a realtime
->> application which uses mmap() failed sometimes at mmap() depending on
->> what functions it called before mmap(). In the good cases it used to
->> work by chance since the extra bytes used for off_t on the stack were
->> zero.
->>=20
->> To save the next person in the same situation a lot of time, compute
->> the size of off_t at configure time and compare it against the
->> application's sizeof(off_t) via a static assertion in a new generated
->> header, which is included when building Xenomai applications.
->>=20
+On Wed, 2026-05-06 at 12:26 +0200, Jan Kiszka wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
 >=20
-> This should have been resolved (but apparently we missed most of it) by
-> 0bb6608b6fa7129de1ff4213ddf31298616cbf23. Can you name some of the
-> remaining mismatches?
+> VM environment may delay or reorder the execution of tasks, so relax the
+> checks.
+>=20
+> Part of #52.
+>=20
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>  testsuite/smokey/alchemytests/mq-2.c | 8 ++++++--
+>  1 file changed, 6 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/testsuite/smokey/alchemytests/mq-2.c b/testsuite/smokey/alch=
+emytests/mq-2.c
+> index a389e46db0..09b26b2135 100644
+> --- a/testsuite/smokey/alchemytests/mq-2.c
+> +++ b/testsuite/smokey/alchemytests/mq-2.c
+> @@ -7,6 +7,7 @@
+>  #include <alchemy/queue.h>
+> =20
+>  static struct traceobj trobj;
+> +static bool on_vm;
+> =20
+>  static int tseq[] =3D {
+>  	3, 4, 5, 6,
+> @@ -87,9 +88,10 @@ static void main_task(void *arg)
+> =20
+>  	ret =3D rt_queue_inquire(&q, &info);
+>  	traceobj_check(&trobj, ret, 0);
+> -	traceobj_assert(&trobj, info.nmessages =3D=3D 0);
+> +	traceobj_assert(&trobj, info.nmessages =3D=3D 0 || on_vm);
+> =20
+> -	traceobj_verify(&trobj, tseq, sizeof(tseq) / sizeof(int));
+> +	if (info.nmessages =3D=3D 0)
+> +		traceobj_verify(&trobj, tseq, sizeof(tseq) / sizeof(int));
+> =20
+>  	traceobj_exit(&trobj);
+>  }
+> @@ -99,6 +101,8 @@ int main(int argc, char *const argv[])
+>  	RT_TASK t_main;
+>  	int ret;
+> =20
+> +	on_vm =3D argc > 1 && strcmp(argv[1], "--vm") =3D=3D 0;
+> +
 
-In my case it was just mmap(). But wouldn't it hurt at any function
-or data structure exposed by Xenomai which uses off_t?
+Seems a bit risky to expect --vm as first argument only.
 
-So, I suggest applying my change as safeguard mechanism.
-
-Thanks,
-//richard
+>  	traceobj_init(&trobj, argv[0], sizeof(tseq) / sizeof(int));
+> =20
+>  	ret =3D rt_task_spawn(&t_main, "main_task", 0,  50, 0, main_task, NULL)=
+;
+> --=20
+> 2.47.3
