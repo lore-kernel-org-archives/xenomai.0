@@ -1,36 +1,36 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF229374E45
-	for <xenomai@lists.linux.dev>; Fri,  8 May 2026 06:23:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0442636F430
+	for <xenomai@lists.linux.dev>; Fri,  8 May 2026 06:23:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778221398; cv=none; b=bsv7c4s2rB1ssqzVt9ryefXutqoNIATHObV4oOCSLNufI0VAWK27eizOsQfuLsAXhzRrS5ltZIH2qyOnnKz0PJU2DT7kxejPkykb/x75dcFFGv+3VjRyJA+b2mUnFz8TT1IGWbTEm3I/3s+6CEliHHc8C+M7Pz9RkdgmBLBiOgM=
+	t=1778221399; cv=none; b=vBQwzUCpYq8H3LWXDkLOA4E7E8NL3JLnoDgtRvxh7ZA+zp3uVmfNeQoGSNJTfpRfBzbueJa/Vx2nZeVO5/bzQ6rtzrG2kRDJ9g0Gy8UnEFE0u4JvYVHWpBj7BzoCCEYYts+qLPjO0JXwHdGXDSKPgSeNlcT8JVgHfCEIFlHN6ts=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778221398; c=relaxed/simple;
-	bh=jX0xgqKO7zXWnlwqDPiVSSM8oCbpTTIaClSP44b5hHM=;
+	s=arc-20240116; t=1778221399; c=relaxed/simple;
+	bh=gAaYBuAG4Z6OLZvZAa8jGeEyNPFTd3AhnPkyVfHdjhM=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=tD/KTijyfckyGUtzzmADhThrYgGMzAkdvjkrQzlMWH8xd8j3KkA13KG2Gmcpl1g4p1Irq7PR02Ew+xiJU2e5ObI8wr8lRlrhZfOPpPvTw8UfhJDMRcAxVPj3MEreLavnHaaremkgnc1K0ZqxO+i0kJpHHHKgd/VcLbvrlRSK2B0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=PEZf/rEA; arc=none smtp.client-ip=185.136.65.225
+	 In-Reply-To:To:Cc; b=QrTVHLlfzAfmmi4kr4pGtRfJY8vlouLOkfC2zvsXnAAUl2mVr7zs5B7BUmAN5KVXjvWX66m7JIwpaQSkGWWvfdhPPe2I0PDTHJdSQ9ayfpZvuQtdEwVg3KCH51Xmkg6VaVJGZDGJICNa9f/Pn3fi97wdfQ3TuDax8VjLkz/5G5s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Bgwpx8oI; arc=none smtp.client-ip=185.136.64.228
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="PEZf/rEA"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20260508062302aea5f8921d00020740
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Bgwpx8oI"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 2026050806230239ec5adbc300020765
         for <xenomai@lists.linux.dev>;
         Fri, 08 May 2026 08:23:02 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=VXnMHZXDOn3WGN7r7oU+To6xWKbE5oPdacbkEE7T07Y=;
- b=PEZf/rEA1+hEhpUboEY7v9xHLfxHoGvXWjFGG8PhF3dOnHBBzPeFC9MwR4KeaXjKCOrSfu
- Xh1+f74fWtGlHuIr+XooMYjfDg5Jk8vC13e0oBOwJCAU3thjMnUQzb+2+Rv4L6+/3Xd2s61a
- +EbLwZGH/n/C4z675MGP2Rt3vnPS6pCpsr62EZM7F+Ww1o1xkYnd4tb7MJ1yPXfAri1COxBD
- KT3DGNABq6VRsYX4eVTxdYhqWTS2TvFNJG0pJ7StB83A6eZcIT/XEj7S3P1v3rqwR3r9uxUf
- Cq+HIlE5lj2EOYDHCW7aA07BOjsw5IjxfkgEwBPJ6F9G21pdNfVCoKmA==;
+ bh=+ldF5j4PCCCYktLvoWL/MjnXBhDf1KWNaMazPUAbkjE=;
+ b=Bgwpx8oI9lCXFmobvxyHuYQs1GXk3bme9V+x/4vomY3dtFTkH1Gw3Avx5S3+Fc7SgBKHDb
+ Jq8NnwwGPubMTi8Dc/w6lXNWe7D+dzWm8CY1zZm9yIWnADxh244ECnZP8b8EIE2VcfFuir+y
+ Bqx7aSb84WQFDrDVfmzE3C29E2OQM/8fYx6LsIfbA4W55VA8UVmtgrkg/8FzE7oOeKO9qx/j
+ jCSH+x4TN38Gv2CicjTQFK5eFc9ofETI95Ci0uyFr7rm84eMzJk5sadpFaFwJQcFYaqDjfEq
+ 5VIzRcqff8qNmG2bD5OIx8c1OSOtjmftPg7z8e/ttCOUb4GqRejBDHVw==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 08 May 2026 08:22:57 +0200
-Subject: [PATCH 24/32] testsuite/xeno-test: Rearrange includes
+Date: Fri, 08 May 2026 08:22:55 +0200
+Subject: [PATCH 22/32] testsuite/spitest: Rearrange includes
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -39,7 +39,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260508-wip-flo-refactor-includes-v1-24-e449f2bd4fc2@siemens.com>
+Message-Id: <20260508-wip-flo-refactor-includes-v1-22-e449f2bd4fc2@siemens.com>
 References: <20260508-wip-flo-refactor-includes-v1-0-e449f2bd4fc2@siemens.com>
 In-Reply-To: <20260508-wip-flo-refactor-includes-v1-0-e449f2bd4fc2@siemens.com>
 To: xenomai@lists.linux.dev
@@ -53,35 +53,37 @@ self-contained.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- testsuite/xeno-test/xeno-test-run.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ testsuite/spitest/spitest.c | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
 
-diff --git a/testsuite/xeno-test/xeno-test-run.c b/testsuite/xeno-test/xeno-test-run.c
-index 6d1bb96c0c4bb90a4d2fbc47b9c58a71db2e494c..1ec2674a469e0a5a34d2712ac10c9b7e46534aa4 100644
---- a/testsuite/xeno-test/xeno-test-run.c
-+++ b/testsuite/xeno-test/xeno-test-run.c
-@@ -1,17 +1,13 @@
-+#include <ctype.h>
-+#include <errno.h>
-+#include <fcntl.h>
- #include <stdio.h>
- #include <stdlib.h>
- #include <string.h>
--#include <errno.h>
--#include <ctype.h>
--
--#include <sys/types.h>
--#include <fcntl.h>
- #include <sys/stat.h>
--#include <unistd.h>
--#include <signal.h>
- #include <sys/wait.h>
--#include <sys/select.h>
- #include <time.h>
-+#include <unistd.h>
+diff --git a/testsuite/spitest/spitest.c b/testsuite/spitest/spitest.c
+index 88eca0246c678512bcdc9e6ab3023fe71fbe753d..afb0c7e6cd1e59ab686510386dc71e41aa800c01 100644
+--- a/testsuite/spitest/spitest.c
++++ b/testsuite/spitest/spitest.c
+@@ -21,19 +21,13 @@
+  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+  */
  
- #define CHILD_SCRIPT  0
- #define CHILD_CHECKED 1
+-#include <sys/types.h>
+-#include <sys/mman.h>
+-#include <sys/ioctl.h>
+-#include <sys/timerfd.h>
+-#include <stdio.h>
+-#include <semaphore.h>
+-#include <errno.h>
+-#include <unistd.h>
+-#include <fcntl.h>
+ #include <smokey/smokey.h>
+-#include <linux/spi/spidev.h>
+ #include <rtdm/spi.h>
+ 
++#include <linux/spi/spidev.h>
++#include <sys/mman.h>
++#include <sys/timerfd.h>
++
+ smokey_test_plugin(spi_transfer,
+ 		   SMOKEY_ARGLIST(
+ 			   SMOKEY_STRING(device),
 
 -- 
 2.54.0
