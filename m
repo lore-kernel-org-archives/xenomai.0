@@ -1,37 +1,37 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C9BB3783AC
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AEA8372EF1
 	for <xenomai@lists.linux.dev>; Fri,  8 May 2026 06:33:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778221991; cv=none; b=MkmBPc2wdHd9VbsFUhks7dXboeqwKNoKAtDy8LBaEuFumLORlTtI9XlHDLE0Qfz5nCCaG/kd7DFKvTP/qj8gHez/EbpxeizhXUWdrQt+UL97ZJQCKLX1xMBW0QMH4L7SOOIqBT8gSN1LBa0/cI4r9TjLAY8Q+qVEZbtfR6Ou7Xk=
+	t=1778221992; cv=none; b=gqSiy/F3e5+foIZSRPgK/YwJ9dwowQcGnDK5H9LpOZ7IbXUX7+nBp6L/5qx/cctVI6QDw7MXUlSmgSfLRrVpBKFOwNMwCFxy04h1E1eCErwIwYdLTjTRWHbOS96557oyuehZ8yASGJdt0Az/zSJ+VRrWA66gVU+FyuGbJS2oRlk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778221991; c=relaxed/simple;
-	bh=X3bVsVmGdiz5EX5GsFlBv3NHI4B4IeJPMKkwsCd6/Vo=;
+	s=arc-20240116; t=1778221992; c=relaxed/simple;
+	bh=5+joBKompsV1RJPwwCTRj19mfNmG8cUgB2I2dazufYE=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=aCJxrLdWyLjNksok7SRsRhbEgXnuvxmfP4huWSEcH6juaKit5GRmwEPFJy4QbMjurBDM9xDyf33BaKuanJzv08AVAolBQ0Qz+lhP3AGI25+PnKpHMy7sqMMd31ZapTfYkwsLfSRNu9kEacDiTOG8Mfsbya2dGictH6YF8nHkwak=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=GLEPztqS; arc=none smtp.client-ip=185.136.65.226
+	 In-Reply-To:To:Cc; b=DwoErizVelFv+7LJgH5/2kLnrdHjAQBpGfGryphVWvgUjrS4/5HapySlwKVa4bvmdO1aygKCUrqhFDafK95enCbelDNtrjexgNbM0XNKz4As4fZIC87PLWlDS7LxGFyI3R+FB25zHo/9Z4Lm0RfeoCwNEn8ahxYw/ZyzJXE3TIc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=OnECHgWi; arc=none smtp.client-ip=185.136.64.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="GLEPztqS"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20260508062252f4038d36880002071c
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="OnECHgWi"
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20260508062250ca357d143b00020797
         for <xenomai@lists.linux.dev>;
-        Fri, 08 May 2026 08:22:52 +0200
+        Fri, 08 May 2026 08:22:51 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=F3zW6qh6MNX8ltm7glR87Qpbuc6aeS4cTbR3mZWAh50=;
- b=GLEPztqSkYFPRjbw7lc+0Y5VUes2U8FAZSPnrPDg6eCbOY1W8QmQ1qrTpviUNE3Ru7uOJi
- Z/fpBFwoCkEYnUktdLf7+Fqi+pGC2r9O+CB61ucAE8qQaIySrJ0iJCrwjCUr0ldEwTjb+XIU
- LK9mG4j6zINKPJoB3GqgjtrDMHBzBwWUBQfve4ydrzM4ID55ukqWZh3rpK9g07l9sd4dpLjF
- R5AB3obLEv1N5NY0J6Yq9dw2RE6OrcBFthhGtFJ1ZTYQIyxzh1QBOHgV0wpqbldJ3afOieZ/
- +KPa4wP+ah8LRrk/y0YfHYfgH+XBOOOntXB36TrWQPzN7OWEQ0uX+36Q==;
+ bh=7oBjbUI6xgI5Be7L74UrfjA/1g9y9rpgT0tZCWrxzCs=;
+ b=OnECHgWim2Qs6a2OrUwHG3WPmFRNROqHWfK6RYKcbWAEblqQFR4smWXPL5fUuiP+ArN27S
+ 4Kz7eVe2/xXea350panJ+wO6y2QQ4nFJZ7vsvGWiXj1zclb9vNl5rcdk+kVwpeK6GjLl+WM1
+ QNEauc8SsNOJmxzyqMWB247Bn7elD2RFTdpFrrHQCAN5z+lGyV/0QYV6+yl3lp9RReNIvh4u
+ jujGSHox2wPp82HOUlZBrlUzF05vUbydI1Ctt95oNELZ5yIqQ+lm2NfgsP6FFKUq/NiSZjKt
+ B4lKpwP2nNNniBncXLWfpzRZIPpPcKSyYr5w/orwRmyaTJk5e6vLTwFg==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 08 May 2026 08:22:39 +0200
-Subject: [PATCH 06/32] lib/vxworks: Rearrange includes and harmonize
- license headers
+Date: Fri, 08 May 2026 08:22:37 +0200
+Subject: [PATCH 04/32] lib/cobalt: Rearrange includes and harmonize license
+ headers
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260508-wip-flo-refactor-includes-v1-6-e449f2bd4fc2@siemens.com>
+Message-Id: <20260508-wip-flo-refactor-includes-v1-4-e449f2bd4fc2@siemens.com>
 References: <20260508-wip-flo-refactor-includes-v1-0-e449f2bd4fc2@siemens.com>
 In-Reply-To: <20260508-wip-flo-refactor-includes-v1-0-e449f2bd4fc2@siemens.com>
 To: xenomai@lists.linux.dev
@@ -50,70 +50,182 @@ X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
 Moving from "local to global" should help us to keep headers
-self-contained. Preparation for migrating lib/copperplate.
+self-contained. Some parts of the lib/cobalt were already migrated,
+the remaining parts have been migrated now.
 
 While at it: Harmonzie license headers. doxygen reported a warning
 while generating the docs.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- lib/vxworks/errnoLib.c    |  8 +++-----
- lib/vxworks/init.c        | 13 +++++--------
- lib/vxworks/intLib.c      |  2 +-
- lib/vxworks/kernLib.c     |  8 ++++----
- lib/vxworks/lstLib.c      |  2 +-
- lib/vxworks/memPartLib.c  | 13 +++----------
- lib/vxworks/memPartLib.h  |  2 +-
- lib/vxworks/msgQLib.c     | 16 ++++------------
- lib/vxworks/msgQLib.h     |  4 ++--
- lib/vxworks/reference.h   |  2 +-
- lib/vxworks/rngLib.c      | 41 ++++++++++++++++++++---------------------
- lib/vxworks/rngLib.h      |  4 +---
- lib/vxworks/semLib.c      | 15 +++++----------
- lib/vxworks/semLib.h      |  3 +--
- lib/vxworks/sysLib.c      |  6 +++---
- lib/vxworks/taskHookLib.c |  9 ++++-----
- lib/vxworks/taskHookLib.h |  3 ++-
- lib/vxworks/taskInfo.c    |  9 +++------
- lib/vxworks/taskLib.c     | 19 +++++++------------
- lib/vxworks/taskLib.h     |  6 +++---
- lib/vxworks/tickLib.c     |  7 +++----
- lib/vxworks/tickLib.h     |  2 +-
- lib/vxworks/wdLib.c       | 11 ++++-------
- lib/vxworks/wdLib.h       |  3 +--
- 24 files changed, 83 insertions(+), 125 deletions(-)
+ lib/cobalt/arch/arm/features.c                     |  5 +++--
+ lib/cobalt/arch/arm/include/asm/xenomai/debug.h    |  3 ++-
+ lib/cobalt/arch/arm/include/asm/xenomai/features.h |  1 +
+ lib/cobalt/arch/arm/include/asm/xenomai/syscall.h  |  5 +++--
+ lib/cobalt/arch/arm64/features.c                   |  5 +++--
+ .../arch/arm64/include/asm/xenomai/features.h      |  1 +
+ .../arch/arm64/include/asm/xenomai/syscall.h       |  4 ++--
+ lib/cobalt/arch/x86/features.c                     | 13 +++++------
+ lib/cobalt/arch/x86/include/asm/xenomai/features.h |  1 -
+ lib/cobalt/attr.c                                  |  4 ++--
+ lib/cobalt/clock.c                                 |  7 +-----
+ lib/cobalt/cond.c                                  |  7 +-----
+ lib/cobalt/cond.h                                  |  3 +--
+ lib/cobalt/current.c                               | 10 ++++-----
+ lib/cobalt/current.h                               |  4 +---
+ lib/cobalt/init.c                                  | 24 +++++++--------------
+ lib/cobalt/internal.c                              | 16 +++++---------
+ lib/cobalt/internal.h                              |  8 +++----
+ lib/cobalt/malloc-nowrap.c                         |  2 +-
+ lib/cobalt/malloc.c                                |  4 ++--
+ lib/cobalt/mmap.c                                  |  7 +++---
+ lib/cobalt/mq.c                                    |  8 +------
+ lib/cobalt/mutex.c                                 |  5 +----
+ lib/cobalt/mutex.h                                 |  5 +----
+ lib/cobalt/parse_vdso.c                            | 12 ++++-------
+ lib/cobalt/printf.c                                | 17 +++------------
+ lib/cobalt/rtdm.c                                  |  8 +------
+ lib/cobalt/sched.c                                 |  9 +++-----
+ lib/cobalt/semaphore.c                             | 10 +++------
+ lib/cobalt/signal.c                                |  5 +----
+ lib/cobalt/sigshadow.c                             |  7 +++---
+ lib/cobalt/thread.c                                |  5 +----
+ lib/cobalt/ticks.c                                 |  8 +++----
+ lib/cobalt/timer.c                                 |  4 +---
+ lib/cobalt/timerfd.c                               |  5 ++---
+ lib/cobalt/trace.c                                 |  9 ++++----
+ lib/cobalt/umm.c                                   | 18 ++++++----------
+ lib/cobalt/umm.h                                   |  2 +-
+ lib/cobalt/wrappers.c                              | 25 +++++++---------------
+ lib/cobalt/wrappers_time64.c                       |  8 -------
+ 40 files changed, 104 insertions(+), 200 deletions(-)
 
-diff --git a/lib/vxworks/errnoLib.c b/lib/vxworks/errnoLib.c
-index 66c91e2dd1d7ac93711026eab08b776c5fa7ea7e..276c91d4638900260e1f0b4255c672afb8124e24 100644
---- a/lib/vxworks/errnoLib.c
-+++ b/lib/vxworks/errnoLib.c
-@@ -10,18 +10,16 @@
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * Lesser General Public License for more details.
--
-+ *
-  * You should have received a copy of the GNU Lesser General Public
-  * License along with this library; if not, write to the Free Software
+diff --git a/lib/cobalt/arch/arm/features.c b/lib/cobalt/arch/arm/features.c
+index 4db1e6f9fbf4090c81ee5dc1e30c69d20baad270..32361a7407d6396ba3d10931fd5bf53fb8b9ab2b 100644
+--- a/lib/cobalt/arch/arm/features.c
++++ b/lib/cobalt/arch/arm/features.c
+@@ -15,13 +15,14 @@
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
   */
  
--#include <stdio.h>
--#include <string.h>
--#include <vxworks/errnoLib.h>
--
- #include "taskLib.h"
- 
-+#include <vxworks/errnoLib.h>
++#include "internal.h"
 +
- void printErrno(int status)
+ #include <asm/xenomai/features.h>
+ #include <asm/xenomai/uapi/fptest.h>
++
+ #include <stdio.h>
+ #include <string.h>
+ 
+-#include "internal.h"
+-
+ void cobalt_arch_check_features(struct cobalt_featinfo *finfo)
  {
- 	const char *msg;
-diff --git a/lib/vxworks/init.c b/lib/vxworks/init.c
-index 4a68c9d7f7af780a226c501fd6351f11cb0f2422..f63d94e93c0de95a51e2b0649ec329b74bd9212a 100644
---- a/lib/vxworks/init.c
-+++ b/lib/vxworks/init.c
-@@ -10,22 +10,19 @@
+ }
+diff --git a/lib/cobalt/arch/arm/include/asm/xenomai/debug.h b/lib/cobalt/arch/arm/include/asm/xenomai/debug.h
+index e49b928516ffeb42259bff18b44573471b004175..ffee1366cb1af316a443aed6adbdca5ca863ccd9 100644
+--- a/lib/cobalt/arch/arm/include/asm/xenomai/debug.h
++++ b/lib/cobalt/arch/arm/include/asm/xenomai/debug.h
+@@ -10,9 +10,10 @@
+ #ifndef _LIB_COBALT_ARM_DEBUG_H
+ #define _LIB_COBALT_ARM_DEBUG_H
+ 
+-#include <signal.h>
+ #include "current.h"
+ 
++#include <signal.h>
++
+ static inline int cobalt_avoid_backtrace(int reason)
+ {
+ 	if (reason == SIGDEBUG_MIGRATE_SIGNAL)
+diff --git a/lib/cobalt/arch/arm/include/asm/xenomai/features.h b/lib/cobalt/arch/arm/include/asm/xenomai/features.h
+index e84b80994b645eb157d6d0d8146ab7d55b7ce29d..7819c9b28ad81fb25445296acb976b298f78174e 100644
+--- a/lib/cobalt/arch/arm/include/asm/xenomai/features.h
++++ b/lib/cobalt/arch/arm/include/asm/xenomai/features.h
+@@ -15,6 +15,7 @@
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
++
+ #ifndef _LIB_COBALT_ARM_FEATURES_H
+ #define _LIB_COBALT_ARM_FEATURES_H
+ 
+diff --git a/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h b/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
+index 1fc605b1ba6f9766f8fe060e16ca767118f906d1..1ac193a00b207edd0c4cceb2930b61cf287db3e2 100644
+--- a/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
++++ b/lib/cobalt/arch/arm/include/asm/xenomai/syscall.h
+@@ -18,12 +18,13 @@
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
++
+ #ifndef _LIB_COBALT_ARM_SYSCALL_H
+ #define _LIB_COBALT_ARM_SYSCALL_H
+ 
+-#include <xeno_config.h>
+-#include <errno.h>
+ #include <cobalt/uapi/syscall.h>
++#include <errno.h>
++#include <xeno_config.h>
+ 
+ #ifndef __ARM_EABI__
+ #error "ARM OABI support has been removed with Xenomai 3.3.x"
+diff --git a/lib/cobalt/arch/arm64/features.c b/lib/cobalt/arch/arm64/features.c
+index e164865317001674269bd1d2be0d70d02daf64da..347b4aa6f2842c1eea269d488b70cd4f4f9f6602 100644
+--- a/lib/cobalt/arch/arm64/features.c
++++ b/lib/cobalt/arch/arm64/features.c
+@@ -15,13 +15,14 @@
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
+ 
++#include "internal.h"
++
+ #include <asm/xenomai/features.h>
+ #include <asm/xenomai/uapi/fptest.h>
++
+ #include <stdio.h>
+ #include <string.h>
+ 
+-#include "internal.h"
+-
+ void cobalt_arch_check_features(struct cobalt_featinfo *finfo)
+ {
+ }
+diff --git a/lib/cobalt/arch/arm64/include/asm/xenomai/features.h b/lib/cobalt/arch/arm64/include/asm/xenomai/features.h
+index 6dfe64cc4bc8e302f038bcbd179c40d530c6001a..4e65706e3acefeed1fa30d695ea09d388554e955 100644
+--- a/lib/cobalt/arch/arm64/include/asm/xenomai/features.h
++++ b/lib/cobalt/arch/arm64/include/asm/xenomai/features.h
+@@ -15,6 +15,7 @@
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
++
+ #ifndef _LIB_COBALT_ARM64_FEATURES_H
+ #define _LIB_COBALT_ARM64_FEATURES_H
+ 
+diff --git a/lib/cobalt/arch/arm64/include/asm/xenomai/syscall.h b/lib/cobalt/arch/arm64/include/asm/xenomai/syscall.h
+index 5ed9eb252a55b4eb1807472ec7447ae733a1de51..1e5594a404b389f3ba1008550d9667c69e8e7ab7 100644
+--- a/lib/cobalt/arch/arm64/include/asm/xenomai/syscall.h
++++ b/lib/cobalt/arch/arm64/include/asm/xenomai/syscall.h
+@@ -16,12 +16,12 @@
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
++
+ #ifndef _LIB_COBALT_ARM64_SYSCALL_H
+ #define _LIB_COBALT_ARM64_SYSCALL_H
+ 
+-#include <xeno_config.h>
+-#include <errno.h>
+ #include <cobalt/uapi/syscall.h>
++#include <xeno_config.h>
+ 
+ #define __xn_syscall_args0
+ #define __xn_syscall_args1 , unsigned long __a1
+diff --git a/lib/cobalt/arch/x86/features.c b/lib/cobalt/arch/x86/features.c
+index 8c5332b9e4d72bafcafda69756c3360066103cd3..826b295a9025c03ec434e5263e24ecbaae436954 100644
+--- a/lib/cobalt/arch/x86/features.c
++++ b/lib/cobalt/arch/x86/features.c
+@@ -10,19 +10,20 @@
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
   * Lesser General Public License for more details.
@@ -125,325 +237,38 @@ index 4a68c9d7f7af780a226c501fd6351f11cb0f2422..f63d94e93c0de95a51e2b0649ec329b7
   */
  
 -#include <stdio.h>
--#include <stdlib.h>
 -#include <unistd.h>
--#include <getopt.h>
--#include <xenomai/init.h>
--#include <vxworks/errnoLib.h>
--
- #include "tickLib.h"
- #include "taskLib.h"
- 
-+#include <xenomai/init.h>
+-#include <string.h>
+-#include <boilerplate/atomic.h>
++#include "internal.h"
 +
-+#include <getopt.h>
+ #include <asm/xenomai/features.h>
+ #include <asm/xenomai/uapi/fptest.h>
+-#include "internal.h"
 +
- /**
-  * @defgroup vxworks VxWorks&reg; emulator
-  *
-diff --git a/lib/vxworks/intLib.c b/lib/vxworks/intLib.c
-index cf07b221dcaa5ac66dfabedb337d277a9a01e6dc..cf2801a855ca1b2792ee088967e810bf5c265465 100644
---- a/lib/vxworks/intLib.c
-+++ b/lib/vxworks/intLib.c
-@@ -10,7 +10,7 @@
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * Lesser General Public License for more details.
--
-+ *
-  * You should have received a copy of the GNU Lesser General Public
-  * License along with this library; if not, write to the Free Software
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-diff --git a/lib/vxworks/kernLib.c b/lib/vxworks/kernLib.c
-index 112f2d2eb1a11d8dc92ceb55e698ec75ee10ff03..3c94732285985b075bbbd59bdbcdc705cb017336 100644
---- a/lib/vxworks/kernLib.c
-+++ b/lib/vxworks/kernLib.c
-@@ -10,18 +10,18 @@
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * Lesser General Public License for more details.
--
-+ *
-  * You should have received a copy of the GNU Lesser General Public
-  * License along with this library; if not, write to the Free Software
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-  */
++#include <stdio.h>
++#include <string.h>
++#include <unistd.h>
  
--#include <vxworks/kernLib.h>
--#include <vxworks/errnoLib.h>
--
- #include "tickLib.h"
- #include "taskLib.h"
- 
-+#include <vxworks/kernLib.h>
-+#include <vxworks/errnoLib.h>
-+
- static int switch_slicing(struct threadobj *thobj, struct timespec *quantum)
+ void cobalt_arch_check_features(struct cobalt_featinfo *finfo)
  {
- 	struct sched_param_ex param_ex;
-diff --git a/lib/vxworks/lstLib.c b/lib/vxworks/lstLib.c
-index 0daa86444ca547bdedfb6e812b6a281e18835bec..2f602b8eee883fd81a892010a890dc8d6b06b6cd 100644
---- a/lib/vxworks/lstLib.c
-+++ b/lib/vxworks/lstLib.c
-@@ -10,7 +10,7 @@
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * Lesser General Public License for more details.
--
-+ *
-  * You should have received a copy of the GNU Lesser General Public
-  * License along with this library; if not, write to the Free Software
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-diff --git a/lib/vxworks/memPartLib.c b/lib/vxworks/memPartLib.c
-index f3efb0d3653a02dfa744d9eb9cf6aba3911c3b2a..4067e5121613c0387c59496efa92ba503a28a008 100644
---- a/lib/vxworks/memPartLib.c
-+++ b/lib/vxworks/memPartLib.c
-@@ -10,23 +10,16 @@
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * Lesser General Public License for more details.
--
-+ *
-  * You should have received a copy of the GNU Lesser General Public
-  * License along with this library; if not, write to the Free Software
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-  */
- 
--#include <stdio.h>
--#include <errno.h>
--#include <stdlib.h>
--#include <memory.h>
--#include <boilerplate/lock.h>
-+#include "memPartLib.h"
-+
- #include <boilerplate/ancillaries.h>
--#include <copperplate/heapobj.h>
- #include <vxworks/errnoLib.h>
--#include <vxworks/memPartLib.h>
--
--#include "memPartLib.h"
- 
- #define mempart_magic	0x5a6b7c8d
- 
-diff --git a/lib/vxworks/memPartLib.h b/lib/vxworks/memPartLib.h
-index f2cd00ac2f4f4ba27ac69c60976b2f2c7d3bddc6..c907f930cf4e4972786deaa47161d2f23b7b5ddb 100644
---- a/lib/vxworks/memPartLib.h
-+++ b/lib/vxworks/memPartLib.h
-@@ -10,7 +10,7 @@
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * Lesser General Public License for more details.
--
-+ *
-  * You should have received a copy of the GNU Lesser General Public
-  * License along with this library; if not, write to the Free Software
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-diff --git a/lib/vxworks/msgQLib.c b/lib/vxworks/msgQLib.c
-index 7b3d59afed3fa587a8fba5572d40cf27dd379ac9..281ff4f817b1ad847a94ddf20ec3a546e48b034b 100644
---- a/lib/vxworks/msgQLib.c
-+++ b/lib/vxworks/msgQLib.c
-@@ -10,26 +10,18 @@
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * Lesser General Public License for more details.
--
-+ *
-  * You should have received a copy of the GNU Lesser General Public
-  * License along with this library; if not, write to the Free Software
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-  */
- 
--#include <stdio.h>
--#include <errno.h>
--#include <stdlib.h>
--#include <assert.h>
--#include <memory.h>
--#include <copperplate/heapobj.h>
--#include <copperplate/threadobj.h>
--#include <vxworks/errnoLib.h>
--
--#include "reference.h"
--#include "taskLib.h"
- #include "msgQLib.h"
- #include "tickLib.h"
- 
-+#include <copperplate/threadobj.h>
-+#include <vxworks/errnoLib.h>
-+
- /*
-  * XXX: In order to keep the following services callable from
-  * non-VxWorks tasks (but still Xenomai ones, though), make sure
-diff --git a/lib/vxworks/msgQLib.h b/lib/vxworks/msgQLib.h
-index 817e90d9cc319f8ad5ebf47b28360ad650ffb7e7..61f1be7fbd0af224d9d77499ec890d819b3df5bc 100644
---- a/lib/vxworks/msgQLib.h
-+++ b/lib/vxworks/msgQLib.h
-@@ -10,7 +10,7 @@
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * Lesser General Public License for more details.
--
-+ *
-  * You should have received a copy of the GNU Lesser General Public
-  * License along with this library; if not, write to the Free Software
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-@@ -19,8 +19,8 @@
- #ifndef _VXWORKS_MSGQLIB_H
- #define _VXWORKS_MSGQLIB_H
- 
--#include <copperplate/syncobj.h>
- #include <copperplate/heapobj.h>
-+#include <copperplate/syncobj.h>
- #include <vxworks/msgQLib.h>
- 
- struct wind_mq {
-diff --git a/lib/vxworks/reference.h b/lib/vxworks/reference.h
-index 94456fa73bcabc0ed8ef15d926e06585aa27606d..43088c6aa5e53079567743f5b0e0172c6c806898 100644
---- a/lib/vxworks/reference.h
-+++ b/lib/vxworks/reference.h
-@@ -10,7 +10,7 @@
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * Lesser General Public License for more details.
--
-+ *
-  * You should have received a copy of the GNU Lesser General Public
-  * License along with this library; if not, write to the Free Software
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-diff --git a/lib/vxworks/rngLib.c b/lib/vxworks/rngLib.c
-index 343d71baa4865537d9dc1bf4133627789bd7d90e..c06096d3e2052d20e56c8affea8ac53464613c2b 100644
---- a/lib/vxworks/rngLib.c
-+++ b/lib/vxworks/rngLib.c
-@@ -1,28 +1,27 @@
- /*
--* Copyright (C) 2008 Niklaus Giger <niklaus.giger@member.fsf.org>.
--*
--* This library is free software; you can redistribute it and/or
--* modify it under the terms of the GNU Lesser General Public
--* License as published by the Free Software Foundation; either
--* version 2 of the License, or (at your option) any later version.
--*
--* This library is distributed in the hope that it will be useful,
--* but WITHOUT ANY WARRANTY; without even the implied warranty of
--* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
--* Lesser General Public License for more details.
--
--* You should have received a copy of the GNU Lesser General Public
--* License along with this library; if not, write to the Free Software
--* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
--*/
--
--#include <stdlib.h>
--#include <boilerplate/lock.h>
--#include <copperplate/heapobj.h>
--#include <vxworks/errnoLib.h>
-+ * Copyright (C) 2008 Niklaus Giger <niklaus.giger@member.fsf.org>.
-+ *
-+ * This library is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU Lesser General Public
-+ * License as published by the Free Software Foundation; either
-+ * version 2 of the License, or (at your option) any later version.
-+ *
-+ * This library is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-+ * Lesser General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU Lesser General Public
-+ * License along with this library; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-+ */
- 
- #include "rngLib.h"
- 
-+#include <copperplate/heapobj.h>
-+#include <vxworks/errnoLib.h>
-+#include <vxworks/rngLib.h>
-+
- #define ring_magic 0x5432affe
- 
- static struct wind_ring *find_ring_from_id(RING_ID rid)
-diff --git a/lib/vxworks/rngLib.h b/lib/vxworks/rngLib.h
-index 947c5eaf71098678a78375e843c00e8ae1a5f82a..bae642438e7d2da47568b5c0ae493ce6758cef1e 100644
---- a/lib/vxworks/rngLib.h
-+++ b/lib/vxworks/rngLib.h
-@@ -10,7 +10,7 @@
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * Lesser General Public License for more details.
--
-+ *
-  * You should have received a copy of the GNU Lesser General Public
-  * License along with this library; if not, write to the Free Software
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-@@ -19,8 +19,6 @@
- #ifndef _VXWORKS_RNGLIB_H
- #define _VXWORKS_RNGLIB_H
- 
--#include <vxworks/rngLib.h>
--
- struct wind_ring {
- 	unsigned int magic;
- 	unsigned int bufSize;
-diff --git a/lib/vxworks/semLib.c b/lib/vxworks/semLib.c
-index f2abf0f839ec115d2387bab182587fe173c93f67..0cbb5096eee07a08e6a058277891a854472a31ba 100644
---- a/lib/vxworks/semLib.c
-+++ b/lib/vxworks/semLib.c
-@@ -10,24 +10,19 @@
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * Lesser General Public License for more details.
--
-+ *
-  * You should have received a copy of the GNU Lesser General Public
-  * License along with this library; if not, write to the Free Software
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-  */
- 
--#include <stdio.h>
--#include <errno.h>
--#include <stdlib.h>
--#include <limits.h>
-+#include "semLib.h"
-+#include "taskLib.h"
-+#include "tickLib.h"
-+
- #include <boilerplate/ancillaries.h>
--#include <copperplate/heapobj.h>
- #include <vxworks/errnoLib.h>
- 
--#include "reference.h"
--#include "taskLib.h"
--#include "semLib.h"
--#include "tickLib.h"
- 
- /*
-  * XXX: In order to keep the following services callable from
-diff --git a/lib/vxworks/semLib.h b/lib/vxworks/semLib.h
-index f863bf0194f87b95504147cf7710e2ef528bf229..6e4863436e66d847bb90c5c8bba8cdc39d869516 100644
---- a/lib/vxworks/semLib.h
-+++ b/lib/vxworks/semLib.h
-@@ -10,7 +10,7 @@
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * Lesser General Public License for more details.
--
-+ *
-  * You should have received a copy of the GNU Lesser General Public
-  * License along with this library; if not, write to the Free Software
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+diff --git a/lib/cobalt/arch/x86/include/asm/xenomai/features.h b/lib/cobalt/arch/x86/include/asm/xenomai/features.h
+index 9a543393268de260195d2082e8679a137dd5322c..344d4a18742645445381e30924cff0acbe938cb5 100644
+--- a/lib/cobalt/arch/x86/include/asm/xenomai/features.h
++++ b/lib/cobalt/arch/x86/include/asm/xenomai/features.h
 @@ -19,7 +19,6 @@
- #ifndef _VXWORKS_SEMLIB_H
- #define _VXWORKS_SEMLIB_H
+ #define _LIB_COBALT_X86_FEATURES_H
  
--#include <pthread.h>
- #include <copperplate/syncobj.h>
- #include <vxworks/semLib.h>
+ #include_next <features.h>
+-#include <xeno_config.h>
+ #include <asm/xenomai/uapi/features.h>
  
-diff --git a/lib/vxworks/sysLib.c b/lib/vxworks/sysLib.c
-index 57999db66ffb15921321ac792c0715c5d5003511..b495fa67ea9deb44e47e802c14462329eba79113 100644
---- a/lib/vxworks/sysLib.c
-+++ b/lib/vxworks/sysLib.c
-@@ -10,17 +10,17 @@
+ int cobalt_fp_detect(void);
+diff --git a/lib/cobalt/attr.c b/lib/cobalt/attr.c
+index 5de2363f78f81d4718f194a155551d72a7df84f9..c4f47b4c39aba16b6516a4a412becaf89c292b43 100644
+--- a/lib/cobalt/attr.c
++++ b/lib/cobalt/attr.c
+@@ -10,14 +10,14 @@
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
   * Lesser General Public License for more details.
@@ -454,21 +279,17 @@ index 57999db66ffb15921321ac792c0715c5d5003511..b495fa67ea9deb44e47e802c14462329
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
   */
  
-+#include "tickLib.h"
-+
- #include <vxworks/errnoLib.h>
- #include <vxworks/sysLib.h>
+-#include <pthread.h>
+ #include <memory.h>
++#include <pthread.h>
  
--#include "tickLib.h"
--
- int sysClkRateGet(void)
+ COBALT_IMPL(int, pthread_attr_init, (pthread_attr_t *attr))
  {
- 	unsigned int resolution;
-diff --git a/lib/vxworks/taskHookLib.c b/lib/vxworks/taskHookLib.c
-index 8953063d320610450b34028524739d387cb6ec6f..06bba7161c2b09b9253f74a41e5c408f3b6ff0b2 100644
---- a/lib/vxworks/taskHookLib.c
-+++ b/lib/vxworks/taskHookLib.c
-@@ -10,19 +10,18 @@
+diff --git a/lib/cobalt/clock.c b/lib/cobalt/clock.c
+index 9551bd5f1a5be21eaec1f5c611396f545eb84eb2..997bad37d0c2d3c8607ac53e697e4530dcf6f901 100644
+--- a/lib/cobalt/clock.c
++++ b/lib/cobalt/clock.c
+@@ -10,17 +10,12 @@
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
   * Lesser General Public License for more details.
@@ -479,71 +300,19 @@ index 8953063d320610450b34028524739d387cb6ec6f..06bba7161c2b09b9253f74a41e5c408f
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
   */
  
--#include <copperplate/heapobj.h>
--#include <vxworks/taskHookLib.h>
--#include <vxworks/errnoLib.h>
--
- #include "taskLib.h"
- #include "taskHookLib.h"
- 
-+#include <vxworks/errnoLib.h>
-+#include <vxworks/taskHookLib.h>
-+
- DEFINE_PRIVATE_LIST(wind_create_hooks);
- 
- DEFINE_PRIVATE_LIST(wind_delete_hooks);
-diff --git a/lib/vxworks/taskHookLib.h b/lib/vxworks/taskHookLib.h
-index c3f9c8d1b0d3f19c3593344c785e154930105b04..cb0f81aa80b61cc235452d0370f50e96ad678135 100644
---- a/lib/vxworks/taskHookLib.h
-+++ b/lib/vxworks/taskHookLib.h
-@@ -10,11 +10,12 @@
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * Lesser General Public License for more details.
--
-+ *
-  * You should have received a copy of the GNU Lesser General Public
-  * License along with this library; if not, write to the Free Software
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-  */
-+
- #ifndef _VXWORKS_TASKHOOKLIB_H
- #define _VXWORKS_TASKHOOKLIB_H
- 
-diff --git a/lib/vxworks/taskInfo.c b/lib/vxworks/taskInfo.c
-index c10bf27bf45ced0d0df322f6f8adbd04c67ce6b6..0cfb7bf25a5de4f2106face65380a9e87b1cb3f0 100644
---- a/lib/vxworks/taskInfo.c
-+++ b/lib/vxworks/taskInfo.c
-@@ -10,21 +10,18 @@
-  * but WITHOUT ANY WARRANTY; without even the implied warranty of
-  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  * Lesser General Public License for more details.
--
-+ *
-  * You should have received a copy of the GNU Lesser General Public
-  * License along with this library; if not, write to the Free Software
-  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-  */
- 
--#include <pthread.h>
 -#include <string.h>
-+#include "taskLib.h"
-+
- #include <boilerplate/ancillaries.h>
--#include <copperplate/threadobj.h>
- #include <vxworks/errnoLib.h>
- #include <vxworks/taskInfo.h>
- 
--#include "taskLib.h"
+-#include <errno.h>
+-#include <pthread.h>
+-#include <unistd.h>
 -
- const char *taskName(TASK_ID task_id)
- {
- 	struct wind_task *task;
-diff --git a/lib/vxworks/taskLib.c b/lib/vxworks/taskLib.c
-index ffef7c832289f853bd763d2000caa05d69ea9d56..2c42c371b614803f827b19d375a400fdde4110fb 100644
---- a/lib/vxworks/taskLib.c
-+++ b/lib/vxworks/taskLib.c
-@@ -10,28 +10,23 @@
+ #include "internal.h"
+ 
+ /**
+diff --git a/lib/cobalt/cond.c b/lib/cobalt/cond.c
+index fb700f4500a6f1e7a0331954f7a5f5a8a3bf1052..180199c8a030d7ca52f8b275893e21b1a1885fb8 100644
+--- a/lib/cobalt/cond.c
++++ b/lib/cobalt/cond.c
+@@ -10,17 +10,12 @@
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
   * Lesser General Public License for more details.
@@ -554,35 +323,432 @@ index ffef7c832289f853bd763d2000caa05d69ea9d56..2c42c371b614803f827b19d375a400fd
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
   */
  
--#include <stdio.h>
 -#include <errno.h>
 -#include <string.h>
+-#include <pthread.h>
+-#include <asm/xenomai/syscall.h>
+-
+ #include "cond.h"
+ #include "current.h"
+ #include "internal.h"
+diff --git a/lib/cobalt/cond.h b/lib/cobalt/cond.h
+index 88b252cb72590b514f95a31c8d8849b3e4f3856f..82bb1bd61f337b5694468378a11aeaeb52e3f11a 100644
+--- a/lib/cobalt/cond.h
++++ b/lib/cobalt/cond.h
+@@ -13,9 +13,8 @@
+ 
+ #include <asm/xenomai/syscall.h>
+ #include <cobalt/uapi/cond.h>
+-
+-#include <string.h>
+ #include <pthread.h>
++#include <string.h>
+ 
+ struct cobalt_cond_cleanup_t {
+ 	struct cobalt_cond_shadow *cond;
+diff --git a/lib/cobalt/current.c b/lib/cobalt/current.c
+index 1e1535004b1913dd29b623575c41553e1c928d7e..d5c57681ee5c1eec5c706dac8312c2c39c7014ae 100644
+--- a/lib/cobalt/current.c
++++ b/lib/cobalt/current.c
+@@ -10,19 +10,17 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
+ 
+-#include <string.h>
+-#include <pthread.h>
+-#include <asm/xenomai/syscall.h>
+-#include <boilerplate/list.h>
+-#include "current.h"
+ #include "internal.h"
+ 
++#include <asm/xenomai/syscall.h>
++#include <string.h>
++
+ static DEFINE_PRIVATE_LIST(tsd_hooks);
+ 
+ #ifdef HAVE_TLS
+diff --git a/lib/cobalt/current.h b/lib/cobalt/current.h
+index 069ee1cc24d7c0b9bf097b83a9e347392847045a..35ccf6301a0d636c957adf00fb002c7c4c4740f3 100644
+--- a/lib/cobalt/current.h
++++ b/lib/cobalt/current.h
+@@ -18,10 +18,8 @@
+ #ifndef _LIB_COBALT_CURRENT_H
+ #define _LIB_COBALT_CURRENT_H
+ 
+-#include <stdint.h>
+ #include <pthread.h>
+-#include <cobalt/uapi/thread.h>
+-#include <xeno_config.h>
++#include <stdint.h>
+ 
+ extern pthread_key_t cobalt_current_window_key;
+ 
+diff --git a/lib/cobalt/init.c b/lib/cobalt/init.c
+index 84f37999d9f59eddb242b3804c46a29bb711addf..f948b3cabe4a508a0a6df2b655d8cf69000871db 100644
+--- a/lib/cobalt/init.c
++++ b/lib/cobalt/init.c
+@@ -10,30 +10,22 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
+ 
+-#include <sys/types.h>
+-#include <sys/mman.h>
+-#include <stdio.h>
++#include "internal.h"
++#include "umm.h"
++
++#include <asm/xenomai/syscall.h>
++#include <cobalt/tunables.h>
++#include <getopt.h>
+ #include <stdlib.h>
+ #include <string.h>
+-#include <errno.h>
+-#include <signal.h>
+-#include <getopt.h>
+-#include <limits.h>
++#include <sys/mman.h>
+ #include <unistd.h>
+-#include <stdint.h>
+-#include <semaphore.h>
+-#include <boilerplate/setup.h>
+-#include <cobalt/tunables.h>
+-#include <asm/xenomai/syscall.h>
+-#include <xenomai/init.h>
+-#include "umm.h"
+-#include "internal.h"
+ 
+ /**
+  * @ingroup cobalt
+diff --git a/lib/cobalt/internal.c b/lib/cobalt/internal.c
+index dd3da08558fc490cebab6954cd72ee7ed8d2b65c..b8380156dcb35aee6f5ddef08f27762968187a4c 100644
+--- a/lib/cobalt/internal.c
++++ b/lib/cobalt/internal.c
+@@ -11,7 +11,7 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+@@ -21,18 +21,12 @@
+  * respect to object validity, callers have to take care of this.
+  */
+ 
+-#include <sys/types.h>
+-#include <stddef.h>
+-#include <stdio.h>
+-#include <unistd.h>
+-#include <signal.h>
+-#include <errno.h>
+-#include <stdarg.h>
+-#include <pthread.h>
+-#include <asm/xenomai/syscall.h>
+-#include <cobalt/sys/cobalt.h>
+ #include "internal.h"
+ 
++#include <asm/xenomai/syscall.h>
++#include <string.h>
++#include <unistd.h>
++
+ int cobalt_extend(unsigned int magic)
+ {
+ 	return XENOMAI_SYSCALL1(sc_cobalt_extend, magic);
+diff --git a/lib/cobalt/internal.h b/lib/cobalt/internal.h
+index 0703c721758fdc778708cae70a0e9d53c6fb8eef..ad53db400555ca3edfc48457a7542d10823174b6 100644
+--- a/lib/cobalt/internal.h
++++ b/lib/cobalt/internal.h
+@@ -10,7 +10,7 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+@@ -18,12 +18,10 @@
+ #ifndef _LIB_COBALT_INTERNAL_H
+ #define _LIB_COBALT_INTERNAL_H
+ 
+-#include <limits.h>
+-#include <stdbool.h>
+-#include <time.h>
++#include "current.h"
++
+ #include <boilerplate/ancillaries.h>
+ #include <cobalt/sys/cobalt.h>
+-#include "current.h"
+ 
+ extern void *cobalt_umm_private;
+ 
+diff --git a/lib/cobalt/malloc-nowrap.c b/lib/cobalt/malloc-nowrap.c
+index 6dda7667d5686b821aa52f06c3fd440ac1f46a37..11638bd2dfe929027a972924cb0c507ba38d7dce 100644
+--- a/lib/cobalt/malloc-nowrap.c
++++ b/lib/cobalt/malloc-nowrap.c
+@@ -10,7 +10,7 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+diff --git a/lib/cobalt/malloc.c b/lib/cobalt/malloc.c
+index c1585586ef8bd66e1e727bf145c16cc75cf77d10..abdd9bffce42763005db52bd55593a025fa669f6 100644
+--- a/lib/cobalt/malloc.c
++++ b/lib/cobalt/malloc.c
+@@ -10,14 +10,14 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
+ 
 -#include <stdlib.h>
+ #include <cobalt/sys/cobalt.h>
++#include <stdlib.h>
+ 
+ /* Memory allocation services */
+ COBALT_IMPL(void *, malloc, (size_t size))
+diff --git a/lib/cobalt/mmap.c b/lib/cobalt/mmap.c
+index 069163a855348cffafcc610ee0ad866b72c48df4..7be8db1b1eca29d2c78758cb86b9a4c614a786e0 100644
+--- a/lib/cobalt/mmap.c
++++ b/lib/cobalt/mmap.c
+@@ -11,17 +11,16 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+   USA.
+  */
+ 
+-#include <sys/mman.h>
+-#include <rtdm/rtdm.h>
+-#include <cobalt/uapi/syscall.h>
+ #include <asm/xenomai/syscall.h>
++#include <rtdm/rtdm.h>
++#include <sys/mman.h>
+ 
+ COBALT_IMPL(void *, mmap64, (void *addr, size_t length, int prot, int flags,
+ 			     int fd, off64_t offset))
+diff --git a/lib/cobalt/mq.c b/lib/cobalt/mq.c
+index 0997d396d06e08407741f4b5d6b373284f219f97..e26d4e5d3784cc05d9477403432b83676153ae4e 100644
+--- a/lib/cobalt/mq.c
++++ b/lib/cobalt/mq.c
+@@ -10,7 +10,7 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+@@ -18,14 +18,8 @@
+ 
+ #include "mq.h"
+ 
+-#include <asm/xenomai/syscall.h>
+-
+-#include <errno.h>
+ #include <stdarg.h>
+-#include <unistd.h>
+-#include <fcntl.h>
+ #include <pthread.h>
+-#include <mqueue.h>
+ 
+ /**
+  * @ingroup cobalt_api
+diff --git a/lib/cobalt/mutex.c b/lib/cobalt/mutex.c
+index edc4e46c065d2dd3695b74923f6758c512ce6909..ff01310f364c4c2860146d055375af94f3ac669e 100644
+--- a/lib/cobalt/mutex.c
++++ b/lib/cobalt/mutex.c
+@@ -10,20 +10,17 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
+ 
+-#include "current.h"
+ #include "internal.h"
+ #include "mutex.h"
+ 
+ #include <asm/xenomai/syscall.h>
+ 
+-#include <pthread.h>
+-
+ /**
+  * @ingroup cobalt_api
+  * @defgroup cobalt_api_mutex Mutual exclusion
+diff --git a/lib/cobalt/mutex.h b/lib/cobalt/mutex.h
+index 728088bf57cf665bcc0fb4aae44561fc131f6790..55d3f843635cecf6e55cdb009838226c75bb3eae 100644
+--- a/lib/cobalt/mutex.h
++++ b/lib/cobalt/mutex.h
+@@ -8,10 +8,7 @@
+ #ifndef _LIB_COBALT_MUTEX_H
+ #define _LIB_COBALT_MUTEX_H
+ 
+-#include <boilerplate/ancillaries.h>
+-#include <cobalt/uapi/mutex.h>
+-
+-#include <pthread.h>
++#include <string.h>
+ 
+ extern pthread_mutex_t *const cobalt_autoinit_mutex;
+ 
+diff --git a/lib/cobalt/parse_vdso.c b/lib/cobalt/parse_vdso.c
+index 37b997b78f05713abda080df8efc8e6203182833..15328fd5e5bff3d491c336a42c8d6e32fcb76a63 100644
+--- a/lib/cobalt/parse_vdso.c
++++ b/lib/cobalt/parse_vdso.c
+@@ -15,16 +15,12 @@
+  * architecture that has a vDSO.
+  */
+ 
+-#include <sys/auxv.h>
+-#include <stdbool.h>
+-#include <string.h>
+-#include <limits.h>
+-#include <pthread.h>
+-#include <error.h>
+-#include <errno.h>
+-#include <elf.h>
+ #include "internal.h"
+ 
++#include <error.h>
++#include <string.h>
++#include <sys/auxv.h>
++
+ #ifndef ELF_BITS
+ # if ULONG_MAX > 0xffffffffUL
+ #  define ELF_BITS 64
+diff --git a/lib/cobalt/printf.c b/lib/cobalt/printf.c
+index bd2d7de56b35def5a5cb7594646f064d6fde12a7..012409ece7a1025647f90bc7f49cf253be7329c8 100644
+--- a/lib/cobalt/printf.c
++++ b/lib/cobalt/printf.c
+@@ -10,28 +10,17 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
+ 
+-#include <errno.h>
+-#include <inttypes.h>
+-#include <limits.h>
+-#include <pthread.h>
+-#include <signal.h>
+-#include <stdarg.h>
+-#include <stdio.h>
++#include "internal.h"
++
+ #include <stdlib.h>
+ #include <string.h>
+-#include <unistd.h>
+ #include <syslog.h>
+-#include <boilerplate/atomic.h>
+-#include <boilerplate/compiler.h>
+-#include <cobalt/tunables.h>
+-#include <cobalt/sys/cobalt.h>
+-#include "internal.h"
+ 
+ #define RT_PRINT_DEFAULT_BUFFER		16*1024
+ #define RT_PRINT_DEFAULT_SYNCDELAY	100 /* ms */
+diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
+index df7aa7eb69904f0953be2d324f29d60913916a4a..a62ad89d141ef5b70ca031cc3749239b8087841a 100644
+--- a/lib/cobalt/rtdm.c
++++ b/lib/cobalt/rtdm.c
+@@ -10,7 +10,7 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
+@@ -19,17 +19,11 @@
+ 
+ #include "rtdm.h"
+ 
+-#include <asm/xenomai/syscall.h>
+-#include <cobalt/uapi/syscall.h>
+ #include <rtdm/rtdm.h>
+ 
+ #include <string.h>
+ #include <stdarg.h>
 -#include <pthread.h>
 -#include <fcntl.h>
--#include <sched.h>
--#include "taskLib.h"
--#include "tickLib.h"
--#include "msgQLib.h"
--#include "taskHookLib.h"
- #include "boilerplate/namegen.h"
- #include "copperplate/internal.h"
- #include "copperplate/registry-obstack.h"
-+#include "msgQLib.h"
-+#include "taskHookLib.h"
-+#include "taskLib.h"
-+#include "tickLib.h"
- #include "vxworks/errnoLib.h"
+ #include <stdlib.h>
+-#include <sys/socket.h>
+-#include <sys/mman.h>
  
-+#include <boilerplate/ancillaries.h>
+ /* support for very old c libraries not supporting O_TMPFILE */
+ #ifndef O_TMPFILE
+diff --git a/lib/cobalt/sched.c b/lib/cobalt/sched.c
+index 6e61ee407f3b385b330adb10865da0de34a48b88..e515ab15d2d38ad70b95b72fbec51bc3fa892d5b 100644
+--- a/lib/cobalt/sched.c
++++ b/lib/cobalt/sched.c
+@@ -10,19 +10,16 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
+ 
+-#include <stddef.h>
+-#include <errno.h>
+-#include <unistd.h>
+-#include <pthread.h>
+-#include <asm/xenomai/syscall.h>
+ #include "internal.h"
+ 
++#include <asm/xenomai/syscall.h>
 +
- union wind_wait_union {
- 	struct wind_queue_wait queue_wait;
- };
-diff --git a/lib/vxworks/taskLib.h b/lib/vxworks/taskLib.h
-index c8d15dd58ba6877e180c7661727b4fca9ddabd4b..f7fa19519df4e44012f649f492a845e9f6a116c5 100644
---- a/lib/vxworks/taskLib.h
-+++ b/lib/vxworks/taskLib.h
+ /**
+  * @ingroup cobalt_api
+  * @defgroup cobalt_api_scheduler Process scheduling
+diff --git a/lib/cobalt/semaphore.c b/lib/cobalt/semaphore.c
+index 1fe3581df1cb30748ed780e57cd212827dd0f4c9..8ba4fbf349913c184ea894613722e2d77bfa3b26 100644
+--- a/lib/cobalt/semaphore.c
++++ b/lib/cobalt/semaphore.c
 @@ -10,7 +10,7 @@
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -592,22 +758,48 @@ index c8d15dd58ba6877e180c7661727b4fca9ddabd4b..f7fa19519df4e44012f649f492a845e9
   * You should have received a copy of the GNU Lesser General Public
   * License along with this library; if not, write to the Free Software
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-@@ -19,9 +19,9 @@
- #ifndef _VXWORKS_TASKLIB_H
- #define _VXWORKS_TASKLIB_H
+@@ -20,12 +20,8 @@
  
--#include <copperplate/threadobj.h>
--#include <copperplate/registry.h>
- #include <copperplate/cluster.h>
-+#include <copperplate/registry.h>
-+#include <copperplate/threadobj.h>
- #include <vxworks/taskLib.h>
+ #include <asm/xenomai/syscall.h>
  
- struct wind_task_args {
-diff --git a/lib/vxworks/tickLib.c b/lib/vxworks/tickLib.c
-index ac8dcda2cd443f234e8de409a87cac788902154f..c44bd4c012fb9239183c6fb2f65a1043cf639f20 100644
---- a/lib/vxworks/tickLib.c
-+++ b/lib/vxworks/tickLib.c
+-#include <stdlib.h>		/* For malloc & free. */
+-#include <stdarg.h>
+-#include <errno.h>
+-#include <fcntl.h>		/* For O_CREAT. */
+-#include <pthread.h>		/* For pthread_setcanceltype. */
+-#include <semaphore.h>
++#include <fcntl.h>	/* For O_CREAT. */
++#include <stdlib.h>	/* For malloc & free. */
+ 
+ /**
+  * @ingroup cobalt_api
+diff --git a/lib/cobalt/signal.c b/lib/cobalt/signal.c
+index b5c0865e95eb571f3bbf67ce29ffc73b9ddf11ef..3efba964dddea815942aacb31756e572df07f5b1 100644
+--- a/lib/cobalt/signal.c
++++ b/lib/cobalt/signal.c
+@@ -10,7 +10,7 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+@@ -18,9 +18,6 @@
+ 
+ #include <asm/xenomai/syscall.h>
+ 
+-#include <stdlib.h>
+-#include <errno.h>
+-#include <fcntl.h>
+ #include <pthread.h>
+ #include <signal.h>
+ 
+diff --git a/lib/cobalt/sigshadow.c b/lib/cobalt/sigshadow.c
+index b98e4a1d5549f2eb9cb76822dc55080bafb21861..1204d7c075331ccfc04c3585acfb62918023c36e 100644
+--- a/lib/cobalt/sigshadow.c
++++ b/lib/cobalt/sigshadow.c
 @@ -10,17 +10,16 @@
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -619,20 +811,20 @@ index ac8dcda2cd443f234e8de409a87cac788902154f..c44bd4c012fb9239183c6fb2f65a1043
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
   */
  
--#include <boilerplate/lock.h>
--#include <vxworks/tickLib.h>
--
- #include "tickLib.h"
- 
-+#include <vxworks/tickLib.h>
+-#include <pthread.h>
+-#include <signal.h>
++#include "internal.h"
 +
- struct clockobj wind_clock;
+ #include <asm/xenomai/debug.h>
+ #include <asm/xenomai/syscall.h>
+-#include "internal.h"
  
- ULONG tickGet(void)
-diff --git a/lib/vxworks/tickLib.h b/lib/vxworks/tickLib.h
-index 2ddbf42abaa0c49b4f0411a5fda1675694fdeefd..04804d29fc63c980ed6c9e5ed0c071bbf0ce0f00 100644
---- a/lib/vxworks/tickLib.h
-+++ b/lib/vxworks/tickLib.h
+ #if !HAVE_BACKTRACE
+ static inline int backtrace(void **buffer, int size)
+diff --git a/lib/cobalt/thread.c b/lib/cobalt/thread.c
+index 264fd6dda90e9afb82f5d6b7a7294928db6e598e..efc74ebfe60feec777cac704a29999bc8d53c7c3 100644
+--- a/lib/cobalt/thread.c
++++ b/lib/cobalt/thread.c
 @@ -10,7 +10,7 @@
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -642,35 +834,154 @@ index 2ddbf42abaa0c49b4f0411a5fda1675694fdeefd..04804d29fc63c980ed6c9e5ed0c071bb
   * You should have received a copy of the GNU Lesser General Public
   * License along with this library; if not, write to the Free Software
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-diff --git a/lib/vxworks/wdLib.c b/lib/vxworks/wdLib.c
-index 55a83084552ddb8a28d72e97d44fcb96d39c60d5..63b5bd60baf2127ec514068c03834377e4fdeb13 100644
---- a/lib/vxworks/wdLib.c
-+++ b/lib/vxworks/wdLib.c
-@@ -21,16 +21,13 @@
-  * available in all processes).
+@@ -21,10 +21,7 @@
+ #include <asm/xenomai/syscall.h>
+ 
+ #include <string.h>
+-#include <errno.h>
+ #include <unistd.h>
+-#include <pthread.h>
+-#include <semaphore.h>
+ 
+ /**
+  * @ingroup cobalt_api
+diff --git a/lib/cobalt/ticks.c b/lib/cobalt/ticks.c
+index 214f2a1a841a0588df2a485d37e1ba3554e51301..8faafd93ed7e880c5abe04a703cd4ab256506963 100644
+--- a/lib/cobalt/ticks.c
++++ b/lib/cobalt/ticks.c
+@@ -10,17 +10,17 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
   */
  
--#include <errno.h>
--#include <stdlib.h>
--#include <memory.h>
--#include <copperplate/heapobj.h>
--#include <copperplate/threadobj.h>
--#include <vxworks/errnoLib.h>
--
- #include "wdLib.h"
- #include "tickLib.h"
+-#include <cobalt/arith.h>
+-#include <cobalt/ticks.h>
+-#include <asm/xenomai/time.h>
+ #include "internal.h"
  
-+#include <copperplate/threadobj.h>
-+#include <vxworks/errnoLib.h>
-+#include <vxworks/wdLib.h>
++#include <asm/xenomai/time.h>
++#include <cobalt/arith.h>
 +
- #define wd_magic	0x3a4b5c6d
+ /*
+  * If we have no fast path via the vDSO for reading timestamps, ask
+  * the Cobalt core.
+diff --git a/lib/cobalt/timer.c b/lib/cobalt/timer.c
+index 0294953f8e69b63e55fe06fe4f7bbbd2b72a1e8d..87dd77d5bf3e7bc58518d9a5a59aed0e68d52c8c 100644
+--- a/lib/cobalt/timer.c
++++ b/lib/cobalt/timer.c
+@@ -10,14 +10,12 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
  
- static struct wind_wd *get_wd(WDOG_ID wdog_id)
-diff --git a/lib/vxworks/wdLib.h b/lib/vxworks/wdLib.h
-index 4bc16a20e15780a357da8ccbceb9d3df3e23a1ef..c59ec7882ec36f03513278861abbbd9502d35b9e 100644
---- a/lib/vxworks/wdLib.h
-+++ b/lib/vxworks/wdLib.h
+-#include "internal.h"
+-
+ #include <asm/xenomai/syscall.h>
+ 
+ #include <errno.h>
+diff --git a/lib/cobalt/timerfd.c b/lib/cobalt/timerfd.c
+index 5fa1f1eaa3902293c81600431fb2d97557c671d2..f1da64fa08158dab77eb7238896d7c5450fb9ea8 100644
+--- a/lib/cobalt/timerfd.c
++++ b/lib/cobalt/timerfd.c
+@@ -10,16 +10,15 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
+ 
++#include <asm/xenomai/syscall.h>
+ #include <errno.h>
+ #include <sys/timerfd.h>
+-#include <asm/xenomai/syscall.h>
+-#include "internal.h"
+ 
+ COBALT_IMPL(int, timerfd_create, (int clockid, int flags))
+ {
+diff --git a/lib/cobalt/trace.c b/lib/cobalt/trace.c
+index 8d9c1890253d2b6233d9f3472f5ac366ad8b2ba8..f59c0e02250dfb84ea6fb3bed3549b58228b9443 100644
+--- a/lib/cobalt/trace.c
++++ b/lib/cobalt/trace.c
+@@ -10,17 +10,18 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
+ 
++#include <asm/xenomai/syscall.h>
++#include <cobalt/trace.h>
++#include <cobalt/uapi/kernel/trace.h>
++
+ #include <errno.h>
+ #include <stdio.h>
+-#include <cobalt/uapi/kernel/trace.h>
+-#include <cobalt/trace.h>
+-#include <asm/xenomai/syscall.h>
+ 
+ int xntrace_max_begin(unsigned long v)
+ {
+diff --git a/lib/cobalt/umm.c b/lib/cobalt/umm.c
+index 6b4303b7270f7cdc12a2b1b09930876ad615d7ed..78d8c4153f1f23b40b200ca345a884b2177a564a 100644
+--- a/lib/cobalt/umm.c
++++ b/lib/cobalt/umm.c
+@@ -10,25 +10,21 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+  */
+ 
+-#include <sys/types.h>
+-#include <sys/ioctl.h>
+-#include <sys/mman.h>
+-#include <errno.h>
+-#include <string.h>
+-#include <unistd.h>
+-#include <fcntl.h>
+-#include <pthread.h>
+-#include <rtdm/rtdm.h>
+-#include <cobalt/uapi/kernel/heap.h>
+ #include "umm.h"
+ #include "internal.h"
+ 
++#include <cobalt/uapi/kernel/heap.h>
++#include <rtdm/rtdm.h>
++
++#include <string.h>
++#include <sys/mman.h>
++
+ void *cobalt_umm_private = NULL;
+ 
+ void *cobalt_umm_shared = NULL;
+diff --git a/lib/cobalt/umm.h b/lib/cobalt/umm.h
+index a298e83695d2ba0c2b7190700a0a3798db880c11..d5769524d0688f687bd06a646552e574ad2f975a 100644
+--- a/lib/cobalt/umm.h
++++ b/lib/cobalt/umm.h
 @@ -10,7 +10,7 @@
   * but WITHOUT ANY WARRANTY; without even the implied warranty of
   * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -680,14 +991,80 @@ index 4bc16a20e15780a357da8ccbceb9d3df3e23a1ef..c59ec7882ec36f03513278861abbbd95
   * You should have received a copy of the GNU Lesser General Public
   * License along with this library; if not, write to the Free Software
   * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
-@@ -20,7 +20,6 @@
- #define _VXWORKS_WDLIB_H
+diff --git a/lib/cobalt/wrappers.c b/lib/cobalt/wrappers.c
+index 3a0063f0515a79908d899eaa55f324ce5f73e9d9..16ced2260175c70f47579fd9c6b1e659954466fe 100644
+--- a/lib/cobalt/wrappers.c
++++ b/lib/cobalt/wrappers.c
+@@ -10,7 +10,7 @@
+  * but WITHOUT ANY WARRANTY; without even the implied warranty of
+  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  * Lesser General Public License for more details.
+-
++ *
+  * You should have received a copy of the GNU Lesser General Public
+  * License along with this library; if not, write to the Free Software
+  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
+@@ -21,27 +21,18 @@
+  * wrapped. These are fallback functions for __real* functions used by
+  * the library itself.
+  */
+-#include <xeno_config.h>
+-#include <sys/types.h>
+-#include <sys/stat.h>
++
++#include <fcntl.h>
++#include <malloc.h>
++#include <pthread.h>
++#include <semaphore.h>
++#include <signal.h>
++#include <stdio.h>
+ #include <sys/ioctl.h>
+-#include <sys/select.h>
+ #include <sys/socket.h>
+ #include <sys/time.h>
+-#include <stdio.h>
+-#include <stdarg.h>
+-#include <stdlib.h>
+-#include <signal.h>
+ #include <syslog.h>
+-#include <pthread.h>
+-#include <semaphore.h>
+-#include <limits.h>
+-#include <fcntl.h>
+-#include <sched.h>
+-#include <memory.h>
+ #include <unistd.h>
+-#include <malloc.h>
+-#include <boilerplate/compiler.h>
  
- #include <copperplate/timerobj.h>
--#include <vxworks/wdLib.h>
+ /* support for very old c libraries not supporting O_TMPFILE */
+ #ifndef O_TMPFILE
+diff --git a/lib/cobalt/wrappers_time64.c b/lib/cobalt/wrappers_time64.c
+index 024d227046833ca8be6b8941ef99e8442c20e009..ebbb36af4d0da7265fee5b7a9df78ec4ef9aa51d 100644
+--- a/lib/cobalt/wrappers_time64.c
++++ b/lib/cobalt/wrappers_time64.c
+@@ -14,21 +14,13 @@
+  */
  
- struct wind_wd {
+ #include "cond.h"
+-#include "internal.h"
+ #include "mq.h"
+ #include "mutex.h"
+ #include "rtdm.h"
  
+-#include <asm/xenomai/syscall.h>
+-#include <cobalt/uapi/syscall.h>
+ #include <rtdm/rtdm.h>
+ 
+-#include <errno.h>
+-#include <mqueue.h>
+-#include <pthread.h>
+-#include <sys/socket.h>
+ #include <sys/time.h>
+-#include <time.h>
+ 
+ #if defined(__USE_TIME_BITS64) || __WORDSIZE == 64 ||                          \
+ 	(defined(__SYSCALL_WORDSIZE) && __SYSCALL_WORDSIZE == 64)
 
 -- 
 2.54.0
