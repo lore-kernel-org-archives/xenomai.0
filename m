@@ -1,36 +1,36 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEB7D378D8A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EED05378D8B
 	for <xenomai@lists.linux.dev>; Fri,  8 May 2026 06:23:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778221402; cv=none; b=p8m1BfI1pJJ4zvVgS64IPOIUZuHNyjXjAdvQ8TTSQ7VPmHpTCkCJxbpEYSXAiw1K/5YIgW0DAtwANhF4yzPeh1miTq67pAdzTy+Va7VK31VYCgXDs6MVc9OVLUH+FXAGDrEvBgUyN8dYHWFpvEzW76QokjRcvSkNBiN8/soD1fQ=
+	t=1778221403; cv=none; b=I6KmQKU+MLMyFGEMEDHGWWPT87vzBvbfxLumH0u2PkmGUX9gUz+X+pJ9bjlqr/MByFgth5LFJQiewSalIEpnEOdnSQ7pwBDedI/B0E2TUy7onVdnnpcywLInC6z1dseEoWbmnpbrHUSVx5OTStb0tJyuhkRMcDgmb947hl+QadE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778221402; c=relaxed/simple;
-	bh=+iuwnf947FO7Aw+mnMqRUIV9Rv2hiqowfdwsrcQuscw=;
+	s=arc-20240116; t=1778221403; c=relaxed/simple;
+	bh=A704rA1Kg01bvGe9Znmbsi5nxRIxv04I+HyuGSswHPc=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=hRQtJukD/ccP//k0I380Tc9jobQT5NIRpFxAv6VcD6HxYQGYtuFw52HxnxngT39sjHlWVhDU6p12I+QCnGgUw4ZjnhN9MWj9KUiezxwmV7hoZ68w21AgndRfyKPzijiSFOKhkAmYh1BWbU0wPDRUXsfjNSp775+5j9CbeEIltcI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=BWBRVp8F; arc=none smtp.client-ip=185.136.64.227
+	 In-Reply-To:To:Cc; b=JwlKuZ+KVwXIr1RsJWtSaTLDDSHPTd0oNnDO5SbOsC0ZuJ6kJC0IuAfYpg7sCB3xq0/F5jqkYPIaR9xiDfMYWYmSa7OxfLYLr90BjrWSdRmjAawRxTYDs+wM1sNQy+CCHOmJw3w3g+t1n3ybuu3yBL+VEjf+R4JstMXu5VYnHKQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Nwy7MhIn; arc=none smtp.client-ip=185.136.65.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="BWBRVp8F"
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202605080623053bf751f0e300020701
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Nwy7MhIn"
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20260508062305ff04323691000207ed
         for <xenomai@lists.linux.dev>;
         Fri, 08 May 2026 08:23:05 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=aEHvj3JhfYLwaldrHKJ4rGpiN5S+/Zts8ejARPjEdec=;
- b=BWBRVp8FISTJeyd1CQpKJcbryPHYGujEy1ZPmKIBV6akO3szlRv6M6t0H53LRr0Ev6NsxQ
- BbE8CazP05iXhX0g28KNCAFEAv0oHxB6T/SBiz6J2uzMJnLmk02BF1cWXm/trhV3PhFoOPDI
- fjC19Gj225KnOTL2H1i9w5L+nmSGPII5GpcxMCHlMtA/MvGdj7LnDQP1vziS3g8u/TnQYmQy
- hAKbQKKVZuavJhtWWG/zlA6gbL4mFlB/ucN0aGd7QCcEBUD0WWgOmDywdXmIgKh2sP0bllOx
- /YIt68peDP5F7EQqEm3NnChoHdwJydvT12riGUYxaG9jWkMv/N5TiqLQ==;
+ bh=n3ly3C2cZ+RcPLWyc0tPJCcDe2BKlIi5GFi/bQVGi+8=;
+ b=Nwy7MhInbgc7Fd8H9qEDu3BicXEXoy71SjkAXkY0zLcb9ozSo8gN56sLwOSEuzfMUnKOPb
+ Ol+B+9KLeGzCj2qe7UNibWh9529n8wp3HnQg2YdCF+CMfzaipUfPqdNQmi/c+BkVhrfPkHrR
+ CmB7YBvWHCOxToxdVU+euZ0WyO06+EOc8Hhzxvopds2wytReEgQ+hMkHMZ543OqRsa2bwGW3
+ CvKbTO9csPS7ybWvSb4F9JXJbeOYr7wmmJGHUWzDUoTXZ+e6QBYKsXTQW6veLJJFpCA68560
+ KlhhQVcwWVvw9wwOqSrizAqBOkmVRlsjAyEKyEDSEvTJ2JXE5x1aUSeA==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Fri, 08 May 2026 08:23:04 +0200
-Subject: [PATCH 31/32] utils: Rearrange includes
+Date: Fri, 08 May 2026 08:23:03 +0200
+Subject: [PATCH 30/32] utils/net: Rearrange includes
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -39,7 +39,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260508-wip-flo-refactor-includes-v1-31-e449f2bd4fc2@siemens.com>
+Message-Id: <20260508-wip-flo-refactor-includes-v1-30-e449f2bd4fc2@siemens.com>
 References: <20260508-wip-flo-refactor-includes-v1-0-e449f2bd4fc2@siemens.com>
 In-Reply-To: <20260508-wip-flo-refactor-includes-v1-0-e449f2bd4fc2@siemens.com>
 To: xenomai@lists.linux.dev
@@ -49,187 +49,223 @@ X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
 Moving from "local to global" should help us to keep headers
-self-contained. This commit holds the cleanups of all utils/
-subdirectories where only a single file has been modified.
+self-contained.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- utils/autotune/autotune.c    | 17 ++++++-----------
- utils/chkkconf/checkconfig.c | 12 ++++++------
- utils/corectl/corectl.c      | 11 +++++------
- utils/hdb/hdb.c              | 16 ++++++++--------
- utils/ps/rtps.c              |  7 ++++---
- utils/slackspot/slackspot.c  | 19 +++++++++----------
- 6 files changed, 38 insertions(+), 44 deletions(-)
+ utils/net/nomaccfg.c   |  8 +++-----
+ utils/net/rtcfg.c      | 17 ++++++-----------
+ utils/net/rtifconfig.c | 17 +++++++----------
+ utils/net/rtiwconfig.c | 12 ++++--------
+ utils/net/rtping.c     | 16 ++++++----------
+ utils/net/rtroute.c    | 13 +++++--------
+ utils/net/tdmacfg.c    |  9 +++------
+ 7 files changed, 34 insertions(+), 58 deletions(-)
 
-diff --git a/utils/autotune/autotune.c b/utils/autotune/autotune.c
-index f52733b7ae1d5a920fc7ad79c7288001dfeb8f21..b608eba8c7044971a8800a273e2e3ad32b28f650 100644
---- a/utils/autotune/autotune.c
-+++ b/utils/autotune/autotune.c
-@@ -16,20 +16,15 @@
-  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-  * 02111-1307, USA.
-  */
--#include <fcntl.h>
--#include <unistd.h>
--#include <getopt.h>
--#include <stdlib.h>
--#include <stdio.h>
--#include <pthread.h>
--#include <limits.h>
--#include <time.h>
--#include <signal.h>
--#include <error.h>
--#include <sys/cobalt.h>
-+
- #include <rtdm/autotune.h>
-+#include <sys/cobalt.h>
- #include <xenomai/init.h>
- 
-+#include <error.h>
-+#include <getopt.h>
-+#include <stdlib.h>
-+
- static int tune_irqlat, tune_kernlat, tune_userlat;
- 
- static int reset, noload, background;
-diff --git a/utils/chkkconf/checkconfig.c b/utils/chkkconf/checkconfig.c
-index 134d8e519085320043c510b565ae488d105a882e..31d6c7838b109b55c85e9f99179851e442ea2272 100644
---- a/utils/chkkconf/checkconfig.c
-+++ b/utils/chkkconf/checkconfig.c
-@@ -4,17 +4,17 @@
-  * Copyright (C) 2020 Philippe Gerum  <rpm@xenomai.org>
+diff --git a/utils/net/nomaccfg.c b/utils/net/nomaccfg.c
+index f0b5dafde6dcef2b8d9f3494415b1a7d38acd79f..97a1c657c53194742ede378ab6fbc32d488bc2cd 100644
+--- a/utils/net/nomaccfg.c
++++ b/utils/net/nomaccfg.c
+@@ -23,16 +23,14 @@
+  *
   */
  
--#include <unistd.h>
-+#include <ctype.h>
-+#include <errno.h>
-+#include <error.h>
- #include <getopt.h>
-+#include <search.h>
- #include <stdbool.h>
--#include <ctype.h>
--#include <stdlib.h>
- #include <stdio.h>
-+#include <stdlib.h>
- #include <string.h>
--#include <search.h>
--#include <error.h>
--#include <errno.h>
- #include <sys/utsname.h>
-+#include <unistd.h>
- 
- #define DEFAULT_KCONFIG    "/proc/config.gz"
- #define DEFAULT_CHECKLIST  DATADIR"/kconf-checklist"
-diff --git a/utils/corectl/corectl.c b/utils/corectl/corectl.c
-index 41b8773ad5db15d60a85b2d00b9b7bba7189d971..c8977af168fc30b1ff4a8ee9ff8c4839258fde52 100644
---- a/utils/corectl/corectl.c
-+++ b/utils/corectl/corectl.c
-@@ -16,15 +16,14 @@
-  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-  * 02111-1307, USA.
-  */
--#include <xeno_config.h>
--#include <unistd.h>
--#include <getopt.h>
--#include <stdlib.h>
--#include <stdio.h>
--#include <error.h>
++#include <nomac_chrdev.h>
 +
- #include <sys/cobalt.h>
- #include <xenomai/init.h>
- 
-+#include <error.h>
-+#include <getopt.h>
-+#include <stdlib.h>
-+
- int __cobalt_control_bind = 1;
- 
- static int action;
-diff --git a/utils/hdb/hdb.c b/utils/hdb/hdb.c
-index 1ecce6ebf533a13b96f7a4a36f281edff10c4d00..dd596b32f9e638fe6dd92bed322914fe58326791 100644
---- a/utils/hdb/hdb.c
-+++ b/utils/hdb/hdb.c
-@@ -16,17 +16,17 @@
-  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-  * 02111-1307, USA.
-  */
--#include <xeno_config.h>
--#include <unistd.h>
--#include <getopt.h>
--#include <stdlib.h>
--#include <malloc.h>
--#include <stdio.h>
--#include <error.h>
--#include <fcntl.h>
-+
- #include <copperplate/cluster.h>
- #include <xenomai/init.h>
- 
-+#include <error.h>
 +#include <fcntl.h>
-+#include <getopt.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <unistd.h>
-+
- static const struct option options[] = {
- 	{
- #define dump_cluster_opt	0
-diff --git a/utils/ps/rtps.c b/utils/ps/rtps.c
-index 6a07f110dbd7694225a6a6837cdd8fffb1562786..1ff53956862ae243193fb9826334f3c1e33702cc 100644
---- a/utils/ps/rtps.c
-+++ b/utils/ps/rtps.c
-@@ -16,11 +16,12 @@
-  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
-  * 02111-1307, USA.
-  */
--#include <string.h>
--#include <stdio.h>
--#include <error.h>
-+
- #include <errno.h>
-+#include <error.h>
-+#include <stdio.h>
+ #include <stdio.h>
  #include <stdlib.h>
-+#include <string.h>
+ #include <string.h>
+-#include <errno.h>
+-#include <fcntl.h>
+ #include <sys/ioctl.h>
  
- #define PROC_ACCT  "/proc/xenomai/sched/acct"
- #define PROC_PID  "/proc/%d/cmdline"
-diff --git a/utils/slackspot/slackspot.c b/utils/slackspot/slackspot.c
-index 031b97f13f975ca77ac579afc41fbb8e3ddbc479..9fb507b2812b295f846740cd485b4dde02ea5e07 100644
---- a/utils/slackspot/slackspot.c
-+++ b/utils/slackspot/slackspot.c
-@@ -19,20 +19,19 @@
-  * vfile, to get backtraces of spurious relaxes.
+-#include <nomac_chrdev.h>
+-
+-
+ static int                     f;
+ static struct nomac_config     nomac_cfg;
+ 
+diff --git a/utils/net/rtcfg.c b/utils/net/rtcfg.c
+index e68bf8786cc2c1c688a3dc486674f1e66a0d52bf..4f05a2a23b7e81c5afbfa780c5f853d021317296 100644
+--- a/utils/net/rtcfg.c
++++ b/utils/net/rtcfg.c
+@@ -22,24 +22,19 @@
+  *
   */
  
++#include <rtcfg_chrdev.h>
++
++#include <arpa/inet.h>
+ #include <errno.h>
+ #include <fcntl.h>
+ #include <limits.h>
++#include <netinet/ether.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+-#include <unistd.h>
 -#include <sys/types.h>
 -#include <sys/stat.h>
--#include <stdio.h>
+ #include <sys/ioctl.h>
+-#include <sys/socket.h>
+-#include <net/if.h>
+-#include <netinet/in.h>
+-#include <netinet/ether.h>
+-#include <arpa/inet.h>
+-
+-#include <rtcfg_chrdev.h>
+-
++#include <sys/stat.h>
++#include <unistd.h>
+ 
+ #define DFLT_PACKET_SIZE        1500 /* Ethernet packet */
+ #define DFLT_CLIENT_BURST_RATE  4
+diff --git a/utils/net/rtifconfig.c b/utils/net/rtifconfig.c
+index 9a9abfc4c9b5ec2817acd0844872d1ec07ea1300..84e127215b752f805cb5fc56de5fd65503f4c934 100644
+--- a/utils/net/rtifconfig.c
++++ b/utils/net/rtifconfig.c
+@@ -23,20 +23,17 @@
+  *
+  */
+ 
++#include <rtnet_chrdev.h>
++
++#include <arpa/inet.h>
++#include <ctype.h>
 +#include <errno.h>
- #include <error.h>
--#include <stdint.h>
++#include <fcntl.h>
++#include <netinet/ether.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+-#include <errno.h>
+-#include <ctype.h>
+-#include <fcntl.h>
+ #include <sys/ioctl.h>
+-#include <net/ethernet.h>
+-#include <net/if_arp.h>
+-#include <netinet/ether.h>
+-#include <netinet/in.h>
+-#include <arpa/inet.h>
+-
+-#include <rtnet_chrdev.h>
+ 
+ /* Some old toolchains don't ARPHRD_IEEE1394 defined */
+ #ifndef ARPHRD_IEEE1394
+diff --git a/utils/net/rtiwconfig.c b/utils/net/rtiwconfig.c
+index eecb2939b1c27f8d1a807f8c29344851d031fa0a..2d4dd2a20fc755aa0fd40b32059c6a588e56801a 100644
+--- a/utils/net/rtiwconfig.c
++++ b/utils/net/rtiwconfig.c
+@@ -1,15 +1,11 @@
++#include <rtwlan_io.h>
++
++#include <errno.h>
++#include <fcntl.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+-#include <errno.h>
+-#include <fcntl.h>
+ #include <sys/ioctl.h>
+-#include <net/ethernet.h>
+-#include <net/if_arp.h>
+-#include <netinet/ether.h>
+-#include <netinet/in.h>
+-
+-#include <rtwlan_io.h>
+ 
+ #define PRINT_FLAG_ALL          1
+ #define PRINT_FLAG_INACTIVE     2
+diff --git a/utils/net/rtping.c b/utils/net/rtping.c
+index bdaf6cb15a3e8b981877bcf3884851a3c315e083..fd3e66e6a7c2f5f1745da97e66fa4f878f8156c8 100644
+--- a/utils/net/rtping.c
++++ b/utils/net/rtping.c
+@@ -22,22 +22,18 @@
+  *
+  */
+ 
+-#include <stdio.h>
 -#include <stdlib.h>
- #include <fnmatch.h>
-+#include <getopt.h>
-+#include <limits.h>
- #include <search.h>
--#include <unistd.h>
++#include <ipv4_chrdev.h>
++
++#include <arpa/inet.h>
+ #include <errno.h>
+ #include <fcntl.h>
+ #include <signal.h>
 +#include <stdio.h>
 +#include <stdlib.h>
  #include <string.h>
--#include <errno.h>
--#include <limits.h>
--#include <malloc.h>
--#include <getopt.h>
-+#include <sys/stat.h>
+-#include <unistd.h>
+-#include <sys/types.h>
+-#include <sys/stat.h>
+ #include <sys/ioctl.h>
+ #include <sys/time.h>
+-#include <netinet/in.h>
+-#include <arpa/inet.h>
+-
+-#include <ipv4_chrdev.h>
+-
 +#include <unistd.h>
-+
-+/* UAPI and dependencies */
- #include <signal.h>
- #include <cobalt/uapi/signal.h>
  
+ int             f;
+ struct ipv4_cmd cmd;
+diff --git a/utils/net/rtroute.c b/utils/net/rtroute.c
+index ef6b56ecf023d2c6733dd8caf476f21bbf4103ed..a8eecf3a0b04ac85aa6dcdedc36ea24a48a74896 100644
+--- a/utils/net/rtroute.c
++++ b/utils/net/rtroute.c
+@@ -22,20 +22,17 @@
+  *
+  */
+ 
++#include <ipv4_chrdev.h>
++
++#include <arpa/inet.h>
+ #include <errno.h>
+ #include <fcntl.h>
++#include <netinet/ether.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+-#include <unistd.h>
+ #include <sys/ioctl.h>
+-#include <sys/stat.h>
+-#include <netinet/in.h>
+-#include <netinet/ether.h>
+-#include <arpa/inet.h>
+-
+-#include <ipv4_chrdev.h>
+-
++#include <unistd.h>
+ 
+ int             f;
+ struct ipv4_cmd cmd;
+diff --git a/utils/net/tdmacfg.c b/utils/net/tdmacfg.c
+index b1937b37feb8fb3bbadbefebdf459266e93a7b15..053b07b7e980a12c47b1bb99e22597c4ce534e28 100644
+--- a/utils/net/tdmacfg.c
++++ b/utils/net/tdmacfg.c
+@@ -23,18 +23,15 @@
+  *
+  */
+ 
+-#include <errno.h>
++#include <tdma_chrdev.h>
++
+ #include <fcntl.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+-#include <unistd.h>
+ #include <sys/ioctl.h>
+ #include <sys/stat.h>
+-#include <arpa/inet.h>
+-
+-#include <tdma_chrdev.h>
+-
++#include <unistd.h>
+ 
+ static int                  f;
+ static struct tdma_config   tdma_cfg;
 
 -- 
 2.54.0
