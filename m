@@ -1,121 +1,189 @@
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 983063AC0ED
-	for <xenomai@lists.linux.dev>; Wed, 13 May 2026 09:23:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.193
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C672F195811
+	for <xenomai@lists.linux.dev>; Wed, 13 May 2026 09:33:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778664208; cv=none; b=j59aglH3EVuMHORhUhCv/8ieO/OHt+s70PiJwcOR1q1ZuaCUPSwZvHd6mEmApRqWVhAlGbYG+qZ6p5Tu3K8TX24v0sdTrUmpwGQ3uK/WEiIYQ1fligZzb0ocVG+KxFMycwk6re0IKDBnnbYvv5VYlfmWoQZBsgTz8UuIi0aCq8Q=
+	t=1778664786; cv=none; b=bW4O6iVsVWiDA4bi2YR3wOCwcscIWWNxlzhYZI1MNZ2PVpKijOuhwecImNFcPzBcy/AdICCYDUYtqkwCiL6Dbvd0aeqpDcSrzFmOWapgYhyoyOlwvcNyiEoF8erCDdVJ2Lpm2RawpTslpQTElTHx9j4PGWv4RaKDNoryMGqDk1k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778664208; c=relaxed/simple;
-	bh=hDJvglkly3DOl3+tE18bppQB/o2fRiulSa7B/Etz9nc=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=WTwnG962/dWS51Ac/OiPJ4MDfcVEnMNoXfweZZ82Suc5DR0VmBcyDBBaU1M06mFZODvMKAFF/lHhJAtCs8ALxiK+7XCuFk2VB1BdR+RA5UIRRnl7/VpE9aw03v03SqkrhixztXvz4p6QytuognfhEUBZF8DG/C4VQH4tZAxAua4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=EBr46Ai0; arc=none smtp.client-ip=217.70.183.193
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1778664786; c=relaxed/simple;
+	bh=wc7V1ldDrbMTD1lJec6ZkQWGseBZGoQ6x3hQuR2tLGc=;
+	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=S6BUoxyb+UvoK05uTPn0hnz4fLs9RrnkAegjDLr2WRvd3hGEuL7ZXgp8S7153g/v3Tef2BN7K6vhDs2VjjIYdkwUWEAg5ElzZYXEzrGNL9SfN14vphHZpiCljtARRRwXVhkyVfA1a9ooXB8T1nytWTYPmEWVwOdcJ3A23bat7tM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=MvC1kVyb; arc=none smtp.client-ip=185.136.64.225
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="EBr46Ai0"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 2C9303EBEF;
-	Wed, 13 May 2026 09:23:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1778664197;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=kIX6XSvk33TbcXIeUbIHQL6RBwZXxmezHb65a/wgIU8=;
-	b=EBr46Ai0wvYM7dy1hfV+bBbhK1ELxHOmDnZzxwlkUc8LTzXqjf11w9HEaUizXM56dmaYCJ
-	2qBSutj/7ezr65WhsGnte++/1uJpaiZ26ienKBJ2sCSyZDLlt9SsMpJFuuvCTu+Xt7W3No
-	KnT0Q/lkpMUFZoYhSxEeGIN1qY57CuYysITjeiYje0pFgotGd+lv9R65xPtBCkwJ+NluFa
-	aVBzUwScLkdexfZYUWn4VMRlA2tmK92XDCKD6/fFBO0bgeW7o2JgxHdW7h49+kVGHD/v/B
-	eLmReJVXY7tcJwbHXFL7d8pa+jjm8nRPov+bO47rqSHmI9o1AuUSXuUQ/t07SA==
-From: Philippe Gerum <rpm@xenomai.org>
-To: =?utf-8?Q?Fran=C3=A7ois?= Legal <francois.legal@thom.fr.eu.org>
-Cc: "Jan Kiszka" <jan.kiszka@siemens.com>,  "xenomai" <xenomai@lists.linux.dev>
-Subject: Re: Getting time in realtime kernel driver
-In-Reply-To: <131e-6a043e00-27-5cd69880@210449648> (=?utf-8?Q?=22Fran?=
- =?utf-8?Q?=C3=A7ois?= Legal"'s message
-	of "Wed, 13 May 2026 11:02:21 +0200")
-References: <131e-6a043e00-27-5cd69880@210449648>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Wed, 13 May 2026 11:23:16 +0200
-Message-ID: <87wlx7hddn.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="MvC1kVyb"
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 2026051309324712d324a22200020751
+        for <xenomai@lists.linux.dev>;
+        Wed, 13 May 2026 11:32:47 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
+ bh=y8FHSDLUGmd010Kc9FfUgrikLFndYEivhOQloBGnk8c=;
+ b=MvC1kVybCAoyRuh+cN14zbInwrXLg8V4T9rB11wp5r04HpE+4iIqNGHSchaMPE7z7jhM0s
+ Za7JNZs62FwbwGFgcvwN0L6DjlyfEIrVdCKJqxT4/fHYtwlNAEThesc1P17dIWTTehbeo3vF
+ 0LZOo4vlT7JJ/fYMDx3LqFW51jugHtkxdZz/dh39DPr1ZwY8DZu3gYr1h6I38xhKVg57ykT6
+ zV/B2O1B6uEIzGPYPbADm6ZbxnzyB0VO5/HBK0yO4PolgeJIRUpUyph+SF8jbnhNNPHhA7TM
+ 5Qk767FoT1nIEo6PE9oeV7gdOZG3ineRIeAozh94npMPOZhriDczFllw==;
+Message-ID: <295a77610687400d43dc4f05dbbb9e659afe4c0d.camel@siemens.com>
+Subject: Re: [PATCH 00/32] lib: Finish rearrangement of includes and license
+ headers
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Tobias Schaffner <tobias.schaffner@siemens.com>, Jan Kiszka
+	 <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
+Date: Wed, 13 May 2026 11:32:47 +0200
+In-Reply-To: <a23d90ac-e797-43d3-80fe-4fa15df47e43@siemens.com>
+References: 
+	<20260508-wip-flo-refactor-includes-v1-0-e449f2bd4fc2@siemens.com>
+	 <aca24e6a-977d-428d-b892-403852958a3f@siemens.com>
+	 <bc8ac763cd82eb8f2d2ab53efc0a7b0275ec2551.camel@siemens.com>
+	 <a23d90ac-e797-43d3-80fe-4fa15df47e43@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Cause: dmFkZTFoBO5f+9c3W4Wl6uZ1IL3RxX9lceXsj6lTdiNoCET9o+CysHNCe5aHFDF5AesKn/5tMFqDAtKoV1aZco+xW2oZRMfTFsa8TTfyw+N6s1eWtrjVZV+XgBQ9bcaRpEGF0JQn8aVlJT9cVl3vtCWk5RJCR1GWAFXJSeLezqi6z7R8WsLOG/O2sEDuwiP5iVXoywEltu9SyBMN782lnSm6r7exUTJN8Qhv5HkQ42nNVnJshKGOE4vXlKxu6Y2TwZVIOkDgPf8VcVuVf3AzdsBRRmvNM5LtMcRobQwtJkgWtQvYMBaMNLx0U5RyPT1gZh6z8JNAYReYAFD7+K70AIrVpfh5pthVn0fZnCEZSnMe+QISUBbk71qp8XjBmjwDQg1QV2ZI2t6SWoNNFcRsPsAW6zabMKAOZsu92BQYg/LBXTLZveUzytYl7lAUqtuX0Tivzg4Pd7SYkawvYvzc3aax6ktfaebKA7Pv/fNfFkQrpx6xglll0kIhcimewPM7KBRRb8hUYSfe4DI/6Cz1ETLFpfDFN37+oAFR+FG51qj2jQmTrD/hQeVjUYN69evJANZr78zlHEPGOJlJZev9o5O7mXlaJnFZctpeIx7o1B8aG0WeMBCvJKcS1R/m6YtLWF/VfgnKVJ2gx+S9JHtTUu14GkdvryRtKHxS3iZBzfVchnZ/oQ
-X-GND-State: clean
-X-GND-Score: -100
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Fran=C3=A7ois Legal <francois.legal@thom.fr.eu.org> writes:
+On Tue, 2026-05-12 at 12:20 +0200, Tobias Schaffner wrote:
+> Hi Florian,
+>=20
+> On 5/8/26 16:23, Florian Bezdeka wrote:
+> > On Fri, 2026-05-08 at 16:15 +0200, Jan Kiszka wrote:
+> > > On 08.05.26 08:22, Florian Bezdeka wrote:
+> > > > Hi all,
+> > > >=20
+> > > > This is the missing cleanup of demo/, lib/, testuite/ and utils/ th=
+at
+> > > > was partially handled already in the past as preparation commits fo=
+r
+> > > > bugfixes or build optimizations. I finally found some time to finis=
+h
+> > > > that work for the missing folders.
+> > > >=20
+> > > > There might be even more potential for cleanups inside the include/
+> > > > directory - and as a result once again inside the already cleaned
+> > > > directories. I skipped that for now, as I consider include/ as an A=
+PI.
+> > > > Changes might force users to adapt/recompile.
+> > > >=20
+> > > > Tested against Dovetail 7.0 already.
+> > > >=20
+> > >=20
+> > > How did you retrieve the header needs and coverage again, manually,
+> > > script-based or AI? And what do you suggest to maintain consistency i=
+n
+> > > the future?
+> > >=20
+> >=20
+> > Sorry, forgot to mention that.
+> >=20
+> > Formatting and sorting of includes: clang-format (with the option
+> > enabled in the last patch)
+> >=20
+> > Indexer: The indexer part of JetBrains Clion. Used to find and eliminat=
+e
+> > unused includes. Followed by a manual compile to verify the result afte=
+r
+> > each compile unit.
+> >=20
+> > No AI.
+> >=20
+> > I haven't checked yet if there is any command line tool for identifying
+> > unused includes yet. If so, we might be able to integrate something int=
+o
+> > CI - on the long run.
+> >=20
+> > For the formatting part clang-format is able to report differences - or
+> > formatting violations. At the moment the code base is not ready for tha=
+t
+> > yet. Too much differences. Step by step.
+>=20
+> this must have been a lot of work and I really like that you started=20
+> this. I had a closer look at the patches and decided to give summary=20
+> instead of single comments on the patches as the comments apply to all=
+=20
+> patches.
+>=20
+>=20
+> A general questions first and maybe this has already been discussed=20
+> behind the scenes: Are we sure that we want to we prefer minimization of=
+=20
+> includes over self containment?
 
-> Le Mercredi, Mai 13, 2026 09:19 CEST, Philippe Gerum <rpm@xenomai.org> a =
-=C3=A9crit:=20
->=20=20
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>=20
->> > On 12.05.26 18:20, Fran=C3=A7ois Legal wrote:
->> >> Hello,
->> >>=20
->> >> I think I already asked about the same question some time ago, but I =
-think I did not get a working answer, so here I am again.
->> >>=20
->> >> On xenomai 3.2 + Ipipe (linux 5.4), I need to be able to get in a RT =
-driver the current linux wall clock (impacted from NTP or PTP).
->> >> I found out I get the correct value with ktime_get_real_ts64. Was wil=
-ling to use __ktime_get_real_seconds but this one is not precise enought fo=
-r my application.
->> >>=20
->> >> So my question is : is it safe to use ktime_get_real_ts64 from within=
- an RT driver ioctl function, and if not, which API in xenomai gives the ex=
-act same time as this one ?
->> >>=20
->> >
->> > Nope, it's not safe, neither under legacy I-pipe (your kernel is dead
->> > BTW) nor latest dovetail. Userspace access to the wallclock was harden=
-ed
->> > for out-of-band accesses, but in-kernel had no use case, thus was never
->> > considered.
->> >
->> > For userland, the easiest answer is moving to a dovetail kernel and th=
-en
->> > using CLOCK_REALTIME. Over I-pipe, we had to model this via a separate
->> > clock named CLOCK_HOST_REALTIME.
->> >
->> > Jan
->>=20
->> This may help:
->>=20
->> "ktime_get_real_fast_ns: - NMI safe and fast access to clock realtime."
->>=20
->> Caveat: with this variant, timestamp is not guaranteed to be monotonic
->> across an update.
->>=20
->> --=20
->> Philippe.
->=20=20
-> Thanks Philippe.
->
-> I tried this one, but I get the same result as with __ktime_get_real_seco=
-nds, the date I get is always 1 second late (I get 52 seconds when the actu=
-al clock is at 53).
->
+.h files: self-containment, include only what you need=20
+.c files: include what you need, from private to public headers, no
+          duplications.
 
-What is the exact content of the timespecs?
+> Simple example from the first patch: lib/alchemy/init.c removing stdio=
+=20
+> but using fprinf() which is now included deep behind a pretty long=20
+> include chain which is a bit hard to follow and changes for the=20
+> different build configurations.
 
-i.e. as received from:
+lib/alchemy/init.c needed a revisit after cleaning up the private
+headers. Should be fixed now.
 
-- ktime_to_timespec64(ktime_get_real_fast_ns()) in kernel space
+> I personally think that only removing the unused includes and may be=20
+> easier to maintain.
+>=20
 
-- clock_gettime(CLOCK_REALTIME, &ts) in userland - assuming this is the
-  way you retrieve the reference clock value to compare with.
+I'm cleaning up unused + unnecessary includes here. Everything included
+by private headers already is unnecessary.
 
---=20
-Philippe.
+>=20
+> I tried some more exotic build configurations and e.g. Mercury fails=20
+> when --disable-pshared or --enable-debug is used.
+
+Hm. Can not reproduce here - nor in CI - nor with my usual compiler/os
+variations. Which ./configure line in combination with which compiler?
+
+I might have noticed that upfront. Testing with:
+  - gcc 14 on Debian 13
+  - gcc 12 on Debian 13
+  - gcc 12 on Debian 12
+  - gcc 16 on Fedora (needs additional fixes on top, see wip/flo/gcc-16)
+
+>=20
+>=20
+> Can you somehow make sure, that we do not have any ifdefs silently=20
+> taking the undef path after the changes?
+> Example: clocktest.c included xeno_config.h which is now removed. Is=20
+> this still included indirectly and taking the if path when checking if=
+=20
+> HAVE_PTHREAD_SPIN_LOCK is set or is it always taking the else path now?
+
+Whenever I removed xeno_config.h I tested that it is really already
+included upfront. In this case:
+
+In file included from ../../include/boilerplate/libc.h:30,
+                 from include/cobalt/pthread.h:24,
+                 from ../../include/boilerplate/ancillaries.h:23,
+                 from clocktest.c:21:
+
+But: There is no tooling behind. I should probably go and check that
+again. I might have missed one.
+
+>=20
+>=20
+> Some small nitpicks:
+>=20
+> s/Harmonzie/Harmonize/ in the commit messages.
+>=20
+>=20
+> There are some commented includes left in the patches:
+> git grep "//#include"
+> demo/posix/cyclictest/error.h://#include <stdio.h>
+> lib/alchemy/event.h://#include <alchemy/event.h>
+> lib/trank/native.c://#include <copperplate/heapobj.h>
+> lib/trank/native.c://#include <copperplate/threadobj.h>
+
+Those have been addressed meanwhile. The current state is published as
+wip/flo/refactor-includes.
