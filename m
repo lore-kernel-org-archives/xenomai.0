@@ -1,35 +1,36 @@
 Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3FC74266A4
-	for <xenomai@lists.linux.dev>; Wed, 13 May 2026 12:49:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22E7437C0F8
+	for <xenomai@lists.linux.dev>; Wed, 13 May 2026 12:50:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778676564; cv=none; b=FfEl4pH283ZL6jjQbNyvYRFLGj9ou6uLUMUZOsdDW+hm0M3dwmHp80t4j+EgWXFEedtg/9uTUtNf+LUnUA7YpwdP2NTaUWwXR1wgQUX9EMJ4SG36tRAyyVQ/nj/94ieu/CrQPy1c1aRaU76nqas+hd+MvrL6R+c6JDI94caHnk4=
+	t=1778676618; cv=none; b=WAYLNQYF/nTla231+AHtMW4E4iwFX8tx42PPJ9aqJCz91OPyYAtOVMxhcrmxFk2HQ7T3U9B3leemMjXee20NQD41s11jECzKlkMnTARFNTPgZTR6xx4OsKVgCb8SfWvntjx6+H4LIEADBfAbjyYrLfy5Ci7wLlVjb90A1CJkFR0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778676564; c=relaxed/simple;
-	bh=Gfz1IafP6cxOGUCBgdu3vp5jWJINVEB/jEXoxGte2O8=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=VMALLglEibo5Aob4Ra1rPh4suNQeg6m+kPa1nDe0d6uGBvxYCAN6sEINxMCvtzFLHsMmE9BNVmIaTtDXDiKebNnZNrwpJVbF44KQeulpRrJhEJpF+D49lCV17xVILQtcXwiqZXBIiu4aInpaD27FJxCxHKgucE/f5uepUKQQoN8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=YT/WZwlB; arc=none smtp.client-ip=185.136.64.226
+	s=arc-20240116; t=1778676618; c=relaxed/simple;
+	bh=AvDSi9ppdMqSr6Vbee86Hq3gYNK4PhX+0EmB0inYRFc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=sAWJymX0qwEfS5QPUwBLkeFXEoab8AQGYIN15ck0xjAjoulYkeHiXlJxgwxYykSEbcb1LlJR5Noz915p0WsEbNFcJyeNHb8bPvNhJ9HaJ0Wpok9egofWl6k5qaoMsj0jmzKyvaUMgXnOUjxoqiSX1MVJUZ2fxW2H5p/BufaYqDA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=UbTisTol; arc=none smtp.client-ip=185.136.64.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="YT/WZwlB"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202605131249158051fad9190002071a
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="UbTisTol"
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20260513125012ec9f18ec31000207cb
         for <xenomai@lists.linux.dev>;
-        Wed, 13 May 2026 14:49:16 +0200
+        Wed, 13 May 2026 14:50:12 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=2J2zeCVGzY5yP0dVfLBPG8YpCllr8x3SrINu69PZHQk=;
- b=YT/WZwlBQDByczTVff+vWFkxo/9BanNHx01KBd9hfwqK3mjL4AwKeh8E9OZnfbkAFW63cT
- SiyioPU1yFytCB2OZ+oaLs0CI/2R528LYeRlvEgh85AhU00xksJDjRgOfWRlvJeJVukdZ+lG
- v59+w0jgWjnK5JzpbeNzarH3wc5zR4Lz5ScgoWXHLThOheFUogoF40sP4zTSQhtLNWhJdB7x
- P8NEgW/C8RabZ8hLUcyytDehFYtreN0dpxyzMjYrkI7T3ZK5hAzn8L1F8QArosN8tjrKiC94
- 46ShL5sebbhFmq88mdPBNz5pFPeER1OBXB3XgVTeSd49QfwckQA7Ngiw==;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=QBF+whlYBcGVCptAGFvqhVgWjWFhBrJOiJ/sYI3QAdw=;
+ b=UbTisTol6NViUzqieNbQSjEovbXe/47UJYohGGLaEp93AFpMMX+kiBmpMD4svUYvdCp/Lw
+ Hq8ekrRn8Sgr+tHuCE/+u4Tramkw+YvBaur6j5eHggGyvLjBB4Flb1ZhqtyZBsKCtopI40XB
+ QecLJg+e8sRVlxb5jEdGsDIebwyFlv84ElJFhWxulRpgNQFVFoZWb2HS0LQJXENBculIkIMn
+ nWwW3Lo7s4p0M+lNpcMtcBOGmIQdxXHaYk7zjJIbSgW6tSNDgEC1h2tWYkkG5LLFMrwgo0pv
+ 6WccXq4LM+P7YLSWW0IgFmUljqQamD/SbDpfVelePRi27K2zSAyy/0Hg==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Wed, 13 May 2026 14:49:14 +0200
-Subject: [PATCH] testsuite/xeno-test: Fix clocktest invocation
+Date: Wed, 13 May 2026 14:50:08 +0200
+Subject: [PATCH 1/5] utils/autotune: Fix compile error seen with gcc 16
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -37,67 +38,54 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260513-wip-flo-drive-by-fixes-v1-1-473a263268db@siemens.com>
-X-B4-Tracking: v=1; b=H4sIAElzBGoC/x3LTQqAIBBA4avErBvQwLKuEi3UxhoIC4V+CO+et
- Px4vBcSRaYEQ/VCpJMT76FA1hW41YSFkOdiaETTCiU0Xnyg33acI5+E9kHPNyV0SjptqTedlVD
- mI9IfyjtOOX/wHDVPaAAAAA==
-X-Change-ID: 20260508-wip-flo-drive-by-fixes-c51c8be9a7b1
+Content-Transfer-Encoding: 8bit
+Message-Id: <20260513-wip-flo-gcc-16-v1-1-120ae1287401@siemens.com>
+References: <20260513-wip-flo-gcc-16-v1-0-120ae1287401@siemens.com>
+In-Reply-To: <20260513-wip-flo-gcc-16-v1-0-120ae1287401@siemens.com>
 To: xenomai@lists.linux.dev
-Cc: Florian Bezdeka <florian.bezdeka@siemens.com>, 
- Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, 
+ Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-The -D cmdline switch and CLOCK_HOST_REALTIME support has been removed
-in commit
-e3a3a3025b14 ("testsuite/clocktest: Drop obsolete CLOCK_HOST_REALTIME
-               and wallclock offset bits")
+This fixes the following compile errror seen when using gcc 16 as
+compiler:
 
-so that an invocation with -D resulted in the help message.
-Taken from one of our LAVA test logs:
+autotune.c: In function ‘sampler_thread’:
+autotune.c:95:34: error: variable ‘n’ set but not used [-Werror=unused-but-set-variable=]
+   95 |         int fd = (long)arg, ret, n = 0;
+      |                                  ^
+cc1: all warnings being treated as errors
 
- + /usr/lib/xenomai/testsuite/clocktest -D -T 30 -C CLOCK_HOST_REALTIME
- usage: clocktest [options]
-   [-C <clock_id|clock_name>]   # tested clock, defaults to CLOCK_REALTIME
-   [-E]                         # -C specifies extension clock
-   [-T <test_duration_seconds>] # default=0, so ^C to end
- + /usr/lib/xenomai/testsuite/clocktest -T 30
-
-Removing the first and unnecessary call to clocktest to clean up tests.
-
-Fixes: e3a3a3025b14 ("testsuite/clocktest: Drop obsolete                       CLOCK_HOST_REALTIME and wallclock offset bits")
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
-Hi all,
+ utils/autotune/autotune.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-During reviews and some code reading some minor regressions in the
-testsuite came to light.
-
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
----
- testsuite/xeno-test/xeno-test.in | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/testsuite/xeno-test/xeno-test.in b/testsuite/xeno-test/xeno-test.in
-index 590eac1e0378309e5a8cfeafac3654bef86fd231..de2749c84592d218889a95cd7bc615aa3f0cae2f 100644
---- a/testsuite/xeno-test/xeno-test.in
-+++ b/testsuite/xeno-test/xeno-test.in
-@@ -108,7 +108,7 @@ fi
+diff --git a/utils/autotune/autotune.c b/utils/autotune/autotune.c
+index f52733b7ae1d5a920fc7ad79c7288001dfeb8f21..2e25daef964beb96a8744e50f5ae9c62c04b64b2 100644
+--- a/utils/autotune/autotune.c
++++ b/utils/autotune/autotune.c
+@@ -92,7 +92,7 @@ static const struct option base_options[] = {
  
- start_timesyncd
+ static void *sampler_thread(void *arg)
+ {
+-	int fd = (long)arg, ret, n = 0;
++	int fd = (long)arg, ret;
+ 	__u64 timestamp = 0;
+ 	struct timespec now;
  
--$testdir/clocktest -D -T 30 -C CLOCK_HOST_REALTIME || $testdir/clocktest -T 30
-+$testdir/clocktest -T 30
- $testdir/switchtest -T 30
- 
- start_load
+@@ -102,9 +102,7 @@ static void *sampler_thread(void *arg)
+ 			if (errno != EPIPE)
+ 				error(1, errno, "pulse failed");
+ 			timestamp = 0; /* Next tuning period. */
+-			n = 0;
+ 		} else {
+-			n++;
+ 			clock_gettime(CLOCK_MONOTONIC, &now);
+ 			timestamp = (__u64)now.tv_sec * 1000000000 + now.tv_nsec;
+ 		}
 
----
-base-commit: 54e9c509863439614484b0bf939c32bfadb15423
-change-id: 20260508-wip-flo-drive-by-fixes-c51c8be9a7b1
-
-Best regards,
 -- 
-Florian Bezdeka <florian.bezdeka@siemens.com>
+2.54.0
 
