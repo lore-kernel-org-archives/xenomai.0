@@ -1,54 +1,56 @@
-Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11012041.outbound.protection.outlook.com [52.101.66.41])
+Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013043.outbound.protection.outlook.com [52.101.72.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B66A330662
-	for <xenomai@lists.linux.dev>; Thu, 14 May 2026 09:13:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 329A437F014
+	for <xenomai@lists.linux.dev>; Thu, 14 May 2026 10:00:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.72.43
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778750020; cv=fail; b=o1lFSZhtMEbA+drBOhl3jTfCXasYp+pnNsi922It6WDZfEhMtxL7nvDu8dU9kNfHeLfaDmuNhN/rh79/RMG82S6LCwxR1lOEr3e7h5RD/HgJXU8ylhvE5qd6yCvnMv3pup0BG3Dij8bTjmTvMh2uccOaIzQ/ya2YApXPTp1JX2U=
+	t=1778752839; cv=fail; b=Bwfp4D9r2tim+rPmQdraa/N/jKOwQfFeInIIqs+kTtQzVykxaARwV8QomeS9qM8uyBbNbZgjHIk+btxngnswb2eDlps0rClOGP0uY0BHz2j4XeKpJbK7UcsuP69Zt1WrknYUim1cX0mmq0Wr4A1m4RzCkVHQbL73SEerrjOkqTY=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778750020; c=relaxed/simple;
-	bh=AFQXU00JIusu3njvdUglm5c7ALxkbGtMVbaB7qiBXkc=;
-	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=k438fBPs5PndVD6/Xe5MLTYOqIHdrFhPfvHgUd5V8Mcb6cfeQmxBndtsyFfE62/PJcyH8a5oloBCUTzViFZw+bSXsk05xHEKMTzBypoq6g2aMpdd9UWTooMu1dPvxTxT7Xou9MIzxZoah+2YGSDs0L9u4fEUr7HXtWK0wnbFmg0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=cW4mr8I6; arc=fail smtp.client-ip=52.101.66.41
+	s=arc-20240116; t=1778752839; c=relaxed/simple;
+	bh=VglfXUFKF3AFLruXeMcSftlEz2d9++Pl6nvA5vVSMH0=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=Jykb5teKREPg/TPYTFb2BRuv10MJGLu5T4jluv2AWgGFlCpffGkIwUh+iptLCkBrqkWiSiYE3tHQA95e1jN6Q+8VMw7mswUzjP7IQYzCKfGx09TqBBo8hV3Af+WQeUbqhPNnFq7qdzC+/MiriBsinuLb6+F4K3D3yTayeERmekk=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=dQdGBOHD; arc=fail smtp.client-ip=52.101.72.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="cW4mr8I6"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="dQdGBOHD"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=qVhAnabREVgTfGncj8Od0grXMGyU2+FEGiGcIXF6Sed8okCHG9fmV1urduzwsf4CRLhR7i7QXe1Hm9Sp8InZB3E+P9EFLJQKyx43krEI959EKtVdQ6oi8U5XVc7bc7xti40tPA596twDufaEj2tHmOKR/e3UkiE+O0OL6jdwhJaBvr0FoaTyQnKnL2iAfDwscDhrY6kSdfUq0FuSwlUxX2huhq46NkpPSrGugu+yLaDA1eqm/ok+D+Ww570Kzf04OVfuDYw9kz1/gmaRsIleV6i0L5z341BP2YBiXT+V1iPdeZ1PFXAaTm22YZCV8znOv+QwgWayOsnQyucCnjqPLw==
+ b=PMkQSYPIZitfTYJ+rVDr3245sLD9l/tr45QbKACoEx/SckeuM5AYzW1bX3+yQFX7P54jOji2+pUdGcscfP7KFBj9YSIp8p4F/hsaBDEhnexeWMFEzSgrIKvYd7VsRnKGbjMdB9i1DwrIju85bPL8IVc4alJ4Z1FVIqbpGsaYldnUTwN0Y2LXmMPfaI3g+Gs+2ibEhjba2zN0TYJUhjoB/FaIpzKv8gmd/melVBrb/TrMOqF9sZaJ8BTlFsucqv8nlbEedUKf6+TluZHDZOrcTJAfuePu4lbDdNYP7kKrE9KrPSPR986pknXUzzLOid2DM3OuzAllBJYAqdORAIR7pw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pbkQKFrAmWo+5Ql3GeYtgheBXy4Z749vVIieOkK9diU=;
- b=HkAZfysrxPBvqbQUj4A3tpMs/55kozToxN/k+jGvRB2Ulv0yYY66tx/1TzEzVHZ1EQtrg1e/6S8RECAt7RIbkv1LcrguotR1iDWHr1Jy5UKd+AdwGnU0yiNS1SP6Hmk6RL+pyD3Yi/lOcF7Xa4Y5lxVwTZNz05qBW1PxPF8AsQzL5x3hgJ/4rHkAC2EVqOo4BskrMMq66EJO4mgV80b/sDZgIB1DbEnrtGcsnLTnLdXC2qmD4KmAjkaf5zz1o/tmx/aEavT74S9MLnV38OL2M7GHMqcI7ZLWWBSxTr9YzMxacxKzyxdNzgPJPc2yeBS6eUVmx/wNjpNH2FlvPVdg4A==
+ bh=ipCbxrzgfXzYd0lfPlSQQXxXXtznFHgNx4Z+XvaAVP0=;
+ b=dxCQ2qMhBIzrVHUeAgUJIbgeKehnXT16lh6Y3uZKyI0U9j6CaagrDKbbjv+mAQTDGYz89q6dIN9VeHaN1BJ1ibbCkG/QjMz0oUU8CkIDg4Wkuw9FFqbGdqd0vMSYVdfAq1t7bgvNzd/mpBDQcQiTfOLCPsordkBy808ihateJX7UQgei+izEKvTs+drRfptr1NqNMG511bHUQPbFCvpfsirVgpIWm4sWK+x/S2jg4o/usgebsTrQ38SOJLLeO5HlyVS//P103ANu94+cQ8jPjaIvMtvZJ8kyas5tD1VqL9FIDDj4S/tw/nAg/gQX/5l+YF0qiG4zkdhJ25PBxUJhpg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pbkQKFrAmWo+5Ql3GeYtgheBXy4Z749vVIieOkK9diU=;
- b=cW4mr8I6exP46uPMVdkoxBYREWIO2rYUZ6FedEAIjYU6LCLhrldN9AAUJC1C0duKRQJ+ayysYmM6+N9IPZ2F/JZfFzEGOp8CJ3tLgiJYqqsqfJNzTbt0UsixXZEBAZNQoQxFUMLU3C+HQ+zlQX92Sfr2fxiwhqh1rPKqoZwrkZdMMRhpiFzjErXizPP733VtFiclV9NCTL07h5O3wzdcjRqFfzAyFAibDV/zhUDsBz3p94LwY/gCSUDuJ6VWwVbuyiB+Jfw15DbCZrg1qolfVCZ4YUXnJdOfFYJqq0t1SGggGE2OWAZY+wpk5cuHVcIOLX4z3iWxyKdxXtowIcd2Ig==
+ bh=ipCbxrzgfXzYd0lfPlSQQXxXXtznFHgNx4Z+XvaAVP0=;
+ b=dQdGBOHD7OqAfkKohfIoD4gLoU5gwWfttzs0NwhT89x67F18QfpewYvWuxapqzSRn3Oma0SFyUFYOlBHPjzK5fO0DyVelumooEdXWkoPllu/ikWdyokVMEIARAHizMzbZZgxfMBZFxoIdZpZbmvTmJbIKqctrze0cILbPy/3IznicU00hOSkpB0AFAXCV2dpuqmR8/R2Sj5u1bZFHFpGmyJZgDYru9iokDW8NUtwjM1T72/lFaGUE7fVQCNOJCVbBRw4xEcte4gXF0nJbFpA5WqQk+wE389RMMGk+62MpJRUKsrk1ZAniZeO+p9NxK8M9IeQwM0irf3hKgR1PEuVJg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by FRZPR10MB9891.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:d10:1c9::7) with
+ by DB9PR10MB7412.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:45f::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.25.18; Thu, 14 May
- 2026 09:13:35 +0000
+ 2026 10:00:32 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1%3]) with mapi id 15.21.0025.012; Thu, 14 May 2026
- 09:13:35 +0000
-Message-ID: <4b429990-1700-4a84-96b0-4f449e4e7e07@siemens.com>
-Date: Thu, 14 May 2026 11:13:34 +0200
+ 10:00:32 +0000
+Message-ID: <3077e418-741f-441a-91d6-a07ec6c8f2ed@siemens.com>
+Date: Thu, 14 May 2026 12:00:31 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] [RFC] Add test to detect spurious suspend wakeups
-To: Richard Weinberger <richard@nod.at>, xenomai@lists.linux.dev
-References: <411e79a0-cabf-4d86-bed0-12e0b9546c1f@siemens.com>
- <20260512071703.2830843-1-richard@nod.at>
+Subject: Re: Spurious task resume due to SIGSHADOW
+To: Richard Weinberger <richard.weinberger@gmail.com>
+Cc: Xenomai <xenomai@lists.linux.dev>
+References: <CAFLxGvw_cRpJbBKg2YG9_oi5Bv_DU39OB41nPyJcq7hv7hK6YQ@mail.gmail.com>
+ <411e79a0-cabf-4d86-bed0-12e0b9546c1f@siemens.com>
+ <CAFLxGvyUZWXEYdvKynRhJEkJGnEKomCmKYvZg3+Z7DJUM+SUPQ@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
@@ -94,11 +96,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <20260512071703.2830843-1-richard@nod.at>
+In-Reply-To: <CAFLxGvyUZWXEYdvKynRhJEkJGnEKomCmKYvZg3+Z7DJUM+SUPQ@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR2P281CA0098.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:9c::6) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR2P281CA0041.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:92::12) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -107,401 +109,151 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|FRZPR10MB9891:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4e01de52-b7b2-4362-18f3-08deb19913f4
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DB9PR10MB7412:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0de46233-c01e-4527-e72d-08deb19fa296
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|376014|1800799024|11063799003|4143699003|22082099003|18002099003|56012099003|55112099003;
+	BCL:0;ARA:13230040|366016|1800799024|376014|4143699003|18002099003|22082099003|56012099003|11063799003|55112099003;
 X-Microsoft-Antispam-Message-Info:
-	cqSrwf8zNaHAsr6lNBdYUkWGXHRlnp8D4DbmbZe/bQy2+OmMo1+WBqWnrodGdZB9XesVYIlp7PTqDCilRr+YFVOjaBXfakDGuVVA2KQTIzMErU/mU/EGXYRBU/F8c6jh60Obx9DKYteEF7JkIgnbdXZMQXW4Lb2sqBUNJD1+bdRfr2lBlzm1wWf5EgMdNZC3/it15+u83b8QjfzCVieWYWZW6m3bhCptV98+kLPymj1wBNRvH7LOXLUei9cRzMMJPWXPpVC1cdhDTrqmlYEdxPiO/VHejCwOPkMaM37TtEyqdf0PbMyGIvbhKEQCKG3pp2KsJWuR+MdF2XPFwCiUI2d3oySvrc2rLVhoMfLwoGmJRgPOf/FOHsAxWfdeCnwt47eAM72DUDImsJIxamUNw/52lMW2Sw7BRoWyXk9qDldfDNBZF9M9UicPVFJZvXE6OCdDOkOuuN2HWgvxRIzociPY0vJsm46OXJbvr2hkD/36x91/7LLaVENky9ZrLmvu3EaitXAEOzW0iQ2kZNz5YZJ2mKsARQcR0kjkhYyNq+cMYDwyC85wvcyPqene53Lyy/rNggcXuwD8IyRgI9pUsRCOE39W8F6xCpgBHsTdaWINrB6orK9EVRB+/jsKsJP4verJ/iyFcs1/2e0+FjUfXbq6YswlD9xcnXechSOvdY/c/mi8jIChv4MiYIYa6/bw
+	1l7pK8YJYCh43XVnhrNxCcSCc9rJkaJ46p59QoLC+w9sSmUNNKhE9ubG8oz4q76PjPid1pNv605zuu5dvsGi4pUI+K5qd77cmBrFTCiCOx7Po8q7lb/+97+WcKQibaPuO18IdILQVukoKMMR7iHIR3Yqh6Q7DSDbo4/ClhM1NDrjQXGKNqLJm8iKrSLC3pwvc2KVDEK3a5jZkmXmTpPxOskS+bMQaaSrpojJ380DnoJYvhwb/ZVBH6OkQVUCKIRDDSbamdetAEzOY6uEkCa0kiA0gMpfBmxdbhP+yW1j6UQ924A41NfcR36XkQzCBVYiCDMH0wkD/HzBKkfNubIS7YdgiG4qE+6z0ZNaVUjVKl5/OJsu65YuzZ1X7mUbSRDuOU0IV4dnohFgyAAoY9jl108RYHx5QU72Ffmjb7lKDiHJakWiNQWZct0scNIBXl1S36QTTtdaFXnS/0KJ2U6mXJ4ytO4MfIPEbV27tXUc/Mkqz5tnLjMwlnxT+sj/4rmqWmqsVjZ8hLn6j0oOCn7YVyv3Wt0ENRx5fWLalJyT+5r4urGGXvLHuX3P+eLAqTnwYd6R0DYKXj3P5szy+rfDDDgDXNouEkGrIj8mXib/yB5R0KIlBeg8QkxipnFzDPVHXEBW7TuFl3auZ2hnUWYWjbXR6+ma6y4FKpPN4jAdLgqNr5EPNO40zUm9VKvvj53D
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(11063799003)(4143699003)(22082099003)(18002099003)(56012099003)(55112099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(4143699003)(18002099003)(22082099003)(56012099003)(11063799003)(55112099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ME5zMk5kajNEM3ZXOHR5RkNZb3E5NnN0cXlvcm5BMG5IT29zRzkrRmZ5c2xz?=
- =?utf-8?B?VWQwaFB5NmNicmFidDFpU1dGd3Q0Sk1wSDREV3FPU2htOXorTzlkb1BlR2o2?=
- =?utf-8?B?aWkyR3JELzJFbzVDOXpOZDZqMWZIOHZ0bENKWC8wUzZhTHU1R3ZnK0NJWklw?=
- =?utf-8?B?YUEzWUw3MGdGRTFsUFdlUzYwU2xmZ2xIMlN3aGxleVpydGZudmsxRFFoWkcw?=
- =?utf-8?B?OFora2huZHQ4SkVuRS9VTXpaMGZUdXVWMVJNdmNPK04wcHNIaDQ4ZGpyaXV0?=
- =?utf-8?B?N2RZazAzeG5DRWwwTHBIZStmazl4OXNab25VaUw0Nmt4ekhWQUhUWmxObmxD?=
- =?utf-8?B?aUFOSkVjV3J3aGVCa3V1MFRJQU5UY0JLZGF6VW9lOENLeC9FelFZdGtaQW56?=
- =?utf-8?B?YXRsS3BVM09NdFgzRVBVRVdmU0daZXNKTnpXc3VqWndLTFF6ck1pSkxSbDVW?=
- =?utf-8?B?S0VXaEtYWllrQUxVT0NveWdMQ2VLK3NZOERzTXQ3eFRGV3VWQnU3SGhPSlk1?=
- =?utf-8?B?eGlaQ1BPejRYd3pXSUdGb2ZKa3gwZU5EYlprcmxsWXR2MHlDQmUvOXB0UjZB?=
- =?utf-8?B?eENQRU51YTg5a0xuL2JJUHIrcG9mRXF6WnNkeUFhTjd3NHhyM2M0b3Zwa0E1?=
- =?utf-8?B?WkdUL2FYSWp3bWlOWGZkZHlqdTNYT0NFdStUS0d4d3FFR1JvVWFnV1Bnd2RS?=
- =?utf-8?B?YzFQVk1TMFY2NHNuSER2TkNtbTRPcnVadmFKOWhnVnJabTQrTWtNenBPUGFj?=
- =?utf-8?B?aHlLWUJRZ3Y0S3lkRUExNVRBbk5wYzZEVkdtaG1IRlY2dDQrUmxVTnB1VlZO?=
- =?utf-8?B?QWtMNE5hUWwyME5rQUZpUUJoRDUvYkRSVExmWS8vYXp3eVFGeVovU0hBSXc4?=
- =?utf-8?B?ajJFWU9iN3lmemVRZk5OSERzaVIzK2ZTWjlLM3AzSC9ZdEFFUFovYllJUWE4?=
- =?utf-8?B?NFNPWEl4Q0dkQmRGVUpnSUJlcjFnYXBHYXo5VnNiditLS2RlWS9ZdlY4eWhO?=
- =?utf-8?B?SXlMcWMzMlo2dmlQd0xWR25BZEhjbHFkOW92QWVkYVFYdWkzVUwrY1RTYzN6?=
- =?utf-8?B?bUJWSGp0cjk1Uit1U21pN1MzaDNtSUJRRWgyQzVzaURJd0RXYW44bGFHN01Q?=
- =?utf-8?B?czNDNThFT1pla3NKVXh2TmZSSnV0OVFvUnFBbWo1WCt2KzY0R3NJeDBNNlRr?=
- =?utf-8?B?b1haUklnNWhndnZSS0RuVVJZZGsreHhXejhIOWlLaE93NDhsRE9nSVpNUEZQ?=
- =?utf-8?B?bzkzd051VXIyQURqQjB2Z1dFdGg5R0RRL1pkN2lsYncyUTRCYzc2bDZFa3c2?=
- =?utf-8?B?UzJud1hRMmlrTGt6bFRmUWFOT1crYTcreVpJTlp2dEJqVWI5UjJSblkrcU1X?=
- =?utf-8?B?TFYyakNDSHFxY041TEpCQzRkSFFDWjZoclBFNkt3SG9SdHVnUXV4VVh2emho?=
- =?utf-8?B?WnZMenV0eTlIRkpJcUk0bThGUmVFTG9VeTNUSjdlWDFQVlBER3JBV2x6TVVI?=
- =?utf-8?B?OHRrRjVVRk1kUFQyZVJFSFBKVGVRTHRsMmx5SFI5bmNNSzZUbDdoWWRTNVM2?=
- =?utf-8?B?L0lTZ290bU8wWWZMNFZnYVExejNRa2lqMWdISDBrS3luN09XUFMvcDRtQzBG?=
- =?utf-8?B?djFZeUlSOC9xdmh0L0tSZlRhVnlDZ1I5N1ZBOHVITjVrbzhKZ2ZUanVKcElC?=
- =?utf-8?B?NjRmWXlJRldUaVFnLzF4Ni9Oc0tKOFZKQUhJRGZ2YTJEOFZ1M01DMmV0VjI0?=
- =?utf-8?B?L0pQS2ZEMXIxVDdDcEQxWDRadCtJSCt0Y3BSMGxldWpoSC9xL2JxSkdwVDc4?=
- =?utf-8?B?RzBqbWJQRXFobmJtV2w2V2ZFWkp1R1JTRGN5UGNOYXZoY09sTlJWdVlHQmg4?=
- =?utf-8?B?ZGZ3V2Q1QnNsRm5LT0JxcnhBRWpUUU5SMU8zOXQ4a3drWjNhVmxFNWpBZGtW?=
- =?utf-8?B?QnorMy9tQ2JubE5BbHpOeXIxMkc4TFpaL3JoaW43M05VWkd0dkd4d2hrdjk3?=
- =?utf-8?B?bmxKekNaanE3LytZTmwxdmxKcThIMjk4QXg2OTc0b29FeFdEek5oQUF5N1du?=
- =?utf-8?B?VUlpSWExWDdyUkRRUG1GaWZjcWlrTHhFVERtUW4zTEp3b3g0QXdzZGlsU1Rp?=
- =?utf-8?B?Ui92S1BvYlV6QTBoOTJHWk9hM1NPRVlHUmxpTC8xbDBzaUtxRFI0YVRESEdZ?=
- =?utf-8?B?VjI1VFJhSi9PRG5wRWpjWDQzdk5RWTdLZ21nd3dxV0JPNEVVTU1idGg0cFFz?=
- =?utf-8?B?TG9JaFBWekVYV1g1ZE1UVGFTNDRDeU5NWGd0WUV4SzR0RTlrZHRQQTMreDAv?=
- =?utf-8?B?MG5LK0hscnFwWHZxem1wTWZvRUZ1RXBqbk9KMzNFaGNRYlUwS0RKUT09?=
+	=?utf-8?B?STJyRStpVkRWdFF3Q3cveUg5MUVPMndQejZncHA0eEV2SHBDdTdYcVozZEE0?=
+ =?utf-8?B?SCtkemNoQ1pKTURRYzdMRHdmMHNqMlBLcThHT0dKc1ptNlFzNHdXVHVQSEVU?=
+ =?utf-8?B?MWRFR2xiTkZiN3VtckxWQ3RYVnNCYnMrbmxRTllnTnlzNUlVOEtrRUhOM3F0?=
+ =?utf-8?B?K2pycHdEQXpFRmR3UG8zTlhwaGdGbHpabUpQc0RFQ2JiNkZ5UDNqay9jMG9l?=
+ =?utf-8?B?cnozY1ZQK3VhUGtmY1JnVFBUdjlmZSt6OGs0dG5Ob244ZlZ3dmlIRXAzVTZy?=
+ =?utf-8?B?VnZoampLcWRKZVl6YWR2TSthVVk5WWNRc0NVNFFOYWlEbkpGeXFXa01DZndu?=
+ =?utf-8?B?RHJxTEt1Um9mUi83RXJMSHJBVURJUW82YXMrUDJoZnRvZW9OWWZQbVNtSzZu?=
+ =?utf-8?B?Y2dkcWsvdlMyTHdwS2s3VHBrd21yOUloN1lKRm04VHp5dUowZTMySDBBTHpa?=
+ =?utf-8?B?VTBIRmtPdmFIZXVMQ0ZvTHR5ZnFjUE5mRmVhQmhocTdYSkVQVmIrSEorc3JY?=
+ =?utf-8?B?eWplUmp6TGVOZjhESlR6bXJjc2lkUmRTNVRRVlE0Q3RNNk8xSHBPYkl2NUxM?=
+ =?utf-8?B?RnZzTWhCa0p2MVpaQ1ZORE5YQVBINWZLVjlSTVd5eldrVVJybEFDLzZISzAy?=
+ =?utf-8?B?ZGVlTEJwQXZTdFBHYys4NW9uMmhyN3hCejVjM0lnc3didEpIbXdCWnFQTlRy?=
+ =?utf-8?B?b3VzVStsRUkzSWh2bCtjTGtBc0J0ZHA0R3NYejJzQjhlcktsVmx0cDZjQjlB?=
+ =?utf-8?B?QU90aEIySllmRXNLdTBiS2lRYVNKUWZ6RGFSOUNrRDRHRVhSVFBsZVJlOTR2?=
+ =?utf-8?B?eHB0WFoxcS84MEFZQUhYNXhxSFFHK3pkcUlXbnRKV0xlNWUraFRpM2l5WkVu?=
+ =?utf-8?B?d3cwS0YzS3VjZGdTSVhMSHNtR1Q1ZG56Y20vZ2F3R0Ryc2d2SGxVTm9hdUhy?=
+ =?utf-8?B?NkkvQjhuQ2E5UFFtdWNLdENOMmdNbnVFT0pKSXRpTGJYZlRwaXBVKzZJM2Nt?=
+ =?utf-8?B?a0VGODFTNjdkQk96dnU4MkRBcVE1U3k4WW54eXRLZngxb0dVbGpvNGpZRHVs?=
+ =?utf-8?B?b2krbUdDYjNyNXVtcTQ5M1d0Q0N3ZTE0djJqRXFoZHlHOXIwKzRrc2JLZ3J6?=
+ =?utf-8?B?L3JqL2IvUWxXY2kvV292TVBWTC9obm1PNy8wWjZEZDlmMGFSUDV4Y3p1ZFJq?=
+ =?utf-8?B?QzBVazdoWkhLaTZ5SlJ0QktYRnVVa1owdnhrcmxsZEdubVlXdSs5N2M2b0Zu?=
+ =?utf-8?B?WnRUK0F3RDNVZDNVdFZsZ2JPa0h1VFdkdGJCNUtkbysrVDVyOUtYZ0Yza0pr?=
+ =?utf-8?B?U0U3ck1xNEI0NnNaL1ZWaElWQlNQbXk4Vzg2SjFLQndRNnNNQmVwSVBYRUU4?=
+ =?utf-8?B?NVNmS2EwYVJUKzlyMTZZVUI3a0xMWmQ1bEp3K09jaUdrbllQQnNtUld6V2hQ?=
+ =?utf-8?B?MFk3M092OFFTNTRmSTFhMkdyQnlwTWJDUWpkNFlKU2RXR084ZVZHUVQ2NW1X?=
+ =?utf-8?B?NG5sellzRHhzMHIxZjVXcWk5aUZNVnRUL3A1ZUREbk5jRlNwUS9vOWpwM2lM?=
+ =?utf-8?B?SnVJcjVOWGVDSTBVM1FWa2Rzc3RIOVdoOWlsNGpqNkQxUEgxNTE5NklyV0U2?=
+ =?utf-8?B?aEdOQ2lKcDZQa2Z5bkZsY2doUGVGNWJGeEhWWkVIamNXdWZsT0hacElQakpY?=
+ =?utf-8?B?LzJZZFphYW5XdHdURFBmaXE0VkdMS1p5aCtKOE9jQXJOTFNweUsvSlc2ZDZP?=
+ =?utf-8?B?Y0N3aFJCY1FieUltaFMxdDN0VytpQTNtOXlGUnpHYXkyTU1XRVovWXpvTmdp?=
+ =?utf-8?B?dFFDekNLdVZxRjJYd3ZJdGE0MS8yWHJBanRkTFhTcXF3bzdxdkx6LytOTmhS?=
+ =?utf-8?B?RFlNU09QSm9kQnQxVCtWbzNrSkJVZUUrdUhmcGxSK2tMY3hPMXY3YzVUV2tj?=
+ =?utf-8?B?M1pwR256Wk04Y2ZQSVRQZnc0M3hnK0hPcVh6VTRiZi81cDJmbGNFUDlpdTFy?=
+ =?utf-8?B?Uy9tUU9GVUVTczZITDMyUzVzR24vZ1l3a3VpT0xXcFNtQ1NMRkdIaFhWRVpH?=
+ =?utf-8?B?Y2ZSRzBWQ1FrM0gwYUMweWZlQmdwZmhRTHZyVWcrcnFVejQxUG5xL2ovUTlB?=
+ =?utf-8?B?MWlRQ3hQZkpUUGx2ck5wQXpZZUQ0Q0ZQTjZ0L2h4ZVpKZkNtYWVrTDRDV2s2?=
+ =?utf-8?B?NDRKZ3lGVW5QRGhidEZmYzhqQ25MN2MyMUNGUHlyZXo5a05jNXkrTTV2Y3pa?=
+ =?utf-8?B?REhWQ3NkYVZYQStobzVHYkZRcHFCcG9GYlNQRU1wMGZaazJzN2liZXRJUFRa?=
+ =?utf-8?B?UW9Nbi9ZcjdlYll1cG1PcnBOcVdaeUsrKzNFV3B5VytDb1pPT1VoZz09?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4e01de52-b7b2-4362-18f3-08deb19913f4
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0de46233-c01e-4527-e72d-08deb19fa296
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 May 2026 09:13:35.7697
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 May 2026 10:00:32.1192
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DwOe8APNPuEDjmeBLwC022wt8kwmP6JTNXqet/0dlYQMfVPYtFFhlWllvzKo+mHdSN+GvjrUI3tAWP5xOGPa+Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: FRZPR10MB9891
+X-MS-Exchange-CrossTenant-UserPrincipalName: ojOGmUqRl4KGAR2eA3N/OBrCek+loKN+WpLLG3ZcTXCZqnsJpRL5rzmo2YBLTBCS/uDrbxVMOjpmjUo++Bmczw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB7412
 
-On 12.05.26 09:17, Richard Weinberger wrote:
-> If a task is suspend and SIGSHADOW is used to harden it,
-> it can happen that the target task itself harends (e.g. by using
-> a syscall). Then the already hardened and suspended task will see
-> SIGSHADOW and resumes.
+On 12.05.26 09:19, Richard Weinberger wrote:
+> On Tue, May 12, 2026 at 7:50 AM Jan Kiszka <jan.kiszka@siemens.com> wrote:
+>>
+>> On 11.05.26 23:49, Richard Weinberger wrote:
+>>> I'm currently debugging an issue on a very old Xenomai system, while
+>>> reading the source I noticed that the very same issue could also exist
+>>> on recent Xenomai releases.
+>>>
+>>> What I see is the following:
+>>> - A task gets suspended and unblocked using rt_task_suspend() and
+>>> rt_task_unblock()
+>>
+>> This is intentionally rt_task_unblock instead of rt_task_resume?
 > 
-> Assisted-by: Claude:claude-opus-4-7
-> Signed-off-by: Richard Weinberger <richard@nod.at>
-> ---
->  configure.ac                                  |   1 +
->  testsuite/smokey/Makefile.am                  |   3 +
->  .../smokey/spurious-suspend-wake/Makefile.am  |  10 +
->  .../spurious-suspend-wake.c                   | 238 ++++++++++++++++++
->  4 files changed, 252 insertions(+)
->  create mode 100644 testsuite/smokey/spurious-suspend-wake/Makefile.am
->  create mode 100644 testsuite/smokey/spurious-suspend-wake/spurious-suspend-wake.c
+> From what I can tell, yes.
 > 
-> diff --git a/configure.ac b/configure.ac
-> index 0d6dd87b6..69d9947fd 100644
-> --- a/configure.ac
-> +++ b/configure.ac
-> @@ -1086,6 +1086,7 @@ AC_CONFIG_FILES([ \
->  	testsuite/smokey/bufp/Makefile \
->  	testsuite/smokey/sigdebug/Makefile \
->  	testsuite/smokey/timerfd/Makefile \
-> +	testsuite/smokey/spurious-suspend-wake/Makefile \
->  	testsuite/smokey/tsc/Makefile \
->  	testsuite/smokey/leaks/Makefile \
->  	testsuite/smokey/memcheck/Makefile \
-> diff --git a/testsuite/smokey/Makefile.am b/testsuite/smokey/Makefile.am
-> index c49a5d77f..f3c1151b6 100644
-> --- a/testsuite/smokey/Makefile.am
-> +++ b/testsuite/smokey/Makefile.am
-> @@ -37,6 +37,7 @@ COBALT_SUBDIRS = 	\
->  	setsched	\
->  	sigdebug	\
->  	timerfd		\
-> +	spurious-suspend-wake \
->  	tsc		\
->  	xddp		\
->  	y2038		\
-> @@ -82,6 +83,7 @@ DIST_SUBDIRS = 		\
->  	setsched	\
->  	sigdebug	\
->  	timerfd		\
-> +	spurious-suspend-wake \
->  	tsc		\
->  	xddp		\
->  	y2038		\
-> @@ -130,6 +132,7 @@ smokey_LDADD = 					\
->  	$(plugin_list)				\
->  	../../lib/smokey/libsmokey@CORE@.la		\
->  	../../lib/copperplate/libcopperplate@CORE@.la	\
-> +	../../lib/alchemy/libalchemy@CORE@.la \
->  	@XENO_CORE_LDADD@			\
->  	 @XENO_USER_LDADD@			\
->  	-lpthread -lrt
-> diff --git a/testsuite/smokey/spurious-suspend-wake/Makefile.am b/testsuite/smokey/spurious-suspend-wake/Makefile.am
-> new file mode 100644
-> index 000000000..b2f4f3b6c
-> --- /dev/null
-> +++ b/testsuite/smokey/spurious-suspend-wake/Makefile.am
-> @@ -0,0 +1,10 @@
-> +noinst_LIBRARIES = libspurious-suspend-wake.a
+>> Because:
+>>
+>> "A nesting count is maintained so that rt_task_suspend() and
+>> rt_task_resume() must be used in pairs."
+> 
+> The application has non-trivial thread management, from what I can
+> tell, it's fine.
+> 
+>>> - In some cases it happens that the task resumes to execute
+>>> - It resumes because a Linux signal is pending, being SIGSHADOW
+>>>
+>>> Since SIGSHADOW is internally used to suspend a task, this alerted me.
+>>> So, I suspect the following issue:
+>>> When xnthread_suspend() fires SIGSHADOW using
+>>> __xnthread_signal(thread, SIGSHADOW, SIGSHADOW_ACTION_HARDEN); nothing
+>>> seems to prevent the case where the target task enters the primary
+>>> domain right before it sees SIGSHADOW. In the next step
+>>> do_sigwake_event() causes it to resume instead of sleeping.
+>>>
+>>> Hmm?
+>>>
+>>
+>> Traces to confirm this theory would be good. But it could indeed be
+>> problematic that the target state (__THREAD_S_SUSPENDED) is only tracked
+>> in userspace where the scheduler has no access to while waking a task.
+> 
+> I think I found a reproducer. See next patch in this mail thread.
+> 
+> This quick and dirty change seems to mitigate the problem, but I consider it
+> a sledge hammer:
+> diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/kevents.c
+> index 7402e2ef6..d72c3788b 100644
+> --- a/kernel/cobalt/dovetail/kevents.c
+> +++ b/kernel/cobalt/dovetail/kevents.c
+> @@ -145,6 +145,14 @@ static int handle_sigwake_event(struct task_struct *p)
+>        if (xnthread_test_state(thread, XNRELAX))
+>                goto out;
+> 
+> +       if (sigismember(&p->pending.signal, SIGSHADOW))
+> +               goto out;
 > +
-> +libspurious_suspend_wake_a_SOURCES = spurious-suspend-wake.c
+> +       if (sigismember(&p->signal->shared_pending.signal, SIGSHADOW))
+> +               goto out;
 > +
-> +CCLD = $(top_srcdir)/scripts/wrap-link.sh $(CC)
-> +
-> +libspurious_suspend_wake_a_CPPFLAGS =   \
-> +        @XENO_USER_CFLAGS@              \
-> +        -I$(top_srcdir)/include
-> +
-> diff --git a/testsuite/smokey/spurious-suspend-wake/spurious-suspend-wake.c b/testsuite/smokey/spurious-suspend-wake/spurious-suspend-wake.c
-> new file mode 100644
-> index 000000000..969bd5344
-> --- /dev/null
-> +++ b/testsuite/smokey/spurious-suspend-wake/spurious-suspend-wake.c
-> @@ -0,0 +1,238 @@
-> +#include <stdio.h>
-> +#include <stdlib.h>
-> +#include <stdbool.h>
-> +#include <unistd.h>
-> +#include <errno.h>
-> +#include <string.h>
-> +#include <sched.h>
-> +#include <sys/types.h>
-> +#include <sys/syscall.h>
-> +#include <smokey/smokey.h>
-> +#include <alchemy/task.h>
-> +
-> +smokey_test_plugin(spurious_suspend_wake,
-> +		   SMOKEY_ARGLIST(
-> +			   SMOKEY_INT(iters),
-> +			   SMOKEY_INT(settle_us),
-> +			   SMOKEY_INT(quiet_us),
-> +			   SMOKEY_INT(victim_cpu),
-> +			   SMOKEY_INT(suspender_cpu),
-> +		   ),
-> +		   "Detect SIGSHADOW vs xnthread_suspend race that "
-> +		   "spuriously resumes an rt_task_suspend()'d task.");
-> +
-> +static volatile unsigned long victim_counter;
-> +static volatile bool stop;
-> +static RT_TASK victim_task;
-> +static RT_TASK suspender_task;
-> +
-> +static int iters		= 5000;
-> +static int settle_us		= 100;
-> +static int quiet_us		= 200;
-> +static int victim_cpu		= 0;
-> +static int suspender_cpu	= 1;
-> +
-> +static unsigned int spurious;
-> +static unsigned long max_delta;
-> +static int cycles_done;
-> +
-> +static void victim_body(void *arg)
-> +{
-> +	(void)arg;
-> +
-> +	/*
-> +	 * Tight relax/harden bouncing:
-> +	 *  - syscall(getpid) is a raw Linux syscall, sets XNRELAX on
-> +	 *    return, leaving us in secondary mode.
-> +	 *  - rt_task_sleep() resolves via libcobalt as a primary-mode
-> +	 *    syscall, so the wrapper runs xnthread_harden() before the
-> +	 *    sleep proper. On return we are back in primary mode.
-> +	 *
-> +	 * The window between the two is when the deferred SIGSHADOW
-> +	 * HARDEN posted by a concurrent rt_task_suspend() can land on a
-> +	 * non-XNRELAX victim and trigger the spurious wake.
-> +	 */
-> +	while (!stop) {
-> +		syscall(__NR_getpid);
-> +		rt_task_sleep(1000);	/* 1us, also forces a harden */
-> +		__atomic_add_fetch(&victim_counter, 1, __ATOMIC_RELAXED);
-> +	}
-> +}
-> +
-> +static void suspender_body(void *arg)
-> +{
-> +	int i, ret;
-> +
-> +	(void)arg;
-> +
-> +	for (i = 0; i < iters && !stop; i++) {
-> +		unsigned long c1, c2, delta;
-> +
-> +		ret = rt_task_suspend(&victim_task);
-> +		if (ret) {
-> +			smokey_warning("rt_task_suspend at iter %d: %s",
-> +				       i, symerror(ret));
-> +			break;
-> +		}
-> +
-> +		/*
-> +		 * Let SIGSHADOW HARDEN actually fire so the victim
-> +		 * either properly blocks on XNSUSP or, if the race
-> +		 * fired, has already been spuriously resumed.
-> +		 */
-> +		rt_task_sleep((RTIME)settle_us * 1000);
-> +
-> +		c1 = __atomic_load_n(&victim_counter, __ATOMIC_RELAXED);
-> +
-> +		/* Quiet window: victim must NOT advance. */
-> +		rt_task_sleep((RTIME)quiet_us * 1000);
-> +
-> +		c2 = __atomic_load_n(&victim_counter, __ATOMIC_RELAXED);
-> +
-> +		ret = rt_task_resume(&victim_task);
-> +		if (ret) {
-> +			smokey_warning("rt_task_resume at iter %d: %s",
-> +				       i, symerror(ret));
-> +			break;
-> +		}
-> +
-> +		delta = c2 - c1;
-> +		if (delta != 0) {
-> +			spurious++;
-> +			if (delta > max_delta)
-> +				max_delta = delta;
-> +			if (spurious <= 5)
-> +				smokey_trace("iter %d: victim advanced by "
-> +					     "%lu in quiet window", i, delta);
-> +		}
-> +
-> +		/* Let the victim accumulate forward progress between
-> +		 * cycles, otherwise we hammer it continuously and can no
-> +		 * longer tell forward progress from wake. */
-> +		rt_task_sleep((RTIME)quiet_us * 1000);
-> +	}
-> +
-> +	cycles_done = i;
-> +}
-> +
-> +static int run_spurious_suspend_wake(struct smokey_test *t, int argc,
-> +				     char *const argv[])
-> +{
-> +	cpu_set_t set;
-> +	int ret, ncpu;
-> +
-> +	smokey_parse_args(t, argc, argv);
-> +	if (SMOKEY_ARG_ISSET(spurious_suspend_wake, iters))
-> +		iters = SMOKEY_ARG_INT(spurious_suspend_wake, iters);
-> +	if (SMOKEY_ARG_ISSET(spurious_suspend_wake, settle_us))
-> +		settle_us = SMOKEY_ARG_INT(spurious_suspend_wake, settle_us);
-> +	if (SMOKEY_ARG_ISSET(spurious_suspend_wake, quiet_us))
-> +		quiet_us = SMOKEY_ARG_INT(spurious_suspend_wake, quiet_us);
-> +	if (SMOKEY_ARG_ISSET(spurious_suspend_wake, victim_cpu))
-> +		victim_cpu = SMOKEY_ARG_INT(spurious_suspend_wake, victim_cpu);
-> +	if (SMOKEY_ARG_ISSET(spurious_suspend_wake, suspender_cpu))
-> +		suspender_cpu = SMOKEY_ARG_INT(spurious_suspend_wake,
-> +					       suspender_cpu);
 
-Do we really need all these options? Affinity tuning could rather be
-done within the set of CPUs the test is given.
+None of this will work, and I'm afraid your approach that you shared
+yesterday for retired Xenomai versions will also fail. I played with
+something even more targeted than the above, and different scenarios,
+e.g. task startup, were starting to lock-up. No surprise, we are
+breaking SIGSHADOW here.
 
-> +
-> +	ncpu = sysconf(_SC_NPROCESSORS_ONLN);
-> +	if (ncpu < 2) {
+The fundamental issue we need to solve with remote suspension/resumption
+is the asynchronicity of the command vs. the pending (and
+non-suppressible) signals. One idea I had is to use a separate
+SIGSHADOW_ACTION_SUSPEND and perform a self-suspension instead of just a
+hardening. That works nicely for resolving the issue you found, but it
+creates a new race between this pending signal and remote resumption.
 
-See above: You should better check for size of the affinity mask the
-test has been given.
+We likely rather need some additional state flag in the thread to encode
+"suspend is pending" which can do the right thing before a thread is
+returning to userland and can also be cleared from remote if suspension
+is lifted quickly again.
 
-> +		smokey_note("need >= 2 online CPUs to drive the race");
-> +		return -ENOSYS;
-
-Let's warn and skip but not fail.
-
-> +	}
-> +	if (victim_cpu < 0 || suspender_cpu < 0 ||
-> +	    victim_cpu >= ncpu || suspender_cpu >= ncpu ||
-> +	    victim_cpu == suspender_cpu) {
-> +		smokey_warning("victim_cpu and suspender_cpu must be "
-> +			       "distinct values in [0, %d)", ncpu);
-> +		return -EINVAL;
-> +	}
-> +	if (iters <= 0 || settle_us <= 0 || quiet_us <= 0) {
-> +		smokey_warning("iters, settle_us, quiet_us must be positive");
-> +		return -EINVAL;
-> +	}
-> +
-> +	stop = false;
-> +	victim_counter = 0;
-> +	spurious = 0;
-> +	max_delta = 0;
-> +	cycles_done = 0;
-> +
-> +	ret = rt_task_create(&victim_task, "ssw-victim", 0, 50, T_JOINABLE);
-> +	if (ret) {
-> +		smokey_warning("rt_task_create(victim): %s", symerror(ret));
-> +		return ret;
-> +	}
-> +
-> +	CPU_ZERO(&set);
-> +	CPU_SET(victim_cpu, &set);
-> +	ret = rt_task_set_affinity(&victim_task, &set);
-> +	if (ret) {
-> +		smokey_warning("rt_task_set_affinity(victim, %d): %s",
-> +			       victim_cpu, symerror(ret));
-> +		goto fail_after_victim_create;
-> +	}
-> +
-> +	ret = rt_task_create(&suspender_task, "ssw-suspender", 0, 50,
-> +			     T_JOINABLE);
-> +	if (ret) {
-> +		smokey_warning("rt_task_create(suspender): %s", symerror(ret));
-> +		goto fail_after_victim_create;
-> +	}
-> +
-> +	CPU_ZERO(&set);
-> +	CPU_SET(suspender_cpu, &set);
-> +	ret = rt_task_set_affinity(&suspender_task, &set);
-> +	if (ret) {
-> +		smokey_warning("rt_task_set_affinity(suspender, %d): %s",
-> +			       suspender_cpu, symerror(ret));
-> +		goto fail_after_suspender_create;
-> +	}
-> +
-> +	ret = rt_task_start(&victim_task, victim_body, NULL);
-> +	if (ret) {
-> +		smokey_warning("rt_task_start(victim): %s", symerror(ret));
-> +		goto fail_after_suspender_create;
-> +	}
-> +
-> +	smokey_trace("victim on CPU%d, suspender on CPU%d, %d iters, "
-> +		     "settle=%dus, quiet=%dus",
-> +		     victim_cpu, suspender_cpu, iters, settle_us, quiet_us);
-> +
-> +	ret = rt_task_start(&suspender_task, suspender_body, NULL);
-> +	if (ret) {
-> +		smokey_warning("rt_task_start(suspender): %s", symerror(ret));
-> +		stop = true;
-> +		rt_task_join(&victim_task);
-> +		goto fail_after_suspender_create;
-> +	}
-> +
-> +	rt_task_join(&suspender_task);
-> +
-> +	stop = true;
-> +	/*
-> +	 * Belt and braces: the suspender may have left the victim
-> +	 * suspended if it broke out early. rt_task_resume is a no-op on
-> +	 * a non-suspended task, so this is always safe.
-> +	 */
-> +	rt_task_resume(&victim_task);
-> +	rt_task_join(&victim_task);
-> +
-> +	rt_task_delete(&suspender_task);
-> +	rt_task_delete(&victim_task);
-> +
-> +	if (spurious) {
-> +		smokey_warning("FAIL: %u/%d cycles saw the victim advance "
-> +			       "during the quiet window (max delta %lu)",
-> +			       spurious, cycles_done, max_delta);
-> +		return -EPROTO;
-> +	}
-> +
-> +	smokey_trace("no spurious wakes in %d cycles", cycles_done);
-> +	return 0;
-> +
-> +fail_after_suspender_create:
-> +	rt_task_delete(&suspender_task);
-> +fail_after_victim_create:
-> +	rt_task_delete(&victim_task);
-> +	return ret;
-> +}
-
-Would love to add it to our testsuite, but maybe rather as part of the
-alchemy tests.
+Did I say that asynchronous thread suspension is a horrible concept to
+implement correctly?
 
 Jan
 
