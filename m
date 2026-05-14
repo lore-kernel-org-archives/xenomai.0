@@ -1,154 +1,165 @@
-Received: from mail-pj1-f44.google.com (mail-pj1-f44.google.com [209.85.216.44])
+Received: from mail-dy1-f178.google.com (mail-dy1-f178.google.com [74.125.82.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EDBA38E8DF
-	for <xenomai@lists.linux.dev>; Thu, 14 May 2026 11:08:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.216.44
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778756924; cv=pass; b=lcsk5+vmAynuO+iXyO31c/vVaJhWy4exnFNtww09ScfeFhABEwxGGNmUjRgrmF7Ua6iQEx2sRUUaRO59eUeUjgXf5qACxAFDT5Rwc8J1ZSHKDjifPB2SpD5xjJFefwAh09TOP5pqlVGsN6h1K4CljqfNLLMjAZ3Cyn/uSF8dW8Q=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778756924; c=relaxed/simple;
-	bh=N0Cu9zcmAGC0a95eOJtMq+TR1ka9YCCcwKaggbQtE+Q=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=bWFT2SGdKNQ4Mi8TtuKOVdzDYXrabMwELQAZyeo/fbzyPMf50ynOxPki0qHGdlNJSAdKCQsrwLZn4SnUOfQprJRO7fvI8FHr44RowyQMnilJ2rhFtldMsp94uUtUY/19hASBa2Gv1PEFEe2T3x0R169SX6RxLeoqcX02+7RmGgo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iVCMcQU9; arc=pass smtp.client-ip=209.85.216.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5399213AD26
+	for <xenomai@lists.linux.dev>; Thu, 14 May 2026 19:02:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.178
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1778785365; cv=none; b=AQG8xz7TvBw36SZCAuI0s+YJl3CLsu+jjQBKuFnLfUl9/DxZJ96dkaRP1rCrrbL7p4n2k4iBiPaLVcF6ayGRUwCtaSpn108DYQI+1DfTGEm79+WClbBlvdbNPqsH+wKnvbgKu/GI+aMMNr+g8wB/jQHu0E8sEJo3I/YME0ilA/k=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1778785365; c=relaxed/simple;
+	bh=X5mh9LyA5nQr4RGSlH9dJp7UCfBbO+zHCvhmtqkysJw=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Yikfdg/L3rHRkVb95f+iYF2M9yPTyNYhPGcpXKWHm3EVESQvhT1Xl4RquMJ9z9bFEJY/28jhIOk752Vt4PVGYm1gSmNbRaLSpR8JKDTZIs6CDisWH4knGNyVNO/GSDFGgDQZv8J6ZaKOStkRxAAvylMn0d4x5+jrYUDSZPpgEB4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=A4fF/Y2x; arc=none smtp.client-ip=74.125.82.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iVCMcQU9"
-Received: by mail-pj1-f44.google.com with SMTP id 98e67ed59e1d1-367cbac9cb1so5706142a91.3
-        for <xenomai@lists.linux.dev>; Thu, 14 May 2026 04:08:43 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1778756923; cv=none;
-        d=google.com; s=arc-20240605;
-        b=TvzvPJRYgc0nXlEXhqMZF7D592ys3Nd2MOVSnmH7MP+pDNUQXVHnW4tAAxCMrzDKDE
-         +JcBZdU+PZbVZeIdy6bLPe4yTWTE526oJjSq53sgOCOH6ORAGjK2zTLK4mnfdC3ZySNs
-         Hv7NWuDQxB81KEEpzzQHEHBTvmM5FD2ZelRJeWVNeEYpWrku7H1hD6u+dHylJrzmeiR/
-         LrSjitWP3cJiAlHpcLzPphrMbSqMID++07esF6FmzSM1Vr0g1D/osDUw+bF6/y+vC/Eg
-         vncIE1R0c0FNXhAvjiTAffClVD/HKsWMCgR7kka+tWpk/QGhd8wKIHONhTJsWSU/owzd
-         v5qw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=GRMIrrwDzxI6iTQjdJ52V7w7Ea9fzmUosi2y1DVtDOQ=;
-        fh=Gbokv2cqjXipI/isbuuM2AkWdnz5ZRsDr4BAyqPfOQ0=;
-        b=CoA8qnjdvoJ3zEJiGUZKhBQi+wdYs2ZL1oxFbyeFvsJ7BnTOw5UVz5QKw/hH4ls0v1
-         yZhvTdix4xVwaIbPrvPeWXnDUU1kTJnErm4xruS40IQwKJpPwTRHLXnIOX8J+H7T5cRl
-         kVkz5JjlAAjpe+b2Mjs54VGU8KJdgm0EQUlhguwWFp5bt/eg+8VaoyStB2QOzXhLhGG1
-         uXFke43RHY8fqSnT9WIWFTYaNfkq45GQbIMiwK46DrRrCXwL9IHdlg0OAWKFXk0zuufs
-         CSEpcIj7fuaieD5wvhVzmhBiUptvZUAvrQ6fL04AOAw/OVby8sypi3R1kd7RxB9R7hM1
-         ZllQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="A4fF/Y2x"
+Received: by mail-dy1-f178.google.com with SMTP id 5a478bee46e88-2f7020a928eso11752347eec.1
+        for <xenomai@lists.linux.dev>; Thu, 14 May 2026 12:02:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778756923; x=1779361723; darn=lists.linux.dev;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1778785363; x=1779390163; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=GRMIrrwDzxI6iTQjdJ52V7w7Ea9fzmUosi2y1DVtDOQ=;
-        b=iVCMcQU97VifpXMqqpGOGeRC7EFg2dUOEO9JjMa5mwK8hyHoc6+xxPnZYRuCtGblGH
-         KPVHUC1TXCT8HmTz20Vcn6Q+sLQLqP/gVCk2aSlLU7lcrFCIpf7J7vAyTp1WwGi5iODJ
-         /gXLp+b3tvsXbAHBkACQvnPaqhmcBb0bdYRRc5G6nW75vyNUi0qyvhCbG9ZYLikM9jDt
-         A3gXN0vus97ZxiNvXUv/yRoyPhjvh2/T/yPWsSOktl4vF2hazSr/JHTTpKDjFcHy57Rm
-         MUtCKwc/WGxU2xvohhJTFlk2CAZWUWZ5/kkzQs5tKYtfLHmDrIiEXiFiiBl2+RY3XTve
-         5hgw==
+        bh=ek8D1srXo4Y4sHkQnMwh5PpNhJ5rkKw2ADE6ue7fUN0=;
+        b=A4fF/Y2xqg2dc+WeXWRhXJdupB4ciogDPf+es0Fupay5whR01zzbFmj10AXlU2mXE6
+         q/+4jxOmH8fLmun+hxaKZcdMZmli0nL4354bPyqbkKr4hyFdC0hzAZCjykF8h/VNNEmY
+         7mfdBK8hEpy4wICuLdPAaAGkvkoNTyymw6IrNcAgNDL99nzua22rIaQKo5Ptw0iywb5e
+         doHLD84uK44lCuS+FEtMu2N49w+V9RK/2stlu7JywGZCYOps6pct/OA6wcxuwKPTzVY0
+         Kfco+AMDFGgXtTsPb4Kd424rQies4+/OsIS1J9jaq2jwl3NvwsKi4hRQ9RtwmGX1/8vL
+         q0aA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778756923; x=1779361723;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+        d=1e100.net; s=20251104; t=1778785363; x=1779390163;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=GRMIrrwDzxI6iTQjdJ52V7w7Ea9fzmUosi2y1DVtDOQ=;
-        b=oGjGQJZjJTCesRbX9POqKncs+v/Q5MGZ9ug0+xXLBCN7vxFthXUJicJveLdPraUO+e
-         W5unVyAZbAW1g9sVTrGQFbZEz+JRN7AQtV5jJSg/dD0qEFAfGUaeu6xF3FDN533sfzXU
-         CWy4rBa0Ct7mhBZepa5bsyPMQ4twbPeRvI7EWwVDVNW/UMaR1oivwDbcedeqbVPFkMGM
-         OlVFcCKwdKvk++WZd5Qs6Ei4FsEy+INCGVSCYDDJ+zLyohL+RqAhZgARIccmdOCqOS2B
-         Urh1u8nUEb8SzFuwWQiBeoell/iM+sNImSPPcqACs9tUcWahhsYdOevQKUC4EpnQWqrb
-         OoDQ==
-X-Gm-Message-State: AOJu0Yw1zVWc84FUNTgCleHatkFuYbMnLw8x5rUO8CFNjNBoki/qVVEc
-	f5iBJooo8G0FnKOfFNaDTfY8kwv+SE7xUlPR7Z1Ml/ZKE19bfjj92INYo8+2eIBGLD1yigj4PZn
-	GEBsR+dVrJi4mfk01VBOvF65Qax++Sj8=
-X-Gm-Gg: Acq92OGSoeAc9D2c9Nk5sTzXg7hz0UinSlE28OHjEXofh4EnepFUKEb40KhKx7l8KY1
-	litlKKr3CNUo2qpF1Kn5OF5T39Gp06h/KITxzZ3Sklq+Wa1AnBBsQ8iwApf56rPc0VlvKGf5Ike
-	xlim8tDSTq/kks9ZDQeKzBbsIU/RJKV3QyB5BJicejjmGMMAzn7ZzlDgawST+J9RbPkU7GBOerA
-	RTmLAw2b0l8bmi2TGkgarqogr//QbnN6njD0cLK5RuDGpUbtdjrw2dktQ8ueY/7qHITI7q8lcjQ
-	hhW1LEw=
-X-Received: by 2002:a17:90a:2ca1:b0:369:1dcf:4a56 with SMTP id
- 98e67ed59e1d1-3691dcf4d6cmr3077943a91.21.1778756922311; Thu, 14 May 2026
- 04:08:42 -0700 (PDT)
+        bh=ek8D1srXo4Y4sHkQnMwh5PpNhJ5rkKw2ADE6ue7fUN0=;
+        b=QsaBf7jOqeO8DWCPaxXExY7n9FZOjB5ucJMgJkBTjg4qvFI6vvYdY189Jvg9CSDoap
+         GZdD+rNTcqjhRdBJ4roxJx5oL/v4xjPE/UfapxIubPpwpfRu7xsNmCbCPl9i29MuJkPI
+         +/Qp1CAvYapX+pxDajkxPCtZQKtMKm5N4Tk2+eAZLWUz9Mjkdlozt4mZ5/As2VuI0pvi
+         61dIHsy/KdInUI9w8cprsJMilxBEO5Hn1BCiLGPGi0/ABRHLzIp2lRl1vRTvHnTH3IC+
+         y3K03MsYizKaq0PGWpWH0nilwK+trjZf238vaY4C15/S/YjKo7nGX9/NahJj/Gk2xuCG
+         jl+A==
+X-Forwarded-Encrypted: i=1; AFNElJ/YMoTCyBmblwkd/AGzCtV8PVi3YYWmgSOV7NK2B+aW64ZHTibA2IoDa8Mjvf1fsu2MV45W02/C@lists.linux.dev
+X-Gm-Message-State: AOJu0YzCCOMfcgbSu1Vw4Hiq3SncLoBhZ3mbJzrrC4kUNijj0eHixKhQ
+	mLn4JhPrkNymGIi+xc+Hrpvib7hDHZrMDBgd7iuJ59d/iCR5v9jO40L4
+X-Gm-Gg: Acq92OGcwp9EJmPQqp2KuE+te+/9/wk9DtKDfEeMuMY3lqGELc27RtlTG91E7TIEmvX
+	2PTJXzZRnr9702I12aJmFqHfoyHXDcAT2GqQJ74nKufXuqWcvw4LiCUW8XqkatcO/IYiRDSzNJA
+	gxZ7JI+eauhaTdO9B9yPlQACMe/7V3ki+VEcure9PuL+id4USNlMS4kWhzqmaguHu/QioljDPk/
+	8FxGeGu6ovLrYxAJv76GWZz+bPJgYwlpeZjjmhEqFph7ncg4iFeaMmmKMUF4p2a2MoPjz8x+/4c
+	wDvOG/cbvBZ2Zi/D86nZ/YZiK36U9Gh0sEn+F3tUzm8RvYfYRX/DV6f5yleA62etkO38S8rvGjr
+	J9vIf/EJiYg1HYf71bPJStblsrwufe8mR3mV7QQim1eP5Mr/L0MKW4zPi97b5QxwJKKkEdQ3fhg
+	U93qqBjMGfEI+0WXqwSOmyEdP4pHlN0Z8b
+X-Received: by 2002:a05:7301:2907:b0:2ed:75d:fe40 with SMTP id 5a478bee46e88-303984bf216mr455337eec.15.1778785363376;
+        Thu, 14 May 2026 12:02:43 -0700 (PDT)
+Received: from localhost ([47.176.121.166])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-30290c4a699sm4145330eec.0.2026.05.14.12.02.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 May 2026 12:02:42 -0700 (PDT)
+From: Jay Sridharan <jayasurya.sridharan@gmail.com>
+To: rpm@xenomai.org
+Cc: brandonho667@gmail.com,
+	brho@relativityspace.com,
+	jayasurya.sridharan@gmail.com,
+	jsridharan@relativityspace.com,
+	xenomai@lists.linux.dev
+Subject: [PATCH] update caveat.md about memory compaction
+Date: Thu, 14 May 2026 12:02:08 -0700
+Message-ID: <20260514190207.40567-2-jayasurya.sridharan@gmail.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <87ecjpj88r.fsf@xenomai.org>
+References: <87ecjpj88r.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CAFLxGvw_cRpJbBKg2YG9_oi5Bv_DU39OB41nPyJcq7hv7hK6YQ@mail.gmail.com>
- <411e79a0-cabf-4d86-bed0-12e0b9546c1f@siemens.com> <CAFLxGvyUZWXEYdvKynRhJEkJGnEKomCmKYvZg3+Z7DJUM+SUPQ@mail.gmail.com>
- <3077e418-741f-441a-91d6-a07ec6c8f2ed@siemens.com>
-In-Reply-To: <3077e418-741f-441a-91d6-a07ec6c8f2ed@siemens.com>
-From: Richard Weinberger <richard.weinberger@gmail.com>
-Date: Thu, 14 May 2026 13:08:28 +0200
-X-Gm-Features: AVHnY4IDGmlR8NxCsF-5_uAygF5DfLU1bvUaHVhcUWTshXrhG815T_GOotRtvRg
-Message-ID: <CAFLxGvw+YkAdHC5HeqcAZJ5aGpm9tHNYO7+aoguHDPaVcAwAQw@mail.gmail.com>
-Subject: Re: Spurious task resume due to SIGSHADOW
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Thu, May 14, 2026 at 12:00=E2=80=AFPM Jan Kiszka <jan.kiszka@siemens.com=
-> wrote:
-> On 12.05.26 09:19, Richard Weinberger wrote:
-> > On Tue, May 12, 2026 at 7:50=E2=80=AFAM Jan Kiszka <jan.kiszka@siemens.=
-com> wrote:
-> > diff --git a/kernel/cobalt/dovetail/kevents.c b/kernel/cobalt/dovetail/=
-kevents.c
-> > index 7402e2ef6..d72c3788b 100644
-> > --- a/kernel/cobalt/dovetail/kevents.c
-> > +++ b/kernel/cobalt/dovetail/kevents.c
-> > @@ -145,6 +145,14 @@ static int handle_sigwake_event(struct task_struct=
- *p)
-> >        if (xnthread_test_state(thread, XNRELAX))
-> >                goto out;
-> >
-> > +       if (sigismember(&p->pending.signal, SIGSHADOW))
-> > +               goto out;
-> > +
-> > +       if (sigismember(&p->signal->shared_pending.signal, SIGSHADOW))
-> > +               goto out;
-> > +
->
-> None of this will work, and I'm afraid your approach that you shared
-> yesterday for retired Xenomai versions will also fail. I played with
-> something even more targeted than the above, and different scenarios,
-> e.g. task startup, were starting to lock-up. No surprise, we are
-> breaking SIGSHADOW here.
+From: Jay Sridharan <jsridharan@relativityspace.com>
 
-Please help me to understand why this approach is doomed.
-I fully understand that unconditionally checking for SIGSHADOW and returnin=
-g
-from handle_sigwake_event() is wrong.
-The check should happen only if task p has the state flag XNSUSP set.
+Thanks Phillipe - maybe try it now? First time sending in patches via email...
 
-What race do you see with the "fix" applied?
-Maybe I'm focusing too strong on the symptom that a suspended task wakes up=
-?
+---
+ content/core/caveat.md | 62 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 62 insertions(+)
 
-> The fundamental issue we need to solve with remote suspension/resumption
-> is the asynchronicity of the command vs. the pending (and
-> non-suppressible) signals. One idea I had is to use a separate
-> SIGSHADOW_ACTION_SUSPEND and perform a self-suspension instead of just a
-> hardening. That works nicely for resolving the issue you found, but it
-> creates a new race between this pending signal and remote resumption.
->
-> We likely rather need some additional state flag in the thread to encode
-> "suspend is pending" which can do the right thing before a thread is
-> returning to userland and can also be cleared from remote if suspension
-> is lifted quickly again.
->
-> Did I say that asynchronous thread suspension is a horrible concept to
-> implement correctly?
+diff --git a/content/core/caveat.md b/content/core/caveat.md
+index b24e270..912b5ba 100644
+--- a/content/core/caveat.md
++++ b/content/core/caveat.md
+@@ -70,6 +70,68 @@ which depend on instrumenting the spinlock constructs (e.g.
+ `CONFIG_DEBUG_PREEMPT`), you may want to disable all the related kernel
+ options, starting with `CONFIG_SMP`.
+ 
++### Memory compaction and page migration impact real-time behavior {#caveat-memory-compaction}
++
++Several kernel configuration options related to memory management can
++introduce unpredictable latency through page migration and page fault
++handling, which is problematic for real-time workloads:
++
++- `CONFIG_COMPACTION`: Enables memory compaction to reduce fragmentation
++  by migrating pages to create larger contiguous memory regions. The
++  compaction process can trigger page migrations that introduce latency.
++
++- `CONFIG_MIGRATION`: Allows the migration of the physical location of
++  memory pages of processes while the virtual addresses are not changed.
++  Useful for allowing the kernel to move pages between NUMA
++  nodes or during compaction. Page migration involves copying page
++  contents and updating page table entries, which can take time, or
++  cause page faults when page table entries become temporarily unavailable.
++  The use of `mlock` or `mlockall` does **NOT** automatically guarantee
++  that a page will not be migrated. See below for more.
++
++- `CONFIG_TRANSPARENT_HUGEPAGE`: Transparent Hugepages (THP) reduces page
++  faults by mapping 2MB instead of 4KB pages, but causes higher latency
++  during faults due to intensive memory allocation and zeroing. While
++  reducing the number of faults, THP can incur higher latency during
++  initial memory access or when khugepaged compacts memory.
++
++The best approach depends on your workload characteristics. In an ideal
++situation, you would disable `CONFIG_COMPACTION`,
++`CONFIG_MIGRATION`, and `CONFIG_TRANSPARENT_HUGEPAGE` entirely. In other
++situations, you may need to keep these options enabled
++
++If you are running applications that alloc/free memory often, and/or need
++a steady source of consecutive pages, you may need to keep `CONFIG_MIGRATION`
++and `CONFIG_COMPACTION` enabled. Without it, your in-band applications may
++experience out-of-memory issues.
++
++Luckily, procfs provides tunables to control compaction behavior:
++
++- `vm.compaction_proactiveness`: determines how aggressively compaction is
++  done in the background. Write of a non zero value to this tunable will
++  immediately trigger the proactive compaction. Setting it to 0 disables
++  proactive compaction.
++- `vm.compact_unevictable_allowed`: When set to 1, compaction is allowed
++  to examine the unevictable lru (mlocked pages) for pages to compact. This
++  should be used on systems where stalls for minor page faults are an
++  acceptable trade for large contiguous free memory. Set to 0 to prevent
++  compaction from moving pages that are unevictable. On EVL, the default
++  value is 0 in order to avoid a page fault due to compaction.
++  (`CONFIG_COMPACT_UNEVICTABLE_DEFAULT`)
++
++procfs also provides an interface to manually trigger a memory compaction
++operation using `vm.compact_memory`.
++
++Using these options, you can perform a sequence such as the following to
++prime the system for reliability:
++
++- Launch EVL threads. At the end of initialization, but before calling mlockall..
++- Trigger a memory compaction manually using `vm.compact_memory`
++- Once complete, call `mlockall` to lock pages.
++- Then, disable `vm.compact_unevictable_allowed` to prevent those pages
++  from getting migrated.
++- Finally, launch other in-band applications.
++
+ ## Architecture-specific issues
+ 
+ ### x86 {#x86-caveat}
+-- 
+2.43.0
 
-Yeah. :-/
-
---=20
-Thanks,
-//richard
