@@ -1,53 +1,53 @@
-Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011013.outbound.protection.outlook.com [40.107.130.13])
+Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11013018.outbound.protection.outlook.com [52.101.83.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0DAB3FA5D6
-	for <xenomai@lists.linux.dev>; Fri, 15 May 2026 08:16:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E69593F0A8F
+	for <xenomai@lists.linux.dev>; Fri, 15 May 2026 08:16:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.83.18
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778833002; cv=fail; b=NYcoo0e2mcsUnphslanh+uNdxo7oislq+mg8cpeIEcSCkbVdliVYJbt4KKEliol+D5NiWBSrQW8YFYE0FmunCi2tniFy7uDNSmv2pORIVGKvKWdq2VsZReJUUyvEUEHHNH7qiIVu22kG40PuVCCKUoiu/nEuB6+PqxnhC1FMf5g=
+	t=1778833005; cv=fail; b=e7Y1VmyJWxPbFaOY0DoAl3IFsIg+bfFd1RUCBMMOsKclK2dcZnEIYVpk5jGc15B9c0NMJIVo17UD+Mo4J4ouBsSuvOMT4oDS9oARZP59/PzHPrhuhQa9ioMNGV4w8srCmN3V6e5aQn66ppODMO9kCuRxLe/hX5FrCzc7q8GLRls=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778833002; c=relaxed/simple;
-	bh=5n+ibAEGlbpets3Cawdm2GbZT1jDEtOfV0jmARIF4ZQ=;
-	h=Message-ID:Date:From:To:Subject:Cc:Content-Type:MIME-Version; b=Z8c4gHy6Q2qDY1GeDXsZokO3zhyIm1VthpqKrl8QljPOGW/+ajuSchSoaCtTkR08jcYO0plGVzByc1pknn3gsuVFu/ml9C1HA66MaQIjpWJRxi47qmY5gDyT8S2QExzorMlE8NRG1bSMuJh94ZUxRiAMtruVFw/bdpBobyz/H/I=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=i9Aox16f; arc=fail smtp.client-ip=40.107.130.13
+	s=arc-20240116; t=1778833005; c=relaxed/simple;
+	bh=E/gRY64twxx6/rKrLqsJdmVdtwLKx5C0IKiBNXE6IxE=;
+	h=Message-ID:Date:From:To:Subject:Cc:Content-Type:MIME-Version; b=n8tbaltgpf+PCeWhhar9iEFq7hApgs5xXkT+bZ8FMz1iKETRxVNwTI/BhsM6gmR46OpVU+e+XOqgW1QxoGtIHJhWttQUD7W/CfG8BRIy8ZoUqpK2dEJy4+QwLW0XaTt0nrUsF0Mzco+xrnPYpAV/EqlyOTPAQwaBR9sdUcw1tm0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=uOmTDEb5; arc=fail smtp.client-ip=52.101.83.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="i9Aox16f"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="uOmTDEb5"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=gAhsrVjbLJ4A2u4OVJfsGi+aNFZTBPsTyG+Y4zQfFs9ABmcK9Sa8MY/OHWMyuNs7pLUPGQMDivPpObT5OsKsqb9zEG0Ay0LUUbRG/VUGRWhjtDpL5z80JdsTlo+OKO+XSrl9hDm9gkzeJSBHNErBp5Rxu0IRbNB3NC2zzTPlixM9w+3S9UwR46i5kan5jFtmUprFRydJhlMWB8KnJLWDWJYRDuDYi/5BVJ6/cNYDp0tD4heu4d6Dl6yrOw24nAlBNEjubh+ut2OCfUKN8DYloB/TcMIdoOw7te9M6sVXyqx0iR8ugNIOgPUlCHGa5AyCrYlW5p/2oLeoVgR3OsYOQg==
+ b=EtTARfwtXkm3+sBoIyw7mf4fL6IZSVxxnJNHXvne9VWxLvRqmlkZ5jP0Lt7fuVbTk5XtmggWhLO6KGWY27FoG8OyblKwPRUNiw97BW+k0elqU+5rDuPjPlPu95QlGhOSMEqwqar6zo6Xv8rdFLNV32GEkzIHr0jyZj+AAsQ7pp5meytouDVKq/yS7IAFokfMS0IHoKhZuy+QcyQpSHS7Rfn5tdpuO5zs6EwjfZ8cZq88FyaNRIXSE6jAWWtQDNBatuhH01xyMLnh9RnLmXonQOpYYB+gUIwN+zMGswRBlESXGrlBhGjPmT2fze4xE6taFbnOK2d43ipUiMn70WFBOQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=bwYnkQ/qFsovNuAKDjm/us4JG4h6de2hVEuDFF9CCWo=;
- b=SCUFxb7bmGFUYS17MCtqXMjz+LNYJiA64XMp7VdpMxsq2q/NMxc/RgCE/4eKzs/E5+prjYJiepI7l36eT41pLQedfghZhVr3KXYpusakUgUgkXykMN7ghrc5V+IsqIcF4tEG6Xe3akk0YZ5FwM5WcdHG6S+dJ5K70Xoe/3Q0diAnd10NdV6Am/rJEXRSrUhoWL1CeadG68EPf9b5zEvhSZsTFQhl+WVg9UweFnqAXeC9WaYmLzxkbhsiKS2a5EPui0gf234ywNa2BjDEjPLwPf4qTmVRzOV22kQqbVnQofwmzgIQh452PJOB6EIDYoS7HcevbfPBy5YINAwktnuzTg==
+ bh=2VTL4pV0HtKD6eKs+ph1HWXY2cs72gDNRke0sEDI/tE=;
+ b=qZaAqYAVwhc3LPRVUUoR4sa4+FXeV85WDZlF3KPfEjsGnqxmJfy7XF2kAzPIAa/xHNEoEQkoePQhpA0+HY/rT4BxX3zk6/PpfBylObx6aswHM9Ftts++PG8b5OxFQLS0Hlj+937VO9bTHrvXKoHiNMxE5hXtkrZB72h8nyEfBTK8DPl3XypR/c7bBqrceAQxrd4y1xcLyFJQGSgO7b19+EJDYS+I4168drXAmXt1yrkYWQNkfntllvgY8azTaob5CCaXKbtTS25faNPBx7XLDhYRSRtSdv9RcPA7kj8KgnFeraf5w15GtLWYeJs64fK5OosBRaFh/irmY0mepMgoxQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bwYnkQ/qFsovNuAKDjm/us4JG4h6de2hVEuDFF9CCWo=;
- b=i9Aox16fMqqKf2xN56ZHrzID+x6QskGzUFCeThYHaA3dZvxOkmhQp0Ualme+h8b1F8Mc3wKciZekdvt2/+/iiE3fV80C2GmgZW2Bq69q8Vu3OxnuXyfqf4Mu4vAT8XKuOBC49UyPJYAWhbUaS3OPUl4PmZeHwmb3vKxJEJy1sELGZMC5Ne2z/ZXkABab6XtB8CFCtqT5HJXcopfmy/6fGrW/+4lp/O53dPsJfAtIqrRorFCXmrOLAE8X5Ir7KyFAN1NNTYvDqfrc8kdIjZpALAv1Y1Tqk2rhzgGtlnw5OEGXgejyZ8TpJfXixPkBcMEWqcHRisOXTSckmKpU6U4wAg==
+ bh=2VTL4pV0HtKD6eKs+ph1HWXY2cs72gDNRke0sEDI/tE=;
+ b=uOmTDEb5Gktz7VWAgXFbUkyqu3GcpJ0hNNRNvFgLXlMLoi/Xg5Aj5dalaXaYNKJGBfsfLyzl2gKRuos/+tZTFd9Mo3HuLgNrMjkvKOASZFleNQyaq1+72r1vuirNW//7pjECDvxgCj1lHsT49tbFVY319FiYR6Jq5SrjsFgAhclbe5Xe98x9TqMDC5jrmh6Nvl8k/+YX4B/w788QMHQehar4NBtYn3/6ihDbBKX2W3/wiySEi+jvj81fW0O3kZX3UP3WIocCmZzOEwrR4sfyLsSvqnyIzAbbCvXYSAH5ggZ4AaB+4Jhr6EZBMvCySGsa3WRu1qDdTpfTwloMDoM18w==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by AS4PR10MB7943.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:4fa::13) with
+ by AM4PR10MB9421.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:6ce::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.25.19; Fri, 15 May
- 2026 08:16:38 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.25.17; Fri, 15 May
+ 2026 08:16:39 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1%3]) with mapi id 15.21.0025.012; Fri, 15 May 2026
- 08:16:38 +0000
-Message-ID: <48f88dbd-c051-4eb9-971b-d0518dfeacf1@siemens.com>
-Date: Fri, 15 May 2026 10:16:37 +0200
+ 08:16:39 +0000
+Message-ID: <fef0a9fd-c06d-4673-bb62-200dab5ae853@siemens.com>
+Date: Fri, 15 May 2026 10:16:39 +0200
 User-Agent: Mozilla Thunderbird
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: Xenomai <xenomai@lists.linux.dev>
-Subject: [PATCH 1/2] kernel/cobalt: Address SIGSHADOW_ACTION_HARDEN and
- self-hardening race condition
+Subject: [PATCH 2/2] kernel/cobalt/thread: Confine condition for sending
+ SIGSHADOW on xnthread_suspend
 Content-Language: en-US
 Cc: Richard Weinberger <richard@nod.at>, Philippe Gerum <rpm@xenomai.org>
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
@@ -105,205 +105,112 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS4PR10MB7943:EE_
-X-MS-Office365-Filtering-Correlation-Id: 11973a57-5d18-41c1-7738-08deb25a493a
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AM4PR10MB9421:EE_
+X-MS-Office365-Filtering-Correlation-Id: 90105ee1-0656-4fa8-c5ba-08deb25a4a4c
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|376014|1800799024|55112099003|18002099003|56012099003|11063799003;
+	BCL:0;ARA:13230040|366016|376014|1800799024|56012099003|18002099003|55112099003|11063799003;
 X-Microsoft-Antispam-Message-Info:
-	5zh0ikbHnNu/2l7z/xtzCdXWEd9jpLvlBbQeRTkc086brTNQcxY3sy4dL2XTo5/7LIszRUs5+b1VEnJRP8oqVzyd1cJNbZLDKnfIEHBfdfYp/+HDwlWAiRi/yZC2yhI9jez9zHcXvcrEhPe40NLqIuNj4k8XTLwdlO5GrXquNT37ZvcjfjegEymzrwiLlzmpMlBX1joqRNQwYWIgtM3p42OaOQ8zgTwhnRoZ02WsK5tGPwOpR4CJENqK8WFp0DHE/vNEZvehZkjCbjX6OzIjO2qr0TOoHRMtJdpwRJyLKnaLmm8I/ZIT7xfDD6Gkoga4H7taY57EJjoSexMTLdEKyG3Xa6ajkPFYjP943j3XZ8ww9b9dsRmlZjSWEvw6JxOyGsTOQmpoMo8JeCZnemyfTdMoCl0O8ayooYXdnA49JOWdSO4MjdRGpxKNxIsLsOUtCWpuvgGQuQlTlpVjbC8Zom6i56yr9qHotWsuiWhzSgmjPJD0As2S2DEzeDHdXZ1CCz6ePsiTeYiaQl5TZLw4bPjFnDb8lqf7joM/EjIm69RItmn48Ehl6l9mXX9IXR8141bGXvDObTRVnEpeOvuk4od/efvUVfJN4iis+Gq2iTbYGy2ORvDmkTAjXxka10A9yEiFwvV4AnlilEDcjY+udPU1g1x3xstu7APhCOtRvVo856es/IzPFMgHSpO0G1Y5
+	93rhSdOEFDgUzawJ1hTEeHXJEqFYj7AELrabZ0gxmtyrZ16QHCZsqe+TjJJH8ZTtfHJFo5ADjGBa2UXUVmlFTvtZOzbRdKgqFxg0kagwpaqMCGZ8feJVFry9ZWhI+ll5f/6xMgfgOcijUvCqJCTtSdtSnGCByZcS0uEVfJb7wVOPtt9DsrvgIffdgu5vlWz68S85bb5w9s+dnUDTEleW7HsDwmdQGvxCmHcj42O6Y+ZwNQPoJTXoRpNgDjZgmfEs2Awww0wYJgCdKQ+9cwiSswL4l6i2w3PXMkdJB3bWINDKtaD3nj3gXG1zXUjS4gNhRPRSVrzi61IkVbpro9QZnNzEUPte/zJUK4jEaiZf364gOS5bRm9HqVsRoYKsox8q16FWdKPvbdY2+Fy3gogSx2PuUXJwfR9SGmzPlN1MhesfYDBUZGnNJG5JA9OFU9y/18yf+tAD1YRigjQs6ROZGAkxQZJkCXM5EaxKJFTCuCMgMVe4lsjLL5p0nG9Yi4m7NeTCT12zD5SuEzEgs6JSR26MnsmBewM6G86pDmKrAgw3k56C4cqzFu4J0BnfRPgZcAagqiS8hPn3qgaUpbq0XEz09KQrFf9ZXh8CRen02MX1oCsPLmVSL+HGq+So/QVcP9l0dZCigbT2VM1r1m0GCiUn1AQM8y23lI4pGvLIMg38oOOoGYH6vmbTonzXmGSb
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(55112099003)(18002099003)(56012099003)(11063799003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(56012099003)(18002099003)(55112099003)(11063799003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WGhCSkhzRGZkZ3laazdsQWtwaEtqd3FsN1RnckZPNmF4ZmFkOEhFTWw3TVUx?=
- =?utf-8?B?d3IwYWdtWmRUc3pTZkNjUnY3M2huSjN3WlNJUjBQSk1BY0RWWUNxTndWNGdr?=
- =?utf-8?B?cUxPSUFmb0pRRXkyT1RBOCs2UzFMVnVJSzZBNlVrb3daUy9JeXBUWXVIeSsr?=
- =?utf-8?B?NlNzVmU1cjY0bVhGSnkzMlFqN1Q3V005RDBNMjVHaHF3TDhCRktVdlhyQXM1?=
- =?utf-8?B?T3JKaG01aitEQlV0bm9teUFaWmk3cGU2c01YYXhTeTM4TXVGcVpFUW9YMWNN?=
- =?utf-8?B?dDkxNVdOMlhTajdrQnZia1hpaVd4czhVM3A2bDI2UkE5Vy90ZTJ2R3ZaR085?=
- =?utf-8?B?Z2RsVzdvWlVIb0hDNE8zMHEzOXJjYThpdU5JaXZNMUY4S3VZSmNWUGROUGxJ?=
- =?utf-8?B?U2ZobTZvSmpNWmpoS3Q5R1ROSGxZbzdmQ0hkTlovWHJhRGd1M3RHSElZSTUx?=
- =?utf-8?B?TWx5cXg3Uzdjem4rekU3ZUJQb3N0ZTlsS2FwMStBTVVFektTQ244L2lnS0ZY?=
- =?utf-8?B?Y1o2V21uakVPaFNCMWJLVGlFRFo2bmJRSkpnYlpVZkZIbUcwZEhJRkRCeUVX?=
- =?utf-8?B?QmxlNU5MUWpBY3FFNkM1L2FyTjZRbEEwTVZ0enhGY2N4UWtFNU5ybmZOWTl1?=
- =?utf-8?B?T1pXTGR1RXc4ZnpjNU9MeEViajd4eGhWbkJtZFZ0ZS9weENCV1dOWUNERGcr?=
- =?utf-8?B?SUI4L2w5ZTBLNWlVVGJmUHZBN05SZWl0SEhrMEErbFFWOUJzTzR5V1BZMXZi?=
- =?utf-8?B?MmZrcnpSQ2xIME02K1YvUmVlZ3hKeFdFNlJWRkdYaHNlVEFzS21yNFlGeWVK?=
- =?utf-8?B?YjRqWGtoODBzYklPZUJyTUdubFVxcklrc1p4NUpWSitodG9QZE9QVlhsWndy?=
- =?utf-8?B?Q0NkNGpPSmQ1UytmTS9pcS9qb1drbVNpaVFRR3h0Tm9uT0xJVDY2UFZOQ09n?=
- =?utf-8?B?TU1Oa3ZIbzZyWmRybUIyYTdSOTA2U1BDSWVWRGhDSlFNeTZNWFJycGtlT3NV?=
- =?utf-8?B?c29lOWhMd1ZEY1AvVXh3VGdheWJWbFJOcmt5MnFIc0s2RzNXTU1SQm90TWhl?=
- =?utf-8?B?S3dCYTdqTSs4bmpEOHlNNW1IMHJhUkdONGpBeDU0OFpoOUtEUVBLUjBGeDA2?=
- =?utf-8?B?eTBzamhyeFNPblk5MDl6ODBTN0pHVHpYSTFna1NOYTBYK1NibDNqY0QwN2ZI?=
- =?utf-8?B?ZG44cy9BenpBY3EwVU15V0gvbUJTOWNnK01Gc005Qm56OWpkMURTNlRVL00y?=
- =?utf-8?B?TDB5Y2Z4RTY4NmhucSs1NWlrWmtyak12VjBLRFAxeGhtR2lJTEhiMjNCRXVo?=
- =?utf-8?B?akgyemkyN2d5Ymh6cEU1cXVvRndSeG9JSzVQTVpDRWhPK29CcCs2R2R6a2dH?=
- =?utf-8?B?RktycXFWVVhUWTEzbW41cUZWeENkR051YXhrWWIxRWdzbkFBbUpDaW5OTUdv?=
- =?utf-8?B?TlptZU5vL0Jrb0VpbUlRQmhJK0h0VllkNU42TFFUTTVtNUNiREVJTENRRThK?=
- =?utf-8?B?dVFuQlNiRzRSczdRTERTNzMxY05hWlJlbXU5Uk44OEZyTTBhU0s2TlF6VUVI?=
- =?utf-8?B?QlhPN1UvWDdZVEIvcEJUU3JmcGdRVVBOMEtWeDVBd1R3eGtzUHNtVGozc1c5?=
- =?utf-8?B?Q09TaWxpS2h2N0YrTmFxQW1FTnZ5bHMwL0ZBQkRQRHJjdVpmbDNQNmNEb3Fo?=
- =?utf-8?B?ZmxrTHRYK29wb3ptaldNNE9tYWtMQldMeCtmdi9WZDNrTnFzclROdUlZZzRv?=
- =?utf-8?B?bDlmTlJXYXN2bWFFcEdsY25mc1RsWEp6WGMzTURrMmlGdTlkZzdyLzJkc1BE?=
- =?utf-8?B?YTZya0IwZk4yY2RTa2NTcnVpNSs4WUdTbVN2WElnbUVkTmFTTldpK0U3cFZJ?=
- =?utf-8?B?b0YrLzBWaU9DU0ZjUXVKbTl2aUdMQmNtdElTOU1MUklDZjFKa1dPSjRCVWRX?=
- =?utf-8?B?Wi9UWGVaT0I1K3ZZekpTcTJOK3pPRE4vR2dBbm9WempaWFNRU2ZPUkN5ekln?=
- =?utf-8?B?dUhEVzgxcFlvemUwOGVXS2NIc20zMHZDQ3g5aGwxRm9DaXRZeWpvajI1Vk9T?=
- =?utf-8?B?cVlYS0lUKzAwZlNyOHB6ZHlNRXVBMW9jOHVjcEtzbWNyK3pSV2F0bkR2SUxx?=
- =?utf-8?B?ZkozK2Q3NjJLdUJZSk54RUFWalBMSFp5a2NGTGFFd2puTEh1WVl1TitWYXpK?=
- =?utf-8?B?RnhoU2NuT2wrT0NqOEtMeXRFVWwyZjNKQ2tGb1JIQXlTeStWdjREOWRmRWYw?=
- =?utf-8?B?L3hkaWlmRDQ4dzhlV0RML0dFOWxHZXZJUWVHSFZvaGIvS1V3WDFHaHYyRlF6?=
- =?utf-8?B?ZWk4SFJhYjlXN3ZxVGZPc3FtRXpwU1RGVldYbGVIeUdpOUI1NmI5QT09?=
+	=?utf-8?B?emJjeE5SNENScmMyRUd1cW5wYk45QWhremV2dmFSOFJkYmhpSEZTUzl4eHJG?=
+ =?utf-8?B?TmJlZ3RuZDdnUkhJUWNlQ3BPNkI5ekRSbkVkUkdocDFnU0xsdUtPU29HMUVB?=
+ =?utf-8?B?WFU1SE9KSTdiK0xBdzRtVEdKdFNWYlQxRndvWThSVzZ2WXF4RnFJVXpMY3Y5?=
+ =?utf-8?B?ZkxsQlBrRVpWTUN1c0R1Tyt4ajhjYzBQNEJKZUszQTczaUZSK21qS3YvUnpz?=
+ =?utf-8?B?Rmx0a01QZnBkU0I2S0NmREVzck9qSzF5WmluVHJjUVZWSW1MNXF6cTRvZkJC?=
+ =?utf-8?B?VWxRUzBEUS9uV0hSamJ1SFpETDB5UUp4aGg3TnVhcG1iQWpYZ1hTVmlUMVQ3?=
+ =?utf-8?B?UjJ2Rmoxa3VtN1g3bmZYVWltcUEzWHBNamV1Qm90SEF0ZitqQWNBN2xhaWpQ?=
+ =?utf-8?B?dFpXejhsY2ZObHFoWDFtMSs1MnU1djJqM0VscEg5ZVdaUnZhY3V2VnUvVURi?=
+ =?utf-8?B?R2x6U3ZxbW1pbFFLMTVlUlFMRWZ4RXRzK09FL3F6b0JPNnMxeUJ5bUdmSzNl?=
+ =?utf-8?B?c0Q5TG9ITkppOHd0dlBGWXB4TDNlc2M3YUlCSnVNZkpQM1ZFeDB1d2dGQzVa?=
+ =?utf-8?B?dnVBSG1XN1d5amlKSE5MU1FTaDJjUkViYjg3MXJIMUd1djdvOUdlSmJyU3Nu?=
+ =?utf-8?B?M3M0dFI3UStCdlFsb3llVG40K0E2Nk4vb2U1UEhmeTROMURpem1HSEkwV1dM?=
+ =?utf-8?B?b2ZuUG9QMlMvVElvS01NVkl4bWczdjh5NVc0MGxXc1dQSXl3bk0xL3YvL1hK?=
+ =?utf-8?B?aXdZTVArV3N6ZDZya1ZaUklkUDN2VkFIbGFrNVZWaTk1bDE2Y2plWVVoa09a?=
+ =?utf-8?B?VEFVYThSN1BjZ0dEVDhOajRJRnVsYjczT1VPR0ZYMzVjOEg5UWVoanpJRk42?=
+ =?utf-8?B?V3UwanlSV2gwZ24xc1JOTERTRHFTVDVpT2Z3WjFzQmxXWHVyVlNFSGFoeVE1?=
+ =?utf-8?B?SDlkellJOW1uaEFYNkRYdCthdmVIQ2k3Ky9KZ3NlTG5aVFZrOEo1U2pSMVBm?=
+ =?utf-8?B?L2tiWUEyYWhmWmhpWk12aVRRbzM3M2hPSWtVaVhzWjRuS3U5YitxS2FNZzlQ?=
+ =?utf-8?B?ZkdpUG5SdVRXVyt0RE9nUU84NjEvZ09oN1ZSRC9TY1hoaDVUa2JGVCt0NVFq?=
+ =?utf-8?B?OWdZTVEyT0YzT1NOQnVwRkNEMmpMc1VqUTd1cm5PNEZTYVhnZWpNRlRsNHU1?=
+ =?utf-8?B?a3NuL3l6STdNRyt3MHFJUjE3OXJpNmlaNzFzeURKYVl3S3lkVkhnU29HSFhr?=
+ =?utf-8?B?b3ZoT2h4WW9rbzFhNUpwN2xvRHJoV3VyWkJWa3poYkhIdHhKa1M1VDN3amhO?=
+ =?utf-8?B?RFhRZEFHVkVJTDVxN0tPZCtVRC8xK2RKOWl4ZmxqTHV2MEdrL1pNYXZuRkpC?=
+ =?utf-8?B?Y3I1UHlJVTV1Ynd2NHk5TjkwUllTeGt0bW5mWnhCRWNUaWFBdHZqeW5qbFpF?=
+ =?utf-8?B?SVZDdkdZYU5ZS3RjVlJLbVg2Q3haVVRuZ0czV2h3bnFiY0xqZGl3UEY0ZDFa?=
+ =?utf-8?B?SjlkOG5CWkVpc1pBYmY5ZmJNZDkvSkxpTHFHTTlESVJUZUxEYVQ3N1BjVGNp?=
+ =?utf-8?B?MFhEaWJwa1VraGIzT3U3RXcxbDlvZ1phMC9LL3o3UTVzTEF3Y2FScGFPUTNv?=
+ =?utf-8?B?VkxPOExKMGRmVGhDLzZ2ZHpPSnVLdjRUd0NnRHRUTW1mNW5NUGIwQ3BWSi9K?=
+ =?utf-8?B?R3BMT0ZmSnN4NnkwdEtoTzNQRWxjOEpQajdLNDhQR1E4RFFQZHhWVXAvN2tG?=
+ =?utf-8?B?a2R1TTFWWkJ2QWpCUVJ2V01nSlZrdGZtQ080Y2g3MFBUVGtXTU9ZcU9YYVV4?=
+ =?utf-8?B?SkQ2R2xIZ2ZUdk84Qkw1TVF0MlliWjlzZmdzaTZjY3phRHRSb2lkdVkzR0pa?=
+ =?utf-8?B?TFU0bXdGQmFrUFZyeWRCNGdvZGhWdUpabUloUzFhT283bEZpZmswcU9RUVVH?=
+ =?utf-8?B?T2U0Y0J6YVhLVlU0eUpielN4TUVTOW91Ly9VSXhuQUo4bVRsVEJFMVFSR1lN?=
+ =?utf-8?B?eVlPbXBUQXZZbXlWOWlHZTRrTVpveTFXSHBLWmRDSEZtTmJzTEtDNkZJdGlS?=
+ =?utf-8?B?N2xrNlN1cWVJUFg0cDBKcTUwV24zRmwwelR5R2FKTnRXNE82andzZ0JuSytM?=
+ =?utf-8?B?OER2eGcrUHFUNWpodnJRUkpsL0tSTEVoakR0VUcvZkZjMmZ5VlorK3ZzVmFu?=
+ =?utf-8?B?c0xRK2FvWnI2aWIwRWlORitBdXBkVW5xcGdTWW9lMTBHZm1JYXRnWTM1Qm1k?=
+ =?utf-8?B?NHFWeVpnY1JYY3JOQVdTMjQrcU0wTDA4RmZkQWxhRHFFL0xhalp6NHNOZlhp?=
+ =?utf-8?B?WDkybFI3VUdNMFVDaVdBVGdlNlZNNDU1OWZ5V3RyVUdIUjc5aTlFQT09?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 11973a57-5d18-41c1-7738-08deb25a493a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 90105ee1-0656-4fa8-c5ba-08deb25a4a4c
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2026 08:16:37.9884
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 May 2026 08:16:39.8534
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YeHitHwHVVnssSEPugXQ5Ke5T5anJBPP6TkDVBMeo439HnBVEm0XrZgG21CAYa+ppeh6QY2IRy4rY9wfzkt5Gg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS4PR10MB7943
+X-MS-Exchange-CrossTenant-UserPrincipalName: OiZR7ylmXrgGLxjt3TVo6WYLu74XxBA2Q8Fh7sZ9XW/xWwtdxVy8ydUjgS/SboXO1kqt7ngClwnjl5sjLbhavA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR10MB9421
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-When a remote thread is suspended, xnthread_suspend checks if it is
-currently relaxed and then calls it into hardened state via SIGSHADOW.
-However, this signal may race with the thread entering primary mode on
-its own, e.g. via a syscall. In that case, the thread will be kicked out
-of its suspension state by the pending signal, and the migrate syscall
-it then executes will not perform the expected suspension anymore.
+In fact, XNDELAY is only self-applied. Drop it from the condition set
+and also fix the comment explaining this as well as some other bits.
 
-Plug this race by introducing two thread state flags, one for pending
-XNSUSP and another one for XNHELD. After having performed the requested
-hardening on SIGSHADOW_ACTION_HARDEN, we are now testing for those
-pending suspension states and replay them via self-suspension as needed.
-If a resume took place in the meantime, the state flags were cleared
-again, and nothing will happen after the migration step.
-
-Reported-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
+ kernel/cobalt/thread.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Didn't check yet if EVL solves this topic differently or is exposed to 
-similar race. But given that Richard found the pattern even in Xenomai 
-2, it's likely worth to check EVL carefully.
-
- include/cobalt/uapi/kernel/thread.h |  2 ++
- kernel/cobalt/posix/signal.c        |  1 +
- kernel/cobalt/posix/syscall.c       | 26 +++++++++++++++++++++++++-
- kernel/cobalt/sched-sporadic.c      |  5 +++--
- kernel/cobalt/thread.c              |  7 ++++++-
- 5 files changed, 37 insertions(+), 4 deletions(-)
-
-diff --git a/include/cobalt/uapi/kernel/thread.h b/include/cobalt/uapi/kernel/thread.h
-index 664def08ef..279a96e19e 100644
---- a/include/cobalt/uapi/kernel/thread.h
-+++ b/include/cobalt/uapi/kernel/thread.h
-@@ -73,6 +73,8 @@
- #define XNPIALERT 0x00000080 /**< Priority inversion alert (SIGDEBUG sent) */
- #define XNSCHEDP  0x00000100 /**< schedparam propagation is pending */
- #define XNCONTHI  0x00000200 /**< Continue in primary mode after debugging */
-+#define XNPNDSUSP 0x00000400 /**< Pending suspension on migrate syscall */
-+#define XNPNDHELD 0x00000800 /**< Pending held on migrate syscall */
- 
- /* Local information flags (private to current thread) */
- 
-diff --git a/kernel/cobalt/posix/signal.c b/kernel/cobalt/posix/signal.c
-index 1842aa5e8a..71277d7ca6 100644
---- a/kernel/cobalt/posix/signal.c
-+++ b/kernel/cobalt/posix/signal.c
-@@ -510,6 +510,7 @@ int __cobalt_kill(struct cobalt_thread *thread, int sig, int group) /* nklocked,
- 			ret = -EINTR;
- 		break;
- 	case SIGRESM:
-+		xnthread_clear_info(&thread->threadbase, XNPNDSUSP);
- 		xnthread_resume(&thread->threadbase, XNSUSP);
- 		goto resched;
- 	case SIGRELS:
-diff --git a/kernel/cobalt/posix/syscall.c b/kernel/cobalt/posix/syscall.c
-index bc1825676f..7dca49a424 100644
---- a/kernel/cobalt/posix/syscall.c
-+++ b/kernel/cobalt/posix/syscall.c
-@@ -118,6 +118,8 @@ static void prepare_for_signal(struct task_struct *p,
- static COBALT_SYSCALL(migrate, current, (int domain))
- {
- 	struct xnthread *thread = xnthread_current();
-+	int err;
-+	spl_t s;
- 
- 	if (is_secondary_domain()) {
- 		if (domain == COBALT_PRIMARY) {
-@@ -131,7 +133,29 @@ static COBALT_SYSCALL(migrate, current, (int domain))
- 			if (xnthread_test_state(thread, XNDORMANT))
- 				return 0;
- 
--			return xnthread_harden() ? : 1;
-+			err = xnthread_harden();
-+			if (err)
-+				return err;
-+
-+			xnlock_get_irqsave(&nklock, s);
-+
-+			if (xnthread_test_info(thread, XNPNDSUSP|XNPNDHELD)) {
-+				int mask = 0;
-+
-+				if (xnthread_test_info(thread, XNPNDSUSP))
-+					mask |= XNSUSP;
-+				if (xnthread_test_info(thread, XNPNDHELD))
-+					mask |= XNHELD;
-+
-+				xnthread_clear_info(thread,
-+						    XNPNDSUSP|XNPNDHELD);
-+				xnthread_suspend(thread, mask, XN_INFINITE,
-+						 XN_RELATIVE, NULL);
-+			}
-+
-+			xnlock_put_irqrestore(&nklock, s);
-+
-+			return 1;
- 		}
- 		return 0;
- 	}
-diff --git a/kernel/cobalt/sched-sporadic.c b/kernel/cobalt/sched-sporadic.c
-index bec8dcb533..80e99a1e7d 100644
---- a/kernel/cobalt/sched-sporadic.c
-+++ b/kernel/cobalt/sched-sporadic.c
-@@ -152,9 +152,10 @@ retry:
- 	if (pss->budget == 0)
- 		return;
- 
--	if (xnthread_test_state(thread, XNHELD))
-+	if (xnthread_test_state(thread, XNHELD)) {
-+		xnthread_clear_info(thread, XNPNDHELD);
- 		xnthread_resume(thread, XNHELD);
--	else if (thread->cprio < pss->param.normal_prio) {
-+	} else if (thread->cprio < pss->param.normal_prio) {
- 		p.pss.init_budget = 0;
- 		p.pss.current_prio = pss->param.normal_prio;
- 		/* Move sporadic thread to the foreground. */
 diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
-index 60a7112844..b605781c64 100644
+index b605781c64..5626e7655f 100644
 --- a/kernel/cobalt/thread.c
 +++ b/kernel/cobalt/thread.c
-@@ -1013,8 +1013,13 @@ void xnthread_suspend(struct xnthread *thread, int mask,
+@@ -996,7 +996,7 @@ void xnthread_suspend(struct xnthread *thread, int mask,
+ 	 * assumptions regarding suspended threads.
+ 	 *
+ 	 * We only care for threads that are not current, and for
+-	 * XNSUSP, XNDELAY, XNDORMANT and XNHELD conditions, because:
++	 * XNSUSP and XNHELD conditions, because:
+ 	 *
+ 	 * - There is no point in dealing with a relaxed thread which
+ 	 * is current, since personalities have to ask for primary
+@@ -1005,15 +1005,15 @@ void xnthread_suspend(struct xnthread *thread, int mask,
+ 	 *
+ 	 * - among all blocking bits (XNTHREAD_BLOCK_BITS), only
+ 	 * XNSUSP, XNDELAY, XNHELD and XNDBGSTOP may be applied by the
+-	 * current thread to a non-current thread. XNPEND is always
+-	 * added by the caller to its own state, XNMIGRATE, XNRELAX
+-	 * and XNDBGSTOP have special semantics escaping this issue.
++	 * current thread to a non-current thread. XNPEND, XNDELAY and
++	 * XNDORMANT are always added by the caller to its own state,
++	 * XNMIGRATE, XNRELAX and XNDBGSTOP have special semantics escaping this issue.
+ 	 *
+ 	 * We don't signal threads which are already in a dormant
  	 * state, since they are suspended by definition.
  	 */
  	if (((oldstate & (XNTHREAD_BLOCK_BITS|XNUSER)) == (XNRELAX|XNUSER)) &&
--	    (mask & (XNDELAY | XNSUSP | XNHELD)) != 0)
-+	    (mask & (XNDELAY | XNSUSP | XNHELD)) != 0) {
-+		if (mask & XNSUSP)
-+			xnthread_set_info(thread, XNPNDSUSP);
-+		if (mask & XNHELD)
-+			xnthread_set_info(thread, XNPNDHELD);
- 		__xnthread_signal(thread, SIGSHADOW, SIGSHADOW_ACTION_HARDEN);
-+	}
- out:
- 	xnlock_put_irqrestore(&nklock, s);
- 	return;
+-	    (mask & (XNDELAY | XNSUSP | XNHELD)) != 0) {
++	    (mask & (XNSUSP | XNHELD)) != 0) {
+ 		if (mask & XNSUSP)
+ 			xnthread_set_info(thread, XNPNDSUSP);
+ 		if (mask & XNHELD)
 -- 
 2.47.3
