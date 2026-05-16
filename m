@@ -1,216 +1,160 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B05E2390C9E
-	for <xenomai@lists.linux.dev>; Sat, 16 May 2026 12:53:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A0F61EB5FD
+	for <xenomai@lists.linux.dev>; Sat, 16 May 2026 15:48:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778936016; cv=none; b=fsHu3EUIBYhptzySln6YwXx5vzK1RaaWnoqcC+Q89re2akk2OkdUFTdUxix74a4Bsqmdk1B5slsXM54UYvgF6hUADETVGxmJNFGHUwVAUtnEa7APGRCAn//YNFbuekBz6DmT6RJJsB4T36nYwfPikkTBaekdciZAs0KcpNLusUc=
+	t=1778946518; cv=none; b=iDktKY5LoGn5NwsPj12sVDEWMWkTOAHwZJ91MrUc5RDQWKNBKJvDa1TGZyfFHyGmmpkUonihXYK6jBAvVkt2R8D8W9rS+AXCe+ChxhfzIP/ND6PdVcZ7LP0UOS0DNO3qhGWCoS8akuytM4Rln0B8E3+o9RvV7c1zJppAV8rXVz8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778936016; c=relaxed/simple;
-	bh=oh7oODXMufjH8D47CYpoa4S3bX5DhRaWLi2sdqR/oTc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LBpfhSIh/CNxk3HqZT3N2ccTJmF4BiuetStXAGxJrdisuWyo9rMaePVqFFRkBg/QAMtm5REcNdxC/tV32lVKVQ+zDk8Uwd8f6F2SdG4IMfwuNlGXPwB6/N8Xcz71HoWYt4nLxn+iysKFyRTWLOAYUYvFE+hGs2zdsLKA0XvcBLs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OhjBHg3y; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1778946518; c=relaxed/simple;
+	bh=RLmKq3jsmdWvohOQ5jeFxCmpI2M4qqLDivWokVf8pG8=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=oS50bRlLgMcSx0vtQ/Hs2EJUJqgXkrem8Kj7JUbN2eWFsaLUegLBYrJJmC9I90VmiSIaEDuP+WNuOWzoLPL0n+vfJ0G7tcz0RGUbQSNU9HRoWGTaDBH5Wjo1QqEv12XhVvdL44ZuA0Qwk3UD2I6ZX+M1I7qUhxVhfdNSANUn5SQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=HBLty6fu; arc=none smtp.client-ip=217.70.183.194
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OhjBHg3y"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-48d102471a4so5151945e9.2
-        for <xenomai@lists.linux.dev>; Sat, 16 May 2026 05:53:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1778936013; x=1779540813; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=vOMTnvRNgTTLNvDjjtizrPTWuo5syU0cd4/fiGK7F2U=;
-        b=OhjBHg3y23i8WdvxofEyVRc2S7m5GoGx0mOw+EFCGhrR1QRDy7mLgQLxDgvV0KWFxW
-         tBYgk/PJzU7TW5ylP7o+EjFtCzSIBtkjELLm4uEgITut8Dv+h+lydis9hFXnU7sgyFkO
-         bPe4hORO/bP5cb6l8fMLDO/HrlxuLsAOmC8nCyo1KH7tYS+mtnbj2gIMXqc33bUg4wY7
-         uPvFQT7r5GIjpZPDHiidjgis/3TT23Yz/9R5vNQZOfYAVHFz8ulKijFkx0IjlYyGdDfz
-         CGKorW+P9XcFHd52T2hTWyrx5K1mv0h4C3q1sAakiM9okY7VzUXGBgejUoaGT+23J2oU
-         aocw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1778936013; x=1779540813;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=vOMTnvRNgTTLNvDjjtizrPTWuo5syU0cd4/fiGK7F2U=;
-        b=UW8brfq5yqasJvPbNten+pHs4ODgzN32k7hgRuUEPT+tglgjqcrd1nPpBbDaa90FAO
-         jQT1W8XbQzX0ZwF2qg7qlbFggxV9+YF0OVm+Q+0jlOahqhFI0lT+bTowqVlNCET5vb+9
-         vjD4wKGHijQBRm49Hhn5x0igqo6S3SL/vpWBhcycFEO7YpXiRr0AbkUr9uQEO+S+HDyf
-         NStKgn7ZNPrzknl2JqLDeOApyLBII7b2g6qW8UHS4CvivT+R+s2r4gDXw5O9n4YCK7lx
-         aeanLJJwEntnn4qKNyZafM5NgYwXo0gojiEgdNW26gzPoUxi2kHCgC2tLJUDRrScNa7c
-         GSaA==
-X-Gm-Message-State: AOJu0YyDpvT5YElbuCqZUakkfy/rV/rYqrWw0JBDTm2AwchqonzMeQ0d
-	IsvuDssZnQ0Sm9f16WQTPMUl1fwOAzP1NTR52jPNuejRaWtXtV97ox18
-X-Gm-Gg: Acq92OGMhCjlMTW5sizT5qPOjS/WVozjJOliDMkNhoKYDRCpOVt3DZEZjX8FO08o1th
-	wKcq52ZqHUv4O5fKhGXlLhN+az6v/J8WRTHi7MOyfj51rWbHoUGZ4eTtA6os6Wav1DPPfdZwJ3f
-	tM0TIl6uBHJ0qDpmElgaskCEo0ZQdbUzdSrGxi2vH27l3E26tz2qLavFyyGHJdzZqXpRPzl+5ch
-	WkCk5walO+PHksKI1Bzqz6tnYVNtEx9Qx1uze0V4AJt7B6AW2GqTnr7L3PVKvkRRXKJpyiTSbDo
-	3xCRPSjT6JSVjZVnYUR+QFB370948mbYaD1U1Hle/gg/z0TB0DwRcaocj26NiPQzpE1WWv1PG8/
-	AJQAGgPZmwE4gIu9MSd5p4VZKymD1ctPXGiOGivkRkA9E1nJiu74WmxjqUPNEcRDU3mDEwmk8TZ
-	cTYoxjV/SwLP9a5oLjeTCNZ9f6zn69DRwYqslEWFYo3g==
-X-Received: by 2002:a05:600c:1e24:b0:488:aa33:dcbd with SMTP id 5b1f17b1804b1-48fe63182a2mr118007235e9.26.1778936012896;
-        Sat, 16 May 2026 05:53:32 -0700 (PDT)
-Received: from [192.168.1.3] ([213.55.168.64])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48fe57943b2sm129814605e9.8.2026.05.16.05.53.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 May 2026 05:53:32 -0700 (PDT)
-Message-ID: <72d7190a-2332-4033-8a1d-f04eea74fcc5@gmail.com>
-Date: Sat, 16 May 2026 14:53:31 +0200
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="HBLty6fu"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 9B5673ED56;
+	Sat, 16 May 2026 15:48:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1778946514;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=QIMxuUcEe9ds8efJtiPvp6S7xPFYptEuo8vpT4ylC5k=;
+	b=HBLty6fuPAS1Z2dhJyNwKHOXvSr71JU3F/UsJtNI37v8HzJBRdT2xgMqLbf+RWC3OT/Gna
+	I3pF2t5SSBwEsPeUl+ODKIoQ39JTIS/vCD8U+riDa/tLRsq9sCDtTUouKHOk793xHl4vA+
+	zg3KAGbBbbs6Hhwsr89ndYQfqT4vHbLAi+6+FrQ2VW3c7myQ3iWbNugxH3830s2BtERYBD
+	BtlIx6v3FIoA6ZHmhG7hEyWPDHprA+1TUuIZQpBEHxAxXUTFoxIQiOgnVlS0GUwhmteZbw
+	viXPeqa17IGPHJmmbO14BTtddGQgH8VTJZFkZpsV7slnjhjOrnCHYwdqeQOjNA==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@lists.linux.dev>,  Richard Weinberger <richard@nod.at>
+Subject: Re: [PATCH 1/2] kernel/cobalt: Address SIGSHADOW_ACTION_HARDEN and
+ self-hardening race condition
+In-Reply-To: <48f88dbd-c051-4eb9-971b-d0518dfeacf1@siemens.com> (Jan Kiszka's
+	message of "Fri, 15 May 2026 10:16:37 +0200")
+References: <48f88dbd-c051-4eb9-971b-d0518dfeacf1@siemens.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Sat, 16 May 2026 17:48:31 +0200
+Message-ID: <87bjefs6cw.fsf@2a02-842b-4100-f601-1469-181b-22db-b4d0.rev.sfr.net>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [EVL] Kernel WARNING: notifier callback netevent_handler already
- registered
-To: Jan Kiszka <jan.kiszka@siemens.com>,
- Florian Bezdeka <florian.bezdeka@siemens.com>,
- Philippe Gerum <rpm@xenomai.org>,
- Tobias Schaffner <tobias.schaffner@siemens.com>
-Cc: xenomai@lists.linux.dev
-References: <8e08bda6-1fed-4a5a-9bb3-74f019b05855@gmail.com>
- <87340ij2lx.fsf@xenomai.org> <201a7d9c-e1dc-4686-8a5e-adc7c921ba14@gmail.com>
- <87jytt34q7.fsf@2a01cb0804738000b42250ae26cae50b.ipv6.abo.wanadoo.fr>
- <2686ae4a-c63e-418e-8b4a-be49a22db83f@gmail.com>
- <ee787e06594ea3a32125c2db0c2112e7f6a9a81d.camel@siemens.com>
- <358e950b-4019-4d47-81a4-0a06dc32be1d@gmail.com>
- <f8527d17-78bc-4852-9ffa-2c3b5110570d@siemens.com>
-From: Hannes Diethelm <hannes.diethelm@gmail.com>
-Content-Language: de-CH, en-US
-In-Reply-To: <f8527d17-78bc-4852-9ffa-2c3b5110570d@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-GND-Sasl: rpm@xenomai.org
+X-GND-Cause: dmFkZTF2+aRBQYTerkvTOla/6SMOmMttQENiMvvxCIQnRteHyMG1tjF7Kg/FTddHiJm3NkuRmjYpE5YOAdVNDE3M0mwJ58i01ua6Tl5tBfssksPVGTsNy7MMZErWFxk3/KJJt6qedNiRkf+6+BJphOLoOjDQ8a3dxn013WHx5Br7UFACFUuJ0Z++kX/Hgv27GQY/fQoROoAnCaTzqdlSotrhRau3CKAaekwpFKvq1OxXKeB4toD3afov/UXFL+24rDKIH47r8ohwZ2X2LHfhzA4ARd9e236PCx9X8hS3Vochm61bVRH7S/no3JKcyAKacpDC8+N1bI6RRUBqR2xBU6xmkgfyuAMIsjY9/GOjoqhQYGtLh5xl8GIwDc9GU1nbqZtb/fGpW6459ypI+HJuX0X+e1JzpxX5afcAT4ARoIXdendQTGWhwEKIQ8vuY0zRuQfigyWON414UBW1QZ0RgbNGC50AmYFYgtAtdnsPaWGcXR44HIIjWAkK/cYxiP674HHqbjmipaLSNxZnu63xeYTWaozK581lkwKBSr3NQbJ1z2yy/GcQDXGn7sJiKOpzKnOfxJzxcKwqoL4F0xnbBKbdPxfMxvUfeVxyfPEnADaeBHORWyFE+/DomTztMoyNYyr5BI22hy6wDGDhInd6QtYjenwuqaSA/6UCuLZyGAYDiJg/9w
+X-GND-State: clean
+X-GND-Score: -100
 
-Am 16.05.26 um 11:50 schrieb Jan Kiszka:
-> On 16.05.26 10:48, Hannes Diethelm wrote:
->> Am 27.04.26 um 11:18 schrieb Florian Bezdeka:
->>> On Sun, 2026-04-26 at 23:32 +0200, Hannes Diethelm wrote:
->>>> Am 26.04.26 um 21:24 schrieb Philippe Gerum:
->>>>> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
->>>>>
->>>>>> Am 25.04.26 um 20:50 schrieb Philippe Gerum:
->>>>>>> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
->>>>>>>
->>>>>>>> Hello
->>>>>>>>
->>>>>>>> There is a Kernel WARNING: "notifier callback netevent_handler
->>>>>>>> already registered right after boot". It is repeated 5 times.
->>>>>>>>
->>>>>>>> Config:
->>>>>>>> Debian Trixie with xfce4 Desktop
->>>>>>>> libevl: r56
->>>>>>>> linux-evl: v6.12.67-evl2-rebase
->>>>>>>>
->>>>>>>> I traced the issue already trough the following code:
->>>>>>>> net/core/net_namespace.c:355
->>>>>>>> kernel/evl/net/net.c:35
->>>>>>>> kernel/evl/net/ipv4/ipv4.c:41
->>>>>>>> kernel/evl/net/ipv4/arp.c:323
->>>>>>>>
->>>>>>>> However, I lack the knowledge to do a proper fix. One way would
->>>>>>>> be to just check in evl_net_init_arp() if it is already
->>>>>>>> registered and don't do it more than once but that doesn't feel
->>>>>>>> right.
->>>>>>> It looks like the system is instantiating multiple network
->>>>>>> namespaces,
->>>>>>> for each of which we set up an ARP front cache by calling
->>>>>>> evl_net_init_arp(). Bad idea to hook a system-wide handler there as
->>>>>>> well. Could you confirm this fix [1] works for you?
->>>>>>> Thanks for reporting this.
->>>>>>> [1]
->>>>>>> https://gitlab.com/Xenomai/xenomai4/linux-evl/-/
->>>>>>> commit/569beef061321c2c00d775b13ad0aec1a1d2a416
->>>>>>>
->>>>>>
->>>>>> Thanks, that was fast. The WARNING is gone now.
->>>>>>
->>>>>> But now after just updating to the kernel including your fix, I
->>>>>> have a different behavior on
->>>>>> incoming packages. It seams that the default when no filter is set
->>>>>> has changed from EVL_RX_SKIP to EVL_RX_ACCEPT.
->>>>>>
->>>>>> linux-evl: v6.12.67-evl2-rebase
->>>>>> -After evl net -ei enp7s0, I can ping another host.
->>>>>> -oob-net-icmp does only receive packages when I use an eBPF filter
->>>>>> with EVL_RX_ACCEPT
->>>>>> -After that, ping doesn't work any more
->>>>>>
->>>>>> linux-evl: v6.12.y-cip-evl-rebase
->>>>>> -After evl net -ei enp7s0, I can NOT ping another host.
->>>>>> -oob-net-icmp does receive packages
->>>>>> -If I use an eBPF filter returning EVL_RX_SKIP, I can ping again
->>>>>>
->>>>>> I am not using VLAN's.
->>>>>>
->>>>>> Was that changed on purpose?
->>>>>
->>>>> Yes, this is implemented by this commit [1]. The rationale here is that
->>>>> if you turn on the oob port directly on a base device, then the evl net
->>>>> stack may assume that the device is entirely dedicated to oob traffic,
->>>>> as opposed to enabling such port on some upper device based on the
->>>>> former (e.g. a VLAN interface). As a result, all ingress traffic
->>>>> received by such base device is diverted (RX_ACCEPT) to the evl net
->>>>> stack.
->>>>>
->>>>> [1] https://gitlab.com/Xenomai/xenomai4/linux-evl/-/
->>>>> commit/3026e69cee2a1de047818fa06ad8c44623461a0d
->>>>>
->>>>
->>>> This makes sense. It took me some time to get evl reading packages by
->>>> activating an eBPF filter and it's mostly save to assume that you don't
->>>> have mixed traffic on an real time network interface. With this change,
->>>> a filter is not needed any more.
->>>>
->>>> A bit off topic:
->>>>
->>>> Is there anything like rtping for evl? I have seen oob-net-icmp.c but
->>>> this is answering requests.
->>>>
->>>> In Xenomai3, there is a debian package configuration. Any interest in
->>>> one for libevl? I have one working but it's still very basic. If it's
->>>> presentable, I can send a patch.
->>>
->>> There is a debianization for x4 in xenomai-images already. See [1].
->>> Can't tell why it hasn't been upstreamed yet. Maybe Tobias or Philippe
->>> can comment on that.
->>>
->>> [1] https://gitlab.com/Xenomai/xenomai-images/-/tree/master/recipes-
->>> xenomai/libevl/files/debian
->>
->> Thanks for the hint. This debianization is also basic, looks like it is
->> only built for
->> CI purpose. But it helps to improve my version.
->>
->> There are a few things missing:
->> - Build dependency's
-> 
-> Which one? We are building the package in a clean sbuild env, so missing
-> build dependencies should have been revealed.
-> 
-> Note that Build-Depends is templated so that we could adjust it to
-> different libevl versions (not needed right now, though).
-> 
-Now I see it the templates. It makes it more flexible but makes it neccessary
-to read into sbuild.
->> - Optional: evl group + udev rules to allow non-root usage
->> - Probably much more for being a install & use debian package
->>
-> 
-> Always open for patches to improve things. We might also move
-> debianization to libevl (like done for Xenomai 3) if that brings more
-> value to users.
-> 
-> Jan
-> 
-At least for me, having the debianization for xenomai3 helped a lot getting
-all up and running.
-I will create a patch when I have something presentable.
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-Regards
-Hannes
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+>
+> When a remote thread is suspended, xnthread_suspend checks if it is
+> currently relaxed and then calls it into hardened state via SIGSHADOW.
+> However, this signal may race with the thread entering primary mode on
+> its own, e.g. via a syscall. In that case, the thread will be kicked out
+> of its suspension state by the pending signal, and the migrate syscall
+> it then executes will not perform the expected suspension anymore.
+>
+> Plug this race by introducing two thread state flags, one for pending
+> XNSUSP and another one for XNHELD. After having performed the requested
+> hardening on SIGSHADOW_ACTION_HARDEN, we are now testing for those
+> pending suspension states and replay them via self-suspension as needed.
+> If a resume took place in the meantime, the state flags were cleared
+> again, and nothing will happen after the migration step.
+>
+> Reported-by: Richard Weinberger <richard@nod.at>
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>
+> Didn't check yet if EVL solves this topic differently or is exposed to 
+> similar race. But given that Richard found the pattern even in Xenomai 
+> 2, it's likely worth to check EVL carefully.
+>
+
+Unlike v3, v4 does not use signals for internal synchronization, so it
+does not suffer that particular issue related to suspending a thread
+(no SIGSHADOW in evl). However, this issue is only a symptom of a much
+broader problem both v3 and v4 have when it comes to dealing with
+signals pending for suspended threads, and your patch won't solve it.
+
+To illustrate this, let's say (A) and (B) are Cobalt threads running
+oob, (X) may be any in-band context:
+
+CPU0                                          CPU1
+----                                          ----
+
+A: xnthread_signal(B, SIGxx)                  B: core_syscall()
+   <schedule irq_work>                              core_suspend(B, XNPEND)
+A: core_suspend(B, XNSUSP)                    B: <schedules out>
+      core_add_state(B, T_SUSP)
+   core_reschedule()
+      core_resched_ipi(CPU1)                  
+X: irq_work_handler()
+      send_sig(B, SIGxx)
+         handle_inband_event(B, INBAND_TASK_SIGNAL)
+            core_resume(B, XNPEND)
+            core_resume(B, XNSUSP)
+            core_add_state(B, XNKICKED)
+         core_reschedule()
+            core_resched_ipi(CPU1)                    
+                                              X: <ipi-handler>
+                                                    core_reschedule()
+                                              B: <resuming oob>
+                                              B: XNKICKED: prepare_for_signal()
+                                                    xnthread_relax()
+                                              B: <running in-band>
+                                              B: migrate_syscall()
+                                                 nop (XNPNDSUSP was not set)
+                                              B: <still running in-band>
+
+Remoteness of CPUs does not even matter, e.g. with prio(A) > prio(B),
+we might observe:
+
+CPU0
+----
+
+B: core_syscall()
+      core_suspend(B, XNPEND)
+B: <schedules out>
+X: send_sig(B, SIGxx)
+      handle_inband_event(B, INBAND_TASK_SIGNAL)
+         core_resume(B, XNPEND) /* B is now fully unblocked */
+         core_add_state(B, XNKICKED)
+<IRQ>: core_resume(A)
+A: <resuming oob>
+A: core_suspend(B, XNSUSP)
+      unblocked + XNKICKED set -> abort: XNSUSP ignored
+B: <resuming oob>
+B: XNKICKED: prepare_for_signal()
+      xnthread_relax()
+B: <still running in-band>
+
+There is clearly no shortage of possible variations of the scenarios
+above especially if we bring up more complex multi-CPU configurations,
+all of them causing some sort of breakage. IOW, there is a general issue
+with signals wrt forcible suspension, not just with SIGSHADOW-based
+synchronization in xnthread_suspend() vs migrate() which in addition,
+has its own set of flaws.
+
+A way to address this properly may require to break an ancient
+invariant, which states that a thread with any blocking bit set must not
+be linked to any runqueue. On the contrary, a way to make sure that a
+suspend request remains pending across a stage migration in order to
+deal with an in-band signal is precisely to allow that request to linger
+as long as necessary in a thread state mask, only to be considered once
+the 'kicked' flag is cleared, ignored and left pending
+otherwise. Meanwhile, that thread should be allowed to run.
+
+I need to have a closer look, but at first glance it seems fairly
+straightforward to implement this in v4 at least.
+
+-- 
+Philippe.
