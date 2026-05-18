@@ -1,160 +1,82 @@
-Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [217.70.183.194])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A0F61EB5FD
-	for <xenomai@lists.linux.dev>; Sat, 16 May 2026 15:48:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3F7E3E16BA
+	for <xenomai@lists.linux.dev>; Mon, 18 May 2026 09:02:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1778946518; cv=none; b=iDktKY5LoGn5NwsPj12sVDEWMWkTOAHwZJ91MrUc5RDQWKNBKJvDa1TGZyfFHyGmmpkUonihXYK6jBAvVkt2R8D8W9rS+AXCe+ChxhfzIP/ND6PdVcZ7LP0UOS0DNO3qhGWCoS8akuytM4Rln0B8E3+o9RvV7c1zJppAV8rXVz8=
+	t=1779094970; cv=none; b=J79a2g5RcdU4Y3Vgj0HIqho8ccaf4acJeGkfzat3+njH99rgRAoTifZu0UrIiu5D56tQm0/HN7xCvJyqRxuBawoJ82sCt3yc5NQapUuZRPgellxQQN6iKKRbRQNAK64OxIa6+FmilQeymJQIvbTOLmkz2KRzOfOO1ngdwPEZniA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1778946518; c=relaxed/simple;
-	bh=RLmKq3jsmdWvohOQ5jeFxCmpI2M4qqLDivWokVf8pG8=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=oS50bRlLgMcSx0vtQ/Hs2EJUJqgXkrem8Kj7JUbN2eWFsaLUegLBYrJJmC9I90VmiSIaEDuP+WNuOWzoLPL0n+vfJ0G7tcz0RGUbQSNU9HRoWGTaDBH5Wjo1QqEv12XhVvdL44ZuA0Qwk3UD2I6ZX+M1I7qUhxVhfdNSANUn5SQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=HBLty6fu; arc=none smtp.client-ip=217.70.183.194
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1779094970; c=relaxed/simple;
+	bh=lGBIDf9l8fm2aP5Df8Nek1fFSD2KPAPUEl+V0funnJk=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=kDvUIbJ9ZGY/12cUk9Mv2N8NjDpYEyd6kkSy80ZhNgaldcTtvd1pmYKkbfLHd/XG2QiBOTu3lYy39k0Ci1FrY3+zjkEyimx27OjYoDyih60V9A10xtJC/ZTrOG9iiWXDnZvyIVsyW2h67ux8ZnJUg5tdDj9Onw9irDSF2moBziY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=B+Y4YFwd; arc=none smtp.client-ip=185.136.65.225
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="HBLty6fu"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 9B5673ED56;
-	Sat, 16 May 2026 15:48:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1778946514;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=QIMxuUcEe9ds8efJtiPvp6S7xPFYptEuo8vpT4ylC5k=;
-	b=HBLty6fuPAS1Z2dhJyNwKHOXvSr71JU3F/UsJtNI37v8HzJBRdT2xgMqLbf+RWC3OT/Gna
-	I3pF2t5SSBwEsPeUl+ODKIoQ39JTIS/vCD8U+riDa/tLRsq9sCDtTUouKHOk793xHl4vA+
-	zg3KAGbBbbs6Hhwsr89ndYQfqT4vHbLAi+6+FrQ2VW3c7myQ3iWbNugxH3830s2BtERYBD
-	BtlIx6v3FIoA6ZHmhG7hEyWPDHprA+1TUuIZQpBEHxAxXUTFoxIQiOgnVlS0GUwhmteZbw
-	viXPeqa17IGPHJmmbO14BTtddGQgH8VTJZFkZpsV7slnjhjOrnCHYwdqeQOjNA==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>,  Richard Weinberger <richard@nod.at>
-Subject: Re: [PATCH 1/2] kernel/cobalt: Address SIGSHADOW_ACTION_HARDEN and
- self-hardening race condition
-In-Reply-To: <48f88dbd-c051-4eb9-971b-d0518dfeacf1@siemens.com> (Jan Kiszka's
-	message of "Fri, 15 May 2026 10:16:37 +0200")
-References: <48f88dbd-c051-4eb9-971b-d0518dfeacf1@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Sat, 16 May 2026 17:48:31 +0200
-Message-ID: <87bjefs6cw.fsf@2a02-842b-4100-f601-1469-181b-22db-b4d0.rev.sfr.net>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="B+Y4YFwd"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20260518090243748957ee2b000207b5
+        for <xenomai@lists.linux.dev>;
+        Mon, 18 May 2026 11:02:43 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=ha08xYRShFgU6hzg0xpgkeafG2rIoH6AD5zwgTub8J0=;
+ b=B+Y4YFwdywmgMmUfEBUVUAxYrW83TPNVRw+Qi+I5lKq/DfVd94rSw9vWk+on6bgoo9WBOv
+ jWAyXJpWGDeoDYOKMRG4TkJxeC9kCx89CP+zc1m/QlKsLugsD+SdDMJ/+GlH28JJv2avM6k7
+ uVt/yC/pvrH0a9AkoTpB5sVouBkc5tcus4DHbIoO9zpMyRGpux4lP3T5Nu4qCXewZ+fn7kiS
+ j1f3lvMQz8eDnMNJf212c6miA21nZCgNEV4XMpTjuwpQI+E5ZiQhMjoakSQaHhgL+VZ279aJ
+ mwqqCp3dgnVyx2GJXVhVpKc9cMf18TM7lAl1AyofQw6uBmr8bIYNywpQ==;
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Date: Mon, 18 May 2026 11:02:43 +0200
+Subject: [PATCH v2 2/4] testsuite/smokey/sched-tp: Fix compile error seen
+ with gcc 16
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Cause: dmFkZTF2+aRBQYTerkvTOla/6SMOmMttQENiMvvxCIQnRteHyMG1tjF7Kg/FTddHiJm3NkuRmjYpE5YOAdVNDE3M0mwJ58i01ua6Tl5tBfssksPVGTsNy7MMZErWFxk3/KJJt6qedNiRkf+6+BJphOLoOjDQ8a3dxn013WHx5Br7UFACFUuJ0Z++kX/Hgv27GQY/fQoROoAnCaTzqdlSotrhRau3CKAaekwpFKvq1OxXKeB4toD3afov/UXFL+24rDKIH47r8ohwZ2X2LHfhzA4ARd9e236PCx9X8hS3Vochm61bVRH7S/no3JKcyAKacpDC8+N1bI6RRUBqR2xBU6xmkgfyuAMIsjY9/GOjoqhQYGtLh5xl8GIwDc9GU1nbqZtb/fGpW6459ypI+HJuX0X+e1JzpxX5afcAT4ARoIXdendQTGWhwEKIQ8vuY0zRuQfigyWON414UBW1QZ0RgbNGC50AmYFYgtAtdnsPaWGcXR44HIIjWAkK/cYxiP674HHqbjmipaLSNxZnu63xeYTWaozK581lkwKBSr3NQbJ1z2yy/GcQDXGn7sJiKOpzKnOfxJzxcKwqoL4F0xnbBKbdPxfMxvUfeVxyfPEnADaeBHORWyFE+/DomTztMoyNYyr5BI22hy6wDGDhInd6QtYjenwuqaSA/6UCuLZyGAYDiJg/9w
-X-GND-State: clean
-X-GND-Score: -100
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20260518-wip-flo-gcc-16-v2-2-f93562624fb4@siemens.com>
+References: <20260518-wip-flo-gcc-16-v2-0-f93562624fb4@siemens.com>
+In-Reply-To: <20260518-wip-flo-gcc-16-v2-0-f93562624fb4@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, 
+ Florian Bezdeka <florian.bezdeka@siemens.com>
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+Fixes the following compile error:
 
-> From: Jan Kiszka <jan.kiszka@siemens.com>
->
-> When a remote thread is suspended, xnthread_suspend checks if it is
-> currently relaxed and then calls it into hardened state via SIGSHADOW.
-> However, this signal may race with the thread entering primary mode on
-> its own, e.g. via a syscall. In that case, the thread will be kicked out
-> of its suspension state by the pending signal, and the migrate syscall
-> it then executes will not perform the expected suspension anymore.
->
-> Plug this race by introducing two thread state flags, one for pending
-> XNSUSP and another one for XNHELD. After having performed the requested
-> hardening on SIGSHADOW_ACTION_HARDEN, we are now testing for those
-> pending suspension states and replay them via self-suspension as needed.
-> If a resume took place in the meantime, the state flags were cleared
-> again, and nothing will happen after the migration step.
->
-> Reported-by: Richard Weinberger <richard@nod.at>
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->
-> Didn't check yet if EVL solves this topic differently or is exposed to 
-> similar race. But given that Richard found the pattern even in Xenomai 
-> 2, it's likely worth to check EVL carefully.
->
+sched-tp.c: In function ‘run_sched_tp’:
+sched-tp.c:233:11: error: assignment discards ‘const’ qualifier from pointer target type [-Werror=discarded-qualifiers]
+  233 |         s = strstr(ref_schedule, schedule);
+      |           ^
+cc1: all warnings being treated as errors
 
-Unlike v3, v4 does not use signals for internal synchronization, so it
-does not suffer that particular issue related to suspending a thread
-(no SIGSHADOW in evl). However, this issue is only a symptom of a much
-broader problem both v3 and v4 have when it comes to dealing with
-signals pending for suspended threads, and your patch won't solve it.
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ testsuite/smokey/sched-tp/sched-tp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-To illustrate this, let's say (A) and (B) are Cobalt threads running
-oob, (X) may be any in-band context:
-
-CPU0                                          CPU1
-----                                          ----
-
-A: xnthread_signal(B, SIGxx)                  B: core_syscall()
-   <schedule irq_work>                              core_suspend(B, XNPEND)
-A: core_suspend(B, XNSUSP)                    B: <schedules out>
-      core_add_state(B, T_SUSP)
-   core_reschedule()
-      core_resched_ipi(CPU1)                  
-X: irq_work_handler()
-      send_sig(B, SIGxx)
-         handle_inband_event(B, INBAND_TASK_SIGNAL)
-            core_resume(B, XNPEND)
-            core_resume(B, XNSUSP)
-            core_add_state(B, XNKICKED)
-         core_reschedule()
-            core_resched_ipi(CPU1)                    
-                                              X: <ipi-handler>
-                                                    core_reschedule()
-                                              B: <resuming oob>
-                                              B: XNKICKED: prepare_for_signal()
-                                                    xnthread_relax()
-                                              B: <running in-band>
-                                              B: migrate_syscall()
-                                                 nop (XNPNDSUSP was not set)
-                                              B: <still running in-band>
-
-Remoteness of CPUs does not even matter, e.g. with prio(A) > prio(B),
-we might observe:
-
-CPU0
-----
-
-B: core_syscall()
-      core_suspend(B, XNPEND)
-B: <schedules out>
-X: send_sig(B, SIGxx)
-      handle_inband_event(B, INBAND_TASK_SIGNAL)
-         core_resume(B, XNPEND) /* B is now fully unblocked */
-         core_add_state(B, XNKICKED)
-<IRQ>: core_resume(A)
-A: <resuming oob>
-A: core_suspend(B, XNSUSP)
-      unblocked + XNKICKED set -> abort: XNSUSP ignored
-B: <resuming oob>
-B: XNKICKED: prepare_for_signal()
-      xnthread_relax()
-B: <still running in-band>
-
-There is clearly no shortage of possible variations of the scenarios
-above especially if we bring up more complex multi-CPU configurations,
-all of them causing some sort of breakage. IOW, there is a general issue
-with signals wrt forcible suspension, not just with SIGSHADOW-based
-synchronization in xnthread_suspend() vs migrate() which in addition,
-has its own set of flaws.
-
-A way to address this properly may require to break an ancient
-invariant, which states that a thread with any blocking bit set must not
-be linked to any runqueue. On the contrary, a way to make sure that a
-suspend request remains pending across a stage migration in order to
-deal with an in-band signal is precisely to allow that request to linger
-as long as necessary in a thread state mask, only to be considered once
-the 'kicked' flag is cleared, ignored and left pending
-otherwise. Meanwhile, that thread should be allowed to run.
-
-I need to have a closer look, but at first glance it seems fairly
-straightforward to implement this in v4 at least.
+diff --git a/testsuite/smokey/sched-tp/sched-tp.c b/testsuite/smokey/sched-tp/sched-tp.c
+index c2c3e41edff266ff9aec9a09f884ffaf3e2a9308..dc30e75a8764d61af018a9ba66648c55fe1570ba 100644
+--- a/testsuite/smokey/sched-tp/sched-tp.c
++++ b/testsuite/smokey/sched-tp/sched-tp.c
+@@ -122,8 +122,8 @@ static int run_sched_tp(struct smokey_test *t, int argc, char *const argv[])
+ {
+ 	union sched_config *p;
+ 	int ret, n, policies;
++	const char *s;
+ 	size_t len;
+-	char *s;
+ 
+ 	ret = cobalt_corectl(_CC_COBALT_GET_POLICIES, &policies, sizeof(policies));
+ 	if (ret || (policies & _CC_COBALT_SCHED_TP) == 0)
 
 -- 
-Philippe.
+2.54.0
+
