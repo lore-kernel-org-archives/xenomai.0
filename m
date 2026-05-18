@@ -1,58 +1,55 @@
-Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010035.outbound.protection.outlook.com [52.101.84.35])
+Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011004.outbound.protection.outlook.com [40.107.130.4])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5F8238331C
-	for <xenomai@lists.linux.dev>; Mon, 18 May 2026 09:18:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.84.35
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DCD63CCFD2
+	for <xenomai@lists.linux.dev>; Mon, 18 May 2026 09:21:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.4
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779095907; cv=fail; b=Fz5WR6M3wVYgDJ7/KHXWcuKjapEeFpog4IUk0MQ88QBGlr/OpRGHDkoOVYrLopW+mGN0rPUsH607G0kMKlXd9AyW4W7N0BQUM4yhQQ0m+J2C6bJl5YskLQN2kCab6aOiNXSJwVuDZ1DhN+0PffWoCBP42cHyjCq6O3jiYv45Hb4=
+	t=1779096103; cv=fail; b=VVQP1XlWFwWVhRGyoWPflOpj3wX6PvGYyGOjeeLoQc4o6PpjVkTUZQjX0yyX26U1IyFGOd/hd7CBtBen+/ye2lzv62BuQDfrA+rVXp9KHk4M8ksMzd+BgkZQJNCljQ+Fs266vaHfF5WcuD1/5OvO3xwmRGTuX3Wt25RqIAeKJ5k=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779095907; c=relaxed/simple;
-	bh=OFTidkQs84y1AK6mXbHGEO1V19RC/mcVG2QrxJRphA0=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=O2GFJXGvqb3VgCohDfchxmHX4+gNFx/gw4vYGa0Wlv9+2rpBhJqTUT04FA5KL16CUsFzqjVl83NXDjyioc37MjE6tBcBhVFFgmUXTwh89faT3fNWloM40KySpuGH9BqPjqCJTceSdLDk5o7oxZJaqimh06y2KmOac1gjUsHvQSw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=WoQMA69c; arc=fail smtp.client-ip=52.101.84.35
+	s=arc-20240116; t=1779096103; c=relaxed/simple;
+	bh=kTmOATOV55R7UB8r+X9m41LCk5WorwU3DuCsWjK2hlo=;
+	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=dhmRJ4KVYkwvX/wY0LsC0Ve29d/+ufkz2tesG/Bk/aXauHUOrAWzFGvkAsKeIi2E+u9Llj6pwfGKBcLdCKJe0LeiTBaVO98jaQkndHaHHfCMxDj6FOkrHV0T6KpPNHb4LYoKL1r48gHA44JVXFs6tQ5ZBHZA8i9HxCTB9bbEQ6c=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=xxovmVVK; arc=fail smtp.client-ip=40.107.130.4
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="WoQMA69c"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="xxovmVVK"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=WCCgi65JZ1nPJXDKgbtuU0OjqFawZSTGYnQDa0WFhB2neKR4JAxK5bU03IvE1tG7jvY8KREBvwA4lmMrhSeAyrR6om9re21w90TKaRQ2NGOrz2GZZmPpCmP8Eq1IvitGvVjN8+EWRLpDJFgJa19owkRfURLbDpHT1tl8dza7+b28BqqgNCSWPPJEigMLXPxvMD7BfelICcEro8h9EVeC0O5gTgZPGFAZ5pT27c/SsYOkc4r0mK9buJZb5MdmvgmCuCOz3582+rZHZ29jhvY9SMYoe0d/Q0XHA+AVJIemdC8BZzzdjuAMmsd144mXb1FDgJy+0FMJbf8LAlQm7jjb5Q==
+ b=td2KPTeevGQb2RpiDdzuBKinjAA+rdjyG3gp2DCYeN+ML7WWMAiFtnoDBNvw+JcLLS2GlOO9gUa94fn4CCQrpwmMnWr62PZa0vve7wWEt29XJq/QNnM5Ln85G6bK/xchE60XYCYziPSFzeKts0caBjrk5V9rhU5PGPgc3z6EwMkdMtD8opLn7FSAbR/QJKq5xpIkG/1wjCjVHbyRvOKFp6z/PZ8LMn2XTFRZce+oUoFzWhOTgBC9E7i51mBZKI0nsqtmJ8CrTRwFiBx1tzdy48jZtgOoWOTXGfXjxEq0pDOA7QYtjdzQC2wcRK/joE40AfxH1GWF/mTuDg8GK90Lxg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=USJYMqrIqdBc+GLPQE56SZYa3ziCDz7iYnlZMjelhgE=;
- b=D3G1GuI9FRpfbmZtAf7XaqhCciHAYigGhhLoGDUQnxkNaj7wQ63kOHvjyKqZG4c0SfVSyhtK4jrkKFIa8LXpbtWtSYoIGsqgLyp2iFVqp9EuxTfEF+rxup595GGLdjiqJ6x/HHKCV9HvlA/I15blsOFHx4MQ4LYAlCMamZCalmvzqIyV+dAyfSsp6hd6kXRlBtbn54yi9vBm2pp7iO+soIjNzJKyvo7DKiBdSjJIiVBtjWJi3FwKQrE6E7UfY7Rs05b523RF6vS7wgAqBVE25tikwjXoeW9/3ZnfRGMRCFhmPDsVGuyOte9MHLU4SrA2IW4Gw+aner3qHwNMA2qHeA==
+ bh=9tpVEwI4FR5SRbQoKK/WuCf1gfO/L1rYqFh3SP2dU4g=;
+ b=r9Wb7WbNS4KV+vdWplJAkGs80EabYCoQa2WVbNl9WG2/IMM5Tfu/Pwl6LBwfUXA5Bex6hbx+R8Jh7l1XYQdziPSA6D+/TBxORHEf9DDuTRr9fhPpAW6jVEnpVcfXJPp6lfOmyyDrzzYdiAO2E6TMJX4XHv5PK+Thgd4/M20q2uRl5UO2Noo0iS7YyS6xoww7dmMCpelgnqTtYoTa8vJRrcyq0BTLjHmXMAfSurQndU+IASCmEUsp10x/lFqe9wbTJofsoZ9zA2a4oPISaVacur0mBBycGaBK1W6vVMyM6fWF8L2o73blvmYkYoSGtGFtsun0i8Hi5/qRyRYs/Qo/nQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=USJYMqrIqdBc+GLPQE56SZYa3ziCDz7iYnlZMjelhgE=;
- b=WoQMA69cnZjJFUQ4PEQgzS+25Aqlgk7MmppOr1B7XtYOr6LaHlWMd2IXWbnHvHMUPlG2B8QTaDkjbeEn9Bmfw6cjCyRefZOgAxirLnbyrVvU29nsDFJwyveth1jtv5HxwPO4hu5xTeMuXxJM0xriB9fWLfSZLj2nW498tr20lvuGnar89FRKReaiNms6LSwGzfxVoC/nc1HqVMFeBtc0k+H6YkDa+VWptsQEAjvfyyuPZdiLdFGlDyQZGi0AaxB7LHQR4W1wr7x/MsVnvq5kVRElk4befuGDbfRPl4K6qpq5/w6lWv8n2d9cAMbhtuCeVKWcHZEQw1d2eQw8TI0GyQ==
+ bh=9tpVEwI4FR5SRbQoKK/WuCf1gfO/L1rYqFh3SP2dU4g=;
+ b=xxovmVVKWeA3HIga/Mu/cojVVUjRFdtT+BZfQkaw3s2clEOnyXt5sKbyjif7u2u0+rheKgd9kfjE0Q1TIsS1GCN9N9DZv/n5SX79dQT5fNnKLXBdSjuzj4ByrAebwd+1zWgT1qLa5g38GEIND/nU+6YDK/Tkv+qCLMScukWeVF4tBrZROxu3RepBDIoTLK3x5vBE/ZQq7H832mDC0OzGpRd41OiQHo1u5mshIErOh2256toC/gRSyhGAijeuat5rii1Doc6U4qSc+O56Lg7bkGr+Gg32qeC5q+vH0xg0I1TNaAFcFGbstzOVv7R/9iP912/GpoMR3O2l1xU6OD5k/A==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
  by AM7PR10MB3748.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:173::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9913.11; Mon, 18 May
- 2026 09:18:22 +0000
+ 2026 09:21:37 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1%3]) with mapi id 15.21.0025.022; Mon, 18 May 2026
- 09:18:22 +0000
-Message-ID: <535f40eb-3af9-427e-85db-2afaf69b847e@siemens.com>
-Date: Mon, 18 May 2026 11:18:21 +0200
+ 09:21:37 +0000
+Message-ID: <b84b91e1-4316-4b5c-8190-73bd46742c1a@siemens.com>
+Date: Mon, 18 May 2026 11:21:36 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] kernel/cobalt: Address SIGSHADOW_ACTION_HARDEN and
- self-hardening race condition
-To: Florian Bezdeka <florian.bezdeka@siemens.com>,
- Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@lists.linux.dev>, Richard Weinberger <richard@nod.at>
-References: <48f88dbd-c051-4eb9-971b-d0518dfeacf1@siemens.com>
- <87bjefs6cw.fsf@2a02-842b-4100-f601-1469-181b-22db-b4d0.rev.sfr.net>
- <a006030cc98da209b4764b5117c41d93fa3d9399.camel@siemens.com>
+Subject: Re: [PATCH v2 4/4] testsuite/smokey/psostests: Fix compile error seen
+ with gcc 16
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
+References: <20260518-wip-flo-gcc-16-v2-0-f93562624fb4@siemens.com>
+ <20260518-wip-flo-gcc-16-v2-4-f93562624fb4@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
@@ -98,11 +95,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <a006030cc98da209b4764b5117c41d93fa3d9399.camel@siemens.com>
+In-Reply-To: <20260518-wip-flo-gcc-16-v2-4-f93562624fb4@siemens.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR4P281CA0124.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:b9::16) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR4P281CA0178.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:b7::6) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -112,192 +109,164 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AM7PR10MB3748:EE_
-X-MS-Office365-Filtering-Correlation-Id: 4359a1ed-7094-4296-ddae-08deb4be68aa
+X-MS-Office365-Filtering-Correlation-Id: 055cf175-cdaf-4870-1b48-08deb4bedcd7
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
 	BCL:0;ARA:13230040|376014|366016|1800799024|11063799003|22082099003|56012099003|18002099003|55112099003|4143699003;
 X-Microsoft-Antispam-Message-Info:
-	ktFYIiMwFa+JtYKTJUqnnrLDBwKVkrbcfem1P5m6GfNTrchobs9raCesK6ttFbO0mQ9VX5HJv3BpzGW3i6ykmPrFxAXjN+Nfc6ai4UL/w9g7OALpiI5q0awka/zeByQD2CdQhR5jT3ST11vJpdmL9fofbjDgKOj7P8maWBYzK3Qk1P+rb/56hZMLjq14pRn60SzMrmwKGblTW4Ma81UuKFfXmyGePyyYPy3kVEKfMavR21KxvKN9d0KsN/Wsk3SdYmBC9MSD7vQnM+YuuUvkPECmSMKIqzM3YKmO7fuQHxgNgXQvMwyh5VxVCP+jzuSTgKeJjQlc5g47jXEl7kRp8mrafXgT6oQSHq4yk9JzBbzhbAOD1zKNQ0yaDdrMFIB68YqVQQvI1/LN31mdMJ6lZiRLgDjGQswvEvxoqNgYrhoZuMafs0engMnO5WgjEW7wvGEVFUsAoyVGwuE2ziAjm4dzNcmFu9u1DPaNOoGW1I1dW6s8uU71+1GJI0B4HUBP4SzwvYpLHC77RZuKDiEtdcWnn+QeY0Mv36436jQnrRjK1pgzOti5BNE94YVk5m7Z81VcyWyT60lwqfPeQ/epGOFlztb00bLpfublukGTMvwlkgiHNBOtSYyYgmiJuvHDU+WqeCgUYqvj1EKXtVn8g9ilcJW9S9EDouzSzFp/cBXsZIm+f8uJRE6rq5YoT2hF
+	Nw+IgTC/4lC9rm2CYXyG6CRWa29/4SusIMzGH/cxIyt6QnBrNYj+k6KaGRzTK2xvguNl6OXkA3bY8TyS9SjqENjhqRrHh40FSPmbsYfXsJGcDqFg/KpgQjLceu9ovaEzRODUCvc6yPP8DR2F11757zHhXE5+3IeSNrcxQTZfCKgP/mE7IsCuySYtMnonLTYE5BNaEFrUdXFp7EiLejszpSpO4uKTqpOxCUvWo2L7YWdQHcR5SdY8Hx41jny/PECNf04uoc0qaQKj646KteSPEgi69tbXvDxTDTWTVLGcSYT6EVPDHKbYI6JoP1n38RaiARMR2JOPvZ338N/e3uGWadp9TmqaTSPvuOMuekgNVZa8IKCEmDdSrtihvOIG1FiJNUSS6c1eXCn+FHdw2NiMiAcPrccdwz6BRo5TW8NZ7F8q/ULAI/86zpdhHfyJk26/r3X66rQCrvXnFcNFcxfeCCyg8HVqsaCBdSeIufF7BeKYQ89bvK1Xm08yS2Z1kIwa5Ugvkw60tBy419npgrsh2/7F5BwdkXjASepWq1h4EO2hYA2nR1bv/T1BMfwghvTWWEABVymnuoyEdO9/3aRUDXQ8fkID+qdpHvyRkU/KGeBCwrhu8kEfdBahGeRuaWiXYf1oPY7Gsf8Rb0K+TT1NYokfGfQ6nDqfrO62Zw3AfqSDA/XkPAHOL6qZwsWYy7Ka
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(11063799003)(22082099003)(56012099003)(18002099003)(55112099003)(4143699003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?bElMWFBJQXNSTmtnaVRXeFFTelUyVGprWG1ON1o3aWJQS0kzVWl5Mm1KK2FI?=
- =?utf-8?B?UXlZcSs4RVhNUDY2V0hCeW1hNUhPNGMzWFhXek5IT2RVWG9kMlNRbDNCNUx4?=
- =?utf-8?B?T2FUbElSeTI0MHZzbysvR0dVNVN1OHVEU0d4UXNLK2RBcXptbU14bUFScUxM?=
- =?utf-8?B?aFNkN3BEZXJielZYQTc3MjVPQ1NLYks0OWIzSkNYcGErK2RFNXRPRDZXYUwx?=
- =?utf-8?B?ejBwYUVvbzBRbVVrQzRJTjVXaGIyQytucTVldC9VOVB6QncyVTltQW03Slli?=
- =?utf-8?B?emk2Y29rYnpHWkFwRHNMTFJRM1FJaktZTnhEWUZ5M1kzTzFWa1pGcFgrc1FT?=
- =?utf-8?B?a2VtMHpFZFltQXEydlJzR1EzZkxBQzZ2QnNxUU5LS1FJMmN3WFpzNmJMeGFP?=
- =?utf-8?B?alg0S0Fuemd6bjJvSEQ3NGVNRUJzakhhS1FFMi9QNzBEa2YwbmZEWXN6Vitz?=
- =?utf-8?B?V0RkQVRTMDNCMnJaNTI0UmI4RkdlT3NJTWNoRWdWU0FJK0pySmoyMEZLbjRn?=
- =?utf-8?B?OFhBa1RRUElQQVlVa1B6emlRQ0E2TUpvTEVFWVhLU1NtOVE3K29jYUdHZFlO?=
- =?utf-8?B?elBqT2RqQTFxcW5XWmsrQTBvWTVON1NMRHpnT2kzaDhYRmhMbFpmejJXWkRT?=
- =?utf-8?B?Mk5SNHBiS0VjZDJjQXRTcjcxYnBmeFhhZC9uaUd4clRjeGhnMEJZNGF2anky?=
- =?utf-8?B?ZHYrQWlMdE01NUdKYXl2RWFVUFhDNlNVcTlad2h4OXdwbGdmcUtSMXMralZl?=
- =?utf-8?B?bld5MU5LWVE5NWJOUjNKSDVwbm1VY0VqdGRGWndjRjZ0VXlGRTlLVGN0UDRs?=
- =?utf-8?B?cVJyRitoaWtDSGV2cThjcW1PdXRVSEExU0FtK1hCdVN3NnlQK2NGcmt2NlZT?=
- =?utf-8?B?TVhadTNQODdhR3NqZk1mU0RyUkVaQTR3dGRNKy9qbmRmY3ZhQXFnS0ZBb3d4?=
- =?utf-8?B?SnI3YkRCQWRueVp0N0grYmdFOUFxUWtRS2ljZUpoYk5UMGNic3FXRDhsT21u?=
- =?utf-8?B?U1k0RjU4RG9Ra21sS3R2SVVSalMybUYwN2dHZHlKdElVaGNYV0Fkc3RtczA0?=
- =?utf-8?B?UE5CQnA4MXU1US9FdFZsZHBRWlNNYkZFN1FuZ3gvRHZoSVVhdUYzUzdpRlhs?=
- =?utf-8?B?RHllSnUyRUM4NlBQRWQ5aVVYZlBYc2wyM3JUc0lUeXhPUzNmS3BHY04zcmxr?=
- =?utf-8?B?ZDREeWNUczkwZVZ2bmtnZm4vM2dPYi84TFdEMitseWhHUWVPQS83UEs0MGI2?=
- =?utf-8?B?dnRMRlpNUldKMFFxUVo5TUtDS2o2NlRCZ2xqWk9mM1cwS1gxd1M5d0M4b0xi?=
- =?utf-8?B?SVFqRXZWQkdIYThyNnlMQUNBS1NKVWNTaHUwQ2tOSStMbWs1TlNMTEx5K2py?=
- =?utf-8?B?cDVoM2g3NXlXUXZ0SVkwc0hMUVo2cG9XTXFZQmVkYkxoZ0dMNVFxRElqaGZ5?=
- =?utf-8?B?M3VoVTRFejN2ZzBlMTlsVy9nMndMbHJtN2dIalpiK0pQVEpIOGh1dlpsa2k5?=
- =?utf-8?B?OGhjWSs4SjdIcy9hdGdmQldpNTlaV2xqSEFrK3RtazZvTHR0bWtQVk1xL0JZ?=
- =?utf-8?B?MS9IVVBJOHZNaHhGcFUxZFpkNk1VS3ErYk1KNkFyaXQwc0E3U2FvM2F3S2F3?=
- =?utf-8?B?YmlFOS9VTTRBamU1RVFlSDBvc2VnOEVsY21JRGpCU0JCc3Z1SklVSkNZcjNr?=
- =?utf-8?B?cHRZaEJjRkJTSTVKenBDdUc1UGM0b2dOaDRIRVo3bjl4S2hXallwZ0xYK213?=
- =?utf-8?B?bzdKR20xRlRmRkQwRU5jOFpzQStoOCtTbXJxUmdOZFIxUHNPV3dHOVkwRlh2?=
- =?utf-8?B?NFF3V21mazJ5b3k0clNVVlR1dUg5Qk5ES1NLMWV0ZWJWTWMzTmM4OFYySHAw?=
- =?utf-8?B?aUxVMGRTVjFYOUJjRkQ4UzRWMnRMZXR0amtja01tc09iZFJjRVMrcXM5cTZ1?=
- =?utf-8?B?MTJtWElKcGFCNytNVXV4aHF3RjlqcUp4c2xjeTZaOENHNVlIcjZsam9ZL0Fu?=
- =?utf-8?B?NXhXbGg5UVZ5NTRvYzdhN0pNY0RHRVFhZ2Y2b2tnUWRiUUJnVTNHVHYyTEJN?=
- =?utf-8?B?ZlgyZTBvWlRTbE83eDVENHkwSExJaldubEgwdTBmdUx6Tk5xTkJKOU5maFR4?=
- =?utf-8?B?TEJ6M2tNU052RHh0c2lEM25hemJRVkZGWVI0QXZKNW05OUlmNlhKdUs3dTV3?=
- =?utf-8?B?UmZKWmdGY1pKNnEyazBBMlpjMk0vcjl6bWlUbkRhS1RYdThqTDNLNEx1WmRB?=
- =?utf-8?B?SVVXWmxhNElpYU9qU3FqV0ppMFRBWm5jTmRZZi8xbWpScGpCSzFoYzFMRXNN?=
- =?utf-8?B?SXVmQlE5UDVTNVFTb1JHNEhQeGRhbmxYdjIvOWMvbnJBS1NMcGV0dz09?=
+	=?utf-8?B?RjFzb2lJOXk5bEpsa3ZpeDNjYmZnY3VYWmdBZ3NkOE1rTWIzL3JuNWFLSTNa?=
+ =?utf-8?B?RXo4enFLemF5ZDMvSjZLd2ZXM2o1b0d3K29kNUx0TkJDN2NsVGhlSzYwRFlr?=
+ =?utf-8?B?U3VEVzM2aWNnK3o0ZHNKVDFmNklqZlVrRUdjRzhLbXNYU2phOWs5N2ZKaTh4?=
+ =?utf-8?B?eXhVbUxJV2xQUVlOL0wvNXR1MSt4TGh0WXAyMmtUV2hvckJqbWhCRXZvaHNJ?=
+ =?utf-8?B?MlhEUFBUY1NUUUtKeEZwNFVQQ1R6QVJicjlNeC9xa2N2OGNoM0xYdmx2ZWlC?=
+ =?utf-8?B?WmdrY0U0WXArdHVIN1ZiOUlKT3BrZ3d6MDQ1TzlYWGdnek92a2VOQkZEM3Nh?=
+ =?utf-8?B?SU43UVBkbW9CS0RTcEJRTGhmakJMdTF4M2FTSXl0Ym9HM3IxOFRIMm9ndDFs?=
+ =?utf-8?B?V2NiSHhlQ3NZOGtSTEppZ2cxcnMxOUZXL0Z5RGlCN2FDMERPUmtTTGF3S2Fs?=
+ =?utf-8?B?ZytXSE8zYWRJWmN1Nk1seHduZEJPSlFYZWQ0MlRZdXFOQ2c1SWthaXgvUFdy?=
+ =?utf-8?B?bkhzNm9ySmt1YnJGYnFDTHFHRy9SS1NMc21FdEdGRGl3Wi8zUXAvR3p4R2Ns?=
+ =?utf-8?B?Ly9FY0J4b2Q4TjI4VTZ4Nkg1dW5uSjlqTjI5WFhWVTFEQklPYytOcmtybzZQ?=
+ =?utf-8?B?M2NSbkRMektQa20vL0ZXVXNWOFJWS3dOSE5TUmNkRitLQSt3ZXRyWGpCRjVB?=
+ =?utf-8?B?ZHBoVnhZNUJ4VHpoSEt2bUdLcFRwRmptNkVzallWNkM0ZlpWSW5GWUZ2WXpy?=
+ =?utf-8?B?emtwUFJUNERibzBHRHJuaEl1eVdiVEdmMEdndXZ2SFFpZlI3SndTYVZrdTA5?=
+ =?utf-8?B?OW1zbGRHZUsrZjd5Z1ZNZStpb0g4d1NBYVZsMXBzcVN2amRRQjhCWHd1aFlz?=
+ =?utf-8?B?eXZWTkoyMGxjVkNaSVhnRm5jejdmWWFGSGEwV2kra3lwUU5KTlVtSldGa3Qr?=
+ =?utf-8?B?aDEvalltNm80MVhFSW1tWmlYbmFlWSs5enBRVXRtOW1SeTBHZi9MZHg0amZm?=
+ =?utf-8?B?WUJYYk9zdWV0a0JIZ3B0OVdVSmNsbnI5cGlSUnhQWjlXQ2Y5UXZuZGhUS3B0?=
+ =?utf-8?B?ajhXOXZDeFRyYVdKWDBXZWNFRURiYjdXcTZTVkkrT1NTSW9xT2d1eW1FOVBi?=
+ =?utf-8?B?WVZRK3V1TnhCZ044dTQ4eFU2OWNhclpsOHdDc1BjQmU2TnFVZ2tKbW5GdG9O?=
+ =?utf-8?B?bWdhWUs2b0x1Q2IyMkFLWnVnNmM4T0JkNnovQi8vN29ia08xYmtnYTJTMnE3?=
+ =?utf-8?B?MU05VThjbVJ1U295MW9SaCtaSmp6YW1NSEtKTmF2cjdpaFVFK05LTVVpTlMv?=
+ =?utf-8?B?OFFFSHp0eERtK1lsdDFGOXJMKzZYQlFXOGVDM0d4V1ZhNEVQajF1NzUyUUdq?=
+ =?utf-8?B?U2ZrWFdMdkh1WmZsanc2aGlJRm40cytUMUswOEZJeWduS2crWXBlL2o4dG9X?=
+ =?utf-8?B?WWh4MS91cWhveVZCN0RteGtDcWpCSGFuc3ErRGZUQzJZV1ZHa3d6WHF5UnlQ?=
+ =?utf-8?B?WHpPSTRmMU1nclY3MmgzcGpxRXBudzJxcDZpdC9sNkc3WHhDK1ZscWkyWG1D?=
+ =?utf-8?B?aURMa3V3TkFQYjFZemdXVFNNNHpuSHNucEE4eVFwRWdXTzNvYXA4U3NVd0Rh?=
+ =?utf-8?B?UUh0SmFIbndWUXRDRjBHemJQbkluVHJEV2lCQzQrV3VoTWpQYjlHUDFoWVBX?=
+ =?utf-8?B?WWVHZ2ZyUnlzWU9MaURYMGJrVG9sVkk5MERDTmlaczF4VjFwS29KMDdEL256?=
+ =?utf-8?B?NktJaU1udGc1RUNoWncxMlpOdnhGYUhydnBONmNXREdiVVk5VXFJb1loRFEy?=
+ =?utf-8?B?Sm9pQzM5V2o1V2M2YW50QmJnQzd3NjVLamxTZkNtclltVlVyb2NTTGJhS011?=
+ =?utf-8?B?S0sxK1UwODhvaHl5Ynp5TEhhWk15VzVWYVNLY0p2YVE3blRJYlNjVVBSRVFZ?=
+ =?utf-8?B?aWhUVGJ6cTdqMmNPMjZaTyt6cTRYRU5SZ1dPVU1oZGtxUVRiU1dXdjdid085?=
+ =?utf-8?B?U05SUGpwVU0xZkFIS3gxbjlQNXlrNmt0NDBlNW5KRVNvTms2Q3lJNitVN0VW?=
+ =?utf-8?B?eFp1c0hnQmlzMWpZb25FNWZ1YzJhelhjY2NPVjhId1FiZzBHU1Rnc0QwQVE5?=
+ =?utf-8?B?ZHd2dVl6MjdOanU5a21KVWw4d1ZWNFN1c2xJWHNMeEhUd0pNOTBQOWgreTUz?=
+ =?utf-8?B?Ry80Z1RjUzNaQ0VRc05xdk1sNmQ5UTgzL0RFc3A3b3lhZXZuN1lCb2x0a0tR?=
+ =?utf-8?B?elVpbm80V3RnYkZtdDBiaW5iQkp0ZkdCQy9NRnlMeFg2ZFJwazB5VDVJczJ0?=
+ =?utf-8?B?RXpCU1VDMUE0dzV0a0JnZitBM0Y4dFRzUHQyR1IyRWEvQzJ0eHdRZz09?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4359a1ed-7094-4296-ddae-08deb4be68aa
+X-MS-Exchange-CrossTenant-Network-Message-Id: 055cf175-cdaf-4870-1b48-08deb4bedcd7
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2026 09:18:22.7416
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2026 09:21:37.6207
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UDpdlrtGw4zQNWxrC+HW3eEbNdkqW+U8usopjnRgdYi/yCRtjw0wZYpGw4y8uMwTyScF495i24/p9x0EALElIQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: H9OQDcMUPkXwPhPVtgcsVuN1EhrMZ7cYerLKUuVBOTupgjAjrYn+6gVgaWGOq1CfR0UxUbNgEHYA3h6su0bupA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3748
 
-On 18.05.26 11:10, Florian Bezdeka wrote:
-> On Sat, 2026-05-16 at 17:48 +0200, Philippe Gerum wrote:
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>
->>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>>
->>> When a remote thread is suspended, xnthread_suspend checks if it is
->>> currently relaxed and then calls it into hardened state via SIGSHADOW.
->>> However, this signal may race with the thread entering primary mode on
->>> its own, e.g. via a syscall. In that case, the thread will be kicked out
->>> of its suspension state by the pending signal, and the migrate syscall
->>> it then executes will not perform the expected suspension anymore.
->>>
->>> Plug this race by introducing two thread state flags, one for pending
->>> XNSUSP and another one for XNHELD. After having performed the requested
->>> hardening on SIGSHADOW_ACTION_HARDEN, we are now testing for those
->>> pending suspension states and replay them via self-suspension as needed.
->>> If a resume took place in the meantime, the state flags were cleared
->>> again, and nothing will happen after the migration step.
->>>
->>> Reported-by: Richard Weinberger <richard@nod.at>
->>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>> ---
->>>
->>> Didn't check yet if EVL solves this topic differently or is exposed to 
->>> similar race. But given that Richard found the pattern even in Xenomai 
->>> 2, it's likely worth to check EVL carefully.
->>>
->>
->> Unlike v3, v4 does not use signals for internal synchronization, so it
->> does not suffer that particular issue related to suspending a thread
->> (no SIGSHADOW in evl). However, this issue is only a symptom of a much
->> broader problem both v3 and v4 have when it comes to dealing with
->> signals pending for suspended threads, and your patch won't solve it.
->>
->> To illustrate this, let's say (A) and (B) are Cobalt threads running
->> oob, (X) may be any in-band context:
->>
->> CPU0                                          CPU1
->> ----                                          ----
->>
->> A: xnthread_signal(B, SIGxx)                  B: core_syscall()
->>    <schedule irq_work>                              core_suspend(B, XNPEND)
->> A: core_suspend(B, XNSUSP)                    B: <schedules out>
->>       core_add_state(B, T_SUSP)
->>    core_reschedule()
->>       core_resched_ipi(CPU1)                  
->> X: irq_work_handler()
->>       send_sig(B, SIGxx)
->>          handle_inband_event(B, INBAND_TASK_SIGNAL)
->>             core_resume(B, XNPEND)
->>             core_resume(B, XNSUSP)
->>             core_add_state(B, XNKICKED)
->>          core_reschedule()
->>             core_resched_ipi(CPU1)                    
->>                                               X: <ipi-handler>
->>                                                     core_reschedule()
->>                                               B: <resuming oob>
->>                                               B: XNKICKED: prepare_for_signal()
->>                                                     xnthread_relax()
->>                                               B: <running in-band>
->>                                               B: migrate_syscall()
->>                                                  nop (XNPNDSUSP was not set)
->>                                               B: <still running in-band>
->>
->> Remoteness of CPUs does not even matter, e.g. with prio(A) > prio(B),
->> we might observe:
->>
->> CPU0
->> ----
->>
->> B: core_syscall()
->>       core_suspend(B, XNPEND)
->> B: <schedules out>
->> X: send_sig(B, SIGxx)
->>       handle_inband_event(B, INBAND_TASK_SIGNAL)
->>          core_resume(B, XNPEND) /* B is now fully unblocked */
->>          core_add_state(B, XNKICKED)
->> <IRQ>: core_resume(A)
->> A: <resuming oob>
->> A: core_suspend(B, XNSUSP)
->>       unblocked + XNKICKED set -> abort: XNSUSP ignored
->> B: <resuming oob>
->> B: XNKICKED: prepare_for_signal()
->>       xnthread_relax()
->> B: <still running in-band>
->>
->> There is clearly no shortage of possible variations of the scenarios
->> above especially if we bring up more complex multi-CPU configurations,
->> all of them causing some sort of breakage. IOW, there is a general issue
->> with signals wrt forcible suspension, not just with SIGSHADOW-based
->> synchronization in xnthread_suspend() vs migrate() which in addition,
->> has its own set of flaws.
->>
->> A way to address this properly may require to break an ancient
->> invariant, which states that a thread with any blocking bit set must not
->> be linked to any runqueue. On the contrary, a way to make sure that a
->> suspend request remains pending across a stage migration in order to
->> deal with an in-band signal is precisely to allow that request to linger
->> as long as necessary in a thread state mask, only to be considered once
->> the 'kicked' flag is cleared, ignored and left pending
->> otherwise. Meanwhile, that thread should be allowed to run.
->>
->> I need to have a closer look, but at first glance it seems fairly
->> straightforward to implement this in v4 at least.
->>
->> -- 
->> Philippe.
+On 18.05.26 11:02, Florian Bezdeka wrote:
+> Fixes the following compile errors:
 > 
-> Uh... All of that sounds a bit scary...
+> rn-1.c: In function ‘alloc_task’:
+> rn-1.c:16:18: error: variable ‘n’ set but not used [-Werror=unused-but-set-variable=]
+>    16 |         int ret, n;
+>       |                  ^
+> rn-1.c:15:22: error: variable ‘alloc_size’ set but not used [-Werror=unused-but-set-variable=]
+>    15 |         u_long size, alloc_size = 0;
+>       |
 > 
-> There was a reprocuder provided by Richard on the list as well, right?
-> Please make sure that we integrate a test case at the same time as the
-> fixes. Otherwise the testcase might never be added.
+> task-2.c: In function ‘backgroundTask’:
+> task-2.c:19:42: error: variable ‘count’ set but not used [-Werror=unused-but-set-variable=]
+>    19 |         unsigned int safety = 100000000, count = 0;
+>       |                                          ^~~~~
+> cc1: all warnings being treated as errors
+> 
+> The counting busy loop has been replaced by an interval based busy
+> loop.
+> 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  testsuite/smokey/psostests/rn-1.c   | 7 +++----
+>  testsuite/smokey/psostests/task-2.c | 5 ++---
+>  2 files changed, 5 insertions(+), 7 deletions(-)
+> 
+> diff --git a/testsuite/smokey/psostests/rn-1.c b/testsuite/smokey/psostests/rn-1.c
+> index 5e82d1506ca029ae2bf812ccbfbf9c3a9ab9cc7e..d2e847375212c9746de3e550a5d10a8be4694de5 100644
+> --- a/testsuite/smokey/psostests/rn-1.c
+> +++ b/testsuite/smokey/psostests/rn-1.c
+> @@ -12,15 +12,15 @@ static u_long tid, rnid;
+>  
+>  static void alloc_task(u_long a1, u_long a2, u_long a3, u_long a4)
+>  {
+> -	u_long size, alloc_size = 0;
+> -	int ret, n;
+> +	u_long size;
+>  	void *buf;
+> +	int ret;
+>  
+>  	traceobj_enter(&trobj);
+>  
+>  	srandom(0x11223344);
+>  
+> -	for (n = 0;; n++) {
+> +	for (;;) {
+>  		size = (random() % (sizeof(rn_mem) / 8)) + 4;
+>  		ret = rn_getseg(rnid, size, RN_NOWAIT, 0, &buf);
+>  		if (ret) {
+> @@ -28,7 +28,6 @@ static void alloc_task(u_long a1, u_long a2, u_long a3, u_long a4)
+>  			break;
+>  		}
+>  		memset(buf, 0xaa, size);
+> -		alloc_size += size;
+>  	}
+>  
+>  	traceobj_exit(&trobj);
+> diff --git a/testsuite/smokey/psostests/task-2.c b/testsuite/smokey/psostests/task-2.c
+> index d24c13465367c7c2a6975dd4cbb01eb75f8fd1ad..be1b6ca18c5354ba092d55b3655bae9a294f2ce7 100644
+> --- a/testsuite/smokey/psostests/task-2.c
+> +++ b/testsuite/smokey/psostests/task-2.c
+> @@ -2,6 +2,7 @@
+>  #include <stdio.h>
+>  #include <stdlib.h>
+>  #include <copperplate/traceobj.h>
+> +#include <copperplate/threadobj.h>
+>  #include <psos/psos.h>
+>  
+>  static struct traceobj trobj;
+> @@ -16,7 +17,6 @@ static u_long sem_id;
+>  
+>  static void backgroundTask(u_long a1, u_long a2, u_long a3, u_long a4)
+>  {
+> -	unsigned int safety = 100000000, count = 0;
+>  	int ret;
+>  
+>  	traceobj_enter(&trobj);
+> @@ -28,8 +28,7 @@ static void backgroundTask(u_long a1, u_long a2, u_long a3, u_long a4)
+>  
+>  	traceobj_mark(&trobj, 2);
+>  
+> -	while (--safety > 0)
+> -		count++;
+> +	threadobj_spin(1000);
 
-Yes, I already asked for a reworked version (Richard and/or the AI).
-
-What may also be valuable here is derive a test case that plays with
-regular signal injections like Philippe sketched above. To my
-understanding, that would even be (structurally) shareable between
-Xenomai 3 and 4.
+That's just 1 µs, isn't it? That sounds rather short, not only for VM
+setups.
 
 Jan
+
+>  
+>  	traceobj_mark(&trobj, 3);
+>  
+> 
+
 
 -- 
 Siemens AG, Foundational Technologies
