@@ -1,36 +1,36 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EC9F3E023E
-	for <xenomai@lists.linux.dev>; Mon, 18 May 2026 09:02:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00A93388379
+	for <xenomai@lists.linux.dev>; Mon, 18 May 2026 09:02:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779094969; cv=none; b=sew5JL1bgv9lla5MW8rKIznpYynevZ2IMIqLKd0fBrCFPC+bJ90zfLD8V9AyrJN+Oc1m9Rrr2wlYvDqb8LwhUq7Hp5qTMh4jvnXEd5MeEhWTMhTn1qXOcbXeFzpqR8dHokyPBZ28V8cH941Mmy5W3ZedoPByTDn9BhmL3fDWZAM=
+	t=1779094970; cv=none; b=mcgYqnzVhKaAeunSVKr+NtrQFmgxM8stVgD4HlH9Zv+MAVGBEg9JBN6QSDTdTOigeCcS1Gip0d99MOnVEBN3SuwNllz6GRhT9eUuRhAo/+1oG34Q1NW+v9gIHPZHH/rvCqippXW9M9v90z0FEJSC2tATrs1tZxPDCUPALmaqNSU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779094969; c=relaxed/simple;
-	bh=C4wd+NyI+lGfQMVCxxxEZJ1d5FCyr1tvdKSO+emP7xg=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=AlewD6nvFMZJ38FLj8C99qde/QNxZFjbPbszwNwSHqb/SJ/InaSUBIfAZ686/h8LXJonHpiypv5wBbXm+9V+cW6SWZXwu/0V9ubkx19ZvU5lWQNXA+GuoyWz0ytl4KBdOlju6LQ1PuyRfZzUb7F5os/51M1yd5f9dlLnLhwSSXI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=lDmel92x; arc=none smtp.client-ip=185.136.65.225
+	s=arc-20240116; t=1779094970; c=relaxed/simple;
+	bh=wnUonAx9EJp9hb5gDHE6cXUrJZ0VeWG6fFLH9LOQz+E=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=lRyTUByiBJMS0ldMxOXJZ453xpf/SU0+MdhXadvTel7zej7/ScK8+YGJAV3BRmXhjtfKRABx5Ld6NdvZzjs+DSa52xPMcjS17MgPiCIXfLJ5jJG8C+icCEfHfd+LP14CXXgqJG1XMVW5Bbe9ayKNy7/KXEXv30+yqvNEyKdk0DM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=dd3vnVVI; arc=none smtp.client-ip=185.136.64.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="lDmel92x"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202605180902435bbc010fc7000207cd
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="dd3vnVVI"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20260518090243a7a86eef50000207ec
         for <xenomai@lists.linux.dev>;
         Mon, 18 May 2026 11:02:43 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=LrPfbHMOh2Ldcxcu4o3hUMDjDNa2dd5xKc/LKCkdQsE=;
- b=lDmel92x5SQ9NXBqYxV/LqxZgO541iQCg//Vb34+IpNTfkhBVk7Z/aUQ9isAJ/nMkm1plh
- w00BIsd/wvLTgg7ynzOmq3L6trJ0sUbFlKeo525vxOXSej6Y9WkklFFXeo+IYOzlqpwD2c2V
- tt+dPGFSS77FdNDzUSUInMEk5JBK0ff9/V3VRgrrRfDugNZnKSZ7JK/o73queRpkC0WxHMnT
- Zjv3AXJUEk7AK/Z0MV46yS57R0MHc1NVBIGpOHz3PyVFmIXWjsnJXlwAy7kSB6iseP9ncMCY
- r/oyn+NgUSHzSL5YzaMTOl/9vNosyZukoOELIx84kZ7htHq4hR7i83Zw==;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=R+w1iwfCT9uoYkhaZN+APg8ZJorzawA6Z8TPT9E2T3A=;
+ b=dd3vnVVIbTGyjRlwoYysxziJ30LqHNAiRcJGX1iHCBheX/FCA3GrShaEb50msLzWB3BxSi
+ vHVWooPGcRDylJFC710EAAjdE403gsKCEHzzt0XfY927gMvkSeEJ8Dy/r91XvXDX/GluMUFa
+ Lqgv8q+Lq85RBYhMjsOj2fOW3ZHLuDISCcJh3iUkfh6YsoGu433Jmrep3rz61gyHdy9ImEjX
+ ZhXhemNOm6OSiNamAIfWLob7dUcrmv+tGK9iEWSkUDkniDj2qKXG232ztfwgJg6HKG0eRdyz
+ MOFVU+08UiCtnKAvxjI0LjIs5KttBC0WVn+xgw23f+lpuoedPRSIm0Nw==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v2 0/4] Add support for gcc 16
-Date: Mon, 18 May 2026 11:02:41 +0200
-Message-Id: <20260518-wip-flo-gcc-16-v2-0-f93562624fb4@siemens.com>
+Date: Mon, 18 May 2026 11:02:42 +0200
+Subject: [PATCH v2 1/4] utils/autotune: Fix compile error seen with gcc 16
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -38,49 +38,57 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIALHVCmoC/x3MQQqAIBBA0avErBtQIcuuEi3UxhqIFIUKorsnL
- d/i/wcKZaYCY/NAppMLx6NCtQ34zR4rIS/VoITSohMDXpww7BFX71Fq1MrI4EzvjJVQo5Qp8P0
- Pp/l9P03aMmhgAAAA
-X-Change-ID: 20260508-wip-flo-gcc-16-6291fb97b9a1
+Content-Transfer-Encoding: 8bit
+Message-Id: <20260518-wip-flo-gcc-16-v2-1-f93562624fb4@siemens.com>
+References: <20260518-wip-flo-gcc-16-v2-0-f93562624fb4@siemens.com>
+In-Reply-To: <20260518-wip-flo-gcc-16-v2-0-f93562624fb4@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: Jan Kiszka <jan.kiszka@siemens.com>, 
  Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi all,
+This fixes the following compile errror seen when using gcc 16 as
+compiler:
 
-Trying to compile the codebase with gcc 16 revealed some minor issues /
-compile failures. Fixing them up was quite easy, so here we go.
+autotune.c: In function ‘sampler_thread’:
+autotune.c:95:34: error: variable ‘n’ set but not used [-Werror=unused-but-set-variable=]
+   95 |         int fd = (long)arg, ret, n = 0;
+      |                                  ^
+cc1: all warnings being treated as errors
 
-gcc 16 is the default compiler on Fefora 44 and available as package
-for Debian 14 (forky).
-
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
-
-Changes in v2:
-  - Reworked patches 3 and 4, removed / migrated busy loops
+The variable n was write-only. Removing the variable entirely as it
+never contributed to the test.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
-Florian Bezdeka (4):
-      utils/autotune: Fix compile error seen with gcc 16
-      testsuite/smokey/sched-tp: Fix compile error seen with gcc 16
-      testsuite/smokey/vxworktests: Fix compile error seen with gcc 16
-      testsuite/smokey/psostests: Fix compile error seen with gcc 16
+ utils/autotune/autotune.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
- testsuite/smokey/psostests/rn-1.c      | 7 +++----
- testsuite/smokey/psostests/task-2.c    | 5 ++---
- testsuite/smokey/sched-tp/sched-tp.c   | 2 +-
- testsuite/smokey/vxworkstests/task-2.c | 4 ----
- utils/autotune/autotune.c              | 4 +---
- 5 files changed, 7 insertions(+), 15 deletions(-)
----
-base-commit: 9fed9de228841e7bc6e3f55fdb44374f15acddc5
-change-id: 20260508-wip-flo-gcc-16-6291fb97b9a1
+diff --git a/utils/autotune/autotune.c b/utils/autotune/autotune.c
+index f52733b7ae1d5a920fc7ad79c7288001dfeb8f21..2e25daef964beb96a8744e50f5ae9c62c04b64b2 100644
+--- a/utils/autotune/autotune.c
++++ b/utils/autotune/autotune.c
+@@ -92,7 +92,7 @@ static const struct option base_options[] = {
+ 
+ static void *sampler_thread(void *arg)
+ {
+-	int fd = (long)arg, ret, n = 0;
++	int fd = (long)arg, ret;
+ 	__u64 timestamp = 0;
+ 	struct timespec now;
+ 
+@@ -102,9 +102,7 @@ static void *sampler_thread(void *arg)
+ 			if (errno != EPIPE)
+ 				error(1, errno, "pulse failed");
+ 			timestamp = 0; /* Next tuning period. */
+-			n = 0;
+ 		} else {
+-			n++;
+ 			clock_gettime(CLOCK_MONOTONIC, &now);
+ 			timestamp = (__u64)now.tv_sec * 1000000000 + now.tv_nsec;
+ 		}
 
-Best regards,
 -- 
-Florian Bezdeka <florian.bezdeka@siemens.com>
+2.54.0
 
