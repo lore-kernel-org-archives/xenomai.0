@@ -1,246 +1,454 @@
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07B853451AF
-	for <xenomai@lists.linux.dev>; Sat, 23 May 2026 11:29:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04A2C305E28
+	for <xenomai@lists.linux.dev>; Sat, 23 May 2026 20:10:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779535748; cv=none; b=KzykBDycrLn0kuH//x004j6RFc3e9JOMHv28RMkF/q5xUO0gpRMi4a0qR82i4v30Q546BiyaJDTIx8iVFVL7RA/p68rRIEm/KJQiqMESvz7sSsX6344LIbjPrkcAVgIQYMjXUeUHCnb5nxseVBZXdlz2ey/jk29n78PpwHuk4cQ=
+	t=1779567059; cv=none; b=nDjbvc5xEGVLIBisj1Da4rVuuVB1DAaxNZCOlAjKCDL+UZtoW4wd9P9U+4kT7gZ011JVUXT+jIc6DriLELfni7zVfJd8/+a4RVO8EIvFZwlJ3gUdwq1bGCYj4y7RPPCymSVZXbXBXMxUK9uxdZpU2x51D0BOsMVtLwSnJXw/L1I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779535748; c=relaxed/simple;
-	bh=TFbxvAOZFD41CYYulQLu9FHje954d5r2U8bHCLcn9eE=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=Ci+hx4yv/8BHfQLu58VZvEjcDgecLr6es0ZVWY2vMBnl7jPhVEooV/mihXMk3yHlH8v8WVYzTArUaoEL8WrvG1hhc9FDDXfxKPVl1QFdHW9hzaXdna5O8bYDYshB4z7T7Cb7xmVGgUPl+vY+ZmlUis0+SynOSaWV4pLcFwOHhHs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=BRrN2Zr4; arc=none smtp.client-ip=217.70.183.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1779567059; c=relaxed/simple;
+	bh=HxmNAZYYQ6PptiRYaKbidqbw/oBCzCljoLoYOfyAXKE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=MvAGrI48JLAcH+qZqAOxcj1hOCN5CJchnOsg4cT4Cw2gAPr4UCUEZQ31w+jBjtj0NnsPAuORVL7Alkd0PmWJFsi64DXlKhO9fiyY0f0eke006TYXG80GEL0GCDBri13IS2gBvnbuG9IrdW4nMKEJfgmWN5evdFDG3mJDsWbyFgI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FN6SIID6; arc=none smtp.client-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="BRrN2Zr4"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 8A6883E972;
-	Sat, 23 May 2026 11:28:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1779535737;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ip7fEYeyjPiI/cs+QXwPMD9wIpQzG/e60buZ6khMBSQ=;
-	b=BRrN2Zr45Hswg5Eq9DkxPezKqAlM3b8IeAmruzFxCHnxylK4qKyk8QikimM+vwruW90Pyo
-	gN67vMFUPGtGAdNG25Qotx+TyB7qAG56OjG1VgrP3cVx6FMd+1EAddMuJ+xDZrqNx0CEiu
-	u+Dfy9SEJR8JSknPwC6IFf4FH8sXsAjWOB2TF8BeO1ggefJa0eKesCF4ijjAbAt6UjbWhc
-	dH1XzrYHs/3CN3y/poJ8Ak8TBDjcj7irZPJUu6UXmVA1gRS8o8czCHqMDiUlRKlVDwoMW9
-	NVcmCYYkX9wIpElLhZNK7eO2juyCC0Iq37hPdwrMhmG0UWD72cropCa6TEvksw==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Hannes Diethelm <hannes.diethelm@gmail.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: [EVL] Client UDP not receiving data
-In-Reply-To: <c8a23c39-b13b-4f89-9967-35d8195d4e2d@gmail.com> (Hannes
-	Diethelm's message of "Sat, 23 May 2026 12:00:43 +0200")
-References: <6f9e6ff2-95a7-402c-90d6-19f0f89bbc80@gmail.com>
-	<87v7chf5xm.fsf@xenomai.org>
-	<327a363e-6b79-45b2-a5b0-6b9f8a82d756@gmail.com>
-	<87y0hbe9kw.fsf@xenomai.org>
-	<19e440ba-bb7a-47ba-a1a9-bb72eb83badd@gmail.com>
-	<87tsryo6sv.fsf@xenomai.org>
-	<c8a23c39-b13b-4f89-9967-35d8195d4e2d@gmail.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Sat, 23 May 2026 13:28:56 +0200
-Message-ID: <87o6i6nz47.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FN6SIID6"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-44a044cb827so6292414f8f.0
+        for <xenomai@lists.linux.dev>; Sat, 23 May 2026 13:10:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779567056; x=1780171856; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=waT+wKSelv9hZu9palBKv2liy9EUbSe21X+rqNE2rR4=;
+        b=FN6SIID6HVu4pSAjQ+BXkMXUYC5r2ggAnJmT5CXpsPtbYMPnTYvLHLBo17pysCCvlX
+         F/w4mcOKiIn8ct8LhI2yStnXQUi5BH+hyahFiT8BybfC2HPxVmSCtSCJbcU/IpILt77z
+         0ifC6VFjlIfl2HWAvEYrdXEPlhecafTd7r69DKnh4ei2eCUskKFMJySaxQsS3HYreiNP
+         WAKbQGXoTcW2b0BJEHnvpRUek3InNPSJxlunHE7wnIpJeUS69F6V/eJlVUyqK0lNw4tH
+         bjk5b7DP/yza+WCrHBVxD2lhq1a3GUJd2ZQrQxddXnY2O43dNf6IDwx75hLPmL8pQOZH
+         0NvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779567056; x=1780171856;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=waT+wKSelv9hZu9palBKv2liy9EUbSe21X+rqNE2rR4=;
+        b=oUsIUG78YePms5QwYThQWqwEZU6xruN/gxtgumHQ2ztuXIYTllCG2I2YAvsx6Q7tR0
+         apxc1K2gGDVFQ0ZJmAhqrF/VIniVy5rVl3t7l3lK47+Bmf3SsvhLZRfrnfJT+F/OhXXt
+         JMjrtU57zrvC+cJXBoD4hv+PQ3hLAbAfyhYgCpQgDJ7Kr/fHmAdeLU6UbK128Ul5GSvC
+         tJ3JarpFJlerAMK753Z2g3TIABfpDUCGeAtMqilicMDQ3ogkNzq/QiypIZ2qXwzZn6LA
+         S7FOvf6hZ4sMI0n6PwJWWjHrIoDw6Lsvq2k710G2BWyJfWR6JQO9VEGeTixm8qtkPI8f
+         VgmQ==
+X-Gm-Message-State: AOJu0Ywh2wGPMi/HxXh5X13i7GEz592Kinq7Sl1S62A37qNIVf9JF0kj
+	ML24v1IpBze9mcTl0qMR0Qc2dNLvK67OnsJDYAqPFBBuAJMaxgZiMFtBnTgqoA==
+X-Gm-Gg: Acq92OEzcUFh1W7rbNospyISEA9vcmG/uUqcC/vlqhGxjQj0bcUhq+QGDFBN3qmmmD8
+	JuTNb2B1YGl7znhThBzI1/hx61KyL/Aoc4SPRXl78wiUlyjMOO1bQltSTfEidDfQx/y9miKIK5C
+	j2SLw9l9U3HwJphCXgHr99TOdl3hI/TL8krT+qGvOv/8q2Xxx3R2rjesU7e+ZLAf9/gY1LRNvAy
+	NIAUtA9dT75DwKyYRH8+1tkFXtsMXtao4v4X6swNLzEY3naGSDqhR0tRX6/vv250ch7bZapWtXf
+	zeCgG5JjUejJ3wPim1QKiwVT1gJMd0r9bgX2lo8XrVNFole91yT/TdOQkXVJt86Jq9wqRGFhcjJ
+	s3BiK1jwlqdm60/pmCA2vzM8p6fEvSN95KFugmWMtElrSkKDa1xHCGjrQ5IQFSHoMiRaINuob7h
+	EJKXq/67qOpXeVlU8HtKcoJj21ig==
+X-Received: by 2002:a05:600c:5254:b0:490:484b:bf41 with SMTP id 5b1f17b1804b1-490484bbf7amr112667885e9.6.1779567056230;
+        Sat, 23 May 2026 13:10:56 -0700 (PDT)
+Received: from localhost ([213.55.168.64])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-490454a0b82sm144862205e9.9.2026.05.23.13.10.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 23 May 2026 13:10:55 -0700 (PDT)
+From: Hannes Diethelm <hannes.diethelm@gmail.com>
+To: xenomai@lists.linux.dev,
+	rpm@xenomai.org
+Cc: Hannes Diethelm <hannes.diethelm@gmail.com>
+Subject: [PATCH] tidbits: net-udp: add server and client mode
+Date: Sat, 23 May 2026 22:10:16 +0200
+Message-ID: <20260523201044.12938-1-hannes.diethelm@gmail.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Cause: dmFkZTEN24UW7QYPbBgOJB2gn50jV5FRvBAiGLBPxUgH45pQuOKm9EoHdd88zInM3BClVOVp0U9DAUpglQn7YobsonmoYTLFCIrpLeqANiTknd5TjPVMHN5CfDgRSAR0t3qShU0ElSN9//rhJoHHtxZcN1BRrSxlK/pgEBMQ7j1NL0AhznU9GKzahH0/h9SSGuOIMJ34KT6woYBU1ERWnHIkvIE0puz6qqcMgH//VYt9rLcK0tgKY+SMWZn1RaNfkcNkYtj+CKNzJIqglqcCxL/baYl1ZuoBoX0IUnZ7qGx9J81UbGVuOAs6WoDJhqKozKtiM3OftHwZfheVq1T1oUrgnHAPeVHzoMIl3lsfWrYrPUCwylJhWOCQ64bK3miDh8GPaWlEBM6JZKZEWpQddL77e+1d5Vs5jV8z8Otl5J25iCznQpD2zRsGcPJpt6LETnqyQhiL94qFp3a33S7lpa9qKEPrXQ7s9fAlHhaUIcMwP8U5axZHKOBRnQr5CT/XWasyynmohGPshrxhhVaAkeeY8cGzXsJ6Kf/ZO14JcVEqCOeuI+Nb5CKY5xJPkvjen5SR+Qp6nbd/prS+cfXeE01YK0loY/V6gLsANqA08p6ZT7f03xtng7xttd3o6OVNNffTUOCqEl9spEXQ6Zx8fhJGx8aZxoTeqyY22OSOIQFBOhIWHA
-X-GND-State: clean
-X-GND-Score: -100
+Content-Transfer-Encoding: 8bit
 
-Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+Additionally, fix memory leaks
 
-> Am 23.05.26 um 10:42 schrieb Philippe Gerum:
->> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
->> 
->>> Am 22.05.26 um 17:40 schrieb Philippe Gerum:
->>>> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
->>>>
->>>>>
->>>>> Thanks for the detailed answer. I might have been not precise enough.
->>>>>
->>>>> The -S and the -R mode work as designed. To show the issue with connect() in evl, I changed
->>>>> the -S mode to:
->>>>> connect()
->>>>> while{
->>>>>     oob_sendmsg()
->>>>>     oob_recvmsg()
->>>>> }
->>>>>
->>>>> This is the classical UDP client pattern. It works with vanilla linux (net-udp.c)
->>>>> but not with evl (oob-net-udp.c), I do not receive any data.
->>>>>
->>>>> By just sending the modified code, it is easy to explain and hopefully for you to
->>>>> reproduce. This is also why I attached the files instead of sending a patch.
->>>>> Be aware that this is just to demonstrate what is not working, not intended as a patch.
->>>>>
->>>>> I run Xenomai4 in a VM and communicate with the host for debugging
->>>>> but I have also a real PC as the final target where I have the same issues.
->>>>>
->>>>> First start on the host:
->>>>> echo Hello | nc -u -l 5201
->>>>>
->>>>> Then in the VM:
->>>>> sudo evl net -ei enp7s0
->>>>> sudo oob-net-udp -d -i enp7s0 -a 192.168.122.1 -p 5201 -S
->>>>>
->>>>> On the host:
->>>>> Mellow sword!
->>>>>
->>>>> In the VM:
->>>>> == bound to enp7s0
->>>>> == sender mode (=> 192.168.122.1:5201)
->>>>> --------tx--------
->>>>> IP-Adresse: 192.168.122.1
->>>>> Port:       5201
->>>>> Family:     512
->>>>> --------rx--------
->>>>> IP-Adresse: 192.168.122.155
->>>>> Port:       58422
->>>>> Family:     512
->>>>>
->>>>> The package is visible in wireshark but oob_recvmsg does not return:
->>>>> No "= 6 bytes received: Hello" and no second transmit.
->>>> Ok, I totally misinterpreted your previous post, sorry for
->>>> that. Brain received -ENOCOFFEE.
->>>>
->>>>>
->>>>> It looks like the auto assigned and bound port from connect() is not forwarded
->>>>> to the oob stage, so no data is received in oob_recvmsg().
->>>>>
->>>> This is exactly the point, indeed. Could you please try this branch
->>>> [1]?
->>>> The two commits on top improve the situation with your test code here.
->>> Thanks for the very fast fix. Connect works now as expected. And I was able to remove the workaround.
->>>
->>> I switched to libevl r58, r57 did not work any more. Is there any visible link libevl->kernel? I just
->>> got an operation not permitted in oob_sleep_until.
->>>
->> Recent evl ABI updates are likely causing this, r58 is required to
->> run
->> any kernel with ABI #44. Every single change affecting the ABI also used
->> to cause its revision number to be incremented, hence the seemingly high
->> value (implementing the evl core started back in 2018). The model has
->> recently switched to bulk updates instead, i.e. a series of ABI updates
->> under a single revision.
->> On the kernel side, the file include/uapi/evl/control-abi.h tracks
->> the
->> base/earliest and current ABI revisions the evl core supports, such
->> decoupling helps in providing backward compatibility from the latter to
->> the former, e.g. if EVL_ABI_BASE is 30 and EVL_ABI_LEVEL is 45, then an
->> application which was compiled against any ABI level >= 30 can use this
->> core. Looking at include/evl/version.h in libevl, you should see the
->> symbol EVL_ABI_PREREQ set to the earliest ABI revision that particular
->> version of libevl can work with, i.e. matched to EVL_ABI_BASE.
->> A recent string of ABI changes went in to support the upcoming POSIX
->> interface, they have been grouped in a single update which triggered ABI
->> #44. That one was going to break backward compat as I hinted at a couple
->> of months ago, aligning EVL_ABI_BASE on EVL_ABI_LEVEL to #44.
->> The development tip for each kernel is now hosted in some next/*
->> branch
->> in the repo, e.g. next/v6.12.y-cip-evl-rebase, which contains staging
->> code until it moves to the rebase/ branch,
->> e.g. v6.12.y-cip-evl-rebase. The next/* kernel branches match the libevl
->> -next branch ABI-wise.
->> IOW, in order to work with the bleeding-edge code implementing any
->> recently discussed changes, you may want to switch to libevl/next and
->> any next/* branch on the kernel side (v6.12.y-cip-evl, v6.18.y-evl, or
->> v7.0-evl ATM).
->> 
->
-> Thanks for the details. For now, libevl r58 works well with next kernel but I will go to next on both
-> repos if I see any issues and test it there also before reporting them.
-> The inegrated check works if I go back to r57 with a small test program:
-> evl: ABI mismatch, see -ENOEXEC at https://v4.xenomai.org/core/user-api/init/#evl_init
-> ./oob-net-udp: cannot attach to the EVL core: Exec format error
->
-> I think I just had so many error messages that I did not see ^ in the real application.
->
->>> But there are two new issues:
->>>
->>> -oob_sendmsg returns "Invalid argument" errno 22 exactly every second. The last number is the
->>> system time in ns.
->>> ERROR: oob_sendmsg Invalid argument 22 806999652287
->>> ERROR: oob_sendmsg Invalid argument 22 807999655503
->>> ERROR: oob_sendmsg Invalid argument 22 808999650416
->>>
->>> I have this with the exact same code as before using bind() and also with the now working connect().
->>> There are 3000 tx / 1000 rx packages/s.
->>>
->>> I tried do{oob_sendmsg}while(errno == 22) but that resulted in a full freeze of the PC.
->>>
->> Sounds like an ABI issue, I cannot reproduce this. Switching to the
->> 'next' branches on both sides may help.
->
-> This was an -ENOCOFFEE on my side. I was using:
-> evl_read_clock(EVL_CLOCK_MONOTONIC, &ts_timeout);
-> ts_timeout.tv_nsec += 1000*1000;
-> ...
-> oob_sendmsg(board->sockfd, &msghdr, &ts_timeout, flags);
->
-> Of course this overflows tv_nsec exactly every second. It seams you or some else verifyes this now
-> and return "Invalid argument".
->
-> With this, everything works now:
-> evl_read_clock(EVL_CLOCK_MONOTONIC, &ts_timeout);
-> ts_timeout.tv_nsec += 1000*1000;
-> while(ts_timeout.tv_nsec >= 1000000000){
->     ts_timeout.tv_nsec -= 1000000000;
->     ts_timeout.tv_sec ++;
-> }
-> ...
-> oob_sendmsg(board->sockfd, &msghdr, &ts_timeout, flags);
->
->> 
->>> -The last commit a4cc7967 on the next branch doesn't compile. Just FYI, I took one commit before, so I was able to test it.
->>>
->> My bad, fixed in the kernel next/* branch.
->> 
->>>>>
->>>> I think we need a simple agent somewhere in the evl netstack in
->>>> kernel
->>>> space answering ICMP_ECHO requests flowing in oob channels directly,
->>>> just like the in-band stack does for in-band traffic. I can look into
->>>> this.
->>> The oob-net-ping sends out pings, so basically the inverse of the existing oob-net-icmp. Now you can run
->>> oob-net-ping on one machine and oob-net-icmp on the other to ping between. For my application, I use it to ping an FPGA
->>> board to see if the connection basically works.
->>>
->> Ok, makes sense too. I'm ok with both approaches actually, it's your
->> call.
->> 
->>> ICMP_ECHO would help in some cases, but ^ works also.
->>>
->> Agreed, we need a built-in ICMP_ECHO responder in the core, which we
->> could disable programmatically as well, so that a ping service
->> implemented in userland which would use the raw packet interface may
->> switch it off for receiving ICMP requests.
->> 
-> Ok, I will send a patch as soon as it is ready. Can take some time, depending on what is going on otherwhise.
+Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
+---
+ tidbits/oob-net-udp.c | 258 +++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 240 insertions(+), 18 deletions(-)
 
-Nice, thanks. I believe that since we may have in-kernel ICMP_ECHO reply
-and oob-net-ping at about the same time, we should make the latter a
-general utility (libevl/utils) instead of a tidbit/example,
-e.g. evl-ping. This way, we would have a standard command for pinging a
-remote oob-enabled machine, that would also work with oob-net-icmp when
-disabling the in-kernel ICMP handling.
-
-e.g.:
-
-# Probing side
-$ evl ping 10.10.10.10
-
-# ICMP server side
-$ oob-net-icmp -i eth0.42
-
+diff --git a/tidbits/oob-net-udp.c b/tidbits/oob-net-udp.c
+index 5673644..3cd7cb2 100644
+--- a/tidbits/oob-net-udp.c
++++ b/tidbits/oob-net-udp.c
+@@ -2,9 +2,23 @@
+  * SPDX-License-Identifier: MIT
+  *
+  * This tidbit demonstrates out-of-band networking, by
+- * sending[-S]/receiving[-R] UDP packets to/from a particular IP
++ * transmitting[-T]/receiving[-R] UDP packets to/from a particular IP
+  * address[-a] and port[-p].
+  *
++ * The server mode [-S] receives a packet from on a given
++ * port and sends a response to the sender's ip/port.
++ *
++ * The client mode [-S] sends a packet to a port/ip
++ * and receives the response from a server. The round
++ * trip time is measured.
++ *
++ * The client and the transmitter wait [-w] before sending the
++ * next packet to not flood the network.
++ *
++ * For the other side, the same code can be used.
++ * For transmitting / client on a non-oob port: socat - UDP-LISTEN:<port>
++ * For receiving / server on a non-oob port: socat - UDP:<Remote-IP-address>:<port>
++ *
+  * See https://v4.xenomai.org/core/net/ for details.
+  */
+ 
+@@ -13,6 +27,7 @@
+ #include <errno.h>
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <stdbool.h>
+ #include <unistd.h>
+ #include <memory.h>
+ #include <getopt.h>
+@@ -30,12 +45,21 @@ static int verbosity = 1;
+ static void usage(void)
+ {
+ 	fprintf(stderr, "oob-net-udp -a <IP-address> [-p <port>]"
+-		"[-m <text>][-n <msgcount>][-I <iterations>][-i <interface>]"
+-		"[-d][-s][-R|-S][-b]\n");
++		"[-m <text>][-n <msgcount>][-I <iterations>][-i <interface>][-w <wait_time_us>]"
++		"[-d][-s][-T|-R|-C|-S][-b]\n");
++}
++
++static void print_addr(char* text, struct sockaddr_in *addr){
++    char ip_str[INET_ADDRSTRLEN+1];
++    inet_ntop(AF_INET, &(addr->sin_addr), ip_str, sizeof(ip_str));
++    evl_printf("%s--------\n", text);
++    evl_printf("IP-Address: %s\n", ip_str);
++    evl_printf("Port:       %d\n", ntohs(addr->sin_port));
++    evl_printf("Family:     %d\n", addr->sin_family);
+ }
+ 
+ static void sender(int s, const char *text, int mcount,
+-		struct sockaddr_in *addr, int iter)
++		struct sockaddr_in *addr, int iter, useconds_t delay)
+ {
+ 	struct oob_msghdr msghdr;
+ 	struct iovec iov;
+@@ -66,8 +90,10 @@ static void sender(int s, const char *text, int mcount,
+ 		if (ret < 0)
+ 			error(1, errno, "oob_sendmsg() failed");
+ 
+-		evl_usleep(1000000);
++		evl_usleep(delay);
+ 	}
++
++	free(tbuf);
+ }
+ 
+ static void receiver(int s, struct sockaddr_in *addr, int iter)
+@@ -76,7 +102,7 @@ static void receiver(int s, struct sockaddr_in *addr, int iter)
+ 	socklen_t len = sizeof(_addr);
+ 	struct oob_msghdr msghdr;
+ 	struct iovec iov;
+-	char tbuf[16384];
++	char rbuf[16384];
+ 	ssize_t ret;
+ 	int n;
+ 
+@@ -89,12 +115,90 @@ static void receiver(int s, struct sockaddr_in *addr, int iter)
+ 		error(1, errno, "getsockname() failed");
+ 
+ 	if (verbosity)
+-		printf("== bound to port %d\n", ntohs(_addr.sin_port));
++		print_addr("bind", addr);
++
++	for (n = 0; !iter || n < iter; n++) {
++		memset(rbuf, 0, sizeof(rbuf));
++		iov.iov_base = rbuf;
++		iov.iov_len = sizeof(rbuf);
++		msghdr.msg_iov = &iov;
++		msghdr.msg_iovlen = 1;
++		msghdr.msg_control = NULL;
++		msghdr.msg_controllen = 0;
++		msghdr.msg_name = &_addr;
++		msghdr.msg_namelen = sizeof(_addr);
++		msghdr.msg_flags = 0;
++		ret = oob_recvmsg(s, &msghdr, NULL, 0);
++		if (ret < 0)
++			error(1, errno, "oob_recvmsg() failed");
++		evl_printf("= %zd bytes received", ret);
++		if (msghdr.msg_flags & MSG_TRUNC)
++			evl_printf(" (TRUNCATED)");
++		evl_printf(": %.*s\n", (int)ret, rbuf);
++	}
++}
++
++static void client(int s, const char *text, int mcount,
++		struct sockaddr_in *addr, int iter, useconds_t delay)
++{
++	struct sockaddr_in _addr;
++	socklen_t len = sizeof(_addr);
++	struct oob_msghdr msghdr;
++	struct iovec iov;
++	int n, tlen;
++	ssize_t ret;
++	char *tbuf;
++	char rbuf[16384];
++	struct timespec ts_tx;
++	struct timespec ts_rx;
++	double rtt_us = 0.0;
++
++	tlen = (strlen(text) + 1) * mcount;
++	tbuf = malloc(tlen);
++	if (!tbuf)
++		error(1, ENOMEM, "cannot create message");
++
++	*tbuf = '\0';
++	for (n = 0; n < mcount; n++)
++		strcat(tbuf, text); /* yep, lazy.. */
++
++	ret = connect(s, (struct sockaddr *)addr, sizeof(*addr));
++	if (ret < 0)
++		error(1, errno, "connect() failed");
++
++	if (verbosity)
++		print_addr("send address", addr);
++
++	ret = getsockname(s, (struct sockaddr *)&_addr, &len);
++	if (ret < 0)
++		error(1, errno, "getsockname() failed");
++
++	if (verbosity)
++		print_addr("receive address", &_addr);
+ 
+ 	for (n = 0; !iter || n < iter; n++) {
+-		memset(tbuf, 0, sizeof(tbuf));
++		evl_read_clock(EVL_CLOCK_MONOTONIC, &ts_tx);
++
+ 		iov.iov_base = tbuf;
+-		iov.iov_len = sizeof(tbuf);
++		iov.iov_len = tlen;
++		msghdr.msg_iov = &iov;
++		msghdr.msg_iovlen = 1;
++		msghdr.msg_control = NULL;
++		msghdr.msg_controllen = 0;
++		msghdr.msg_name = addr;
++		msghdr.msg_namelen = sizeof(*addr);
++		msghdr.msg_flags = 0;
++		ret = oob_sendmsg(s, &msghdr, NULL, 0);
++		if (ret < 0)
++			error(1, errno, "oob_sendmsg() failed");
++		if (verbosity > 1)
++			print_addr("sent to", addr);
++
++		memset(rbuf, 0, sizeof(rbuf));
++		/* recvmsg stores remote address */
++		memset(&_addr, 0, sizeof(_addr));
++		iov.iov_base = rbuf;
++		iov.iov_len = sizeof(rbuf);
+ 		msghdr.msg_iov = &iov;
+ 		msghdr.msg_iovlen = 1;
+ 		msghdr.msg_control = NULL;
+@@ -103,26 +207,114 @@ static void receiver(int s, struct sockaddr_in *addr, int iter)
+ 		msghdr.msg_namelen = sizeof(_addr);
+ 		msghdr.msg_flags = 0;
+ 		ret = oob_recvmsg(s, &msghdr, NULL, 0);
++
++		evl_read_clock(EVL_CLOCK_MONOTONIC, &ts_rx);
++		rtt_us = (ts_rx.tv_sec - ts_tx.tv_sec) * 1000000.0 + (ts_rx.tv_nsec - ts_tx.tv_nsec) / 1000.0;
++
+ 		if (ret < 0)
+ 			error(1, errno, "oob_recvmsg() failed");
++		if (verbosity > 1)
++			print_addr("received from", &_addr);
++		evl_printf("= %zd bytes received rtt=%.1fus", ret, rtt_us);
++		if (msghdr.msg_flags & MSG_TRUNC)
++			evl_printf(" (TRUNCATED)");
++		evl_printf(": %.*s\n", (int)ret, rbuf);
++
++		evl_usleep(delay);
++	}
++
++	free(tbuf);
++}
++
++static void server(int s, const char *text, int mcount,
++		struct sockaddr_in *addr, int iter)
++{
++	struct sockaddr_in _addr;
++	struct oob_msghdr msghdr;
++	struct iovec iov;
++	int n, tlen;
++	ssize_t ret;
++	char *tbuf;
++	char rbuf[16384];
++
++	tlen = (strlen(text) + 1) * mcount;
++	tbuf = malloc(tlen);
++	if (!tbuf)
++		error(1, ENOMEM, "cannot create message");
++
++	*tbuf = '\0';
++	for (n = 0; n < mcount; n++)
++		strcat(tbuf, text); /* yep, lazy.. */
++
++	ret = bind(s, (struct sockaddr *)addr, sizeof(*addr));
++	if (ret < 0)
++		error(1, errno, "bind() failed");
++
++	if (verbosity)
++		print_addr("bind", addr);
++
++	for (n = 0; !iter || n < iter; n++) {
++		memset(rbuf, 0, sizeof(rbuf));
++		/* recvmsg stores remote address, we respond to this address */
++		memset(&_addr, 0, sizeof(_addr));
++		iov.iov_base = rbuf;
++		iov.iov_len = sizeof(rbuf);
++		msghdr.msg_iov = &iov;
++		msghdr.msg_iovlen = 1;
++		msghdr.msg_control = NULL;
++		msghdr.msg_controllen = 0;
++		msghdr.msg_name = &_addr;
++		msghdr.msg_namelen = sizeof(_addr);
++		msghdr.msg_flags = 0;
++		ret = oob_recvmsg(s, &msghdr, NULL, 0);
++		if (ret < 0)
++			error(1, errno, "oob_recvmsg() failed");
++		if (verbosity > 1)
++			print_addr("received from", &_addr);
+ 		evl_printf("= %zd bytes received", ret);
+ 		if (msghdr.msg_flags & MSG_TRUNC)
+ 			evl_printf(" (TRUNCATED)");
+-		evl_printf(": %.*s\n", (int)ret, tbuf);
++		evl_printf(": %.*s\n", (int)ret, rbuf);
++
++		iov.iov_base = tbuf;
++		iov.iov_len = tlen;
++		msghdr.msg_iov = &iov;
++		msghdr.msg_iovlen = 1;
++		msghdr.msg_control = NULL;
++		msghdr.msg_controllen = 0;
++		msghdr.msg_name = &_addr;
++		msghdr.msg_namelen = sizeof(_addr);
++		msghdr.msg_flags = 0;
++		ret = oob_sendmsg(s, &msghdr, NULL, 0);
++		if (ret < 0)
++			error(1, errno, "oob_sendmsg() failed");
++		if (verbosity > 1)
++			print_addr("sent to", &_addr);
+ 	}
++
++	free(tbuf);
+ }
+ 
++typedef enum {
++	TRANSMIT,
++	RECEIVE,
++	SERVER,
++	CLIENT
++} udp_mode_t;
++
+ int main(int argc, char *argv[])
+ {
+ 	int tfd, s, c, mcount = 1, iter = 0, port = 42042, on = 1;
+-	const char *text = "Mellow sword!", *iface = NULL;
+-	bool send = false, bcast = false;
++	const char *text = "Mellow sword!\n", *iface = NULL;
++	bool bcast = false;
++	udp_mode_t mode = RECEIVE;
+ 	struct sched_param param;
+ 	struct sockaddr_in addr;
+ 	const char *ip = NULL;
+ 	ssize_t ret;
++	useconds_t delay=1000000;
+ 
+-	while ((c = getopt(argc, argv, "a:m:n:i:I:p:dsRSb")) != EOF) {
++	while ((c = getopt(argc, argv, "a:m:n:i:w:I:p:dsTRCSb")) != EOF) {
+ 		switch (c) {
+ 		case 'a':
+ 			ip = optarg;
+@@ -142,6 +334,9 @@ int main(int argc, char *argv[])
+ 		case 'i':
+ 			iface = optarg;
+ 			break;
++		case 'w':
++			delay = atoi(optarg);
++			break;
+ 		case 'I':
+ 			iter = atoi(optarg);
+ 			break;
+@@ -151,11 +346,17 @@ int main(int argc, char *argv[])
+ 		case 'b':
+ 			bcast = true; /* Force mode, e.g. for directed broadcast */
+ 			break;
++		case 'T':
++			mode = TRANSMIT;
++			break;
+ 		case 'R':
+-			send = false;
++			mode = RECEIVE;
++			break;
++		case 'C':
++			mode = CLIENT;
+ 			break;
+ 		case 'S':
+-			send = true;
++			mode = SERVER;
+ 			break;
+ 		default:
+ 			usage();
+@@ -203,7 +404,7 @@ int main(int argc, char *argv[])
+ 			printf("== bound to %s\n", iface);
+ 	}
+ 
+-	if (send) {
++	if (mode == TRANSMIT) {
+ 		if (bcast) {
+ 			ret = setsockopt(s, SOL_SOCKET, SO_BROADCAST, &on, sizeof(on));
+ 			if (ret)
+@@ -224,12 +425,33 @@ int main(int argc, char *argv[])
+ 		if (verbosity)
+ 			printf("== sender mode (=> %s:%d)\n", bcast ? "[broadcast]" : ip, port);
+ 
+-		sender(s, text, mcount, &addr, iter);
+-	} else {
++		sender(s, text, mcount, &addr, iter, delay);
++	} else if (mode == RECEIVE) {
+ 		if (verbosity)
+ 			printf("== receiver mode (<= %s:%d)\n", ip, port);
+ 
+ 		receiver(s, &addr, iter);
++	} else if (mode == CLIENT) {
++		if (verbosity)
++			printf("== client mode (<= %s:%d)\n", ip, port);
++
++		/*
++		 * Guarantee a mere oob path from the first packet
++		 * onward by pre-caching the route and link-layer
++		 * address via an explicit neighbour solicitation
++		 * before we start sending data.
++		 */
++		ret = evl_net_solicit(s, (const struct sockaddr *)&addr,
++				EVL_NEIGH_PERMANENT);
++
++		client(s, text, mcount, &addr, iter, delay);
++	} else if (mode == SERVER) {
++		if (verbosity)
++			printf("== server mode (<= %s:%d)\n", ip, port);
++
++		server(s, text, mcount, &addr, iter);
++	} else {
++		error(1, 0, "Mode not implemented");
+ 	}
+ 
+ 	return 0;
 -- 
-Philippe.
+2.47.3
+
