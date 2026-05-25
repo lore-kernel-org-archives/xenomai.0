@@ -1,264 +1,323 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3F522D23BC
-	for <xenomai@lists.linux.dev>; Mon, 25 May 2026 20:39:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C43B4246778
+	for <xenomai@lists.linux.dev>; Mon, 25 May 2026 21:02:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779741560; cv=none; b=uaiXARXgXouUVZzyPSy1/nHtCLE4dJBxhQkkKwSTPvlN9CJ3I9CxmeY4eDl8LtRI/DJjldnrs4tPN1L1GPt9Msu9FJ02NRt0/CtZh7Bd3OVI8NYx92rGZTuWZu4X+U824fWh+ztr5ei/f0yBlJTnJWGvMpQ6kaz5J1ZwogEyqWU=
+	t=1779742960; cv=none; b=TOyC3Xzd3NGGsgdV10lWQb6YxAeUiGn93tissWfdaOL4ggX8cFbmXLcyAfXnEhOx8SiR/XB2TNmiAbMOvKs+hdaTm+3sp6U6ZlpLKrytXoRq6zVapS/C9M2Iu4SZMPCTtJJUocjDW2TtY1UiEQqvkwiPjpAA+JnKagIRdOoKZvM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779741560; c=relaxed/simple;
-	bh=Tw0Lu7JDsGwhwyOShoEXFjELp2hd/BEEP6Fy+lj059E=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=JrL+R8YvgUFSQ9drviCH8ILf2EvMDqbtwnJi8X2crm6RBIh2V5N9BVHoFWWSpOCw3fMFrb6ecCtHW+bSLqbpYlLOr5LJXkcaPWJnqE0RDYF6Yp3OvUgq969vKuPEFJ5gMb1YggNzqslNINvehE5fMtHRCToCx/5KrzTAh/7k9LM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ppsLph++; arc=none smtp.client-ip=209.85.128.42
+	s=arc-20240116; t=1779742960; c=relaxed/simple;
+	bh=rpNLhjWp9MbzmnAkniPhDIB+EJcx+HjMBdIu+wl0hJE=;
+	h=Content-Type:Message-ID:Date:MIME-Version:Subject:To:Cc:
+	 References:From:In-Reply-To; b=XXIRoAJobPhgPpoNNATyWZavUsbVrnmSZzn+M7aB98fWV5HQapTx547yvOdMmc+Tld53oLnX/rYi/E34T0VEyhdh0e9NoYnHWvw+DC6Eo6GsUDlx2il+L0/1xuEhK1jo3OCV/oOaeOUKYKlvaECdaeGp+fhee2NlDKcCsLmYDMs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BSMuuh0/; arc=none smtp.client-ip=209.85.128.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ppsLph++"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-49042aeeb75so47400835e9.1
-        for <xenomai@lists.linux.dev>; Mon, 25 May 2026 13:39:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BSMuuh0/"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4903974854dso37819705e9.3
+        for <xenomai@lists.linux.dev>; Mon, 25 May 2026 14:02:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779741557; x=1780346357; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=m++Ny3sUMxSIM8MThHPR0nsphZjCBPdyWTPGxVtT0OA=;
-        b=ppsLph++fUoDa/MbnuPsOAPsEs3qtMizYhLyRQPLi+jm1c2djayUmNFiftfncYBJ0Q
-         kNLiWa5HfY8i+q35gjCu+iZLKxs8ja1DveLi+PjSvRNmg1Po6L4vFico4sXjsm+bEXG9
-         O/mhDWoxvYCT8E2w2kS398TfXpgRNSQz1B4urQbGzw4iRnWo/41gzvmuXh3P+HRomaly
-         GgRFL/eViEec6tLqCQ0i9bqe5NY++T22x8E0KbyrTwvO886ewsUudiurul2tSkb4TyEL
-         dLFGLnUyFqdxF8oroXfc/+ow8bMsx9JYXdB6WqG+0trXLBcQmYEK7RlcL0uQierrU9s8
-         mQ1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779741557; x=1780346357;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1779742957; x=1780347757; darn=lists.linux.dev;
+        h=in-reply-to:from:content-language:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=m++Ny3sUMxSIM8MThHPR0nsphZjCBPdyWTPGxVtT0OA=;
-        b=Oh6Bjtcg14PnLKSmtD0qTbdZY/J6dF/qfJUUJqQF3vtrIj/vKcFUuSiS0XH7kNICtT
-         j3GUvU8fkyaWYIfpGaJ4LoqHpx4l5yWVRe4QmT/Uf5sf5vsgd0pwUoMzyxe1x3Kux1n5
-         m1cPdrGoc9Sfal05P6FmRMBFUS3uhIbFIjRHnd+SplSNLEinZ3Cq+9GHHSipSMQTTa62
-         lJc0+v8nBDnD44mLewYevOjO59y8u2LMTLsJjC5ZhFGhocyKEbFSyeEQBUlgHJmUP+ln
-         VELM12ww10Jkpl7ZhVJ+NnlOV6JukPI7gFMTMRrntYoLYonLBg7h6d2v3hy7xytZktKZ
-         So+A==
-X-Gm-Message-State: AOJu0YzQ57YblQt6cLW7mTTcOegfo3aCA0FzcQZ5L67nZwbGGpWU27ob
-	iESv97VAH8qlWQKBMN5y2qO5yl6AGIfXZR+Q+XOLc3IaJVgl2li0NQ6oq1RFMQ==
-X-Gm-Gg: Acq92OGYhHpkDbAzYvMKn+pxOckHvmh2kJgPYPYDZwuBioicNLLR18ahIlsbSbzdCrO
-	ThJ4fIxlVdZmvQEvwyzLgew5Lz1GrgY+Q8HAWD2xDsnvJOx+yXnZOWSJzkgNG6N6XbyMHiLo8il
-	CIbIZIir7F3v0OD6+YiOJ723gyjmoV+LJELdDiP1SAo9Sa2yVyuFuq4arua/zWcMmu1guGHX9i6
-	rlGayNDDncCYsnk1n6wB4QiIj45+R961t41C2GkXYknSCi5ikig4LZd+kg9KtserGk6EYYfLmnG
-	5P2Kb07GxYt8O30eOMMrVdNnDz4vIf7AONgMHFjTxw6AqDE5qY+N2VRv8X5iWp3uMoEQC+VdmO/
-	QK1/4FS2ihrX+25D710LS7jA3qVi4TfbM4YLGeaCh1BXxdAc48qIZ3JOaqWW4KPiGA81JuiIlZM
-	ooGGDx2NxuGLOY+9INWuH/IOfSeg==
-X-Received: by 2002:a05:600c:674a:b0:490:5057:f5f7 with SMTP id 5b1f17b1804b1-49050580a91mr191550915e9.11.1779741556671;
-        Mon, 25 May 2026 13:39:16 -0700 (PDT)
-Received: from localhost ([213.55.168.64])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4904561f682sm293045095e9.13.2026.05.25.13.39.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 May 2026 13:39:15 -0700 (PDT)
-From: Hannes Diethelm <hannes.diethelm@gmail.com>
-To: xenomai@lists.linux.dev,
-	rpm@xenomai.org
-Cc: Hannes Diethelm <hannes.diethelm@gmail.com>
-Subject: [PATCH] core: net: document udp-demo server client
-Date: Mon, 25 May 2026 22:37:25 +0200
-Message-ID: <20260525203818.11519-1-hannes.diethelm@gmail.com>
-X-Mailer: git-send-email 2.47.3
+        bh=jNbfcp2z2XBwQW1VAfcPav8swezzDWFvYAIMYbhZc/E=;
+        b=BSMuuh0/6oFTlUcuCczzze0neXOK81ZDOUYaYlxwq+Jb9gL0dAMdSb2VSrLrz2/Ptc
+         vt89bz2DdXceXS2Xmd18wcR0T4x9yTeXxobi0canBAHjzi1MlGOzW9DRDFerKCkH1C3c
+         wcZyR7gqvIVlgq3wdYn0s+2kHsay4H+POAcP51jr03zHZaunYG5aWJSDiZNxtfYSEXUP
+         O2Spw6Ew8gCiMANGK0odCPGdVEOZhM9HNks4+pggqseh5UAcI6FIMTZ3XW2nBEojmWEg
+         FQMlgtnEh/L+vsH0brrwybSuH0/SbgJj17saQYjpkK/DImPm3OLf/gtgWi9hbtNGA4zj
+         5TwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779742957; x=1780347757;
+        h=in-reply-to:from:content-language:references:cc:to:subject
+         :user-agent:mime-version:date:message-id:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=jNbfcp2z2XBwQW1VAfcPav8swezzDWFvYAIMYbhZc/E=;
+        b=Zcq9+MIfaU3ZcV6edC2aMPJx3jSwCBPToQ8gDYs9vMA40bipYCCQQ6T/hpIqKF5KQP
+         eWQNeV2t9mgp6HxIRaz9nuet8K/j8hoLTfDa/DQ0+rNk2FDldgB91Z61kZcT/MA64YuE
+         TOjnBnCVG5uoOMvXorEimWjRGo7/P2WfUIVfFQCd7LReK7k+cM3xVMPQzejHE7y0S6lW
+         SzSDfYOYqCMSkCfdKnrr6FLdTZUe6nI3TZusJej2SUO0o2YisXQ2mzCM65/1OEJfrDgj
+         P+yOJH2wBchZJqSfJ+zOlsbPr4hHh3okxD0352udDwFtpWceAJwxq62GnBibsDoQwqul
+         ue4w==
+X-Gm-Message-State: AOJu0YxnIOn2tmzrYGPJs705yhxvala+a+BeFmQ+lMT5b5374p4mOR0k
+	vCByzJepMIkxXQWEBuQy4gM9+Ekj5nntkA1+gt748F3/btKG8HhuS03J
+X-Gm-Gg: Acq92OH05QjCgzCabTWfBzorPLy2T2C2EFtZfElP+FCCWAJxs/tMZ5ZS06LkMW0I6aK
+	Srk8FeYTUSJ1NwYH+mf7hpeQ/wf2cRxW5jKvC/8aMDzdaT+Gko1DC2XNI/fPNqvCnboigiWdGT6
+	A4jeC79HLfLHxmEseaRDC45HTnlNT78XHJlBboEYkSC3HhfmMZdundqI/kaWJnmAbDT5S1mdZRS
+	B1G1+X6REv03Llh6S7KW9Z7GPVyLjx3en98CN/0tCG9rwltqgK21F34UIp1koilAnPTPHCaKS09
+	P1MysyObSoOtMBHRP9L+Eyq6A33Y0y+xht93Cm6tLtCTO31ddgJapifdSetj8K86M/OArZy6lkC
+	6aB3QZv355GAvhl4bvVe9Es80ogCUEm+/MTare8SYDyNou3cdLUhsjL4SeAHsvt5Vq/yFot1nFf
+	CpTroTg7RR9ycAOm18XllOR+hhN+Huf7c=
+X-Received: by 2002:a05:600c:3b13:b0:490:598a:226b with SMTP id 5b1f17b1804b1-490598a2290mr142280765e9.28.1779742956925;
+        Mon, 25 May 2026 14:02:36 -0700 (PDT)
+Received: from [192.168.1.3] ([213.55.168.64])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4904527f7f7sm405634605e9.7.2026.05.25.14.02.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 May 2026 14:02:35 -0700 (PDT)
+Content-Type: multipart/mixed; boundary="------------jPPeI1srnlHvuRp7Z0gieMq9"
+Message-ID: <05e115e3-6dcb-4eba-8cf9-3510f0891621@gmail.com>
+Date: Mon, 25 May 2026 23:02:33 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] tidbits: net-udp: add server and client mode
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev
+References: <20260523201044.12938-1-hannes.diethelm@gmail.com>
+ <87cxyjph49.fsf@xenomai.org>
+Content-Language: en-US
+From: Hannes Diethelm <hannes.diethelm@gmail.com>
+In-Reply-To: <87cxyjph49.fsf@xenomai.org>
 
-Also document broadcast mode and fix mistakes
----
- content/core/net/udp-demo.md | 123 ++++++++++++++++++++++++++++++++---
- 1 file changed, 114 insertions(+), 9 deletions(-)
+This is a multi-part message in MIME format.
+--------------jPPeI1srnlHvuRp7Z0gieMq9
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-diff --git a/content/core/net/udp-demo.md b/content/core/net/udp-demo.md
-index 2b7807f..3f4aa9c 100644
---- a/content/core/net/udp-demo.md
-+++ b/content/core/net/udp-demo.md
-@@ -21,7 +21,8 @@ is out-of-band capable.
- The general usage of this demo is as follows:
- 
- ```
--oob-net-udp -a <IP-address> [-p <port>][-m <text>][-n <msgcount>][-i <iterations>][-d][-s][-R|-S]
-+oob-net-udp -a <IP-address> [-p <port>][-m <text>][-n <msgcount>][-i <iterations>]
-+  [-w <wait-time-us>][-d][-s][-b][-T|-R|-C|-S]
- ```
- 
- where:
-@@ -40,16 +41,27 @@ where:
-   
- - -i<iterations> defines the number of datagrams which should be sent
-   or received.
--  
-+
-+- -w<wait-time-us> is the time in us before a new package is sent. This is valid
-+  for _transmitter_ / _client_. (defaults to 1000000)
-+
- - -d raises the verbosity of the demo to debug mode, such as
-   displaying the content of the packets received.
-   
- - -s tames down the verbosity of the demo to silent mode, no output
-   will be produced in this mode.
-+
-+- -b enables broadcast mode. This is only valid for _transmitter_.
-   
- - -R switches the demo to _receiver_ mode.
- 
--- -S switches the demo to _sender_ mode.
-+- -T switches the demo to _transmitter_ mode.
-+
-+- -S switches the demo to _server_ mode. This mode receives a packet from a client and
-+  immediately sends a response to the address / port where the package was received from.
-+
-+- -C switches the demo to _client_ mode. This mode sends a packet to a server and waits
-+  for a response. The round trip time is measured.
- 
- You need to set up a basic out-of-band network as described by this
- [document]({{% relref "core/net/setup#evl-net-setup-vlan" %}}). For
-@@ -69,24 +81,29 @@ peers [set up for out-of-band communications]({{% relref
-   network device with a IPv4 address set to 10.10.10.10
- ```
- ~# /usr/bin/oob-net-udp -a 10.10.10.10 -R
--== sender mode (=> 127.0.0.1:42042)
-+== receiver mode (<= 10.10.10.10:42042)
-+bind--------
-+IP-Address: 10.10.10.10
-+Port:       42042
-+Family:     2
- = 14 bytes received: Mellow sword!
- = 14 bytes received: Mellow sword!
- = 14 bytes received: Mellow sword!
- ```
- 
--## Running the UDP sender {#evl-net-udp-sender}
-+## Running the UDP transmitter (sender) {#evl-net-udp-sender}
- 
--In its receiver form (`-S` switch is given), the UDP demo program
-+In its transmitter form (`-T` switch is given), the UDP demo program
- emits datagrams to the specified address and port (42042 by default).
- 
- > On the second host which has established an out-of-band port on some
-   network device with a IPv4 address set to 10.10.10.11
- ```
--~# /usr/bin/oob-net-udp -a 10.10.10.10 -S
-+~# /usr/bin/oob-net-udp -a 10.10.10.11 -T
-+== sender mode (=> 10.10.10.11:42042)
- ```
- 
--## Running the demo in loopback mode
-+## Running the transmit / receive demo in loopback mode
- 
- As mentioned earlier, you can run this simple demo on the loopback
- device of a single machine, as follows:
-@@ -96,7 +113,10 @@ device of a single machine, as follows:
- ~# oob-net-udp -R -a 127.0.0.1&
- [1] 516
- == receiver mode (<= 127.0.0.1:42042)
--== bound to port 42042
-+bind--------
-+IP-Address: 127.0.0.1
-+Port:       42042
-+Family:     2
- 
- ~# oob-net-udp -S -a 127.0.0.1 
- == sender mode (=> 127.0.0.1:42042)
-@@ -107,6 +127,91 @@ device of a single machine, as follows:
- = 14 bytes received: Mellow sword!
- ...
- ```
-+
-+## Running the UDP server {#evl-net-udp-server}
-+
-+In its server form (`-S` switch is given), the UDP demo program
-+waits for datagram on the specified address / port and immediately sends
-+an answer to the the address / port where the package was received from.
-+Say we have two peers [set up for out-of-band communications]({{% relref
-+"core/net/setup" %}}):
-+
-+> On the first host which has established an out-of-band port on some
-+  network device with a IPv4 address set to 10.10.10.10
-+```
-+~# /usr/bin/oob-net-udp -a 10.10.10.10 -S
-+== server mode (<= 10.10.10.10:42042)
-+bind--------
-+IP-Address: 10.10.10.10
-+Port:       42042
-+Family:     2
-+= 14 bytes received: Mellow sword!
-+= 14 bytes received: Mellow sword!
-+= 14 bytes received: Mellow sword!
-+```
-+
-+## Running the UDP client {#evl-net-udp-client}
-+
-+In its client form (`-C` switch is given), the UDP demo program
-+emits a datagram to the specified address and port (42042 by default).
-+After the datagram is sent, it waits for a response and prints the round trip time.
-+The call to connect automatically assigns a port where the client will receive the
-+response.
-+
-+> On the second host which has established an out-of-band port on some
-+  network device with a IPv4 address set to 10.10.10.11
-+```
-+~# /usr/bin/oob-net-udp -a 10.10.10.10 -C
-+== client mode (<= 10.10.10.10:42042)
-+send address--------
-+IP-Address: 10.10.10.10
-+Port:       42042
-+Family:     2
-+receive address--------
-+IP-Address: 10.10.10.10
-+Port:       42671
-+Family:     2
-+= 15 bytes received rtt=56.6us: Mellow sword!
-+= 15 bytes received rtt=57.1us: Mellow sword!
-+= 15 bytes received rtt=51.7us: Mellow sword!
-+```
-+
-+## Running the server / client demo in loopback mode
-+
-+As mentioned earlier, you can run this simple demo on the loopback
-+device of a single machine, as follows:
-+
-+```
-+~# evl net -ei lo
-+~# oob-net-udp -S -a 127.0.0.1 -m "I am the server" &
-+[1] 516
-+== server mode (<= 127.0.0.1:42042)
-+bind--------
-+IP-Address: 127.0.0.1
-+Port:       42042
-+Family:     2
-+
-+~# oob-net-udp -C -a 127.0.0.1 -m "I am the client"
-+== client mode (<= 127.0.0.1:42042)
-+send address--------
-+IP-Address: 127.0.0.1
-+Port:       42042
-+Family:     2
-+receive address--------
-+IP-Address: 127.0.0.1
-+Port:       37204
-+Family:     2
-+... (the server is now displaying the incoming frames)
-+... (the client is also displaying the incoming frames and the round trip time rtt)
-+... (the messages might be displayed out of order)
-+= 16 bytes received: I am the client
-+= 16 bytes received rtt=51.7us: I am the server
-+= 16 bytes received: I am the client
-+= 16 bytes received rtt=56.6us: I am the server
-+= 16 bytes received: I am the client
-+= 16 bytes received rtt=57.1us: I am the server
-+...
-+```
- ---
- 
- {{<lastmodified>}}
--- 
-2.47.3
+Am 25.05.26 um 18:51 schrieb Philippe Gerum:
+> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+> 
+>> Additionally, fix memory leaks
+>>
+>> Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
+>> ---
+>>   tidbits/oob-net-udp.c | 258 +++++++++++++++++++++++++++++++++++++++---
+>>   1 file changed, 240 insertions(+), 18 deletions(-)
+>>
+> 
+> Merged, thanks. Would you mind sending a patch to update the related doc
+> on the website at [1], regarding the new -S mode? The pages can be
+> downloaded from [2].
+> 
+> [1] https://v4.xenomai.org/core/net/udp-demo/index.html
+> [2] https://gitlab.com/Xenomai/xenomai4/website.git
+> 
 
+Sure, done. Is there any way to preview the website? I just used a markdown
+preview, I hope it did the job and I did not introduce format issues.
+
+By the way:
+I had sometimes issues in my VM. It might just be that I am using two
+interfaces on the same subnet and disabled the non-oob one after
+enabling the oob mode on the other one or there might also be an issue
+somewhere in the evl code. I am not yet able to reproduce it clearly.
+Sometimes it is all fine, sometimes not. Until now, it did not happen on
+the real PC or in loopback mode. But I also don't have a good setup with two
+PC's to really test this (yet). I will follow up when I have something reproducible.
+
+If it went wrong, the following happened. After a reboot, all was fine again:
+In client mode, the sender address was from the wrong interface:
+192.168.255.245 instead of 192.168.122.155
+
+In server mode, the sender address was just 0.0.0.0.
+
+In both cases, there is no answer from the other side due to the response was sent
+to the wrong IP address.
+
+I think the issue is not in my code, due to when I use the standard libc functions
+in otherwise the same code, the issue disappeared. Attached the code I was using
+for tests and also on the host to test server/client.
+
+Regards
+Hannes
+--------------jPPeI1srnlHvuRp7Z0gieMq9
+Content-Type: text/x-csrc; charset=UTF-8; name="net-udp.c"
+Content-Disposition: attachment; filename="net-udp.c"
+Content-Transfer-Encoding: base64
+
+LyoKICogU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IE1JVAogKgogKiBUaGlzIHRpZGJpdCBk
+ZW1vbnN0cmF0ZXMgb3V0LW9mLWJhbmQgbmV0d29ya2luZywgYnkKICogdHJhbnNtaXR0aW5n
+Wy1UXS9yZWNlaXZpbmdbLVJdIFVEUCBwYWNrZXRzIHRvL2Zyb20gYSBwYXJ0aWN1bGFyIElQ
+CiAqIGFkZHJlc3NbLWFdIGFuZCBwb3J0Wy1wXS4KICoKICogVGhlIHNlcnZlciBtb2RlIFst
+U10gcmVjZWl2ZXMgYSBwYWNrZXQgZnJvbSBvbiBhIGdpdmVuCiAqIHBvcnQgYW5kIHNlbmRz
+IGEgcmVzcG9uc2UgdG8gdGhlIHNlbmRlcidzIGlwL3BvcnQuCiAqCiAqIFRoZSBjbGllbnQg
+bW9kZSBbLUNdIHNlbmRzIGEgcGFja2V0IHRvIGEgcG9ydC9pcAogKiBhbmQgcmVjZWl2ZXMg
+dGhlIHJlc3BvbnNlIGZyb20gYSBzZXJ2ZXIuIFRoZSByb3VuZAogKiB0cmlwIHRpbWUgaXMg
+bWVhc3VyZWQuCiAqCiAqIFRoZSBjbGllbnQgYW5kIHRoZSB0cmFuc21pdHRlciB3YWl0IFst
+d10gYmVmb3JlIHNlbmRpbmcgdGhlCiAqIG5leHQgcGFja2V0IHRvIG5vdCBmbG9vZCB0aGUg
+bmV0d29yay4KICoKICogRm9yIHRoZSBvdGhlciBzaWRlLCB0aGUgc2FtZSBjb2RlIGNhbiBi
+ZSB1c2VkLgogKiBGb3IgdHJhbnNtaXR0aW5nIC8gY2xpZW50IG9uIGEgbm9uLW9vYiBwb3J0
+OiBzb2NhdCAtIFVEUC1MSVNURU46PHBvcnQ+CiAqIEZvciByZWNlaXZpbmcgLyBzZXJ2ZXIg
+b24gYSBub24tb29iIHBvcnQ6IHNvY2F0IC0gVURQOjxSZW1vdGUtSVAtYWRkcmVzcz46PHBv
+cnQ+CiAqCiAqIFNlZSBodHRwczovL3Y0Lnhlbm9tYWkub3JnL2NvcmUvbmV0LyBmb3IgZGV0
+YWlscy4KICovCgojaW5jbHVkZSA8cHRocmVhZC5oPgojaW5jbHVkZSA8ZXJyb3IuaD4KI2lu
+Y2x1ZGUgPGVycm5vLmg+CiNpbmNsdWRlIDxzdGRpby5oPgojaW5jbHVkZSA8c3RkbGliLmg+
+CiNpbmNsdWRlIDxzdGRib29sLmg+CiNpbmNsdWRlIDx1bmlzdGQuaD4KI2luY2x1ZGUgPG1l
+bW9yeS5oPgojaW5jbHVkZSA8Z2V0b3B0Lmg+CiNpbmNsdWRlIDxzdHJpbmcuaD4KI2luY2x1
+ZGUgPHN5cy9zb2NrZXQuaD4KI2luY2x1ZGUgPHN5cy9pb2N0bC5oPgojaW5jbHVkZSA8YXJw
+YS9pbmV0Lmg+CgpzdGF0aWMgaW50IHZlcmJvc2l0eSA9IDE7CgpzdGF0aWMgdm9pZCB1c2Fn
+ZSh2b2lkKQp7CglmcHJpbnRmKHN0ZGVyciwgIm9vYi1uZXQtdWRwIC1hIDxJUC1hZGRyZXNz
+PiBbLXAgPHBvcnQ+XSIKCQkiWy1tIDx0ZXh0Pl1bLW4gPG1zZ2NvdW50Pl1bLUkgPGl0ZXJh
+dGlvbnM+XVstaSA8aW50ZXJmYWNlPl1bLXcgPHdhaXRfdGltZV91cz5dIgoJCSJbLWRdWy1z
+XVstVHwtUnwtQ3wtU11bLWJdXG4iKTsKfQoKc3RhdGljIHZvaWQgcHJpbnRfYWRkcihjaGFy
+KiB0ZXh0LCBzdHJ1Y3Qgc29ja2FkZHJfaW4gKmFkZHIpewogICAgY2hhciBpcF9zdHJbSU5F
+VF9BRERSU1RSTEVOKzFdOwogICAgaW5ldF9udG9wKEFGX0lORVQsICYoYWRkci0+c2luX2Fk
+ZHIpLCBpcF9zdHIsIHNpemVvZihpcF9zdHIpKTsKICAgIHByaW50ZigiJXMtLS0tLS0tLVxu
+IiwgdGV4dCk7CiAgICBwcmludGYoIklQLUFkZHJlc3M6ICVzXG4iLCBpcF9zdHIpOwogICAg
+cHJpbnRmKCJQb3J0OiAgICAgICAlZFxuIiwgbnRvaHMoYWRkci0+c2luX3BvcnQpKTsKICAg
+IHByaW50ZigiRmFtaWx5OiAgICAgJWRcbiIsIGFkZHItPnNpbl9mYW1pbHkpOwp9CgpzdGF0
+aWMgdm9pZCBzZW5kZXIoaW50IHMsIGNvbnN0IGNoYXIgKnRleHQsIGludCBtY291bnQsCgkJ
+c3RydWN0IHNvY2thZGRyX2luICphZGRyLCBpbnQgaXRlciwgdXNlY29uZHNfdCBkZWxheSkK
+ewoJc3RydWN0IG1zZ2hkciBtc2doZHI7CglzdHJ1Y3QgaW92ZWMgaW92OwoJaW50IG4sIHRs
+ZW47Cglzc2l6ZV90IHJldDsKCWNoYXIgKnRidWY7CgoJdGxlbiA9IChzdHJsZW4odGV4dCkg
+KyAxKSAqIG1jb3VudDsKCXRidWYgPSBtYWxsb2ModGxlbik7CglpZiAoIXRidWYpCgkJZXJy
+b3IoMSwgRU5PTUVNLCAiY2Fubm90IGNyZWF0ZSBtZXNzYWdlIik7CgoJKnRidWYgPSAnXDAn
+OwoJZm9yIChuID0gMDsgbiA8IG1jb3VudDsgbisrKQoJCXN0cmNhdCh0YnVmLCB0ZXh0KTsg
+LyogeWVwLCBsYXp5Li4gKi8KCglmb3IgKG4gPSAwOyAhaXRlciB8fCBuIDwgaXRlcjsgbisr
+KSB7CgkJaW92Lmlvdl9iYXNlID0gdGJ1ZjsKCQlpb3YuaW92X2xlbiA9IHRsZW47CgkJbXNn
+aGRyLm1zZ19pb3YgPSAmaW92OwoJCW1zZ2hkci5tc2dfaW92bGVuID0gMTsKCQltc2doZHIu
+bXNnX2NvbnRyb2wgPSBOVUxMOwoJCW1zZ2hkci5tc2dfY29udHJvbGxlbiA9IDA7CgkJbXNn
+aGRyLm1zZ19uYW1lID0gYWRkcjsKCQltc2doZHIubXNnX25hbWVsZW4gPSBzaXplb2YoKmFk
+ZHIpOwoJCW1zZ2hkci5tc2dfZmxhZ3MgPSAwOwoJCXJldCA9IHNlbmRtc2cocywgJm1zZ2hk
+ciwgMCk7CgkJaWYgKHJldCA8IDApCgkJCWVycm9yKDEsIGVycm5vLCAic2VuZG1zZygpIGZh
+aWxlZCIpOwoKCQl1c2xlZXAoZGVsYXkpOwoJfQoKCWZyZWUodGJ1Zik7Cn0KCnN0YXRpYyB2
+b2lkIHJlY2VpdmVyKGludCBzLCBzdHJ1Y3Qgc29ja2FkZHJfaW4gKmFkZHIsIGludCBpdGVy
+KQp7CglzdHJ1Y3Qgc29ja2FkZHJfaW4gX2FkZHI7Cglzb2NrbGVuX3QgbGVuID0gc2l6ZW9m
+KF9hZGRyKTsKCXN0cnVjdCBtc2doZHIgbXNnaGRyOwoJc3RydWN0IGlvdmVjIGlvdjsKCWNo
+YXIgcmJ1ZlsxNjM4NF07Cglzc2l6ZV90IHJldDsKCWludCBuOwoKCXJldCA9IGJpbmQocywg
+KHN0cnVjdCBzb2NrYWRkciAqKWFkZHIsIHNpemVvZigqYWRkcikpOwoJaWYgKHJldCA8IDAp
+CgkJZXJyb3IoMSwgZXJybm8sICJiaW5kKCkgZmFpbGVkIik7CgoJcmV0ID0gZ2V0c29ja25h
+bWUocywgKHN0cnVjdCBzb2NrYWRkciAqKSZfYWRkciwgJmxlbik7CglpZiAocmV0IDwgMCkK
+CQllcnJvcigxLCBlcnJubywgImdldHNvY2tuYW1lKCkgZmFpbGVkIik7CgoJaWYgKHZlcmJv
+c2l0eSkKCQlwcmludF9hZGRyKCJiaW5kIiwgYWRkcik7CgoJZm9yIChuID0gMDsgIWl0ZXIg
+fHwgbiA8IGl0ZXI7IG4rKykgewoJCW1lbXNldChyYnVmLCAwLCBzaXplb2YocmJ1ZikpOwoJ
+CWlvdi5pb3ZfYmFzZSA9IHJidWY7CgkJaW92Lmlvdl9sZW4gPSBzaXplb2YocmJ1Zik7CgkJ
+bXNnaGRyLm1zZ19pb3YgPSAmaW92OwoJCW1zZ2hkci5tc2dfaW92bGVuID0gMTsKCQltc2do
+ZHIubXNnX2NvbnRyb2wgPSBOVUxMOwoJCW1zZ2hkci5tc2dfY29udHJvbGxlbiA9IDA7CgkJ
+bXNnaGRyLm1zZ19uYW1lID0gJl9hZGRyOwoJCW1zZ2hkci5tc2dfbmFtZWxlbiA9IHNpemVv
+ZihfYWRkcik7CgkJbXNnaGRyLm1zZ19mbGFncyA9IDA7CgkJcmV0ID0gcmVjdm1zZyhzLCAm
+bXNnaGRyLCAwKTsKCQlpZiAocmV0IDwgMCkKCQkJZXJyb3IoMSwgZXJybm8sICJyZWN2bXNn
+KCkgZmFpbGVkIik7CgkJcHJpbnRmKCI9ICV6ZCBieXRlcyByZWNlaXZlZCIsIHJldCk7CgkJ
+aWYgKG1zZ2hkci5tc2dfZmxhZ3MgJiBNU0dfVFJVTkMpCgkJCXByaW50ZigiIChUUlVOQ0FU
+RUQpIik7CgkJcHJpbnRmKCI6ICUuKnNcbiIsIChpbnQpcmV0LCByYnVmKTsKCX0KfQoKc3Rh
+dGljIHZvaWQgY2xpZW50KGludCBzLCBjb25zdCBjaGFyICp0ZXh0LCBpbnQgbWNvdW50LAoJ
+CXN0cnVjdCBzb2NrYWRkcl9pbiAqYWRkciwgaW50IGl0ZXIsIHVzZWNvbmRzX3QgZGVsYXkp
+CnsKCXN0cnVjdCBzb2NrYWRkcl9pbiBfYWRkcjsKCXNvY2tsZW5fdCBsZW4gPSBzaXplb2Yo
+X2FkZHIpOwoJc3RydWN0IG1zZ2hkciBtc2doZHI7CglzdHJ1Y3QgaW92ZWMgaW92OwoJaW50
+IG4sIHRsZW47Cglzc2l6ZV90IHJldDsKCWNoYXIgKnRidWY7CgljaGFyIHJidWZbMTYzODRd
+OwoJc3RydWN0IHRpbWVzcGVjIHRzX3R4OwoJc3RydWN0IHRpbWVzcGVjIHRzX3J4OwoJZG91
+YmxlIHJ0dF91cyA9IDAuMDsKCgl0bGVuID0gKHN0cmxlbih0ZXh0KSArIDEpICogbWNvdW50
+OwoJdGJ1ZiA9IG1hbGxvYyh0bGVuKTsKCWlmICghdGJ1ZikKCQllcnJvcigxLCBFTk9NRU0s
+ICJjYW5ub3QgY3JlYXRlIG1lc3NhZ2UiKTsKCgkqdGJ1ZiA9ICdcMCc7Cglmb3IgKG4gPSAw
+OyBuIDwgbWNvdW50OyBuKyspCgkJc3RyY2F0KHRidWYsIHRleHQpOyAvKiB5ZXAsIGxhenku
+LiAqLwoKCXJldCA9IGNvbm5lY3QocywgKHN0cnVjdCBzb2NrYWRkciAqKWFkZHIsIHNpemVv
+ZigqYWRkcikpOwoJaWYgKHJldCA8IDApCgkJZXJyb3IoMSwgZXJybm8sICJjb25uZWN0KCkg
+ZmFpbGVkIik7CgoJaWYgKHZlcmJvc2l0eSkKCQlwcmludF9hZGRyKCJzZW5kIGFkZHJlc3Mi
+LCBhZGRyKTsKCglyZXQgPSBnZXRzb2NrbmFtZShzLCAoc3RydWN0IHNvY2thZGRyICopJl9h
+ZGRyLCAmbGVuKTsKCWlmIChyZXQgPCAwKQoJCWVycm9yKDEsIGVycm5vLCAiZ2V0c29ja25h
+bWUoKSBmYWlsZWQiKTsKCglpZiAodmVyYm9zaXR5KQoJCXByaW50X2FkZHIoInJlY2VpdmUg
+YWRkcmVzcyIsICZfYWRkcik7CgoJZm9yIChuID0gMDsgIWl0ZXIgfHwgbiA8IGl0ZXI7IG4r
+KykgewoJCWNsb2NrX2dldHRpbWUoQ0xPQ0tfTU9OT1RPTklDLCAmdHNfdHgpOwoKCQlpb3Yu
+aW92X2Jhc2UgPSB0YnVmOwoJCWlvdi5pb3ZfbGVuID0gdGxlbjsKCQltc2doZHIubXNnX2lv
+diA9ICZpb3Y7CgkJbXNnaGRyLm1zZ19pb3ZsZW4gPSAxOwoJCW1zZ2hkci5tc2dfY29udHJv
+bCA9IE5VTEw7CgkJbXNnaGRyLm1zZ19jb250cm9sbGVuID0gMDsKCQltc2doZHIubXNnX25h
+bWUgPSBhZGRyOwoJCW1zZ2hkci5tc2dfbmFtZWxlbiA9IHNpemVvZigqYWRkcik7CgkJbXNn
+aGRyLm1zZ19mbGFncyA9IDA7CgkJcmV0ID0gc2VuZG1zZyhzLCAmbXNnaGRyLCAwKTsKCQlp
+ZiAocmV0IDwgMCkKCQkJZXJyb3IoMSwgZXJybm8sICJzZW5kbXNnKCkgZmFpbGVkIik7CgkJ
+aWYgKHZlcmJvc2l0eSA+IDEpCgkJCXByaW50X2FkZHIoInNlbnQgdG8iLCBhZGRyKTsKCgkJ
+bWVtc2V0KHJidWYsIDAsIHNpemVvZihyYnVmKSk7CgkJLyogcmVjdm1zZyBzdG9yZXMgcmVt
+b3RlIGFkZHJlc3MgKi8KCQltZW1zZXQoJl9hZGRyLCAwLCBzaXplb2YoX2FkZHIpKTsKCQlp
+b3YuaW92X2Jhc2UgPSByYnVmOwoJCWlvdi5pb3ZfbGVuID0gc2l6ZW9mKHJidWYpOwoJCW1z
+Z2hkci5tc2dfaW92ID0gJmlvdjsKCQltc2doZHIubXNnX2lvdmxlbiA9IDE7CgkJbXNnaGRy
+Lm1zZ19jb250cm9sID0gTlVMTDsKCQltc2doZHIubXNnX2NvbnRyb2xsZW4gPSAwOwoJCW1z
+Z2hkci5tc2dfbmFtZSA9ICZfYWRkcjsKCQltc2doZHIubXNnX25hbWVsZW4gPSBzaXplb2Yo
+X2FkZHIpOwoJCW1zZ2hkci5tc2dfZmxhZ3MgPSAwOwoJCXJldCA9IHJlY3Ztc2cocywgJm1z
+Z2hkciwgMCk7CgoJCWNsb2NrX2dldHRpbWUoQ0xPQ0tfTU9OT1RPTklDLCAmdHNfcngpOwoJ
+CXJ0dF91cyA9ICh0c19yeC50dl9zZWMgLSB0c190eC50dl9zZWMpICogMTAwMDAwMC4wICsg
+KHRzX3J4LnR2X25zZWMgLSB0c190eC50dl9uc2VjKSAvIDEwMDAuMDsKCgkJaWYgKHJldCA8
+IDApCgkJCWVycm9yKDEsIGVycm5vLCAicmVjdm1zZygpIGZhaWxlZCIpOwoJCWlmICh2ZXJi
+b3NpdHkgPiAxKQoJCQlwcmludF9hZGRyKCJyZWNlaXZlZCBmcm9tIiwgJl9hZGRyKTsKCQlw
+cmludGYoIj0gJXpkIGJ5dGVzIHJlY2VpdmVkIHJ0dD0lLjFmdXMiLCByZXQsIHJ0dF91cyk7
+CgkJaWYgKG1zZ2hkci5tc2dfZmxhZ3MgJiBNU0dfVFJVTkMpCgkJCXByaW50ZigiIChUUlVO
+Q0FURUQpIik7CgkJcHJpbnRmKCI6ICUuKnNcbiIsIChpbnQpcmV0LCByYnVmKTsKCgkJdXNs
+ZWVwKGRlbGF5KTsKCX0KCglmcmVlKHRidWYpOwp9CgpzdGF0aWMgdm9pZCBzZXJ2ZXIoaW50
+IHMsIGNvbnN0IGNoYXIgKnRleHQsIGludCBtY291bnQsCgkJc3RydWN0IHNvY2thZGRyX2lu
+ICphZGRyLCBpbnQgaXRlcikKewoJc3RydWN0IHNvY2thZGRyX2luIF9hZGRyOwoJc3RydWN0
+IG1zZ2hkciBtc2doZHI7CglzdHJ1Y3QgaW92ZWMgaW92OwoJaW50IG4sIHRsZW47Cglzc2l6
+ZV90IHJldDsKCWNoYXIgKnRidWY7CgljaGFyIHJidWZbMTYzODRdOwoKCXRsZW4gPSAoc3Ry
+bGVuKHRleHQpICsgMSkgKiBtY291bnQ7Cgl0YnVmID0gbWFsbG9jKHRsZW4pOwoJaWYgKCF0
+YnVmKQoJCWVycm9yKDEsIEVOT01FTSwgImNhbm5vdCBjcmVhdGUgbWVzc2FnZSIpOwoKCSp0
+YnVmID0gJ1wwJzsKCWZvciAobiA9IDA7IG4gPCBtY291bnQ7IG4rKykKCQlzdHJjYXQodGJ1
+ZiwgdGV4dCk7IC8qIHllcCwgbGF6eS4uICovCgoJcmV0ID0gYmluZChzLCAoc3RydWN0IHNv
+Y2thZGRyICopYWRkciwgc2l6ZW9mKCphZGRyKSk7CglpZiAocmV0IDwgMCkKCQllcnJvcigx
+LCBlcnJubywgImJpbmQoKSBmYWlsZWQiKTsKCglpZiAodmVyYm9zaXR5KQoJCXByaW50X2Fk
+ZHIoImJpbmQiLCBhZGRyKTsKCglmb3IgKG4gPSAwOyAhaXRlciB8fCBuIDwgaXRlcjsgbisr
+KSB7CgkJbWVtc2V0KHJidWYsIDAsIHNpemVvZihyYnVmKSk7CgkJLyogcmVjdm1zZyBzdG9y
+ZXMgcmVtb3RlIGFkZHJlc3MsIHdlIHJlc3BvbmQgdG8gdGhpcyBhZGRyZXNzICovCgkJbWVt
+c2V0KCZfYWRkciwgMCwgc2l6ZW9mKF9hZGRyKSk7CgkJaW92Lmlvdl9iYXNlID0gcmJ1ZjsK
+CQlpb3YuaW92X2xlbiA9IHNpemVvZihyYnVmKTsKCQltc2doZHIubXNnX2lvdiA9ICZpb3Y7
+CgkJbXNnaGRyLm1zZ19pb3ZsZW4gPSAxOwoJCW1zZ2hkci5tc2dfY29udHJvbCA9IE5VTEw7
+CgkJbXNnaGRyLm1zZ19jb250cm9sbGVuID0gMDsKCQltc2doZHIubXNnX25hbWUgPSAmX2Fk
+ZHI7CgkJbXNnaGRyLm1zZ19uYW1lbGVuID0gc2l6ZW9mKF9hZGRyKTsKCQltc2doZHIubXNn
+X2ZsYWdzID0gMDsKCQlyZXQgPSByZWN2bXNnKHMsICZtc2doZHIsIDApOwoJCWlmIChyZXQg
+PCAwKQoJCQllcnJvcigxLCBlcnJubywgInJlY3Ztc2coKSBmYWlsZWQiKTsKCQlpZiAodmVy
+Ym9zaXR5ID4gMSkKCQkJcHJpbnRfYWRkcigicmVjZWl2ZWQgZnJvbSIsICZfYWRkcik7CgkJ
+cHJpbnRmKCI9ICV6ZCBieXRlcyByZWNlaXZlZCIsIHJldCk7CgkJaWYgKG1zZ2hkci5tc2df
+ZmxhZ3MgJiBNU0dfVFJVTkMpCgkJCXByaW50ZigiIChUUlVOQ0FURUQpIik7CgkJcHJpbnRm
+KCI6ICUuKnNcbiIsIChpbnQpcmV0LCByYnVmKTsKCgkJaW92Lmlvdl9iYXNlID0gdGJ1ZjsK
+CQlpb3YuaW92X2xlbiA9IHRsZW47CgkJbXNnaGRyLm1zZ19pb3YgPSAmaW92OwoJCW1zZ2hk
+ci5tc2dfaW92bGVuID0gMTsKCQltc2doZHIubXNnX2NvbnRyb2wgPSBOVUxMOwoJCW1zZ2hk
+ci5tc2dfY29udHJvbGxlbiA9IDA7CgkJbXNnaGRyLm1zZ19uYW1lID0gJl9hZGRyOwoJCW1z
+Z2hkci5tc2dfbmFtZWxlbiA9IHNpemVvZihfYWRkcik7CgkJbXNnaGRyLm1zZ19mbGFncyA9
+IDA7CgkJcmV0ID0gc2VuZG1zZyhzLCAmbXNnaGRyLCAwKTsKCQlpZiAocmV0IDwgMCkKCQkJ
+ZXJyb3IoMSwgZXJybm8sICJzZW5kbXNnKCkgZmFpbGVkIik7CgkJaWYgKHZlcmJvc2l0eSA+
+IDEpCgkJCXByaW50X2FkZHIoInNlbnQgdG8iLCAmX2FkZHIpOwoJfQoKCWZyZWUodGJ1Zik7
+Cn0KCnR5cGVkZWYgZW51bSB7CglUUkFOU01JVCwKCVJFQ0VJVkUsCglTRVJWRVIsCglDTElF
+TlQKfSB1ZHBfbW9kZV90OwoKaW50IG1haW4oaW50IGFyZ2MsIGNoYXIgKmFyZ3ZbXSkKewoJ
+aW50IHMsIGMsIG1jb3VudCA9IDEsIGl0ZXIgPSAwLCBwb3J0ID0gNDIwNDIsIG9uID0gMTsK
+CWNvbnN0IGNoYXIgKnRleHQgPSAiTWVsbG93IHN3b3JkIVxuIiwgKmlmYWNlID0gTlVMTDsK
+CWJvb2wgYmNhc3QgPSBmYWxzZTsKCXVkcF9tb2RlX3QgbW9kZSA9IFJFQ0VJVkU7CglzdHJ1
+Y3Qgc29ja2FkZHJfaW4gYWRkcjsKCWNvbnN0IGNoYXIgKmlwID0gTlVMTDsKCXNzaXplX3Qg
+cmV0OwoJdXNlY29uZHNfdCBkZWxheT0xMDAwMDAwOwoKCXdoaWxlICgoYyA9IGdldG9wdChh
+cmdjLCBhcmd2LCAiYTptOm46aTp3Okk6cDpkc1RSQ1NiIikpICE9IEVPRikgewoJCXN3aXRj
+aCAoYykgewoJCWNhc2UgJ2EnOgoJCQlpcCA9IG9wdGFyZzsKCQkJYnJlYWs7CgkJY2FzZSAn
+ZCc6CgkJCXZlcmJvc2l0eSA9IDI7CgkJCWJyZWFrOwoJCWNhc2UgJ3MnOgoJCQl2ZXJib3Np
+dHkgPSAwOwoJCQlicmVhazsKCQljYXNlICdtJzoKCQkJdGV4dCA9IG9wdGFyZzsKCQkJYnJl
+YWs7CgkJY2FzZSAnbic6CgkJCW1jb3VudCA9IGF0b2kob3B0YXJnKTsKCQkJYnJlYWs7CgkJ
+Y2FzZSAnaSc6CgkJCWlmYWNlID0gb3B0YXJnOwoJCQlicmVhazsKCQljYXNlICd3JzoKCQkJ
+ZGVsYXkgPSBhdG9pKG9wdGFyZyk7CgkJCWJyZWFrOwoJCWNhc2UgJ0knOgoJCQlpdGVyID0g
+YXRvaShvcHRhcmcpOwoJCQlicmVhazsKCQljYXNlICdwJzoKCQkJcG9ydCA9IGF0b2kob3B0
+YXJnKTsKCQkJYnJlYWs7CgkJY2FzZSAnYic6CgkJCWJjYXN0ID0gdHJ1ZTsgLyogRm9yY2Ug
+bW9kZSwgZS5nLiBmb3IgZGlyZWN0ZWQgYnJvYWRjYXN0ICovCgkJCWJyZWFrOwoJCWNhc2Ug
+J1QnOgoJCQltb2RlID0gVFJBTlNNSVQ7CgkJCWJyZWFrOwoJCWNhc2UgJ1InOgoJCQltb2Rl
+ID0gUkVDRUlWRTsKCQkJYnJlYWs7CgkJY2FzZSAnQyc6CgkJCW1vZGUgPSBDTElFTlQ7CgkJ
+CWJyZWFrOwoJCWNhc2UgJ1MnOgoJCQltb2RlID0gU0VSVkVSOwoJCQlicmVhazsKCQlkZWZh
+dWx0OgoJCQl1c2FnZSgpOwoJCQlleGl0KDEpOwoJCX0KCX0KCglpZiAoaXAgPT0gTlVMTCkg
+ewoJCXVzYWdlKCk7CgkJZXhpdCgyKTsKCX0KCgltZW1zZXQoJmFkZHIsIDAsIHNpemVvZihh
+ZGRyKSk7CglhZGRyLnNpbl9mYW1pbHkgPSBBRl9JTkVUOwoJYWRkci5zaW5fcG9ydCA9IGh0
+b25zKHBvcnQpOwoJaWYgKCFzdHJjbXAoaXAsICJicm9hZGNhc3QiKSkgewoJCWFkZHIuc2lu
+X2FkZHIuc19hZGRyID0gSU5BRERSX0JST0FEQ0FTVDsKCQliY2FzdCA9IHRydWU7Cgl9IGVs
+c2UgaWYgKCFpbmV0X3B0b24oQUZfSU5FVCwgaXAsICZhZGRyLnNpbl9hZGRyKSkgewoJCWVy
+cm9yKDEsIEVJTlZBTCwgImludmFsaWQgSVAgYWRkcmVzcyIpOwoJfSBlbHNlIGlmIChhZGRy
+LnNpbl9hZGRyLnNfYWRkciA9PSBJTkFERFJfQlJPQURDQVNUKSB7CgkJYmNhc3QgPSB0cnVl
+OwoJfQoKCS8qCgkgKiBHZXQgYW4gVURQIHNvY2tldCB3aXRoIG91dC1vZi1iYW5kIGNhcGFi
+aWxpdGllcy4KCSAqLwoJcyA9IHNvY2tldChBRl9JTkVULCBTT0NLX0RHUkFNLCAwKTsKCWlm
+IChzIDwgMCkKCQllcnJvcigxLCBlcnJubywgImNhbm5vdCBjcmVhdGUgb3V0LW9mLWJhbmQg
+VURQIHNvY2tldCIpOwoKCWlmIChpZmFjZSkgewoJCWlmIChzZXRzb2Nrb3B0KHMsIFNPTF9T
+T0NLRVQsIFNPX0JJTkRUT0RFVklDRSwgaWZhY2UsIHN0cmxlbihpZmFjZSkpKQoJCQllcnJv
+cigxLCBlcnJubywgInNldHNvY2tvcHQoU09fQklORFRPREVWSUNFKSIpOwoJCWlmICh2ZXJi
+b3NpdHkpCgkJCXByaW50ZigiPT0gYm91bmQgdG8gJXNcbiIsIGlmYWNlKTsKCX0KCglpZiAo
+bW9kZSA9PSBUUkFOU01JVCkgewoJCWlmIChiY2FzdCkgewoJCQlyZXQgPSBzZXRzb2Nrb3B0
+KHMsIFNPTF9TT0NLRVQsIFNPX0JST0FEQ0FTVCwgJm9uLCBzaXplb2Yob24pKTsKCQkJaWYg
+KHJldCkKCQkJCWVycm9yKDEsIGVycm5vLCAiY2Fubm90IGVuYWJsZSBicm9hZGNhc3QgZm9y
+IFVEUCBzb2NrZXQiKTsKCQl9CgoJCWlmICh2ZXJib3NpdHkpCgkJCXByaW50ZigiPT0gc2Vu
+ZGVyIG1vZGUgKD0+ICVzOiVkKVxuIiwgYmNhc3QgPyAiW2Jyb2FkY2FzdF0iIDogaXAsIHBv
+cnQpOwoKCQlzZW5kZXIocywgdGV4dCwgbWNvdW50LCAmYWRkciwgaXRlciwgZGVsYXkpOwoJ
+fSBlbHNlIGlmIChtb2RlID09IFJFQ0VJVkUpIHsKCQlpZiAodmVyYm9zaXR5KQoJCQlwcmlu
+dGYoIj09IHJlY2VpdmVyIG1vZGUgKDw9ICVzOiVkKVxuIiwgaXAsIHBvcnQpOwoKCQlyZWNl
+aXZlcihzLCAmYWRkciwgaXRlcik7Cgl9IGVsc2UgaWYgKG1vZGUgPT0gQ0xJRU5UKSB7CgkJ
+aWYgKHZlcmJvc2l0eSkKCQkJcHJpbnRmKCI9PSBjbGllbnQgbW9kZSAoPD0gJXM6JWQpXG4i
+LCBpcCwgcG9ydCk7CgoJCWNsaWVudChzLCB0ZXh0LCBtY291bnQsICZhZGRyLCBpdGVyLCBk
+ZWxheSk7Cgl9IGVsc2UgaWYgKG1vZGUgPT0gU0VSVkVSKSB7CgkJaWYgKHZlcmJvc2l0eSkK
+CQkJcHJpbnRmKCI9PSBzZXJ2ZXIgbW9kZSAoPD0gJXM6JWQpXG4iLCBpcCwgcG9ydCk7CgoJ
+CXNlcnZlcihzLCB0ZXh0LCBtY291bnQsICZhZGRyLCBpdGVyKTsKCX0gZWxzZSB7CgkJZXJy
+b3IoMSwgMCwgIk1vZGUgbm90IGltcGxlbWVudGVkIik7Cgl9CgoJcmV0dXJuIDA7Cn0K
+
+--------------jPPeI1srnlHvuRp7Z0gieMq9--
