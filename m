@@ -1,68 +1,72 @@
-Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E44D43C0A1C
-	for <xenomai@lists.linux.dev>; Tue, 26 May 2026 18:30:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DE1B314A98
+	for <xenomai@lists.linux.dev>; Tue, 26 May 2026 18:30:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779820211; cv=none; b=bhL0UUfc5T5E7AVciNalRWAGQVf7BC1vfj4jTACHWs/w7ASCxJ8Xr0Gv9PHfMj+mmXIwUA6Rmhl/k0A/zgzwICqsC/1842SyscfPAhRTtzjs64utvZrmWXRjmqcLALXegaXmNiXkXNX37uwno91yQmjB03YBWzz9Wkf1PJbMH3g=
+	t=1779820228; cv=none; b=Q29HKmg26WpDzU0hnMpTJo2UC7zeB2szSdVBXdqNi044MftLwUajszp8CufHpQXTjhtw1eQKYMtSDt5G/+Wf21wwYFNdHGzjxdC5Msxgu8WiYG9R4ZIL19m8P6r+PGe+LSVZlapBhKjC16CK5o3Kd9y64PEYWLlChlPNuAKCYuk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779820211; c=relaxed/simple;
-	bh=fXeg9287IrZ8iIBS11hPErLFe5InysDs9CgPYkXWBz0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=hbMOsul+RPLKS7C5aNw9w4XBI4PVFjqcRZ4Kw2DLT3YdlkSJAhB6HNwIstaCLbgMOA31IGpDLvhZQsRuzg/Ucc5+T25RTG/50GjecQ6eiATTSuPEiZb17Gt9VdWH7YjeEGwxIJD2NEhwAg7Fn03TqBlrHRmk8EtDHoJOsVczTuo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AdSnePH6; arc=none smtp.client-ip=209.85.128.47
+	s=arc-20240116; t=1779820228; c=relaxed/simple;
+	bh=DY51fApW96oNoJcNIJtwhoeMV/9O48Drqk0F2vb1eOE=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=KNsUAxWGxhNkzsBow3RC5WxIi3YD4l2IVZUhYktMrQ7wItfHgmsRZucK/Y6RuyoW2fJWdn99RA32PMSEb/N4g51ITp1dtdvsh62MddOVpzPh/tkVQzKWWupucwb3ISAMSGWIhOVpMmlgD4rrlFW/u/TKNFUhlivNbPy63H4rbQU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=qdDBqV0R; arc=none smtp.client-ip=209.85.128.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AdSnePH6"
-Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-49041e84237so37210045e9.1
-        for <xenomai@lists.linux.dev>; Tue, 26 May 2026 11:30:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qdDBqV0R"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-49068493267so17462285e9.1
+        for <xenomai@lists.linux.dev>; Tue, 26 May 2026 11:30:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779820208; x=1780425008; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=HI7SdlZ2sAa0x5rHYiR1gObOpYTPrttHHTaKVZjc2Mg=;
-        b=AdSnePH6SzQ7r6PRx+5QBOEo0C91e8qeWBV9NnZ/DIN/pkJ+3yjciOOTwWZSXSViDB
-         vL/eS5c+dQ44JiDeuAi+XxbGsmERi+PeeEmcqnNgz+hlJGgF+86uVRnVwGdzxebw5gYz
-         KezNdPnuBKsA0ctFDjzfKFu2lsba8dN/NVZqh+WVuR9sD0Yw6Kr/YOi0sGWpkcs9gD8I
-         VLk0CVnbBXSrh6djVvDF3psykU0H4P2B2wphaf2czOew0+12jC/RHbzSn/c3GxjqZg+S
-         nlvi0zd7aQCgYhj/eQh34/LiQW1QiYG4FErrEXutKydEoopOVX9/iFHHh9vhFdpSHbQy
-         2Xjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779820208; x=1780425008;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20251104; t=1779820226; x=1780425026; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HI7SdlZ2sAa0x5rHYiR1gObOpYTPrttHHTaKVZjc2Mg=;
-        b=SE6xnY51q6XZWB/CXiMiljK/VqpT3CsxCqkH8yuDo7vetP/ERUVNzmH0W99QMBh1EB
-         eouf0vhy8QLpl06bLbkohz7WYA4tYzFuoF1L6EcvgooVkOMNRjUgpNJP4F+lp/MaFteD
-         Sh++sqdcmc5OEgpaXxEMl0Al3LBGRtMf3D9cOq8pznEyLbIDUoIozdQJK1jVrAq6azhW
-         Tfu0K51lfrGMLwV1+5FTSxlyLLUoq8ufspCXuT6BfNzJSfDo7MVJONcy+bH4wsJDQW6w
-         GyCLu0aJ6jt0NHYF+Wk9coXDAQUUbuH3lhmTac8PaqXZ2WlbkwJl3BQE9YMN4nawJNnU
-         9cNg==
-X-Gm-Message-State: AOJu0YzPRb1xzr/2CKfZi4PlqReeYZjQYxGGjR5Zf0mSSKst4TZSo5+F
-	OXepQcI93YxJOJR9EleS2xpphml1WYluP904V6xl7y9bnrwEoAjMnFRmmzOxTg==
-X-Gm-Gg: Acq92OHrJIOyW8Vmb76iTRUmCgfGVPhM0hBkRWXoFYeKwhn8pGqkJU2G+X1dIvkZ7w+
-	d9UsHPezRBtO2mdPDIRb+mtoWnW/6Y0Bgx2qfDuXa0x2fjO9qdAZqNEFPFE6HyoO/vCPKtzcUYX
-	9OarV7R7sGrPKCzbFscad+4x6V9MNv6nmeDE4qn5sI2MVr4OVXVfP71VpiHtxgtGyz7gtscjNZk
-	ZHuq3KIfrqacyN5VCTWDaoBDfvtzFos/F8Z4BL2n7NwhsyThoKIEBzx91q/oVYxTKUH0zhqBR94
-	gj3mgPu5vj8674O41PKbnG/ZwIix3YOIYLXGkmVW2fG2TLPxroQb8J+Q01M86OZXaefOfCK+l2J
-	0wLBCSVoAqYUm35lgTGP7ELtFnp5Hai9HIBazQxW6/9pQuh3l/VF1YK1wk5nXGBeMPXb+VPxcBZ
-	US8Zc6NRO25Vj5bbqzEZOZI23UCUJL5n2gU+8z
-X-Received: by 2002:a05:600c:a402:b0:48f:e230:29f5 with SMTP id 5b1f17b1804b1-490426b0c92mr235100665e9.16.1779820208058;
-        Tue, 26 May 2026 11:30:08 -0700 (PDT)
+        bh=IF4PMRPk59Xbd57xSMy5PE91UT89NK+lRKUekADIx44=;
+        b=qdDBqV0RAIzoDV6xIpYtIy1fg8KK+6lHQJ6zBdNvyeCZcrE6jJdcXuDjoSMCgvOeWV
+         vC+N30fL6CrQFgb9kGUzCYnMP9Hub2GE3zGTJbuhfN8QSn6i4NvcBnHjdNYTToOEkgaW
+         vXe+3yH6RtcOx22BRhRqOgvxL9V5m2F1GPKOmG5NyF41/8Y1NgwvWhhjEC99Yr5cslEX
+         zTvpMhYg1AFoXnGdZnXJTajmwx/KdmGy4RWJ9xGV/1evKdmUX56DfLhxCgUGWbrwF2gy
+         U+pBgnY0NxJCx8F24D5tBBRuiQXDa9UXJi/EeoXk2kC1rfvJbdhaQVdM+1f/Lsec8Iio
+         QIQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779820226; x=1780425026;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=IF4PMRPk59Xbd57xSMy5PE91UT89NK+lRKUekADIx44=;
+        b=KXTKOAknKIzmSaIXdFKAa8piC+wo5ydKW/nIFGBLNK0GJjjs0sNAVr3OVsWpDEvkIJ
+         0cjQQg0OidwrpedSKKbSJz3q4gHg+AJzNarNSQNdVZzFTV0cUnC0BbODvOrYIT+Xt+4d
+         PxwpGZ0vw5c1BnkKzFW2pxkgjqqeDsF2S0jOoj438qAc9Qqqd91j/KMI/jdv8BKddzi8
+         S1nS4ppb31sKDAhOMXQztL9PnyllnQRc05/yPcS5LBaf5IhlL26G/p3u2tUpWGnbKCsD
+         EO54fuPE94PQkgs9G3SfO4urQaVjpftDnJIY33epHNjPWjdiEJivLFr4NCCg3jd/5loT
+         TG2g==
+X-Gm-Message-State: AOJu0YzPUJKEA8cwQ4a9Ev4x6jo7K4bCVeSL7QForzZPOdLO2QKi0XAQ
+	IIsNK7tqG1VnGBrDQyWvvxgU2wg25ZskjGG4hWiHWPcCAZLwApBmb33bPObJCQ==
+X-Gm-Gg: Acq92OHBuw79l+ukTs3Ef+CwNdYxz3SPiIZnHiWuA3E75MfADHB9WTBSqh706wc35mP
+	eClVnRPCsEJ+M24Qz7dY2cx6NZJdXhUrqcnVAzBkIhdl7Th+HjDHU5L6rabUdSUiJlxnKZUgvGF
+	5LsQt6ssD5G6h9vAzBKuzuGJpAGT8XVq8yjPcm8ccgxWoHlGqK7DuOoEHq8aM3AjEci4LF8PARl
+	CNLyAzKFWCP86q5XCBo5dN/NhHcsElNuKzMssnmpZfISrN3jKZHzpNkREl7AByTvZ79pAD1YAh0
+	AzhCDfRcrZl30/Iy7nMaP2zniYWKn//tM5Ws8m/f3TjajU5KxcHSkyn4e2HLnAFdVlhTEAY1Fuf
+	xfBGorRfDs47QNJKDOz0NpXDibMYnSNUzwvuYj2rOfhYdug0fEkXSzvAMSO0O7hEbvEP1nvX0YQ
+	mj+fZW7UiYit9S1w5HhEX8BDv0t0/GplqACzB6
+X-Received: by 2002:a05:600c:8484:b0:490:3b87:be0e with SMTP id 5b1f17b1804b1-490428e3362mr340694775e9.29.1779820225465;
+        Tue, 26 May 2026 11:30:25 -0700 (PDT)
 Received: from localhost ([213.55.168.64])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-49042ce923asm114428385e9.35.2026.05.26.11.30.05
+        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-45edb5c44e4sm19051f8f.36.2026.05.26.11.30.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2026 11:30:07 -0700 (PDT)
+        Tue, 26 May 2026 11:30:25 -0700 (PDT)
 From: Hannes Diethelm <hannes.diethelm@gmail.com>
 To: xenomai@lists.linux.dev,
 	rpm@xenomai.org
 Cc: Hannes Diethelm <hannes.diethelm@gmail.com>
-Subject: [PATCH 0/1] fix error handling in client
-Date: Tue, 26 May 2026 20:29:22 +0200
-Message-ID: <20260526182923.4576-1-hannes.diethelm@gmail.com>
+Subject: [PATCH 1/1] tidbits: net-udp: fix error handling in client
+Date: Tue, 26 May 2026 20:29:23 +0200
+Message-ID: <20260526182923.4576-2-hannes.diethelm@gmail.com>
 X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20260526182923.4576-1-hannes.diethelm@gmail.com>
+References: <20260526182923.4576-1-hannes.diethelm@gmail.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -71,20 +75,35 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hello
+Also fix mistake in comment
 
-While writing the doc, I found a mistake in the last patch. If desired, I can also resend the
-last patch with this fixes in one patch.
-
-Regards
-Hannes
-
-Hannes Diethelm (1):
-  tidbits: net-udp: fix error handling in client
-
+Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
+---
  tidbits/oob-net-udp.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
+diff --git a/tidbits/oob-net-udp.c b/tidbits/oob-net-udp.c
+index 3cd7cb2..11b8459 100644
+--- a/tidbits/oob-net-udp.c
++++ b/tidbits/oob-net-udp.c
+@@ -8,7 +8,7 @@
+  * The server mode [-S] receives a packet from on a given
+  * port and sends a response to the sender's ip/port.
+  *
+- * The client mode [-S] sends a packet to a port/ip
++ * The client mode [-C] sends a packet to a port/ip
+  * and receives the response from a server. The round
+  * trip time is measured.
+  *
+@@ -443,6 +443,8 @@ int main(int argc, char *argv[])
+ 		 */
+ 		ret = evl_net_solicit(s, (const struct sockaddr *)&addr,
+ 				EVL_NEIGH_PERMANENT);
++		if (ret)
++			error(1, -ret, "evl_net_solicit()");
+ 
+ 		client(s, text, mcount, &addr, iter, delay);
+ 	} else if (mode == SERVER) {
 -- 
 2.47.3
 
