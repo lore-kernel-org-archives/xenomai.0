@@ -1,39 +1,68 @@
-Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1B5C3AF64E
-	for <xenomai@lists.linux.dev>; Tue, 26 May 2026 16:12:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E44D43C0A1C
+	for <xenomai@lists.linux.dev>; Tue, 26 May 2026 18:30:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779811965; cv=none; b=Xh/ldRVx4kHfVgeI8rZ5DZNqf7xa6rkDAFanhpJI8IbNJCLpKA4VRjHZFXzLIxO+uLhpgcA/Hxc7IBWwTH7/7yuAtxjXwHWNLw0cH9vjRIPg8VbPoW4twuUJpYuCEFN7pe0KIO5N2IeGgpo/HqPtYi0ZS0OhoOcdqZdcE5c8sxk=
+	t=1779820211; cv=none; b=bhL0UUfc5T5E7AVciNalRWAGQVf7BC1vfj4jTACHWs/w7ASCxJ8Xr0Gv9PHfMj+mmXIwUA6Rmhl/k0A/zgzwICqsC/1842SyscfPAhRTtzjs64utvZrmWXRjmqcLALXegaXmNiXkXNX37uwno91yQmjB03YBWzz9Wkf1PJbMH3g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779811965; c=relaxed/simple;
-	bh=a0MGPNFeflhWyUWiaYYJzLgtFySQE74vTD1YjiOq0Mk=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qTZ+kwZvBZByqfIf8JwwpbWj05jc+E8KjU6k/vCAZIPlKFw6H8/nLEJR4i0NTIBAAW8tblr9ExVrukB5QfcUCSTRFrraNx2jM1K4gvlYZz5SA/JW+WHSx/4LqOWkIgqYJNEKZb5oVAcSaCz+jCgE5LRQVLNENhLmEJq0AKLis7I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=g1/Eig7U; arc=none smtp.client-ip=185.136.64.228
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1779820211; c=relaxed/simple;
+	bh=fXeg9287IrZ8iIBS11hPErLFe5InysDs9CgPYkXWBz0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=hbMOsul+RPLKS7C5aNw9w4XBI4PVFjqcRZ4Kw2DLT3YdlkSJAhB6HNwIstaCLbgMOA31IGpDLvhZQsRuzg/Ucc5+T25RTG/50GjecQ6eiATTSuPEiZb17Gt9VdWH7YjeEGwxIJD2NEhwAg7Fn03TqBlrHRmk8EtDHoJOsVczTuo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AdSnePH6; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="g1/Eig7U"
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20260526103201bbf79842f90002070f
-        for <xenomai@lists.linux.dev>;
-        Tue, 26 May 2026 12:32:02 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=0ifdY4TlmLAHGxKjjexvhxwtQ/4ipdPx7daV/3DTB4k=;
- b=g1/Eig7UDy9OU5dztbJDnD57zARHDwayBFF3DlXtMAVu9LaEMyq6XKEp4fIhiP7b1fuHWU
- fjQw7vaqg6GZu56CojoqjLTy60S0Yqv2HXnZUXhj7UbrXjVK67n+fM1QU5Smgosm5qHueEsA
- dKyA9/6i7xJDUkuKjxsgxsa/iF5vfM4OlWM5HS3DiTrnhCDsPQD5jxl8ksDY83QHenrQOC3d
- icMDnihUZAJlKJh0hlM/Om5UHSE9ET/GC7dV8oFOmT1Xyxy+DddKtCKapRdZI02eb31iyhei
- cGYDQf0XjPR7cNJy/d74WSf7/uak0FuLfdKJ70Q5rayFu04ny1V6Nb2w==;
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: xenomai@lists.linux.dev
-Cc: Philippe Gerum <rpm@xenomai.org>,
-	Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH Dovetail 6.18, 7.0] lib/vdso: Fix build failure around CONFIG_GENERIC_VDSO_CLOCKSOURCE
-Date: Tue, 26 May 2026 12:31:57 +0200
-Message-ID: <20260526103158.2476350-1-florian.bezdeka@siemens.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AdSnePH6"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-49041e84237so37210045e9.1
+        for <xenomai@lists.linux.dev>; Tue, 26 May 2026 11:30:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1779820208; x=1780425008; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=HI7SdlZ2sAa0x5rHYiR1gObOpYTPrttHHTaKVZjc2Mg=;
+        b=AdSnePH6SzQ7r6PRx+5QBOEo0C91e8qeWBV9NnZ/DIN/pkJ+3yjciOOTwWZSXSViDB
+         vL/eS5c+dQ44JiDeuAi+XxbGsmERi+PeeEmcqnNgz+hlJGgF+86uVRnVwGdzxebw5gYz
+         KezNdPnuBKsA0ctFDjzfKFu2lsba8dN/NVZqh+WVuR9sD0Yw6Kr/YOi0sGWpkcs9gD8I
+         VLk0CVnbBXSrh6djVvDF3psykU0H4P2B2wphaf2czOew0+12jC/RHbzSn/c3GxjqZg+S
+         nlvi0zd7aQCgYhj/eQh34/LiQW1QiYG4FErrEXutKydEoopOVX9/iFHHh9vhFdpSHbQy
+         2Xjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1779820208; x=1780425008;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HI7SdlZ2sAa0x5rHYiR1gObOpYTPrttHHTaKVZjc2Mg=;
+        b=SE6xnY51q6XZWB/CXiMiljK/VqpT3CsxCqkH8yuDo7vetP/ERUVNzmH0W99QMBh1EB
+         eouf0vhy8QLpl06bLbkohz7WYA4tYzFuoF1L6EcvgooVkOMNRjUgpNJP4F+lp/MaFteD
+         Sh++sqdcmc5OEgpaXxEMl0Al3LBGRtMf3D9cOq8pznEyLbIDUoIozdQJK1jVrAq6azhW
+         Tfu0K51lfrGMLwV1+5FTSxlyLLUoq8ufspCXuT6BfNzJSfDo7MVJONcy+bH4wsJDQW6w
+         GyCLu0aJ6jt0NHYF+Wk9coXDAQUUbuH3lhmTac8PaqXZ2WlbkwJl3BQE9YMN4nawJNnU
+         9cNg==
+X-Gm-Message-State: AOJu0YzPRb1xzr/2CKfZi4PlqReeYZjQYxGGjR5Zf0mSSKst4TZSo5+F
+	OXepQcI93YxJOJR9EleS2xpphml1WYluP904V6xl7y9bnrwEoAjMnFRmmzOxTg==
+X-Gm-Gg: Acq92OHrJIOyW8Vmb76iTRUmCgfGVPhM0hBkRWXoFYeKwhn8pGqkJU2G+X1dIvkZ7w+
+	d9UsHPezRBtO2mdPDIRb+mtoWnW/6Y0Bgx2qfDuXa0x2fjO9qdAZqNEFPFE6HyoO/vCPKtzcUYX
+	9OarV7R7sGrPKCzbFscad+4x6V9MNv6nmeDE4qn5sI2MVr4OVXVfP71VpiHtxgtGyz7gtscjNZk
+	ZHuq3KIfrqacyN5VCTWDaoBDfvtzFos/F8Z4BL2n7NwhsyThoKIEBzx91q/oVYxTKUH0zhqBR94
+	gj3mgPu5vj8674O41PKbnG/ZwIix3YOIYLXGkmVW2fG2TLPxroQb8J+Q01M86OZXaefOfCK+l2J
+	0wLBCSVoAqYUm35lgTGP7ELtFnp5Hai9HIBazQxW6/9pQuh3l/VF1YK1wk5nXGBeMPXb+VPxcBZ
+	US8Zc6NRO25Vj5bbqzEZOZI23UCUJL5n2gU+8z
+X-Received: by 2002:a05:600c:a402:b0:48f:e230:29f5 with SMTP id 5b1f17b1804b1-490426b0c92mr235100665e9.16.1779820208058;
+        Tue, 26 May 2026 11:30:08 -0700 (PDT)
+Received: from localhost ([213.55.168.64])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-49042ce923asm114428385e9.35.2026.05.26.11.30.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 May 2026 11:30:07 -0700 (PDT)
+From: Hannes Diethelm <hannes.diethelm@gmail.com>
+To: xenomai@lists.linux.dev,
+	rpm@xenomai.org
+Cc: Hannes Diethelm <hannes.diethelm@gmail.com>
+Subject: [PATCH 0/1] fix error handling in client
+Date: Tue, 26 May 2026 20:29:22 +0200
+Message-ID: <20260526182923.4576-1-hannes.diethelm@gmail.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -41,33 +70,21 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-During the forward porting to 6.18 the signature of
-update_generic_mmio() changed and introduced one undeclared variable.
+Hello
 
-At the same time the name of the kconfig variable got invalid.
+While writing the doc, I found a mistake in the last patch. If desired, I can also resend the
+last patch with this fixes in one patch.
 
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- kernel/time/vsyscall.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Regards
+Hannes
 
-diff --git a/kernel/time/vsyscall.c b/kernel/time/vsyscall.c
-index 13f6c9d91045..5fa096452dba 100644
---- a/kernel/time/vsyscall.c
-+++ b/kernel/time/vsyscall.c
-@@ -76,7 +76,8 @@ static inline void update_vdso_time_data(struct vdso_time_data *vdata, struct ti
- 
- static void update_generic_mmio(struct vdso_time_data *vdata, struct clocksource *cs)
- {
--#ifdef CONFIG_GENERIC_CLOCKSOURCE_VDSO
-+#ifdef CONFIG_GENERIC_VDSO_CLOCKSOURCE
-+	struct vdso_clock *vc = vdata->clock_data;
- 	u16 seq;
- 
- 	if (cs->vdso_type == (vc->cs_type_seq >> 16))
+Hannes Diethelm (1):
+  tidbits: net-udp: fix error handling in client
+
+ tidbits/oob-net-udp.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
 -- 
-2.54.0
+2.47.3
 
