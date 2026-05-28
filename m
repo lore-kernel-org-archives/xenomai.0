@@ -1,321 +1,651 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7010317143
-	for <xenomai@lists.linux.dev>; Wed, 27 May 2026 20:03:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 689E2196C7C
+	for <xenomai@lists.linux.dev>; Thu, 28 May 2026 06:39:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779912190; cv=none; b=E0hSiAlRGmlXvIKNVdC2HOk89OnzSoeeYiSaBMDxcrC9KhWyEabPbn1Spt9yNEoNaQES2qhYM/TNNzD+eRroHKDmUteBTYTYdcXhmFwozScFvVFexZ+t7nBaXzbGM/FKX/tFAJjqjUirwRdgx+qOjQaof2MPOfwxPBBPplx5Cdk=
+	t=1779950366; cv=none; b=KpS+0ZRh/xNP0IqbiXWtXUNtR9Ga9YJUVeDlDTQ5RoK/FbGpShjpVXk7nFB2a3yf3C04trBFOGDX23Q+MbqAyLAI8Wb2R2OCP5qqrP5XKH9dElGbgEI2/289C8oK8Q/KSve32qxL8snK5rZKDr1cxNrj9ztDFJ7dqVEwD2JDDns=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779912190; c=relaxed/simple;
-	bh=6OMxFKm0gPSUKbj1wE5SCV2c07cd+aRcnywe0GQRVHQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=AZwu0EGXdlei+ZUPB+CGEY+4YoxDNnfXUGecHLLMSBUeJCOR1ChRtInVXMszH/t/9hsRgrjBpKadUVmy24IpXFgTqah9Qf2r4Y7vmmbfQ99KTwy/F/SHtT7+IkASO+qSGz/GJpK7871oVssZuGrH49eTNLyCHBOtp2S++Gg0r2k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=koHBIknQ; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1779950366; c=relaxed/simple;
+	bh=yKRRVqJ0J0jK+xEKPAMoKMYw94MVbtwWhZCyw6wkrQs=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=XwM/gtms27yEOOqAGYDUKpiZJHFYNk7zxn369zC3ofeHXd8Y8mkhKPZSaCsA4x1fV6LZ6CDJkq5wqEFwskYS6oSIrDS3lad8z+Kxem6BEL/ZUA7eaGtVWGnISqhZr7B+/QQagLW6/5bFvtV/yEi8JtU1OYkEdw9YsclyhhTDfzU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=d+z6aeSM; arc=none smtp.client-ip=185.136.65.226
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="koHBIknQ"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4905e190c71so44407435e9.3
-        for <xenomai@lists.linux.dev>; Wed, 27 May 2026 13:03:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1779912187; x=1780516987; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=PAMfO5KNtSlNdxdaAX+b60YzRaVjIQPA93E42VeDcqU=;
-        b=koHBIknQtHcCnQf7hFr66jrKiDtjoRCyKA2h943iTG5FWTRJhUyGNXEOLtmdt7Tom9
-         DUxamoaicoMmLY/BQiz0Fr4Rx0pNDO+GP4FjeWZRkYeiEQsNbksh93BiFl19xsVylQig
-         +nRlHfQeez4bStQ/khZnPgc9UsbSXrvwHMfiNGZVR88UO54lCX9/TAK0hBUjs1NZY9eQ
-         j/TCovBRuvgH4Qg7HBmB+awTKyqGWbOcqSb5JNRUFG88KUmThIDNaS6cH0c34f/pgaQX
-         XuGsnmHZyylcdSCiGqPCMb9L1Vhx73POxxaKgjAGeSixDII6dIaVDdsFLOStdr67JD5G
-         lJLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1779912187; x=1780516987;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=PAMfO5KNtSlNdxdaAX+b60YzRaVjIQPA93E42VeDcqU=;
-        b=bjKNZAjIdwZvPcKPI3RkiCLWTJPajMpwS8cu4CrtypcwAiOKCclVvp8BaOjU0eT3QO
-         jqLF1VEcyFu25o+fshVxExTrKDWH1y76rBzzLb30i+M6LlKPh2dXZxtSZbRd2MCdjh1Z
-         IqoQ19gFNgokm5sEXSJJltU1l0pHNTNf5JHSyy7rHe1s7vv8WfWNhSDVowBotGF+B4xR
-         8R0oXkoMS1JCDmKsyR+mvBNiTi/UsXRWiNXzkHLeZTzae3KntQfXeQD/x5FYLPwc0pcB
-         VpTOKC3lJQSbO+TLFXrhgGSgPoj705yNLJlQJh+lZjHHs2gRQFuUTqImL97Zu0qUfi+U
-         MmTA==
-X-Gm-Message-State: AOJu0Yyq+CY6vU6zHellaTMPuAEkwHRVKYmUjR+qGQMWHES4md15jgZe
-	NVft7TuAY2lzgeDPdSSrZfM0p22CyRy/c528EPkoBqcbGoOc+DQwKQH5ohvtsg==
-X-Gm-Gg: Acq92OFU82Zxjxm5zTohTtCdZ7Ki4CfdcqNQen0e9KGBu8Bf3OIKaU7bjAo4vGLvDgh
-	18+eT29bKdsd9M1t5Fsr07TpMDV5tlR7ZYbXWnVWkwqw8AsLYsaPtWHEEQHvBrplXpsA925ntgQ
-	LT/AmRd2rTnks5J2wqEEpbUvxJ0VpNQulxe7GuvwWl2eB8VCXm6K2lwoZjFd0VXiWjRT2uZqfyZ
-	6kgY6HPr4UztSPzOFgBQ4fW06a0Odb0aHemdScvLfcMp4IUyfXSW0Dew0CphRdzS76ZP5Uh9laz
-	/2Q1beECMSU94k+AORGZ59l9QVROcUzEUyuh/0X8sSJX/A4PdunA+K64z9aUX7AtjPFJn79RTUN
-	VQFA/IrRpndjnnCDSJRornl1zL/HkFHWGg8GykfI8JYMwz2vsXbgXXMnGeQb1BrCpcv7OatgOx0
-	YMKR/Ue+onOCHV4ZriLV1gcm9NmqxUhZMrq/I7T4vf/Q==
-X-Received: by 2002:a05:600d:640f:10b0:490:3ff5:737f with SMTP id 5b1f17b1804b1-490426cefe0mr300262135e9.18.1779912186757;
-        Wed, 27 May 2026 13:03:06 -0700 (PDT)
-Received: from [192.168.1.3] ([213.55.168.64])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4908b7a70b9sm2102645e9.12.2026.05.27.13.03.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 May 2026 13:03:06 -0700 (PDT)
-Message-ID: <47be7249-b249-4b2d-aa29-868d14412d0e@gmail.com>
-Date: Wed, 27 May 2026 22:03:05 +0200
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="d+z6aeSM"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 2026052806391237273b8f900002073c
+        for <xenomai@lists.linux.dev>;
+        Thu, 28 May 2026 08:39:12 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=0T4TR1vtppr4LazjM8mFYe/RdLAEhUg0/c+lX9QGLGY=;
+ b=d+z6aeSMiwwFAz5260BpqJ5VEJVQdQ3fTbRFL/uXEWfTdpbB6DWeBAawZvJa1aqEkY50xE
+ aZ2w4sUoz+IEnPwSWAXUEdibHWdd3EvzcebD0cPEZq1VIG7rZiXZ+YEkUPhLT+C9NfrgJsLk
+ 0i+Fmk1vfrK/Zw9kqrNBPW1q0AacIlptqmmUYdwVEp8mSxbjtsijsE4lad7V/B+a4GyVEQmj
+ ju5PY18gac/PBZMAlcrxyO713OQ+su50KfWLwBmwkdhNxqaO4Obryc1/TvLLmU+B6hXrMFgZ
+ rmI83diloMIF5GnvAawCceHc6iPHIheEDXRA7yIhvb87uBMKHab330Cw==;
+Message-ID: <2c2db565533aa453c6099704580825aa5cce81e3.camel@siemens.com>
+Subject: Re: [PATCH dovetail v7 11/11] riscv: dovetail: add core support
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
+Cc: rpm@xenomai.org, jan.kiszka@siemens.com
+Date: Thu, 28 May 2026 08:39:12 +0200
+In-Reply-To: <20260430111101.1539377-12-tobias.schaffner@siemens.com>
+References: <20260430111101.1539377-1-tobias.schaffner@siemens.com>
+	 <20260430111101.1539377-12-tobias.schaffner@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] tidbits: net-udp: add server and client mode
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@lists.linux.dev
-References: <20260523201044.12938-1-hannes.diethelm@gmail.com>
- <87cxyjph49.fsf@xenomai.org> <05e115e3-6dcb-4eba-8cf9-3510f0891621@gmail.com>
- <34f6ff16-6e68-4529-9fa7-d9fbe99b46ad@gmail.com> <87bje0hdxg.fsf@xenomai.org>
-Content-Language: de-CH, en-US
-From: Hannes Diethelm <hannes.diethelm@gmail.com>
-In-Reply-To: <87bje0hdxg.fsf@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Am 27.05.26 um 21:04 schrieb Philippe Gerum:
-> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
-> 
->> Am 25.05.26 um 23:02 schrieb Hannes Diethelm:
->>> Am 25.05.26 um 18:51 schrieb Philippe Gerum:
->>>> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
->>>>
->>>>> Additionally, fix memory leaks
->>>>>
->>>>> Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
->>>>> ---
->>>>>    tidbits/oob-net-udp.c | 258 +++++++++++++++++++++++++++++++++++++++---
->>>>>    1 file changed, 240 insertions(+), 18 deletions(-)
->>>>>
->>>>
->>>> Merged, thanks. Would you mind sending a patch to update the related doc
->>>> on the website at [1], regarding the new -S mode? The pages can be
->>>> downloaded from [2].
->>>>
->>>> [1] https://v4.xenomai.org/core/net/udp-demo/index.html
->>>> [2] https://gitlab.com/Xenomai/xenomai4/website.git
->>>>
->>> Sure, done. Is there any way to preview the website? I just used a
->>> markdown
->>> preview, I hope it did the job and I did not introduce format issues.
->>> By the way:
->>> I had sometimes issues in my VM. It might just be that I am using two
->>> interfaces on the same subnet and disabled the non-oob one after
->>> enabling the oob mode on the other one or there might also be an issue
->>> somewhere in the evl code. I am not yet able to reproduce it clearly.
->>> Sometimes it is all fine, sometimes not. Until now, it did not happen on
->>> the real PC or in loopback mode. But I also don't have a good setup
->>> with two
->>> PC's to really test this (yet). I will follow up when I have
->>> something reproducible.
->>> If it went wrong, the following happened. After a reboot, all was
->>> fine again:
->>> In client mode, the sender address was from the wrong interface:
->>> 192.168.255.245 instead of 192.168.122.155
->>> In server mode, the sender address was just 0.0.0.0.
->>> In both cases, there is no answer from the other side due to the
->>> response was sent
->>> to the wrong IP address.
->>> I think the issue is not in my code, due to when I use the standard
->>> libc functions
->>> in otherwise the same code, the issue disappeared. Attached the code
->>> I was using
->>> for tests and also on the host to test server/client.
->>> Regards
->>> Hannes
->>
->> So, I was able to create something reproducible. I was a bit confused first
->> due to sometimes it worked, sometimes not. But this was my fault, not
->> rebooting before the test and not exactly using the same commands in the same order.
->>
->> All command blocks below where performed after a reboot.
->>
->> I have two network interfaces:
->> enp1s0: virtio
->> enp7s0: e1000e
->>
->> After boot:
->> enp1s0: 192.168.122.246 nm 255.255.255.0
->> enp7s0: No address
->>
->> First Scenario-------------------
->>
->> The client works fine:
->> dhclient enp7s0 # 192.168.122.155 nm 255.255.255.0
->> ifconfig enp1s0 down
->> evl net -ei enp7s0
->> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -C -p 5201 -m "Client"
->>
->> The server sometimes fails:
->> dhclient enp7s0 # 192.168.122.155 nm 255.255.255.0
->> ifconfig enp1s0 down
->> evl net -ei enp7s0
->> ./oob-net-udp -d -i enp7s0 -a 0.0.0.0 -S -p 5201 -m "Server"
->>
->> There is sometimes the error:
->> oob-net-udp: oob_sendmsg() failed: Operation now in progress
->> This goes away after a few tries and then it works afterwards.
->>
->> If I bind to the interface address instead of INADDR_ANY, same issue:
->> ./oob-net-udp -d -i enp7s0 -a 192.168.122.155 -S -p 5201 -m "Server"
->>
->> Second Scenario-------------------
->>
->> Here, I do not set an IP address for enp7s0. This was a mistake on my side. Disregard,
->> more careful testing showed the exact same behavior for posix / vanilla kernel. But it is
->> important for the third scenario.
->>
->> ifconfig enp1s0 down
->> ifconfig enp7s0 up
->> evl net -ei enp7s0
->> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501
->>
->> Here, the sender address shown in wireshark is 192.168.122.246. This is the address from enp1s0
->> that is disabled. Exactly the same for posix / debian kernel.
->>
->> ifconfig:
->> enp7s0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
->>          inet6 fe80::5054:ff:fe5a:79c5  prefixlen 64  scopeid 0x20<link>
->>          ether 52:54:00:5a:79:c5  txqueuelen 1000  (Ethernet)
->>          RX packets 15  bytes 960 (960.0 B)
->>          RX errors 28  dropped 0  overruns 0  frame 28
->>          TX packets 30  bytes 3332 (3.2 KiB)
->>          TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
->>          device interrupt 22  memory 0xfdc40000-fdc60000
->>
->> lo: flags=73<UP,LOOPBACK,RUNNING>  mtu 65536
->>          inet 127.0.0.1  netmask 255.0.0.0
->>          inet6 ::1  prefixlen 128  scopeid 0x10<host>
->>          loop  txqueuelen 1000  (Lokale Schleife)
->>          RX packets 28  bytes 2672 (2.6 KiB)
->>          RX errors 0  dropped 0  overruns 0  frame 0
->>          TX packets 28  bytes 2672 (2.6 KiB)
->>          TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
->>
->> Third scenario------------------
->>
->> Setting an IP address after evl net -ei and the first package sent doesn't work. It looks like
->> the info is copied once and not updated later, also not when disabled and enabled
->> again.
->>
->> The following does not work:
->> ifconfig enp1s0 down
->> ifconfig enp7s0 up 192.168.122.100
->> evl net -ei enp7s0
->> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501 # Fine, sender address is 192.168.122.100
->> evl net -di enp7s0
->> ifconfig enp7s0 192.168.122.110
->> evl net -ei enp7s0
->> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501 # Sender address is still 192.168.122.100, should be 192.168.122.110
->>
->> This works:
->> ifconfig enp1s0 down
->> ifconfig enp7s0 up
->> evl net -ei enp7s0
->> ifconfig enp7s0 192.168.122.155
->> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501 # Fine, the sender address is 192.168.122.155
->>
->> This also doesn't work and created the confusion:
->> ifconfig enp1s0 down
->> ifconfig enp7s0 up
->> evl net -ei enp7s0
->> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501 # Same behavior as in second scenario, sender address is 192.168.122.246
->> ifconfig enp7s0 192.168.122.155 #Note, setting the IP address is after the first package sent
->> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501 # Same behavior as in second scenario, sender address is 192.168.122.246
->> evl net -di enp7s0
->> evl net -ei enp7s0
->> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501 # Same behavior as in second scenario, sender address is 192.168.122.246
->> evl net -di enp7s0
->> ifconfig enp7s0 192.168.122.155
->> evl net -ei enp7s0
->> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501 # Same behavior as in second scenario, sender address is 192.168.122.246
->>
->> Can you reproduce this? It is of now importance for what I am using EVL for. I just discovered this while testing the server / client mode.
->> So no urgency from my side.
->>
-> 
-> I did not try to reproduce it yet, but reading this description, I would
-> most certainly see the same outcome. I believe this is all related to
-> the so-called "oob front caches" for ARP and IPv4 routing decisions EVL
-> maintains [1].
-> 
-> In light of that doc, what is most likely happening is:
-> 
-> - the EINPROGRESS status is EVL telling the caller that it could not
->    resolve either the dest ip using its route cache or the MAC address of
->    the destination in its ARP cache, so it had to relay the packet to the
->    in-band stage for transmit. IOW, the packet is outgoing, but the
->    end-to-end real-time guarantee you would have if the NIC driver was
->    oob-capable is lost for this particular transmit.
-> 
->    As the in-band stack does the proper resolution for that relayed
->    packet eventually, recording the results into its own neighbour and
->    routing tables, it also conveniently pass this information to some
->    dovetail hooks which EVL listens to, and therefore learns from,
->    feeding its front caches with it. This usually happens quickly after
->    the in-band transmit happens, but some delay may appear due to the
->    time required to receive an ARP reply message from a peer for
->    instance. This is what might make the behavior look slightly flaky at
->    times from a user perspective.
-> 
->    The way to make this deterministic (therefore without transient
->    EINPROGRESS error on first transmit) is by using explicit peer
->    solicitation as discussed in [2].
-> 
+On Thu, 2026-04-30 at 13:11 +0200, Tobias Schaffner wrote:
+> Add Dovetail co-kernel support for RISC-V, including, irq pipeline
+> integration, out-of-band aware trap handling and memory management.
+>=20
+> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+> ---
+>  arch/riscv/Kconfig                   |   2 +
+>  arch/riscv/include/asm/dovetail.h    |  23 ++++++
+>  arch/riscv/include/asm/mmu_context.h |   2 +
+>  arch/riscv/include/asm/syscall.h     |   6 ++
+>  arch/riscv/include/asm/thread_info.h |   8 +++
+>  arch/riscv/kernel/traps.c            | 102 ++++++++++++++++++++++-----
+>  arch/riscv/mm/context.c              |  20 +++++-
+>  arch/riscv/mm/fault.c                |  28 +++++---
+>  8 files changed, 162 insertions(+), 29 deletions(-)
+>  create mode 100644 arch/riscv/include/asm/dovetail.h
+>=20
+> diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+> index 0d8291a6c4da5..70ea8457e1f66 100644
+> --- a/arch/riscv/Kconfig
+> +++ b/arch/riscv/Kconfig
+> @@ -151,6 +151,7 @@ config RISCV
+>  	select HAVE_ARCH_USERFAULTFD_WP if 64BIT && MMU && USERFAULTFD && RISCV=
+_ISA_SVRSW60T59B
+>  	select HAVE_ARCH_VMAP_STACK if MMU && 64BIT
+>  	select HAVE_IRQ_PIPELINE
+> +	select HAVE_DOVETAIL
+>  	select HAVE_ASM_MODVERSIONS
+>  	select HAVE_CONTEXT_TRACKING_USER
+>  	select HAVE_DEBUG_KMEMLEAK
+> @@ -379,6 +380,7 @@ config AS_HAS_OPTION_ARCH
+> =20
+>  source "arch/riscv/Kconfig.socs"
+>  source "arch/riscv/Kconfig.errata"
+> +source "kernel/Kconfig.dovetail"
+> =20
+>  menu "Platform type"
+> =20
+> diff --git a/arch/riscv/include/asm/dovetail.h b/arch/riscv/include/asm/d=
+ovetail.h
+> new file mode 100644
+> index 0000000000000..ac08db99f4e92
+> --- /dev/null
+> +++ b/arch/riscv/include/asm/dovetail.h
+> @@ -0,0 +1,23 @@
+> +/*
+> +* SPDX-License-Identifier: GPL-2.0
+> +*
+> +* Copyright (C) 2024-2026 Tobias Schaffner
+> +*/
+> +#ifndef _ASM_RISCV_DOVETAIL_H
+> +#define _ASM_RISCV_DOVETAIL_H
+> +
+> +#if !defined(__ASSEMBLY__)
+> +#ifdef CONFIG_DOVETAIL
+> +
+> +static inline void arch_dovetail_exec_prepare(void)
+> +{ }
+> +
+> +static inline void arch_dovetail_switch_prepare(bool leave_inband)
+> +{ }
+> +
+> +static inline void arch_dovetail_switch_finish(bool enter_inband)
+> +{ }
+> +
+> +#endif /* CONFIG_DOVETAIL */
+> +#endif /* !__ASSEMBLY__ */
+> +#endif /* _ASM_RISCV_DOVETAIL_H */
+> diff --git a/arch/riscv/include/asm/mmu_context.h b/arch/riscv/include/as=
+m/mmu_context.h
+> index dbf27a78df6c8..a1ac9192d51c8 100644
+> --- a/arch/riscv/include/asm/mmu_context.h
+> +++ b/arch/riscv/include/asm/mmu_context.h
+> @@ -15,6 +15,8 @@
+> =20
+>  void switch_mm(struct mm_struct *prev, struct mm_struct *next,
+>  	struct task_struct *task);
+> +void switch_oob_mm(struct mm_struct *prev, struct mm_struct *next,
+> +	struct task_struct *task);
+> =20
+>  #define activate_mm activate_mm
+>  static inline void activate_mm(struct mm_struct *prev,
+> diff --git a/arch/riscv/include/asm/syscall.h b/arch/riscv/include/asm/sy=
+scall.h
+> index 8067e666a4ca6..12376b54268e0 100644
+> --- a/arch/riscv/include/asm/syscall.h
+> +++ b/arch/riscv/include/asm/syscall.h
+> @@ -117,6 +117,12 @@ static inline bool arch_syscall_is_vdso_sigreturn(st=
+ruct pt_regs *regs)
+>  	return false;
+>  }
+> =20
+> +static inline unsigned long syscall_get_arg0(struct task_struct *task,
+> +					     struct pt_regs *regs)
+> +{
+> +	return regs->orig_a0;
+> +}
+> +
+>  asmlinkage long sys_riscv_flush_icache(uintptr_t, uintptr_t, uintptr_t);
+> =20
+>  asmlinkage long sys_riscv_hwprobe(struct riscv_hwprobe *, size_t, size_t=
+,
+> diff --git a/arch/riscv/include/asm/thread_info.h b/arch/riscv/include/as=
+m/thread_info.h
+> index 8a9e85c6e6316..8153a4f263638 100644
+> --- a/arch/riscv/include/asm/thread_info.h
+> +++ b/arch/riscv/include/asm/thread_info.h
+> @@ -41,6 +41,7 @@
+> =20
+>  #include <asm/processor.h>
+>  #include <asm/csr.h>
+> +#include <dovetail/thread_info.h>
+> =20
+>  /*
+>   * low level task data that entry.S needs immediate access to
+> @@ -80,6 +81,7 @@ struct thread_info {
+>  #ifdef CONFIG_RISCV_USER_CFI
+>  	struct cfi_state	user_cfi_state;
+>  #endif
+> +	struct oob_thread_state oob_state;      /* co-kernel thread state */
+>  };
+> =20
+>  #ifdef CONFIG_SHADOW_CALL_STACK
+> @@ -123,6 +125,9 @@ int arch_dup_task_struct(struct task_struct *dst, str=
+uct task_struct *src);
+> =20
+>  #include <asm-generic/thread_info_tif.h>
+> =20
+> +#define TIF_MAYDAY			14      /* emergency trap pending */
+> +#define _TIF_MAYDAY			(1 << TIF_MAYDAY)
+> +
+>  #define TIF_32BIT			16	/* compat-mode 32bit process */
+>  #define TIF_RISCV_V_DEFER_RESTORE	17	/* restore Vector before returing t=
+o user */
+> =20
+> @@ -132,5 +137,8 @@ int arch_dup_task_struct(struct task_struct *dst, str=
+uct task_struct *src);
+>   * Local (synchronous) thread flags.
+>   */
+>  #define _TLF_OOB		0x0001
+> +#define _TLF_DOVETAIL		0x0002
+> +#define _TLF_OFFSTAGE		0x0004
+> +#define _TLF_OOBTRAP		0x0008
+> =20
+>  #endif /* _ASM_RISCV_THREAD_INFO_H */
+> diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
+> index b37bb5da87c5c..1f7d471457892 100644
+> --- a/arch/riscv/kernel/traps.c
+> +++ b/arch/riscv/kernel/traps.c
+> @@ -115,26 +115,47 @@ void die(struct pt_regs *regs, const char *str)
+>  static __always_inline
+>  bool mark_trap_entry(int signo, struct pt_regs *regs)
+>  {
+> +	oob_trap_notify(signo, regs);
+> +
+>  	if (likely(running_inband())) {
+>  		hard_cond_local_irq_enable();
+>  		return true;
+>  	}
+> =20
+> +	oob_trap_unwind(signo, regs);
+> +
+>  	return false;
+>  }
+> =20
+>  static __always_inline
+>  void mark_trap_exit(int signo, struct pt_regs *regs)
+>  {
+> +	oob_trap_unwind(signo, regs);
+>  	hard_cond_local_irq_disable();
+>  }
+> =20
+> -void do_trap(struct pt_regs *regs, int signo, int code, unsigned long ad=
+dr)
+> +static __always_inline
+> +bool mark_trap_entry_raw(int trapnr, struct pt_regs *regs)
+>  {
+> -	struct task_struct *tsk =3D current;
+> +	oob_trap_notify(trapnr, regs);
+> =20
+> -	if (!mark_trap_entry(signo, regs))
+> -		return;
+> +	if (running_oob()) {
+> +		oob_trap_unwind(trapnr, regs);
+> +		return false;
+> +	}
+> +
+> +	return true;
+> +}
 
-Right, the server mode does not call evl_net_solicit(). I somehow expected duet to the remote packages is
-received before, this information could be used directly, so no evl_net_solicit() is needed.
+I think that it should be possible to merge mark_trap_{entry,exit}_raw()
+with the non-raw variant, so that only mark_trap_{entry,exit} would
+stay.
 
-But by using the posix network implementation, I now see also an ARP request going out. So an evl_net_solicit()
-is needed for each IP where a package is sent to for the first time. I will add this to the demo and send a patch.
+The _raw variant is used for traps over kernel-, while non-raw is used
+for traps over user-space.
 
-Options:
-1. Just be lazy and always call evl_net_solicit() -> If evl_net_solicit() does not takes to long if the ARP is already there, why not.
-2. Internally manage a list of IP's where evl_net_solicit() was already performed, should be easy.
-3. Is there a way to ask EVL if the ARP already done?
+We could check for user_mode() and handle that within one function.
 
-What do you think?
+But: See do_trap_break(), break point handling.=20
 
-> - the bad sender address of the 3rd scenario may be a variant of this
->    bug, with the added trick that it should only happen with
->    unconnected/unbound sockets, in which case the source address is
->    retrieved from the routing record matching the destination address. In
->    this case, the routing record found in the EVL front cache is obsolete
->    since the transmitting device changed its (prefix) address. So it
->    looks like some flushing of those obsolete records is missing on
->    changing the address with an active oob port..
-> 
->    If I'm right, you should be able to work around this issue by flushing
->    the EVL route cache after the netdev update and before transmitting,
->    as follows:
->         # echo 1 > /sys/class/evl/net/ipv4_routes
->    Obviously, this is not that nice, and the netstack should behave and
->    do this automatically. Will fix.
+> +
+> +static __always_inline
+> +void mark_trap_exit_raw(int trapnr, struct pt_regs *regs)
+> +{
+> +	oob_trap_unwind(trapnr, regs);
+> +}
+> +
+> +static void do_trap_raw(struct pt_regs *regs, int signo, int code, unsig=
+ned long addr)
+> +{
+> +	struct task_struct *tsk =3D current;
+> =20
+>  	if (show_unhandled_signals && unhandled_signal(tsk, signo)
+>  	    && printk_ratelimit()) {
+> @@ -147,6 +168,14 @@ void do_trap(struct pt_regs *regs, int signo, int co=
+de, unsigned long addr)
+>  	}
+> =20
+>  	force_sig_fault(signo, code, (void __user *)addr);
+> +}
+> +
+> +void do_trap(struct pt_regs *regs, int signo, int code, unsigned long ad=
+dr)
+> +{
+> +	if(!mark_trap_entry(signo, regs))
+> +		return;
+> +
+> +	do_trap_raw(regs, signo, code, addr);
+> =20
+>  	mark_trap_exit(signo, regs);
+>  }
+> @@ -157,7 +186,7 @@ static void do_trap_error(struct pt_regs *regs, int s=
+igno, int code,
+>  	current->thread.bad_cause =3D regs->cause;
+> =20
+>  	if (user_mode(regs)) {
+> -		do_trap(regs, signo, code, addr);
+> +		do_trap_raw(regs, signo, code, addr);
+>  	} else {
+>  		/*
+>  		 * Dovetail: If we trapped from kernel space, either
+> @@ -175,37 +204,46 @@ static void do_trap_error(struct pt_regs *regs, int=
+ signo, int code,
+>  #else
+>  #define __trap_section noinstr
+>  #endif
+> -#define DO_ERROR_INFO(name, signo, code, str)					\
+> +#define DO_ERROR_INFO(name, signo, code, str, trapnr)				\
+>  asmlinkage __visible __trap_section void name(struct pt_regs *regs)		\
+>  {										\
+>  	if (user_mode(regs)) {							\
+> +		if(!mark_trap_entry(trapnr, regs))				\
+> +			return;							\
+>  		irqentry_enter_from_user_mode(regs);				\
+>  		local_irq_enable();						\
+>  		do_trap_error(regs, signo, code, regs->epc, "Oops - " str);	\
+>  		local_irq_disable();						\
+>  		irqentry_exit_to_user_mode(regs);				\
+> +		mark_trap_exit(trapnr, regs);					\
+>  	} else {								\
+> +		if(!mark_trap_entry_raw(trapnr, regs))				\
+> +			return;							\
+>  		int stalled =3D test_and_stall_inband_nocheck();			\
+>  		irqentry_state_t state =3D irqentry_nmi_enter(regs);		\
+>  		do_trap_error(regs, signo, code, regs->epc, "Oops - " str);	\
+>  		irqentry_nmi_exit(regs, state);					\
+>  		if (!stalled)							\
+>  			unstall_inband_nocheck();				\
+> +		mark_trap_exit_raw(trapnr, regs);				\
+>  	}									\
+>  }
+> =20
+>  DO_ERROR_INFO(do_trap_unknown,
+> -	SIGILL, ILL_ILLTRP, "unknown exception");
+> +	SIGILL, ILL_ILLTRP, "unknown exception", regs->cause);
+>  DO_ERROR_INFO(do_trap_insn_misaligned,
+> -	SIGBUS, BUS_ADRALN, "instruction address misaligned");
+> +	SIGBUS, BUS_ADRALN, "instruction address misaligned", EXC_INST_MISALIGN=
+ED);
+>  DO_ERROR_INFO(do_trap_insn_fault,
+> -	SIGSEGV, SEGV_ACCERR, "instruction access fault");
+> +	SIGSEGV, SEGV_ACCERR, "instruction access fault", EXC_INST_ACCESS);
+> =20
+>  asmlinkage __visible __trap_section void do_trap_insn_illegal(struct pt_=
+regs *regs)
+>  {
+>  	bool handled;
+> =20
+>  	if (user_mode(regs)) {
+> +		if(!mark_trap_entry(EXC_INST_ILLEGAL, regs))
+> +			return;
+> +
+>  		irqentry_enter_from_user_mode(regs);
+>  		unstall_inband_nocheck();
+>  		hard_local_irq_enable();
+> @@ -220,7 +258,12 @@ asmlinkage __visible __trap_section void do_trap_ins=
+n_illegal(struct pt_regs *re
+>  				      "Oops - illegal instruction");
+> =20
+>  		irqentry_exit_to_user_mode(regs);
+> +
+> +		mark_trap_exit(EXC_INST_ILLEGAL, regs);
+>  	} else {
+> +		if(!mark_trap_entry_raw(EXC_INST_ILLEGAL, regs))
+> +			return;
+> +
+>  		int stalled =3D test_and_stall_inband_nocheck();
+>  		irqentry_state_t state =3D irqentry_nmi_enter(regs);
+> =20
+> @@ -230,11 +273,13 @@ asmlinkage __visible __trap_section void do_trap_in=
+sn_illegal(struct pt_regs *re
+>  		irqentry_nmi_exit(regs, state);
+>  		if (!stalled)
+>  			unstall_inband_nocheck();
+> +
+> +		mark_trap_exit_raw(EXC_INST_ILLEGAL, regs);
+>  	}
+>  }
+> =20
+>  DO_ERROR_INFO(do_trap_load_fault,
+> -	SIGSEGV, SEGV_ACCERR, "load access fault");
+> +	SIGSEGV, SEGV_ACCERR, "load access fault", EXC_LOAD_ACCESS);
+> =20
+>  enum misaligned_access_type {
+>  	MISALIGNED_STORE,
+> @@ -254,15 +299,22 @@ static const struct {
+>  	},
+>  };
+> =20
+> -static void do_trap_misaligned(struct pt_regs *regs, enum misaligned_acc=
+ess_type type)
+> +static void do_trap_misaligned(struct pt_regs *regs, enum misaligned_acc=
+ess_type type,
+> +			       int trapnr)
+>  {
+>  	irqentry_state_t state;
+>  	int stalled;
+> =20
+>  	if (user_mode(regs)) {
+> +		if(!mark_trap_entry(trapnr, regs))
+> +			return;
+> +
+>  		irqentry_enter_from_user_mode(regs);
+>  		local_irq_enable();
+>  	} else {
+> +		if(!mark_trap_entry_raw(trapnr, regs))
+> +			return;
+> +
+>  		stalled =3D test_and_stall_inband_nocheck();
+>  		state =3D irqentry_nmi_enter(regs);
+>  	}
+> @@ -274,29 +326,32 @@ static void do_trap_misaligned(struct pt_regs *regs=
+, enum misaligned_access_type
+>  	if (user_mode(regs)) {
+>  		local_irq_disable();
+>  		irqentry_exit_to_user_mode(regs);
+> +		mark_trap_exit(trapnr, regs);
+>  	} else {
+>  		irqentry_nmi_exit(regs, state);
+>  		if (!stalled)
+>  			unstall_inband_nocheck();
+> +
+> +		mark_trap_exit_raw(trapnr, regs);
+>  	}
+>  }
+> =20
+>  asmlinkage __visible __trap_section void do_trap_load_misaligned(struct =
+pt_regs *regs)
+>  {
+> -	do_trap_misaligned(regs, MISALIGNED_LOAD);
+> +	do_trap_misaligned(regs, MISALIGNED_LOAD, EXC_LOAD_MISALIGNED);
+>  }
+> =20
+>  asmlinkage __visible __trap_section void do_trap_store_misaligned(struct=
+ pt_regs *regs)
+>  {
+> -	do_trap_misaligned(regs, MISALIGNED_STORE);
+> +	do_trap_misaligned(regs, MISALIGNED_STORE, EXC_STORE_MISALIGNED);
+>  }
+> =20
+>  DO_ERROR_INFO(do_trap_store_fault,
+> -	SIGSEGV, SEGV_ACCERR, "store (or AMO) access fault");
+> +	SIGSEGV, SEGV_ACCERR, "store (or AMO) access fault", EXC_STORE_ACCESS);
+>  DO_ERROR_INFO(do_trap_ecall_s,
+> -	SIGILL, ILL_ILLTRP, "environment call from S-mode");
+> +	SIGILL, ILL_ILLTRP, "environment call from S-mode", EXC_SYSCALL);
+>  DO_ERROR_INFO(do_trap_ecall_m,
+> -	SIGILL, ILL_ILLTRP, "environment call from M-mode");
+> +	SIGILL, ILL_ILLTRP, "environment call from M-mode", EXC_SUPERVISOR_SYSC=
+ALL);
+> =20
+>  static inline unsigned long get_break_insn_length(unsigned long pc)
+>  {
+> @@ -348,6 +403,9 @@ void handle_break(struct pt_regs *regs)
+> =20
+>  asmlinkage __visible __trap_section void do_trap_break(struct pt_regs *r=
+egs)
+>  {
+> +	if(!mark_trap_entry_raw(EXC_BREAKPOINT, regs))
+> +		return;
+> +
+>  	if (user_mode(regs)) {
+>  		irqentry_enter_from_user_mode(regs);
+>  		unstall_inband_nocheck();
+> @@ -369,6 +427,8 @@ asmlinkage __visible __trap_section void do_trap_brea=
+k(struct pt_regs *regs)
+>  		if (!stalled)
+>  			unstall_inband_nocheck();
+>  	}
+> +
+> +	mark_trap_exit_raw(EXC_BREAKPOINT, regs);
+>  }
 
-Thanks, this works. I looked trough [1] but it was not clear to me that this applies also to the sender IP.
-ifconfig enp1s0 down
-ifconfig enp7s0 up 192.168.122.100
-evl net -ei enp7s0
-./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501 # Fine, sender address is 192.168.122.100
-ifconfig enp7s0 192.168.122.110
-echo 1 > /sys/class/evl/net/ipv4_flush_routes
-./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501 # Fine, sender address is 192.168.122.110
+This is the only trap - or more specific: caller of _raw() - that is
+different. Why?
 
-Notes:
-[3] /sys/class/evl/net/arp is now probably /sys/class/evl/net/ipv4_flush_arp
-[4] /sys/class/evl/net/ipv4_routes is now probably /sys/class/evl/net/ipv4_flush_routes
+All other traps are using _raw() for the kernel- and non-raw for user-
+space part.
 
-[3] https://v4.xenomai.org/core/net/index.html#evl-arp-cache
-[4] https://v4.xenomai.org/core/net/index.html#evl-route-cache
-
->   
-> [1] https://v4.xenomai.org/core/net/index.html#evl-output-routing
-> [2] https://v4.xenomai.org/core/net/index.html#evl-peer-solicitation
-> 
-
+> =20
+>  asmlinkage __visible __trap_section  __no_stack_protector
+> @@ -385,6 +445,15 @@ void do_trap_ecall_u(struct pt_regs *regs)
+> =20
+>  		syscall =3D syscall_enter_from_user_mode(regs, syscall);
+> =20
+> +		if(dovetailing()) {
+> +			if (syscall =3D=3D EXIT_SYSCALL_OOB) {
+> +				hard_local_irq_disable();
+> +				return;
+> +			}
+> +			if (syscall =3D=3D EXIT_SYSCALL_TAIL)
+> +				goto done_inband;
+> +		}
+> +
+>  		add_random_kstack_offset();
+> =20
+>  		if (syscall >=3D 0 && syscall < NR_syscalls) {
+> @@ -404,6 +473,7 @@ void do_trap_ecall_u(struct pt_regs *regs)
+>  		 */
+>  		choose_random_kstack_offset(get_random_u16());
+> =20
+> +done_inband:
+>  		syscall_exit_to_user_mode(regs);
+>  	} else {
+>  		int stalled =3D test_and_stall_inband_nocheck();
+> diff --git a/arch/riscv/mm/context.c b/arch/riscv/mm/context.c
+> index 55c20ad1f7444..8f38b4a5eb262 100644
+> --- a/arch/riscv/mm/context.c
+> +++ b/arch/riscv/mm/context.c
+> @@ -25,7 +25,7 @@ static unsigned long num_asids;
+> =20
+>  static atomic_long_t current_version;
+> =20
+> -static DEFINE_RAW_SPINLOCK(context_lock);
+> +static DEFINE_HARD_SPINLOCK(context_lock);
+>  static cpumask_t context_tlb_flush_pending;
+>  static unsigned long *context_asid_map;
+> =20
+> @@ -315,7 +315,7 @@ static inline void flush_icache_deferred(struct mm_st=
+ruct *mm, unsigned int cpu,
+>  #endif
+>  }
+> =20
+> -void switch_mm(struct mm_struct *prev, struct mm_struct *next,
+> +static void do_switch_mm(struct mm_struct *prev, struct mm_struct *next,
+>  	struct task_struct *task)
+>  {
+>  	unsigned int cpu;
+> @@ -336,3 +336,19 @@ void switch_mm(struct mm_struct *prev, struct mm_str=
+uct *next,
+> =20
+>  	flush_icache_deferred(next, cpu, task);
+>  }
+> +
+> +void switch_mm(struct mm_struct *prev, struct mm_struct *next,
+> +	struct task_struct *task)
+> +{
+> +	unsigned long flags;
+> +
+> +	protect_inband_mm(flags);
+> +	do_switch_mm(prev, next, task);
+> +	unprotect_inband_mm(flags);
+> +}
+> +
+> +void switch_oob_mm(struct mm_struct *prev, struct mm_struct *next,
+> +	struct task_struct *task)
+> +{
+> +	do_switch_mm(prev, next, task);
+> +}
+> diff --git a/arch/riscv/mm/fault.c b/arch/riscv/mm/fault.c
+> index 885e2f66515e3..32cb7285d6db8 100644
+> --- a/arch/riscv/mm/fault.c
+> +++ b/arch/riscv/mm/fault.c
+> @@ -7,6 +7,7 @@
+>   */
+> =20
+> =20
+> +#include <linux/preempt.h>
+>  #include <linux/mm.h>
+>  #include <linux/kernel.h>
+>  #include <linux/interrupt.h>
+> @@ -315,8 +316,12 @@ void handle_page_fault(struct pt_regs *regs)
+>  		return;
+>  	}
+> =20
+> +	oob_trap_notify(cause, regs);
+> +	if (!running_inband())
+> +		goto out;
+> +
+>  	/* Enable interrupts if they were enabled in the parent context. */
+> -	if (!regs_irqs_disabled(regs) && running_inband())
+> +	if (!regs_irqs_disabled(regs))
+>  		local_irq_enable_full();
+> =20
+>  	/*
+> @@ -326,7 +331,7 @@ void handle_page_fault(struct pt_regs *regs)
+>  	if (unlikely(faulthandler_disabled() || !mm)) {
+>  		tsk->thread.bad_cause =3D cause;
+>  		no_context(regs, addr);
+> -		return;
+> +		goto out;
+>  	}
+> =20
+>  	if (user_mode(regs))
+> @@ -334,7 +339,7 @@ void handle_page_fault(struct pt_regs *regs)
+> =20
+>  	if (!user_mode(regs) && addr < TASK_SIZE && unlikely(!(regs->status & S=
+R_SUM))) {
+>  		if (fixup_exception(regs))
+> -			return;
+> +			goto out;
+> =20
+>  		die_kernel_fault("access to user memory without uaccess routines", add=
+r, regs);
+>  	}
+> @@ -357,7 +362,7 @@ void handle_page_fault(struct pt_regs *regs)
+>  		count_vm_vma_lock_event(VMA_LOCK_SUCCESS);
+>  		tsk->thread.bad_cause =3D cause;
+>  		bad_area_nosemaphore(regs, SEGV_ACCERR, addr);
+> -		return;
+> +		goto out;
+>  	}
+> =20
+>  	fault =3D handle_mm_fault(vma, addr, flags | FAULT_FLAG_VMA_LOCK, regs)=
+;
+> @@ -375,7 +380,7 @@ void handle_page_fault(struct pt_regs *regs)
+>  	if (fault_signal_pending(fault, regs)) {
+>  		if (!user_mode(regs))
+>  			no_context(regs, addr);
+> -		return;
+> +		goto out;
+>  	}
+>  lock_mmap:
+> =20
+> @@ -384,7 +389,7 @@ void handle_page_fault(struct pt_regs *regs)
+>  	if (unlikely(!vma)) {
+>  		tsk->thread.bad_cause =3D cause;
+>  		bad_area_nosemaphore(regs, code, addr);
+> -		return;
+> +		goto out;
+>  	}
+> =20
+>  	/*
+> @@ -396,7 +401,7 @@ void handle_page_fault(struct pt_regs *regs)
+>  	if (unlikely(access_error(cause, vma))) {
+>  		tsk->thread.bad_cause =3D cause;
+>  		bad_area(regs, mm, code, addr);
+> -		return;
+> +		goto out;
+>  	}
+> =20
+>  	/*
+> @@ -414,12 +419,12 @@ void handle_page_fault(struct pt_regs *regs)
+>  	if (fault_signal_pending(fault, regs)) {
+>  		if (!user_mode(regs))
+>  			no_context(regs, addr);
+> -		return;
+> +		goto out;
+>  	}
+> =20
+>  	/* The fault is fully completed (including releasing mmap lock) */
+>  	if (fault & VM_FAULT_COMPLETED)
+> -		return;
+> +		goto out;
+> =20
+>  	if (unlikely(fault & VM_FAULT_RETRY)) {
+>  		flags |=3D FAULT_FLAG_TRIED;
+> @@ -438,7 +443,8 @@ void handle_page_fault(struct pt_regs *regs)
+>  	if (unlikely(fault & VM_FAULT_ERROR)) {
+>  		tsk->thread.bad_cause =3D cause;
+>  		mm_fault_error(regs, addr, fault);
+> -		return;
+>  	}
+> -	return;
+> +
+> +out:
+> +	oob_trap_unwind(cause, regs);
+>  }
+> --=20
+> 2.43.0
