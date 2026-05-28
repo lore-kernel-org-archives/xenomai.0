@@ -1,651 +1,223 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011030.outbound.protection.outlook.com [52.101.70.30])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 689E2196C7C
-	for <xenomai@lists.linux.dev>; Thu, 28 May 2026 06:39:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1779950366; cv=none; b=KpS+0ZRh/xNP0IqbiXWtXUNtR9Ga9YJUVeDlDTQ5RoK/FbGpShjpVXk7nFB2a3yf3C04trBFOGDX23Q+MbqAyLAI8Wb2R2OCP5qqrP5XKH9dElGbgEI2/289C8oK8Q/KSve32qxL8snK5rZKDr1cxNrj9ztDFJ7dqVEwD2JDDns=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1779950366; c=relaxed/simple;
-	bh=yKRRVqJ0J0jK+xEKPAMoKMYw94MVbtwWhZCyw6wkrQs=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=XwM/gtms27yEOOqAGYDUKpiZJHFYNk7zxn369zC3ofeHXd8Y8mkhKPZSaCsA4x1fV6LZ6CDJkq5wqEFwskYS6oSIrDS3lad8z+Kxem6BEL/ZUA7eaGtVWGnISqhZr7B+/QQagLW6/5bFvtV/yEi8JtU1OYkEdw9YsclyhhTDfzU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=d+z6aeSM; arc=none smtp.client-ip=185.136.65.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C5F8248886
+	for <xenomai@lists.linux.dev>; Thu, 28 May 2026 07:38:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.30
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1779953902; cv=fail; b=jRHOcKpfzuEYrqHtsZMW7ZxMqglvpoHfRqMBEuvp8pMqyKVplj8vjH0zs675m42E2Tc3hEufbLDYRbCipXaIyWtnqOEQnlk+iG4ToQa/eq5e0CYQPSsPCu70MRWYZohSkyCe5b/fTt/2SyTokCuwZn5GRYS3z9ak/41ATzruyJI=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1779953902; c=relaxed/simple;
+	bh=x4nBmP5HfYdhxMFkbQPGwvz3CLjKfIN+JLwHPYbAW14=;
+	h=Message-ID:Date:From:To:Subject:Content-Type:MIME-Version; b=Pn3k1apUtyLqTKQNv3tg8TCDCDP6DcVauVjd2EpUyTycoj35aR1qmWli8PqiIoWoUXWBfLBEdATG7udRSAn3mLVtENhTTtX4tN2f02/6THtZvQk+KRA3OQxQz3dPZsDA4FERTmWg47eyqcLD3xnY/y8Q+00EwLgELGNqVbcuHac=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=IzT3FH7t; arc=fail smtp.client-ip=52.101.70.30
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="d+z6aeSM"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 2026052806391237273b8f900002073c
-        for <xenomai@lists.linux.dev>;
-        Thu, 28 May 2026 08:39:12 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=0T4TR1vtppr4LazjM8mFYe/RdLAEhUg0/c+lX9QGLGY=;
- b=d+z6aeSMiwwFAz5260BpqJ5VEJVQdQ3fTbRFL/uXEWfTdpbB6DWeBAawZvJa1aqEkY50xE
- aZ2w4sUoz+IEnPwSWAXUEdibHWdd3EvzcebD0cPEZq1VIG7rZiXZ+YEkUPhLT+C9NfrgJsLk
- 0i+Fmk1vfrK/Zw9kqrNBPW1q0AacIlptqmmUYdwVEp8mSxbjtsijsE4lad7V/B+a4GyVEQmj
- ju5PY18gac/PBZMAlcrxyO713OQ+su50KfWLwBmwkdhNxqaO4Obryc1/TvLLmU+B6hXrMFgZ
- rmI83diloMIF5GnvAawCceHc6iPHIheEDXRA7yIhvb87uBMKHab330Cw==;
-Message-ID: <2c2db565533aa453c6099704580825aa5cce81e3.camel@siemens.com>
-Subject: Re: [PATCH dovetail v7 11/11] riscv: dovetail: add core support
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
-Cc: rpm@xenomai.org, jan.kiszka@siemens.com
-Date: Thu, 28 May 2026 08:39:12 +0200
-In-Reply-To: <20260430111101.1539377-12-tobias.schaffner@siemens.com>
-References: <20260430111101.1539377-1-tobias.schaffner@siemens.com>
-	 <20260430111101.1539377-12-tobias.schaffner@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="IzT3FH7t"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=O/ENEBYKK2+VbqQOU3FhaDkxmfLjDmxrYm8hR/m6px98epCL5nENznQrgmOuGqE6Gpz/6muqSWfiVJGLbXXKD+IQpSuwZNx2eiaUVCJf0KG0WYklODSyf3oWNi+Lbusfo3bGcb3W9reB2i4eqIqme8rETYx5cIFf2A94rkRM7GjIKwM3OWH/Esn82AkpMlGdlEkgOCoraZ5BU/Q6/S/rpMyC7VSg9rx1997+dVVz+IQzMc3uhhDD+fMjfU0YObA46vM9LAQN9m/1IlDFWGkRXBHxNuYzUHX3D38pj1O7ydf0x+wvrl8HIm8ylUbD9KpcleqqZMq02w/BvNf1sWYF9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=GeMhdKtr6xSpgPCEHXm9ZlJph9b59lqQXyPIuXk2m0o=;
+ b=Swo6JP+fu86zoGTaSQgEXSCrmTNOE6HXgDwHWtfT6ZrC8W37VaxmeYQclpBr5NBPRx/X48XpAvZ3ExL9E/yJgH9QsfoJJqM+aGjjSOa3VlCJlCK4dJBftvN0ojmoZJMrLcaSqyxwHweWzeOEzuzNMe5dN6f8lM73RcAVu8FqwjkEjUYy4rvZwg+tvP/fX4T+noba9YgKpTvZiTAaTxyVgfk1ahiWD+5VU9AK+lk2+2ndPsOYOynSwxGIZKWNPKc5NQI6TL2YrqPmmU2nrIuTl8/3FaA5HiilMxr8PRS/iHUNLepjp4Le6WunLFCZVSRNU1CEJg/2Hc+TJe780QD75Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=GeMhdKtr6xSpgPCEHXm9ZlJph9b59lqQXyPIuXk2m0o=;
+ b=IzT3FH7ttn7MQwbfg1flg+6tVYAs+gqEE6XCPb9YnN05mlwwxcb+Pkb8l3n2KSbo8f//FaztQPWwBlDgNmFoddt4BtWdCHhUIHf+jpEutjlROiEuj0jSDVzD4Cqj0vht3F7cYeULj6kaS1ENLAC1wVB/W4yNUAEbJ7Zh1DzUcFtaza5UzJOmZCFQ0xDmwVq+IH8n3B6ugFeDrz28XITlPNa5KNZLMwEaC+zbO1Wn0L3TaSt5RVu7yWce83lhJSomXT4uKcxEQHwIh3+Ak1B/NIh6lwNiVJoS3bp5TlRWxd6ez2J5dt83KpcsKMmoMMo2biDd0PxDiORisWFE1eLNfw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by AM7PR10MB3559.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:142::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.13; Thu, 28 May
+ 2026 07:38:17 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::be9f:e8ca:ee9:83e1%3]) with mapi id 15.21.0071.011; Thu, 28 May 2026
+ 07:38:17 +0000
+Message-ID: <8be12604-226e-4703-af51-ab4bc8e75a8f@siemens.com>
+Date: Thu, 28 May 2026 09:38:15 +0200
+User-Agent: Mozilla Thunderbird
+From: Jan Kiszka <jan.kiszka@siemens.com>
+To: Xenomai <xenomai@lists.linux.dev>
+Subject: [PATCH v2] kernel/cobalt/thread: Confine condition for sending
+ SIGSHADOW on xnthread_suspend
+Content-Language: en-US
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ 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
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR4P281CA0178.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:b7::6) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AM7PR10MB3559:EE_
+X-MS-Office365-Filtering-Correlation-Id: e1ff5bf8-55ab-4c36-1577-08debc8c153b
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|1800799024|366016|55112099003|11063799006|56012099006|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	tZBujzT7hvTNnOdpPzg8FrJrWpyXBkRGqV8zQMaFwroMXiwUm/2mPl+Hhm1pf4f4Oox8bPxep5+Dr7JQf5Ia8H2QG5mBjMOejZou+i5DPv2K8pdxZ6ILceCSsyT0vtaAf7CZBzfYM65E+5CvdBcargR993stgAKZMHxUurDYEdX3WSTZNTi5wFNGFGOhWJXJc0EgjSwqFkAs2zDUT0hpuXByEUyAZDr263a2+fUflEtCcdH0A2K5tMsCr2FpciUvi0ixHafa4yTm/14Z02y7DNGhb1YaePfuHOcvQn/VquiYMJju3AM5Kl1O6xt/ev1qZ2bu/AUcC7arW876QWqNMpqj9owIvK8g00zPbiyyyLFjwHfyJl7Aue7D/BdgGxNp8Va21TRF8ZV5m7KlG+RsGir8kj+l9sdbVWZsUJKyC1IrvdweFekJ+XsOakOlNM1YKoevhpe2obliL+ck69fGuKfPOIykotCAeYdhzx9K81Hr05DwlA5PFn+S6ejHE39ShpLPgZdC9GeiXEw280eHDs27rGz/0GAiNbyvhXO7ENWmTQFDs+Vuyzhj27qkC+SQrflgaWOLCmtz7j+sNZ5f8Zs0UpmI6xcp1QJltqzDCr2+PHEPkvFco7Q+7No4HpCMZMYPWccAFcNv2iTuBe/jC+AT2afCdo8sAXdwqYV9hF8OXc11gTTtsv+98UumhZVLEb1cnRCTZGeTKQLUN+Vt2Q==
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(55112099003)(11063799006)(56012099006)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?K0dXV3Q4SjlMK3lNU1ZrbXhObkNEMWhsUjVra1lsNzgzRXJ0S21WSS9CVWxw?=
+ =?utf-8?B?b2paV0U4YXlYR0VvZmdTSnRXbUtSaHFObnNjMlhRZFI5Qi9YUjZRUHF0cUs4?=
+ =?utf-8?B?OXZsem1MODRWeXZHYlNiSHp2TjVOeVBwUkJWYXNQN254VGE2eldLVGRybmxM?=
+ =?utf-8?B?SDRrcXNxUzNDOTFub0VIU0RFQnFRL3lqS1NRRnM0TzROcnhRSWh0ekpaVzky?=
+ =?utf-8?B?WVFXZ2pkYjJEM0NKWTRjcStsMG9idE83WTFDQmFmeXFIL3RvN0R3VXBLM0M4?=
+ =?utf-8?B?MDRqWVB1WVBYbDRrdDZlQXNqT3hGcmZOd29aeDUzK0xrT0d4M2NiU1JyQTc2?=
+ =?utf-8?B?dFF5TTYvWHl0dno4Rm1ZSDFtdTVaZWg3NlJ1RXNzWThKNVp6M0Q3V3N3c1VE?=
+ =?utf-8?B?RDZmZVkyTUhxMWR2SkcycHlvMS9aeVJ6VVNUNjZkdlp5VDd0TnhTVWJHSHB3?=
+ =?utf-8?B?M09JMWNZZWhRdG00QXFHL3JGOTlydzVSM2tPQmxBOUlBNi9zSFYvR1N0YkRm?=
+ =?utf-8?B?N3ZjZGkwMHJ5WlhFNExUbzVINFJGMFdtSEtiVlpHMmZ6M3ZFbEZpQkV6amN5?=
+ =?utf-8?B?Wi83dXo0cDFYaDhKd3dTMGJCOWNaOWlBbFFMQW1INVdXL3JDVXFyKzd2cU55?=
+ =?utf-8?B?b0JabVhmcUFSWTNMcHgyTUk1aEpPSFAzdVFGL0djdlpqbDhkb3FQc0ZvRHFU?=
+ =?utf-8?B?SmpwTjFSOE53WWhOM2lpdzN2WGdaNnBqN0h5Nkx4bEpyUDlUOFc5UU0rV2Vy?=
+ =?utf-8?B?aWJvQ0tabmswN2FqZGhzQkVTc1ByK1pDMklHVUQ5NTdyaGhQbjczbmRQR1lM?=
+ =?utf-8?B?YnVmOUVnL21lMDFZTXRhZE80VjFJUmxScjRreE1sWEkxNUwvTzM0Ym90OWFU?=
+ =?utf-8?B?Yko3NlhseDk5NytZU0xxRWZzMm93MEhqdmtrVGhKa0loVEpGYUFkV1hDbGlN?=
+ =?utf-8?B?TWhVbFlYMFIvZytXZ0tHeGJBK2o3LzNHc1FiSW5hRHpZMFpqZVJ4Z05YM3RV?=
+ =?utf-8?B?V010bGJKU0tLYWxzOWdCZ0piN1Zvc3dRbzZHMnhSWDkwRHdjM2taUmJYUlND?=
+ =?utf-8?B?dEpGTnMyMUtqcUhPOUFXc3drVWFvc2ZkRmRkbVNhV29DMDIycUgzVi9FWXYx?=
+ =?utf-8?B?c0FkOFBKNm5FN0F1YjV0R2gzVFMxTE1idnl2ckNINDU1M2I5VklqN2w3alNS?=
+ =?utf-8?B?dmdJYUxHRkJORER6b1RMSm91SGZRbWJoTjFuTUQ5amFyYVB3NjN3L0N4SHhz?=
+ =?utf-8?B?cVZUMHBmYXBtTGZOOGVkVFN2aHRHUlN5RDFZaThvK21KbExPdUszZldEN2tk?=
+ =?utf-8?B?S2hEYk1TZW04TkhKNVUyT3poVHVPUVpaVjRjdzZOWW95UFVaYmtGSDI3cFZX?=
+ =?utf-8?B?ZDVzTGxwSmJmSE1Vc05odGtaU1BUMFlFdnNKUHdZYkZxbjMxVkxqd0tpdVNj?=
+ =?utf-8?B?dUxQSlUxWDFYZGFQRjRNZnNIMU0yaERqOEJKK01tVEErOENDb0tiUDRTNXc3?=
+ =?utf-8?B?ZDlUZGdqU0tTQnpMWmFyOEpaNXhGakFVbVJlMU9Hd1ZMaS95dEdOK24wUFhr?=
+ =?utf-8?B?TFBxMk1qbWlzNmdBQmdWbjVBRGlaa2JDM3B2VThoN2ozMlo0SjVDRU52Rm5D?=
+ =?utf-8?B?amVIbkZCOStSY3VkdHRiWkh4ZVFxMDFoUzF3bkUyUUYvdnFWbzJQQXRiclR4?=
+ =?utf-8?B?VytRQ2ZLQ0RjY1BmQ0tSalRIZ1VpN1Z3ODdGbkMwNHI4NEJPeHhTcmROYXl3?=
+ =?utf-8?B?amhESHVrMENvdFgvM3ZzUW9oWjcwaWVGY0JyMXpPaFJwY1IycW9HTXpNNlZU?=
+ =?utf-8?B?bWNNaDkxLzE5ay82cjFPcXVlMkxVSlc5R281QWZmRDB4RHl3WnBNT2JmNVFv?=
+ =?utf-8?B?V25yRUVEeGM5blk2OUdGS0xzU29wUzVNL3A3VGVUNTZXUmxaY2xCRjJucGdy?=
+ =?utf-8?B?SVRiMnBzUlhlT1RjbituNzArckJrdEtvOWM1a0JrSkltSFYzM081dVd1YmZU?=
+ =?utf-8?B?WXR1dDh1L2hrdTM1bEFSSThYRXpWdFRqeDdNK0N4R3MzVDBITWdjRWIwdWs5?=
+ =?utf-8?B?YzZoNnZLaGhKYnZiUTJ2VWsxQ2kxQTNvWnVVblpma0VCeUVIUUMxeXJjMGlr?=
+ =?utf-8?B?Rm9lNVh1czVJdld5SGtNSFJlMU1Ha1hYbGJjRjJlNWxJM2U1U01GV2tvaUQ1?=
+ =?utf-8?B?VjQyOWN2V0Z1NXRUS2w1TVNENkVKTjBMalhEbnZzV1ZJM04xbzV3ZTJiVnUz?=
+ =?utf-8?B?TTlnbjB5a25CMVp3S2JoK1BaQ1Rtd3d6bEdWeFI4ODAwdHBkZVhKaCszM29J?=
+ =?utf-8?B?TVVPSytvYWtndDhOeWtWODh2RHo3OEx1TXJIZjlvRWhnWTNsTVY3UT09?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e1ff5bf8-55ab-4c36-1577-08debc8c153b
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2026 07:38:17.2579
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fbCOVWaGP9ZasUM3PxuQ4wG3+4jMzMAvrOWwJlTj4tyP8AWe+I2I+PguVtQpoueE6wHs8LLDg6kQDTH92Xj8IQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3559
 
-On Thu, 2026-04-30 at 13:11 +0200, Tobias Schaffner wrote:
-> Add Dovetail co-kernel support for RISC-V, including, irq pipeline
-> integration, out-of-band aware trap handling and memory management.
->=20
-> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
-> ---
->  arch/riscv/Kconfig                   |   2 +
->  arch/riscv/include/asm/dovetail.h    |  23 ++++++
->  arch/riscv/include/asm/mmu_context.h |   2 +
->  arch/riscv/include/asm/syscall.h     |   6 ++
->  arch/riscv/include/asm/thread_info.h |   8 +++
->  arch/riscv/kernel/traps.c            | 102 ++++++++++++++++++++++-----
->  arch/riscv/mm/context.c              |  20 +++++-
->  arch/riscv/mm/fault.c                |  28 +++++---
->  8 files changed, 162 insertions(+), 29 deletions(-)
->  create mode 100644 arch/riscv/include/asm/dovetail.h
->=20
-> diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-> index 0d8291a6c4da5..70ea8457e1f66 100644
-> --- a/arch/riscv/Kconfig
-> +++ b/arch/riscv/Kconfig
-> @@ -151,6 +151,7 @@ config RISCV
->  	select HAVE_ARCH_USERFAULTFD_WP if 64BIT && MMU && USERFAULTFD && RISCV=
-_ISA_SVRSW60T59B
->  	select HAVE_ARCH_VMAP_STACK if MMU && 64BIT
->  	select HAVE_IRQ_PIPELINE
-> +	select HAVE_DOVETAIL
->  	select HAVE_ASM_MODVERSIONS
->  	select HAVE_CONTEXT_TRACKING_USER
->  	select HAVE_DEBUG_KMEMLEAK
-> @@ -379,6 +380,7 @@ config AS_HAS_OPTION_ARCH
-> =20
->  source "arch/riscv/Kconfig.socs"
->  source "arch/riscv/Kconfig.errata"
-> +source "kernel/Kconfig.dovetail"
-> =20
->  menu "Platform type"
-> =20
-> diff --git a/arch/riscv/include/asm/dovetail.h b/arch/riscv/include/asm/d=
-ovetail.h
-> new file mode 100644
-> index 0000000000000..ac08db99f4e92
-> --- /dev/null
-> +++ b/arch/riscv/include/asm/dovetail.h
-> @@ -0,0 +1,23 @@
-> +/*
-> +* SPDX-License-Identifier: GPL-2.0
-> +*
-> +* Copyright (C) 2024-2026 Tobias Schaffner
-> +*/
-> +#ifndef _ASM_RISCV_DOVETAIL_H
-> +#define _ASM_RISCV_DOVETAIL_H
-> +
-> +#if !defined(__ASSEMBLY__)
-> +#ifdef CONFIG_DOVETAIL
-> +
-> +static inline void arch_dovetail_exec_prepare(void)
-> +{ }
-> +
-> +static inline void arch_dovetail_switch_prepare(bool leave_inband)
-> +{ }
-> +
-> +static inline void arch_dovetail_switch_finish(bool enter_inband)
-> +{ }
-> +
-> +#endif /* CONFIG_DOVETAIL */
-> +#endif /* !__ASSEMBLY__ */
-> +#endif /* _ASM_RISCV_DOVETAIL_H */
-> diff --git a/arch/riscv/include/asm/mmu_context.h b/arch/riscv/include/as=
-m/mmu_context.h
-> index dbf27a78df6c8..a1ac9192d51c8 100644
-> --- a/arch/riscv/include/asm/mmu_context.h
-> +++ b/arch/riscv/include/asm/mmu_context.h
-> @@ -15,6 +15,8 @@
-> =20
->  void switch_mm(struct mm_struct *prev, struct mm_struct *next,
->  	struct task_struct *task);
-> +void switch_oob_mm(struct mm_struct *prev, struct mm_struct *next,
-> +	struct task_struct *task);
-> =20
->  #define activate_mm activate_mm
->  static inline void activate_mm(struct mm_struct *prev,
-> diff --git a/arch/riscv/include/asm/syscall.h b/arch/riscv/include/asm/sy=
-scall.h
-> index 8067e666a4ca6..12376b54268e0 100644
-> --- a/arch/riscv/include/asm/syscall.h
-> +++ b/arch/riscv/include/asm/syscall.h
-> @@ -117,6 +117,12 @@ static inline bool arch_syscall_is_vdso_sigreturn(st=
-ruct pt_regs *regs)
->  	return false;
->  }
-> =20
-> +static inline unsigned long syscall_get_arg0(struct task_struct *task,
-> +					     struct pt_regs *regs)
-> +{
-> +	return regs->orig_a0;
-> +}
-> +
->  asmlinkage long sys_riscv_flush_icache(uintptr_t, uintptr_t, uintptr_t);
-> =20
->  asmlinkage long sys_riscv_hwprobe(struct riscv_hwprobe *, size_t, size_t=
-,
-> diff --git a/arch/riscv/include/asm/thread_info.h b/arch/riscv/include/as=
-m/thread_info.h
-> index 8a9e85c6e6316..8153a4f263638 100644
-> --- a/arch/riscv/include/asm/thread_info.h
-> +++ b/arch/riscv/include/asm/thread_info.h
-> @@ -41,6 +41,7 @@
-> =20
->  #include <asm/processor.h>
->  #include <asm/csr.h>
-> +#include <dovetail/thread_info.h>
-> =20
->  /*
->   * low level task data that entry.S needs immediate access to
-> @@ -80,6 +81,7 @@ struct thread_info {
->  #ifdef CONFIG_RISCV_USER_CFI
->  	struct cfi_state	user_cfi_state;
->  #endif
-> +	struct oob_thread_state oob_state;      /* co-kernel thread state */
->  };
-> =20
->  #ifdef CONFIG_SHADOW_CALL_STACK
-> @@ -123,6 +125,9 @@ int arch_dup_task_struct(struct task_struct *dst, str=
-uct task_struct *src);
-> =20
->  #include <asm-generic/thread_info_tif.h>
-> =20
-> +#define TIF_MAYDAY			14      /* emergency trap pending */
-> +#define _TIF_MAYDAY			(1 << TIF_MAYDAY)
-> +
->  #define TIF_32BIT			16	/* compat-mode 32bit process */
->  #define TIF_RISCV_V_DEFER_RESTORE	17	/* restore Vector before returing t=
-o user */
-> =20
-> @@ -132,5 +137,8 @@ int arch_dup_task_struct(struct task_struct *dst, str=
-uct task_struct *src);
->   * Local (synchronous) thread flags.
->   */
->  #define _TLF_OOB		0x0001
-> +#define _TLF_DOVETAIL		0x0002
-> +#define _TLF_OFFSTAGE		0x0004
-> +#define _TLF_OOBTRAP		0x0008
-> =20
->  #endif /* _ASM_RISCV_THREAD_INFO_H */
-> diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
-> index b37bb5da87c5c..1f7d471457892 100644
-> --- a/arch/riscv/kernel/traps.c
-> +++ b/arch/riscv/kernel/traps.c
-> @@ -115,26 +115,47 @@ void die(struct pt_regs *regs, const char *str)
->  static __always_inline
->  bool mark_trap_entry(int signo, struct pt_regs *regs)
->  {
-> +	oob_trap_notify(signo, regs);
-> +
->  	if (likely(running_inband())) {
->  		hard_cond_local_irq_enable();
->  		return true;
->  	}
-> =20
-> +	oob_trap_unwind(signo, regs);
-> +
->  	return false;
->  }
-> =20
->  static __always_inline
->  void mark_trap_exit(int signo, struct pt_regs *regs)
->  {
-> +	oob_trap_unwind(signo, regs);
->  	hard_cond_local_irq_disable();
->  }
-> =20
-> -void do_trap(struct pt_regs *regs, int signo, int code, unsigned long ad=
-dr)
-> +static __always_inline
-> +bool mark_trap_entry_raw(int trapnr, struct pt_regs *regs)
->  {
-> -	struct task_struct *tsk =3D current;
-> +	oob_trap_notify(trapnr, regs);
-> =20
-> -	if (!mark_trap_entry(signo, regs))
-> -		return;
-> +	if (running_oob()) {
-> +		oob_trap_unwind(trapnr, regs);
-> +		return false;
-> +	}
-> +
-> +	return true;
-> +}
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-I think that it should be possible to merge mark_trap_{entry,exit}_raw()
-with the non-raw variant, so that only mark_trap_{entry,exit} would
-stay.
+In fact, XNDELAY is only self-applied. Drop it from the condition set
+and also fix the comment explaining this as well as some other bits.
 
-The _raw variant is used for traps over kernel-, while non-raw is used
-for traps over user-space.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
 
-We could check for user_mode() and handle that within one function.
+Changes in v2:
+ - rebased over next, without [1] as dependency (which will need a 
+   broader approach)
 
-But: See do_trap_break(), break point handling.=20
+[1] https://lore.kernel.org/xenomai/48f88dbd-c051-4eb9-971b-d0518dfeacf1@siemens.com/
 
-> +
-> +static __always_inline
-> +void mark_trap_exit_raw(int trapnr, struct pt_regs *regs)
-> +{
-> +	oob_trap_unwind(trapnr, regs);
-> +}
-> +
-> +static void do_trap_raw(struct pt_regs *regs, int signo, int code, unsig=
-ned long addr)
-> +{
-> +	struct task_struct *tsk =3D current;
-> =20
->  	if (show_unhandled_signals && unhandled_signal(tsk, signo)
->  	    && printk_ratelimit()) {
-> @@ -147,6 +168,14 @@ void do_trap(struct pt_regs *regs, int signo, int co=
-de, unsigned long addr)
->  	}
-> =20
->  	force_sig_fault(signo, code, (void __user *)addr);
-> +}
-> +
-> +void do_trap(struct pt_regs *regs, int signo, int code, unsigned long ad=
-dr)
-> +{
-> +	if(!mark_trap_entry(signo, regs))
-> +		return;
-> +
-> +	do_trap_raw(regs, signo, code, addr);
-> =20
->  	mark_trap_exit(signo, regs);
->  }
-> @@ -157,7 +186,7 @@ static void do_trap_error(struct pt_regs *regs, int s=
-igno, int code,
->  	current->thread.bad_cause =3D regs->cause;
-> =20
->  	if (user_mode(regs)) {
-> -		do_trap(regs, signo, code, addr);
-> +		do_trap_raw(regs, signo, code, addr);
->  	} else {
->  		/*
->  		 * Dovetail: If we trapped from kernel space, either
-> @@ -175,37 +204,46 @@ static void do_trap_error(struct pt_regs *regs, int=
- signo, int code,
->  #else
->  #define __trap_section noinstr
->  #endif
-> -#define DO_ERROR_INFO(name, signo, code, str)					\
-> +#define DO_ERROR_INFO(name, signo, code, str, trapnr)				\
->  asmlinkage __visible __trap_section void name(struct pt_regs *regs)		\
->  {										\
->  	if (user_mode(regs)) {							\
-> +		if(!mark_trap_entry(trapnr, regs))				\
-> +			return;							\
->  		irqentry_enter_from_user_mode(regs);				\
->  		local_irq_enable();						\
->  		do_trap_error(regs, signo, code, regs->epc, "Oops - " str);	\
->  		local_irq_disable();						\
->  		irqentry_exit_to_user_mode(regs);				\
-> +		mark_trap_exit(trapnr, regs);					\
->  	} else {								\
-> +		if(!mark_trap_entry_raw(trapnr, regs))				\
-> +			return;							\
->  		int stalled =3D test_and_stall_inband_nocheck();			\
->  		irqentry_state_t state =3D irqentry_nmi_enter(regs);		\
->  		do_trap_error(regs, signo, code, regs->epc, "Oops - " str);	\
->  		irqentry_nmi_exit(regs, state);					\
->  		if (!stalled)							\
->  			unstall_inband_nocheck();				\
-> +		mark_trap_exit_raw(trapnr, regs);				\
->  	}									\
->  }
-> =20
->  DO_ERROR_INFO(do_trap_unknown,
-> -	SIGILL, ILL_ILLTRP, "unknown exception");
-> +	SIGILL, ILL_ILLTRP, "unknown exception", regs->cause);
->  DO_ERROR_INFO(do_trap_insn_misaligned,
-> -	SIGBUS, BUS_ADRALN, "instruction address misaligned");
-> +	SIGBUS, BUS_ADRALN, "instruction address misaligned", EXC_INST_MISALIGN=
-ED);
->  DO_ERROR_INFO(do_trap_insn_fault,
-> -	SIGSEGV, SEGV_ACCERR, "instruction access fault");
-> +	SIGSEGV, SEGV_ACCERR, "instruction access fault", EXC_INST_ACCESS);
-> =20
->  asmlinkage __visible __trap_section void do_trap_insn_illegal(struct pt_=
-regs *regs)
->  {
->  	bool handled;
-> =20
->  	if (user_mode(regs)) {
-> +		if(!mark_trap_entry(EXC_INST_ILLEGAL, regs))
-> +			return;
-> +
->  		irqentry_enter_from_user_mode(regs);
->  		unstall_inband_nocheck();
->  		hard_local_irq_enable();
-> @@ -220,7 +258,12 @@ asmlinkage __visible __trap_section void do_trap_ins=
-n_illegal(struct pt_regs *re
->  				      "Oops - illegal instruction");
-> =20
->  		irqentry_exit_to_user_mode(regs);
-> +
-> +		mark_trap_exit(EXC_INST_ILLEGAL, regs);
->  	} else {
-> +		if(!mark_trap_entry_raw(EXC_INST_ILLEGAL, regs))
-> +			return;
-> +
->  		int stalled =3D test_and_stall_inband_nocheck();
->  		irqentry_state_t state =3D irqentry_nmi_enter(regs);
-> =20
-> @@ -230,11 +273,13 @@ asmlinkage __visible __trap_section void do_trap_in=
-sn_illegal(struct pt_regs *re
->  		irqentry_nmi_exit(regs, state);
->  		if (!stalled)
->  			unstall_inband_nocheck();
-> +
-> +		mark_trap_exit_raw(EXC_INST_ILLEGAL, regs);
->  	}
->  }
-> =20
->  DO_ERROR_INFO(do_trap_load_fault,
-> -	SIGSEGV, SEGV_ACCERR, "load access fault");
-> +	SIGSEGV, SEGV_ACCERR, "load access fault", EXC_LOAD_ACCESS);
-> =20
->  enum misaligned_access_type {
->  	MISALIGNED_STORE,
-> @@ -254,15 +299,22 @@ static const struct {
->  	},
->  };
-> =20
-> -static void do_trap_misaligned(struct pt_regs *regs, enum misaligned_acc=
-ess_type type)
-> +static void do_trap_misaligned(struct pt_regs *regs, enum misaligned_acc=
-ess_type type,
-> +			       int trapnr)
->  {
->  	irqentry_state_t state;
->  	int stalled;
-> =20
->  	if (user_mode(regs)) {
-> +		if(!mark_trap_entry(trapnr, regs))
-> +			return;
-> +
->  		irqentry_enter_from_user_mode(regs);
->  		local_irq_enable();
->  	} else {
-> +		if(!mark_trap_entry_raw(trapnr, regs))
-> +			return;
-> +
->  		stalled =3D test_and_stall_inband_nocheck();
->  		state =3D irqentry_nmi_enter(regs);
->  	}
-> @@ -274,29 +326,32 @@ static void do_trap_misaligned(struct pt_regs *regs=
-, enum misaligned_access_type
->  	if (user_mode(regs)) {
->  		local_irq_disable();
->  		irqentry_exit_to_user_mode(regs);
-> +		mark_trap_exit(trapnr, regs);
->  	} else {
->  		irqentry_nmi_exit(regs, state);
->  		if (!stalled)
->  			unstall_inband_nocheck();
-> +
-> +		mark_trap_exit_raw(trapnr, regs);
->  	}
->  }
-> =20
->  asmlinkage __visible __trap_section void do_trap_load_misaligned(struct =
-pt_regs *regs)
->  {
-> -	do_trap_misaligned(regs, MISALIGNED_LOAD);
-> +	do_trap_misaligned(regs, MISALIGNED_LOAD, EXC_LOAD_MISALIGNED);
->  }
-> =20
->  asmlinkage __visible __trap_section void do_trap_store_misaligned(struct=
- pt_regs *regs)
->  {
-> -	do_trap_misaligned(regs, MISALIGNED_STORE);
-> +	do_trap_misaligned(regs, MISALIGNED_STORE, EXC_STORE_MISALIGNED);
->  }
-> =20
->  DO_ERROR_INFO(do_trap_store_fault,
-> -	SIGSEGV, SEGV_ACCERR, "store (or AMO) access fault");
-> +	SIGSEGV, SEGV_ACCERR, "store (or AMO) access fault", EXC_STORE_ACCESS);
->  DO_ERROR_INFO(do_trap_ecall_s,
-> -	SIGILL, ILL_ILLTRP, "environment call from S-mode");
-> +	SIGILL, ILL_ILLTRP, "environment call from S-mode", EXC_SYSCALL);
->  DO_ERROR_INFO(do_trap_ecall_m,
-> -	SIGILL, ILL_ILLTRP, "environment call from M-mode");
-> +	SIGILL, ILL_ILLTRP, "environment call from M-mode", EXC_SUPERVISOR_SYSC=
-ALL);
-> =20
->  static inline unsigned long get_break_insn_length(unsigned long pc)
->  {
-> @@ -348,6 +403,9 @@ void handle_break(struct pt_regs *regs)
-> =20
->  asmlinkage __visible __trap_section void do_trap_break(struct pt_regs *r=
-egs)
->  {
-> +	if(!mark_trap_entry_raw(EXC_BREAKPOINT, regs))
-> +		return;
-> +
->  	if (user_mode(regs)) {
->  		irqentry_enter_from_user_mode(regs);
->  		unstall_inband_nocheck();
-> @@ -369,6 +427,8 @@ asmlinkage __visible __trap_section void do_trap_brea=
-k(struct pt_regs *regs)
->  		if (!stalled)
->  			unstall_inband_nocheck();
->  	}
-> +
-> +	mark_trap_exit_raw(EXC_BREAKPOINT, regs);
->  }
+ kernel/cobalt/thread.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-This is the only trap - or more specific: caller of _raw() - that is
-different. Why?
-
-All other traps are using _raw() for the kernel- and non-raw for user-
-space part.
-
-> =20
->  asmlinkage __visible __trap_section  __no_stack_protector
-> @@ -385,6 +445,15 @@ void do_trap_ecall_u(struct pt_regs *regs)
-> =20
->  		syscall =3D syscall_enter_from_user_mode(regs, syscall);
-> =20
-> +		if(dovetailing()) {
-> +			if (syscall =3D=3D EXIT_SYSCALL_OOB) {
-> +				hard_local_irq_disable();
-> +				return;
-> +			}
-> +			if (syscall =3D=3D EXIT_SYSCALL_TAIL)
-> +				goto done_inband;
-> +		}
-> +
->  		add_random_kstack_offset();
-> =20
->  		if (syscall >=3D 0 && syscall < NR_syscalls) {
-> @@ -404,6 +473,7 @@ void do_trap_ecall_u(struct pt_regs *regs)
->  		 */
->  		choose_random_kstack_offset(get_random_u16());
-> =20
-> +done_inband:
->  		syscall_exit_to_user_mode(regs);
->  	} else {
->  		int stalled =3D test_and_stall_inband_nocheck();
-> diff --git a/arch/riscv/mm/context.c b/arch/riscv/mm/context.c
-> index 55c20ad1f7444..8f38b4a5eb262 100644
-> --- a/arch/riscv/mm/context.c
-> +++ b/arch/riscv/mm/context.c
-> @@ -25,7 +25,7 @@ static unsigned long num_asids;
-> =20
->  static atomic_long_t current_version;
-> =20
-> -static DEFINE_RAW_SPINLOCK(context_lock);
-> +static DEFINE_HARD_SPINLOCK(context_lock);
->  static cpumask_t context_tlb_flush_pending;
->  static unsigned long *context_asid_map;
-> =20
-> @@ -315,7 +315,7 @@ static inline void flush_icache_deferred(struct mm_st=
-ruct *mm, unsigned int cpu,
->  #endif
->  }
-> =20
-> -void switch_mm(struct mm_struct *prev, struct mm_struct *next,
-> +static void do_switch_mm(struct mm_struct *prev, struct mm_struct *next,
->  	struct task_struct *task)
->  {
->  	unsigned int cpu;
-> @@ -336,3 +336,19 @@ void switch_mm(struct mm_struct *prev, struct mm_str=
-uct *next,
-> =20
->  	flush_icache_deferred(next, cpu, task);
->  }
-> +
-> +void switch_mm(struct mm_struct *prev, struct mm_struct *next,
-> +	struct task_struct *task)
-> +{
-> +	unsigned long flags;
-> +
-> +	protect_inband_mm(flags);
-> +	do_switch_mm(prev, next, task);
-> +	unprotect_inband_mm(flags);
-> +}
-> +
-> +void switch_oob_mm(struct mm_struct *prev, struct mm_struct *next,
-> +	struct task_struct *task)
-> +{
-> +	do_switch_mm(prev, next, task);
-> +}
-> diff --git a/arch/riscv/mm/fault.c b/arch/riscv/mm/fault.c
-> index 885e2f66515e3..32cb7285d6db8 100644
-> --- a/arch/riscv/mm/fault.c
-> +++ b/arch/riscv/mm/fault.c
-> @@ -7,6 +7,7 @@
->   */
-> =20
-> =20
-> +#include <linux/preempt.h>
->  #include <linux/mm.h>
->  #include <linux/kernel.h>
->  #include <linux/interrupt.h>
-> @@ -315,8 +316,12 @@ void handle_page_fault(struct pt_regs *regs)
->  		return;
->  	}
-> =20
-> +	oob_trap_notify(cause, regs);
-> +	if (!running_inband())
-> +		goto out;
-> +
->  	/* Enable interrupts if they were enabled in the parent context. */
-> -	if (!regs_irqs_disabled(regs) && running_inband())
-> +	if (!regs_irqs_disabled(regs))
->  		local_irq_enable_full();
-> =20
->  	/*
-> @@ -326,7 +331,7 @@ void handle_page_fault(struct pt_regs *regs)
->  	if (unlikely(faulthandler_disabled() || !mm)) {
->  		tsk->thread.bad_cause =3D cause;
->  		no_context(regs, addr);
-> -		return;
-> +		goto out;
->  	}
-> =20
->  	if (user_mode(regs))
-> @@ -334,7 +339,7 @@ void handle_page_fault(struct pt_regs *regs)
-> =20
->  	if (!user_mode(regs) && addr < TASK_SIZE && unlikely(!(regs->status & S=
-R_SUM))) {
->  		if (fixup_exception(regs))
-> -			return;
-> +			goto out;
-> =20
->  		die_kernel_fault("access to user memory without uaccess routines", add=
-r, regs);
->  	}
-> @@ -357,7 +362,7 @@ void handle_page_fault(struct pt_regs *regs)
->  		count_vm_vma_lock_event(VMA_LOCK_SUCCESS);
->  		tsk->thread.bad_cause =3D cause;
->  		bad_area_nosemaphore(regs, SEGV_ACCERR, addr);
-> -		return;
-> +		goto out;
->  	}
-> =20
->  	fault =3D handle_mm_fault(vma, addr, flags | FAULT_FLAG_VMA_LOCK, regs)=
-;
-> @@ -375,7 +380,7 @@ void handle_page_fault(struct pt_regs *regs)
->  	if (fault_signal_pending(fault, regs)) {
->  		if (!user_mode(regs))
->  			no_context(regs, addr);
-> -		return;
-> +		goto out;
->  	}
->  lock_mmap:
-> =20
-> @@ -384,7 +389,7 @@ void handle_page_fault(struct pt_regs *regs)
->  	if (unlikely(!vma)) {
->  		tsk->thread.bad_cause =3D cause;
->  		bad_area_nosemaphore(regs, code, addr);
-> -		return;
-> +		goto out;
->  	}
-> =20
->  	/*
-> @@ -396,7 +401,7 @@ void handle_page_fault(struct pt_regs *regs)
->  	if (unlikely(access_error(cause, vma))) {
->  		tsk->thread.bad_cause =3D cause;
->  		bad_area(regs, mm, code, addr);
-> -		return;
-> +		goto out;
->  	}
-> =20
->  	/*
-> @@ -414,12 +419,12 @@ void handle_page_fault(struct pt_regs *regs)
->  	if (fault_signal_pending(fault, regs)) {
->  		if (!user_mode(regs))
->  			no_context(regs, addr);
-> -		return;
-> +		goto out;
->  	}
-> =20
->  	/* The fault is fully completed (including releasing mmap lock) */
->  	if (fault & VM_FAULT_COMPLETED)
-> -		return;
-> +		goto out;
-> =20
->  	if (unlikely(fault & VM_FAULT_RETRY)) {
->  		flags |=3D FAULT_FLAG_TRIED;
-> @@ -438,7 +443,8 @@ void handle_page_fault(struct pt_regs *regs)
->  	if (unlikely(fault & VM_FAULT_ERROR)) {
->  		tsk->thread.bad_cause =3D cause;
->  		mm_fault_error(regs, addr, fault);
-> -		return;
->  	}
-> -	return;
-> +
-> +out:
-> +	oob_trap_unwind(cause, regs);
->  }
-> --=20
-> 2.43.0
+diff --git a/kernel/cobalt/thread.c b/kernel/cobalt/thread.c
+index 60a7112844..a51d9eca8d 100644
+--- a/kernel/cobalt/thread.c
++++ b/kernel/cobalt/thread.c
+@@ -996,7 +996,7 @@ void xnthread_suspend(struct xnthread *thread, int mask,
+ 	 * assumptions regarding suspended threads.
+ 	 *
+ 	 * We only care for threads that are not current, and for
+-	 * XNSUSP, XNDELAY, XNDORMANT and XNHELD conditions, because:
++	 * XNSUSP and XNHELD conditions, because:
+ 	 *
+ 	 * - There is no point in dealing with a relaxed thread which
+ 	 * is current, since personalities have to ask for primary
+@@ -1005,15 +1005,16 @@ void xnthread_suspend(struct xnthread *thread, int mask,
+ 	 *
+ 	 * - among all blocking bits (XNTHREAD_BLOCK_BITS), only
+ 	 * XNSUSP, XNDELAY, XNHELD and XNDBGSTOP may be applied by the
+-	 * current thread to a non-current thread. XNPEND is always
+-	 * added by the caller to its own state, XNMIGRATE, XNRELAX
+-	 * and XNDBGSTOP have special semantics escaping this issue.
++	 * current thread to a non-current thread. XNPEND, XNDELAY and
++	 * XNDORMANT are always added by the caller to its own state,
++	 * XNMIGRATE, XNRELAX and XNDBGSTOP have special semantics
++	 * escaping this issue.
+ 	 *
+ 	 * We don't signal threads which are already in a dormant
+ 	 * state, since they are suspended by definition.
+ 	 */
+ 	if (((oldstate & (XNTHREAD_BLOCK_BITS|XNUSER)) == (XNRELAX|XNUSER)) &&
+-	    (mask & (XNDELAY | XNSUSP | XNHELD)) != 0)
++	    (mask & (XNSUSP | XNHELD)) != 0)
+ 		__xnthread_signal(thread, SIGSHADOW, SIGSHADOW_ACTION_HARDEN);
+ out:
+ 	xnlock_put_irqrestore(&nklock, s);
+-- 
+2.47.3
