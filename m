@@ -1,255 +1,176 @@
-Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11012048.outbound.protection.outlook.com [52.101.66.48])
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A85A33E377
-	for <xenomai@lists.linux.dev>; Fri, 29 May 2026 13:53:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.48
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780062829; cv=fail; b=BL43mMC0QRZza+hXNWcenfQhJMOe53UzBojeHt6RPNyu6FCuH1hLQ19E1UUE+C2mSseolSClrkHEdfyLCvAyEpHftMOKbupMqRJQeAoW9uk869eXIe9QhmXk5ljExhsBBTv1Ie8isdcUWmBmKvSqnpFz2KTCXjJ+CbxcgysgJ8I=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780062829; c=relaxed/simple;
-	bh=FbsuOny+owi0X0+otcchj9zpP1p+AjNn8TiWVsadKfw=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=JG736u/4H/KVzNx/OlwfGs0mPZUnWjRZWqnEZQzfresfUMGf4xyE7DQZdLJz7bZlcrMODOm+dLn3vSxeFwC/DN4WURAYO7r0jTMe5CBlUC0vEcJ+X/M6xhaG3DexpWAtWAyMD9vhczJujHdXUXrek2NAySZCfc61vp1o0PE+bU8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=DIGGKBs2; arc=fail smtp.client-ip=52.101.66.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32E362E737C
+	for <xenomai@lists.linux.dev>; Fri, 29 May 2026 15:16:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.195
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780067813; cv=none; b=rentyFfeXTfNSlWd82UtnaAACSWQ4o7jv67R/TfjW34RnW7/fiskrLckI+xxpfBDVYoT1gftARdREAR60K8UN51iczXLtDevuyrt0zWQbW3s9H5s7q/tjmbsUZrClm5ejh3N2AnewwCVOPdB6i0Or6J8ZHac8jGBRhxUuv/Oo4E=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780067813; c=relaxed/simple;
+	bh=s7NovrluHMF1FWm8R0Vt23luQG1S3C6FAsgspbVYZZg=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=RqwLlhY1XXePeFhh43wUCHi+703u0gbLC7PvpKgQVeF5aUDJ/gBDlbbPjv5xplGesKCOnJdcKsDfoP2JZ/wt63sS6K64IuSD/qDOq5AgAgQ5hM8qLO9ym/AtbWBSw9T5rS2QjBLs7Ea2WTmntcJwdZ34ucQOciL1CG3tlvG/8+E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=pVP6G9ha; arc=none smtp.client-ip=217.70.183.195
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="DIGGKBs2"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=A9Q+zsK7h7B6quX71B2Z+htHOtX2at5fkONgP6tKCEe1T2gad29GgWnqkogRmZ24ncnfWzKMzFF0pWly3LbuWC8HgYx4DkYp3f3ggmqOdz3hLE/92ACCFtZQbzs1wWclEgmRJciVCAQN1ux+TxhOu67oiWUmdVvSS8oK63iN6DPMUaqdDtBP5xj4UL4zjKw+MI3HbaVzgVLhrz6z1mWLSNsnfDem5TGM35W44F90oWk2iv6nHKktqaK3quprGlAM3usZLZTGBKCKWC9JVgTk6Oaw2cMIA/DqLO3JvnPOQjZCwxBhwhvTS6gY1DyXvtwvOtSE9+mjonfRi3g+/LaIqg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FbsuOny+owi0X0+otcchj9zpP1p+AjNn8TiWVsadKfw=;
- b=vlFkSTSAAfrKl8spa/wRLOI6/OZzOqh5RZ2zyiuVufmdRoZmtqhO1CS3OpcJ2qGZBn1xz8rcIRIak6jSjoQJZtLARgPrcbPTjl4skiPrL73g4Ci1x4vcctaLe2XRjXFBaEA8UVOP9YbA7mgdDClRwswunRJufVnx4axxfKDcnI4sMR3r0JuQ0D4JtSDKtmUGyPSAGXdgKphO/JeSiBX/pgSCQvoJUx8TeafaDhqBpheab9Nx8YA1SMeq1tn7sT3gCjhpV3zUAvlL74zKB9pjqUGnZuac+iRbgb5dtRtrpCDvweH4g5TfbLXPntZYC0eMPuQpFo51st2ML+GSFV1vgg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FbsuOny+owi0X0+otcchj9zpP1p+AjNn8TiWVsadKfw=;
- b=DIGGKBs2bb4CXic3TWGprN8gpeUBZRSYbNvP7cJAYQx3Caij3Dywsf8LtSLtsQXvyYDIbQcy1XFiN62zpqt4+p3iqI0dBVRw4/RHfa9C6PG3/gW62MHF3HqDRbWTnMXWDJYYZK2W23TIdc/Zt4oEsqvHdYscxvrTixZvU22IatPVyWM+r6H6U2zvv2cpU+gwK8r+frhIBsWE/E/X02BuiD3LurePDJ0e767XfhNcqAv1nA7AlS4vDfiDhqq9Zuzax0qmC5dYlhcesR9m/tyToLK+BpbJP8P3MfNkO9r20fK7HTaI6AztOuAicUpts7QOZ9s/WlTxv/2wM3aRykM6jA==
-Received: from AS1PR10MB5700.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:47c::7)
- by DB9PR10MB8245.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:4c8::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.15; Fri, 29 May
- 2026 13:53:36 +0000
-Received: from AS1PR10MB5700.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::a80c:6870:c1e9:d41d]) by AS1PR10MB5700.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::a80c:6870:c1e9:d41d%4]) with mapi id 15.21.0071.011; Fri, 29 May 2026
- 13:53:36 +0000
-From: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-To: "rpm@xenomai.org" <rpm@xenomai.org>, "Kiszka, Jan"
-	<jan.kiszka@siemens.com>
-CC: "Schaffner, Tobias" <tobias.schaffner@siemens.com>,
-	"xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="pVP6G9ha"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id C72F42064C;
+	Fri, 29 May 2026 15:16:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1780067809;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=+Yek1qjeLEIXAwsk9+/w+VDncAyF/4Tht52RCi2nk2o=;
+	b=pVP6G9hakazW8l61UsxLuKyjd7FsdEqdv0i2QyW0fxAL2+vBty2dGhwjhdDNKgwedAUTlX
+	paz33U3RfH6J3qEe0omLvF66XEbtin4fOzBKiTnwZUxiCSRCh+9LHh2BElj+YQnKXM3RrN
+	9DFVptmh0719fMUiUBH9ZkQqc/Dom5XJBtqflKeLbhGMwjBb8c4UI5rG7rD+TecjJSU6ki
+	Xul6PWByRIgG0/T0mRFcub0eYKL/5zSrLDgyR3vZNH6ESmy0xQ7CCr00zzSTzBDCjGKLdw
+	Zeka/NLBslXhZNq6mBpatDONOttodfg93i7W+MFIpOtkYT8pjpP8/6+KKXjOdA==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>,  Tobias Schaffner
+ <tobias.schaffner@siemens.com>,  xenomai@lists.linux.dev
 Subject: Re: Dovetail on risc-v: Testing strategy, managing efforts for
  forward porting
-Thread-Topic: Dovetail on risc-v: Testing strategy, managing efforts for
- forward porting
-Thread-Index: AQHc70x+pA7N5O5dEUOhUUmQleXNYrYkx35kgAADvQCAAAYz4IAAAb2AgAAzUYA=
-Date: Fri, 29 May 2026 13:53:36 +0000
-Message-ID: <ac539a660d311083336a970152faec0e44716441.camel@siemens.com>
-References: <77ac2e8147a0ecd8f9618e3a9492ec87bdf9dd98.camel@siemens.com>
-			<87bjdyil4u.fsf@xenomai.org>
-			<030f8cd8-a587-496a-ab3d-11e67568a732@siemens.com>
-		 <87wlwmh4x4.fsf@xenomai.org>
-	 <b63745f3f56d5494ae60f0248e4f2ea440448bc6.camel@siemens.com>
 In-Reply-To: <b63745f3f56d5494ae60f0248e4f2ea440448bc6.camel@siemens.com>
-Accept-Language: de-DE, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-user-agent: Evolution 3.60.1 (3.60.1-1.fc44) 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AS1PR10MB5700:EE_|DB9PR10MB8245:EE_
-x-ms-office365-filtering-correlation-id: dcb7ad8e-e9b3-40a4-c230-08debd89ae2a
-x-ms-exchange-atpmessageproperties: SA
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|1800799024|376014|10070799003|366016|55112099003|38070700021|11063799006|6133799003|56012099006|4143699003|18002099003|22082099003;
-x-microsoft-antispam-message-info:
- sBgf56kuTs5yjlWwBxHT6FbA9k6STLqcSZekY6A9sdmWF5K4WNvwlvBiPN2AHLZZI758WpEHyDth+wU1y3CPC3VLDuL5eJh8mMySQeVQ+Dm4Z/5sVwMIiu1kr78gJYQVBxJRZSAiAgKu406/PSeCJwT8oQ4tSd/dU998M7ZkNl0Dv7k+MRv1pJ4iXWYZr4VD55dKLe8VfEGLdGLBpsud/XRs0S9VEIPpx1xxbYEkVqRqdiNbp/VlAbw+U81bL6GY8n/mQtvzp17jAbZRBYSBYlSHo65iY90f00LmYkrv//gy8uBQsTuyk0EJdDDcZv7qaech+RKLiI/Xq7K9Q5itXxxtAk0qnvU4VwWi6hIVWWJIfSVbvIlAYWHpp6vZ/lHRMwnYGw2bcq37tDrljCcL8+9onkzOObE8EHIgWxs392uRMByvtXX68mSU/R6xVg5sv/ot/PPhCPBAFKulO9l+0FtgHDXlFvgsUT/3Boqoi9fJWk94IuPKDMc7nIifd+6Eaae2zCJRHJESjM44KwuJn2spa0U5cL7dBC/DLR9OmzE8eNaDtinbl1rFTfSmcpEOcmPQva0yUB3PC1Bs2NUcOtUBfFyJkjZRZWcNup0LtV5SAYfBygdW78BWUcWuH1Gnee/mXK6CCqKWdsgk0fxvsTar1YkuGvpuAeGjm4WurXykU5uh4pPpIvTbI56jRXfVEJFMHnHZsEkMmgormusBQ9b00ee3SiyCjnyNoDoh5EfpKePGYqoxV49yQ/GSh6OzeYjp1rnCry5fJwKxzIVYJQ==
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS1PR10MB5700.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(10070799003)(366016)(55112099003)(38070700021)(11063799006)(6133799003)(56012099006)(4143699003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 2
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?ZWJlejNKaXNSUUJoaC9MZjNIYStKU05oTEJPTEpJMWNhVTFyV3RRbkVVbVNT?=
- =?utf-8?B?d3JvcUZBdlA2YnNPcno5S0dvR1c4eGFWRG1IaSszUDZBVStEeW9mQmQvdldT?=
- =?utf-8?B?K1ZKMFFlazc2dTBSNEs0RHJuRGVYeTFkYmtWa09oNnN3dkg3Tmh4WkVmenhE?=
- =?utf-8?B?VHhkN0xsclJ0MHVtMnlCa3R1bXJNTUpzamovN2VXdGZNOUFmdEgzS2xmTXRL?=
- =?utf-8?B?dkttSXhlejJja0h1ZmlUUGhOY2xqSmcydWxKTjk5MVhSNmZURmtMVFExU285?=
- =?utf-8?B?RnEwNVBZZG5HVk1UR1JFZDdMT21vVVFyU1dKdnRZKzBLSXJQangzRXVjWnpW?=
- =?utf-8?B?Q1FPc0RISk9iV2R6SjFmblYxSnFXMWdSUDA5N2RqMWwwblkrWm5jVTNhYWhk?=
- =?utf-8?B?OG53SHl4WUFUK0ZyU0d0RWVVL24xUURUbCtYTFhVTHVEa1J0QXY2cGV1YjdO?=
- =?utf-8?B?YTZPak5VSjlVZEhWSmd3UnZXallRWHVYVW5LWHVKSnQ5MmN2bmVXRTZ3dExo?=
- =?utf-8?B?WlZlOGIvL0RKd1IraGZHUlM4dE81dEY2TkI2R1IyMHN3Z0dKdllPeFVNdElH?=
- =?utf-8?B?U3c5MlFoUHR4WFdlbmRUVWdXTTJTYys4c2dnb2hVNVlJcFQxaWgrcG5yWEh3?=
- =?utf-8?B?QUYyQllZRkxHSk5wcytweEExZ2VOY0g4aVdkYnhpVWtJMmtxalJOUGJXNTlC?=
- =?utf-8?B?TkxWb1duRlp6WCtqaTJsTXFRbWwvSUlYdUw0WHdxaFNqL2hYbDYyeU5GQkNa?=
- =?utf-8?B?RGsrV3doa0VWWGdlZk5UY1FKNU1ldWpDVlpKVjM4SnY1YU1KcDdrdTU3dTh3?=
- =?utf-8?B?L002djl2NkJiKzAzdjZ6SzZaOE82R2hhMDZTMjBhMWp0YS9TMExYRVlsUTJx?=
- =?utf-8?B?OHk2VUJDd1NjMEoxei9neFZMVmtCdUNyVGJnOTNweWdQMVRwemNsci9IaG1n?=
- =?utf-8?B?amUxM2xyMGRhUzFZNkFxS1NyemVXZWQ0ZXEySTNCamg5RW1BR1kzSTA0dzZW?=
- =?utf-8?B?TDF1K0pvaEVFYXRrSXVyZ2dFNkJ2R2M2b0p5L0hoWjcvWC9oOTVydlgrSmxt?=
- =?utf-8?B?SS82YXR1YTdaYVQvanR0R1N5bkRYWDNjaW43N2Q4aWdQWlJSM1BzWFBtQS9h?=
- =?utf-8?B?NjZZT3ZseUZZWkJCOG5mYlh2Tm93ejJOMEJicXBpYUxGMkp3R2p2Umg4L3lO?=
- =?utf-8?B?WGgyTDRITEJpSUJZZVpvcUhvbEpNbmNtNnFuVzcwckVxeGg5SEtJK2VGbnRR?=
- =?utf-8?B?R2ZpaHMweHcxOEg1UDhHM2VXOGVNY2RsSWFFMndxWGhPc2NZZGpGSHd5d1hF?=
- =?utf-8?B?Ujk1Nlc0a3Fua080OXVsaUNTZzhDN3g1QTRkcFdNdVdyUG5LSUZMa2VXK1Yx?=
- =?utf-8?B?VHh1cXd1YUJuQWlxKy9TdTVVRHpqbVI1QlRaeXFGd2J2d3ZyUkNPTWdORFpP?=
- =?utf-8?B?WGx4eXIzMkNTWUh5M1NvNUdxanNCSG5uNmpjY1kzN2d6dlBybWxWaWhkRHRs?=
- =?utf-8?B?RzdtY3hxUlRveVJoR0Z0Y0ZGcE5yZnloTjFnNjd0b0s2UTFGeUt3S2ZpSXdE?=
- =?utf-8?B?VkRUV3MvaVBURnpFaXhUYW1jUDlUN2VwYmFSQUtzOWJ5MklMTE9mZ3BqeHNX?=
- =?utf-8?B?cUoyaFFDRGMzbHBTS2hybkJlS1A3MDhxNUwvSzVQTnJsWEYrSnBodWYrZkZx?=
- =?utf-8?B?SWU4bm8rUlJ6NFpia09ESmxYS2E3MDlKN3RiUWVHUGJSeG5vbGJZV0ZsTVdh?=
- =?utf-8?B?eHBPMGNrLytUbVh0cFNEd3lqdVRrSGpkZCtmbjdtZEpBVlZIZXNuYjlKL3gv?=
- =?utf-8?B?ZWhmM2NZOFZNaU8rNHkyUU9QcXp3K2NhL21NbnNjU3R6VnR4S21WdzhyNExj?=
- =?utf-8?B?a3g1T3hOMlRtd3dyRDZoMTZrRnQrRm9GRU9Calp3aDFQL0VmeU1FZmRMc09J?=
- =?utf-8?B?TEF5aENvYlJlZVBXRHJOa1M1NlNVRjhtcUlYZHhpUUVMRlQzNGRJdSsrZWtz?=
- =?utf-8?B?UElQT2RGb1d3VjZiWGVmOGlESElVcXlpQXlJTjdmaXJ1TkZLd0dTYzY4d3Ru?=
- =?utf-8?B?UFBTTXZacnphQjBIMFVzT2RSL0h3WDhpczl6akFJMU1EWGg4OWpIVkdwQnI0?=
- =?utf-8?B?cmFacTlJd0ZXZFIwVHlXZThhTUVyTUtOdEp1L1RNNHNFRjRwWTFscFFBcGZW?=
- =?utf-8?B?VTNBdG56d3pEK2IrV3pIYVFicjJvRVh0TTVCOHRqeE82Wm1lVW5YNk1CZUFB?=
- =?utf-8?B?bi9Ua0VYV3hqc2QyWFo5alpnWTQybTNyN1h3WURVMmYzSXllMkJwT1g0ZGtB?=
- =?utf-8?B?bDFrQ0l1VlNVdVdXd2l2blRGVUxyek55U1ZabGdrcWJoMkovdk1TUEpGSE1m?=
- =?utf-8?Q?s9I4s3BbN4gOSSedIQvK5uySJnCq2d1NREXddLLfMnQdF?=
-x-ms-exchange-antispam-messagedata-1: 7eq8fNcWrhq1FjMCfGKw1X7MZ69XEm+qFlY=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <6CA9810B15B41A4FB89348DDB8D44532@EURPRD10.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+	(Florian Bezdeka's message of "Fri, 29 May 2026 12:49:55 +0200")
+References: <77ac2e8147a0ecd8f9618e3a9492ec87bdf9dd98.camel@siemens.com>
+	<87bjdyil4u.fsf@xenomai.org>
+	<030f8cd8-a587-496a-ab3d-11e67568a732@siemens.com>
+	<87wlwmh4x4.fsf@xenomai.org>
+	<b63745f3f56d5494ae60f0248e4f2ea440448bc6.camel@siemens.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Fri, 29 May 2026 17:16:48 +0200
+Message-ID: <87qzmugs9r.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AS1PR10MB5700.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: dcb7ad8e-e9b3-40a4-c230-08debd89ae2a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 May 2026 13:53:36.3213
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: GeCKDahLSpN9t+0rFZEN7Ly53NdtTZtHITK6iTKR4QV0CNhKaSjbqLo9Rwtm8uYbHXKXSAK3+N6EZd19STKeeVBwvqo9wTPbJNklr4IBufM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB8245
+Content-Type: text/plain
+X-GND-Sasl: rpm@xenomai.org
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: dmFkZTEhG+vnld1B+d5eZgnttVRl2hovLAqJwBlwIxzX+fBt1mtR12Xmsp/WIoLOENGr2zwvIsJqSAc9N/i43yxjXkm2x+/VS71MjkZZaUYTPme5+k4daBi85BtM+HewMJqOXncENTjAkAiAeUhfx0UtZhtI8DLYgHLBaj3cnTlfEwr7QBdxYmJGyUuHSD3NLFaOOqffMVndt4tV3DSwziE74k5hWzcvWhqGlQdwpdRuv1DbhbrGROjKwTodETyLg3iMBzed2k4ob0D8TOT16Z4Mq5Wr7y5ldoP4prH/RybobleSBZz2i9ahlCh3hFjUaWjtmX9jqFQukGg5RTYS8C6Fi6SaNbxTzfC1QBO85xn8XlTX58vF0jUIqxDJD2SrgFehsvrUxEcX0/ztTa/WdhHYM9TM4LW/E0nFkNEzej2OlnecsHiwIR02cM4sxCKB/vGd9NNZZ0T5IHvR8lsiv88JIJe1zWWLwfWVftgW3+hhsQbZSYaTPErPz1iTcThpFULLX0uSMLGVWh5WPl2/M3iIlNGQDc8bl67ULDXGphSVI/EiqhXDpMXSONi6Tn6J0FGRTslqphU9lvMXMRh5gi+1sSzd7/UiidFMRrm68AiZXWqXkChElUaW+WPUuInRbih6uTjARiAX85SKM1NKE0ixR3U6SvhS9FGSY26wP7MYuaiPHQ
 
-T24gRnJpLCAyMDI2LTA1LTI5IGF0IDEyOjQ5ICswMjAwLCBGbG9yaWFuIEJlemRla2Egd3JvdGU6
-DQo+IE9uIEZyaSwgMjAyNi0wNS0yOSBhdCAxMjo0MyArMDIwMCwgUGhpbGlwcGUgR2VydW0gd3Jv
-dGU6DQo+ID4gSmFuIEtpc3prYSA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4gd3JpdGVzOg0KPiA+
-IA0KPiA+ID4gT24gMjkuMDUuMjYgMTI6MDgsIFBoaWxpcHBlIEdlcnVtIHdyb3RlOg0KPiA+ID4g
-PiANCj4gPiA+ID4gRmxvcmlhbiBCZXpkZWthIDxmbG9yaWFuLmJlemRla2FAc2llbWVucy5jb20+
-IHdyaXRlczoNCj4gPiA+ID4gDQo+ID4gPiA+ID4gSGkgUGhpbGlwcGUsDQo+ID4gPiA+ID4gDQo+
-ID4gPiA+ID4gSSdtIGN1cnJlbnRseSB3YWl0aW5nIGZvciBhIHY4IG9mIFRvYmlhcycgcmlzYy12
-IGltcGxlbWVudGF0aW9uLiBBDQo+ID4gPiA+ID4gY291cGxlIG9mIG1pbm9yIHRoaW5ncyBzdGls
-bCBuZWVkIGZpeGluZywgYnV0IG92ZXJhbGwgSSB3b3VsZCBzYXkgdGhhdA0KPiA+ID4gPiA+IHdl
-IGFyZSBsb29raW5nIGdvb2QgLSByZWFkeSBmb3IgbWVyZ2luZyAtIGFzc3VtaW5nIHRoYXQgY3Vy
-cmVudGx5DQo+ID4gPiA+ID4gcnVubmluZyB0ZXN0cyBhcmUgc3VjY2Vzc2Z1bC4NCj4gPiA+ID4g
-PiANCj4gPiA+ID4gDQo+ID4gPiA+IFJlYWxseSBuaWNlIHN0dWZmLCB0aGFua3MgdG8gYW55b25l
-IGludm9sdmVkLg0KPiA+ID4gPiANCj4gPiA+ID4gPiBGcm9tIG15IHBvaW50IG9mIHZpZXcgdGhl
-cmUgaXMgb25lIGlzc3VlIGxlZnQsIHRoYXQgbmVlZHMgYSBkaXNjdXNzaW9uOg0KPiA+ID4gPiA+
-IFRlc3RpbmcgYW5kIGZvcndhcmQgcG9ydGluZyBpbiB0aGUgZnV0dXJlLg0KPiA+ID4gPiA+IA0K
-PiA+ID4gPiA+IFVwIHRvIG5vdyBJIHdhcyBhYmxlIHRvIHRlc3QgYWxsIGFyY2hpdGVjdHVyZXMg
-dXNpbmcgY29iYWx0IC8geDMuIFRoYXQNCj4gPiA+ID4gPiB3aWxsIGNoYW5nZSBub3csIGFzIHdl
-IGRvbid0IGhhdmUgcmlzYy12IHN1cHBvcnQgaW4geDMuDQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4g
-SSBzZWUgdGhlIGZvbGxvd2luZyBvcHRpb25zOg0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IDE6IEFk
-ZGl0aW9uYWxseSBmb3J3YXJkIHBvcnQgbGludXgtZXZsIGluIHRoZSBmdXR1cmUsIHNvIHRoYXQg
-d2UgY2FuIHJ1bg0KPiA+ID4gPiA+IHRlc3RzIGFnYWluc3QgcmlzYy12IHVzaW5nIHg0LiBBZGRp
-dGlvbmFsIGVmZm9ydCBmb3IgbWUsIGVzcGVjaWFsbHkNCj4gPiA+ID4gPiBiZWNhdXNlIHdlIGRv
-bid0IGhhdmUgYW4gaW4taG91c2UgdXNlciBmb3IgdGhhdC4gQ2FuIHlvdSBlc3RpbWF0ZSBob3cN
-Cj4gPiA+ID4gPiBtdWNoIHRpbWUgaXQgdGFrZXMgeW91IHRvIGZvcndhcmQgcG9ydCBsaW51eC1l
-dmwgaW4gY29tcGFyaXNvbiB0byBsaW51eC0NCj4gPiA+ID4gPiBkb3ZldGFpbD8NCj4gPiA+ID4g
-PiANCj4gPiA+ID4gDQo+ID4gPiA+IFBvcnRpbmcgZXZsIHRvIGEgbmV3IGFyY2gga2VybmVsLXdp
-c2UgaXMgZnVuZGFtZW50YWxseSB0cml2aWFsLCB0aGUgcmVhbA0KPiA+ID4gPiB3b3JrIGlzIGRv
-bmUgYnkgRG92ZXRhaWwuIEZvciBldmVyeSBjdXJyZW50bHkgc3VwcG9ydGVkIGFyY2gsIHRoZSBh
-bW91bnQNCj4gPiA+ID4gb2YgYXJjaC1zcGVjaWZpYyBldmwgY29kZSBpcyA2MCBsaW5lcyBvZiBD
-LCBtZXJlbHkgd3JhcHBlcnMgaW4gaGVhZGVycw0KPiA+ID4gPiAoYXJjaC8qL2luY2x1ZGUvYXNt
-L2V2bC8qLmgpLiBUb2JpYXMgYWxyZWFkeSBjb250cmlidXRlZCB0aGUgZmV3IGJpdHMNCj4gPiA+
-ID4gbGliZXZsIG5lZWRzIHRvIHN1cHBvcnQgcmlzYy12Lg0KPiA+ID4gPiANCj4gPiA+ID4gPiAy
-OiBBZGQgcmlzYy12IHN1cHBvcnQgdG8geDMgYXMgd2VsbC4gVG8gbXkgdW5kZXJzdGFuZGluZyB0
-aGVyZSB3ZXJlIG5vDQo+ID4gPiA+ID4gcGxhbnMgeWV0LCBidXQgaXQgbWlnaHQgYmUgd29ydGgg
-aXQgdG8gbGltaXQgZm9yd2FyZCBwb3J0aW5nIGVmZm9ydHMuIEkNCj4gPiA+ID4gPiBjb3VsZCBm
-b2N1cyBvbiB4MyBmb3IgdGVzdGluZy4gVGhpcyBtaWdodCBhbHNvIGhlbHAgdG8gY29tcGFyZSBy
-aXNjLXYNCj4gPiA+ID4gPiBhZ2FpbnN0IHRoZSBvdGhlciBhcmNoaXRlY3R1cmVzLg0KPiA+ID4g
-PiA+IA0KPiA+ID4gPiANCj4gPiA+ID4gQWx0aG91Z2ggdGhpcyBtYXkgcmVxdWlyZSBhIGxpdHRs
-ZSBtb3JlIGVmZm9ydCBjb21wYXJlZCB0byB4NCwgc3VjaCBwb3J0DQo+ID4gPiA+IHdvdWxkIHN0
-aWxsIGJlIHRyYWN0YWJsZSBzaW5jZSBEb3ZldGFpbCBkb2VzIG1vc3Qgb2YgdGhlIHdvcmsgaGVy
-ZSBhcw0KPiA+ID4gPiB3ZWxsLiBBZGRpbmcgcmlzYy12IHN1cHBvcnQgdG8geDMgaXMgSmFuJ3Mg
-Y2FsbC4NCj4gPiA+ID4gDQo+ID4gPiA+ID4gMzogSWdub3JlIHJpc2MtdiBkdXJpbmcgZm9yd2Fy
-ZCBwb3J0aW5nLiBZZXMsIHRoaXMgb3B0aW9uIGV4aXN0cywgYnV0IEkNCj4gPiA+ID4gPiBkb24n
-dCBjb25zaWRlciBpdCBhcyBhIHJlYWwgLyB2YWxpZCBvcHRpb24uDQo+ID4gPiA+ID4gDQo+ID4g
-PiA+IA0KPiA+ID4gPiBOZWl0aGVyIGRvIEkuIE1lcmdlZCBpbXBsaWVzIG1haW50YWluZWQuDQo+
-ID4gPiA+IA0KPiA+ID4gPiA+IDQ6IE1lcmdlIHRoZSByaXNjLXYgc3VwcG9ydCBpbnRvIGxpbnV4
-LWV2bC4gVGhhdCB3b3VsZCBtYWtlIHJpc2Mtdg0KPiA+ID4gPiA+IHN1cHBvcnQgZXhjbHVzaXZl
-IHRvIGV2bCwgd2hlcmUgd2UgY291bGQgYWxyZWFkeSB0ZXN0IGl0LiBXb3VsZCB0aGF0IGJlDQo+
-ID4gPiA+ID4gYW4gdmFsaWQgb3B0aW9uIGZvciB0aGUgZXZsIHNpZGU/DQo+ID4gPiA+ID4gDQo+
-ID4gPiA+IA0KPiA+ID4gPiBObywgSSBiZWxpZXZlIHRoYXQgd2UgY2FuIGRlYWwgd2l0aCBvbmUg
-YXJjaCBtb3JlIHN1Y2ggYXMgcmlzYy12IGluIHRoZQ0KPiA+ID4gPiBEb3ZldGFpbCBtYWludGVu
-YW5jZSBwcm9jZXNzLiBCZXNpZGVzLCB3ZSByZWFsbHkgd2FudCB0aGUgZ2VuZXJpYw0KPiA+ID4g
-PiBEb3ZldGFpbCBjb2RlIHRvIGJlIHNoYXJlZCBieSBhbGwgYXJjaGl0ZWN0dXJlcywgb3RoZXJ3
-aXNlIHRoaXMgd291bGQNCj4gPiA+ID4gYmVjb21lIGEgbWFpbnRlbmFuY2UgbmlnaHRtYXJlIGZv
-ciB0aGUgcmlzYy12IHBvcnQuDQo+ID4gPiA+IA0KPiA+ID4gPiA+IEFueSBhZGRpdGlvbmFsIG9w
-dGlvbiBhdmFpbGFibGUsIHRoYXQgSSBtaXNzZWQ/DQo+ID4gPiA+ID4gDQo+ID4gPiA+IA0KPiA+
-ID4gPiBJJ2Qgc2F5LCB0aGUgc2ltcGxlciB0aGUgYmV0dGVyLiBUb2RheSwgZW5hYmxpbmcgcmlz
-Yy12IGZvciB4NCB3b3VsZCBiZQ0KPiA+ID4gPiBzdHJhaWdodGZvcndhcmQgd2hpbGUga2VlcGlu
-ZyB0aGUgY3VycmVudCBtYWludGVuYW5jZSBtb2RlbCBmb3IgRG92ZXRhaWwNCj4gPiA+ID4gbW9z
-dGx5IHVuYWZmZWN0ZWQuICBHcmFudGVkLCBmb3J3YXJkIHBvcnRpbmcgdG8gdGhlIGxhdGVzdCBr
-ZXJuZWwNCj4gPiA+ID4gcmVsZWFzZSBtYXkgcmVxdWlyZSBhIGJpdCBtb3JlIHdvcmsgaW4gb3Jk
-ZXIgdG8gbWFpbnRhaW4gdGhlIHJpc2MtdiBwYXJ0DQo+ID4gPiA+IHRvbywgYnV0IG15IHVuZGVy
-c3RhbmRpbmcgaXMgdGhhdCBUb2JpYXMgaXMgd2lsbGluZyB0byBoZWxwIHdpdGggdGhpcyBpbg0K
-PiA+ID4gPiB0aGUgbG9uZyB0ZXJtLiBBRkFJQ1MsIHRoZSBhcmNoLXNwZWNpZmljIHBhcnQgaW4g
-cmlzYy12IGZvciBEb3ZldGFpbCBpcw0KPiA+ID4gPiBmYWlybHkgcmVhc29uYWJsZSBpbiBzaXpl
-IGFzIHdlbGwuDQo+ID4gPiA+IA0KPiA+ID4gPiBTbywgZmlyc3Qgc3RlcCB3b3VsZCBiZSB0byBt
-ZXJnZSB0aGUgRG92ZXRhaWwgcmlzYy12IHN1cHBvcnQgaW50bw0KPiA+ID4gPiBsaW51eC1kb3Zl
-dGFpbCBsaWtlIG90aGVyIHN1cHBvcnRlZCBhcmNocywgZW5hYmxpbmcgaXQgZm9yIHg0L2V2bCBp
-biB0aGUNCj4gPiA+ID4gc2FtZSBtb3ZlLiBJdCBjb3VsZCBiZSBlbmFibGVkIGZvciB4MyBuZXh0
-LCB3aGVuIHRpbWUgYWxsb3dzIG9uIHlvdXIgZW5kDQo+ID4gPiA+IGlmIGRlc2lyZWQuDQo+ID4g
-PiA+IA0KPiA+ID4gDQo+ID4gPiBUbyBteSB1bmRlcnN0YW5kaW5nLCBGbG9yaWFuJ3MgY29uY2Vy
-bnMgYXJlIG5vdCBhYm91dCB0aGUgZmlyc3QtdGltZQ0KPiA+ID4gZW5hYmxpbmcgb3IgcmlzYy12
-IGJ1dCBpdHMgZnV0dXJlIHRlc3Rpbmcgd2hlbiBnb2luZyB0byBhIG5ldyBrZXJuZWwNCj4gPiA+
-IHZlcnNpb24uIFdoaWxlIGFyY2gtd2lzZSwgbW9zdCB3b3JrIGlzIGRvbmUgaW4gZG92ZXRhaWws
-IHRlc3Rpbmcgd291bGQNCj4gPiA+IG9ubHkgYmUgcG9zc2libGUgb25jZSBsaW51eC1ldmwgaXMg
-cG9ydGVkIHRvIGEgbmV3IGtlcm5lbCBhcyB3ZWxsLiBBbmQNCj4gPiA+IHRoYXQgcG9ydGluZyBp
-cyB3aWRlbHkgYXJjaC1hZ25vc3RpYyBidXQgZm9yIG90aGVyIHJlYXNvbnMgKGRyaXZlcnMNCj4g
-PiA+IGUuZy4pIHF1aXRlIHNvbWUgZ2VuZXJpYyBlZmZvcnQuDQo+ID4gDQo+ID4gVGhpcyBwcm92
-ZWQgdG8gYmUgYSBsaW1pdGVkIGVmZm9ydCBvdmVyIHRpbWUuIFBvcnRpbmcgaXNzdWVzIGluIGdl
-bmVyaWMNCj4gPiBkcml2ZXIgY29kZSBmb3IgbGludXgtZXZsIGNhbiBvbmx5IGFmZmVjdCB0aGUg
-R1BJTyBjb3JlLCBhbGwgdGhlIHJlc3QgaXMNCj4gPiBvbiB0aGUgRG92ZXRhaWwgc2lkZSAoTklD
-IGRyaXZlcnMsIFNQSSBhbmQgRE1BIGNvcmVzKSwgc28gYWxyZWFkeSBwb3J0ZWQNCj4gPiBhY3R1
-YWxseS4NCj4gPiANCj4gPiBUaG9zZSBpc3N1ZXMgZGlkIGhhcHBlbiBidXQgcmFyZWx5LCBhbmQg
-dGhlIGNvbXBsZXhpdHkgdG8gYWRkcmVzcyB0aGVtDQo+ID4gYWx3YXlzIHdlcmUgYW4gb3JkZXIg
-b2YgbWFnbml0dWRlIHNtYWxsZXIgdGhhbiBpdCBoYXMgYmVlbiBmb3IgRG92ZXRhaWwNCj4gPiBv
-dmVyIHRpbWUuIE1vc3QgaW1wb3J0YW50bHksIHRob3NlIG1lcmdlIGNvbmZsaWN0cyB3ZXJlIGFs
-bCBkdWUgdG8NCj4gPiBjaGFuZ2VzIGluIHN5bWJvbCBuYW1lcyBhbmQgcm91dGluZXMgbW92aW5n
-IGFyb3VuZCBkdWUgdG8gdXBzdHJlYW0NCj4gPiByZWZhY3RvcmluZy9jbGVhbmluZyB1cCB0aGUg
-Y29kZSwgc3RpbGwga2VlcGluZyB0aGUgb3JpZ2luYWwgbG9naWMNCj4gPiB1bnRvdWNoZWQgdGhv
-dWdoLiBJJ2Qgc2F5IHN1Y2ggcG9ydGluZyB3b3JrIHN0aWxsIHF1YWxpZmllcyBhcyBzaW1wbGUu
-DQo+IA0KPiBXaXRoIHRoYXQ6IExldCBtZSB0cnkgaXQuIFdoaWNoIGJyYW5jaCBzaG91bGQgYmUg
-dGhlICJzb3VyY2UiIGZvciB2Ny4xLQ0KPiBldmwtcmViYXNlPyBuZXh0L3Y3LjAtZXZsLXJlYmFz
-ZSBvciB2Ny4wLWV2bC1yZWJhc2U/ICh3aXRoIG9yIHdpdGhvdXQNCj4gbmV4dC8pDQo+IA0KPiBJ
-IHdvdWxkIGRvIGl0IHRoZSBzYW1lIHdheSBhcyBmb3IgRG92ZXRhaWw6IEkgd291bGQgcHVzaCB0
-byBzb21ldGhpbmcNCj4gbGlrZSB3aXAvPHJlbGVhc2U+LXJlYmFzZSBhbmQgYXNrIHlvdSB0byB0
-YWtlIG92ZXIgLyByZWxlYXNlLiBSaWdodD8NCj4gDQo+IEZsb3JpYW4NCg0KU28sIGZpcnN0IGV2
-bCByZWJhc2UgZG9uZS4gUmVzdWx0IGF2YWlsYWJsZSBhdCBbMV0sIHBsZWFzZSByZXZpZXcgYW5k
-DQpzcGF3biB0ZXN0cy4NCg0KSSBoYWQgdG8gZml4IGEgbWVyZ2UgY29uZmxpY3QgaW4gZHJpdmVy
-cy9waW8vZ3Bpb2xpYi1jZGV2LmMsDQpsaW5lZXZlbnRfY3JlYXRlLCB3aGVyZSB3ZSBoYWQgdGhl
-IGZvbGxvd2luZyBjb2RlIGZsb3c6DQoNCglpZiAob29iX2hhbmRsaW5nX3JlcXVlc3RlZChsZmxh
-Z3MpKSB7DQoJCXJldCA9IGV2bF9vcGVuX2ZpbGUoJmxlLT5vb2Jfc3RhdGUuZWZpbGUsIGZpbGUp
-Ow0KCQlpZiAocmV0KQ0KCQkJZ290byBvdXRfcHV0X2ZpbGU7DQoJfQ0KDQoJZXZlbnRyZXEuZmQg
-PSBmZDsNCglpZiAoY29weV90b191c2VyKGlwLCAmZXZlbnRyZXEsIHNpemVvZihldmVudHJlcSkp
-KSB7DQoJCWlmIChvb2JfaGFuZGxpbmdfcmVxdWVzdGVkKGxmbGFncykpDQoJCQlldmxfcmVsZWFz
-ZV9maWxlKCZsZS0+b29iX3N0YXRlLmVmaWxlKTsNCiANCgkJcmV0ID0gLUVGQVVMVDsNCgkJZ290
-byBvdXRfcHV0X2ZpbGU7DQoJfQ0KDQoJcmV0dXJuIHJldDsNCg0Kb3V0X3B1dF9maWxlOg0KCWZw
-dXQoZmlsZSkNCg0KDQpJIGNvbXBsZXRlbHkgcmVtb3ZlZCB0aGUgZnB1dCgpIGNhbGwgYXMgSSBj
-b25zaWRlcmVkIHRoYXQgYSByZXNvdXJjZS0NCmNvdW50IHVuZGVyZmxvdy4gZXZsX29wZW5fZmls
-ZSgpIHdpbGwgYWx3YXlzIHJldHVybiAwIC0gc3RpbGwga2VlcGluZw0KdGhlIGVycm9yIGhhbmRs
-aW5nIC0gYW5kIGlmIGNvcHlfdG9fdXNlcigpIGZhaWxlZCwgSSB0aGluayB0aGVyZSBpcyBubw0K
-cmVhc29uIHRvIGNhbGwgaXQuIFJpZ2h0Pw0KDQpbMV0gaHR0cHM6Ly9naXRsYWIuY29tL1hlbm9t
-YWkveGVub21haTQvbGludXgtZXZsLy0vdHJlZS93aXAvZmxvL3Y3LjEtZXZsLXJlYmFzZQ0K
+Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+
+> On Fri, 2026-05-29 at 12:43 +0200, Philippe Gerum wrote:
+>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>> 
+>> > On 29.05.26 12:08, Philippe Gerum wrote:
+>> > > 
+>> > > Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+>> > > 
+>> > > > Hi Philippe,
+>> > > > 
+>> > > > I'm currently waiting for a v8 of Tobias' risc-v implementation. A
+>> > > > couple of minor things still need fixing, but overall I would say that
+>> > > > we are looking good - ready for merging - assuming that currently
+>> > > > running tests are successful.
+>> > > > 
+>> > > 
+>> > > Really nice stuff, thanks to anyone involved.
+>> > > 
+>> > > > From my point of view there is one issue left, that needs a discussion:
+>> > > > Testing and forward porting in the future.
+>> > > > 
+>> > > > Up to now I was able to test all architectures using cobalt / x3. That
+>> > > > will change now, as we don't have risc-v support in x3.
+>> > > > 
+>> > > > I see the following options:
+>> > > > 
+>> > > > 1: Additionally forward port linux-evl in the future, so that we can run
+>> > > > tests against risc-v using x4. Additional effort for me, especially
+>> > > > because we don't have an in-house user for that. Can you estimate how
+>> > > > much time it takes you to forward port linux-evl in comparison to linux-
+>> > > > dovetail?
+>> > > > 
+>> > > 
+>> > > Porting evl to a new arch kernel-wise is fundamentally trivial, the real
+>> > > work is done by Dovetail. For every currently supported arch, the amount
+>> > > of arch-specific evl code is 60 lines of C, merely wrappers in headers
+>> > > (arch/*/include/asm/evl/*.h). Tobias already contributed the few bits
+>> > > libevl needs to support risc-v.
+>> > > 
+>> > > > 2: Add risc-v support to x3 as well. To my understanding there were no
+>> > > > plans yet, but it might be worth it to limit forward porting efforts. I
+>> > > > could focus on x3 for testing. This might also help to compare risc-v
+>> > > > against the other architectures.
+>> > > > 
+>> > > 
+>> > > Although this may require a little more effort compared to x4, such port
+>> > > would still be tractable since Dovetail does most of the work here as
+>> > > well. Adding risc-v support to x3 is Jan's call.
+>> > > 
+>> > > > 3: Ignore risc-v during forward porting. Yes, this option exists, but I
+>> > > > don't consider it as a real / valid option.
+>> > > > 
+>> > > 
+>> > > Neither do I. Merged implies maintained.
+>> > > 
+>> > > > 4: Merge the risc-v support into linux-evl. That would make risc-v
+>> > > > support exclusive to evl, where we could already test it. Would that be
+>> > > > an valid option for the evl side?
+>> > > > 
+>> > > 
+>> > > No, I believe that we can deal with one arch more such as risc-v in the
+>> > > Dovetail maintenance process. Besides, we really want the generic
+>> > > Dovetail code to be shared by all architectures, otherwise this would
+>> > > become a maintenance nightmare for the risc-v port.
+>> > > 
+>> > > > Any additional option available, that I missed?
+>> > > > 
+>> > > 
+>> > > I'd say, the simpler the better. Today, enabling risc-v for x4 would be
+>> > > straightforward while keeping the current maintenance model for Dovetail
+>> > > mostly unaffected.  Granted, forward porting to the latest kernel
+>> > > release may require a bit more work in order to maintain the risc-v part
+>> > > too, but my understanding is that Tobias is willing to help with this in
+>> > > the long term. AFAICS, the arch-specific part in risc-v for Dovetail is
+>> > > fairly reasonable in size as well.
+>> > > 
+>> > > So, first step would be to merge the Dovetail risc-v support into
+>> > > linux-dovetail like other supported archs, enabling it for x4/evl in the
+>> > > same move. It could be enabled for x3 next, when time allows on your end
+>> > > if desired.
+>> > > 
+>> > 
+>> > To my understanding, Florian's concerns are not about the first-time
+>> > enabling or risc-v but its future testing when going to a new kernel
+>> > version. While arch-wise, most work is done in dovetail, testing would
+>> > only be possible once linux-evl is ported to a new kernel as well. And
+>> > that porting is widely arch-agnostic but for other reasons (drivers
+>> > e.g.) quite some generic effort.
+>> 
+>> This proved to be a limited effort over time. Porting issues in generic
+>> driver code for linux-evl can only affect the GPIO core, all the rest is
+>> on the Dovetail side (NIC drivers, SPI and DMA cores), so already ported
+>> actually.
+>> 
+>> Those issues did happen but rarely, and the complexity to address them
+>> always were an order of magnitude smaller than it has been for Dovetail
+>> over time. Most importantly, those merge conflicts were all due to
+>> changes in symbol names and routines moving around due to upstream
+>> refactoring/cleaning up the code, still keeping the original logic
+>> untouched though. I'd say such porting work still qualifies as simple.
+>
+> With that: Let me try it. Which branch should be the "source" for v7.1-
+> evl-rebase? next/v7.0-evl-rebase or v7.0-evl-rebase? (with or without
+> next/)
+>
+
+next/
+
+> I would do it the same way as for Dovetail: I would push to something
+> like wip/<release>-rebase and ask you to take over / release. Right?
+>
+
+yep.
+
+-- 
+Philippe.
