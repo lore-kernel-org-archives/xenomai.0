@@ -1,266 +1,290 @@
-Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013064.outbound.protection.outlook.com [52.101.72.64])
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B57FD334C0D
-	for <xenomai@lists.linux.dev>; Fri, 29 May 2026 10:21:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.72.64
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780050097; cv=fail; b=W7gMTntgVLJ1xcCrsqpM/R1imWNvlMcva5PeTWAmRW6ivRfYl3cIoPHJK7MRq31OFLHw3rZWjpGj1RfE1NUshXb5UEcZ+kiBXQk49sIYT9+79Q2tsO4pJQQ5UZNqQOziFZQbZy/Hnn79pn9AuRpoAc7ajEWi+41lB4j7oSOQ328=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780050097; c=relaxed/simple;
-	bh=M2n4Rmjy1MBlzqljEPW0eP9yiqdtXeNJ268zsSohifs=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=UqsR/DY1HzNBD5lNUG8OjMbq1or/0nnn1Epz/44R3SPJlKz3Zchnp3qOJmbTzn4onLF3efJ9OjLn+jNTa0kKkkTkSlUcWk0qqD0kKSkUMh0rKNrlqCoubB1cRNcEVxi+7HLjuKJK5g+cMzja8rXXe+cN1MCoii4DW7UfwPynWPI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=FziRFsfp; arc=fail smtp.client-ip=52.101.72.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A63203A987B
+	for <xenomai@lists.linux.dev>; Fri, 29 May 2026 10:23:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1780050211; cv=none; b=tNlbezQfl0k+pvzU5ONV0Mc4o7upDgWjypWMcQ5JIFOtWJdaUztcnhdGBzJitLdZBAYlqH0xASN7y7gP2snjqPBoZhf8V+qQGln/OpBi4WaIHEK8tibHpXvxBd7NDiIwHIN+KAha5BHD99bZu7OOmrM7meNo5m/z7MK/j4CVcsI=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1780050211; c=relaxed/simple;
+	bh=dVKvBshIerRCEQGMqAO/+HZ7dZYR0qKOBrmDst8CyRc=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=f/rP7w7xYBljmdlJgP8eqID1/7G47G/dXxLE3P+gBRl6Yw1F3A3Ig0rrzFamsrsbZ9OlKpvnFhOfyVNqJrctxx0LxGPdfpagzYvuXCeT/GuBMro7GElbnAJqvKPi10B63LLq1HEd6se5Tb9lRa2guxzl9scOTuCvwka3EFbeu0U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=dIDp4CZk; arc=none smtp.client-ip=217.70.183.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="FziRFsfp"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=gTbjgmKMycjDONcN+r+XJ97gjuxM6FDHj2Tt1UxXwmaTDwq04RhH0lmwPwc3uo+ocPHTvLGLEMwWn/7KhLRL3gxBJUw5mW4nJOE7vzXLc+9Ni4lvRvEUapGaOSRFJVQ+ivakVY+TwuQSgVZav2QrSytoGykP7Sj3zCKa3l7lc8mlTulDdlqMqE36ccYNT3/ZbsuUq4ISVWnACC5+QpTUTXcI88qaXnfBLVf0WZ55pRF+WItme4lxct/bEGVL6VhsU5O9gN8dv/UgChgyILHOM43lnQzHmNY/IuDMWwF8T8u+2Tp/c2nNP/mxqJZrGL7uq5Us4flpYrctebWAiORq/A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3D1COhd+8hy2a3Nbr6aPEgkUylwsuJ38NlFfB6XHF2A=;
- b=GWH1Vv0x8r9MpsOmKEvtBk2Edd0vJP9MgEnmD0GWWNl6VadvsfSrtIxyiLgXcc0LkgX2vj9Ud/2sZ2EsNVbjuCYvJYCK0UAP6Cyqx8DtDeN+FuaZWP512/GyKS48Glms3i768RZOn0TkPgr5s85Y1fjKMl/4c1y4APRa53WkEIJNFlkpET3djNtH0btHDF9HCqnz+SZ0Y2U9g/Orri645dMR7ksM3Dh2uBfYMckLJ9wEZiQdWm4T79+HBDHw1Qm0pObVzmJETVgxUb2HgaHjiDss5JhAQtjH4FWJuMuB04aGZnN7eHuiobRaP4oaEI6BYQQ2jDZ/zcHQnKIRjMBOiA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3D1COhd+8hy2a3Nbr6aPEgkUylwsuJ38NlFfB6XHF2A=;
- b=FziRFsfpMT2F1pSoZf++xTubdrGWewbbI31BQEP+NxxvnGlijgDu8k+nlpL4eq7W6HvABUCnYkRFSeuV3EYDi99BEfHZs8lFOuVrVbLUqISHabfM8WIuloWiL/Pf1z7AIFPXP8T3+PHGe4hw3m3G3LfrTOQd7crndIbo8CKpcyQlrV28N9s9kWdhzhG1FIXNNokC8CHUf/dEuopxr0vCM3cGQ7i0//9OX2ap+8K+ebCNYCXCMxzMBtLZhDn76ldMElcIdLlt94wOsbp7DH4YvTxiHubV2CFDJMDK2FnLYpcG2b4Se7o0B7DrvYLr5wQaMeykft995tTaN1TUBawdEQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DU4PR10MB9640.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:645::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.71.14; Fri, 29 May
- 2026 10:21:33 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::be9f:e8ca:ee9:83e1%3]) with mapi id 15.21.0071.014; Fri, 29 May 2026
- 10:21:33 +0000
-Message-ID: <030f8cd8-a587-496a-ab3d-11e67568a732@siemens.com>
-Date: Fri, 29 May 2026 12:21:30 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: Dovetail on risc-v: Testing strategy, managing efforts for
- forward porting
-To: Philippe Gerum <rpm@xenomai.org>,
- Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
-References: <77ac2e8147a0ecd8f9618e3a9492ec87bdf9dd98.camel@siemens.com>
- <87bjdyil4u.fsf@xenomai.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Content-Language: en-US
-Autocrypt: addr=jan.kiszka@siemens.com; keydata=
- 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
-In-Reply-To: <87bjdyil4u.fsf@xenomai.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR2P281CA0122.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:9d::11) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="dIDp4CZk"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 79B0A3EBF2;
+	Fri, 29 May 2026 10:23:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1780050202;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=UWIpCbQfNafF72rsAZusY5cda7EwbgyIMWSrx1AoxF0=;
+	b=dIDp4CZkvNkRI26McOdsJ3p6znYkwgwJ3tKoOnGf7liegFLe8fBNzYWFZMgWgZpcbQ/xG2
+	LX5BnjMFA4la3CMoZP5J9rdFd68w2p0ZC78qYnRIw1++qkeI+obQqNjIyJfJrOelwrEG6s
+	xPQJ30rFsL9A3xIShrekSiVy2kqEodjcz7MgXAM3l1uNfi7kBTysZRoDNhKr8Sto3jrGk8
+	bgpnAfaQT7SxWjfOq6LbT0HtCWyZsh7NMFIi6158D5YpjOD6Y1QGnIWmDx/CME+CQRF+kO
+	2yFRU7IcwX/I4oRAg3ELLhAeN30yBvehA4DvYUQ5Ul+QoH7h4Dp5qlzDc6OX2Q==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Hannes Diethelm <hannes.diethelm@gmail.com>
+Cc: xenomai@lists.linux.dev
+Subject: Re: [PATCH] tidbits: net-udp: add server and client mode
+In-Reply-To: <87bje0hdxg.fsf@xenomai.org> (Philippe Gerum's message of "Wed,
+	27 May 2026 21:04:27 +0200")
+References: <20260523201044.12938-1-hannes.diethelm@gmail.com>
+	<87cxyjph49.fsf@xenomai.org>
+	<05e115e3-6dcb-4eba-8cf9-3510f0891621@gmail.com>
+	<34f6ff16-6e68-4529-9fa7-d9fbe99b46ad@gmail.com>
+	<87bje0hdxg.fsf@xenomai.org>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Fri, 29 May 2026 12:23:21 +0200
+Message-ID: <8733zaikfa.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DU4PR10MB9640:EE_
-X-MS-Office365-Filtering-Correlation-Id: ea3c67f0-13c8-40ec-5db5-08debd6c0e7d
-X-MS-Exchange-AtpMessageProperties: SA
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|366016|1800799024|55112099003|56012099006|4143699003|6133799003|11063799006|22082099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	eoUuGAv/Elkrz0b1dOZ811v+gPSWRgHNuRCtiyLUoCdWkXC+BrtRmUBSAz6f0nDeJ5TaIDbUQpRr33FGHDIxdVxjRgc+AEUZ/pZj2A7wZqEoUlC8QHMS2lcr46fMjyRThk0P6Z5LR7GFoqUzVGSUbYT0WkDZtDFqwweuTBFyiYOPA/OZF6ym5Nu6zM2JeciTKvd2BE3JaC3N/hFE2CZAaId6JUChKeXfGwmltXWDqTcADSUjRMMJKcAVYznnXF3cVddBJ6dDWKYlh/w05Bc6DHNXIGlFbAezOlnRVQQyiqIImuVemojl53FTMhy0R1Xwp2xwg11G7QGeo8bkXRGta5fzdv2Zmfx7bIINSfDivWY7cvi/1y278kQRcs3VH/SjUwS9xeHbFGicsoXDylk/A3328pLeT9JK8g19WrLwiQeh5V7/ThxgVWbAjuwWaHoBAWEIudjg3JjlGYoyI1agAZX1/mc5CD9L1f6PYRA10a9vwU2bZbaYrg3pR92KixyQsI/k0D4wNsUnblZ+CoFt5ToCVtnLLnfMMslAU1orOjbtk4dbxNs0MoDV57DrJvH9pk54VuFuSEx8ILRI8x7CAtC54aLLNFgyP8usQ6CoaGmILN8p/wEtJlsFttrV6gZi3Uv42wtmsd/yyuJgiMkPyvl8umkb8Lp03fxSoDrp1g6Fiac25rsVmUfgC9+sGT5BuNy3lKolR//7TRCIBlSsbw==
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(1800799024)(55112099003)(56012099006)(4143699003)(6133799003)(11063799006)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?czREOGFSaEZBR2NXTG5RRThjdk1tVXR0U1o0cDlhYnZSTm0zcTNveExlL21F?=
- =?utf-8?B?bUUrMk5PWm8yVzBvNjhuc2pvcmtNUEgrZ3hjUWF1R0dWakJjZjJ0WTZEUTFt?=
- =?utf-8?B?UUNmOUowV2FockFUL2ZPQjg2WUlNWGt4bHYzRmpOUWlSVFpDRzliaDlZVUpX?=
- =?utf-8?B?SmRoSkpsMWZWcGtqN25jMUliUGtva0syeFNvbFRKTkhOWEdhQmNFczNSNzNW?=
- =?utf-8?B?YTE5TFhOZEtSdUtMT2FhOTd6QXVzaGsvckZ4UFJrQ3pkd2h4b1lZMCt6Mlda?=
- =?utf-8?B?ZVBmRklUcGFLb2RDd0FlRHdySkt2aitnSzBMUW9BcG1WL0lydEplRkVla09z?=
- =?utf-8?B?MEtIaXB6NHJjQVZGMFA2RGxOeHZLMHpsSmNyYk56dElUVE1HRVo3ejJiL3ZQ?=
- =?utf-8?B?bTcxcXRmMktENmhhQ3ZXQjFWTnlobjkwUER3Uyt0RXkvdnNjUm9acExKY2ts?=
- =?utf-8?B?NFZUZ2h6VlVsbzZ5dm5NL1kxeDliVVdJTEJvSVY2SDFEaEpWQVl1am1lSHZM?=
- =?utf-8?B?YWRrMVVmWmRXay90cEFCTlE3L1hMQ0paMzlNdFdZNys0Rm1kc2d2VHVGMjFO?=
- =?utf-8?B?dHQrRjNqbko5VERqZmlGNVlwZlRmRlM1WlJMSFVqbnE4MG04TVRxZVRqOHhk?=
- =?utf-8?B?d1UreExZNk1Ba3kwN2hXbC9nSy9KTXA2VXBqemtxK1VpOXpEbG9yU3FJSWxT?=
- =?utf-8?B?QWVHc3NqNjlnVGU2SHNzVUNUMlFvTjAyNGVaeUJFanVpcjFOd21QKzVxL0VJ?=
- =?utf-8?B?TytsbnBJajg5aWpjRnpRcXJLckJteU03U2JFQ3FJVGlNWTlLckUvL0xkNXJK?=
- =?utf-8?B?RWcvdnljdUNEaG8zWU5OZGNQVU0wOGlmWFFIT1Fwd2ZGVXdSTTRXN0tLam1Q?=
- =?utf-8?B?R3BtRGN6Tkt4UmhnLzFNZmhWS2lGTXlwVndqVU5UenlPUW5FcXZ4WmYrMEY0?=
- =?utf-8?B?akUvcGFyWElVVDlxem4xekkyZGxGQXZIVi9vVnRDNjdCWE1yZzhNbWlvYktC?=
- =?utf-8?B?UG5SYTlzOE9ocDJxNGplUnNiSDBsbkV0cVdNWnR6Y3VYTnJkdmE5U3FNWDNX?=
- =?utf-8?B?bTFaNjJ1ME9PV2FvVzY2OWpxMDM1QWc4K2RRNmxSRW9lWGFrWG1hc2w5L0N5?=
- =?utf-8?B?NjVjaXd5VWFweHNiR0t5UEZDdHVOUWFSOWVGaEV3YjhKY0lPUGxGa3Q1UHRj?=
- =?utf-8?B?a1RCTHY1T0h3c0dURWhzbncvQTdURmJzcFRqTExvazJ2eWQ5ZkMvbnF5UGNj?=
- =?utf-8?B?VW5ZMnhBUllDMjdQSjZ2dWRzRUs5QldxVFZoQkJRN0hyZjF4ekovTExGU0t4?=
- =?utf-8?B?VjZGT0FrbVJMYlk5NnVsU2Z0YlJEVUJ6akJ4ckliZ080VHZHWGxnWEFkVHJC?=
- =?utf-8?B?dlNVeHNQUFU4ekI2YTRybUVyK0FZYUFjNkVxNlBvWnQ5OHFxRUFUd0hyUnBL?=
- =?utf-8?B?Lyt0K1I3ZzkwakZxc0VHZSsxR0dyVXNOSWlOaXNYTUV5cjgxUk5LRFhrNFI2?=
- =?utf-8?B?NThZdzZ4K0dYQjdTRlJHTHJyTjZlOXVHd1h0TTdMc3plSTZ4d0lpbWMwYUYr?=
- =?utf-8?B?eUZGU1Zsb21HTGxjVnVuMXBlVkV2am9YWFFGYWtYUnlNdVpCSVRLUW5NVkdJ?=
- =?utf-8?B?UEFxVjM1V2NvVU53WlhHbEZESDV1L29SczcvQmxGL1ZnOW1KNHJZekxqWTVK?=
- =?utf-8?B?Z05DWVZwT0FGSzBRd010aksyY0ZwL1pWY0NtOXh2cElQY1dURU5qWSsrSmlJ?=
- =?utf-8?B?YlBwSm96R0hVSEx6dVRRcFY5K3JQOHpyazRoOVc2Tk9CQTFVOTNuTHkycHBa?=
- =?utf-8?B?MUVBV202VEFTR0V2R1NLSmRoUnlkakxSQkU5T3VLMFNZby9NaHNRdTAraVhJ?=
- =?utf-8?B?enVDcUo4TGR0SDBYeE5Ec3VmZ0JpVmFNb1locWxWSS94dlFobmgyVHdJWmVG?=
- =?utf-8?B?MHNIOWs5bUZkOWp0Y29KMCtUTS9QZFJ2SjVPRHVrcEpQY1paenBDTGNqRDdW?=
- =?utf-8?B?SHprc1ZEc1pEak1OUWlwY1dRR0NVVTF6VXZaWkloZ2ZIUXdNL0VQWndaVEF0?=
- =?utf-8?B?SXdVcnFjb0FTbkcwd1pkVkdVSFhpYmFBVUZKMXpGZWJoSEkxNlEwZTZDbDRR?=
- =?utf-8?B?MTVjUkR1Q0dpMDhJbFZSd0l3MWRiMk9ZTkprQ3VxdnlRZ2d1S2tIMnUvRDM2?=
- =?utf-8?B?bHptY3Y3dGl5dG5FM0VteDA2SEUwSmk2U25kd00yNm15VWZiK3RybSs1TTVD?=
- =?utf-8?B?dDZlVk50OVZXK2NYUU1ISC9NMUZQWSt4ZjMzdXdyRXVXSC9PdkEvaWtBdVVU?=
- =?utf-8?B?b2JTYXE1V3JXajF5ZnBkQTJ4STJtUjZpTS9MeURTRE1PUVZobm5IQT09?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea3c67f0-13c8-40ec-5db5-08debd6c0e7d
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2026 10:21:33.1995
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ct81+2e2UEyrw7ucpvi/+d8Jo0H736Fyvyzc8WZk+sFph/xcrktsd8lDnj22WnnWtc0gab1gyJ/3wZChH5ou+A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU4PR10MB9640
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-GND-Sasl: rpm@xenomai.org
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: dmFkZTEYaB7MQFncGwJLdjREpCVmO2mj6O4cYCziDb6y6j9pEwex++qyC5uPVzVJRNkW+fYGK93z+0kWjM3KTH3cEQ6IKjZR8ZfY2oGLwf7CbNIOYkA//tsvY000QCxgufJ8ICn744K2Rr3ZhgHxFGJdXqAh/0fUUP820P7Ttxr3eiupinXrtEH5eeEYM6qZwm0MfuWZWczyc8QMcrYBlHo+FRNNO1eDEbvObLt+gKtms171ucLgerrsua9qg1ZCiMq/tL/VDTJzIg+wFapiXD61F8ed1n9Ph8OMz25bjmPWaCxEQ86v5rM+SE5ICXuCDvPea5htWEG3u76LMFIX8hGktqthWwXXYkixqHgNZHuDRRKBZlszPIsv7xjaikn+106OIWJl2x47bXpnlJmEawd/imKDb4a1Cpb554WbSwbZBaqvndN/4UIfe49oZsDaKwEvZINCQtfNouANrIR7KnqUylbH4fAn0qW81Is/4jXUHbwRDsfaJRSuJFKdpN+v8PL0NxHC2E74MT5IyYkIfUCltvM+PDq311T5FUzdfS8ncWePZ4p5j6JJx8CNw1RCT1YGWB5kQs44IBSEzyV3jbePuI2an93v0tjGT5IA7csFGcCr53yKgTfUcz3xj2odP2NdVySF7Q5L6huwC5toPHAeHeZtVjYGsp6SbCl+v5emYfAjSQ
 
-On 29.05.26 12:08, Philippe Gerum wrote:
-> 
-> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
-> 
->> Hi Philippe,
->>
->> I'm currently waiting for a v8 of Tobias' risc-v implementation. A
->> couple of minor things still need fixing, but overall I would say that
->> we are looking good - ready for merging - assuming that currently
->> running tests are successful.
->>
-> 
-> Really nice stuff, thanks to anyone involved.
-> 
->> From my point of view there is one issue left, that needs a discussion:
->> Testing and forward porting in the future.
->>
->> Up to now I was able to test all architectures using cobalt / x3. That
->> will change now, as we don't have risc-v support in x3.
->>
->> I see the following options:
->>
->> 1: Additionally forward port linux-evl in the future, so that we can run
->> tests against risc-v using x4. Additional effort for me, especially
->> because we don't have an in-house user for that. Can you estimate how
->> much time it takes you to forward port linux-evl in comparison to linux-
->> dovetail?
->>
-> 
-> Porting evl to a new arch kernel-wise is fundamentally trivial, the real
-> work is done by Dovetail. For every currently supported arch, the amount
-> of arch-specific evl code is 60 lines of C, merely wrappers in headers
-> (arch/*/include/asm/evl/*.h). Tobias already contributed the few bits
-> libevl needs to support risc-v.
-> 
->> 2: Add risc-v support to x3 as well. To my understanding there were no
->> plans yet, but it might be worth it to limit forward porting efforts. I
->> could focus on x3 for testing. This might also help to compare risc-v
->> against the other architectures.
->>
-> 
-> Although this may require a little more effort compared to x4, such port
-> would still be tractable since Dovetail does most of the work here as
-> well. Adding risc-v support to x3 is Jan's call.
-> 
->> 3: Ignore risc-v during forward porting. Yes, this option exists, but I
->> don't consider it as a real / valid option.
->>
-> 
-> Neither do I. Merged implies maintained.
-> 
->> 4: Merge the risc-v support into linux-evl. That would make risc-v
->> support exclusive to evl, where we could already test it. Would that be
->> an valid option for the evl side?
->>
-> 
-> No, I believe that we can deal with one arch more such as risc-v in the
-> Dovetail maintenance process. Besides, we really want the generic
-> Dovetail code to be shared by all architectures, otherwise this would
-> become a maintenance nightmare for the risc-v port.
-> 
->> Any additional option available, that I missed?
->>
-> 
-> I'd say, the simpler the better. Today, enabling risc-v for x4 would be
-> straightforward while keeping the current maintenance model for Dovetail
-> mostly unaffected.  Granted, forward porting to the latest kernel
-> release may require a bit more work in order to maintain the risc-v part
-> too, but my understanding is that Tobias is willing to help with this in
-> the long term. AFAICS, the arch-specific part in risc-v for Dovetail is
-> fairly reasonable in size as well.
-> 
-> So, first step would be to merge the Dovetail risc-v support into
-> linux-dovetail like other supported archs, enabling it for x4/evl in the
-> same move. It could be enabled for x3 next, when time allows on your end
-> if desired.
-> 
+Philippe Gerum <rpm@xenomai.org> writes:
 
-To my understanding, Florian's concerns are not about the first-time
-enabling or risc-v but its future testing when going to a new kernel
-version. While arch-wise, most work is done in dovetail, testing would
-only be possible once linux-evl is ported to a new kernel as well. And
-that porting is widely arch-agnostic but for other reasons (drivers
-e.g.) quite some generic effort.
+> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+>
+>> Am 25.05.26 um 23:02 schrieb Hannes Diethelm:
+>>> Am 25.05.26 um 18:51 schrieb Philippe Gerum:
+>>>> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+>>>>
+>>>>> Additionally, fix memory leaks
+>>>>>
+>>>>> Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
+>>>>> ---
+>>>>> =C2=A0 tidbits/oob-net-udp.c | 258 ++++++++++++++++++++++++++++++++++=
++++++---
+>>>>> =C2=A0 1 file changed, 240 insertions(+), 18 deletions(-)
+>>>>>
+>>>>
+>>>> Merged, thanks. Would you mind sending a patch to update the related d=
+oc
+>>>> on the website at [1], regarding the new -S mode? The pages can be
+>>>> downloaded from [2].
+>>>>
+>>>> [1] https://v4.xenomai.org/core/net/udp-demo/index.html
+>>>> [2] https://gitlab.com/Xenomai/xenomai4/website.git
+>>>>
+>>> Sure, done. Is there any way to preview the website? I just used a
+>>> markdown
+>>> preview, I hope it did the job and I did not introduce format issues.
+>>> By the way:
+>>> I had sometimes issues in my VM. It might just be that I am using two
+>>> interfaces on the same subnet and disabled the non-oob one after
+>>> enabling the oob mode on the other one or there might also be an issue
+>>> somewhere in the evl code. I am not yet able to reproduce it clearly.
+>>> Sometimes it is all fine, sometimes not. Until now, it did not happen on
+>>> the real PC or in loopback mode. But I also don't have a good setup
+>>> with two
+>>> PC's to really test this (yet). I will follow up when I have
+>>> something reproducible.
+>>> If it went wrong, the following happened. After a reboot, all was
+>>> fine again:
+>>> In client mode, the sender address was from the wrong interface:
+>>> 192.168.255.245 instead of 192.168.122.155
+>>> In server mode, the sender address was just 0.0.0.0.
+>>> In both cases, there is no answer from the other side due to the
+>>> response was sent
+>>> to the wrong IP address.
+>>> I think the issue is not in my code, due to when I use the standard
+>>> libc functions
+>>> in otherwise the same code, the issue disappeared. Attached the code
+>>> I was using
+>>> for tests and also on the host to test server/client.
+>>> Regards
+>>> Hannes
+>>
+>> So, I was able to create something reproducible. I was a bit confused fi=
+rst
+>> due to sometimes it worked, sometimes not. But this was my fault, not
+>> rebooting before the test and not exactly using the same commands in the=
+ same order.
+>>
+>> All command blocks below where performed after a reboot.
+>>
+>> I have two network interfaces:
+>> enp1s0: virtio
+>> enp7s0: e1000e
+>>
+>> After boot:
+>> enp1s0: 192.168.122.246 nm 255.255.255.0
+>> enp7s0: No address
+>>
+>> First Scenario-------------------
+>>
+>> The client works fine:
+>> dhclient enp7s0 # 192.168.122.155 nm 255.255.255.0
+>> ifconfig enp1s0 down
+>> evl net -ei enp7s0
+>> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -C -p 5201 -m "Client"
+>>
+>> The server sometimes fails:
+>> dhclient enp7s0 # 192.168.122.155 nm 255.255.255.0
+>> ifconfig enp1s0 down
+>> evl net -ei enp7s0
+>> ./oob-net-udp -d -i enp7s0 -a 0.0.0.0 -S -p 5201 -m "Server"
+>>
+>> There is sometimes the error:
+>> oob-net-udp: oob_sendmsg() failed: Operation now in progress
+>> This goes away after a few tries and then it works afterwards.
+>>
+>> If I bind to the interface address instead of INADDR_ANY, same issue:
+>> ./oob-net-udp -d -i enp7s0 -a 192.168.122.155 -S -p 5201 -m "Server"
+>>
+>> Second Scenario-------------------
+>>
+>> Here, I do not set an IP address for enp7s0. This was a mistake on my si=
+de. Disregard,
+>> more careful testing showed the exact same behavior for posix / vanilla =
+kernel. But it is
+>> important for the third scenario.
+>>
+>> ifconfig enp1s0 down
+>> ifconfig enp7s0 up
+>> evl net -ei enp7s0
+>> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501
+>>
+>> Here, the sender address shown in wireshark is 192.168.122.246. This is =
+the address from enp1s0
+>> that is disabled. Exactly the same for posix / debian kernel.
+>>
+>> ifconfig:
+>> enp7s0: flags=3D4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500
+>>         inet6 fe80::5054:ff:fe5a:79c5  prefixlen 64  scopeid 0x20<link>
+>>         ether 52:54:00:5a:79:c5  txqueuelen 1000  (Ethernet)
+>>         RX packets 15  bytes 960 (960.0 B)
+>>         RX errors 28  dropped 0  overruns 0  frame 28
+>>         TX packets 30  bytes 3332 (3.2 KiB)
+>>         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+>>         device interrupt 22  memory 0xfdc40000-fdc60000
+>>
+>> lo: flags=3D73<UP,LOOPBACK,RUNNING>  mtu 65536
+>>         inet 127.0.0.1  netmask 255.0.0.0
+>>         inet6 ::1  prefixlen 128  scopeid 0x10<host>
+>>         loop  txqueuelen 1000  (Lokale Schleife)
+>>         RX packets 28  bytes 2672 (2.6 KiB)
+>>         RX errors 0  dropped 0  overruns 0  frame 0
+>>         TX packets 28  bytes 2672 (2.6 KiB)
+>>         TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+>>
+>> Third scenario------------------
+>>
+>> Setting an IP address after evl net -ei and the first package sent doesn=
+'t work. It looks like
+>> the info is copied once and not updated later, also not when disabled an=
+d enabled
+>> again.
+>>
+>> The following does not work:
+>> ifconfig enp1s0 down
+>> ifconfig enp7s0 up 192.168.122.100
+>> evl net -ei enp7s0
+>> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501 # Fine, sender ad=
+dress is 192.168.122.100
+>> evl net -di enp7s0
+>> ifconfig enp7s0 192.168.122.110
+>> evl net -ei enp7s0
+>> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501 # Sender address =
+is still 192.168.122.100, should be 192.168.122.110
+>>
+>> This works:
+>> ifconfig enp1s0 down
+>> ifconfig enp7s0 up
+>> evl net -ei enp7s0
+>> ifconfig enp7s0 192.168.122.155
+>> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501 # Fine, the sende=
+r address is 192.168.122.155
+>>
+>> This also doesn't work and created the confusion:
+>> ifconfig enp1s0 down
+>> ifconfig enp7s0 up
+>> evl net -ei enp7s0
+>> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501 # Same behavior a=
+s in second scenario, sender address is 192.168.122.246
+>> ifconfig enp7s0 192.168.122.155 #Note, setting the IP address is after t=
+he first package sent
+>> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501 # Same behavior a=
+s in second scenario, sender address is 192.168.122.246
+>> evl net -di enp7s0
+>> evl net -ei enp7s0
+>> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501 # Same behavior a=
+s in second scenario, sender address is 192.168.122.246
+>> evl net -di enp7s0
+>> ifconfig enp7s0 192.168.122.155
+>> evl net -ei enp7s0
+>> ./oob-net-udp -d -i enp7s0 -a 192.168.122.1 -T -p 2501 # Same behavior a=
+s in second scenario, sender address is 192.168.122.246
+>>
+>> Can you reproduce this? It is of now importance for what I am using EVL =
+for. I just discovered this while testing the server / client mode.
+>> So no urgency from my side.
+>>
+>
+> I did not try to reproduce it yet, but reading this description, I would
+> most certainly see the same outcome. I believe this is all related to
+> the so-called "oob front caches" for ARP and IPv4 routing decisions EVL
+> maintains [1].
+>
+> In light of that doc, what is most likely happening is:
+>
+> - the EINPROGRESS status is EVL telling the caller that it could not
+>   resolve either the dest ip using its route cache or the MAC address of
+>   the destination in its ARP cache, so it had to relay the packet to the
+>   in-band stage for transmit. IOW, the packet is outgoing, but the
+>   end-to-end real-time guarantee you would have if the NIC driver was
+>   oob-capable is lost for this particular transmit.
+>
+>   As the in-band stack does the proper resolution for that relayed
+>   packet eventually, recording the results into its own neighbour and
+>   routing tables, it also conveniently pass this information to some
+>   dovetail hooks which EVL listens to, and therefore learns from,
+>   feeding its front caches with it. This usually happens quickly after
+>   the in-band transmit happens, but some delay may appear due to the
+>   time required to receive an ARP reply message from a peer for
+>   instance. This is what might make the behavior look slightly flaky at
+>   times from a user perspective.
+>
+>   The way to make this deterministic (therefore without transient
+>   EINPROGRESS error on first transmit) is by using explicit peer
+>   solicitation as discussed in [2].
+>
+> - the bad sender address of the 3rd scenario may be a variant of this
+>   bug, with the added trick that it should only happen with
+>   unconnected/unbound sockets, in which case the source address is
+>   retrieved from the routing record matching the destination address. In
+>   this case, the routing record found in the EVL front cache is obsolete
+>   since the transmitting device changed its (prefix) address. So it
+>   looks like some flushing of those obsolete records is missing on
+>   changing the address with an active oob port..
+>
+>   If I'm right, you should be able to work around this issue by flushing
+>   the EVL route cache after the netdev update and before transmitting,
+>   as follows:
+>        # echo 1 > /sys/class/evl/net/ipv4_routes
+>   Obviously, this is not that nice, and the netstack should behave and
+>   do this automatically. Will fix.
+>
 
-Jan
+Done. The netstack now automatically purges obsolete records with stale
+source addresses from its cache upon removal of an IP address from a
+device. Scenario 3 should behave as expected now.
 
--- 
-Siemens AG, Foundational Technologies
-Linux Expert Center
+--=20
+Philippe.
