@@ -1,34 +1,34 @@
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F01042B75F
-	for <xenomai@lists.linux.dev>; Fri, 29 May 2026 15:24:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 892213C1985
+	for <xenomai@lists.linux.dev>; Fri, 29 May 2026 15:34:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780068300; cv=none; b=SfQSat5D/oc5z98QF/g3wivLBY/sMErE6redD1HjHFOW0uIZ0jZsQtlsN5qP+/LjbhDtlV554jIdSJIwc9+LVla1Mqt6VuEpi/TlaRVEjU32pI6pK4ueOUfT/JkQuhjRVpMfq6xKOdEbHTDLsR+iNcXkQcw5NYRgvGwrwly15kc=
+	t=1780068861; cv=none; b=UExHvk3MacHrQKlSkt2FkD34zZlA2ydzBbch9p+4BoaOKmt8u9BOBrMtPA3NYVfIy/QSGECr/ZFMqcX574tSaLnHX67IMxX8wUkKqE0/v5jTSA6fL3ovg4o2GCHPgvk+sCXp3eeynTV52CXUDmtXO42//MVpP3fmJjAqDlh0Kx8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780068300; c=relaxed/simple;
-	bh=C/fBgvqLoRxn36ureb+2cr2R0WA+exu24Hdppbtgvow=;
+	s=arc-20240116; t=1780068861; c=relaxed/simple;
+	bh=yCoRm8OQJGnm7vlDFpgJF/LeeS5MkD7u3M6i3sGOSdI=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=gIiBAxayFRtAKIZGpEFaCPH5YkQ8Dm+YJFPreBnVBzhOUqIa8xmlqCVJNZ8jXxSzp4Y7gF17MHYWHnUfsJRHfRz8cmuvwP/gLZgFPV6QZaSLqTG2jTfa3J//q+Pf40MVDrR+swIRDHOMBnK/MDc1ontltOkxQQDVUlSVA5atvzU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=gBOoKg+X; arc=none smtp.client-ip=217.70.183.197
+	 MIME-Version:Content-Type; b=rp1fZV68H95QnpfxJ+WuTUS8V2DWm/4VpwDxmHP663CCQsfZWp5AB4ZgrJm+4fhdY+XTUPo0d6kkPV+fUNz4N6QY8U8vWoFU6u0Clnwh6Kfna34HSxgRC4y21pa9oUMy18QKLW+R7M+5LKqGn8hr+pEq3kj7FYDt6X63LwHEt+c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=QQ/DpVTq; arc=none smtp.client-ip=217.70.183.198
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="gBOoKg+X"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 88AF33EC83;
-	Fri, 29 May 2026 15:24:55 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="QQ/DpVTq"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 822973EC47;
+	Fri, 29 May 2026 15:34:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1780068296;
+	t=1780068856;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=wblKWd2xxctbVB9stH92R5uRv3hJHZ85eQ/lLaoD4Nc=;
-	b=gBOoKg+Xz/ZmTQqzF21x9Agi0NTP1LUWG3DXmR3M6Kw4FxSlTVVOo//617q7NBOD6oAq9+
-	b5C8dChpMytn0T4UysCoLOmeEeFw45kwZ7nrZPcU4bHFLbkDD9B4wQJ4KrwT1htiKSFZi9
-	fbSeKl2LIRVq1v8c3dkoWm6xQz9GXlfhDMoYDF23cE+HNOOLAQqx1tzHYfLXWgXLD5B2ia
-	0eKPr4Z9MO4hqGmKC2Mafd7LMztZdtUmUvVupVfOyt8ru+bhJMbOhg22IPAtUtZBtOLe3o
-	kVfu8JYxqe5iPFOY1p4vTp3sBStq/wXQsM7hYHf7X1pH2EgJb1p9y0T+DS9w6Q==
+	bh=uyvK5w18aa/TAiAMySKXQAeHmqqoSmNw9+R5vWRjdeY=;
+	b=QQ/DpVTqpg8dQIkt+aZZBUqbSnjByRlRIyRvLpGBEpNM4VMamDeRfpS/3Qp6R0iCPLlFMN
+	SDG2hyf/Xu7S6C5I4sW4xIo3QBQ9i7xMzIQO80BDfbqouho7F49XcXW14gOwQP//1j5UQK
+	PqUymAyXNdbNuouJZfdjLyqLfyAcbfAVh6o/aMoT2ilnQMW6UIOOm/P/sLAK8Cys/4Sqdj
+	RvPBiFBwY6gsKtremV+NX0mV8A7HDKGc16QfPLwZe5SwRCwvi9itknwmsncPQs5wYg2sCT
+	zPveny7yQBTSkI5B87INJsPQcxV0TWEMO2RGDn8sP4wdTKzTRCoWOFvXmG/ZUQ==
 From: Philippe Gerum <rpm@xenomai.org>
 To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
 Cc: "Kiszka, Jan" <jan.kiszka@siemens.com>,  "Schaffner, Tobias"
@@ -45,8 +45,8 @@ References: <77ac2e8147a0ecd8f9618e3a9492ec87bdf9dd98.camel@siemens.com>
 	<b63745f3f56d5494ae60f0248e4f2ea440448bc6.camel@siemens.com>
 	<ac539a660d311083336a970152faec0e44716441.camel@siemens.com>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Fri, 29 May 2026 17:24:53 +0200
-Message-ID: <87ldd2grwa.fsf@xenomai.org>
+Date: Fri, 29 May 2026 17:34:15 +0200
+Message-ID: <87fr3agrgo.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -57,7 +57,7 @@ Content-Type: text/plain
 X-GND-Sasl: rpm@xenomai.org
 X-GND-State: clean
 X-GND-Score: -100
-X-GND-Cause: dmFkZTEVvOBq93aPkJ8PLxYi99GprSxpviauNRcbX/eqJKmtVBJPMpLzyfmhp0WnoGdwbcgVBHdybyDcmxIdhRVs23oRujVWZIfZj3k6ZpynENw7JMNUM+79+x+5bE7oOGNRmSPUWpZBGVeXamAl5W3Ym1utE4axwgsgAlTUDlXg5mII+9z3ugRriobUBR+vY78s/Q++NRyO9C3h1PSlAZ1NuSC5LIXTHJVlP+mj8OPgTmjqne2TMPOa+bA4xkaPdtObxQmtiLVSNfef0s+hoVPV3UuCeerAz2fOqI61wYMsesQQuoeffEvvcBYLOhmoQSOQgjnP8DmamZjsKS9PfCGaFcpaRgWhYc9w+jk+1Vfy9fKG4Z2r7K3J9OFQLLJDMPGHUgew+SiwNvVdt44Jy9sNGX51la33jvalvf8G8FZqASdXwszlnzBZmWXs83o1nhsCog7ZAk3cdKyjmvplyOmdwOaee/lt9gpXVIG+YMN+AmxOAnEG8NTcUr+Vv9Hp/aATBQ2YMm/fzD7XP3hjEmX4uLZd0TY1xIDbqGuRs2z5FkdWydxULE/M5HgAIQLtOypxUAeQEYUBFeKqE0zBgLLV7JhsVT+1CnxCXlqFrxiFyS/N4l8QyxXklarc4yWsWkjmXRJOZisKZxHSBKfCEBsYkSmwk/MThUdeGuVgOQS9++dvhA
+X-GND-Cause: dmFkZTE3tOg7BSR7+YZg+XU79Dn8WT391hLYFC1hl9hO3bq+4ZZLOjbIJ9jPG3jHV8QhYwnZ5Fau8Xt2b1agtweGelBXr3J2ysif7vohw58+v/il7uHDHOokGZR1Wd7SN09wLZJlkbp6cuN/8jMuodo5Z26UqZFKUOSeIbzuJWqhJJFxKt7Q8Qv/Fq54339ZYnDh8oxG30D6LM2mXu0H2l0h1pcvpkByJ3+s9L3SGilsts3rWQR44frIs6OuEdP39XAJWowGOM5yr/gepTUQBJWVKYW+0f1xUhGLgrCpcPtXZWxUJ4Q549jU4FNpOqKFYKjRqPM0+KeaZh/Ew31i6ZaQ4z6Ut5n3+Vai4LdbIORbUZpt0aZ97WXkpKEgSpRC3DjeHu+lJ51lb6FG732CFrIVkZERs6fWOY3D84r7mOoAUFXCYrauOsNC8EdPwXNzRwFjEgrl51UDQ+mtEwFIvgg8sNuW74bkAv7nCJslKPyaSSvZZ8goX2CRdcScQQXLi3PStUBw6MHusoJOcwz4BcDPa2IWhc8gcG/3ZL7cHfSeGNKCXUz2G1kJnEIGM2haBAKH8P3XvZh7YPfWJACuvYQ7dNDWc42E+1H9Trr2YfF7KaqHA9NEQa1oCVJciJbbnQGKVbOV9pJuiQW5Nq1tXjPkt+uL2M36odj8+ikbDeUOfNPl1Q
 
 "Bezdeka, Florian" <florian.bezdeka@siemens.com> writes:
 
@@ -199,19 +199,22 @@ X-GND-Cause: dmFkZTEVvOBq93aPkJ8PLxYi99GprSxpviauNRcbX/eqJKmtVBJPMpLzyfmhp0WnoGd
 >
 >
 > I completely removed the fput() call as I considered that a resource-
-> count underflow. evl_open_file() will always return 0 -
-
-In the current implementation, yes. This might change.
-
-> still keeping
+> count underflow. evl_open_file() will always return 0 - still keeping
 > the error handling - and if copy_to_user() failed, I think there is no
 > reason to call it. Right?
-
-Since 7.1 uses RAII-style management via FD_PREPARE() and friends, no
-need for explicit fput() anymore indeed.
-
 >
 > [1] https://gitlab.com/Xenomai/xenomai4/linux-evl/-/tree/wip/flo/v7.1-evl-rebase
+
+Btw, this is exactly the kind of fixups the GPIO core required over time
+while forward porting evl. Generic code cleanups or in this case, use of
+a fairly recently introduced kernel features like auto-drop of file
+refs. This may require careful review as upstream may be keen on moving
+code around in this area of the kernel, but all in all, nothing really
+tricky.
+
+The only thing that might bite some day is the removal of the legacy
+gpio_cdev V1 interface we are still using, but moving to V2 would not be
+a massive work anyway.
 
 -- 
 Philippe.
