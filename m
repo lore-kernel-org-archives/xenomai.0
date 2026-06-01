@@ -1,41 +1,43 @@
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D12243E3C46
-	for <xenomai@lists.linux.dev>; Mon,  1 Jun 2026 18:00:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 578014204E
+	for <xenomai@lists.linux.dev>; Mon,  1 Jun 2026 18:13:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780336847; cv=none; b=NE8c+vJNVU23S2xrX7DibgaDLnoqg4rspdYxfjMIfeD3Lnlf0zWXoaPvZy3lw5E8pdMwSMeDQMdC/QIpfPW5SyrmZu/bDZ6j53gX5EnZ8DzkVhrF2uyk7GxYrYAJ0s+ToMs5QJtgBI83XNBBtcE5rIhkc1BOfLGCJ+MJtRNBciI=
+	t=1780337596; cv=none; b=fswvGqf38EzanctxXj95h7N6J+R2PcHeNY/1iBMRAZKCVfMIaHa+bSSkLW25y6xRIFHMhP8Rn0UqHIq++nqFVgJehN84VDceIENisxiZM+FBtG0oaeAdaSOMNinyXsd+GMRBhsuZ4t7vKy4AYGHKGjLFN5Ep6Y5upGlkyTV7uoM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780336847; c=relaxed/simple;
-	bh=x3M6s5f+qLU9CkRp5FHNJhFJsQs158hPj6kFh36lhM4=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=DOL5b0rfkboqDliGkkvlAacVgxsrcZOclkxL/2epYWtjuIcvKyxShztNpU2wUrmnHaCcu7xr6ovxQHbtV/YbpdwaxW1V4cqr+g5h50n0WrOKbmnM9qkrxhxYRX2UoxYbKhKkbYZJqHanPvz2P/ZtnucT/GwVtWG5hOigS+HGtng=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=XbVtIhRe; arc=none smtp.client-ip=185.136.65.227
+	s=arc-20240116; t=1780337596; c=relaxed/simple;
+	bh=hDBVdSijmDAroLQv4UkKP6smOmIaChZWUji1N3cT8BM=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=RXcVPf0a06HtJ3fVtLVlazt44tFMLXOjqUkS45aY3R+rgElb/BENrMV3GYj/rnt50OqOFk5682geOH2TD5I2jufk0NlhGyg7yoD/WljjSurxq0IUiCRfOgs6DVvX6qHnQyxkexqfGVW3DIVi4YhdQ/c3XOQIDUycJyFRKC0V1BI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=k8sSNsvz; arc=none smtp.client-ip=185.136.64.228
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="XbVtIhRe"
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202606011800355d389e96090002073e
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="k8sSNsvz"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 202606011813044d3f601a060002079e
         for <xenomai@lists.linux.dev>;
-        Mon, 01 Jun 2026 20:00:35 +0200
+        Mon, 01 Jun 2026 20:13:04 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=av91mdE1qKuxLYvgferjD4e9Bm6HWQIW+nIQmKnVb2Y=;
- b=XbVtIhRe+SD3xtn22JsRI+8u/IjQ5KPMsplf80ltLGCALXHSXLcdjT3E7d1DJGgGvtcCYd
- CpfXQme0yrIoQrEAmCIh9k85Ck2t2/xtJqDUj3KDIceXFq2VJhHgWAOfOjKiSs83rf0mSYAe
- fVdQBj0E+DWi7G/eT0wPNVyRNmIpRSFhpCd20Tu/ti8fWGdZLVOjnh1bfxV7jovtp9A92rl+
- 7O6n9jOnizNfmJ+aeAuWCDgGPGA3yBERW67yqS5iKcp6YU9iKXT6J9BmWBcoqBpgPc0bcz4J
- 7boERiDzNXkbE4JKF8qmWOyXZ6tk44qXZsDFiTe3Nji+EGzkiDdQoOdw==;
-Message-ID: <558767f3737914500bcfb1d0bb3f27c0089a98ee.camel@siemens.com>
-Subject: Re: [RFC PATCH Dovetail 7.1] x86: irq_pipeline: Allow X86_FRED to
- be enabled
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=2VTB3ZCUDaNFtNGid6MSV7X3bTqYWCfkHw97TVMPhDc=;
+ b=k8sSNsvz9KZRKYxU6OTWI2QB8kjpPftnzab84po3eszJxeIAam/bDry+NzjJ96ZvxtG820
+ 9zz+mJeETrTaymJLbet0vLasHJbS45vpJaxE68hDnf6IXkDp6kBQApIsrHw4RyEfbWWhKwhp
+ bcjGApzmXFUDu73NgAqe1edvYis/dDufMnX8zQiv5JIkHyotaQncF1LcLNtduuhOqIRDAc4L
+ A73ykW6w23esn0+1prN5aNv/zxdFoq2+9spT4Mv2ySTdMupagnmmoT0csdxOLTj323O3wE76
+ 8C0JBKRSLBItj0GEmJJzqJSq3grGZ5uCinzJbQaq3Ey0savuYQRcmKdw==;
+Message-ID: <27c28604c6d3abca8b31ddf182bdf6d52ad4d572.camel@siemens.com>
+Subject: Re: Dovetail 7.1-rc6 updates pushed
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: xenomai@lists.linux.dev, Philippe Gerum <rpm@xenomai.org>
-Date: Mon, 01 Jun 2026 20:00:33 +0200
-In-Reply-To: <20260601175838.1115533-1-florian.bezdeka@siemens.com>
-References: <20260601175838.1115533-1-florian.bezdeka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev, Tobias Schaffner
+ <tobias.schaffner@siemens.com>,  Jan Kiszka <jan.kiszka@siemens.com>
+Date: Mon, 01 Jun 2026 20:13:03 +0200
+In-Reply-To: <87y0gy4brj.fsf@xenomai.org>
+References: <aea902f9f55316c2c357b9fadbbd8e9b716e92ff.camel@siemens.com>
+	 <87y0gy4brj.fsf@xenomai.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -47,101 +49,54 @@ MIME-Version: 1.0
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On Mon, 2026-06-01 at 19:58 +0200, Florian Bezdeka wrote:
-> Some low level entry functions, fred_##func were not defined when
-> FRED has been enabled:
+On Mon, 2026-06-01 at 15:43 +0200, Philippe Gerum wrote:
+> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
 >=20
-> ld: vmlinux.o:(.data..ro_after_init+0x6100): undefined reference to `fred=
-_sysvec_apic_timer_interrupt'
-> ld: vmlinux.o:(.data..ro_after_init+0x6120): undefined reference to `fred=
-_sysvec_kvm_posted_intr_nested_ipi'
-> ld: vmlinux.o:(.data..ro_after_init+0x6128): undefined reference to `fred=
-_sysvec_kvm_posted_intr_wakeup_ipi'
-> ld: vmlinux.o:(.data..ro_after_init+0x6130): undefined reference to `fred=
-_sysvec_kvm_posted_intr_ipi'
-> ld: vmlinux.o:(.data..ro_after_init+0x6150): undefined reference to `fred=
-_sysvec_irq_work'
-> ld: vmlinux.o:(.data..ro_after_init+0x6158): undefined reference to `fred=
-_sysvec_x86_platform_ipi'
-> ld: vmlinux.o:(.data..ro_after_init+0x6160): undefined reference to `fred=
-_sysvec_reboot'
-> ld: vmlinux.o:(.data..ro_after_init+0x6178): undefined reference to `fred=
-_sysvec_call_function_single'
-> ld: vmlinux.o:(.data..ro_after_init+0x6180): undefined reference to `fred=
-_sysvec_call_function'
-> ld: vmlinux.o:(.data..ro_after_init+0x6188): undefined reference to `fred=
-_sysvec_reschedule_ipi'
-> ld: vmlinux.o:(.data..ro_after_init+0x6198): undefined reference to `fred=
-_sysvec_spurious_apic_interrupt'
+> > Hi all,
+> >=20
+> > I just pushed the following branch updates for Dovetail based on 7.1-
+> > rc6:
+> >=20
+> > Dovetail:
+> > wip/flo/v7.1-dovetail-rebase
+> > wip/flo/v7.1-dovetail-rebase+riscv
+> >=20
+> > Evl:
+> > wip/flo/v7.1-evl-rebase
+> > wip/flo/v7.1-evl-rebase+riscv
+> >=20
+> > The +riscv branches are containing v8 of Tobias' riscv enabling series,
+> > maybe we need v9, let's see.
+> >=20
+> > Any additional testing on those branches is highly appreciated.
+> >=20
+> > @Philippe:
+> > I'm still waiting for some feedback for [1]. That seems now to be a
+> > invalid combination of kconfigs, which is dovetail specific. Upstream
+> > thread at [2].
+> >=20
+> > Can you remember why KVM_INTEL is not selecting X86_FRED in case
+> > IRQ_PIPELINE is enabled? I haven't checked the details yet, nor tried t=
+o
+> > remove the dovetail specific adjustment.
+> >=20
 >=20
-> Updating the DEFINE_IDTENTRY_SYSVEC_PIPELINED() and
-> DEFINE_IDTENTRY_SYSVEC_PIPELINED_NORETURN() macros to define those
-> functions.
->=20
-> FRED entry points for sysvecs will no go through the IRQ pipeline as
-> we do it for the IDT.
->=20
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
->=20
-> Hi Philippe,
->=20
-> input highly welcome. This allows to build x86 with FRED enabled, which
-> fixes a compile time issue introduced with 7.1-rc5.
->=20
-> On first glance that seems to do the right thing, but as always I might
-> miss something.
+> Maybe because the pipeline never supported X86_FRED, doing so would
+> required to rework the irq-entry trampoline macros, which is deemed
+> painful work.
 
-Forgot to mention: The most important file to review is most likely
-arch/x86/entry/entry_fred.c.
+I sent out a RFC patch for that, input welcome.
 
->=20
->  arch/x86/Kconfig                |  2 +-
->  arch/x86/include/asm/idtentry.h | 11 +++++++++++
->  2 files changed, 12 insertions(+), 1 deletion(-)
->=20
-> diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-> index 4d40fbb58b1c..fc6500301ff9 100644
-> --- a/arch/x86/Kconfig
-> +++ b/arch/x86/Kconfig
-> @@ -554,7 +554,7 @@ config X86_CPU_RESCTRL_INTEL_AET
-> =20
->  config X86_FRED
->  	bool "Flexible Return and Event Delivery"
-> -	depends on X86_64 && !IRQ_PIPELINE
-> +	depends on X86_64
->  	help
->  	  When enabled, use Flexible Return and Event Delivery
->  	  instead of the legacy SYSCALL/SYSENTER/IDT architecture for
-> diff --git a/arch/x86/include/asm/idtentry.h b/arch/x86/include/asm/idten=
-try.h
-> index 0b517059ae9d..bb1df662dc56 100644
-> --- a/arch/x86/include/asm/idtentry.h
-> +++ b/arch/x86/include/asm/idtentry.h
-> @@ -222,6 +222,11 @@ static __always_inline void __##func(struct pt_regs =
-*regs, u8 vector)
->   */
->  #define DEFINE_IDTENTRY_SYSVEC_PIPELINED(vector, func)			\
->  __visible noinstr void func(struct pt_regs *regs)			\
-> +{									\
-> +	arch_pipeline_entry(regs, vector);				\
-> +}									\
-> +									\
-> +void fred_##func(struct pt_regs *regs)					\
->  {									\
->  	arch_pipeline_entry(regs, vector);				\
->  }									\
-> @@ -233,6 +238,12 @@ __visible noinstr void func(struct pt_regs *regs)			=
-\
->  {									\
->  	arch_pipeline_entry(regs, vector);				\
->  }									\
-> +									\
-> +void fred_##func(struct pt_regs *regs)					\
-> +{									\
-> +	arch_pipeline_entry(regs, vector);				\
-> +}									\
-> +									\
->  __visible __noreturn void __##func(struct pt_regs *regs)
-> =20
->  #define DEFINE_IDTENTRY_SYSVEC_SIMPLE_PIPELINED(vector, func)		\
+Meanwhile I can provide some updates on the testing part. The following
+problems seem to be reproducible on 7.1-rc5 and 7.1-rc6 - while 7.1-rc4
+was fine (at least once):
+
+x86   x3: Test timeout. Something seems slower than expected.
+arm64 x4: Same problem
+
+To rule out problems in our CI setup I spawned some 7.0 tests, which
+were fine, at least twice in a row. Seems someone has to look into that.
+As I'm running out of time: Any resources available?
+
+Best regards,
+Florian
