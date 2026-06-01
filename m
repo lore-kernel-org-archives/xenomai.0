@@ -1,185 +1,124 @@
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51CCC38BF89
-	for <xenomai@lists.linux.dev>; Mon,  1 Jun 2026 08:29:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4443D360EF0
+	for <xenomai@lists.linux.dev>; Mon,  1 Jun 2026 08:53:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780302551; cv=none; b=ZvGGDipHA5E4clsXwdFDXY462crKyFEGJ7hwCdhSDgJrFcjL+MJcN9o1omrIfu4SiymL2XgfpYIDEJk8SLhbUZOSqIiAZBkq/geWK5FcbdBvStMMLbP1Y0az8QxfjJZ2VzPSAmjXQ2TYnqXmt0qQrwrMHLLRjX6FrZjwtknm1V8=
+	t=1780304028; cv=none; b=JILQUH5xNlXC6sspo7e7sryyv47am74NIQFoMNNx6fGZUEXTYNaL3DhKenK7eu3VaeyCZVGpmxX7BL9THneZsqvfdvGa1Zv6+LZL6iDV3RBXkXvCaPtuQrHOFx/DGSPpAjqncnO7FmS3pxnGNpJDDe17TS0jeOpQn4o/xV4a1uc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780302551; c=relaxed/simple;
-	bh=3oukh4tpdXPNgl+6qZYIj2P0Y/zmJpdEe6OmAX1L7Dw=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=FX9w9SYHwP/isC/Tt7F26hDQBwEt99+Fhd8F48uTQAKjFSYgk2lF+dTCneUwIfflRsFDWtN8zQg5+PrMQ7H18clR+s05kjART56LNbTipZ7mlrDG9S3vWCu7mB6QWOy97AaUGA00HIv53Fk/Lq3u/56EiaTEgxL6qT48YU95Xbs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=RofhwA2A; arc=none smtp.client-ip=217.70.183.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1780304028; c=relaxed/simple;
+	bh=Us3JMCyEo28MAqPypc5dMW7R9gXrlVBS52jrJ/ABEJs=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=dMr5QK4nWp/XGLIAIQtmey5GsXvGN5sJ8adzkhvH33XGzESFZCH7DFq0EcUMN+zzCb/TI0j9ujRUzm+Zhcy3mNvuayvfOCMHJkE8NpaGPtWMOL59t8YNTUm4PLjigP45qEFQnS6PACwhER7Mx49YDghbUWmdWQOW61TyuEBlXlQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=JBD08KwN; arc=none smtp.client-ip=185.136.65.225
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="RofhwA2A"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 978583EBCF;
-	Mon,  1 Jun 2026 08:29:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1780302540;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=wbW2mS98esPMhcYvFxeFDp18+FC7kgaCNR8wzkte8/g=;
-	b=RofhwA2AAcRuiIDGuiqRpP6Lxt+42r1X3SKDWZvjLS9DdR9h/ylK6VqQJIGzKt8Ql9O479
-	Y8Emc2LFmITd/yfFApfZ++jrC1XX0YFQZa3gYQvApJKO2brmLIDEQEYvS4V7TazvGTzYq4
-	z4JAGDyp2Ao9LIS85cchvG+6qJdIyqAdEQ4UAxG3aeq+ZO36NX/WUGW58SZXb+YLixm/Gl
-	Jz6KCF052atee8Hg3yipQPLpH0YxLFmJxLDisL+f05BxKEKoP2BJHkFZinAFv+1DWHIUK+
-	7bgi7Kk6dQCOptjlV197/fr/dAGWBfQFaTqH+S7Z4sDr77AJ2xDbl/hubJ/W2A==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Hannes Diethelm <hannes.diethelm@gmail.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: [PATCH 1/1] tidbits: net-udp: solicit new client for server mode
-In-Reply-To: <20260528194459.6117-2-hannes.diethelm@gmail.com> (Hannes
-	Diethelm's message of "Thu, 28 May 2026 21:44:59 +0200")
-References: <20260528194459.6117-1-hannes.diethelm@gmail.com>
-	<20260528194459.6117-2-hannes.diethelm@gmail.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Mon, 01 Jun 2026 10:29:00 +0200
-Message-ID: <87a4te64vn.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="JBD08KwN"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20260601085335d7150031ab000207d2
+        for <xenomai@lists.linux.dev>;
+        Mon, 01 Jun 2026 10:53:36 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=ftPrdnI1agRzCz51rs+WKuREX0xou8M8/BuRbSpKqjA=;
+ b=JBD08KwNLqzOCX/dJvBmZOmXZtl5oiYSJVl+Po4/zfT+6JsJ2BVWJcoFu7ruQsnlC/F9U0
+ uo24uYB8fRwdEVFpkEr9n8+5qnhlr8hXrDaghv5sXW2XcJVL/VceXfTqjLkRFjIYXczsNHeH
+ rHxc+zdTGvDAE/u8Yt9Z6gt77HnCWbMrCi7dgg8R5gL0JuUfGq3j2AIqj9rwbrRIA4LuVfik
+ PRlGEA7aOKQM+UGYEYIs6sxLSi6z07kvdycdC4iTICJjlon9L+Sh06r46gdhljuV2j1qA47p
+ PMgu6bNELkWz6aGfo3hvjyhl0/51R9G2609cpCSXf8PcFZxN3xcuXRmQ==;
+Message-ID: <da5d431e2b95e3f3077f151d2259f0164b5b2722.camel@siemens.com>
+Subject: Re: [PATCH dovetail v8 11/11] riscv: dovetail: add core support
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
+Cc: rpm@xenomai.org, jan.kiszka@siemens.com
+Date: Mon, 01 Jun 2026 10:53:35 +0200
+In-Reply-To: <20260531055304.2890455-12-tobias.schaffner@siemens.com>
+References: <20260531055304.2890455-1-tobias.schaffner@siemens.com>
+	 <20260531055304.2890455-12-tobias.schaffner@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Cause: dmFkZTEr76E7lxt5bsLNkepAsZoH+Bs9SEUYezMIvVXlOb7ThjWlxEPVkHihwfKBINbRe4zVPfvke+XV+iUXMs1qhLcP8brhOwYsFhBlQZpCoK9WPC1VWDeq8XO3OtYuqupbEh90fRipeSXsmewFgt4aol/cIouyroPHdHoJgMHIskZYX9FS0EzIo4LpEmn3PqBs/QkOvXMp2HV4HkRoleEAG7HCYLsOAwZfVSRwvwCTMTXvDAI52KekAhesX+cC6Mm5bWzZgGQZTbYXyjvpGLdh3jECpfg8dDJzViZFGj1CdoQBJgA17KYjAr5DbbHMiFW1Nc3V2r2ucCkEl+ziRz63FMz5s7F7M168T/2zbkasue31VtKpxj7cvw0V4o3Hw38B3H0+CfAvYAVm6dvwreaik5nzsAZqqSwGP49yC3h+XLRF6WRqsbzoNS2AoqPZDotoRm7VgedQqh16Lua1a9tzD/V8v1loQi+da0b8vPNZim55nWVjzzhz5HY87Z+C58BPOulwwaKlV/zLbbmKmnZLfycqcl5/tVSzdD560cVYfgP1lgAKex/RfrXkXO4gWInwoGRLwYNV/UBxXxIIG1ilYjTa8gU9AGE6MOmSk5YPl5kKaOxdw7lcSE1q2iGnDmhoAlHg+oFtkCNaiXIgJg3L2nap37ZVsefxtH9/adKxhyYPBw
-X-GND-State: clean
-X-GND-Score: -100
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+On Sun, 2026-05-31 at 07:53 +0200, Tobias Schaffner wrote:
 
-> This fixes random EINPROGRESS at init or during runtime.
->
-> Also correct whitespaces and make stdout more consistent.
->
-> Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
-> ---
->  tidbits/oob-net-udp.c | 58 +++++++++++++++++++++++++++++++++++++------
->  1 file changed, 50 insertions(+), 8 deletions(-)
->
-> diff --git a/tidbits/oob-net-udp.c b/tidbits/oob-net-udp.c
-> index 11b8459..7af834f 100644
-> --- a/tidbits/oob-net-udp.c
-> +++ b/tidbits/oob-net-udp.c
-> @@ -50,12 +50,12 @@ static void usage(void)
->  }
->  
->  static void print_addr(char* text, struct sockaddr_in *addr){
-> -    char ip_str[INET_ADDRSTRLEN+1];
-> -    inet_ntop(AF_INET, &(addr->sin_addr), ip_str, sizeof(ip_str));
-> -    evl_printf("%s--------\n", text);
-> -    evl_printf("IP-Address: %s\n", ip_str);
-> -    evl_printf("Port:       %d\n", ntohs(addr->sin_port));
-> -    evl_printf("Family:     %d\n", addr->sin_family);
-> +	char ip_str[INET_ADDRSTRLEN+1];
-> +	inet_ntop(AF_INET, &(addr->sin_addr), ip_str, sizeof(ip_str));
-> +	evl_printf("== %s\n", text);
-> +	evl_printf("   ip-address: %s\n", ip_str);
-> +	evl_printf("   port:       %d\n", ntohs(addr->sin_port));
-> +	evl_printf("   family:     %d\n", addr->sin_family);
->  }
->  
->  static void sender(int s, const char *text, int mcount,
-> @@ -226,6 +226,8 @@ static void client(int s, const char *text, int mcount,
->  	free(tbuf);
->  }
->  
-> +#define SERVER_ADDR_LIST_SIZE 64
-> +
->  static void server(int s, const char *text, int mcount,
->  		struct sockaddr_in *addr, int iter)
+[snip]
+
+> -void do_trap(struct pt_regs *regs, int signo, int code, unsigned long ad=
+dr)
+> +static void do_trap_raw(struct pt_regs *regs, int signo, int code, unsig=
+ned long addr)
+
+I wonder why this can't just stay do_trap() ...
+
 >  {
-> @@ -236,6 +238,9 @@ static void server(int s, const char *text, int mcount,
->  	ssize_t ret;
->  	char *tbuf;
->  	char rbuf[16384];
-> +	in_addr_t addr_list[SERVER_ADDR_LIST_SIZE]={};
-                                                  ^ missing whitespaces
-> +	size_t addr_list_fill=0;
-> +	bool solicit_done;
->  
->  	tlen = (strlen(text) + 1) * mcount;
->  	tbuf = malloc(tlen);
-> @@ -276,6 +281,39 @@ static void server(int s, const char *text, int mcount,
->  			evl_printf(" (TRUNCATED)");
->  		evl_printf(": %.*s\n", (int)ret, rbuf);
->  
-> +		/*
-> +		 * We need to call evl_net_solicit for each new
-> +		 * client once before sending data. This will break
-> +		 * realtime for the first response.
-> +		 * If this is not done and the ARP address is not
-> +		 * yet in cache or garbage-collected, oob_sendmsg
-> +		 * will return EINPROGRESS on start or during runtime.
-> +		 */
+>  	struct task_struct *tsk =3D current;
+> =20
+> -	if (!mark_trap_entry(regs))
+> -		return;
+> -
 
-We can happily send redundant solicit requests to the core, no need to
-filter out cached addresses, evl_net_solicit() will do the right thing.
+We could call mark_trap_entry() here ...
 
-> +		solicit_done = false;
-> +		for(size_t i = 0; i < addr_list_fill && !solicit_done; i++){
+>  	if (show_unhandled_signals && unhandled_signal(tsk, signo)
+>  	    && printk_ratelimit()) {
+>  		pr_info("%s[%d]: unhandled signal %d code 0x%x at 0x" REG_FMT,
+> @@ -150,6 +152,14 @@ void do_trap(struct pt_regs *regs, int signo, int co=
+de, unsigned long addr)
+>  	}
+> =20
+>  	force_sig_fault(signo, code, (void __user *)addr);
 
-                   ^ missing whitespace
+and we add the mark_trap_exit() call here .
 
-> +			if(addr_list[i] == _addr.sin_addr.s_addr){
-                          ^ missing whitespace
-
-> +				solicit_done = true;
-> +			}
-> +		}
-> +		if(!solicit_done){
-> +			if(verbosity){
-> +				char ip_str[INET_ADDRSTRLEN+1];
-> +				inet_ntop(AF_INET, &(_addr.sin_addr), ip_str, sizeof(ip_str));
-> +				evl_printf("== client %s first seen: evl_net_solicit\n", ip_str);
-> +			}
-> +			ret = evl_net_solicit(s, (const struct sockaddr *)&_addr,
-> +					EVL_NEIGH_PERMANENT);
-> +			if (ret)
-> +				error(1, -ret, "evl_net_solicit()");
+> +}
 > +
-> +			if(addr_list_fill < SERVER_ADDR_LIST_SIZE){
-> +				addr_list[addr_list_fill] = _addr.sin_addr.s_addr;
-> +				addr_list_fill ++;
-                                              ^ extraneous whitespace
-
-> +			}else{
-> +				error(1, EPERM, "address list full");
-> +			}
-> +		}
+> +void do_trap(struct pt_regs *regs, int signo, int code, unsigned long ad=
+dr)
+> +{
+> +	if(!mark_trap_entry(regs))
+> +		return;
 > +
->  		iov.iov_base = tbuf;
->  		iov.iov_len = tlen;
->  		msghdr.msg_iov = &iov;
-> @@ -433,7 +471,7 @@ int main(int argc, char *argv[])
->  		receiver(s, &addr, iter);
->  	} else if (mode == CLIENT) {
->  		if (verbosity)
-> -			printf("== client mode (<= %s:%d)\n", ip, port);
-> +			printf("== client mode (<=> %s:%d)\n", ip, port);
->  
->  		/*
->  		 * Guarantee a mere oob path from the first packet
-> @@ -449,8 +487,12 @@ int main(int argc, char *argv[])
->  		client(s, text, mcount, &addr, iter, delay);
->  	} else if (mode == SERVER) {
->  		if (verbosity)
-> -			printf("== server mode (<= %s:%d)\n", ip, port);
-> +			printf("== server mode (<=> %s:%d)\n", ip, port);
->  
-> +		/*
-> +		 * The server calls evl_net_solicit() internally
-> +		 * for each new ip address.
-> +		 */
->  		server(s, text, mcount, &addr, iter);
+> +	do_trap_raw(regs, signo, code, addr);
+> =20
+>  	mark_trap_exit(regs);
+>  }
+
+That part would get unnecessary.
+
+> @@ -160,7 +170,7 @@ static void do_trap_error(struct pt_regs *regs, int s=
+igno, int code,
+>  	current->thread.bad_cause =3D regs->cause;
+> =20
+>  	if (user_mode(regs)) {
+> -		do_trap(regs, signo, code, addr);
+> +		do_trap_raw(regs, signo, code, addr);
+
+This is the single caller of do_trap_raw() and I'm quite sure that this
+is not correct as we would not enable hard_irqs when handling a error
+trap over userland...
+
+
 >  	} else {
->  		error(1, 0, "Mode not implemented");
+>  		/*
+>  		 * Dovetail: If we trapped from kernel space, either
+> @@ -177,6 +187,8 @@ static void do_trap_error(struct pt_regs *regs, int s=
+igno, int code,
+>  #define DO_ERROR_INFO(name, signo, code, str)=09
 
--- 
-Philippe.
+That was my final finding. I think I'm done with reviewing.
+
+Btw: I'm seeing some strange behavior on 7.1-rc5 on x86. The system is
+slower than expected and triggering some test timeouts. Rebase to -rc6
+is already done. Trying to update all the necessary branches now.
+
+Best regards,
+Florian
