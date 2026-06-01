@@ -1,111 +1,195 @@
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4BA3DF6C
-	for <xenomai@lists.linux.dev>; Mon,  1 Jun 2026 18:28:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D4C036494B
+	for <xenomai@lists.linux.dev>; Mon,  1 Jun 2026 19:35:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780338535; cv=none; b=reTMSI4oU7xOuXE3m1M+vqTI/1uqRORncKkXF5BhDoYmKY1fThw9irigsdlE7GEbQ7HMVyxcbaX3jQz5eUhNFzwTmaflD/VstMqRpz4lJ8frZQDcRbWBswjaEnEAU6uUou6SEtL2WCdYmNoNUEoyHPtJHuDKyzAMAkNZUvs62Ic=
+	t=1780342508; cv=none; b=athUZ1T53wrvhVWaQHIKFqUpvNIjJ5mzdMk9daHVHks2K5TKyf4C4XzxKR0j0+9THXp3EnGONZe8HXbQ7IXDYURsLPl4EE6kb9oXh8+fUIrJsoxKDyXxGGXyD0FIsW/5jw/F4MxD8WxxN2aA14FZkMTdxRMYZ6VmuWI1OHjsqcY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780338535; c=relaxed/simple;
-	bh=5GJnAbWeaLFw+JCtHwbrXMM3ZtCTJWDHfbBiU0nLW60=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=ejNYK12a1rOwL1NP/eH0AV9WPceOmYhr+0O50UNWZKJIf/b3KFe7tLPkI3pVTdVUFj07JWtAEA15QDtZ2EyMo3t4yc1/eiLeVxrOC/+cx/D9+lSgcUOfpyEEIW/zDENxgAfHYooOjXodgAQ7R0PKrSAJfFfiJetrHwv2OLuyt3g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=oDygcIRN; arc=none smtp.client-ip=217.70.183.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1780342508; c=relaxed/simple;
+	bh=7aBzfEWoxw9iOEOqkjH1GuX0maqZkLABM/DJ2zq97us=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=HY7scGBjxvdGUlHALMxCbQIpjT25WQ6ZbhLIJYb1spiaUduBrvsi9OikBSsdcJu9wuBC1X2jPPwXM32v4NzUho02DM2KbNYmGKh6OgGvp9gskodWsUML+PVhf3Q/e4ARICpD/lp5fE1p8tSTDLmyFQHIcEAU6ahPVXDzBfpEHXY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OWJLqh1u; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="oDygcIRN"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 3CD313EC84;
-	Mon,  1 Jun 2026 18:28:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1780338530;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=DVqRfUIjRmAPZY9Zmakua3jvkOdjMg0w9aqcAbe2vEo=;
-	b=oDygcIRN4BggYMsAiureoCc/WPdmln1T9JfjpUyQCJOzBDmUCXUKSiVn/cmbw1QpCEIFJX
-	3C6KjIkSSxG0ElW2ou5IHghoc6Ed72R0fE9B+YgqoVDqP3mwt1cZYjHVGwOrA0zwBc9J0S
-	n0c9DJu85PjLINnHtqtcALuyqCyYk5C+qUydLPw7lPaTqXbaCEBTc8m78navv//5SgMBPa
-	vgOwpOHtAZiMgc94bDinMkVBAGJb2YUkO1HOx8f1/eYh0Q5Lsx2q5f5lJSlqRZOAvGuFCM
-	u0ZhBKDihjPk4ViVljJgBMUOhTVwZr3X/5Hsi9tjiR4D+pnIThNU2KgPepLJaQ==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@lists.linux.dev,  Tobias Schaffner
- <tobias.schaffner@siemens.com>,  Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: Dovetail 7.1-rc6 updates pushed
-In-Reply-To: <27c28604c6d3abca8b31ddf182bdf6d52ad4d572.camel@siemens.com>
-	(Florian Bezdeka's message of "Mon, 01 Jun 2026 20:13:03 +0200")
-References: <aea902f9f55316c2c357b9fadbbd8e9b716e92ff.camel@siemens.com>
-	<87y0gy4brj.fsf@xenomai.org>
-	<27c28604c6d3abca8b31ddf182bdf6d52ad4d572.camel@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Mon, 01 Jun 2026 20:28:49 +0200
-Message-ID: <87se763yji.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OWJLqh1u"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-490afc47455so2901155e9.2
+        for <xenomai@lists.linux.dev>; Mon, 01 Jun 2026 12:35:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1780342506; x=1780947306; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=1VKuJjt0rEFA4AZC0NWroC0MLw6LOAzY3pkd4PVBtb4=;
+        b=OWJLqh1uoMWph45Ym9j+apffiUn+jnjoCW4ISSH5wJSy9lERn6vQazDXPeBld1oWWz
+         vGPGzuS2UmEka4suwM6p5loro7Em4iX8lWfuDiwiiWeMt3KuUn4+gDpwLb2yE9mjGDUf
+         sT95WkA7XpfDJYk3pmqeJeWeWtZvW+kCliHdlIJ4MvRgbamlWru3AqdA4cXMWaaw18Ce
+         r9h8KFS2Zq1Hl/SktXH+mY4xHBSDRlMJayEVvGtoeycDHdYMMgPIr69YkOC0X9OdU2oy
+         Cjuw6gcqHEXxwoZWk5PRDqApU7vUhFFYDYWmtbptz5zsj1OPYHoF8bq7u4ZBmQN5KERv
+         XS7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1780342506; x=1780947306;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=1VKuJjt0rEFA4AZC0NWroC0MLw6LOAzY3pkd4PVBtb4=;
+        b=aoUTeiSPcr55axZuhOmnfLhq0HKAlNDNe5O36WBcQPuF7U/hkcFCXd3N2cvGqGbBii
+         5hjqBAp/NgYJCx23JZbep7iR8bPWEkMTw0XXGDAvXzcvtBqmVSIcFvzUge159L90hvwR
+         PQN02XNHYIVyHWhutRXlLR6lK+tqwEYVXHVG2dqVcPSXjqiblNgYBXaCha/c5BKr7jLw
+         UYtFV2v9Xab6wEvQTOwSh0Jn/wD0fkAZpx6QCmkdwNsBB0BXd5MAxfok9T8j3IhWZ8Nd
+         230P0AvlYFXHMiCKH9Yl0+Va/jEK3LbqNgC7msz7rjIyh8gmeqIyL9kIWtXVZc5gwy81
+         qBVA==
+X-Forwarded-Encrypted: i=1; AFNElJ+HI8t2RT/DK9d+k3VsUxslBVWdyHwv7P9XwVWjyvbQQlvgVImybCuniqyl7UPqmnTOda4GmPub@lists.linux.dev
+X-Gm-Message-State: AOJu0YwZOtkRr/+PXqczZRvozMnbme27ZHE+ubG5b1zMrIFQcJmVGWFT
+	iSqArATFnQ0vJLTYrpM+/g3ts39KrLYJtwUGp8aHZs85VM5PNH6Ua2B+
+X-Gm-Gg: Acq92OHMWReRWSqBC8P2Fzi1iExqIahHZV1b47A6jj/5VEMKcFfZJfqRXKfygvObxbO
+	7Gu1xU70nwwCKb8Qqyun/H5ErSo3ibONr/nNKo2f+WVpVPlzUN7csW38LWWSDX0jGNVpbWpzUpp
+	I1F0N+B2CmZW1wYqocRyarXk+5LckGEo0/2BHTCj1f8v1J1Yx/x13t+RGYqma6KjRQoJhTAEHSH
+	akmQQwqvhvOVAoMN+u2ULStDjqg3TyDJYCLyJeQm4KUta25iTuapPz4KHty2EI2JPuF78ZERG5w
+	PsblPAMaiJmyG1rPhE5qtqkeBFpkIEoUvktAk+7ZyUxxO6UFGJ0rU/wSgtuy4WYnenRbX9Vby1D
+	U+c2fY6vNi/ZAJ3tQyZ5RcUUA+svMGyaWeAY2YzZtBQfOSPJ8K/COjgB+ky55C6ia7eUsJSEWxb
+	59yc/eN/F26yPGKE57SRlj1+WPmLn7YxlnfLr+
+X-Received: by 2002:a05:600d:486:10b0:490:b025:f324 with SMTP id 5b1f17b1804b1-490b025f485mr25418375e9.32.1780342505613;
+        Mon, 01 Jun 2026 12:35:05 -0700 (PDT)
+Received: from localhost ([213.55.168.64])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-4909c0ac831sm82295545e9.10.2026.06.01.12.35.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Jun 2026 12:35:05 -0700 (PDT)
+From: Hannes Diethelm <hannes.diethelm@gmail.com>
+To: rpm@xenomai.org
+Cc: hannes.diethelm@gmail.com,
+	xenomai@lists.linux.dev
+Subject: [PATCH v2] tidbits: net-udp: solicit new client for server mode
+Date: Mon,  1 Jun 2026 21:33:27 +0200
+Message-ID: <20260601193327.367361-1-hannes.diethelm@gmail.com>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <87a4te64vn.fsf@xenomai.org>
+References: <87a4te64vn.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Cause: dmFkZTFBzh26IG1G9zW89KbgucioCMwsxWYAuWCrTcy78qVN4kXwOzG2cU78B5v5NUZ/SbHY9jGRzyEBz7FBo8sKoiDufwpF6BGf2XuI9Vn4o24FcEKnrGp+Qf2+Bl8+ucn6BhL6QN0qnufe4S+6eViHbn4ztbPJI/0la/XSVUMjLezMB3AFVvVJuPKiE21tSNu1GVQNM8Yzt2rdwEBzgE/eS5RZ8THNHaUlgT9/HBXIxcxB1dZv8aswnVWRrjbY7AueVsjIcyR3eRRBLnLKqbkwEbZknQNMAsF870/mvVpUhaXLxFHYVdTNWAgYpdqKeBmw5hzasg4mMMUfDWXDH6c/4PyYcy9PCsVgpYWvf5q+wZFn8PlitBaS3F1QW2mLQbia5n0+ybY1Z/nBFt+dil+xAl2z3ECH+8w75iEw9jn4hMws7neppaV3eBsx6u1w8REEwfNeGDLifQaqpUckYg9MAzJkG083109AnrckrvSI8DJRnY46xnpO4HmSzu2u8cgKOYwBzHvHlvUP2CjIW7oIyaMXdLGpduvYmn5nLDJpqef46cf6QwsUJOA57NTMc225EPirOKJkigWAAYXCWW9EVRSKgh/n+QlefsFWndfXTChTjzjP/hiDxdA3hbpa7WHsVXywdtuSl8LS8IqrZ+/wpdA7dbk1uBFcuyiYJuSnoJBoTQ
-X-GND-State: clean
-X-GND-Score: -100
+Content-Transfer-Encoding: 8bit
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+This fixes random EINPROGRESS at init or during runtime.
 
-> On Mon, 2026-06-01 at 15:43 +0200, Philippe Gerum wrote:
->> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
->> 
->> > Hi all,
->> > 
->> > I just pushed the following branch updates for Dovetail based on 7.1-
->> > rc6:
->> > 
->> > Dovetail:
->> > wip/flo/v7.1-dovetail-rebase
->> > wip/flo/v7.1-dovetail-rebase+riscv
->> > 
->> > Evl:
->> > wip/flo/v7.1-evl-rebase
->> > wip/flo/v7.1-evl-rebase+riscv
->> > 
->> > The +riscv branches are containing v8 of Tobias' riscv enabling series,
->> > maybe we need v9, let's see.
->> > 
->> > Any additional testing on those branches is highly appreciated.
->> > 
->> > @Philippe:
->> > I'm still waiting for some feedback for [1]. That seems now to be a
->> > invalid combination of kconfigs, which is dovetail specific. Upstream
->> > thread at [2].
->> > 
->> > Can you remember why KVM_INTEL is not selecting X86_FRED in case
->> > IRQ_PIPELINE is enabled? I haven't checked the details yet, nor tried to
->> > remove the dovetail specific adjustment.
->> > 
->> 
->> Maybe because the pipeline never supported X86_FRED, doing so would
->> required to rework the irq-entry trampoline macros, which is deemed
->> painful work.
->
-> I sent out a RFC patch for that, input welcome.
->
-> Meanwhile I can provide some updates on the testing part. The following
-> problems seem to be reproducible on 7.1-rc5 and 7.1-rc6 - while 7.1-rc4
-> was fine (at least once):
->
-> x86   x3: Test timeout. Something seems slower than expected.
-> arm64 x4: Same problem
->
-> To rule out problems in our CI setup I spawned some 7.0 tests, which
-> were fine, at least twice in a row. Seems someone has to look into that.
-> As I'm running out of time: Any resources available?
->
+Also correct whitespaces and make stdout more consistent.
 
-Not here, at least not yet.
+Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
+---
+ tidbits/oob-net-udp.c | 58 +++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 50 insertions(+), 8 deletions(-)
 
+diff --git a/tidbits/oob-net-udp.c b/tidbits/oob-net-udp.c
+index 11b8459..658b463 100644
+--- a/tidbits/oob-net-udp.c
++++ b/tidbits/oob-net-udp.c
+@@ -50,12 +50,12 @@ static void usage(void)
+ }
+ 
+ static void print_addr(char* text, struct sockaddr_in *addr){
+-    char ip_str[INET_ADDRSTRLEN+1];
+-    inet_ntop(AF_INET, &(addr->sin_addr), ip_str, sizeof(ip_str));
+-    evl_printf("%s--------\n", text);
+-    evl_printf("IP-Address: %s\n", ip_str);
+-    evl_printf("Port:       %d\n", ntohs(addr->sin_port));
+-    evl_printf("Family:     %d\n", addr->sin_family);
++	char ip_str[INET_ADDRSTRLEN+1];
++	inet_ntop(AF_INET, &(addr->sin_addr), ip_str, sizeof(ip_str));
++	evl_printf("== %s\n", text);
++	evl_printf("   ip-address: %s\n", ip_str);
++	evl_printf("   port:       %d\n", ntohs(addr->sin_port));
++	evl_printf("   family:     %d\n", addr->sin_family);
+ }
+ 
+ static void sender(int s, const char *text, int mcount,
+@@ -226,6 +226,8 @@ static void client(int s, const char *text, int mcount,
+ 	free(tbuf);
+ }
+ 
++#define SERVER_ADDR_LIST_SIZE 64
++
+ static void server(int s, const char *text, int mcount,
+ 		struct sockaddr_in *addr, int iter)
+ {
+@@ -236,6 +238,9 @@ static void server(int s, const char *text, int mcount,
+ 	ssize_t ret;
+ 	char *tbuf;
+ 	char rbuf[16384];
++	in_addr_t addr_list[SERVER_ADDR_LIST_SIZE] = {};
++	size_t addr_list_fill = 0;
++	bool solicit_done;
+ 
+ 	tlen = (strlen(text) + 1) * mcount;
+ 	tbuf = malloc(tlen);
+@@ -276,6 +281,39 @@ static void server(int s, const char *text, int mcount,
+ 			evl_printf(" (TRUNCATED)");
+ 		evl_printf(": %.*s\n", (int)ret, rbuf);
+ 
++		/*
++		 * We need to call evl_net_solicit for each new client
++		 * once before sending data. This demotes the caller to the
++		 * in-band stage for the first response.
++		 * If this is not done and the ARP address is not
++		 * yet in cache or garbage-collected, oob_sendmsg
++		 * will return EINPROGRESS on start or during runtime.
++		 */
++		solicit_done = false;
++		for (size_t i = 0; i < addr_list_fill && !solicit_done; i++) {
++			if (addr_list[i] == _addr.sin_addr.s_addr) {
++				solicit_done = true;
++			}
++		}
++		if (!solicit_done) {
++			if (verbosity) {
++				char ip_str[INET_ADDRSTRLEN+1];
++				inet_ntop(AF_INET, &(_addr.sin_addr), ip_str, sizeof(ip_str));
++				evl_printf("== client %s first seen: evl_net_solicit\n", ip_str);
++			}
++			ret = evl_net_solicit(s, (const struct sockaddr *)&_addr,
++					EVL_NEIGH_PERMANENT);
++			if (ret)
++				error(1, -ret, "evl_net_solicit()");
++
++			if (addr_list_fill < SERVER_ADDR_LIST_SIZE) {
++				addr_list[addr_list_fill] = _addr.sin_addr.s_addr;
++				addr_list_fill++;
++			} else {
++				error(1, EPERM, "address list full");
++			}
++		}
++
+ 		iov.iov_base = tbuf;
+ 		iov.iov_len = tlen;
+ 		msghdr.msg_iov = &iov;
+@@ -433,7 +471,7 @@ int main(int argc, char *argv[])
+ 		receiver(s, &addr, iter);
+ 	} else if (mode == CLIENT) {
+ 		if (verbosity)
+-			printf("== client mode (<= %s:%d)\n", ip, port);
++			printf("== client mode (<=> %s:%d)\n", ip, port);
+ 
+ 		/*
+ 		 * Guarantee a mere oob path from the first packet
+@@ -449,8 +487,12 @@ int main(int argc, char *argv[])
+ 		client(s, text, mcount, &addr, iter, delay);
+ 	} else if (mode == SERVER) {
+ 		if (verbosity)
+-			printf("== server mode (<= %s:%d)\n", ip, port);
++			printf("== server mode (<=> %s:%d)\n", ip, port);
+ 
++		/*
++		 * The server calls evl_net_solicit() internally
++		 * for each new ip address.
++		 */
+ 		server(s, text, mcount, &addr, iter);
+ 	} else {
+ 		error(1, 0, "Mode not implemented");
 -- 
-Philippe.
+2.47.3
+
