@@ -1,84 +1,89 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FA5D3A2543
-	for <xenomai@lists.linux.dev>; Mon,  1 Jun 2026 09:49:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF20B312825
+	for <xenomai@lists.linux.dev>; Mon,  1 Jun 2026 10:36:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780307357; cv=none; b=UI0ETuRl4hjRVcygMyFGRbI66IR1BgijNHqd37uQhqjFL/ICzIMPJM3tjMVt1usi1EqeKwDMjVquNh5lptFLM5cVHdoM9Rn9HJ7I47EJwSooe9WUVwA/6QIMi20lsY1kh8rjgNkAAKDe9aAm2Pn86+plfC04YUfscdl0g5GVGs8=
+	t=1780310173; cv=none; b=mNvr7oWa1mcUWMjmZ4f+2D/hwJPTcwa4oxNKYFoe3e6bDP47jYVKS6/174PpvQknrl5nVAsl6/+WgyIb0XmhdXZh0FlkC/VjJ9Xaj0mDgSo6M3ddqMjFoWtPSwySOkEQnSjcOfiJJHt0XaC3M3ewKSgje9IklXXjsvgpZyiINkk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780307357; c=relaxed/simple;
-	bh=WsMHi6PP1HVXEL1Wx8Af1k5HNKqvcXh7X/4oS36tbQo=;
-	h=Message-ID:Subject:From:To:Cc:Date:Content-Type:MIME-Version; b=kOPf20djLQK3UZhKHfsFdzfD2Qi36bxq28gPPTE9rc+1yjb569DOxHtAIETNaMjuXKaQZGU4rcC+ZzB45+rSoMbfnjEjsu3/KMwHWdtsGat5rjaqU7cfmaV/Y6LIpbLkvngvumDJVAcOikVe8JtlsshEUPyEYLnbXo/JoTdWF4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=LDjwNBT/; arc=none smtp.client-ip=185.136.65.225
+	s=arc-20240116; t=1780310173; c=relaxed/simple;
+	bh=+DK9H4SYLq0QmRoyqF52cpsLQAcFbrFhJl5PWSuoRrA=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ESA8tq88fOGr0FybaI1KiSMkfknwLbkV9+ju8kdZvu8UpmGDP/Q7NW1gQ3WBq7EXJDs9RSAGxGs90VuXAseAiD7fsqFM6yyrS6NfjaGXRniQYrzKkrpFRfQcXj9rMv4xQ29S0xsCiKmL649whnc8uNt4cLY1P0d3ZU80TAi6v14=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=nEnN3RMs; arc=none smtp.client-ip=185.136.64.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="LDjwNBT/"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202606010949035982dc28b6000207e9
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="nEnN3RMs"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20260601103557a922c39b1700020734
         for <xenomai@lists.linux.dev>;
-        Mon, 01 Jun 2026 11:49:03 +0200
+        Mon, 01 Jun 2026 12:35:57 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=WsMHi6PP1HVXEL1Wx8Af1k5HNKqvcXh7X/4oS36tbQo=;
- b=LDjwNBT/+O45X2PuM6EnGz1ahM1LL87wPKSW7Cul4xfhMVX1mrywW9zWPPzqQKlF25kose
- GRYh7n8gY0AK7Vhbbc9BTmPEa6HZInLxB4toNIHup0dqVWZOSjqLrK75/qp6iCcTlG8KL02X
- ZE1QR6Y+oCO6lYIsoMYQVpVCSBkVE2Kk9gh7+c/9IhWst+buE69FKLX9YCEfhhkeNShEBbW0
- NPIzEICOjZhsQyH9E4HPO6SYIgVCb8fadA/dZoDaCN/EwYb+rq081Ny0dA+dSRJ56R9Wi8fe
- P3/+uhD8W5oJxrwoTxQonUB+Mku3FMyhvRyatJDJzf+qOlrgQ770jGbA==;
-Message-ID: <aea902f9f55316c2c357b9fadbbd8e9b716e92ff.camel@siemens.com>
-Subject: Dovetail 7.1-rc6 updates pushed
+ bh=UcyscMrXAqQFA0hluPkdJvPhYFLmWzVfneg8VhgXi4M=;
+ b=nEnN3RMsWhzDpvwHSnDHgvcEq7SGp8OeqV06mgzPF9+K//e54nS1Gp02EsrTwvevbScAL9
+ 8f5UH+SycK2g/o3Ys0ddBOttgT1Sl5HQmClv339/JCmF8r0ITy6yu+hYar8vFRcW/iptOUIx
+ Ke8Noru980nCK+njnpdA+te72kAiBMxXsQDi890QESDtRcaxJet15FPpBAzRcz5rCDqpP5Ps
+ omsvb7F692TtN2fkWPIAG9FipjOL6bOYaxTgNu+YkUoa+UkNXjbOr2aABOzz1Bz1YFiL0Ehe
+ vZRSQTEHkrl01cVRZ8Qr5Ug5y8vgjYiE81jE2odVHf73xzZilfGPCA7Q==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Philippe Gerum <rpm@xenomai.org>, xenomai@lists.linux.dev
-Cc: Tobias Schaffner <tobias.schaffner@siemens.com>, Jan Kiszka
-	 <jan.kiszka@siemens.com>
-Date: Mon, 01 Jun 2026 11:49:03 +0200
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+To: xenomai@lists.linux.dev
+Cc: Jan Kiszka <jan.kiszka@siemens.com>,
+	Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: [PATCH xenomai-images] kas/ci: Fix bitbake variable referencing themselves
+Date: Mon,  1 Jun 2026 12:35:49 +0200
+Message-ID: <20260601103549.785345-1-florian.bezdeka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi all,
+When trying to run a local kas build using the kas/opt/ci.yaml option
+file the following bitbake error occurred as the following two bitbake
+variables were referencing themselves:
 
-I just pushed the following branch updates for Dovetail based on 7.1-
-rc6:
+Variables:
+  - AWS_ACCESS_KEY_ID
+  - AWS_SECRET_ACCESS_KEY
 
-Dovetail:
-wip/flo/v7.1-dovetail-rebase
-wip/flo/v7.1-dovetail-rebase+riscv
+Error:
+bb.data_smart.ExpansionError: Failure expanding variable
+AWS_ACCESS_KEY_ID, expression was ${AWS_ACCESS_KEY_ID} which triggered
+exception
+Exception: variable AWS_ACCESS_KEY_ID references itself!
+The variable dependency chain for the failure is: AWS_ACCESS_KEY_ID
 
-Evl:
-wip/flo/v7.1-evl-rebase
-wip/flo/v7.1-evl-rebase+riscv
+The problem only exists for local builds as the gitlab project
+configuration defines such variables.
 
-The +riscv branches are containing v8 of Tobias' riscv enabling series,
-maybe we need v9, let's see.
+We can avoid the bitbake error by stopping forwaring the variables to
+bitbake. We don't need those variables inside the build environment.
+The only user is located in the deploy_to_aws.sh script, which is
+executed on gitlab CI level.
 
-Any additional testing on those branches is highly appreciated.
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ kas/opt/ci.yaml | 4 ----
+ 1 file changed, 4 deletions(-)
 
-@Philippe:
-I'm still waiting for some feedback for [1]. That seems now to be a
-invalid combination of kconfigs, which is dovetail specific. Upstream
-thread at [2].
+diff --git a/kas/opt/ci.yaml b/kas/opt/ci.yaml
+index e1466a0..01d5c07 100644
+--- a/kas/opt/ci.yaml
++++ b/kas/opt/ci.yaml
+@@ -23,7 +23,3 @@ local_conf_header:
+     IMAGE_INSTALL:remove = "sshd-regen-keys"
+     IMAGE_INSTALL:remove = "expand-on-first-boot"
+     IMAGE_FSTYPES = "${@ 'ext4.gz' if d.getVar('MACHINE', True).startswith('qemu') else 'tar.gz' }"
+-
+-env:
+-  AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+-  AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+-- 
+2.54.0
 
-Can you remember why KVM_INTEL is not selecting X86_FRED in case
-IRQ_PIPELINE is enabled? I haven't checked the details yet, nor tried to
-remove the dovetail specific adjustment.
-
-That's the last 7.1 related TODO on my end, provided that testing goes
-well.
-
-Best regards,
-Florian
-
-[1]=C2=A0https://gitlab.com/Xenomai/linux-dovetail/-/commit/0f02151294aad2b=
-e733fb6f03b09edf4f864e6f9
-[2] https://lore.kernel.org/all/6ae24df3f3a62957ca997c6788926fd212f074b3.ca=
-mel@siemens.com/
