@@ -1,45 +1,43 @@
 Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 896A63D170C
-	for <xenomai@lists.linux.dev>; Tue,  2 Jun 2026 09:43:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2622F3E9F76
+	for <xenomai@lists.linux.dev>; Tue,  2 Jun 2026 14:10:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780393423; cv=none; b=gNCMkFu9B9+wh8TQiA43jE3Leez9PnRXqNirIjUKSefPfyS0Z3GFymMbgOHcy9xay7UAOVA/+wL2qMIDtp0rvlhvHJJPqLMvSvmaPlRtkgDXdFTc8Qr9QEdl+DsatI4uqmm0Ypk7Kf7g+yCiHt6aO1EExtEM2WdizB3VoS/VpdU=
+	t=1780409414; cv=none; b=nln6QSRKHcQkdqKkjzoK/FV2CapD1W7JJTD+AZlshnwsHMjJ4akJgAvxl6x3zjY3qdjvGeAVKidv94SNYS/D53uyp/6IQH7IHsVEmJ2tXh1pbkD4MpmeRV9PFIpH6q4rWDhLnn2/JWNk7ubuAg8jkxiN41w3ZpdsdrrJyK3qIr4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780393423; c=relaxed/simple;
-	bh=Wot0L9szDw0MPRYUwvi1UXx/+sNAAO1RBv3dKt/kVSo=;
+	s=arc-20240116; t=1780409414; c=relaxed/simple;
+	bh=7vCXVr9Q3t5nCeOnkYK4nIDDU8cFfFHKbMBUZ3WBbkE=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=jPKCatQkzYRurCz6X7nlWRXDWRl0sK546HQXJfSF00nMQEMAENGFm1rppftP74xoTunT9RKRf4uYx9q3YoZVtWmY88SNSYJvPKMMTlLm+9f1+jMu4T5Cc/k+UrUqDvKny2dg59bZ84VdA/EqvCHq6P21Yx9WBNiOOaqmGK2qGDU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=gfW6es4J; arc=none smtp.client-ip=185.136.65.225
+	 Content-Type:MIME-Version; b=RCesJb1WKomVg6Ri5EMkpUbRxMoR+VFa4BPXRaCN96wiGKVyjG0imvn7imaOhpu2NQdrAr4ayPcNtu9ozRmSNz2pg7QnnGj/vBdfeZym6nhZ2eIexSPADo+y09WwrJnoFHMjkVArE5xrwBWZlcgrMhkiZCVe3tvJAYIjSbv/FPw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=SJEZmrLJ; arc=none smtp.client-ip=185.136.65.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="gfW6es4J"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202606020943265e1cc1e6ab00020746
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="SJEZmrLJ"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202606021410078c4faf8b5f00020766
         for <xenomai@lists.linux.dev>;
-        Tue, 02 Jun 2026 11:43:28 +0200
+        Tue, 02 Jun 2026 16:10:07 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=cnC5Y56RLb6XWsh73hbLYlJy4KD+u05glDy16yicbUY=;
- b=gfW6es4JuqI2h8fj9GjY+m89I+KLc4M2oDXQuvB1IouAE7crMaUdDVtNV0mOGEFHtbfAe0
- TvRqg8x5O14N6XUqv80u/uaotvSQ79zNhKf36x3HP9Xh8JEDF/43Kbe7NCad6LQtVbQ9kxXM
- C60tdGMa3n1JGRj0HKLNQh6S96d/h/6NS0vgm31h2lKb+CfI75EWajwb+gojTuncaqoucdDK
- pjoavq/PKbnN5sCDWuCbRvnfaIwJ7VNLjB4Cvc8ny7fbYER7+tUZo5/M+zRnAf7qpZw2N6P+
- lqF9qA1l1pRqVOFjtPhcUVt9D0ONeI7iHVFRDh7AaLikLpKUrA4WUcDg==;
-Message-ID: <eae9c7c7ecfebf7503f52051e8a444a4cec90888.camel@siemens.com>
-Subject: Re: Dovetail 7.1-rc6 updates pushed
+ bh=nfnxWAmgSJmzpuUUkdlrUpAobC3+Ne141JGLnlEZp7o=;
+ b=SJEZmrLJ+rnESnolhUfkNHJIbGRFNVs5/SupmpVpIjelrjJMc0VI1NEluH0hHE9d7AL/w2
+ pKo3P4yJ5l3j0eRT/84+tNmJoFDwAZTm9JD2VsAD7ygkuxThM7NBW0yRQVoA5Jt6G4N7e4mU
+ NMVccg8rpbxWQF8VFUaPwwXqMq2YVRhd9ogK+4holJQL3Tr7pmHym7bUAnjsCQ0hbXu00c7X
+ aL+b87ObEBm1MVHVekCFIExLig7tJQCJbi8bJsQePVV2GRVevhnHafT3TybgDT3rVbP9eIzG
+ 29zfGRwAUQV/5GcJiUz61i6wBPsLgWWYxCf3WKv518kvjIRgfEbBtQUQ==;
+Message-ID: <a579710690aa3a24e008aac78568d69153842e79.camel@siemens.com>
+Subject: Re: [PATCH dovetail v8 02/11] riscv: irq_pipeline: add IRQ
+ pipelining core
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@lists.linux.dev, Tobias Schaffner
- <tobias.schaffner@siemens.com>,  Jan Kiszka <jan.kiszka@siemens.com>
-Date: Tue, 02 Jun 2026 11:43:26 +0200
-In-Reply-To: <87se763yji.fsf@xenomai.org>
-References: <aea902f9f55316c2c357b9fadbbd8e9b716e92ff.camel@siemens.com>
-		<87y0gy4brj.fsf@xenomai.org>
-		<27c28604c6d3abca8b31ddf182bdf6d52ad4d572.camel@siemens.com>
-	 <87se763yji.fsf@xenomai.org>
+To: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
+Cc: rpm@xenomai.org, jan.kiszka@siemens.com, shannmu <shanmu1901@gmail.com>
+Date: Tue, 02 Jun 2026 16:10:06 +0200
+In-Reply-To: <20260531055304.2890455-3-tobias.schaffner@siemens.com>
+References: <20260531055304.2890455-1-tobias.schaffner@siemens.com>
+	 <20260531055304.2890455-3-tobias.schaffner@siemens.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
@@ -51,70 +49,53 @@ MIME-Version: 1.0
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On Mon, 2026-06-01 at 20:28 +0200, Philippe Gerum wrote:
-> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+On Sun, 2026-05-31 at 07:52 +0200, Tobias Schaffner wrote:
+> This patchset integrates IRQ pipelining into the RISC-V architecture,
+> bringing it in line with the Dovetail/IRQ pipeline model used on other
+> architectures. It adds the core pipelining infrastructure and adapts
+> low-level primitives to cleanly separate in-band and out-of-band
+> interrupt handling.
 >=20
-> > On Mon, 2026-06-01 at 15:43 +0200, Philippe Gerum wrote:
-> > > Florian Bezdeka <florian.bezdeka@siemens.com> writes:
-> > >=20
-> > > > Hi all,
-> > > >=20
-> > > > I just pushed the following branch updates for Dovetail based on 7.=
-1-
-> > > > rc6:
-> > > >=20
-> > > > Dovetail:
-> > > > wip/flo/v7.1-dovetail-rebase
-> > > > wip/flo/v7.1-dovetail-rebase+riscv
-> > > >=20
-> > > > Evl:
-> > > > wip/flo/v7.1-evl-rebase
-> > > > wip/flo/v7.1-evl-rebase+riscv
-> > > >=20
-> > > > The +riscv branches are containing v8 of Tobias' riscv enabling ser=
-ies,
-> > > > maybe we need v9, let's see.
-> > > >=20
-> > > > Any additional testing on those branches is highly appreciated.
-> > > >=20
-> > > > @Philippe:
-> > > > I'm still waiting for some feedback for [1]. That seems now to be a
-> > > > invalid combination of kconfigs, which is dovetail specific. Upstre=
-am
-> > > > thread at [2].
-> > > >=20
-> > > > Can you remember why KVM_INTEL is not selecting X86_FRED in case
-> > > > IRQ_PIPELINE is enabled? I haven't checked the details yet, nor tri=
-ed to
-> > > > remove the dovetail specific adjustment.
-> > > >=20
-> > >=20
-> > > Maybe because the pipeline never supported X86_FRED, doing so would
-> > > required to rework the irq-entry trampoline macros, which is deemed
-> > > painful work.
-> >=20
-> > I sent out a RFC patch for that, input welcome.
-> >=20
-> > Meanwhile I can provide some updates on the testing part. The following
-> > problems seem to be reproducible on 7.1-rc5 and 7.1-rc6 - while 7.1-rc4
-> > was fine (at least once):
-> >=20
-> > x86   x3: Test timeout. Something seems slower than expected.
-> > arm64 x4: Same problem
-> >=20
-> > To rule out problems in our CI setup I spawned some 7.0 tests, which
-> > were fine, at least twice in a row. Seems someone has to look into that=
-.
-> > As I'm running out of time: Any resources available?
-> >=20
+> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+> Co-authored-by: shannmu <shanmu1901@gmail.com>
+> Co-authored-by: Philippe Gerum <rpm@xenomai.org>
+> ---
+
+> [snip]
+> =20
+> +static __always_inline
+> +bool mark_trap_entry(struct pt_regs *regs)
+> +{
+> +	if (running_oob()) {
+> +		return false;
+> +	}
+> +
+> +	if (user_mode(regs))
+> +		hard_cond_local_irq_enable();
+
+I had to debug x86 today and noticed a difference here:
+
+hard_cond_local_irq_enable() and the _disable() part below are not
+protected by the user_mode() check in x86 and I think that is correct.
+We would like to allow hard IRQs to arrive, keeping the pipeline active
+while handling a trap.
+
+In addition I would vote for using the same checks/ordering as other
+architectures do. I haven't checked arm{64}, but x86 is using a=20
+running_inband() check instead of running_oob(). That should help to
+avoid stupid mistakes in the future.
+
+> +
+> +	return true;
+> +}
+> +
+> +static __always_inline
+> +void mark_trap_exit(struct pt_regs *regs)
+> +{
+> +	if (user_mode(regs))
+> +		hard_cond_local_irq_disable();
+> +}
+> +
 >=20
-> Not here, at least not yet.
 
-I scheduled a couple of overnight test runs on -rc4. Those test are
-looking OK. Something in -rc5 seems to trigger that. The problem seems
-qemu/kvm specific, test runs on real hardware were OK.
-
-I found a couple of recent discussions around VMX/SVM regressions, some
-of them related to the delayed hrtimer arming. As we disable the delayed
-arming completely, that should not be our problem. Maybe we should just
-wait for -rc7?
+[snip]
