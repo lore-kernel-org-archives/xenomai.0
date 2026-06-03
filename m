@@ -1,36 +1,36 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0818630148B
-	for <xenomai@lists.linux.dev>; Wed,  3 Jun 2026 15:07:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8617385D64
+	for <xenomai@lists.linux.dev>; Wed,  3 Jun 2026 15:07:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780499254; cv=none; b=YCmTQrfo4lZmAE8X5U5e8j+tRtL2eL+/aLU65Xb+kwx//1IPEMQ3fom18SY2TYz1g7a/8AvL0pKzKXf3zoHu3a+OksHSUfMRTkDu6OHvNblb3FWiZJhm8tpzNV7FEYMicQr/1ZzEMQzjQbcqJFP/dk0/MiPxn3jw13bFGL7FtBo=
+	t=1780499255; cv=none; b=Les/Z5z76ug1Z4ywNDeJ/wMGuWAcOVqMVIgQ32n9fYwbThxHB3lcVfP3rSvwvWgcgNwlB8EHgIIA9qnJ+CAw2EuXoQij3SDazbjSB+3KHoco1EnOZZae3LASas2E1tLgoZEE9H3N1zC9BQ0PwcfhZb+g/IrwhddHi8BjDbnd9ng=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780499254; c=relaxed/simple;
-	bh=XmVfUcDVGEsYRmSq4nx9HH03YuiMeEF5x2GZPhlDzQQ=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=as22IpLzwCJBE67t5RecdxKoeb1wYCi58i3hsXLTceP8RH2cP7A+2Fms5hCAtaSFSSG+vEzH8IgXqDdY04gvqKJ5FkjV1yRE9/TWor5keQzSVBsMlP5sZR+x3Ppz3+dHx4Z9k/xRW5j7AWrGWGS/gguJ8dy4mdr+pTiltVL+9tY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Sa3WRoRB; arc=none smtp.client-ip=185.136.65.225
+	s=arc-20240116; t=1780499255; c=relaxed/simple;
+	bh=BOVLTpRRyYJl9GmFDzO/KpA7YC3KRK36X3atvUH9dXQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=r7OQW5ghWOndOb2fo43a5bcvfdm0KmjwzvXU7/RDYPviIG8B4hR8J4aYnT5h63zOp1DJdBbqb9KAXZCFWNr3rIt3FvIPDLohyv4bqMQXLRbOmcPHgkbKDwJVssLIJJivToY9CW28b/g4t5k9IsGTj7yNDkD7CaVW1Y+LShtvpd4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=U4myOH4a; arc=none smtp.client-ip=185.136.65.226
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Sa3WRoRB"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 2026060315072328c579db4f00020701
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="U4myOH4a"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20260603150724ed1405e8640002077a
         for <xenomai@lists.linux.dev>;
-        Wed, 03 Jun 2026 17:07:23 +0200
+        Wed, 03 Jun 2026 17:07:24 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=47SuTo1CVJ6NuRdPm0hxFtK43IZYHjgHSRMZdQxFyCQ=;
- b=Sa3WRoRBoGhCCITUmY1dLX3bREbbLp7yUgtmVjM/Br/9Dt9BrUXqQMuh0QwRzGbDx8OJ33
- EcZvAzkUvtOndY+ORbyiOLwFU/O1LgN5o4lAfQgJw4hbug2Vq0THpYaFZVzYwj2589+fYKLy
- RZbMaISTVt7/2ZRlCQb1+cXwQdBdnU7iPKMZD57GQChX/FUhNHWySDD/tm+wdzbY9mb/hwYt
- T8jxBdvGJ3JRlXudQH1pXGSNMon/aq0JlPQ4iRxkt3pvZ4zwlUTc52JKGyo5fpCGczax/JKY
- Ee4YXC/qk+Y/89R7Dw1cnLuFoA58fmTddJOavSVLoy9JR1hp8VMU9tEA==;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=TMmO+cJmuBNau0NZYW2HhwDLeHl89Iuk/3/vxkkwUIc=;
+ b=U4myOH4aOoFPgvplbrqhtPYy7vFm4JjWQe9doQDbsoZIdrWs2Mq4AnIrBjPFm1H4zq+cpb
+ IlH+PbxKgLWeNKDuDyDr9yS2smySFfkaj41iTTsZHpB0x8Cpn9JQGouPoEb9pCKktubu/vd9
+ B/a0juXHdxEEOGNiUatu7/wRGyYf9NzU6djDQ0HUwp2/2McBjQJbtDi89Fsi+0qcPl+X0lNP
+ tpX1ONsciC+ZrPFZCytC3Ut4/VB6lZxIGU+TBG8n0DxGQg+q5zjewi4CK+T4GrRxvSQ1i7h3
+ nQ/9y+sBcYJdmK8laFHjwa1Q1zfrZkIZyTA/xoHNTkLWQfYI8Yi2XNrQ==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH 0/2] arm: Review irq pipeline
-Date: Wed, 03 Jun 2026 17:07:14 +0200
-Message-Id: <20260603-wip-flo-v7-1-arm-fixups-v1-0-c28b4ff180ed@siemens.com>
+Date: Wed, 03 Jun 2026 17:07:15 +0200
+Subject: [PATCH 1/2] arm: irq_pipeline: Fix fault_{entry,exit} imbalance
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -39,10 +39,9 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIACJDIGoC/x2MWwqAIBAArxL73YIpaXSV6KPHWgs9RMmC8O5Jn
- 8Mw80IgzxSgLV7wFDnweWSoygKmdTgWQp4zgxRSCy0U3uzQbidGgxUOfkfLz+UCynquGzsaaRV
- Brp2nbP5z16f0AaWcJp5pAAAA
-X-Change-ID: 20260603-wip-flo-v7-1-arm-fixups-25d58fb72f3e
+Message-Id: <20260603-wip-flo-v7-1-arm-fixups-v1-1-c28b4ff180ed@siemens.com>
+References: <20260603-wip-flo-v7-1-arm-fixups-v1-0-c28b4ff180ed@siemens.com>
+In-Reply-To: <20260603-wip-flo-v7-1-arm-fixups-v1-0-c28b4ff180ed@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: Philippe Gerum <rpm@xenomai.org>, 
  Tobias Schaffner <tobias.schaffner@siemens.com>, 
@@ -50,50 +49,33 @@ Cc: Philippe Gerum <rpm@xenomai.org>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi Philippe,
+upstream commit
+d92725256b4f ("mm: avoid unnecessary page fault retires on shared memory types")
+introduced a new exit path to do_page_fault(), so that an imbalance
+of fault_{entry,exit} can happen.
 
-This is the result of a review of the arm implementation of the IRQ
-pipeline. Triggered by some risc-v reviews.
-
-I'm sure about the two easy fixes, targeting different Dovetail
-versions, so split into different patches.
-
-In addition there is one more, I need your input here:
-
-We have two calls to interrupts_enabled() in arch/arm/mm/fault.c,
-both in the do_page_fault() path.
-
-Assuming that we are handling a page fault over kernel space,
-inband stage stalled, we would leave the kernel with the inband stage
-unstalled, as interrupts_enabled() is checking the hardware state (as
-pushed to the stack on entry) instead of the inband stage stall bit.
-
-Is that correct?
-
-I'm quite sure we have more real problems that in this case, but
-maybe we should fix that up?
-
-We would have to call something that does the HW check in case
-CONFIG_IRQ_PIPELINE is off, but checks the stall bit in case pipelining
-is enabled.
-
-To: xenomai@lists.linux.dev
-Cc: Philippe Gerum <rpm@xenomai.org>
-Cc: Tobias Schaffner <tobias.schaffner@siemens.com>
+The commit was introduced with Linux 6.0, so all newer Dovetail
+versions are affected.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
-Florian Bezdeka (2):
-      arm: irq_pipeline: Fix fault_{entry,exit} imbalance
-      arm: irq_pipeline: Fix fault_{entry,exit} imbalance
+ arch/arm/mm/fault.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- arch/arm/mm/fault.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
----
-base-commit: 5c4243abc449083b74c94fcd353d360b6ce78b5b
-change-id: 20260603-wip-flo-v7-1-arm-fixups-25d58fb72f3e
+diff --git a/arch/arm/mm/fault.c b/arch/arm/mm/fault.c
+index b4bb33e1638cd67ce2b6c0b90a4a9693e784bb3e..4beae304c0269d11173cd3b360cec05e59f30d82 100644
+--- a/arch/arm/mm/fault.c
++++ b/arch/arm/mm/fault.c
+@@ -539,7 +539,7 @@ do_page_fault(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
+ 
+ 	/* The fault is fully completed (including releasing mmap lock) */
+ 	if (fault & VM_FAULT_COMPLETED)
+-		return 0;
++		goto out;
+ 
+ 	if (!(fault & VM_FAULT_ERROR)) {
+ 		if (fault & VM_FAULT_RETRY) {
 
-Best regards,
 -- 
-Florian Bezdeka <florian.bezdeka@siemens.com>
+2.54.0
 
