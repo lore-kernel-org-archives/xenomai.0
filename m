@@ -1,36 +1,36 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8617385D64
-	for <xenomai@lists.linux.dev>; Wed,  3 Jun 2026 15:07:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95D713D667C
+	for <xenomai@lists.linux.dev>; Wed,  3 Jun 2026 15:47:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780499255; cv=none; b=Les/Z5z76ug1Z4ywNDeJ/wMGuWAcOVqMVIgQ32n9fYwbThxHB3lcVfP3rSvwvWgcgNwlB8EHgIIA9qnJ+CAw2EuXoQij3SDazbjSB+3KHoco1EnOZZae3LASas2E1tLgoZEE9H3N1zC9BQ0PwcfhZb+g/IrwhddHi8BjDbnd9ng=
+	t=1780501668; cv=none; b=cPLJU1Ax+wZEGFVncNxzw2QlKzwEpeAwQBXgCeaMHXoTed64hGO9b0CltKINTQMFHqe/XniqHIDpxpgcLv+1n2mosD+xs3/YayZwOzVuQKL6aSZCIhepBhG1AnYwb6kvMUMZRJw8VFtO29OYxzXNugdMIghBTBUsYqpkquz8UZc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780499255; c=relaxed/simple;
-	bh=BOVLTpRRyYJl9GmFDzO/KpA7YC3KRK36X3atvUH9dXQ=;
+	s=arc-20240116; t=1780501668; c=relaxed/simple;
+	bh=Z4pfJFDhdt+HtgmQYoqyyZoB4lGGkSuxV7k1EqR30As=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=r7OQW5ghWOndOb2fo43a5bcvfdm0KmjwzvXU7/RDYPviIG8B4hR8J4aYnT5h63zOp1DJdBbqb9KAXZCFWNr3rIt3FvIPDLohyv4bqMQXLRbOmcPHgkbKDwJVssLIJJivToY9CW28b/g4t5k9IsGTj7yNDkD7CaVW1Y+LShtvpd4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=U4myOH4a; arc=none smtp.client-ip=185.136.65.226
+	 In-Reply-To:To:Cc; b=ZypgGkNAGR85Fy6SVn61zeyJg5eJoZCC5xAAwpqE2TdVMyl9pPKy8P4y8qMNlXoeOGhurfzzLvVX1+NXfQprn5HkYighbX2LWdaNyUwEnGnxGWvY8x+epk6cct1cOCZt1wp6W/jvNHQfU/e9kTG+DhLhi05SEgtwoAUF0YYCBMk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=T8YEpRDn; arc=none smtp.client-ip=185.136.65.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="U4myOH4a"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20260603150724ed1405e8640002077a
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="T8YEpRDn"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202606031507244fa86b6262000207d9
         for <xenomai@lists.linux.dev>;
         Wed, 03 Jun 2026 17:07:24 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=TMmO+cJmuBNau0NZYW2HhwDLeHl89Iuk/3/vxkkwUIc=;
- b=U4myOH4aOoFPgvplbrqhtPYy7vFm4JjWQe9doQDbsoZIdrWs2Mq4AnIrBjPFm1H4zq+cpb
- IlH+PbxKgLWeNKDuDyDr9yS2smySFfkaj41iTTsZHpB0x8Cpn9JQGouPoEb9pCKktubu/vd9
- B/a0juXHdxEEOGNiUatu7/wRGyYf9NzU6djDQ0HUwp2/2McBjQJbtDi89Fsi+0qcPl+X0lNP
- tpX1ONsciC+ZrPFZCytC3Ut4/VB6lZxIGU+TBG8n0DxGQg+q5zjewi4CK+T4GrRxvSQ1i7h3
- nQ/9y+sBcYJdmK8laFHjwa1Q1zfrZkIZyTA/xoHNTkLWQfYI8Yi2XNrQ==;
+ bh=i8SYN73a2oZxNEB3HfJ+oIIIslAJ178SYR8KPaIa4O4=;
+ b=T8YEpRDn2XS1K1S820KrcK7TxKt2P4ijjlhtrN4Bu7ou3BkmepJ3KU54wykiy/gLMJB1dp
+ fsD3jSUa8G2wlty2sYLRfiXvcC+4bdAhMVpkho09DPo9QU4j67RBTlRfUNZzFgcnBbZznihg
+ m1pH/B0maNiW8nVyAw3G2bayLiJWQ0ANm4y2KyMKMu6tF/IURhaMptMOzhl/xBaOBMbQffXC
+ /Lm2uM/NtnymSCalko97dnPCGTX7O1bsi0rC9boyK92BCbPzMbHrZkxRBSOMDJVGouEinLeD
+ Uk8s865Z69zi07IBLxbDiNEmR9nKRf+eoShsrXjmyOo0FvTdZ+HtdWAw==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Wed, 03 Jun 2026 17:07:15 +0200
-Subject: [PATCH 1/2] arm: irq_pipeline: Fix fault_{entry,exit} imbalance
+Date: Wed, 03 Jun 2026 17:07:16 +0200
+Subject: [PATCH 2/2] arm: irq_pipeline: Fix fault_{entry,exit} imbalance
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -39,7 +39,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260603-wip-flo-v7-1-arm-fixups-v1-1-c28b4ff180ed@siemens.com>
+Message-Id: <20260603-wip-flo-v7-1-arm-fixups-v1-2-c28b4ff180ed@siemens.com>
 References: <20260603-wip-flo-v7-1-arm-fixups-v1-0-c28b4ff180ed@siemens.com>
 In-Reply-To: <20260603-wip-flo-v7-1-arm-fixups-v1-0-c28b4ff180ed@siemens.com>
 To: xenomai@lists.linux.dev
@@ -50,11 +50,11 @@ X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
 upstream commit
-d92725256b4f ("mm: avoid unnecessary page fault retires on shared memory types")
+c16af1212479 ("ARM: 9328/1: mm: try VMA lock-based page fault handling first")
 introduced a new exit path to do_page_fault(), so that an imbalance
 of fault_{entry,exit} can happen.
 
-The commit was introduced with Linux 6.0, so all newer Dovetail
+The commit was introduced with Linux 6.8, so all newer Dovetail
 versions are affected.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
@@ -63,18 +63,18 @@ Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/arm/mm/fault.c b/arch/arm/mm/fault.c
-index b4bb33e1638cd67ce2b6c0b90a4a9693e784bb3e..4beae304c0269d11173cd3b360cec05e59f30d82 100644
+index 4beae304c0269d11173cd3b360cec05e59f30d82..49f5d628c4c9a91a3e879af0d541fd76665d78fe 100644
 --- a/arch/arm/mm/fault.c
 +++ b/arch/arm/mm/fault.c
-@@ -539,7 +539,7 @@ do_page_fault(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
- 
- 	/* The fault is fully completed (including releasing mmap lock) */
- 	if (fault & VM_FAULT_COMPLETED)
+@@ -502,7 +502,7 @@ do_page_fault(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
+ 	if (fault_signal_pending(fault, regs)) {
+ 		if (!user_mode(regs))
+ 			goto no_context;
 -		return 0;
 +		goto out;
+ 	}
+ lock_mmap:
  
- 	if (!(fault & VM_FAULT_ERROR)) {
- 		if (fault & VM_FAULT_RETRY) {
 
 -- 
 2.54.0
