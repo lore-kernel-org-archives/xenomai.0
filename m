@@ -1,86 +1,75 @@
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+Received: from out162-62-57-252.mail.qq.com (out162-62-57-252.mail.qq.com [162.62.57.252])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63A7F3E717A
-	for <xenomai@lists.linux.dev>; Wed,  3 Jun 2026 18:39:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 926AD2F532F
+	for <xenomai@lists.linux.dev>; Fri,  5 Jun 2026 03:00:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=162.62.57.252
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1780511977; cv=none; b=src5arG7g3Rj4M3TcLYnGPSXje2CKma1Xq0XfkqxPMnR18AGvTa7SCXM5HJlsJO6v9on3cZyVuL9J7tpOhdrQ1IuHZ3LruHY5Moial5hHDWeqL2iPXUUVu9codcnzV1DPkvPyrE76Jcbl+1J1LQmBROI41C69xfchawChoEAmls=
+	t=1780628438; cv=none; b=AEzwm7AJZZb6VTaTg5NLtBc5zcMLcvbUuXHXYHAYhcb1DIZLiZTF68d+OsNjxcfEtDh9eudzyjy7mp+G7eSgiPK4X2yMMaGNBocUc8WePrX20RnlpCrIPHFEdmFuIeyqyN0MUqv8Ec5e0YXJfR59cfcSMMpcme8ND4aGJGcZ/3M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1780511977; c=relaxed/simple;
-	bh=t3gCgHvF42xHX14L/c+EAqKFh1skeI/OEEzey/fXiZU=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=cru4zyQfw0jgKkGdD9lnm4PiZw9JTfKbIFDcXgnSmPCNuAA71qVldcmd47rCGuD35GisnkdCEFvF+fHlHXcJtTLmfJ5mg6FJaYt3fAQ/XylaXbspSjQlRWiuU95J+VQpmEFjqHNzqxVQjBuCpa5XpZmcsSYtlBuKYLAa8bThw6Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=PWZdjfDm; arc=none smtp.client-ip=217.70.183.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1780628438; c=relaxed/simple;
+	bh=pVR4D/cf6FLANBCwA95hWBRpDZuGngB8EKivmepIywQ=;
+	h=From:To:Subject:Mime-Version:Content-Type:Date:Message-ID; b=fwXV2fqQJPNL29WkobkM0tu7Bg2ik0kI5AlVcq7tCtz0cm4HPtHGpKsTvkCVtxeJQWJbujEjnIkYHrkgH990vQq4lOkqlAsGX7YI+Q5DH3jVQYZdV8Wie1O8R0bYgc94dDFK1g6kU09AtxIdHcSxYtlGS13sO/52Ioi429r2Qs4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com; spf=pass smtp.mailfrom=qq.com; dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b=C7x5xAVR; arc=none smtp.client-ip=162.62.57.252
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=qq.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=qq.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="PWZdjfDm"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 952073EC8F;
-	Wed,  3 Jun 2026 18:39:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1780511968;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=W5Ijp9+ptc5kIN1WkTPPpfC4kWaMsOwMY8PO7/4glcc=;
-	b=PWZdjfDm1K+6UXNxLWoHblUKz++2yuligGbIos165FGUROG3uclGIpsN5KpFGWUBdstkkV
-	hGttrtliQMS0+lPFIkM9SXw0fddLuGohhg/+xeKqPGz01ll+tZXLHqcbZXJ+BWGJSOhzN9
-	KxLjEWQ1aiFxLeYy3Ctp86Np6zWfhPEyFM3detcb/f3CZh2YbL4gHowStlesDP2d1pN+Eb
-	H+SBCAOMnW5UNUUo1q5VjNSfu9XzDsglmqv4bwH6AL36x3odd0HBRpDCtY0YO/VfwoOBOo
-	Ok7rceTSpkoZfhBKKEAUMJIf0/t5hpa77VT8utndZ3rmuDhbcvv620XMMxcT2A==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@lists.linux.dev,  Tobias Schaffner <tobias.schaffner@siemens.com>
-Subject: Re: [PATCH 2/2] arm: irq_pipeline: Fix fault_{entry,exit} imbalance
-In-Reply-To: <20260603-wip-flo-v7-1-arm-fixups-v1-2-c28b4ff180ed@siemens.com>
-	(Florian Bezdeka's message of "Wed, 03 Jun 2026 17:07:16 +0200")
-References: <20260603-wip-flo-v7-1-arm-fixups-v1-0-c28b4ff180ed@siemens.com>
-	<20260603-wip-flo-v7-1-arm-fixups-v1-2-c28b4ff180ed@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Wed, 03 Jun 2026 20:39:27 +0200
-Message-ID: <875x3zlb8g.fsf@xenomai.org>
+	dkim=pass (1024-bit key) header.d=qq.com header.i=@qq.com header.b="C7x5xAVR"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qq.com; s=s201512;
+	t=1780628421; bh=pVR4D/cf6FLANBCwA95hWBRpDZuGngB8EKivmepIywQ=;
+	h=From:To:Subject:Date;
+	b=C7x5xAVRx/N18jUVaEeJZkwrG+h6yih2BnuSWIZ+F3mQJzMX/bI7nmW3l0SI5MFKe
+	 qdqP2WMQi48Es43hJcMAAJSX4HexgfKgwLplm925FzF1GptBUrFTZkek0BB0QZxHCI
+	 kjcVNiKG+XcmFGj8bZZf/uNjwrsd/oA1JzeaDyC8=
+X-QQ-XMRINFO: NI4Ajvh11aEjEMj13RCX7UuhPEoou2bs1g==
+X-QQ-XMAILINFO: MFBABGT0feQ/l94p5/H+uktaPGi+urZ2+SleabcIk3YQtF6yuF2Hg4eOibWmDA
+	 ov0DMKYK5B0B/SfZSJRep3284A5d09QI7ZbXTsUd5d4dK1l0UN1PDqnOsInwDN1yVIg3cGRQIDqPg
+	 922G9vM3CfC2NbXSBkbjydfYNAuhsF1j2rONJV8hY3hsNcBnSkiZfX6ZIbJu9nKNmmY1XkU26yPjh
+	 /dyaUa3IwXZqh4FGRoSOYJXJ7r3+uBRLkDruhwCKvmT/OIkqj2Pc4ZHKEZOjYbEg0Z66vGMAp0J/B
+	 sfHgjFsnUHK3IQlfzjYHVC3DI633WNc7RLMCF3vNNsAcgv8hHcVdCB3xfjicCYulewdTBr/Dg5+9U
+	 aM08dTeQlM2d9tPbOFtxkg2NcEfLcxHeLBFENoLADWBx5wI4O2bFJobUA7HXq1vMTM/5U0NOZjefU
+	 3Mb1ZBET5nrgaIgtPXsf+DGzqfh5RuWCx0o68IFaWadd+sZzhxeSYCcBwM9s+e0O8LVWHKmfHdx8D
+	 76Y7+bF6/HJDIdCNq3bKEstblQ3UfIon3QrcG6HWlkgn9sifDoZXTu5d2LcKu9HtWs3LKggEyXCXw
+	 V4zgXQrrKgrtigYAwnu052afhx7mDGSY1PVDhnwhVLPiCasPU/z7EObXMz0Zz6kkLOg9fUkW9zVJC
+	 Ma/F/zPFU9P3XhgTk+kRviIR4czUXL6bDVoSL1xlWtHLkbnnl6Xp5z8gNP+qjLgnEsJRuspQd8b+B
+	 rB0HvH+5yc232RJK/U7ndb8IPQmgGK3+PrZnXnFDsjzeduswTxGNU9D405lqzgrOQ93CtgVlDX1rk
+	 tfuHeedRloq0FHTGlKesEUNTMMKsCKxo6QUJsssvzty4WsAqJJRPAuw8WJW2OX0UjO1HK1GnmoUhp
+	 cMfD0LAGS5TOP63m/pJZExD5c3+T2iXWo7Toc2mO3mkk+W1Bq3akrX2kQ6kyJ5zuxArZ6VRT2QroQ
+	 zRuH02M4saDNBX/jrqluYiCjz125I4ssco7W0M/BFlOIWVNdQ60sot96c9SuKlHiYA6tqF5k4qitz
+	 RkpStrvbNcPu4GnLHGt8UfRim5Q4g0dpg/6w/In11fzq0In2JfTuQqsGPEA==
+From: "=?utf-8?B?8J+QsA==?=" <384434518@qq.com>
+To: "=?utf-8?B?eGVub21haUBsaXN0cy5saW51eC5kZXY=?=" <xenomai@lists.linux.dev>
+Subject: [Xenomai] Inquiry about Xenomai 3 Cobalt support for Raspberry Pi 5 (BCM2712)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: dmFkZTF7phc7uGOGsa0A5eBy5XFnbFX7wQl6BuOK+vyYnTRxwWBdTUtfSz+okMLaKyEY0ECaHjTddnm3sNK+jG72/QSTIvJTLJC6l+nYLvcDB6rrWYbIrQdPJAn2dJPuwSoI3JT8N97CuAKkoidBuv0oqjEknKneamOfE5lkprxyCb4nGI1/N9ZoelJGOpt6LMJkVUPeQckl1Jpy/2A1MT6XFZdrn/GuJqKXsjYLWBcTdfEkmtVVG9I6olFG18sSOzfHWTrZ6c9CCeZgZUABmmF4FpWENa+D5T0IPjUebjmQtyQ6EcHuqCwMPpscNYry+wQV+t1pGlktZjuxogjl44wfaRn5EHAcnl5Ke7Bn6xHKipNUvFrIcYWmvFWMAPBo9BsLVksRqSoCGloeKRg1A3MmeFdBClugk5jv+uAadV2d6IeisLRS1Gnkad4+8y5K4iC2NGKBE10h9kjPOpHSGGaDqAfsrEYQwDM3O8PSeKYWuj5Ttigb3wkgzYf7ctJu2/6l6myPo9yuyXHFWwBSzWTlzYSYP3wmgHsYdSwk5ettj6dbxewSuzK2VYYpgi7INuEEuQecL6fMzSITUVWvlIhjDFDem6M1wC05emFBcLwGZn6jXF6wZeiIUV1egXK1R3MGE4uPZ2LHW6HWqBrAOWxpfX+zUvOawPOWDDogYJzSDbC5QA
+Mime-Version: 1.0
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
+Date: Fri, 5 Jun 2026 11:00:20 +0800
+X-Priority: 3
+Message-ID: <tencent_4B6C1E0637495CD615CA662268723067AA09@qq.com>
+X-QQ-MIME: TCMime 1.0 by Tencent
+X-Mailer: QQMail 2.x
+X-QQ-Mailer: QQMail 2.x
+X-QQ-mid: xmsezb41-0t1780628420t6y50c8y6
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+RGVhciBYZW5vbWFpIFRlYW0sCgpJIGFtIGNvbnNpZGVyaW5nIHVzaW5nIFhlbm9tYWkgMyBv
+dmVyIHRoZSBDb2JhbHQgY29yZSBvbiB0aGUgUmFzcGJlcnJ5IFBpIDUsIHdoaWNoIGlzIGJh
+c2VkIG9uIHRoZSBCcm9hZGNvbSBCQ00yNzEyIFNvQyAoQ29ydGV4LUE3NiwgQVJNdjguMuKA
+kUEpLiBJIGhhdmUgY2hlY2tlZCB0aGUgb2ZmaWNpYWwgIlN1cHBvcnRlZCBIYXJkd2FyZSIg
+cGFnZSBmb3IgWGVub21haSAzLCBidXQgaXQgY3VycmVudGx5IGxpc3RzIG9ubHkgdGhlIEJD
+TTI4MzUvQkNNMjgzNiBzZXJpZXMgZm9yIEJyb2FkY29tIFNvQ3MgYW5kIGRvZXMgbm90IG1l
+bnRpb24gdGhlIEJDTTI3MTIuCgpGb3IgeW91ciByZWZlcmVuY2UsIG1haW5saW5lIExpbnV4
+IGhhcyBhZGRlZCBzdXBwb3J0IGZvciB0aGUgQkNNMjcxMiBTb0Mgc3RhcnRpbmcgZnJvbSB2
+ZXJzaW9uIDYuMTIsIGFuZCBsYXRlciB2ZXJzaW9ucyBzdWNoIGFzIDYuMTgsIDYuMTksIGFu
+ZCA3LjAgY29udGludWUgdG8gc3VwcG9ydCBpdC4KCklzIHRoZSBCQ00yNzEyIC8gUmFzcGJl
+cnJ5IFBpIDUgY3VycmVudGx5IHN1cHBvcnRlZCBieSBYZW5vbWFpIDMgb3ZlciB0aGUgQ29i
+YWx0IGNvcmUgKGluY2x1ZGluZyB0aGUgcmVxdWlyZWQgRG92ZXRhaWwgaW50ZXJydXB0IHBp
+cGVsaW5lIHN1cHBvcnQpPyBJZiBub3QsIGlzIHRoZXJlIGFueSBwbGFuIHRvIGFkZCBzdXBw
+b3J0IGluIHRoZSBuZWFyIGZ1dHVyZT8KClRoYW5rcy4KCgkK8J+QsAozODQ0MzQ1MThAcXEu
+Y29t
 
-> upstream commit
-> c16af1212479 ("ARM: 9328/1: mm: try VMA lock-based page fault handling first")
-> introduced a new exit path to do_page_fault(), so that an imbalance
-> of fault_{entry,exit} can happen.
->
-> The commit was introduced with Linux 6.8, so all newer Dovetail
-> versions are affected.
->
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
->  arch/arm/mm/fault.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/arm/mm/fault.c b/arch/arm/mm/fault.c
-> index 4beae304c0269d11173cd3b360cec05e59f30d82..49f5d628c4c9a91a3e879af0d541fd76665d78fe 100644
-> --- a/arch/arm/mm/fault.c
-> +++ b/arch/arm/mm/fault.c
-> @@ -502,7 +502,7 @@ do_page_fault(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
->  	if (fault_signal_pending(fault, regs)) {
->  		if (!user_mode(regs))
->  			goto no_context;
-> -		return 0;
-> +		goto out;
->  	}
->  lock_mmap:
-
-Merged, thanks.
-
--- 
-Philippe.
