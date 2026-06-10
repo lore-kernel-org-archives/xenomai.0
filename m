@@ -1,37 +1,36 @@
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BEC63DB31F
-	for <xenomai@lists.linux.dev>; Wed, 10 Jun 2026 09:20:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0FEB3DBD49
+	for <xenomai@lists.linux.dev>; Wed, 10 Jun 2026 09:20:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781083226; cv=none; b=linPAiOq3SRhltfARKLeosJcyy7ukTzATtry1QPPSyJgh0jaUKjmg8hf2wOLWP18rPZjFdPGl4npAkGgHeW1KtMx1l4PIjuX5BitQWVx8h7lcdTkEhJ9KraGCuXhtDacWwkuu3odFlQ1Cm/tJXoJuwlY9vvYB7f0Ku/UuBXvgw0=
+	t=1781083228; cv=none; b=mKVRqeOLYN0f8J+fzpd7igu63pBEfMmhllic5qeI9o5G2kHjEU3nYBK3f31dmrfjY+A1ogCpHoyfDyE3FmVXtHQoLTva3iMCSYl8jvyD2mrowB5aUcoOli5GbACEl5KvHlYrgGYWNUBi9eV1iTd0DdHNuJXqzAWrSDAcmJtMa/Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781083226; c=relaxed/simple;
-	bh=ZwH9XNC+pejz/0n6+39keE5somrhsmNMekHoE/h827k=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=U40yvCPLCYDsNO+1GTjME+JqqoMcpJaWJanSc/Jmn2Zem5gun7oDquHsc+rAnRrOmLPDTzzrxt/jg6eCvsXlALBYcPNlbqSfVpnJbWxLPz2V1xvXwvbeb9lYfvT4hCt7bacxoCrtiv1gFD2T8yPFh2o8rmwA/5avcslmIyrf+NQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=NM4uK0qy; arc=none smtp.client-ip=185.136.65.227
+	s=arc-20240116; t=1781083228; c=relaxed/simple;
+	bh=j9rWthIk085YO84Z95eDtiRJWahJjRRwQLpYiMu1qEk=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=RErs5DpvGdro+U3+BXDJ8cMTAz5O8Ea09XY4XfxDK/lDg6rCDAXjQDcsiaD+PrSfMZHAMCPpY+xZy+roPeRZIwTHIRbS3RHPrpNJ05bNomS4Jl52+hoc1Q+083aFKDWpmBArQtlvWVy23xzfa8xiuNF6Vu7T+GJVrFvjtQU7rME=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=qcxTVBc0; arc=none smtp.client-ip=185.136.65.228
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="NM4uK0qy"
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 2026061009201380d3f4dfa50002072a
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="qcxTVBc0"
+Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 202606100920139753f8c6850002079d
         for <xenomai@lists.linux.dev>;
-        Wed, 10 Jun 2026 11:20:14 +0200
+        Wed, 10 Jun 2026 11:20:13 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=X/Y7CwuKCw6an7iAkYGxbIuusqdWC6g04Zil5/Rz51E=;
- b=NM4uK0qyD+XxMivHMT3H4DD2Q1pJ7DaJZBxaDx27VeXBGUrfqf3Um7T+9HTqOp7pT6gaxQ
- DaF7qV8jCAtKUOAxVv8Q2gnQ2OLoHoTp+F6qkr+/f87eB5838BYNPW2A6R8RVqSrB6NQibsi
- 4Wqk9k2iNRi6ZbAVUYiJ4ad7/tzywg+adiXp0jGQGs1HHMawxjvvCq2MM0s5QJYUhdRvJ17l
- GZxfHjTi2NSPO4q7I0SOH8yNLRkmMlXt/UExkU2STz0ewXDVrziLvwel+loTTi+5wiXnI5pq
- xbCbmo125F5MrnxOYQBM1PGdOqXZEhFpPSJuCotV7OgziLk4nGWhrCqA==;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=1ul8GZZN9RZRDzlQnDXUpagfcQjOmRPcUjI46MROXPk=;
+ b=qcxTVBc0Sbd9dwccHyQlC+pegUs6rHjsNB2BhhxLEmw9iElzXN4MhEoKZXqfMr4Y+6g/ca
+ Nvv8Q8gXP1na1sySVrMIU0V+0fSHvf62cLEtbr8nGiCBZ9Y/RR64cHg0CWUilVv4C17pBd2q
+ MMy2cHRyS0OEsaBTUFFWTav/Ekl15nCWckB50DViHqSaNNXlA815D3jvCw6OtSYzMRzaS57g
+ 9LnseHXygmBSKNGUZWS5kL6DxML66YG922oYuzns/okdZ9lT/EUatR5iBgS4bDtt6WTk3j7k
+ QJ0+ON0rtwbZk0w8pG6LF+dmW6RS55mmVUUMyGltXYClZF3DEwOI9RxQ==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Wed, 10 Jun 2026 11:20:14 +0200
-Subject: [PATCH Dovetail v2 2/6] arm: irq_pipeline: Move fault_entry()
- fault_exit() into separate header
+Subject: [PATCH Dovetail v2 0/6] Dovetail: arm: Finalize review results
+Date: Wed, 10 Jun 2026 11:20:12 +0200
+Message-Id: <20260610-wip-flo-v7-1-arm-pipelining-fixes-v2-0-62c9c477f8f2@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -40,9 +39,11 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260610-wip-flo-v7-1-arm-pipelining-fixes-v2-2-62c9c477f8f2@siemens.com>
-References: <20260610-wip-flo-v7-1-arm-pipelining-fixes-v2-0-62c9c477f8f2@siemens.com>
-In-Reply-To: <20260610-wip-flo-v7-1-arm-pipelining-fixes-v2-0-62c9c477f8f2@siemens.com>
+X-B4-Tracking: v=1; b=H4sIAEwsKWoC/42NQQ6CMBAAv2L27JqlIBVPHvyF4dDgAptA27Ska
+ gh/t8EPeJxMMrNC5CAc4XpYIXCSKM5mUMcDdKOxA6M8M4MiVVNNDb7EYz85TBoLNGFGL54nsWI
+ H7OXNEZtKXc6V0lr3NeSOD7yLnHnA3SVejEzQZjNKXFz47PNU7P73KeiPTyqQsGRNpqSyITa3K
+ DyzjafOzdBu2/YFfpIHct4AAAA=
+X-Change-ID: 20260609-wip-flo-v7-1-arm-pipelining-fixes-9428542777f6
 To: xenomai@lists.linux.dev
 Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, 
  Tobias Schaffner <tobias.schaffner@siemens.com>, 
@@ -50,195 +51,53 @@ Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Introducing a new header allows us to keep the implementation as
-static inline function. Moving them into asm/dovetail.h or
-asm/irq_pipeline.h would require us to rewrite those helpers as macros.
+Hi Philippe,
+
+This is the first try to fully process the feedback on the
+interrupts_enabled() issue mentioned in the former patch series.
+
+Input welcome.
+
+I tried hard to keep everything easy, but changing the current
+implementation triggered a lot of unexpected include / build problems, 
+especially within the arch/arm/include/asm folder.
+
+Testing looks good, I'm going to schedule a full CI run now.
+
+To: xenomai@lists.linux.dev
+Cc: Philippe Gerum <rpm@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Tobias Schaffner <tobias.schaffner@siemens.com>
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- arch/arm/include/asm/trap_entry.h | 82 +++++++++++++++++++++++++++++++++++++++
- arch/arm/mm/fault.c               | 65 +------------------------------
- 2 files changed, 83 insertions(+), 64 deletions(-)
+Changes in v2:
+- Resend. Forgot the list...
 
-diff --git a/arch/arm/include/asm/trap_entry.h b/arch/arm/include/asm/trap_entry.h
-new file mode 100644
-index 0000000000000000000000000000000000000000..56cf3352c38d9347e989f9b4f6be0b7d649d9b13
---- /dev/null
-+++ b/arch/arm/include/asm/trap_entry.h
-@@ -0,0 +1,82 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _ASMARM_TRAP_ENTRY_H
-+#define _ASMARM_TRAP_ENTRY_H
-+
-+#include <asm/dovetail.h>
-+#include <asm/trace/exceptions.h>
-+
-+#ifdef CONFIG_MMU
-+#ifdef CONFIG_IRQ_PIPELINE
-+/*
-+ * We need to synchronize the virtual interrupt state with the hard
-+ * interrupt state we received on entry, then turn hardirqs back on to
-+ * allow code which does not require strict serialization to be
-+ * preempted by an out-of-band activity.
-+ */
-+static inline unsigned long fault_entry(int exception, struct pt_regs *regs)
-+{
-+	unsigned long flags;
-+
-+	trace_ARM_trap_entry(exception, regs);
-+
-+	flags = hard_local_save_flags();
-+
-+	/*
-+	 * The companion core must demote the current context to
-+	 * in-band stage if running oob on entry.
-+	 */
-+	mark_trap_entry(exception, regs);
-+
-+	if (raw_irqs_disabled_flags(flags)) {
-+		stall_inband();
-+		trace_hardirqs_off();
-+	}
-+
-+	hard_local_irq_enable();
-+
-+	return flags;
-+}
-+
-+static inline void fault_exit(int exception, struct pt_regs *regs,
-+			      unsigned long flags)
-+{
-+	WARN_ON_ONCE(irq_pipeline_debug() && hard_irqs_disabled());
-+
-+	/*
-+	 * We expect kentry_exit_pipelined() to clear the stall bit if
-+	 * kentry_enter_pipelined() observed it that way.
-+	 */
-+	mark_trap_exit(exception, regs);
-+	trace_ARM_trap_exit(exception, regs);
-+	hard_local_irq_restore(flags);
-+}
-+
-+#else /* !CONFIG_IRQ_PIPELINE */
-+
-+#define fault_entry(__exception, __regs)		\
-+	do {						\
-+		(void)(__exception);			\
-+		(void)(__regs);				\
-+	} while (0)
-+
-+#define fault_exit(__exception, __regs, __flags)	\
-+	do {						\
-+		(void)(__exception);			\
-+		(void)(__regs);				\
-+		(void)(__flags);			\
-+	} while (0)
-+
-+#endif /* !CONFIG_IRQ_PIPELINE */
-+
-+#else /* CONFIG_MMU */
-+unsigned long fault_entry(int exception, struct pt_regs *regs)
-+{
-+	return 0;
-+}
-+
-+static inline void fault_exit(int exception, struct pt_regs *regs,
-+			      unsigned long combo)
-+{ }
-+#endif /* !CONFIG_MMU */
-+
-+#endif
-diff --git a/arch/arm/mm/fault.c b/arch/arm/mm/fault.c
-index 7a5c0a5a825df5f76eec6aa341d910c3efa63f88..60982ec0627464dd389e1c9b106858bc92ccf260 100644
---- a/arch/arm/mm/fault.c
-+++ b/arch/arm/mm/fault.c
-@@ -24,6 +24,7 @@
- #include <asm/system_info.h>
- #include <asm/tlbflush.h>
- #include <asm/dovetail.h>
-+#include <asm/trap_entry.h>
- #define CREATE_TRACE_POINTS
- #include <asm/trace/exceptions.h>
- 
-@@ -38,61 +39,6 @@ bool copy_from_kernel_nofault_allowed(const void *unsafe_src, size_t size)
- 	return addr >= TASK_SIZE && ULONG_MAX - addr >= size;
- }
- 
--#ifdef CONFIG_IRQ_PIPELINE
--/*
-- * We need to synchronize the virtual interrupt state with the hard
-- * interrupt state we received on entry, then turn hardirqs back on to
-- * allow code which does not require strict serialization to be
-- * preempted by an out-of-band activity.
-- */
--static inline
--unsigned long fault_entry(int exception, struct pt_regs *regs)
--{
--	unsigned long flags;
--
--	trace_ARM_trap_entry(exception, regs);
--
--	flags = hard_local_save_flags();
--
--	/*
--	 * The companion core must demote the current context to
--	 * in-band stage if running oob on entry.
--	 */
--	mark_trap_entry(exception, regs);
--
--	if (raw_irqs_disabled_flags(flags)) {
--		stall_inband();
--		trace_hardirqs_off();
--	}
--
--	hard_local_irq_enable();
--
--	return flags;
--}
--
--static inline
--void fault_exit(int exception, struct pt_regs *regs,
--		unsigned long flags)
--{
--	WARN_ON_ONCE(irq_pipeline_debug() && hard_irqs_disabled());
--
--	/*
--	 * We expect kentry_exit_pipelined() to clear the stall bit if
--	 * kentry_enter_pipelined() observed it that way.
--	 */
--	mark_trap_exit(exception, regs);
--	trace_ARM_trap_exit(exception, regs);
--	hard_local_irq_restore(flags);
--}
--
--#else	/* !CONFIG_IRQ_PIPELINE */
--
--#define fault_entry(__exception, __regs)  ({ 0; })
--#define fault_exit(__exception, __regs, __flags)  \
--	do { (void)(__flags); } while (0)
--
--#endif	/* !CONFIG_IRQ_PIPELINE */
--
- /*
-  * This is useful to dump out the page tables associated with
-  * 'addr' in mm 'mm'.
-@@ -165,15 +111,6 @@ void show_pte(const char *lvl, struct mm_struct *mm, unsigned long addr)
- 	pr_cont("\n");
- }
- #else					/* CONFIG_MMU */
--unsigned long fault_entry(int exception, struct pt_regs *regs)
--{
--	return 0;
--}
--
--static inline void fault_exit(int exception, struct pt_regs *regs,
--			unsigned long combo)
--{ }
--
- void show_pte(const char *lvl, struct mm_struct *mm, unsigned long addr)
- { }
- #endif					/* CONFIG_MMU */
+---
+Florian Bezdeka (6):
+      arm: irq_pipeline: Fix fault_{entry,exit} bypass in do_kernel_address_page_fault
+      arm: irq_pipeline: Move fault_entry() fault_exit() into separate header
+      arm: irq_pipeline: Fix fault_{entry,exit} bypass in hw_breakpoint_pending
+      arm: irq_pipeline: Fix ordering problem in alignment trap handling
+      dovetail: Decouple kernel/irq/pipeline.c from irqstate bit definitions
+      arm: irq_pipeline: Fix IRQ state checking in trap entry paths
 
+ arch/arm/include/asm/dovetail.h         |  1 +
+ arch/arm/include/asm/irq_pipeline.h     | 41 +++++++++++++----
+ arch/arm/include/asm/trace/exceptions.h |  3 +-
+ arch/arm/include/asm/trap_entry.h       | 82 +++++++++++++++++++++++++++++++++
+ arch/arm/kernel/hw_breakpoint.c         |  8 +++-
+ arch/arm/mm/alignment.c                 |  8 ++--
+ arch/arm/mm/fault.c                     | 73 +++--------------------------
+ arch/arm64/include/asm/irq_pipeline.h   |  9 ++--
+ kernel/irq/pipeline.c                   | 20 +++-----
+ 9 files changed, 145 insertions(+), 100 deletions(-)
+---
+base-commit: 01b2d00fe7ab9fc7663219e4c75ab205a257832c
+change-id: 20260609-wip-flo-v7-1-arm-pipelining-fixes-9428542777f6
+
+Best regards,
 -- 
-2.54.0
+Florian Bezdeka <florian.bezdeka@siemens.com>
 
