@@ -1,36 +1,37 @@
-Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0FEB3DBD49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E278E3DBD4D
 	for <xenomai@lists.linux.dev>; Wed, 10 Jun 2026 09:20:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.228
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781083228; cv=none; b=mKVRqeOLYN0f8J+fzpd7igu63pBEfMmhllic5qeI9o5G2kHjEU3nYBK3f31dmrfjY+A1ogCpHoyfDyE3FmVXtHQoLTva3iMCSYl8jvyD2mrowB5aUcoOli5GbACEl5KvHlYrgGYWNUBi9eV1iTd0DdHNuJXqzAWrSDAcmJtMa/Q=
+	t=1781083229; cv=none; b=f324rhZZYQEQy18HzvuOX6rdgjU+4hl6FGlP/6r7uVAlgEOMjEyM7JL6xKcXa7wdFQ3PK0Z5fktJwS3MJ1GOLxuTLmcma92dFAlQI60eGgiAPurj3KKPP3D2HL8EHPlyouzjYrXKarEsnaT1QnyeFc310N7p3g5tvKXSrHrJ4J8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781083228; c=relaxed/simple;
-	bh=j9rWthIk085YO84Z95eDtiRJWahJjRRwQLpYiMu1qEk=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=RErs5DpvGdro+U3+BXDJ8cMTAz5O8Ea09XY4XfxDK/lDg6rCDAXjQDcsiaD+PrSfMZHAMCPpY+xZy+roPeRZIwTHIRbS3RHPrpNJ05bNomS4Jl52+hoc1Q+083aFKDWpmBArQtlvWVy23xzfa8xiuNF6Vu7T+GJVrFvjtQU7rME=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=qcxTVBc0; arc=none smtp.client-ip=185.136.65.228
+	s=arc-20240116; t=1781083229; c=relaxed/simple;
+	bh=cpIMWyS00MB5y4Wy1wxzU/WC1LCk8JuZidawNJr5i+I=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=Q4tTp4WPduYk/GA72MBRBxCY0pRTVWrIGqBK8d3eEi0CA3k8r5U9eKgkZz4y5/vtnUCrgq02tiPD6tV6sRv/iG27me8TstGgqszw8/djyJMFGXhK2HWH7SP6t7VcD/KXjoZ4zrDintnp8+p4WN/Pa8bxqPm8PuKKEyW8fuw4EWk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=qo91dzEh; arc=none smtp.client-ip=185.136.65.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="qcxTVBc0"
-Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 202606100920139753f8c6850002079d
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="qo91dzEh"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 202606100920130a822fbb2a00020707
         for <xenomai@lists.linux.dev>;
         Wed, 10 Jun 2026 11:20:13 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
- bh=1ul8GZZN9RZRDzlQnDXUpagfcQjOmRPcUjI46MROXPk=;
- b=qcxTVBc0Sbd9dwccHyQlC+pegUs6rHjsNB2BhhxLEmw9iElzXN4MhEoKZXqfMr4Y+6g/ca
- Nvv8Q8gXP1na1sySVrMIU0V+0fSHvf62cLEtbr8nGiCBZ9Y/RR64cHg0CWUilVv4C17pBd2q
- MMy2cHRyS0OEsaBTUFFWTav/Ekl15nCWckB50DViHqSaNNXlA815D3jvCw6OtSYzMRzaS57g
- 9LnseHXygmBSKNGUZWS5kL6DxML66YG922oYuzns/okdZ9lT/EUatR5iBgS4bDtt6WTk3j7k
- QJ0+ON0rtwbZk0w8pG6LF+dmW6RS55mmVUUMyGltXYClZF3DEwOI9RxQ==;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=FryUKitzJHLC3a4AvoKOlZk2um0Mr0Ac0fHSkSgWMb0=;
+ b=qo91dzEhxWL2pH/W/VDA28wbvRRIaFFH8ipAIW/7PxJA1Fg5wKFrcmBKUt/H3D2r0wQaAA
+ +/hahsJxozWUi2PbYnw5mvTP3ooL8yebs/BoAOjVAF5O7S2bR6TUQZPWijrR6xJXnbTM669S
+ hUmaJPxH9eIlq58lg/5YLrfNZpgYdV7fQ+30KVLBDZJzlKPnlVPaWX8ljk+l9lCNA5ln//G/
+ 9w+hQIO2gMr1HrtIxsTR7FXpg47Jj3X+Qwbp5vvZxjeMl7I9QRev419oxzIA8y5cHyGVarL0
+ mt59k8COeUdknJkHMHFiAWPKjaXFC4tpYOGdcZ9maxPHVsN1oWvnkUcQ==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH Dovetail v2 0/6] Dovetail: arm: Finalize review results
-Date: Wed, 10 Jun 2026 11:20:12 +0200
-Message-Id: <20260610-wip-flo-v7-1-arm-pipelining-fixes-v2-0-62c9c477f8f2@siemens.com>
+Date: Wed, 10 Jun 2026 11:20:13 +0200
+Subject: [PATCH Dovetail v2 1/6] arm: irq_pipeline: Fix fault_{entry,exit}
+ bypass in do_kernel_address_page_fault
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -39,11 +40,9 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAEwsKWoC/42NQQ6CMBAAv2L27JqlIBVPHvyF4dDgAptA27Ska
- gh/t8EPeJxMMrNC5CAc4XpYIXCSKM5mUMcDdKOxA6M8M4MiVVNNDb7EYz85TBoLNGFGL54nsWI
- H7OXNEZtKXc6V0lr3NeSOD7yLnHnA3SVejEzQZjNKXFz47PNU7P73KeiPTyqQsGRNpqSyITa3K
- DyzjafOzdBu2/YFfpIHct4AAAA=
-X-Change-ID: 20260609-wip-flo-v7-1-arm-pipelining-fixes-9428542777f6
+Message-Id: <20260610-wip-flo-v7-1-arm-pipelining-fixes-v2-1-62c9c477f8f2@siemens.com>
+References: <20260610-wip-flo-v7-1-arm-pipelining-fixes-v2-0-62c9c477f8f2@siemens.com>
+In-Reply-To: <20260610-wip-flo-v7-1-arm-pipelining-fixes-v2-0-62c9c477f8f2@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, 
  Tobias Schaffner <tobias.schaffner@siemens.com>, 
@@ -51,53 +50,51 @@ Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi Philippe,
+In case do_kernel_address_page_fault() was entered over supervisor mode
+the fault_{entry,exit} machinery was bypassed. As a result the inband
+IRQ mask might have been touched from the oob stage.
 
-This is the first try to fully process the feedback on the
-interrupts_enabled() issue mentioned in the former patch series.
-
-Input welcome.
-
-I tried hard to keep everything easy, but changing the current
-implementation triggered a lot of unexpected include / build problems, 
-especially within the arch/arm/include/asm folder.
-
-Testing looks good, I'm going to schedule a full CI run now.
-
-To: xenomai@lists.linux.dev
-Cc: Philippe Gerum <rpm@xenomai.org>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Tobias Schaffner <tobias.schaffner@siemens.com>
+There is another problem with interrupts_enabled() in the supervisor
+mode code path. That one will be addressed in a separate patch.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
-Changes in v2:
-- Resend. Forgot the list...
+ arch/arm/mm/fault.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
----
-Florian Bezdeka (6):
-      arm: irq_pipeline: Fix fault_{entry,exit} bypass in do_kernel_address_page_fault
-      arm: irq_pipeline: Move fault_entry() fault_exit() into separate header
-      arm: irq_pipeline: Fix fault_{entry,exit} bypass in hw_breakpoint_pending
-      arm: irq_pipeline: Fix ordering problem in alignment trap handling
-      dovetail: Decouple kernel/irq/pipeline.c from irqstate bit definitions
-      arm: irq_pipeline: Fix IRQ state checking in trap entry paths
+diff --git a/arch/arm/mm/fault.c b/arch/arm/mm/fault.c
+index 49f5d628c4c9a91a3e879af0d541fd76665d78fe..7a5c0a5a825df5f76eec6aa341d910c3efa63f88 100644
+--- a/arch/arm/mm/fault.c
++++ b/arch/arm/mm/fault.c
+@@ -382,6 +382,8 @@ do_kernel_address_page_fault(struct mm_struct *mm, unsigned long addr,
+ {
+ 	unsigned long irqflags;
+ 
++	irqflags = fault_entry(ARM_TRAP_ACCESS, regs);
++
+ 	if (user_mode(regs)) {
+ 		/*
+ 		 * Fault from user mode for a kernel space address. User mode
+@@ -391,9 +393,7 @@ do_kernel_address_page_fault(struct mm_struct *mm, unsigned long addr,
+ 		 * Note that __do_user_fault() will enable interrupts.
+ 		 */
+ 		harden_branch_predictor();
+-		irqflags = fault_entry(ARM_TRAP_ACCESS, regs);
+ 		__do_user_fault(addr, fsr, SIGSEGV, SEGV_MAPERR, regs);
+-		fault_exit(ARM_TRAP_ACCESS, regs, irqflags);
+ 	} else {
+ 		/*
+ 		 * Fault from kernel mode. Enable interrupts if they were
+@@ -409,6 +409,8 @@ do_kernel_address_page_fault(struct mm_struct *mm, unsigned long addr,
+ 		__do_kernel_fault(mm, addr, fsr, regs);
+ 	}
+ 
++	fault_exit(ARM_TRAP_ACCESS, regs, irqflags);
++
+ 	return 0;
+ }
+ 
 
- arch/arm/include/asm/dovetail.h         |  1 +
- arch/arm/include/asm/irq_pipeline.h     | 41 +++++++++++++----
- arch/arm/include/asm/trace/exceptions.h |  3 +-
- arch/arm/include/asm/trap_entry.h       | 82 +++++++++++++++++++++++++++++++++
- arch/arm/kernel/hw_breakpoint.c         |  8 +++-
- arch/arm/mm/alignment.c                 |  8 ++--
- arch/arm/mm/fault.c                     | 73 +++--------------------------
- arch/arm64/include/asm/irq_pipeline.h   |  9 ++--
- kernel/irq/pipeline.c                   | 20 +++-----
- 9 files changed, 145 insertions(+), 100 deletions(-)
----
-base-commit: 01b2d00fe7ab9fc7663219e4c75ab205a257832c
-change-id: 20260609-wip-flo-v7-1-arm-pipelining-fixes-9428542777f6
-
-Best regards,
 -- 
-Florian Bezdeka <florian.bezdeka@siemens.com>
+2.54.0
 
