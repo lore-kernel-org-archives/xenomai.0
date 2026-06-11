@@ -1,109 +1,203 @@
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EA9C38F25F
-	for <xenomai@lists.linux.dev>; Thu, 11 Jun 2026 08:53:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.193
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8B51223DEA
+	for <xenomai@lists.linux.dev>; Thu, 11 Jun 2026 13:46:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781168029; cv=none; b=OATjN5Hu3TV6DgNJ7Z+p+pRiK1g1StmTgu6EO/oVux6y++y/x9f7/JuNsvo1y7P8EkyG6o4mkKN1zzZsgdKHQnGaZxs0fGbl24Zfpc9zCdBdExLVsJVBWT/eyn2spn29PCgpRQ5rf72yauAH9kfzHihAZcqSWcX2J6jE4GHK/rM=
+	t=1781185618; cv=none; b=NZujdWVqZGBrsstaksyzOGOz+4ElbINW47QJeIoJ6OR+7At0uvl26DrATpZP2SRLApEhKOlzYbVZi7OXe+7KFgpBtnOd5uxiSYn+O8Ff70RxpauLCLa0s1ln9cq3NkWsIghZIUMDrxxwVosPeC5F8wmaCDJHzWLbeKc1fn8TxHw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781168029; c=relaxed/simple;
-	bh=AwvGWPFW2JxNYTl553aLUoWh6fMQkLQ75WCaL0ePB30=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=SvsFKGHvmFJbY3WiueggX3HH6odJhqDiTYei0oQQq8x5E3IPPjy8J0keqgskzkSKhg0zaJk4473AkJZ0QZ+jJz/lUmQQBvPDzJ6t1Q058BgkRVlZgbJupWXYvkKlAugk3LlEGmNCnz6OaTOqj8RBw/abXiBBj1oxI572taYiogE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=CywJN9Ur; arc=none smtp.client-ip=217.70.183.193
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1781185618; c=relaxed/simple;
+	bh=qWpmBBFjeRhYavUdwxhNjdabfswG1a7ygIwUfm8+r8E=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=tVE2raSENF4cpYgua950CqtcFZSHgrSLFbe7ZP/5ZrC4iI1/sNxsD+SAsJ6d60l9HMYzRYi/FDWQDArYtdqHk9MEFGv/l4IC4uSHM5fFwn4dpTZQ+FbHTDbN/56Ivn9IUuIaYC0CUmzvMJ/1IXgbvMIjjpZSawAx3vTdjfAThLw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=efgBHN61; arc=none smtp.client-ip=185.136.65.225
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="CywJN9Ur"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 801843EBCA;
-	Thu, 11 Jun 2026 08:53:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1781168019;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=eFyo/2AWEVpEjytqRnfoQfzfDwAw6HS9r9TaSOJBKHc=;
-	b=CywJN9UrUiyy+l8k/jhgFrSnf6EuFG6xzE+TQwdCoySgz0wi5T+/XsNGTF3pTlQyrJ/6Ov
-	kOJklbF8DcJgdYJ/SEbwkENuf792ahRVUPeZoSH3hsf1IjhYd7YPAOmYwjoCNMZQfuEJ6k
-	vAsl4SsfjsxQynnRwCU1DiGvsGm/iB/uIfqiD5LaWRlYq0D+OWpa2viaMQWS41JgT8vmMu
-	NGndI2HWpGAKVJRIYtvjoLfrh6A8oiUdRS/mRWWlHavPZ58i9wWUM+nt1+1Lwm8gdZszOM
-	uNOcK+CfP11R1onsvq7O9hcGb7AvpVTPT2Ij3KP47ku51KD2ZqNe6Zna4ly8rA==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: SCHED_SPORADIC in Xenomai 3
-In-Reply-To: <2becb808-b1ef-4d3e-b1e7-121697cef154@siemens.com> (Jan Kiszka's
-	message of "Thu, 11 Jun 2026 09:56:02 +0200")
-References: <19c8bc29-9eb5-4265-931a-1cc5c34ba1ac@siemens.com>
-	<5bb1aace-8083-400b-9e74-5a047873a1ed@siemens.com>
-	<c5761187-9689-45b1-9527-89cc8a5b2763@siemens.com>
-	<2227cdf6-d2cc-4f5a-87ab-d09861d4ce26@siemens.com>
-	<30be9f34-4fd0-47fc-932f-70970217acb0@siemens.com>
-	<87y0glbjp6.fsf@xenomai.org>
-	<2becb808-b1ef-4d3e-b1e7-121697cef154@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Thu, 11 Jun 2026 10:53:36 +0200
-Message-ID: <87mrx1bgq7.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="efgBHN61"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20260611134645baf09eedb000020733
+        for <xenomai@lists.linux.dev>;
+        Thu, 11 Jun 2026 15:46:45 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=om+FH8VDhv480ZMl2/fN5cuMppCArcGUmhzdeW+tTbE=;
+ b=efgBHN61T3XVgoWC9LP+56UreuHUcK9XWruV/wHK6AajLz3I+8bqCKn0sD6S63QtrI7sB4
+ xDIa7kYUycmJsfeG8H51P5zpSCIBEkPojnN+EzUd4MInIZFd0x1I66iynjhBxxqUjXPsl9lX
+ PwMyx7tdHeSlmHfmL76reoK3shdJFVsO2UwS6asVgEjgJadREhsfc8P8zDOVy0qnln1uIH1Z
+ 4P1Ul7Px/BtPs2GnD9ishaeuhUdDCTtsWe9spLr+DxwNrbbonJzF2NIivdFsdmvwUNdo255q
+ 5XDYDpyZmSwGd1F9YQzI1QEIiOFN3bEgULYAUYttECYk8SP5O2L1gMaw==;
+Message-ID: <0a76369a44e33ca1c8c27c5c2690770b4668be7c.camel@siemens.com>
+Subject: Re: [PATCH RFC Dovetail 7.1] arm64: irq_pipeline: 7.1 specific
+ adjustments
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
+Date: Thu, 11 Jun 2026 15:46:44 +0200
+In-Reply-To: <20260611134057.2267177-1-florian.bezdeka@siemens.com>
+References: <20260611134057.2267177-1-florian.bezdeka@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: dmFkZTGM7vYQ3eGXKDRbIytoX5iZwBnYT9+alb9iJmTLSW8C6nXfUL58nZ68GZEZ3A393j8HjXEH8a1SbYKaIm2rrUpEhDDdHLmUsn7BGl+jcXRF1/v1GR+02yStBVs6QRZEcDSqfDSYNuX4D2f2XSMbYATA8kChYyZPz5DpDOiqz3X49pfGzepKkjHgjdmkaXH4bRBS/UkT28Edr+ZWG9Y10w5vuOwus4AYOvnTS+WlBkXptA8Wguow/iw6UWv2WwY8nmioKFwBDvqA/se/yUqi/CfTDBGHxZU3j8gNcuFbQ6ylKFWi3/Lw/XYp5Wdblk028X13VUVqDeUtmy7q5alMdFRKsUtEvWSCWOAspD4KtvMC7SeFE3L8vAkKjqO7IITFEshZ5lgN7jMMCKzrU6rd86XgzUkF1GVjMVfTDiuBWzt0ciG5woNV02uwZNggM51e9FXcwMeaUXU+0ecmhLZniWMLPXB+GBoc9v5DZdXDSXTpsFX/2K/R35pIo4BvhovLzXQqGEyQWq3uH+rupbaMG9U2KC3M7kkyH5runj/SwwRhihiFSLiiS9KUE7N9vi1JsYjPO4cL+T7nnadGayK173Fae0wgKeSp+d6UT/Vv+7ek96fywlvfQohz0yL/x7PGmAKRYis5BgD0eq8FuK7JzUC6KqgdSqSfylWJY6KMwZtrww
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+On Thu, 2026-06-11 at 15:40 +0200, Florian Bezdeka wrote:
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>=20
+> Hi Philippe,
+>=20
+> final tests are still running but the local tests are looking good.
+> The EVL testsuite triggered a WARN_ONCE() - see process.c below - which
+> caused the systems to hang.
+>=20
+> Turned out the arm64 entry code got some refactorings that needed some
+> adjustments - pipline wise.
+>=20
+> I would fold the following into 7.1, so could you please double check?
+> Thanks!
+>=20
+>  arch/arm64/kernel/entry-common.c | 35 ++++++++++++++++++++++++++++----
+>  arch/arm64/kernel/process.c      |  6 +++---
+>  include/linux/irq-entry-common.h |  3 +++
+>  3 files changed, 37 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/arch/arm64/kernel/entry-common.c b/arch/arm64/kernel/entry-c=
+ommon.c
+> index b0e141266349..97f6d6904a5d 100644
+> --- a/arch/arm64/kernel/entry-common.c
+> +++ b/arch/arm64/kernel/entry-common.c
+> @@ -166,7 +166,16 @@ static noinstr irqentry_state_t arm64_enter_from_ker=
+nel_mode(struct pt_regs *reg
+>  static void noinstr arm64_exit_to_kernel_mode(struct pt_regs *regs,
+>  					      irqentry_state_t state)
+>  {
+> -	local_irq_disable();
+> +	if (irqs_pipelined()) {
+> +		hard_local_irq_disable();
+> +		if (running_inband()) {
+> +			stall_inband_nocheck();
+> +			trace_hardirqs_off();
+> +		}
+> +	} else {
+> +		local_irq_disable();
+> +	}
+> +
+>  	irqentry_exit_to_kernel_mode_preempt(regs, state);
+>  	local_daif_mask();
+>  	mte_check_tfsr_exit();
+> @@ -175,7 +184,14 @@ static void noinstr arm64_exit_to_kernel_mode(struct=
+ pt_regs *regs,
+> =20
+>  static __always_inline void arm64_syscall_enter_from_user_mode(struct pt=
+_regs *regs)
+>  {
+> -	enter_from_user_mode(regs);
+> +	if (running_inband()) {
+> +		WARN_ON_ONCE(irq_pipeline_debug() && irqs_disabled());
+> +		stall_inband_nocheck();
+> +		enter_from_user_mode(regs);
+> +		trace_hardirqs_on();
+> +		unstall_inband_nocheck();
+> +	}
 
-> On 11.06.26 09:49, Philippe Gerum wrote:
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->> 
->>> diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
->>> index d527b6be2c..6dfbf83220 100644
->>> --- a/kernel/cobalt/sched.c
->>> +++ b/kernel/cobalt/sched.c
->>> @@ -895,6 +895,7 @@ static inline void do_lazy_user_work(struct xnthread *curr)
->>>  
->>>  int ___xnsched_run(struct xnsched *sched)
->>>  {
->>> +	struct xnsched_class *prev_schedclass __maybe_unused;
->>>  	bool switched = false, leaving_inband;
->>>  	struct xnthread *prev, *next, *curr;
->>>  	spl_t s;
->>> @@ -933,6 +934,13 @@ int ___xnsched_run(struct xnsched *sched)
->>>  
->>>  	prev = curr;
->>>  
->>> +#ifdef CONFIG_XENO_OPT_SCHED_CLASSES
->>> +	prev_schedclass = prev->sched_class;
->>> +	if (prev_schedclass->weight < next->sched_class->weight &&
->>> +	    prev_schedclass->sched_out)
->>> +		prev_schedclass->sched_out(prev);
->>> +#endif
->> 
->> I would call the scheduling out hook unconditionally, the sched class
->> has all the information required to sort this out, do the right thing,
->> which the generic scheduler does not.
->
-> That would mean moving the accounting out of the pick callback
-> unconditionally as well - leaving some smaller synergies on the road.
+Should enter_from_user_mode() be called while the inband stage is
+stalled, or after unstalling? The exit part is called while being
+stalled, so I kept that in sync, but I'm not 100% sure.
 
-This hook would have to be called when the current thread blocks, which
-should not be filtered out by the class weight check. Moreover, if next
-!= curr, we know for sure that curr is either blocked, yields on a
-round-robin tick or gets preempted on priority basis. In the latter
-case, the sched class weight is accounted for when picking next. If
-current is still runnable, prev_schedclass->weight has to be lower than
-next->sched_class->weight for preemption to take place anyway.
+> +
+>  	mte_disable_tco_entry(current);
+>  	sme_enter_from_user_mode();
+>  }
+> @@ -191,6 +207,7 @@ static __always_inline void arm64_enter_from_user_mod=
+e(struct pt_regs *regs)
+>  		WARN_ON_ONCE(irq_pipeline_debug() && irqs_disabled());
+>  		stall_inband_nocheck();
+>  		enter_from_user_mode(regs);
+> +		rseq_note_user_irq_entry();
+>  		trace_hardirqs_on();
+>  		unstall_inband_nocheck();
+>  	}
+> @@ -226,8 +243,18 @@ static __always_inline void arm64_syscall_exit_to_us=
+er_mode(struct pt_regs *regs
+>   */
+>  static __always_inline void arm64_exit_to_user_mode(struct pt_regs *regs=
+)
+>  {
+> -	local_irq_disable();
+> -	irqentry_exit_to_user_mode_prepare(regs);
+> +	if (irqs_pipelined()) {
+> +		hard_local_irq_disable();
+> +		if (running_inband()) {
+> +			stall_inband_nocheck();
+> +			trace_hardirqs_off();
+> +			irqentry_exit_to_user_mode_prepare(regs);
+> +		}
+> +	} else {
+> +		local_irq_disable();
+> +		irqentry_exit_to_user_mode_prepare(regs);
+> +	}
+> +
+>  	local_daif_mask();
+>  	sme_exit_to_user_mode();
+>  	mte_check_tfsr_exit();
+> diff --git a/arch/arm64/kernel/process.c b/arch/arm64/kernel/process.c
+> index b1eac5fd75c1..0047d0bdedd9 100644
+> --- a/arch/arm64/kernel/process.c
+> +++ b/arch/arm64/kernel/process.c
+> @@ -748,8 +748,8 @@ static inline void debug_switch_state(void)
+>  		unsigned long pmr_expected =3D GIC_PRIO_IRQOFF;
+>  		unsigned long pmr_actual =3D read_sysreg_s(SYS_ICC_PMR_EL1);
+> =20
+> -		WARN_ONCE(daif_actual !=3D daif_expected ||
+> -			  pmr_actual !=3D pmr_expected,
+> +		WARN_ONCE(running_inband() && (daif_actual !=3D daif_expected ||
+> +			  pmr_actual !=3D pmr_expected),
+>  			  "Unexpected DAIF + PMR: 0x%lx + 0x%lx (expected 0x%lx + 0x%lx)\n",
+>  			  daif_actual, pmr_actual,
+>  			  daif_expected, pmr_expected);
+> @@ -757,7 +757,7 @@ static inline void debug_switch_state(void)
+>  		unsigned long daif_expected =3D DAIF_PROCCTX_NOIRQ;
+>  		unsigned long daif_actual =3D read_sysreg(daif);
+> =20
+> -		WARN_ONCE(daif_actual !=3D daif_expected,
+> +		WARN_ONCE(running_inband() && daif_actual !=3D daif_expected,
+>  			  "Unexpected DAIF value: 0x%lx (expected 0x%lx)\n",
+>  			  daif_actual, daif_expected);
 
-IOW, the following change would be appropriate:
+That was the warning triggered by CI, that stalled the system. Is that
+expected? I'm quite sure that in the oob case the DAIF flags are
+different, but is WARN_ONCE() expected to completely halt the system?
 
->>> +	    if (prev_schedclass->sched_out)
->>> +		prev_schedclass->sched_out(prev);
 
--- 
-Philippe.
+>  	}
+> diff --git a/include/linux/irq-entry-common.h b/include/linux/irq-entry-c=
+ommon.h
+> index 58c28b2a8f2b..61a8e129e71f 100644
+> --- a/include/linux/irq-entry-common.h
+> +++ b/include/linux/irq-entry-common.h
+> @@ -600,6 +600,9 @@ irqentry_exit_to_kernel_mode_after_preempt(struct pt_=
+regs *regs, irqentry_state_
+>  {
+>  	bool synchronized;
+> =20
+> +	if (running_oob())
+> +		return;
+> +
+
+The enter/exit code moved one layer down, from irqentry_enter() to
+irqentry_enter_from_kernel_mode(), so this code needs the oob check as
+well.
+
+>  	instrumentation_begin();
+>  	synchronized =3D irqentry_syncstage(state);
+> =20
+> --=20
+> 2.54.0
