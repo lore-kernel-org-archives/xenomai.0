@@ -1,49 +1,49 @@
-Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011002.outbound.protection.outlook.com [52.101.70.2])
+Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010017.outbound.protection.outlook.com [52.101.84.17])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ADD7E30B51D
-	for <xenomai@lists.linux.dev>; Wed, 10 Jun 2026 18:17:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.2
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5579333A71B
+	for <xenomai@lists.linux.dev>; Thu, 11 Jun 2026 05:39:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.84.17
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781115454; cv=fail; b=biOr55BUDTRlRNU9SxEA5TqtSmYLiBQv0CPNdWedrkyAmDxKdZopcjgwNfSO6IB03u8F6A43tgQLIg53N9iw7v454OpzWkagHfYvexbxCNL6Fe+b/vInH/649xkmm28hIwRpnR0t1cTcSg8rBPgPXbSPyClX4cz3OdeC5LxPt6o=
+	t=1781156354; cv=fail; b=dNDSLWNplzr9yCbL1I1rjtqYbiDZ5dlVllztI1daJEQi2Tw9ZypZUJlgNdVHgwt2FLSj7i8j4T255yeYEOyrQULjR7hpsFuZpQP9obv0l6pfK3SaM+j15N/xL9TfBEsVL6GJpjF2xCewyBo6acqL2Y21bt26EzdRu7Askaji0p4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781115454; c=relaxed/simple;
-	bh=Xu5zv/KDJjPXaSQ/N40vjJdrjrUivdiQ6g+QpFCyvgQ=;
+	s=arc-20240116; t=1781156354; c=relaxed/simple;
+	bh=tsPk7OHTQ36CdDBHtLbwKye+r047ig0SSwhIbvh8Cno=;
 	h=Message-ID:Date:Subject:From:To:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=sygN/t1ljhVRwT9I0RJVqoBnvCL+VXSQoP7vLO6nyakEFIKql66JcN+vvEAJBjhHML6+hz+DCGzXzC4P9PkDZOsvAOhx8kyCzhWfZBZmsSsjvGaBABLc7BMYsqlFZqDJp04jLPJEPYQJQzWB3xoC22yLXM0WzNUSUQ4RweUbVDs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=P546Qg9+; arc=fail smtp.client-ip=52.101.70.2
+	 Content-Type:MIME-Version; b=WRWkDCIeIatJrvM+fEDx+bG7pqCVRlqMuJnvymvD5aGpWSkpibb1dvFSFVkR4BMok8db/J5bSJKdrwvUj5jRxFhXj7qIdq3/fpEbDAccx30qkvHXaFpxTd8PLvK1BVHzF0yiA3+76OWgunmdfi12ViTVNvwBgsrh4BAhS9iwXao=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=ZTHi+USW; arc=fail smtp.client-ip=52.101.84.17
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="P546Qg9+"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="ZTHi+USW"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=hyWEn8ul9Cn2BHa0eoWJYS5SVCLojqzW9o3jSVodfK6eHwNde3u9WQ9e2lBtUuHja7AnHQ4Zi4vfyqgPkYcwNL+Dh6uuXdXT1+8cUVymYS6OUXmSHydYlEDnuoAyP8urItQ1l86WqATH4vmK9GnKy30jWhuLtdeNvoRjnfjeDqtsIx+omdH/jMFyJY3CWQF6aIOpoTedXXYMt5tLy6TV09eHIijeDjqhW0GWxkj32reLvGx1tcsRlf3sDBF9/+zyI0zym4nZ50hxoJXMT4c6AgdTXYddg7Fo4U0YDP7lL2O22Fm0AnvO1GnAZ34Gv1Ld24clQgsLmc4dJiCduYdncw==
+ b=vAD9ioSbBCwX4FXFmd1KTyuIDjcOIHnbhUAwT4X50CnAd/14E0PzpbrIU9MYI3onnJXJeR+t9AruJtpH2QsSZeLzr2F1Ob1ysIP+SZkVbxLF17vJnQnZBq6tBi+UpYyZ9izvOrmicXsf0i4/ShGwQF4OZQ9n6v66bbBHB9HqFE4zjg+E1sOaXoRXEYj+wm0okQFHrqqvoeWP28tG1uuwFGGlt/hBwWvOGCCBD1ytiF65N/22QRwgK7WL86CXRIE/kHO/gjOjGEmwdNXHRqXD95Ld/m0DAFf5ThNr+/ai35qc5C6XPPw5uAXlaFcr4pDENO8vob2SmGuVp1pWEI5JxA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=yF3DCh4v65aaZjR9hmh9AkRRwqR/zwbeyUEXbxnt46Y=;
- b=a0fDvDQR3TlZjbnE0ssFJjits2kamkC7FYfSb+zJIP72wQ8BLiODpdliYGMBA7GhTmuAy7jb0Dud8+cDuQGqzTzcn7W23zPtNWC9MGpDGZ1T9092xG1SPGtvfH94he27CbEk3wqooEo4k0Jw3OgdWS/ICKcww4LOlG7NDnJjJeNeepF/YWnUSe2r3pBE3+dVuhv/KL4JoAI65U6FaMHyWhA/9wZCikNeZXin+cD7C2Ssahi3HUX7zwySVS9MxVHswLPs/6x2kLuogPxud5+PVA48DUCiD9PXC8ZeOy2ZXcb+7zQTa/ytTMjGIUl3N1H2Hd85TQUDL2jVjeIn8VnEJg==
+ bh=mGzXLNvM4c6ynsMy6Uv2SPz7pb5HNKMmX7RE+1YlEqA=;
+ b=ZpOS00W/XHpn2RuC1+kJaJYUev8iY2ndIHFZmHw5UJxkxOZw2SVzazD/oFA0eM2Xay5KD2XR+Hsou57RmevWbnjPMjwcwuGtdCro+4ndSFw2xNG7py7DvTvjzZsraf5OWne8+b9lmwSh+Y/XS4R1vv7lh9bn/Xp3SY8LckpziO9bxPx7wuRucFy5fuOsdRUceKiAieF0jmKEC9UJU1Zs5spJwSy8Y0vxe8yDTPoSH3QD5msQqdAKL8BXkBvMDpdhZMBj+nvLNRlReGWSnlurMJbqgt8T1a5GZq81uwOmDsiushlblMPvlHtUrqwYVBwWyZSQjKMI0i11SI6TqvJZsA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yF3DCh4v65aaZjR9hmh9AkRRwqR/zwbeyUEXbxnt46Y=;
- b=P546Qg9+i0ClY32xdNzXz0rfd/SadYjKNirtsyz+rAL1kr6dfm0YIkKjHIYl3kLeFq0VUOby7/HKlo8hDrHi3OQxR2qaldRr+435JXgmJqQkek9mxWweyfwcFVca9i42NSI+8qIH4xeNsvq4XJvIZvyGLqfC0laow4/Xb7fptgThAIj2H5PWr6ii7CALX+gtfOg5Nm+oqsOEwmZU/2xS49AEq2toO3YktRDVbvTw5tGjMfV+miLiu32YIJWM5bhwH5nlA2hQIcKB/NBYpIDNRW/6xdiGboqaXgU8qrceKqakdYZkYDR4FxOucmnTaMw6Y0Rm8m6uEdnQ8FtZ6AVxLA==
+ bh=mGzXLNvM4c6ynsMy6Uv2SPz7pb5HNKMmX7RE+1YlEqA=;
+ b=ZTHi+USWUwf7+k4HGZAljXLsTVuP3AP4x/Lz6LGwTh5vhMaa96jLdfjVgTl1hWyCMeGgZrUW0ZW/GcO+MDQushYxLPEWVcMl8r6/jNOlhOWUT0RYdU0IjIEXYFcq3X4hfGY8UQ1oQ8ulRNGATIQoOW2PDoA68wm5D+eB5ZWMdZhbAP1JdtRFYT8P5dxerTWM1eHDi7duDzyz9DDeLaHIUFxdXIBNALVQ69PuytRGRX3OYekagFNJxKtgtTn2sVDDsDGuWtu17KkR6fTdnu5nhyvVLaNDkRaQyew7KcSIyIEcNmkPXUoHCO3XXSnYmH5U4E4eywW+4m0aW1SxSNYVug==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by AS2PR10MB7072.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:594::13) with
+ by VI0PR10MB9468.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:800:2d1::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.11; Wed, 10 Jun
- 2026 18:17:29 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.11; Thu, 11 Jun
+ 2026 05:38:59 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::be9f:e8ca:ee9:83e1%3]) with mapi id 15.21.0113.011; Wed, 10 Jun 2026
- 18:17:29 +0000
-Message-ID: <2227cdf6-d2cc-4f5a-87ab-d09861d4ce26@siemens.com>
-Date: Wed, 10 Jun 2026 20:17:28 +0200
+ ([fe80::be9f:e8ca:ee9:83e1%3]) with mapi id 15.21.0113.013; Thu, 11 Jun 2026
+ 05:38:59 +0000
+Message-ID: <30be9f34-4fd0-47fc-932f-70970217acb0@siemens.com>
+Date: Thu, 11 Jun 2026 07:38:57 +0200
 User-Agent: Mozilla Thunderbird
 Subject: Re: SCHED_SPORADIC in Xenomai 3
 From: Jan Kiszka <jan.kiszka@siemens.com>
@@ -51,6 +51,7 @@ To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@lists.linux.dev>
 References: <19c8bc29-9eb5-4265-931a-1cc5c34ba1ac@siemens.com>
  <5bb1aace-8083-400b-9e74-5a047873a1ed@siemens.com>
  <c5761187-9689-45b1-9527-89cc8a5b2763@siemens.com>
+ <2227cdf6-d2cc-4f5a-87ab-d09861d4ce26@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
@@ -95,11 +96,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <c5761187-9689-45b1-9527-89cc8a5b2763@siemens.com>
+In-Reply-To: <2227cdf6-d2cc-4f5a-87ab-d09861d4ce26@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR4P281CA0274.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:e6::18) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR4P281CA0055.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:cc::12) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -108,173 +109,405 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AS2PR10MB7072:EE_
-X-MS-Office365-Filtering-Correlation-Id: 77a7395a-74d6-4e2c-7530-08dec71c8852
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|VI0PR10MB9468:EE_
+X-MS-Office365-Filtering-Correlation-Id: 89684cc1-bf35-4c3a-f361-08dec77bbcb9
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|376014|366016|1800799024|55112099003|18002099003|22082099003|3023799007|56012099006|5023799004|11063799006|6133799003|4143699003;
+	BCL:0;ARA:13230040|23010399003|1800799024|366016|376014|3023799007|55112099003|11063799006|5023799004|4143699003|56012099006|6133799003|18002099003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	HOfLekohuygpcr9kE0tiXrgLbp9D/JX15iO+0UU+QRo4FDPOfT56TUpFDKT4scNYdPsYK9XedJBvAKUvMlKNZ1a4ZR7sKpsvgO1n95kzNMMXmQ0DPR5OQqTym41sMMlqg+WLT+PPIzp+/buAzy0B9bnLe7bCfdT17tvrBDOhFkRrNNUEsDG9Ha+X5LOKFZpKDIPh912RysH8UAuk5LKc+rg9IToy7lImFHDnw7svxT82TWAPHnE7n/8Pv+88jtbMXt5Wbi3ka/Vfc6A5uxVMm2ihrm4KjmH3GMRhRPHvzgelzJC7Myji1KY0sjhenF6kadjlLKa9BVzvtDrfIDfFwljrpsHVl6wS6hq34pCJR31Md19Ko4CI+Rem4Q5k6FiOj5sRycjrlCO21+/AOc0rJ6slX6Kt3fGeB3aEs6kH3CiROKWDojUyQ+yMtM72jIbrpkSR1kELofADXbiaUscs7MBaINFBxlzZRcW7AeVfDzmkWJPQGcTuJIRt2yLgyVa7meM5G1oEWIr98srploJsOFhrePxHuuJ/5UlmC6gLdjvNguFBdkvH0vMX0iyusSjaPNtG98/mC0DE3bMT9MTPC9kHCpPbyYGLLcHc103D0sy1Kro01TArMdJ9Tx/zsH3YLvfNl9L9FYgbUlXRJiHxn14nVusq03NHRwD+QFFGqUwz1+EuYTEPEQK5f9PWa2+G
+	rDIsBiauVlioERUa2D11jjVrx1rTnePd3mcjCaspptLFRU80Hf4yymdzvyXYQ+9/FpnJKcBFkKGvbuWjBLVrqO3e6hWznoo8gbpP+LY3g823s8qVmTP0VSkbaBqloNzEQOs97qoqp2kSTShcuHz1b29tilhqTRVyUOVwrcylw5jKnZFhPLIIUd1cCiVwp5E2VIyUnDxdcmZcvz0iCK1pW+iT6hcfmpV66oPlXKX4/cWNSWHEAK3g9rUfqmms2B8FL1cS2MillosZlI3uWkd/nxX+lggltP4P0Yj0MX5ytDnBCjsw3vLcMhhUwpfc96eqY3xw5NKVbAAev/SlErrfj0ycAiaDL1rnKKA+POQz1u7iUQ7h59+hemtCvjau2wh7zDBEl371zTysGr1vvwpbcmlp6dnEhLfYOf1kv2YQfds5iE0Xj2ZssMi4u0CdMnUBljzVnY7Yc/AQbOzgouqq3ATw3zFDh2S5FvUGsSOTG+1a1HWFsmXIJD0ZTBOYJu0WIkWe15uRS0t2b73IZm7GYNJGNqT0Z9f7wEbb8sWE6yuHozvxLZiMtMTPgp+lKKOqNYUJ7GmXGNuGq1JXZoz4boiagRueF2J6c6nL1szwIj7VHFe3yEMDJLnvwcrzAqInR4DZ876A08g80v150kBh+S0x0lF6QehJJVaOKSAcqvBNdQjTGGSHEdcdhLOylj9X
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(366016)(1800799024)(55112099003)(18002099003)(22082099003)(3023799007)(56012099006)(5023799004)(11063799006)(6133799003)(4143699003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(366016)(376014)(3023799007)(55112099003)(11063799006)(5023799004)(4143699003)(56012099006)(6133799003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WVFpYTRKUURIRFdEWFlqSWF0YjE0dlRTc1lMbnJCUXoxMXdFSWpTY1ZBZXc5?=
- =?utf-8?B?REE3bTU2cTJlYUwydkFBWWFrMTlrTlFBWU5xcUk3N05IbjZrQkd4Z2YzL0M3?=
- =?utf-8?B?ZVNXdXBJazdKU1RUb1dSaFF5ZjA5K3BSWUNTR25HNWROZ2RJZUNjejQ0UGpQ?=
- =?utf-8?B?Zk5kYmprWWo1Z0pBQm52WnB1QjhEbC9meUlaajZOYlh6T3ZZbGFkelNBNjlR?=
- =?utf-8?B?S0xCNnZEYmxCSGkvc01KZ1ZUV29pYmlEMTlqckowWlQ5L25wZUpLbVRjSzVs?=
- =?utf-8?B?SjFnYjRLaGY2YkF1UklFRlZHRDhZd0h2V1VGbUJKRktzSkpIL0o5S3o0YVgz?=
- =?utf-8?B?ZWZPZnB6Zk9ROUJMa09oTENHMStOVW0xZFpVRHRLVDZ3RTJlNHp5QnRTWDJS?=
- =?utf-8?B?MExSenpZV1YyOS81dlRxYk52aU5YcEJzREhMWXgrdkxrNFYzWm1GNUlZYUhR?=
- =?utf-8?B?NFg3bHhxYm84VGoxV3dVWncvU2s3VExDbDFGMmpyNHV1OVVOVEdRT3ZvK0ox?=
- =?utf-8?B?MDFVMHZhRU5FV2hZbWUvTXY2OE9BdjFYdnVBZzQ2WllOdGdJNW9lMmdwa0tr?=
- =?utf-8?B?bERmck9iZHJpbWcwK0t0OXFZVmtaTkUvaXN2bFB0a3MwQVpla0JnOUVLZWJS?=
- =?utf-8?B?eWdNYWJCSWVHTlpWbGhrUFNtSkVWQ25NRkd3NktTNjdXNE8wZ002V1MyL2d0?=
- =?utf-8?B?c3dsaFFGUkJESzAzcERUWnR5ZE9CSGI2cE1neVVRNHRCZjlWK25yRU12ZGdZ?=
- =?utf-8?B?TTFJSFB2QTVoQzlWenNlRHlTVmxJdkFvT1A1WVN5QkIxZEQ3K1BoeVN3ZkJ4?=
- =?utf-8?B?aDhSRE5DMjU1aEpxbFI4NWxEeUY5aEpOVENoNDJ0Q3c0b3B2RHRQUFMzeW5D?=
- =?utf-8?B?eFJ1bDlGelZ0TUxiQXBOWUsxdHhDMHJoTHV0REo3SDQwQ205S0cwNDNiWklU?=
- =?utf-8?B?UG9UVHcwNktGWW1wSXdmR0RkeFpiOC8zOFk5R0ZJNzIxWlBRUG9mZGNBcDE3?=
- =?utf-8?B?aXBEcjVTUnBweVQ0WjJPd2I3Z3pTaGM1TzdZYjVoRzFEY29hNzNBcys5bFA5?=
- =?utf-8?B?anNJQVJlNEtHZHNFV3RkN0JyalF0VUFSYlZqb05hS3owdGhsN3V3T1JTMlk4?=
- =?utf-8?B?YlkwMkhpU3V0V1RQSkRmM2doMHh4bWl0cy9VMlpuUVlUS3EvbWdaejdmWWxm?=
- =?utf-8?B?VmJVZ1lZNzVYN0ZWeTlFMTBLVVVtcXUzd3NYMFJNOUZhaWI1VjYwWCsxSkcy?=
- =?utf-8?B?SzFJL1N6Z3BuOGdnR0xKeCtINFJHMGJVajAyZkxXdkY5aVBlOHRnUkhRRFA0?=
- =?utf-8?B?RHhLZ3VBYVduSWdIZ0VUdlY4VG1ySTNuNU1zVGZickRxd01yK0Z6U0psWnU4?=
- =?utf-8?B?OGxBeDJzQ0VmZ1dHT0NHaURvVk5KcHBQam5uRnZVL1R3TEtJUmFWUVBrWUFO?=
- =?utf-8?B?eW9VWXlBWjB6TlU5by9CUGlNa3N5YUREUnhFMG1US20yZkJ6RnpuRWxXVExN?=
- =?utf-8?B?aGZQQUxEZUVoU1VZMWJlckdTRUlxQUlkdDBHV09TSWZXbDhnVkVuME5ScWpW?=
- =?utf-8?B?MlphMTJCVTI1Mk90RGRQRTFFU2phbEs3VVZkRDh1S0x3TnVKUmFvUDlEWlAx?=
- =?utf-8?B?SFVYWldXZ3Fsb0pFZ0RCZnRzR1E1SnFWcFIyU3hHWHJVQ3NwWlcxWm96VG9G?=
- =?utf-8?B?YzgxWlJiSEtiaXJuSXIvU09vamRLTFpoZG1NSFA4emVvSXZaTmk1Q3dFTlMz?=
- =?utf-8?B?ckNQbmx5UUpQZ1gzeVA3Nk1LY25TaUY0dGNFdEQxZXJ5dzNySm9HcC9PT0RD?=
- =?utf-8?B?ckxPYnBuQUpuN0NwQ09ZbWM1b1d2YS96ZFBLSS9OQzRNa1FDN3plampUbzlL?=
- =?utf-8?B?VkhhQVNDOG9UK1FlazMyMC9udUNpSk50TVgwbHVDMHVjMm9HYk5uZjN2UkJE?=
- =?utf-8?B?MEdiNjRId3ZpMUV1ZkdqUTEvdEtNSlFVN3BRcFloaVNzUldsMlplMW1xalFp?=
- =?utf-8?B?QWE4MURWcGFuZUtmbmlZYm9PZlJrdzI0M0xoY05EdktZR1k5cXgvckorMzZw?=
- =?utf-8?B?UjZPcVFqeHlMSHRyR2JMYVY2NVgwcU1oSXRkelpJaVMvZzltUFJjSzZ0MHRG?=
- =?utf-8?B?NEJYcnV6MDRsZXhMV3QraDBKc25aYjZyWUl4bDhKWTNZUXlwaTFndVN4NE0w?=
- =?utf-8?B?YnlqRkdOVjJKamI2Y3g4ZXdhSWtCalhNZURPYTR4dVNDTGxMN3RmalNkb2Vq?=
- =?utf-8?B?UUhoc3RvZlRyMXNObTh2V0c2SWU4czJPd0dkRVBLWVBTNzkvWjQvekc4UkdX?=
- =?utf-8?B?RlRJMnllZkJ5U2d4c3QrMHJ2LzdBeFdRSW5rdDhqS0Qzd3JoMCtTdz09?=
+	=?utf-8?B?cHJJcFM3dTNZclVYbnU2Zk15TEZJaWZTOXhZZzZnVFU4VEJBYnZSaDUyZUM0?=
+ =?utf-8?B?QW9FbUZBYmNYUGxMVXE3RTYwM1hZanV2amVVMGIwRzF5UVpQWFQzd1EydEsv?=
+ =?utf-8?B?U2NjR0NMRlFCcVJzVHVNa2h0U0hYSmRkWHYxYWpRdEIrMkU3ZFVycDU0UkM4?=
+ =?utf-8?B?QlkvN1dIRHlGZ3dmUW01NTVHMmc2MWxVeDI2ckM0QlY0YXI2Mm1NMDB3YlEx?=
+ =?utf-8?B?UzlvKzE3VGd6d3VsUEd2SHVLRGZwRWVpSFZoWG9YOGZ6YVM1L3d1UjVFVC84?=
+ =?utf-8?B?MDFab0gyelVPUll4cWgzT0lLS3FNT1ZKNVk3cGpXSUxQUEp0UEhqNEZMcU9I?=
+ =?utf-8?B?aElzQ3U3WGRObTJpNlEyeEVCdSt0LzlqYTBPelNUWFJVNVJCNnNseEIwVk1s?=
+ =?utf-8?B?ZllJNlRCTHY1TktEdnpySnU2aXdxWGhQU3Z6MlpsN05CcHFsdG5nT1V2UnJ4?=
+ =?utf-8?B?azl0S0tOZGN2OUhJQS9pQ0ZudlJWZ3dsV2NibzZ2ZnRaaXdyL09meXVINU5Y?=
+ =?utf-8?B?NVo0T09MQ3E2cEFTRnNLMkFqUi9SQ0FobVVRamlPdWxvdG12QjArUTEyelY0?=
+ =?utf-8?B?WkFlbU5CR1RTeUpndi9FR1pISmxpdnBuZUNsRlZwbmt3WnFBcXhpQWtIYkxj?=
+ =?utf-8?B?Y1Y0NEhVSzV6emRFS085dW5VTm9TQlpyeEtYOU1lSnJLK25xclQ4T3pOMGRj?=
+ =?utf-8?B?WXgwbzhxMnI5OFNSLzZzby9CbWlsbVBnSFNPUXZlT3VicnFSRzNLMlgwaHhW?=
+ =?utf-8?B?cWxXMmpMd2lvUDJxZEdPMWwvbGo3MXZVaHVQNXNRa0VMZlJ5UHg5ZDZKdDZX?=
+ =?utf-8?B?bUQ4dEJ3WVgrZ0ZuYlFEc1FaMmloY01MOGVLcmlwdXJEVUhYNHdLYXZCOHlE?=
+ =?utf-8?B?M1pBeWUxZWEyNUZoTVhnR1JrTGRWYU5BakRMS0hybVpKbmk2SHR6dENZb1Nu?=
+ =?utf-8?B?MVlWVmgzbmhDVWtXQnlKZ1g2RGR5TFNoVU5nL2Y2VTkzOHQydXJML21HR24z?=
+ =?utf-8?B?TlJja3MxTjN4SmdhWW9hYWRHZ2dUUHJsNHpjRWJReDJyaWRSUnJGQnY0Y1l2?=
+ =?utf-8?B?R1BWdE9SWXdVNW1RNDB4cDNNKy8xa2RTcHdRU0xyRUNJSjlINTJsVXFtRWhs?=
+ =?utf-8?B?MUJMcTRaUThBOGt6bkdBV25QNEIyR09IZzFzMVVnaGhFWkxBS2dYZzJLUEpm?=
+ =?utf-8?B?VVlMTnIxanU4RmZuZitmN0VFMjdlbW1HWG1jYkZ3YVZEMHNoUjkzbkUrZHU4?=
+ =?utf-8?B?S0ZEcGFqcjNDeFVpeW1QZjduODV6NWpWU1NWSmRteHpLeWhuZjhWS3Q0SENW?=
+ =?utf-8?B?VDk0Zms2UFpEbkw3NXhWbkRTbHdNWjRhbUZTUUtsTVI3a05OV1FEWHl5S0hq?=
+ =?utf-8?B?Wk9nM0F4VWwvSXVxK0Y4eDlYYkR2UVdkZ05wUTRsZzhvWXVTTVRQVEl1RStW?=
+ =?utf-8?B?dS9nL0dSU0xmQW5NWERUOHZCWnNyeDB6aVVsSHUvUDR6NXNGYXJSMkpmRk92?=
+ =?utf-8?B?WWtaS2plZGxRK1BaUDFnNlZkV1VDNXNDd3BzVFV6L25vTURMUEVtWEIvNFg5?=
+ =?utf-8?B?OUlzRGwxY0NHQTQraFlhZW9uQmRSYktNZTUvWHZXdmphVjAvVHdhdENaeVNs?=
+ =?utf-8?B?SmFvaVZya0pjdUZUQ3NrSEdEVVRTeUgrZDVxZXdoSmZLQkJKUWlibHY1SnlK?=
+ =?utf-8?B?cXh6b2QwZG9XUnNrNEhRSllyZ2ZTakZ1S1BycGVhYnQzUm8wM2RudFVkYXBQ?=
+ =?utf-8?B?VkN0SlRxanFUTlhGOHQrL0c3clovbXo5YjdqTUFmTmNEaUU3Q3gwQ1dxU3FR?=
+ =?utf-8?B?dlF1S2h3L0Rydm1tL1NCaElGcm5KTzg2NDA4K01OMHRYc2ljNEpCZEJJbzNs?=
+ =?utf-8?B?NGp5L1BmamNWdGtRcmF5aTJxYXFIVUhjS2ZuSU5jL0JEZUdNcDZ5WUs1bGhV?=
+ =?utf-8?B?WUhrTTc3enh0Ky8rYjBDWmVYTlo3WGl1SVVvR2hMVlBETlUzSjE5K2dmNFpu?=
+ =?utf-8?B?UzI0dVBPQjhFVE9qTzYrMjM4dGo4dUFSZDVMUHdZTXRjWjM0YkF1U0FEd3Jt?=
+ =?utf-8?B?T3NvQVp5QVVQT2kyNWl4cmJhSk8yMWtmWW13U21BOU1BNXAyWGNMdGtPaE1V?=
+ =?utf-8?B?cTZGN0c5RmtIZE5FVWhVNDJhdjJlN0lLa1B0UmRyL1ZYUG16cnNBMnN0WGwz?=
+ =?utf-8?B?UGJvb0ZydUVzRlNtYTllZzNZNU84UDVXZWtadTYyNkw0enMzcnBhVElSNTYx?=
+ =?utf-8?B?SzF0TCtnNEV4aWV4azhvSG9mdmh2NmZiUWE4OEV0TjBiWkNCNkNBRkVPMEtE?=
+ =?utf-8?B?dnp2bkVpOTc0Y1dYYzhxbUpBY1lIbVJkdWNyZG82Z0dzRk1FS1BPZz09?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77a7395a-74d6-4e2c-7530-08dec71c8852
+X-MS-Exchange-CrossTenant-Network-Message-Id: 89684cc1-bf35-4c3a-f361-08dec77bbcb9
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2026 18:17:29.7121
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jun 2026 05:38:59.7433
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: tDFZjjPvDGia8NvzoRXLsuIh61pKATKZmhQF2db1Uytz9YSJX4GUL/tFw/cycGyhtg7VeY/VcYanxhMZ3JGMDA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS2PR10MB7072
+X-MS-Exchange-CrossTenant-UserPrincipalName: jVb9K+PWofSFJPGzztnwxpcd0aJ51Y9gg5JV4wYtj0xYjeVhWUvrsZrBEBxE/TeiyhcIgiAkB3IL1EldFKhxKQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI0PR10MB9468
 
-On 10.06.26 09:33, Jan Kiszka wrote:
-> On 10.06.26 09:21, Jan Kiszka wrote:
->> On 10.06.26 08:24, Jan Kiszka wrote:
->>> Hi Philippe,
+On 10.06.26 20:17, Jan Kiszka wrote:
+> On 10.06.26 09:33, Jan Kiszka wrote:
+>> On 10.06.26 09:21, Jan Kiszka wrote:
+>>> On 10.06.26 08:24, Jan Kiszka wrote:
+>>>> Hi Philippe,
+>>>>
+>>>> while trying to port the signal-while-suspended fix to Xenomai 3, I ran
+>>>> into XNHELD, a state only existing there. I suppose that was once
+>>>> forward-ported as EVL_T_HALT. The only user of XNHELD in Xenomai 3 is
+>>>> SCHED_SPORADIC - so let's dive into that scheduling class.
+>>>>
+>>>> Turned out it was never documented, not even linked to the POSIX
+>>>> standard. But it also slightly differs from it (low_prio = -1 -> suspend
+>>>> on depletion). There is also no test case, so I asked an AI for one.
+>>>> That worked fairly well as it seems to have revealed an issue:
+>>>>
+>>>> Could it be that we are not properly suspending the budget tracking when
+>>>> a higher-prio task from a different scheduling class is preempting a
+>>>> sporadic thread? It looks like that xnsched_sporadic_pick is not invoked
+>>>> if a thread is selected from a higher-prio class first, namely sched-rt
+>>>> with its weight 4 vs. 3 if sched-sporadic. Or is that an (undocumented)
+>>>> limitation/misconfiguration? Is that issue even affecting other
+>>>> time-slicing classes as well??
+>>>>
+>>>> That furthermore makes me wonder if we actually have users of
+>>>> sched-sporadic. Likely a hard to answer question, as usual. But such a
+>>>> limitation should have been observed earlier under real workload...
+>>>>
+>>>> Jan
+>>>>
 >>>
->>> while trying to port the signal-while-suspended fix to Xenomai 3, I ran
->>> into XNHELD, a state only existing there. I suppose that was once
->>> forward-ported as EVL_T_HALT. The only user of XNHELD in Xenomai 3 is
->>> SCHED_SPORADIC - so let's dive into that scheduling class.
+>>> Here is a trace that proves how xnsched_sporadic_pick and, thus, 
+>>> sporadic_suspend_activity are not called:
 >>>
->>> Turned out it was never documented, not even linked to the POSIX
->>> standard. But it also slightly differs from it (low_prio = -1 -> suspend
->>> on depletion). There is also no test case, so I asked an AI for one.
->>> That worked fairly well as it seems to have revealed an issue:
->>>
->>> Could it be that we are not properly suspending the budget tracking when
->>> a higher-prio task from a different scheduling class is preempting a
->>> sporadic thread? It looks like that xnsched_sporadic_pick is not invoked
->>> if a thread is selected from a higher-prio class first, namely sched-rt
->>> with its weight 4 vs. 3 if sched-sporadic. Or is that an (undocumented)
->>> limitation/misconfiguration? Is that issue even affecting other
->>> time-slicing classes as well??
->>>
->>> That furthermore makes me wonder if we actually have users of
->>> sched-sporadic. Likely a hard to answer question, as usual. But such a
->>> limitation should have been observed earlier under real workload...
+>>>          disrupt-1682  [000] d..2.    94.171753: cobalt_head_sysentry: syscall=clock_nanosleep64
+>>>          disrupt-1682  [000] d..2.    94.171755: cobalt_clock_nanosleep: clock_id=1 flags=0() rqt=(0.060000000)
+>>>          disrupt-1682  [000] d..2.    94.171757: cobalt_thread_suspend: pid=1682 mask=0x4 timeout=60000001 timeout_mode=0 wchan=(nil)
+>>>          disrupt-1682  [000] d..2.    94.171759: cobalt_timer_start:   timer=0xffffc900008bbb00(smokey) value=60000001 interval=0 mode=0x0
+>>>          disrupt-1682  [000] d..2.    94.171761: cobalt_tick_shot:     next tick at 94.231756 (delay: 59995 us)
+>>>          disrupt-1682  [000] d..2.    94.171770: cobalt_schedule:      status=0x10000000
+>>>          disrupt-1682  [000] d..2.    94.171771: cobalt_trace_pid:     pid=1682, prio=30
+>>>          disrupt-1682  [000] d..2.    94.171776: bprint:               xnsched_sporadic_pick: xnsched_sporadic_pick, curr=1682 next=1681
+>>>          disrupt-1682  [000] d..2.    94.171777: bprint:               xnsched_sporadic_pick: sporadic_resume_activity, pss->budget 99964473
+>>>          disrupt-1682  [000] d..2.    94.171778: bprint:               sporadic_schedule_drop: sporadic_schedule_drop, pss->budget 99964473
+>>>          disrupt-1682  [000] d..2.    94.171778: cobalt_timer_start:   timer=0xffffc900008bc4d8(pss-drop) value=94216201725 interval=0 mode=0x1
+>>>          disrupt-1682  [000] d..2.    94.171779: cobalt_switch_context: prev_name=disrupt prev_pid=1682 prev_prio=30 prev_state=0x248044 ==> next_name=ss-d next_pid=1681 next_prio=20
+>>>             ss-d-1681  [000] d..2.    94.171784: cobalt_trace_pid:     pid=1681, prio=20
+>>>             ss-d-1681  [000] d..2.    94.171788: cobalt_synch_acquire: synch=0xffffc900008bd408
+>>>             ss-d-1681  [000] d..2.    94.171789: cobalt_head_sysexit:  result=0
+>>>             ss-d-1681  [000] d..2.    94.171799: cobalt_head_sysentry: syscall=mutex_unlock
+>>>             ss-d-1681  [000] d..2.    94.171801: cobalt_synch_release: synch=0xffffc900008bd408
+>>>             ss-d-1681  [000] d..2.    94.171801: cobalt_head_sysexit:  result=0
+>>>             ss-d-1681  [000] d..2.    94.231786: cobalt_timer_expire:  timer=0xffffc900008bbb00
+>>>             ss-d-1681  [000] d..2.    94.231789: cobalt_thread_resume: name=disrupt pid=1682 mask=0x4
+>>>             ss-d-1681  [000] d..2.    94.231790: cobalt_trace_pid:     pid=1682, prio=30
+>>>             ss-d-1681  [000] d..2.    94.231791: cobalt_timer_stop:    timer=0xffffc900008bbb00
+>>>             ss-d-1681  [000] d..2.    94.231794: cobalt_tick_shot:     next tick at 94.271741 (delay: 39948 us)
+>>>             ss-d-1681  [000] d..2.    94.231802: cobalt_schedule:      status=0x10000000
+>>>             ss-d-1681  [000] d..2.    94.231803: cobalt_trace_pid:     pid=1681, prio=20
+>>>             ss-d-1681  [000] d..2.    94.231805: cobalt_switch_context: prev_name=ss-d prev_pid=1681 prev_prio=20 prev_state=0x248048 ==> next_name=disrupt next_pid=1682 next_prio=30
+>>>          disrupt-1682  [000] d..2.    94.231810: cobalt_trace_pid:     pid=1682, prio=30
+>>>          disrupt-1682  [000] d..2.    94.231811: cobalt_head_sysexit:  result=0
+>>>          disrupt-1682  [000] d..2.    94.271767: cobalt_timer_expire:  timer=0xffffc900008bc4d8
+>>>          disrupt-1682  [000] d..2.    94.271771: cobalt_thread_suspend: pid=1681 mask=0x200 timeout=0 timeout_mode=0 wchan=(nil)
+>>>          disrupt-1682  [000] d..2.    94.271772: cobalt_tick_shot:     next tick at 95.130203 (delay: 858431 us)
+>>>          disrupt-1682  [000] d..2.    94.271914: cobalt_head_sysentry: syscall=clock_nanosleep64
+>>>          disrupt-1682  [000] d..2.    94.271916: cobalt_clock_nanosleep: clock_id=1 flags=0() rqt=(0.060000000)
+>>>          disrupt-1682  [000] d..2.    94.271917: cobalt_thread_suspend: pid=1682 mask=0x4 timeout=60000001 timeout_mode=0 wchan=(nil)
 >>>
 >>> Jan
 >>>
+>>> PS: I asked AI (opus-4.7) to confirm or disprove this, and it failed in 
+>>> its code analysis. It seems like the way the code is structured and 
+>>> commented misguided it in its conclusions. Sooo statistically human...
+>>>
 >>
->> Here is a trace that proves how xnsched_sporadic_pick and, thus, 
->> sporadic_suspend_activity are not called:
+>> Asked different ("find a path where..."):
 >>
->>          disrupt-1682  [000] d..2.    94.171753: cobalt_head_sysentry: syscall=clock_nanosleep64
->>          disrupt-1682  [000] d..2.    94.171755: cobalt_clock_nanosleep: clock_id=1 flags=0() rqt=(0.060000000)
->>          disrupt-1682  [000] d..2.    94.171757: cobalt_thread_suspend: pid=1682 mask=0x4 timeout=60000001 timeout_mode=0 wchan=(nil)
->>          disrupt-1682  [000] d..2.    94.171759: cobalt_timer_start:   timer=0xffffc900008bbb00(smokey) value=60000001 interval=0 mode=0x0
->>          disrupt-1682  [000] d..2.    94.171761: cobalt_tick_shot:     next tick at 94.231756 (delay: 59995 us)
->>          disrupt-1682  [000] d..2.    94.171770: cobalt_schedule:      status=0x10000000
->>          disrupt-1682  [000] d..2.    94.171771: cobalt_trace_pid:     pid=1682, prio=30
->>          disrupt-1682  [000] d..2.    94.171776: bprint:               xnsched_sporadic_pick: xnsched_sporadic_pick, curr=1682 next=1681
->>          disrupt-1682  [000] d..2.    94.171777: bprint:               xnsched_sporadic_pick: sporadic_resume_activity, pss->budget 99964473
->>          disrupt-1682  [000] d..2.    94.171778: bprint:               sporadic_schedule_drop: sporadic_schedule_drop, pss->budget 99964473
->>          disrupt-1682  [000] d..2.    94.171778: cobalt_timer_start:   timer=0xffffc900008bc4d8(pss-drop) value=94216201725 interval=0 mode=0x1
->>          disrupt-1682  [000] d..2.    94.171779: cobalt_switch_context: prev_name=disrupt prev_pid=1682 prev_prio=30 prev_state=0x248044 ==> next_name=ss-d next_pid=1681 next_prio=20
->>             ss-d-1681  [000] d..2.    94.171784: cobalt_trace_pid:     pid=1681, prio=20
->>             ss-d-1681  [000] d..2.    94.171788: cobalt_synch_acquire: synch=0xffffc900008bd408
->>             ss-d-1681  [000] d..2.    94.171789: cobalt_head_sysexit:  result=0
->>             ss-d-1681  [000] d..2.    94.171799: cobalt_head_sysentry: syscall=mutex_unlock
->>             ss-d-1681  [000] d..2.    94.171801: cobalt_synch_release: synch=0xffffc900008bd408
->>             ss-d-1681  [000] d..2.    94.171801: cobalt_head_sysexit:  result=0
->>             ss-d-1681  [000] d..2.    94.231786: cobalt_timer_expire:  timer=0xffffc900008bbb00
->>             ss-d-1681  [000] d..2.    94.231789: cobalt_thread_resume: name=disrupt pid=1682 mask=0x4
->>             ss-d-1681  [000] d..2.    94.231790: cobalt_trace_pid:     pid=1682, prio=30
->>             ss-d-1681  [000] d..2.    94.231791: cobalt_timer_stop:    timer=0xffffc900008bbb00
->>             ss-d-1681  [000] d..2.    94.231794: cobalt_tick_shot:     next tick at 94.271741 (delay: 39948 us)
->>             ss-d-1681  [000] d..2.    94.231802: cobalt_schedule:      status=0x10000000
->>             ss-d-1681  [000] d..2.    94.231803: cobalt_trace_pid:     pid=1681, prio=20
->>             ss-d-1681  [000] d..2.    94.231805: cobalt_switch_context: prev_name=ss-d prev_pid=1681 prev_prio=20 prev_state=0x248048 ==> next_name=disrupt next_pid=1682 next_prio=30
->>          disrupt-1682  [000] d..2.    94.231810: cobalt_trace_pid:     pid=1682, prio=30
->>          disrupt-1682  [000] d..2.    94.231811: cobalt_head_sysexit:  result=0
->>          disrupt-1682  [000] d..2.    94.271767: cobalt_timer_expire:  timer=0xffffc900008bc4d8
->>          disrupt-1682  [000] d..2.    94.271771: cobalt_thread_suspend: pid=1681 mask=0x200 timeout=0 timeout_mode=0 wchan=(nil)
->>          disrupt-1682  [000] d..2.    94.271772: cobalt_tick_shot:     next tick at 95.130203 (delay: 858431 us)
->>          disrupt-1682  [000] d..2.    94.271914: cobalt_head_sysentry: syscall=clock_nanosleep64
->>          disrupt-1682  [000] d..2.    94.271916: cobalt_clock_nanosleep: clock_id=1 flags=0() rqt=(0.060000000)
->>          disrupt-1682  [000] d..2.    94.271917: cobalt_thread_suspend: pid=1682 mask=0x4 timeout=60000001 timeout_mode=0 wchan=(nil)
+>> "You're right — I need to retract part of my previous answer. Looking at this scenario through the cascade rule, sporadic_suspend_activity() is not invoked when a SCHED_FIFO thread preempts a SCHED_SPORADIC thread.
+>>                                                                                                                                                                                                                            
+>>   The path
+>>
+>>   1. A SCHED_SPORADIC thread runs at, say, normal_prio = 50. Its drop_timer was armed by sporadic_schedule_drop() at the last cascade, set to fire at resume_date + budget.
+>>   2. A SCHED_FIFO thread at priority 80 becomes runnable (wakes from sleep, IRQ unblocks it, etc.) and xnsched_set_resched() marks the CPU.
+>>   3. ___xnsched_run() → xnsched_pick_next() iterates for_each_xnsched_class (sched.c:322). RT has the highest weight, so xnsched_rt_pick(sched) runs first.
+>>   4. In xnsched_rt_pick (sched.c:730–762), the head of the highest-priority queue is now the FIFO thread. Its sched_class == &xnsched_class_rt.
+>>   5. The cascade check at sched.c:757 (if (unlikely(thread->sched_class != &xnsched_class_rt))) is false.
+>>   6. xnsched_rt_pick returns the FIFO thread via del_q. The for_each_xnsched_class loop sees a non-NULL result and exits.
+>>   7. xnsched_sporadic_pick is never called. sporadic_suspend_activity(curr) never runs on the outgoing sporadic thread."
+>>
+>> This looks more useful.
 >>
 >> Jan
 >>
->> PS: I asked AI (opus-4.7) to confirm or disprove this, and it failed in 
->> its code analysis. It seems like the way the code is structured and 
->> commented misguided it in its conclusions. Sooo statistically human...
->>
 > 
-> Asked different ("find a path where..."):
+> The blast radius extends:
 > 
-> "You're right — I need to retract part of my previous answer. Looking at this scenario through the cascade rule, sporadic_suspend_activity() is not invoked when a SCHED_FIFO thread preempts a SCHED_SPORADIC thread.
->                                                                                                                                                                                                                            
->   The path
+>  - I added a preempting fifo thread to the sched-quota test as well, and
+>    it completely destroyed the thread group accounting: the group no
+>    longer gets throttled, rather than getting time stolen by the
+>    preemptions.
 > 
->   1. A SCHED_SPORADIC thread runs at, say, normal_prio = 50. Its drop_timer was armed by sporadic_schedule_drop() at the last cascade, set to fire at resume_date + budget.
->   2. A SCHED_FIFO thread at priority 80 becomes runnable (wakes from sleep, IRQ unblocks it, etc.) and xnsched_set_resched() marks the CPU.
->   3. ___xnsched_run() → xnsched_pick_next() iterates for_each_xnsched_class (sched.c:322). RT has the highest weight, so xnsched_rt_pick(sched) runs first.
->   4. In xnsched_rt_pick (sched.c:730–762), the head of the highest-priority queue is now the FIFO thread. Its sched_class == &xnsched_class_rt.
->   5. The cascade check at sched.c:757 (if (unlikely(thread->sched_class != &xnsched_class_rt))) is false.
->   6. xnsched_rt_pick returns the FIFO thread via del_q. The for_each_xnsched_class loop sees a non-NULL result and exits.
->   7. xnsched_sporadic_pick is never called. sporadic_suspend_activity(curr) never runs on the outgoing sporadic thread."
-> 
-> This looks more useful.
-> 
-> Jan
+>  - The evl core looks identical here and should be similarly affected,
+>    regarding quota-based scheduling.
 > 
 
-The blast radius extends:
+Here is an attempt to fix sched-quota, along with the test case 
+modifications:
 
- - I added a preempting fifo thread to the sched-quota test as well, and
-   it completely destroyed the thread group accounting: the group no
-   longer gets throttled, rather than getting time stolen by the
-   preemptions.
+diff --git a/include/cobalt/kernel/sched.h b/include/cobalt/kernel/sched.h
+index 106e6e29a3..bf19391e2c 100644
+--- a/include/cobalt/kernel/sched.h
++++ b/include/cobalt/kernel/sched.h
+@@ -136,6 +136,7 @@ struct xnsched_class {
+ 	void (*sched_dequeue)(struct xnthread *thread);
+ 	void (*sched_requeue)(struct xnthread *thread);
+ 	struct xnthread *(*sched_pick)(struct xnsched *sched);
++	void (*sched_out)(struct xnthread *thread);
+ 	void (*sched_tick)(struct xnsched *sched);
+ 	void (*sched_rotate)(struct xnsched *sched,
+ 			     const union xnsched_policy_param *p);
+diff --git a/kernel/cobalt/sched-quota.c b/kernel/cobalt/sched-quota.c
+index 60b2c92b8f..d6e7022d99 100644
+--- a/kernel/cobalt/sched-quota.c
++++ b/kernel/cobalt/sched-quota.c
+@@ -405,27 +405,36 @@ static void xnsched_quota_requeue(struct xnthread *thread)
+ 	tg->nr_active++;
+ }
+ 
++static void charge_usage(struct xnsched_quota_group *tg, xnticks_t now)
++{
++	xnticks_t elapsed;
++
++	elapsed = now - tg->run_start_ns;
++	if (elapsed < tg->run_budget_ns)
++		tg->run_budget_ns -= elapsed;
++	else
++		tg->run_budget_ns = 0;
++}
++
+ static struct xnthread *xnsched_quota_pick(struct xnsched *sched)
+ {
+ 	struct xnthread *next, *curr = sched->curr;
+ 	struct xnsched_quota *qs = &sched->quota;
+ 	struct xnsched_quota_group *otg, *tg;
+-	xnticks_t now, elapsed;
++	xnticks_t now;
+ 	int ret;
+ 
+ 	now = xnclock_read_monotonic(&nkclock);
+ 	otg = curr->quota;
+ 	if (otg == NULL)
+ 		goto pick;
++
+ 	/*
+ 	 * Charge the time consumed by the outgoing thread to the
+ 	 * group it belongs to.
+ 	 */
+-	elapsed = now - otg->run_start_ns;
+-	if (elapsed < otg->run_budget_ns)
+-		otg->run_budget_ns -= elapsed;
+-	else
+-		otg->run_budget_ns = 0;
++	charge_usage(otg, now);
++
+ pick:
+ 	next = xnsched_getq(&sched->rt.runnable);
+ 	if (next == NULL) {
+@@ -477,6 +486,14 @@ out:
+ 	return next;
+ }
+ 
++static void xnsched_quota_out(struct xnthread *thread)
++{
++	struct xnsched_quota_group *tg = thread->quota;
++
++	if (tg)
++		charge_usage(tg, xnclock_read_monotonic(&nkclock));
++}
++
+ static void xnsched_quota_migrate(struct xnthread *thread, struct xnsched *sched)
+ {
+ 	union xnsched_policy_param param;
+@@ -814,6 +831,7 @@ struct xnsched_class xnsched_class_quota = {
+ 	.sched_dequeue		=	xnsched_quota_dequeue,
+ 	.sched_requeue		=	xnsched_quota_requeue,
+ 	.sched_pick		=	xnsched_quota_pick,
++	.sched_out		=	xnsched_quota_out,
+ 	.sched_tick		=	NULL,
+ 	.sched_rotate		=	NULL,
+ 	.sched_migrate		=	xnsched_quota_migrate,
+diff --git a/kernel/cobalt/sched.c b/kernel/cobalt/sched.c
+index d527b6be2c..6dfbf83220 100644
+--- a/kernel/cobalt/sched.c
++++ b/kernel/cobalt/sched.c
+@@ -895,6 +895,7 @@ static inline void do_lazy_user_work(struct xnthread *curr)
+ 
+ int ___xnsched_run(struct xnsched *sched)
+ {
++	struct xnsched_class *prev_schedclass __maybe_unused;
+ 	bool switched = false, leaving_inband;
+ 	struct xnthread *prev, *next, *curr;
+ 	spl_t s;
+@@ -933,6 +934,13 @@ int ___xnsched_run(struct xnsched *sched)
+ 
+ 	prev = curr;
+ 
++#ifdef CONFIG_XENO_OPT_SCHED_CLASSES
++	prev_schedclass = prev->sched_class;
++	if (prev_schedclass->weight < next->sched_class->weight &&
++	    prev_schedclass->sched_out)
++		prev_schedclass->sched_out(prev);
++#endif
++
+ 	trace_cobalt_switch_context(prev, next);
+ 
+ 	/*
+diff --git a/testsuite/smokey/sched-quota/sched-quota.c b/testsuite/smokey/sched-quota/sched-quota.c
+index f9e64e37f1..cebe629394 100644
+--- a/testsuite/smokey/sched-quota/sched-quota.c
++++ b/testsuite/smokey/sched-quota/sched-quota.c
+@@ -45,9 +45,9 @@ smokey_test_plugin(sched_quota,
+ 
+ static unsigned long long crunch_per_sec, loops_per_sec;
+ 
+-static pthread_t threads[MAX_THREADS];
++static pthread_t threads[MAX_THREADS + 1];
+ 
+-static unsigned long counts[MAX_THREADS];
++static unsigned long counts[MAX_THREADS + 1];
+ 
+ static int nrthreads;
+ 
+@@ -107,6 +107,36 @@ static void *thread_body(void *arg)
+ 	return NULL;
+ }
+ 
++static void *disruptor(void *arg)
++{
++	unsigned long *count_r = arg;
++	int oldstate, oldtype;
++	struct timespec req;
++
++	pthread_setcancelstate(PTHREAD_CANCEL_ENABLE, &oldstate);
++	pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS, &oldtype);
++	*count_r = 0;
++	sem_post(&ready);
++
++	pthread_mutex_lock(&lock);
++	for (;;) {
++		if (started)
++			break;
++		pthread_cond_wait(&barrier, &lock);
++	}
++	pthread_mutex_unlock(&lock);
++
++	while (!throttle) {
++		do_work(1000, count_r);
++
++		req.tv_sec = 0;
++		req.tv_nsec = 1000000;
++		clock_nanosleep(CLOCK_MONOTONIC, 0, &req, NULL);
++	}
++
++	return NULL;
++}
++
+ static void __create_quota_thread(pthread_t *tid, const char *name,
+ 				  int tgid, unsigned long *count_r)
+ {
+@@ -133,7 +163,7 @@ static void __create_quota_thread(pthread_t *tid, const char *name,
+ 	__create_quota_thread(&(__tid), __label, __tgid, &(__count))
+ 
+ static void __create_fifo_thread(pthread_t *tid, const char *name,
+-				 unsigned long *count_r)
++				 void *(*func)(void *), unsigned long *count_r)
+ {
+ 	struct sched_param param;
+ 	pthread_attr_t attr;
+@@ -143,9 +173,9 @@ static void __create_fifo_thread(pthread_t *tid, const char *name,
+ 	pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+ 	pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+ 	pthread_attr_setschedpolicy(&attr, SCHED_FIFO);
+-	param.sched_priority = 1;
++	param.sched_priority = 2;
+ 	pthread_attr_setschedparam(&attr, &param);
+-	ret = pthread_create(tid, &attr, thread_body, count_r);
++	ret = pthread_create(tid, &attr, func, count_r);
+ 	if (ret)
+ 		error(1, ret, "pthread_create(SCHED_FIFO)");
+ 
+@@ -153,8 +183,8 @@ static void __create_fifo_thread(pthread_t *tid, const char *name,
+ 	pthread_setname_np(*tid, name);
+ }
+ 
+-#define create_fifo_thread(__tid, __label, __count)	\
+-	__create_fifo_thread(&(__tid), __label, &(__count))
++#define create_fifo_thread(__tid, __label, __func, __count)	\
++	__create_fifo_thread(&(__tid), __label, __func, &(__count))
+ 
+ static double run_quota(int quota)
+ {
+@@ -190,6 +220,10 @@ static double run_quota(int quota)
+ 		sem_wait(&ready);
+ 	}
+ 
++	create_fifo_thread(threads[nrthreads], "disruptor", disruptor,
++			   counts[nrthreads]);
++	sem_wait(&ready);
++
+ 	pthread_mutex_lock(&lock);
+ 	started = 1;
+ 	pthread_cond_broadcast(&barrier);
+@@ -212,6 +246,7 @@ static double run_quota(int quota)
+ 		pthread_cancel(threads[n]);
+ 		pthread_join(threads[n], NULL);
+ 	}
++	pthread_join(threads[nrthreads], NULL);
+ 
+ 	cf.quota.op = sched_quota_remove;
+ 	cf.quota.remove.tgid = tgid;
+@@ -243,7 +278,7 @@ static unsigned long long calibrate(void)
+ 
+ 	for (n = 0; n < nrthreads; n++) {
+ 		snprintf(label, sizeof(label), "t%d", n);
+-		create_fifo_thread(threads[n], label, counts[n]);
++		create_fifo_thread(threads[n], label, thread_body, counts[n]);
+ 		sem_wait(&ready);
+ 	}
+ 
 
- - The evl core looks identical here and should be similarly affected,
-   regarding quota-based scheduling.
+Something analogous for sched-sporadic does not help. It looks broken in 
+its algorithm, specifically that is schedules consumed budget for 
+recharge on preemption, rather than reducing the remaining budget. But I 
+might also miss some case where this is actually needed.
 
 Jan
 
