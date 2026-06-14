@@ -1,53 +1,56 @@
-Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11013026.outbound.protection.outlook.com [52.101.83.26])
+Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010044.outbound.protection.outlook.com [52.101.69.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E0FC29CE9
-	for <xenomai@lists.linux.dev>; Sun, 14 Jun 2026 19:35:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.83.26
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC68C25785D
+	for <xenomai@lists.linux.dev>; Sun, 14 Jun 2026 19:35:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.44
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781465736; cv=fail; b=f2sR3gVJi894O+xUO6s5DCl6+lL9UiWahuWTEVQJxt+iNPkEdgw5agVYF4G4EWHqzM4UJeTFl3fI93niRCE2PqGhzJpLa7SFDnVUy5RvEkL0BC8rJgE5DNyuq2kcceL26YA8Cu3F1vb3AarX0S+/5igbgkpTK4meajEU5BBd6Yo=
+	t=1781465761; cv=fail; b=hBRTTsxgX2CM+BCqKgarxpeCFG9KVrkiFcXn//xB09GLO2MyVGQ9kkhs9oqashXLlY0jLRpVOUi/AnIqSIR3KStcWaCpni3Zijtad+EocTYZP33ExMaxXj5l8Aw78SDubagFkA7nqBkrRRQdALfnPGchiaMJwqKxt7hV+QYG1jg=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781465736; c=relaxed/simple;
-	bh=NKuSYZGpZF0bihmMccuJCNWaQzi95ve0FcGogACAy9A=;
-	h=Message-ID:Date:From:Subject:To:Content-Type:MIME-Version; b=fEaANXnFMORMWfUfwq50RMIqnymFGnLoeb5//6OOKyGDYqT40iPZuBjPdG+90BPbwstPVrSl669j65kszcDcZeSQUhqkWhmAnbWp6iZn3mB4xR0mzEIkjZevDxDZ7a5cgp+RPVck/jfYhRJt9K8dCnYUf5hoaqqVJvkjlma2+i8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=cLIpe60b; arc=fail smtp.client-ip=52.101.83.26
+	s=arc-20240116; t=1781465761; c=relaxed/simple;
+	bh=+3GeTrpRXqYfDxc/qavRY/Q+S3j7SLO2TvIMrS50EbQ=;
+	h=Message-ID:Date:Subject:From:To:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=a8iEb8Ovy3gmy85I+askQ810K+mH/5gJOyLQy60MOwfSKx7SykWzsXZOvzqAv4oic9VOG2qxfetSVYNaXikhRbSl5OYiDeJzvSUVNSx1gXKwxh06mmXFzuCqHrZzed6mA2HJSJ3FGs4+r6g5y0eaFEYdUC2omaTWCo0Cw+6cJf4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=TiQ1SOrK; arc=fail smtp.client-ip=52.101.69.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="cLIpe60b"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="TiQ1SOrK"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=psSyO6fxoJu5sfhLEXkWpea6ovsLcykVVrqE/zsWEvDl3xbA0PkN3eaEP0IpCLZ27jnoSIu2NbeRYYP1GiQiIcoH15nI/LKXSlDBy6zZoTp5eiz6X25tRv7R1J0KjUVJYLXpaaws59A6t/oLIqrNpx+DL0wGREODDdppXBpX6VSpAY0GWXpJD4Mw34k3arvS4FIGTbJrRL4xcu9TSd9pP+koozTh+hPk4uhcFLdQFvbc/huYizyy/R2mMvpg5+dgJW6Cd3D4/KhDf6sbs917DtE89lNSsXpQE2vzBalWCAbpGbMPEB5GqTCC8xTrfxaTp+W70+QnPBipARAllE7YTA==
+ b=X1txJ2k47Y7+mnfKbqvn7p0eR1q8QFc4yJwlHjHD+fHjIM2hJF08FsmK5y9A371WSp1wti+aXJmIpOkmS477fNi8M6rcLGdSz7b8mqsiWplBI0omr8s2oLjYD7eaviH1rJAAdJR5ca1gP8QExZlKBGVPvyzMPIfHqzkZrlGM/dqwfyh8h+uJuO/C0RIzKkhFAMzNSKpgl3g6O0ElrdCwBT0oM8AJmwhRkmxBourJcNPL1TSA/QPpJdW2oQIvLrT3MTpqGRL7Hqic5WMBCtjO9HFcauki9uTAVN2gV2xYDWmS/nwm5egYHdbm/FGNShbeXFxTKY4jBucHKyee7IMTkw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5dttahDkQLBaPozqKWZ5sGY5yUmZqP/HvPmunbu4e0s=;
- b=XKB96GqIqt27OSKEuy8y5Ca7V8COnmgY9YF/3mPa/guQCwGEaBy8eqxYAhiubWEE+0uqTMPkavKMACCFW7CORZYtA3JRovbMDvj4HYV7W72m4RFVN6vGyPTumUcxF9tgcqdoNiT8J6V+V++UHOAZXZ1U2Psbqwz1ADDVSMuOhkS8ncMW3VphpUWEuLbD46+ewTsNwrK9/q6RwgQgG0RQV1CTDsq/5reEwRAvSRTrhmQFdc1TuhXmsFNJuIoUyETMR69eEmiDZLStJU8jw8txnUJ+B4Zl9KZqbDDKlQQZJCs1F0TJxtNIK+vPk4wJ6vP8qWL7JrPUDRl0xkSlImaE9w==
+ bh=2jzpupV/lO/D2z5jlYfeggS4uKOwDVDTJpJ2lehVbOE=;
+ b=B/a7PA/Ss7p0vSpWM7twWFMRLIK+lTJjUIvd67S5kGNu0USQIbV4bicRHDnMfDCtVNEN9Q9bv4zQwZ0CW4lnuok0/yJpZNE2zpGwlj1sLWDrrgaX2QZqyR3u7A/8/dgG8PjanH4UU3lmn4FTdmuoQ7gW3ArFbOYgY+V5YgFzw0GEpCiEc68oh5VvdPeByB2uH7tOQmRDKgLHYYsaxagTG2aPrwCLgaIAg5yNI3AqPVGxZka2zrcuryX6LWZ6qg/uO0gcLQFH6O6e6ytA8j0wI3UvTJmNOTsfh4aC6dmfriwEQ9yPUqbZgRWSwhDw4yjSF+1vX52BzSqdzbNkW4wFFg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5dttahDkQLBaPozqKWZ5sGY5yUmZqP/HvPmunbu4e0s=;
- b=cLIpe60beqOGsnfcoQz1OU+CSspONS+urkCzjNDE76okxNkfY93Cpm98joOinsTWB4n8GQFYvnZSAiPSftjCC7S5m3vML4tkNQP47wq6uuhj6KQUXsiZqThlOkwCqSLrOXC3QitxqRfYhFdAcNCcCRiFvDVKAWyJDHvmPgon5NQLXvFpYmUPGYDDnMnQnDDm9d474YwL2Vyi8QJTHkPOCMopZTphdroovQJ9rZXL/ez3BYeBhGZM+ZCQy4CCjZpAL1W5pVvXh+Y+XOK5LGn6h07DDl25gSWvn3W5Rn3JmRBfqzTx7vQUCs9hnFCecqWm/872U8e2RN0cHhfD7CLKSg==
+ bh=2jzpupV/lO/D2z5jlYfeggS4uKOwDVDTJpJ2lehVbOE=;
+ b=TiQ1SOrKLB2E3PEPCCWnXRaB0pXoG4F7VwEWgde/4eIwdaY9NkfnofkamBXdNxO3RNSuh50t94tlkEsIxxJo6iPRAir6S3tV2KmEuPRpxMsRGiiGpx7wFQCoaEffqvqf9oOs/MsPDo5WRIQtMdfT0vayKHaZ2GOwAY7/WC9TVw6ju8ii8LN++tMSaiJr5R8d7X1oPn8dvSEhUKqWQgwJ3kyYdA24ikF1NrXDZbmGIB8THSVrmq8y7zrL0sT6VrX8vwMQin5VT79AWpqFgL0BfyHQczXo01fUt8vDN1jD4yWyou7PUuS+wrZgc7qe39ohrOXYQPLHhXJAlogqTbTOyg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
  by DU0PR10MB7382.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:446::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.13; Sun, 14 Jun
- 2026 19:35:29 +0000
+ 2026 19:35:57 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1%3]) with mapi id 15.21.0113.015; Sun, 14 Jun 2026
- 19:35:29 +0000
-Message-ID: <e5e231b6-dcae-4b40-9c49-4c93f2e761d9@siemens.com>
-Date: Sun, 14 Jun 2026 21:35:28 +0200
+ 19:35:56 +0000
+Message-ID: <5e63aec5-e782-4936-a526-c2fffbbc9635@siemens.com>
+Date: Sun, 14 Jun 2026 21:35:55 +0200
 User-Agent: Mozilla Thunderbird
+Subject: [PATCH 2/2] evl/sched/quota: Correct budget tracking for preempted
+ threads
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [PATCH 1/2] evl/sched: Add sched_out handler to sched_class
-Content-Language: en-US
 To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@lists.linux.dev>
+References: <e5e231b6-dcae-4b40-9c49-4c93f2e761d9@siemens.com>
+Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
  uNUqthIkgLGWzKugodvkcCK8Wbyw+1vxcl4Lw56WezLsOTfu7oi7Z0vp1XkrLcM0tofTbClW
@@ -91,10 +94,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
+In-Reply-To: <e5e231b6-dcae-4b40-9c49-4c93f2e761d9@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR4P281CA0021.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:c9::12) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR4P281CA0026.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:c9::11) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -104,117 +108,199 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DU0PR10MB7382:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7d330143-3832-4b02-8dd0-08deca4c1789
+X-MS-Office365-Filtering-Correlation-Id: ffe0534b-9bc4-445d-3274-08deca4c27ce
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|376014|23010399003|1800799024|18002099003|55112099003|6133799003|56012099006|5023799004|11063799006;
+	BCL:0;ARA:13230040|366016|376014|23010399003|1800799024|22082099003|18002099003|55112099003|56012099006|11063799006;
 X-Microsoft-Antispam-Message-Info:
-	6F3fY0ewwyeNP313qDFMa30wT+idwdiisqKgiD7jJ2bUQYHcOdOZcWSuOuVotEEyGL9yLd7jogU8ObQ3u3irTQqSFUS5cy/GZAwhI8OhIcov/Mkxeq2Ji6bJyCXnwaSGsLRtgvpJiBwtYi89pNOsE3Dxx3GvIvh2cM7gq9DmbV9DAuUz5/wXXEV5nV8K9TmOl1lPReF9aLby+zQmmRQlKaA1x6SBMrh+haInBkdniPIPF0ZprtuIN094yvAnvrzPp7nSohZ0vCAYnd0DzIfTFggWH/jty4y0dBXfeLRpihzk983hsdMgxaZNTmyXfCWz6QAsFQeqyGuANSsPE4JaNj3usqxvILJLWUQA3/xH1Y+uUgQb6WjLTrx5hYFlyL95gX7ghE5FqE4UjbV+53QVq0g91XkDy0H+6PHbDlNFRXMWJ9SluFgxkBG1WqIRYg3UrqXfc4JmoJFsCfcOyVk+x56+c4oWIgXxIpuDzNGaJTfjvJjEYm2gtqt+3k+XCgEHAw4uZ0mT6teObB1qC6O7T1J0k0QfaxwhZaVzzOa3ViLXJ4Nnj+NNSuEkdbqzMhGWggOY072XaaYEGWHt7rvPpV209TmqzwUgZqZ6iWUn2u28+lHUvMbQ+ViNOxRCvbhDcTDO8rDnMU5Z3vj+Ldcf0Pr+d8uio3Hqun6BmtWgrSl1x7HWu8CKUSWmEpA75uAQ
+	hc4AGuzPbPJ4etCdVcf7j9PS+IUR4o0lIy0thiWLvRdo3DNN3XDVx536TKfpSxvOBVzajp/8BL6DZKnd/XDiyvhDiRi9DQCM2L/LxPJZ4fpci8+sPkylVrVOBB1kRlM3UdpFws+n5FsFM405HGsH8+QyiRbZ2jSwQl3XSKS0qBuZw4oG69xlYdSWUMcA1G7W+wtNtM+bU7kpmUGMdKfKkx99EurORkHFizfr3RxZn3jT0P10fOfkBJ/09QCWS3kbRG+6Jtq4MShpwuXnXtVhml0BbZ17W4FHbMeeuy7YahZv9iK8ikOt4HpMKevrGn3cPCmUhewGFgAnIKPVYlqI+QaBSE/qGyjzOkDfTtToaZCFHW9vPFUG4/2iZEtDK71xDXxuTtfAH1TYLnCbsoDj1hCOVGxGDF1+PsYbAXTxPx9jOib7VGRdTkciam2/IFrlRMyxljGUrTY+hnZEFAzyE1h14I6t5vTfn/11lzbpZYPgV7eIhiL2jNAycS0rVRuDej76Wp2Y2JmEv14uLbny/BP7jG73a6OT7pZWp4/JzKyJE/cBwjsAPlhE/LvQ5MYH5LI+7Ym2ymuO7QZOSz5ie/mAyQIAezu8LNdI8aKjPu6jTSDmLySyILKzR7lYIlKK4s29V07r3tcpuxjvkGhPr157q4npfLF4nJ8XBSWhaArPeka9ce5UzPrEZmya3oxl
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(23010399003)(1800799024)(18002099003)(55112099003)(6133799003)(56012099006)(5023799004)(11063799006);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(23010399003)(1800799024)(22082099003)(18002099003)(55112099003)(56012099006)(11063799006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?VUluamtRaDg0VUNNT1ZSdXB6YUVnVE4yVDBPNnpwMDMrT0FDSEYzeDdYWkhw?=
- =?utf-8?B?TGRycDg3UCtId1BXOFUyOTlNNDhBY0w3VVNORUJTYTk5VXpwUzl3SEt5QmxB?=
- =?utf-8?B?TDZPSWpWQWlhMm1aaTVzYkw5QVF0bW9URXFXVTdNM3lrZHlJcU1NVVdUbHg4?=
- =?utf-8?B?SUZNL1ZpdXJyQlE0elNGVXprdllGTmkzQlMyd2VzNkhlYSsvSHRCaFYxaXJn?=
- =?utf-8?B?dS9CaHY2OWdtazd6emJBOEkrS1NIakdiK2xZR3NseisrNmc2RWtFbGJWQVNz?=
- =?utf-8?B?UkQ1cUhMb2tkUTdxdGkzUWtHYnVPV2Z0RnkzcjJZN1h6cXFhVEViYy8vekhM?=
- =?utf-8?B?TTVmRWFrdjBxSUJiZWR0MDFkM2hPUWNBVlN6Y01XZGNxODZMb0FZVjZyMnRL?=
- =?utf-8?B?WS90OXZEZEphS1NGbithMmo5ZHJSNEdJMmhFQ1RuTnBOaGVLNW5Wemd0Q1Av?=
- =?utf-8?B?MW9DRHNzTUdUNDNsbkI5czRYS281Mmtyd01LNjhhNDVwSjZqUTJiUkY1QWtJ?=
- =?utf-8?B?V3MzSW81Mi93djBhN1pMSVhXZGk3UXRxeldPVjNFRjRYNXVpYjUxWnFJWEth?=
- =?utf-8?B?TmVNeGdna21MZ1ZxWWhSM0RPSmo5cmlRamtmVXc1bGNMOHp2dStoQTRSWEV3?=
- =?utf-8?B?NmtBNTdwLzZER2h5RWs2cVpXSDV6V05qZ0pIeVRQcGFBS2JqMWFDY0toZG9t?=
- =?utf-8?B?bkg4dS9kZHd3cW41UVdFSTRSb21iSk1PL2JrajlEU2N3RXg1eWd6R0FXWGx0?=
- =?utf-8?B?K1NaS2VMRmxKSHRGeGVyU1B0S1o4WWRnMERYWk16ZVRnZEluQ2VtWkZyRW5B?=
- =?utf-8?B?bnJkZ3JjcDBodUNaczJYOWZBTG1CSjV3MVlYU1haZlhmK0RjS3gyVFNhVDlj?=
- =?utf-8?B?SVFNeU1OTFhjNE10MERwZmUxcDRUNXVONWpJRDYzTzI1QTlSaE1FUEJQdFFs?=
- =?utf-8?B?NTVCZVo4TnQ0Tnl6SEk2Wk0wenNLTGlDMnJkWU5KT1BrUGVPcklzYUpmejhh?=
- =?utf-8?B?cHRCUGc1Nyt5U2VCMFdDWVdkbVJINUJnSUdZRERnMjZMem5Gdm5lVnllMFBz?=
- =?utf-8?B?M0lYUFhFTFp0c2ozTHBIVVV2OFhDazNKd1NWVlhCc1VFRXcrRkR5K2U3TEEx?=
- =?utf-8?B?eDZkcklHZVdCWndLNUZobVNpYjlNeUFicVZBRW41N2NHNlRmOXZSL2dBemhZ?=
- =?utf-8?B?YzBhcWZpbHM0MllGQ1JlcEZKeDdYMWZNcTFTZHg1TkR0OHpUZmNnRzlBVFVj?=
- =?utf-8?B?SDNjMEdBVXRNc1R5TExiRDhMc2FMak95c3pMQWtSOC9HWWp0azJnZituQUZu?=
- =?utf-8?B?SEJnWHYvN2pMd0FDeTVnMHhoY0FJQ3krelBWdjBWbU1Qc3NJVmE2bm9Gbmw0?=
- =?utf-8?B?ckdBQnUwZkRyNzVPeTROS1B2RG9sUEp2MSt4alg5c0xvQm02NkpaaGxpTHl5?=
- =?utf-8?B?Z050KzNwVkdUK3NsZ3dLUDFRRW9Hb1dKWXdQbXoxbFc2Tk5uUkdjQ2haLzdY?=
- =?utf-8?B?WWJXc014MGRVdW9kajZrSS94UUV5QUFPUXpBaVNGeHVLN1B1dFZVNlRwNEdm?=
- =?utf-8?B?VVJsRGltVnBPUWNjQVp3dFpiWVZQU2RQbHdwc0ptaTJTN1RPTERpR1hhWTlN?=
- =?utf-8?B?bmZVaDFDOStZc1ZZM1FlRWdZS0ZMQ0tkM0tSZ1lvU1BvOFNBYXBaU00wODA0?=
- =?utf-8?B?b2U4SSttSjlKZE9HTGpQeUF1RG1laHJlNE00S2tzMHRLV2pUcFpqUzRhVDVt?=
- =?utf-8?B?alBWZ2V0S3JFbG1aNzNIRlVkWE43VHBMZk9meWNabmQ3K3FxaXlhOC96Y285?=
- =?utf-8?B?bXV0Tnc1cXMxYjQ1d3pHUmgybmQ3Y0NCV3Q0alJsYzJqSlNmOTB6ZXhkVGRt?=
- =?utf-8?B?cTIxVEVCZUgrd1ZCM1cvZ3BNYU9udkdrczNCRzM2LzJUZENLaFFQcHJLbWZ0?=
- =?utf-8?B?aytNL1F6cFltMVdQWmJvL0lEa2ZRVGRHSmpVMUcrTkJUb3JtQVJBSHhzblNQ?=
- =?utf-8?B?aW9ZNlJ2MVpVUmRjVVRBSlZWdG5PNUJtMVVQY21YVi9IalhNZ2wybUl0OHE0?=
- =?utf-8?B?MCtmR0N4UlQ0N0xBZzlWZWxBcFd4TWExVWhhUmlmOW5SNjJmMkM3aXRHUG5S?=
- =?utf-8?B?d1liNGRieU5QNkVNSHFsS3JtaDZkcndKU0M4SVlWcndNQ0RoZ2lGcU5WNy9P?=
- =?utf-8?B?MDF2Y1pOdlBOU0ZLVU1PaGREY1ZpZnd4QUVvQmFQTHhnQ0tucWFLT3pTTGI1?=
- =?utf-8?B?aW90YXJsRnU0UmRGcmFpUXJwSTgrUGhuMGwvbVpER3RNemxXSWZXRlZ1eTBE?=
- =?utf-8?B?NUZpUU9nTUd1Wlp5dThQOEt2MTkxMGplWHVUb2ZGUmRLdGNMcnk5dz09?=
+	=?utf-8?B?bEM5STlxL2VWT1JEbFEwV1pTbE9UV2wrSmJnamE1cXlDaFZzMzhUZVBKUTBr?=
+ =?utf-8?B?YkE2OE15U0lCMHQxd09ESTB2b0NUY2RPYWJGdVNMYVlJMVp3ZU1zUGNDd0tE?=
+ =?utf-8?B?dmczd1hPUVBLdkVFQzdObXlVN3k3aGIycUhUN3RwckFSdXFYY1AzZGJHSlFI?=
+ =?utf-8?B?Z0ZzUnk4SXFLa1lMQnJGWlNZeG50K3F5aWZ5MXdsL1JTQ1ltSjRJVGcwMkQr?=
+ =?utf-8?B?YnI5V1JuWFpLZXZ0a2t2eisweVhmeEIyVHY5TW84VThidVcwT2hiNW1iSGNw?=
+ =?utf-8?B?QnpTZ09mSXRiTWlGNnhQUTdSQWNsYUNJN0JQOTBvZEZVYUNZTFEwVUFZUSs0?=
+ =?utf-8?B?M3dmbW9OUW4wekQ2M0RRY3k5bCtzZE1iUjBJeWt2eVUrYlFtSXBKTjA2aDRS?=
+ =?utf-8?B?UHlCNTg4bTlMY2p1ZzdEbTlXeUswSGdkeVR3b21Nc3pwT2o0eDJDZUY2Tjk0?=
+ =?utf-8?B?VmpzalV0dm9vMGRjd0xneHdxUm9QckVSbVd3YVV4Z05GakJ5TE9vbnRCeith?=
+ =?utf-8?B?bURaeXZsQ0ZJTCt4TjkxNXNlRHhUNitScmhNaFJ1N0UwcEhQU0FnTEFydy9Y?=
+ =?utf-8?B?ZlJxQ3d0TUFZR3lIL1c1YTY3US8zOFBDc3hwVU5IN1hCbkNpaW1lVzJHTGdL?=
+ =?utf-8?B?eVlEZU5XMHJIV3F0OS9yOGpiUngvSHgrWCtZRUtTcTRYanZIK3Zqa0w4RXlK?=
+ =?utf-8?B?amNsdFM3bXpPRTU1Q3dOWlNTZVNGcURHSUsrelBrdjZGRmZVVStaQU5MTGVn?=
+ =?utf-8?B?QVZRb2pJdmJvNmIxcWZONlpaSDEwelVSMFN4aTNpdTJGc21mbTFyUEpxRWdY?=
+ =?utf-8?B?VVVrM0E4Y0FrQ1ljckx4Nk9KbmNGWnkvaGNKQUJqUkQ3Y1ZVOFcyVloxRzhl?=
+ =?utf-8?B?M0JkL01VdjZadjVHU0hNSjZSVjN4Sm5zYkxCUmJtZ3JzbEpOQ1NLRFRMT00v?=
+ =?utf-8?B?UkJQakhVSU5BZWZjaDlhQ01tVTZHL3diblQvMklkL0dHVTllclM5Z2orZUww?=
+ =?utf-8?B?T1BvZ3dYT2tkSkZVNUdRc0RETDMrZXRkVUNQTzZ5Rk5xWXBDS3U2M3B5UFpz?=
+ =?utf-8?B?MXFYWVFySlZ2OVFtdVd6L2ZWMG1qRm9wMDZnTjVUbU5oODAyeE1CbFYzY3hD?=
+ =?utf-8?B?Q2NQVUhYSUEwajZnNEo4M0tVVjlqVlJtdXQrYXU4T29MMC9GdmlQRGtjYWhF?=
+ =?utf-8?B?Vkd5Q3hiNFMwQVZJMEV0ZzVEWDQwUUhHVG0vOUpJZjBpa2FYaGJOSHdxSGda?=
+ =?utf-8?B?aFN5VmVXU2JsZVNLVXpJbWk2NmxCRy9tZ3RSTmZaRWFVcTRzNFlncUdOMlk0?=
+ =?utf-8?B?U1laRlFQL2NYVE10N3NQa3BKK1VjOW4rd0FXRVhlekhIL1hlTGFSaWFheHZX?=
+ =?utf-8?B?SWkzZ1BtWE03MVpNWEsvSFZwS1lZUTZ2dm5NTGNNaWJwanVJbS8rSUVmVzEv?=
+ =?utf-8?B?YWFhOHRzUWxibHpGNXYxNzhYTHN0NDJYNDNhUDNhNTlrdFNGeDNSVEkyUmRV?=
+ =?utf-8?B?R0dEb09aNk0wMVg5d2l5Sk5CQ0dtbTROcHlEQkxSTml3bFgwL2dPOG5VdnRq?=
+ =?utf-8?B?NklwNkdGNnJuLyt6MTlCQWtaMGV5WU1DN3crbWU5NHNvWVBhREdTSTJ0N2g3?=
+ =?utf-8?B?NDIvUm16UHpTY2xoNVNzTUZLS1NnV1N1a1VEZm9VSFMraFpUeEkyQ1h4LzRa?=
+ =?utf-8?B?NU54VXQrbGV4bWltU0JRbmVNcGRxdHV6MjhPaUlOUEFKSmY2WVhwVW0vL2gy?=
+ =?utf-8?B?aFlXOUlaT1VSSTN3VUtaeDJ5Q2M3c1l6M2pFM1RFdXJ6R2tFZXhDRDVqUEsy?=
+ =?utf-8?B?SGdQWEVNd1VlWkY2cWowaGViUDRjV3o3VjhqcHZ0alVPY1VaYTRaMmZUd3B6?=
+ =?utf-8?B?ZGk0anZqL09MNUpSTVEvRWVFSG56ZFNuY0ZXMlcrR1ZkRVhvT0x3czNCTEsr?=
+ =?utf-8?B?R2JHdFhaUG9HWFAxdU8xSmgwb0UzUEI2UzBZb25GcG5qNC9HcFZYOENkYjBD?=
+ =?utf-8?B?SkhRRjFIbEtaSGZPRDNZSm1Lc0wyUmxYWlcrdWZFNnZVQURqMU1Jd1dXQ0Vk?=
+ =?utf-8?B?UVBRalB5cGF4cjZIa3B2bDdQUFBLcHFZZEhiemNiMHB2cmpORzZIRnZ3d1FL?=
+ =?utf-8?B?SmNIalN5RFAvblhlano0MnBvcTIwUXEySlhWdzRYVm8xbDlMUzFVMXBtOGxx?=
+ =?utf-8?B?bXVLK0tGazhqRkxsODBOVkdlWUEvN2YwVzNEc2xTWFowc0c4eG55dzVMRGdr?=
+ =?utf-8?B?YVRCbjY4c2lBU3lNUGEwTDMvUmsrTm55dGlHaXBoZmdLMnNzRHVQNkkvKzho?=
+ =?utf-8?B?WHVkcUlwU0YyK21odlVlYXh0NGp1a2NHVDhlZ0tQY1U0S1VRVTdPUT09?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7d330143-3832-4b02-8dd0-08deca4c1789
+X-MS-Exchange-CrossTenant-Network-Message-Id: ffe0534b-9bc4-445d-3274-08deca4c27ce
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2026 19:35:29.6396
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jun 2026 19:35:56.8921
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8+wt9NsJkEXrtVOuDGY/GimzFMqi0Is3oZg3B0/XkwfVmjgQOweyEkOIzJrbrIeX4zox7wqsmcmM4igagqiaFQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: V1Bz4qZvBg74EEKmoIS9yirLqzX/5wnRjTAcE7SoXvMD+UD45FtxEE0fJ9CKCLwW9u96c29vZdRlotdYctY1DQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB7382
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This shall be invoked before a thread switch, providing both the current
-and the next thread as arguments. Some scheduling classes may need it to
-correctly handle their state as the sched_pick may not be invoked when a
-higher-weighted class is providing the next thread.
+This was so far not possible due to a missing sched_class callback,
+causing threads being credited for the preemption time of threads from
+higher-weighted classes.
 
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- include/evl/sched.h     | 2 ++
- kernel/evl/sched/core.c | 5 +++++
- 2 files changed, 7 insertions(+)
+ kernel/evl/sched/quota.c | 56 +++++++++++++++++++++++++++++-----------
+ 1 file changed, 41 insertions(+), 15 deletions(-)
 
-diff --git a/include/evl/sched.h b/include/evl/sched.h
-index ae9690860146c..0b16f1b1cf626 100644
---- a/include/evl/sched.h
-+++ b/include/evl/sched.h
-@@ -120,6 +120,8 @@ struct evl_sched_class {
- 	void (*sched_dequeue)(struct evl_thread *thread);
- 	void (*sched_requeue)(struct evl_thread *thread);
- 	struct evl_thread *(*sched_pick)(struct evl_rq *rq);
-+	void (*sched_out)(struct evl_thread *thread,
-+			  struct evl_thread *next);
- 	void (*sched_yield)(struct evl_thread *thread);
- 	void (*sched_migrate)(struct evl_thread *thread,
- 			      struct evl_rq *rq);
-diff --git a/kernel/evl/sched/core.c b/kernel/evl/sched/core.c
-index eb133e334d30f..0d49fc16bd67e 100644
---- a/kernel/evl/sched/core.c
-+++ b/kernel/evl/sched/core.c
-@@ -910,6 +910,7 @@ static __always_inline bool test_resched(struct evl_rq *this_rq)
-  */
- void __evl_schedule(void) /* oob or/and hard irqs off (CPU migration-safe) */
- {
-+	struct evl_sched_class *prev_schedclass;
- 	struct evl_rq *this_rq = this_evl_rq();
- 	struct evl_thread *prev, *next, *curr;
- 	bool leaving_inband, inband_tail;
-@@ -990,6 +991,10 @@ void __evl_schedule(void) /* oob or/and hard irqs off (CPU migration-safe) */
- 	this_rq->curr = next;
- 	leaving_inband = false;
+diff --git a/kernel/evl/sched/quota.c b/kernel/evl/sched/quota.c
+index 0829da711a66a..d331dc2e8f7ac 100644
+--- a/kernel/evl/sched/quota.c
++++ b/kernel/evl/sched/quota.c
+@@ -187,11 +187,28 @@ static void quota_refill_handler(struct evl_timer *timer) /* oob stage stalled *
+ 	raw_spin_unlock(&rq->lock);
+ }
  
-+	prev_schedclass = prev->sched_class;
-+	if (prev_schedclass->sched_out)
-+		prev_schedclass->sched_out(prev, next);
++static void charge_usage(struct evl_quota_group *tg, ktime_t now)
++{
++	ktime_t elapsed;
++
++	elapsed =  ktime_sub(now, tg->run_start);
++	if (elapsed < tg->run_budget)
++		tg->run_budget = ktime_sub(tg->run_budget, elapsed);
++	else
++		tg->run_budget = 0;
++}
++
+ static void quota_limit_handler(struct evl_timer *timer) /* oob stage stalled */
+ {
++	struct evl_quota_group *tg;
+ 	struct evl_rq *rq;
+ 
+ 	rq = container_of(timer, struct evl_rq, quota.limit_timer);
++
++	tg = rq->curr->quota;
++	if (tg)
++		charge_usage(tg, evl_ktime_monotonic());
 +
  	/*
- 	 * Careful: we _must_ have updated this_rq->curr before
- 	 * performing the rest of the context switch code
+ 	 * Force a rescheduling on the return path of the current
+ 	 * interrupt, so that the budget is re-evaluated for the
+@@ -253,6 +270,8 @@ static bool quota_setparam(struct evl_thread *thread,
+ 			/* Dequeued earlier by our caller. */
+ 			list_del(&thread->quota_next);
+ 			thread->quota->nr_threads--;
++		} else if (thread == evl_current()) {
++			tg->run_start = evl_ktime_monotonic();
+ 		}
+ 		thread->quota = tg;
+ 		list_add(&thread->quota_next, &tg->members);
+@@ -400,21 +419,11 @@ static struct evl_thread *quota_pick(struct evl_rq *rq)
+ 	struct evl_thread *next, *curr = rq->curr;
+ 	struct evl_sched_quota *qs = &rq->quota;
+ 	struct evl_quota_group *otg, *tg;
+-	ktime_t now, elapsed;
++	ktime_t now;
+ 
+ 	now = evl_ktime_monotonic();
+ 	otg = curr->quota;
+-	if (otg == NULL)
+-		goto pick;
+-	/*
+-	 * Charge the time consumed by the outgoing thread to the
+-	 * group it belongs to.
+-	 */
+-	elapsed = ktime_sub(now, otg->run_start);
+-	if (elapsed < otg->run_budget)
+-		otg->run_budget = ktime_sub(otg->run_budget, elapsed);
+-	else
+-		otg->run_budget = 0;
++
+ pick:
+ 	next = evl_get_schedq(&rq->fifo.runnable);
+ 	if (next == NULL) {
+@@ -430,8 +439,6 @@ static struct evl_thread *quota_pick(struct evl_rq *rq)
+ 	if (tg == NULL)
+ 		return next;
+ 
+-	tg->run_start = now;
+-
+ 	/*
+ 	 * Don't consider budget if kicked, we have to allow this
+ 	 * thread to run until it eventually switches to in-band
+@@ -448,9 +455,12 @@ static struct evl_thread *quota_pick(struct evl_rq *rq)
+ 		goto pick;
+ 	}
+ 
+-	if (otg == tg && evl_timer_is_running(&qs->limit_timer))
++	if (otg != tg) {
++		tg->run_start = now;
++	} else if (evl_timer_is_running(&qs->limit_timer)) {
+ 		/* Same group, leave the running timer untouched. */
+ 		goto out;
++	}
+ 
+ 	/* Arm limit timer for the new running group. */
+ 	evl_start_timer(&qs->limit_timer,
+@@ -462,6 +472,21 @@ static struct evl_thread *quota_pick(struct evl_rq *rq)
+ 	return next;
+ }
+ 
++static void quota_out(struct evl_thread *thread, struct evl_thread *next)
++{
++	struct evl_quota_group *otg = thread->quota;
++	struct evl_quota_group *ntg = next->quota;
++	ktime_t now;
++
++	if (otg && otg != ntg) {
++		if (ntg)
++			now = ntg->run_start;
++		else
++			now = evl_ktime_monotonic();
++		charge_usage(otg, now);
++	}
++}
++
+ static void quota_migrate(struct evl_thread *thread, struct evl_rq *rq)
+ {
+ 	union evl_sched_param param;
+@@ -786,6 +811,7 @@ struct evl_sched_class evl_sched_quota = {
+ 	.sched_dequeue		=	quota_dequeue,
+ 	.sched_requeue		=	quota_requeue,
+ 	.sched_pick		=	quota_pick,
++	.sched_out		=	quota_out,
+ 	.sched_migrate		=	quota_migrate,
+ 	.sched_chkparam		=	quota_chkparam,
+ 	.sched_setparam		=	quota_setparam,
 -- 
 2.47.3
+
