@@ -1,77 +1,151 @@
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74A0A383C8F
-	for <xenomai@lists.linux.dev>; Sat, 13 Jun 2026 17:44:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.197
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4EC732573F
+	for <xenomai@lists.linux.dev>; Sun, 14 Jun 2026 09:17:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781372643; cv=none; b=VMgUGbO2y9ZYDMMz+6mQKjM8GkwlT/ed9/jkxwgLdVKrpKjBuZgwZuwC/I/bBCHRlPN5cTj52tsB0lQZyx8bBwsV0AHDpTIFitjvQzvx2lhnx7q3kz04Y1IVEbSZN+jrOnHighfdKvBdRNqarQCMc4mXeKNI/6jadZQDc+rVIZE=
+	t=1781428667; cv=none; b=dFjkRtCQezvAgQ0iFLmZtiblx3hk3raTG5bQYenbnO42MS9AyYij8AIxW1J7qSd7EfiE0N1IL0Ec0D/+tUq+1ciCKw7yEhtr4RBhSpawIKUfdm2VDoi7sph0nlom9tfIYIrKqbawX60yaQZGwWakkPN/CVMXqxLx/ID504SpE6s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781372643; c=relaxed/simple;
-	bh=joBqFo4AVTfgC8bX3xHn7OnlQBnYhgv2mY+Ei4woQE0=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=dKNW+cbJd+XGmnU6GAaKu8JivwHmjLcFJVUwRBx7Iry8YEOPpVnoO2EWhKDE+mTbVWv0nX6yQSnabpiszzfV1dbY/zAcqlajlbyid7Tp41ElhGUXi2q8GG6A6dz7JDcw4v4NKhlqZcdjNbV4ar9Gfv+W+61TvNsLB4QRXQ8VPuY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=MZ/y8Jwf; arc=none smtp.client-ip=217.70.183.197
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1781428667; c=relaxed/simple;
+	bh=+PImMXBQ5xqYmqP37/FJ+KC9isQsmPClPR4YJh3sQQw=;
+	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=KVOvhuo4g4B21uYeOB1doxRnm8X+kIsYLrywKgD14u/604d8j5PHAGaRB1kSVSJoKAqkUY7zRohlAWcXyL9cCSGnHn4PT0/RbsovOuyJg4xZqoqz21nCYFFyqE6N0jNmbyHcjGCj7zI2eDvKPzzjQVY5euYFetBAGbpeIchfjLI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=qKkjChxv; arc=none smtp.client-ip=185.136.65.228
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="MZ/y8Jwf"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id CAD953E98F;
-	Sat, 13 Jun 2026 17:43:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1781372634;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=JLlBYsbJPlh89G8PWazemzM4oA9rMgdQzQLrRkzZhNc=;
-	b=MZ/y8JwfRvRrN5d3l+3ywZG6A/gYq1FTm38fRAkJ/hVduHcCr3XlXCGR5kVdv3MGa/Zt6U
-	YMs8xmEg0GYNfA6KxK6exOQSxpkt+XpTCSx9jC9Bp/B3Tc8G34rqO2WMNwW/LzvRgjZWQi
-	UfXbwwkfgDQByatfvSNw2rAmZfUCtStgNzfi536eSmOECUVArqFU/TwzDOI8ZTelHQzbB/
-	ak9RKffdJPiNAMjwrheD/EH5MW1MoSjBxzpWy240CLSBfZBrbRGcs4fyPKdTqm/LjT3qyj
-	Kmw8mQw9ifMH89u4DAynLsrKxUwm45fuqf0oD3BZ6e6uT4J3pYc7PJEHtvTrbQ==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@lists.linux.dev,  Tobias Schaffner
- <tobias.schaffner@siemens.com>,  Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: [PATCH] x86: dovetail: Call trap exit code with hard IRQs disabled
-In-Reply-To: <874ij6tleh.fsf@2a02-842b-4100-f601-1469-181b-22db-b4d0.rev.sfr.net>
-	(Philippe Gerum's message of "Sat, 13 Jun 2026 19:12:06 +0200")
-References: <20260612211719.3054905-1-florian.bezdeka@siemens.com>
-	<874ij6tleh.fsf@2a02-842b-4100-f601-1469-181b-22db-b4d0.rev.sfr.net>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Sat, 13 Jun 2026 19:43:45 +0200
-Message-ID: <87bjdexrn2.fsf@2a02-842b-4100-f601-1469-181b-22db-b4d0.rev.sfr.net>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="qKkjChxv"
+Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 202606140917351a3989ee12000207ba
+        for <xenomai@lists.linux.dev>;
+        Sun, 14 Jun 2026 11:17:35 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=jan.kiszka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
+ bh=kxqyYihKzzuVZqpxmK8BDtxZJ0sVgq/amDobKhP8HB0=;
+ b=qKkjChxvrAA8H9k+rdmO3Z2Srb2DglGnOoySPEIpERbECJWZhjRxPajssMDX2EfKOOge9r
+ 5K6pWVrTWONEAZRc4XTt27HoLDt4QuI4dPca3RshdiPW6+n78+3/BLvdNhePoEvNRHGuB8Om
+ u6cR4DXs1mbZIdMxwoXhTT3bg3L4Vp7/dFVNK0uYO9kHpg7pSM8JqOaT0tXWjeo+82g03U1i
+ hEEwPzGz5e3GOZVJXn8VHTfSad6R6cbphkWeKohaJ6tu5aDcPwTarJG9bcVEU1vwB3fK6Jl7
+ gLNPLxC2VXEypwJMftpnrOjdGZ0xaFYZVD05LxL8NqIx+EB3dMYzqWAA==;
+From: Jan Kiszka <jan.kiszka@siemens.com>
+To: xenomai@lists.linux.dev
+Subject: [xenomai-images][PATCH 5/6] linux-xenomai: Renovate xenomai-4 kernel versions
+Date: Sun, 14 Jun 2026 11:17:33 +0200
+Message-ID: <36308aaa5fd8683e6a6ce0100cff648b2149fc74.1781428654.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1781428654.git.jan.kiszka@siemens.com>
+References: <cover.1781428654.git.jan.kiszka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Score: -100
-X-GND-Cause: dmFkZTG4enVlCHNXb9wufMarb2D7x4STEWS7WSW7PLmBP0dFRkdjn8lghsDy3a1++YfDBNZC1LigzPiZhdXcZV9nds3Gs6CApIVtkcdJajxI3Nk9YELp8doNMXxCbWBq3PkqHjUKcHcc2Sf0YCFUvy7LKeE+2BsSCkhs4QQ4OitpycN3cD/do/KtDZ3SO98D7sP29c3ZbDsF4s+RntuQNJjXwqNpWi23HktyH8iKAbS9xKifDkqcq25gwLryICA3e1TYg66k8UeCZTy0eLW7SROakHhwN/vFqTGSCfijRkp4BW0F1dBAw51SmscoWKDrdifD5sEU/Txeo5BipbbdovChmt/MdpkZ+0M2AbCzkLgH98GZ0Owo8Rg+up5s5mjzOtH/eUSxPZTDAhrzNXFsIwP1WwZ1vaBACmzc3QTPWM5bBZBvC7QihkosyULgIVICTRg9ox/VxmIecsaqPM7YJEtxD27MRE5RWxhD/kBhX6f4M99J0nDK3L1kVssCQG3i8cpS+DLzNNLoCNN2X/PFKr2/ZopFSB3mu8NLjpNlx7RqouLfmUIx+5Gs6Wv95UPr2nNhxgdoQKdPMPw2o6K0NwP4VVP78x9oBYcJa7ZLbrm2ANz9/Q4CEXZjclZVVzglmmfRE1976lGSdgNhNf6n4j2VnfIavUF/u3AyYJYztOz2aCrG/g
-X-GND-State: clean
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-294854:519-21489:flowmailer
 
-Philippe Gerum <rpm@xenomai.org> writes:
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
->
->> mark_trap_exit() should do the reverse operations of mark_trap_entry()
->> keeping ordering in mind. Especially as oob_trap_unwind() is expecting
->> hard IRQs to be off.
->>
->
-> oob_trap_unwind() does not require irqs to be disabled,
-> __oob_trap_unwind() already takes care of this. However, we do want
-> oob_trap_unwind() to return with irqs off unconditionally because
-> handle_oob_trap_exit() might not ensure this. So the original ordering
-> is right.
+6.1.y-cip-evl is now EOL, drop it. Bump the rest to latest releases.
 
-A better fix may be to disable hard irqs right before leaving
-__oob_trap_unwind(), instead of expecting handle_oob_trap_exit() - which
-is user-provided - to do so. This would make things clearer, and the
-conditional disabling in mark_trap_exit() pointless.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ Kconfig                                        | 10 ----------
+ recipes-kernel/linux/linux-xenomai-4_6.1.bb    | 14 --------------
+ recipes-kernel/linux/linux-xenomai-4_6.12.bb   |  2 +-
+ recipes-kernel/linux/linux-xenomai-4_6.18.bb   |  2 +-
+ recipes-kernel/linux/linux-xenomai-4_latest.bb |  5 ++---
+ 5 files changed, 4 insertions(+), 29 deletions(-)
+ delete mode 100644 recipes-kernel/linux/linux-xenomai-4_6.1.bb
 
+diff --git a/Kconfig b/Kconfig
+index dc79700..091a299 100644
+--- a/Kconfig
++++ b/Kconfig
+@@ -228,14 +228,6 @@ config EVL_KERNEL_6_12
+ 	bool "Latest 6.12 EVL release"
+ 	depends on !ARCH_RISCV64
+ 
+-config EVL_KERNEL_6_1_HEAD
+-	bool "Head of 6.1 EVL branch"
+-	depends on !ARCH_RISCV64
+-
+-config EVL_KERNEL_6_1
+-	bool "Latest 6.1 EVL release"
+-	depends on !ARCH_RISCV64
+-
+ endchoice
+ 
+ config KAS_INCLUDE_EVL_KERNEL
+@@ -245,8 +237,6 @@ config KAS_INCLUDE_EVL_KERNEL
+ 	default "kas/opt/linux-6.18.yaml" if EVL_KERNEL_6_18
+ 	default "kas/opt/linux-6.12-head.yaml" if EVL_KERNEL_6_12_HEAD
+ 	default "kas/opt/linux-6.12.yaml" if EVL_KERNEL_6_12
+-	default "kas/opt/linux-6.1-head.yaml" if EVL_KERNEL_6_1_HEAD
+-	default "kas/opt/linux-6.1.yaml" if EVL_KERNEL_6_1
+ 
+ choice
+ 	prompt "libevl version"
+diff --git a/recipes-kernel/linux/linux-xenomai-4_6.1.bb b/recipes-kernel/linux/linux-xenomai-4_6.1.bb
+deleted file mode 100644
+index 2efe538..0000000
+--- a/recipes-kernel/linux/linux-xenomai-4_6.1.bb
++++ /dev/null
+@@ -1,14 +0,0 @@
+-#
+-# Xenomai Real-Time System
+-#
+-# Copyright (c) Siemens AG, 2023-2026
+-#
+-# Authors:
+-#  Clara Kowalsky <clara.kowalsky@siemens.com>
+-#
+-# SPDX-License-Identifier: MIT
+-#
+-
+-require recipes-kernel/linux/linux-xenomai-4-evl.inc
+-
+-SRCREV ?= "v6.1.162-cip51-evl2-rebase"
+diff --git a/recipes-kernel/linux/linux-xenomai-4_6.12.bb b/recipes-kernel/linux/linux-xenomai-4_6.12.bb
+index 7281917..249b485 100644
+--- a/recipes-kernel/linux/linux-xenomai-4_6.12.bb
++++ b/recipes-kernel/linux/linux-xenomai-4_6.12.bb
+@@ -11,4 +11,4 @@
+ 
+ require recipes-kernel/linux/linux-xenomai-4-evl.inc
+ 
+-SRCREV ?= "v6.12.69-cip17-evl1-rebase"
++SRCREV ?= "v6.12.85-cip22-evl4-rebase"
+diff --git a/recipes-kernel/linux/linux-xenomai-4_6.18.bb b/recipes-kernel/linux/linux-xenomai-4_6.18.bb
+index a1ddad5..10fe5f9 100644
+--- a/recipes-kernel/linux/linux-xenomai-4_6.18.bb
++++ b/recipes-kernel/linux/linux-xenomai-4_6.18.bb
+@@ -11,4 +11,4 @@
+ 
+ require recipes-kernel/linux/linux-xenomai-4-evl.inc
+ 
+-SRCREV ?= "v6.18.7-evl2-rebase"
++SRCREV ?= "v6.18.22-evl5-rebase"
+diff --git a/recipes-kernel/linux/linux-xenomai-4_latest.bb b/recipes-kernel/linux/linux-xenomai-4_latest.bb
+index 9d479cd..a542e80 100644
+--- a/recipes-kernel/linux/linux-xenomai-4_latest.bb
++++ b/recipes-kernel/linux/linux-xenomai-4_latest.bb
+@@ -27,12 +27,11 @@ python () {
+         (ret, out) = subprocess.getstatusoutput(cmd)
+         d.setVar('LATEST_KERNEL_BRANCH', out)
+     else:
+-        d.setVar('LATEST_KERNEL_BRANCH', 'v6.12.y-evl-rebase')
++        d.setVar('LATEST_KERNEL_BRANCH', 'v6.18.y-evl-rebase')
+ }
+ 
+ GIT_BRANCH = "${@ \
+-    'v6.1.y-cip-evl-rebase' if is_kernel(d, '6.1') \
+-    else 'v6.12.y-cip-evl-rebase' if is_kernel(d, '6.12') \
++    'v6.12.y-cip-evl-rebase' if is_kernel(d, '6.12') \
+     else 'v6.18.y-evl-rebase' if is_kernel(d, '6.18') \
+     else d.getVar('LATEST_KERNEL_BRANCH') }"
+ GIT_BRANCH:riscv64 = "wip/evl-riscv"
 -- 
-Philippe.
+2.47.3
+
