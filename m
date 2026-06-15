@@ -1,49 +1,49 @@
-Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11012062.outbound.protection.outlook.com [52.101.66.62])
+Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11012010.outbound.protection.outlook.com [52.101.66.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CE013B0AFA
-	for <xenomai@lists.linux.dev>; Mon, 15 Jun 2026 06:44:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.62
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0BF930F533
+	for <xenomai@lists.linux.dev>; Mon, 15 Jun 2026 06:46:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.10
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781505895; cv=fail; b=YSkTWZwa/cZVIIsg9dDTum9fyPd5eZA8OZ5WbSClX61dyafQkds8CJVnQmnVslqsVlzNRHP36lq7t/XJRjLLc5+qan8kgDZm3QMc5zvypOLSzgHE8dDNWJMmvaP8LWNk1Q+j89RigFPJdxZoY4HVf/8QEfn/+4sZDCF+mM7ar98=
+	t=1781506009; cv=fail; b=AmiXfnidr53ggL7pDoPfzguuEGw0k9mDFuUUkTDMhy1bLfrQpTfBLsoynG4gwgQgQObLgdUwvUSS40onnZNZUyUMSHxeaupd+DeIocinF6azWnS1wiw2xdzMBJPUnp6LIf9VB2bsIAqwmcloJUTMzfGMLhdtCVj95IMQVLSsO54=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781505895; c=relaxed/simple;
-	bh=ABxGPJgo6x5/igLDbiyQMBbUI6k2xaSMuLkss/+bfsc=;
+	s=arc-20240116; t=1781506009; c=relaxed/simple;
+	bh=NWU515Ox4QT0ghHXSUP2XYEH7HVN3IWLa5kOb3usAjs=;
 	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=i2DNGxkifKJ8M0uNyLu4KnhMKUTESSrnk4vskmqDKy/1PniEGrGXYWbrR/NE+5DKufainCBJfjUEwLi2sW7Z7r9vhZ1gU5VrE8Fy/TpGgcsmdjX12gbWZCcVh70SiTRSIXZstJM0Yp/auNZT0Pr5UA2P4/iczf9Kk04VSxQ7+kk=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=IsG6BM0E; arc=fail smtp.client-ip=52.101.66.62
+	 Content-Type:MIME-Version; b=BgqqZulekZPKvvOwajDJbQD4tlctLLoB07Dkl9HDAsICLV3DQJtvsByzfYlBvdPOjqDpS962iN3civEGNdswAQ4tNiJux9YAcVmLAep5WWLBWD3/D9yUfbe1pjicbkUiyywsygv/NSatZ5mTbTptZke0VbXpRcqtgHQI4YlxSvw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=FBE0kkan; arc=fail smtp.client-ip=52.101.66.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="IsG6BM0E"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="FBE0kkan"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Q/azREYtuN8vA6+JzyDIYd6GjG9ULptwTWCSl03MV3qut0KXPy8OrzSyZ5osfxaCkhFYUhcBcy/f4Wx1e/4alJQ76FX5MRuACEClqXtlH3EvoSEwDM2ovDh26waiOOafp+I+hIolZh6snWtVR+ykk3GPvdbKjqPYSoPqVtYyLZNbLVBDqcuqc/+8rlxqz7R0fhZnLRd+JareH0TKvU/EQGarVx+hFpa7URCjBdxaTCh9CTzbX05ckMWd+4iOutODcmi6/EH5sn6uCnZcznRKnxPrFnYrr56jnvT05T2NS4pS7SvQ3pwuezSPUOlYEbTBhrnhHbeDQgBabJ4knpetXg==
+ b=gq3tjrFKJ8a/otwZB//H2zLPcmM3U+kjzbSCNtE0oNc01MyDN/f+fvESn59c5AVGpGtNQGQIDk0ZvRUDU8ZtQmhM8vHMt+9mMJF5h+Z2FJnsE6MHfn5rQ8RPPSNhvETS2xLWR/pqYQkGVYqt7CdBQggeGAw7JjSAIC5RWS4/ZfU/sHRrSIQWs5IH9tjPggoRzCoThHcCswND9otKToyiCihMMU5FWNensrz4ah8OhA5F9b5Bw6hYG0N3blz4kbm1+N+mMkmxV8/QnHToHf87tM8ig12KPlVqPJfkXoWrMa8XNO3hDJTHuxbKiMBI4saNzOnJP2tRmfmx3YRRCFkMTg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=dpHuSI+8ztpD2lzq8Mcmf47LaEIUuiB4GlfiTkGAQCs=;
- b=W4mC0BkuIck2bZva+8hD8pJ4ab1bYHjD/dm6vH4DwJHfry5Chh3VcfvBB425BlB5O+jE+mpdinLyrAe2UwQqWwOXBFOFDcz/2ZvCsgfSKQHy4P1X/2lbfjmy0mZl0lH1WsLKGXJuK4ruSCadO3komM4BU8yM2v9zPSYnPjMERlo+3PiEXA8vysY5KcebqZkJv+dMPiGWenna4p2WKAIdmUoeb6xt66j2FjA3wvLTIcpwjPKiAqrTqHmvX4Tsqi/mOSqjlzkCt0RN6N9lGqfe72VOpL6sCJT05om2XeejPc4S3kiDjGZWnKUSo6VKD9o6AgzQ2rS5vfHRo1GTsMZ5gQ==
+ bh=uHwXrDdsuf1MG5XCM1NVG9MPh6f1/KOUN67uJ/ySfig=;
+ b=Uwmk95jQyGrti/X6EBgwreT0jF8HIAMSY7Zm7AHRn1HGQ3LGWiacoPz7v31/vjqdK45Y9e9038n7PDLlRjyfR7iyhsGNYzu8v5y4bYWT1bimsbvwWsjdGy+4KG/JdqBs7fOLsgmZ/gV0OT9PMgmScFrkDyZf9B0pKJJhGbE1oAuTMfq5uXMA/sL234QSFA4c07Ior+EMg3VetrSJtYJFb08mwUqPjflfvRiFRl51q8meuRjHU6ShS9AGcLuGPLYxJEovzI31Q1iewV+GPXMoWvrhDHxabR9+JB9uV3vzczIbILbcDnRWiSrWYs54mlUI8XRUmoLnlRoc6lAXwXgosw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dpHuSI+8ztpD2lzq8Mcmf47LaEIUuiB4GlfiTkGAQCs=;
- b=IsG6BM0EbNPp5feGU+sX1jcgM0G47ivH8wNhlXQ7MYZres5YUNw3Yc2k2kQ+oZhxLSoloxIXMppbIfGaItJK+eT1ZetNPB9uPoWIlDS94epsNE68JT522Qz3R5mPktSIhxA3sxvNErWO/O065O1aOQtIm9yvJLk92oDA0YpzRLRJReyoxe+2c2kczxwd9G7gPZm1yq85lpS9QMX4XpXfUrCpmBAzkQSuc8JTP1E8TiOi4tdfci50SEKY/RySNnLlfkSxjsnPicEiYEvyschQ3+hy8CUyguVZKgXojjakWt/KMffJU3SFf8Tr2dZJS1svTsZU4reo4YmyOvoGqRKaHQ==
+ bh=uHwXrDdsuf1MG5XCM1NVG9MPh6f1/KOUN67uJ/ySfig=;
+ b=FBE0kkan5WfbmuaPJJ4gSj93iA7X8hMcz1x823SBEVVAzRioGdsbmRR5o6j0h7oVO8UKG/soV0WUWvThzKtf1ePF3NVKFRYJFoP5OwS3PAO5I7RRNAbXwMElmo2JlFH45lcjDh7iZUXbwmjGy/FaPV+Scmjlj1GhcnwXuwYfRY/QGH5t5451fkj8PYeocuqTz+bSA+y+hmpigSr7oj/+6/MMtFHzYg8ABZ4PyTzJEdFBg8TmAWa6+tGA19i9EGYuEKLvmT8VcehE9skXR5yD4K6FcpCX/jbIdnUd8ADjBGNAhkj8ecb4NZ7MuuRYtaFJWKfq4SOGacon2HExsBvFoA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DU0PR10MB7076.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:423::12) with
+ by DU0PR10MB5655.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:319::7) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.113.18; Mon, 15 Jun
- 2026 06:44:50 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.92.18; Mon, 15 Jun
+ 2026 06:46:35 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1%3]) with mapi id 15.21.0113.015; Mon, 15 Jun 2026
- 06:44:49 +0000
-Message-ID: <4931c426-810f-4798-b854-da3b63eeeea5@siemens.com>
-Date: Mon, 15 Jun 2026 08:44:49 +0200
+ 06:46:35 +0000
+Message-ID: <d3d659d9-b327-4f19-89d0-7f53c3b18796@siemens.com>
+Date: Mon, 15 Jun 2026 08:46:34 +0200
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH 1/2] evl/sched: Add sched_out handler to sched_class
 To: Philippe Gerum <rpm@xenomai.org>
@@ -98,8 +98,8 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
 In-Reply-To: <87a4swi9sy.fsf@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0160.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:b3::14) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR0P281CA0156.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:b3::10) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -108,69 +108,69 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DU0PR10MB7076:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0880cb12-e96b-4363-5944-08decaa998f3
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DU0PR10MB5655:EE_
+X-MS-Office365-Filtering-Correlation-Id: 275e557b-6d71-4b37-66aa-08decaa9d809
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|23010399003|366016|376014|22082099003|18002099003|55112099003|4143699003|6133799003|56012099006|5023799004|11063799006;
+	BCL:0;ARA:13230040|376014|366016|23010399003|1800799024|55112099003|6133799003|18002099003|22082099003|11063799006|4143699003|5023799004|56012099006;
 X-Microsoft-Antispam-Message-Info:
-	Po6HkvsuMiSwsKH2yGLQqYmBuinGhkQC2DgDLul2Q2GihK7Xwct+6tcgHLauLOoXaO0NQPRIhYtrEKflLqMF+0LYNu0s3hvfH6ntlXmC12M0lnH8G9/ezMDfd5YByBxrUat3INwl0B8t3kSg1hiyf2MnVvna0KQU88oIo7x8eym1fURfRy1a2qnN34l3GkMPoFvnp3LC+rNY8NncXt5RJeBwZlU+7lJfeBPhhe1ME7gfrmB0K812/wfUZ2n2EJdLOG1bkWq7GjfyoQ9dhv1nuv5yMPOYqlv3I6VzTo0cK/W/2lWpO7T5DBrE5OALAGdq7MT2d+VlW4lRgZQPzLQH+cs93G9xfwqW+BoHN1khUkGJE/VxMlmbmvSkr0i7Q/azMacb10d0GnK/gt2RZ5xRd3MvihopW41/c+D0tgIYAl4d1K5e9mo24YqrcpnjYwlWIrOVSxQlCGWnIYq3y+G9UnlRzH1xXnBsRc7llYrCDUvCgVLgLAuK0rpYKIYNq/gV+znT8bS1JxZVspWWcLsSvDTVVO4tUJJlMjOrfygHlmTCLVQ1dXgwZrLrt6JMjpdihBE/7GvanX3zNtakc1qQQrsR03gJFXFSAqmHu3WDmyTUfh6bvulP9O/SKYGXInKYaNGCIN8vcTuCmSyE9JzyTJy7YTsNjv9rf5vXN2ZVCG4S/0PxHFo1W05txB4PV/cA
+	UfRddGYrEqCo5nM8IPBjJgVEXStsphnjUj8EAfnIxetBAlyJKM7lv+B2n9/GYPUtR7842vGFl4AtKUam9tCUsETmZ4/C9mpWQpKhVGv1ZWw0C1/e18pFQhMX/C5auyX6e0VFYjp0/vJ2+D5oh2RmYWTsltU9RUC/3UrstMxd6IfhW+fZzb6lZBiSvkOoSRZH9JmxJeqtZDX/i8o02LmJJDEvXhQjJZYsV6dB/Y4jY0Y5mSVMeZhhy3WXobQM7LsTZ2kcTtDlsSOPEWhQtqEGYhh5z2mqpltcDH13bf4cwSJN3/4mx6C8fBE6UeVRDjdYvpuXCfj/qsELWQq+1ZP32rzP1SyenmkayDJz7LYxaAiXCz+zt/tUgImZCW2pOpf7qc+nth1qNiiPMwPxm00x5WfTovSYc5I252pNu+jmXWXXfZfRy3KE2NYqdvAI/7RJlImeuSe1lfK3eyJlCDRmX3tMcci4TT+HYkNamlALwDZz9kGwTOmhZ+OiajQTOMi/90O4R98KoAoY8GTmhOiRj8aPm5I7L8kCAZw8GqfJ1RXLQkhk2jzJWBCJubQPqmQb8b2yvWcudIq9sg/XSkNH3RZqb9odKGZG1fya4IynEExEmPbPojxCI3hfrEl3BkGfF38wvG/9hGyFfp/hDuIvjLclGequXZxMsTkzIld8QBa23HENF43g1Q3PtfAXQfAm
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(366016)(376014)(22082099003)(18002099003)(55112099003)(4143699003)(6133799003)(56012099006)(5023799004)(11063799006);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(366016)(23010399003)(1800799024)(55112099003)(6133799003)(18002099003)(22082099003)(11063799006)(4143699003)(5023799004)(56012099006);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?R2tpNkdPbjNHNC90MzEyUWx4NDJ5Q1RRa0pudVdUNy9RY3lYUW04c3NoTzNm?=
- =?utf-8?B?WTdSZ2ZOQk42ZzhSR0puSnZabkVBaDV2NmZiZnRvL2VldXhLcGlwcnA2QmVa?=
- =?utf-8?B?aU5FNFBDYjkxK0JrejVHZUt5SkNKamsvbzlxR3ZoY0ZzMWY1TDd4d2FxNW9Q?=
- =?utf-8?B?Y2tuOTB6aFBvWWlwSFBrQUxaR2JaakNpYit5czdYV0tkcXNwN2NRMnQ5cXJI?=
- =?utf-8?B?RXFqMWhyT09wOGZrY1Z6Y0drZ3JRRjVPSlZPYlZlanpOdXAwNTBvTDZDMnh4?=
- =?utf-8?B?V01aWDRscFdEOHhlY0FwZGwzbG8xTmp1QVdpNWtYVnJSUHR6SGp4OHl6aHcz?=
- =?utf-8?B?aDU1M1E1MWFZRlVObndGTDE3b2F1cUhaSWdkRC9lSjhJWTJXY1lBT0hNdUx6?=
- =?utf-8?B?SkJPTkNRQ2xyWXkvTVRLYTJNNGN3NklwWEVIMnNyQUdZMVNtTFluMEk4R3BD?=
- =?utf-8?B?L256L0gzOWhkU1JXaHpxRzF2QnNQczkrZWZuMVlxRzQvRjZCeUNBZE50OHFj?=
- =?utf-8?B?VkdQdndJbjlaS2dKc3ptS3lIUWtiRG9GTkExS3JDeDZEYVFISFRUdzJEQnJj?=
- =?utf-8?B?ZjhqMS8wdDRtM2xZOXc0TlFtalMvWElzaVBaOUduVkU2cnFsU1pUb2g2ekJC?=
- =?utf-8?B?VUVsbjBtbEsxQ1Rpd3d1STJPQW1meVBrUXBjNVdvMzltSFNpMFJDLzFNMkls?=
- =?utf-8?B?dE0waDNtNTRUUE5BQzRZalRTY1VubUxnbE1XRU5uZEdPYklrUTJqTCs2RVM3?=
- =?utf-8?B?dFZVc2ZyNEJST2s2cnluT2xWRHdrS0lqUTdid1JLK0dHanFtRytLM0twT2xJ?=
- =?utf-8?B?bTVoQ2hZdnl6ODRQZk9USkU3NlMwYnFvUnRpRHVGUzJIa3hoMWwyYkorUFpX?=
- =?utf-8?B?Y0x6ZlNEck1zY2dwZ1hBQU4yZmpRanNPeW5QY2JobTNGZk1sanczNUc0clBi?=
- =?utf-8?B?cHZRYVJNYkVzeEIzT1NWTHc4TFpydTJSdjhmSWpxVVBIOWUzT2tMZldkUGw2?=
- =?utf-8?B?cHFONVJzT20wN0JscUlNRDF5V0lyU2E5ZHVPei91bEJ1ditHWVRnRUY1SU5p?=
- =?utf-8?B?UWh3VkRLQkc1aVhDRmtDMitSdFNGSXNadDZ3M3F0NlplVW9QemlRNWVSejly?=
- =?utf-8?B?SGpoSWxuekhRQk4yZldmVEt5UlF5THJSWFVuWXhjMFUyeVhBUTFEOWlaeGtW?=
- =?utf-8?B?bFdnOUlhcFpKWUs0TEJYQXZZQ0ZLdzB2eWpEQ3orNm5nb1JCWko3NHQ2SFRP?=
- =?utf-8?B?OUxEMUV3OTRmSlZOR0VLWDk4d3FYNEUwc1ZFdkp0d1RVRXZERGt1eCttWUpW?=
- =?utf-8?B?UGd6Tk1YSUVwUWFrY1lZaVVBZndiYkVtbGVWSU5CVWtib3FDaHJJdUp5Nlhu?=
- =?utf-8?B?TUQxUjV1amhxRHl1MjdsRWFKUmd4QXZUVHNyeHBRWno5aGMyYTlrL0JZL3d0?=
- =?utf-8?B?NEVuV3VmMUtWVnQzdGNKZEZ4QXVsejIvaWZ4YzR5T2FscjZPN29CT2dhZHB5?=
- =?utf-8?B?S2dFMy91Ly9EM1hvZTI2bi9DRFVjUVFOcWg3bnIyLzUzVnZRdkhvaHQxbzUx?=
- =?utf-8?B?Vm1FUDM0Rzh4d3hBbWxGOHZJRWlYSEt3ZUpaM3hTTTEwcnZFM2lBYXdIWEVj?=
- =?utf-8?B?TEFlWUZtczY5QldPUzZxNVNwazAzZGNFTHZWSjhwTzQ1cmk0TUV3czlLY3A3?=
- =?utf-8?B?eDB6aTJobWJhRExKc2FZN1pVUDJTMTVVZWNwaERqRnhpdTdnZ3kra2NkYi9r?=
- =?utf-8?B?M0tJTkw2NndqNWhWV0gyZkNlOFRvaXcxN0pQQnFJM29BNzFoMEc2aXhzOTNo?=
- =?utf-8?B?TkU5dkZTSEtCMVhZRTVza1ZTSmJuTFhKWUc5akx5STcvekhRMG5KRVd0ei9J?=
- =?utf-8?B?OVFPdCtkN1hBRVVsNHR3WGNBNENCVVZaNWdubXlOTWo4U201Q1NBdUNRclpU?=
- =?utf-8?B?SXNSdkoyL09XcCt1d0xyc212aEJ3YjZjV1pPOWVZVURHeDY4VXpuYzZWVG41?=
- =?utf-8?B?by9WcG8zbnNyRWlvWk1HbGlsVWVOOTFielc0c00vZEp0UW9MK1ozNXMyRTlS?=
- =?utf-8?B?VlJIdktzYVpIRGx1eVVsTFNxSG1tNUJiU2NXWHJIOURFb2pSeFdBOTVqUW5P?=
- =?utf-8?B?bVhjZGV2R2dLNTNCT2JCRmlpNjhqRXhodUNFRzNXajIwRHMzUS94RkdjRFFm?=
- =?utf-8?B?cnE2RFJQM1lyOHhlMStQcWRiRHFhY25uOFRRRDVvK3h5OWx2NUVQb3NNRE93?=
- =?utf-8?B?SWg2ZmRhdG5KRFUxWlRIN0FRaGZpbmNSMDBWVTVJeE8wdjQrQ0ppQmtBWnFI?=
- =?utf-8?B?YTVuV2QxZjM0aWhCYkVEVG82YkwxSkpvaW9va1lTMjg1YkZTV1lXUT09?=
+	=?utf-8?B?Y2hadGpIQnJ5M2NtN2ZFaS9ldzJLbFM1aE9ROTdnSk5XamtNRklsUGxtVEkz?=
+ =?utf-8?B?emttczlkMUExQkRFVjJLeFRFZW02R0s3LzBROE90RkRWV2syR01tdnJHZWFU?=
+ =?utf-8?B?UFYwRGtaVzREQnNwVEUwOEN4aVI2NGR3OTQ1VEJXNURwNzh4Y2M1MGFLUlJM?=
+ =?utf-8?B?MUxwaXVQMjYySWdIby85cVBUYnp3ZzJ1anpzclhuR2c3b3ljdVNodVgxcVRH?=
+ =?utf-8?B?Rlp2eHkrMkU3aVlTRkNMQzhmUzA5aENSKzVsQzFUNHBFZVFvVm5yYVhWTUtF?=
+ =?utf-8?B?N3ZzZmdCQ0JxUHZPZWpiVDN2T0dkUE1FVVEySjNFcnpMVTFzSURRMncvM3pq?=
+ =?utf-8?B?a0VPRGFYZnJmLy9yM2lxMWNvbUkyYmdKSFpJd09vMnFtTlU5eGR1S01ZTWpT?=
+ =?utf-8?B?TjUrQk55VWFZUnd1ZDMvTWlvSzNFWEFjSkdxbDJ5aWVJcWxlc0U0OStjQzV3?=
+ =?utf-8?B?T0pKWDR0WHpOajA5eW9ySU55RXZBdUhGVTNJTEcvNWd3MVZIdDdaU3BvdlJa?=
+ =?utf-8?B?NkoxQjBBV3Y2SFV5TGxKZktLOEdKWmVMc2tWeUpJV0xFUytTRkJsWm11WkdN?=
+ =?utf-8?B?U0l2VzB0ZnlqNkI3VVpZUVovQjRWWHBsUG1EcnllczE5L2RvanRwODFLMnBn?=
+ =?utf-8?B?cFQxNk05WllJTGRHZVFMamRKSDBMSG9McU1vcGp5MEdaVkpYUnVwQW9HMG5k?=
+ =?utf-8?B?Vm1BZzR1Tk41K3h3WXJlUnVueExMZWIrc2VaUk1oR2V4UmYzSEJPYXdXRE9I?=
+ =?utf-8?B?YWdLTzIxZTFFRXR0SDkxcDk5ZXFVekozOERldUNYbVZqdFVaUzZkNm9ybXJY?=
+ =?utf-8?B?NjZLUjFQNmEzRld4d3kycjBVVWpydnkwWWJpckE0U2UxVXNxeGF5bExaSnZv?=
+ =?utf-8?B?NTAyc3Y5SmVOT0JodUcyVEIwbGQwajRveVR1d1lxeGJZQmFPWlF3dHBFL1Ns?=
+ =?utf-8?B?RG9wTFVyVjZxallnd1VBbzBYU0RSeHlSczd6VjYyQnFtUVdtMVc5SzFFWDZR?=
+ =?utf-8?B?YmlUWG5lc3RhdXlKWUJwWnQ2TityWDlzOGdBbXdxbmtRZWpSVHV3TVJ5Wm1L?=
+ =?utf-8?B?L1lldVZiMDdpdDBOUnRjcy9mWS9CODBvbXhjdlEycUthdy90Wkh2Uk5ocDh0?=
+ =?utf-8?B?SkE3a1JobzU1ajV2eW91bGF2SkRnM05FTFZLaDh3ZFlJaFFUZmhYT3Q3T1kz?=
+ =?utf-8?B?dzRzSnpHQUJ1QjZLUEt2QVJYTUYyc2lVVUVWcUo4VkVLVzhNd0o1ZGVaVytw?=
+ =?utf-8?B?VnZUb1dyZHE2UExTczNYSktzclhRYWJQMWROeWJmZzFUOGpsMHB3VlFUVGJ0?=
+ =?utf-8?B?dnIvUzgva3R3NlFMaVNCVHZBdGZ6VzZuQitkUytRY21PckdNUkpGdE03eGk2?=
+ =?utf-8?B?eENUNFVsczcvWVFUWVQvTmNuVlQxSzRBQjE4V1l6OU1nUWxyNUZITnRCQVNQ?=
+ =?utf-8?B?WGlUMldCeTVZOXJ3MVVtOW1xd05yWHJuWVh2MkJKbjdkNzd3dGM1SDI2MnRD?=
+ =?utf-8?B?UkZZeWtWbTB0QmJXMUhFQmxsVjBia0FmNjFvSGx2UXJERTFWYVk3RnFBV1Jr?=
+ =?utf-8?B?dGFFckFoWTUveFpja1V3YzVJeXhqTnlQZ0E2WFlrUzR2RmliTXZRVy82R2dt?=
+ =?utf-8?B?b0YycFBSQXFJTW5sVjVKWGFzMEZtVUI1Rzh0SW95M1NMeDZYRHBQdjZ1eHBN?=
+ =?utf-8?B?WE8rUUVnOWlqSFZtRm5JY0hVWVl3TFZsT0FoemRYWEpTM0Q3aEJMTVBXSktK?=
+ =?utf-8?B?ckp6cWwyQjFieFlrcXFtN2REOU9vc3FGaHNlMDVaNEdmWlBROUQ0YkVpd04y?=
+ =?utf-8?B?WkF6S2NSYzZYVEtPVDlONkVjbitMOXhzanU4M1NWSHF6S0Y2M0x1b2d1dXRF?=
+ =?utf-8?B?bC9PU1ppbCtWbVRWSXc2cS9CV3gvRytpVWFYbGErOFp4dHR1QkJ5NFowRDBs?=
+ =?utf-8?B?cW1lMnY1S2Z0NGdiUm5ZVHQ4NE42cE5wWHJIaDlXamcrL3lxaXloSzkyZmk0?=
+ =?utf-8?B?SkV3cHRrTGdzWHJVOFV4QWd0eXhLbFhBZ2xrRklETHZjSCtrNEVlL1pzUGRv?=
+ =?utf-8?B?cXdUNjFjb3RIQnhNN29TVG1oMTFEanNWcVdKa0ZUMi9JVUl3YjI3WWRxTklG?=
+ =?utf-8?B?S3V3cmhON3krNWRNYStRcWozQUNJN3NKWXFZQklLVWx3dlg4aHZqNXBaNFB0?=
+ =?utf-8?B?ZlBvdnJRS25wNng4anQwRldFUTAxbDlGQnlyYUJnQWNuckFlVXBlRjMwQUh2?=
+ =?utf-8?B?YWNXb2FjaXhYbUVrQlpTeU90bWMyZ2s3aWJEN3NkeFVRUW93MXFQcGlxMVRG?=
+ =?utf-8?B?b256RGtlM0ZvZTllYmtOb09kWUo0c3ptN2JWck5oSE10NmpHRkpFdz09?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0880cb12-e96b-4363-5944-08decaa998f3
+X-MS-Exchange-CrossTenant-Network-Message-Id: 275e557b-6d71-4b37-66aa-08decaa9d809
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2026 06:44:49.8849
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jun 2026 06:46:35.6989
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YQ86lokvqs57AdLw1FTg4DoLdMYx0z7DUrORrVD19o71/ZBRo4SFk/9lAAbttc4KWeILKo9vyo46Spvh/FVskw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB7076
+X-MS-Exchange-CrossTenant-UserPrincipalName: yjhpEM1okORlvFD3Iu79k0+r1jd/QlJ6SjnTSRonS/Dr+u3T0Hyss8kB6Ej0c7qxDwOGC0Az0hhCLJWpj6YQEQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU0PR10MB5655
 
 On 15.06.26 08:42, Philippe Gerum wrote:
 > Philippe Gerum <rpm@xenomai.org> writes:
@@ -264,487 +264,9 @@ On 15.06.26 08:42, Philippe Gerum wrote:
 >  	void (*sched_requeue)(struct evl_thread *thread);
 >  	struct evl_thread *(*sched_pick)(struct evl_rq *rq);
 > +	void (*sched_out)(struct evl_thread *thread);
->  	void (*sched_yield)(struct evl_thread *thread);
->  	void (*sched_migrate)(struct evl_thread *thread,
->  			      struct evl_rq *rq);
-> diff --git a/include/evl/sched/quota.h b/include/evl/sched/quota.h
-> index dfe3b7390958..dc8416645da8 100644
-> --- a/include/evl/sched/quota.h
-> +++ b/include/evl/sched/quota.h
-> @@ -40,6 +40,7 @@ struct evl_quota_group {
->  
->  struct evl_sched_quota {
->  	ktime_t period;
-> +	struct evl_sched_queue runnable;
->  	struct evl_timer refill_timer;
->  	struct evl_timer limit_timer;
->  	struct list_head groups;
-> diff --git a/kernel/evl/sched/core.c b/kernel/evl/sched/core.c
-> index d1d025e06a5d..7127d4e52df9 100644
-> --- a/kernel/evl/sched/core.c
-> +++ b/kernel/evl/sched/core.c
-> @@ -773,7 +773,8 @@ static inline void set_next_running(struct evl_rq *rq,
->  		evl_stop_timer(&rq->rrbtimer);
->  }
->  
-> -static struct evl_thread *__pick_next_thread(struct evl_rq *rq)
-> +static __always_inline struct evl_thread *
-> +__pick_next_thread(struct evl_rq *rq)
->  {
->  	struct evl_sched_class *sched_class;
->  	struct evl_thread *curr = rq->curr;
-> @@ -821,8 +822,14 @@ static struct evl_thread *__pick_next_thread(struct evl_rq *rq)
->  /* rq->curr->lock + rq->lock held, hard irqs off. */
->  static struct evl_thread *pick_next_thread(struct evl_rq *rq)
->  {
-> -	struct evl_thread *next = __pick_next_thread(rq);
-> +	struct evl_thread *next, *prev = rq->curr;
-> +	struct evl_sched_class *prev_class = prev->sched_class;
->  
-> +	if (prev_class->sched_out)
-> +		prev_class->sched_out(prev);
-> +
-> +	next = __pick_next_thread(rq);
-> +	trace_evl_pick_thread(next);
->  	set_next_running(rq, next);
->  
->  	return next;
-> @@ -972,21 +979,20 @@ void __evl_schedule(void) /* oob or/and hard irqs off (CPU migration-safe) */
->  		return;
->  	}
->  
-> +	prev = curr;
->  	next = pick_next_thread(this_rq);
-> -	trace_evl_pick_thread(next);
-> -	if (next == curr) {
-> -		if (unlikely(next->state & EVL_T_ROOT)) {
-> +	if (next == prev) {
-> +		if (unlikely(prev->state & EVL_T_ROOT)) {
->  			if (this_rq->local_flags & RQ_TPROXY)
->  				evl_notify_proxy_tick(this_rq);
->  			if (this_rq->local_flags & RQ_TDEFER)
->  				evl_program_local_tick(&evl_mono_clock);
->  		}
->  		raw_spin_unlock(&this_rq->lock);
-> -		raw_spin_unlock_irqrestore(&curr->lock, flags);
-> +		raw_spin_unlock_irqrestore(&prev->lock, flags);
->  		return;
->  	}
->  
-> -	prev = curr;
->  	this_rq->curr = next;
->  	leaving_inband = false;
->  
-> diff --git a/kernel/evl/sched/quota.c b/kernel/evl/sched/quota.c
-> index 0829da711a66..14748e3a843e 100644
-> --- a/kernel/evl/sched/quota.c
-> +++ b/kernel/evl/sched/quota.c
-> @@ -12,45 +12,35 @@
->  #include <uapi/evl/sched-abi.h>
->  
->  /*
-> - * With this policy, each per-CPU runqueue maintains a list of active
-> - * thread groups for the sched_fifo class.
-> - *
-> - * Each time a thread is picked from the runqueue, we check whether we
-> - * still have budget for running it, looking at the group it belongs
-> - * to. If so, a timer is armed to elapse when that group has no more
-> - * budget, would the incoming thread run unpreempted until then
-> - * (i.e. evl_quota->limit_timer).
-> + * Each time a thread is picked from the ->runnable queue, we check
-> + * whether the group it belongs to still has runtime budget.  If so, a
-> + * timer is armed to fire when that group has no more budget, would
-> + * the incoming thread run unpreempted until then
-> + * (i.e. quota->limit_timer).
->   *
->   * Otherwise, if no budget remains in the group for running the
->   * candidate thread, we move the latter to a local expiry queue
->   * maintained by the group. This process is done on the fly as we pull
-> - * from the runqueue.
-> + * from the ->runnable queue.
->   *
-> - * Updating the remaining budget is done each time the EVL core asks
-> - * for replacing the current thread with the next runnable one,
-> - * i.e. evl_quota_pick(). There we charge the elapsed run time of the
-> - * outgoing thread to the relevant group, and conversely, we check
-> - * whether the incoming thread has budget.
-> + * Updating the remaining budget is done each time the EVL core
-> + * schedules out a thread undergoing the quota scheduling policy,
->   *
-> - * Finally, a per-CPU timer (evl_quota->refill_timer) periodically
-> - * ticks in the background, in accordance to the defined quota
-> - * interval. Thread group budgets get replenished by its handler in
-> - * accordance to their respective share, pushing all expired threads
-> - * back to the run queue in the same move.
-> + * Finally, a per-CPU timer (quota->refill_timer) periodically ticks
-> + * in the background, in accordance to the defined quota interval,
-> + * replenishing per-group budgets, pushing all expired threads back to
-> + * the quota ->runqueue too.
->   *
-> - * NOTE: since the core logic enforcing the budget entirely happens in
-> - * evl_quota_pick(), applying a budget change can be done as simply as
-> - * forcing the rescheduling procedure to be invoked asap. As a result
-> - * of this, the EVL core will ask for the next thread to run, which
-> - * means calling evl_quota_pick() eventually.
-> + * NOTE: forcing a call to the rescheduling procedure is enoiugh to
-> + * apply a budget change.
->   *
-> - * CAUTION: evl_quota_group->nr_active does count both the threads
-> - * from that group linked to the sched_fifo runqueue, _and_ the
-> - * threads moved to the local expiry queue. As a matter of fact, the
-> - * expired threads - those for which we consumed all the per-group
-> - * budget - are still seen as runnable (i.e. not blocked/suspended) by
-> - * the EVL core. This only means that the SCHED_QUOTA policy won't
-> - * pick them until the corresponding budget is replenished.
-> + * CAUTION: quota_group->nr_active does count both the threads from
-> + * that group linked to the runnable queue, _and_ the threads moved to
-> + * the local expiry queue. As a matter of fact, the expired threads -
-> + * those for which we consumed all the per-group budget - are still
-> + * seen as runnable (i.e. not blocked/suspended) by the EVL core. This
-> + * only means that the SCHED_QUOTA policy won't pick them until the
-> + * corresponding budget is replenished.
->   */
->  
->  #define MAX_QUOTA_GROUPS  1024
-> @@ -61,15 +51,19 @@ static DECLARE_BITMAP(group_map, MAX_QUOTA_GROUPS);
->  
->  static LIST_HEAD(group_list);
->  
-> -static inline bool thread_on_quota(struct evl_thread *thread,
-> -				struct evl_quota_group *tg)
-> +static inline bool current_on_quota(struct evl_quota_group *tg)
->  {
-> -	/*
-> -	 * Check whether @thread is running on some CPU, and belongs
-> -	 * to quota group @tg.
-> -	 */
-> -	return thread->quota == tg &&
-> -		!(thread->state & (EVL_T_READY|EVL_THREAD_BLOCK_MASK));
-> +	struct evl_rq *rq = tg->rq;
-> +	struct evl_thread *curr = rq->curr;
-> +	struct evl_sched_quota *qs = &rq->quota;
-> +
-> +	if (curr->quota != tg)
-> +		return false;
-> +
-> +	if (curr->state & (EVL_T_READY|EVL_T_KICKED|EVL_THREAD_BLOCK_MASK))
-> +		return false;
-> +
-> +	return evl_timer_is_running(&qs->limit_timer);
->  }
->  
->  static inline bool group_is_active(struct evl_quota_group *tg)
-> @@ -82,7 +76,7 @@ static inline bool group_is_active(struct evl_quota_group *tg)
->  	 * runqueue, in which case tg->nr_active already accounted for
->  	 * it.
->  	 */
-> -	return thread_on_quota(tg->rq->curr, tg);
-> +	return current_on_quota(tg);
->  }
->  
->  static inline void replenish_budget(struct evl_sched_quota *qs,
-> @@ -134,10 +128,10 @@ static inline void replenish_budget(struct evl_sched_quota *qs,
->  	} else if (tg->run_credit) {
->  		credit = ktime_sub(tg->quota_peak, budget);
->  		/* Consume the accumulated credit. */
-> -		if (tg->run_credit >= credit)
-> +		if (tg->run_credit >= credit) {
->  			tg->run_credit =
->  				ktime_sub(tg->run_credit, credit);
-> -		else {
-> +		} else {
->  			credit = tg->run_credit;
->  			tg->run_credit = 0;
->  		}
-> @@ -150,8 +144,8 @@ static inline void replenish_budget(struct evl_sched_quota *qs,
->  
->  static void quota_refill_handler(struct evl_timer *timer) /* oob stage stalled */
->  {
-> -	struct evl_quota_group *tg;
->  	struct evl_thread *thread, *tmp;
-> +	struct evl_quota_group *tg;
->  	struct evl_sched_quota *qs;
->  	struct evl_rq *rq;
->  
-> @@ -167,7 +161,7 @@ static void quota_refill_handler(struct evl_timer *timer) /* oob stage stalled *
->  		if (tg->run_budget == 0 || list_empty(&tg->expired))
->  			continue;
->  		/*
-> -		 * For each group living on this CPU, move all expired
-> +		 * For each group pinned on this CPU, move all expired
->  		 * threads back to the runqueue. Since those threads
->  		 * were moved out of the runqueue as we were
->  		 * considering them for execution, we push them back
-> @@ -178,7 +172,7 @@ static void quota_refill_handler(struct evl_timer *timer) /* oob stage stalled *
->  		list_for_each_entry_safe_reverse(thread, tmp,
->  						&tg->expired, quota_expired) {
->  			list_del_init(&thread->quota_expired);
-> -			evl_add_schedq(&rq->fifo.runnable, thread);
-> +			evl_add_schedq(&qs->runnable, thread);
->  		}
->  	}
->  
-> @@ -195,7 +189,7 @@ static void quota_limit_handler(struct evl_timer *timer) /* oob stage stalled */
->  	/*
->  	 * Force a rescheduling on the return path of the current
->  	 * interrupt, so that the budget is re-evaluated for the
-> -	 * current group in evl_quota_pick().
-> +	 * current group in quota_pick().
->  	 */
->  	raw_spin_lock(&rq->lock);
->  	evl_set_self_resched(rq);
-> @@ -221,6 +215,7 @@ static void quota_init(struct evl_rq *rq)
->  {
->  	struct evl_sched_quota *qs = &rq->quota;
->  
-> +	evl_init_schedq(&qs->runnable);
->  	qs->period = quota_period;
->  	INIT_LIST_HEAD(&qs->groups);
->  
-> @@ -337,8 +332,8 @@ static void quota_forget(struct evl_thread *thread)
->  
->  static void quota_kick(struct evl_thread *thread)
->  {
-> +	struct evl_sched_quota *qs = &thread->rq->quota;
->  	struct evl_quota_group *tg = thread->quota;
-> -	struct evl_rq *rq = thread->rq;
->  
->  	/*
->  	 * Allow a kicked thread to be elected for running until it
-> @@ -347,7 +342,7 @@ static void quota_kick(struct evl_thread *thread)
->  	 */
->  	if (tg->run_budget == 0 && !list_empty(&thread->quota_expired)) {
->  		list_del_init(&thread->quota_expired);
-> -		evl_add_schedq_tail(&rq->fifo.runnable, thread);
-> +		evl_add_schedq_tail(&qs->runnable, thread);
->  	}
->  }
->  
-> @@ -358,79 +353,82 @@ static inline int thread_is_runnable(struct evl_thread *thread)
->  
->  static void quota_enqueue(struct evl_thread *thread)
->  {
-> +	struct evl_sched_quota *qs = &thread->rq->quota;
->  	struct evl_quota_group *tg = thread->quota;
-> -	struct evl_rq *rq = thread->rq;
->  
->  	if (!thread_is_runnable(thread))
->  		list_add_tail(&thread->quota_expired, &tg->expired);
->  	else
-> -		evl_add_schedq_tail(&rq->fifo.runnable, thread);
-> +		evl_add_schedq_tail(&qs->runnable, thread);
->  
->  	tg->nr_active++;
->  }
->  
->  static void quota_dequeue(struct evl_thread *thread)
->  {
-> +	struct evl_sched_quota *qs = &thread->rq->quota;
->  	struct evl_quota_group *tg = thread->quota;
-> -	struct evl_rq *rq = thread->rq;
->  
->  	if (!list_empty(&thread->quota_expired))
->  		list_del_init(&thread->quota_expired);
->  	else
-> -		evl_del_schedq(&rq->fifo.runnable, thread);
-> +		evl_del_schedq(&qs->runnable, thread);
->  
->  	tg->nr_active--;
->  }
->  
->  static void quota_requeue(struct evl_thread *thread)
->  {
-> +	struct evl_sched_quota *qs = &thread->rq->quota;
->  	struct evl_quota_group *tg = thread->quota;
-> -	struct evl_rq *rq = thread->rq;
->  
->  	if (!thread_is_runnable(thread))
->  		list_add(&thread->quota_expired, &tg->expired);
->  	else
-> -		evl_add_schedq(&rq->fifo.runnable, thread);
-> +		evl_add_schedq(&qs->runnable, thread);
->  
->  	tg->nr_active++;
->  }
->  
-> -static struct evl_thread *quota_pick(struct evl_rq *rq)
-> +static void quota_out(struct evl_thread *thread)
->  {
-> -	struct evl_thread *next, *curr = rq->curr;
-> -	struct evl_sched_quota *qs = &rq->quota;
-> -	struct evl_quota_group *otg, *tg;
-> -	ktime_t now, elapsed;
-> +	struct evl_sched_quota *qs = &thread->rq->quota;
-> +	struct evl_quota_group *tg = thread->quota;
-> +	ktime_t now, consumed;
-> +
-> +	/* Timer off means that we are not tracking quota. */
-> +	if (!evl_timer_is_running(&qs->limit_timer))
-> +		return;
->  
-> -	now = evl_ktime_monotonic();
-> -	otg = curr->quota;
-> -	if (otg == NULL)
-> -		goto pick;
->  	/*
->  	 * Charge the time consumed by the outgoing thread to the
->  	 * group it belongs to.
->  	 */
-> -	elapsed = ktime_sub(now, otg->run_start);
-> -	if (elapsed < otg->run_budget)
-> -		otg->run_budget = ktime_sub(otg->run_budget, elapsed);
-> -	else
-> -		otg->run_budget = 0;
-> +	now = evl_ktime_monotonic();
-> +	consumed = ktime_sub(now, tg->run_start);
-> +	if (consumed < tg->run_budget) {
-> +		tg->run_budget = ktime_sub(tg->run_budget, consumed);
-> +	} else {
-> +		tg->run_budget = 0;
-> +		evl_stop_timer(&qs->limit_timer);
-> +	}
-> +}
-> +
-> +static struct evl_thread *quota_pick(struct evl_rq *rq)
-> +{
-> +	struct evl_thread *next, *curr = rq->curr;
-> +	struct evl_sched_quota *qs = &rq->quota;
-> +	struct evl_quota_group *tg;
-> +
->  pick:
-> -	next = evl_get_schedq(&rq->fifo.runnable);
-> +	next = evl_get_schedq(&qs->runnable);
->  	if (next == NULL) {
->  		evl_stop_timer(&qs->limit_timer);
->  		return NULL;
->  	}
->  
-> -	/*
-> -	 * As we basically piggyback on the SCHED_FIFO runqueue, make
-> -	 * sure to detect non-quota threads.
-> -	 */
->  	tg = next->quota;
-> -	if (tg == NULL)
-> -		return next;
-> -
-> -	tg->run_start = now;
-> +	tg->nr_active--;
->  
->  	/*
->  	 * Don't consider budget if kicked, we have to allow this
-> @@ -439,25 +437,29 @@ static struct evl_thread *quota_pick(struct evl_rq *rq)
->  	 */
->  	if (next->info & EVL_T_KICKED) {
->  		evl_stop_timer(&qs->limit_timer);
-> -		goto out;
-> +		return next;
->  	}
->  
-> +	/*
-> +	 * __pick_next_thread() might have requeued the current
-> +	 * thread which is still leading the pack.
-> +	 */
-> +	if (curr == next)
-> +		return next;
-> +
->  	if (ktime_to_ns(tg->run_budget) == 0) {
-> -		/* Flush expired group members as we go. */
-> +		/* Park expired group members as we go. */
->  		list_add_tail(&next->quota_expired, &tg->expired);
->  		goto pick;
->  	}
->  
-> -	if (otg == tg && evl_timer_is_running(&qs->limit_timer))
-> -		/* Same group, leave the running timer untouched. */
-> -		goto out;
-> -
-> -	/* Arm limit timer for the new running group. */
-> -	evl_start_timer(&qs->limit_timer,
-> -			ktime_add(now, tg->run_budget),
-> -			EVL_INFINITE);
-> -out:
-> -	tg->nr_active--;
-> +	/* Arm new limit timer on change of running group. */
-> +	if (curr->quota != tg || !evl_timer_is_running(&qs->limit_timer)) {
-> +		tg->run_start = evl_ktime_monotonic();
-> +		evl_start_timer(&qs->limit_timer,
-> +				ktime_add(tg->run_start, tg->run_budget),
-> +				EVL_INFINITE);
-> +	}
->  
->  	return next;
->  }
-> @@ -542,7 +544,7 @@ static int quota_destroy_group(struct evl_quota_group *tg,
->  	 * Unregister the group before we drop rq->lock. As a result,
->  	 * it won't accept threads anymore while we are busy moving
->  	 * the current members to the fifo class, and concurrent
-> -	 * evl_quota_remove requests would receive -EINVAL.
-> +	 * quota_remove requests would receive -EINVAL.
->  	 */
->  	__clear_bit(tg->tgid, group_map);
->  	list_del(&tg->next);
-> @@ -556,7 +558,7 @@ static int quota_destroy_group(struct evl_quota_group *tg,
->  	 * hold rq->lock on entry, we do a trylock dance to prevent an
->  	 * ABBA issue. No livelock is possible since we unregistered
->  	 * that group already, so &tg->members can only be depleted
-> -	 * (by this loop specifically).
-> +	 * (by this loop exclusively).
->  	 */
->  
->  	while (!list_empty(&tg->members)) {
-> @@ -583,10 +585,10 @@ static void quota_set_limit(struct evl_quota_group *tg,
->  			int *quota_sum_r)
->  {
->  	struct evl_rq *rq = tg->rq;
-> -	struct evl_thread *thread, *tmp, *curr = rq->curr;
-> +	struct evl_thread *thread, *tmp;
->  	struct evl_sched_quota *qs = &rq->quota;
-> -	ktime_t now, elapsed, consumed;
->  	ktime_t old_quota = tg->quota;
-> +	ktime_t consumed;
->  	u64 n;
->  
->  	assert_hard_lock(&rq->lock);
-> @@ -615,16 +617,8 @@ static void quota_set_limit(struct evl_quota_group *tg,
->  	tg->quota_percent = quota_percent;
->  	tg->quota_peak_percent = quota_peak_percent;
->  
-> -	if (thread_on_quota(curr, tg)) {
-> -		now = evl_ktime_monotonic();
-> -
-> -		elapsed = now - tg->run_start;
-> -		if (elapsed < tg->run_budget)
-> -			tg->run_budget -= elapsed;
-> -		else
-> -			tg->run_budget = 0;
-> -
-> -		tg->run_start = now;
-> +	if (current_on_quota(tg)) {
-> +		quota_out(rq->curr);
->  		evl_stop_timer(&qs->limit_timer);
->  	}
->  
-> @@ -646,7 +640,7 @@ static void quota_set_limit(struct evl_quota_group *tg,
->  		list_for_each_entry_safe_reverse(thread, tmp, &tg->expired,
->  						quota_expired) {
->  			list_del_init(&thread->quota_expired);
-> -			evl_add_schedq(&rq->fifo.runnable, thread);
-> +			evl_add_schedq(&qs->runnable, thread);
->  		}
->  	}
->  
-> @@ -786,6 +780,7 @@ struct evl_sched_class evl_sched_quota = {
->  	.sched_dequeue		=	quota_dequeue,
->  	.sched_requeue		=	quota_requeue,
->  	.sched_pick		=	quota_pick,
-> +	.sched_out		=	quota_out,
->  	.sched_migrate		=	quota_migrate,
->  	.sched_chkparam		=	quota_chkparam,
->  	.sched_setparam		=	quota_setparam,
-> 
 
-Could you summarize the key difference to my patch 2? Which preemption
-or accounting cases did you additionally identify?
+The out handler also needs the target thread in order to identify if
+there is a tg change or not.
 
 Jan
 
