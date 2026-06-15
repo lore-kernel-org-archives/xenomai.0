@@ -1,100 +1,211 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9B853DB63D
-	for <xenomai@lists.linux.dev>; Mon, 15 Jun 2026 09:57:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C9BE3DB635
+	for <xenomai@lists.linux.dev>; Mon, 15 Jun 2026 09:59:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781517430; cv=none; b=MRmJiM99g+RHiRw5gaOigXVMZ1xqMJuTQBg+FwT6h+/xElnOUThd6j8WHVTgYMfaDseo0lEfvXar24iYL+4WdBh7hyi37mbN/xhmJT01uUCplggaS6AKzHKdsPyHEaVXZp2dO8w+06SifYZSkZXi24KRtIWDoGOJS/l5sJCWXck=
+	t=1781517566; cv=none; b=kKCexcACoyd46bnxtD5SIeuVOsbt5EPD+ECtEUD7ao8e6rmEVCQ26DzhezqXpMrEOGx6IPEXeLdPTZdGOkA1fQtZF+GlrtJmg3lmtNkz2J94PxxuxxZJ9fsqriJrYjUxi5A72XWkxXuDL0wFq7hR+XUSksW7EqZlIluUv7iFMhw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781517430; c=relaxed/simple;
-	bh=kVr8UppswCerCn5pxOsbyIFJHEJ3Mz0TtXMi797ATHg=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=fQDwLQ4+i2xjh7EBlgyoebWWJk77vuCP4KrXmp8l3REpfSYc5plX/aIfjBQMjQfc0THWr/gY7zuneAT/7yo3CgOu+OrOPnTKl9yrb6lTjUtBjiplcfXvoXqeK9k1W6YnwjLsHZ4h2CKmdvyvGrBmG9E7yykKAyML5t+Su9UDGh4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Ot1passP; arc=none smtp.client-ip=185.136.64.226
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1781517566; c=relaxed/simple;
+	bh=vPwtb0qJZUQlNnbYcXaHToqEwYu65ak5ffShm1/FdAU=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=FY4KSikoq4ZvhhCPaHE9QYwbEbviskq4hGUgxCQJttZEt1e9gjyn76zbvKeuPUItBU9R2R5OquhwC58AzjFFMydL3jZhxF5XLIscYjoKk6hUrzyhzX+j7utAHWor5CmzSjfCVwbbhql45WHrTYqsQDgfDArPJBAG9Kj1bRBw0JY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=Gbz9NmvM; arc=none smtp.client-ip=217.70.183.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Ot1passP"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 20260615095655a80ca92a3a000207ea
-        for <xenomai@lists.linux.dev>;
-        Mon, 15 Jun 2026 11:56:55 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=MVKbc3Zv22dh/RiHgBGPeX2FBwbB8GVpB+trLAen0Ck=;
- b=Ot1passP/d7e3lqbrNUw5yZwaYbnjUTLcAgZY8aactkEzAKkBAl8MEtygQKX0e1HvWOLxI
- HnYCZzwj2pjqg/YCc0u0p0taQb83zW3tlFgQ96RPAJznBYr2x2PRnI0c1RSXlSvBxAU0PDKt
- z4Y6Uu8Y1VarYNsQkvZI+1RNYRAzA/4DOH7/gq7igVoowleLGcQlxTaUZJ/yrJQAJNr8TcHV
- HyC0HHzThGIbl2JOxK0bwsqVyjobxjXXJi5OxfBxWS8wiZ90TKDEhK+ReZJ10f+PDCucjf0q
- V6QZKbt6OG1emDAzJOBYK709ibd7KPwBlqB5kyeOkQDv3aBE5T5VHpqA==;
-Message-ID: <59a7a9f8931703b299f1883e275efbe077e17d1f.camel@siemens.com>
-Subject: Re: [PATCH] x86: dovetail: Call trap exit code with hard IRQs
- disabled
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@lists.linux.dev, Tobias Schaffner
- <tobias.schaffner@siemens.com>,  Jan Kiszka <jan.kiszka@siemens.com>
-Date: Mon, 15 Jun 2026 11:56:54 +0200
-In-Reply-To: <87bjdexrn2.fsf@2a02-842b-4100-f601-1469-181b-22db-b4d0.rev.sfr.net>
-References: <20260612211719.3054905-1-florian.bezdeka@siemens.com>
-		<874ij6tleh.fsf@2a02-842b-4100-f601-1469-181b-22db-b4d0.rev.sfr.net>
-	 <87bjdexrn2.fsf@2a02-842b-4100-f601-1469-181b-22db-b4d0.rev.sfr.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="Gbz9NmvM"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 7C1E63EC21;
+	Mon, 15 Jun 2026 09:59:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1781517562;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=dJfqbFww5HGOOenhzcW+p/pDh9iFArXfv/Gg7BClNGs=;
+	b=Gbz9NmvMw0pDuRd40AWJTZL4+xdV7Z/ntmA7hIcGcL01n0u2olopBcwBsA2T3owpMvsQcB
+	4h5yPkI8Ww/gmXjbblJ3Kso1LtaBaWUlVFl3QhxjEdM30BnQSQMyn0elkmzpBpIg/mFs1M
+	XvZLnT6N8+HmxXSHuWxRHNb0qRDsVkloPOKXgmKMr+ZsLmIX4A+X9ipf4v9c+i4/Gp7bia
+	FSKSySYErEzgIzWmFM9lSAeOd+9UK4lqX1EmoK2/g8dFTuf72ksxbdPXSZe0qqQufYtc36
+	ZSK64AiNRxkdyCsLkK7c06MXkDtsr/aHEffz/28dHlbY0XoHSz3rYp5fZpU+Zw==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@lists.linux.dev>
+Subject: Re: [PATCH 1/2] evl/sched: Add sched_out handler to sched_class
+In-Reply-To: <4797a713-e16f-4792-ab7a-51a2876fb6ef@siemens.com> (Jan Kiszka's
+	message of "Mon, 15 Jun 2026 11:04:32 +0200")
+References: <e5e231b6-dcae-4b40-9c49-4c93f2e761d9@siemens.com>
+	<87ldcgiah9.fsf@xenomai.org> <87a4swi9sy.fsf@xenomai.org>
+	<4797a713-e16f-4792-ab7a-51a2876fb6ef@siemens.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Mon, 15 Jun 2026 11:59:22 +0200
+Message-ID: <87wlw0cef9.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Content-Type: text/plain
+X-GND-Sasl: rpm@xenomai.org
+X-GND-Cause: dmFkZTFbtLa0/p8TPhL0sXL9aQw2cFoqEvvSE+JDii4G4tsqMgX4Jgsj3CgfVIl8oCH4tAH8VONq63PkPHCW8qvsrC28Mvd1JtBHx7P+Vfy/JbLaN76c9Nu38kK/nPa0lDVxwfqAN5Rcy7bYHzpxUQqX6YfiCbyjz/m6x7YiOqFEHJu33XO8P8UnLYzwhpWqlLIC+LCj3k+hKCyXEJaypEY9LRnusR+qWxWUFI6M+Nx88ny0JBRLT+bTCM8nI6TlarNh8dwNeIqHgYDhwFaAwBwOuvQASvsDpa+zG4bMNPGhf4uxpVtcC5E0Ku/q0rdXibUjOvoo20NqAk0DLb/f+RYP9mQmeZqn2sEC7eLdseK2fOQyRsR4fNnB9uPbCTENElU9RSPwwa+TAiY2gSMDMFGNkgJETjpsFhUwURZ88TYB7nFtf49f2/FDx/PV8VJRse7xaIcUxS0cfnqo3NceC2Df4HRh+XXKm31ok1Zs0O6WRBKxBUKPyf3JjJ2lGIWW8rqpLWxH20DF64Hl6ifPy8VzgGaT+8yKSH77Mv40F2SBwnQvSVqL0Kml7DAhidQxrghtIUw+gsj+dn/k+Q8y+4avUSvqfRcavggeeHxKEJEiFMa7IQNYUDh7PctV2tOF56SYHgR9HCjbbJ8ndjQ2TzJbtu7TmnAQTsLS76kL88CpIg+2DA
+X-GND-State: clean
+X-GND-Score: -100
 
-On Sat, 2026-06-13 at 19:43 +0200, Philippe Gerum wrote:
-> Philippe Gerum <rpm@xenomai.org> writes:
->=20
-> > Florian Bezdeka <florian.bezdeka@siemens.com> writes:
-> >=20
-> > > mark_trap_exit() should do the reverse operations of mark_trap_entry(=
-)
-> > > keeping ordering in mind. Especially as oob_trap_unwind() is expectin=
-g
-> > > hard IRQs to be off.
-> > >=20
-> >=20
-> > oob_trap_unwind() does not require irqs to be disabled,
-> > __oob_trap_unwind() already takes care of this. However, we do want
-> > oob_trap_unwind() to return with irqs off unconditionally because
-> > handle_oob_trap_exit() might not ensure this. So the original ordering
-> > is right.
->=20
-> A better fix may be to disable hard irqs right before leaving
-> __oob_trap_unwind(), instead of expecting handle_oob_trap_exit() - which
-> is user-provided - to do so. This would make things clearer, and the
-> conditional disabling in mark_trap_exit() pointless.
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-But=C2=A0wouldn't that unpair the irq enable/disable calls in the exit
-handler? (evl only, cobalt has no implementation)
+> On 15.06.26 08:42, Philippe Gerum wrote:
+>> Philippe Gerum <rpm@xenomai.org> writes:
+>> 
+>
+> You also need to update tg->run_start. Otherwise, you will overcharge
+> the next time this group is checked here.
+>
 
-I clearly overlooked the hard_local_irq_disable() call in
-__oob_trap_unwind().
+Yes, this needs fixing.
 
-Now looking at that again I think that the hard_cond_local_irq_disable()
-call (that I moved) in mark_trap_exit() is a unnecessary for oob tasks.
-The trap exit handler should have done the right thing already. That
-would synchronize mark_trap_{entry,exit} on x86.
+>> +	} else {
+>> +		tg->run_budget = 0;
+>> +		evl_stop_timer(&qs->limit_timer);
+>> +	}
+>> +}
+>> +
+>> +static struct evl_thread *quota_pick(struct evl_rq *rq)
+>> +{
+>> +	struct evl_thread *next, *curr = rq->curr;
+>> +	struct evl_sched_quota *qs = &rq->quota;
+>> +	struct evl_quota_group *tg;
+>> +
+>>  pick:
+>> -	next = evl_get_schedq(&rq->fifo.runnable);
+>> +	next = evl_get_schedq(&qs->runnable);
+>>  	if (next == NULL) {
+>>  		evl_stop_timer(&qs->limit_timer);
+>>  		return NULL;
+>>  	}
+>>  
+>> -	/*
+>> -	 * As we basically piggyback on the SCHED_FIFO runqueue, make
+>> -	 * sure to detect non-quota threads.
+>> -	 */
+>>  	tg = next->quota;
+>> -	if (tg == NULL)
+>> -		return next;
+>> -
+>> -	tg->run_start = now;
+>> +	tg->nr_active--;
+>>  
+>>  	/*
+>>  	 * Don't consider budget if kicked, we have to allow this
+>> @@ -439,25 +437,29 @@ static struct evl_thread *quota_pick(struct evl_rq *rq)
+>>  	 */
+>>  	if (next->info & EVL_T_KICKED) {
+>>  		evl_stop_timer(&qs->limit_timer);
+>> -		goto out;
+>> +		return next;
+>>  	}
+>>  
+>> +	/*
+>> +	 * __pick_next_thread() might have requeued the current
+>> +	 * thread which is still leading the pack.
+>> +	 */
+>> +	if (curr == next)
+>> +		return next;
+>> +
+>>  	if (ktime_to_ns(tg->run_budget) == 0) {
+>> -		/* Flush expired group members as we go. */
+>> +		/* Park expired group members as we go. */
+>>  		list_add_tail(&next->quota_expired, &tg->expired);
+>>  		goto pick;
+>>  	}
+>>  
+>> -	if (otg == tg && evl_timer_is_running(&qs->limit_timer))
+>> -		/* Same group, leave the running timer untouched. */
+>> -		goto out;
+>> -
+>> -	/* Arm limit timer for the new running group. */
+>> -	evl_start_timer(&qs->limit_timer,
+>> -			ktime_add(now, tg->run_budget),
+>> -			EVL_INFINITE);
+>> -out:
+>> -	tg->nr_active--;
+>> +	/* Arm new limit timer on change of running group. */
+>> +	if (curr->quota != tg || !evl_timer_is_running(&qs->limit_timer)) {
+>> +		tg->run_start = evl_ktime_monotonic();
+>> +		evl_start_timer(&qs->limit_timer,
+>> +				ktime_add(tg->run_start, tg->run_budget),
+>> +				EVL_INFINITE);
+>> +	}
+>
+> I still don't fully get how the limit timer should be started on
+> setparam over the current thread. Will curr be NULL in that case, thus
+> curr != next? Is that the reason to go for a separate runqueue?
+>
 
-diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index 6b5b33b4d511..8230b785664a 100644
---- a/arch/x86/kernel/traps.c
-+++ b/arch/x86/kernel/traps.c
-@@ -355,7 +355,9 @@ static __always_inline
- void mark_trap_exit(int trapnr, struct pt_regs *regs)
- {
-        oob_trap_unwind(trapnr, regs);
--       hard_cond_local_irq_disable();
-+
-+       if (likely(running_inband()))
-+               hard_cond_local_irq_disable();
- }
+Nope, that one is only to make things clearer, since there is no upside
+in sharing the runqueues (this was inherited from SCHED_SPORADIC for no
+obvious reason with hindsight). At some point, I noticed that it would
+even have introduced a bug in a previous tentative implementation using
+sched_class as a discriminator between threads, to figure out whether we
+should call the sched_out() handler. So, the simpler, the better:
+distinct classes, distinct runqueues.
+
+Regarding the limit timer issue, sched_pick() should not shortcut on
+curr == next. IOW, the rest of the code should run even in this case. By
+turning on the resched bit (which the quota_setparam() caller does), we
+would end up in sched_pick() with either of those outcomes out of
+quota_setparam():
+
+- 'current' switched group, in which case we would arm a limit timer in
+  sched_pick() because curr->quota != next->quota (provided the shortcut
+  on curr == next is gone).
+
+- 'current' stays in the same group, so the limit timer still runs unless
+  the budget was already fully consumed.
+
+So I would revise my latest patch as follows:
+
+diff --git a/kernel/evl/sched/quota.c b/kernel/evl/sched/quota.c
+index 3ac650c08ccb..8f1321d46cac 100644
+--- a/kernel/evl/sched/quota.c
++++ b/kernel/evl/sched/quota.c
+@@ -407,6 +407,7 @@ static void quota_out(struct evl_thread *thread)
+ 	now = evl_ktime_monotonic();
+ 	consumed = ktime_sub(now, tg->run_start);
+ 	if (consumed < tg->run_budget) {
++		tg->run_start = now;
+ 		tg->run_budget = ktime_sub(tg->run_budget, consumed);
+ 	} else {
+ 		tg->run_budget = 0;
+@@ -440,20 +441,13 @@ static struct evl_thread *quota_pick(struct evl_rq *rq)
+ 		return next;
+ 	}
+ 
+-	/*
+-	 * __pick_next_thread() might have requeued the current
+-	 * thread which is still leading the pack.
+-	 */
+-	if (curr == next)
+-		return next;
+-
+ 	if (ktime_to_ns(tg->run_budget) == 0) {
+ 		/* Park expired group members as we go. */
+ 		list_add_tail(&next->quota_expired, &tg->expired);
+ 		goto pick;
+ 	}
+ 
+-	/* Arm new limit timer on change of running group. */
++	/* Arm new limit timer if need be. */
+ 	if (curr->quota != tg || !evl_timer_is_running(&qs->limit_timer)) {
+ 		tg->run_start = evl_ktime_monotonic();
+ 		evl_start_timer(&qs->limit_timer,
+
+>
+> Looks ok otherwise, tests pass as well.
+>
+
+Uh? Ok. That was absolutely unintentional at this stage!
+
+-- 
+Philippe.
