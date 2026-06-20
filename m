@@ -1,412 +1,216 @@
-Received: from mslow3.mail.gandi.net (mslow3.mail.gandi.net [217.70.178.249])
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB1441F8755
-	for <xenomai@lists.linux.dev>; Sat, 20 Jun 2026 16:44:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.249
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B05E432B127
+	for <xenomai@lists.linux.dev>; Sat, 20 Jun 2026 17:28:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1781973899; cv=none; b=ARL3AFvIVtw3S1l3NUX+oIwv3Y9HzfPShQ5Kg3mTanm6GkXysFxJXUnCMuckSniQUrxn8ORtK9HbatYVOBwRaJA4CJCH//0Un9YvrVrk/dxLSEVRFBkGUxt/5JNMh3D8Mk4cYxzdUh/S/xsKLmzDx76BcJN3G2p1/DMZIkLmdc0=
+	t=1781976510; cv=none; b=DGr1HamFdciuifNCwd6+Jc/qQ/WGlub64fttrKY26tNekFybzYncIPYOhIiK0cn5jr0aJolnHge3ksy18cew5PYGCF2fbfP6lSGMbcL41hl1XOZRz/vVGUH7qqxXYxLyntfVQ+oUbkxZ2ikdiWBzvdMpHqs/Nbj+e1lJU4Fzmd4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1781973899; c=relaxed/simple;
-	bh=YtlBK30IdRFFzniffYm0yO9dS4sUlZvOaNTwh4gKI/0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Zk3+XMfI1/4bilnGUBEyhmblBaSE/eyRYIYVI4gXUgyRv0ctf65+CosVJrI3XYMYUvMY4KgzAsrgDcu3807EXV2SWnyl5Hc6K2sQ2wlnaw9pA26vvtGrW79wEyqSLRx4d8ducp1FJdLVLsZSGNS5Berw1P2GaJT1dvv/bXXpwd0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=kkh5fsLq; arc=none smtp.client-ip=217.70.178.249
+	s=arc-20240116; t=1781976510; c=relaxed/simple;
+	bh=SlnOpZHsU/q8WuNUA3WbiX1GotqXct4pXvLd+l2aRE8=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=pIN9rUVt0aG6fZ+lUXvH5XblGgbBh5CTNuwVKzWIt1fQPtqfMY2VyUnCyMPHJ0kRZ6wcz98PGPLO0BkPa9W8RtIDtT7g0f31RDLnX5XfJ0cyqycA0rJeewP0Sj6Wen2EmQkVc88TzrKtqeSKc7MMB1UFXqbAQtbl6LUkyp+samI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=fPjwWkbE; arc=none smtp.client-ip=217.70.183.198
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="kkh5fsLq"
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
-	by mslow3.mail.gandi.net (Postfix) with ESMTP id 3748B580D50
-	for <xenomai@lists.linux.dev>; Sat, 20 Jun 2026 16:16:37 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id DEC643F5E8;
-	Sat, 20 Jun 2026 16:16:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="fPjwWkbE"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id E20CC3F56B;
+	Sat, 20 Jun 2026 17:28:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1781972190;
+	t=1781976505;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=/PrsSrbLpid9KMFCBzFA2nqQ4+mhqu4JqFAWDCjbkoI=;
-	b=kkh5fsLqAK1yepHbo4BwIMqAlUy3ye6r4O5Q9r0OdKVNd9gKtwthiVcNXCROeYvOI+wCYP
-	5z1sBYBkB6XzeUdEsdh6G/Ux4309VuXCpRI8Worl7cd10v67cmy3zst3n1YeFMyYhSkTdL
-	sTsjcAwhshbuWWhtycyl9lYkgbpz4bLCMq9900WuFQel9nK/D01zf0D6tZz51PEJHPvrpc
-	e59LDfybh+wmt+D7LrWWXAABtrAcQtx595KfLZXoEedGpF2EC6hm9lg3cEMrLlcpKAsJSb
-	BzRtgnV9VLRik3IduSVvuEAGxSLzORCQBH0b10XQb90nbZvtPjlgPb3kylWOoQ==
-From: Philippe  Gerum <rpm@xenomai.org>
-To: xenomai@lists.linux.dev
-Cc: Philippe Gerum <rpm@xenomai.org>
-Subject: [PATCH v3 2/2] evl/sched: quota: fix budget tracking on preemption
-Date: Sat, 20 Jun 2026 18:08:45 +0200
-Message-ID: <20260620161531.422484-3-rpm@xenomai.org>
-X-Mailer: git-send-email 2.54.0
-In-Reply-To: <20260620161531.422484-1-rpm@xenomai.org>
-References: <20260620161531.422484-1-rpm@xenomai.org>
+	bh=ftvKz+uwA1bpGm9DWblA0vbW4pPbfozdqXGNf80ST44=;
+	b=fPjwWkbER2K+glLG1FXJCmThOm7uG7b//5pbh59IAQF4oTjQMT6YiDNQBZeGv3fm5ZAxOK
+	f+GPCDc2thhxsd8kcAjHR1PUfbpzz7xDWChrdcxhoP1y7oARmsvMthzTiu1z8afxHYhCLK
+	rTRvaopU6Fuz1fBBWDUQBLMl7qD9Rl9VhDkVBw9fGM+FlryDXoZJ8smfN+cGQpYCELu9sH
+	bCyxvTI3T6VpbU0klpecGxyAoouK5MV834bR9N5NaGeIwkzwxU18z6Wnua4xgAPh/mM0Vw
+	T1n6Q+2lLRAAbAel1CBeOfays+1ighE1uuzO5NCfbXk8oS2OWG/X/fORU2hHIg==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Hannes Diethelm <hannes.diethelm@gmail.com>
+Cc: xenomai@lists.linux.dev
+Subject: Re: [PATCH 1/1] tidbits: net-udp: solicit new client for server mode
+In-Reply-To: <3216fbd8-3ee4-46f7-851b-0f3b48c38572@gmail.com> (Hannes
+	Diethelm's message of "Mon, 1 Jun 2026 22:02:58 +0200")
+References: <20260528194459.6117-1-hannes.diethelm@gmail.com>
+	<20260528194459.6117-2-hannes.diethelm@gmail.com>
+	<87a4te64vn.fsf@xenomai.org> <874ijm62yu.fsf@xenomai.org>
+	<3216fbd8-3ee4-46f7-851b-0f3b48c38572@gmail.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Sat, 20 Jun 2026 19:28:24 +0200
+Message-ID: <87ik7d86kn.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-GND-Sasl: rpm@xenomai.org
-X-GND-Score: 0
-X-GND-Cause: dmFkZTGJIOk+bsa8eEvzf5ba91NsFllY1F9SyzOk+wdiJoIXYRgkUZdgljX6L/B05YAUCUQxZyYiCVoN6I+pr4QXc4Vic0ckXXQzWzUE0dJO8IWtvv/xGA9qJVxpxej/UcSoJsch28ZkMBS7fmK9HusZhbHKUTprhUBWnUyefF7vHShr1Z4Shx1TIt7zRli7j7lfZtJ8dfWq+pL4zynA7uu6rCSQzluqVUBoNabcq5d5nJqZjHZGiLeizcu/oM39ezvYEbqYl7+kdpYGUI/ekuWzjYNopWN/27VGiwOuSWVmR/Az5kYgP0esYIKtxlqCVjiaRzYMr0jbVsYCQ0pyHWaGOsgDB2tMIjD5alwjfcbm3NG13PRmxbNT3+s/VCB5jtu0j6S8FItxZKHWqTcKDn7RyVp9k8Gn6MtKY12C/svZWucsxD4QMlmgNZPH5RpuA8rqSW4q9PljnpewCWlRoQIbmp+cEGNr//YTSP9lGleZ5Uwmvy7TzrUnScQqCbBA4Kq4BxCYCUog/H/qhW5Cdvmbx3tqpVLnD2pULdWEOfFYvM15P1uT+4BrUFqvBgaRUmEhc33ziB1piVdHSBe0kxZDZMujtVnskvuNLjdzZypOjfmdywVDV5Pi5K5fEGiHt/Nq4+pvO1qB84tiGd71lulCc1xh9u0Q4SD3NSpYKC62tgHhWQ
+X-GND-Cause: dmFkZTGVe8/9XZjUI50Qt1B30DGEVM3Xnard5irqgKtpvqTWxvbRN0TLUXu/KBsTzvq4yH2j7sPYeKUN9kIBoH5AC4mE1WC8+CMfKqqZEDzV3d5C3MRsCW0OZotgFKNTd/1QfC48qhMz4EKWEYYVK2jSXaELT42YVD/4wzYWzXp8NgDBlRynsjRvCVVuknY1QHy74goY8xUsOTNkOjtbh86ZCllSbdS7cYi6RFDDz2EQpQSYVs8zSJ1Ep34uW0ZixCLPhu/d7CfOkk6MpvRU+vFv8ERqPr04/0WhZnwvX2s92M0wa/OnCYjJzVqZSwtKTGpeqxnq1fUPa5tcAEUW8bs5/UCfglmgJpEDqqyFdWJHktGOkziA1TAFrUnuQZXjGJcxtRG8zlI9lh8nutzXbsOURcLbYOKwkrqME741UzP48Of6kH9tapzp3D5RbUaCXw1nlrmKDlpaaAQPv9A+gGLEj2MGAsyQI+dkLQUMnRXF7GlwAc0jRFxcq0QfVME7nn3K6ok7Gtf16N+Tze6HydR/bgNOczeNqEag5oPMGZt54EK+Apdrj9LkBbq2M7AzhQQmk4MFy6PIl2bywnw8FEkRfyRx0HkNdLITd8KhnsAwDftcDlg4kTO8/hHt5we7IkcpDvuwV18OcyVRygXmXqxyZj/iaFcynDwWltDiXzHxcAZb0g
 X-GND-State: clean
+X-GND-Score: -100
 
-From: Philippe Gerum <rpm@xenomai.org>
+Hannes Diethelm <hannes.diethelm@gmail.com> writes:
 
-Upon preemption of a SCHED_QUOTA thread by a SCHED_FIFO one, the
-runtime budget of the former is inaccurately tracked. This is due to
-the fifo->sched_pick() handler returning a valid thread, which
-prevents the quota->sched_pick() handler from being called. As a
-result, the last runtime period of the outgoing thread is not
-accounted for.
+> Am 01.06.26 um 11:10 schrieb Philippe Gerum:
+>> Philippe Gerum <rpm@xenomai.org> writes:
+>> 
+>>> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+>>>
+>>>> This fixes random EINPROGRESS at init or during runtime.
+>>>>
+>>>> Also correct whitespaces and make stdout more consistent.
+>>>>
+>>>> Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
+>>>> ---
+>>>>   tidbits/oob-net-udp.c | 58 +++++++++++++++++++++++++++++++++++++------
+>>>>   1 file changed, 50 insertions(+), 8 deletions(-)
+>>>>
+>>>> diff --git a/tidbits/oob-net-udp.c b/tidbits/oob-net-udp.c
+>>>> index 11b8459..7af834f 100644
+>>>> --- a/tidbits/oob-net-udp.c
+>>>> +++ b/tidbits/oob-net-udp.c
+>>>> @@ -50,12 +50,12 @@ static void usage(void)
+>>>>   }
+>>>>     static void print_addr(char* text, struct sockaddr_in *addr){
+>>>> -    char ip_str[INET_ADDRSTRLEN+1];
+>>>> -    inet_ntop(AF_INET, &(addr->sin_addr), ip_str, sizeof(ip_str));
+>>>> -    evl_printf("%s--------\n", text);
+>>>> -    evl_printf("IP-Address: %s\n", ip_str);
+>>>> -    evl_printf("Port:       %d\n", ntohs(addr->sin_port));
+>>>> -    evl_printf("Family:     %d\n", addr->sin_family);
+>>>> +	char ip_str[INET_ADDRSTRLEN+1];
+>>>> +	inet_ntop(AF_INET, &(addr->sin_addr), ip_str, sizeof(ip_str));
+>>>> +	evl_printf("== %s\n", text);
+>>>> +	evl_printf("   ip-address: %s\n", ip_str);
+>>>> +	evl_printf("   port:       %d\n", ntohs(addr->sin_port));
+>>>> +	evl_printf("   family:     %d\n", addr->sin_family);
+>>>>   }
+>>>>     static void sender(int s, const char *text, int mcount,
+>>>> @@ -226,6 +226,8 @@ static void client(int s, const char *text, int mcount,
+>>>>   	free(tbuf);
+>>>>   }
+>>>>   +#define SERVER_ADDR_LIST_SIZE 64
+>>>> +
+>>>>   static void server(int s, const char *text, int mcount,
+>>>>   		struct sockaddr_in *addr, int iter)
+>>>>   {
+>>>> @@ -236,6 +238,9 @@ static void server(int s, const char *text, int mcount,
+>>>>   	ssize_t ret;
+>>>>   	char *tbuf;
+>>>>   	char rbuf[16384];
+>>>> +	in_addr_t addr_list[SERVER_ADDR_LIST_SIZE]={};
+>>>                                                    ^ missing whitespaces
+>>>> +	size_t addr_list_fill=0;
+>>>> +	bool solicit_done;
+>>>>     	tlen = (strlen(text) + 1) * mcount;
+>>>>   	tbuf = malloc(tlen);
+>>>> @@ -276,6 +281,39 @@ static void server(int s, const char *text, int mcount,
+>>>>   			evl_printf(" (TRUNCATED)");
+>>>>   		evl_printf(": %.*s\n", (int)ret, rbuf);
+>>>>   +		/*
+>>>> +		 * We need to call evl_net_solicit for each new
+>>>> +		 * client once before sending data. This will break
+>>>> +		 * realtime for the first response.
+>>>> +		 * If this is not done and the ARP address is not
+>>>> +		 * yet in cache or garbage-collected, oob_sendmsg
+>>>> +		 * will return EINPROGRESS on start or during runtime.
+>>>> +		 */
+>>>
+>>> We can happily send redundant solicit requests to the core, no need to
+>>> filter out cached addresses, evl_net_solicit() will do the right thing.
+>>>
+>> Except that doing so would always demote the caller to the in-band
+>> stage, which may not be what you want. The fact that we'd need to
+>> maintain a cache in apps in order to figure out whether solicitation
+>> should be done shows a shortcoming in the core, users should not have to
+>> do this dance.
+>> We should have an oob call for probing the route+arp caches with
+>> ipv4. I'll look into this asap.
+>> 
+>
+> Yes, this is the reason I do it this way and print out a message if
+> this happens.
+>
+> I think server mode with multiple clients in real time is not something you
+> can just easily do without careful considerations what happens when multiple
+> clients send a message at the same time or TDMA behind. My intent in this example
+> is mostly to show that it is possible.
+>
+> A real application would need one of these options:
+> - A thread only for solicitation so the main thread doesn't get blocked
+> - evl_net_solicit() with a flag like MSG_DONTWAIT and then poll in the main loop if
+>   the client is ready
+> - Know the clients in advance
+> - A warm up phase during clients can connect
+> - ...
+>
+> However, a way for probing and reading the arp would shurely help.
 
-To fix this issue, we use the recently introduced sched_out() handler
-to update the remaining budget of preempted threads appropriately.
+Here is a general proposal to deal with the issue of sending UDP packets
+to unplanned destinations, which is basically what the server mode has
+to do, when receiving unsolicited messages.
 
-Signed-off-by: Philippe Gerum <rpm@xenomai.org>
----
- kernel/evl/sched/quota.c | 190 +++++++++++++++++++--------------------
- 1 file changed, 95 insertions(+), 95 deletions(-)
+We have a single invariant to cope with: the evl network stack wants to
+use the routing+arp information produced by the regular in-band stack,
+so that we can benefit from potentially complex routing logic without
+reinventing that wheel. Therefore, the route to any new/unsolicited
+destination must be resolved by the in-band stack once so that we can
+send UDP packets to that peer from the oob stage next.
 
-diff --git a/kernel/evl/sched/quota.c b/kernel/evl/sched/quota.c
-index 0829da711a66..2f045510b235 100644
---- a/kernel/evl/sched/quota.c
-+++ b/kernel/evl/sched/quota.c
-@@ -12,45 +12,39 @@
- #include <uapi/evl/sched-abi.h>
- 
- /*
-- * With this policy, each per-CPU runqueue maintains a list of active
-- * thread groups for the sched_fifo class.
-+ * Each time a thread is picked from the runnable thread queue, we
-+ * check whether the group it belongs to still has runtime budget.  If
-+ * so, a timer is armed to fire when that group has no more budget,
-+ * would the incoming thread run unpreempted until then
-+ * (i.e. quota->limit_timer).
-  *
-- * Each time a thread is picked from the runqueue, we check whether we
-- * still have budget for running it, looking at the group it belongs
-- * to. If so, a timer is armed to elapse when that group has no more
-- * budget, would the incoming thread run unpreempted until then
-- * (i.e. evl_quota->limit_timer).
-+ * NOTE: SCHED_QUOTA piggybacks off the per-CPU runqueue of the
-+ * SCHED_FIFO class in order for the threads of both classes to
-+ * compete for the same CPU.
-  *
-  * Otherwise, if no budget remains in the group for running the
-  * candidate thread, we move the latter to a local expiry queue
-  * maintained by the group. This process is done on the fly as we pull
-  * from the runqueue.
-  *
-- * Updating the remaining budget is done each time the EVL core asks
-- * for replacing the current thread with the next runnable one,
-- * i.e. evl_quota_pick(). There we charge the elapsed run time of the
-- * outgoing thread to the relevant group, and conversely, we check
-- * whether the incoming thread has budget.
-+ * Updating the remaining budget is done each time the EVL core
-+ * schedules out a thread undergoing the quota scheduling policy,
-  *
-- * Finally, a per-CPU timer (evl_quota->refill_timer) periodically
-- * ticks in the background, in accordance to the defined quota
-- * interval. Thread group budgets get replenished by its handler in
-- * accordance to their respective share, pushing all expired threads
-- * back to the run queue in the same move.
-+ * Finally, a per-CPU timer (quota->refill_timer) periodically ticks
-+ * in the background, in accordance to the defined quota interval,
-+ * replenishing per-group budgets, pushing all expired threads back to
-+ * the runqueue.
-  *
-- * NOTE: since the core logic enforcing the budget entirely happens in
-- * evl_quota_pick(), applying a budget change can be done as simply as
-- * forcing the rescheduling procedure to be invoked asap. As a result
-- * of this, the EVL core will ask for the next thread to run, which
-- * means calling evl_quota_pick() eventually.
-+ * NOTE: forcing a call to the rescheduling procedure is enough to
-+ * apply a budget change.
-  *
-- * CAUTION: evl_quota_group->nr_active does count both the threads
-- * from that group linked to the sched_fifo runqueue, _and_ the
-- * threads moved to the local expiry queue. As a matter of fact, the
-- * expired threads - those for which we consumed all the per-group
-- * budget - are still seen as runnable (i.e. not blocked/suspended) by
-- * the EVL core. This only means that the SCHED_QUOTA policy won't
-- * pick them until the corresponding budget is replenished.
-+ * CAUTION: quota_group->nr_active does count both the threads from
-+ * that group linked to the runqueue, _and_ the threads moved to the
-+ * local expiry queue. As a matter of fact, the expired threads -
-+ * those for which we consumed all the per-group budget - are still
-+ * seen as runnable (i.e. not blocked/suspended) by the EVL core. This
-+ * only means that the SCHED_QUOTA policy won't pick them until the
-+ * corresponding budget is replenished.
-  */
- 
- #define MAX_QUOTA_GROUPS  1024
-@@ -61,15 +55,19 @@ static DECLARE_BITMAP(group_map, MAX_QUOTA_GROUPS);
- 
- static LIST_HEAD(group_list);
- 
--static inline bool thread_on_quota(struct evl_thread *thread,
--				struct evl_quota_group *tg)
-+static inline bool current_on_quota(struct evl_quota_group *tg)
- {
--	/*
--	 * Check whether @thread is running on some CPU, and belongs
--	 * to quota group @tg.
--	 */
--	return thread->quota == tg &&
--		!(thread->state & (EVL_T_READY|EVL_THREAD_BLOCK_MASK));
-+	struct evl_rq *rq = tg->rq;
-+	struct evl_thread *curr = rq->curr;
-+	struct evl_sched_quota *qs = &rq->quota;
-+
-+	if (curr->quota != tg)
-+		return false;
-+
-+	if (curr->state & (EVL_T_READY|EVL_T_KICKED|EVL_THREAD_BLOCK_MASK))
-+		return false;
-+
-+	return evl_timer_is_running(&qs->limit_timer);
- }
- 
- static inline bool group_is_active(struct evl_quota_group *tg)
-@@ -82,7 +80,7 @@ static inline bool group_is_active(struct evl_quota_group *tg)
- 	 * runqueue, in which case tg->nr_active already accounted for
- 	 * it.
- 	 */
--	return thread_on_quota(tg->rq->curr, tg);
-+	return current_on_quota(tg);
- }
- 
- static inline void replenish_budget(struct evl_sched_quota *qs,
-@@ -134,10 +132,10 @@ static inline void replenish_budget(struct evl_sched_quota *qs,
- 	} else if (tg->run_credit) {
- 		credit = ktime_sub(tg->quota_peak, budget);
- 		/* Consume the accumulated credit. */
--		if (tg->run_credit >= credit)
-+		if (tg->run_credit >= credit) {
- 			tg->run_credit =
- 				ktime_sub(tg->run_credit, credit);
--		else {
-+		} else {
- 			credit = tg->run_credit;
- 			tg->run_credit = 0;
- 		}
-@@ -150,8 +148,8 @@ static inline void replenish_budget(struct evl_sched_quota *qs,
- 
- static void quota_refill_handler(struct evl_timer *timer) /* oob stage stalled */
- {
--	struct evl_quota_group *tg;
- 	struct evl_thread *thread, *tmp;
-+	struct evl_quota_group *tg;
- 	struct evl_sched_quota *qs;
- 	struct evl_rq *rq;
- 
-@@ -167,7 +165,7 @@ static void quota_refill_handler(struct evl_timer *timer) /* oob stage stalled *
- 		if (tg->run_budget == 0 || list_empty(&tg->expired))
- 			continue;
- 		/*
--		 * For each group living on this CPU, move all expired
-+		 * For each group pinned on this CPU, move all expired
- 		 * threads back to the runqueue. Since those threads
- 		 * were moved out of the runqueue as we were
- 		 * considering them for execution, we push them back
-@@ -195,7 +193,7 @@ static void quota_limit_handler(struct evl_timer *timer) /* oob stage stalled */
- 	/*
- 	 * Force a rescheduling on the return path of the current
- 	 * interrupt, so that the budget is re-evaluated for the
--	 * current group in evl_quota_pick().
-+	 * current group in quota_pick().
- 	 */
- 	raw_spin_lock(&rq->lock);
- 	evl_set_self_resched(rq);
-@@ -395,69 +393,78 @@ static void quota_requeue(struct evl_thread *thread)
- 	tg->nr_active++;
- }
- 
--static struct evl_thread *quota_pick(struct evl_rq *rq)
-+static void quota_out(struct evl_thread *thread)
- {
--	struct evl_thread *next, *curr = rq->curr;
--	struct evl_sched_quota *qs = &rq->quota;
--	struct evl_quota_group *otg, *tg;
--	ktime_t now, elapsed;
-+	struct evl_sched_quota *qs = &thread->rq->quota;
-+	struct evl_quota_group *tg = thread->quota;
-+	ktime_t now, consumed;
-+
-+	/* Timer off means that we are not tracking quota. */
-+	if (!evl_timer_is_running(&qs->limit_timer))
-+		return;
- 
--	now = evl_ktime_monotonic();
--	otg = curr->quota;
--	if (otg == NULL)
--		goto pick;
- 	/*
- 	 * Charge the time consumed by the outgoing thread to the
- 	 * group it belongs to.
- 	 */
--	elapsed = ktime_sub(now, otg->run_start);
--	if (elapsed < otg->run_budget)
--		otg->run_budget = ktime_sub(otg->run_budget, elapsed);
--	else
--		otg->run_budget = 0;
--pick:
--	next = evl_get_schedq(&rq->fifo.runnable);
--	if (next == NULL) {
-+	now = evl_ktime_monotonic();
-+	consumed = ktime_sub(now, tg->run_start);
-+	if (consumed < tg->run_budget) {
-+		tg->run_start = now;
-+		tg->run_budget = ktime_sub(tg->run_budget, consumed);
-+	} else {
-+		tg->run_budget = 0;
- 		evl_stop_timer(&qs->limit_timer);
--		return NULL;
- 	}
-+}
-+
-+static struct evl_thread *quota_pick(struct evl_rq *rq)
-+{
-+	struct evl_thread *next, *curr = rq->curr;
-+	struct evl_sched_quota *qs = &rq->quota;
-+	struct evl_quota_group *tg;
-+
-+pick:
-+	next = evl_get_schedq(&rq->fifo.runnable);
-+	if (next == NULL)
-+		goto stop_and_out;
- 
- 	/*
--	 * As we basically piggyback on the SCHED_FIFO runqueue, make
--	 * sure to detect non-quota threads.
-+	 * Since we piggyback off the SCHED_FIFO runqueue, make sure
-+	 * to pick plain fifo threads unconditionally.
- 	 */
- 	tg = next->quota;
- 	if (tg == NULL)
--		return next;
-+		goto stop_and_out;
- 
--	tg->run_start = now;
-+	tg->nr_active--;
- 
- 	/*
- 	 * Don't consider budget if kicked, we have to allow this
- 	 * thread to run until it eventually switches to in-band
- 	 * context.
- 	 */
--	if (next->info & EVL_T_KICKED) {
--		evl_stop_timer(&qs->limit_timer);
--		goto out;
--	}
-+	if (next->info & EVL_T_KICKED)
-+		goto stop_and_out;
- 
- 	if (ktime_to_ns(tg->run_budget) == 0) {
--		/* Flush expired group members as we go. */
-+		/* Park expired group members as we go. */
- 		list_add_tail(&next->quota_expired, &tg->expired);
- 		goto pick;
- 	}
- 
--	if (otg == tg && evl_timer_is_running(&qs->limit_timer))
--		/* Same group, leave the running timer untouched. */
--		goto out;
-+	/* Arm new limit timer if need be. */
-+	if (curr->quota != tg || !evl_timer_is_running(&qs->limit_timer)) {
-+		tg->run_start = evl_ktime_monotonic();
-+		evl_start_timer(&qs->limit_timer,
-+				ktime_add(tg->run_start, tg->run_budget),
-+				EVL_INFINITE);
-+	}
- 
--	/* Arm limit timer for the new running group. */
--	evl_start_timer(&qs->limit_timer,
--			ktime_add(now, tg->run_budget),
--			EVL_INFINITE);
--out:
--	tg->nr_active--;
-+	return next;
-+
-+stop_and_out:
-+	evl_stop_timer(&qs->limit_timer);
- 
- 	return next;
- }
-@@ -542,7 +549,7 @@ static int quota_destroy_group(struct evl_quota_group *tg,
- 	 * Unregister the group before we drop rq->lock. As a result,
- 	 * it won't accept threads anymore while we are busy moving
- 	 * the current members to the fifo class, and concurrent
--	 * evl_quota_remove requests would receive -EINVAL.
-+	 * quota_remove requests would receive -EINVAL.
- 	 */
- 	__clear_bit(tg->tgid, group_map);
- 	list_del(&tg->next);
-@@ -556,7 +563,7 @@ static int quota_destroy_group(struct evl_quota_group *tg,
- 	 * hold rq->lock on entry, we do a trylock dance to prevent an
- 	 * ABBA issue. No livelock is possible since we unregistered
- 	 * that group already, so &tg->members can only be depleted
--	 * (by this loop specifically).
-+	 * (by this loop exclusively).
- 	 */
- 
- 	while (!list_empty(&tg->members)) {
-@@ -583,10 +590,10 @@ static void quota_set_limit(struct evl_quota_group *tg,
- 			int *quota_sum_r)
- {
- 	struct evl_rq *rq = tg->rq;
--	struct evl_thread *thread, *tmp, *curr = rq->curr;
-+	struct evl_thread *thread, *tmp;
- 	struct evl_sched_quota *qs = &rq->quota;
--	ktime_t now, elapsed, consumed;
- 	ktime_t old_quota = tg->quota;
-+	ktime_t consumed;
- 	u64 n;
- 
- 	assert_hard_lock(&rq->lock);
-@@ -615,26 +622,18 @@ static void quota_set_limit(struct evl_quota_group *tg,
- 	tg->quota_percent = quota_percent;
- 	tg->quota_peak_percent = quota_peak_percent;
- 
--	if (thread_on_quota(curr, tg)) {
--		now = evl_ktime_monotonic();
--
--		elapsed = now - tg->run_start;
--		if (elapsed < tg->run_budget)
--			tg->run_budget -= elapsed;
--		else
--			tg->run_budget = 0;
--
--		tg->run_start = now;
-+	if (current_on_quota(tg)) {
-+		quota_out(rq->curr);
- 		evl_stop_timer(&qs->limit_timer);
- 	}
- 
- 	if (tg->run_budget <= old_quota)
--		consumed = old_quota - tg->run_budget;
-+		consumed = ktime_sub(old_quota, tg->run_budget);
- 	else
- 		consumed = 0;
- 
- 	if (tg->quota >= consumed)
--		tg->run_budget = tg->quota - consumed;
-+		tg->run_budget = ktime_sub(tg->quota, consumed);
- 	else
- 		tg->run_budget = 0;
- 
-@@ -786,6 +785,7 @@ struct evl_sched_class evl_sched_quota = {
- 	.sched_dequeue		=	quota_dequeue,
- 	.sched_requeue		=	quota_requeue,
- 	.sched_pick		=	quota_pick,
-+	.sched_out		=	quota_out,
- 	.sched_migrate		=	quota_migrate,
- 	.sched_chkparam		=	quota_chkparam,
- 	.sched_setparam		=	quota_setparam,
+From the point above, and as you pointed out already, an oob sender must
+either plan for reaching a particular destination (e.g. soliciting it
+prior to entering time-critical code), or accept an initial delay for
+the route to be resolved if the destination is not yet known on first
+transmit (i.e. out of the oob caches).
+
+So, I would say that evl could meet the requirements you stated above by
+implementing the following:
+
+- Honor MSG_PROBE for oob_sendmsg(), so that only the general call
+  sanity and route resolution to the destination host is performed when
+  set in the request flags, without actually sending any data. On
+  success of such call, we would know that the routing information is
+  readily available from the oob caches, no offload to in-band would
+  have happened if we had not given this flag. The absence of routing
+  information to the destination from some oob cache would yield a
+  specific error, so that the caller may decide what to do next.
+
+- Extend the effect of receiving MSG_DONTWAIT (and more generally
+  O_NONBLOCK on fildes) to what we would do upon missing routing
+  information: if present, return with a specific error code _without_
+  relaying the packet to the in-band stack. The caller may then decide
+  to handle the case locally. Otherwise, proceed as usual (i.e. relay to
+  the in-band stack, then notify the caller with -EINPROGRESS).
+
+- Provide a way to synchronize with the route resolution process in evl,
+  i.e. a syscall that would block until a given destination is available
+  from the oob cache. This call already exists, evl_net_solicit() can be
+  used for that purpose (if a resolution request is already in flight,
+  subsequent ones to the same destination won't cause any harm).
+
+Points 1 and 2 are implemented in [1]. Feedback greatly appreciated and
+important when you have time. Usability for real-world applications is
+key.
+
+> It would also be nice to have an "evl net" command to list the
+> entry's. I tried the normal arp command but it doesn't behave nicely
+> with evl.
+
+Could you please elaborate on this issue? Currently, updates to the
+in-band cache are propagated to the oob cache (by registering a hook
+into the relevant notifier chain in the kernel). So I would expect all
+destinations of interest to oob which are visible from the in-band arp
+cache to be available from the evl map as well.
+
+This said, I agree that we need a way to inspect the oob cache
+specifically. Working on it.
+
+[1] https://gitlab.com/Xenomai/xenomai4/linux-evl/-/tree/wip/net-solicit?ref_type=heads
+
 -- 
-2.54.0
-
+Philippe.
