@@ -1,104 +1,108 @@
 Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B26C36E47A
-	for <xenomai@lists.linux.dev>; Mon, 22 Jun 2026 07:39:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 191C0388E6E
+	for <xenomai@lists.linux.dev>; Mon, 22 Jun 2026 08:05:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782113965; cv=none; b=IRhbKuy5MIiZzW+eFEIlMBOs/pULMVJ1IPknyQ+JtgFNIlKwlURnZoiW4gFOD0mbaJC2wOWslWspjrsXKYSyqtI4mlw07sQOWAQjCtdM6UL9iA/6dItpE+bJECvlm5LA8vPvtPZSFRmbBBUad5FC6bpz/pK+8QkvDiMlPx4QBOw=
+	t=1782115545; cv=none; b=cwiH9y83GM5EBdpvEpaKdOvOS0QbJkmSK1cBNifxANQuGW0Pdly3ikdRljUzLGvBsL3OA5mTMc7QvhFLZWucIui3Bk85N902/wgzRJyi0JvmxIjwhFYFQHChQyNMniw5YuP8g7qcMmrFtZ68eIFkKdR505wMgHwmTe8o4Xjw23E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782113965; c=relaxed/simple;
-	bh=2Ucx8yX01e7IxV3pU3pIM88xBN9AF90zfmM1QhWI4wY=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=cgzqHWeN+3HGDjW1KSRJsufvuh4Sb0MGD6Hovv0NKLyMVcIXg9rtI8MXx4WnwTj4TmWQJGLcEJ37MPJLsNWfquNdq6pchCTrdwDDHrq7q/Ya2bf3Eov3NmgKOC3/dgnIYzi7kTKB0uxlHgAWXBWv/UBNmbleegoSyYjDbV4faTE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=SqG0eMIQ; arc=none smtp.client-ip=185.136.64.228
+	s=arc-20240116; t=1782115545; c=relaxed/simple;
+	bh=c5HKNzVqFRdztn3UdbjuZZKmZFiUtvCFHkdLf4Mqn7c=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=s2pAC8+6hjBt6uAi2BgBmfdnIuSj3DP1X/lLcAGWT7ir1jM0kjy4GWvjMn/MUTUNZAVPxAcfXa35UqT0BPs/sNZEeVoBRNuGR3s/RNWIOnwjDwQ2gg4Mem9CcajNRgWocUnCE72SYKRuAso3rxIUJUzaigiF+aSUKN7wimc6Zjg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=rvLkoooK; arc=none smtp.client-ip=185.136.64.228
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="SqG0eMIQ"
-Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 202606220739165624b91e6f000207ea
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="rvLkoooK"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20260622080538a056bfe0fa0002074d
         for <xenomai@lists.linux.dev>;
-        Mon, 22 Jun 2026 09:39:17 +0200
+        Mon, 22 Jun 2026 10:05:38 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=2Ucx8yX01e7IxV3pU3pIM88xBN9AF90zfmM1QhWI4wY=;
- b=SqG0eMIQopIKPsgOrADhG2qYPRCR/zGlcEjO9JFcHRhzNtarHcOGDI/YKPxhnG8vjOKgfu
- L9qnlL9OhDAyGiDL895xRuJIeBs+mv4P3ZG7S+8kIq0Lzv4Ny1j05mKTzZn5zhhRtOei/tDh
- HtSzIbdfsjaTYgoRH4S1CP8wVryfmUu8L0zrQh51Y3k2mcP2eZ/qhzo6xtlTqIJCrAsW5rA/
- qSp86R++Sv3IIBbiwJd4iXkS1BZ9aS5aXpVffujsMSa+S27sA0qBPao27dtQF1LObkzJ+oap
- EphXqJJVT5vixqLeqWcE6OaV2rXUJ7ujNZ8Ah7aVh5AZ4p0PUGs7uNQA==;
-Message-ID: <6fab68d3def30cfc168e81fc9a4e7334c18ec035.camel@siemens.com>
-Subject: Re: Possible Xenomai 3 latency regression on arm64
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc;
+ bh=h4g9gVEy00y+2eTnR7cQFwcKnaNG6wQPg8bEzCWprcQ=;
+ b=rvLkoooKywUDjBlNGgcpWeOn+NCdkYZi7sKf9D2jx4Z/89OV0pBCpfcgGqeay46aGgUoTW
+ 65Rs0cU/hzRm9edqT+zX7jAKy8JdeSvK3GX9LuBpOA1V9W7MWH8DF+erAkYhtE2O8TpP4LmG
+ ZTh9b06K+MGN2MajnPnMunjpjjNCz1kcbNTHklmRt89Py9QtMhAI4HdDHMp7aLceZ6gIllws
+ xX2SbAMTj/85BL3ZVc43tW/MugrVFDXVjx3F4oC2m2jAsNF0d8YMVq91x28HqVfFWmfWGfFx
+ XPZtsN5Xrz3zKKA+Nd403ArZBhPRxKFfkIwofgfnRyq5csyDDzJMj8mA==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Tobias Schaffner <tobias.schaffner@siemens.com>, Xenomai
-	 <xenomai@lists.linux.dev>, Quirin Gylstorff <quirin.gylstorff@siemens.com>
-Date: Mon, 22 Jun 2026 09:39:16 +0200
-In-Reply-To: <877bnrf3o8.fsf@xenomai.org>
-References: <8ed28071-2341-4322-bedc-df1929e3a125@siemens.com>
-		<87tsr4fe74.fsf@xenomai.org>
-		<28f40baf-6a24-49f0-bf15-415e7ee6e34f@siemens.com>
-		<87cxxsfan7.fsf@xenomai.org> <877bnrf3o8.fsf@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Subject: [PATCH Dovetail v3 0/6] Dovetail: arm: Finalize review results
+Date: Mon, 22 Jun 2026 10:05:24 +0200
+Message-Id: <20260622-wip-flo-v7-1-arm-pipelining-fixes-v3-0-230f03227abb@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAMTsOGoC/5WOsQ7CIBRFf6Vh9hmgFcTJwb8wDgRf25e00ECDm
+ qb/LqmTm443JznnLixhJEzsVC0sYqZEwZdR7yrmeus7BLqXzSSXiitu4EETtEOArEGAjSNMNOF
+ AnnwHLT0xgWnk8dBIrXWrWPFMETdQNFd2CRlnSwO7FdJTmkN8bfEsNv7pCP5DJwvgUKPmtua14
+ WjPiXBEn/YujJs/y7+dsjiVdMY15f6xld/OdV3ff3sSRDIBAAA=
+X-Change-ID: 20260609-wip-flo-v7-1-arm-pipelining-fixes-9428542777f6
+To: xenomai@lists.linux.dev
+Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, 
+ Tobias Schaffner <tobias.schaffner@siemens.com>, 
+ Florian Bezdeka <florian.bezdeka@siemens.com>
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On Mon, 2026-06-22 at 09:13 +0200, Philippe Gerum wrote:
-> Philippe Gerum <rpm@xenomai.org> writes:
->=20
-> > Jan Kiszka <jan.kiszka@siemens.com> writes:
-> >=20
-> > > On 15.06.26 09:35, Philippe Gerum wrote:
-> > > > Jan Kiszka <jan.kiszka@siemens.com> writes:
-> > > >=20
-> > > > > Hi all,
-> > > > >=20
-> > > > > it seems we got some >10% worst-case latency increase over the la=
-st
-> > > > > month with Xenomai head and 6.12 - that is at least the setup we =
-use in
-> > > > > our long-running weekly test.
-> > > > >=20
-> > > > > Tonight, the RPi4 test triggered by exceeding the configured limi=
-t of
-> > > > > 150 =C2=B5s [1]. About half a year ago, we were in 130 =C2=B5s ra=
-nge with it [2].
-> > > > > x86 and beaglebone are apparently not seeing this change.
-> > > > >=20
-> > > >=20
-> > > > My rpi4 fried. Is the issue visible with x4 as well?
-> > > >=20
-> > >=20
-> > > We do not have long-running latency tests for x4 yet, do we, Tobias?
-> > >=20
-> >=20
-> > Ok, I can try this on an odroid c4. Did anyone succeeded in booting a
-> > mainline kernel on pi5? Last time I checked, root-over-nfs was not
-> > possible yet.
->=20
-> A follow up on the latency issue. I did notice a regression in the
-> latency figures with v4 too, specifically on arm64. The issue was
-> introduced in v6.12.85-cip22-dovetail3-rebase, where vDSO support for
-> oob callers was unexpectedly disabled due to applying 682c4aa14fe6. That
-> change is correct starting from v6.18.y, but should not have been
-> applied to v6.12.y. The bug caused a ~12% increase in the worst-case
-> latency figures on odroid c4.
->=20
-> With that change reverted, I'm back to normal on c4 with
-> v6.12.90-cip24-dovetail2-rebase. A couple of additional fixes to the
-> generic lib/vdso support went in as well, but those have no effect on
-> latency.
->=20
-> All dovetail and v4/evl branches have been updated accordingly.
+Hi Philippe,
 
-All those changes are not yet part of the 7.1 branches (which have been
-recently rebased to the first 7.1 release). Will you (Philippe) take
-care of integrating that or should I pick it?
+This is the first try to fully process the feedback on the
+interrupts_enabled() issue mentioned in the former patch series.
+
+Input welcome.
+
+I tried hard to keep everything easy, but changing the current
+implementation triggered a lot of unexpected include / build problems, 
+especially within the arch/arm/include/asm folder.
+
+Testing looks good, I'm going to schedule a full CI run now.
+
+To: xenomai@lists.linux.dev
+Cc: Philippe Gerum <rpm@xenomai.org>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Tobias Schaffner <tobias.schaffner@siemens.com>
+
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+Changes in v3:
+- Patch 1: Integrate review comments
+- Patch 2: Integrate review comments, rename to dovetail_fault_entry 
+- Link to v2: https://lore.kernel.org/r/20260610-wip-flo-v7-1-arm-pipelining-fixes-v2-0-62c9c477f8f2@siemens.com
+
+Changes in v2:
+- Resend. Forgot the list...
+
+---
+Florian Bezdeka (6):
+      arm: irq_pipeline: Rename and move fault_entry_{enter,exit}
+      arm: irq_pipeline: Fix dovetail_fault_{entry,exit} bypass in do_kernel_address_page_fault
+      arm: irq_pipeline: Fix dovetail_fault_{entry,exit} bypass in hw_breakpoint_pending
+      arm: irq_pipeline: Fix ordering problem in alignment trap handling
+      dovetail: Decouple kernel/irq/pipeline.c from irqstate bit definitions
+      arm: irq_pipeline: Fix IRQ state checking in trap entry paths
+
+ arch/arm/include/asm/dovetail.h         |  1 +
+ arch/arm/include/asm/irq_pipeline.h     | 41 ++++++++++----
+ arch/arm/include/asm/trace/exceptions.h |  3 +-
+ arch/arm/include/asm/trap_entry.h       | 83 +++++++++++++++++++++++++++++
+ arch/arm/kernel/hw_breakpoint.c         |  8 ++-
+ arch/arm/mm/alignment.c                 |  6 +--
+ arch/arm/mm/fault.c                     | 94 ++++++---------------------------
+ arch/arm64/include/asm/irq_pipeline.h   |  9 ++--
+ kernel/irq/pipeline.c                   | 20 +++----
+ 9 files changed, 156 insertions(+), 109 deletions(-)
+---
+base-commit: 0ea6cb72940b40c147655ae13dd77ffcae553df9
+change-id: 20260609-wip-flo-v7-1-arm-pipelining-fixes-9428542777f6
+
+Best regards,
+-- 
+Florian Bezdeka <florian.bezdeka@siemens.com>
+
