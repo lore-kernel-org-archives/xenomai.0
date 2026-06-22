@@ -1,37 +1,37 @@
-Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A18038F23F
-	for <xenomai@lists.linux.dev>; Mon, 22 Jun 2026 08:05:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.228
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0293838E8D3
+	for <xenomai@lists.linux.dev>; Mon, 22 Jun 2026 08:05:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782115551; cv=none; b=otKtA9gr+PIdD8RrKrD7SeumxYLMHfKne9uY6X5J2U1Eu2pczpfPSGK4QaDUtVTFqMPqkwanAiwuU8I+KfWdjDFpyFq0EmAubaSgMWED1XJ4cjHmzZBitDAfHPizMXfR8t+mf40mG6sFTfnIScqSaTTj4M8Or/PRTJqyOOaEns8=
+	t=1782115552; cv=none; b=W141myQgEFUcREVAYRzZfokOSsabFXJKOL37gOOpyl1qlxlEDh+c0GzQWY/joxJtm6HBDzlc4BLPySGRmhkevd9Oeq6b1p9T2guvAbcQom+cwPqkd5TdpR/1OMSeOKOaGTi2z2YTNpMHJL8YJ2q9Xn5Z2kuIPPzq5SQ+WQQe1AM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782115551; c=relaxed/simple;
-	bh=K2BZdBcdIUNrLvP+2PP+/kDiTNXxvaYqwLNEIKV6T24=;
+	s=arc-20240116; t=1782115552; c=relaxed/simple;
+	bh=Jvfooe2wQs3TClZ8jYqaxdURfT+bWkNyt3IgqucFp0M=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=esPWJPPWq/2mXKULWvpFcsONpJFLrMbWL/drXfTkylQpzZQHHuZ1T+sH9uyyyILo1+ti5nr3ugYgeZ6BCazBaqzV0OL3NXzBLN1DuneHCmhY1m52oBoeOK7/KPMoAUTDlj7ky0dH6ekowFz38UUtXe3HLUls/glkn/l85j1I910=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=WJT+Y5zt; arc=none smtp.client-ip=185.136.65.228
+	 In-Reply-To:To:Cc; b=iKj0NQ/Hp8C6EWmvlZIfcsyyMn5xRGUqslcUQeVRSKNrfahqFItPjTlwnMvaPlrhfZufdHr3c+3Gede8ZVdt2Y47FUmIGwE49VxyMj1zkZE+2awnysKzmL9NXX+IBXs1OMB4Uy19+02+1AvD8JiZuHM/UH41Lo1OEg4cjTZdSVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=hbIQf3By; arc=none smtp.client-ip=185.136.65.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="WJT+Y5zt"
-Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 20260622080538727ff84dda000207d2
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="hbIQf3By"
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202606220805384a78faada40002075e
         for <xenomai@lists.linux.dev>;
-        Mon, 22 Jun 2026 10:05:38 +0200
+        Mon, 22 Jun 2026 10:05:39 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=SpPUD5NInARoYyMqqu81eR9xNcM2lNB9KyLc3WnvprY=;
- b=WJT+Y5ztwHhrGpiwWCA3l4sY5cxI+I+mMcVIV3IRxhDKHycb/quDhM2pEqcYqpVyGp7zo6
- cU6OvmxNk3jr5ZyQD9fWNYK6DDCIYNGZ6+3oH0uXd6gPYhLO8aQUQUr6LmvBWn897D2BEvnv
- 0UxtF5E7yZqMNPFcd5y9Gv4FSt3blimlg3iVZF/OG5tNdsMfhTcTPaibiXbUpMba87tocldB
- NpbXgkN5CUGO+vqMrLUtRTzaTb07SitUzud3ZbV0KfIJqjlE48caTffGUMEec5P+zWYrcdno
- OHgWKjs4l8M/vhn1fDHIrvOG863xkMfOrjdyOkZ8adxa1nbegx4KffAw==;
+ bh=A/MvjFjMafmCEZgyjTmt7qS0VtzBZckd4ViP4u0OFYk=;
+ b=hbIQf3ByIxqSxz+/YvProbC3pmDohUz0QmVIZQHINMpC60uyna2pwh5vIhYz70Qc6eIPyx
+ V1EXVQbu9sHsvBGERDxu/eoKIu8ytARVOjMt4MqVw03Q8ZNQrJM53BepSl9ZFbyIck45b12b
+ UhVrb/f1IKMymLS1ST20qKWZAuhJ1fjRyQWnrW28FupTrgRa1J92PPDuiyVKLqxMn7sEYDXV
+ bzk9zfk6h68dnNKdIu8UbJfWc5XGLAl6w7PRxIGVZJrGqilJuSOru8onoAs4DF1k40vRjx9F
+ Ma++JDhxDuoC3jZ1gxzA3TLbJ+ZGXsOndV77If3xtApEheMUudJ309rg==;
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Mon, 22 Jun 2026 10:05:25 +0200
-Subject: [PATCH Dovetail v3 1/6] arm: irq_pipeline: Rename and move
- fault_entry_{enter,exit}
+Date: Mon, 22 Jun 2026 10:05:28 +0200
+Subject: [PATCH Dovetail v3 4/6] arm: irq_pipeline: Fix ordering problem in
+ alignment trap handling
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260622-wip-flo-v7-1-arm-pipelining-fixes-v3-1-230f03227abb@siemens.com>
+Message-Id: <20260622-wip-flo-v7-1-arm-pipelining-fixes-v3-4-230f03227abb@siemens.com>
 References: <20260622-wip-flo-v7-1-arm-pipelining-fixes-v3-0-230f03227abb@siemens.com>
 In-Reply-To: <20260622-wip-flo-v7-1-arm-pipelining-fixes-v3-0-230f03227abb@siemens.com>
 To: xenomai@lists.linux.dev
@@ -50,287 +50,39 @@ Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>,
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Introducing a new header allows us to keep the implementation as
-static inline function and make it re-usable for other compile units.
-Moving the implementation into existing headers like asm/dovetail.h or
-asm/irq_pipeline.h would require us to rewrite those helpers as macros.
+mark_trap_entry() will migrate to the inband stage and enable hard
+IRQs. With that the IRQ pipelining is active, allowing hard IRQs to
+arrive but keeping the inband stage stalled.
 
-Prefixing with dovetail_ to keep the Linux namespace clean.
+Moving the mark_trap_entry() above the - still wrong -
+interrupts_enabled() to follow the same pattern as in other trap
+handlers. As we are inband after the call we can now enable inband IRQs
+if the parent context allows that.
 
 Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 ---
- arch/arm/include/asm/trap_entry.h | 83 ++++++++++++++++++++++++++++++++++++
- arch/arm/mm/fault.c               | 89 ++++++---------------------------------
- 2 files changed, 96 insertions(+), 76 deletions(-)
+ arch/arm/mm/alignment.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/include/asm/trap_entry.h b/arch/arm/include/asm/trap_entry.h
-new file mode 100644
-index 0000000000000000000000000000000000000000..abe5f80cd301a8ca5ddb2ca350b80bf5708f0f79
---- /dev/null
-+++ b/arch/arm/include/asm/trap_entry.h
-@@ -0,0 +1,83 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _ASMARM_TRAP_ENTRY_H
-+#define _ASMARM_TRAP_ENTRY_H
-+
-+#include <asm/dovetail.h>
-+#include <asm/trace/exceptions.h>
-+
-+#ifdef CONFIG_MMU
-+#ifdef CONFIG_IRQ_PIPELINE
-+/*
-+ * We need to synchronize the virtual interrupt state with the hard
-+ * interrupt state we received on entry, then turn hardirqs back on to
-+ * allow code which does not require strict serialization to be
-+ * preempted by an out-of-band activity.
-+ */
-+static inline unsigned long dovetail_fault_entry(int exception,
-+						 struct pt_regs *regs)
-+{
-+	unsigned long flags;
-+
-+	trace_ARM_trap_entry(exception, regs);
-+
-+	flags = hard_local_save_flags();
-+
-+	/*
-+	 * The companion core must demote the current context to
-+	 * in-band stage if running oob on entry.
-+	 */
-+	mark_trap_entry(exception, regs);
-+
-+	if (raw_irqs_disabled_flags(flags)) {
-+		stall_inband();
-+		trace_hardirqs_off();
-+	}
-+
-+	hard_local_irq_enable();
-+
-+	return flags;
-+}
-+
-+static inline void dovetail_fault_exit(int exception, struct pt_regs *regs,
-+				       unsigned long flags)
-+{
-+	WARN_ON_ONCE(irq_pipeline_debug() && hard_irqs_disabled());
-+
-+	/*
-+	 * We expect kentry_exit_pipelined() to clear the stall bit if
-+	 * kentry_enter_pipelined() observed it that way.
-+	 */
-+	mark_trap_exit(exception, regs);
-+	trace_ARM_trap_exit(exception, regs);
-+	hard_local_irq_restore(flags);
-+}
-+
-+#else /* !CONFIG_IRQ_PIPELINE */
-+
-+#define dovetail_fault_entry(__exception, __regs)		\
-+	do {							\
-+		(void)(__exception);				\
-+		(void)(__regs);					\
-+	} while (0)
-+
-+#define dovetail_fault_exit(__exception, __regs, __flags)	\
-+	do {							\
-+		(void)(__exception);				\
-+		(void)(__regs);					\
-+		(void)(__flags);				\
-+	} while (0)
-+
-+#endif /* !CONFIG_IRQ_PIPELINE */
-+
-+#else /* CONFIG_MMU */
-+unsigned long dovetail_fault_entry(int exception, struct pt_regs *regs)
-+{
-+	return 0;
-+}
-+
-+static inline void dovetail_fault_exit(int exception, struct pt_regs *regs,
-+				       unsigned long combo)
-+{ }
-+#endif /* !CONFIG_MMU */
-+
-+#endif
-diff --git a/arch/arm/mm/fault.c b/arch/arm/mm/fault.c
-index 49f5d628c4c9a91a3e879af0d541fd76665d78fe..b6b766652b753ef860d16b153685b0d3b582bffa 100644
---- a/arch/arm/mm/fault.c
-+++ b/arch/arm/mm/fault.c
-@@ -24,6 +24,7 @@
- #include <asm/system_info.h>
- #include <asm/tlbflush.h>
- #include <asm/dovetail.h>
-+#include <asm/trap_entry.h>
- #define CREATE_TRACE_POINTS
- #include <asm/trace/exceptions.h>
- 
-@@ -38,61 +39,6 @@ bool copy_from_kernel_nofault_allowed(const void *unsafe_src, size_t size)
- 	return addr >= TASK_SIZE && ULONG_MAX - addr >= size;
- }
- 
--#ifdef CONFIG_IRQ_PIPELINE
--/*
-- * We need to synchronize the virtual interrupt state with the hard
-- * interrupt state we received on entry, then turn hardirqs back on to
-- * allow code which does not require strict serialization to be
-- * preempted by an out-of-band activity.
-- */
--static inline
--unsigned long fault_entry(int exception, struct pt_regs *regs)
--{
--	unsigned long flags;
--
--	trace_ARM_trap_entry(exception, regs);
--
--	flags = hard_local_save_flags();
--
--	/*
--	 * The companion core must demote the current context to
--	 * in-band stage if running oob on entry.
--	 */
--	mark_trap_entry(exception, regs);
--
--	if (raw_irqs_disabled_flags(flags)) {
--		stall_inband();
--		trace_hardirqs_off();
--	}
--
--	hard_local_irq_enable();
--
--	return flags;
--}
--
--static inline
--void fault_exit(int exception, struct pt_regs *regs,
--		unsigned long flags)
--{
--	WARN_ON_ONCE(irq_pipeline_debug() && hard_irqs_disabled());
--
--	/*
--	 * We expect kentry_exit_pipelined() to clear the stall bit if
--	 * kentry_enter_pipelined() observed it that way.
--	 */
--	mark_trap_exit(exception, regs);
--	trace_ARM_trap_exit(exception, regs);
--	hard_local_irq_restore(flags);
--}
--
--#else	/* !CONFIG_IRQ_PIPELINE */
--
--#define fault_entry(__exception, __regs)  ({ 0; })
--#define fault_exit(__exception, __regs, __flags)  \
--	do { (void)(__flags); } while (0)
--
--#endif	/* !CONFIG_IRQ_PIPELINE */
--
- /*
-  * This is useful to dump out the page tables associated with
-  * 'addr' in mm 'mm'.
-@@ -165,15 +111,6 @@ void show_pte(const char *lvl, struct mm_struct *mm, unsigned long addr)
- 	pr_cont("\n");
- }
- #else					/* CONFIG_MMU */
--unsigned long fault_entry(int exception, struct pt_regs *regs)
--{
--	return 0;
--}
--
--static inline void fault_exit(int exception, struct pt_regs *regs,
--			unsigned long combo)
--{ }
--
- void show_pte(const char *lvl, struct mm_struct *mm, unsigned long addr)
- { }
- #endif					/* CONFIG_MMU */
-@@ -278,9 +215,9 @@ void do_bad_area(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
- 	 * have no context to handle this fault with.
- 	 */
- 	  if (user_mode(regs)) {
--		irqflags = fault_entry(ARM_TRAP_ACCESS, regs);
-+		irqflags = dovetail_fault_entry(ARM_TRAP_ACCESS, regs);
- 		__do_user_fault(addr, fsr, SIGSEGV, SEGV_MAPERR, regs);
--		fault_exit(ARM_TRAP_ACCESS, regs, irqflags);
-+		dovetail_fault_exit(ARM_TRAP_ACCESS, regs, irqflags);
- 	  } else
- 		/*
- 		 * irq_pipeline: kernel faults are either quickly
-@@ -391,9 +328,9 @@ do_kernel_address_page_fault(struct mm_struct *mm, unsigned long addr,
- 		 * Note that __do_user_fault() will enable interrupts.
- 		 */
- 		harden_branch_predictor();
--		irqflags = fault_entry(ARM_TRAP_ACCESS, regs);
-+		irqflags = dovetail_fault_entry(ARM_TRAP_ACCESS, regs);
- 		__do_user_fault(addr, fsr, SIGSEGV, SEGV_MAPERR, regs);
--		fault_exit(ARM_TRAP_ACCESS, regs, irqflags);
-+		dovetail_fault_exit(ARM_TRAP_ACCESS, regs, irqflags);
- 	} else {
- 		/*
- 		 * Fault from kernel mode. Enable interrupts if they were
-@@ -433,7 +370,7 @@ do_page_fault(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
- 	if (addr >= TASK_SIZE)
- 		return do_kernel_address_page_fault(mm, addr, fsr, regs);
- 
--	irqflags = fault_entry(ARM_TRAP_ACCESS, regs);
-+	irqflags = dovetail_fault_entry(ARM_TRAP_ACCESS, regs);
- 
- 	/* Enable interrupts if they were enabled in the parent context. */
- 	if (interrupts_enabled(regs))
-@@ -595,7 +532,7 @@ do_page_fault(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
- no_context:
- 	__do_kernel_fault(mm, addr, fsr, regs);
- out:
--	fault_exit(ARM_TRAP_ACCESS, regs, irqflags);
-+	dovetail_fault_exit(ARM_TRAP_ACCESS, regs, irqflags);
- 
- 	return 0;
- }
-@@ -671,9 +608,9 @@ do_sect_fault(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
+diff --git a/arch/arm/mm/alignment.c b/arch/arm/mm/alignment.c
+index 76f2716635b73a0001efc3308777fc6a3bd712ca..37023b96a468531c026ea5f6c47d25f3d49fd6a7 100644
+--- a/arch/arm/mm/alignment.c
++++ b/arch/arm/mm/alignment.c
+@@ -815,11 +815,11 @@ do_alignment(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
  	if (addr >= TASK_SIZE && user_mode(regs))
  		harden_branch_predictor();
  
--	irqflags = fault_entry(ARM_TRAP_SECTION, regs);
-+	irqflags = dovetail_fault_entry(ARM_TRAP_SECTION, regs);
- 	do_bad_area(addr, fsr, regs);
--	fault_exit(ARM_TRAP_SECTION, regs, irqflags);
-+	dovetail_fault_exit(ARM_TRAP_SECTION, regs, irqflags);
- 	return 0;
- }
- #endif /* CONFIG_ARM_LPAE */
-@@ -726,7 +663,7 @@ do_DataAbort(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
- 	if (!inf->fn(addr, fsr & ~FSR_LNX_PF, regs))
- 		return;
+-	if (interrupts_enabled(regs))
+-		hard_local_irq_enable();
+-
+ 	mark_trap_entry(ARM_TRAP_ALIGNMENT, regs);
  
--	irqflags = fault_entry(ARM_TRAP_DABT, regs);
-+	irqflags = dovetail_fault_entry(ARM_TRAP_DABT, regs);
- 	pr_alert("8<--- cut here ---\n");
- 	pr_alert("Unhandled fault: %s (0x%03x) at 0x%08lx\n",
- 		inf->name, fsr, addr);
-@@ -734,7 +671,7 @@ do_DataAbort(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
++	if (interrupts_enabled(regs))
++		local_irq_enable();
++
+ 	instrptr = instruction_pointer(regs);
  
- 	arm_notify_die("", regs, inf->sig, inf->code, (void __user *)addr,
- 		       fsr, 0);
--	fault_exit(ARM_TRAP_DABT, regs, irqflags);
-+	dovetail_fault_exit(ARM_TRAP_DABT, regs, irqflags);
- }
- 
- void __init
-@@ -759,14 +696,14 @@ do_PrefetchAbort(unsigned long addr, unsigned int ifsr, struct pt_regs *regs)
- 	if (!inf->fn(addr, ifsr | FSR_LNX_PF, regs))
- 		return;
- 
--	irqflags = fault_entry(ARM_TRAP_PABT, regs);
-+	irqflags = dovetail_fault_entry(ARM_TRAP_PABT, regs);
- 	pr_alert("8<--- cut here ---\n");
- 	pr_alert("Unhandled prefetch abort: %s (0x%03x) at 0x%08lx\n",
- 		inf->name, ifsr, addr);
- 
- 	arm_notify_die("", regs, inf->sig, inf->code, (void __user *)addr,
- 		       ifsr, 0);
--	fault_exit(ARM_TRAP_PABT, regs, irqflags);
-+	dovetail_fault_exit(ARM_TRAP_PABT, regs, irqflags);
- }
- 
- /*
+ 	if (thumb_mode(regs)) {
 
 -- 
 2.54.0
