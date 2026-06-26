@@ -1,128 +1,92 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.5])
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79CBF20E023
-	for <xenomai@lists.linux.dev>; Thu, 25 Jun 2026 09:32:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.5
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E95D3CC300
+	for <xenomai@lists.linux.dev>; Fri, 26 Jun 2026 05:51:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.196
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782379930; cv=none; b=FuatarCrME2GhznK9phkWhvuSEyJhH6TyM1aCptmc2sjmFDCmd5KUQqxrQeWCoIx1uN+5mJWlsOJKz5In3b1dsS7/mIERuDUwfDnU8qMc1mEgLIDvtYdc17FxoAGGHmxq4R/WD3jjJZIRobvONsphsOZU0lTwdxqM3dw5kP5M9M=
+	t=1782453092; cv=none; b=pqiLpPPKwFkAN5BzViRjj6JPeC/gK6QzINHrPZlF1xmFsKeeAuJSEd3utOyLL57Rcx4sTjxYA+NYMYKXSbl+9guA6ZxcbXDABIzk/8oWtBiadLj5ABMEnmVUPFLtMbFUVWZbCVVAmybkNTqGWIQcgEzWM7CFUntUpCc4RJeSshA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782379930; c=relaxed/simple;
-	bh=R8h26P+yiY4+VSLRgMrYGHnVRnJg4gR4fxQB/lLEheY=;
-	h=Date:From:To:Subject:Content-Type:MIME-Version:Message-ID; b=uUyt00/PswfYLrixQKVyGGFDztfSvZlsKhekJkMzwoNSxYAc6EtrLvHLy+Cg9u5RPN+jLqiEEzNzCc8rP6YMMKnrzqv+RRyL3z3lJeYA2QMRXHuArTBChzRsq/I2MMBlXZ36U95mi8hegUquWMLSV7zEQgRCntm6a/VNoXRN4HU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=AYxxJi5M; arc=none smtp.client-ip=220.197.31.5
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1782453092; c=relaxed/simple;
+	bh=GdBpiCaDMyrp4dSwF+wucTXnYBytrL98BTEXli3HIfk=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=jQYl7iU6vwihEasXaPSxoFitl14LvcktB9/kF0Uf/0Nh0RG0GMhzPKwGl7rPV2K4ON2Ne8qprMFapiaq5eFrQ1izejQZnfpcBleLhAZqnuwi5EdEAXXunkD6X1Klc1NIqmbkVomJlclF2q0JH4pWz9vf4jMwLNylfy60OoqbUuM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=X+Aj/tkz; arc=none smtp.client-ip=217.70.183.196
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="AYxxJi5M"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=R8h26P+yiY4+VSLRgMrYGHnVRnJg4gR4fxQB/lLEheY=; b=A
-	YxxJi5MV78d2/9uFwz0olXy2s1HoDTGCVEJqka7MI6YU9E5O9xk4uHk9FEunCM1c
-	GmxGBhvlGm6AuaTUe0zbJ4gYHTuFH5UoGuFyaid4l6uj/CDut6pK/AL7MwrMy6ww
-	zx2Vc7RAyJuo8h4XJYiaNEEaJtD/5iEeW1CUP8MhuI=
-Received: from powertree$163.com ( [219.142.137.151] ) by
- ajax-webmail-wmsvr-40-144 (Coremail) ; Thu, 25 Jun 2026 17:32:02 +0800
- (CST)
-Date: Thu, 25 Jun 2026 17:32:02 +0800 (CST)
-From: linz  <powertree@163.com>
-To: "Philippe Gerum" <rpm@xenomai.org>, xenomai@lists.linux.dev
-Subject: [PATCH] irqchip: gic-v3-its: irq_pipeline: Fix OOB context in-band
- lock warning for ITS lock
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version 2023.4-cmXT build
- 20260403(27802f6d) Copyright (c) 2002-2026 www.mailtech.cn 163com
-X-NTES-SC: AL_Qu2TAP+ctkEp5CmaZekckk8bhes9Wsa4s/ki3YBXc+wGgj7H9BoQfXJfGEvMycu2NgyruTS2XRtn5v5ddqtkqHa84kRJkFy2whQQAkNlNw==
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="X+Aj/tkz"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 3BD823F6BB;
+	Fri, 26 Jun 2026 05:51:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1782453080;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=s0zxHwmRvKKU8QZQwRjuwcHtflD62gE/zRqjiOTZWGk=;
+	b=X+Aj/tkzY+pOxOW3vzrnYVuiGOuq60DHC0zmP6+S40PT/Tkiw2sEti4oFIyEmCRm60T0Hp
+	aNJRKE9NK6VPUVyMfAx8GzMGsPqpm5ex2s/Xzaj5d6smKH5J9IOWZs/nBAnaLg77x/8ahQ
+	4NKrhJH0a57tHmEne8f+hHgjWzl8uFNgVlgqRFwzdHpD6Y5HQCimpabPqRAbH7K2ihLmvi
+	KSNhvPIhmK280aetqp8NhKZjZwVXFtgyB9H6PhNeH0cssk3eGUZR1gPVrj3bJsRLmv+2zC
+	CkFPsHeyKYoX0V1/IP+fpPpUHYR9iquBHyFDh1Dhse7UIiDXrCg60KqqJOz9iw==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: xenomai@lists.linux.dev,  Jan Kiszka <jan.kiszka@siemens.com>,  Tobias
+ Schaffner <tobias.schaffner@siemens.com>
+Subject: Re: [PATCH Dovetail v3 3/6] arm: irq_pipeline: Fix
+ dovetail_fault_{entry,exit} bypass in hw_breakpoint_pending
+In-Reply-To: <20260622-wip-flo-v7-1-arm-pipelining-fixes-v3-3-230f03227abb@siemens.com>
+	(Florian Bezdeka's message of "Mon, 22 Jun 2026 10:05:27 +0200")
+References: <20260622-wip-flo-v7-1-arm-pipelining-fixes-v3-0-230f03227abb@siemens.com>
+	<20260622-wip-flo-v7-1-arm-pipelining-fixes-v3-3-230f03227abb@siemens.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Fri, 26 Jun 2026 07:51:11 +0200
+Message-ID: <87cxxdrgs0.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <517534d7.8863.19efe1f45f1.Coremail.powertree@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:kCgvCgDH17uS9TxqJt0QAA--.1250W
-X-CM-SenderInfo: psrzv2pwuhvqqrwthudrp/xtbCxRJL4Go89ZLKdwAA3w
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+Content-Type: text/plain
+X-GND-Sasl: rpm@xenomai.org
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: dmFkZTFmUw46q1hSK+Bza6bj7ATcCvusDPINDku7v55ODxDHUoEScXhdh/9ESkfVo6cKkhGqo6CxZSOc6i/rSZsSpIMAAeGJ5Tf+kFK1B1UuHJlUoNRHrPvsaMv7giUXW4zaDOA/Sj+vvnOHAHVg0zWtsOFFAeh7xlHU8NlHqDoLaPc+5jD2d4ZSoRnr1nDEmX2QOSac7ujLhgMTgbjbqp/jkMfwKCNl5PDgfldPQhpY7XILA/Ali2kHxZzElFGEuxX9gGhvvfZBweedZHdQldKB8JBTiUK3/Vrv1lj5IWhaLncn1wRst3c8lPaBGVFlq+8nnU4XmBkTNOUF6hnbt4xQ2H7tf4BcuuwpxweiShDf+hdU0Q0hC+V/qk+B1pvfrTrEDhwVr90bjGg74rE6+AufngwUSvSuX+kJgzAhERZ5TT7/F7l9okFJ52Og3eV2kZyOK7hWiFueKLBsifEmzJQbni069S8OINo3rsJwZzjRxZWWzivIhGcz93qTOtKI3qU0XqEd+sl9QgqeYWRPbDVa9JlA389uS6Nx5j8kh7Q8ulUTkx57zvhx7w5e543YsjhPNmLR8daEXLCMhM1soFYRNEzOnglKt4DnedaSHLFsB1NxwIIf+eZegxuwnDr7EXamzPdnkiQsBc9cQCpggTLmws9ZyS7kcKxdQ3esGqKhOw4LjQ
 
-SGksIEkgZmluZCBhIGNhbGwgdHJhY2Ugd2hlbiBJIHVzZSB2Ni42LnktZG92ZXRhaWwgKyB4ZW5v
-bWFpIHYzLjMgYnJhbmNoLCB0aGUgY2FsbCB0cmFjZSBpcyBhcyBmb2xsb3dzCgpbwqAgwqAgMS41
-MTA5MDNdIElSUSBwaXBlbGluZTogc29tZSBjb2RlIHJ1bm5pbmcgaW4gb29iIGNvbnRleHQgJ1hl
-bm9tYWknCsKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgY2FsbGVk
-IGFuIGluLWJhbmQgb25seSByb3V0aW5lClvCoCDCoCAxLjUxMDkxMl0gQ1BVOiAwIFBJRDogMCBD
-b21tOiBzd2FwcGVyLzAgVGFpbnRlZDogRyBTwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqA2LjYu
-NjMtZG92ZXRhaWwyICM4ClvCoCDCoCAxLjUxMDkxOF0gSGFyZHdhcmUgbmFtZTogUGUyMjA0IERF
-TU8gRERSNCAoRFQpClvCoCDCoCAxLjUxMDkyMF0gSVJRIHN0YWdlOiBYZW5vbWFpClvCoCDCoCAx
-LjUxMDkyM10gQ2FsbCB0cmFjZToKW8KgIMKgIDEuNTEwOTI2XcKgIGR1bXBfYmFja3RyYWNlKzB4
-OTAvMHhlNApbwqAgwqAgMS41MTA5NDBdwqAgc2hvd19zdGFjaysweDE0LzB4MWMKW8KgIMKgIDEu
-NTEwOTQ2XcKgIGR1bXBfc3RhY2tfbHZsKzB4ODQvMHhjOApbwqAgwqAgMS41MTA5NTNdwqAgZHVt
-cF9zdGFjaysweDE0LzB4MWMKW8KgIMKgIDEuNTEwOTU3XcKgIGNoZWNrX2luYmFuZF9zdGFnZSsw
-eGIwLzB4YzgKW8KgIMKgIDEuNTEwOTY1XcKgIGluYmFuZF9pcnFfc2F2ZSsweGMvMHgyOApbwqAg
-wqAgMS41MTA5NzFdwqAgX3Jhd19zcGluX2xvY2tfaXJxc2F2ZSsweDE0LzB4OTAKW8KgIMKgIDEu
-NTEwOTc3XcKgIGl0c19zZW5kX3NpbmdsZV9jb21tYW5kKzB4MjQvMHgxNTQKW8KgIMKgIDEuNTEw
-OTg0XcKgIGxwaV91cGRhdGVfY29uZmlnKzB4OWMvMHgxNDQKW8KgIMKgIDEuNTEwOTkwXcKgIGl0
-c19tYXNrX2lycSsweDJjLzB4NjQKW8KgIMKgIDEuNTEwOTk3XcKgIGlycV9jaGlwX21hc2tfcGFy
-ZW50KzB4MTgvMHgyMApbwqAgwqAgMS41MTEwMDVdwqAgaXRzX21hc2tfbXNpX2lycSsweDFjLzB4
-MjgKW8KgIMKgIDEuNTExMDEyXcKgIGhhbmRsZV9mYXN0ZW9pX2lycSsweDFjYy8weDJiNApbwqAg
-wqAgMS41MTEwMTZdwqAgZ2VuZXJpY19waXBlbGluZV9pcnFfZGVzYysweDZjLzB4YTQKW8KgIMKg
-IDEuNTExMDIxXcKgIGdlbmVyaWNfaGFuZGxlX2RvbWFpbl9pcnErMHgxOC8weDIwClvCoCDCoCAx
-LjUxMTAyOF3CoCBnaWNfaGFuZGxlX2lycSsweDRjLzB4MTIwClvCoCDCoCAxLjUxMTAzMl3CoCBo
-YW5kbGVfaXJxX3BpcGVsaW5lZCsweDQwLzB4NjQKW8KgIMKgIDEuNTExMDM4XcKgIGNhbGxfb25f
-aXJxX3N0YWNrKzB4MjQvMHgzMApbwqAgwqAgMS41MTEwNDRdwqAgZG9faW50ZXJydXB0X2hhbmRs
-ZXIrMHgxMzgvMHgxNTgKW8KgIMKgIDEuNTExMDUwXcKgIGVsMV9pbnRlcnJ1cHQrMHg0MC8weDEx
-MApbwqAgwqAgMS41MTEwNTVdwqAgZWwxaF82NF9pcnFfaGFuZGxlcisweDE0LzB4MWMKW8KgIMKg
-IDEuNTExMDYxXcKgIGVsMWhfNjRfaXJxKzB4NjQvMHg2OApbwqAgwqAgMS41MTEwNjRdwqAgZGVm
-YXVsdF9pZGxlX2NhbGwrMHgzMC8weDc4ClvCoCDCoCAxLjUxMTA3MV3CoCBkb19pZGxlKzB4MTI4
-LzB4MTUwClvCoCDCoCAxLjUxMTA3N13CoCBjcHVfc3RhcnR1cF9lbnRyeSsweDM0LzB4MzgKW8Kg
-IMKgIDEuNTExMDgxXcKgIGtlcm5lbF9pbml0KzB4MC8weDFkNApbwqAgwqAgMS41MTEwODhdwqAg
-YXJjaF9wb3N0X2FjcGlfc3Vic3lzX2luaXQrMHgwLzB4OApbwqAgwqAgMS41MTEwOTZdwqAgc3Rh
-cnRfa2VybmVsKzB4NTA0LzB4NWNjClvCoCDCoCAxLjUxMTEwM13CoCBfX3ByaW1hcnlfc3dpdGNo
-ZWQrMHhiYy8weGM0CgoKVGhlIGZ1bmN0aW9uIGNhbGwgY2F1c2luZyB0aGUgaXNzdWUgaXMgYXMg
-Zm9sbG93czoKZ2VuZXJpY19oYW5kbGVfZG9tYWluX2lycQrCoCDCoCA9PiBnZW5lcmljX3BpcGVs
-aW5lX2lycV9kZXNjCsKgIMKgIMKgIMKgID0+IGdlbmVyaWNfaGFuZGxlX2lycV9kZXNjCsKgIMKg
-IMKgIMKgIMKgIMKgID0+IGhhbmRsZV9mYXN0ZW9pX2lycQrCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCA9PiBtYXNrX2NvbmRfZW9pX2lycQrCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCA9PiBt
-YXNrX2lycQrCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCA9PiBpdHNfbWFza19t
-c2lfaXJxCsKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgID0+IGlycV9j
-aGlwX21hc2tfcGFyZW50CsKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgID0+IGl0c19tYXNrX2lycQrCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCA9PiBscGlfdXBkYXRlX2NvbmZpZwrCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCDCoCA9PiBpdHNfc2VuZF9p
-bnYKwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgPT4gQlVJTERfU0lOR0xFX0NNRF9GVU5DCsKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgID0+IHJh
-d19zcGluX2xvY2tfaXJxc2F2ZSgmaXRzLT5sb2NrLCBmbGFncyk7CgoKT24gRG92ZXRhaWwtZW5h
-YmxlZCBrZXJuZWxzIHdpdGggWGVub21haSBJUlEgcGlwZWxpbmUsIEdJQ3YzIElUUyBpbnRlcnJ1
-cHQgaGFuZGxpbmcgcnVucyBpbiBPT0IgKG91dC1vZi1iYW5kKSBpbnRlcnJ1cHQgY29udGV4dC4g
-VGhlIG9yaWdpbmFsIHJhd19zcGlubG9ja190IHVzZWQgZm9yIGl0c19ub2RlLT5sb2NrIGludm9r
-ZXMgdGhlIHN0YW5kYXJkIGluLWJhbmQtb25seSByYXdfc3Bpbl9sb2NrX2lycXNhdmUoKSBpbnRl
-cmZhY2UuClRoaXMgdHJpZ2dlcnMgdGhlIGZvbGxvd2luZyBwaXBlbGluZSBjb250ZXh0IHZpb2xh
-dGlvbiB3YXJuaW5nOiBJUlEgcGlwZWxpbmU6IHNvbWUgY29kZSBydW5uaW5nIGluIG9vYiBjb250
-ZXh0ICdYZW5vbWFpJyBjYWxsZWQgYW4gaW4tYmFuZCBvbmx5IHJvdXRpbmUKCnJhd19zcGluX2xv
-Y2tfaXJxc2F2ZSgpIGlzIGFuIGluLWJhbmQgZXhjbHVzaXZlIEFQSSBhbmQgY2Fubm90IGJlIHNh
-ZmVseSBjYWxsZWQgZnJvbSBYZW5vbWFpIE9PQiBpbnRlcnJ1cHQgY29udGV4dCwgd2hpY2ggdmlv
-bGF0ZXMgdGhlIElSUSBwaXBlbGluZSBpc29sYXRpb24gcnVsZXMuCgpJIHRoaW5rIHRoYXQgZml4
-IHRoaXMgYnkgcmVwbGFjaW5nIHJhd19zcGlubG9ja190IHdpdGggaHlicmlkX3NwaW5sb2NrX3Qg
-Zm9yIHRoZSBJVFMgbm9kZSBsb2NrLiBUaGUgaHlicmlkIHNwaW5sb2NrIHN1cHBvcnRzIGJvdGgg
-aW4tYmFuZCBMaW51eCBrZXJuZWwgY29udGV4dCBhbmQgT09CIFhlbm9tYWkgcGlwZWxpbmUgY29u
-dGV4dCwgYWRhcHRpbmcgbG9jay9pcnFzYXZlIGxvZ2ljIGR5bmFtaWNhbGx5IGFjY29yZGluZyB0
-byB0aGUgcnVubmluZyBjb250ZXh0LCBlbGltaW5hdGluZyB0aGUgY29udGV4dCBtaXNtYXRjaCB3
-YXJuaW5nIHdoaWxlIGd1YXJhbnRlZWluZyBsb2NrIG11dHVhbCBleGNsdXNpb24uCgpUaGUgZml4
-ZWQgdXAgcGF0Y2ggaXMgYXMgZm9sbG93czoKCkZyb20gMTAzN2ZjZjZkNzVlY2YzN2UxY2FmMjgz
-ZDExOTgxNzdlNzQxMGJlMyBNb24gU2VwIDE3IDAwOjAwOjAwIDIwMDEKRnJvbTogemhhbmdsaW4g
-PHBvd2VydHJlZUAxNjMuY29tPgpEYXRlOiBUaHUsIDI1IEp1biAyMDI2IDE2OjU2OjMxICswODAw
-ClN1YmplY3Q6IFtQQVRDSF0gaXJxY2hpcDogZ2ljLXYzLWl0czogaXJxX3BpcGVsaW5lOiBmaXgg
-T09CIGNvbnRleHQgaW4tYmFuZArCoGxvY2sgd2FybmluZyBmb3IgSVRTIGxvY2sKCi0tLQrCoGRy
-aXZlcnMvaXJxY2hpcC9pcnEtZ2ljLXYzLWl0cy5jIHwgMiArLQrCoDEgZmlsZSBjaGFuZ2VkLCAx
-IGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvaXJxY2hp
-cC9pcnEtZ2ljLXYzLWl0cy5jIGIvZHJpdmVycy9pcnFjaGlwL2lycS1naWMtdjMtaXRzLmMKaW5k
-ZXggMGU1NzczNWVhYy4uODQ3YjAwOGI3MSAxMDA2NDQKLS0tIGEvZHJpdmVycy9pcnFjaGlwL2ly
-cS1naWMtdjMtaXRzLmMKKysrIGIvZHJpdmVycy9pcnFjaGlwL2lycS1naWMtdjMtaXRzLmMKQEAg
-LTk0LDcgKzk0LDcgQEAgc3RydWN0IGl0c19kZXZpY2U7CsKgICogbGlzdC4KwqAgKi8KwqBzdHJ1
-Y3QgaXRzX25vZGUgewotwqAgwqAgcmF3X3NwaW5sb2NrX3TCoCDCoCDCoCDCoCBsb2NrOworwqAg
-wqAgaHlicmlkX3NwaW5sb2NrX3TCoCDCoCDCoGxvY2s7CsKgIMKgIMKgc3RydWN0IG11dGV4wqAg
-wqAgwqAgwqAgZGV2X2FsbG9jX2xvY2s7CsKgIMKgIMKgc3RydWN0IGxpc3RfaGVhZMKgIMKgIGVu
-dHJ5OwrCoCDCoCDCoHZvaWQgX19pb21lbcKgIMKgIMKgIMKgICpiYXNlOwotLcKgCjIuMzQuMQoK
-UGxlYXNlIGhlbHAgdG8gcmV2aWV3IGl0LCB0aGFuayB5b3Uu
+
+Hi Florian,
+
+Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+
+> HW breakpoint / watchpoint handling was bypassing the
+> dovetail_fault_{entry,exit} machinery. As a result it could happen that
+> the inband IRQ mask was touched from the OOB stage.
+>
+> There is one more problem in the HW bp/wp handling related to
+> interrupts_enabled(). This one will be fixed in a separate patch.
+>
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  arch/arm/include/asm/dovetail.h         | 1 +
+>  arch/arm/include/asm/trace/exceptions.h | 3 ++-
+>  arch/arm/kernel/hw_breakpoint.c         | 6 ++++++
+>  3 files changed, 9 insertions(+), 1 deletion(-)
+>
+> diff --git a/arch/arm/include/asm/dovetail.h b/arch/arm/include/asm/dovetail.h
+> index 795a1fb903ec29f4c2fb7b25e70980796804acc0..eeb5d16ad032044a2587822f6b35074d664a9bbc 100644
+> --- a/arch/arm/include/asm/dovetail.h
+> +++ b/arch/arm/include/asm/dovetail.h
+> @@ -16,6 +16,7 @@
+>  #define ARM_TRAP_VFP		6	/* VFP floating point exception */
+>  #define ARM_TRAP_UNDEFINSTR	7	/* Undefined instruction */
+>  #define ARM_TRAP_ALIGNMENT	8	/* Unaligned access exception */
+> +#define ARM_TRAP_HW_BREAK	9	/* HW break or watchpoint exception */
+>
+
+ARM_TRAP_HW_BREAK would not be caught by xnarch_fault_bp_p() and friends
+without fixing them up. What is the expected upside of differentiating
+ARM_TRAP_BREAK from ARM_TRAP_HW_BREAK?
+
+-- 
+Philippe.
