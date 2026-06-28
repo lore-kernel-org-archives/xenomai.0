@@ -1,39 +1,39 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.3])
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73F302110E
-	for <xenomai@lists.linux.dev>; Sun, 28 Jun 2026 04:51:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.3
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86EBA49620
+	for <xenomai@lists.linux.dev>; Sun, 28 Jun 2026 04:51:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.3
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782622283; cv=none; b=Kx94LEB5cp32EAxi8enQCVmAd4xtrngp9EOKos4UP6P1tUaC5slhZCO+oYxp0QAe1EX+kKQQcoD03rsITljtHtPRCSnxIaSTyoSIrtpG1RXWDIze++yQlkliEOUyLmJrNx7u2+agbh6wcTHAxCXuLJMQFujJzP36o6NgGF/RtQE=
+	t=1782622283; cv=none; b=U680RckwPQdrkj4qyYVtSpOGgPYJlx7vCJ6+r7bMIGge2YX/u/axqwjlsaERGFRUVz3aVhg7lnvzoTp3qJlTUzdMwnz+7g+h2iX1TCpQ+fYKll+Zym1ZH5WvtAAcUVXaqoO3+aRAu1voDsND2yvkMp/JqeNi46P5d1TEh6njv88=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1782622283; c=relaxed/simple;
-	bh=uwIHuhn3hOmevFd4sJEbNwyQVRUhg4fNvkrNaUAGwpM=;
+	bh=BCMBB7GHskrD78QwR1nT09GRsidz9++Yt8xScOYG8bs=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=t0TzyTc1xy2YzEbkHfoSxgcYpwL8NqoWtU9AjVM7/t1Zaq/3/KMbaC9r6evgg9zVe+OtdYRWjBSjf2qmydKa4JvDayfm+Cq0CIPo49QEo8qXK+fj0SjTzXgOGiDMviWFIWMylF32ZVheVQ8cKR00p2i4LR9qT4F7Yhjjlxr8o6k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=f0CVmCT+; arc=none smtp.client-ip=220.197.31.3
+	 MIME-Version; b=S3+s268Z87nV4yuEqMr3JcdJB56SXkw2GYq5+yP4L8dgMjOiUJ/RdUdt/ck2mjkKGa1fFQYE+Bip7Olxf8BcirH5MrbtW83b8syqWlAPHikYQbgdMRcWHqq4Jn2mXg5eEq6Ddc3v593o7ZQo3qWCC+Z2cfUJCPusQXuLfdmNp1s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=caXl6dDu; arc=none smtp.client-ip=117.135.210.3
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="f0CVmCT+"
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="caXl6dDu"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=wX
-	SHxpHp8HyHdlZE07rIUNDBp7aOi+E2G1v6EmTPPl4=; b=f0CVmCT+3EmeeDLYfU
-	JclMrxVipPKqvDD+DUFpUIQDm5d0ZxEnwJOLSvwd3ykQhZFxqFnDHUzzHB7cRITf
-	Kbr9FskBE6y/nYNCn9bU0ub9u/5Plt8Rh00Q+zGZZqBJpOYoI86/U96oYoyfP8Xx
-	cwu5gfRUcBELBxhwKokXFsfIs=
+	s=s110527; h=From:To:Subject:Date:Message-Id:MIME-Version; bh=WM
+	d8Ql6Vw4nGBfIlwAhJn3DHDR5app+96NgECFixjoo=; b=caXl6dDuSDhHkjBiwb
+	6WceQyhctchCX0zEJwY1niBMGMRLp3THDKdCL8I6fV40RdjmfZqJG64TGptEqd5l
+	ERQhJ/P2BHWVHCrFxJYe8nAliUWq51lfe/ljYfeDaMw3/YTXbDO0DDHWqlDuQgnE
+	y3T882pT8znmwGZAmk8z5zVJQ=
 Received: from wang-Xenomai.. (unknown [])
-	by gzga-smtp-mtada-g0-1 (Coremail) with SMTP id _____wCXYGc2qEBqjBkzGA--.59914S4;
-	Sun, 28 Jun 2026 12:51:15 +0800 (CST)
+	by gzga-smtp-mtada-g0-1 (Coremail) with SMTP id _____wCXYGc2qEBqjBkzGA--.59914S7;
+	Sun, 28 Jun 2026 12:51:18 +0800 (CST)
 From: guang_feng_wang@163.com
 To: jan.kiszka@siemens.com,
 	rpm@xenomai.org,
 	florian.bezdeka@siemens.com
 Cc: xenomai@lists.linux.dev,
 	guang feng wang <guang_feng_wang@163.com>
-Subject: [PATCH website v1 2/5] doc: update stale Cobalt kernel preparation example
-Date: Sun, 28 Jun 2026 12:50:56 +0800
-Message-Id: <433757b3a9242de476c946075be857abb9601a12.1782585785.git.guang_feng_wang@163.com>
+Subject: [PATCH website v1 5/5] doc: update Cobalt boot log
+Date: Sun, 28 Jun 2026 12:50:59 +0800
+Message-Id: <6f8921003f90f662522700933867074755602bbb.1782585785.git.guang_feng_wang@163.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <cover.1782585785.git.guang_feng_wang@163.com>
 References: <cover.1782585785.git.guang_feng_wang@163.com>
@@ -44,45 +44,46 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:_____wCXYGc2qEBqjBkzGA--.59914S4
-X-Coremail-Antispam: 1Uf129KBjvJXoW7urWrZF1fGr4rXFWrtw48tFb_yoW8GFW3pr
-	yDuw1rKFyrGr1ay3WDXayxZr1rWa93KryUWrWDCa42ya4qyrs2qF9Ivrn09Fy5XFs7Aa1Y
-	vryYqr9rCa18AFJanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-	9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zErWFUUUUUU=
-X-CM-SenderInfo: xjxd0wxbih0wxbzd0wi6rwjhhfrp/xtbC+QPkXmpAqEMCJQAA3m
+X-CM-TRANSID:_____wCXYGc2qEBqjBkzGA--.59914S7
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZw4kWrWDAF13KrykCryUZFb_yoWktFc_X3
+	W8KrWvvr45JF9rCrW09F1xZF9Y9ay8JryrJ3yIvF12vw1DAFnxuwn8Z34rAr13CF429FZx
+	urn8t3ZrKr4I9jkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+	9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRNzuW5UUUUU==
+X-CM-SenderInfo: xjxd0wxbih0wxbzd0wi6rwjhhfrp/xtbC+QblX2pAqEYCSQAA3K
 
 From: guang feng wang <guang_feng_wang@163.com>
 
-The Cobalt kernel preparation example still refers to a linux-3.10-ipipe
-tree. This is stale for the current Dovetail-based Cobalt setup path.
+The Cobalt boot check still shows an I-pipe log message. This is stale
+for the current Dovetail-based Cobalt setup.
 
-Update the example to use a generic Dovetail-enabled Linux tree instead.
+Replace it with an updated Cobalt boot log example.
 
 Signed-off-by: guang feng wang <guang_feng_wang@163.com>
 ---
- content/installation/_index.md | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ content/installation/_index.md | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/content/installation/_index.md b/content/installation/_index.md
-index 673b51b..265cb5a 100644
+index 12cf726..30f54ce 100644
 --- a/content/installation/_index.md
 +++ b/content/installation/_index.md
-@@ -59,11 +59,12 @@ if so.
- tells the script about the target architecture. If unspecified, the
- build host architecture suggested as a reasonable default.
+@@ -937,11 +937,13 @@ messages like these:
  
--For instance, the following command would prepare the Linux tree located
--at `/home/me/linux-3.10-ipipe` in order to patch the Xenomai support in:
-+For instance, the following command would prepare a Dovetail-enabled
-+Linux tree located at `/home/me/linux-dovetail` in order to patch
-+the Xenomai support in:
+ ```
+     $ dmesg | grep -i xenomai
+-    I-pipe: head domain Xenomai registered.
+-    [Xenomai] Cobalt vX.Y.Z enabled
++    [Xenomai] scheduling class idle registered.
++    [Xenomai] scheduling class rt registered.
++    IRQ pipeline: high-priority Xenomai stage added.
++    [Xenomai] Cobalt vX.Y.Z
+ ```
  
-     $ cd xenomai-3
--    $ scripts/prepare-kernel.sh --linux=/home/me/linux-3.10
-+    $ scripts/prepare-kernel.sh --linux=/home/me/linux-dovetail
+-If the kernel fails booting, or the log messages indicates an error
++If the kernel fails booting, or the log messages indicate an error
+ status instead, see the [Troubleshooting guide]({{% relref
+ "troubleshooting/_index.md#x3-failed-boot-klog" %}}).
  
- Note: The script will infer the location of the Xenomai kernel code from
- its own location within the Xenomai source tree. For instance, if
 -- 
 2.34.1
 
