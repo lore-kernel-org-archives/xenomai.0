@@ -1,592 +1,188 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from m16.mail.163.com (m16.mail.163.com [117.135.210.4])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A011732D7FA
-	for <xenomai@lists.linux.dev>; Sun, 28 Jun 2026 15:40:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9A063BB4A
+	for <xenomai@lists.linux.dev>; Mon, 29 Jun 2026 12:14:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=117.135.210.4
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1782661229; cv=none; b=NeR9rKCkoAZMfGUVcuAShN9XcTAtRw5kLedPom40bnN3lpJmCJG1B9r9v7Dfd0OpBagT2FDJRxGZ3LwOSXkrrJ3YP0rpLbweQDfzbyImGeBCo7JO3DF9QsQaqGbXw9E11B1mORfqkMy/4/AT8072VJv+y94a++K35HxxGJxRP/U=
+	t=1782735250; cv=none; b=c9unzEKhunzHohiutpx+MrDx0nuRNBDW4iT46pc6jnUrHzrYf6Ydub/tFXvwb9syvDAMFLX8khGVUyX6tzoB79VksT8L5h7WJ1sQf0ix6BI/ft7PtW7CVjsLxe7Kziy/yxipMtwOrNu8ChDv1qmYp4iTaZHxmsPESBb0yUots6w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1782661229; c=relaxed/simple;
-	bh=2ky+TIXb/h7bzwW64mhIB3fn/pMRivjNF9OLxCjuTwc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=C43Ru679qNXwmV0ocmMtbM32tlf/lJW7Cz3ftyGXiJMCLMO/gLBIDonLaYsLx8UN2Wv/SaERJ2ne1Aboi/18FKs5tv9PX8C5M3QTtJ5+31nFc5F5j0JBDszewy0b2pRzQHLySolpKqP0KeDmKmGXw2i0K8I16FsgCuZEgg/ubKE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=S+6DkJ0M; arc=none smtp.client-ip=209.85.128.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1782735250; c=relaxed/simple;
+	bh=Q750/bc1x3SqHHDpMPSFIeqGLzMybXVvXz9L2IVYpt4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
+	 MIME-Version:Message-ID; b=ZgFK27WMax50FjMc0/TuVUAcZ8sf+tlC4pD/PvJuYsiI9kBJYJ48OI6qBJJwuF+5zIWTk4X8vIQRaRVtiEh12rjEanhvJUKuuPU7FG2aC1bXCR+1QDzBGDcOA+MmVPGuvvO1eW8HYBPeHNHi+BYyT3rRR6YvJDpZxfC++Sx7fiw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=Vk2SLWGx; arc=none smtp.client-ip=117.135.210.4
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="S+6DkJ0M"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-49249707788so20582635e9.2
-        for <xenomai@lists.linux.dev>; Sun, 28 Jun 2026 08:40:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1782661226; x=1783266026; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=DO0OX+dpZ5HpX7s3jWDeFyKGT1OqtjfvNdjF+pWZd2U=;
-        b=S+6DkJ0M2roFsONSQpzs6d/Z88arro5RGDO16xqQTwpuVal29QoFckV0yqfKKnnYu8
-         BICmtnoSahNCVFkuPBOBVeLon43OVcL0uw/piWXCE1zzrKgzRwjSvO3RwbPVhAB8yE+z
-         39nRgkaC770e+4DfyFprQNMLp3mkxGAFoxGIgKRiLRUZs/b47s/Va0/MfM2OoZbNneAT
-         Ki3qKdOE12KE+7qhzsZrn40ZIx/oKQNY08RXDLjrW4NN6TGWKD0iJms7CucHsMX0OMT+
-         VCYpnDdYkFdgraIzBRzwrxaCTNiD+8we+KJk0dn/yI9KJteJ6UyJfWu/suBuwEQTKDeW
-         C7gQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1782661226; x=1783266026;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=DO0OX+dpZ5HpX7s3jWDeFyKGT1OqtjfvNdjF+pWZd2U=;
-        b=fuMeu1waunLqh+YZi4FhBjllwfCSDzinZYqlMPudBqgeh5lgqE3YU6n/DHHs6gTHZr
-         xkrdgZZ9fXnmMOakaOn7FstWWewrbV9abj8S9iubu5qhfPhPQk6I21l00qZouSc3oZcd
-         doXU9uT0a2wrIvCWEo6Amlco6GHUwJFoxXJU2jIKHm6SOA8ib0/5NTDV0rmWsGW1poiT
-         F5NmjoaVTjr5MnSaHoXR84MWLACU6uDCsBzwrumLA7O6OiMez6JyMalQKKy/umXCpYHF
-         kEs+F6TRbHZF0Kg1z/7jKMdZDmFT3IcfcASl0w3O3lmBI0QIaxaq99pc3ikpC9XzSGVa
-         Wv2w==
-X-Gm-Message-State: AOJu0YyD3EueRVVHkn0vo+RDRsUv7pva2zqTVeYM+nDrgjKkF8DCqBAZ
-	XEO3HeD1oDQ4ggxgbLJX0j5RQ8qLnZeb0TBIMXETN70qpFsa4JHjihSAHsOo1g==
-X-Gm-Gg: AfdE7cnP+th97YZZIDBiTm7gom3a1z7ttsTSJCwOubrLdxjl7+w87ao7jEhlHY8Sprv
-	aAwejTXi+SS+fZh/4mzYKnbCqpm1g2BO7dGzghU32NHt6aXUaTGlgbctjBG5jRj+QP8WAh5QQvV
-	eR1BwSmvQYnYjdGwUZE1h+GS1/jMzKDoCibi9BXvdKGrnw+6c6pK3XrxfdmA0jYRjAhDDa/Q4H2
-	b7wcejNThYKxU58QLxC07Z/DdkI6ZHNO4vWDRQWR/qvVyHQWkaA89uGJcPDlQmLWpMFHZc/R36Y
-	ESZ7M/JrA23VqGGyqAkDiCxVvrtfYcSOdn6g7NNGVvdsCZwBnPvkkU6UqlcfXyPZlQ1XqRhmnCX
-	cH1tkvyvAKjhpPR/uF4nr8dTthHQPdwXSOmT4zDUwvRXkyFIR+RVEoNrHY4sLksEgSy17btMf3N
-	pob/ut+mUSXG7JPDA=
-X-Received: by 2002:a05:600c:a209:b0:492:40df:d49c with SMTP id 5b1f17b1804b1-4926fc770bemr97099995e9.23.1782661225617;
-        Sun, 28 Jun 2026 08:40:25 -0700 (PDT)
-Received: from localhost ([213.55.168.64])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-49268fc0d36sm385531365e9.2.2026.06.28.08.40.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 28 Jun 2026 08:40:24 -0700 (PDT)
-From: Hannes Diethelm <hannes.diethelm@gmail.com>
-To: xenomai@lists.linux.dev,
-	rpm@xenomai.org
-Cc: Hannes Diethelm <hannes.diethelm@gmail.com>
-Subject: [PATCH 1/1] tidbits: net-ping: add ping tidbit using raw socket
-Date: Sun, 28 Jun 2026 17:39:56 +0200
-Message-ID: <20260628153956.1435330-2-hannes.diethelm@gmail.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260628153956.1435330-1-hannes.diethelm@gmail.com>
-References: <20260628153956.1435330-1-hannes.diethelm@gmail.com>
+	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="Vk2SLWGx"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
+	Message-ID; bh=Q750/bc1x3SqHHDpMPSFIeqGLzMybXVvXz9L2IVYpt4=; b=V
+	k2SLWGxFqhDzmEyCMrQa0o+ziohgJuaFdZaj4r0rNWXlaoVvSOb+OvJGm0K6w40D
+	65PygBpkYp1F54c9ej77rLRaLK+hcVn/44CeW765fuuRxY90M/JwbHuTcTssS2Tp
+	iv43LJmvAvyYkkVX+20uD9HRfvkVb4ARxGQgY0btwg=
+Received: from mars_liu2023$163.com ( [119.123.42.48] ) by
+ ajax-webmail-wmsvr-40-114 (Coremail) ; Mon, 29 Jun 2026 20:13:55 +0800
+ (CST)
+Date: Mon, 29 Jun 2026 20:13:55 +0800 (CST)
+From: mars_liu  <mars_liu2023@163.com>
+To: "Jan Kiszka" <jan.kiszka@siemens.com>
+Cc: xenomai <xenomai@lists.linux.dev>
+Subject: Re:Re:Re: After upgrading from Debian 11 to Debian 12, the latency
+ became worse
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version 2023.4-cmXT build
+ 20260511(2e539873) Copyright (c) 2002-2026 www.mailtech.cn 163com
+In-Reply-To: <d5a8d97.9cac.19ef9dccf5b.Coremail.mars_liu2023@163.com>
+References: <7acb182.9d78.19eeeecbe17.Coremail.mars_liu2023@163.com>
+ <cda3f311-155b-408e-828e-e90c21c857ad@siemens.com>
+ <d5a8d97.9cac.19ef9dccf5b.Coremail.mars_liu2023@163.com>
+X-NTES-SC: AL_Qu2TAPuYukoo4yabYekck0cSj+4/UcK2vfUm1Y9Tc/oEtArN0QcGX19uN0fL+syJCR6KtySVVzdo79x3RaxHqAOcynUkVZgqKWpkqgA4qw==
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <589ddc8c.9df7.19f134cea3a.Coremail.mars_liu2023@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID:cigvCgD3twKDYUJqykETAA--.2982W
+X-CM-SenderInfo: 5pdu2sholxjiist6il2tof0z/xtbCxgOjsmpCYYM40QAA33
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 
-This tidbit allows to ping any host and measure the response time.
-
-Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
----
- tidbits/meson.build    |   6 +
- tidbits/oob-net-ping.c | 480 +++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 486 insertions(+)
- create mode 100644 tidbits/oob-net-ping.c
-
-diff --git a/tidbits/meson.build b/tidbits/meson.build
-index 3713219..f24502f 100644
---- a/tidbits/meson.build
-+++ b/tidbits/meson.build
-@@ -6,6 +6,12 @@ executable('oob-net-icmp',
-     dependencies: libevl_dep
- )
- 
-+executable('oob-net-ping',
-+    'oob-net-ping.c',
-+    install: true,
-+    dependencies: libevl_dep
-+)
-+
- executable('oob-net-udp',
-     'oob-net-udp.c',
-     install: true,
-diff --git a/tidbits/oob-net-ping.c b/tidbits/oob-net-ping.c
-new file mode 100644
-index 0000000..efbe11e
---- /dev/null
-+++ b/tidbits/oob-net-ping.c
-@@ -0,0 +1,480 @@
-+/*
-+ * SPDX-License-Identifier: MIT
-+ *
-+ * This tidbit demonstrates out-of-band networking, by sending
-+ * ICMPv4(ECHO) requests using the raw packet socket
-+ * interface. Responses are received and checked.
-+ * See https://v4.xenomai.org/core/net/ for details.
-+ *
-+ * Copyright (C) 2026 Hannes Diethelm <hannes.diethelm@gmail.com>
-+ * based on oob-net-icmp.c
-+ *
-+ */
-+
-+#include <pthread.h>
-+#include <error.h>
-+#include <errno.h>
-+#include <stdint.h>
-+#include <stdbool.h>
-+#include <stdio.h>
-+#include <stdlib.h>
-+#include <unistd.h>
-+#include <memory.h>
-+#include <getopt.h>
-+#include <sys/socket.h>
-+#include <sys/ioctl.h>
-+#include <linux/if_packet.h>
-+#include <netinet/ether.h>
-+#include <netinet/ip_icmp.h>
-+#include <net/ethernet.h>
-+#include <net/if.h>
-+#include <arpa/inet.h>
-+#include <evl/thread.h>
-+#include <evl/clock.h>
-+#include <evl/proxy.h>
-+#include <evl/net/net.h>
-+
-+static int verbosity = 1;
-+
-+static uint16_t ip_checksum(void *buf, int len)
-+{
-+	uint16_t *p = buf;	/* buf is assumed to be 16bit-aligned. */
-+	uint32_t sum = 0;
-+	int count = len;
-+
-+	while (count > 1) {
-+		sum += *p++;
-+		count -= sizeof(*p);
-+	}
-+
-+	if (count > 0)
-+		sum += *(uint8_t *)p;
-+
-+	while (sum >> 16)
-+		sum = (sum & 0xffff) + (sum >> 16);
-+
-+	return ~sum & 0xffff;
-+}
-+
-+static void dump_packet(const char *title, const unsigned char *buf, int len)
-+{
-+	int n = 0;
-+
-+	evl_printf("== dumping %s, length=%d\n", title, len);
-+
-+	while (len-- > 0) {
-+		evl_printf("%.2x ", *buf++);
-+		if ((++n % 16) == 0)
-+			evl_printf("\n");
-+	}
-+
-+	if (n % 16)
-+		evl_printf("\n");
-+}
-+
-+static void print_ip_header(const struct ip *iphdr)
-+{
-+	evl_printf("iphdr.ip_hl=%d\n", iphdr->ip_hl);
-+	evl_printf("iphdr.ip_v=%d\n", iphdr->ip_v);
-+	evl_printf("iphdr.ip_len=%d\n", ntohs(iphdr->ip_len));
-+	evl_printf("iphdr.ip_id=%d\n", ntohs(iphdr->ip_id));
-+	evl_printf("iphdr.ip_p=%d\n", iphdr->ip_p);
-+	evl_printf("iphdr.ip_sum=%#x\n", iphdr->ip_sum);
-+}
-+
-+static void print_icmp_reply(const void *etherbuf, size_t len)
-+{
-+	const struct icmphdr *icmphdr;
-+	const struct ip *iphdr; /* no option behind */
-+	const void *icmpdata;
-+
-+	dump_packet("ICMP reply", etherbuf, len);
-+	iphdr = etherbuf + ETH_HLEN;
-+	print_ip_header(iphdr);
-+	icmphdr = (const struct icmphdr *)(iphdr + 1);
-+	icmpdata = icmphdr + 1;
-+	(void)icmpdata;
-+	evl_printf("icmp.icmp_type=%d\n", icmphdr->type);
-+	evl_printf("icmp.icmp_id=%d\n", ntohs(icmphdr->un.echo.id));
-+	evl_printf("icmp.icmp_seq=%d\n", ntohs(icmphdr->un.echo.sequence));
-+}
-+
-+static int check_icmp_reply(void *etherbuf, size_t len, uint16_t id, uint16_t sequence)
-+{
-+	struct ip *iphdr;
-+	struct icmphdr *icmphdr;
-+
-+	if (len < ETH_HLEN + sizeof(struct ip) + sizeof(struct icmphdr)) {
-+		if (verbosity > 1)
-+			dump_packet("truncated packet", etherbuf, len);
-+		return 1;
-+	}
-+
-+	size_t datalen = len - ETH_HLEN - sizeof(struct ip) - sizeof(struct icmphdr);
-+
-+	iphdr = etherbuf + ETH_HLEN;
-+	icmphdr = (struct icmphdr *)(iphdr + 1);
-+
-+	if (iphdr->ip_hl != 5 || iphdr->ip_v != 4 || iphdr->ip_p != IPPROTO_ICMP) {
-+		if (verbosity > 1) {
-+			dump_packet("mangled packet", etherbuf, len);
-+			print_ip_header(iphdr);
-+		}
-+		return 1;
-+	}
-+
-+	/* IP checksum */
-+	uint16_t ip_cksum = ip_checksum(iphdr, sizeof(*iphdr));
-+	if (ip_cksum != 0) {
-+		evl_printf("ip checksum error\n");
-+		return 1;
-+	}
-+
-+	/* ICMP checksum */
-+	uint16_t icmp_cksum = ip_checksum(icmphdr, sizeof(*icmphdr) + datalen);
-+	if (icmp_cksum != 0) {
-+		evl_printf("icmp checksum error\n");
-+		return 1;
-+	}
-+
-+	if (ntohs(icmphdr->un.echo.id) != id) {
-+		evl_printf("id mismatch\n");
-+		return 1;
-+	}
-+	if (ntohs(icmphdr->un.echo.sequence) != sequence) {
-+		evl_printf("sequence mismatch\n");
-+		return 1;
-+	}
-+
-+	if (verbosity > 1)
-+		print_icmp_reply(etherbuf, len);
-+
-+	return 0;
-+}
-+
-+static size_t build_icmp_request(uint8_t *o_frame, size_t icmplen,
-+				 const struct in_addr *dst_ip,
-+				 const struct in_addr *src_ip,
-+				 const struct ether_addr *dst_mac,
-+				 const struct ether_addr *src_mac,
-+				 uint16_t id,
-+				 uint16_t sequence)
-+{
-+	struct icmphdr *icmphdr;
-+	struct ip *iphdr;
-+	uint16_t cksum;
-+	size_t datalen;
-+	size_t pktlen;
-+	uint8_t *data;
-+
-+	pktlen = icmplen + ETH_HLEN + sizeof(*iphdr);
-+	memset(o_frame, 0, pktlen);
-+
-+	iphdr = (struct ip *)(o_frame + ETH_HLEN);
-+	icmphdr = (struct icmphdr *)(iphdr + 1);
-+	data = (uint8_t *)(icmphdr + 1);
-+	if (icmplen < sizeof(*icmphdr)) {
-+		evl_printf("icmplen to short\n");
-+		return 0;
-+	}
-+	datalen = icmplen - sizeof(*icmphdr);
-+
-+	/* MAC */
-+	memcpy(o_frame, dst_mac, ETH_ALEN);
-+	memcpy(o_frame + ETH_ALEN, src_mac, ETH_ALEN);
-+	o_frame[ETH_HLEN - 2] = (ETH_P_IP >> 8) & 0xff;
-+	o_frame[ETH_HLEN - 1] = ETH_P_IP & 0xff;
-+
-+	/* IPv4 */
-+	iphdr->ip_hl = 5;
-+	iphdr->ip_v = 4;
-+	iphdr->ip_tos = 0;
-+	iphdr->ip_len = htons(pktlen - ETH_HLEN);
-+	iphdr->ip_id = htons(sequence + id + 0x1000);
-+	iphdr->ip_off = htons(IP_DF);
-+	iphdr->ip_ttl = 64;
-+	iphdr->ip_p = IPPROTO_ICMP;
-+	memcpy(&iphdr->ip_src, src_ip, sizeof(iphdr->ip_src));
-+	memcpy(&iphdr->ip_dst, dst_ip, sizeof(iphdr->ip_dst));
-+	iphdr->ip_sum = 0;
-+	iphdr->ip_sum = ip_checksum(iphdr, sizeof(*iphdr));
-+
-+	/* ICMP */
-+	icmphdr->type = ICMP_ECHO;
-+	icmphdr->code = 0;
-+	icmphdr->un.echo.id = htons(id);
-+	icmphdr->un.echo.sequence = htons(sequence);
-+	icmphdr->checksum = 0;
-+
-+	/* data */
-+	for (size_t i = 0; i < datalen; i++)
-+		data[i] = i + '0';
-+
-+	/* ICMP checksum */
-+	cksum = ip_checksum(icmphdr, sizeof(*icmphdr) + datalen);
-+	icmphdr->checksum = cksum;
-+
-+	if (verbosity > 1) {
-+		evl_printf("ip_len=%zd, icmp_len=%zd, ip_len=%d, datalen=%ld\n",
-+			   sizeof(*iphdr), sizeof(struct icmphdr),
-+			   ntohs(iphdr->ip_len), datalen);
-+		print_ip_header(iphdr);
-+		dump_packet("ICMP request", o_frame, pktlen);
-+	}
-+
-+	return pktlen;
-+}
-+
-+static void usage(void)
-+{
-+	fprintf(stderr, "oob-net-ping -i <network-interface> -a <addr> [-d][-s]\n");
-+}
-+
-+int main(int argc, char *argv[])
-+{
-+	uint8_t i_frame[ETHER_MAX_LEN], o_frame[ETHER_MAX_LEN];
-+	int ret, tfd, s, c, ifindex;
-+	const char *netif = NULL;
-+	const char *ip_addr = NULL;
-+	struct oob_msghdr msghdr;
-+	struct sched_param param;
-+	struct sockaddr_ll addr;
-+	struct sockaddr_in dst_addr, src_addr;
-+	struct sockaddr dst_hwaddr, src_hwaddr;
-+	struct arpreq arp_request;
-+	struct ifreq ifr;
-+	struct iovec iov;
-+	struct timespec ts_timeout;
-+	struct timespec ts_ping_tx;
-+	struct timespec ts_ping_rx;
-+	uint16_t id = getpid(); //Use pid as ID randomization
-+	uint16_t sequence = 0;
-+	ssize_t count;
-+	useconds_t delay=1000000;
-+
-+	while ((c = getopt(argc, argv, "i:a:w:ds")) != EOF) {
-+		switch (c) {
-+		case 'i':
-+			netif = optarg;
-+			break;
-+		case 'a':
-+			ip_addr = optarg;
-+			break;
-+		case 'w':
-+			delay = atoi(optarg);
-+			break;
-+		case 'd':
-+			verbosity = 2;
-+			break;
-+		case 's':
-+			verbosity = 0;
-+			break;
-+		default:
-+			usage();
-+			exit(1);
-+		}
-+	}
-+
-+	dst_addr.sin_family = AF_INET;
-+	dst_addr.sin_port = htons(0);
-+	if (!inet_pton(AF_INET, ip_addr, &dst_addr.sin_addr))
-+		error(1, EINVAL, "invalid IP address");
-+
-+	if (netif == NULL || ip_addr == NULL) {
-+		usage();
-+		exit(2);
-+	}
-+
-+	param.sched_priority = 1;
-+	ret = pthread_setschedparam(pthread_self(), SCHED_FIFO, &param);
-+	if (ret)
-+		error(1, ret, "pthread_setschedparam()");
-+
-+	tfd = evl_attach_self("oob-net-icmp:%d", getpid());
-+	if (tfd < 0)
-+		error(1, -tfd, "cannot attach to the EVL core");
-+
-+	/*
-+	 * Get a UDP socket with out-of-band capabilities for solicit.
-+	 * Solicit does not work with raw socket (It can not, raw captures all)
-+	 */
-+	s = socket(AF_INET, SOCK_DGRAM | SOCK_OOB, 0);
-+	if (s < 0)
-+		error(1, errno, "cannot create drgram packet socket");
-+
-+	if (netif) {
-+		if (setsockopt(s, SOL_SOCKET, SO_BINDTODEVICE, netif, strlen(netif)))
-+			error(1, errno, "setsockopt(SO_BINDTODEVICE)");
-+		if (verbosity)
-+			printf("== bound to %s\n", netif);
-+	}
-+	/*
-+	* Guarantee a mere oob path from the first packet
-+	* onward by pre-caching the route and link-layer
-+	* address via an explicit neighbour solicitation
-+	* before we start sending data.
-+	*/
-+	ret = evl_net_solicit(s, (const struct sockaddr *)&dst_addr,
-+			      EVL_NEIGH_PERMANENT);
-+	if (ret)
-+		error(1, -ret, "evl_net_solicit()");
-+
-+	close(s);
-+
-+	/*
-+	 * Get a raw socket with out-of-band capabilities.
-+	 */
-+	s = socket(AF_PACKET, SOCK_RAW | SOCK_OOB, 0);
-+	if (s < 0)
-+		error(1, errno, "cannot create raw packet socket");
-+
-+	/*
-+	 * Get ifindex
-+	 */
-+	memset(&ifr, 0, sizeof(ifr));
-+	strncpy(ifr.ifr_name, netif, IFNAMSIZ - 1);
-+	ret = ioctl(s, SIOCGIFINDEX, &ifr);
-+	if (ret < 0)
-+		error(1, errno, "ioctl(SIOCGIFINDEX)");
-+
-+	ifindex = ifr.ifr_ifindex;
-+
-+	/*
-+	 * Get local mac address
-+	 */
-+	ret = ioctl(s, SIOCGIFHWADDR, &ifr);
-+	if (ret < 0)
-+		error(1, errno, "ioctl(SIOCGIFHWADDR)");
-+
-+	src_hwaddr = ifr.ifr_hwaddr;
-+
-+	/*
-+	 * Get the local ip address
-+	 */
-+	ret = ioctl(s, SIOCGIFADDR, &ifr);
-+	if (ret < 0)
-+		error(1, errno, "ioctl(SIOCGIFADDR)");
-+
-+	src_addr.sin_family = AF_INET;
-+	src_addr.sin_port = htons(0);
-+	src_addr.sin_addr.s_addr = ((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr.s_addr;
-+
-+	/*
-+	 * Get the destination mac address
-+	 */
-+	memset(&arp_request, 0, sizeof(arp_request));
-+	((struct sockaddr_in *)&arp_request.arp_pa)->sin_family = AF_INET;
-+	((struct sockaddr_in *)&arp_request.arp_pa)->sin_addr.s_addr = dst_addr.sin_addr.s_addr;
-+	memcpy(arp_request.arp_dev, ifr.ifr_name, sizeof(arp_request.arp_dev));
-+
-+	ret = ioctl(s, SIOCGARP, &arp_request);
-+	if (ret < 0)
-+		error(1, errno, "ioctl(SIOCGARP)");
-+
-+	if (arp_request.arp_flags & ATF_COM) {
-+		dst_hwaddr = arp_request.arp_ha;
-+	} else {
-+		error(1, 0, "ARP entry is incomplete or invalid.\n");
-+	}
-+
-+	if (verbosity > 1) {
-+		evl_printf("sending via %s (if%d), ip=%s, mac=%.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n",
-+			ifr.ifr_name, ifindex, inet_ntoa(src_addr.sin_addr),
-+			(uint8_t)src_hwaddr.sa_data[0],
-+			(uint8_t)src_hwaddr.sa_data[1],
-+			(uint8_t)src_hwaddr.sa_data[2],
-+			(uint8_t)src_hwaddr.sa_data[3],
-+			(uint8_t)src_hwaddr.sa_data[4],
-+			(uint8_t)src_hwaddr.sa_data[5]);
-+		evl_printf("sending to ip=%s, mac=%.2x:%.2x:%.2x:%.2x:%.2x:%.2x\n",
-+			inet_ntoa(dst_addr.sin_addr),
-+			(uint8_t)dst_hwaddr.sa_data[0],
-+			(uint8_t)dst_hwaddr.sa_data[1],
-+			(uint8_t)dst_hwaddr.sa_data[2],
-+			(uint8_t)dst_hwaddr.sa_data[3],
-+			(uint8_t)dst_hwaddr.sa_data[4],
-+			(uint8_t)dst_hwaddr.sa_data[5]);
-+	}
-+
-+	memset(&addr, 0, sizeof(addr));
-+	addr.sll_ifindex = ifindex;
-+	addr.sll_family = AF_PACKET;
-+	addr.sll_protocol = htons(ETH_P_ALL);
-+	ret = bind(s, (struct sockaddr *)&addr, sizeof(addr));
-+	if (ret)
-+		error(1, errno, "cannot bind packet socket");
-+
-+	if (verbosity)
-+		evl_printf("listening to interface %s\n", netif);
-+
-+	for (;;) {
-+		count = build_icmp_request(o_frame, 64,
-+			(struct in_addr *)&dst_addr.sin_addr.s_addr,
-+			(struct in_addr *)&src_addr.sin_addr.s_addr,
-+			(struct ether_addr *)dst_hwaddr.sa_data,
-+			(struct ether_addr *)src_hwaddr.sa_data,
-+			id, sequence);
-+
-+		iov.iov_base = o_frame;
-+		iov.iov_len = count;
-+		msghdr.msg_iov = &iov;
-+		msghdr.msg_iovlen = 1;
-+		msghdr.msg_control = NULL;
-+		msghdr.msg_controllen = 0;
-+		msghdr.msg_name = NULL;
-+		msghdr.msg_namelen = 0;
-+		msghdr.msg_flags = 0;
-+		if (verbosity > 1)
-+			evl_printf("  .. ICMP request sent: %zd\n", count);
-+
-+		evl_read_clock(EVL_CLOCK_MONOTONIC, &ts_ping_tx);
-+		count = oob_sendmsg(s, &msghdr, NULL, 0);
-+		if (count < 0)
-+			error(1, errno, "oob_sendmsg() failed");
-+
-+		iov.iov_base = i_frame;
-+		iov.iov_len = sizeof(i_frame);
-+		msghdr.msg_name = &addr;
-+		msghdr.msg_namelen = sizeof(addr);
-+
-+	rx:
-+		evl_read_clock(EVL_CLOCK_MONOTONIC, &ts_timeout);
-+		ts_timeout.tv_sec += 1;
-+		count = oob_recvmsg(s, &msghdr, &ts_timeout, 0);
-+		evl_read_clock(EVL_CLOCK_MONOTONIC, &ts_ping_rx);
-+		if (count < 0) {
-+			if (errno != ETIMEDOUT) {
-+				error(1, errno, "oob_recvmsg() failed");
-+			} else {
-+				evl_printf("  .. ICMP timeout!\n");
-+				goto next;
-+			}
-+		}
-+
-+		if (check_icmp_reply(i_frame, count, id, sequence) != 0) {
-+			evl_printf("icmp check failed, probably intercepted other package, retry rx\n");
-+			goto rx;
-+		}
-+
-+		if (verbosity > 1)
-+			evl_printf("  .. ICMP reply recv: %zd\n", count);
-+		if (verbosity)
-+			evl_printf("[%d] count=%zd, proto=%#hx, ifindex=%d, type=%u, halen=%u, "
-+				"mac=%.2x:%.2x:%.2x:%.2x:%.2x:%.2x rtt=%.1fus\n",
-+				sequence, count, ntohs(addr.sll_protocol),
-+				addr.sll_ifindex, addr.sll_pkttype,
-+				addr.sll_halen, (uint8_t)addr.sll_addr[0],
-+				(uint8_t)addr.sll_addr[1],
-+				(uint8_t)addr.sll_addr[2],
-+				(uint8_t)addr.sll_addr[3],
-+				(uint8_t)addr.sll_addr[4],
-+				(uint8_t)addr.sll_addr[5],
-+				(ts_ping_rx.tv_sec - ts_ping_tx.tv_sec) * 1000000.0 +
-+				(ts_ping_rx.tv_nsec - ts_ping_tx.tv_nsec) / 1000.0);
-+next:
-+		evl_usleep(delay);
-+		sequence++;
-+	}
-+
-+	return 0;
-+}
--- 
-2.47.3
-
+CgoKCgoKCgoKCgoKCgoKCgpBdCAyMDI2LTA2LTI0IDIxOjQwOjU4LCAibWFyc19saXUiIDxtYXJz
+X2xpdTIwMjNAMTYzLmNvbT4gd3JvdGU6Cj4KPgo+Cj4KPkF0IDIwMjYtMDYtMjIgMjI6MTc6Mjgs
+ICJKYW4gS2lzemthIiA8amFuLmtpc3prYUBzaWVtZW5zLmNvbT4gd3JvdGU6Cj4+Q2FuIHlvdSB0
+cnkgdG8gc3lzdGVtYXRpY2FsbHkgZWxpbWluYXRlIHZhcmlhYmxlcyB0aGF0IG1heSBjb250cmli
+dXRlIHRvCj4+dGhlIGluY3JlYXNlPyBFLmcuLCB1c2UgdGhlIG9sZCBrZXJuZWwgd2l0aCBpdHMg
+b3JpZ2luYWwgY29uZmlndXJhdGlvbgo+Pm9uIHRoZSBuZXcgaW5zdGFsbGF0aW9uIG9yIGdvIGJh
+Y2sgdG8gdGhlIG9yaWdpbmFsIFhlbm9tYWkgdmVyc2lvbi4KPj4KPj5JZiB0aGUga2VybmVsIGlz
+IHRoZSBjYXVzZSwgY2hlY2tpbmcgb25jZSBtb3JlIGlmIHRoZSBlZmZlY3RpdmUgY29uZmlnCj4+
+b2YgNi4xIGlzIG5vdCBtaXNzaW5nIG9yIGFkZGluZyBzdXNwaWNpb3VzIHRoaW5ncyBjb21wYXJl
+ZCB0byB0aGUKPj5lZmZlY3RpdmUgNS4xMCBrZXJuZWwgY29uZmlnLgo+Pgo+PkFuIGFsdGVybmF0
+aXZlIGlzIG9idmlvdXNseSB0dXJuaW5nIG9uIHRyYWNpbmcgYW5kIHJlY29yZCBvbmUgb2YgdGhv
+c2UKPj5ldmVudHMgdGhhdCBhcmUgbG9uZ2VyIHRoYW4gZXhwZWN0ZWQuIEF0IGxlYXN0IGJhc2lj
+IGV2ZW50IHRyYWNlcwo+Pihjb2JhbHQgZXZlbnRzKSBzaG91bGQgbm90IGluY3JlYXNlIGxhdGVu
+Y2llcyBvbiB0aGVpciBvd24gYSBsb3Qgd2hpbGUKPj5naXZpbmcgYSBnZW5lcmFsIG92ZXJ2aWV3
+IHdoYXQgaGFwcGVucy4KPj4KPj5KYW4KPj4KPj4tLSAKPj5TaWVtZW5zIEFHLCBGb3VuZGF0aW9u
+YWwgVGVjaG5vbG9naWVzCj4+TGludXggRXhwZXJ0IENlbnRlcgo+Cj4KPkkgd2FzIHJ1bm5pbmcg
+bGF0ZW5jeSB0ZXN0IHdpdGggZXZlbnQgdHJhY2Ugb24uIEluaXRpYWxseSBJIGVuYWJsZWQgY29i
+YWx0IGV2ZW50IGFuZCBpcnFfcGlwZWxpbmUg4oCTIGdvdCByZXN1bHQgMS4gVGhlbiBJIGVuYWJs
+ZWQgbG9jYWxfdGltZXJfZW50cnkgYXMgd2VsbCB0byBzZWUgd2hhdCdzIGdvaW5nIG9uLCBnb3Qg
+cmVzdWx0IDIuIEJvdGggdGltZXMgdGhlIHRlc3QgY3V0IG9mZiB3aGVuIG1heCBsYXRlbmN5IGV4
+Y2VlZGVkIDcwdXMuCj4KPgo+cmVzdWx0IDE6PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT0KPgkgICAgICAuLi4KPiAgICAgICAgICAgICAgLi4uLi4uCj4gICAgICAgICAgICAgIGRk
+LTE3MjggICAgWzAwMF0gKi5+Li4gIDc0MjYuODE5ODgyOiBjb2JhbHRfdGlja19zaG90OiBuZXh0
+IHRpY2sgYXQgNzQyNi44MTk5NzUgKGRlbGF5OiA5MyB1cykKPiAgICAgICAgICAgICAgZGQtMTcy
+OCAgICBbMDAwXSAqLn4uLiAgNzQyNi44MTk4ODM6IGlycV9waXBlbGluZV9leGl0OiBpcnE9NTI0
+NTQ3Cj4gICAgICAgICAgICAgIGRkLTE3MjggICAgWzAwMF0gIy5+Li4gIDc0MjYuODE5ODgzOiBj
+b2JhbHRfc2NoZWR1bGU6IHN0YXR1cz0weDEwMDAwMDAwCj4gICAgICAgICAgICAgIGRkLTE3Mjgg
+ICAgWzAwMF0gIy5+Li4gIDc0MjYuODE5ODgzOiBjb2JhbHRfdHJhY2VfcGlkOiBwaWQ9MTcyOCwg
+cHJpbz0tMQo+ICAgICAgICAgICAgICBkZC0xNzI4ICAgIFswMDBdICMufi4uICA3NDI2LjgxOTg4
+MzogY29iYWx0X3N3aXRjaF9jb250ZXh0OiBwcmV2X25hbWU9Uk9PVC8wIHByZXZfcGlkPTAgcHJl
+dl9wcmlvPS0xIHByZXZfc3RhdGU9MHgxODAwOCA9PT4gbmV4dF9uYW1lPXNhbXBsaW5nLTE3MzIg
+bmV4dF9waWQ9MTczNiBuZXh0X3ByaW89MQo+ICAgICAgICAgICAgICBkZC0xNzI4ICAgIFswMDBd
+ICMufi4uICA3NDI2LjgxOTg4MzogY29iYWx0X3RpbWVyX3N0YXJ0OiB0aW1lcj0wMDAwMDAwMDg4
+NWU2NWNmKFt3YXRjaGRvZ10pIHZhbHVlPTEwMDAwMDAwMDAgaW50ZXJ2YWw9MCBtb2RlPXJlbAo+
+ICAgc2FtcGxpbmctMTczMi0xNzM2ICAgIFswMDBdICoufjIuICA3NDI2LjgxOTg4NDogY29iYWx0
+X3RyYWNlX3BpZDogcGlkPTE3MzYsIHByaW89MQo+ICAgc2FtcGxpbmctMTczMi0xNzM2ICAgIFsw
+MDBdIGQufjIuICA3NDI2LjgxOTg4NTogY29iYWx0X2hlYWRfc3lzZXhpdDogcmVzdWx0PTgKPiAg
+IHNhbXBsaW5nLTE3MzItMTczNiAgICBbMDAwXSBkLn4yLiAgNzQyNi44MTk4ODU6IGNvYmFsdF9o
+ZWFkX3N5c2VudHJ5OiBzeXNjYWxsPXJlYWQKPiAgIHNhbXBsaW5nLTE3MzItMTczNiAgICBbMDAw
+XSBkLn4yLiAgNzQyNi44MTk4ODU6IGNvYmFsdF9mZF9yZWFkOiBkZXZpY2U9MDAwMDAwMDA3MDVm
+YTY1YyBmZD0zIGFyZz0weDggcGlkPTE3MzYgY29tbT1zYW1wbGluZy0xNzMyCj4gICBzYW1wbGlu
+Zy0xNzMyLTE3MzYgICAgWzAwMF0gKi5+Mi4gIDc0MjYuODE5ODg2OiBjb2JhbHRfc3luY2hfc2xl
+ZXBvbjogc3luY2g9MDAwMDAwMDBhMTRlNTNlZgo+ICAgc2FtcGxpbmctMTczMi0xNzM2ICAgIFsw
+MDBdICoufjIuICA3NDI2LjgxOTg4NjogY29iYWx0X3RocmVhZF9zdXNwZW5kOiBwaWQ9MTczNiBt
+YXNrPTB4MiB0aW1lb3V0PTAgdGltZW91dF9tb2RlPTAgd2NoYW49MDAwMDAwMDBhMTRlNTNlZgo+
+ICAgc2FtcGxpbmctMTczMi0xNzM2ICAgIFswMDBdICoufjIuICA3NDI2LjgxOTg4NjogY29iYWx0
+X3NjaGVkdWxlOiBzdGF0dXM9MHgxMDAwMDAwMAo+ICAgc2FtcGxpbmctMTczMi0xNzM2ICAgIFsw
+MDBdICoufjIuICA3NDI2LjgxOTg4NjogY29iYWx0X3RyYWNlX3BpZDogcGlkPTE3MzYsIHByaW89
+MQo+ICAgc2FtcGxpbmctMTczMi0xNzM2ICAgIFswMDBdICoufjIuICA3NDI2LjgxOTg4NjogY29i
+YWx0X3N3aXRjaF9jb250ZXh0OiBwcmV2X25hbWU9c2FtcGxpbmctMTczMiBwcmV2X3BpZD0xNzM2
+IHByZXZfcHJpbz0xIHByZXZfc3RhdGU9MHg0YzA0MiA9PT4gbmV4dF9uYW1lPVJPT1QvMCBuZXh0
+X3BpZD0wIG5leHRfcHJpbz0tMQo+ICAgc2FtcGxpbmctMTczMi0xNzM2ICAgIFswMDBdICoufjIu
+ICA3NDI2LjgxOTg4NjogY29iYWx0X3RpbWVyX3N0b3A6IHRpbWVyPTAwMDAwMDAwODg1ZTY1Y2YK
+PiAgICAgICAgICAgICAgZGQtMTcyOCAgICBbMDAwXSAjLn4uLiAgNzQyNi44MTk4ODc6IGNvYmFs
+dF90cmFjZV9waWQ6IHBpZD0xNzI4LCBwcmlvPS0xCj4gICAgICAgICAgICAgIGRkLTE3MjggICAg
+WzAwMF0gKi5+Li4gIDc0MjYuODIwMDQzOiBpcnFfcGlwZWxpbmVfZW50cnk6IGlycT01MjQ1NDcK
+PiAgICAgICAgICAgICAgZGQtMTcyOCAgICBbMDAwXSAqLn4uLiAgNzQyNi44MjAwNDQ6IGNvYmFs
+dF90aW1lcl9leHBpcmU6IHRpbWVyPTAwMDAwMDAwYTdkMmI4MzMKPiAgICAgICAgICAgICAgZGQt
+MTcyOCAgICBbMDAwXSAqLn4uLiAgNzQyNi44MjAwNDQ6IGNvYmFsdF9zeW5jaF93YWtldXA6IHN5
+bmNoPTAwMDAwMDAwYTE0ZTUzZWYKPiAgICAgICAgICAgICAgZGQtMTcyOCAgICBbMDAwXSAqLn4u
+LiAgNzQyNi44MjAwNDQ6IGNvYmFsdF90aHJlYWRfcmVzdW1lOiBuYW1lPXNhbXBsaW5nLTE3MzIg
+cGlkPTE3MzYgbWFzaz0weDIKPiAgICAgICAgICAgICAgZGQtMTcyOCAgICBbMDAwXSAqLn4uLiAg
+NzQyNi44MjAwNDQ6IGNvYmFsdF90cmFjZV9waWQ6IHBpZD0xNzM2LCBwcmlvPTEKPiAgICAgICAg
+ICAgICAgZGQtMTcyOCAgICBbMDAwXSAqLn4uLiAgNzQyNi44MjAwNDU6IGNvYmFsdF90aWNrX3No
+b3Q6IG5leHQgdGljayBhdCA3NDI2LjgyMDA3NSAoZGVsYXk6IDMwIHVzKQo+ICAgICAgICAgICAg
+ICBkZC0xNzI4ICAgIFswMDBdICoufi4uICA3NDI2LjgyMDA0NTogaXJxX3BpcGVsaW5lX2V4aXQ6
+IGlycT01MjQ1NDcKPiAgICAgICAgICAgICAgIC4uLgo+ICAgICAgICAgICAgICAgLi4uLi4uCj4K
+PnJlc3VsdCAyOj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Cj4gICAgICAgICAg
+ICAuLi4KPiAgICAgICAgICAgIC4uLi4uLgo+ICAgICAgICAgICAgICBkZC0xNTEwICAgIFswMDFd
+ICoufi4uICAxNjg5LjAwOTcwMDogY29iYWx0X3RpY2tfc2hvdDogbmV4dCB0aWNrIGF0IDE2ODku
+MDA5Nzk2IChkZWxheTogOTUgdXMpCj4gICAgICAgICAgICAgIGRkLTE1MTAgICAgWzAwMV0gKi5+
+Li4gIDE2ODkuMDA5NzAxOiBsb2NhbF90aW1lcl9leGl0OiB2ZWN0b3I9MjM2Cj4gICAgICAgICAg
+ICAgIGRkLTE1MTAgICAgWzAwMV0gKi5+Li4gIDE2ODkuMDA5NzAxOiBpcnFfcGlwZWxpbmVfZXhp
+dDogaXJxPTUyNDU0Nwo+ICAgICAgICAgICAgICBkZC0xNTEwICAgIFswMDFdICMufi4uICAxNjg5
+LjAwOTcwMjogY29iYWx0X3NjaGVkdWxlOiBzdGF0dXM9MHgxMDAwMDAwMAo+ICAgICAgICAgICAg
+ICBkZC0xNTEwICAgIFswMDFdICMufi4uICAxNjg5LjAwOTcwMjogY29iYWx0X3RyYWNlX3BpZDog
+cGlkPTE1MTAsIHByaW89LTEKPiAgICAgICAgICAgICAgZGQtMTUxMCAgICBbMDAxXSAjLn4uLiAg
+MTY4OS4wMDk3MDI6IGNvYmFsdF9zd2l0Y2hfY29udGV4dDogcHJldl9uYW1lPVJPT1QvMSBwcmV2
+X3BpZD0wIHByZXZfcHJpbz0tMSBwcmV2X3N0YXRlPTB4MTgwMDggPT0+IG5leHRfbmFtZT1zYW1w
+bGluZy0xNTEyIG5leHRfcGlkPTE1MTYgbmV4dF9wcmlvPTEKPiAgICAgICAgICAgICAgZGQtMTUx
+MCAgICBbMDAxXSAjLn4uLiAgMTY4OS4wMDk3MDI6IGNvYmFsdF90aW1lcl9zdGFydDogdGltZXI9
+MDAwMDAwMDA4NmE0NmI2ZChbd2F0Y2hkb2ddKSB2YWx1ZT0xMDAwMDAwMDAwIGludGVydmFsPTAg
+bW9kZT1yZWwKPiAgIHNhbXBsaW5nLTE1MTItMTUxNiAgICBbMDAxXSAqLn4yLiAgMTY4OS4wMDk3
+MDI6IGNvYmFsdF90cmFjZV9waWQ6IHBpZD0xNTE2LCBwcmlvPTEKPiAgIHNhbXBsaW5nLTE1MTIt
+MTUxNiAgICBbMDAxXSBkLn4yLiAgMTY4OS4wMDk3MDM6IGNvYmFsdF9oZWFkX3N5c2V4aXQ6IHJl
+c3VsdD04Cj4gICBzYW1wbGluZy0xNTEyLTE1MTYgICAgWzAwMV0gZC5+Mi4gIDE2ODkuMDA5NzAz
+OiBjb2JhbHRfaGVhZF9zeXNlbnRyeTogc3lzY2FsbD1yZWFkCj4gICBzYW1wbGluZy0xNTEyLTE1
+MTYgICAgWzAwMV0gZC5+Mi4gIDE2ODkuMDA5NzAzOiBjb2JhbHRfZmRfcmVhZDogZGV2aWNlPTAw
+MDAwMDAwNjkzYWEzMmQgZmQ9MyBhcmc9MHg4IHBpZD0xNTE2IGNvbW09c2FtcGxpbmctMTUxMgo+
+ICAgc2FtcGxpbmctMTUxMi0xNTE2ICAgIFswMDFdICoufjIuICAxNjg5LjAwOTcwMzogY29iYWx0
+X3N5bmNoX3NsZWVwb246IHN5bmNoPTAwMDAwMDAwOTc4ZjM2Y2UKPiAgIHNhbXBsaW5nLTE1MTIt
+MTUxNiAgICBbMDAxXSAqLn4yLiAgMTY4OS4wMDk3MDM6IGNvYmFsdF90aHJlYWRfc3VzcGVuZDog
+cGlkPTE1MTYgbWFzaz0weDIgdGltZW91dD0wIHRpbWVvdXRfbW9kZT0wIHdjaGFuPTAwMDAwMDAw
+OTc4ZjM2Y2UKPiAgIHNhbXBsaW5nLTE1MTItMTUxNiAgICBbMDAxXSAqLn4yLiAgMTY4OS4wMDk3
+MDQ6IGNvYmFsdF9zY2hlZHVsZTogc3RhdHVzPTB4MTAwMDAwMDAKPiAgIHNhbXBsaW5nLTE1MTIt
+MTUxNiAgICBbMDAxXSAqLn4yLiAgMTY4OS4wMDk3MDQ6IGNvYmFsdF90cmFjZV9waWQ6IHBpZD0x
+NTE2LCBwcmlvPTEKPiAgIHNhbXBsaW5nLTE1MTItMTUxNiAgICBbMDAxXSAqLn4yLiAgMTY4OS4w
+MDk3MDQ6IGNvYmFsdF9zd2l0Y2hfY29udGV4dDogcHJldl9uYW1lPXNhbXBsaW5nLTE1MTIgcHJl
+dl9waWQ9MTUxNiBwcmV2X3ByaW89MSBwcmV2X3N0YXRlPTB4NGMwNDIgPT0+IG5leHRfbmFtZT1S
+T09ULzEgbmV4dF9waWQ9MCBuZXh0X3ByaW89LTEKPiAgIHNhbXBsaW5nLTE1MTItMTUxNiAgICBb
+MDAxXSAqLn4yLiAgMTY4OS4wMDk3MDQ6IGNvYmFsdF90aW1lcl9zdG9wOiB0aW1lcj0wMDAwMDAw
+MDg2YTQ2YjZkCj4gICAgICAgICAgICAgIGRkLTE1MTAgICAgWzAwMV0gIy5+Li4gIDE2ODkuMDA5
+NzA1OiBjb2JhbHRfdHJhY2VfcGlkOiBwaWQ9MTUxMCwgcHJpbz0tMQo+ICAgICAgICAgICAgICBk
+ZC0xNTEwICAgIFswMDFdICoufi4uICAxNjg5LjAwOTgwMDogaXJxX3BpcGVsaW5lX2VudHJ5OiBp
+cnE9NTI0NTQ3Cj4gICAgICAgICAgICAgIGRkLTE1MTAgICAgWzAwMV0gKi5+Li4gIDE2ODkuMDA5
+ODYxOiBsb2NhbF90aW1lcl9lbnRyeTogdmVjdG9yPTIzNgo+ICAgICAgICAgICAgICBkZC0xNTEw
+ICAgIFswMDFdICoufi4uICAxNjg5LjAwOTg2MjogY29iYWx0X3RpbWVyX2V4cGlyZTogdGltZXI9
+MDAwMDAwMDBhYzI2OTI5NAo+ICAgICAgICAgICAgICBkZC0xNTEwICAgIFswMDFdICoufi4uICAx
+Njg5LjAwOTg2MjogY29iYWx0X3N5bmNoX3dha2V1cDogc3luY2g9MDAwMDAwMDA5NzhmMzZjZQo+
+ICAgICAgICAgICAgICBkZC0xNTEwICAgIFswMDFdICoufi4uICAxNjg5LjAwOTg2MjogY29iYWx0
+X3RocmVhZF9yZXN1bWU6IG5hbWU9c2FtcGxpbmctMTUxMiBwaWQ9MTUxNiBtYXNrPTB4Mgo+ICAg
+ICAgICAgICAgICBkZC0xNTEwICAgIFswMDFdICoufi4uICAxNjg5LjAwOTg2MjogY29iYWx0X3Ry
+YWNlX3BpZDogcGlkPTE1MTYsIHByaW89MQo+ICAgICAgICAgICAgICBkZC0xNTEwICAgIFswMDFd
+ICoufi4uICAxNjg5LjAwOTg2MjogY29iYWx0X3RpY2tfc2hvdDogbmV4dCB0aWNrIGF0IDE2ODku
+MDA5ODk2IChkZWxheTogMzQgdXMpCj4gICAgICAgICAgICAgIGRkLTE1MTAgICAgWzAwMV0gKi5+
+Li4gIDE2ODkuMDA5ODYyOiBsb2NhbF90aW1lcl9leGl0OiB2ZWN0b3I9MjM2Cj4gICAgICAgICAg
+ICAgIGRkLTE1MTAgICAgWzAwMV0gKi5+Li4gIDE2ODkuMDA5ODYzOiBpcnFfcGlwZWxpbmVfZXhp
+dDogaXJxPTUyNDU0Nwo+ICAgICAgICAgICA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
+PT09PQo+Cj5JbiByZXN1bHQgMSwgdGhlIG1heCBsYXRlbmN5IGludGVydmFsIHdhcyBiZXR3ZWVu
+IHRoZSBleHBlY3RlZCBuZXh0IHRpY2sgYW5kIGlycV9waXBlbGluZV9lbnRyeToKPjc0MjY4MjAw
+NDMg4oCTIDc0MjYuODE5OTc1ID0gNjjigK/CtXMuCj4KPkluIHJlc3VsdCAyLCB0aGUgbWF4IGxh
+dGVuY3kgaW50ZXJ2YWwgd2FzIGJldHdlZW4gaXJxX3BpcGVsaW5lX2VudHJ5IGFuZCBsb2NhbF90
+aW1lcl9lbnRyeToKPjE2ODkuMDA5ODYxIOKAkyAxNjg5LjAwOTgwMCA9IDYx4oCvwrVzLgo+Cj5X
+aGF0IGNhdXNlZCB0aGVzZSB0d28gc2NlbmFyaW9zPyBQbGVhc2UgZ2l2ZSBtZSBzb21lIGhpbnRz
+LiAKPgoKSGkgSmFuLAoKUmVnYXJkaW5nIHRoZSBmaXJzdCByZXN1bHQsIHdoZW4gdGhlIGlzc3Vl
+IG9jY3VycmVkIGFnYWluLCBJIGRpZG4ndCBzZWUgYW55IFNNSS4gVXN1YWxseSwgdGhlIGludGVy
+cnVwdCBkZWxheSBpcyB3aXRoaW4gMTAgwrVzLiBXaGF0IGVsc2UgY291bGQgY2F1c2UgdGhlIGRl
+bGF5IHRvIGJlIG1vcmUgdGhhbiA2MCDCtXM/IE9yIGRvIHlvdSBoYXZlIGFueSBzdWdnZXN0aW9u
+cyBmb3IgZnVydGhlciBkZWJ1Z2dpbmc/IFRoYW5rcyBhIGxvdCBmb3IgeW91ciBoZWxwLgoKLS0K
+CgoK
