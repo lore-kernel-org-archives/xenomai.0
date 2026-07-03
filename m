@@ -1,55 +1,58 @@
-Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011004.outbound.protection.outlook.com [40.107.130.4])
+Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010055.outbound.protection.outlook.com [52.101.69.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C91433D1ABD
-	for <xenomai@lists.linux.dev>; Fri,  3 Jul 2026 12:29:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A669C3D1CA0
+	for <xenomai@lists.linux.dev>; Fri,  3 Jul 2026 12:29:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.55
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783081781; cv=fail; b=dUosQgrnXfPvdR3ZHu3oAWBljwIRsQnbuTxTGKilDAw59Spk2q17rpUtDh+mvbB5w4gs8au3dNF9+wIqnZVQYZX2FUQkMywKujO5gEaYtwERzJ4Suu6F/VL6F5sSyNbTMuZ22TDJnx0Nu8MasONkpUj4KLbyt+5Hup79t/OOd00=
+	t=1783081786; cv=fail; b=fPzrmtRo13YnqPaoLeRV3xR0d1EaKPe8sZDvBl5UdF6XoXuMZe/lURgiLhRflvFa6OiYgbJYF42IAWDV13bcFWDNNUEpdFdVVWBxsXIpVS80/P/6s+/JlnUSojfL6EPSOeXsswuAJNkp4w3plivQHiyY6iV7MDsPEgCJmBlIo0o=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783081781; c=relaxed/simple;
-	bh=Kjekokm1mJVS7LHfDxSjZTNtyk9fvMhC0NHcnSWzshI=;
-	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=Gbly36WeVz/tsaljvU6+PnEUVOMGCquck54QRKhc+0PQ3CeiPLVby7lh/t8gLIZ6H/pcz9rmUwZw5vSjk7Tf9l//gxeeIOiJJhBEotAtnpHYIgI6QN0Bg0fTiPsQT9NEPCuyGrXuOM2cozJ254q/4p9KvCH5HP33KPcsGAi7kl8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=h2uO+dbg; arc=fail smtp.client-ip=40.107.130.4
+	s=arc-20240116; t=1783081786; c=relaxed/simple;
+	bh=8r3gC8DWCivjOwihUrcWSiNX++d4//uUpUlBxMi/O7A=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=hafXXE7ARzQLVC875CCOo4V6nS8n1N3otdt4IhRnPBnlwRFTJKayfIOFK6dsbWwQpDF90EjFkfYoeB3Vh2r5+/T3jbxerp6w9Ibwl4D0kXOlnY61+kmCwl58VUAWVW2W1EGt/pYE4ZwO0uKcZr8+cm0GnxkkUWB/l3KaE2H1YpQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=q0L96PGI; arc=fail smtp.client-ip=52.101.69.55
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="h2uO+dbg"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="q0L96PGI"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=hK54lseW76sg7RbAlyyNy/iTJHSFsVQM9r5EosFVYmhl09Iv7x/NFCerX7ux0THu/dFdSpKUPvvHokrxalEc/4BxuxRoOCvghvLSQ1nmDAakoMy15XviwntCqrmN9sbIOBQXpnRSREX9WDgU1guAVlY0ZOkSB7qKGz0OHI+fXP+uwZ1TcvT82iuUJAunMeKO7bzoUcvqB0380zjP2S31ze9rfHaX6wNM5P9zLVHUPKsrU8ofygyLvZhjdl3JqTat33VrltTF9pIlQDs0/9eYp91PRH48usI8t7p5CqNNAeToBrSWdyGUwFZewzgZFec6dsj6KRYa8mADRWNHb/mq+w==
+ b=Ksxaw4WFj5XhfssC7U6j05hX9n3mLUp9FfBKcpNCjSlerXc/rms/x5C5LUDeui1qGHAnm/x+vRVifQikWcuY3HbaBAr0E1LYoKTGgmgGP4yWRsGNAYF0A45djRl+olZXue+oPnsZQkZypkNeNqFYwRgg1T09+vneKfEp+LTEY/peKKyWuGciO98Yj7HI3fcGy18onuGJ/nQGJ2qm23bz3BwbqXOtflKOS/biT56sCbIOcVFJJL6kCyfXfDNDeT4/i4PEM8MWBNpNp6NdElyWZtzFn1PUtu/Xf8vpBYmPG3DsN/lTlr/HJKvtngrf01BuJbkq1cSMD5bF55fe8md5Cw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+DBrU1zAYMOyyqEvWlJ2huw2KBVKOxckUyKaZQE/4lU=;
- b=yYNOi4DUPegZl8Zcr7LhbW/sPfEIJeQO4FP8J6bG3O/NGHcgczmfdNF5bDlJtfQDCSozVxjEXkVhbieWUUwd8OR0MCjvkR3WwZL4ErfH84NptbZlO7y7yobjjBbDyJL9EW0ytBPs1oCAGcv8qn7NEwEuj4UsS7UrWrK6FZl+iTdrt7pz7fVuOiw34MjHxq9LabUPETZUV/JWNNPEDK3sTeIz2WIH9l6ccKkms8xCjnDPZUs2ZjyTpOfUNLk6xZsPWcB/uyMTGYC5NYn7xEr0W+nLfNBw6bRJ6STrA/Rppm3oOZ/4N/7xljqwOCWTHGhmxzo6ZknjhItH8YYr+DxeQw==
+ bh=3IviPY2679t1/EObwHf83AykQR0/7OVlr+6WHKrj68U=;
+ b=GKqAC0X4XhT6S6HVXMlnTCu17dAs3G7rxaXcFFTO6EG3GbaB+YrK8yMKCVIlYNB/bLhuFJ1IqIyqHg0AJeU5b7KJSC+n7oY/4hia6mqSxefROB2oNYMWGHT9GrcGUMt39rD/Wv88y6VlPeqPRMuVX0ZsDBiOwrY3NSLvW3/6tsCiFq9YuAZ22C5c/JfdHwlt3fdkmx6PaCJGDNt2z+HEOdmHGNX6I8hcvETsMxwA0uTetZHWBj4VkA+kQtuYCJn2gdl3jzfe0Q/Qr1hO/UkwDT5zzLBwgv6iJKQ+5ezH66pPlcdtxAx+pPBeu9UCsA1qtj3W/c3bSxAvMhxdlc+xjg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+DBrU1zAYMOyyqEvWlJ2huw2KBVKOxckUyKaZQE/4lU=;
- b=h2uO+dbgTIDz7zmTmIH2T7wnrdRl1XC/Qi3vdtXzR50l7SvRueXoKHUvJGxcZ3K/hKMhwHtrmvtoT3HK8DTTLLvZaYNQsh/llzgATARehYteDiXZcAGtqDUfAXRVSBjHC2ZvjQR5a3aaskhGWsCAQHtmVPrEQQcYliPFzRYzTijEFViUzhJa84LpFSpDO0a6weTJZoaSSv3A1Z9zc0KNFCMD6zHypfnzd9udnoWfB72J4j4wRWzK1HO+sELhhASB9WPc1185pzvbRnV3yCdV80sPWwBxn9mm7hHwxQ/0JgQfLu64vTdgZhD9q6VqNB/SqP7MV9AEaeHteLeH5f1xNQ==
+ bh=3IviPY2679t1/EObwHf83AykQR0/7OVlr+6WHKrj68U=;
+ b=q0L96PGIINwbaCY1oldr2yymXt+Tb9pc49dTnGZctlDvpjGxTqPOSpb6wcrcdlcdPbd3wy178dfr4lLCN+kU/uybWD6il83gfxpaKxczVJFwFNgBefTwcKB0ZXt99ILxO1p/dqN76kQM3ndzA/0Mgia/2IKSeK/gBZoIDJdUMzX5qQLo/h9RBseU1PM5odhokg2XELPNcGkK6Z2h9ttykatJKKMiQSsGLhVgh6WoOKAch4VY5B2byqKyXI/wsuNRqg25cQHXWEbYckUELcoQbiGwRz4tFgT2xk0EImFQVRtzVfWYeqIgFK4HmQvaVs8c7UBqWAXwRuWTj0Pdl4DYLw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:3dd::5)
- by AS8PR10MB6032.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:53b::12) with
+ by PR3PR10MB4093.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:a3::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.159.12; Fri, 3 Jul
- 2026 12:29:33 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.181.11; Fri, 3 Jul
+ 2026 12:29:35 +0000
 Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::5f49:b0e9:d295:22d8]) by AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::5f49:b0e9:d295:22d8%3]) with mapi id 15.21.0181.010; Fri, 3 Jul 2026
- 12:29:33 +0000
+ 12:29:35 +0000
 From: Tobias Schaffner <tobias.schaffner@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: rpm@xenomai.org,
 	jan.kiszka@siemens.com,
 	Tobias Schaffner <tobias.schaffner@siemens.com>
-Subject: [PATCH libevl 0/4] evl-test: stress load and latmus integration
-Date: Fri,  3 Jul 2026 14:29:20 +0200
-Message-ID: <20260703122924.30212-1-tobias.schaffner@siemens.com>
+Subject: [PATCH libevl 3/4] evl-test: improve help message with detailed usage information
+Date: Fri,  3 Jul 2026 14:29:23 +0200
+Message-ID: <20260703122924.30212-4-tobias.schaffner@siemens.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260703122924.30212-1-tobias.schaffner@siemens.com>
+References: <20260703122924.30212-1-tobias.schaffner@siemens.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: FR4P281CA0313.DEUP281.PROD.OUTLOOK.COM
@@ -62,87 +65,113 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|AS8PR10MB6032:EE_
-X-MS-Office365-Filtering-Correlation-Id: a3eb952a-27f1-4c3b-c7b3-08ded8febcee
+X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|PR3PR10MB4093:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8586652f-b2df-497c-cf0e-08ded8febe06
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|23010399003|10070799003|366016|376014|56012099006|55112099003|18002099003|11063799006;
+	BCL:0;ARA:13230040|376014|23010399003|10070799003|1800799024|366016|11063799006|56012099006|3023799007|55112099003|22082099003|18002099003;
 X-Microsoft-Antispam-Message-Info:
-	jIlqDtoNChhzEjw0PFZTu3lKaRODaI4qgty9ibCSbavPHM59PngT/qePHAVvuTJc3S+zaaw05o/Ul0msdTxcwzDbWb+chp3SbmPVZMD/6JZ67u349ysxXqSXRqes6FqCCqqYuVloTuzh5SzzKS+7rPbKAt4PeIYNc/c2blEeutU71DSIXxUQbr9LxGS2BeHSY+16OHKZYf1HLT2Gjr2xZ/AL3WIXEcgSA5UqGk02+44pVx6NrN8BfXlNXg6LDnzJPZospKkb38qo1itcYOMJO7ZyN1zMoiH9aATeLzidKBd5S3rjXNiM2/3X4ozVVotabLZIxMpTYYmq8nhh+QPZf+7oWUs0I/ezMkpKNQ62q6IWft9yNwwmGGGIV14eK2TayDpqg/N49MwEvf9QiKO2jkyTRWxVvBMnfEWcMjuu0/Rik+Y/7ZAUomYZPfJyA8bt/VCArG3fLxNb5FAqMz4Zfr8KVzgUdRyuv9bE1TPXa0zMP6wdYEKqYLmnbFlthSH+TDrH4crLIG2R5dYHPekG1ke7FjjirOpB/IM9UBVJcRdEp26dcdfaLm6xUFJzOCuZmNQjGh6ymKeHcX7eF4uccI7jkyh9v/dHOKYqi2BMEWZGrA18NiS2+taVoLtxyoaz8hZwdCkaMxLK1ZXi2moNxqhiJ/teOv9bgab+yxZG8HU=
+	cn1GjivBp/IPRGGXQc3p35XX0qOx9N1k33T7Cer9/k6VOWTh9qUOVxADgNLqiKGXCcukujd5FeC5M0lwbS4uAs/PdmqdE9Q86lRC3FSa7RGNJqf1FeMuaLZElbYQSwLNzy7ld4EtRAJIHQVEpVh8AkAPh1HbBmc4gNM1zZCSgprDZ2YWqhZYIHMc2z55IAQdBQWn/zpL/cc0DXVtWgH7LDg5qNNk1+LsxONslmGiNMlFfHxKKEBYaa2ciXWxK1F98crFzYbG+5SB7FS0HsFaZ5Hoyront9fHAFKYpBDc2JVEuRV1cbSZAegPMzollxttM1KKHK81j1+D6YHcLQ88vZkT4qYgXQQTclbiZiGtA3pNpuARL/FaWq/2yO855WlBMi1kOXVDa0oThNGoPnGe+HYdGPE2cfmI0qtkssNm600L5O4mzvOxUdBre5dvF9StkiA2tM1864/m7ePU7yVUZu2VQdkFYhZzfgDAKjEl/ZzyXM80o3qz2+IuUCqogBxYvEZwvlPuL/yPREhwkKEPN6S98ywBxQP3auLRNyAqDy3kq9z/WXhs2oCGuqjJ3/cGvBLORcv0IN74WX7xLHbpWXhl4rRwmYJ2AKrVv2VXYiRjzpgj2LxfOIdtfY7j5FGnyj7PCxcKFGDeQgpdyWltLbNphH7mexPRdKmZIIh/VnA=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(10070799003)(366016)(376014)(56012099006)(55112099003)(18002099003)(11063799006);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(10070799003)(1800799024)(366016)(11063799006)(56012099006)(3023799007)(55112099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?B15BlUger+QfQQbo3KR3uTcNtGAXzYp83POyST1cjvuKn/BmIi2VwEyHchto?=
- =?us-ascii?Q?WvYeCc6pkdKqSrGSo+JVmsTtywdtTpeEcVxdZhaVOIjj45h6L6iFzHznP9CV?=
- =?us-ascii?Q?n0O6VonwD8ixxSXFj3yRNjsQadstltwU3/Af23eHtyX3CcIJ9teIhpmg8Ves?=
- =?us-ascii?Q?BPKUf64z5El2cSKlYm5p5OCk2RYjgnfaO0xY75NEviQDGTbmMhbGkYxEcxxv?=
- =?us-ascii?Q?8UMDMQXMlz+smB2gbDB060JwFa51qyESOOyA+p2ZqjoeuaNBHQtnYwO7A53e?=
- =?us-ascii?Q?4Sg/T2YVtTL7rUu3HLDRsp97bwyt4RcPk2MzsUugt1nMoRQbW/SRUvJJB6Z8?=
- =?us-ascii?Q?rj6PGYYlbg1ceIhYR9+oS5xupERd5DySVPxZCSUrMMYRHWaXwy7FaF5FrLaF?=
- =?us-ascii?Q?KcngxIt1r15o3A0STSJAGHdPFs9PFzyhukH1vyfW0XUFLZWzNvNdoEYDXz3I?=
- =?us-ascii?Q?YmY4i5eFckdJ3PTWM+07nYxvVt8CGAXwBw+biSYVNdRDQHxzUlSHvDn24wLM?=
- =?us-ascii?Q?GqkrFyPDC43/p1jRr182R5MAIFfXD35jWQr6g2XnNsAaFLCnN+JtIkRJXWkI?=
- =?us-ascii?Q?gf8jPXNZPK35sg+vTTAlMg33rLncA/zq5hA4XIl/uRj5/K9bB2Ey8ymIIcVR?=
- =?us-ascii?Q?fAq5hvmF4Cz8syCFxha3aejEByl6ahtTqVRUevniYJKeUXWAY7w8vJm+/27K?=
- =?us-ascii?Q?s50e79utMQi92i8XXLjSZk5YFiHJhWr0BxBU3gbYpuPepCtDpCtR8ZPpcPXb?=
- =?us-ascii?Q?jAM0q9p1MtUjBZE89qjfkg4+wY0x4dwf+aw1k1Ub24goR+Vv6SbZVz3nAFH2?=
- =?us-ascii?Q?acUpjB7CS/ReE+GAGVEpdv8syBpQzqLTA0HPkgEgNo+lOzEP5BfYWStEZjg8?=
- =?us-ascii?Q?EpM71uv5b14naMtFdCqMAe9bodxboShKux6+DfF0A0L/W5tNXw8GwIabTxjU?=
- =?us-ascii?Q?C52/vKPA7swPac0QB08kEfMRmlD/ME4YzfiruUd0i5zv6Em2+Rxs9Zf+JUr2?=
- =?us-ascii?Q?hFd2dkf6IlnH8xDmGrIorD8j5qh0/UVzYn+jUySx6rcDa2AsNbdXcRJIpsqr?=
- =?us-ascii?Q?Q6qa8QzqxUMdrytJS+k72Rb9tJ84VWtkebU93OI0b64knQDXdqTkkXaG9En9?=
- =?us-ascii?Q?tT00o8havEGSofSRafsqDGNmMQwJSRnamuR9sdASahUjbfO2Vw3q7C2k9bzo?=
- =?us-ascii?Q?OrFMPdDLRw9CAyWYlFW+4GWBVRu5LyGY2j/DdA2BePDhQ2BDcGqfuff7Bftq?=
- =?us-ascii?Q?4iYpLhghjeg8gZ+SUIeaUHTqxUotooludbOuJQplnNyUO3YGsa4kJeKg1qpE?=
- =?us-ascii?Q?WDkFiQ+pZS+fVqxwbEulttcrgVwmlx8ta0LQIZH87OZFkEfmOlcmbhaAmCSN?=
- =?us-ascii?Q?prIIW2fqEHikxJGH3UHz6Rs2k8lhewCczLOykwa12lQ/xOenHycabA62LLzO?=
- =?us-ascii?Q?WByoRoFGdrh2GcG8yOqEU77G52MPzxCAiBcITUfMjA+AOgRz+XSEXyBy1XVq?=
- =?us-ascii?Q?dubBLsigxvGQlxokuv2OGrOeX/Ql9VI5uR7rlqDoF/MUlR044CmkmpAA9EdC?=
- =?us-ascii?Q?et8WCY/lV/Gveb/6cfJKonJ3LNT4yYfFAPGFU4tlL6lvG0CDd7Oka80cgqsK?=
- =?us-ascii?Q?s2OEVRj17VUGBFkBRWqHFIrJJ/rfCf0L7aDlGd+uarTuNDoWf8L//q7zB16o?=
- =?us-ascii?Q?I9OwAqrt9gmK+o6G/Tp0noeLXtdMCHMe2OG3JSMC0oQkpjdiOXmOfZDkI/eB?=
- =?us-ascii?Q?ZB04NC/GzTfN9XO8mIGVOCB41PLjYuTahh+0BavKCFgBC2WFVhOHDMd6grTO?=
-X-MS-Exchange-AntiSpam-MessageData-1: nD2qch0AvYhsEJ2xUBvC350mBGP+0bcYGEA=
+	=?us-ascii?Q?QzoxkD2b3ytqGPjFpb/QNwaxLNYYJo3ZhcJieymEBcNLRRRCUrxZIksVTZJT?=
+ =?us-ascii?Q?1TcIscl4dkyRHm9hPS01CyZpOI5qLyIiDDuWviYQpEf5w5vdYPRiVA63TRsO?=
+ =?us-ascii?Q?PkBv/wuEiDHn55m9ib8M7YacsWk5KMIhS2XdwAGqPcCv56Qd/KQ0Bj2FAR8g?=
+ =?us-ascii?Q?JWpy4R7g3GZOWUsLNi+sMbPbPf5zaJtJtaVraFgCai+Fz/x1LDmaulBD3jkn?=
+ =?us-ascii?Q?uutskTmJQZW/uu7dsZGAOYCbAV1R2DVIHV7eXW7KMb8iPb3Xcs0kgbV4hAl1?=
+ =?us-ascii?Q?rWQgTgzpy2WMr5ugNrM3dXlmqE8XL6GycStEDwPo0vsZe10/cNw5n9FbnpF0?=
+ =?us-ascii?Q?MNqlHCgzlAL5Ufi8bbqyZV1uRiB5lXw/TkcicWQYqctXWQacUxfOLbTpOIml?=
+ =?us-ascii?Q?RaoD0gQpCeJvazjzaaFD7R4d1AOColFSeMBGJhYvxelK0voqHn5sBlSyxbC5?=
+ =?us-ascii?Q?yLu6CAmnt+lNVrZg8DD4ektGWMxFpRfpY1XWnGlLgB9MBUrrq7OasNd7BvpJ?=
+ =?us-ascii?Q?bWy2ZL7iVC8AsIbARBYmlyuhAs2jb7TnAeGryVa457dpxP1lpZh9VrZi7IYk?=
+ =?us-ascii?Q?hSqKW0EuY29o/avON2/xLHSLK+99hmJt/huw0AK8M3FRhEhYmBtGA37JTWDc?=
+ =?us-ascii?Q?5y/OVWC6oCHe4bAxv564N/fxw6Hzgi9Ppxdv2wcOiNYFOJMahQuimphp9W0n?=
+ =?us-ascii?Q?HYNxQ37NTl3JaBHAF/fxZ4nNco+PoX0Ug7koZuajIk3kMCZ9mC7PtwWVlQYB?=
+ =?us-ascii?Q?WwtvT9YVvDo3pdiKSld6Vk7HVFB9G6lSNzMWuMul+KNdHf2R1H+58EZwGPef?=
+ =?us-ascii?Q?YRosf+FhRzMusWmQo9iDwdqVBG1LWdQzGPCpKo5IAPz7vis/zZuuASl1Ys4X?=
+ =?us-ascii?Q?OOH3pxcNvtSJwPPh/WFdtFlgf2Df5pl5RKzYxnokNTIgFmmJgVdi7UPRl546?=
+ =?us-ascii?Q?jD7O1yUXsyqJFE6NNWMK8B26pYXfA3lToP/b4IlfJrTb2C4D8NWBy1/VZ5kB?=
+ =?us-ascii?Q?Qw8yiFYziB53MAz6S1ZJexHIiMP0p+66xTejk2EtLC2qcNrgc1IcSjd5gmat?=
+ =?us-ascii?Q?58FAnv/ghPe/LjIWTnlTD3sKU//fCt5P/8tMhN5wprtlGKh+0Vzq9FJmjOzW?=
+ =?us-ascii?Q?Rb5vYl/HtLJv7Ruc3Pzm9dlzi/mm66jLKR4MImYhjQzsJS22wwxGohAR2+EZ?=
+ =?us-ascii?Q?La7L+HxyJyGNk9nj+K+0nzWqkeuNsRRtCG9ydQ7TbbMcWF6Xfw8EYWrhYQQT?=
+ =?us-ascii?Q?Np1EC0ejIu5AMFl4in94Qvbv4JaEqwMUJ0o6NFzIP6L4TLljWh/4jgy9VnDv?=
+ =?us-ascii?Q?rYG1tcZcKXrkTael1QEKGgG7uBWAERZR9QN/tLBjQt3d/UihHLpBfMr85g9Z?=
+ =?us-ascii?Q?dyqeSocT3san6y5x6u9nJxET5e7LV0noeMyk4jz+NFV2fpkBacgF4OjeJ9nn?=
+ =?us-ascii?Q?Bo4VFwbH7gV73MRZVYbF/pGAKI3xL36NRi7HpK2qs2kaeEs8EKOoObeY9pzi?=
+ =?us-ascii?Q?RZUhUmfea5bQ1ukaUXCrZEDo86gYu95uwsrQ1DrMoHZcdspsEGTywednw07u?=
+ =?us-ascii?Q?TY82SgE1kAbrh/jTI2At5dfE639/chu8u/Fw/tx6SKCCNUfb8ChWrdSgaxfF?=
+ =?us-ascii?Q?vGe0yV8V0gLvhkMs0tJbVU2EQ0m9joOY4Rh007UwtfHiYEbGFN+4moGTloyc?=
+ =?us-ascii?Q?RxZf5Yc1r9Vfv4vDu+SS6l/KmeJSS+KCCkcwksbfkuGRaOksJTn2vRC2wGXo?=
+ =?us-ascii?Q?IWbdFvojUT/6CxZzzh+4Gspit8Y1hcuSilHPqcYYnKrALrhV7uO7xy6Ou8U8?=
+X-MS-Exchange-AntiSpam-MessageData-1: vEUk79WtbY0LR89tU5MZ04qnd9IgAqK3r+0=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a3eb952a-27f1-4c3b-c7b3-08ded8febcee
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8586652f-b2df-497c-cf0e-08ded8febe06
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2026 12:29:33.7763
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jul 2026 12:29:35.5535
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6Y2iWBa0zglDLvEt8WtSMuH/r4+iF14SjLpLU6vLpEKEpWgFXNHCbgLIFy5fbGkaM4XBfFDF3Wl9n1fcQ2Ccn6Gy/OGH22buzOsyjCf9ftM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR10MB6032
+X-MS-Exchange-CrossTenant-UserPrincipalName: w1UtN7yqcU8AxfSiwX0e7H9YVfZEZ2vWg2L9EQrEgkJmn8udLUBXPpy89JUtQjlaFTKiJDNBWXwfpS6Nr1hREv2A+eGQniAiDNJppSU1A38=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR10MB4093
 
-Extend evl-test to exercise the system while the tests run and to
-measure latency at the end of a session.
+Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+---
+ utils/evl-test | 35 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 34 insertions(+), 1 deletion(-)
 
-The motivation is to allow running the suite under stress in CI to
-surface bugs that only show up under load.
-latmus run under that same load and with a latency threshold will allow
-the pipeline to spot latency regressions.
-
-Example:
-
-  # run the suite under CPU/memory stress, fail above 200us,
-  # keep the latmus report
-  evl test --stress-cmd "stress-ng --cpu 4 --vm 2 --vm-bytes 1G" \
-           --latmus-args "-T 60 -A 200" --latmus-out /tmp/latmus.log
-
-Tobias Schaffner (4):
-  evl-test: add stress command support for background load testing
-  evl-test: run latmus in the end of the test suite
-  evl-test: improve help message with detailed usage information
-  latmus: send setup messages to stdout instead of stderr
-
- latmus/latmus.c |   4 +-
- utils/evl-test  | 100 ++++++++++++++++++++++++++++++++++++++++++++++--
- 2 files changed, 99 insertions(+), 5 deletions(-)
-
+diff --git a/utils/evl-test b/utils/evl-test
+index 86a3d0d..98a48e1 100644
+--- a/utils/evl-test
++++ b/utils/evl-test
+@@ -7,7 +7,40 @@ if test \! -d $EVL_TESTDIR; then
+ fi
+ 
+ usage() {
+-   echo >&2 "usage: $(basename $1) [-l][-L][-k][-r][-h][--stress-cmd cmd][--stress-out file][--latmus-args args][--latmus-out file] [test-list]"
++   cat >&2 <<EOF
++usage: $(basename $1) [options] [test-list]
++
++Run EVL test suite or specific tests from the test directory.
++
++Options:
++  -l                    list available tests
++  -L                    list available tests with full paths
++  -k                    keep going after test failures
++  -r                    repeat tests continuously until interrupted
++  --stress-cmd <cmd>    run stress command during the test session (quote if multiple arguments)
++  --stress-out <file>   redirect stress command output (default: /dev/null)
++  --latmus-args <args>  extra arguments passed to the final latmus run (e.g. "-A 150", "-T 60")
++  --latmus-out <file>   redirect latmus output (default: /dev/null)
++  -h                    display this help message
++  --                    pass remaining arguments to test programs
++
++Arguments:
++  test-list             one or more test names to run (default: all tests)
++
++Latency check:
++  After the functional tests, latmus runs quietly for 10 seconds under the active stress load
++  (if any) before teardown. The runtime defaults to 10s unless overridden with -T via
++  --latmus-args.
++
++Environment Variables:
++  EVL_TESTDIR           directory containing test binaries
++
++Examples:
++  $(basename $1)                                   # run all tests
++  $(basename $1) --stress-cmd "stress-ng --cpu 4"  # run tests under stress-ng CPU stress
++  $(basename $1) --latmus-args "-T 60 -A 200"      # run latmus for 60s and fail above 200us
++  $(basename $1) -- --verbose                      # pass --verbose to all tests
++EOF
+ }
+ 
+ help=false
 -- 
 2.43.0
 
