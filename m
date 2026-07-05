@@ -1,67 +1,129 @@
-Received: from mslow3.mail.gandi.net (mslow3.mail.gandi.net [217.70.178.249])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B0B137F002
-	for <xenomai@lists.linux.dev>; Sun,  5 Jul 2026 15:23:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.249
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A4263587DE
+	for <xenomai@lists.linux.dev>; Sun,  5 Jul 2026 15:27:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783265007; cv=none; b=qrnUAzliUQ/Jay+oDK3aCBw368M9YwaiZesbZlF6m6qfZP9XN16gB9tCmeOtuwYhekSfan0e7RepRiVMzNKfMtXa+JIqvO+zoVowEg9/x1aAeHN0qtXZOLOjOcl6WNM1xTT5uQk0jzvk3JKzO4zKvfeH6oqxs59V23V6bUVOVsQ=
+	t=1783265280; cv=none; b=leZBFF5VpLkMbQHja8jWjrE9d5RMdcY73pzNYnte38AtO0LBrzkBeBtThUyzMHCYZOguqbUyduJIjscKaT8Vk8R2Mh0P40GF5I7Ojn0hn9jSbTwUFQv8UC/i35X590pocPC0X8uJa1LGtIIMVzgtS80X9NSYART3jp8Wo+Bu7s0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783265007; c=relaxed/simple;
-	bh=MiaLz7VgX07KuLYqsKwyCkIebC6ErPUid3+82OXVpv0=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=GGHN4Brfty2tZPDYcvJ7Paw+sLZGNPvyNYJxhtgbI4xYm3dStk89JmVjukfmY6pCSsnn+dVfBTKxz3dqKtGc/VTndl+w9Gi+xXU3Pj0g3e+Ps928BHwVd6NjQaiKgj06XD5TQGgg3XG2pxyCDHsTCPJFjNsMGpuPw+vj7uwgHiw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=P5T9S6gj; arc=none smtp.client-ip=217.70.178.249
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1783265280; c=relaxed/simple;
+	bh=tU4Jhn1X34DweevFCyd6mQ2V1EXeQbmiAP+pAy+UPBQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ayCmtoNzLJmzLXU1HkxkoTgZokz+sBXZrlSpGsRKfRu7+hVRWDp6wYdWZcZ0AVXJQAHYAjb3Vs5/oQZqDLanVL7WhPQQdscSMIYEOkWNHHnoRvp9bemXNTiEZqCukDi0yeq4nkZJqJBizeFVZFO0VJfFob0Z65X4b5GKh9y8KzI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cE230nQS; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="P5T9S6gj"
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-	by mslow3.mail.gandi.net (Postfix) with ESMTP id 3CC4D5805DB
-	for <xenomai@lists.linux.dev>; Sun,  5 Jul 2026 15:06:24 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 8E0131F416;
-	Sun,  5 Jul 2026 15:06:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1783263976;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=GSodneQvUhJoQWYdgdtYHbH+I7PJ8iMi6D8ikQhMnIs=;
-	b=P5T9S6gjRuPBw4nQmSqrTxlf/JpoEKiWkWJ8XeX4o7ADvSBDekDP2slwWS4WqjljPx6Ahg
-	HcNDE76I8uSlFHt86vb2TORUaP3KV/E9uPYK/G7XUZXQFAA+qJ0XZd1t7/eHsZynpU086w
-	m4rQxi3JKeOYgnAMiQJ4psQRhcOQouvwAJ9vXRrT5K3aL7+0EgbMGa6FAW8L2/fL1EWs/q
-	0n4wvTAfEwNx+fx2f1YWnk/x42WADmaXSZDupjAgdag7iWffuiTCDJ3/GFDR5KNVSROmsk
-	I8Tn5iVZXONDi279XIP6LPwC9sQ/NoK0eYHfILzcr18Nr2T7JWgC/mGhdzqWaA==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Hannes Diethelm <hannes.diethelm@gmail.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: EVL: Kernel WARNING
-In-Reply-To: <b5821b4e-cfd9-4255-ac8f-3de55a788d1c@gmail.com> (Hannes
-	Diethelm's message of "Sun, 5 Jul 2026 14:00:41 +0200")
-References: <c88ccba0-23fd-4f4c-a182-0967e79adefb@gmail.com>
-	<b5821b4e-cfd9-4255-ac8f-3de55a788d1c@gmail.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Sun, 05 Jul 2026 17:06:15 +0200
-Message-ID: <87h5mdmq6w.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cE230nQS"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-490cf3000f0so21503735e9.1
+        for <xenomai@lists.linux.dev>; Sun, 05 Jul 2026 08:27:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1783265277; x=1783870077; darn=lists.linux.dev;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Gmyows6k91kT7jnhibosg3WP5TYSWTCNsoKKU03AONM=;
+        b=cE230nQSrqXayT1rUosDgqmk3Zg3bbyq5AuuSvdia3dc76b27+umBWSP2NFemhA2MI
+         aKn22QjR+35AHsXvllH2cG+GtFzWz8Fucl/FcH0PVpaUr9IXOXTcE6hy95tlAoEwpxoM
+         0LWYZ+Fnv8VQrXezr1DKX4A6fsMO8/6obyyZL1LWtrweL3kEM0jvloedB67+rWI404D3
+         CjDr6Tr9K1NqeJ2qxg+W53CTPOtYsm0OBTXp+wRfHusJmgPvlYGB0FNs5irYXQUj680D
+         94uiTaPrPH1sQ0kwrUt7bKRAFZzkuF711/OSYGl0EtuHYNEGgVwFNjN5K5MXMDDVobUi
+         kHxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783265277; x=1783870077;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Gmyows6k91kT7jnhibosg3WP5TYSWTCNsoKKU03AONM=;
+        b=LOZ2Quqfyd8HXgwmp4YVvX2XhOdsVw1natHDFRfOJqyYPiWqXFQKhL3myorJ/6hp1Z
+         5kR08B9S316/KIWoWGag8C2z3fzZEV8OZ+WkQFavFGLKqtbf1tFsTIsaOlzq8OhFUj4M
+         JT8r//y4jHEcY+DDSQtNde8dMavdk266rC1Cpk8GdwzYQvL6+S0dOhQALKl+3HUvYY/z
+         TpiUVVfXX5DD7+fhZj4lk1l9qPxP9mRgZOJQ4FO4KtGhRAYrVGgiAElsUGSOyNNRcamN
+         gtqq7U7WUjFBh1CqqYEEvw375gXgtZPpzTnZ12iKWPx+pF/QmqtHVxuEF+6Djowd206n
+         fvVQ==
+X-Gm-Message-State: AOJu0YwIl61tmI6Vp91B1u4jUSpW3UBJUYx8aB0zttmaMKi3FkHmRYzP
+	KqUC1L9e0BewwqshJfTXWfEzDRCdypleNqfrQY/ndPXBgx1mZCDXeVG33JKyPg==
+X-Gm-Gg: AfdE7cnEVCtewM7CZUIabaQwnTib06hGR9qx8VqW9r9Jkhsp8OsBhx+6TNRzqYtxqPP
+	IldNLhvPH4Q0y5mj8oKY3XN7MQ1V7qfl1DeWTYaULzeCIwqPSz7qvwOERr1vUehyTl47gjjIvcn
+	N8RH7R+v2AfCfsmBbGr3vzPG8Zm1Sh1AHoeN3Dbb2PCgJI0yC5I41u6Allt89IxulWQPkwkNE4q
+	otCPPH5UEETeGuj0SKBEAaYi73huoxVp9gU9v0oKkdkdgkGFXFUhWxQHVJjdeRwdZnUGn24C4bE
+	RowZv1RoWxgd7xSDuHnosxNNOSVPdRKecOSTlZCJcoXFM8b67OkKGyiVDs5Yrjdh9x4excn8beA
+	KkFScuZZkr1gYJqhBUmIYJKXklQyAANa7tS8gaB254kTBOsBUFPYh/G/47mp2yGqkKWYaEkc6cG
+	RPV6ckvxKnHY+OfSlY9D99
+X-Received: by 2002:a05:600c:4e4b:b0:491:91cc:d12d with SMTP id 5b1f17b1804b1-493d76c4431mr31136115e9.25.1783265276848;
+        Sun, 05 Jul 2026 08:27:56 -0700 (PDT)
+Received: from [192.168.1.3] ([213.55.168.64])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47a9de1d905sm17051725f8f.2.2026.07.05.08.27.55
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 05 Jul 2026 08:27:56 -0700 (PDT)
+Message-ID: <7f0d1a81-adce-4d15-9707-87b8469cf8ae@gmail.com>
+Date: Sun, 5 Jul 2026 17:27:55 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: dmFkZTF2XSMSrSgCpRaYEvqL82fCMLW4EZY9v3lp6+UDpptikKGnbnnGjAe7d2b7jOl6E6w98lhUZG0Ti27DDdqlOlbXWHk6NRjgCpx7XChJDPuVAVc0YBK/hV/XWcyGIJYBhxst7HpcKHRIl18whIYZUlzLOF5hxEAR1Hf58VkX76WkikOhQ44ApslDTcWOdiiSYnim3jRS6S7dr3mlbqthNBGixZWFSRSlJRb886ZfMvsoHGsOV6YE0X+jel8MZAfpdamy6tVqI4LJOgD2lZpH6x/K6C7EwJ8hQozUC7pF+v2vHNK40xSSCrcC42gdHxqsL7AcoH9x3/xCb5vyNz3W400CIR6SKB8E5/FNoiRMnqZwTsWdg0nHACHc7jb8y3tRA4brsy6jJlLi5YGjUv2YirZaMWakP9vD195MrJ4O4ciPBX8/4Mmo3uFSk6kHSYjjOvg5aXBZMynLdroAWaU23XfzdP1pdhTHrQ6gPqaMAK5UifUqC2zjlj3A4pkIwp1NBDqP1ENd16V0P97J9DNZL3oUNer3lnxOf87TAEfzSYL3heFHddOv5uhzCLFp/urL0hpX/7aIuiBpIC44t1MI2L3wCp3dU/M+SZwg909LC9x/eVwzXo6tYwFrxgKWNK8TT5ewKAw1BrYNRjHT0Vt4LlT9DUya0CCym5KycdsZAo/RqA
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/1] tidbits: net-ping: add ping tidbit using raw socket
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev
+References: <20260628153956.1435330-1-hannes.diethelm@gmail.com>
+ <20260628153956.1435330-2-hannes.diethelm@gmail.com>
+ <87y0fpmqky.fsf@xenomai.org>
+From: Hannes Diethelm <hannes.diethelm@gmail.com>
+Content-Language: de-CH, en-US
+In-Reply-To: <87y0fpmqky.fsf@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+Am 05.07.26 um 16:57 schrieb Philippe Gerum:
+> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+> 
+>> This tidbit allows to ping any host and measure the response time.
+>>
+>> Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
+>> ---
+>>   tidbits/meson.build    |   6 +
+>>   tidbits/oob-net-ping.c | 480 +++++++++++++++++++++++++++++++++++++++++
+>>   2 files changed, 486 insertions(+)
+>>   create mode 100644 tidbits/oob-net-ping.c
+>>
+> 
+> Thanks. We need this to build on 32bit systems:
+> 
+> --- a/tidbits/oob-net-ping.c
+> +++ b/tidbits/oob-net-ping.c
+> @@ -215,7 +215,7 @@ static size_t build_icmp_request(uint8_t *o_frame, size_t icmplen,
+>   	icmphdr->checksum = cksum;
+>   
+>   	if (verbosity > 1) {
+> -		evl_printf("ip_len=%zd, icmp_len=%zd, ip_len=%d, datalen=%ld\n",
+> +		evl_printf("ip_len=%zd, icmp_len=%zd, ip_len=%d, datalen=%zu\n",
+>   			   sizeof(*iphdr), sizeof(struct icmphdr),
+>   			   ntohs(iphdr->ip_len), datalen);
+>   		print_ip_header(iphdr);
+> 
+> What about turning this code into the (currently missing) 'evl-ping'
+> utility? I believe it is of general interest to any user.
+> 
 
-> - With the good version, I tested ~1M packages, all fine, max 60 us
-> response time on the real PC
+Thanks, I will fix this.
 
-You mean 60us for the overall round-trip time between two evl-enabled
-targets in full/end-to-end oob mode?
+Why not. So I would move the code in the tools place and rename it? Meanwhile,
+I was continuing work, so statistics are available, ping style.
 
--- 
-Philippe.
+oob-ping:
+2 packets transmitted, 2 received, 0% packet loss, time 1633ms
+rtt min/avg/max/mdev = 226.8/248.3/269.9/21.6 us
+
+ping:
+3 packets transmitted, 3 received, 0% packet loss, time 2030ms
+rtt min/avg/max/mdev = 0.118/0.142/0.159/0.017 ms
+
+The only difference is, that I use us instead of ms. That could confuse some users.
+What do you think, stay at us or use ms?
+
+BTW: This is in a VM, that's the reason for the bad timing.
