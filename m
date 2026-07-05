@@ -1,102 +1,72 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EE67D3769E1
-	for <xenomai@lists.linux.dev>; Sun,  5 Jul 2026 12:00:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27F651F4C96
+	for <xenomai@lists.linux.dev>; Sun,  5 Jul 2026 15:01:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.193
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783252846; cv=none; b=fQ7dqscjYYZvzojqhwxYsH1pmNyjpxsOxh5xb9aeopCFhJE21+91TLpUyqJ5fOSUCif0niaQUJbyQb1cviZUUpgYLx2c1gHTOC441TjfEeYwrnwG1W6HVRVxOL4YpxfHUvix6P0bRbUAUPx3LQTTA+LmxBwuTefpePaj4WobJV4=
+	t=1783263690; cv=none; b=TkghumVDMSXQ2eE3XKdlzQ7UzEXtmaeDM/d8PJMsO1+lb6BHd5fYmL0xxlPA+Sc0ed1nWNAjNrtiksrQw8m8C8jMoQgBlvZm/50dXQ4xzKjrR5NIunfxvy+sQRJW1lcyHKQ/Lm+pQLIzOide9TKKkmjg86EHvWOv6WBu4aqd7V0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783252846; c=relaxed/simple;
-	bh=ZM0Eydln+hv+KYG7ukui+2+VftMr+02mLIV7qPGc+ds=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=aQvdUSQ0QIuc3cI1unLPva5serqpqV1cdVoigbZCrdevb2V1Y7bg/IU3X2ivBMzZFRhAUK6UomhgHsk1e9iSD1STEZgrKP/a8Cyq/cRjTv7iVKiiEapNU/cJZIsWvRos63jN5kKvIrCjSWHimUZskpMmbhbUU4eYSUG/N/i0Rdo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OcWdEMLR; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783263690; c=relaxed/simple;
+	bh=popYnmTFabcGotrVWV6+Y+IaHV2BJw1CjOSGBhyDiRs=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=U9GqY0qS41ILxgrbfYmHWzk63pbYLvCgtCDLTdYTXwwGx0f3ptmo74orssDgO/App11jmPKAlPW2VXesxmungsNciyV/RXDQBlVaB1TGLFYZje1iRCGP3wW03deefBM7pUciruCtDZSLiiQZM9V8Tte0SPJVIVaS8PrDyBigpwE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=ciMyEh4L; arc=none smtp.client-ip=217.70.183.193
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OcWdEMLR"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-493b786d6c0so10228255e9.2
-        for <xenomai@lists.linux.dev>; Sun, 05 Jul 2026 05:00:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783252843; x=1783857643; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=LM9ADdGFkfdafFx5WENtIwShKpKTPHVmWGnzogPSbLE=;
-        b=OcWdEMLR8MW33NM0ECSeDKgz4D6ETkLckxAQFPdW26Id3/7yWmxRIAYO9VADkDIZ/h
-         uxCnmX+QlrzujU8IGwl5MtL+hBipE0kj2FFGYNI9XFGIXKsj1KnCNHB5qjn3KXa+tfZV
-         LS7FadZPueR90fSfhClgQJIyvu+iENEgvhnNtVyDq3PSYtn+3X8cGKW1tfRUlRPYttyK
-         LbQKjSzXXjuxciqFsgLwrJ0dr7HBSLeX/B95V0fmudcBXnglZmzAry7RJnaI183xaTu8
-         0AB2bdvp6X/HnL0iuChNFHGpMOgFep96ulgfxDcpYLpc2xytynm/d3RN0X7b4Dcq7a3k
-         NMsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783252843; x=1783857643;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=LM9ADdGFkfdafFx5WENtIwShKpKTPHVmWGnzogPSbLE=;
-        b=r7+kO/kK5GE58Cv5jPjEkMrelDxbnmeg2kzwdd0sP2iKDtHTizy9DG6E1OS+cNg4Em
-         Msq73qJEO7cWPIj3OqcTbRbaf7oxYWCqJFzNRgQcbSJLbyRgebT2zCPb0OZZr/3n//sm
-         DB/OFph2i39HIKVibiBiGPtQFIzoIgJDKOcEwhv1b2moZrwZEtqdxVBvAqR6kUsZ83fC
-         MxU4l3kqgQmgC39wt+/tY83gz+ifmqHlDGdxXLbGQNdIIdo1B79G5yXicc92fjcMHAHK
-         YmZQdpzZhTfJK6QZxT62bjFvVCnzpliHq455jUgQEokFp50PvpCh6/F6gDw6K1IOC7+g
-         X8CQ==
-X-Gm-Message-State: AOJu0YwCH5iMi2Rcf7IgDWYWgS7ot2EzW9r2G6UUItfgAzqed3Bv/6+2
-	we4iDSrh06f4pdMLTg4DRsbkeL1DjBdpJB435sJgkHDpFNMu1hCv2/PT
-X-Gm-Gg: AfdE7ckV8VFn9WdJWcobjwAbjyNze0frO/kocenFMob0nfBYsIA39m99qKA7D5gmNJ3
-	xQ+H89T9tublwH/T9eB0OIBtfzGynrkD9JfE46a3qrr1SHhz3BA6J/0nx7/So8rixhxP4BCvMOP
-	cOOUzWo+mK+Nd5yGO+xMHAqbUHwX+qVCf/NNhAX9BpewS3T1m79LpoB9RrXoMOJl24oWvVEF8ha
-	ZJaPTSGVpqMb+BnEEH3frQ0sj7RjXEJVhUNER4Zo+p9RuB6YSCaS0dqnpHQhr+VR2VmOxwC50bB
-	hKRPAK2K+JgxGflNvo0egiDEgrcGaeCdr6xrn+Q6HjpbyaZbsSc7buWqE1juk4Ej2Jwi0haF0F0
-	yq7A7ZzIqtB0rwTS2URLxkRuE+X3YuATIBfPaGQHg3P+RBVVts5k2078HOr44YUaYYzULao3h8W
-	uxvobPhYbVu5JeEpfa0yhH
-X-Received: by 2002:a05:600c:3f0f:b0:492:3c7e:57aa with SMTP id 5b1f17b1804b1-493d118e7bbmr78798995e9.0.1783252842992;
-        Sun, 05 Jul 2026 05:00:42 -0700 (PDT)
-Received: from [192.168.1.3] ([213.55.168.64])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47aa039ae4fsm16135112f8f.18.2026.07.05.05.00.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 05 Jul 2026 05:00:42 -0700 (PDT)
-Message-ID: <b5821b4e-cfd9-4255-ac8f-3de55a788d1c@gmail.com>
-Date: Sun, 5 Jul 2026 14:00:41 +0200
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="ciMyEh4L"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 6B7533E96E;
+	Sun,  5 Jul 2026 15:01:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1783263678;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=nNuZlYC5xftf/3SiUzLM5u3HjQT80ESzoaKu8udYAeE=;
+	b=ciMyEh4L5848jf0EVEo0UWS7Tbc/nAKtaGPoXzU3p2ecZwLykWuVv9EbZiCC5c9zgkZBuO
+	7KU0odTvIkqfp0wLxl5ISVZBRs+FkeccNdNMQYCX9JE5bHjWqsoKNQSYEExk/3orwr9cCt
+	6byKyd7402NrSw1alf6ku5MpJFfBt1tAUZ/nTg2Pdnj2W8wZCN0+CVdshTbhDyK17rwsZF
+	x8U7mNDVYwjfa3bLa5c565BEt9d87NuFQZLoMNTwqEkAJNURjtqusy2QhGYP5IfPI+Ti4v
+	3Mz8r9nog5uW1hqziGS4C9I54c5uiAqUKPoxZCpihsc0V3bOvxZDCy71hKJcqg==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Hannes Diethelm <hannes.diethelm@gmail.com>
+Cc: xenomai@lists.linux.dev
+Subject: Re: [PATCH 0/1] tidbits: net-ping: add ping tidbit using raw socket
+In-Reply-To: <20260628153956.1435330-1-hannes.diethelm@gmail.com> (Hannes
+	Diethelm's message of "Sun, 28 Jun 2026 17:39:55 +0200")
+References: <20260628153956.1435330-1-hannes.diethelm@gmail.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Sun, 05 Jul 2026 17:01:17 +0200
+Message-ID: <87se5xmqf6.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: EVL: Kernel WARNING
-From: Hannes Diethelm <hannes.diethelm@gmail.com>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@lists.linux.dev
-References: <c88ccba0-23fd-4f4c-a182-0967e79adefb@gmail.com>
-Content-Language: de-CH, en-US
-In-Reply-To: <c88ccba0-23fd-4f4c-a182-0967e79adefb@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-GND-Sasl: rpm@xenomai.org
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: dmFkZTGga3Km2k4N1TrkgFXHisLexpx4Zdgds5crb0+qkGIxdXvJXVSdeckvYxXTIMKQs3IMCnyAR19z2nh0XvbD+3Jm0gE9+yYzmRMa/6gWi660vg7Z+gpcwjqNZAJ/djbcBowlWKzO+iCMaTUWg3XUoP/VjhS20QnjQEUkvKqzyzsp8YeYp4ccwlyTlWuSwkXPylEFWGry3LwajbeCwEinFnLVyIFQyvH1VY4hbQnFjFOtPrEOAiURBuFQmhfRzUMsETvEFTtHKS/AO6rGcd3SJ67i3yYebP0pQ/QQaRQc+NtmVWF+9KmMDwrIS3q1RXz1CnIPjE14G7KGohuh8ehNlPqQhDIoHlVcsIbOZSOH6RHgXW/7N4iWmYKEYkoFvr9kNg98EwSaUenjXJEJV/ne+WBb6/409q+iy/ilkjLQJEV5qP1SrwbkKHrIOgqIJA/SoNcHL5OZIT1sYnA4opzu6Ls5RToA4yG4GxT4Y1v1CiqpBg3AWUWyV2thseeonC/LVu5vzOpaPUOi5IrtFetVAmyBCXZGoT5QJjmfoN4v6amiqlueV0QjRShR4xYPkn90/2TsvHvOzHn5qM0sUfWUm9jmDtf0EKYhs6eyKaGMK4wKD9/sKJip8eSdsLk7n+kVEqpIn0LmyGV1cRpUnLPhXHEoiTF0/hKrG0MmXHmGzSzHgQ
 
-Am 04.07.26 um 20:05 schrieb Hannes Diethelm:
-> Hi
-> 
-> After updating to the lastest v6.12.y-cip-evl-rebase, I have a kernel 
-> WARNING in the igb driver if I use my oob-net-icmp.c (Patch submitted)
-> 
-> Exact commits good...bad:
-> linux-evl efed612...55591d4
-> libevl 3e5577d..f7b7df4
-> 
-> Regards
-> Hannes
-> ...
+Hannes Diethelm <hannes.diethelm@gmail.com> writes:
 
-Update:
+> This patch is the result from experimenting with evl networking. I use it to do basic
+> connection tests from the out of band network and check the timing.
+>
+> It is a bit complex due to evl doesn't support IPPROTO_ICMP sockets.
+>
+> Using the in-band network stack, you can use: sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);
+> and then only send the icmp part of the message. However, such a support is not really needed,
+> it works fine without.
+>
 
-- It fails after ~240...253 packages. After that, no ping response is received any more
-- I use "sudo ./oob-net-ping -i enp7s0 -a 192.168.122.1 -w 1000" so it fails faster
-- Also without -w 1000, it fails, you just have to wait longer
-- With an I350 card, I get the kernel WARNING
-- In a VM with an e1000e, I don't get a warning but still after ~250 packages, no response is
-   received any more
-- After evl net -di / evl net -ei, it works for another ~250 packages until it fails again
-- With the good version, I tested ~1M packages, all fine, max 60 us response time on the real PC
+This said, we have an ICMP protocol module in the evl stack since
+recently, which only responds to ICMP_ECHO requests ATM, directly from
+kernel space. Extending IPPROTO_ICMP by implementing the oob_sendmsg()
+handler for it there has become an option.
+
+-- 
+Philippe.
