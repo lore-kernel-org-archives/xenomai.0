@@ -1,95 +1,99 @@
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB1572DFF3F
-	for <xenomai@lists.linux.dev>; Sun,  5 Jul 2026 15:10:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30E51433E7A
+	for <xenomai@lists.linux.dev>; Sun,  5 Jul 2026 15:17:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783264246; cv=none; b=d76txA6V+qNY8rsAS6dShkjMWshZYsSxDbgdhUyqT46pMXb1+iZlj6fF0yP2Ksn8/cF3t1P3R4XRqRTOCWRF+4Z80PxCCzAfY4PwgKN8DokjXoyn998JGwXqK2/4krfCvWqSCAJc7ncChHiGZ/pAHuv6BZsdcnwgTh7Cp3JabBw=
+	t=1783264661; cv=none; b=Inngm4OItXzG0ocnQPncjJcsTlW2BOUwQMBcgnx2PFRe8KoV74Ohe+uqohiwfdrPO0AE9UjI+/5KfP+iR/leuvJi1ZStYks6nnh/Vj4/M+QM8Led7hkYM1ZgtUYG1Q5f5Mm2737SAzjiO/lMa8POenXHPpzzaboY+I7KOe9BkCA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783264246; c=relaxed/simple;
-	bh=o85OHqcAaM3oosZrxH74HmJzHDJj8awlq5hiyQJlVvQ=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=AkQoNIIa3gQMdA2G1a5g43qoiCzOusfNznN/rGKO3jO5zv+FD77gGyRX/4EdKM657J4r3uN6dxYH+m8QuEAedJ504DbrfneyFxk25DOh8uU1ycT4wYs6FUqSNGD6UG1VrIyKcVBRvM1fl6QpmceSBEy7isjnAK/VrKjmsB+t7cE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=irBAmLIZ; arc=none smtp.client-ip=217.70.183.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1783264661; c=relaxed/simple;
+	bh=Ko3LsIq1V0+iFcmCOF0OBpxQuF0VYKwFyLRZgLNpL9o=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=I9aMhzgJ19ydS5UdSKJlHgRyqJHyFXAhU97GKVBE0BHybrJdTJlBqNlexfzvc1jwXmCE17N4A0mGW7zp3edZoE+AWiPKhE64CB7vJYDcmRbJ7nzRDA5HbUxlw5kNYAEJ37zna5X3o7hGV+7U/bWiq6/3OpBhZCM49PrHS1ow10w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kUVUwUHb; arc=none smtp.client-ip=209.85.221.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="irBAmLIZ"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id C23463ED92;
-	Sun,  5 Jul 2026 15:10:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1783264242;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=RjBNo7ws1JTMQTlZL6C8RmvHnhEqCj634rPmmQdqa5g=;
-	b=irBAmLIZ7czrgd9t4bvk+gPzOPBN7tHnE+qvVIdAUjUvgavaYo1APUNAFE3dfHTip8lEXB
-	1ThdMNMo4v0J/8dwxMOhdzLOYAJzmiuNICCE2PUP0ZPt5fY48VnDFBJ+5ZhuXVl/ZH5Ipg
-	fV/uSbub9nvWb96zcRHkHl7b0v9Q3FUPrhjRrJF1kPO+PS6MzuYHu4Fk9iskJnGXLGR2bc
-	ZF95Oip1xdAvRY5kIP+HcfpnEaf2h7LGy/KbATAjcXyiYNFqljyIn8I+xbq7jkhHad2VfU
-	CIYj2g+6IKgPG/Um3MGaEn8XJZBib2IbdewE6NqzyY18KrPnTXcGYtjhuz94IA==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Hannes Diethelm <hannes.diethelm@gmail.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: EVL: Kernel WARNING
-In-Reply-To: <87mrw5mqa8.fsf@xenomai.org> (Philippe Gerum's message of "Sun,
-	05 Jul 2026 17:04:15 +0200")
-References: <c88ccba0-23fd-4f4c-a182-0967e79adefb@gmail.com>
-	<b5821b4e-cfd9-4255-ac8f-3de55a788d1c@gmail.com>
-	<87mrw5mqa8.fsf@xenomai.org>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Sun, 05 Jul 2026 17:10:42 +0200
-Message-ID: <87bjclmpzh.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kUVUwUHb"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-475881b9a4bso1823154f8f.3
+        for <xenomai@lists.linux.dev>; Sun, 05 Jul 2026 08:17:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1783264658; x=1783869458; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=A18NW4JDvYcBBfviaBOta9HHvl2cU4S6YdyNlpF4ev0=;
+        b=kUVUwUHbUu1hUzfPecp8RSk7NLYabusjtuSSNXd/1J8rQDXkmqiiP3AMVjLVSV7aSK
+         ORgIuzdyJegldJf4d/M8UPp/TTzB0gsV0uF5ndZ9IzCHU9l0oszFYheuDp8s+cMWI/Z1
+         iyZAAIivMwHrlXBybMYnlaIQFSAjtc+coiYG/LKVi4UVKesHbR155hRkGzitSfbEvQVy
+         384WbUR2eVWRBKg/ummgB7CClPa6Q0RxYNBC7LeFcIHUub3b2/nCLpIb4gn7sacaaikI
+         esaeM1RuIJP3on6EWwVs7MvKpMrvu/x1LrRKYo8Ee0wAZFhkAeXV7PQ2VVUxluIFrqB9
+         L3xQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1783264658; x=1783869458;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=A18NW4JDvYcBBfviaBOta9HHvl2cU4S6YdyNlpF4ev0=;
+        b=UoVm6HP0jvdWCVgSfkfgmuCmriBHlsvvctndsxY7eY46zIkJktBwMyRAKCw1lg8UIn
+         zq4GGUrkXS+nXiEysunUYqV0d4qbmo1wj1t8cJiNmN4yEt+3ZVnWqyakULJlL1o/Q/hW
+         H8DTPzOQs9QwYyk7cFiRwhq13CryhYaMY9nFNbKrH8XejK01nDmXAn5qTqdvMwGToHas
+         IEQsayNe06H1ed3yxxv4+KiNuaEf2SCVmXJ+4IC54he4nw+6cQjCviz8AAHzYKvS8GYz
+         Gn6S85XOD4MXNWbukn3YcImIiqY3WfNwMbvjlvStZ5GlmqAFWjjFTqSCyIx/eKsXGu3Z
+         QV5g==
+X-Gm-Message-State: AOJu0Yx520qhfFqLsw26NJEwBOcMAkYRyrofqOm2Q9HYLXMsOJfLQ5MA
+	xAFRXw1FxFJHDPEDSO6Qd/VSEx03WIvOPCoyposbtOualhDROqFXODmKe3z8gw==
+X-Gm-Gg: AfdE7cntG9jYijy2FQe8gpZ6zFe4Rq6GtpKsjE78o6j67L65RpL1KxRBSB0QyHovbhd
+	k1dQOLkmZlHGAsWaFFBTnHJwgRx8VNKwdbtC7b0ik/j+0JF3wCul1Rjo59bXn7TmfIuXxELbtmr
+	1nUAvcLjJygwmZGpif+LzW9j98ByF9/TzfQXwJVGc/nOg1MQW0HKqe4F9hHww8/d4l9QYLAm2/W
+	nrpzIrk0O5tA4HWSFpkA7iPkvxwHU4Vjy2oMSHLYBcFxsxMgoAVntpUq7nleDSOHn21vqrSlitQ
+	7BRdbILdziBj32WEehIIQWIJXHpDOcrH7xRLHsWExr0cg94QlLlzIugXB77rjiQxCk9smSEzkFI
+	k9hshNeQ7N+HAH78vlDi4/jLcQ3t1AUJQg34NbqnfqROqd+ILuSP7xKyhsj2QFf9icXhO0t2PdF
+	E5a8qKBZwB+3pwHSeHa0sHt9WSWD8tBpk=
+X-Received: by 2002:adf:e003:0:20b0:474:2929:474c with SMTP id ffacd0b85a97d-47aad6434a9mr5348359f8f.36.1783264658316;
+        Sun, 05 Jul 2026 08:17:38 -0700 (PDT)
+Received: from [192.168.1.3] ([213.55.168.64])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47aa0f213e8sm15091125f8f.34.2026.07.05.08.17.37
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 05 Jul 2026 08:17:37 -0700 (PDT)
+Message-ID: <593465e6-53c2-4f54-8d4f-745b028ff289@gmail.com>
+Date: Sun, 5 Jul 2026 17:17:37 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Cause: dmFkZTF2XSMSrSgCpRaYEvqL82fCMLW4EZY9v3lp6+UDpptikKGnbnnGjAe7d2b7jOl6E6w98lhUZG0Ti27DDdqlOlbXWHk6NRjgCpx7XChJDPuVAVc0YBK/hV/XWcyGIJYBhxst7HpcKHRIl18whIYZUlzLOF5hxEAR1Hf58VkX76WkikOhQ44ApslDTcWOdiiSYnim3jRS6S7dr3mlbqthNBGixZWFSRSlJRb886ZfMvsoHGsOV6YE0X+jel8MZAfpdamy6tVqI4LJOgD2lZpH6x/K6C7EwJ8hQozUC7pF+v2vHNK40xSSCrcC42gdHxqsL7AcoH9x3/xCb5vyNz3W400CTYqC9gHS6destyxQLp4T7uUYS0v5TjAXrOb10q7Gv2pmEnYhCjRrbeKav03fmrhETssOve4QkJez8qPlyPmWjCZmC/LqAGAqSjPoIAcmHqmPdZ+OQnZEh+NT/BF3zYZPDiFz1W/5Xm4UltsmjeEJpSUxCKODAHLJsBDmd0lzDKHGLUrioeDCy1APaA2fL9YhZfushRXQszsuJFVn2LUg3AFMJqupSQgNPp13Bwe8QMq7u07fqZLfuT/e9DC3s8IbbqhCji+sFmnjj5/7xBmilIsCDlDGJmaGp8IblV4HVgRgIRWGxsJf7Q2LW6T8oH/DmDU3QWbpVM6WEvDYXSsz9A
-X-GND-State: clean
-X-GND-Score: -100
+User-Agent: Mozilla Thunderbird
+Subject: Re: EVL: Kernel WARNING
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev
+References: <c88ccba0-23fd-4f4c-a182-0967e79adefb@gmail.com>
+ <b5821b4e-cfd9-4255-ac8f-3de55a788d1c@gmail.com> <87h5mdmq6w.fsf@xenomai.org>
+Content-Language: de-CH, en-US
+From: Hannes Diethelm <hannes.diethelm@gmail.com>
+In-Reply-To: <87h5mdmq6w.fsf@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Philippe Gerum <rpm@xenomai.org> writes:
-
+Am 05.07.26 um 17:06 schrieb Philippe Gerum:
 > Hannes Diethelm <hannes.diethelm@gmail.com> writes:
->
->> Am 04.07.26 um 20:05 schrieb Hannes Diethelm:
->>> Hi
->>> After updating to the lastest v6.12.y-cip-evl-rebase, I have a
->>> kernel WARNING in the igb driver if I use my oob-net-icmp.c (Patch
->>> submitted)
->>> Exact commits good...bad:
->>> linux-evl efed612...55591d4
->>> libevl 3e5577d..f7b7df4
->>> Regards
->>> Hannes
->>> ...
->>
->> Update:
->>
->> - It fails after ~240...253 packages. After that, no ping response is received any more
->> - I use "sudo ./oob-net-ping -i enp7s0 -a 192.168.122.1 -w 1000" so it fails faster
->> - Also without -w 1000, it fails, you just have to wait longer
->> - With an I350 card, I get the kernel WARNING
->> - In a VM with an e1000e, I don't get a warning but still after ~250 packages, no response is
->>   received any more
->> - After evl net -di / evl net -ei, it works for another ~250 packages until it fails again
->> - With the good version, I tested ~1M packages, all fine, max 60 us response time on the real PC
->
-> Ok, I can reproduce this easily with oob-net-ping as you described. This
-> also happens with an (arm-based) FEC driver, which confirms that this is
-> a generic issue - maybe in the packet protocol module? - not a driver
-> specific bug. Working on it.
+> 
+>> - With the good version, I tested ~1M packages, all fine, max 60 us
+>> response time on the real PC
+> 
+> You mean 60us for the overall round-trip time between two evl-enabled
+> targets in full/end-to-end oob mode?
+> 
 
-I forgot to mention that this issue boils down to a shortage of buffers
-to convey ingress packets, which explains the behavior once
-triggered. Some memory leakage in the packet layer seems to be at work,
-because it does not trigger when spraying the receiving target with
-ICMP/UDP requests.
+That's between an evl-enabled host and an FPGA board as a target[1]
+directly connected with 100M Ethernet and an Intel I350 after some
+heavy tuning. Most tuning was done for PREEMT_RT. I have to test what
+is really needed for Xenomai4 and what can be dropped.
 
--- 
-Philippe.
+I don't have two PC's to test (yet).
+
+https://store.mesanet.com/index.php?route=product/product&product_id=374
