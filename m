@@ -1,48 +1,46 @@
-Received: from mslow3.mail.gandi.net (mslow3.mail.gandi.net [217.70.178.249])
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 32BB32DFF3F
-	for <xenomai@lists.linux.dev>; Sun,  5 Jul 2026 15:10:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.249
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB1572DFF3F
+	for <xenomai@lists.linux.dev>; Sun,  5 Jul 2026 15:10:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783264224; cv=none; b=LDxs+Lt5enPmbHtSKd5IHzZO3bjf/XJP7Biw1EmDn4VohG/8xgkrhtbCNNkuDxmRGqBzw3zCNkGSDoRdXjK3GZ7/i82YPxRBR1IH7jYvZqEtYbP3Z5T09Stc1H1QYPTJkC7I+n+d0uvwIiQzhJWy358nQ3vFgEQ0I5jYrf3fm1Y=
+	t=1783264246; cv=none; b=d76txA6V+qNY8rsAS6dShkjMWshZYsSxDbgdhUyqT46pMXb1+iZlj6fF0yP2Ksn8/cF3t1P3R4XRqRTOCWRF+4Z80PxCCzAfY4PwgKN8DokjXoyn998JGwXqK2/4krfCvWqSCAJc7ncChHiGZ/pAHuv6BZsdcnwgTh7Cp3JabBw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783264224; c=relaxed/simple;
-	bh=Wscbr1eYTpH+b+83eLov8GJaM5hRG4BzkLy+FSeG3f4=;
+	s=arc-20240116; t=1783264246; c=relaxed/simple;
+	bh=o85OHqcAaM3oosZrxH74HmJzHDJj8awlq5hiyQJlVvQ=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=ZRPkCd+9oaECOkKoAIekgM8iCh51YFEPZ45PfNQ4On+/0f107KggJbWD8nhoJrob8ce6ZJH9zPJEx7a+X0W2q3lSyEkZClon2n8r67yTbf9CEoLa01nR7Fx/dEgSFU9yBcpbF2ddPAxVNUmIUb1d6dr1MtUeGYvlZODozyQmHF8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=LyKL7yo4; arc=none smtp.client-ip=217.70.178.249
+	 MIME-Version:Content-Type; b=AkQoNIIa3gQMdA2G1a5g43qoiCzOusfNznN/rGKO3jO5zv+FD77gGyRX/4EdKM657J4r3uN6dxYH+m8QuEAedJ504DbrfneyFxk25DOh8uU1ycT4wYs6FUqSNGD6UG1VrIyKcVBRvM1fl6QpmceSBEy7isjnAK/VrKjmsB+t7cE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=irBAmLIZ; arc=none smtp.client-ip=217.70.183.198
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="LyKL7yo4"
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-	by mslow3.mail.gandi.net (Postfix) with ESMTP id 76C245801C5
-	for <xenomai@lists.linux.dev>; Sun,  5 Jul 2026 14:58:01 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 2F2073ED8B;
-	Sun,  5 Jul 2026 14:57:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="irBAmLIZ"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id C23463ED92;
+	Sun,  5 Jul 2026 15:10:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1783263474;
+	t=1783264242;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=mqoA62/VqGGKaqq8e95YTasuAymbLpDybcol+Umgnys=;
-	b=LyKL7yo4L2lDCNKoPQs2csVQEeDqIzbC1oXoNjJ4zTLrXONiXfwb2qudElzkYvTRupWoXW
-	MP+4mMKL0qDJ7FKMa1+HRhBCMStEVNvhc5Brt6gyUhq0U+v+LvJIxs5YrLZX011v1YFeUj
-	b2orXQdLex1YXGbbfA8vgtZpWxVJAVWPeGup44NfNx6RZCgEtKqHqHaQaCRnDt/qRzadFR
-	NNdjRb8TPYmPKvGNRCZwua3vukcT+OEFdhlapRdNEciS3/LDoPRgm8ti4LXdZXj/WmzG6r
-	6epvq+duHBuGBaTUPUMMAL0fg94ITn18m13609lHk/dSRuM7pzNMsz2tOr+xwg==
+	bh=RjBNo7ws1JTMQTlZL6C8RmvHnhEqCj634rPmmQdqa5g=;
+	b=irBAmLIZ7czrgd9t4bvk+gPzOPBN7tHnE+qvVIdAUjUvgavaYo1APUNAFE3dfHTip8lEXB
+	1ThdMNMo4v0J/8dwxMOhdzLOYAJzmiuNICCE2PUP0ZPt5fY48VnDFBJ+5ZhuXVl/ZH5Ipg
+	fV/uSbub9nvWb96zcRHkHl7b0v9Q3FUPrhjRrJF1kPO+PS6MzuYHu4Fk9iskJnGXLGR2bc
+	ZF95Oip1xdAvRY5kIP+HcfpnEaf2h7LGy/KbATAjcXyiYNFqljyIn8I+xbq7jkhHad2VfU
+	CIYj2g+6IKgPG/Um3MGaEn8XJZBib2IbdewE6NqzyY18KrPnTXcGYtjhuz94IA==
 From: Philippe Gerum <rpm@xenomai.org>
 To: Hannes Diethelm <hannes.diethelm@gmail.com>
 Cc: xenomai@lists.linux.dev
-Subject: Re: [PATCH 1/1] tidbits: net-ping: add ping tidbit using raw socket
-In-Reply-To: <20260628153956.1435330-2-hannes.diethelm@gmail.com> (Hannes
-	Diethelm's message of "Sun, 28 Jun 2026 17:39:56 +0200")
-References: <20260628153956.1435330-1-hannes.diethelm@gmail.com>
-	<20260628153956.1435330-2-hannes.diethelm@gmail.com>
+Subject: Re: EVL: Kernel WARNING
+In-Reply-To: <87mrw5mqa8.fsf@xenomai.org> (Philippe Gerum's message of "Sun,
+	05 Jul 2026 17:04:15 +0200")
+References: <c88ccba0-23fd-4f4c-a182-0967e79adefb@gmail.com>
+	<b5821b4e-cfd9-4255-ac8f-3de55a788d1c@gmail.com>
+	<87mrw5mqa8.fsf@xenomai.org>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Sun, 05 Jul 2026 16:57:49 +0200
-Message-ID: <87y0fpmqky.fsf@xenomai.org>
+Date: Sun, 05 Jul 2026 17:10:42 +0200
+Message-ID: <87bjclmpzh.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -51,38 +49,47 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-GND-Sasl: rpm@xenomai.org
-X-GND-Cause: dmFkZTGga3Km2k4N1TrkgFXHisLexpx4Zdgds5crb0+qkGIxdXvJXVSdeckvYxXTIMKQs3IMCnyAR19z2nh0XvbD+3Jm0gE9+yYzmRMa/6gWi660vg7Z+gpcwjqNZAJ/djbcBowlWKzO+iCMaTUWg3XUoP/VjhS20QnjQEUkvKqzyzsp8YeYp4ccwlyTlWuSwkXPylEFWGry3LwajbeCwEinFnLVyIFQyvH1VY4hbQnFjFOtPrEOAiURBuFQmhfRzUMsETvEFTtHKS/AO6rGcd3SJ67i3yYebP0pQ/QQaRQc+NtmVWF+9KmMDwrIS3q1RXz1CnIPjE14G7KGohuh8ehNlPqQSDR/Azj+/PpX54mCkVO/KYtjvCmktQIcKtytTkD3A6vKaYWF+pRzi4YPZQ5uzcju5PuyBLZriiKc7yJM71Q4TgvDauuKXDxxeneHuQzH9pzra0IOOG24Y1gOFpfRLQVS1i9oq82I+2XleJl5uoQr5mlIBDCc1YVDll8tMR9oMnvbIjmngfyV6OTHxCScS0f0eZTpnq2qXhT5br3+Txvr5p+IvSwfVz7q0C7jaSS7TaYVmFTXABpa21m7SEARi5MgM0YMcTQ7g8wFcKh+qGcsl+yMnQUpRKUkAcDhkPLu5BVsz4KBVIOIpF0RGbHtLeY5hxEt4/RPuDCiXpXuOQcX8w
+X-GND-Cause: dmFkZTF2XSMSrSgCpRaYEvqL82fCMLW4EZY9v3lp6+UDpptikKGnbnnGjAe7d2b7jOl6E6w98lhUZG0Ti27DDdqlOlbXWHk6NRjgCpx7XChJDPuVAVc0YBK/hV/XWcyGIJYBhxst7HpcKHRIl18whIYZUlzLOF5hxEAR1Hf58VkX76WkikOhQ44ApslDTcWOdiiSYnim3jRS6S7dr3mlbqthNBGixZWFSRSlJRb886ZfMvsoHGsOV6YE0X+jel8MZAfpdamy6tVqI4LJOgD2lZpH6x/K6C7EwJ8hQozUC7pF+v2vHNK40xSSCrcC42gdHxqsL7AcoH9x3/xCb5vyNz3W400CTYqC9gHS6destyxQLp4T7uUYS0v5TjAXrOb10q7Gv2pmEnYhCjRrbeKav03fmrhETssOve4QkJez8qPlyPmWjCZmC/LqAGAqSjPoIAcmHqmPdZ+OQnZEh+NT/BF3zYZPDiFz1W/5Xm4UltsmjeEJpSUxCKODAHLJsBDmd0lzDKHGLUrioeDCy1APaA2fL9YhZfushRXQszsuJFVn2LUg3AFMJqupSQgNPp13Bwe8QMq7u07fqZLfuT/e9DC3s8IbbqhCji+sFmnjj5/7xBmilIsCDlDGJmaGp8IblV4HVgRgIRWGxsJf7Q2LW6T8oH/DmDU3QWbpVM6WEvDYXSsz9A
 X-GND-State: clean
 X-GND-Score: -100
 
-Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+Philippe Gerum <rpm@xenomai.org> writes:
 
-> This tidbit allows to ping any host and measure the response time.
+> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
 >
-> Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
-> ---
->  tidbits/meson.build    |   6 +
->  tidbits/oob-net-ping.c | 480 +++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 486 insertions(+)
->  create mode 100644 tidbits/oob-net-ping.c
+>> Am 04.07.26 um 20:05 schrieb Hannes Diethelm:
+>>> Hi
+>>> After updating to the lastest v6.12.y-cip-evl-rebase, I have a
+>>> kernel WARNING in the igb driver if I use my oob-net-icmp.c (Patch
+>>> submitted)
+>>> Exact commits good...bad:
+>>> linux-evl efed612...55591d4
+>>> libevl 3e5577d..f7b7df4
+>>> Regards
+>>> Hannes
+>>> ...
+>>
+>> Update:
+>>
+>> - It fails after ~240...253 packages. After that, no ping response is received any more
+>> - I use "sudo ./oob-net-ping -i enp7s0 -a 192.168.122.1 -w 1000" so it fails faster
+>> - Also without -w 1000, it fails, you just have to wait longer
+>> - With an I350 card, I get the kernel WARNING
+>> - In a VM with an e1000e, I don't get a warning but still after ~250 packages, no response is
+>>   received any more
+>> - After evl net -di / evl net -ei, it works for another ~250 packages until it fails again
+>> - With the good version, I tested ~1M packages, all fine, max 60 us response time on the real PC
 >
+> Ok, I can reproduce this easily with oob-net-ping as you described. This
+> also happens with an (arm-based) FEC driver, which confirms that this is
+> a generic issue - maybe in the packet protocol module? - not a driver
+> specific bug. Working on it.
 
-Thanks. We need this to build on 32bit systems:
-
---- a/tidbits/oob-net-ping.c
-+++ b/tidbits/oob-net-ping.c
-@@ -215,7 +215,7 @@ static size_t build_icmp_request(uint8_t *o_frame, size_t icmplen,
- 	icmphdr->checksum = cksum;
- 
- 	if (verbosity > 1) {
--		evl_printf("ip_len=%zd, icmp_len=%zd, ip_len=%d, datalen=%ld\n",
-+		evl_printf("ip_len=%zd, icmp_len=%zd, ip_len=%d, datalen=%zu\n",
- 			   sizeof(*iphdr), sizeof(struct icmphdr),
- 			   ntohs(iphdr->ip_len), datalen);
- 		print_ip_header(iphdr);
-
-What about turning this code into the (currently missing) 'evl-ping'
-utility? I believe it is of general interest to any user.
+I forgot to mention that this issue boils down to a shortage of buffers
+to convey ingress packets, which explains the behavior once
+triggered. Some memory leakage in the packet layer seems to be at work,
+because it does not trigger when spraying the receiving target with
+ICMP/UDP requests.
 
 -- 
 Philippe.
