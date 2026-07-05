@@ -1,47 +1,46 @@
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9B6E2F7F11
-	for <xenomai@lists.linux.dev>; Sun,  5 Jul 2026 16:46:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BE1D2E06EF
+	for <xenomai@lists.linux.dev>; Sun,  5 Jul 2026 16:49:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.195
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783270006; cv=none; b=IcjLF58Zq/45/1LfDv/177g27etYLDjV5mO0B7ZBu/ACahXs5yuqGFXoN93PPeLRRYO+3PDvV+9x2FJH2hWLD5dTpOvWISNY0qbNRKqYk3CAHsngUJdHNzMxI5RfIVvBlWTQms+DUPP6+NcsVwJ1hwXrqoU5P1ZFb5OAVLmAuo0=
+	t=1783270188; cv=none; b=A1U3MO/wqb1l/iLLZqi1bRld07jDNbo/rrGTI254Nh2mMB+CKy7LWK1vmcWBIdfRin9SXQ2wxmeQulzrgvQq7OGk3w3RHPu8YZ0cn7Zyhx71lgdI/OQCrNj4yc7qbMf5r4C0qGCsSZVI0qL5XgU6Um6P9AKC+1Q3LdSPWuojbbE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783270006; c=relaxed/simple;
-	bh=81+UbEnTlYLaUPzcEVwO7gY+vXw4f9HC0vnmk1cWO4E=;
+	s=arc-20240116; t=1783270188; c=relaxed/simple;
+	bh=lGGspXM2SFC6SFmQjWrrPLFIeF0Z5laSsiDn5jbhpQQ=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=NvPBUa2tsYRVugUOWOeZBTvOPkoaETDBClxpsEls7J5jhhBtrKAw/ESQlzfuMhzOvhKM/aCnggUGoJ8zYe6j8OZIpOmosdAQKccwvOj8F2iuPqbqL7SxbVXO8Xmeg+el0qcIj/3D7V/RD58ACSzebUQgOUrJcTCOkoPUEPLZiKY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=D18cWrPU; arc=none smtp.client-ip=217.70.183.198
+	 MIME-Version:Content-Type; b=i3hbFMKul+nHEf3suLF7oA8h9ZaJSpaUwgxA6K70HxoIbQWEScjBWgqcH7iCXcYk/GG8xEuBiu6KEPdR46yk5ZlwQw4Nrtrj/D2C6y4+xOLBvy/JDXVxQUW4UDovl//YAsX9TYaIdO0sNuPjyZKSqAH6j7dLL2o7Y30toM41oyE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=CsorX9XZ; arc=none smtp.client-ip=217.70.183.195
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="D18cWrPU"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id A416C3EDA1;
-	Sun,  5 Jul 2026 16:46:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="CsorX9XZ"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id EF8E91F416;
+	Sun,  5 Jul 2026 16:49:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1783270001;
+	t=1783270184;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=CsvOBEYiu3rFsjwU5Lpx5jod1Pcwbjp87egBFYs0WcA=;
-	b=D18cWrPUMmnfI94hDLmRIku3WcrIeQ3ajEzeNUqUAunujAf7IAGgChiTUKo+YgiEn0k779
-	NgT9Pnw/VH30stbIY3B+SVmA0NCvQWd9LiVeUDV0jwmY2W8EPVleGE7wOgly4QS4MDHUe+
-	PfL2Hmh4EZFjWQHwbtz/yoYQaY3i7xjtLdjUqCYnNseikeLiPZIEc1C2N+DSkIdYxtcJMi
-	bBMo+OKHcx+VyYyQKQ1YOpJNViaewMxhoT61+yeJe6lNAFcDnCy3bJmMqPM0DYT2R8xdx7
-	GAvwOZh6b/LOFES+UHMW+NfCNSVKfwivX3K8pRJDJywpcDhXB9xpEjdG8g9JgQ==
+	bh=2+jc5ISK0IfFHYPASA06Oe9hzNKRBwQWPnMhIz7DDRs=;
+	b=CsorX9XZQwejCfoIEc69BSo1vz3lj2aXLizylWFQw6x+npXpN5Tt34kfPQtdAkp3rHymLz
+	Ym78hVpm+eHNrhscn/OIw0EjjvMIxQOaJWI4oSoYfiCwrwYH8uUlgJi5UH8sVljS90Hk6c
+	QrncPcIawe+fAemqxyeMq/wkfM/wOTX1AbqSSFZIw50qUBU1+EasUgOCF5EgAyTrdAneHY
+	lcGMLYZoo/o3oQGF3yFDOChN0vzib0VlcPesO7BECfhJTaxP2NMqxDWWEjkMu3MrYUFlA0
+	QqHvKFsxnVlda9nTltYG+ef7lmAJphrSIlUOF+iaqpamRu2BTYuMqCWF0mnngw==
 From: Philippe Gerum <rpm@xenomai.org>
 To: Hannes Diethelm <hannes.diethelm@gmail.com>
 Cc: xenomai@lists.linux.dev
-Subject: Re: EVL: Kernel WARNING
-In-Reply-To: <593465e6-53c2-4f54-8d4f-745b028ff289@gmail.com> (Hannes
-	Diethelm's message of "Sun, 5 Jul 2026 17:17:37 +0200")
-References: <c88ccba0-23fd-4f4c-a182-0967e79adefb@gmail.com>
-	<b5821b4e-cfd9-4255-ac8f-3de55a788d1c@gmail.com>
-	<87h5mdmq6w.fsf@xenomai.org>
-	<593465e6-53c2-4f54-8d4f-745b028ff289@gmail.com>
+Subject: Re: [PATCH 0/1] tidbits: net-ping: add ping tidbit using raw socket
+In-Reply-To: <c67924a5-603f-4c8e-b958-f055dd9b1bfc@gmail.com> (Hannes
+	Diethelm's message of "Sun, 5 Jul 2026 17:21:01 +0200")
+References: <20260628153956.1435330-1-hannes.diethelm@gmail.com>
+	<87se5xmqf6.fsf@xenomai.org>
+	<c67924a5-603f-4c8e-b958-f055dd9b1bfc@gmail.com>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Sun, 05 Jul 2026 18:46:36 +0200
-Message-ID: <871pdhs7tf.fsf@xenomai.org>
+Date: Sun, 05 Jul 2026 18:49:43 +0200
+Message-ID: <87v7atqt3s.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -50,39 +49,35 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-GND-Sasl: rpm@xenomai.org
-X-GND-Cause: dmFkZTGKFkUWszyPij413g+2LoExTrMERvdPSfu4ExBhWLhPblREczAi+4SGPNDWTXTaQ9UZXWg5rGbwcTwp3DYYlKRgbczA/2dpZVTgDWtSjgALes8DiEPs7971YD7MfB5NVZbUModdASyraf+TG51XNOzL2o27qu2h3ldZ+GUJSckRZNKRxv1M6rzF1KKAqlTOsNDmbs1uB2DVKQ9OhNgupvba1z1bkd6hd9KpUeXUZfKaWz32RsgdKilqSRQN62Erzk07fxNb7yW0j20DK7JNerEMrRk0tDZyDqdcbsfzourlP203H4/QqfVIfNQrbJAdhGKkik8Wxk4CrfgcHAzHPr9UP/+/hcjGMoBGvb9jtnestX14DbCEYXbOa6oM0BQad/LgIUc6zjO3RBZ8MhM5DwUHZaLvIsP6tM/42Mj9QGiME2ZqIkVZYjtF+G56y2DMRPSR1NesT9qbpocmgGj/YWsoC3y3qw4COYhMEo9WIJOLB/oHOqoyFG2yvB4TVfngr96MDTwAMIBWArFMlH/qLshOcCspieTWcZFLr/zbiE56TieF+M0I20qr81Z2Y4L7W47IRk64AU1N96ROrzrL7o0v9vZeS2TTm4wooHdO8OKANaK8I6fGSYjE4A3j4wCGydkQWRAkE+2cvzldoh5c884AIuhqozEJ5epW6hEeGQ+3+A
 X-GND-State: clean
 X-GND-Score: -100
+X-GND-Cause: dmFkZTFVj20DHq2Ff3kZp36DTTgrugTeB11lQYiiDCRBePkefJmRE1auxkIXcLLDz1Qax8XP/W+hIJ8gpCkLyUcg6mWbhyFzX6IKXRYbvRqAeRj9tyx01vte/rqWg0Faybyb73TaUkb3/mcRPEU1WBVR3/gaeawilawftTzanIap0dfvC/fSlG/K4DRZgjItxK8mIrqkfl8WkVRdVdLr+L6BEJ8fyCg2OWZ1c00304S07eaMDC9pWRYg0CHpfHf/KnrgI/Cdl1NtNVjVHXsY99agyZMjGgyXTnH4yhT6jgu9M1xKlROZ1B7s/HCSU2N/bK4TbCrQQeBXMqw8f+tP+voUF2MFOlTzjNRKB+6rFpRis+1NGhZot2DAN2AAF+jGZQOOSyapUQWRu0MprZKtZ7YpXecPSdHPS7OTKSvgcrg/gJN3CSfxvR8Prf+WOZUpOCDIPUNoZXdyz4JjXfVLnWnvwbBGjNQURCKYoUJIbKSrz6rDlHxPQlx8sP0tlDAilpOm73U1JoJ+cX6/Vb3C47SFjfPdOVx+1kzAQoRDbtSRUvJD2OwImlJuID38OTrw+cacMKvqd8eJr6DBdGIN+JkF/3gTH2BybxJTwsfWYgfqnhznnTUC9PY+E8mksSsAyFltLBn1c30JzuUZQEH08eoS/U023oC9QF/lnY1WZanvi4/+OQ
 
 Hannes Diethelm <hannes.diethelm@gmail.com> writes:
 
-> Am 05.07.26 um 17:06 schrieb Philippe Gerum:
+> Am 05.07.26 um 17:01 schrieb Philippe Gerum:
 >> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
 >> 
->>> - With the good version, I tested ~1M packages, all fine, max 60 us
->>> response time on the real PC
->> You mean 60us for the overall round-trip time between two
->> evl-enabled
->> targets in full/end-to-end oob mode?
+>>> This patch is the result from experimenting with evl networking. I use it to do basic
+>>> connection tests from the out of band network and check the timing.
+>>>
+>>> It is a bit complex due to evl doesn't support IPPROTO_ICMP sockets.
+>>>
+>>> Using the in-band network stack, you can use: sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);
+>>> and then only send the icmp part of the message. However, such a support is not really needed,
+>>> it works fine without.
+>>>
+>> This said, we have an ICMP protocol module in the evl stack since
+>> recently, which only responds to ICMP_ECHO requests ATM, directly from
+>> kernel space. Extending IPPROTO_ICMP by implementing the oob_sendmsg()
+>> handler for it there has become an option.
 >> 
 >
-> That's between an evl-enabled host and an FPGA board as a target[1]
-> directly connected with 100M Ethernet and an Intel I350 after some
-> heavy tuning. Most tuning was done for PREEMT_RT. I have to test what
-> is really needed for Xenomai4 and what can be dropped.
->
-> I don't have two PC's to test (yet).
->
-> https://store.mesanet.com/index.php?route=product/product&product_id=374
+> That would make the ping tool way simpler. I can also wait until this is available and
+> create a new patch. It's mostly done just to figure out that IPPROTO_ICMP is not available.
 
-Ok, thanks for the information. Meanwhile, I found the culprit. Now I
-have to figure out why I did that. Oh, well..
-
-commit a793acf3cab9a608d70a39d740f04c6a6a1ec77c
-Author: Philippe Gerum <rpm@xenomai.org>
-Date:   Tue May 26 10:16:44 2026 +0200
-
-    evl/net: packet: forward status of ETH_P_ALL delivery
+Ok, I believe having IPPROTO_ICMP would be the best approach. I'll
+let you know when this is available.
 
 -- 
 Philippe.
