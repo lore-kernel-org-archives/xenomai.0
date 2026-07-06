@@ -1,46 +1,46 @@
 Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E572D3F39C9
-	for <xenomai@lists.linux.dev>; Mon,  6 Jul 2026 08:24:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF3D2441036
+	for <xenomai@lists.linux.dev>; Mon,  6 Jul 2026 09:00:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.196
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783326310; cv=none; b=KVJhfBZK5OT42X0kds/4gbWlVqhO53pT1ckmyIhwexbdRribgKSrY4855ZukX+MUwZW0NBt3qNpChCMKlAOkHM4ZKGG6HbuvnqUOj4wOE40Rcd++FxJ7Lv6lhkevnnBkVXtkltEFRuJzN3k/wAx/j2aY3Iwt0BG17nYELC5Owow=
+	t=1783328456; cv=none; b=cL0L0xsnf5VSRbTkcuW2tabj5IvhomYb2yyAKyAZyoM0QEQZtcVqG4erTwtcdObf7dBJvGVwT45bX+6e30VxnkqAlzz6iTiAWc2ZN422wPwvnSbKVXnftieYpiRM+YsmZ4s+B4RLvg4HmvxA3K8t9hS2AWwKECSxMCh+c7LZYmQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783326310; c=relaxed/simple;
-	bh=lyAkXCNkLVnZNyWi0qmSzPmpUlMb5l7OWEfj8iEMIRo=;
+	s=arc-20240116; t=1783328456; c=relaxed/simple;
+	bh=cvDmc/Hu8qxemDMlWXyN3a99Fn5Ujcr/lJFe1WENPgs=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=rbNI7EDT2UU6jmyRrs+FrhuFPNeQI4ff36Q+X3C0tCOFiu1EKIj72v4IM16Uc2R4s1DAONy25o6NO4mFiAGDGJm9RoQPnMgko9y0ivRxYcvr0jPerytsmWi7lnWpk2IpmbAYJoCEdAmtcCktz+m7o5vKwtYGvC761QSwgiFrP08=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=o3sJklIm; arc=none smtp.client-ip=217.70.183.196
+	 MIME-Version:Content-Type; b=Rm9FlvI13DKlnLBTNrSpVUQoK5+LHY+KLofxG6UJ2biZrLC4mhDJA3cRJwSPly9Fyaz9wF7n0e415gfBB4fvsiM51steE48RsW1dgFh7ldZXiDbKUzKJgDupD1cxbrHx843Bpmv9tkdvbsQYE6kTjhhftG0Y2yQR9KIbQQRT/C4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=OZdFJt3J; arc=none smtp.client-ip=217.70.183.196
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="o3sJklIm"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id D1E813E9F5;
-	Mon,  6 Jul 2026 08:24:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="OZdFJt3J"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 0C4B93EC0A;
+	Mon,  6 Jul 2026 09:00:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1783326287;
+	t=1783328446;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=pBUmesZipgfdgJUR6FrYTCqgy7GTeG1a1LjrkbFNE0g=;
-	b=o3sJklImmZyoV6Hv9htJ0UtPdJ0zppRUbP/MQ0oiEoDQsiZkK3cPf53Xm1DA7ztEJipN/g
-	eJmLyu3soUJW+KAxGEdX8lANZ15M3OWdNThevjhR6RlQjNyC5BxhchNekhSy7LHrVyYeLp
-	iLqNUO9+laOW6M9FYp3Q7gJ4LLKnlsj/RAIlBgyGDtOQGFhxLYi0sZMFdzKq+f1R/x49C8
-	6+9mzdsOLD32AYGka2sBRJ7Cdqa/vJK7k/L/IMjCKkEE0YxSoesr254mKy8DIptcsuNYo5
-	MVdnLLq/RLDSy7uE3wAUKGb2wcDRNEWaoB9er6QC60uJgTsvympxBfL+NvagxA==
+	bh=s0yOobwbiIm2W/FSZDe2F8bh8qB2Mx6mN6/gYkfJQMs=;
+	b=OZdFJt3JaEwSsSFQurBIAlDbSN4aGD1jQCdCWWMjxzXGNlFy8VnFHcgC9/zHUKUacMnBxL
+	EkzKwg7zeMuBaUN540K4y0ayOtK/SS5rtB4toqB2mQmGFASsoR7e6mjHlBdBqtpkXvJFOy
+	0haUXVK5l9pjxE7/vHiJDpg7YKUJHxikqZ3i/irTXgHKHtUOCkBKZNtdc5h+RZ/uksmKYt
+	96PkqyR2AEKjot9fzVztRPhUtx4CRpvy+vk5Bcjr8+4OIivTTARY6Lb4kUjNs0N6UXHU2t
+	reKKRBnFztAC/UjEKeYKVqLGKRdeGp+En4iPA6fwjdWspgFEW+0pNcurxiwIEw==
 From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: Tobias Schaffner <tobias.schaffner@siemens.com>,
-  jan.kiszka@siemens.com,  xenomai@lists.linux.dev
-Subject: Re: [PATCH dovetail v9 00/11] riscv: Add dovetail support
-In-Reply-To: <08cea22b06a502fb97101869738f0873eec8de12.camel@siemens.com>
-	(Florian Bezdeka's message of "Mon, 06 Jul 2026 09:38:26 +0200")
-References: <20260703152738.129122-1-tobias.schaffner@siemens.com>
-	<08cea22b06a502fb97101869738f0873eec8de12.camel@siemens.com>
+To: Tobias Schaffner <tobias.schaffner@siemens.com>
+Cc: xenomai@lists.linux.dev,  jan.kiszka@siemens.com
+Subject: Re: [PATCH libevl 2/4] evl-test: run latmus in the end of the test
+ suite
+In-Reply-To: <20260703122924.30212-3-tobias.schaffner@siemens.com> (Tobias
+	Schaffner's message of "Fri, 3 Jul 2026 14:29:22 +0200")
+References: <20260703122924.30212-1-tobias.schaffner@siemens.com>
+	<20260703122924.30212-3-tobias.schaffner@siemens.com>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Mon, 06 Jul 2026 10:24:46 +0200
-Message-ID: <87echgr0dt.fsf@xenomai.org>
+Date: Mon, 06 Jul 2026 11:00:45 +0200
+Message-ID: <878q7oqypu.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -51,77 +51,46 @@ Content-Type: text/plain
 X-GND-Sasl: rpm@xenomai.org
 X-GND-State: clean
 X-GND-Score: -100
-X-GND-Cause: dmFkZTFgfIjjI4feSdarCUhJwCLdbeN4ZjR0/unk+usQMhj4tWrY+o+6rRQSp8+oOmSosF8F4rj/J0LvdJNuAA+s7US2nTe66OuhdSRs2e6S6/L2Ta4C3AyOm/ZAvV2gn743jhWI6ClX+DS+6dIDZ8pAOCxVxlg0jumqac/4HF+PDq223NDLQAys6LszrOlKzYex8/J1TqS1fmV4wiRT6+1IcXJa9ZBgZBPJrcn2YKW9XEzXSQb11YNQSnxfsD1jvmGJUtNlEOIYfOR8PEfUi2IDXoT5gFoZ5vKuEbt8+pM8eLKxFfAtw9J+bHOp00CE39bXO3X3X6CmVNyEd/ZbuuFOYdKWKz3LDQ/k/YAwL9YRJ+FaiQ0VnXO8HclOJRlxG3JBqwydGVikJkrM1XJuoXP9oLrIcNFAuzzfthXLyjj60rEsN9J8CcCBI7Bi0evII5kOdky8NJXt3JBwwa5ZIvzeDbrFdMxLuzpxxEb0PqpEoQlldslMwjimk2wbr932p7tgq1g7l5/Ax48jNVqT91AO09kMca/ALvc3FsnXfZ6oKWb2sJMwuYB6GAbXPDkTEaQPMq0no/agXjual000yRXtZAJVjieLJTDZYk/4cBTjZoF1QCIneKS/7bCKwwZPkOJ4ss28vLA3NTlErIL9NBYNP7lmDRsPW2hOYf6Q4RHuwgXjxg
+X-GND-Cause: dmFkZTGA67d+OEZ84vUpqLGZa66ZED86TinVQsANIt5+IJoG3PJg2iK2HQprqX7N/AFIVDKV99WsuKc5HnysjUpjValdA2TuVdx98PQn78tJtkcqrPwxjamCM2yNrXl6mUMhpjHFJTBC5uWWoilaHgo+bhpkwVK2ZciLyc6BLJZz0fPusZv1kK+UIDkkFQmDIvDp9yqox+etIPd0gTBmFoKFEmjOoVjEIg+2x/drN8nZ5SAHMuvIG7zT3ZxsPCdCyyD16JNNZh2JnRgm9vQyDT1G5652uJIKW1pSjlfgWEikm8kN3Ev2CeG7AU+9UQM0g5gaDVYwMm+iA8IBGfeHrf+1E6VZLPrOQtdeTYAydqYOTed0q0z2xsEN6yAl40svJ4qjxSiQiEp2uYhmUK9cVult6iTeKmFghqVugSTjibxEjM6nzJHe0RjI0mI/7rCpV4shHjb3dvEIs76aqoz5GRaa82KB/JIllcLzJSdETDlQ/fVSMKzSeq6cbxQynXrFoX6M4AlfOKnB9iP+JWgdxyJQraIho7AqMEGm9YRp/TedtnbKgYxSU8m5UZd0nT40PzIedAExfrUBry9KslJerzfKOBC1LJ/tG0aLDHBV8GOtKngNbfnvi3yx4RFVsv2eByqqgPESjEq08iEZsB/rE3KPO+cZo9b5VJKoSbNbwW1CB4AaHA
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+Tobias Schaffner <tobias.schaffner@siemens.com> writes:
 
-> On Fri, 2026-07-03 at 17:27 +0200, Tobias Schaffner wrote:
->> Hi all,
->> 
->> this series introduces initial support for Dovetail on RISC-V.
->> 
->> Feedback, suggestions, and especially reviews are very welcome.
->> 
->> Changes since v1:
->>  * Disable independent irq/softirq stack usage when pipelining
->>  * Drop KVM changes as long as they can not be properly tested
->> 
->> Changes since v2:
->>  * Rework trap handling
->> 
->> Changes since v3:
->>  * Included the IRQ pipelining patches to have all riscv specific
->>    patches included
->>  * Rebased to dovetail/v6.18.y-dovetail-rebase
->>  * Merged most of the fixes
->>  * Fixed IRQ Stack handling and enabled IRQ_STACKS again
->> 
->> Changes since v4:
->>  * Rebased to dovetail/v7.0.y-dovetail-rebase
->>  * Applied suggestions from the last patch set
->>  * Added starfive-visionfive2 board support
->>  * Introduced raw console device based on sbi debug console
->>  * Reworked pipelined irq handling
->> 
->> Changes since v5:
->>  * Rebased to tip of dovetail/v7.0.y-dovetail-rebase
->>  * Applied suggestions from the last patch set
->>  * Use mark_trap_entry/exit_raw for kernel mode exception paths which
->>    use irq_nmi_entry/exit for now, as the nmi irq handlers expect hard
->>    irqs to stay off. This may be be subject to further optimization at
->>    a later stage, but I do not see any negative impact latency wise in
->>    my tests.
->> 
->> Changes since v6:
->> Address the review comments from the last patch set:
->>  * Keep the virtual irq state in sync with the hard irq state in trap
->>    handlers
->>  * Fix irq_nesting imbalance when running with disabled IRQ_STACKS
->> 
->> Changes since v7:
->>  * Simplify Trap handling
->>  * Rebase to wip/flo/v7.1-dovetail-rebase
->> 
->> Changes since v8:
->>  * Further simplify trap handling adressing Florians suggestions and
->>    recent fixes to irq-entry-common
+> Run latmus at the end of the session, before tearing down, to allow measuring
+> the worst-case latency under load if a stress-command is given.
 >
-> Minor:
+> Add --latmus-args to pass extra arguments to latmus (e.g. -A threshold or -T to
+> override the runtime).
 >
->  - Changelog in reverse order, newest first
->  - Enumeration of changed patches, so we don't have to review all
->    of them again.
+> latmus runs quietly for 10 seconds by default; a runtime passed through
+> --latmus-args takes precedence. Its own output is dropped by default and
+> can be redirected with --latmus-out.
 >
+> Examples:
+>   # default: tests + a 10s latmus run, latmus output discarded
+>   evl test
 >
+>   # fail if worst-case latency exceeds 150us
+>   evl test --latmus-args "-A 150"
 >
-> Philippe, how do we proceed here? Do you want me to update the +riscv
-> branches that we have for 7.1 and than take over from there? Or should
-> we move it to the 7.2 cycle?
+>   # measure latency under load for 60s, save the report
+>   evl test --stress-cmd "stress-ng --cpu 4" \
+>            --latmus-args "-T 60 -A 200" --latmus-out /tmp/latmus.log
 >
-> Same question for 7.1: How do we proceed as 7.2-rc1 is out... 
 
-Please pick the risc-v port for 7.1, then I'll handle the forward port
-to 7.2 from there.
+The purpose is fine by me, but the integration logic looks too
+complicated. Would it be possible to simply have a 'latency' test (as a
+shell script) available from $libexec/evl/tests, that would launch the
+latmus executable under the hood with the provided arguments?
+
+Spawning it would amount to using the common syntax:
+
+$ evl test latency [-- latmus-args ...]
+
+With this, we could achieve the same goal with no addition required to
+evl-test whatsoever:
+
+$ evl test -k
+$ evl test latency -- -A 150 -T 10s > /tmp/latmus.log
 
 -- 
 Philippe.
