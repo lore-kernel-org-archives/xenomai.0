@@ -1,194 +1,93 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECB9B366051
-	for <xenomai@lists.linux.dev>; Sun,  5 Jul 2026 23:57:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6AC933BED11
+	for <xenomai@lists.linux.dev>; Mon,  6 Jul 2026 05:56:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783295880; cv=none; b=EFA0JS12L33MDKrF/TeWBWHSCtUhrNP4PDI0UPYU0o0p4v+LyepMMIS5xbKH+OUotXZXz1drIWYOShwE/J1+oTKIzMcj8/vBUMcw+VX4RxleO2tF7Xv3OoQXjDqCr6GhjdEeoRgfwc+cnBdsdDqwfc0o02LlyVKbVj3y9J6XH/4=
+	t=1783317375; cv=none; b=s9qjotIk1SPSb7KRwCnDL9gSLO6E2cEvTUOxl4jcnZ0HUrc0hBThHWLxt4g0NeekjG1V0L9PMTpalbL0QZ2MhymK8sqSqtGixgW8whmvHAtVWrTMix8t0c73jCrPEnZmmqaSG05WRiTrlJjLzv6aez4sNN0a4IBmCTdOrXYLX0k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783295880; c=relaxed/simple;
-	bh=7FDmF2KV8e8G5GD8TTwCrI8N/C5OKb5uX1M/x6R87ik=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=cLlqJz5/fll3h4mN6kLvVtzYFXKvZZauaHC2PXwF645d8O964/baRfxkAhiOnrjE39TcemcQYTNLRZN17Fta7NhxD6n+WZr07Jaj+viF1GOSrEhqcjETkPivDmXo2WclJdmav9VyqcHnC4TrffRzsjbak+sY3W1o27Sm8N/+I+I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Hpf+wHjO; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783317375; c=relaxed/simple;
+	bh=yVIfyjsg5C352sh8Tebo9OtRCTd0khpxdWxPLoPtlE0=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=YRmDjwqC+XIxFS1wCFtReBYM6fvybH3hRDuBWu3NsgHvPksN6m5eJm5TC18nSoZTYWWWcBxixZwlJ434ayJ3mHZw5mbHCTWE5PNdVxvjDsslUz344eR61yYiBla/0ryj+PboOCycK8dkKdX32KrK5upZkee3pM/5R8OG5GUrEyA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=p0eeD6Vo; arc=none smtp.client-ip=217.70.183.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Hpf+wHjO"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-493bb510ce4so17586435e9.1
-        for <xenomai@lists.linux.dev>; Sun, 05 Jul 2026 16:57:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783295877; x=1783900677; darn=lists.linux.dev;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=stCWYzig2eG/TCE3lFoRTx3Udn9CJFKu1CeLCkSjLlM=;
-        b=Hpf+wHjO0VqNV69DIRFqopsuG5x7CSMkTKYSxBN9UIfj/1V9caYuDpZlWIML0fA56L
-         YPRUpvZ9WmYuPJbSkqxjRrCR+tKSnRj827P0myWtBr75rYUz2XuH+01pGbu8i/Te0lqa
-         AxRulQOdnsiBEZ939nVChANavtg9U9OYQQCScLFd/CMoCRGwpz/v068O3OX3TinAOyNa
-         VmUFFW4KihKF2j8uLbmOGNPh+DFZHgNr6Kxgk7ZPXeJAhP/Ehj5CAElXb9gGQ7V/zKOV
-         IJT/688Ju/AakgX+LVh03zaMpEx+NXgV+ZZR+/NPxHbd0DIu5ZO6zgbfCK5aCxbQDM8Z
-         iuxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783295877; x=1783900677;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=stCWYzig2eG/TCE3lFoRTx3Udn9CJFKu1CeLCkSjLlM=;
-        b=bLh+PJ7+MAldmWtX4qb00GPKuySYDS5pNG+Q14+30b38zMIidkryZCPDsStkg/cWLD
-         bCYN2JFjRMcyUSXiO3vFBDHOojLoBvYqBAfQR/ShyKcvKu2tAKMaKuFhRdlgrcF8NInI
-         g1E1LTTKSCi9wnk8CuZq6c01SUFyUkMec7zeblp+kfLvCW66/2TqWa57MZartG1GpiOj
-         Mh/Oj9pXG9OYLM6TlyH+9DO/xxM75eAZkERiSVTBUOLztvEnta8GH4S4ex0ECa8b10hN
-         m0fkvmlLQQsEj27f6tLt4mo40W4sb20klvSO1cD31UlLjId3Nj9CJHJuoIDL5crqW57c
-         pO8g==
-X-Gm-Message-State: AOJu0YwSWY6tiklWVwiApOzTEdk8iXgCgNp2ufBvcL4D9rhm6h2j3rNR
-	gjoRJ9BQpfPFBc7r3FDWlOTevav3u6qZXJETAsdFoUXqXQGxnMGYLPg/
-X-Gm-Gg: AfdE7cl298dX+5blACN9RwkiIqzI9sqQ5iVVgWAwld3ZKEh55TpawLPktDxFU6soQ0t
-	29BP00NuLdLQ3mys298p5W1r0IalGY7p9FfpQD1ihIbuP4uXkZx0u7VyZdawvGZB1QC9vLRKrql
-	1zBYCpFCrNFOdsk8sxgaysV6oaBHJrEivz6s1Q5qOtB/D1KDnQ+G5FoaMCnIOoMhNGarhKh0wzQ
-	B+m3n0aZNemXrSY6VCHeOdrBkh00061s1GOhiwQ+XT7RH4DBbbxU/2SRvp2U6yyPfvl16i+sZR1
-	cD0bc38gA4wU/sCcs7nL+m/oel6X9iYRE93JElNNRTDBmu0P82SjhCof72ksJGzS/c0ID5JHw/J
-	Ym/lKU+/Y8UPib8qAvnZtDcefyuDiFNWlRMx2T8yP8yLTUldtWpY4cv82vpOsyZRXXN/IIrlz7L
-	W/xyU279NWDBHZ9z8JdfkV
-X-Received: by 2002:a05:600c:154d:b0:493:bcba:46a4 with SMTP id 5b1f17b1804b1-493d11f32f9mr100540645e9.20.1783295877113;
-        Sun, 05 Jul 2026 16:57:57 -0700 (PDT)
-Received: from [192.168.1.3] ([213.55.168.64])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493c63172fesm554057435e9.0.2026.07.05.16.57.54
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 05 Jul 2026 16:57:55 -0700 (PDT)
-Message-ID: <0945f3ae-d4be-44aa-b882-ef87c329e709@gmail.com>
-Date: Mon, 6 Jul 2026 01:57:53 +0200
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="p0eeD6Vo"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 2F09E3ED08;
+	Mon,  6 Jul 2026 05:56:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1783317371;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=il0+aJgIOw01ZlHDPbZSCYyTqZQotz7mPH09bM7nqJY=;
+	b=p0eeD6Vo7jNOc6WOPxjvI5xddy0ItN+RggDqTDfGmlKeyW9REgaxhzitEjqzwF7o3uw0x7
+	QQ+pIpSEjWXWQEBzynpqKoUnIEFf8QKU0+i+rdE9dyC3HyOwbaG88BrJs5nueTkpSQyU4r
+	caTlxYL4w2F4t8nkmP+PCHBxy9Ngeq5NKJ2ZO7CXRkXPZq1QrBbCOhTzp1Kri3U+uG2nkF
+	TqluFMkwPoWY8uEjPzkjs0a/eXI+jzJoUqaZduCcD/Q0JgoU/ObOazcRQ+kJ/aJvY1MDqX
+	wT8VU6raPoGO5ofXLbHbFxdAIm3z6gYhdxZJt/+PHjuktSMrf27piA7CD526Ww==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Hannes Diethelm <hannes.diethelm@gmail.com>
+Cc: xenomai@lists.linux.dev
+Subject: Re: EVL: Kernel WARNING
+In-Reply-To: <871pdhs7tf.fsf@xenomai.org> (Philippe Gerum's message of "Sun,
+	05 Jul 2026 18:46:36 +0200")
+References: <c88ccba0-23fd-4f4c-a182-0967e79adefb@gmail.com>
+	<b5821b4e-cfd9-4255-ac8f-3de55a788d1c@gmail.com>
+	<87h5mdmq6w.fsf@xenomai.org>
+	<593465e6-53c2-4f54-8d4f-745b028ff289@gmail.com>
+	<871pdhs7tf.fsf@xenomai.org>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Mon, 06 Jul 2026 07:56:06 +0200
+Message-ID: <87jyr8r79l.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/1] tidbits: net-ping: add ping tidbit using raw socket
-From: Hannes Diethelm <hannes.diethelm@gmail.com>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@lists.linux.dev
-References: <20260628153956.1435330-1-hannes.diethelm@gmail.com>
- <87se5xmqf6.fsf@xenomai.org> <c67924a5-603f-4c8e-b958-f055dd9b1bfc@gmail.com>
- <87v7atqt3s.fsf@xenomai.org> <8cd341fe-9aee-4600-91a8-3947e948db4c@gmail.com>
-Content-Language: de-CH
-In-Reply-To: <8cd341fe-9aee-4600-91a8-3947e948db4c@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-GND-Sasl: rpm@xenomai.org
+X-GND-Score: -100
+X-GND-Cause: dmFkZTGty/JpZ0ecktrBCe7EQ847ymGCidrRMJecDSvASq180Ui+izAvhzF2TZV1GZWHnZ5Uotjda++bJkPUwO4TI/N3IO+/RgZNjHt3WDETdcW8AGVSY8qdIzI0LgJhvkP/TIfpmd8Q2BTuVm70gGBjcXdejOuuuJXg/kCFRrSo/VuFRoFFUp1oQwookNt3BUE4KjpobiYFXEmsLpkckF/U/fnE/1NkGSdpR0u7O1gt4riex0/6WtDo3hu6eHUMntfgGYthWXVw1yamdZ2YAfnlOF975uVfkHo8v4KnXJT5eRNgjdrJ3QwCZFRLd7Ocy/z7lWYdRTDDZk0U1Lz5ldOqe6RNHFCx31LEvgjcuPzRlbAqFIaXHpUnwecfJdK0FibNp922ilJ2pjyrn5T9/TQ4yvQ21i0vuINpWgO+fXnH6Hqdkq77QjIsA19HI9exQgPOzRcN+j2mm5MAfcwYmCVeRiOb7C9TDOpT5nLY696zEK3TXgyraqyPZDJo7EPygB/Tso+PHFO6LR8FmU4cTvcVXk2mnLe4HNJr7sNMdAA/E5g1M80QYnKqoTmXJB5rspIIM5JSn05zlSM8eFMOdbzz3wnGx78vnTupI/EK/arG4gKBzg6+FKPG1pTktdQCITEnvosta3AOjs0S2T4BxwsKsViXkBj/6itiQDP2zpQbXN4n+A
+X-GND-State: clean
 
-Am 06.07.26 um 00:17 schrieb Hannes Diethelm:
-> Am 05.07.26 um 18:49 schrieb Philippe Gerum:
->> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
->>
->>> Am 05.07.26 um 17:01 schrieb Philippe Gerum:
->>>> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
->>>>
->>>>> This patch is the result from experimenting with evl networking. I 
->>>>> use it to do basic
->>>>> connection tests from the out of band network and check the timing.
->>>>>
->>>>> It is a bit complex due to evl doesn't support IPPROTO_ICMP sockets.
->>>>>
->>>>> Using the in-band network stack, you can use: sockfd = 
->>>>> socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);
->>>>> and then only send the icmp part of the message. However, such a 
->>>>> support is not really needed,
->>>>> it works fine without.
->>>>>
->>>> This said, we have an ICMP protocol module in the evl stack since
->>>> recently, which only responds to ICMP_ECHO requests ATM, directly from
->>>> kernel space. Extending IPPROTO_ICMP by implementing the oob_sendmsg()
->>>> handler for it there has become an option.
->>>>
->>>
->>> That would make the ping tool way simpler. I can also wait until this 
->>> is available and
->>> create a new patch. It's mostly done just to figure out that 
->>> IPPROTO_ICMP is not available.
->>
->> Ok, I believe having IPPROTO_ICMP would be the best approach. I'll
->> let you know when this is available.
->>
-> 
-> Meanwhile, I changed to ms and corrected the "%zu". Attached 4 variants:
-> oob-net-ping.c - The variant from the patch, improved
-> oob-net-ping-nonraw.c - OOB with IPPROTO_ICMP (Not tested due to obvious 
-> reasons)
-> ping-raw.c - POSIX raw
-> ping-nonraw.c - POSIX with IPPROTO_ICMP
-> 
-> This might help you debug the IPPROTO_ICMP implementation.
-> 
-> While sometimes having issues with EVL, I created also POSIX variants
-> so see if it is my issue.
-> 
-> I can create also a patch if you prefer for one of the two OOB variants.
-> 
-> There where issues with -O3 in ip_checksum(). With -O0, it works.
-> 
-> The only difference I see between working and faulty is that with 16bit- 
-> aligned (raw)
-> it fails and with 32bit-aligned (nonraw) it works. -O3 debugging doesn't 
-> really work, in assembly
-> its nearly unreadable with -O3 and as soon as I add a printf() in the 
-> while loop,
-> the checksum is good. I have no clue might be UB or a compiler bug. Took 
-> me some time to debug.
-> I have gcc (Debian 14.2.0-19) 14.2.0
-> 
-> Of course, as soon as I create a test program with only ip_checksum() 
-> and exactly the
-> same data, it works also, just combined with the code, it breaks down.
-> 
-> This version creates faulty check-sums:
-> static uint16_t ip_checksum(void *buf, int len)
-> {
->      uint16_t *p = buf;    /* buf is assumed to be 16bit-aligned. */
->      uint32_t sum = 0;
->      int count = len;
-> 
->      while (count > 1) {
->          sum += *p++;
->          count -= sizeof(*p);
->      }
-> 
->      if (count > 0)
->          sum += *(uint8_t *)p;
-> 
->      while (sum >> 16)
->          sum = (sum & 0xffff) + (sum >> 16);
-> 
->      return ~sum & 0xffff;
-> }
-> 
-> While this works:
-> static uint16_t ip_checksum(void *buf, int len)
-> {
->      void *p = buf;
->      uint32_t sum = 0;
->      int count = len;
-> 
->      while (count > 1) {
->          sum += (uint16_t)(*(uint8_t *)p) + ((uint16_t)(*(uint8_t *)(p + 
-> 1)) << 8);
->          p += 2;
->          count -= 2;
->      }
-> 
->      if (count > 0)
->          sum += *(uint8_t *)p;
-> 
->      while (sum >> 16)
->          sum = (sum & 0xffff) + (sum >> 16);
-> 
->      return ~sum & 0xffff;
-> }
+Philippe Gerum <rpm@xenomai.org> writes:
 
-Disregard the issue with ip_checksum(). -fsanitize=undefined gave the clue. It was indeed UB, just not where I expected it. Fixing it right now:
+> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+>
+>> Am 05.07.26 um 17:06 schrieb Philippe Gerum:
+>>> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+>>> 
+>>>> - With the good version, I tested ~1M packages, all fine, max 60 us
+>>>> response time on the real PC
+>>> You mean 60us for the overall round-trip time between two
+>>> evl-enabled
+>>> targets in full/end-to-end oob mode?
+>>> 
+>>
+>> That's between an evl-enabled host and an FPGA board as a target[1]
+>> directly connected with 100M Ethernet and an Intel I350 after some
+>> heavy tuning. Most tuning was done for PREEMT_RT. I have to test what
+>> is really needed for Xenomai4 and what can be dropped.
+>>
+>> I don't have two PC's to test (yet).
+>>
+>> https://store.mesanet.com/index.php?route=product/product&product_id=374
+>
+> Ok, thanks for the information. Meanwhile, I found the culprit. Now I
+> have to figure out why I did that. Oh, well..
+>
+> commit a793acf3cab9a608d70a39d740f04c6a6a1ec77c
+> Author: Philippe Gerum <rpm@xenomai.org>
+> Date:   Tue May 26 10:16:44 2026 +0200
+>
+>     evl/net: packet: forward status of ETH_P_ALL delivery
 
-ping-raw.c:206:16: runtime error: member access within misaligned address 0x7f4bbbd00a3e for type 'struct ip', which requires 4 byte alignment
-0x7f4bbbd00a3e: note: pointer points here
-  6f 6a 08 00 45 00  00 54 c3 84 40 00 40 01  00 00 c0 a8 7a f6 c0 a8  7a 01 00 00 00 00 00 00  00 00
-              ^
+Fixed by #bb06b3a8f100.
+
+-- 
+Philippe.
