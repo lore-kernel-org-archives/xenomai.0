@@ -1,133 +1,72 @@
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E376169AD2
-	for <xenomai@lists.linux.dev>; Tue,  7 Jul 2026 13:56:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.196
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5041F3ED135
+	for <xenomai@lists.linux.dev>; Tue,  7 Jul 2026 13:57:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.228
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783432604; cv=none; b=NoDjvuEXd22ow1mwGtG+nMfgjTXXcI6p2uQ2jPyJYvBzO4xCSDCYQ8uPDd3S17Hpu8dom9nJwYqDRAGoVpH2VT0MBhjwcIfri1Cfej9s2pxW1n3PGXcm2eCUpwARnQqz9aTiDzJCWDO5meKyydRX2zUUY7u3Q5sMPhpgZ0FOArM=
+	t=1783432629; cv=none; b=h9VH4qnw24k+mHaizHMJfnqgbVnWOnpVl2TaJBdG+c10s5bk496pCQqniSFQkkB+MuUNVaH8A0kSFrH+BSB1qICgwrjh0nI/7Rd4XcbIX7HaDhw+5wjVoVW5Goh7beiGMLK0AMIRUv0mQNcD4/nfYPuhufOw2NOZv+/XZoMzzKo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783432604; c=relaxed/simple;
-	bh=sI0ESUqjDK9oj2dKvqCuDYJlQ+Eld56E0AR1ocPC2W0=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=YuRXyaT0WBa/uDhlwbu3cFE2WVSkwmkPG0hiX7KWp6iO58zfyE6nkA6HDcWtiQiurFkEA5rSBNhWyvpZXPToBQOoq/43S1mPq3KWkVDFz9a7xEhTirgH8zUwIbyrFB0Lj7FqFwiQ1m9PJKfMRkwik2KAXhIDF4bf97GoTrwPLHc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=SOP/Wwf4; arc=none smtp.client-ip=217.70.183.196
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1783432629; c=relaxed/simple;
+	bh=LZBkpl4JTREWMyK996085BWL4MMypKi53F5iUACijO0=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=YuIzivByiyl6OhITYi510Hvs+MSam9Tu1jNArkzy+DOvY5isWaGsSBV/NFBHhrMPAR0Wd/Tgh7VSDCKfuglOQ9L8uwTNxn1emQqINDCCmo5c6eRBhd2XzPfPVzF9Zm+2sQCkTw9yRAmrXyZwszXvwpNbjwqV7f3MlpJqvYkmr+o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=LJMRMc8L; arc=none smtp.client-ip=185.136.64.228
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="SOP/Wwf4"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 69B413EC91;
-	Tue,  7 Jul 2026 13:56:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1783432592;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=0snP9/QNKT8dg3ynEvAIViBS2K4EjSYsNXD/VN8H9Q4=;
-	b=SOP/Wwf41Q0sOLTOWde2Jkv6UQoKKwEXGCFhdGQkJpQk5JsKcB+271gppGeQhGyD5ckDFx
-	fjPubDCoDqcjfCvBDJmBlj/1wH424x40bKVphP4dzyqnAW6Nfl7OoZdb2pfh+rrHhgOxtx
-	S/FSMiZj12QrnF9bubWW9JrdsgDa9+7cigZko5YI7vj85pQGUg6+CsTeM1S6Z+g4jUGx8W
-	aPWuh73NwtX/IJMKfY74zii8vtj6aXDJn0Y/tLdUK52yNMLG+zSS48wngYgQuB2hCFEk7L
-	3eVxjSAjnGZFXoAjCzHc58Q6dBfXadbIBlUOTTSbrthoATBW/VWcnJF/Nqx+/Q==
-From: Philippe Gerum <rpm@xenomai.org>
-To: "Bezdeka, Florian" <florian.bezdeka@siemens.com>
-Cc: "Schaffner, Tobias" <tobias.schaffner@siemens.com>,
-  "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>,  "Kiszka, Jan"
- <jan.kiszka@siemens.com>
-Subject: Re: [PATCH dovetail v10 00/11] riscv: Add dovetail support
-In-Reply-To: <8bbe1df3070e3d031950851525c67386b03cd1e9.camel@siemens.com>
-	(Florian Bezdeka's message of "Tue, 7 Jul 2026 10:51:05 +0000")
-References: <20260706182927.281078-1-tobias.schaffner@siemens.com>
-	<aea1bc068740212737bd02d3b6317dac1eb8fbc8.camel@siemens.com>
-	<8bbe1df3070e3d031950851525c67386b03cd1e9.camel@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Tue, 07 Jul 2026 15:56:31 +0200
-Message-ID: <87tsqavr74.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="LJMRMc8L"
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20260707135700810113d7e400020747
+        for <xenomai@lists.linux.dev>;
+        Tue, 07 Jul 2026 15:57:00 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=LZBkpl4JTREWMyK996085BWL4MMypKi53F5iUACijO0=;
+ b=LJMRMc8LZRz+rOWUSxR3/vno4jNI00U/Lv6vHGih24MOymsKpe4Fdfybuyvhishn1Rpvmy
+ eG4AKndZZ//0LgN3ILQ0dG1O+1we3nMcCMYeeCN9VCoHRpHYSn42LsC5XSyVYRbARIaTfYbx
+ GgeYquJGtqfC3cXpdq0XjhbGYhLFJM71vfBb+OuzONRBVEd+9HuOpFqjwEFW/0kfzYPJsUgf
+ KEFLYZ/i8ukBmza6GiXU9mPREGv8ZItKoVaO4k0mUa37DqmWWoz0NZFX9kAGul/makQ553d7
+ i6mNdN2FHO6BUotX5atuydq075kk5H8EWThOPUUbjMXOM1tXd8TIajxA==;
+Message-ID: <2fff81a403bcd74efac90a1f66ed6d7e8e235c86.camel@siemens.com>
+Subject: Re: [PATCH Dovetail v4 0/8] Dovetail: arm: Finalize review results
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev, Jan Kiszka <jan.kiszka@siemens.com>, Tobias
+ Schaffner <tobias.schaffner@siemens.com>
+Date: Tue, 07 Jul 2026 15:57:00 +0200
+In-Reply-To: <875x2qx64u.fsf@xenomai.org>
+References: 
+	<20260707-wip-flo-v7-1-arm-pipelining-fixes-v4-0-057b8af5a2ca@siemens.com>
+	 <875x2qx64u.fsf@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: dmFkZTFCwdW/wo3hQR8cJe3sfva/TtGYuWr/zGDxBnkGGVNUQ58+jTOMdCKyANuFeSncbMmMm+OcAl65zloLepVMZN+bwGKDAnFtmQxeRd7SNyRC1D8w3iHJkVwZ99+wFN2HM/WYu9+E4yqRO2gzdF49TVvTQTMWnSZPvGFZziqxDarAQhPW14MXYyQvxMMyNHkVJj78t28UDXzH26HnwGINPZytKM47Jl94/WxMjQqIfk44x+kwTUfORcocGdIkeuqgu2ingGfW56dhCo+lXD23SIKNtJU4xXORa267zf8W4YW4AqGHxTifeZmPcYw0xnPBzOjza0MCcu6Jo5VKbLAuxOMVoMpvg/014doW8JquG3REqaD5weOOvBtLUV7Xv2Fj4W8v5bV9DcwJapBSnA1+RlqAt6o/y+NM35UKb+Jf/n2bhntmGCKfyx1Vd7NTkrbO0A3wLYxRYjjzv63zk6EzYERsoZC4Ld/DbMkUG5DAOfdZiuyQ+xSLpxSouIJWu9957QNL57iCH630oX51nyN4FTSgCV31YFy3h3NEbdhINFzrnq2YzkJAv2otTGSYaOy3C2luEZj0+7aAsmcS6gGD2Tx1v+wHxU2SKPARl2QQxxuAdAP2SUc4UN9iCmmuiRuicHbEfq/PfHzl0OTNQixCC4/AUEcVvfJ8+LVnrurQ0ufnIw
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-"Bezdeka, Florian" <florian.bezdeka@siemens.com> writes:
+On Tue, 2026-07-07 at 15:48 +0200, Philippe Gerum wrote:
+> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+>=20
+> > Hi Philippe,
+> >=20
+> > This is the first try to fully process the feedback on the
+> > interrupts_enabled() issue mentioned in the former patch series.
+> >=20
+> > Input welcome.
+> >=20
+> > I tried hard to keep everything easy, but changing the current
+> > implementation triggered a lot of unexpected include / build problems,=
+=20
+> > especially within the arch/arm/include/asm folder.
+> >=20
+>=20
+> LGTM now.
+>=20
 
-> On Tue, 2026-07-07 at 12:02 +0200, Florian Bezdeka wrote:
->> On Mon, 2026-07-06 at 20:29 +0200, Tobias Schaffner wrote:
->> > Hi all,
->> > 
->> > this series introduces initial support for Dovetail on RISC-V.
->> > 
->> > Feedback, suggestions, and especially reviews are very welcome.
->> > 
->> > Changes since v1:
->> >  * Disable independent irq/softirq stack usage when pipelining
->> >  * Drop KVM changes as long as they can not be properly tested
->> > 
->> > Changes since v2:
->> >  * Rework trap handling
->> > 
->> > Changes since v3:
->> >  * Included the IRQ pipelining patches to have all riscv specific
->> >    patches included
->> >  * Rebased to dovetail/v6.18.y-dovetail-rebase
->> >  * Merged most of the fixes
->> >  * Fixed IRQ Stack handling and enabled IRQ_STACKS again
->> > 
->> > Changes since v4:
->> >  * Rebased to dovetail/v7.0.y-dovetail-rebase
->> >  * Applied suggestions from the last patch set
->> >  * Added starfive-visionfive2 board support
->> >  * Introduced raw console device based on sbi debug console
->> >  * Reworked pipelined irq handling
->> > 
->> > Changes since v5:
->> >  * Rebased to tip of dovetail/v7.0.y-dovetail-rebase
->> >  * Applied suggestions from the last patch set
->> >  * Use mark_trap_entry/exit_raw for kernel mode exception paths which
->> >    use irq_nmi_entry/exit for now, as the nmi irq handlers expect hard
->> >    irqs to stay off. This may be be subject to further optimization at
->> >    a later stage, but I do not see any negative impact latency wise in
->> >    my tests.
->> > 
->> > Changes since v6:
->> > Address the review comments from the last patch set:
->> >  * Keep the virtual irq state in sync with the hard irq state in trap
->> >    handlers
->> >  * Fix irq_nesting imbalance when running with disabled IRQ_STACKS
->> > 
->> > Changes since v7:
->> >  * Simplify Trap handling
->> >  * Rebase to wip/flo/v7.1-dovetail-rebase
->> > 
->> > Changes since v8:
->> >  * Further simplify trap handling adressing Florians suggestions and
->> >    recent fixes to irq-entry-common
->> > 
->> > Changes since v9:
->> >  * Fix checkpatch finding in patch 11 "riscv: Add dovetail support"
->> > 
->> 
->> Thanks, applied to the following branches:
->> 
->> dovetail: wip/flo/v7.1-dovetail-rebase
->> evl:      wip/flo/v7.1-evl-rebase
->> 
->> Philippe, final test run has been scheduled, expecting both branches to
->> be taken over by you. Any left overs?
->
-> Yep. I forgot two commits 64afd165 and 0679eb1e from the 7.0 branch.
->
-> I will fix that in a minute.
->
-
-Ok, please strip the reference to "cobalt" in the CLOCK_EVT_FEAT* commit
-when reconciling the evl trees, this might be confusing.
-
--- 
-Philippe.
+Nice. Should I apply it to the 7.1-wip branch already?
