@@ -1,44 +1,46 @@
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93C5341DEE4
-	for <xenomai@lists.linux.dev>; Tue,  7 Jul 2026 13:43:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 21E753EBF04
+	for <xenomai@lists.linux.dev>; Tue,  7 Jul 2026 13:53:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.193
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783431811; cv=none; b=H/pEE3ulau+gfyG3d9vmK0x/LMoyhqGVTGlPqk89pdkn6IuL6+othxh4FjTnT3rVU39oHW2C/ciTvBc+V7wTtGS43G9oT7WNlivxkoh6LpDO7r8JMpHgWqHuaqyoPkZfqaa5BFZiTVikmRaoEuk/gHfQQDrj+0qgk8MbrA/U4vc=
+	t=1783432428; cv=none; b=IlNLLuZCH7efacF+G7bhRDWYY1FLLpe4ZMdkAuX83i+YACN3YU2XdQNMsGvlfiQGpivBDOjqj5iVxV3SMwy/s5OlnooMf2Q+VF1IXP+3ZJUGn9usyjlbdBoZXwYK1QnY2BILQHJSMp4Veoc9VlS7bNH0ba1MFv87jzziXBgINvU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783431811; c=relaxed/simple;
-	bh=t/oiYvKHShvadrGUJCuSnbSIGZ4tX22MFNOIeKBY68Q=;
+	s=arc-20240116; t=1783432428; c=relaxed/simple;
+	bh=6m7cevUuZuUFUzAd/ZRSH47Q5uK/0s0REkag9m8BGJE=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=EaekCunJu92c7aCuaUQddB+OpCPfCTBNu1lFIFzZ2Cd2/bIN7Onq97mpcXbMd39lCtcKG6e02UyVn1vBfYw3vAZwrgqZqq2LBe+HzL5ONkBNL2eruDRjC6KRULqFqcmslUMYplMntAhUm6J8+HrNTDarDLAIEjIIt/dT780p5qE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=d+iN7RmP; arc=none smtp.client-ip=217.70.183.201
+	 MIME-Version:Content-Type; b=FB+L+LsBckgy8dqxp4UkhBGgqLDEjsuRmega18ji/kcnLvRkHsLL0f9yxlJyu2ZBy8adhnu5GZ5oCgEcU/u0YifJ+04Lj1F/dZE2FKtTKtB7Q/l4u1um2YQBZfx8mJ+hILmKuelx1cvWnQcuu5bA1LP1nu2WtzReg2McD5wfZcg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=nk0uiJFb; arc=none smtp.client-ip=217.70.183.193
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="d+iN7RmP"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 345753EC6A;
-	Tue,  7 Jul 2026 13:43:22 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="nk0uiJFb"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 839553EDF3;
+	Tue,  7 Jul 2026 13:53:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1783431802;
+	t=1783432417;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=U4iRQjfvpuM+n9KW2Na6y/F+r83HaZr44BgZViB+KDU=;
-	b=d+iN7RmPBe8bSMSh/B3eu/gf32bPql6bN9NXjR4A95d33AB/vddzS/0YJ5OFAuJMKATxi+
-	qUFIxKgpQ8DvSJfOEGhN4MuzT6947PUaloMINacBX9woZi0Hc0hsarLFLUkSgeqX0vNEfX
-	/cEeHCZqmcLdzEqNSed3hfZHEnz+9rZivGVoobn9NhYkP92UoqgHawaV8d15/D7JCV9B1z
-	POmg/c2yvwSiRcj8csaD3pqnWCG++GeHI/RJk9pPKsItEosGrTWtuPozk1mLtE2NmtBGWM
-	uIZkzBzns4xcYp5bxc+ebwwZVB/LZLzuvWNSU7VTQpuDIagBctwn/lNeIq1jYw==
+	bh=1MQSFT6tNssPfzBcZY4St5hjrUR3S03rdJV1wM6OV7k=;
+	b=nk0uiJFb0HXyyKlb13obFIJuMOI6/Rn4PPfVS9592yP5kOEV3/58TYGOqrZDCjdziRLmTS
+	XI/NUmiukwVT8ZJazrV8/8Js4Fng9iBZd+fGgeJ8ga8UXNUVm51doYdpnOtReOwoqgJoze
+	uOuuvL8zjwlF87QlnIig2k28oomk1V/ZBmq5tCuoeIuFi5wPSCqdSWT+are1SWL6BAHLRN
+	iv/7iiqDcGbSyjyZUPVkMhv4jzT8dgNdmIQHjYjakjqyzKWhhoA6IH3qGUm5B+TwvzR8fI
+	vgdZZGrBMQRgj5tIgrfFJtRkETsfCi/ROVdMzbo1okCc5TQ7/8DMsxwXr3UPWA==
 From: Philippe Gerum <rpm@xenomai.org>
-To: Hannes Diethelm <hannes.diethelm@gmail.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: [PATCH] utils: test: show test name before running it
-In-Reply-To: <20260707110109.10253-1-hannes.diethelm@gmail.com> (Hannes
-	Diethelm's message of "Tue, 7 Jul 2026 13:01:09 +0200")
-References: <20260707110109.10253-1-hannes.diethelm@gmail.com>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: Tobias Schaffner <tobias.schaffner@siemens.com>,
+  xenomai@lists.linux.dev,  jan.kiszka@siemens.com
+Subject: Re: [PATCH dovetail v10 00/11] riscv: Add dovetail support
+In-Reply-To: <aea1bc068740212737bd02d3b6317dac1eb8fbc8.camel@siemens.com>
+	(Florian Bezdeka's message of "Tue, 07 Jul 2026 12:02:52 +0200")
+References: <20260706182927.281078-1-tobias.schaffner@siemens.com>
+	<aea1bc068740212737bd02d3b6317dac1eb8fbc8.camel@siemens.com>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Tue, 07 Jul 2026 15:43:21 +0200
-Message-ID: <87bjcix6di.fsf@xenomai.org>
+Date: Tue, 07 Jul 2026 15:53:37 +0200
+Message-ID: <87zf02vrby.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -47,58 +49,79 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-GND-Sasl: rpm@xenomai.org
-X-GND-Score: -100
-X-GND-Cause: dmFkZTGZ8fBD8ZX9Sxhk98YoVfg1bQVxtlt5MBUHTjChbGFbWUJhER/kxiF6scf10Ur4Tq7TLP0qHaDHNdxnPZb7jSV1JWKHv3IhpsUMXmUUgXSgn/Ljrq2HoIK+J38y0bDnATdAsuogr/jatTLYJX8mQbSWb3uqSz+ACBLFE23my82BKtJJigwSqd6tovR+6YpHyXf3g6ejv6vYyJaV0xlrQTIzBczDQTyG8wo6ZinYhzFEu7Xozu7pYW2rTX5OOPNQA33R01T1K2H/xrI4ENRHlcQahsEWClDtmZ3bVuGKB6Fy0ZRLjUZRfhTn5K94aprrQpZhAumEZ6Wqzj2TVHsWOU/QYloOqfSStiqnd2BuL2WB5Yd7HX8Qlol/1m0Bpz+Izau4z7VAbDgj9B0t4HURPrDNL0Z9r95NTgV17vYL94HqzRjzhCpQMWMAU4v3Nm5UnEuVPszSt7NMlLxK4kErXNtw61vy/2CFCNLMnB3so+b6JH0WXUGJoExesnFjxB5JfEgRKplnkruL9/SJt6E7SH/SMSGtbA47dihQC+1F5f0/QhrZ1H+Fklx88AHhlXZ8aIiElUlXgG5rTLSyJkcXvWgyQqe3z/+UId+JdlR1oNDkiTf6wV2fRt4i5K59cMVyw1UfoxE5EDKs/r2qELRCKJqzZuEtnSUF7o2mKAFEkGG8lQ
 X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: dmFkZTEyP2sfVKpQmKvaPEZGG4n6XPTCWPPzISnYg1bF5V0aB7KkJC+5bA2GRQXyc5YhMsc3tUeP+qXNvDQsyAVopHwskD3WfA65m9b0+6zm2DgC9/GjpR20S1PD48m9V6ok5OC4JY6Lgz7ExXfA3G2RewRGoy4ACyBIAqiZoGsFw8vCda+2e5kNZiWYO+kgS80iwjwBErn2XiuHXn13V6zXfV5pNw9yGvYL2H0jlP26w+HMxnjvE2VGNT6WR0LxdqDZekMMuCXRpz1VG1Z2WESJxgHhyUFQOgrd+Rb3LJKtUWm1loFOoKMfOazMfY0SfXpAUKcBJjfaWJ/DjJVhdIyKDmfZZ4NMCKd6vOEXaIHP7lIv80y5IHKUZ3NjUQ91GwzhwNA74mq9UOpXaduMwpkXrb/AqTg+C6r/croaP7DgfmyxyGZFJU/ExYhvGLEL8ulittciqxgKpVcr1A83gHJCngCBlBJgSxJ+a1SNUjEaUyEUfJwwQoiUTjz0wNpQN8Qvbx/brM3yeVBw/rzt1A9c+XxOlzoWlTJS8YR/ECsXQif8+y/My905Dk/kLgdAqN91+uuCCpuTaDNAfzVmjx32So1V05ybxSkpPKvC5GFNoY9EsStCQ0BGS8y7tUWhcPdPrz50Nym6XTVAwnBJQgWqDZiTvMUPz1gDTiDovwJI1jKy3w
 
-Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+Florian Bezdeka <florian.bezdeka@siemens.com> writes:
 
-> This way, the running test is visible. This helps for longer running or
-> freezed tests.
+> On Mon, 2026-07-06 at 20:29 +0200, Tobias Schaffner wrote:
+>> Hi all,
+>> 
+>> this series introduces initial support for Dovetail on RISC-V.
+>> 
+>> Feedback, suggestions, and especially reviews are very welcome.
+>> 
+>> Changes since v1:
+>>  * Disable independent irq/softirq stack usage when pipelining
+>>  * Drop KVM changes as long as they can not be properly tested
+>> 
+>> Changes since v2:
+>>  * Rework trap handling
+>> 
+>> Changes since v3:
+>>  * Included the IRQ pipelining patches to have all riscv specific
+>>    patches included
+>>  * Rebased to dovetail/v6.18.y-dovetail-rebase
+>>  * Merged most of the fixes
+>>  * Fixed IRQ Stack handling and enabled IRQ_STACKS again
+>> 
+>> Changes since v4:
+>>  * Rebased to dovetail/v7.0.y-dovetail-rebase
+>>  * Applied suggestions from the last patch set
+>>  * Added starfive-visionfive2 board support
+>>  * Introduced raw console device based on sbi debug console
+>>  * Reworked pipelined irq handling
+>> 
+>> Changes since v5:
+>>  * Rebased to tip of dovetail/v7.0.y-dovetail-rebase
+>>  * Applied suggestions from the last patch set
+>>  * Use mark_trap_entry/exit_raw for kernel mode exception paths which
+>>    use irq_nmi_entry/exit for now, as the nmi irq handlers expect hard
+>>    irqs to stay off. This may be be subject to further optimization at
+>>    a later stage, but I do not see any negative impact latency wise in
+>>    my tests.
+>> 
+>> Changes since v6:
+>> Address the review comments from the last patch set:
+>>  * Keep the virtual irq state in sync with the hard irq state in trap
+>>    handlers
+>>  * Fix irq_nesting imbalance when running with disabled IRQ_STACKS
+>> 
+>> Changes since v7:
+>>  * Simplify Trap handling
+>>  * Rebase to wip/flo/v7.1-dovetail-rebase
+>> 
+>> Changes since v8:
+>>  * Further simplify trap handling adressing Florians suggestions and
+>>    recent fixes to irq-entry-common
+>> 
+>> Changes since v9:
+>>  * Fix checkpatch finding in patch 11 "riscv: Add dovetail support"
+>> 
 >
-> The log is now shown after the test name.
+> Thanks, applied to the following branches:
 >
-> Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
-> ---
->  utils/evl-test | 13 +++++++------
->  1 file changed, 7 insertions(+), 6 deletions(-)
+> dovetail: wip/flo/v7.1-dovetail-rebase
+> evl:      wip/flo/v7.1-evl-rebase
 >
-> diff --git a/utils/evl-test b/utils/evl-test
-> index fa3ef73..5139d09 100644
-> --- a/utils/evl-test
-> +++ b/utils/evl-test
-> @@ -83,22 +83,23 @@ result=0
->  while : ; do
->        for t in $test_list; do
->  	  test \! -x $t && echo "$(basename $0): $(basename $t): no such test" && exit 2
-> +	  echo -n "$(basename $t):"
->  	  # Swap stdout<->stderr for the test, capturing stderr into $log.
->  	  log=$($t $test_arg_list 3>&1 1>&2 2>&3)
->  	  status=$?
->  	  if test $status = 43; then
-> -	      echo "$(basename $t): $log"
-> +	      echo " $log"
->  	  else
-> -	      test -n "$log" && echo "$log"
->  	      if test $status = 0; then
-> -		  echo "$(basename $t): OK"
-> +		  echo " OK"
->  	      elif test $status = 42; then
-> -		  echo "$(basename $t): no kernel support"
-> +		  echo " no kernel support"
->  	      else
-> -		  echo "** $(basename $t): BROKEN"
-> +		  echo " ** BROKEN"
->  		  result=$status
-> -		  test x$keep_going = xfalse && break
->  	      fi
-> +	      test -n "$log" && echo "$log"
-> +	      test $result -ne 0 && test x$keep_going = xfalse && break
->  	  fi
->        done
->        test x$repeat = xfalse && break
+> Philippe, final test run has been scheduled, expecting both branches to
+> be taken over by you. Any left overs?
+>
 
-Merged, thanks.
+Nothing in my Dovetail queue at the moment, we should be all set for
+releasing Dovetail 7.1. I'll reconcile wip/flo/v7.1-evl-rebase and evl
+upstream from that point.
 
 -- 
 Philippe.
