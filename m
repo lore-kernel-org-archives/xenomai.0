@@ -1,120 +1,89 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B949421638D
-	for <xenomai@lists.linux.dev>; Mon,  6 Jul 2026 21:21:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B561339A801
+	for <xenomai@lists.linux.dev>; Tue,  7 Jul 2026 09:50:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783372897; cv=none; b=jkoKH6QOMrwF6ZqHaX88V4YzWTQZtyKpbw/ZlKe96pUR3MOr6ms8QhCrTQ+fyU6lVJK4rCIfElb7mWtDha86awRnwwLob1yJYCrXYUftv0hNMRGvU7xxfJbvDoGj9ifWe60AvISNg8NekB4m2mqvAR+Y23E7a+YMsYE3k3RYlSI=
+	t=1783417828; cv=none; b=OmRBhKdofi9bV2btU2J/s22zqh0Ji0uqrz05QahFhOMYGoSp+mwaWgj6X31G0hwMgZEk0Hv//4UUIhwtCquAqjHtAHoTKfGwrOTL8W+Lde1omhNOJdHK9YoSQRdAYYFRSz0vcuhAdSpz166S4ofDlgXDREsk2vgLPhuY9mQ3UHs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783372897; c=relaxed/simple;
-	bh=nCndE9toDoxWuiTLFsjPIZhez74dTqdkz9xanUDX9JQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=h4e0HpQ3xhgRO648bnE5TFP/x5TjUgXm+TgKx4Tp56kb2IN/YP+l+Qg/N9+97/IyG/70uZQycmTHKP6sbVOeXYFh2bCk1NEcFaVewTsA+Dva32WI051xrIfTO4lFUQkHkoOGEUNqjfuLyd2ocTKIMzYZYg74Qksw2aKPNRVwKDQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IBqWHiD1; arc=none smtp.client-ip=209.85.128.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783417828; c=relaxed/simple;
+	bh=rMhW78V/BuOlqh8dNlcK6E06X059jLpboCu+n9NaEXM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=RphlOUwBkJMmuBeoL7hcbBbvzmJh1a97TOfUdRTd7VzYN32oTXO4w/4It2bmOzbv6J/6aAfHVqa6429+Y2kYjp+cPXGSj0C1xXxtMDJQq6EUjtwLM4A6DfBZm6hqeY14/7n56ATonBici/oP2vl37Yec9QUN5hxkudRQGiyAv+0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=t4F1aCh3; arc=none smtp.client-ip=185.136.64.227
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IBqWHiD1"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-493b691cb44so25115215e9.0
-        for <xenomai@lists.linux.dev>; Mon, 06 Jul 2026 14:21:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783372894; x=1783977694; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=F7M830ZKfy/uKnQqJH401DLoUe31wEN1pru4wfsWHLU=;
-        b=IBqWHiD1Wgv8DyiiKvQfDanVK0Aj7p3Zv2rg29BbDnKKj2MtU5mAMkdlI14LKVB/o8
-         yNJYhJYTLs51+SkcV+vnrnGI4JXfJe75HLjlBKbag3rkLvX7DUEfXiEakkifrKSDXXzU
-         GBI1eREdC+ENuXAvaTiK1ZeRMh1P5JaHmP0wHWvuzRh7iJeWv5RVYTI13tH+9eqa5J+T
-         3A7JpwX7FF4J4OOylkzss8AnJ0npV+AS2FNB9iQWWud1WsgRNeOK2Q5p2UYK0QDyLj8I
-         NPeHZbUruKjOHoC3HT5I4YNxyruYxxqlqoZtOjiGS2FVXItBuxCQ0Rrf8fnh6rG4jPI+
-         AUMQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783372894; x=1783977694;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=F7M830ZKfy/uKnQqJH401DLoUe31wEN1pru4wfsWHLU=;
-        b=kJ+bh40DEqYxAxlhYdisc9ZDMiTDUWD5kXJIyXpjumqWhOftrQRGECVPLEuh39ZkT2
-         KfYt0D1TxIrTq3bdV/5SOfmCzhoLEsbRlBP2XHcCHKNjNZ4qOSbpadi/7V1AhzDLUQzG
-         ZEbZzlDbCUHExO/G5khBWFCrZ0ggICJ+WwtW9jWwA9wukAloJ11QZnTbL/9aoxySAlTS
-         fYutvYfVPn25/A5Bxg3fFGVeCoBOUxCb0igSIFotUs259PsPfsLzxnPAWWZ1VRG8uCx3
-         jWXs4Gb4/Sd9TUWdiLPlKQmGC9YdxMR2BTuNI6q5E7i+1cz2UVOCPiPARtLLhV2KM0r6
-         6U3A==
-X-Gm-Message-State: AOJu0Yy19iZH2k4nf99nNXnOjh49+3NAftFfkN8QDeCk6pCHO8VJPsHU
-	6ac+fqIRaxRn+XnWh5kngOSQdFbdfRa71Qn5tDP3STCkHCz6VHfaOWfe
-X-Gm-Gg: AfdE7clXovkE9/KFQVWrD20wQV5vJ7WnsxjsDERcK/IggDIYZU0YtjZcqIWVr3z71Hr
-	75Rt3E4+UxMCfwoozy2UwuxTk9M/HkvxtjCV4clccId3KNbRuPBlY4sGlEN5O7kpu+t1ehoU/i6
-	4MByseQ/u/mwWDiw98GNroOCxVx1XYRuyUa78rT0pPwU6DveFBMETxD7IOG0fiaveSikvkNjZXg
-	LYv4hUvjkvX9nmD2oAMnaDhrnhvzWe1mERupZYxsOycFXei+eAAsBotRddCHLgn2uiiGOHpA02R
-	S/Ny7gUr9o9bV3lGwTdrs6Yfmpj3aXnQQqYCrfbeNrKc8m0BZocKGFwocV6UwSEK4QNR1SCJbF6
-	uD4773bJJ5pvJY0TDt5FoXIzXTmjEyMWANhYQUvemMcrvBOBzUp32cY9+k+4ir7aP+n9uYOSI4D
-	a9gOUsmQ7qd/pqzYY92ivt
-X-Received: by 2002:a05:600c:3e1b:b0:493:bd66:3efb with SMTP id 5b1f17b1804b1-493df09601dmr23164705e9.29.1783372893965;
-        Mon, 06 Jul 2026 14:21:33 -0700 (PDT)
-Received: from [192.168.1.3] ([213.55.168.64])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-493e0fbd355sm727595e9.13.2026.07.06.14.21.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 06 Jul 2026 14:21:33 -0700 (PDT)
-Message-ID: <8713503f-ec2c-4b87-a07c-708b2bf4b159@gmail.com>
-Date: Mon, 6 Jul 2026 23:21:32 +0200
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="t4F1aCh3"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202607070950204f2ca28494000207b8
+        for <xenomai@lists.linux.dev>;
+        Tue, 07 Jul 2026 11:50:20 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=VgM7F/OX3Cgwxr3j5zJypqDZsN+bJr/ulH4bc9b5MwM=;
+ b=t4F1aCh3/g1TlHFDTPgwPu3NZ/jcLtnYU1wtusnQoAgpFelUiCo//4Wedqam550wfWdPxt
+ HlIQ5f1nJ12Z1cGIM3ZophwSNMTHcDWywfAyhBXMdZlxY5xGELWtN9/TBNeCavFsl8jClhen
+ W5RkJ+N2Q7byKbiXWM5JK2ozoYLc6uWfB3ZKQst4AmvKci3DYIFBvyMztR+5Scdj+sS8BNFW
+ 3pJvn/sckrrU/FjbTpSDnHKcA50yUKvUdwtq2zMEjswZiM9JX4CPoKYxhS71pLzXFjXlizse
+ OeJT+PJCimKfePZkvLbY9HpODTi6EBzn0BJY48K5zpT17aQV67933Xpw==;
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+Date: Tue, 07 Jul 2026 11:50:18 +0200
+Subject: [PATCH Dovetail v4 2/8] arm: irq_pipeline: Fix
+ dovetail_fault_{entry,exit} bypass in do_kernel_address_page_fault
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: EVL: Kernel WARNING
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@lists.linux.dev
-References: <c88ccba0-23fd-4f4c-a182-0967e79adefb@gmail.com>
- <b5821b4e-cfd9-4255-ac8f-3de55a788d1c@gmail.com> <87h5mdmq6w.fsf@xenomai.org>
- <593465e6-53c2-4f54-8d4f-745b028ff289@gmail.com> <871pdhs7tf.fsf@xenomai.org>
- <87jyr8r79l.fsf@xenomai.org>
-Content-Language: de-CH, en-US
-From: Hannes Diethelm <hannes.diethelm@gmail.com>
-In-Reply-To: <87jyr8r79l.fsf@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20260707-wip-flo-v7-1-arm-pipelining-fixes-v4-2-057b8af5a2ca@siemens.com>
+References: <20260707-wip-flo-v7-1-arm-pipelining-fixes-v4-0-057b8af5a2ca@siemens.com>
+In-Reply-To: <20260707-wip-flo-v7-1-arm-pipelining-fixes-v4-0-057b8af5a2ca@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>, 
+ Tobias Schaffner <tobias.schaffner@siemens.com>, 
+ Florian Bezdeka <florian.bezdeka@siemens.com>
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Am 06.07.26 um 07:56 schrieb Philippe Gerum:
-> Philippe Gerum <rpm@xenomai.org> writes:
-> 
->> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
->>
->>> Am 05.07.26 um 17:06 schrieb Philippe Gerum:
->>>> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
->>>>
->>>>> - With the good version, I tested ~1M packages, all fine, max 60 us
->>>>> response time on the real PC
->>>> You mean 60us for the overall round-trip time between two
->>>> evl-enabled
->>>> targets in full/end-to-end oob mode?
->>>>
->>>
->>> That's between an evl-enabled host and an FPGA board as a target[1]
->>> directly connected with 100M Ethernet and an Intel I350 after some
->>> heavy tuning. Most tuning was done for PREEMT_RT. I have to test what
->>> is really needed for Xenomai4 and what can be dropped.
->>>
->>> I don't have two PC's to test (yet).
->>>
->>> https://store.mesanet.com/index.php?route=product/product&product_id=374
->>
->> Ok, thanks for the information. Meanwhile, I found the culprit. Now I
->> have to figure out why I did that. Oh, well..
->>
->> commit a793acf3cab9a608d70a39d740f04c6a6a1ec77c
->> Author: Philippe Gerum <rpm@xenomai.org>
->> Date:   Tue May 26 10:16:44 2026 +0200
->>
->>      evl/net: packet: forward status of ETH_P_ALL delivery
-> 
-> Fixed by #bb06b3a8f100.
-> 
+In case do_kernel_address_page_fault() was entered over supervisor mode
+the dovetail_fault_{entry,exit} machinery was bypassed. As a result the
+inband IRQ mask might have been touched from the oob stage.
 
-Thanks, tested and it works.
+There is another problem with interrupts_enabled() in the supervisor
+mode code path. That one will be addressed in a separate patch.
+
+Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+---
+ arch/arm/mm/fault.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm/mm/fault.c b/arch/arm/mm/fault.c
+index b6b766652b753ef860d16b153685b0d3b582bffa..08ebc043971000fd8d6245bcbb6c170d801c73b3 100644
+--- a/arch/arm/mm/fault.c
++++ b/arch/arm/mm/fault.c
+@@ -332,6 +332,7 @@ do_kernel_address_page_fault(struct mm_struct *mm, unsigned long addr,
+ 		__do_user_fault(addr, fsr, SIGSEGV, SEGV_MAPERR, regs);
+ 		dovetail_fault_exit(ARM_TRAP_ACCESS, regs, irqflags);
+ 	} else {
++		irqflags = dovetail_fault_entry(ARM_TRAP_ACCESS, regs);
+ 		/*
+ 		 * Fault from kernel mode. Enable interrupts if they were
+ 		 * enabled in the parent context. Section (upper page table)
+@@ -344,6 +345,8 @@ do_kernel_address_page_fault(struct mm_struct *mm, unsigned long addr,
+ 			local_irq_enable();
+ 
+ 		__do_kernel_fault(mm, addr, fsr, regs);
++
++		dovetail_fault_exit(ARM_TRAP_ACCESS, regs, irqflags);
+ 	}
+ 
+ 	return 0;
+
+-- 
+2.55.0
+
