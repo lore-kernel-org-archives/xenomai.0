@@ -1,44 +1,44 @@
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BCC241D4ED
-	for <xenomai@lists.linux.dev>; Tue,  7 Jul 2026 13:34:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93C5341DEE4
+	for <xenomai@lists.linux.dev>; Tue,  7 Jul 2026 13:43:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783431283; cv=none; b=C4OQ1MAVsQJS5mWPIz0vr1UBtKopuj0quxATT0s1BnuZ4lhZL+phtm6PoPVgS6qaM7cD3rEbHKJlQmYiU3juM1hY0YGcCpzvfmthgjfzIJkTDb854GETcvwRHJ4s3cjMcQaI7ES3EewhVjj4BGAf2SFiAriFW7mkVXfOJKnIVno=
+	t=1783431811; cv=none; b=H/pEE3ulau+gfyG3d9vmK0x/LMoyhqGVTGlPqk89pdkn6IuL6+othxh4FjTnT3rVU39oHW2C/ciTvBc+V7wTtGS43G9oT7WNlivxkoh6LpDO7r8JMpHgWqHuaqyoPkZfqaa5BFZiTVikmRaoEuk/gHfQQDrj+0qgk8MbrA/U4vc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783431283; c=relaxed/simple;
-	bh=SF7ONEM+svfUX5/lOp3B+Zz81j/GlP5bThcfMOg7eug=;
+	s=arc-20240116; t=1783431811; c=relaxed/simple;
+	bh=t/oiYvKHShvadrGUJCuSnbSIGZ4tX22MFNOIeKBY68Q=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=iomSYNbmK2Fn58z7wA/ZJcMKLzI3JVejNf+4BvTtIl+pUn1oUsBLsjfN1dY0svUE4q7kNco5xxUPkpitCzaGjPdmavKOprk7l8ROhu4nI3jM0eFUkv/PZwIFAuWwmwir9T5d39KUHXoTEj8F1jyjZiDU4AeqAfZsu04+6UeRbEQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=fGBO/OUy; arc=none smtp.client-ip=217.70.183.198
+	 MIME-Version:Content-Type; b=EaekCunJu92c7aCuaUQddB+OpCPfCTBNu1lFIFzZ2Cd2/bIN7Onq97mpcXbMd39lCtcKG6e02UyVn1vBfYw3vAZwrgqZqq2LBe+HzL5ONkBNL2eruDRjC6KRULqFqcmslUMYplMntAhUm6J8+HrNTDarDLAIEjIIt/dT780p5qE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=d+iN7RmP; arc=none smtp.client-ip=217.70.183.201
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="fGBO/OUy"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 5C58B3ED35;
-	Tue,  7 Jul 2026 13:34:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="d+iN7RmP"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 345753EC6A;
+	Tue,  7 Jul 2026 13:43:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1783431274;
+	t=1783431802;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=ufp5//1WZCqKAuEgSltthD68s8UO3FRGQ96NjxQMlEc=;
-	b=fGBO/OUyFwJoIdaHMZOQ9M8UMaOALxyui9xDWwnD9ql4zL+5ajHx8mqknfzztdmHP5AYgj
-	zBrdErVUCSK/i7DfYqa3mMOtZqo0D3EhtT6Y68RCSjyS6ZHGcVbhPZOPiAMho5zW5jAcSS
-	JdOVYxwIN7Uiku0S97wNKixFW+Hpd7mXt49Fv1sWkVImiG6PYzpxvdss0yrGtCm0G7IKRX
-	sj9Pj+p5OSial+9wa92eQx1nrdAUFITawwuGRFO5fJb2AuacyXvz2w5ZyjKoIWmXaL2ldv
-	nnAWH7CxaOjhxaWbe5GckYUskENahraYSHjgHpmGeOQzfve0+okkxmKis4vaeQ==
+	bh=U4iRQjfvpuM+n9KW2Na6y/F+r83HaZr44BgZViB+KDU=;
+	b=d+iN7RmPBe8bSMSh/B3eu/gf32bPql6bN9NXjR4A95d33AB/vddzS/0YJ5OFAuJMKATxi+
+	qUFIxKgpQ8DvSJfOEGhN4MuzT6947PUaloMINacBX9woZi0Hc0hsarLFLUkSgeqX0vNEfX
+	/cEeHCZqmcLdzEqNSed3hfZHEnz+9rZivGVoobn9NhYkP92UoqgHawaV8d15/D7JCV9B1z
+	POmg/c2yvwSiRcj8csaD3pqnWCG++GeHI/RJk9pPKsItEosGrTWtuPozk1mLtE2NmtBGWM
+	uIZkzBzns4xcYp5bxc+ebwwZVB/LZLzuvWNSU7VTQpuDIagBctwn/lNeIq1jYw==
 From: Philippe Gerum <rpm@xenomai.org>
 To: Hannes Diethelm <hannes.diethelm@gmail.com>
 Cc: xenomai@lists.linux.dev
-Subject: Re: EVL: hectic test fails when to many CPUs are available
-In-Reply-To: <2a2e5b00-ef70-4de5-865b-c8d00c87104b@gmail.com> (Hannes
-	Diethelm's message of "Tue, 7 Jul 2026 13:43:15 +0200")
-References: <2a2e5b00-ef70-4de5-865b-c8d00c87104b@gmail.com>
+Subject: Re: [PATCH] utils: test: show test name before running it
+In-Reply-To: <20260707110109.10253-1-hannes.diethelm@gmail.com> (Hannes
+	Diethelm's message of "Tue, 7 Jul 2026 13:01:09 +0200")
+References: <20260707110109.10253-1-hannes.diethelm@gmail.com>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Tue, 07 Jul 2026 15:34:28 +0200
-Message-ID: <87h5max6sb.fsf@xenomai.org>
+Date: Tue, 07 Jul 2026 15:43:21 +0200
+Message-ID: <87bjcix6di.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -47,41 +47,58 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-GND-Sasl: rpm@xenomai.org
-X-GND-Cause: dmFkZTEFspW0RpFWqxVXSdoOR66PI4361yTUO4c/dpxff9rQusM3bkqvfL57j8jhLlSpYyv/JqrYb3EDb4rHU9sgch7AHcOmdxsazyY/vhWJ5wg3hOvzjEEDEMp7otQkn0UOkqBmCfq16e1VJaCtBpvmY28t50q3VlU0spw2nEldN3hkFvOeECRFdDxDiIY4/V4QlMvToeBvB2rUH897bP+eC4G3F6wkUy6m8etYUuf/p+/IF00fKbC8/99P7XF+AwYHC16zpnE213hdVYSOgxb/N73mr1Tou1/dTv+BMpreWTNojRnBEkzmnh+uS87P+0fvtAue/zjSXW+pRmt8Pnb/82PotEcMWUVwp5Vwthxy9S6/aU+KTWpjiVlekpk+EBCzN3FP8R9llpNWNLyfXwvDkQyHQnpPQ0fmvhgk47L+9EtP1NC64160ahNxhcUqNAJA7zzREjZN9Iol5JshwwOIxdKh0tUzMmn+lRMND2QRjeBNYpEBiVVYc8erCzqVGc5TGtHYVofyIrZ9fh9/nfF87+tf5+O1mCEXH4b8L6wn3qvIPwjHuP7F6zi8GAE+PezQL3eEVZf0Q9UhmeY4aE5ET2yWPtYQvvfApp52AMZ+qPrvDOG8K7bUZjX+QxOraIFQvds++oBFqW+xYaMpsMM99SzZ0LRMUsYmSvfEzoOmX2MGzg
-X-GND-State: clean
 X-GND-Score: -100
+X-GND-Cause: dmFkZTGZ8fBD8ZX9Sxhk98YoVfg1bQVxtlt5MBUHTjChbGFbWUJhER/kxiF6scf10Ur4Tq7TLP0qHaDHNdxnPZb7jSV1JWKHv3IhpsUMXmUUgXSgn/Ljrq2HoIK+J38y0bDnATdAsuogr/jatTLYJX8mQbSWb3uqSz+ACBLFE23my82BKtJJigwSqd6tovR+6YpHyXf3g6ejv6vYyJaV0xlrQTIzBczDQTyG8wo6ZinYhzFEu7Xozu7pYW2rTX5OOPNQA33R01T1K2H/xrI4ENRHlcQahsEWClDtmZ3bVuGKB6Fy0ZRLjUZRfhTn5K94aprrQpZhAumEZ6Wqzj2TVHsWOU/QYloOqfSStiqnd2BuL2WB5Yd7HX8Qlol/1m0Bpz+Izau4z7VAbDgj9B0t4HURPrDNL0Z9r95NTgV17vYL94HqzRjzhCpQMWMAU4v3Nm5UnEuVPszSt7NMlLxK4kErXNtw61vy/2CFCNLMnB3so+b6JH0WXUGJoExesnFjxB5JfEgRKplnkruL9/SJt6E7SH/SMSGtbA47dihQC+1F5f0/QhrZ1H+Fklx88AHhlXZ8aIiElUlXgG5rTLSyJkcXvWgyQqe3z/+UId+JdlR1oNDkiTf6wV2fRt4i5K59cMVyw1UfoxE5EDKs/r2qELRCKJqzZuEtnSUF7o2mKAFEkGG8lQ
+X-GND-State: clean
 
 Hannes Diethelm <hannes.diethelm@gmail.com> writes:
 
-> Hello
+> This way, the running test is visible. This helps for longer running or
+> freezed tests.
 >
-> This is the reason for the patch for evl-test. I guess a beginners mistake / edge case but
-> if you want to look into it:
+> The log is now shown after the test name.
 >
-> If I don't set evl.oobcpus in my VM or just use to many OOB CPUs, the hectic test crashes and
-> never exits. I have to use kill -9 to stop it.
+> Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
+> ---
+>  utils/evl-test | 13 +++++++------
+>  1 file changed, 7 insertions(+), 6 deletions(-)
 >
-> evl_attach(): Resource temporarily unavailable: This is probably not handled correctly.
->
-> evl.oobcpus=0-15 -> Freeze
-> evl.oobcpus=1-15 -> Freeze
-> evl.oobcpus=2-15 -> Ok
->
-> /usr/libexec/evl/tests/hectic -T 5
->
-> rtus_ufps11-10 rtuo11-11 rtuo11-12 rtuo_ufpp11-13 rtuo_ufpp11-14
-> rtuo_ufps11-15 rtuo_ufps11-16 rtuo_ufpp_ufps11-17 rtuo_ufpp_ufps11-18
-> fpu_stress_ufps11-19 switcher_ufps12-0 rtk12-1 rtk12-2 rtup12-3
-> revl_attach(): Resource temporarily unavailable
->
+> diff --git a/utils/evl-test b/utils/evl-test
+> index fa3ef73..5139d09 100644
+> --- a/utils/evl-test
+> +++ b/utils/evl-test
+> @@ -83,22 +83,23 @@ result=0
+>  while : ; do
+>        for t in $test_list; do
+>  	  test \! -x $t && echo "$(basename $0): $(basename $t): no such test" && exit 2
+> +	  echo -n "$(basename $t):"
+>  	  # Swap stdout<->stderr for the test, capturing stderr into $log.
+>  	  log=$($t $test_arg_list 3>&1 1>&2 2>&3)
+>  	  status=$?
+>  	  if test $status = 43; then
+> -	      echo "$(basename $t): $log"
+> +	      echo " $log"
+>  	  else
+> -	      test -n "$log" && echo "$log"
+>  	      if test $status = 0; then
+> -		  echo "$(basename $t): OK"
+> +		  echo " OK"
+>  	      elif test $status = 42; then
+> -		  echo "$(basename $t): no kernel support"
+> +		  echo " no kernel support"
+>  	      else
+> -		  echo "** $(basename $t): BROKEN"
+> +		  echo " ** BROKEN"
+>  		  result=$status
+> -		  test x$keep_going = xfalse && break
+>  	      fi
+> +	      test -n "$log" && echo "$log"
+> +	      test $result -ne 0 && test x$keep_going = xfalse && break
+>  	  fi
+>        done
+>        test x$repeat = xfalse && break
 
-Mm, ok. This one is indeed an old and obscure issue which has never been
-cared of. Increasing CONFIG_EVL_COREMEM_SIZE and CONFIG_EVL_NR_THREADS
-in order to account for the massive amount of threads involved in large
-CPU configurations should fix it.
-
-At any rate, the test should unwind and exit cleanly when that fails,
-so there is still this issue to solve at some point.
+Merged, thanks.
 
 -- 
 Philippe.
