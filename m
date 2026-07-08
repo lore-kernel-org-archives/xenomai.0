@@ -1,51 +1,52 @@
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6E2F3F0756
-	for <xenomai@lists.linux.dev>; Wed,  8 Jul 2026 08:55:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.196
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDBC4407CE1
+	for <xenomai@lists.linux.dev>; Wed,  8 Jul 2026 09:00:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783500943; cv=none; b=sqYj3nSCN62fOmNg3VF0O2uHX21cyjCOuhNJhHwcJb3c06qgtcYkwq/2VJQy/FQ+4nQ+qMDEkduiMqIpT/PNpBgi0mCwq+MNFwusXmGbQoDeleqHTDZK24pxMQ2x8CcePfSUsVjAgAubQHZPfTs/KQu9nwf3t+vY8visr2nGbzQ=
+	t=1783501239; cv=none; b=gQMdldK/+v+C78s0Ih1l/egFMRh9hqNEQn06kE1zhkGr24db1G3EpBWyradTMtkzy6mnm6OA5M43rPxbxFIUxb84Nd6SQMC6cZkVxj4M6sDO+wkKzY0L/jNSWVzOmSYYjrWH2wsqnWTMBRioayXHopUCI/faErOyLe+3Zu6I4rA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783500943; c=relaxed/simple;
-	bh=Iu28TtLtxMKDo85eK7XF82DcgpRp55uPw/ZPS31yqOM=;
+	s=arc-20240116; t=1783501239; c=relaxed/simple;
+	bh=ko0Hjs8FZbxYKsiUx3WeGGWdq7FGpRkfU7Yet8KPTZI=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=ZJdW328U/OhSQvRhQDDDOAUZ3Bf87ea3MqP9e/VuHR5Eqk15UJlt9ZEkz7hV4pczqgRqh1raNEdp0Qo77+01v7k5JCDTErJw+mBLIQ+xiDm7N3XgnxcDzuKXZ11v3hXn9mb3dEsa+5hQMUnklEOZ1Bq3LW8SzCMM/xrIv84KVCw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=aqdY6mLK; arc=none smtp.client-ip=217.70.183.196
+	 MIME-Version:Content-Type; b=Vc6l0WhPZfjS9bNcuzE1iPlwJBnKNdynAsaX+VQeINvL9+to+Uq3OXkOFzW2C0fwb92GqE/dTmpJiKcHp8C0XzMauAsYYwNNJPaIV0PJapgRr9vngEptzegT0P+tdV1EHgooqIcIhckV6N+R/rYUrxlGl2zILfGyR9u+oVNKB6A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=F2slkePz; arc=none smtp.client-ip=217.70.183.198
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="aqdY6mLK"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 4D1953E9C7;
-	Wed,  8 Jul 2026 08:55:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="F2slkePz"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 996773EB8B;
+	Wed,  8 Jul 2026 09:00:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1783500937;
+	t=1783501234;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=00ls+5kkr0cFUD3gRGVBm9++9F1gmVbl77VeSRQGkmE=;
-	b=aqdY6mLKPX/AttcvPZjwZXkSyH9a8T17LAH6skb57zDf9gbswhODVo0NAZtrdz8ZEQDOg+
-	bQOq9mmLUYdTHEQH1G5SO7iTSZJPiHx6zUVR6s7ptRnpbMR0rNzKcrsrIkIOpwYQdMkkxL
-	qr+CIb4uEEy3oMYm17M9zJu1Ih8PM5IKEEqY2lBGYhkjof/+OyaFxGliqM+77s9ZpZx+Tg
-	Fn7wEgaDzrxvFgXjB6FkVuXoiZqp8YgrfRPA2aJYKGCoBfDt++GDHZaH78dsT7clnzZPPO
-	za1F3KEoknusBa1TvnLEoOoOFwLFiJ9pF9ZGXIGI3kXLyWRgnu8xf6FQYwj5vA==
+	bh=G0CKLFZHntnQ7FXXEFo0qsJIFTbp2Z1mRHIjDtVD7+E=;
+	b=F2slkePzbQa9Do01bma/Q3DO9p1j5qrxblliWDZAjkdDOXLzXvFE80vHPtvIVtnWC883ce
+	6pzwRfbvUwEZoem71wLQ22A1DJ5U4eqhI4oLkAioLHfYWnkt6rpjaXTkvbGIvhiWJ/viYB
+	Im+1XgB3yPoww5xfWmZKkoPaiUIzk1C+wtWTBipk4ma6bIWo4yILwzmaHOKyJf2kcMcFA4
+	OxXJAt4Pp5lrUBR1i1LVfdEKEjonlEBReLv48AJbnj++Nx8RkY5uBcdJnH9Sppg+IbLgkH
+	TyqDAwrNGQ7ake6p2Si+Qmp4CK25wz3RdCmyiFpKVdCIXlY//fH4XwCycwBUDw==
 From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Tobias Schaffner <tobias.schaffner@siemens.com>,  Florian Bezdeka
- <florian.bezdeka@siemens.com>,  xenomai@lists.linux.dev
-Subject: Re: [PATCH linux-evl 0/2] Add RISC-V support to EVL
-In-Reply-To: <bd2c18af-c93e-43fb-81ef-14cdd31a8bba@siemens.com> (Jan Kiszka's
-	message of "Wed, 8 Jul 2026 09:23:45 +0200")
-References: <20251010101130.3758633-1-tobias.schaffner@siemens.com>
-	<837969b0d849fb716bc712df566bde246c5ffc41.camel@siemens.com>
-	<40c1b8c7-ffb9-4f13-801f-cdcaeeda5ce2@siemens.com>
-	<e27b6011-a7f8-4be2-995c-2515f74e87b9@siemens.com>
-	<4906b6de-86bf-4c44-8f7a-4486aebf3c58@siemens.com>
-	<bd2c18af-c93e-43fb-81ef-14cdd31a8bba@siemens.com>
+To: Tobias Schaffner <tobias.schaffner@siemens.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>,  xenomai@lists.linux.dev,
+  florian.bezdeka@siemens.com
+Subject: Re: [PATCH xenomai-images] ci: do not skip tests on vm that have
+ been relaxed
+In-Reply-To: <901c6221-f432-4d90-9b13-95bda2e3fe79@siemens.com> (Tobias
+	Schaffner's message of "Wed, 8 Jul 2026 09:51:13 +0200")
+References: <20260703114846.24710-1-tobias.schaffner@siemens.com>
+	<f0b9873b-ce17-4cee-8ea0-4b0ec260e8f1@siemens.com>
+	<88e281b1-54a6-41c7-9df4-61376a38c181@siemens.com>
+	<e7debecd-2490-40e8-8223-4e076d39165f@siemens.com>
+	<27d44aef-6dd8-4323-b24b-70f0770a9f49@siemens.com>
+	<901c6221-f432-4d90-9b13-95bda2e3fe79@siemens.com>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Wed, 08 Jul 2026 10:55:36 +0200
-Message-ID: <87zf01lv1z.fsf@xenomai.org>
+Date: Wed, 08 Jul 2026 11:00:33 +0200
+Message-ID: <87tsq9lutq.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -55,80 +56,85 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 X-GND-Sasl: rpm@xenomai.org
+X-GND-Cause: dmFkZTFlntvjqdE7PALx10mNx9Uio/1bOU3tBXVfFiNsz+/aTO8UnNcifOVU5HVWfXikTf/tvoQyAhwUCRO4NVl8jyEhfSuqlECQdR41JP3IBMz//cIrWNshlk6lXiA+m2moOdxgt/V77ySH/5mc0MHq9NxDubNgxiKNKSEhGsWI9OOzLfjsXrLxBwrXc9NsWc27eMb3h39imS6aKOUFshpdWMhKFkQGIFrgFJEGcTGm9ZtFMxMKrzqNbE9imTYD1cW0asJGUS7wxuXifhfEufcHDGpSQw6lwFx7+qt5K0ynqMdaXmjlnPbLApiyDaGQVjfbxdDKAvTV2PbvcO+y2Ll/W/JxMyQt874YiX5MHmRSeruTbOzBb3qMpz04L5yvvfq70q9dwC5rSsdvq0D/gawW9LTg80Q05MY7q9Gaa7GeZmTR0q7yXARQli3m91Kbq4oO97eKrm4G2hsGudFmmP1ZaWHn4Ze9tgn8+xDqtB3tUquafcFQbfRh1cb8EuVzR7RECeGTFV2XFCLxxtHB/vaEpPUiuCbskO+wEBXI7WY0LXzYoFbZqwuChdvbUmK3ZN3GwmZiP8/ZVUVoXvQXt50a7LCO524FeGNLl9wlZNGaaJmVWhv7e2EmoMjdFJN5JyggAALXtqV51azTlRr/l9qbHsY3yipBcumUGMVnrWbzUHnHYA
 X-GND-State: clean
 X-GND-Score: -100
-X-GND-Cause: dmFkZTG3FP7BAZ6LmHlh5TSQsA4b3nGzaannuRJTXbXXnoRDS74rBZMnGU5dINGk4yGRlH1ERkzPjTxXLpPqh10+ep0zSIdkyMbfsOjeyeZ/8EBR4Ko3SRJT+elHqQ9d0m/tRSvFaus1h5s0+mpV2PG9BgacIOF0l+pjhHvvryNdK5c/k4qn/03+ESaijN0uED0wvblHizf75DqnblRPOXTZEjfYpD9t5dM/6BV0GmVfnmbjhCu+kYsdbCKPVT4T0lkEabPaXNbQXZb+brsvUNYlP20aOIEwy/kqGbv283ipCnHjL4/KSgH9BVZcHZ6qEr8ic6tP3MQlr5cCyv622r1F6oJdPUSqqvG+BX08IxNfdt8W3gbaOr8eqK4BMxgpwL7p8+7ZzpELB4abZSkuj2RnnqgPJVfWTZvT24YRoxaI84F3CFi5UT3DePYb/aKuZg+eFtENhYaQupAxNqXVy03NVHejpDifQACHRGcOiQzD2elcRLWiZ6HWGiGd+pZ6vsXykw1LGNUlikdz58GzEPfwOm8mqHTJn5BP+xwnaRzGVXryqTPLACIxst7LCXlVzUf5IomQYRtfFphlELxcExrNAetPx5Mpe9ALmB9b3A0C6XgvUyTBrJEj3Py2F7OUKvbKadmvuEYFkXxvrA152tum5Rz1/JFYG8jsdyLrXUWPexFsOg
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+Tobias Schaffner <tobias.schaffner@siemens.com> writes:
 
-> On 08.07.26 08:26, Tobias Schaffner wrote:
->>=20
->>=20
->> On 7/8/26 08:07, Jan Kiszka wrote:
->>> On 08.07.26 07:17, Tobias Schaffner wrote:
->>>> On 7/8/26 00:30, Florian Bezdeka wrote:
->>>>> On Fri, 2025-10-10 at 12:10 +0200, Tobias Schaffner wrote:
->>>>>> Hi all,
->>>>>>
->>>>>> this series introduces an initial EVL port for RISC-V.
->>>>>>
->>>>>> While some tests are still failing, I=E2=80=99d like to share this e=
-arly
->>>>>> version with the community to gather feedback, reviews, and hopefully
->>>>>> some assistance in refining the port.
->>>>>>
->>>>>> The patches have been tested in combination with the Dovetail RISC-V
->>>>>> port on top of v6.12-evl1-rebase.
->>>>>>
->>>>>> Looking forward to your feedback and suggestions.
->>>>>>
->>>>>
->>>>> I tried to apply this series today, and run into the following issues
->>>>> reported by my tooling.
->>>>>
->>>>> Patch 1 is fine, patch 2 has some checkpatch findings.
->>>>>
->>>>> A couple of debatable warnings like:
->>>>>
->>>>> WARNING: Misplaced SPDX-License-Identifier tag - use line 1 instead
->>>>> #58: FILE: arch/riscv/include/uapi/asm/evl/fptest.h:2:
->>>>> + * SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
->>>>>
->>>>> WARNING: unnecessary whitespace before a quoted newline
->>>>> #95: FILE: arch/riscv/include/uapi/asm/evl/fptest.h:34:
->>>>> +
->>>>>
->>>>> In addition to a serious one:
->>>>>
->>>>> ERROR: Missing Signed-off-by: line by nominal patch author 'shannmu
->>>>> <shanmu1901@gmail.com>'
->>>>
->>>> I did not get any responses from this email anymore. I can try to reach
->>>> out to him one last time, but what do we do about it if he will not
->>>> reply?
->>>>
+> Hi Philippe,
+>
+> On 7/7/26 13:21, Jan Kiszka wrote:
+>> On 03.07.26 16:00, Tobias Schaffner wrote:
 >>>
->>> If I read that patch correctly, it's majority is taken from the
->>> corresponding Xenomai 3 logic. How much is unique contribution, how much
->>> was your work, Tobias?
->>=20
->> I added the evl_set_fpregs/evl_check_fpregs content which is a
->> translation from what Gilles Chanteperdrix
->> <gilles.chanteperdrix@xenomai.org> did for the x86 and arm architectures
->> with some isa enablement bits added.
->>=20
->> This should be the initial version by shanmu where I added this on top:
->> https://github.com/shannmu/linux/blob/xenomai4/wip/dovetail-riscv/
->> evl_port/arch/riscv/include/asm/evl/fptest.h
->>=20
+>>>
+>>> On 7/3/26 14:07, Jan Kiszka wrote:
+>>>> On 03.07.26 13:54, Tobias Schaffner wrote:
+>>>>> Hi all,
+>>>>>
+>>>>> in some of my test runs the sched-tp-overrun test was failing with:
+>>>>> 2026-06-23T17:25:44 ../tests/sched-tp-overrun.c:119: FAILED:
+>>>>> evl_read_observable(tfd, &nf, 1) (=3DResource temporarily unavailable)
+>>>>> 2026-06-23T17:25:44 ** sched-tp-overrun: BROKEN
+>>>>>
+>>>>> I only see this on virtual targets.
+>>>>> e.g.: https://code.siemens.com/ebsy/debian/xenomai-images/-/
+>>>>> jobs/393605372
+>>>>> Mostly on arm but also saw this on qemu-amd64 in one of my recent run=
+s.
+>>>>>
+>>>>
+>>>> Maybe improper/missing synchronization during test startup? Or when is
+>>>> this hit?
+>>>
+>>>
+>>> Does not look like a synchronization problem to me.
+>>> The key part of the test failure is this combination:
+>>>
+>>> /*
+>>> * Trigger an overrun condition by staying busy for longer
+>>> * than the duration of our allotted time window.
+>>> */
+>>> for (;;) {
+>>>  =C2=A0=C2=A0=C2=A0=C2=A0evl_read_clock(EVL_CLOCK_MONOTONIC, &now);
+>>>  =C2=A0=C2=A0=C2=A0=C2=A0if (timespec_sub_ns(&now, &start) > OVERRUN_TI=
+ME)
+>>>  =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 break;
+>>> }
+>>>
+>>> /*
+>>> * Now check whether we received the overrun event as
+>>> * expected. Since non-blocking input is enabled, a lack of
+>>> * notification would amount to an error (EAGAIN).
+>>> */
+>>> __Tcall_assert(ret, evl_read_observable(tfd, &nf, 1));
+>>>
+>>>
+>>> The OVERRUN_TIME of 200us seems to be not enough to trigger the overrun
+>>> or in some cases or at least the message was not send in time.
+>>>
+>>> I suspected the issue to be time stealing but saw the fixup parts of the
+>>> tp scheduler trying to handle missed time frames. I think we just have
+>>> to increase the overrun time but not sure how much to still keep the
+>>> fixup parts tested. I guess these code paths are only exercised on
+>>> virtual targets.
+>>>
+>> So, do you want to drop tp-overrun from this patch for now, or how
+>> to
+>> proceed?
 >
-> At least for this patch, I think it would be fair to claim authorship
-> for the final one and only refer to shanmu as provider of a baseline.
+>
+> @Philippe:
+> What is your opinion on this? Do we want to also relax the overrun
+> time here?
 >
 
-Agreed.  This is a trivial adaptation of the pre-existing
-arch/arm*/include/asm/evl/fptest.h, which is in and of itself
-boilerplate code.
+The whole test requires a certain degree of timeliness from the platform
+it runs on, typically the TP schedule which is being tested might be off
+only because of dramatic slowdowns, which would be considered as
+pathological on real hardware although understandable in a vm. So I
+would simply disable the test in a virtualized environment, because
+relaxing the thresholds would end up making the test pointless.
 
 --=20
 Philippe.
