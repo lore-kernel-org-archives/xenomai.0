@@ -1,188 +1,120 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF94C2BE033
-	for <xenomai@lists.linux.dev>; Sun, 12 Jul 2026 20:10:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7776367F2F
+	for <xenomai@lists.linux.dev>; Sun, 12 Jul 2026 20:17:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783887050; cv=none; b=bUp3SLXdnEFxMgyO7cnmhijtzTkdDPYRSsXe15zB0TE6YrUqhmS5Icchf+LXfhvxQBzCYQ1FHpAuD0y98YKm977BmcyhpdH3l3knEgDFOhRCjCbISu4Bb6O/wtzRJkxEYrUK/VrxqCgGl2gjnOju4fs2W06Lp4NLRG/D8zr6mck=
+	t=1783887476; cv=none; b=RHxd798RnuyamYnQJhCKI7jT6wvXusQ6sGtujwbpbwDvAL1HKbsWfpqaEJphGzLcyGuKyk0o3FqSuU/0XSzIPV5nQVE12j61IrOam+lhKAA8YZRKUoI1+rlK+/1HEuX9CgeypAPjJxC4UhJSEWTfvnnfcFE3jCyeqRXGXcPjQe4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783887050; c=relaxed/simple;
-	bh=wy5TXaEQMA9mVSgOOcgvWaJaZnRWnmDpUOQrNXlOEj8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=EcvoGFQnz9pN82w0uPssUEBKvI/bm+nXy83JotASSBGgtSHjAFCj5ty9coJOG4eGL/b2etvRcsRO1YjZeNwHNI7UDT/m/s5blVUehihEdDMEupHFJYRQXVVbZm9e/fvVJDFXyw3AmP8Ix3RawWjYsD6dmCajFrqaw76MLCRfJzk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DKt6zF+X; arc=none smtp.client-ip=209.85.128.42
+	s=arc-20240116; t=1783887476; c=relaxed/simple;
+	bh=IDuCvhSJRM7oj8W3M9WvQOQRHR/vjGllpsqZJZ99o/w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=cns5K3ceUdfymZ4cgP5VnkPDErw8si67RrVqAy3Xbm52AuoTdCSyHGcqeZE3xNuRrTHzLFUIQxhVPnZD1ySJrzlZkJXx1oaJZLkTcj5qcksd96Teg4iiDpxVwQrxx2l3PpZeaPGJtff3fBDuHliC7CyV0QdNhFR5fHiaJeCfOyo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gZDuTGEt; arc=none smtp.client-ip=209.85.221.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DKt6zF+X"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-493f60208a5so20106525e9.3
-        for <xenomai@lists.linux.dev>; Sun, 12 Jul 2026 13:10:48 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gZDuTGEt"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-47f36a122fdso567207f8f.2
+        for <xenomai@lists.linux.dev>; Sun, 12 Jul 2026 13:17:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783887047; x=1784491847; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=yqpUXocUBZqy8WwKD2L7eQDMhQn0BdtervpbCwQlPiU=;
-        b=DKt6zF+XBEbM4KNs+33VDIrm3Un96ahzDMxgYZy4TKgiNXxMCDHkrPEJ7NNz2mscrF
-         rM/B9l9rxWgm8i98VRZ8PwrGph3LlzglQ+EDSWgfIDClPAJoWi1um5lAT4yRthKMB4Mb
-         cedEtf+FrcuBJYRcL0DM67U27FRKqk/oYc2JdoXc58UviGOSkOAnLWUsWaJlTCydlCuJ
-         lCJcCt+0ZM6V6TZ5zu3C+R7qXj1lVKjv1jkrtZZXCdn1SlMdoCLH8k0m+yTKIqnYo+Ys
-         SzQWXnxsDGS0PIRYpGCLj46ZXsCqU4dV3aTsbx10CSFJ9Zk8Rol3u4hvIIlv16ikU0/i
-         xOtg==
+        d=gmail.com; s=20251104; t=1783887473; x=1784492273; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=yjvQqDJq0jNtGyDKMzQdBephKx7yhbUCHJBfLTnp//Q=;
+        b=gZDuTGEtzat5+CcygauAM1jMN1YDeSJdQslByomWAKL8ExWmjUTXNplCLUWC/JZT8e
+         FUq55EVxewU6ar0rOi5rcn8AknbK1aHVNgIvbyf5Bo4bXzLxOFHNU/gJa1X2nb78RMvT
+         +zylgBxvZrmj7lVUXDRCvNmnjq0J/GEoyqmuv2rX6XTtONMKDyDiZ0b9pR8JDBJx9LYX
+         v8RZojh5G7oZjdSj6LnXtN1usGrmhl8+YswaQLtvbsR4+TTHkfewWNUyAQVemayWmgJs
+         vaX8x+TcGBpcUAB6KrypGx8j23li3nmuGsNzMaG+e4/Ju5N79Bub+wyvL2obBtbLvhnh
+         +W4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783887047; x=1784491847;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=yqpUXocUBZqy8WwKD2L7eQDMhQn0BdtervpbCwQlPiU=;
-        b=hQcN8521Fkn+b4Ilf2YqRdBZoSkdWSmVIIx8CBOJWWoip2Efv/wAolmeESAhBNOFvi
-         3uC8fqaUaNcGRRxE7z+tw/TjNHQWeiVXErRknCBSmKjZsKsX3fSa4BtP9wgC3omocmel
-         q1yqjXoJJP3a7QA5FnUmqNGzdl7ppx+BxdYVZT67auFjk5JbD9HYA+oZYxy361qmQ5DV
-         Ykn+fxx4G439Dhh8/ODHTONjuQRzJ0oR+EkXEQKMKVQhroXM5ToH+HWI2yYKBbqdfYN7
-         Mkldi9Tc5vuTZ5RvTfJJw1b4yvUihHWnX+CveOXY4RTNNrln/0gUtxQIPK9hLxx0z10L
-         XI1Q==
-X-Gm-Message-State: AOJu0YzAZXHD7OzNCXwlRlb9H7Sdnl9GqgMmUyYtnpPv/c+ikBcapdSh
-	kQY0kOmdIG82nRv6n5E6qKoiUVVtJYY4LcD8Q/O2osvPRepC0XLo7+YyBGJC8xPQ
-X-Gm-Gg: AfdE7cmqPb1gI7kFkbtBNQEVj6xzqcloEftIBikyk2I4vAoFF/lK90Q0+4XAg455VHx
-	SJgbo6qAyBs8bwEbPT0KJMDf2W/by+G1Z4IdRLphhemC7FndMcX8H04vtIy9atH0kOFDPiRnRo6
-	c1Tra5TDgJMNsut2cxnW+vNkvbbepcBx50mDjfQ0z95m56iFwJrsG6tU4cSacGf/9tNgDwyNomB
-	zB3q2IYGnCUd9HRra9pFnKDUibUFyeEoM46NbRaEpfl8oO26QqR9fEi4vDqWpP1IT9vNOYni10U
-	FpbNud0MJOUFbopPbDWhk+rvkRJCZkz78aIMGmxSmeMWKW2QBOK02qWd9I0shVYzmwxpActS3XN
-	z0iZDz2PU8Ppj3qNj874J4nljdDoPdCrrvru08QHH5fYaXvplqHLtQ9gRYUh+12qZHuzLMEC276
-	UuOMDw2DUaQkWFoY4=
-X-Received: by 2002:a05:600c:4ed4:b0:493:e946:c0fb with SMTP id 5b1f17b1804b1-493f87804fcmr76254745e9.0.1783887046942;
-        Sun, 12 Jul 2026 13:10:46 -0700 (PDT)
-Received: from localhost ([213.55.168.64])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-493eb6d5055sm305591695e9.5.2026.07.12.13.10.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jul 2026 13:10:46 -0700 (PDT)
-From: Hannes Diethelm <hannes.diethelm@gmail.com>
-To: xenomai@lists.linux.dev,
-	rpm@xenomai.org
-Cc: Hannes Diethelm <hannes.diethelm@gmail.com>
-Subject: [PATCH] test: hectic: sem_post task_init on failure
-Date: Sun, 12 Jul 2026 22:07:49 +0200
-Message-ID: <20260712200749.9210-1-hannes.diethelm@gmail.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <87h5max6sb.fsf@xenomai.org>
-References: <87h5max6sb.fsf@xenomai.org>
+        d=1e100.net; s=20251104; t=1783887473; x=1784492273;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=yjvQqDJq0jNtGyDKMzQdBephKx7yhbUCHJBfLTnp//Q=;
+        b=Q8hrVOzFQP2sEYoJIY5spLMr+cWMcBSbPfrazhcF7xv5KGnMMfuaFPsu+Ce2xtUaS9
+         Y1u23D9oFUdrwgDCBJqnbMer2iPCcInaVyeZMxYFVGXo0tA7wI4QZWIBE1YaTaLGqOIq
+         OiUTrST3KlKnMUvsnkNHM8T/iR0HbumpMkrxwo0nqghOhv3SvQ8LP30XrEv1BlZZ+aC1
+         G8kZxmK5HoK9ARzC0l/DJs2Ov+ZP5DU4WansLitPQCtIDwePc3tIRVz4z2TPn1U0x4fn
+         qXuAPhJJstpFbQ2a7cTIkT/ytrAHrYIsWYJG6L09HDCpZACXWTQ/sL6ndhiTHVSmh9GI
+         v0yA==
+X-Gm-Message-State: AOJu0YzrBJKPN3joOAsFDOpLm1prX7h0jpXerRjavxSDLFVdeNAG7sa5
+	vymR8AZIxA84Mp3BUG9YkuYx01lpw2ohM4vcVRroEEi4zNBXxpSN2u1r
+X-Gm-Gg: AfdE7cmCGNyqZZ1RkHYLvSWldZ0T1+fU9Zb1XNTZhGsrEPB6yp2J8T5F4TBrVDnnuAb
+	GhW2POeRmoE0TL8uD8clQD2D1em99K34IMOchlPENLZsF1RzwV2sNIVKq8h9ZOJIhaOCotMp5Df
+	ABWEK8IUpyAJkap4XymAcY+IZ30L0CRnUDW3YInmQpSNCQgSDaiLg25T5kcnQ7VWPDMtJDDFjq0
+	Bun9Q+UaTmeihMRbKUWiahijrUiEoUzTTGSiUJrfAnZPq1dgM0U469yVzkXhj4quWDjmJZoxwx4
+	48/TqS5EVPytlpbrDKbdPu2mFS7nqsqs313UAVUq+F1VhDMY3dSUxMNzve0LPr1E6T/dTXzuzxZ
+	+7LyOXlnwtM29p5FckW8FZacCh4yGiYWb/YmwwIhczwcPb1t/oVH3AiTEFvBO3kMEDCQbyJ9POc
+	TmFFbUIoESSUwTBlUGS5iOv30iSH0vYdY1jc+O+PxeAA==
+X-Received: by 2002:a05:6000:290f:b0:479:e2ea:3d51 with SMTP id ffacd0b85a97d-47f2dce228amr7505096f8f.17.1783887472843;
+        Sun, 12 Jul 2026 13:17:52 -0700 (PDT)
+Received: from [192.168.1.3] ([213.55.168.64])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47a9e4d843csm78469685f8f.14.2026.07.12.13.17.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 12 Jul 2026 13:17:52 -0700 (PDT)
+Message-ID: <8311d15c-e582-4351-8d92-a143a69a8359@gmail.com>
+Date: Sun, 12 Jul 2026 22:17:51 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: EVL: hectic test fails when to many CPUs are available
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev
+References: <2a2e5b00-ef70-4de5-865b-c8d00c87104b@gmail.com>
+ <87h5max6sb.fsf@xenomai.org>
+Content-Language: de-CH, en-US
+From: Hannes Diethelm <hannes.diethelm@gmail.com>
+In-Reply-To: <87h5max6sb.fsf@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-This fixes the issue where hectic doesn't exit on init failure when
-there are for example not enough resources due to to many available
-CPU's.
+Am 07.07.26 um 15:34 schrieb Philippe Gerum:
+> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+> 
+>> Hello
+>>
+>> This is the reason for the patch for evl-test. I guess a beginners mistake / edge case but
+>> if you want to look into it:
+>>
+>> If I don't set evl.oobcpus in my VM or just use to many OOB CPUs, the hectic test crashes and
+>> never exits. I have to use kill -9 to stop it.
+>>
+>> evl_attach(): Resource temporarily unavailable: This is probably not handled correctly.
+>>
+>> evl.oobcpus=0-15 -> Freeze
+>> evl.oobcpus=1-15 -> Freeze
+>> evl.oobcpus=2-15 -> Ok
+>>
+>> /usr/libexec/evl/tests/hectic -T 5
+>>
+>> rtus_ufps11-10 rtuo11-11 rtuo11-12 rtuo_ufpp11-13 rtuo_ufpp11-14
+>> rtuo_ufps11-15 rtuo_ufps11-16 rtuo_ufpp_ufps11-17 rtuo_ufpp_ufps11-18
+>> fpu_stress_ufps11-19 switcher_ufps12-0 rtk12-1 rtk12-2 rtup12-3
+>> revl_attach(): Resource temporarily unavailable
+>>
+> 
+> Mm, ok. This one is indeed an old and obscure issue which has never been
+> cared of. Increasing CONFIG_EVL_COREMEM_SIZE and CONFIG_EVL_NR_THREADS
+> in order to account for the massive amount of threads involved in large
+> CPU configurations should fix it.
+> 
+> At any rate, the test should unwind and exit cleanly when that fails,
+> so there is still this issue to solve at some point.
+> 
 
-Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
----
- tests/hectic.c | 32 ++++++++++++++++++++++----------
- 1 file changed, 22 insertions(+), 10 deletions(-)
+The supplied patch should fix the issue with the forever running hectic
+test. It looks like the main thread waited forever for the task_init semaphore.
 
-diff --git a/tests/hectic.c b/tests/hectic.c
-index af8f988..b07e074 100644
---- a/tests/hectic.c
-+++ b/tests/hectic.c
-@@ -270,6 +270,7 @@ static void *sleeper_switcher(void *cookie)
- 	CPU_SET(param->cpu->index, &cpu_set);
- 	if (sched_setaffinity(0, sizeof(cpu_set), &cpu_set)) {
- 		perror("sleeper: sched_setaffinity");
-+		sem_post(&task_init);
- 		clean_exit(EXIT_FAILURE);
- 	}
- 
-@@ -379,6 +380,7 @@ static void *fpu_stress(void *cookie)
- 	CPU_SET(param->cpu->index, &cpu_set);
- 	if (sched_setaffinity(0, sizeof(cpu_set), &cpu_set)) {
- 		perror("sleeper: sched_setaffinity");
-+		sem_post(&task_init);
- 		clean_exit(EXIT_FAILURE);
- 	}
- 
-@@ -399,19 +401,14 @@ static void *fpu_stress(void *cookie)
- 	return NULL;
- }
- 
--static void attach_thread(struct task_params *param)
-+static int attach_thread(struct task_params *param)
- {
- 	char buffer[64];
--	int efd;
- 
- 	task_name(buffer, sizeof(buffer), param->cpu,param->swt.index);
- 
- 	/* Make it a public thread only for demo purpose. */
--	efd = evl_attach_self("/%s:%d", buffer, getpid());
--	if (efd < 0) {
--		perror("evl_attach()");
--		clean_exit(EXIT_FAILURE);
--	}
-+	return evl_attach_self("/%s:%d", buffer, getpid());
- }
- 
- static void *rtup(void *cookie)
-@@ -423,12 +420,17 @@ static void *rtup(void *cookie)
- 	cpu_set_t cpu_set;
- 	unsigned i = 0;
- 
--	attach_thread(param);
-+	if (attach_thread(param) < 0) {
-+		perror("evl_attach()");
-+		sem_post(&task_init);
-+		clean_exit(EXIT_FAILURE);
-+	}
- 
- 	CPU_ZERO(&cpu_set);
- 	CPU_SET(param->cpu->index, &cpu_set);
- 	if (sched_setaffinity(0, sizeof(cpu_set), &cpu_set)) {
- 		perror("rtup: sched_setaffinity");
-+		sem_post(&task_init);
- 		clean_exit(EXIT_FAILURE);
- 	}
- 
-@@ -503,12 +505,17 @@ static void *rtus(void *cookie)
- 	cpu_set_t cpu_set;
- 	unsigned i = 0;
- 
--	attach_thread(param);
-+	if (attach_thread(param) < 0) {
-+		perror("evl_attach()");
-+		sem_post(&task_init);
-+		clean_exit(EXIT_FAILURE);
-+	}
- 
- 	CPU_ZERO(&cpu_set);
- 	CPU_SET(param->cpu->index, &cpu_set);
- 	if (sched_setaffinity(0, sizeof(cpu_set), &cpu_set)) {
- 		perror("rtus: sched_setaffinity");
-+		sem_post(&task_init);
- 		clean_exit(EXIT_FAILURE);
- 	}
- 
-@@ -600,12 +607,17 @@ static void *rtuo(void *cookie)
- 	cpu_set_t cpu_set;
- 	unsigned i = 0;
- 
--	attach_thread(param);
-+	if (attach_thread(param) < 0) {
-+		perror("evl_attach()");
-+		sem_post(&task_init);
-+		clean_exit(EXIT_FAILURE);
-+	}
- 
- 	CPU_ZERO(&cpu_set);
- 	CPU_SET(param->cpu->index, &cpu_set);
- 	if (sched_setaffinity(0, sizeof(cpu_set), &cpu_set)) {
- 		perror("rtuo: sched_setaffinity");
-+		sem_post(&task_init);
- 		clean_exit(EXIT_FAILURE);
- 	}
- 
--- 
-2.47.3
-
+Probably not a fully clean way of doing it but it exits now with a many error messages
+in case there is not enough memory instead of running forever.
