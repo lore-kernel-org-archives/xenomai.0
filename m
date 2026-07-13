@@ -1,120 +1,91 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7776367F2F
-	for <xenomai@lists.linux.dev>; Sun, 12 Jul 2026 20:17:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEB6735B63B
+	for <xenomai@lists.linux.dev>; Mon, 13 Jul 2026 06:55:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783887476; cv=none; b=RHxd798RnuyamYnQJhCKI7jT6wvXusQ6sGtujwbpbwDvAL1HKbsWfpqaEJphGzLcyGuKyk0o3FqSuU/0XSzIPV5nQVE12j61IrOam+lhKAA8YZRKUoI1+rlK+/1HEuX9CgeypAPjJxC4UhJSEWTfvnnfcFE3jCyeqRXGXcPjQe4=
+	t=1783925720; cv=none; b=TeMXN3OnxnpzBdm2lypfTbOSRGaGUWRXgFhWWNMv46nIlTiVv8A4ZDTgu9+89ChMkW65iw8X4X5TiNn/LlRnAR0rRChfADuiv4VSluKYjlUGzNebiOxdsyULZDnArJ3iYF94ThhAXih+zpY3qLYA4w4B/eJbYDBqDAtKLDbSxWk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783887476; c=relaxed/simple;
-	bh=IDuCvhSJRM7oj8W3M9WvQOQRHR/vjGllpsqZJZ99o/w=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cns5K3ceUdfymZ4cgP5VnkPDErw8si67RrVqAy3Xbm52AuoTdCSyHGcqeZE3xNuRrTHzLFUIQxhVPnZD1ySJrzlZkJXx1oaJZLkTcj5qcksd96Teg4iiDpxVwQrxx2l3PpZeaPGJtff3fBDuHliC7CyV0QdNhFR5fHiaJeCfOyo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gZDuTGEt; arc=none smtp.client-ip=209.85.221.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1783925720; c=relaxed/simple;
+	bh=ikaByMKLCDVuFJOOz9CJZmUIP3n/VIPwNzQVrZntB5Y=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=LXbuOMxAcpbW7oaPwJz+cChFCZKGttMvFS5cLXeB71OZpl5TtbHYed/IM/qlvZoVGhFueNsbT8n4YksiakCVnLPV6WFjLPbjDaP61ix7FPJddClftFjvpI9mABkkinUaodSjJ5osbsI+DPDgD/OGRcOW/gf5Y6NnUKlfIUFVbaQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=PbYxvCZt; arc=none smtp.client-ip=217.70.183.198
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gZDuTGEt"
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-47f36a122fdso567207f8f.2
-        for <xenomai@lists.linux.dev>; Sun, 12 Jul 2026 13:17:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1783887473; x=1784492273; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=yjvQqDJq0jNtGyDKMzQdBephKx7yhbUCHJBfLTnp//Q=;
-        b=gZDuTGEtzat5+CcygauAM1jMN1YDeSJdQslByomWAKL8ExWmjUTXNplCLUWC/JZT8e
-         FUq55EVxewU6ar0rOi5rcn8AknbK1aHVNgIvbyf5Bo4bXzLxOFHNU/gJa1X2nb78RMvT
-         +zylgBxvZrmj7lVUXDRCvNmnjq0J/GEoyqmuv2rX6XTtONMKDyDiZ0b9pR8JDBJx9LYX
-         v8RZojh5G7oZjdSj6LnXtN1usGrmhl8+YswaQLtvbsR4+TTHkfewWNUyAQVemayWmgJs
-         vaX8x+TcGBpcUAB6KrypGx8j23li3nmuGsNzMaG+e4/Ju5N79Bub+wyvL2obBtbLvhnh
-         +W4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1783887473; x=1784492273;
-        h=content-transfer-encoding:content-type:in-reply-to:from
-         :content-language:references:cc:to:subject:user-agent:mime-version
-         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=yjvQqDJq0jNtGyDKMzQdBephKx7yhbUCHJBfLTnp//Q=;
-        b=Q8hrVOzFQP2sEYoJIY5spLMr+cWMcBSbPfrazhcF7xv5KGnMMfuaFPsu+Ce2xtUaS9
-         Y1u23D9oFUdrwgDCBJqnbMer2iPCcInaVyeZMxYFVGXo0tA7wI4QZWIBE1YaTaLGqOIq
-         OiUTrST3KlKnMUvsnkNHM8T/iR0HbumpMkrxwo0nqghOhv3SvQ8LP30XrEv1BlZZ+aC1
-         G8kZxmK5HoK9ARzC0l/DJs2Ov+ZP5DU4WansLitPQCtIDwePc3tIRVz4z2TPn1U0x4fn
-         qXuAPhJJstpFbQ2a7cTIkT/ytrAHrYIsWYJG6L09HDCpZACXWTQ/sL6ndhiTHVSmh9GI
-         v0yA==
-X-Gm-Message-State: AOJu0YzrBJKPN3joOAsFDOpLm1prX7h0jpXerRjavxSDLFVdeNAG7sa5
-	vymR8AZIxA84Mp3BUG9YkuYx01lpw2ohM4vcVRroEEi4zNBXxpSN2u1r
-X-Gm-Gg: AfdE7cmCGNyqZZ1RkHYLvSWldZ0T1+fU9Zb1XNTZhGsrEPB6yp2J8T5F4TBrVDnnuAb
-	GhW2POeRmoE0TL8uD8clQD2D1em99K34IMOchlPENLZsF1RzwV2sNIVKq8h9ZOJIhaOCotMp5Df
-	ABWEK8IUpyAJkap4XymAcY+IZ30L0CRnUDW3YInmQpSNCQgSDaiLg25T5kcnQ7VWPDMtJDDFjq0
-	Bun9Q+UaTmeihMRbKUWiahijrUiEoUzTTGSiUJrfAnZPq1dgM0U469yVzkXhj4quWDjmJZoxwx4
-	48/TqS5EVPytlpbrDKbdPu2mFS7nqsqs313UAVUq+F1VhDMY3dSUxMNzve0LPr1E6T/dTXzuzxZ
-	+7LyOXlnwtM29p5FckW8FZacCh4yGiYWb/YmwwIhczwcPb1t/oVH3AiTEFvBO3kMEDCQbyJ9POc
-	TmFFbUIoESSUwTBlUGS5iOv30iSH0vYdY1jc+O+PxeAA==
-X-Received: by 2002:a05:6000:290f:b0:479:e2ea:3d51 with SMTP id ffacd0b85a97d-47f2dce228amr7505096f8f.17.1783887472843;
-        Sun, 12 Jul 2026 13:17:52 -0700 (PDT)
-Received: from [192.168.1.3] ([213.55.168.64])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47a9e4d843csm78469685f8f.14.2026.07.12.13.17.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 12 Jul 2026 13:17:52 -0700 (PDT)
-Message-ID: <8311d15c-e582-4351-8d92-a143a69a8359@gmail.com>
-Date: Sun, 12 Jul 2026 22:17:51 +0200
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="PbYxvCZt"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 818A43EDB7;
+	Mon, 13 Jul 2026 06:55:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1783925709;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=1v8zqaWfPe0kESmPbdrxCkKA9IGLfKD1L0EGce/hre4=;
+	b=PbYxvCZty9oMsMGIeXh2gpfgDa68O/jOYFr1xXPg/lHuSDddBxEw5Y+JcXN94XYu2fxCpE
+	KYlaPA/M+rM9XqzmpyFdBO6mLbElvprUf5tiZq531eCqT8uYzEC4ZIsctJbJDx0uy0kUkM
+	YXGnBAMcLNp1nCX/jFA1DBiMPro0jMp5zJ+G7PKnpZysVLkKV+3mDCpTT0O7DESglJabYJ
+	KMvdVQnYTUM0lD4hp+Pz4fFi4lrRtdpViRHVqwV2K+1e/PxaoUhWYIINByKnx8k4R8T4op
+	Y+aw6kok+fZXhd/tDB9aqt/9iCUdQ06hC3cRLju1PTZXtYZm5OuiBqgbi+c/ZQ==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Tobias Schaffner <tobias.schaffner@siemens.com>
+Cc: xenomai@lists.linux.dev
+Subject: Re: [PATCH libevl v2 0/4] evl-test: stress load and latmus integration
+In-Reply-To: <20260709143516.395611-1-tobias.schaffner@siemens.com> (Tobias
+	Schaffner's message of "Thu, 9 Jul 2026 16:35:12 +0200")
+References: <20260709143516.395611-1-tobias.schaffner@siemens.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Mon, 13 Jul 2026 08:54:53 +0200
+Message-ID: <877bmz751e.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: EVL: hectic test fails when to many CPUs are available
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai@lists.linux.dev
-References: <2a2e5b00-ef70-4de5-865b-c8d00c87104b@gmail.com>
- <87h5max6sb.fsf@xenomai.org>
-Content-Language: de-CH, en-US
-From: Hannes Diethelm <hannes.diethelm@gmail.com>
-In-Reply-To: <87h5max6sb.fsf@xenomai.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-GND-Sasl: rpm@xenomai.org
+X-GND-Cause: dmFkZTEa9uR43egCQzlslEB3/RDCXdeS1io0m+cu9Vc41LaIYk3FYrwYaaZ/jVt52ojIVtmV5iLOGzO+N1suZzyCdvMYIsLAZmgo38sA4HRxDYJ8V2uf1fNNFf5Dd+3+6OcvL+6RPXu0Nlw/y1sobTR7b5KrJR/rssOVLqIXYHE03+HLdtVvdgRffyztRu7sgleb/ZwZFC3gVLx5gJreHjXG+3Vww53bVjM1rJ3WuTNmpzMIMbtS1plCXNh/E4AP2TUw6DX9iqKwjMbqyVX7+gERzX6HDFK0pQfY8bpyO22gIGvExwK6Uj8cO6s6DPf0UyXjXo5+tcyxYHWWlNvGtFTOJwdWJfYuYWPtA+TewHxvKBC0aGG3VDuJbo3MxYMD5qc7dOQW6Alzt1tGZOfFJEAKHhTgDll6G6YDaW0yHQaKt8ZPuSUfmywbK0yhIQiJcTXOfMe7aYvNlK7pugKwgpfhj/Aojx5K93Q8yx+9s1TTZtuhdO/2JRm4NEtkl4G8Uc7vX/ftpnYV0tLP6dogAiEJ4zp7GLGswLPiKtOS2SsJ8CQzqar05Walg5ec4Phgk3Xr7W0uSy1nRXXSSteUoGe8fUsVviHOsiBHWynH4YUiUCZwwEjknINLPZE8AojukfjNFdOi7vZluKTXmNg8KEHzQn80bRbOlV2s+rF0os8CpnkSow
+X-GND-State: clean
+X-GND-Score: -100
 
-Am 07.07.26 um 15:34 schrieb Philippe Gerum:
-> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
-> 
->> Hello
->>
->> This is the reason for the patch for evl-test. I guess a beginners mistake / edge case but
->> if you want to look into it:
->>
->> If I don't set evl.oobcpus in my VM or just use to many OOB CPUs, the hectic test crashes and
->> never exits. I have to use kill -9 to stop it.
->>
->> evl_attach(): Resource temporarily unavailable: This is probably not handled correctly.
->>
->> evl.oobcpus=0-15 -> Freeze
->> evl.oobcpus=1-15 -> Freeze
->> evl.oobcpus=2-15 -> Ok
->>
->> /usr/libexec/evl/tests/hectic -T 5
->>
->> rtus_ufps11-10 rtuo11-11 rtuo11-12 rtuo_ufpp11-13 rtuo_ufpp11-14
->> rtuo_ufps11-15 rtuo_ufps11-16 rtuo_ufpp_ufps11-17 rtuo_ufpp_ufps11-18
->> fpu_stress_ufps11-19 switcher_ufps12-0 rtk12-1 rtk12-2 rtup12-3
->> revl_attach(): Resource temporarily unavailable
->>
-> 
-> Mm, ok. This one is indeed an old and obscure issue which has never been
-> cared of. Increasing CONFIG_EVL_COREMEM_SIZE and CONFIG_EVL_NR_THREADS
-> in order to account for the massive amount of threads involved in large
-> CPU configurations should fix it.
-> 
-> At any rate, the test should unwind and exit cleanly when that fails,
-> so there is still this issue to solve at some point.
-> 
+Tobias Schaffner <tobias.schaffner@siemens.com> writes:
 
-The supplied patch should fix the issue with the forever running hectic
-test. It looks like the main thread waited forever for the task_init semaphore.
+> Extend evl-test to exercise the system while the tests run and to
+> measure latency at the end of a session.
+>
+> The motivation is to allow running the suite under stress in CI to
+> surface bugs that only show up under load.
+> latmus run under that same load and with a latency threshold will allow
+> the pipeline to spot latency regressions.
+>
+> Example:
+>
+>   # run latmus under CPU/memory stress, fail above 200us,
+>   # keep the latmus report
+>   evl test --stress-cmd "stress-ng --cpu 4 --vm 2 --vm-bytes 1G" \
+>            latmus -- -T 60 -A 200
+>
+> Changes since v1:
+>  * Introduce a small shell script wrapper in the test dir to add latmus
+>    to the testsuite instead of calling it in the end after the other tests.
+>
+> Tobias Schaffner (4):
+>   evl-test: add stress command support for background load testing
+>   evl-test: improve help message with detailed usage information
+>   latmus: send setup messages to stdout instead of stderr
+>   tests: Add latmus wrapper script for evl-test integration
+>
+>  latmus/latmus.c   |  4 ++--
+>  tests/latmus      | 16 +++++++++++++
+>  tests/meson.build | 11 +++++++++
+>  utils/evl-test    | 57 ++++++++++++++++++++++++++++++++++++++++++++++-
+>  4 files changed, 85 insertions(+), 3 deletions(-)
+>  create mode 100755 tests/latmus
 
-Probably not a fully clean way of doing it but it exits now with a many error messages
-in case there is not enough memory instead of running forever.
+Series merged, thanks.
+
+-- 
+Philippe.
