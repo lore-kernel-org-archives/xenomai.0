@@ -1,168 +1,62 @@
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B04F1342CBA
-	for <xenomai@lists.linux.dev>; Mon, 13 Jul 2026 06:55:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01A9A2236F0
+	for <xenomai@lists.linux.dev>; Mon, 13 Jul 2026 07:07:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1783925733; cv=none; b=OpfFJO+37tSNgFx8W6MPf/Fzqf8DH+IwI1Kii8J/zDpS7NQALa4JmyjvXts3Uze5X9J5rIG3KrnqZ/yZZJmk0HuxyfxhYfnBIpQ4MA/tvsvSdjwcKGQuYyMTNKVT1ysabXGLdqB064jQwxZSEJ91gf7X/CSERLpzVrGA1HFTteo=
+	t=1783926436; cv=none; b=IC+e4bTwfAofZZSZB5U4+DEBnE+c8W3OMDYcavY0Xk3oVYNPKXYcQf6kPQc3ig++we30iXrLWirxjDU+HPDbbX0vB0g2fhypedJdqGBwi2ATooAbAEbz75/G+RJkD0p3hC153NfFGXzVz/ppswVl/IIjPt9BiEXbZbTLPivRHxo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1783925733; c=relaxed/simple;
-	bh=uiHTXFk1i2VCRKSL0/kMj/xtbnm8KhTVk2K8GCba15M=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=e9aN1rRnKXSCsUACG+uvcC6mb53hk0+EhbsGsUikHEkv2oyR9KauUzeSXe2KcRDEXjvPpLTl03PFlHhgLWy5OL//yJZVqac8c41fh9w1yxX+0+/ZfOT4ObT1ytjcQEshlavG/gzfr2ScUyMVChw6yo8I6Jm4vbWKXnMl5v2EMQs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=VZgmn977; arc=none smtp.client-ip=217.70.183.201
+	s=arc-20240116; t=1783926436; c=relaxed/simple;
+	bh=kGX8U92PlEIr7mf966Zmjjt90nIRlJzAeMHvhCPNAqM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=e9JCGpC8lWoeuMoQU9fanzqMN/C0W5k+LbF5gERvnDe6OPEH0Xb7iRSEMdz+pTuyk/aGu//ByJ6r/Vg+7dnibLEWPEvev4nIwI/3coP9VQSahBotc2/nr9XzbnHdAqeQtISBxUL/yHrxkMDns4bLaZCn99BnL0/5kHApn2l8KpU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=gIDzi5Uf; arc=none smtp.client-ip=217.70.183.198
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="VZgmn977"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 829813F618;
-	Mon, 13 Jul 2026 06:55:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="gIDzi5Uf"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id DBA6E3EDAD;
+	Mon, 13 Jul 2026 07:07:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1783925724;
+	t=1783926433;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=Dv0llW4+N32Mgo8+ofeR5hx2UFXNlSPeab74AeSyX6U=;
-	b=VZgmn977kxQG0ag1zXb1m/L2Oxay43Kl51RsD5epVLQZeZFJnm8M5kLCZGyfJ3E3+G1hKb
-	2mEPnzbz6U4o5+zcIdeZcb0LRr/IPiylsuh00MRL6RbAAGhfDZeBn4+bkyeQsgZmTwtKhJ
-	t2Ka/ACYEkTekNHeALrQYNJGl8wOqtbBaYc1sFRdu48hDdaLSAd3g5k9cDYL6EoEosr9+i
-	oInmHN12x1sVuy0cNKLmf3HabwHyYZ5AgihBec0v9ji/aNzqlMW0kFTE4SdMmNa7SAsgd+
-	So62BvLLQG463dFMNJ8tVTJZBMq5RZC5Upot9scY/MDRX6VAFWvP0duSvxU9SA==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Hannes Diethelm <hannes.diethelm@gmail.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: [PATCH] test: hectic: sem_post task_init on failure
-In-Reply-To: <20260712200749.9210-1-hannes.diethelm@gmail.com> (Hannes
-	Diethelm's message of "Sun, 12 Jul 2026 22:07:49 +0200")
-References: <87h5max6sb.fsf@xenomai.org>
-	<20260712200749.9210-1-hannes.diethelm@gmail.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Mon, 13 Jul 2026 08:55:23 +0200
-Message-ID: <871pd7750k.fsf@xenomai.org>
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=gYj0IYAfDX6eqlMqalEo5lINJti8AsX7Nd9T6kAFo40=;
+	b=gIDzi5UfxjMvwXWBXuolkuqvoXut8JAXXtTsSuPaIDbBl654KkJvn8+8+AQV4lAKR+Uqjn
+	cCOSOOdiygv5dXtkaWTV0Pm1o5v4YLxa1WErl6JXvgxzuh/yApLhYLNA0zF4IpCR60ZcIQ
+	8rN3xWz5fIzVuRW53+DTmzWiM0TUoh0vekPJQnOsaycpl2ze+4eaTbVwegifsDugvynZhx
+	MEGFHtOHAbnDef+sI2qOxXQHlJXnBuj/JgCuVU98qNYGxn3Sc/4QKzXmZytQGlhwMzQFH0
+	S66/GqizYI+CkGyk0Xq16eJG9Rn9RnoFA0SrH1ewb0FCCVZPGEul0uVxNBZRsA==
+From: Philippe  Gerum <rpm@xenomai.org>
+To: xenomai@lists.linux.dev
+Cc: Tobias Schaffner <tobias.schaffner@siemens.com>,
+	Philippe Gerum <rpm@xenomai.org>
+Subject: [PATCH v1 0/1] vDSO-related definitions for RISC-V
+Date: Mon, 13 Jul 2026 09:05:17 +0200
+Message-ID: <20260713070639.60268-1-rpm@xenomai.org>
+X-Mailer: git-send-email 2.55.0
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 X-GND-Sasl: rpm@xenomai.org
-X-GND-Score: -100
-X-GND-Cause: dmFkZTEa9uR43egCQzlslEB3/RDCXdeS1io0m+cu9Vc41LaIYk3FYrwYaaZ/jVt52ojIVtmV5iLOGzO+N1suZzyCdvMYIsLAZmgo38sA4HRxDYJ8V2uf1fNNFf5Dd+3+6OcvL+6RPXu0Nlw/y1sobTR7b5KrJR/rssOVLqIXYHE03+HLdtVvdgRffyztRu7sgleb/ZwZFC3gVLx5gJreHjXG+3Vww53bVjM1rJ3WuTNmpzMIMbtS1plCXNh/E4AP2TUw6DX9iqKwjMbqyVX7+gERzX6HDFK0pQfY8bpyO22gIGvExwK6Uj8cO6s6DPf0UyXjXo5+tcyxYHWWlNvGtFTOJwdWYaUqHf1paeC7M21h3XZ2MWN76zUq2KHQRxq8Y1kMr4TMQG0YDsryA//l+buTiINmsGlHoRFRtbQtfg69A/huN2gMAOTnZAy2K40VWfQouHzV4a0S99HLDmidNXQJrUvOm7fElhRy5uXjIJJgPH0jQ6AMLbzhcTKRxLgms676QAHiiggeT5emVoseKbCT2LxpMxbzeYpEABL1BuXjXiqf/Rq6LBa6p20GIlAfKV26NeEEtIEcEU4yAiOlphMNq42UyZ3A9OeoDxESHYQ2TWk4MjAPtTNiDoGM3AHlJ1iS4PW/CBLOa+K0DS6r63MMwPGCJDls4xXZOZGHpMFT8LUuWg
+X-GND-Cause: dmFkZTGPLH3oY5FqujRu6hW0nVVceLlMibFpMlmR9WW7/8QIYYcd/AJFj1GyJ1/KsbVRKX8422ytG+agjBAN6XAMNT2Rah4iV7nTB9L4ReXv5AnciNC/C2EC9kvmkQYY2/RQFCFsxQ8/VsGeUkgwRpVb1z1RAV6DyG/sBGpI7tG7f943S2WIqL0pKEKBtwpOtR4LQ9Xkh8MT0Q2BaP138yfq64ZPAGCEuVZWxOblPrwRsgB3YovCeKiKDrpFxo3vNGRklRkLnfUNkN+ZeWURynL25mQ3/yMHmSw1wpjNkSuphaduL+nU06m5/ILBHvvv9YkrFn6lwEFWF2jj0jNJozttzTLaAFsJ845wtPcUDKG6+HTBHMWMKw+U2ogN97ycJqpRhchYv+1qN3Ji/Pw9YMl1X3n5qCyZcqvosjnJ00b2FSQAouJDwKx/JSK5x/U++tQMimpa783epsw966BHZ4g/QvZNEVm+QenP42Rve4W5wSU2ryTA98VE4StEJcLevrXitnSY8z0PxoLetxXpbd3JnmTij3eyQLPnXQbWeS2B6wcVqGzM2D9o4I++3v9cfdG+N8zV4qWM9ptikNKlF5IOciUqGeM0AWgWmWUtwKz86KTUVIrL6HNfK69B3p607pKw5Grxi7oPDyv5z1tC/GSUmtuWHWzoul3nMYBcNBvuW9asAg
 X-GND-State: clean
+X-GND-Score: -100
 
-Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+From: Philippe Gerum <rpm@xenomai.org>
 
-> This fixes the issue where hectic doesn't exit on init failure when
-> there are for example not enough resources due to to many available
-> CPU's.
->
-> Signed-off-by: Hannes Diethelm <hannes.diethelm@gmail.com>
-> ---
->  tests/hectic.c | 32 ++++++++++++++++++++++----------
->  1 file changed, 22 insertions(+), 10 deletions(-)
->
-> diff --git a/tests/hectic.c b/tests/hectic.c
-> index af8f988..b07e074 100644
-> --- a/tests/hectic.c
-> +++ b/tests/hectic.c
-> @@ -270,6 +270,7 @@ static void *sleeper_switcher(void *cookie)
->  	CPU_SET(param->cpu->index, &cpu_set);
->  	if (sched_setaffinity(0, sizeof(cpu_set), &cpu_set)) {
->  		perror("sleeper: sched_setaffinity");
-> +		sem_post(&task_init);
->  		clean_exit(EXIT_FAILURE);
->  	}
->  
-> @@ -379,6 +380,7 @@ static void *fpu_stress(void *cookie)
->  	CPU_SET(param->cpu->index, &cpu_set);
->  	if (sched_setaffinity(0, sizeof(cpu_set), &cpu_set)) {
->  		perror("sleeper: sched_setaffinity");
-> +		sem_post(&task_init);
->  		clean_exit(EXIT_FAILURE);
->  	}
->  
-> @@ -399,19 +401,14 @@ static void *fpu_stress(void *cookie)
->  	return NULL;
->  }
->  
-> -static void attach_thread(struct task_params *param)
-> +static int attach_thread(struct task_params *param)
->  {
->  	char buffer[64];
-> -	int efd;
->  
->  	task_name(buffer, sizeof(buffer), param->cpu,param->swt.index);
->  
->  	/* Make it a public thread only for demo purpose. */
-> -	efd = evl_attach_self("/%s:%d", buffer, getpid());
-> -	if (efd < 0) {
-> -		perror("evl_attach()");
-> -		clean_exit(EXIT_FAILURE);
-> -	}
-> +	return evl_attach_self("/%s:%d", buffer, getpid());
->  }
->  
->  static void *rtup(void *cookie)
-> @@ -423,12 +420,17 @@ static void *rtup(void *cookie)
->  	cpu_set_t cpu_set;
->  	unsigned i = 0;
->  
-> -	attach_thread(param);
-> +	if (attach_thread(param) < 0) {
-> +		perror("evl_attach()");
-> +		sem_post(&task_init);
-> +		clean_exit(EXIT_FAILURE);
-> +	}
->  
->  	CPU_ZERO(&cpu_set);
->  	CPU_SET(param->cpu->index, &cpu_set);
->  	if (sched_setaffinity(0, sizeof(cpu_set), &cpu_set)) {
->  		perror("rtup: sched_setaffinity");
-> +		sem_post(&task_init);
->  		clean_exit(EXIT_FAILURE);
->  	}
->  
-> @@ -503,12 +505,17 @@ static void *rtus(void *cookie)
->  	cpu_set_t cpu_set;
->  	unsigned i = 0;
->  
-> -	attach_thread(param);
-> +	if (attach_thread(param) < 0) {
-> +		perror("evl_attach()");
-> +		sem_post(&task_init);
-> +		clean_exit(EXIT_FAILURE);
-> +	}
->  
->  	CPU_ZERO(&cpu_set);
->  	CPU_SET(param->cpu->index, &cpu_set);
->  	if (sched_setaffinity(0, sizeof(cpu_set), &cpu_set)) {
->  		perror("rtus: sched_setaffinity");
-> +		sem_post(&task_init);
->  		clean_exit(EXIT_FAILURE);
->  	}
->  
-> @@ -600,12 +607,17 @@ static void *rtuo(void *cookie)
->  	cpu_set_t cpu_set;
->  	unsigned i = 0;
->  
-> -	attach_thread(param);
-> +	if (attach_thread(param) < 0) {
-> +		perror("evl_attach()");
-> +		sem_post(&task_init);
-> +		clean_exit(EXIT_FAILURE);
-> +	}
->  
->  	CPU_ZERO(&cpu_set);
->  	CPU_SET(param->cpu->index, &cpu_set);
->  	if (sched_setaffinity(0, sizeof(cpu_set), &cpu_set)) {
->  		perror("rtuo: sched_setaffinity");
-> +		sem_post(&task_init);
->  		clean_exit(EXIT_FAILURE);
->  	}
+Philippe Gerum (1):
+  lib/arch: riscv: add vDSO-related definitions
 
-Merged, thanks.
+ lib/arch/riscv/include/asm/evl/vdso.h | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+ create mode 100644 lib/arch/riscv/include/asm/evl/vdso.h
 
 -- 
-Philippe.
+2.55.0
+
