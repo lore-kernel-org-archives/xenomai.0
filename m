@@ -1,148 +1,162 @@
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
+Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010042.outbound.protection.outlook.com [52.101.69.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 589AF3F788F
-	for <xenomai@lists.linux.dev>; Wed, 15 Jul 2026 09:21:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.196
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784107286; cv=none; b=QykOxi6bFi+SB0SFGqCsGb+iYPpnvt1uT9qQaa0SJ7kDutu/sA3/pXR8DPAheT7kY4ibC91MqUlHmxsaCnL2BEz922C14j6gXNGvxwQTBupem9AGU52NtpUZ259WE7rD94PSQEGKhYBIsmnQ8H6B7ma4gAi4RPmWQ3U9jKGNyns=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784107286; c=relaxed/simple;
-	bh=kIyoF6lpvlWOJhpBVWO6hcFZ/8U+2uuCqy5YD33mPJ4=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=eeCM4SW/c5lJs9Qiiv0yBOHHoJxhLfN6IYN1llrM699qEv8r3sf4EDL5a0tvhZ85qVj6tEQ6J8h1NGGYww/4/Hj2xgvwW+qechpWAP51AE9Cm2HhoOnTBJxBzoxiPCYWYqXEEtKUtxr3hhR3PVrMIssaPrwsm2cCwDlXp4tNIJk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=Eka5U24I; arc=none smtp.client-ip=217.70.183.196
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DE8F429033
+	for <xenomai@lists.linux.dev>; Wed, 15 Jul 2026 09:28:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784107716; cv=fail; b=B4I9W5e0kk0oKdP1cWiXJHXrX/8NBHp/BNh+yaVsgw1rKKwRF5CiEDYCpX0d2azpA5etnbTSOPiTOoSMRhuxb+hRZOvmbEoo3n3eh0Qt0C/lk14xOO2Qu3nnmm5YwkEvnRhmDzr4yDfNW/wDceXz0nuLNu9RdH4v1TiIuVK7TtY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784107716; c=relaxed/simple;
+	bh=d1R8TqZxzlUZ5sni8evfdKZDj1nh6bp+fW8eqIxXCX0=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=rnjXXiEtlGfVasexg2zrHEBQbFbwW3EPVLOMr4z0VrcqQ+uvHQTMZRq0S9EGwKflsXLRwn6c4d1U9gLgpY3b+fhsuCecJ/DwKJV7McCgcx3bL7g/X3xaXPpnWt8gqTYnjZ+9KtjXF6Bu4h0+fmMdn47EtXCeu6OTeOc1RdP5ioY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=IVmcmQUD; arc=fail smtp.client-ip=52.101.69.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="Eka5U24I"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 3D9FF3E9B9;
-	Wed, 15 Jul 2026 09:21:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1784107275;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=dDOZvOxF6UO0BcHbCFt8jxkgxBVI1pDQtFf1O3GJWl4=;
-	b=Eka5U24I02KiaqydvaoHpCBtkx030d6oftpPEHXv3TPankR/5XmAfddLawbvdj1Yj+h6yo
-	8RnLHMqeZ4Y35cDqepWFQK38mZBnLzBq6KWBi85Zg250sTSBvssxlDKz4qpOXbCfSZC02L
-	QLLvW41wAqWqtgaHr2J3o/kd2tdA9Ry2d5E2KuuBXaeFtaDEZiytHEWg726IHaQxxX9MEK
-	bwVXOVajD2e06ZS/YkfzrvsoI6izVyiNj3r8+YA0iFmDDaP3vHtWfBeyCcZrUWXJQTp8wK
-	0wPvOYxtSNue9587P925DkG95JbsJ4uRe7bi/6KnAgU/27JdBGt69+JLO/K9OQ==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Kevin Strell <kstrell@aerotech.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: Xenomai 4 Allocator Fragmentation Questions
-In-Reply-To: <CADfsJ_GwXvHioDB_HvGWardrTj_wFJJO-q0QtER42duwZFoi9Q@mail.gmail.com>
-	(Kevin Strell's message of "Tue, 14 Jul 2026 16:44:19 -0400")
-References: <CADfsJ_GwXvHioDB_HvGWardrTj_wFJJO-q0QtER42duwZFoi9Q@mail.gmail.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Wed, 15 Jul 2026 11:21:13 +0200
-Message-ID: <87mrvsmwvq.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="IVmcmQUD"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=iXcMmyBzNuvY7irzEBbnDdZvp/a3fhPXV+8Z1OInzG1Jx8kpcutUkZb1qcC1xA7/+FSrh3PdSbvYLPcjGQVu7TXIGERag6FpHviiC+2Fj4/45TOe5PYy/vAc/20rstSP82EatdLC2P6soXj3w9RI3Kp0awA2ebSIZ8kzoCPmSltdtVupPOefdf3ZjN+Uoqr+5V6RG24XVBBeTdWcXtkYMtoQYAZZhqn8XRRkOifPlRQH+t++a1gwrjmkXbF89MDaljMaEuXOOamc9GcFqelIf5PXMUlzVzM5UZN0wE9q0FoVZd6yDq+KSKE8R8f9qDzEmS0kKHfFZGoecF0XkY1HhQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=xjX7ru9ED/JXLPd3heRTm0llUjZDIF6wrPU4oSXpcK8=;
+ b=mm8lme3KHokgY90bDzLlVuvDFKmT5ZkUpihbZmy9QWyjDIm0Q6BsbwRGbrc2KNT+6cbxdAfh5KvWcpb1OP9nLA4fmgJllpbytJoke4PI6wSYptlYIdsgjdVzOo/WTUk36Tlr6d10bOzIeOofnx6EDys3kFnNoy9taSu32om0DexiJq76YU9wCf2NKW0uVDlNGLOlbVy4MqvIixeyrrSVBuqJwY3SPNnDicM3+FTO3T5p8NspStIKhaKLc/vp7YsYmWalP34KYUjcF+j61QoDGbbTHbMIMr+e45yKmBDOL3H9+y3yqNuAADaXaQOrOPxO1XjsCG2rxHg5q+ZW1+mOJA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xjX7ru9ED/JXLPd3heRTm0llUjZDIF6wrPU4oSXpcK8=;
+ b=IVmcmQUDVHHndsdAOAq5zmOCI0rZG23aUazKmJqu4VQSFqkc3Mnj1Uv1l1hxcYacH8h0uZQsS3yd6y8a6KWi4dlW+FbImCNI87uQxCJxO3nax624xhUwp45yHiytXRw2TQw3AO2F0JXNsFoD24XutcbtTn07DXhuc4qEt8kf67swTfmjLSCDnhJECg+y/kIRoZwaMikzZ4c46eTjGJsQ81rAlJkA8VEap9K/6hSpYPG7Bu3hO+la0a5bOecFUZatajn2dWYB/Ujo6GQDkuD+tvq65O+JwKZsgBdPwHkVwdX905dsryuxk9E8yryUse5d38/hg4M8Hzh1qkyJAwYPmw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:3dd::5)
+ by AM7PR10MB3745.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:14e::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.202.19; Wed, 15 Jul
+ 2026 09:28:29 +0000
+Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::5f49:b0e9:d295:22d8]) by AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::5f49:b0e9:d295:22d8%3]) with mapi id 15.21.0223.008; Wed, 15 Jul 2026
+ 09:28:29 +0000
+From: Tobias Schaffner <tobias.schaffner@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: rpm@xenomai.org,
+	jan.kiszka@siemens.com,
+	Tobias Schaffner <tobias.schaffner@siemens.com>
+Subject: [PATCH xenomai-images 0/3] longterm EVL testing under load
+Date: Wed, 15 Jul 2026 11:28:19 +0200
+Message-ID: <20260715092822.223712-1-tobias.schaffner@siemens.com>
+X-Mailer: git-send-email 2.43.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: FR4P281CA0033.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:c7::16) To AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:3dd::5)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: dmFkZTGAkfZaBdHo5we3QL1DFFUcHlYpXe1G//td8gkvP+Pw7bOGi3qyVLjdjRxiAxD+nUUYeSmNaJ/GChe3XneHTRhEdkuGuuCItcTriQc6hkBrOEYPdM5QiloLlbNIqHriryIfW8XFPyUFJNSPH10JEvpZH7yBaWg9oRiH1mcLc7DfpTBGCC6q7BCz9Lom6LrcsUczKMcMD63nOl+qIAgL+ojQ0UrX7Rd5xHP9Z0djXGgaZqna9J5YzCkPcZd3W/Me80RRjWX8e8Ucw+vYE/sTRez5nVXOONexbL6G5jqGypSNbzqG6ASe7AYEDvc89GJ47jNr5ede3oFObKjUK+30Deu4SxFGdWhwmA6GNQr7lH2aZIfSmLpwiuJGK8DhSxz2tQz8uRvM+mVY2+NgtwZCy9SU4FnZQL/87zdeJcr+KSnwhZt8d+Y2T06Zglz98GB3eNmcldjyPL6Yi8TllWsHGhG8BquiNKG5nAw2ZcexHh7+WdQi6loI+Px8k1Slmi8RyQiGMHegrN+j+0dR/OPb+qSdgbSGEwTIQrMxu9ksQI8xIlAf+l5jDe0+aJ14/kRJ/y0NG5AeFhKyAl52t979pNSKHfQ0Fbm9607E8Jfc3HB9A1eC9oIDTaH2rtvDpdgRq4O5pEhTf+lpBBndKdAPDPRabkxM0it7d9cFMY78mRKMdw
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|AM7PR10MB3745:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4981628c-2eec-429a-d7f9-08dee2536e33
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|376014|366016|23010399003|10070799003|55112099003|56012099006|11063799006|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	+YIjinYnff4y1lLlVaZKMEsvqxsbH87dn31PI4pi/cFKzjl1T2EtSOBxq/z9pCWEGPTISrOu8g2AtfkXyIQ2CEzLpuWOpPaPXXVnOJBH9EL87CXFTJ0bKltHuQ2hsGItWrdhgqQghWKNUPaIfJaNsfOi38hlXrUicSVYfbYCBPWM+2rs98b3FKjJJ8o/KkEVfpBXLru6J3kLEjTwMaqvTYxNm8SltNmxuO9y6O0hwsMxBW9YPey+zcz2NW2H7THBnMS2T+4n7GQb/gQkBV4PNDelVbK9CXX6HlA32gE/Q1aLi6p9zbNJ0CnmZqKmYf2KzZ5ICVUeAjNx9BHmVQAhIP5IVHphLGhFcrI+ZM9cJvHF7iuriCJ/9YhMj7VYSSf1ETGDkWgQUL2jOg8sHnmk2p9vKHeu1CRzTPGyIjjqm+yJCf8M/f+tDzojAU8edCtgpkSJ/uG4FuVSgZARFDar71DmdvpmwvZPI9GboAYa5hR2P6PrFntjsT/MC2gkRqJnyEQqbK6CavU6mfYbSfK3WoRB7jhhgqluoHU7hhgvyMjLQq/ln7YzB1Lx7I8OmhQAlj2qrOu6kLeW+8tIXxECMZWx8Z9YPXXXkhm3wKqYtZPiwohIyf9hdgBAxYxno3Ykuz+uOUDSLPWKW9MWSKCo9ys2FQUNLtygRb/D83ZpGl4=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016)(23010399003)(10070799003)(55112099003)(56012099006)(11063799006)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?Ma/xV5ZG+gCYvAVRuD+fLJdEG87me3yNCuPWKJ1xO6Q7O5/9mDTuL1JNJAF4?=
+ =?us-ascii?Q?gMOp7V2dH7oMJyrSof5bZyquq2uWn/lUVpoQvL/4/gNxZg34j3T69RqZFIUK?=
+ =?us-ascii?Q?Nxp+CrWwnZrJck/3ZfmaN0iyHEeL8i0vySUvgo+iq93O2Xct00pi7fJOYQVq?=
+ =?us-ascii?Q?cZGKYIxtc9yWKHiuqSzGEtfUl3WqdozJiC1EGUJHv2ZZJYRge5JRVHPslq4r?=
+ =?us-ascii?Q?gvShCRfzAXIsaq0WXhFrioyAFeaf2r+qudoSWpRAnRYMCsXpA3ZNm6zK06YO?=
+ =?us-ascii?Q?YODHo4oyM1ViJqyoBPOSx0hEP4a+HVVr7Sa43A5Vqn5zlfP8XuC5JIXkhi7B?=
+ =?us-ascii?Q?qW7yhL4+33RyWF4YNGHiYzWiusBzn5EuZnwlYP025RU1oNFjN9+8aZiC9by+?=
+ =?us-ascii?Q?pFHK7+N0Be0G79DzfeSZ9tIER+Gdw1fwYUtlDVMziOMshkf+CSrIsXmRgDDg?=
+ =?us-ascii?Q?adpylIAQGs3SXNV8FIlW6GMYybPNfqHBu0LTZsqqJbtxEX3mdtVwEfEO7DRr?=
+ =?us-ascii?Q?ioxdVoJwM+EJis6lNSQRRIUAIA1AhR7UgDKUCydLeeAL1FVUwXIqiA0HoTDJ?=
+ =?us-ascii?Q?iMOLoEhbajxKrKy4bXTYS7buFT0FQ4bPyMxklZo3pEQlhOf9WmSbfrszQLXN?=
+ =?us-ascii?Q?slbosUgmtNRA6S8ZmPgUF//jALhzDOc5GfZ3v7i3NcS1wiKt+ykNu+f65QD6?=
+ =?us-ascii?Q?H529NOxGK8wYEQRn9pbuJ6tE/8dQQ6An+6LcKrekfNLdYa/5QF31rjHd+b2K?=
+ =?us-ascii?Q?styn3FBR7sI+tmTIh+s4NWnAjcQoZ62MsWwfYMyTDS8Rje2KC3DPrmVnVNxV?=
+ =?us-ascii?Q?Rv2P2EQuzV8mVgl1BRU0MoIHs0I120L0BdTWH8JdMMS6ORUYfPv+K6NzEoRn?=
+ =?us-ascii?Q?wgbMWuCbpkztETaCukJx1we0I0f1D4xcCJWJMY2f2JkMgI+3cYXhNdnSg7Lv?=
+ =?us-ascii?Q?0DLTecLDvQCRqeVxGL13UWOmHIdgFdV15+2WoM0J7/yHAPQvcV2j999KHz3c?=
+ =?us-ascii?Q?HSr+lhHFWpnCdoow8ugcb4ceKnwDX/Mq84iFzoC9YzlC6D2HLYhfbOXWRcX9?=
+ =?us-ascii?Q?0OGV10tVeKsV86gBL7ZoWv+y9oqVuvXQZFpxMDGpj+XIw5VShD6fb+J+KCsc?=
+ =?us-ascii?Q?31Itu7+VqFDGIKMBeOnCvjxYvtDc6OWfp5XH3h6EFwIn2xCV1vij77NU7BRp?=
+ =?us-ascii?Q?kHDePS9nWBKLq+vP6CW5ujVQd+Fa6rG/+21H2Ms4qfO8aMXTdk6wJ34hfm2i?=
+ =?us-ascii?Q?RHRRQZYj7nfYR/Dgjccq5edB3Wl6JwVn78/binXtompDlb444Ms46niaqhMI?=
+ =?us-ascii?Q?P0w9OtwbOhFpZ+3J0RY6eN0WLTPsoavlRa4orERU/gebbaG15DCGizlWyYhU?=
+ =?us-ascii?Q?q2EFNYjuDQ8oAfFlJOadNLzPYu4EV0O/M8Ybn7g4q2UIPJ7slrICDH/jsbkw?=
+ =?us-ascii?Q?PV7dOuwxIyR4grcdyaM+MYrWkOQ8xH725yXPJsQ/DFXK2XZApfglNrnBvb6v?=
+ =?us-ascii?Q?q1p5dvA0MG48OUWRuxjapkY3YL7LrbYPqsd0RSk6o7VBy9BM8silaKd6LUA6?=
+ =?us-ascii?Q?6IqOZMbmSzmzTGtXyIuZDy9+Qlav0IUI0JtFs6UtW0stHFvAQzI2m9o15kmn?=
+ =?us-ascii?Q?78m2URbLZEzlMxYqllFkQAtIM22NUy7mcLH3bIUww6otayXG7rtbBpiLsZAO?=
+ =?us-ascii?Q?sCif/8nDXrdZXe95KC4TE2VvynG72H9tfNgzOZkDIBvzQG56QLVoobdmCR8x?=
+ =?us-ascii?Q?V/eoSHT1/fTP2Hel9Khw2B/4oH28BYu+4W/rE0ADzO0CMWztBbE4S300n/OF?=
+X-MS-Exchange-AntiSpam-MessageData-1: gnKF1XqPZERpwc1ueXRr58Qwx8299rlXixk=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4981628c-2eec-429a-d7f9-08dee2536e33
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2026 09:28:29.5234
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ynlbd9lZoRpseRNgLG0gdTFhJLeJ5njcnnUaK3KC1uFABv6tTaugXWO0LR/2yNet/aAYRk3VN8dux71ztFPouTU5XYXC2XyRCtd/McIwsu4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3745
 
-Kevin Strell <kstrell@aerotech.com> writes:
+Hi all,
 
-> We are currently using Xenomai 4 on an AM69 on our new prototype and
-> appear to be running into fragmentation issues with the default
-> allocator while trying to use thread local heaps. After several
-> seconds of operation our application starts experiencing allocation
-> failures with evl_alloc_block_unlocked returning NULL. Our heaps are
-> allocated on reset and we do not extended or otherwise change the size
-> of the heaps during runtime. The allocated memory in question is
-> allocated out-of-band and is typically under 100 bytes but
-> occasionally there are larger allocations. Additionally, we have tried
-> running the heap_torture test on our platform and the results do not
-> seem good. Pretty much every test with the +shuffle option is showing
-> more than 50% fragmentation and many show more than 90%.
+This series introduces EVL test runs with additional stress applied via
+stress-ng, as well as long-term testing. Along the way, I also updated the
+long-term kernel under test from 6.12 to 6.18.
 
-I believe that you may be referring to this output of the heap-torture
-test specifically:
+Please note:
+ * The clock-timer-periodic test currently fails as soon as stress is
+   applied. I proposed "tests: skip clock-timer-periodic on virtual targets"
+   to address this.
+ * On the Raspberry Pi 4, even the 3-minute test exceeds the latency
+   threshold with debugging disabled:
+   latency threshold is exceeded (150000 >= 163.951), aborting.
+   https://gitlab.com/Xenomai/xenomai-images/-/jobs/15353275174
 
-sorted by: max fragmentation
-  HEAPSZ  BLOCKSZ   NRBLKS  AVG-A  AVG-F  MAX-A  MAX-F   OVRH%  FRAG%  FLAGS
-     16k       16     1024    1.8    1.9    7.3    4.7    0.0   99.8   +shuffle 
-     16k       16     1024    1.8    1.8    5.3    4.3    0.0   99.8   +shuffle +hot
-     16k       32      512    1.9    1.9    6.7    4.0    0.0   99.6   +shuffle 
-     16k       32      512    1.9    1.9    4.0    4.0    0.0   99.6   +shuffle +hot
-     16k       64      256    1.9    1.9    5.0    4.0    0.0   99.2   +shuffle +hot
-     16k       64      256    1.9    2.0    7.7    3.7    0.0   99.2   +shuffle 
-     16k      128      128    2.0    2.1    6.7    4.0    0.0   93.8   +shuffle 
-     16k      128      128    2.0    1.9    4.0    4.0    0.0   93.8   +shuffle +hot
+Best,
+Tobias
 
-This is expected in the so-called "shuffle" mode, the results are
-unfortunately slightly misleading in this case. In this mode, the test
-allocates N blocks sequentially from an empty heap, then randomizes the
-release of such blocks not to follow the allocation order, so that we
-artificially create "holes" all over the map.
+Tobias Schaffner (3):
+  ci: use stress-ng to stress EVL tests
+  ci: Update for longterm test runs from 6.12 to 6.18
+  ci: add long-term EVL CI test pipeline
 
-When enough blocks have been released (evl_free_block) to amount for
-half of the heap size, the test then measures the difference between the
-largest block size it is able to allocate next, and the amount of memory
-which should be available, in theory. The ratio determines the
-fragmentation value in the results above. Clearly, the
-randomization/shuffle on free is ruining the coalescence between
-released blocks, which shows in the figure.
-
-IOW, heapmem may be subject to fragmentation when an adverse
-allocation/deallocation pattern happens, but the one reported by the
-test in shuffle mode is extremely unfavorable by design.
-
->
-> We did try the compaction procedure documented on the Xenomai 4
-> Caveats page but it did not seem to improve our situation. It is
-> unclear to us when the compaction should be triggered. The
-> documentation states it needs to happen before mlockall() is called
-> but evl_init() makes a call to mlockall() and the latter seems like it
-> needs to be called first.
->
-> We have been able to avoid the fragmentation problems by switching to
-> using the rpmalloc library (https://github.com/mjansson/rpmalloc)
-> instead of libevl's memory heap services. All that being said, we have
-> a couple questions about the default Xenomai allocator.
-
-The documentation about (system-wide, kernel) memory compaction from the
-Caveat section does not apply to heapmem in libevl which is
-process-local, operating in fixed-size heaps as defined by the
-user. heapmem has no compaction or garbage collection mechanism
-whatsoever.
-
->
-> 1. Other than the compaction procedure, is there anything we can do
-> with the default Xenomai allocator to improve the performance in
-> regards to fragmentation?
-
-Use multiple heaps if possible, to confine the problematic allocation
-patterns.
-
-> 2. When is the correct time to run the compaction procedure in regards
-> to when we should call evl_init()?
-
-Those are unrelated issues.
-
-> 3. If the fragmentation is a known issue of the default allocator, is
-> there any other allocator that is recommended?
->
-
-An allocator which meets real-time requirements while still limiting
-external fragmentation to the minimum may be difficult to find because
-both goals are somewhat conflicting (notably because garbage collection
-may not fit well when it comes to time complexity). You may want to have
-a look at respins of the TLSF allocator, some of them were designed to
-address the fragmentation issue the original one had - which was the
-reason for developing heapmem years ago.
-
-I'm interested by any result in this area, feedback welcome.
+ .gitlab-ci.yml                  |  8 +++++
+ ci/lib/gitlab-ci-base.yml       |  2 ++
+ ci/lib/kernel/6_12.yml          | 45 ++++++++++++++++++++++++++--
+ ci/lib/kernel/6_12_physical.yml | 52 ---------------------------------
+ ci/lib/kernel/6_18.yml          | 42 ++------------------------
+ ci/lib/kernel/6_18_physical.yml | 52 +++++++++++++++++++++++++++++++++
+ ci/xenomai_3_next_long_term.yml |  4 +--
+ ci/xenomai_4_evl.yml            |  2 +-
+ ci/xenomai_4_next.yml           |  2 +-
+ ci/xenomai_4_next_long_term.yml | 24 +++++++++++++++
+ kas/opt/ci.yaml                 |  1 +
+ 11 files changed, 136 insertions(+), 98 deletions(-)
+ delete mode 100644 ci/lib/kernel/6_12_physical.yml
+ create mode 100644 ci/lib/kernel/6_18_physical.yml
+ create mode 100644 ci/xenomai_4_next_long_term.yml
 
 -- 
-Philippe.
+2.43.0
+
