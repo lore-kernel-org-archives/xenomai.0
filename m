@@ -1,55 +1,53 @@
-Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010036.outbound.protection.outlook.com [52.101.69.36])
+Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011019.outbound.protection.outlook.com [52.101.70.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41C7F431E67
-	for <xenomai@lists.linux.dev>; Mon, 20 Jul 2026 14:40:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.36
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20DD5432E81
+	for <xenomai@lists.linux.dev>; Mon, 20 Jul 2026 14:40:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.19
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784558438; cv=fail; b=njHW63cwvADFNlV5jOtMQXFbTQG5CXinoq+yd84VQ5/ypLkBt+iWJ0xGWZEVr4cAdp3T7vzwQT+ofiAXQDRyOsZLY/WWXBU3daJXhS6hMYiel6BG6Bro4qJiri1vE7F7/LsOE5IicgEBJ1lCoud9UUJ6LW73bnwLHzgTOvOn8lA=
+	t=1784558455; cv=fail; b=gP9hfu4q2Lpdb7NGjCOUyaErcqvRMC3pciHAB3kbxNPZVcoeU+YN2ewrSpDZaVEoo6+UClgHjIB/FihGqRH49bj3N4RyY40gotg0FYZxzv53Tv7VQwfog6C51DG+vBIcwGXj4Se4SiJ3YxOjYgikg6KlsQgWQTYtWjEn3pxlgT0=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784558438; c=relaxed/simple;
-	bh=tRmSJV4LsPdnOzKB6j9yYtN+7fWRrszmVqMZ+9hNfRA=;
+	s=arc-20240116; t=1784558455; c=relaxed/simple;
+	bh=JZBllUkQFKXvC1Yh3VTO+L0ldOYgGo8IFGnMXhjxVHg=;
 	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=X7gXmCtctVJVxCpHgMiU1dE4oRBfzRZpgejpfEsdZ/jdRKK8H0jDAzIoe9SXI0ZsGf/uj8S9BhxAC+AtAvz9N/LB0cvjFi5hDCmxVugxt0lRN7iziCLxeFjRC8UMFxc6U4sLifONFd2Z19hfU/rqru4qXhg9LlQDqr0y7f1TdMI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=IpsaxZc7; arc=fail smtp.client-ip=52.101.69.36
+	 Content-Type:MIME-Version; b=pE5mSTUMet/hCTv1boe+2tSLa+ERnZl26WCXp3PX/Zz0pMtgLkF4CPjYdBTLY4O/fKH4boRoz44oadKeb18Ul1a5elTyXxN3m+nBQI9/1fSSIs/Iz6djvKicBgNorCHoA0okjonPDOcIKov8KXL7AzYF4jdLlnq4bxpOdWMkXhc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=DGSijhFC; arc=fail smtp.client-ip=52.101.70.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="IpsaxZc7"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="DGSijhFC"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=duVyf3CQCgVD26DXt476ykyXf3kVm8ZdqsXwQNqcnRC5tFI87e6AbRuVookB5X0tb0ul43FXzQ0uDcn45h/o0A5VtDAssB3DarOtUg0l02BJDkY59XKpBlynNeCYhh7Na7MCF7IgxGdQ6kFWwqwbh6pqzPWSM5LKydow5AExG+1S4F4ZYj5/tLY2PUMS9Nxem52mAhG0L/2QbIkXT1s9GQuBQ9szl/5FLHYU71U6Q8KYrs9vZ5nFER7SGrTrAP9wekf9mXFw5zuiCgr7JOBugBA8RoZvixMu6VNH5+rYZIDjfdBrGk+eaabXoyTWf8RUJ1XhuTjgrThi46l02f+SNA==
+ b=vSTrWQLaGb3TlRDpSKJdxlMXd2FTk0BwniT2DDrpn5MVdhb+bouxqoz8awzMPBoGEB3G3OkrQ3ykh5Zy49Rulp9sW9G/1rS6E9RZ3BMvJ/ojnwIn5TtCrlDG+e6Yb7Z6bDIN1qaQnuo+rkZthWmwnwwTvwF+nBMB43pNrLfiSRjYMuNMlhKyFR+uSwTeI8cdktWVqEQpdK5R+vYbMYvbZOszTnA8Y54HC1xXQTk6JF7yIvVM9y0hKF73wNszg68KNrnkiYjQPs9PvmTbj2r+rWZRsZQJDJ2WJ6IB832ovHa2eTGaurX80sxsDm/cZoY6k3Hbg9YzjCZSwWHi5+AwbQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=y9Da/OSNo+9bwkxcujhXYvxmTWYpF3L0NWCtOoawtjU=;
- b=vrFRQXXUQ1hD0nr2Zax1w+mdIVzTg4imfhsRHpf2CZo1TEwtVKwXIe7T434lgm4QGwsczzPKKMdeCsikQLSvtUn93JeWk5gLOH7z6YW3wiVLpKx2A1qTem/nSePOTWh56TlOkcrhsrA/AWWoRq6UCfqsnEwfmHQ6FX11710liR/dOXxD7NW42d0bHjAHecaIqNUMjIB0BPcjfv65dVo8+MJOX2F3mpSnyM1J2l2FhNEVqf4TbOGQMsJnm7/+jU0s3G4SoGQFzb5wKzTyLKS/wadj1VR1BwdPcWYnCFVj+wCltzzSemCqwy9dQauCRPTPwx/4ZMqVtw3lcfdeY12asg==
+ bh=aVbK6aYQFOrgaHCrK5GQKcV0GtIdxFd2y++FsSwx1z0=;
+ b=v/nTy/5IV3xn+fsat0kZTLs45CeU9EY47eLg1Ba/HpNG2rjAd6uUfbpq0wW7NTndzjbT94WL0OGPdtv3Nc2/ySal6X8H3IV2UQ5HLd3swU8gOOxvaXl14BCiFWulQSwrgvOrsZjnetCon2WAxXNN3rKLnpYi7nnCm+36A0bEIbBBbh2di+SaM3MDjGls43XqY+3R9/3ekeFKjFA7rC3GHk5U+OR79oE1P5mjdHHMuO6yN5RxfgYRjc+oO4WDJ4jRF+TmHS1zmq4aaF4wNWBobeWvR8YYEER3YX6vW4A78pCfTdU9Tm3WfZqIxrJMR+8qz9Th5/TSVHy3D+YMwkN03g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=y9Da/OSNo+9bwkxcujhXYvxmTWYpF3L0NWCtOoawtjU=;
- b=IpsaxZc7TNpIxFcybYto3sd1kcRTGlbzoLMKq9Q12v/LHdvC4Q/QMKLvGYuB4KxDoBce3FWIenkrnm0rEWO62+Qx3wBCmXymMoxPwqWb3vYYYb9jNFq7/ESJ+8kVnL9xiiEO/Crrl0GkP0X3Qvh9PhLc2sSCHZkGxpB/z3E+pUdEhqR3Kc+YM/k78Ukiot94E9u9l7tCdZtFvsi2jvpMqBcqBlzmMLZIuVNg6yaEA45gLR/+75tt1p7XcU0nivGIE1WXPokyf01agUoyb3cUydhSwUEhxr0DOWf+OEAshCYTs1ruNrcKBT88Lx9IpuWHgydqnrI6ZcpQ5R4PLdcyfg==
+ bh=aVbK6aYQFOrgaHCrK5GQKcV0GtIdxFd2y++FsSwx1z0=;
+ b=DGSijhFCdaLUx4IN9uF2KXmn175AHbAqknW6NU/tL7BBrssmdpU1pr+wE6QdkAoWvVkGDM2644h/9GSYALV8Q5Xnqv7yzhjFDn2lFD0BT1HRGBgLC+W59/U/gv+tfS7Ef8+FqLdVEBvLSQCJZMCpPnruQoP8nGrjkzymr7BGGfzhluLwYwEyTKS6YCoIbJjGRCGtPM2EYeahHB5HKRUV+R1e+KxLksc+Cn8Xix8j2KaidIiPbAeats6EKHul+c19GfNAWaiOG8qU6qe+f7J0C1fx7qprhJU4E1QJRwSY6uw+009r4ZV+6tioca1sA0Wo9aSBeN4gYOK+jbDRULRQWg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:76::15)
  by PRAPR10MB5201.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:278::19) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.223.18; Mon, 20 Jul
- 2026 14:40:32 +0000
+ 2026 14:40:50 +0000
 Received: from GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::63bc:6561:54d3:94b9]) by GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::63bc:6561:54d3:94b9%4]) with mapi id 15.21.0223.013; Mon, 20 Jul 2026
- 14:40:32 +0000
-Message-ID: <36b4022a-e6c0-4402-abac-27167859e08a@siemens.com>
-Date: Mon, 20 Jul 2026 16:40:31 +0200
+ 14:40:49 +0000
+Message-ID: <c7f52464-e9bc-4824-9cb2-bd5d0260f0da@siemens.com>
+Date: Mon, 20 Jul 2026 16:40:48 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 4/4] testsuite/smokey/psostests: Fix compile error seen
- with gcc 16
+Subject: Re: [PATCH v3 0/4] Add support for gcc 16
 To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
 References: <20260717-wip-flo-gcc-16-v3-0-5429c866bcca@siemens.com>
- <20260717-wip-flo-gcc-16-v3-4-5429c866bcca@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
@@ -95,11 +93,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <20260717-wip-flo-gcc-16-v3-4-5429c866bcca@siemens.com>
+In-Reply-To: <20260717-wip-flo-gcc-16-v3-0-5429c866bcca@siemens.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: LO4P123CA0430.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:18b::21) To GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO4P123CA0415.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:18b::6) To GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:150:76::15)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -109,181 +107,111 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: GV2PR10MB6186:EE_|PRAPR10MB5201:EE_
-X-MS-Office365-Filtering-Correlation-Id: 082ae8ba-5423-4aaf-c35c-08dee66cda11
+X-MS-Office365-Filtering-Correlation-Id: f10e31fe-ba3d-4312-aad7-08dee66ce413
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|23010399003|376014|366016|22082099003|55112099003|18002099003|56012099006|11063799006|4143699003|10067099003|6133799003;
+	BCL:0;ARA:13230040|1800799024|23010399003|376014|366016|22082099003|55112099003|18002099003|3023799007|56012099006|11063799006|10067099003|6133799003;
 X-Microsoft-Antispam-Message-Info:
-	EINUq4zHCRJsazMSIz8GFJ6+/L5s0oegJ3kTfPmC+GsgawB9qldKOKkFFNAOkmYQdMSM/rKZDMoikmtczcLZ7O8QbcOMqp/LO02GEIJjgPL8YU9w7EuGXneuDDVWR3SWFWPIaqQK8NinwaULGP16FBGTV0NP4teL9ssZPfXW4XMnlMItGXCpy063cFIQX7v3HVnGrh1ICLAW+owbIX25I+JfvFy+Wjh3nf/EJMu2BptWXPq7SELCCINUUFB+ZzTVlZk4ePh/lJvs0kVwmKqbuq1ogYCQeUuMZYCWNnG9xUQMft43LoyHWTlNNnTbI+d1o5vHA7v84p3NGNhLiUwctysWl5fmfRRnTOLc05Y9PIrGU4KKvOMib2UlCOPZgbGXvDWqNZ4inEvHkN7hGlCYEmJTXQptq8L4HWXXkW4X+A8j2fjjwD6FVjkknkmaoSwVUTZXy84bPvgpuXcTgQ8ziUx7hurXpKZYx7Wjdv56+rKec8Zx2ZaAes8E7NUNObs8ixuibfGRlHjuiWkrimDJsGehO45t5w6XTIBJMTDcn1RYhVIzgMULJNyhhu/dk202ghxG+Jz+gCse8bUuIpPZGlQNkBeSTruBwOM83b58uTxuAKLwxLjIRn9AYnzY7v3R9xCjL3+7QGGjN+DqgpO8KygbrIbeRoPxswUL1VlETsU=
+	Ssfn5OtckWjNZLrGhrHUlGszux3g57bJaq0FAiWPDyfpyUaNGWGV+XCkNZQutfhVQNWHeeeRX0fhh99L1GQP5A4tIaZFoAkXuEaHtYZwBSa0/e4LWWM7owSWoSJMSaoHEOZH+Q8kZ10TeOSuMJ2EJJZXvdo34WM7w8Mgzkll5SEc8X5bQK5G+ReIX3bz6sohSSGTcdl2C+K27TFzKYzn8+oxjjW2xIyxoegHIAzYjQp3r3JOG1tPNKBcdItzdRlz0G7V3d6ugQDKhTqTzcq/xRzhS2P/LkGM+xulq7VPR/yUhnNRezNqXzjJDL2zXzdZMzS4cWrudxmqmzeJAhEzdi8VXgpGsh3WCW/0bkpJwM58whLblXX0AgMNLrWNAI7BGnUgC1Ro9aGvnn0bJnLQ4tb/sva9Tz0qIj7d1UbyXXUKWZ3f1HpUyLFtprfP4zk8r87vacTLQF/6qtn/gEnrgRs+LWNyPMktksUfA0VYPSattiqgrjizgesENm4ASnoRqeILkzW3Ml3FEPhNn10mENn4j/FDzDndmVxXn4W83w+DOvh4HTP+6UhEm/iFQtZCk3e1cna9z9NX1LPMiTyHXVz/LFjDGrncTRaRD76VasU0WJZFRZn4IKEWVaf9l+9KDf8i1qSzh+1N0B5sEosqWIeZnirJKPPEUQErEwGBF7s=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(376014)(366016)(22082099003)(55112099003)(18002099003)(56012099006)(11063799006)(4143699003)(10067099003)(6133799003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(376014)(366016)(22082099003)(55112099003)(18002099003)(3023799007)(56012099006)(11063799006)(10067099003)(6133799003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?b2ZoYXc0eVVZdGdQMlkvMndpWFR6WkJJQjc4ekU5SXViU3RZUUpSa2orUjcx?=
- =?utf-8?B?TitPSnhMdi9Lc1R3Yk4wdHY1bmZzRUtMeWZqQWN5c1IrZG5HZUsrc1hhOTlw?=
- =?utf-8?B?TFMwaEIvbytLY2h0d2dmVmd4enZheHBlekRlMjhQRDluRWE4U3FwUjhCSXdr?=
- =?utf-8?B?TTRNTmVZR1JBM25yb3E4NVpHZFZRclE2YzhpN0R2aVdZajFWQzJqNFRVbXIv?=
- =?utf-8?B?R3JMVnhUajN1ajVLdk1Nc2I5TXFKYllQZm9vTzBmaHAvVGtHVDlzZ2Z2Qk15?=
- =?utf-8?B?TDFnYkkvSFZkWjBSRFM4Rjk4VVdVQ2ZlMVRZeGFKYmZyU2ljVEN5L3U1TjVp?=
- =?utf-8?B?ajY1cHgvMHByeVl6cjUyWExkeXRlaC9jWkszWFAwUWdQL2U0YTRoM0ZROTJK?=
- =?utf-8?B?VjA5UFpvb3ZJQjBxQi9NalBqY2U5RW11VDF1SGF3U29uZDloTmFZWlpnWWJl?=
- =?utf-8?B?QzI1VFRPRWJ2UmR4RGliU3hZRm1LYlVMZ0VJVUVOTVl4bDF6OEJqa3lpUENk?=
- =?utf-8?B?S2JYMi9OSzVKZnlGbytBNmJOc0loQVBWSWoySVdVVVNBTm1yMUcyYUpqNm1Q?=
- =?utf-8?B?dTBqNTM5OStDOWVVMlYxajZRYjUxanZvZVArdysvRGRXRGFKQTRubE9JcVBW?=
- =?utf-8?B?M0lVL29jK2ZLa2VBLzI5alBkREo5ZldHdWlPK0NyaTM1eU1EcXkzVXREcEgx?=
- =?utf-8?B?OSt2akVTQ2QwRExxZWY5WUVKbVhKSmxHV0lONzFHL0hRS3E1Qkxrdi92NzI0?=
- =?utf-8?B?R0U1eDRYS3hnVng4bmVFdmMxczc4Q0JVZVljNkQ3dFBZNmRuTW9pMElvRVN2?=
- =?utf-8?B?L3ZaTDgxRFVtelZWNHU4dUNQcTRPUUhsTG1tVFBtUHJ4a2t0Z0NOc0d4bFo5?=
- =?utf-8?B?TDlCckJYREc5alo0eWN6WUROTXNHVUZDT1ZOZkp3L2gzd2gvTmxGLy9LZXVJ?=
- =?utf-8?B?KzVqdXljNGdqTm1rTjYvdG9YeW9ZeStONmt3b3hNZkhPY1h3bVo3VXR5Nm5m?=
- =?utf-8?B?TWZXdzErcityV1JTSGV0Qi9vQ0JNdHhkU2U5ZEZMZE8yOTlPdytYK3JYNkp0?=
- =?utf-8?B?RFhuV0o3TkRvWlZaNEIrU3QvVm5HZk1XSjA5ZjN4MURzNHZVNW0xV1FzRVB0?=
- =?utf-8?B?bmtZcnZiajhybFA5ZFdyQmljSm1YUmJWeHNva1pvbXZxbGoyaUJrWUVXUW5Z?=
- =?utf-8?B?Q2NJaG91cFJmOGlPM2hyUy9KcmVaSjNsU3V0WnhKdUtxQzdsL2ZDanhQZXBI?=
- =?utf-8?B?MEVSRW9IY3lKNnFKYStzc0hrY3ZEaEttZHI2NWY2Y2hqUWMzZG0zc0RCV3F0?=
- =?utf-8?B?TzYxMFJCV3BHbFlta3lVUUJ5QXRHUjNHbzdoeTgzZXVNRklPcDh3RWRFVWNY?=
- =?utf-8?B?cFlDZExuNXBabXdUY2xJRkJtTVZYTVFycTFEdUUvVXdYOFYrd2VQdWYzaWpL?=
- =?utf-8?B?WTgzaXM1MFNmS0RaR2Q2dTFhdEFySG9UUlpZeGszWUNiWW16dURtRW5JZHdh?=
- =?utf-8?B?QUZSNy9NeXBNa3dkZ2Q0WjE0NEJiWFFSMERYWTlQVCtFdFdkL0Vlc1NDM1Ro?=
- =?utf-8?B?UnFMR1VHWmJzNjlmVStXWkkvT0h0Um9tVU1HR25lbHZ6ZWtDek1xTlNtMkFv?=
- =?utf-8?B?SlNqcXA1SFVDRGZpZy83Z0FMTFl3VTI3UW1vWFlybkxTazVnYU1XOEJlSEgx?=
- =?utf-8?B?azk0VDZidUVzTzJzWDA2VmhMQkhYUndmNnRuVHdqWDhhVHJxZmRJOWVMUXpz?=
- =?utf-8?B?VytUSVFZSnd5V2E3UmxPbnlpUHkyUmxXSVV5NERUVm1SaExWYVMrVzZ1d3Rz?=
- =?utf-8?B?U0c3elhXVGlVYnI5cjZ5UmVaZWhLME4ydWMxZE5PdkhUSTY4RjI5TVFVWTZW?=
- =?utf-8?B?OGxUUmRkRjhna0MrQzdTZTYwdThsQUp5UWN4NjdUZThqQXdBSkUrUkVXZFJr?=
- =?utf-8?B?T1ZrTXN5MXBCR2xYSGdNd21uempxbm1LUUtkTWVMT2N5eldMMWw3QXJac3U0?=
- =?utf-8?B?cWV0VGRRRk9FQTNCV2RpR2tHNzltN2ljRGwra0dXb0FKMURiTTNmbCs3Qzgx?=
- =?utf-8?B?cWtYcUprdHVjOGEvNWt1L3pvRFozM3RkdzlURTQyaTF1K2xHbEVhNWdqQW1W?=
- =?utf-8?B?Vkp6bHVSek5GUG5NSEZqNUxQWUZEZHdXekpwSkxuM1dGK3NpZ05Kdm1XT2xq?=
- =?utf-8?B?R2t2TFBPRkpWdWZyTkVQSFFBY3BMNHh5S21XVzBES3ZFcDI0LzMxcWpvSlFx?=
- =?utf-8?B?UWxRcS8zRGdnb2NyOW55NjkvaDAxSTlBanNaa1FaQldiNnNMYVVybmU0aEQw?=
- =?utf-8?B?VXBsbHFiSVBMR2lQLzJWRFh3NGJoVkttT2JqMk9rYXBuZFNpckJwZz09?=
+	=?utf-8?B?NU1OR3d0dEhwME9yaFIvUTNNWSs3ckpYRnpXbUJaTlFqZllIZUxnaE5lZFZy?=
+ =?utf-8?B?aFJ3MVhVVTNOT0V0RXRRbEtvMHFUNEtPdWNkbWdoaDduZ0h6Q0UrOFB2YmM0?=
+ =?utf-8?B?dWpwR1Faak55NmZOeGZZemp0aWJVcm85MVBYR2dQNjNMUGo3Qkk2RS8rNlFK?=
+ =?utf-8?B?UlJNaDlsR1l4dFptUDhIV1U0OU4wcGl2YjVZdDcrRjRNTFh2a2hnRWVhMjgz?=
+ =?utf-8?B?SDlLZERWRUVrMXA0aDhiS01Ma1VEbHZ5NEtHakZLRkZpa3BtQ0tYYUJaeVZF?=
+ =?utf-8?B?TFduWStTUHJ1NmJoMktrWkoyMm1RWHV0c3E5SXpZQ1haazZKWDlwWlcvTTB4?=
+ =?utf-8?B?QlZta3ZWd0VnQ2RsMTBONW1CTjNNcTAwYTBOb3cxdEFMVUNDZ3V0TjQ4Wm5V?=
+ =?utf-8?B?ZjZ6d1RLcHp6YnVHNmQ1R3NNenBHVWlkOWs1eVJjRG4xd0YveUx4MUJXMkow?=
+ =?utf-8?B?ZFB1UjBGL0hnTzRlQzFZWUgyZit3OUtmWWQvbHFzNzNCaUZ2WjBWdmFrbkZZ?=
+ =?utf-8?B?Zk0vZGJVcW9OV1BDeXJCZzR2ek1idUgvcTZuWXdhcGdnNFVSekJXSGpHb0RP?=
+ =?utf-8?B?bHRnbVM0TWJsbmJLTmY4V0l4VnJMcVpUZGpSOU92QzdjOFAyY2hzNm1CNDZj?=
+ =?utf-8?B?L1B3SUNLSlZEYlBYVjZlR1R0ZHF6eTgvNS9pbDRkbFI1K28zVVNBb1FOSHc2?=
+ =?utf-8?B?Snd3WUFDUlRjalR0TEZuYTdzeDg0Mlo2MWl3bGxocmU5OFgxYXhRcGZ1NW9C?=
+ =?utf-8?B?UlZjMmg3eXNhaWEraVllRWpFR3ByL1pSajZ1d3lhQVhTUUUyOTAxWVJUZ2xo?=
+ =?utf-8?B?dE8za3VRMk1KNzdpT21GOThmeTlHNzFodGM2VUEyTXJ0N3BzaVFiZncwa1hC?=
+ =?utf-8?B?Zk55Vm1kVjFFZmRNcHhDeGlDNjZvTzVPTXpBNWNZWTBTYWlJakxOYnMwOE1L?=
+ =?utf-8?B?ZGFtejFBM0ZldkRaMlJEMUJiYVJ6OE1oZWxiaEhlSDdIeENtaFN1YllPdVpw?=
+ =?utf-8?B?VFE0N3VQelorcjVVNE9MWHhzd1k4Y3VKTFk3YjNRa0hPRVVEY2F2WFJCZjhL?=
+ =?utf-8?B?eWdTMGVpZkhiYmVRM0JxZnNMYStOQU44RTBUS0RQTlJkdGlnZnJFTWJsMzZk?=
+ =?utf-8?B?K1MrWmFsbHBzS0xzeFA5Rm40akxVZGFiV0oxbTRHQ1picjllT1h3RW5sdkpX?=
+ =?utf-8?B?cUNRWGNJc1loc1gzM29iWUJkY2lKWnJwek55SitNU3I1cFJCaVFQbm1rTi9P?=
+ =?utf-8?B?Y2t3TGxJYkdHQVhKL2lsQ1lwZ3FlWDdJZmxXVGluN2liZUdQNisyREZFbEF1?=
+ =?utf-8?B?d0phVElvM2FoYXJQR1JldkNBelhJOEJVKytvN29pOWVNdzBuYnE3UzVVMTdq?=
+ =?utf-8?B?VU5aS3lQcysrVTA0cFlkTXRyd3pJNnJTZUVtTU1LSjlrZ1R1d0Y4am5pTW5P?=
+ =?utf-8?B?NXJRdElKMjZzU1pzMXBDeUwvR1FHOWVDaWo4ZEJXZzFScUE3Uk0vMzhITGNU?=
+ =?utf-8?B?Y2tsVDdQSGJsaGtyMFRNYmdINW9JOGluZ1hYSVF4ZG9ZS2o0eHF1L1ZycFFU?=
+ =?utf-8?B?ZjN0d2xpSjcveGQxWG5TTFEzS1RRU1FPWE5Da1BhdjZSbk1qZE5Fd0ZQR1FW?=
+ =?utf-8?B?TjR1MjU3YXQ5SnRreWFreUQwY2VEczd0MDUxNTNydVFrejhOZmFOQkp0WVlF?=
+ =?utf-8?B?bDd3RVlYWDQ5eGtMaWh5Y3dzd2paMWgrVWp2UFQxY1o1SUxDeGJ4OWo0a1RJ?=
+ =?utf-8?B?M3FvQjdYN3VTTndLd0d5cHpCcnhSOUZLWml0cGR2ZUpRZDZrSy9CSmozV1ly?=
+ =?utf-8?B?ZFM2TDlXTTRJUlZmZHZqcmI0UjVxT3lBUENTUTdDdEJHUlFsMWJXV1UreSt5?=
+ =?utf-8?B?TkZxaHg5am5YS2drU1o2eVRVTTNiMnZJanVHcW9zQXh0YTRrYk03MDc0MUhI?=
+ =?utf-8?B?aXdGdFBHTEJuYnNDbFB2NlJaNWZaa3JQMlhsc010ZjF3V3BYNUFSYUx6L3U1?=
+ =?utf-8?B?NW1nUzEvYmJhKzhxdHZhY3c3c1dvb0tpVUw0SW8vYzdCTFJMckZPcDY4U2pJ?=
+ =?utf-8?B?T25zVWNiRnA1b05UcWYrM0ptc0lXQ01COElRT0dFQkpoeTdsOEo2KzV2Mytk?=
+ =?utf-8?B?TFh5U0d3LzlDTVJ3UWQ2L1V3V1c0VHdiVFRMMmdvbUhSTFh6YmdzSG1YYzV2?=
+ =?utf-8?B?NTBqYkRpd0JaandJZDhqdkM3M2J6alhiRTZIemQzbkxPdHVIYld1ZTFzUVBN?=
+ =?utf-8?B?M3Q5RmllekZjOXgzNVlBbU5KekhWMG9McTBYbVQxbk9zNVM5YUZKSytkYUJF?=
+ =?utf-8?B?Q1lMWU9IbWNMeWJRVG9OSWw4SVFmYlZwYVJ4cGNvTGZ5T0pnbisrZz09?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 082ae8ba-5423-4aaf-c35c-08dee66cda11
+X-MS-Exchange-CrossTenant-Network-Message-Id: f10e31fe-ba3d-4312-aad7-08dee66ce413
 X-MS-Exchange-CrossTenant-AuthSource: GV2PR10MB6186.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2026 14:40:32.4847
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jul 2026 14:40:49.2648
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 2So4rhCRREbSxKMMakCywv5GZHzxSVypPwOAxDaz3+hj31kPS65Ff4vV8HTtFbJNteazN2qr3InI/h+/UACYXg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1xlJkJJsrWa49GmYb9gm2meJ55NekYWJ+TAXwHTVgqjO0asReacxjWTHnULxshNakByRLOAioFB391GQ/e5J4A==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PRAPR10MB5201
 
 On 17.07.26 09:45, Florian Bezdeka wrote:
-> Fixes the following compile errors:
+> Hi all,
 > 
-> rn-1.c: In function ‘alloc_task’:
-> rn-1.c:16:18: error: variable ‘n’ set but not used [-Werror=unused-but-set-variable=]
->    16 |         int ret, n;
->       |                  ^
-> rn-1.c:15:22: error: variable ‘alloc_size’ set but not used [-Werror=unused-but-set-variable=]
->    15 |         u_long size, alloc_size = 0;
->       |
+> Trying to compile the codebase with gcc 16 revealed some minor issues /
+> compile failures. Fixing them up was quite easy, so here we go.
 > 
-> task-2.c: In function ‘backgroundTask’:
-> task-2.c:19:42: error: variable ‘count’ set but not used [-Werror=unused-but-set-variable=]
->    19 |         unsigned int safety = 100000000, count = 0;
->       |                                          ^~~~~
-> cc1: all warnings being treated as errors
+> gcc 16 is the default compiler on Fefora 44 and available as package
+> for Debian 14 (forky).
 > 
-> The counting busy loop has been replaced by an interval based busy
-> loop. While at it: Enable this test for CI. It was previously marked
-> as broken. The counting busy loop was not enough to keep the task alive.
+> Cc: Jan Kiszka <jan.kiszka@siemens.com>
+> 
+> Changes in v3:
+> - Rebased on current next
+> - Patch 4: Enable psos test at smokey level
+> - Patch 4: Increase busy waiting interval to 2ms
+> - Link to v2: https://lore.kernel.org/r/20260518-wip-flo-gcc-16-v2-0-f93562624fb4@siemens.com
+> 
+> Changes in v2:
+>   - Reworked patches 3 and 4, removed / migrated busy loops
 > 
 > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
 > ---
+> Florian Bezdeka (4):
+>       utils/autotune: Fix compile error seen with gcc 16
+>       testsuite/smokey/sched-tp: Fix compile error seen with gcc 16
+>       testsuite/smokey/vxworktests: Fix compile error seen with gcc 16
+>       testsuite/smokey/psostests: Fix compile error seen with gcc 16
+> 
 >  testsuite/smokey/psostests/psostests.c | 4 +---
 >  testsuite/smokey/psostests/rn-1.c      | 7 +++----
 >  testsuite/smokey/psostests/task-2.c    | 5 ++---
->  3 files changed, 6 insertions(+), 10 deletions(-)
+>  testsuite/smokey/sched-tp/sched-tp.c   | 2 +-
+>  testsuite/smokey/vxworkstests/task-2.c | 4 +---
+>  utils/autotune/autotune.c              | 4 +---
+>  6 files changed, 9 insertions(+), 17 deletions(-)
+> ---
+> base-commit: 48934c3fed790f8603eaaf0d4fa1ce92d27552f4
+> change-id: 20260508-wip-flo-gcc-16-6291fb97b9a1
 > 
-> diff --git a/testsuite/smokey/psostests/psostests.c b/testsuite/smokey/psostests/psostests.c
-> index 289d563ac3595f0e2d21bc5f5746772fd51234b8..31347ba45ea430ac4b2e62be4c1e437519f2fb37 100644
-> --- a/testsuite/smokey/psostests/psostests.c
-> +++ b/testsuite/smokey/psostests/psostests.c
-> @@ -15,9 +15,7 @@ static const char * const tests[] = {
->  	"psostests_sem1",
->  	"psostests_sem2",
->  	"psostests_task1",
-> -	// 0"014.452| BUG in __traceobj_assert_failed(): [FGND] trace assertion failed:
-> -	//		../../../../../../../../../workspace/sources/xenomai/testsuite/smokey/psostests/task-2.c:56 => "ret == 0"
-> -	//"psostests_task2",
-> +	"psostests_task2",
->  	"psostests_task3",
->  	"psostests_task4",
->  	"psostests_task5",
-> diff --git a/testsuite/smokey/psostests/rn-1.c b/testsuite/smokey/psostests/rn-1.c
-> index 5e82d1506ca029ae2bf812ccbfbf9c3a9ab9cc7e..d2e847375212c9746de3e550a5d10a8be4694de5 100644
-> --- a/testsuite/smokey/psostests/rn-1.c
-> +++ b/testsuite/smokey/psostests/rn-1.c
-> @@ -12,15 +12,15 @@ static u_long tid, rnid;
->  
->  static void alloc_task(u_long a1, u_long a2, u_long a3, u_long a4)
->  {
-> -	u_long size, alloc_size = 0;
-> -	int ret, n;
-> +	u_long size;
->  	void *buf;
-> +	int ret;
->  
->  	traceobj_enter(&trobj);
->  
->  	srandom(0x11223344);
->  
-> -	for (n = 0;; n++) {
-> +	for (;;) {
->  		size = (random() % (sizeof(rn_mem) / 8)) + 4;
->  		ret = rn_getseg(rnid, size, RN_NOWAIT, 0, &buf);
->  		if (ret) {
-> @@ -28,7 +28,6 @@ static void alloc_task(u_long a1, u_long a2, u_long a3, u_long a4)
->  			break;
->  		}
->  		memset(buf, 0xaa, size);
-> -		alloc_size += size;
->  	}
->  
->  	traceobj_exit(&trobj);
-> diff --git a/testsuite/smokey/psostests/task-2.c b/testsuite/smokey/psostests/task-2.c
-> index d24c13465367c7c2a6975dd4cbb01eb75f8fd1ad..21497433f1a3584184406b172c367eacd5a8b127 100644
-> --- a/testsuite/smokey/psostests/task-2.c
-> +++ b/testsuite/smokey/psostests/task-2.c
-> @@ -2,6 +2,7 @@
->  #include <stdio.h>
->  #include <stdlib.h>
->  #include <copperplate/traceobj.h>
-> +#include <copperplate/threadobj.h>
->  #include <psos/psos.h>
->  
->  static struct traceobj trobj;
-> @@ -16,7 +17,6 @@ static u_long sem_id;
->  
->  static void backgroundTask(u_long a1, u_long a2, u_long a3, u_long a4)
->  {
-> -	unsigned int safety = 100000000, count = 0;
->  	int ret;
->  
->  	traceobj_enter(&trobj);
-> @@ -28,8 +28,7 @@ static void backgroundTask(u_long a1, u_long a2, u_long a3, u_long a4)
->  
->  	traceobj_mark(&trobj, 2);
->  
-> -	while (--safety > 0)
-> -		count++;
-> +	threadobj_spin(2000000);
->  
+> Best regards,
 
-Here you do the right thing.
-
->  	traceobj_mark(&trobj, 3);
->  
-> 
-
-But the patch description is confusing: It only talks about fixing
-compiler errors, but the code is actually re-enabling psostests_task2,
-isn't it?
+Thanks, patches 1 and 2 already applied.
 
 Jan
 
