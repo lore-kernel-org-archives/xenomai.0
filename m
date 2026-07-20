@@ -1,149 +1,324 @@
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C8002DF3DA
-	for <xenomai@lists.linux.dev>; Mon, 20 Jul 2026 18:48:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DC29330D2A
+	for <xenomai@lists.linux.dev>; Mon, 20 Jul 2026 20:03:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784573322; cv=none; b=hyXK7N7txdJ7AKtJo+1iK9Ix/o7OPY/MoVMTFVVLekEr9mPv/JuEORQgYLuWSeDKNy5yJ9aO4ajtx2VICKtidoLYSLx+ADZCiT1FJ40vr84SB9qRaTDQ4PxstXDHs5+HyzWBR+cfhWqS3KupmPdY7OyBaIt5EYgmS9Fe1q5UFc0=
+	t=1784577838; cv=none; b=YJh5BZrL+06FOyaNtl3h9ST4IPLlffOaljHSgYVXeO54ohwA+7HcinamncxJwwF4qF6sx1KbOi474DFb2iEhjefo825N502IhZI2vOqwiXN5tc4lKaadbIztzWXJowUDAvfIBIqrtLHFj+ZTGHmxaS4aZl5JdPAi+4ohaOIiGXw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784573322; c=relaxed/simple;
-	bh=Nnn50ktVimYNJmfVMK9zZU9nvqBb6nmCD8lDGPuAT5g=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=uAuULsQ1p3ksr2kgnuvPpP7rmhFh4ITzQaCztHOoKBG5qrmfJEYvZ5pcmk0Sa3uifHf7CJtYkiOY17ed3ZQ9E6ksBfaTGIzRkn5oQuQZxKCmPNP2wRPIrMwWn2xOL/EzCXLbp8pRT9/NgYQt1iqQicwNRVtUbantqSPwiCcDHQU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=h5ZTGSzn; arc=none smtp.client-ip=217.70.183.195
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1784577838; c=relaxed/simple;
+	bh=0Wo8PFH4MjrAl/NUuxvJSzzyWJMAl67EDqfugWraTu8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=gRaWSmt/8t/j3CGFoUzEj5qFe2+5tA4qHGWuzeCR1wXsb95bdg4Stjib0v605H59tq13ozsI1kopMu1qFE+PgpLyzWI/AYjNDCWUAE80UKnwhf7VfWRPHB7lGd1X0ldINJ0qB64EWeWIsy7RZfjbJ/SMoAuO/BoNCaG1iMRKrLI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LGYtTxaS; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="h5ZTGSzn"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 6DBBF1F75F;
-	Mon, 20 Jul 2026 18:48:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1784573309;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=ui4UAVNAtlkuEZduYKk5IAs/l4rmcjeDkS5hcThI/Nw=;
-	b=h5ZTGSznZn3BdUme7/CUWcaWo+kbg94ZYcZ8Fr1p56tpWseMvydIr44hin8VNRxomYxkJU
-	QqiF/Div/4RASDjEhethXAtUIAZZV3iu6e5woKUUlQ6BVxc64vImXd8I1jHe6gEBg0Npxl
-	Qh8Z2QEQeKn7kuycR/6YB4h/iutP2mklzJQQAGisKj8dNL1FilGYhiP6jC2NDuK4l41Yvx
-	VSWMVxf37UTqWPifdedf7pwfnWhNwd6zHNcJH7kKrY3tV2R9Qqq2BB0+Q/LbEM+xuBbyV/
-	N+MAE4dQPHlU2M9HrjM/vtSPyC5WKGzr437rgs99eqrtaK/dUNUBK6SzGP+hDQ==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: [libevl][PATCH 2/2] tests: sched-quota-accuracy: Add preempting
- FIFO thread
-In-Reply-To: <87o6ghlulu.fsf@xenomai.org> (Philippe Gerum's message of "Wed,
-	08 Jul 2026 11:05:17 +0200")
-References: <83bfeeef-c3b2-473e-b94f-8d270b0a512c@siemens.com>
-	<38c143a3-5021-4617-ab2f-ff3c9f3adc74@siemens.com>
-	<87cxxlbik5.fsf@xenomai.org> <87jyrta2c2.fsf@xenomai.org>
-	<ef230925-f258-4cf5-9fc1-6426167fc819@siemens.com>
-	<255484c0-7955-4bb3-b592-742d4fbd79ed@siemens.com>
-	<87o6ghlulu.fsf@xenomai.org>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Mon, 20 Jul 2026 20:48:27 +0200
-Message-ID: <87mrvlebus.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LGYtTxaS"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-49554ebb87dso21722225e9.3
+        for <xenomai@lists.linux.dev>; Mon, 20 Jul 2026 13:03:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784577834; x=1785182634; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=k92Bnmf7CzxZh5C7gnUWBdUKfLJfpuLq9dEk5dCxDFE=;
+        b=LGYtTxaSMUzZMxu0RuYiUUc8KsMglBx14pnsebXCm/85IpYa+GP5mhbHkEM9XLFtvd
+         uUCM2LrrpdyQ7snPom7KQTc2Q+Wip1CDA4kYnebAWw7QYm1TGW/x4DH67osoQ+agNbnF
+         fF0cLIL4cF3HjAmUG2sMgDT5/APqQd4BBq58gLrOrEkcC3tdQbqhw4h6So4JE8F7zvz2
+         0fqj8lYSzAS08CBa1CQ/IQY2O78jbbt75utUNsmJ1wGL2tfyw2yY6tXAywDdgraX3Ymo
+         Iurq92QQAJI7Q1imYb383BgMSbrJPqI/OsCHhm5Odj6D/Rm/1puBSUE0+J2pvHgpTxrG
+         ILUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784577834; x=1785182634;
+        h=content-transfer-encoding:content-type:in-reply-to:from
+         :content-language:references:cc:to:subject:user-agent:mime-version
+         :date:message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=k92Bnmf7CzxZh5C7gnUWBdUKfLJfpuLq9dEk5dCxDFE=;
+        b=mboXZ59CNY67pOKOe97siUFSAJdfWZuNXW1a7D4sUlGwZa7MT0SL/Av0kRWRQbxR6p
+         gHQT0XvhWJnwax2rOkV8bgjoQPc1ssazeikHyO0EOOtuCbM1sQd9S6wp6fzoLDCCHY63
+         f7uNOzwWRxNfxb4oSj8iO7o43J0sSUW2qKXR4XjdPNolxUdcyAtWKBNUwxoRRLentGs6
+         iKYVJbOUqkZznbFE94yhHvMOXxchLaAc1yzEtuzyXtQ09sp9eInjd4Ea2r9IWSTj+v0S
+         bQt5Xqc1usfyQObZlAG8wiRjWjI36VjBnS5yp6v906ZnPZfH5jBNDO9Pk76oQztlQchJ
+         M5rQ==
+X-Gm-Message-State: AOJu0Yz0Sw3RGfVvZpmoOSRA15jmGYKGBynTzCLA2HQFbu7xWVR/8p6C
+	oMkGiSwp9O6c3BlCGU8BGKup/In0/LWEMrOmSSBHhNV/CRFtBtRuRcHIu9iQlJBn
+X-Gm-Gg: AfdE7cm4NoT+Rm6aCMgAE/teNrH9+Z87za+BLIxkNX2NFkTtL2L7GQVZu8m/FfxLjQ8
+	LUAjHDHd3ZQ9f45T5uUNV13HwMm+HrjLJmjzcu9xzTzRu+rrZpvpUzpfrDtkmUc/lh93MCM9I0P
+	n//GQ/VHnc8og8WCp3nslwzfkDBD5J3Km5N1CZ1etuI7eV5MhxdTxpLDaTGDAmWb/7OfylisKEF
+	GhYXp7cdIhvfx/hGsqQxaJfG40QteBr/1VeAK5FYwrBmCfR9+nMTOgLKHLbQzvdkz0wdjmaQLzy
+	5YddFc0NqpNApIOTS3WLTqf0s8NH+QvzwYSQycZnjqEwFagqcH85Rg8TIbNHacxoGFn97cqMoMy
+	4dReUfGv7TvvrLGdK6P6Apv/4f71woev5QVnpiquzM2LpOo3NGcsNBOBV2U+1qKRIu+TNo7Utjb
+	yPhUvO2W8S7g==
+X-Received: by 2002:a05:600c:b8d:b0:493:f0f5:f2d7 with SMTP id 5b1f17b1804b1-4954a3e6e97mr177280305e9.7.1784577833773;
+        Mon, 20 Jul 2026 13:03:53 -0700 (PDT)
+Received: from [192.168.1.3] ([213.55.168.64])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-47f63e499c2sm30571397f8f.4.2026.07.20.13.03.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 20 Jul 2026 13:03:53 -0700 (PDT)
+Message-ID: <11409ae1-be7b-4003-8d40-f5e1cb34d2ec@gmail.com>
+Date: Mon, 20 Jul 2026 22:03:52 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: dmFkZTFo01LEl58AaSoQ8x7xXkjpfGHoMeWW6W8AoUtBmJQAgZryFHPPI4QBzDACn397agUDH9rT4IwrGVMpiEWHIM7UqC1tOZ5z8q3oZNSW3Y16RgOAirfk7+P2qgZFZ4ZlcM/vCMM8hYI5zoArqfMgftwXhp8cHqfcKJmzwvLA0l7aMTH/BRJk3GOCOCTDZoYqYjRfE4AnkT2+gPbDtlq4XIDVScgFNZDedV2oc99On6djGH+oX+j9EGhnJpyvS2Q0yOoTlQJY7zcomA4zMVjnNJirIS96/qOBUv91YebkZJ1NnT7FBH2k2Kf8DTTROSinwiWBpNjU6Wc8i3A7Bs0cBWgikN0FNyLUSnIEuCvB0UPVtCN/3g90GG0tpntgqoir21TfheUrJgzIWYMzcI0EC5m5MmcsAMpcJaa/3nr3+61hBDbho5waHBWJVuzlFgyhKck+nlNFw/YHhmbOeiumJbn3BJarIeYmTMc/Pwro1FQa5ocDaEJm68t5rJVSaNbckenWaGAC7dNNBBr99bhnabdfGgQ/oll2gJa6/7bH1/z62Q989RsLhNvY5NEIRH+a2F0WvQ5NxiNxLES22AC/JBhxW4zgnA3iznSqJs5Pp4/AwO/5Jjwtw/wvNSKb/O50RxPg1HfUyrgjKIemWVcJn+Y4YPSMps0QVFDOrMEpPoKofw
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/1] tidbits: net-udp: solicit new client for server mode
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev
+References: <20260528194459.6117-1-hannes.diethelm@gmail.com>
+ <20260528194459.6117-2-hannes.diethelm@gmail.com>
+ <87a4te64vn.fsf@xenomai.org> <874ijm62yu.fsf@xenomai.org>
+ <3216fbd8-3ee4-46f7-851b-0f3b48c38572@gmail.com> <87ik7d86kn.fsf@xenomai.org>
+ <6c0d9a13-732b-49c5-886b-3dda8b1f5cab@gmail.com> <87o6gmzlpn.fsf@xenomai.org>
+ <13bb8457-8148-4758-84d5-1ab324e978bd@gmail.com> <8733xd20u3.fsf@xenomai.org>
+Content-Language: de-CH
+From: Hannes Diethelm <hannes.diethelm@gmail.com>
+In-Reply-To: <8733xd20u3.fsf@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Philippe Gerum <rpm@xenomai.org> writes:
-
-> Jan Kiszka <jan.kiszka@siemens.com> writes:
->
->> On 20.06.26 14:40, Jan Kiszka wrote:
->>> On 20.06.26 13:17, Philippe Gerum wrote:
->>>> Philippe Gerum <rpm@xenomai.org> writes:
+Am 20.07.26 um 16:27 schrieb Philippe Gerum:
+> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+> 
+>> Am 04.07.26 um 19:52 schrieb Philippe Gerum:
+>>> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+>>>
+>>>> Am 20.06.26 um 19:28 schrieb Philippe Gerum:
+>>>>> - Honor MSG_PROBE for oob_sendmsg(), so that only the general call
+>>>>>      sanity and route resolution to the destination host is performed when
+>>>>>      set in the request flags, without actually sending any data. On
+>>>>>      success of such call, we would know that the routing information is
+>>>>>      readily available from the oob caches, no offload to in-band would
+>>>>>      have happened if we had not given this flag. The absence of routing
+>>>>>      information to the destination from some oob cache would yield a
+>>>>>      specific error, so that the caller may decide what to do next.
 >>>>
->>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>>
->>>>>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>>>>>
->>>>>> Test that higher-prio SCHED_FIFO threads do not run on the bill of
->>>>>> SCHED_QUOTA threads and that their accounting is not otherwise
->>>>>> disturbed.
->>>>>>
->>>>>
->>>>> This patch introduced a regression when determining the accuracy of the
->>>>> policy with respect to allotting threads the expected runtime budget:
->>>>>
->>>>> root@phytec-mira-evl:~# evl test sched-quota-accuracy
->>>>> sched-quota-accuracy: 494.0%
->>>>>
->>>>> The proper result would rather be close to the following:
->>>>>
->>>>> root@phytec-mira-evl:~# evl test sched-quota-accuracy
->>>>> sched-quota-accuracy: 99.1%
+>>>> It seams the flag MSG_PROBE is kernel only? I did not find any occurrence
+>>>> in /usr/include or in libevl.
 >>>>
->>>> Ok, I guess the fact that the calibration process does not factor in the
->>>> disruptor explains the full breakage we have with the accounting now:
->>>>
->>>> root@phytec-mira-evl:~# evl test sched-quota-accuracy -- -v
->>>> picked CPU1 for execution
->>>> CPU1: calibrating: 893547 loops/sec
->>>> CPU1: new thread group #0, quota sum is 10%
->>>> CPU1: done quota_thread[0], count=150399
->>>> CPU1: done quota_thread[1], count=145636
->>>> CPU1: done quota_thread[2], count=141552
->>>> CPU1: 3 threads: cap=10%, effective=49.0%, disruption=49.6%
->>>> sched-quota-accuracy: 489.7%
->>>>
->>>> Which does not make any sense since the effective value should be capped
->>>> at 10% in the above case, compared to the nominal (full) report which
->>>> should be:
->>>>
->>>> root@phytec-mira-evl:~# evl test sched-quota-accuracy -- -v
->>>> picked CPU1 for execution
->>>> CPU1: calibrating: 899203 loops/sec
->>>> CPU1: new thread group #0, quota sum is 10%
->>>> CPU1: done quota_thread[0], count=26818
->>>> CPU1: done quota_thread[1], count=26709
->>>> CPU1: done quota_thread[2], count=35612
->>>> CPU1: 3 threads: cap=10%, effective=9.9%
->>>> sched-quota-accuracy: 99.1%
->>>>
->>>> Dropping this patch from the -next branch for now.
->>>>
->>> 
->>> I would rather recommend taking a trace and debugging the scheduler -
->>> this could very likely be remaining issue in the quota fix.
->>> 
+>>> Yep, my bad. Using MSG_PROBE is not the right way, since that would
+>>> conflict with MSG_PROXY in userland which has a totally different
+>>> meaning. I have revisited the implementation, simplifying it actually:
+>>> since the evl netstack already accepts zero-sized messages, sending such
+>>> a datagram to the UDP layer now amounts to returning early with the
+>>> address resolution status, short-circuiting the logic before the actual
+>>> transmission happens.
+>>> IOW, passing a NULL or empty iov into the msghdr struct does what
+>>> MSG_PROBE was intended to do.
 >>
->> What is the state of this? How can I reproduce the issue you saw? What
->> is specific to the target, what could also be seen over qemu[/kvm]?
+>> I tested this variant. It works. But I wonder:
+>> If I use:
+>> ret = oob_sendmsg(s, &msghdr, NULL, 0); errno is set to EHOSTUNREACH
+>> If I use:
+>> ret = oob_sendmsg(s, &msghdr, NULL, MSG_DONTWAIT); errno is set to EWOULDBLOCK
 >>
->
-> The task of writing a proper test for evl is ongoing, the overall sched
-> issue is very much on my radar. I'll follow up when this test code is
-> available.
+>> Is this intended? EHOSTUNREACH is like halve correct. Yes, the host can not be reached
+>> but only due to no ARP request is sent.
+>>
+> 
+> EHOSTUNREACH was intended as a way to distinguish from EWOULDBLOCK wrt
+> lack of buffer space for the outgoing message, this code was the only
+> option close enough to the idea to be conveyed available from the errno
+> list that would not conflict with other situations. Now, since such
+> probing mode needs no message space in the first place, this is guarding
+> against the impossible, which does not make sense. Returning
+> -EWOULDBLOCK in both cases above would still be
+> practical. e.g. something along these lines:
+> 
+> diff --git a/kernel/evl/net/ipv4/udp.c b/kernel/evl/net/ipv4/udp.c
+> index d819616c3b5b..5912a1fbcfb5 100644
+> --- a/kernel/evl/net/ipv4/udp.c
+> +++ b/kernel/evl/net/ipv4/udp.c
+> @@ -417,22 +417,22 @@ static ssize_t send_udp(struct evl_socket *esk,
+>   	 * address.
+>   	 */
+>   	ret = find_egress_path(esk, daddr, &ert, &earp, &pseudo_earp, msg_flags);
+> -	if (ret == -EMULTIHOP)
+> -		return ret;	/* MSG_DONTROUTE cannot be honored. */
+> -
+>   	if (ret) {
+> +		if (ret != -EHOSTUNREACH)
+> +			return ret;
+> +
+> +		if (datalen == 0)
+> +			return -EWOULDBLOCK; /* Address probe failed. */
+> +
+>   		/*
+> -		 * No route known from the front cache - bummer. We
+> -		 * may have to offload the transmit operation to the
+> -		 * in-band stack, unless only probing or MSG_DONTWAIT
+> -		 * is set.
+> +		 * We have a message to send but no route was found in
+> +		 * the front cache - bummer. We may have to offload
+> +		 * the transmit operation to the in-band stack, unless
+> +		 * only probing or MSG_DONTWAIT is set.
+>   		 */
+>   		if (msg_flags & MSG_DONTWAIT)
+>   			return -EWOULDBLOCK;
+>   
+> -		if (datalen == 0)
+> -			return ret;
+> -
+>   		/*
+>   		 * We always charge the socket even when offloading to
+>   		 * the in-band stack although we won't consume any
+> 
 
-You need to pick e5e876da..3e32fa6f from [1] for the kernel bits, and
-198a21b7..HEAD from [2] for an improved sched-quota-accuracy test which
-also measures the preemption noise, with a significantly simpler
-implementation. The topmost commits in [2] also introduce an interface
-to the ftrace-based 'evl_trace' event which I used for debugging.
+I think in this case, it is fine as it is. You also won't expect EWOULDBLOCK or EAGAIN as long as you
+don't set MSG_DONTWAIT.
 
-Basically, I merged the gist of our past proposals, refining here and
-there as issues were uncovered.
+But now there are two ways of probing. Either with or withouth MSG_DONTWAIT that behave slightly different.
+Might be just support MSG_DONTWAIT -> EWOULDBLOCK and drop the other variant? Or is there a reason
+for the variant withouth MSG_DONTWAIT?
 
-Heavily tested on real hardware, which uncovered a couple of other
-serious issues. I plan to write a separate test program for testing the
-runtime credit and peak management.
+>> For oob-net-udp server mode, this variant is a bit wastefull due to oob_sendmsg() would
+>> either always be called twice or I would have to keep the list of clients.
+>>
+> 
+> Which brings back the option of some MSG_xxx operation flag so that we
+> could pass a valid buffer _and_ a probing flag, but then we'd need
+> Dovetail to add one to the standard list (in userland) because I don't
+> see any standard one to piggyback off of.
+> 
 
-[1]
-https://gitlab.com/Xenomai/xenomai4/linux-evl/-/commits/next/v6.12.y-cip-evl-rebase?ref_type=heads
+Is there a reason to pass a valid buffer to only probe? Either you probe
+with a NULL buffer / size 0 or you pass a buffer and set MSG_DONTWAIT so
+the message is sent if possible. If not, evl_net_solicit() and retry.
 
-[2] https://gitlab.com/Xenomai/xenomai4/libevl/-/commits/next?ref_type=heads
+BTW: NULL buffer / size 1 fails. But it also makes no sense.
 
--- 
-Philippe.
+>>>
+>>>>> - Extend the effect of receiving MSG_DONTWAIT (and more generally
+>>>>>      O_NONBLOCK on fildes) to what we would do upon missing routing
+>>>>>      information: if present, return with a specific error code _without_
+>>>>>      relaying the packet to the in-band stack. The caller may then decide
+>>>>>      to handle the case locally. Otherwise, proceed as usual (i.e. relay to
+>>>>>      the in-band stack, then notify the caller with -EINPROGRESS).
+>>>>
+>>>> So the oob-net-udp server code can be changed to use MSG_DONTWAIT and
+>>>> if the return value is EWOULDBLOCK, call evl_net_solicit() and try again instead
+>>>> of holding a list of IP's right?
+>>>>
+>>> Yep.
+>>
+>> This works nicely, I will send a patch changing oob-net-udp server mode to use this.
+>>
+>> The only disadvantage is that if for what ever reason, the client is already in the ARP
+>> cache but not permanent, it is cleared after a timeout, so evl_net_solicit() can happen
+>> later than expected.
+>>
+> 
+> Yep, because at the moment, the core mirrors to the front cache all
+> insertions and deletions happening into the inband cache
+> unconditionally. We could force a permanent state for any entry we are
+> about to insert into the front cache in order to prevent what you
+> described, but I'm wary about unwanted side-effects.
+
+Right now you can use evl_net_solicit(..., EVL_NEIGH_PERMANENT) to make shure it is
+permanent but this is an in band call according to the doc. So if you want to stay
+out of band, you need to probe.
+
+Now the probing doesn't show if the arp entry is permanent or going to disapear soon. So it
+can pass at the first try and fail later. Right now, you are better off doing evl_net_solicit()
+for every client if you want to be shure.
+
+With ioctl(s, SIOCGARP, &arp_request), you can check if the entry is permanent
+(arp_request.arp_flags & ATF_PERM) and then use evl_net_solicit(..., EVL_NEIGH_PERMANENT) if not.
+But the ioctl is also in band.
+
+An option would be either to support of oob_ioctl() for SIOCGARP. Or create something like
+evl_net_routeinfo(s, addr) returning flags would make probing obsolete.
+
+Flags could be:
+EVL_ARP_COM        Lookup complete (If this is not set, no ARP entry)
+EVL_ARP_PERM       Permanent entry
+EVL_ROUTE_MULTIHOP More than one hop away (Will fail with MSG_DONTROUTE)
+
+> 
+>>>
+>>>>> - Provide a way to synchronize with the route resolution process in
+>>>>> evl,
+>>>>>      i.e. a syscall that would block until a given destination is available
+>>>>>      from the oob cache. This call already exists, evl_net_solicit() can be
+>>>>>      used for that purpose (if a resolution request is already in flight,
+>>>>>      subsequent ones to the same destination won't cause any harm).
+>>>>> Points 1 and 2 are implemented in [1]. Feedback greatly appreciated
+>>>>> and
+>>>>> important when you have time. Usability for real-world applications is
+>>>>> key.
+>>>>
+>>>> I am a bit busy right now, but I would like to test it. However, It can
+>>>> take a week or two.
+>>>>
+>>> Np. Your contribution has been valuable, so it's worth waiting for
+>>> it.
+>>>
+>>>>>
+>>>>>> It would also be nice to have an "evl net" command to list the
+>>>>>> entry's. I tried the normal arp command but it doesn't behave nicely
+>>>>>> with evl.
+>>>>> Could you please elaborate on this issue? Currently, updates to the
+>>>>> in-band cache are propagated to the oob cache (by registering a hook
+>>>>> into the relevant notifier chain in the kernel). So I would expect all
+>>>>> destinations of interest to oob which are visible from the in-band arp
+>>>>> cache to be available from the evl map as well.
+>>>>>
+>>>>
+>>>> The issue was on my side, I need to run "arp -n" so it does not resolve host
+>>>> names. Otherwise, it takes quite some time. But this makes sense, with OOB
+>>>> active, it will never receive the answer on the request, so it times out.
+>>>>
+>>> Ok, this is not user-friendly. I'll have a look.
+>>>
+>>>> By the way: Since some time, all incoming network traffic goes to the OOB
+>>>> stage when it is enabled. However, all outgoing traffic from the in-band stage
+>>>> is still sent. Would it make sense to block all outgoing traffic after
+>>>> "evl net -ei" except might be ARP requests if they are initialized by evl_net_solicit()?
+>>>>
+>>> I believe this may break some use cases I'm aware of. Some people do
+>>> currently use such asymmetry between ingress-oob and egress-inband on
+>>> the same interface on purpose.
+>>
+>> In this case, it is fine.
+>>
+>>>
+>>>> At the moment, this is done using nftables for linuxcnc, this works fine
+>>>> for preemt_rt and xenomai, so not really needed.
+>>>>
+>>> Currently, it is assumed that any outgoing inband traffic has a
+>>> purpose,
+>>> even on an oob-enabled interface. What kind of egress inband traffic
+>>> could/should be dropped safely when flowing through an oob interface?
+>>
+>> Mostly unintended traffic by either user error or some running services
+>> sending discovery messages to all interfaces. Using nftables works nicely
+>> so there is no real need to do anything else.
+>>
+> 
+> Ok.
+> 
+>>>
+>>>>> This said, I agree that we need a way to inspect the oob cache
+>>>>> specifically. Working on it.
+>>>>> [1]
+>>>>> https://gitlab.com/Xenomai/xenomai4/linux-evl/-/tree/wip/net-solicit?ref_type=heads
+>>>>>
+>>>
+>>
+>> I've seen this commits are already on v6.12.y-cip-evl-rebase? I did these tests on v6.12.y-cip-evl-rebase.
+> 
+> Yep, because this probing mode is here to stay, although I'm considering
+> another way to provide this using a dedicated MSG_xx flag. Problem ATM
+> is that I'd like not to pollute the namespace uselessly by creating
+> non-std flags. This said, it may be legitimate to extend the existing
+> set in this case.
+> 
+
+Fine for me, so I did not have to compile yet another kernel.
+
