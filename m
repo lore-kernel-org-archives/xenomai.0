@@ -1,117 +1,197 @@
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B40EA24A078
-	for <xenomai@lists.linux.dev>; Tue, 21 Jul 2026 20:15:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45DE3367B63
+	for <xenomai@lists.linux.dev>; Tue, 21 Jul 2026 22:36:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784664946; cv=none; b=fPswxX6JuUC6XLmmR978tw6zLhQ/v22tKQbZyuA1UPMQ+hQKQZBaG2wrSCQJE879fCqKHQudqduykRZsXrNKvBtnybdNG8pO+nvYnK0cBeqC7j3vJ64Pkwti0RNWU4o63Sy7e4dN5WQYIF040VhuQqrxKM2DcUGGLnasdu3FMHo=
+	t=1784673377; cv=none; b=Bra2wzFMSySndlkQp06NProv3rH+/ZsSilHhx5TdjJMFWE+Vvs8Yh+7tg2FH9s+KKSNVtTKxb4+fRDzEslnGz34dV4tsuCFADoc8Sp1FbHoycO21IyrlSk8WZ+5pYnIABeJgromYdXo5TXpG6ZbUK1IJ8jC4OpMO3jFi3iRQyiU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784664946; c=relaxed/simple;
-	bh=Z8eBEZ2oYzGxx/H+z+VcR598Lpc9sIc+H5wNe8iVdRo=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=SLXE/4w0a40aqLuZgl+kGkwzbieFrMdNyTiZp9GuDwPks1m3HaPuwbTB9LHj+cMukfrdE8eh+6u08Yrd75WpQTGSpcm1PtFO0ef9v77iEmaFw99ch0BKRcP5j9IXuz2w8nN9NV3ti4j3iG1SzYIPVCorzrDXJv9PSt/+PMMFSLE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=NIhuFs+c; arc=none smtp.client-ip=217.70.183.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1784673377; c=relaxed/simple;
+	bh=YeW8Oe/4ZVBnCvO+/b6GYrrjaOdT+nfQXcl4+4PSEes=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=BvCpMHWxXxBs9t4fsWN7u4VFraDM1LivNiw7S47U3ZOqZXRzV934nH0diCheCW6qCcK+VdviAfT1obVSVPYJwKMaN5rVepdKgl2tv8fol6oiWUQ/fi86YC5jdklrpcTMT3WK3EG+/Gn+hBmiJHddA7WFRZkb+U0+UuCOUrCKz2E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PllAC6oc; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="NIhuFs+c"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 16B343F545;
-	Tue, 21 Jul 2026 20:15:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1784664936;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=//VDJpcPBnZU3u+/LH+vKPNKdz7BVwI9iN8Zi7cX3S4=;
-	b=NIhuFs+cJtvnnLOreUqevqQ55viahFUb5vCPH5u9VDLhEkmWg8Xek1f7zg8h4upeop9vek
-	6/64GDmICyDBgaVzsEEx5oIzA7fATF5RDRA5eNKSa+oukodsQdc5zOYmxGrJhOfTbBxvA1
-	ohYs8XrXMO7QPNDUb8bzgDqOD4YdqmaIy2qbMnSIzMR3OTztmqf0glsEOPyrewsoTuIFIC
-	oDqs4d526YlqVoUU9gKLTsnE7IauAEl5TMZDXZEkhIdlW3wOszqraSP+FY7z9N4o8eAu2w
-	zoR5LWiPbt7DnW1Vq7JVfbgCn4nR9e4Z/GaAnozu+iSjlAoICM1PEUQGaSh2VA==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Hannes Diethelm <hannes.diethelm@gmail.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: [PATCH 1/1] tidbits: net-udp: solicit new client for server mode
-In-Reply-To: <11409ae1-be7b-4003-8d40-f5e1cb34d2ec@gmail.com> (Hannes
-	Diethelm's message of "Mon, 20 Jul 2026 22:03:52 +0200")
-References: <20260528194459.6117-1-hannes.diethelm@gmail.com>
-	<20260528194459.6117-2-hannes.diethelm@gmail.com>
-	<87a4te64vn.fsf@xenomai.org> <874ijm62yu.fsf@xenomai.org>
-	<3216fbd8-3ee4-46f7-851b-0f3b48c38572@gmail.com>
-	<87ik7d86kn.fsf@xenomai.org>
-	<6c0d9a13-732b-49c5-886b-3dda8b1f5cab@gmail.com>
-	<87o6gmzlpn.fsf@xenomai.org>
-	<13bb8457-8148-4758-84d5-1ab324e978bd@gmail.com>
-	<8733xd20u3.fsf@xenomai.org>
-	<11409ae1-be7b-4003-8d40-f5e1cb34d2ec@gmail.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Tue, 21 Jul 2026 22:15:35 +0200
-Message-ID: <87jyqodrq0.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PllAC6oc"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4953de5be0aso42806375e9.0
+        for <xenomai@lists.linux.dev>; Tue, 21 Jul 2026 15:36:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1784673374; x=1785278174; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:in-reply-to:content-language
+         :references:cc:to:subject:from:user-agent:mime-version:date
+         :message-id:from:to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Q2tiBeFlUcpZYQEhlYymbQPMeZrtgG+M3RD0r4gY6P4=;
+        b=PllAC6oc+dJKq/gt4WnKbo9l46bbW4VI42sH7YUwD8VeageDcfTsLClc1y0imxB3jF
+         1lByUoWbv31UVvRFTtdNGkWwo1RSgkFNIgJwd4GUzTq0aAuQeLx3EUnddQKVfBOTTaHs
+         XQ0Sn7Tce8wKWKPWAuZjxn9NN6hnu/tQbMzZICVHuZFeX5e8WVM0w+Z8VZLy58pXtK4r
+         1EbnuORzJMxXuUnapwGU8cw+P3PNHzDctMVeywC9M6NvknPSpHLRp482Hh3v5bjZXAJm
+         JaxbR7lbSailqC+HoE1s85deyKRVSksXGtnFayScczsJfrOABwlkBye9quZJRhCvcVWh
+         uEmQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1784673374; x=1785278174;
+        h=content-transfer-encoding:content-type:in-reply-to:content-language
+         :references:cc:to:subject:from:user-agent:mime-version:date
+         :message-id:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Q2tiBeFlUcpZYQEhlYymbQPMeZrtgG+M3RD0r4gY6P4=;
+        b=p5G2o6jFXvZcuwQIhP2WLSKhe4BTOk8FuOnsldWG3URV2XWeLtXihZVXBKYitI5dZk
+         RO5sNsqyKyXnyYMDZ5L/b54NYDW8m7UgeCyFuctECaavJyf4cIor+h88Z4zF2jmsqRH7
+         HM6Bc5XGYJg/2MHepSnbHOkoFsnV1j02rQmAUx/OnBM4Ekp5vlBj8o6SW7IJXfbhp3Pc
+         y9LFY8akYN1/waLUFW1dKV7qEBBRrhoVScWpYx7Gt7qciw9ZOIo4UW5d2vgzgCnr91VQ
+         ziRrYOEX6QZKPvxKRpDV/qw3AFBqBeBe5WlGZwy9nCXXfSVePD9mlxZBiWSYnlJIVKuj
+         a3vQ==
+X-Gm-Message-State: AOJu0YycMOLocBvJO0QyT7BoX7bhniwHX3y80zuY+NSnpxBYicj5Gi4j
+	rNLUVCFojqjaHeBdPPOeKsbC1OYAJgotH/2zhoj2ryk+Arckf3qbRfwTxQ95S+nX
+X-Gm-Gg: AfdE7cnM16VDgZEO9TjEwfk9hHyOPCZBHfdXEadD3jmwvfY9ykeemS6wxFrCsZPNKQP
+	ygpUsmlaKJdmB32PQr4pAtznwy/rJiT2zxpoym8X3qwpaca+bnr78Qu6LTEgDITXL1K70tcukGf
+	wGBQvrih0n4h61m2dol9N1gcBByGdY15OS6WjbHa+fvDUNjSwBCCdVEwato26SOrJxPfZuBu/M3
+	mwL2WjasY533/aNnyGltrWWF6cav4CIeuQkPW9olcAbf9ehSFM4dioU8/8blc3UR6jNgaQLdOeL
+	QymWce0j5Uiej+Q4K1xnRShIr4+knMkcZziv+dBrK0t+aoPemFjiR0Re9q6+l8rT1GS24ilofB8
+	2FvafiekIRAyZGe09i1HBzkiBISm9TEWQRK196ofmohOX7w6kkX+u46j6ptgScWY2r59ZeSLBrI
+	zPLI7bgTBtBQ==
+X-Received: by 2002:a05:600c:138a:b0:493:f318:3bc6 with SMTP id 5b1f17b1804b1-4954a3dc7b1mr245234105e9.13.1784673374240;
+        Tue, 21 Jul 2026 15:36:14 -0700 (PDT)
+Received: from [192.168.1.3] ([213.55.168.64])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4956ab41aa2sm17623615e9.1.2026.07.21.15.36.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Jul 2026 15:36:13 -0700 (PDT)
+Message-ID: <3105aa6e-ba08-4e5a-b228-233473aa5675@gmail.com>
+Date: Wed, 22 Jul 2026 00:36:12 +0200
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Cause: dmFkZTGu2Ly2QEBUYbXmDGR7hEWsmC1VpofN2NrhJ2mJzuSl08RDpt+fN4tsPMGyU5Ue5mYkvLiTAQCHpkLfboEmnGborNiSRY8uC1/opwQtwy5O4O57uQEpuSnDjToU3ch+IxpulESIe8TMmxGNeLHyJjAOw42mfBwx0x+y4BOM+6l50IJKiPHJVyGXDOWHEsCf5P7UhczM9P3vVg+jhIMp+2f5j1502A/MoSQ5IJ3iZ2ITKKs48xDv4TuEBYpYdvZLk3I7yPirU46GIDBa8LmgCKEQS2s7VQq1QJh+N8Uz715bjMdBRaNwp4h6HPsNVNvj+LgVHvHUxQTcQa7c0/FUjuHBEjrucW2ml8EbOjRyFjh9YpD2cJuJvNLYGUkqbBi4/hyuBjvoxAkmXw2CZP+0rML5Ll2zpEVZxTyL2U5D1wQfYUj6MCfmDHH+2euU5jqlXRr3xPtsmHDKaMq5z2fI/xXivQzm375VxF2jzGWbaW81ux9b3g3GGlC53iIXfLKOkFRNwReHQ+etdbXVxZ4vwXWInufkW5K311s1PiTtNjl1KiEpEZw/et+ujyxdTiWhPV68B5zb6nVs6QOCofB1qzFPwcGFhu/SV4HLH/pVawNOgSEpotdR/ASZoLkqISrIzOTnuvYW6pO+KZUODz9NrbuHl9l3uIOAbXIWDk1M7J5d4A
-X-GND-State: clean
-X-GND-Score: -100
+User-Agent: Mozilla Thunderbird
+From: Hannes Diethelm <hannes.diethelm@gmail.com>
+Subject: Re: [PATCH 1/1] tidbits: net-udp: solicit new client for server mode
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev
+References: <20260528194459.6117-1-hannes.diethelm@gmail.com>
+ <20260528194459.6117-2-hannes.diethelm@gmail.com>
+ <87a4te64vn.fsf@xenomai.org> <874ijm62yu.fsf@xenomai.org>
+ <3216fbd8-3ee4-46f7-851b-0f3b48c38572@gmail.com> <87ik7d86kn.fsf@xenomai.org>
+ <6c0d9a13-732b-49c5-886b-3dda8b1f5cab@gmail.com> <87o6gmzlpn.fsf@xenomai.org>
+ <13bb8457-8148-4758-84d5-1ab324e978bd@gmail.com> <8733xd20u3.fsf@xenomai.org>
+ <11409ae1-be7b-4003-8d40-f5e1cb34d2ec@gmail.com> <87jyqodrq0.fsf@xenomai.org>
+Content-Language: de-CH, en-US
+In-Reply-To: <87jyqodrq0.fsf@xenomai.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+Am 21.07.26 um 22:15 schrieb Philippe Gerum:
+> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+> 
+>> Am 20.07.26 um 16:27 schrieb Philippe Gerum:
+>>
+>> An option would be either to support of oob_ioctl() for SIOCGARP. Or create something like
+>> evl_net_routeinfo(s, addr) returning flags would make probing obsolete.
+>>
+> 
+> Not entirely. The issue with solely having SIOCGARP or any probe-only
+> explicit request is that you would have to pair two syscalls at each
+> transmit at least, one to probe for the sender address before possibly
+> soliciting that peer if absent from the oob cache, another one for
+> sending the message eventually. i.e., for every packet:
+> 
+>      ioctl(SIOCGARP)
+>           !ATF_COM? -> evl_net_solicit()
+>      oob_sendmsg(..., 0)
 
-> Am 20.07.26 um 16:27 schrieb Philippe Gerum:
->
-> An option would be either to support of oob_ioctl() for SIOCGARP. Or create something like
-> evl_net_routeinfo(s, addr) returning flags would make probing obsolete.
->
+You are right, that is an unneeded syscall as long as you don't keep a
+list of clients as before. This can remove the need from calling
+evl_net_solicit() in the case the client is already in ARP and permanent but
+this will be the only change and won't help that much.
 
-Not entirely. The issue with solely having SIOCGARP or any probe-only
-explicit request is that you would have to pair two syscalls at each
-transmit at least, one to probe for the sender address before possibly
-soliciting that peer if absent from the oob cache, another one for
-sending the message eventually. i.e., for every packet:
+> 
+> OTOH, with the latest attempt to address this issue, we can send a
+> probe-only request by passing MSG_PROBE (EHOSTUNREACH), or a request
+> that does not attempt to defer transmit to the inband stage on probe
+> failure by passing MSG_DONTWAIT (EWOULDBLOCK). i.e., for every packet
+> 
+> redo:
+>      oob_sendmsg(..., MSG_DONTWAIT)
+>           EWOULDBLOCK?
+>                 oob_sendmsg(..., MSG_PROBE)
+>                    EHOSTUNREACH?
+>                        evl_net_solicit()
+>                        goto redo
+>                    otherwise assume ENOMEM
+>           otherwise all done
+> 
+> IOW, using a proper combination of MSG_DONTWAIT and MSG_PROBE in the
+> right sequence would either succeed to send the packet immediately on
+> the first oob_sendmsg() call, otherwise fail on memory shortage or
+> missing route from the oob cache. In the latter case, which could only
+> happen once for each new peer under normal circumstances, we could
+> disambiguate the EWOULDBLOCK status using an explicit probe.
+> 
+> A better way to do this in a single step unambiguously would require the
+> addition of another operation flag, like MSG_DONTDEFER, preventing the
+> deferral to inband on failed probe and causing oob_sendmsg() to return
+> with a specific error code. e.g. something as simple as the following
+> would cover all requirements:
+> 
+>       oob_sendmsg(..., MSG_DONTDEFER) -> EADDRNOTAVAIL on failed probe.
+> 
+> Now, we might also piggyback off of MSG_OOB instead of defining yet
+> another operation flag, as a way to say "oob only, don't relay to
+> inband", but I'm still pondering whether this would be nicely witty or
+> utterly confusing..
+> 
 
-    ioctl(SIOCGARP)
-         !ATF_COM? -> evl_net_solicit()
-    oob_sendmsg(..., 0)
+Yes, this is a variant. I was not aware that MSG_DONTWAIT -> EWOULDBLOCK
+can also mean ENOMEM.
 
-OTOH, with the latest attempt to address this issue, we can send a
-probe-only request by passing MSG_PROBE (EHOSTUNREACH), or a request
-that does not attempt to defer transmit to the inband stage on probe
-failure by passing MSG_DONTWAIT (EWOULDBLOCK). i.e., for every packet
+Now after considering all options, i start to prefer the variant before
+this patch, keeping a list of already solicit'ed clients. It is straight
+forward, simple and fast. And you know exactly when to expect an in band
+call. Might be we should just drop this patch instead of adding unnecessary
+complexity for example code?
 
-redo:
-    oob_sendmsg(..., MSG_DONTWAIT)
-         EWOULDBLOCK?
-               oob_sendmsg(..., MSG_PROBE)
-                  EHOSTUNREACH?
-                      evl_net_solicit()
-                      goto redo
-                  otherwise assume ENOMEM
-         otherwise all done
+With MSG_DONTWAIT/MSG_PROBE you are not sure if the ARP entry is permanent.
+That means if you are unlucky, a few packages are sent to the client before
+EHOSTUNREACH is returned which could be bad for real time.
+If you have a real time server and clients, I imagine clients would expect
+the first response to be delayed due to initialization / ARP but every following
+response to be in time.
 
-IOW, using a proper combination of MSG_DONTWAIT and MSG_PROBE in the
-right sequence would either succeed to send the packet immediately on
-the first oob_sendmsg() call, otherwise fail on memory shortage or
-missing route from the oob cache. In the latter case, which could only
-happen once for each new peer under normal circumstances, we could
-disambiguate the EWOULDBLOCK status using an explicit probe.
+With ioctl(SIOCGARP) or evl_net_routeinfo(), a list of checked client's would
+also be needed due to it would be wasteful to call the kernel each time before
+sending a package.
 
-A better way to do this in a single step unambiguously would require the
-addition of another operation flag, like MSG_DONTDEFER, preventing the
-deferral to inband on failed probe and causing oob_sendmsg() to return
-with a specific error code. e.g. something as simple as the following
-would cover all requirements:
+MSG_DONTWAIT / MSG_PROBE could still be useful in certain applications, for example
+when you have a separate thread that handles evl_net_solicit(), so you can
+just call oob_sendmsg() until it succeeds without needing to signal back.
 
-     oob_sendmsg(..., MSG_DONTDEFER) -> EADDRNOTAVAIL on failed probe.
+This would be something like this:
 
-Now, we might also piggyback off of MSG_OOB instead of defining yet
-another operation flag, as a way to say "oob only, don't relay to
-inband", but I'm still pondering whether this would be nicely witty or
-utterly confusing..
+server_thread:
+     if(!is_in_list(addr))
+         write_solicit_queue(addr)
+         add_to_list(addr)
+     oob_sendmsg(..., MSG_DONTWAIT)
+          EWOULDBLOCK?
+                oob_sendmsg(..., MSG_PROBE)
+                   EHOSTUNREACH?
+                       skip or mark for retry depending on the application
+                   otherwise assume ENOMEM -> generate error
+          otherwise all done
 
--- 
-Philippe.
+solicit_thread:
+     while(true)
+	addr=read_solicit_queue()
+	evl_net_solicit(addr)
+
+I also prefer using an explicit MSG_PROBE instead of an implicit zero size
+message.
+
+For ioctl(SIOCGARP) or evl_net_routeinfo(), I don't see a good use-case after
+all. You can just use evl_net_solicit(), it probably won't hurt if you do it once to
+much and you have to implement the case when evl_net_solicit() is needed anyway
+and take the timing for this into account.
+
