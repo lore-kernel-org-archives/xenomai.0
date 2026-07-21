@@ -1,58 +1,53 @@
-Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11013035.outbound.protection.outlook.com [40.107.162.35])
+Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013029.outbound.protection.outlook.com [40.107.159.29])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52D1C37B3FE
-	for <xenomai@lists.linux.dev>; Tue, 21 Jul 2026 10:37:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.162.35
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D70E0481252
+	for <xenomai@lists.linux.dev>; Tue, 21 Jul 2026 10:38:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.29
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784630253; cv=fail; b=gndlx2zsKYX9JpESjgLQxajNzg9lnWyQ+ceP1bvD5RlDY+aMTV3Twty/UupGpn68E4/WReh6/leJq7KDONXmvteQAceGQ9l5ic9qbf2OHP0ylpVQ9Rq7AQpel6oNqK3f9CQHBWwOCYnLo5LkeEzlkPiemL0koc2YEI59j+ZWBSs=
+	t=1784630322; cv=fail; b=qhjJG4SwxtwH7w6gXaWri8lmmNMXiaHdPH9o9yQ2z9OJgb/p1OkhINgAbTwKY/N9hdAPAAuCzWFsIUdcH9TR8mOyZ2M7yPFDbwiuADDztAi0nVvXpcYP3z7yJNYXde0WJLh9mr0azpUaLB1ixflU5P2Wjr3DWUPSXG3jTRn6MtU=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784630253; c=relaxed/simple;
-	bh=caO3bl6oYPQ3GcUDrT8tVGmLXpy8a+0Y8LpqvikIgBY=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=h62YxY7ziCSWKstGyao7i0ZfFWwVjGTjg0ehvf5AAHqIcT1/WQoaHP2mu6/ApH4JCww3sDWlykM57um2nSjD1oQ7xKaOKns3EGhKr7P+aV0MX095PJdEV9a7jIK8nz/xNFrVqjTglbk6P85RrDw7HAY51cVvviCxo5P3faBBcC0=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=NN1vOJaC; arc=fail smtp.client-ip=40.107.162.35
+	s=arc-20240116; t=1784630322; c=relaxed/simple;
+	bh=P/d9iyCZfVUDWX3B7sKxZdqJF/E6Lstb5XU26TosrMc=;
+	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=kapTUEg5RruZe39cSxjVqnqGLGpHarP65tkg4CwHgkOTExELK3elHRmqLmVKROokijGvnjaGQ+6VpOnmgZznvQaP/bLHPB7ud2J9VuPTTp+Dl22VTAejz1dlMiKkMYGvxLYs318efThG/Rdn5zRzxxOpMuIdw6CBnmYfaNEdoJA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=JvSGRSSA; arc=fail smtp.client-ip=40.107.159.29
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="NN1vOJaC"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="JvSGRSSA"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=oFKeOeyYoYKG93tUxQU1p+GXRoQN+cho7hMzwkjtQGf5Bf51yDrJlt4Gndb8tacsL+taEsCWNMLXgdG6ZH9SRxF7mXbFRAZWDkhjPMPt8mt8h1239hmJUayxAdHd5u8z9ZRL5sPl/k0c2YiZaxkPGTBiZpMwR5egF4Z8bJ8UZbSAiEym57+6xwlWJ60UAjstZH4LnDdK4jN6iMFke+shx5gITwT7uObalaKwqcbtHiwuNkqahY3w0/6Hs90mlm50OrvBWGVibqdtfJVZfM2I8Tf3VcRyiTp/HiM3xE8W0UBuoz2FIJMpR1AxJPe/c1SoFyDdmAz6ohnHSkpcqa4sDA==
+ b=Vx7mEYvDyCk3PfJWv5h6fznUD7NhRyLIFhUlBrz7Zk7Sv2kCOrJVveQBlzT7KleFTJlUM0rIsSRMVTVD/s7ZZ7vDpQQC0Cq00xgJp3PlKH0lLnzBO1u5H3/V313BneFILHGScc6XW7wJewSQVRRpqTUUZx3gzqkpPl3UUzHJOtZ9fBBL0SjgqDle2oxU+qifbQrp+bxyDeqXL7cmBCW4JziHbbTsMfO978hmu+knuqO8DkBSWWJgDicRVkivhoFVWWoHAzF0qBwT7qusfUHYckUCTiTJCaciPrdGpQn4PDnHJmQXBllL5QlcKHt6Z9hLsULTippnhpctyidO4k3rsA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rrvXQKr2IrHc+r9wL8bXcp9jRcfipIm8VBhTojotl2o=;
- b=NWS8lej36HUtmRYUXK72Hh1gaMpH/DJZ3dIJCY4TZm7ce00Q2kpBcNuP3NkssdwT1LdUigx4mALoLiBVNh0TVfblSR9TVwGEae5+YrqMYIs4rKWipcp+ya0/woEX3lBDDTZKzL3HHRD8nguiGss3al3quF4VaLTPk9QQ50upHB19jnyUogAbiDfzpfL5+glTFidNK9x8h80g6K3wYp0wt8aAZPwGsPYlBK6YYyoQg1Ow6/u2ZmmwSI8BohNyhbzIg8VqA6dXV8kLgvdanpHhDVEURYwoxHtt0oU2/+tkQqmfR5F28GThSvTEh98uQJUruqK/om6FdnHqzV1qmygONw==
+ bh=x2ynqR9B6d+mpKu+guRxkhKdDSdPOVh4hNm98RtSq4o=;
+ b=s87i0NWFBe4mrojz6xxqCVCaj4cmeFjsAKPY3DZ8kDx4uA1Gp+okLQd2YQj7McNtRl5ui0lfLF+yATWB83A1jbpc+/lPSLQp38tIi+PTeO/cIYULsRT9eOyiOrc8jL90KxCQgYd10wgsbFjMMnl7JlziUP2AKTqzutQpBgNhUXykGP10LvqR8E3adtYtYYeG7ZjYz2L+NmmqIb9TenFv6NMUx0plrYWWYJHwFx2/mz9NMfzR/2oQ7tM1f1WIwDiFjAn61ZvM52k4l6DdBF+Zl6KFgCp9pfERKm4eCaAJiy89yh8vKSTlfscAoVaL6qnbD9bxmoC+9oLWl+9RxKiQZA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rrvXQKr2IrHc+r9wL8bXcp9jRcfipIm8VBhTojotl2o=;
- b=NN1vOJaCZAjkz/Q/9jpx0LCLwFftgTt2yE2RtYEhtXpObcAdddZvg5MSTDOlQDnUb1P1YjbmMqW86AN2oK8r619xlNd2wjQwZG3C19PXA7P86HouwDVa/YASC2jIkQdekUqh2XGnDovrPlPnQldMiUmawhmOhA7+GOOxhBhBuiPm79Pn+2md7acSP0EZHmwwdq55SoA4Zeg3JaszNl7MvfYhb/ZxvVKVRnimEdGPaa/gsW7ddgPHbR5hP/sRGXWqRuOH6axD7wZIKUtoGCRsM+aF//21DwATh0bA46xYHrKxL6mDQsFG//bnunmYEJdcK7YBJyvppmQ8qGw8Zcd+Dg==
+ bh=x2ynqR9B6d+mpKu+guRxkhKdDSdPOVh4hNm98RtSq4o=;
+ b=JvSGRSSAwufMgimSInJEIvMI0In/wekpcWHrMKTgx6jM6MXz6UdH8oykf8beQMwi5rwgPaQLXPbVztTrvYruPhh6lSTJmsDqKbKXzbR1AhuiMHEmc8fjFYf5tFrM9/mV7VCl0JIfgAvIMUZRu1Dnu4VIU0wgY3OzYcij+/1bvc5F1xGnkCIXGhz6yPMzflWpz+J+ydQxiJp4yErOx0Rx19MjzA8OqGQEB+DoBLHeHwJ85gfmie0/Yu5O7LqFQE6bu4AqyIGtVXsAWepI3XHbKArT4uf4PKLccZ4Hf1W9HVeCc3KOGwzFVnXlRHbIKSoH3UaRSYaPAEFjYppLy/Dw4g==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
  by VI1PR10MB3326.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:803:139::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.223.18; Tue, 21 Jul
- 2026 10:37:27 +0000
+ 2026 10:38:35 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1%3]) with mapi id 15.21.0245.009; Tue, 21 Jul 2026
- 10:37:27 +0000
-Message-ID: <ab53bde9-f1eb-4a03-b545-78501a25cd1b@siemens.com>
-Date: Tue, 21 Jul 2026 12:37:26 +0200
+ 10:38:35 +0000
+Message-ID: <5efa453b-d7e1-4323-af77-dc6ff697356b@siemens.com>
+Date: Tue, 21 Jul 2026 12:38:34 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 0/1] libevl: Add debian package config
-To: Hannes Diethelm <hannes.diethelm@gmail.com>, xenomai@lists.linux.dev,
- rpm@xenomai.org
-Cc: Tobias Schaffner <tobias.schaffner@siemens.com>,
- Florian Bezdeka <florian.bezdeka@siemens.com>
-References: <20260717205820.8359-1-hannes.diethelm@gmail.com>
- <60f4470e-cdb7-40a7-a73a-9bb6d4a10ebd@siemens.com>
- <2d7c3324-28f6-444e-a8a0-a028368804b6@gmail.com>
+Subject: Re: [PATCH v4 0/3] Add support for gcc 16
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
+References: <20260720-wip-flo-gcc-16-v4-0-f281a1f0cbd4@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
@@ -98,11 +93,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <2d7c3324-28f6-444e-a8a0-a028368804b6@gmail.com>
+In-Reply-To: <20260720-wip-flo-gcc-16-v4-0-f281a1f0cbd4@siemens.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: LO4P123CA0366.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:18e::11) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO4P123CA0370.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:18e::15) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -112,264 +107,117 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|VI1PR10MB3326:EE_
-X-MS-Office365-Filtering-Correlation-Id: 07f83b73-f51f-4fef-3673-08dee7140f49
+X-MS-Office365-Filtering-Correlation-Id: b99e9069-e765-4a1a-8467-08dee7143797
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|23010399003|366016|22082099003|55112099003|18002099003|56012099006|11063799006|4143699003|10067099003|6133799003;
+	BCL:0;ARA:13230040|1800799024|376014|23010399003|366016|22082099003|55112099003|18002099003|3023799007|56012099006|11063799006|10067099003|6133799003;
 X-Microsoft-Antispam-Message-Info:
-	GNELKenF6St8dFToUSDKDuhIT2J8QOF28BY/vOrz1P/u88LUeUexWf26TxyihK6GddFGQjEBAvwXtDRk1rLMj4PDuXV0xjV0rhYhV9pNwXaQI3jKmHCLsoMBbJNzefusJFjQEKGtOS9E0P5Rzmb2QRZuQyvOFsedy/KZp9HpWjlrmrq0b4Ym+tIVt46a4vvn89gRIGkOD1045kOwuKx3hHHFihJRaLRwgdWM4W+e84WOT0t6qeHJ/GbxrZj2iRVfw6tGj4dYmIOkVy5o3cEwvbd09yhsI3G3Fk6HAycV2UPJVZxupPsWJcHxOOOYxUiKbERbRANUlzVLdBauOboXNqodzIvoq+3QX1LzWpgUv8hjVKc35P4Pp8cf5m+GQz+kq4FxgND/eDJCfTIvboiXXR9GUptcdNssOREkpJqdOJEPw/nvShJcPmyBUQysnNdBZ/K3RhymhgZgFz8mqLJi+DzyZqLzvfUOawJVmxFdxA/GvITGFoXopbrABIJKwfb3XKoU5AiyteM5hP6Iyns7F1Hs9GBxSxCNfxuezZgpzEuaZR5G0CV2jqrPUyyajYrS4Uaz5ipQLln9OwdJqO/whqeLtQVVYFmR3GQX9wkWzKNQ4M47iz4wWqqym7FAWm2kmDxexDnEQ4R6HdueG/G8d6ZF0Vl9uZJGoswWRRHH4yY=
+	+2MP7XXjzjHQbV/Dq8Kg+1bsHWlErM6x0DdorOicgZaReNOjl52ey6qmFZ8ZPm1LciyuqN3j/WN0PS09stE1XhO0fJa9xs3GsDh4TvxoiOqFRkCexaNerVJDZkeuROkf2S4WTYuBR4EOD76iqplF5UBehQ7MNPWX7G5w7lcZBOFZIHIlOQahxZVlwC3jdIIaoMXIVytc8/WSKiTngOL5L8B2tGEtfLOMGPcb6LUBvABGBWMMAi2uE2LO5eaEL5veQrOqmRqudFUXPrjW+cOL3NzFgVoaBbgoga9laxlLROdTSOnOEmrEM8oX6tXXtV5VZEppKdykt0mLm1KeRqbCPMCMOTFTN5e+rQVDPJCQ3k/p8PNWBntNopMQtKv5e+f38iJe265SGgUFufazF7lVP3AyIN/y7LwAPwlJSiiidQ9QE95LapB/E9sLzmlIenLJymzL8pJ6lDJPKZKaZV0XXGGbVMpv62BEEA+MZ2BuXuWbk3oi/jr//9NLusFVNQg0kefVfgn6bgGBeYp4xecp0Izxi17J2t16Xa4xFMuoeLBiKVSVMtoJmKzKEF8sOqYQgv3k0kGw2ep5SD+Gi81rTOmZ6DgEAAV5vwLWblk7kHQqODkpJT5F/tEvbEO6O4F4XXCpQoaRtfAt2MBf5RYAELsjaz26Fy/OmgykeWvPRAk=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(23010399003)(366016)(22082099003)(55112099003)(18002099003)(56012099006)(11063799006)(4143699003)(10067099003)(6133799003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(23010399003)(366016)(22082099003)(55112099003)(18002099003)(3023799007)(56012099006)(11063799006)(10067099003)(6133799003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?dzJJWnhNaUlVZFl4RThvaTliWGkwcThONzRFb0puZjlFaDZXQVJiQ2gxUUV1?=
- =?utf-8?B?UmJVbFdDTWRTU2VNN082ZE53Q2dJczJqYk8wa3BkU2haRXh6MnlqUllxdEZn?=
- =?utf-8?B?OVVlT081aHJxUzFwL0wzUUtUS3ROT2J4VFkwUmwvR3dTdmNXZTJrY2gzVW9B?=
- =?utf-8?B?OVR3OXhtcVpJSnhwbThOSFhwRFk4OEdGTTZ1dkljRmdZckVKejhuWTM3bkhi?=
- =?utf-8?B?bEFlbXhpUHE4aFVyT1RmL056dHNlMXBiM0xRQnJCcERvR0Y4R1FlUHJqaFds?=
- =?utf-8?B?LzFlS3JYL1RuL0dzRnQzODAwM1kvZUk5WThnSEFPa2N5bUdnMTFoUVhraGF3?=
- =?utf-8?B?Mnp4dFU3UFY5RnVDVkJQak5PVUtzQW4vZ1I0QnNxb0tIODRuN1l2ZFVYb2Q4?=
- =?utf-8?B?eklGVFZEWmJPcnFSSitsajJ4VzB5ekNWakV4aHdObXhkRllNcEphZVp4OG1x?=
- =?utf-8?B?bEwxdk40MngrY3JVeDVtWHJocEVBYVZhZCtoQmJPRVRBbU1QbDdMNGJZQVBK?=
- =?utf-8?B?Z0VvMzRLcmxoM0xXbkdiQlFLVkNodFRhV2VJVTUzU29PYVM2T0FRQjRFRStP?=
- =?utf-8?B?TXd1STFkZi9qd3F5SXF2RFB2ZDNsR3ZWejVLZmFMbUZyVFpCNWJpblpvSUt2?=
- =?utf-8?B?eWNWYjhwdWJmbjB2VE5sMmh5RGxiZ0lkTVFmWkJxbnNSNDVHai9oOXM3bjda?=
- =?utf-8?B?QjFCTjBjS21Nb3djNkhRNHNMdjVka1NxV0lmcEJLeFQ3a0Nob09PRGdGL0dS?=
- =?utf-8?B?SnV4N1JpZ2RmaVl3VUUrKzliVzJKMDdGQlBFZXduQVh5TTZZUDJiZUwrbUdB?=
- =?utf-8?B?eitNVXdyQ3lJdGNHaHhTM0syS1ZXelZ3U2RvdzBidDFEK2hQdHpEV2liczV6?=
- =?utf-8?B?aTAwRndTL3pxSmFYeDF4UEwydFVyM0ZWSTdxUE5rV2RHdU1YeWVZRjFPRlVu?=
- =?utf-8?B?Qks4aDFNMDRGVHA0UlZSZGY1d2w0Z05xUlF6U3pwclpoZHlwdWZvZUd1RTEy?=
- =?utf-8?B?VmZKYmlSZm96VkdoNG9Dd0kyKzJPS0dZQ3JudTJ1YjlUSmlSb3NoaU1SY201?=
- =?utf-8?B?dnhFeCtZRTBuLzk2Ym1WaStsSmRlV0NGRWhXRXZWd25yeUNnVEFHWXFxanVt?=
- =?utf-8?B?MTdtUERsU3k4TW5pYVZEZlNJaWNoM2kyQy8rU05SWnlxMzZ1WU1pM1FrNmlS?=
- =?utf-8?B?bWIwb1c5dllBV0V4ZU8rQldMTEIwMHFidHcxL0p4T1pISys4d0xyTjVBT0NX?=
- =?utf-8?B?WVNwdWNuY0NYblMrUmlqOU5uMHA1akZwM0VwQkx2WnFzSXpNWlpNZWRWMWJl?=
- =?utf-8?B?am9PZnRZNm95VVhJMlJLTi82bmpQd09JaEZvRklLdnZzWHB0MEs5Y1hXVG40?=
- =?utf-8?B?dHh0aFZ3bkRNOHQvQ2dkaU5YbGg5bFp3cUlHVU1wOXJzVk55NDg5Qit6ZG81?=
- =?utf-8?B?T3k3b01FaHNoa2p4YTZ2SmRXS0dzVklONHY0Qm1EODRidUtzS0lRTEdSLy85?=
- =?utf-8?B?TTFmbXQrcFVOb1hRd0h5UXNqTHdGU3Q5TWoxMGMyZmZZMlpMRnlPVC9Lb1lK?=
- =?utf-8?B?aytOZk95WFNhc21ZRDUxT09vaENLeFc5N2pLQ0IrWnlXN2o4U2NjdDk0Q255?=
- =?utf-8?B?c3ZWRjczY1F3THB6K1QwdDBBYlB5NjlxRjV0cll3MDNEcEN6M3BaK0lLQUZh?=
- =?utf-8?B?UDNjalYxYUpMdjhYSDhjK3ZyaGNNSmdQbWUreVcxM0YzakM5b0FmN3U0SE54?=
- =?utf-8?B?WE16enNkbU5maXpuWmpVYWx2NWJsb0tzYmlUQTdHM2lGWVkvUFdFeGpqQkYw?=
- =?utf-8?B?eHk4a3ppNkxKemhQWFZqcHFrYTVGTEdZUXB1RHhLWk1ITHNKampHUndHdy9j?=
- =?utf-8?B?N21rd09KK3NvNWxsbzNyMlhqRWJaUXQ1a1hUVkdWSnViQmI0UHczYnc3cnlP?=
- =?utf-8?B?bHR0emNpYzRKSlZXSHJzY202UTYrNEZhdnFRK1N1NlhjOEZGdUNYb0dUYWhE?=
- =?utf-8?B?cDJKdjRXRXYrYmZsVEY2VTJoTldaQXR2YW05TU92cnprL3FzYWFBM05XRTlC?=
- =?utf-8?B?M3AwME9zWHcrcSt0MkFNWEIzb1FHU2s3K21sMkFJTUM1cTRoN2owcVRnWXE1?=
- =?utf-8?B?WmxUckNBZ0Ivdks5VkY3cU5MckJzSDljQ215TWZydDdPWlRFTUFqUy9Namto?=
- =?utf-8?B?TUE5cXczdTBGamlVM2xranpBeGxCQytpOVJWd0dhbHRSa1NPL29aSXdyQmUv?=
- =?utf-8?B?VStxSGNjMnJGRjNWbm9FZ29nem1hMzMvUW5MemdpSFEyb0V1OHRiNEpWSHZL?=
- =?utf-8?B?SGpRVGozUHRqMEZRZlBva3E0UnAwTk9ZcFZMYzlmZkVCRDM4L0toQT09?=
+	=?utf-8?B?TmZORlVUa21mZzdJdHZRZnpBM21ZUld3Mzh6dnpENmYzQUg5Z1U0UDYrby9m?=
+ =?utf-8?B?SEVZeDBWNHBPVDcvYjdQbkpPTU1OQWVPUENraGI4U1RDOGhLc3dJSk01Q3Rh?=
+ =?utf-8?B?N2ZtWDZpVndyeUZSVVFNNEFxWUY0NGNYcGo4dWpEMk44QWpkaEtzMHVXNXRr?=
+ =?utf-8?B?dlIzVTcvbTAwVDE5SW56MTFSay8rZzh5VjZHT083b21BcmpFUDBkajRRVkJ4?=
+ =?utf-8?B?SmlKUUJ5Z0M3V3ZiQXpKR21WTFZrK0tJTUxJQUZyVlNrYWtyK3g2cGRWNjY4?=
+ =?utf-8?B?Ymt5L05pb1RnMEhnVE9WNWtWZ3pSTDhLb0JxdHZzZ2VKVS9pQkx1ZWk2blRF?=
+ =?utf-8?B?K1ZzZEdwUWFlbTMwdXdrSWhpWmd0QWM0Z3FSVU9UMERyekJkMFdaUklHWFNv?=
+ =?utf-8?B?UVVsN1dMRTRyYXliSWFFUTZsUUFGaytGZUxoRWxvVDEwaEk0ajNVNlN4cUFk?=
+ =?utf-8?B?TFhMaHdWOHpFbWhoNDA5RDVoMyt2ekVSbzVrcHo2TjVtZWFGMVh0VkhDeTRq?=
+ =?utf-8?B?RGxEeEpGT210SDh2Qi9tNXkvN3B1cmlSWGg3SGhHWlVQdDJiS29Kd3U5eGJp?=
+ =?utf-8?B?OHRyVkE2dk5RRVBYSnNqZmFjQTU1YkdoS1hLZzBxZFFLa01ERUQvY3pwdlVU?=
+ =?utf-8?B?d01UbTVDb1hjOTAwcUd2am9ZbjJUZENzOVJSa3J4SUVsblU4NVV0b1VRTkpL?=
+ =?utf-8?B?V2NIVVVSdEdKZEJMV2lLMzhBRTRZTVVkKzVkdFFuQU9LdU9pLzJ0S1k5V0Jw?=
+ =?utf-8?B?bitaV3IrbjBjWXF2SDFEYjBSdksxL0JKeXRPbWJybVNkLzhnVEZhdHhwV0VF?=
+ =?utf-8?B?M0p1MXNWQ01DVnNhcjhBMWNKSXU2ejNsdnp4NlVscWRTbllscllBRXBXT3gr?=
+ =?utf-8?B?bEZRMGgvMzh6QUI1ZWZxZWwyM2RYVGF4Q3h2YkZkK1Y4ZTc4MmEwbFRQa09W?=
+ =?utf-8?B?L0Z0RlR2bEdhZTRFS0Q2Tlp3cEJGYU1CQkYvSDhtV3Nmc0hhdXMrRldsV3Zw?=
+ =?utf-8?B?T0JXbnlXaFMzRGQyYnpqWVJkTXliMk1xVm1VTG5sT1k5ZjlQd21hbkNJUW9K?=
+ =?utf-8?B?ZkZLUXNxdUF1ck1ReXFMVXorY0FzMjcxTVdCczJlTEI4eXRTc082MDE4bmFY?=
+ =?utf-8?B?NmZmYWZBWWdNWE1WYTE2TEJ0elB5SitGOURramtFTjBHMzJmbzNTQW9ZSElT?=
+ =?utf-8?B?bCs3SW8xM3ZnK0ZHVDEwbTdINTAyNTdIM3E5ZE10eklLNnl0OFEzOFVlbFFr?=
+ =?utf-8?B?ZjVGQXdSejVZV1B6c1ZUcmkxZlBhekVmUnJXdGdoR2hOVGdjNmxXOHIyZkVK?=
+ =?utf-8?B?SEFaNmtZeDY1Z2c5dGljaVlrRnR0SVBWMDl2SVptbE01NzZTUEE3SEZTTVJ4?=
+ =?utf-8?B?KzRsdXVYSzBrN2J0WHpCMThDeklGandBNlNiV1p5UXRZR2VucTMrN0xBRW5h?=
+ =?utf-8?B?LzlXclJpc0tBa2JtZXE4VG10TGQ0cE4wbkZ2Q3BmM2xacEhNb3RuY2thY0xx?=
+ =?utf-8?B?TjF0QXM0UFlPK1lSZjdWdVIxd05lU2Vla0I2eHg5Y3UxY2M0cG9lMWROTHF0?=
+ =?utf-8?B?ZEpKWjYrWTljVHFJRnlvMmlYSXVIMU1RQTVJM3BoQmZtMEVZNmh0eFZEL0hN?=
+ =?utf-8?B?cEpabDM4S3pNRFVZaVMvajdUbzFFd1VUWk1NdjYrU2hZUk9IK1lqKy9HOFQw?=
+ =?utf-8?B?bHN2TFQ5NGhiQ2pPdGY4K3orS3RFNnNKSTZ0Q3ZuckU2Vk9IYzBaUkJ2RGpQ?=
+ =?utf-8?B?dHdQbnhMQlhUQkZiaUJ1VWJVQlgxVGFCZ1drL2tZUHlYN29pUmdyMXdoR1BF?=
+ =?utf-8?B?OFNtV0d0R1FQU2dXUnNGaU1jS0QwUkZhN0ViaFJFOGw4N0V1S25Scjdpajc3?=
+ =?utf-8?B?RDQvSTJaRTFzanlYZGpyREF4UmJ6MDlYSXhKWUFnc1kzSmYzVGIxVkdzWlRE?=
+ =?utf-8?B?MEVyblVqMUIyUEJ1UVF1a28xTXg4MmQzamNDdzk0WXFueEdEOWxxdnBTbG9H?=
+ =?utf-8?B?a0dGR1NaWUJtd1NnTVpVOU5OcEpHM0FCN2tCQU4xNCtzRWkwM3FsTG1ucnlo?=
+ =?utf-8?B?UE9HMXhhL29VbzBWRTRSZk1wdm0rVWV5eEJqY1BWMHBFWEh3QU5VVGxBWnly?=
+ =?utf-8?B?UXlUUDRQR2N1bVpJamlDR2FaR0U3bndJdXdwMEhkaU1ySDBIMXczajhQdUNZ?=
+ =?utf-8?B?UXhjcG5wT2ZlazgzT0p2ZlQvdnRZSCtpZFlWSmlDRC9pdnF1cFlXS1dOaHd5?=
+ =?utf-8?B?Q2tza1lIdWx1NEJLY1ZNNEdRZDJscDB4cHVRZWc3N3ZWb296THl1d0hhOFAv?=
+ =?utf-8?B?a3g0SDRvRzdIQ2xwb1MrQ01IOFFRZ2pZMkVZL0dDMUpBNG5GZHVPZz09?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 07f83b73-f51f-4fef-3673-08dee7140f49
+X-MS-Exchange-CrossTenant-Network-Message-Id: b99e9069-e765-4a1a-8467-08dee7143797
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2026 10:37:27.6653
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2026 10:38:35.2680
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3WwrjPg+w2ftPdklybtXd1ksTstPvBCvkyPXCAG8Vxy054E/5fEKFiU7Mg9e+qHjtyff20NuZ9AvKi+6aZL2gQ==
+X-MS-Exchange-CrossTenant-UserPrincipalName: trlrfiiAOYT+XZGdcvoykQfLuGSgLJiYFtj2FXDRJGgJXIae4XWT8SNAdCjIvpDD546zjg3zbqHrdwYlM3GgPg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR10MB3326
 
-On 21.07.26 00:22, Hannes Diethelm wrote:
-> Am 20.07.26 um 16:30 schrieb Jan Kiszka:
->> Hi Hannes,
->>
->> thanks for carrying this over.
+On 20.07.26 23:28, Florian Bezdeka wrote:
+> Hi all,
 > 
-> Thanks for all the feedback.
+> Trying to compile the codebase with gcc 16 revealed some minor issues /
+> compile failures. Fixing them up was quite easy, so here we go.
 > 
->>
->> On 17.07.26 22:58, Hannes Diethelm wrote:
->>> This patch adds a debian package config that allows to build a deb's
->>> using dpkg-buildpackage -b -uc.
->>>
->>> The packages are libevl / libevl-test similar to[1]. However, latmus
->>> is placed in libevl. One might not need the tests but still want to
->>> use latmus.
->>
->> For the purpose of tuning the core, or what is the reasoning here?
+> gcc 16 is the default compiler on Fefora 44 and available as package
+> for Debian 14 (forky).
 > 
-> Yes exactly. One might need latmus but won't care about the tests.
+> Cc: Jan Kiszka <jan.kiszka@siemens.com>
 > 
-> Based on the comment from Florian, it would probably make more sense to
-> create more packages:
+> Changes in v4:
+> - Patch 1: Removed. Already applied
+> - Patch 2: Removed. Already applied 
+> - Patch 1: Previously Patch 3: taskDelay() -> threadobj_spin()
+> - Patch 2: Previously Patch 4: Update changelog, factor out test
+>            activation
+> - Patch 3: New. Test activation as separate patch
+> - Link to v3: https://lore.kernel.org/r/20260717-wip-flo-gcc-16-v3-0-5429c866bcca@siemens.com
 > 
-> - libevl (only library)
-> - libevl-bin (evl / latmus / oob-* tidbits)
-> - libevl-test (tests)
-> - libevl-dev (headers / libevl.a)
+> Changes in v3:
+> - Rebased on current next
+> - Patch 4: Enable psos test at smokey level
+> - Patch 4: Increase busy waiting interval to 2ms
+> - Link to v2: https://lore.kernel.org/r/20260518-wip-flo-gcc-16-v2-0-f93562624fb4@siemens.com
 > 
+> Changes in v2:
+>   - Reworked patches 3 and 4, removed / migrated busy loops
+> 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+> Florian Bezdeka (3):
+>       testsuite/smokey/vxworktests: Fix compile error seen with gcc 16
+>       testsuite/smokey/psostests: Fix compile error seen with gcc 16
+>       testsuite/smokey/psostests: Enable psostests_task2 test
+> 
+>  testsuite/smokey/psostests/psostests.c | 4 +---
+>  testsuite/smokey/psostests/rn-1.c      | 7 +++----
+>  testsuite/smokey/psostests/task-2.c    | 5 ++---
+>  testsuite/smokey/vxworkstests/task-2.c | 5 ++---
+>  4 files changed, 8 insertions(+), 13 deletions(-)
+> ---
+> base-commit: 8109051556b438cd4c280e75c2a45ae3b43d7f7e
+> change-id: 20260508-wip-flo-gcc-16-6291fb97b9a1
+> 
+> Best regards,
 
-Alternatively, maybe there is a way to split off the tuning feature from
-latmus tool, like we have with autotune in xenomai3.
-
->>
->>>
->>> Additionally, libevl installs /usr/lib/udev/rules.d/90-libevl.rules
->>> which sets all evl
->>> device files to group evl, g+rw. libevl.postinst adds this group and
->>> triggers an udev reload.
->>>
->>> This allows to use libevl without root. However, using SCHED_FIFO still
->>> needs either root or setcap cap_sys_nice+ep and possibly some other
->>> tweaks.
->>> Some tests and my application work with cap_sys_nice+ep. However, for
->>> example latmus fails
->>> due to unknown reasons. The debian packages sets no capabilities but
->>> this could be added
->>> if desired.
->>>
->>> Caveats:
->>>
->>> The test ptrace-sync fails with <timeout waiting for gdb>. dh_strip -
->>> Xptrace-sync from[1]
->>> does not help and it is not needed: When libevl-test-dbgsym is
->>> installed, the symbols are
->>> available but the test still fails. With dh_strip -Xptrace-sync, the
->>> symbols are not found:
->>> warning: could not find '.gnu_debugaltlink' file for /usr/libexec/
->>> evl/tests/ptrace-sync
->>
->> But the package built by xenomai-images does not have this problem and
->> runs the ptrace test successfully. Already dug into the key differences?
-> 
-> Not yet. Might be just a different gdb version or path issue. I am using
-> Debian Trixie.
-> 
-> Is there a way to download this images? I've seen there is a way to
-> build them locally, i can also try this.
-> 
-
-We do not ship pre-built images, you would have to build your own image
-here.
-
->>
->>>
->>> If linux-evl is also built and installed as a debian package, linux-
->>> libc-dev can not be
->>> installed due to /usr/include/evl/*-abi.h are both installed by
->>> libevl and linux-libc-dev
->>> from the kernel build. However, installing linux-libc-dev from debian
->>> trixie works fine.
->>
->> This looks wrong: The kernel is providing us with a different UAPI, thus
->> also needs to deliver an alternative linux-libc-dev package. It should
->> be the role of libevl to deliver those headers as it has no knowledge
->> about the actual kernel in use here. That's why xenomai-images is
->> generating a new linux-libc-dev and is not relying on libevl here.
->>
-> 
-> Yes, Philippe sent me the hint with the -Dinstall-uapi=false switch,
-> thanks.
-> 
-> One remaining issue is the versioning / dependency's. For now, to keep
-> it simple, I just used the libevl tag
-> as the version. And it doesn't recommend a xenomai4 kernel.
-> 
-> For now, the packages are:
-> libevl_59_amd64.deb
-> libevl-test_59_amd64.deb dep libevl >= 59
-> linux-image-6.12.90-cip24-xenomai4-r59_6.12.90-3_amd64.deb (Withouth
-> PREEMT_RT)
-> linux-image-6.12.90-cip24-xenomai4-r59-rt_6.12.90-3_amd64.deb (With
-> PREEMT_RT)
-> 
-> I am working here [1] on creating Debian xenomai4 packages for linuxcnc.
-> Not perfect but does the job. It's still WIP
-> but a few people got this already working without knowledge how to build
-> kernels.
-> I did not yet push the latest version and I have to change from pushing
-> the binary's to github releases.
-> 
-> With the uapi installed with linux-libc-dev, libevl has to depend on the
-> right linux-libc-dev.
-> 
-> Version 59 is not really correct. The kernel has EVL ABI 45. Libevl has
-> API 36, needs API >= 45.
-> For kernel dependency's, the ABI version is important, right?
-> 
-> For libevl, it could be either the API = 36 / dso_version = 8.0.0 /
-> version = 0.59.
-> 
-> Variant with API/ABI as version:
-> - libevl 36 recommends linux-image-xenomai4 >= 45 or linux-image-
-> xenomai4-rt >= 45
-> - libevl-bin 36 dep libevl >= 36
-> - libevl-test 36 dep libevl >= 36
-> - libevl-dev 36 dep libevl >= 36 linux-libc-dev >= 1:45
-> 
-> Dependency packages, needed to convert the ABI versioning into kernel
-> versioning:
-> - linux-image-xenomai4 45 dep linux-image-6.12.90-cip24-xenomai4-45 or
-> other kernel versions
-> - linux-image-xenomai4-rt 45 dep linux-image-6.12.90-cip24-xenomai4-
-> rt-45 or other kernel versions
-> - linux-libc-dev 1:45 dep linux-libc-dev-xenomai4-45
-> 
-> Kernel packages:
-> - linux-image-6.12.90-cip24-xenomai4-45 6.12.90
-> - linux-image-6.12.90-cip24-xenomai4-rt-45 6.12.90
-> - linux-libc-dev-xenomai4-45 6.12.90
-> 
-> To create a linux-libc-dev-xenomai4-45 package, I would have to add a
-> patch for linux-evl, the standard
-> kernel debian package system doesn't support custom names for linux-
-> libc-dev. But this should be not to
-> complicated.
-> 
-> It's the first Debian package I am working on that's not only for me. I
-> have to read a bit more in the
-> doc's how this dependency's are normally created properly.
-> 
-> Also linux-libc-dev 1:45 is a bit dirty: Using the epoch to replace the
-> standard linux-libc-dev by a dependency
-> package that will not be replaced by the latest stock one. It should
-> work tough.
-> 
-> Alternatives:
-> -Install the abi with libevl
-> -Create a linux-libc-dev-xenomai4 package from linux-evl and depend on
-> that / remove the evl headers from linux-libc-dev
->  so linux-libc-dev stock can be installed together with linux-libc-dev-
-> xenomai4. I compared the content, most evl related files
->  are new, only fnctl.h has
->  #define O_OOB        010000000000
->  added. However, I don't see any usage in libevl. So this should work.
-> -Leave the dependency's on the kernel packages away and solve this by
-> documentation
->  However, you would have to place a hold on linux-libc-dev so it doesn't
-> get replaced as soon as your OS has a newer kernel.
-> 
-> Do you have other ideas how to solve the version / dependency's / linux-
-> libc-dev issue?
-> 
-> For now I named the kernel packages -xenomai4 but I am thinking about
-> changing to -evl or xenomai-evl. What is more appropriate?
-
-The topic is complicated because neither Debian nor other packaging
-systems I know allow to express this two-dimensional version dependency
-(>= ABI version X, latest kernel Y). If you encode the ABI into the
-package version as well, you are folding that version matrix into a
-single version number (>= abi-X-kernel-Y, or >= kernel-Y-ABI-X) - none
-is perfect.
-
-If your target audience for those packages primarily consists of
-beginners, it will be best to model it via a lock-step between libevl
-and some kernel package that carries a specific ABI version in its name
-(linux-image-evlX_kernel-ver-Y etc.). This implies creating a
-linux-libc-dev flavor as well (linux-libc-dev-evlX or so). That package
-should carry Provides:, Conflicts:, and Replaces: for linux-libc-dev in
-its metadata.
-
-We side-step all these issues in xenomai-images by generating and
-installing a set of custom packages in a curated environment where
-upstream will not be able to replace the self-build xenomai packages
-(preferences are set accordingly for local repo with those packages).
+Thanks, applied.
 
 Jan
 
