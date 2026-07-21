@@ -1,183 +1,188 @@
-Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010071.outbound.protection.outlook.com [52.101.69.71])
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEFBC4014BB
-	for <xenomai@lists.linux.dev>; Tue, 21 Jul 2026 16:01:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.71
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1784649674; cv=fail; b=Fp8yTGAIJVa+F+pbRBoRtb8QjNbzEMQOcOSHihbaPnjBr8MkWbnwcT17R4Pe87PoGh16H82hkorf/Pe8ypLpPHqYR8AacDqNLeUXLwKWDb+Dtb9wvfe8cRQFfO0aEy+AzaIbeXCr4IBVLMFfIlNVt6t94PwhpHJdaDuDf9SQEFI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1784649674; c=relaxed/simple;
-	bh=6HFy1KKZbxLTerD3uiWTM+JQcsKm48hqRJDI0PFTlAA=;
-	h=Message-ID:Date:From:Subject:To:Content-Type:MIME-Version; b=kYtzyJOrdAiDXHqn60vcpmgzcPlr7JT7R90mo6UEmDFx2rYbyIaHK6+/xUgKTiXEIFm+YFbLiMJHOAoVf+on3FapUmxAuKkr2v6IpqfAKr9TDVNpOX/fPnkyqe82FkRz1K6oyI8Eo5BAlDIRPOrIOqb9blEvw04Xn4FPkw0EDsI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=prXPaQPz; arc=fail smtp.client-ip=52.101.69.71
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5E9A372EE9
+	for <xenomai@lists.linux.dev>; Tue, 21 Jul 2026 16:48:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.193
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1784652506; cv=none; b=oBoK5EaW00tx/083VF78GOTJR/fTWCqz5AKAGIpOs3zfRIROtyftM4gOVE/KgGXow9kQKeED/Jh0TGHQfC3NiKywqjlI7N95NTLOfammSTbPLz1eBi5q/fnM1Htx+7vYu60G0P8+XhFfDZxzm3qOJAy8FkRi+KbCBk2IygXHtn8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1784652506; c=relaxed/simple;
+	bh=dYoEktHqXBtlP34kduwqmlBLmWpYzRM9x4CLRd/UGPc=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=ixQ/KwFyQdFfpk3n6mZPAVOsmNxcIo6/KRe/IY0wmU4XixXeum7rEPWVigtAYAwNuLcTedyY0mhTGVqtK2ulsavslf4C0UMZHfp3gG2F14ylBBtx0RJxYEiEiXlIMPJwlypZkGIWhhi6urdQNwlBT8p4AN/5R5Qz5ZJVA56mHwc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=hmMEHhps; arc=none smtp.client-ip=217.70.183.193
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="prXPaQPz"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ZagOEoZkEfJLdvBt8igqfhHdxvePX1HMfGrsA6eT4/ZERECEbpcbPinP+zG+zf//wMxRqRgHtZUJI3G/UMsXx3jPKJb2iTlT6gKix8KlShLdHEeSgsW6zphaO0L4VD8yUETdyyKsGJGpNbZftCJ3teKoqa9kBjDEzrCP2iOqFfC8MUG4IrM9WROirisVQSCpWfbr5E/emBpQKQpcWACsOfd6EWJwmWiluKrkrxPzIhceRUH8vQVt69l6mD/Cm19daZWAOrvRUY61kU2rhe2R1MZUziWsgVoq4rf/u8YHWozp85IfnSCPjQPSAAnbATL2fCi0Jk/SoiOzR1c0kWMT/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6HFy1KKZbxLTerD3uiWTM+JQcsKm48hqRJDI0PFTlAA=;
- b=QoAKFsgoqrc/JOtWtAkCv9Bcc+z2ytBgdITykzOn4XpYWysqncqUpYBKexCJdeZqFhYoUbVMLersOuffJrazp6RmjA0eA5lGJyCVhSICgE1rhMMECCPUO9HGMda430bOe3VduPBUkV6JUM/5VPgcOM/8txjFSX/tcZC8u0Hz/BPqsEUDgwnXeUX+eFaB4vvQ0m2MtuSapEUy/SWerMuldN5uDx6R9xDyg7wtASYZbw9gMNOxb8ODcRNTxaysHGqXuzFW+XXXQYkhgpV2wEle+HsF2YJvcdNd6asvg1kPoUEtCQ5ib+JsVj10ocDvyHngo1/H25lhU0LI2lE8hDgZWw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6HFy1KKZbxLTerD3uiWTM+JQcsKm48hqRJDI0PFTlAA=;
- b=prXPaQPzR/MAb7jnWCFst3adZG3Ph8JFPln6KLfURsz+aRS+VEemZ/KCbc9L3xVm33hekRETY73HDcHmJE77jH7PYHsEyu3H6MRKzEmWzNlgS0KTuAXjLqKcKta/xsxJSvhtX8j2ijYFPnPAmyWTdKcmdO5ZQ0q+wXjdMzVQqMynD335uDu/w5+WQy/c4OaNYYpy50kIDXIXG4qC66xq/euQPTVX9rrSE6nxWGr3KztWWm6A1ljD22Ng1ZiZS1I5ilxvp7JwT4zU1j6X9N2otvSrnK20AwjoDm0AN91YZt0S90Bv38EQRu0SSCVFK7nRUqttXxU32AmnEyrdMRVzJg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DB4PR10MB6191.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:385::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.223.18; Tue, 21 Jul
- 2026 16:01:09 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::be9f:e8ca:ee9:83e1%3]) with mapi id 15.21.0245.009; Tue, 21 Jul 2026
- 16:01:09 +0000
-Message-ID: <11652667-3c20-4879-8033-6a9534be3865@siemens.com>
-Date: Tue, 21 Jul 2026 18:01:08 +0200
-User-Agent: Mozilla Thunderbird
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Xenomai community call on Wednesday, July 22, 2026, UTC 7:30 AM
-To: Xenomai <xenomai@lists.linux.dev>
-Content-Language: en-US
-Autocrypt: addr=jan.kiszka@siemens.com; keydata=
- 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
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0083.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:190::16) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="hmMEHhps"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 20C843ECDC;
+	Tue, 21 Jul 2026 16:48:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1784652496;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=PwOUCOOmBf3Vz3EpIsVIILfCQDfgBcH0wG8iQfl6XpE=;
+	b=hmMEHhpsmU0o9zb013SjA0FOBUpbpRiNlMeq5UQW7gctl7q4pvlL64jOwdB2ro5fD/GxcJ
+	GM6giTmoHjzoVXUXnBz7rXBAWBeFuZ8weGRMBtUn6b//1GwITufB1crlQzNrmpJFP+UMXa
+	b8NRNcTTyExz7dfDYtTQTi0F8JVg8XMu+ZdTP2klIZO1P7l97xkT/j+aVUJVE/lF2PfQ8t
+	9VgW3nJ16h85ijzjPN+1WIzok7HKQU92suDVjIu3xPdVhcx/dNzhflP5Kvd3K5L5SKLCM2
+	Zisk1qA+ilZJiTMIKQPOrrA4ri4InvfPQE+sOPif8RqiMksjtfDWLzvR9YHOPA==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Hannes Diethelm <hannes.diethelm@gmail.com>
+Cc: xenomai@lists.linux.dev
+Subject: Re: [PATCH 1/1] tidbits: net-udp: solicit new client for server mode
+In-Reply-To: <87se5ckcgr.fsf@xenomai.org> (Philippe Gerum's message of "Tue,
+	21 Jul 2026 09:51:00 +0200")
+References: <20260528194459.6117-1-hannes.diethelm@gmail.com>
+	<20260528194459.6117-2-hannes.diethelm@gmail.com>
+	<87a4te64vn.fsf@xenomai.org> <874ijm62yu.fsf@xenomai.org>
+	<3216fbd8-3ee4-46f7-851b-0f3b48c38572@gmail.com>
+	<87ik7d86kn.fsf@xenomai.org>
+	<6c0d9a13-732b-49c5-886b-3dda8b1f5cab@gmail.com>
+	<87o6gmzlpn.fsf@xenomai.org>
+	<13bb8457-8148-4758-84d5-1ab324e978bd@gmail.com>
+	<8733xd20u3.fsf@xenomai.org>
+	<11409ae1-be7b-4003-8d40-f5e1cb34d2ec@gmail.com>
+	<87se5ckcgr.fsf@xenomai.org>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Tue, 21 Jul 2026 18:48:15 +0200
+Message-ID: <874ihsi90w.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DB4PR10MB6191:EE_
-X-MS-Office365-Filtering-Correlation-Id: b8339be1-ea24-4a14-fbda-08dee741476d
-X-MS-Exchange-AtpMessageProperties: SA
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|23010399003|366016|1800799024|4133799003|11063799006|10067099003|56012099006|55112099003|18002099003;
-X-Microsoft-Antispam-Message-Info:
-	DPNR2DW2R3aAfZnGp408nsFhp6tH33y8oADC3ocY0VPJ2d2rXkLKzG9OpNlFn1lI8wb0DcQUxVQaDfyUAl6S6z4yHoC8c8jisDieCqJZnTZItz0Ujhs5IjdSM5o2jNUvJ60RjNDt5u8AWN1qejQY//yi0pJcFKQkSVvb8QhiH8VP/mOFZjJ8r6rvjr9TM0vVJVW/u/WM66Uf4iLlvQmEQbeachqf0EElvb9+XftWOqekADPj8ZtOEwSWp3j7sLnbHHKYeU1gCXo3vv1ZpAwmVgKlRnZpstM/viBjE1KV5pw75Voqa9KWRUkHZ8f12KLJ28gRT7VIqGPpWpwoiC2cn858sPUBos7EidxFSQJedJz3FGpfGsX6NqEzv2zRS1+SEgmQwEt8mO8Np8mK1LQqnv2jCgPLJKjxP8wDABA7w4IXAxqtXNtD0IeWlD+ocloEKMHF/R0pylBYWcCqm7rVK6cxDBR6Fg33gBDBsOKxUCFMr4alDNSw7R8LEATTx1ms6RQedjrv+8FpbYLn4WJ1TV9FkBbNITE7Yzo04B46PcwloEh/d0HemUpk4ZmkQQ3VtiAnArnTjLLanaEsn0BzrpVM2tVpmVK3+m85cxxTkF7RA/t2jN3pJknezvLUbo+/2oqiREe919smMRTCoe5/wtQlkIieQ06KbcrHV0/MiKo=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(366016)(1800799024)(4133799003)(11063799006)(10067099003)(56012099006)(55112099003)(18002099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?NisrdVF3dXFGdFlHTzZvSHl0cFhqMlNrckxrM3ZtOFlVVkd4eW96MEdGd2Nk?=
- =?utf-8?B?Rjhnc2kyN3JQMHAyb2lISEo1TjVQVFd5SFlVZlZsWkkwQUlNb3NLOGFNT2Vy?=
- =?utf-8?B?QS9lUlVuQkNMOEpCMzJISUtITWQzdlp3MWgzcEZ5YWhER2p4bnBVdnU1Z2JC?=
- =?utf-8?B?QkxER0RnVnJxek15bmIxWHhLUUIwMHF2dzdJRHZTN2gzZzl4MWYyRW1Ib1Bi?=
- =?utf-8?B?Sm1SQlc5ZVhTY05rUm5EVW1FeThzNU8wRkJZSkxGUElsSTBsWkIxeE9BcFNn?=
- =?utf-8?B?c0RQb0FLeG9mck9GdjJsNTMrc2Eyc240dDYweXlRZTBvZlZ5VHNyOUgxRHp1?=
- =?utf-8?B?djlYenUySWhIdzhEREJMNFBsbVl6UHJmZnZQYlpJWldaT1l4L0FIaU5YZkt0?=
- =?utf-8?B?NkNmazRVbE8rem9KblA3T2hjazZNdkFkOW02QmdOUVZuUXlCeFdOdzU2c3lO?=
- =?utf-8?B?bXYzTWpTRmptU0hDa2RValJVV3VPZTFFQ3R4dHJLdFRWT0tWWW9adWt3SGNh?=
- =?utf-8?B?Z0JhcVNrd3llOXU5aGFrL0VGU251QTFRR2JkOVhpcUFxN3RQNGVMaVV5VzJQ?=
- =?utf-8?B?bGZWWFhTNk9xMnFXY1VkT05hVGZkMUJtZVF2M09Kb3RpaVJnWkx5T0RLRHVi?=
- =?utf-8?B?a0JIVmZWZmUwOTRHczYvRFpiV2lJNkhaamNuTkgvcTlOTTh0aFhYSUIzSndo?=
- =?utf-8?B?dkJDYTBNcEtrVy9paVdLRmlmY2EyQWQ2QW1Wa0MvcXlKK0ZOWGFETUZ4UW1w?=
- =?utf-8?B?WDM1T0srNUR5VDZ4Z1ZTcU1ad0Y1VCt6UFFmRmwzbnhnS0llLzd0OVlqNDlH?=
- =?utf-8?B?c2o5ZFMreENQenJ1TWkvTFd1bEpJZFJTaU95V3JmeXR4V3kyd3Y0RlZMbDVD?=
- =?utf-8?B?SDBUTWVYU0tCOWt2b1BaVDZvKzBZd3BlZE9Ja0w1YWZESVRrTS9Ic0NRN0Vm?=
- =?utf-8?B?WW5wdDB6TnZtSlZMblBQTG45bHhXdTYwMEtOSmkxS2J1c2lhSFNJTWZzbCt3?=
- =?utf-8?B?SHNGRllGZjBjOWdhUVRnVnhSNGdWVHBqT3RUbTlDNG8wWmZJM2FBY084MUx0?=
- =?utf-8?B?cEtObDR4SHJyNUVlaTUzQzhXQkN3dC82aC9JVmNlR1Q0U0Z1NFRkZXM2WWZU?=
- =?utf-8?B?SkY1c2J6alRJYlVBcmhmMkNhb0puWnhZRUorSlpMQWRNbFhkS2xuM09lWkNt?=
- =?utf-8?B?NzVqODU1bEdGY3JHckc3ZHg2UGQ0MjVlQUhNeW4rTkVLSEdHL3B0VnZOWkls?=
- =?utf-8?B?U0RjRFU0VUJhZE54cThrZ1BJTFhPRkZxcEl0WllDQWJzRHpZc09aVVhLU3hk?=
- =?utf-8?B?UGl1ZlpLcEFSTHBpRnB3M3dWMEVBMjF6Mm1vQmZNbGZtcmxLaWE2OFNkOE5R?=
- =?utf-8?B?c21ya09PZ1lOYmlNQ2xWNXZ5WUpHUE9UWkJXWHF0cUFuWS9NUUxpYk50SE1n?=
- =?utf-8?B?bTNLRlluY1JJZFU5TUlBSXBkMzM5OFRYb3R1YmdqZUhYN3h3V2xtc1RJUE9Q?=
- =?utf-8?B?OUh3dVRHdCs0NVNuUGpjS3Q1ajRzRmQzaXczVmFJK29ua1V2NStZbFpzYTRD?=
- =?utf-8?B?YVUwc0E4OVZaaGZWcG83dU1nWG1ldU5GR2duRlZtQm9tWDNMOEd3N1ZPSnQx?=
- =?utf-8?B?SE5EVVBYVm0zMTVUeWZwN2hVdWZxbFFaWVBLYzhmRitqUjZKY0Z3Yi9NaGlP?=
- =?utf-8?B?Yi9TcU04NDlTR005M05WV09xWEo2VWh5b3gyeHJ6Nm1WdmZpY0JZZjVtWFl4?=
- =?utf-8?B?NnprTTFiU29MS0RGc2NXWUxNbFU1NjQzRmpZTjRMVVdhWWJvN3BkVFY5UmFS?=
- =?utf-8?B?MUxaSmMyMzc2cFJvbE1nK0JkY0ExM0VPblRkdW9NRTZvTGp4eVlOQjZYczNk?=
- =?utf-8?B?MVczcVc3QkVZcmdWbzF6SEJWUE55WWFnZ01xQy9Zc2RyNjZ1R3E1U2k5cWVq?=
- =?utf-8?B?MXp5MjM0ajRNMnNqSC9xaFNkU3NLY21VUEtBYWdZdy9zNnJJK1c3aVQ2Qlcx?=
- =?utf-8?B?b0s4MVcxTW1XdVRXSTBPYWI2MVhaTGFHWklHakNZM2s0Q2RwOHZ5cUdQUC9F?=
- =?utf-8?B?REwzRDM2VjZlV2JYTmR4YVQvR2MwMms4em56azFLbkx5NnVOUzNyZDVJNnpj?=
- =?utf-8?B?dUs4Qzl4QmlyTVhrMEIydFdGODNpc00zNGVJZXNSR2FZa0dLYUFWWWJ3M1Ay?=
- =?utf-8?B?QThvREZPbWM3dEVhTXlWNTRvbms4ODBRcCtqR1pQc2lXU0FpdDUyZ2hwQzdM?=
- =?utf-8?B?TUVBTUY4TEppREJiczM4Wk95YlNqM3FtNUp5Z1Zsc0xTcmFtNEN3RGVubjFD?=
- =?utf-8?B?MnVLRTVYOTVjcmJBSWsvdEdITWZSQVg3VDBvMjdTRHZlMkhrcktTUT09?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8339be1-ea24-4a14-fbda-08dee741476d
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2026 16:01:09.2344
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Y+/gTSBL2J+5BZW8Q3aEobuMEZdvTqMkFVNwKnkUTZhYiZuegnuIb5XlWCxQzsUitP5vUGYoJjIsdy6Ai6Lolw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB4PR10MB6191
+Content-Type: text/plain
+X-GND-Sasl: rpm@xenomai.org
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: dmFkZTEpwGO4ETaniUuZ+qXFpZ60+o+WFNmv5pmJnHPkjks4bEevU4QCf0jzDXCj881Ml+A6SzJbLmx2nE5MjztggEY9PNnfxrUN13+ek+9+PtCT4KNDrI/UH+m5sI6ZlVpPPB7UoaX8JHGCujm+9QeTloU1Gbx5wLub+gKtKrVg/gb/+kvh7HC8kOam/R6SzIkDBRYtBEZwP1XQLcl/N5ZpOWr5oPh6f8s/VuCPVthLqvWfpqggr5K/nPdyi88vBtVhN8isOKCugUpI9FtpVMqYPffApLa+IVZmJcnswqDZ6RVyukeXrzLQTAOyrCcx+Jbr9hgCGC2y9gHXHvxJUOQx+F4xAIYNYgNwYXH/Rp+2EJ1+WkpiME6HYHFwSA9CyRenu0EpVfKdn7SoP1v9H/ZP79WsUFoI4fkIx8yhKw4uCXjznbMXOJN/LAF01oFfeSVQxdkadPm6t6kv2hONBIo4wVVRdfSTDzs0vxEyoDKlBtOje4qRDiEersuyp+oXz1XtztTJMQEIes+5dOohom89HQuEQnOGdxYv4YvBbjmLnUW0H6mUfDvsuYTag02duRFJ3gYly8Yp70nx4d1gaktTFx8iQbQxC63sYN7qgGE9TBDH4kiwbP9kQYZxdwzVeG3mj+VLzyUoD46UdYDyP2KBooICUT/N2DQDYlEMdJx5KrbeNQ
 
-Topics may include but are not limited to upstream/downstream project
-plans, status updates, and technical discussions. It's an open online
-meeting that anyone can join and ask questions (you may have to wait for
-the organizer to let you in).
+Philippe Gerum <rpm@xenomai.org> writes:
 
-Time:
-Wednesday, July 22, 2026, UTC 7:30 AM
-Paris, France CEST 9:30 AM
-China CST 3:30 PM
+> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+>
+>> Am 20.07.26 um 16:27 schrieb Philippe Gerum:
+>>> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+>>> 
+>>>> Am 04.07.26 um 19:52 schrieb Philippe Gerum:
+>>>>> Hannes Diethelm <hannes.diethelm@gmail.com> writes:
+>>>>>
+>>>>>> Am 20.06.26 um 19:28 schrieb Philippe Gerum:
+>>>>>>> - Honor MSG_PROBE for oob_sendmsg(), so that only the general call
+>>>>>>>      sanity and route resolution to the destination host is performed when
+>>>>>>>      set in the request flags, without actually sending any data. On
+>>>>>>>      success of such call, we would know that the routing information is
+>>>>>>>      readily available from the oob caches, no offload to in-band would
+>>>>>>>      have happened if we had not given this flag. The absence of routing
+>>>>>>>      information to the destination from some oob cache would yield a
+>>>>>>>      specific error, so that the caller may decide what to do next.
+>>>>>>
+>>>>>> It seams the flag MSG_PROBE is kernel only? I did not find any occurrence
+>>>>>> in /usr/include or in libevl.
+>>>>>>
+>>>>> Yep, my bad. Using MSG_PROBE is not the right way, since that would
+>>>>> conflict with MSG_PROXY in userland which has a totally different
+>>>>> meaning. I have revisited the implementation, simplifying it actually:
+>>>>> since the evl netstack already accepts zero-sized messages, sending such
+>>>>> a datagram to the UDP layer now amounts to returning early with the
+>>>>> address resolution status, short-circuiting the logic before the actual
+>>>>> transmission happens.
+>>>>> IOW, passing a NULL or empty iov into the msghdr struct does what
+>>>>> MSG_PROBE was intended to do.
+>>>>
+>>>> I tested this variant. It works. But I wonder:
+>>>> If I use:
+>>>> ret = oob_sendmsg(s, &msghdr, NULL, 0); errno is set to EHOSTUNREACH
+>>>> If I use:
+>>>> ret = oob_sendmsg(s, &msghdr, NULL, MSG_DONTWAIT); errno is set to EWOULDBLOCK
+>>>>
+>>>> Is this intended? EHOSTUNREACH is like halve correct. Yes, the host can not be reached
+>>>> but only due to no ARP request is sent.
+>>>>
+>>> EHOSTUNREACH was intended as a way to distinguish from EWOULDBLOCK
+>>> wrt
+>>> lack of buffer space for the outgoing message, this code was the only
+>>> option close enough to the idea to be conveyed available from the errno
+>>> list that would not conflict with other situations. Now, since such
+>>> probing mode needs no message space in the first place, this is guarding
+>>> against the impossible, which does not make sense. Returning
+>>> -EWOULDBLOCK in both cases above would still be
+>>> practical. e.g. something along these lines:
+>>> diff --git a/kernel/evl/net/ipv4/udp.c b/kernel/evl/net/ipv4/udp.c
+>>> index d819616c3b5b..5912a1fbcfb5 100644
+>>> --- a/kernel/evl/net/ipv4/udp.c
+>>> +++ b/kernel/evl/net/ipv4/udp.c
+>>> @@ -417,22 +417,22 @@ static ssize_t send_udp(struct evl_socket *esk,
+>>>   	 * address.
+>>>   	 */
+>>>   	ret = find_egress_path(esk, daddr, &ert, &earp, &pseudo_earp, msg_flags);
+>>> -	if (ret == -EMULTIHOP)
+>>> -		return ret;	/* MSG_DONTROUTE cannot be honored. */
+>>> -
+>>>   	if (ret) {
+>>> +		if (ret != -EHOSTUNREACH)
+>>> +			return ret;
+>>> +
+>>> +		if (datalen == 0)
+>>> +			return -EWOULDBLOCK; /* Address probe failed. */
+>>> +
+>>>   		/*
+>>> -		 * No route known from the front cache - bummer. We
+>>> -		 * may have to offload the transmit operation to the
+>>> -		 * in-band stack, unless only probing or MSG_DONTWAIT
+>>> -		 * is set.
+>>> +		 * We have a message to send but no route was found in
+>>> +		 * the front cache - bummer. We may have to offload
+>>> +		 * the transmit operation to the in-band stack, unless
+>>> +		 * only probing or MSG_DONTWAIT is set.
+>>>   		 */
+>>>   		if (msg_flags & MSG_DONTWAIT)
+>>>   			return -EWOULDBLOCK;
+>>>   -		if (datalen == 0)
+>>> -			return ret;
+>>> -
+>>>   		/*
+>>>   		 * We always charge the socket even when offloading to
+>>>   		 * the in-band stack although we won't consume any
+>>> 
+>>
+>> I think in this case, it is fine as it is. You also won't expect EWOULDBLOCK or EAGAIN as long as you
+>> don't set MSG_DONTWAIT.
+>>
+>> But now there are two ways of probing. Either with or withouth MSG_DONTWAIT that behave slightly different.
+>> Might be just support MSG_DONTWAIT -> EWOULDBLOCK and drop the other
+>> variant?
+>
+> You mean detect a probing request when receiving MSG_DONTWAIT and a
+> zero-sized buffer? That is an option. Another option would be to always
+> return EHOSTUNREACH/??? on failed probe regardless of whether
+> MSG_DONTWAIT is set. I would preferably go for the second option iff we
+> can settle on a unconfusing, unambiguous error status.
+>
 
-Join Teams Meeting:
-https://teams.microsoft.com/l/meetup-join/19%3ameeting_NmQ4NjFlZmItZmE1NS00MzZjLTk3OWMtNzc3N2Q0N2Y2MzM4%40thread.v2/0?context=%7b%22Tid%22%3a%2238ae3bcd-9579-4fd4-adda-b42e1495d55a%22%2c%22Oid%22%3a%22058073ef-2de1-450d-b434-70a67389dcfa%22%7d
+Ok, I believe that the best option is to go back to an explicit
+operation flag for probing eventually, because all other options seem
+confusing.  Therefore MSG_PROBE handling was resurrected [1] in the udp
+layer, and EHOSTUNREACH is unambiguously used to denote a failed probe
+if MSG_PROBE is set.
 
-Jan
+As you pointed out, the MSG_PROBE definition is missing from the common
+socket.h bits in user-space, but the same flag value is defined as
+MSG_PROXY in *libc headers, which looks like obsolete. Anyway, to
+address this, MSG_PROBE was added to the evl/uapi bits with enough
+guards to prevent conflicts or mismatches. It defines the constant
+expected by the kernel, which is very unlikely to change since this
+belongs to the part of the ABI which is written in stone.
+
+The commit log states the possible outcomes depending on the operation
+flags and/or size of the message passed to oob_sendmsg().
+
+[1]
+https://gitlab.com/Xenomai/xenomai4/linux-evl/-/commit/566f032dc3bc4c3e945e94887b7f57cd6e57dfb6
+
+-- 
+Philippe.
