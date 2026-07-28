@@ -1,105 +1,141 @@
-Received: from mail-lf1-f41.google.com (mail-lf1-f41.google.com [209.85.167.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011038.outbound.protection.outlook.com [52.101.70.38])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67AA53B71AE
-	for <xenomai@lists.linux.dev>; Tue, 28 Jul 2026 13:33:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54CFE3ACA72
+	for <xenomai@lists.linux.dev>; Tue, 28 Jul 2026 14:33:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.38
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785245640; cv=pass; b=n31AwYSV9U0lYvypNdYejJqNA5QEgwWaGVRKUkZm5RqdX8nHRmm16PA+T340nCTYAPxzzuiv9bT5/ghg4HLfDDwHo9ldx70DAEbc5PXiFTxXjTkt2FxUE4yVr6AgP3tOzN4RhUCuL8WX0YQIIo8zqkMsQzcgD3SFXnE2rNZg+hc=
+	t=1785249224; cv=fail; b=btJ2svsarQqHVPUbXIUJZfQ++9K2fCCl7Gjex2noPouhqfWgAamQma1B7LEXCDL9HKZz8V2BvekeG4pRfgo0dywfCJ7mlNccPeZYG2Ub+oZn6lZXTQ/oEicQBX14zllSiUIsjmE+1BCmUNOdxO+s6h+BBo3uwRJF+4lGH2Ej0XM=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785245640; c=relaxed/simple;
-	bh=owKPDL6dQjBZGSd1cScVHs+SSrecAAzeX+z5sLtmJG8=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=oCOwHHX52ib4I7Bi+vWJYBtQlfF0v6mQzoxCRZzRODfAKCTNSwWae+YYvVRuJ5fj26/Hh9ltrQxEa6KSNBhYNpI4u3FJGBM5EI8QpyKqWP7W4WVUsutnMnKLjJcGvLrr19+R10Kx963341HMFPWRcddHgAXCQIZJdxJqIpugTW8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=aerotech.com; spf=pass smtp.mailfrom=aerotech.com; dkim=pass (1024-bit key) header.d=aerotech.com header.i=@aerotech.com header.b=ApmmOolv; arc=pass smtp.client-ip=209.85.167.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=aerotech.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=aerotech.com
+	s=arc-20240116; t=1785249224; c=relaxed/simple;
+	bh=1WW7TTkkWDn3slqXSp4lR9vOwXesdKIW95Cfiyp2zf4=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=DbkHsG5VlXxBHJU9ikvIAlGCLNETJGDDVyV9EClzDHc4V4naiTAlfwjQZAj0Z9WyFs9DWURulNYg+ylqaT5Jcw1BTgHF54+dGUO8bNqd8Do6I19+8cg3O+IZ3f5cnHUUMWg80QKs2FtmIu7mTRCVnGi1BylWZJt+da6ZtUA51CU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=w132SrMi; arc=fail smtp.client-ip=52.101.70.38
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=aerotech.com header.i=@aerotech.com header.b="ApmmOolv"
-Received: by mail-lf1-f41.google.com with SMTP id 2adb3069b0e04-5b2a8e4c77eso3192545e87.1
-        for <xenomai@lists.linux.dev>; Tue, 28 Jul 2026 06:33:57 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1785245635; cv=none;
-        d=google.com; s=arc-20260327;
-        b=arezxfA0/bItsyeekVVMsmWSVvechzjhEOar3w4bsy3BNPlgJSjzaYqu2OVsbsagI7
-         GA7EsiLUCRyaDdr2zPnJuLH3IChQPaFtvGcu9kwKvxhmWvVUUGFjeVjKEESp0WCpbkxF
-         ZjH06iD1gbh1JU/4TPLqIj3IqWpcGR7CdzUdGpvnORZt+gxaj2B4EcSlOneS5sXtjqH1
-         +K4xJk5ikQCpGxdtO4JBkUpgU6QYGuADi40jhz/Glc/qXv1suj+HjDNLdzJ0RwaUPF7A
-         lFKaMi/UHMHocrotmNBzQZvg1lsdrf21kGZh0Bdpr1h/gcNcWX/4aIOm/2kU70usWuTc
-         VXkQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=owKPDL6dQjBZGSd1cScVHs+SSrecAAzeX+z5sLtmJG8=;
-        fh=zmyoEc4rEtwXjEEppPJHE7SCPEZsUI7ZQAEV/Q9KTpI=;
-        b=bN2exvs7Q5DqJqLsfUoNS0B9IsMJXqXf7axA0SClOBWQRSBjcPzG/wGAgd92FctPFL
-         Kg1GglFaHWUHv4AfkutqxFiR3+QFbM1df+vTHT9RCMWgpxOprFeWTLOM4ZMK3V/GYN1Y
-         2DauNNRvwQqLXPzxt9K4LKgTetuJUU2OHZvBg2UfHl6lLLxkMI6Rsw0MsXqItyi97swJ
-         s4Ob94gtMphRuXTbgSxcsa9rRYu8Cpgem/TNKc8HObSl/bt/r7gr8ZvSEmpC6Jz6Hnqs
-         Je/May4P+r/n0vZ9L3zrqtOoyMu+a0jzNc3OWGik2OrOBHBijp63gwt/7vcYuXc1IK8K
-         mJxw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=aerotech.com; s=google; t=1785245635; x=1785850435; darn=lists.linux.dev;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=owKPDL6dQjBZGSd1cScVHs+SSrecAAzeX+z5sLtmJG8=;
-        b=ApmmOolvO+O0UDjyu7aVO/mXrOttbd/QKKF2sCmKdEW5oPqrtNOuvSw6uw9KBM/YBU
-         e/HxM6zzzXYHuOB/+56BSwJCSnIj2uZsml2D0WbTUwU4UlB6tDtJBWJ/KnH8bvvtIVBn
-         08YUnPU784OjLLU3Lk5L8gjglyXCILdNwNcRg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1785245635; x=1785850435;
-        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
-         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to:content-type;
-        bh=owKPDL6dQjBZGSd1cScVHs+SSrecAAzeX+z5sLtmJG8=;
-        b=ILGaoQgnPE2WF9IvdrTVtzMKOf4jyz9AKUXwR6qOrO7FXMcyS3oifTLvpZo84ODIQe
-         OdpWRkJo5nQn1Nduo0/x18cIDOH+ZV+D6j8GNEUNaoldqExKX2GsyxA8Tz3Rbemzmssv
-         BTmldeDaGPZfzKgwOMVmU8u0eRdAfHkTjOq42lU8tVbJtyWSgmok3Nrjfcas2WpDq0R+
-         rzf74CfGPw9dHlQuXAQgBbDm4bj4tZzPO5TKwNAkST8xksoGGns7TgnJw++0jkypYxgU
-         ZKDcxVL/KIxWVml7UczFAdtFIYsA7lRgZJmph5kFJE15MAUZ0kywTyblh0CqsHVzeFGv
-         MVqw==
-X-Forwarded-Encrypted: i=1; AHgh+Rqux4qQtlSlFP6jZuYDbnXwLgToU1tMzLhCk4wjvMpaJ2IMvIXxpHPOb7n3MGM2QwUg2/XiKX5X@lists.linux.dev
-X-Gm-Message-State: AOJu0YxIsY9sIPZvLtGx4sObIwrW8diGs2firyke9NnfHEDGFBo4jG75
-	JpF3QS97LCTNQ7lP3CeWVpc0QhEBjRgncmrw+E5ZBh2LaUS3ggneuET/l8u6uPzoR3IrrG4XehP
-	+fZqbrc+TNifxAFywekQ3CkqWq86CovLTiMJ4O7iLb52Tck8Ftqvs3YYjVBP0PsqRnANg6Bq6fm
-	+hofsdVaNfQQYqB2FGxXCrD1TKFaE8wRSFojWuawG7H9iYe/D2yTSXH6h2EqtHGL2cPaONbnRek
-	g8DHhqN5PFsWLEHvQaWNtWxs3kmF9jy/oMi+63mcVynjBZu+I1aQQYW0b+/1PBfe2Lp+aSRP1kw
-	oA==
-X-Gm-Gg: AR+sD10+eK0f/Oq8wNw8mHf/Q7rhnpXEK9hN7wF7EkJsw8HlPQb9imD+4Rsq1iztoL3
-	7MF4AGejapqzIK9kIjo5jWYEKp08LckA0Yr1Pl5+s8qID8qD4RUFF+6n8GhG/HSZOHIEwsct0Fd
-	qgZuY0o+j9SKPmY6ljzzI0mHYg9ahuU9dZ5/G9uOEUv1vz/GuMJVbr2eqXps760kd25o/clxnzK
-	ApShAOv86VLB+Jf3OrXv5Cz4NF1NoAZuA0IYBUD9n5bc65RtP+tBqbnFIQXB+G23iUFCdd7vg==
-X-Received: by 2002:ac2:4f03:0:b0:5b1:5061:e5d2 with SMTP id
- 2adb3069b0e04-5b2d0251476mr576026e87.30.1785245635331; Tue, 28 Jul 2026
- 06:33:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="w132SrMi"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=su7M2d/5sp0dKEEJV/1LXnn+jwTB8JbiW8puMq352NalwAfIOG4V04QDeeS5OPTAE1+ZQxpX2fTWyOcQnfRAB8z1jTjOnCIR3IkygXa8P+oBhcPF/IrqWm+nH4CF4ev4y+Sqy4twmGN6y7i07IsKz9byvVOz0ZX0ebfrXdPPKt/GFwPaBwc3ZhvHdOfRkr7luSoA9kEPeofhoXFONI98eTWEa3F8D+NB5FhG72ZAEqjdGLUn88PSwiWZFHKD1xYl7ClHJ7dtuk5VVFVALJwLgqPQg+5ReMRKZ9KdoEvHuRqVJhthemrnSVgxLYzpWwN2y+qqUSSA0w1Ztwvj8dsV7g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=NlkVDmhawtyylt+GoOGEc5ctQ3xcQgAwC1uvcpJc7BQ=;
+ b=mzoFJ+rq9Xegb5ioTZDTMx8BV4M1++mfz/owRAzpM/V2YgLZCqxr+YevSWRkWe3ckOL/VeTbXSeYv/VhlNyDwogsKDh/NZkVDat/nbekqyw4JnB/IQUt/VxU72N2qFWejmjilmSxNqK9IU6yl8daKurWDDUejP3C5g51dJu1ZA74qbtPMgLPzqonK+Ti9lUESzA8JuzbWqUWt6ZKANHFv3gk1ouUrSy4mf/Yuh4WzhflAUfkczglwfmAGXDdhYvxLmAFs0ATkkhpt/KGM9NZV67Mj6PJjFO4R8By8lnB1Y0LB+9lLTkMu4LbWmWGBbJ87p9NSk3uBPe84IQZedsNLg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NlkVDmhawtyylt+GoOGEc5ctQ3xcQgAwC1uvcpJc7BQ=;
+ b=w132SrMi9ZAVCTHw8k2cPixvAvKzxEdoRFTpWtqdK9YLnl5uppbnpBQmNbU41G9Wg0NDV/1xfOs1l62uEhum3dr12afZ2tEoSwmUglkwvM2BhMHVZ8fwo1zVa0hti/JEZjwqny1qmJFL7POjzrptaz9FSzUyLE2iU4EPaq8I+RA4ExMcVVsTkl8++/7RNT5tsAb4xp3eahYF/UhhkyBqdAxYwKSUZp8hENPEwozOyh2tfvHSGz4qfnBS6xvMd4QGF89wXA/pLV+S41oOinWH42qTro/URE5Z5K9m1jGDrXOCMKdOf9xYrcKqp/j/mT+4mYDlrYnTjZHv/cMTif70jg==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:3dd::5)
+ by PR3PR10MB4030.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:ab::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.245.13; Tue, 28 Jul
+ 2026 14:33:40 +0000
+Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::5f49:b0e9:d295:22d8]) by AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::5f49:b0e9:d295:22d8%6]) with mapi id 15.21.0245.012; Tue, 28 Jul 2026
+ 14:33:40 +0000
+From: Tobias Schaffner <tobias.schaffner@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: jan.kiszka@siemens.com,
+	Tobias Schaffner <tobias.schaffner@siemens.com>
+Subject: [PATCH xenomai-images] libevl: remove the riscv custom branch
+Date: Tue, 28 Jul 2026 16:33:32 +0200
+Message-ID: <20260728143332.2746337-1-tobias.schaffner@siemens.com>
+X-Mailer: git-send-email 2.43.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: FR4P281CA0239.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:e9::16) To AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:3dd::5)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-References: <CADfsJ_GwXvHioDB_HvGWardrTj_wFJJO-q0QtER42duwZFoi9Q@mail.gmail.com>
- <875x2gmuoo.fsf@xenomai.org> <CABE=YNs=T-x2iyDjOMcuDzkEOx6EQCUeX7ivGy15O01cZ8682w@mail.gmail.com>
- <87y0evvcug.fsf@xenomai.org>
-In-Reply-To: <87y0evvcug.fsf@xenomai.org>
-From: Bryan Smith <bsmith@aerotech.com>
-Date: Tue, 28 Jul 2026 09:33:28 -0400
-X-Gm-Features: AUfX_mzziSsh9EG5nP7UrbEssGo4rwnqoxMCtCqnZ_La_Ex5yAUgbLwx8Y4grFQ
-Message-ID: <CABE=YNuwToOBR1gUUP1mYPtHQaNXWVKuWSxO9HJC22aAfqxBZQ@mail.gmail.com>
-Subject: Re: Xenomai 4 Allocator Fragmentation Questions
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Kevin Strell <kstrell@aerotech.com>, xenomai@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
-X-CLOUD-SEC-AV-Sent: true
-X-CLOUD-SEC-AV-Info: aerotech2,google_mail,monitor
-X-Gm-Spam: 0
-X-Gm-Phishy: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|PR3PR10MB4030:EE_
+X-MS-Office365-Filtering-Correlation-Id: 58c0a36f-c732-45d4-c8f1-08deecb537c2
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|23010399003|366016|376014|11063799006|56012099006|10067099003|3023799007|55112099003|18002099003;
+X-Microsoft-Antispam-Message-Info:
+	UNDhqIncQlyeWMlfJursGT2oEqPzJThSSqEr4VY3HMXHiRYxb2MHR2NqSfXGSJXhKooYyX3Vlh87bOl676LNYhpRQ12vqhopRRe+nz6qABDdRRlc9MpT+P0N9Dy7a+KNocDozq0chBBEjSC6J/nxKT2sB9oRnouc//fgpD46S24IzMxL1OfHLknn8dWQe+/WzrsfW+wQTZKoaUO3mh/Q6J9+yHm5ng3XiNtKKgmZN0hiaUesPMD/ngb+RWmhUBhHg01sd7fHxrfMQUA4aFRiSbpgTWlN1KA3/4TGaCj95EBOfKtGNvE9DnNEU5qzTz7q6lmReS5jP5vP4/KkmvHSkcQs75iB9iHNQOrl92QUxb2fn1kpr83w5GncJ0AjxXp1AzAnwi3lGoi6nqKGPahix2sBUZSrmIa8kPFQueyktWiZE/t48aKcIivb9us46cfSzrVAu+/gwUtbwXqIJkNTnNEbzwdMhyvj4gXAfxAg1vLjrB2USzXdN57NlTrrQ+t0blaKvwl0R5nul/TeOJcTNINn/i3jFvAdszQLhQbdUizvBpvDSivqra8z/g4PkKmnK++Jjsp/NTxDMnF9hlsTpPMzLfwLgB+8CEz3Ih17vs2Fso5qNVEBFNJvNbfrpDOQAizjs7OuZgzB8Q/tO8lNQItb5Aw7a1J1jIzX9G4DJHU=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(366016)(376014)(11063799006)(56012099006)(10067099003)(3023799007)(55112099003)(18002099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?l0mzte+7gB3co6m/WZSbkEDhLF8PvwhQewo2cWGZxAA9o3lAUPf/jvgbNF0T?=
+ =?us-ascii?Q?Ny9FoZpY1FGj15rLFn57kI4aa8JYjl4Z7Di0A90Cb7neU67X6wtRylUYrBJI?=
+ =?us-ascii?Q?t3Xe8amXWuyrDgM7LBMXH/WdKrefGZk0Jy9vBSQ4Ty/cBt6TSyaBT4Eznqyb?=
+ =?us-ascii?Q?Q/gQwioh9XL92DEknZZ6OOyjuBiUjNisC59hJdBNx57FT/z5XDA9EXddhDlL?=
+ =?us-ascii?Q?/F3hvRAqgn06vjySImzT1LBKPavzVSjG2+6ZjjEabj4Ru1XQzfVtg+8EvdAE?=
+ =?us-ascii?Q?3JHWnqqK62Qw2tpKbi7bJEMb0kQ7Q2iM8CxukizqOdR+Vrn49ghRqLrJZvnm?=
+ =?us-ascii?Q?tqTVHb20/gzjFPmCuVeGGWZ1+meD478fcTeJFjspLxtN6srmC6aY5wabCi+j?=
+ =?us-ascii?Q?7uSDA29UuNPkAl1/lcNGKfzzdoLNXeGL0QkRbGSwfmeI6TSHVOIfTyynb02k?=
+ =?us-ascii?Q?D/QR2BUAntSdYT7nO18dAilFhXupX0BOMMo8vPO1dZ9pCp3KAIjBUN5JtpRt?=
+ =?us-ascii?Q?1FRaKAaBoAVFq8X+HvXRc/nQSaODVXyTKmqk7TLGLQaGn0HPzYBm0ieb00GQ?=
+ =?us-ascii?Q?XTiN8YucUODGYott2KhAj0trfOAK1CBMd0SfTC7cCFYsqUujl2OZ2cjWxHBn?=
+ =?us-ascii?Q?sxYTbii19uDJEAlJRx3u9EsZeFDP8V0sBm8SbE4NcjcZx3vfDZxuEovZwxZd?=
+ =?us-ascii?Q?ucolWFjTazsTIdgmW3WoaYZZPpanIksAjWJZOY3cjTnJgjvF8ulreb2fdyAJ?=
+ =?us-ascii?Q?ikdvVLQ9bnb2L2x1WC0Y+zx/6zcXhH2rDK5FfPF5DpscA1gTXEsqESY31WG9?=
+ =?us-ascii?Q?L9O913Zw7jE39fVkfFnJYv5lIFMG27TcChanzHu9bcFOYi568H8P3FDJYrKC?=
+ =?us-ascii?Q?Dt22wX4F1HIdiV8sZX6UPfe9iJgCkHVouDkG8/nqDv7JGTH3Thn3TUnG0A1t?=
+ =?us-ascii?Q?UDW1y8O3rlSJvMrPMzV8hc7QEBnOz6moH/UTqq6enFEULvdCw4qMOzChBOlp?=
+ =?us-ascii?Q?5ur/iQBOGdVDCxQBfJDgAHwb971wy/0JObab25IQ7377AQOtwU6HKOG5f/l5?=
+ =?us-ascii?Q?9DGgo1Q3PyMVmcUzHuc9ecSJ6Um999GCACj9pFjHLhdeYhKGFDc+62RDPbHo?=
+ =?us-ascii?Q?qKEl7tyVfPa/kUMCtoIg9AT9H91mdHsHjsqUjXrG/lVhW2afJG5ySg0Q9iz8?=
+ =?us-ascii?Q?t1JK5ZElT6Ewqp1PmeQvC26aVnd2xy109fW9BNCkr7ec6IepBgb9ZSeBEyWs?=
+ =?us-ascii?Q?kcp1uX0cfJoMmhAoWHlqktgKbC/z8xDd99o/UPc/OQSWK3SAMmdqUiIlw1r2?=
+ =?us-ascii?Q?LHjacS3dX3LzvhLzdnpe3ySiKCTBiuzl0XK9PoL4u+yg5qCw4QbMFLq4B52+?=
+ =?us-ascii?Q?7JrJIJgYgEUbeFtSmqexrq7DKBpGfdcJiui13Hh07niUUZKQvDgERCK3kem8?=
+ =?us-ascii?Q?wAivw24xIrIYrHBO281Gd9IcyzNFbtXndcKW/4jSHDGwUsMgQQ29JuRJFjsh?=
+ =?us-ascii?Q?brn8C8qWRWBsnPDbmuCbKvEm2ORsxY8r8+wv6ZhgkPNzxTDj1dGIp/gq0QWG?=
+ =?us-ascii?Q?jPqCMziUGS1YWpvXE8IE5/Z+piBnH0PXnLvrvucuiXftSzOPMP05KnXmKhBq?=
+ =?us-ascii?Q?VsM6iLr49o/75yhzBSvfHhynLjIYrR7RkT4/fMMd7d/8TeP2otKaGo5c09dq?=
+ =?us-ascii?Q?Z0Cc9SiW8YIe9xF5ZXNLiyjZdNozpSyZtAuJyIK/+4xZQtjAM9AxQ3GjuBan?=
+ =?us-ascii?Q?eQW3Cj4C2fyyiPccehI3UpVqfpFDl5o=3D?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 58c0a36f-c732-45d4-c8f1-08deecb537c2
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jul 2026 14:33:40.3657
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: ictLNNIljECz5a3Pj+EYSZ88NN/ERhVOQmEyTRhhmcPrvTsyDQu1Ap7NQfbjW2GFKVWbos/6Xy6W9bjFzh8lfXv4ZAG7HMeIlf1zS6AkJvI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR10MB4030
 
-Philippe Gerum <rpm@xenomai.org> writes:
+The riscv build bits have been merged into the libevl next branch
+and the custom branch is therefore not needed anymore.
 
-> Passing a NULL format should make the core pick a unique default name
-> for this private element, e.g. evl_new_mutex(&heap.lock, NULL);
+Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+---
+ recipes-xenomai/libevl/libevl_master.bb | 1 -
+ 1 file changed, 1 deletion(-)
 
-I didn't know about that capability, that's very useful. Thanks again.
+diff --git a/recipes-xenomai/libevl/libevl_master.bb b/recipes-xenomai/libevl/libevl_master.bb
+index 48f10dc..f59949d 100644
+--- a/recipes-xenomai/libevl/libevl_master.bb
++++ b/recipes-xenomai/libevl/libevl_master.bb
+@@ -12,7 +12,6 @@
+ require libevl.inc
+ 
+ GIT_BRANCH = "${PV}"
+-GIT_BRANCH:riscv64 = "wip/libevl-riscv"
+ 
+ SRC_URI += "git://gitlab.com/Xenomai/xenomai4/libevl.git;protocol=https;branch=${GIT_BRANCH}"
+ 
+-- 
+2.43.0
+
