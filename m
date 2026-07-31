@@ -1,36 +1,36 @@
 Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013062.outbound.protection.outlook.com [52.101.72.62])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A56B342E8F8
-	for <xenomai@lists.linux.dev>; Fri, 31 Jul 2026 17:43:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CC233AFB1B
+	for <xenomai@lists.linux.dev>; Fri, 31 Jul 2026 17:43:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.72.62
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785519783; cv=fail; b=CZHTMTItSsGuyaqCQHZKUFZTb9y5JPwjbgj0lCXB4TNmS/IeVjjdKB1JXj5yoNE+NBqg0WR7Jel1nbNS9d/nozHexhkGiVu147r2mMyZO0WTodO1LFuuNIxjHD8Vwis9lmpCoANMJh36Z7GV7sMbKqoCaozAF65jVtK5jWajHa8=
+	t=1785519786; cv=fail; b=gJT6tXu3NA4I5djzQfIWWhcKJqODq5STVnj4R3s8Yi1y2TmT/zHBXHt5t9gc5CnoEU+rHpn4RuEiwWQNvPZH18GQ0FwbmODt59WPOia0ooNNylK2SY6dgFb7DnOQp7uetNQYu/tQerU64Yc1UMcUDqNZHWOf8Ibhq01Yf/UdPRs=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785519783; c=relaxed/simple;
-	bh=49SHkqZBzHgBy5dNzMD/FnuyS1L5/cTNNq8/h/7UwV4=;
+	s=arc-20240116; t=1785519786; c=relaxed/simple;
+	bh=5Qz6+qv0/lM1qHI2p9KKp3SR7zE5nP8Jx9c5fCjVLgA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=HTNV2EgZx4CRtibiIEDqPgJNZptjqawf3hDdzmiwU6uW+5M6KAfVTpgoGFh3oFAcgqUA8NbIqmPgg0qdGfgA+pPgTyRZbR8Q7kXHK2YD7RNoV/3AgHQXjg43NJ6nlBRtD6AnK7IHra9R6a8NFF5sQUsEIkc3CPFI6/YKHkIk3kU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=i1pTJKT0; arc=fail smtp.client-ip=52.101.72.62
+	 Content-Type:MIME-Version; b=pn9UrLQB3QX5+tQ0QKtjPQAl2MeDEhTQJwVZDdoVhbBjjHfeRPubeKyTTbIppo1HSnyu9Xvj+ziKK+T8MnvOTI4cS35fvZrAv2QKFQp6mF+INI9KvIjVPScEeXxY2mm+B4wXTwp24e4GaKUWez3zxXfKLCTIbUd3pMctCYBAfo4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=a4Q4o8lF; arc=fail smtp.client-ip=52.101.72.62
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="i1pTJKT0"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="a4Q4o8lF"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=N0GH8zEB1p9XcQWNOuUupfwae3jgRpLuD9YoS8NqDHo7lC5fAeomwzKmg+73XLNt8vpzGSMCL2joj78h9YLFPJqiBCBkUaDtY8xWJwoAA6mCOQP8Z+iSSu34EZJ0Rx9WcjfBMOUna5/RUOuRbvJpX9mxB4mBwY9hrNpNkdzGf/xGeEzsbUUsUPwOAGz1TFdcjdvsqXxNGUXMtrq6d87dJ/8yq1wPl9jAsHeHhZWiNnnymyrtAJbh/SAKIMmJYmrwrvmrUd17G9rVddMwMy/EghSdXvLGbxUwDo3c9dD/r7lqCCmHl+de9BRiQgauap15f+Ap4JyVtWH8NF8rK/6a8A==
+ b=SwyMmmYcOAI/2YO3dwYg+9Er5VJi1a5beOTWd0I7O+fOViI9qxmub5Y5RBnGsAzcMToBmcvnudAzfGhGOZr/vcGf63TmpdfMPNGNSJdmpfPcjiRTmQubz1jsIjlHym1XwLzf1fW9iIs9K6BNry2MhNpwnvcpEliQkz5rU0dIGNW6Vt4J1oj5bbo86HzKnk7XAg0MCPq47cO/1ZLMuaEkGBuZaGwvpAG3hRRS2CjJO4todcZGPNyz0/mKhZFGkCidMrFIEeotm5udZaoJyftosivGW/yMDE+54hKrK8ErO+5OhWDGiFNt8/e27ZEhY+RMLLRHbSbU2Z28bIE3PISVLw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Zer9H2WtFmEWV69eoJI2Z/wZ+8Oj3e4s2SMaSOskkfA=;
- b=aH3fhqimy7WeTjTf/ndubstsHiRB0i0X2iRm/awpgPLkBHX64HxVhD9SprR1haBq48bjP6kx9ksdHsDzo8FwA0t3RHJx+oRVb6+k/AtvJnB7Zk+LLVnJG0iL1Fa64O8xXXQukJzkDjVb/pxQHgk9OYjMqS2Ahut8ti9PQLYKdJsKeUMULB5zypCrhBZYhBAiEmlD/YQpIc1xIiKWmfDsxTQznKyYXMnPTpBlCdhjy2IkWDs0nnleb2UcHtEo/ZwsIRQsJSdu7nRU2LvC0psNp4KBas11e/UqBOoRzvePuJ6MoRP1Q6gkUgQM2+nDKgHevRz/lQgWQgrnKhIhk7DPtA==
+ bh=8eNCu4qoPrcMXYOh7HeG11miO/i8GpL6mXOCfc/Bn3A=;
+ b=Pv1TEmyavlg95AAnVQdXFgPxS93CfYvFny90dD1N6i3EX/w/K6NKScCsfRhRrCVXNnZ7KdoYmw9iJCMhto6hdGZ2Igimn3tAohsTztQUxoyG9mH/Mz6GiPF3U+MC+6YVX912MWwH/7oRlAfz1sPpbrTURXY3zt+ZOkEdlXUCv60IQ8EWZOEzHTS40RLz+Qf2DtLgZlTptvJyycCVU+nAne5Xr7Iu/45jmQddZ8qYbmKPyAmBq0iJo6dMCUfs8a/2Ek6VhOH4aUYZ+TkzRPSA1d+Y8TevmSiQM/71adTvHwrpCjwWWYyFe52E1uhh9I1C6hFioGI6z45G4h9e5hgbAw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Zer9H2WtFmEWV69eoJI2Z/wZ+8Oj3e4s2SMaSOskkfA=;
- b=i1pTJKT00N3XOHhbJgU3/c88wxQGcdu+kyU8F0STEWWZcOq2nk7G8UqgRHAQ3CvK783YiI69N8htia3GzNIqhMsbSqd0Ik4qwq/DnWDyeSH/meaJT9dUGFsI5qRrxXCupddv/KiIc+1DITyJJMxhg3mIn/ZEnWTyvBJakDlKcE/rpDq+j/r8o7nB8xdfyqp24kelxsH9RWr8bunq+HoqEyRsJnnzFfWb2HX/E34iDiYRXbTpDUoVWto7Q4Rg3HwskBtVmGZw65hp7tsEVjyF4mnEHCgyzfdtRAN33dGFqpEZFyirktITlc+NANZQhQBTLUkctedH1u5/ZclyAVsWIA==
+ bh=8eNCu4qoPrcMXYOh7HeG11miO/i8GpL6mXOCfc/Bn3A=;
+ b=a4Q4o8lFQOtia3S+e9UJBSacCD2pOJPidp5a8pjMHB+IXKKhwYhp9ZF9IC3d1xbvIL/mx5ihd3/4/r68Wxu/mojFSJ8T1hQ1LXaxPEup2epA93gn3nmeAfNjwOIORWCOCYcwz4FrLW6ovq2VCLQuJCaanpdKYcPeG3FRuPVKh7TrI76PDqA2b48cGbaGbvqmtlGZoRdeV1J0EaqUKCRGiuHz5K80bLsYo2aFj2ZWnZdD9bPNsu7WjpgolAZcM3Yb/1yYPZKMKOdq+3McJVXpeBelb5Y+B6Vv/XPPOEjqCqF8ggYQjxwVSXRVZG4QTRkjG3J2QLydRXFuGSk4l1eRdQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:3dd::5)
@@ -46,9 +46,9 @@ From: Tobias Schaffner <tobias.schaffner@siemens.com>
 To: xenomai@lists.linux.dev
 Cc: rpm@xenomai.org,
 	Tobias Schaffner <tobias.schaffner@siemens.com>
-Subject: [PATCH linux-evl v4 1/2] riscv: Add EVL core
-Date: Fri, 31 Jul 2026 19:42:44 +0200
-Message-ID: <20260731174246.3431398-2-tobias.schaffner@siemens.com>
+Subject: [PATCH linux-evl v4 2/2] riscv: Add FPU register test support
+Date: Fri, 31 Jul 2026 19:42:45 +0200
+Message-ID: <20260731174246.3431398-3-tobias.schaffner@siemens.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260731174246.3431398-1-tobias.schaffner@siemens.com>
 References: <20260731174246.3431398-1-tobias.schaffner@siemens.com>
@@ -65,346 +65,243 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|GV1PR10MB9059:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2bd66bb2-27bd-46a5-2502-08deef2b268a
+X-MS-Office365-Filtering-Correlation-Id: 22ce64b0-1309-40bd-b909-08deef2b26cd
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|10070799003|376014|1800799024|23010399003|56012099006|18002099003|11063799006|10067099003|55112099003|22082099003;
+	BCL:0;ARA:13230040|366016|10070799003|376014|1800799024|23010399003|56012099006|18002099003|5023799004|11063799006|10067099003|3023799007|55112099003|22082099003;
 X-Microsoft-Antispam-Message-Info:
-	5vQ6rqG1/A3UY6lxMA2yytOWqI8GMrvcTB4xV4iFuQlA97aJjanuoQpHfo99qtqKQ49c3FT3LT32qjyKIpBnHGe/h1X81u6mGxV1VgOYLEFE/1hWL12HHmVDkEA7Mo4G2FnE0RSIjoz3Y5Qhtj8SQjklsZSSLFk8+lr8fngOgrKPAUtpiVqo5DWyuBy0VHlNs9r5RqKmjEyRZGSM8uqnicnwc6To4b8vT33dglJqvkIFpGA2Uv1nJueUEhxVJ2v77HVEpkuCXd2CK+EY4VrbVEK3W+PA1W7TKxVCoIqBkLvbzJ/7GKCF2qz8cBfKPvC1dQj65XZf33ByRXoTz4e1/UO2kZqeGT5kY5c9L86XzBH49+l6v90I2ZrqWq+HXX9kmgGMI51lrf+vA+CBJnlbvwdF+wEtXpbXuLDLCufrazFAZ2ukz75TQnkBbG6OFeq4svhLCK3QY9avVUkbCh/ErQg4HDTEJTDxZiIo7PVky8BBWuMKKPCjYwQ4ddBmAY1UaEpxbBcZukEDwRKCOexALQp73I1luFKCk0wQukgZBgF27MYsfiDhXgUuimnp4zauv0uWJTK7zmug+mKGy9Bm8XbX7sFhmJCmgYT6tIUSpc/lcdVJV/2zuyOOuDAobRB1LOuIb2j7yUeSfw+yhgPBxh0+NE1nPf9HRgFM1iRaHTc=
+	pyLrb4eotPR1uuci0EO+4roCYNgFURw4OOgaDtkiUDIG9Eh5TZYKz0tZChcBJkGTHb5z//E9+peiLqDImSwIefCGjDjRjqdPwlb+a6xHRUY0DmK4FYmmzuy1LCbGuCcRnj0qAVCxksKCglHQpONhp1hxvarh/IpUrvdjpxA5tCI3b7yeI01w5VcyZSI78bp08z8xAHBDbhiMWYtGkV7tsguLnaJrQj3OTVdxrczSPDVnSQNdTI1QlkpEmJblEonDYHUwDZ5pzP0S2r09Z1GpfX48govAkxs4E1PV4usQA4coBaeowXj5mDzoZoJk6vvzx8AuixbyQKd3Sq34/Lv0CymeP/r4AA1ym2lSxfYvexUI5gzt0VcB4DlEC2ygGAEhW/cxxNjpQJWe9GlSpJcTvh8uOyF3Zu9JaAqJALi4oied/bhP4RUI46c+lJvAje+OX4aSba6uLwBF8yjjaJPSBVy6zuVL7HJmwoV8KImdtlaZ2goXGa4Wv/skc0SS3JIwJ/QtvRcmpguFUkh83yfZ/rDc0lSNQNLADKTc33/yTrL5lf0ZDtwDPy/4GFTlp2TmMwTF0XVM6cauHJySvzjQnyAP3StP7i7rDNuMOvgn2q3EMQkRZvZCzpqVPoLu7JuJTezp5jWoHf5u2j7SpGT9yLNiv8T4fy9DHeqNtyeOgVY=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(10070799003)(376014)(1800799024)(23010399003)(56012099006)(18002099003)(11063799006)(10067099003)(55112099003)(22082099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(10070799003)(376014)(1800799024)(23010399003)(56012099006)(18002099003)(5023799004)(11063799006)(10067099003)(3023799007)(55112099003)(22082099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?AXEYRCjwZ5JDgivHVGsRk+FYjTVGWJO0TW9gBOuuE5zBq5PwnzcZ683LsG11?=
- =?us-ascii?Q?fztRUI9KFAxLsO1tU7MMTdn2SEeL+eBbxiZWyC8eYj9WGa6sb7Zq9B4Ib2En?=
- =?us-ascii?Q?eY2uwrxNrwVdyt8UQuRGn6Rex8lE5YX/9Hy3PV636QE24edEfHXekZVZ2Vzw?=
- =?us-ascii?Q?7r0cGjd/NP+DcfnMZllUnnktvmOAaMIqaHpsVUnU3rzNY4JgWl+arCiLry9J?=
- =?us-ascii?Q?4wVmQyzR9oRl5hQo9Iyx7MFgMuNVxnTvg6JMK2T1eZgfdqGnDUrL4HD6FikZ?=
- =?us-ascii?Q?85ZrSxG31GPuKRac4K1H+MArTndxmfwjQ+UjU0MpvsooJAYAqVphYSAL7sWK?=
- =?us-ascii?Q?3ZDMMbI4X3rWD21m1ox1bGQKL+V+paUAGBX3KpwzQhI0eRRBqLRSyZNPJOcC?=
- =?us-ascii?Q?v4nlbRyzotdnYZDbFOrHkAAQ+Ho8f2hWTIA0WUl5s/zgMxXrF5iqG1FOrNbj?=
- =?us-ascii?Q?0FHpWUvFPDaDfmG9EvgF0Z24ztCR0qEqiXtAiVF8cBSFN3cgoNIXrv8nuNZz?=
- =?us-ascii?Q?XvJkDHv1GD1htIjXuBaW41DVbgB4Z5SrtgFAskM5clznmqbsBL6vHnI02jML?=
- =?us-ascii?Q?hwmIcXhR5EVzoYtHzTdA6b70bpDXeAHrr0/MweffB81QFhXpTZ6l0TEQrBuj?=
- =?us-ascii?Q?PFjAsBJo9By1iDJQYGYQyVNXzAxwdWRxRJsGfEZUBg85uvrx+GhyNLSMb0xP?=
- =?us-ascii?Q?09amH90RK5rSRC/wXUih6HeWRBP9uqM7pF7eVrN35DqiQV1bz/qganJoHYnA?=
- =?us-ascii?Q?Rl+PUPO+cNCTGzwcnoKbno3oDpXI9gM6uHKZuAkPrAgVZaAjMJJMaubBa6ik?=
- =?us-ascii?Q?IcEuQS0Xz/cHNjwWlLhKcxlyW/F0UvoQRFETi922n7eFgic+BEKaesKI4GSB?=
- =?us-ascii?Q?ygPG9cn2kt9oAcVH3GKZxgmVBOM4BeCTONPXY9gN6/wptMqtU1MNo/VxJhQ9?=
- =?us-ascii?Q?vjU9/uLEi45hIBYvtTFzJSB9KBpQqAa4Y91m1E2G/Yoola6jlOBlTmerVJAm?=
- =?us-ascii?Q?p8GBbgoaHXgIFmDhI0iDwndgb7VKdMy5Khw8Jqy+/94qU8VjMYqkydkELOCA?=
- =?us-ascii?Q?/8fa9G8IWvPlxyngAfJKaZ8VVPhdRdWptNImEKSi6trIi4Su61nHxj3xbkd+?=
- =?us-ascii?Q?LqBRocG+9XOzO4OxO7efuF8/pK/kQ5Qs5ulAw4w9Fy0iOV90M4Q9A6IJ1VyD?=
- =?us-ascii?Q?kQHeLyb3W0M2KRJXRo3/VvZyc5kqcWo2GteZmlfllGoajq5y3JUzXKkt4YwV?=
- =?us-ascii?Q?hsHe2/C6P0YvA0n8tZPkipWpE7q7MGfEg4KcBS6XI5f6pwwYCXyyovrkxMOJ?=
- =?us-ascii?Q?Im+c4+wchomKpllJEfgpWwFJJR/GhfcIilTkpnBqhLOxiGa4Xy/Ql8c1kwZb?=
- =?us-ascii?Q?/b5XKXFl29BwvEDoQaetskXtfBZwiDLrGOaDF67Wiy9Ut3lIsgxH9E3le4d7?=
- =?us-ascii?Q?llFwHGLcwIhqZIe7AX7wwYMMT9EvwczVdfFhD4ISGUcVfYT/FiHLW2+mMbgF?=
- =?us-ascii?Q?eA5g0aldu9vnrWmFoLbdhBxYi+49gYZmpgyCgcRlMEye0ThS33XMQ6SknT4p?=
- =?us-ascii?Q?FsORLyx7AATEWTcwEZAXgSYq2OyN2hOUfX4zjZ8zMycYrikQhN5bAP4awjxN?=
- =?us-ascii?Q?20s+fQWyha1naqu3qVMs+pa7ldaOU78RRukcO/txrQccl6j8BQe9Q2yH9tgr?=
- =?us-ascii?Q?e4SLyfVzPsFw0fbIy5vanjcGUt9i/XRUKLATP2CNF9GV0bieJ77Z90v21fwm?=
- =?us-ascii?Q?LPSP9AJySlZ3J7i4LaTKZDRBhvXYGli1FS2eDQUgPvQxSohD2Z6NrZrVMaD8?=
-X-MS-Exchange-AntiSpam-MessageData-1: SJpDRtJO/rO+OGpIIzwVAUAP6p01cHyYzSI=
+	=?us-ascii?Q?UYD7JE8ekFPIPdkhGUQU5M/G4W3c0PSDA8ObxuBCOb0qzyGieLYLCMvlePci?=
+ =?us-ascii?Q?xbZxJQq4w58UwwDpo4zeTHtKYqtm/PVz4oJJCYgsQ4G1jCfs5UrswZqC/v8C?=
+ =?us-ascii?Q?Jf4YehYZVPgpueQx2sl/xeZ8zBf/DXZDg1ARPrwJzWn4ECq+RTbHmuJvtahl?=
+ =?us-ascii?Q?PVg307mxblisMLtKQRzuCtG7GcpC5XqHs3Rk2neoLRWwUkwZHZgCDm0xm2iI?=
+ =?us-ascii?Q?NC66zBtf00Hw2nqeXTqyZlCTrWfARTpr8+6TrJpS6aSTsdRekCyB1Qyko+vg?=
+ =?us-ascii?Q?uJnPvzFOCiew6EIiCfEtnEYlNuTtU9lHarJRPehh+9ih/jk3iOBLax6pabJo?=
+ =?us-ascii?Q?1kZo+ixNW5UHPGUy2YW8iSTe7QlKyMiAjz44MGmTTb/t7tV9e2qPs5Qk7fOL?=
+ =?us-ascii?Q?Aw84UFNtFHwQvE/pP4pyvc3aTxcdT9IZckz8Zsus0hwA/Raf6WqgG6YwnQFI?=
+ =?us-ascii?Q?qfI24QHb4aS+03Iv+z4+mzpleQ50gFuBE1lGx9I2Os2YZuXzqfRG27Iy4ZPc?=
+ =?us-ascii?Q?1p33GJK06yD6+edUO7hlsWS1ZUDA73ayYiCAt9zIniZnuF/NqdCuBtZQyQex?=
+ =?us-ascii?Q?QNXUNO8J59497JZhCP9HZkOYvgO7Fn5q8PhVgay9w/hfZKGSdVv1rAQ5uima?=
+ =?us-ascii?Q?36WbqhbaQ4RnLR37YQUgMfqh81eSSXvBFqgaTnr0UN1wVbg19XuXm4fo/txp?=
+ =?us-ascii?Q?Yzcyw5ywMTNhW9c91dDaWD9WZHOlLK8RPwnZ7nR1BsZEAcuyXFAYa9/JZtSG?=
+ =?us-ascii?Q?EfuP4bxItsN8vuk3ImMQeVYU3J0eOTTiApu6OzcD3uU3+HikW7pWlhZJTMl9?=
+ =?us-ascii?Q?7KHLEo5NfhcL9dLQQK9auCAcvOaP7rUB6dM9ehWlp9U2LsOSCa2MY5ga6eL0?=
+ =?us-ascii?Q?SC+b94oQr8UpSwvwd06przh/sXCg1BWKGa2JvZsn2MTz35WBmcwgDc6u8aZN?=
+ =?us-ascii?Q?BeyFJuqpp/IY2WOMUWojzKuyZh1ynybiE+fJi7p8g7ZshPUsmH3GamiZGRHD?=
+ =?us-ascii?Q?vF8q3uIv5KNEpUn0v/eVeXYu7BTTgfPIkGCbnDxlRrDdWMZpXbEpwk/KQGZY?=
+ =?us-ascii?Q?zmdVz3X4yEPZOIHzQ5X7KbD45qbrFeGOkBVJHRzN+8BYI2aKDCUEdQS2oLRt?=
+ =?us-ascii?Q?w93hsS5CrAsVSJzDcJbrWBK0hmKN8hY5ssmntg39Lb04VLvsLHlMOrNLo/Tp?=
+ =?us-ascii?Q?FbeUEMrksVFMKzq7VhzCstHCxPL2tm0KTunW1TdzCAAGxYa/9juB6gmqiUZT?=
+ =?us-ascii?Q?WqavSzF9HVIKXBZaBAGSj8Q6KtbBPJZcgvRynq0ICed0xMmSEWCYEdKawuRr?=
+ =?us-ascii?Q?ww6nsPpDwAFKT5uLQKGF0zEL3LNraQDDH2/AjmOofvLRpXzeg0Q4m5U4U+HA?=
+ =?us-ascii?Q?Pn/Ak+NV3QDT3uceLdU4Jj7EGVht1RCzKHyXcAPVBPZQhLPyVAO9MwyUrK9p?=
+ =?us-ascii?Q?Znxi2S/oECpo650h2hNCh7j6V7mNKmqFNpBO8wMbBfz+XCnXOh87Ii+ZqGZE?=
+ =?us-ascii?Q?KBH86liMAOVRkijYhT/HsEenloZMPrSbu3z5QcDeIMRGrcc/+I76fsYT014+?=
+ =?us-ascii?Q?9CY5gFKZ6RC/DXtm17wO6YF3QpfPQI7zTq31QOgBt5LhLPi9L3wrPNK/k+bB?=
+ =?us-ascii?Q?Gi9XqQGk3R0swper65RNFkS4dsv2pS9+ud/VV84O2P74ADPMLHd0mROIqcyV?=
+ =?us-ascii?Q?vgbNuGboLeWfA1iyJQz5cf0SQKJrz7Pc/ckG90hEKAZXBAa5JrSsQamhXAHG?=
+ =?us-ascii?Q?FmeVEmTz2DskcG8mj4KPqRHjrVDuu8/onXI9fz1j/3Bl3auvsTy0x/jt5XZn?=
+X-MS-Exchange-AntiSpam-MessageData-1: kaiudn9hUXFRPx/VZmzMt/WyGH6ktgLXNps=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2bd66bb2-27bd-46a5-2502-08deef2b268a
+X-MS-Exchange-CrossTenant-Network-Message-Id: 22ce64b0-1309-40bd-b909-08deef2b26cd
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2026 17:42:54.3702
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Jul 2026 17:42:54.8133
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JMcxuopd0M310dnbb7OLWwynrprDJQO5VETyH+bBhuB6GaQyVKvZ6kMlUsLxKTjOJh63PqDTjjK9fAs67N/9kWWXQE+n+7YAXHkpjhIfn0o=
+X-MS-Exchange-CrossTenant-UserPrincipalName: sRPG7ZubhOcas+3cMG1hG9LTXTxdvZU7agEH9/NYCSZwQ4FWxgztXMmub2YbnAbH2oODCqSKewbr8q7QP+n4EnOMUrYI6PnusWSNAEOeZ3w=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR10MB9059
+
+Define evl_set_fpregs() and evl_check_fpregs(), allowing low-level
+manipulation and validation of FPU register state.
 
 Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
 ---
- arch/riscv/Kconfig                        |  2 ++
- arch/riscv/include/asm/evl/calibration.h  | 12 +++++++++++
- arch/riscv/include/asm/evl/fptest.h       | 22 ++++++++++++++++++++
- arch/riscv/include/asm/evl/syscall.h      | 25 +++++++++++++++++++++++
- arch/riscv/include/asm/evl/thread.h       | 12 +++++++++++
- arch/riscv/include/dovetail/irq.h         | 11 ++++++++++
- arch/riscv/include/dovetail/mm_info.h     | 11 ++++++++++
- arch/riscv/include/dovetail/net.h         | 11 ++++++++++
- arch/riscv/include/dovetail/netdevice.h   | 11 ++++++++++
- arch/riscv/include/dovetail/poll.h        | 11 ++++++++++
- arch/riscv/include/dovetail/skbuff.h      | 11 ++++++++++
- arch/riscv/include/dovetail/thread_info.h | 11 ++++++++++
- arch/riscv/include/uapi/asm/evl/fptest.h  | 16 +++++++++++++++
- 13 files changed, 166 insertions(+)
- create mode 100644 arch/riscv/include/asm/evl/calibration.h
- create mode 100644 arch/riscv/include/asm/evl/fptest.h
- create mode 100644 arch/riscv/include/asm/evl/syscall.h
- create mode 100644 arch/riscv/include/asm/evl/thread.h
- create mode 100644 arch/riscv/include/dovetail/irq.h
- create mode 100644 arch/riscv/include/dovetail/mm_info.h
- create mode 100644 arch/riscv/include/dovetail/net.h
- create mode 100644 arch/riscv/include/dovetail/netdevice.h
- create mode 100644 arch/riscv/include/dovetail/poll.h
- create mode 100644 arch/riscv/include/dovetail/skbuff.h
- create mode 100644 arch/riscv/include/dovetail/thread_info.h
- create mode 100644 arch/riscv/include/uapi/asm/evl/fptest.h
+ arch/riscv/include/asm/evl/fptest.h      |  13 ++-
+ arch/riscv/include/uapi/asm/evl/fptest.h | 127 ++++++++++++++++++++++-
+ 2 files changed, 135 insertions(+), 5 deletions(-)
 
-diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
-index 70ea8457e1f6..193b14fd4b17 100644
---- a/arch/riscv/Kconfig
-+++ b/arch/riscv/Kconfig
-@@ -152,6 +152,7 @@ config RISCV
- 	select HAVE_ARCH_VMAP_STACK if MMU && 64BIT
- 	select HAVE_IRQ_PIPELINE
- 	select HAVE_DOVETAIL
-+	select HAVE_ARCH_EVL
- 	select HAVE_ASM_MODVERSIONS
- 	select HAVE_CONTEXT_TRACKING_USER
- 	select HAVE_DEBUG_KMEMLEAK
-@@ -381,6 +382,7 @@ config AS_HAS_OPTION_ARCH
- source "arch/riscv/Kconfig.socs"
- source "arch/riscv/Kconfig.errata"
- source "kernel/Kconfig.dovetail"
-+source "kernel/Kconfig.evl"
- 
- menu "Platform type"
- 
-diff --git a/arch/riscv/include/asm/evl/calibration.h b/arch/riscv/include/asm/evl/calibration.h
-new file mode 100644
-index 000000000000..4da81f33ce3c
---- /dev/null
-+++ b/arch/riscv/include/asm/evl/calibration.h
-@@ -0,0 +1,12 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _EVL_RISCV_ASM_CALIBRATION_H
-+#define _EVL_RISCV_ASM_CALIBRATION_H
-+
-+#include <linux/kconfig.h>
-+
-+static inline unsigned int evl_get_default_clock_gravity(void)
-+{
-+	return IS_ENABLED(CONFIG_SMP) ? 6000 : 3000;
-+}
-+
-+#endif /* !_EVL_RISCV_ASM_CALIBRATION_H */
 diff --git a/arch/riscv/include/asm/evl/fptest.h b/arch/riscv/include/asm/evl/fptest.h
-new file mode 100644
-index 000000000000..76a8092af702
---- /dev/null
+index 76a8092af702..abbfe67055e5 100644
+--- a/arch/riscv/include/asm/evl/fptest.h
 +++ b/arch/riscv/include/asm/evl/fptest.h
-@@ -0,0 +1,22 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _EVL_RISCV_ASM_FPTEST_H
-+#define _EVL_RISCV_ASM_FPTEST_H
+@@ -3,19 +3,28 @@
+ #define _EVL_RISCV_ASM_FPTEST_H
+ 
+ #include <linux/cpufeature.h>
++#include <asm/fpu.h>
+ #include <uapi/asm/evl/fptest.h>
+ 
+ static inline bool evl_begin_fpu(void)
+ {
+-	return false;
++	kernel_fpu_begin();
 +
-+#include <linux/cpufeature.h>
-+#include <uapi/asm/evl/fptest.h>
-+
-+static inline bool evl_begin_fpu(void)
++	return true;
+ }
+ 
+-static inline void evl_end_fpu(void) { }
++static inline void evl_end_fpu(void)
 +{
-+	return false;
++	kernel_fpu_end();
 +}
+ 
+ static inline u32 evl_detect_fpu(void)
+ {
+ 	u32 features = 0;
+ 
++	if (has_fpu())
++		features = evl_riscv_fpsimd;
 +
-+static inline void evl_end_fpu(void) { }
-+
-+static inline u32 evl_detect_fpu(void)
-+{
-+	u32 features = 0;
-+
-+	return features;
-+}
-+
-+#endif /* _EVL_RISCV_ASM_FPTEST_H */
-diff --git a/arch/riscv/include/asm/evl/syscall.h b/arch/riscv/include/asm/evl/syscall.h
-new file mode 100644
-index 000000000000..1ef2d008934f
---- /dev/null
-+++ b/arch/riscv/include/asm/evl/syscall.h
-@@ -0,0 +1,25 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-+#ifndef _EVL_RISC_ASM_SYSCALL_H
-+#define _EVL_RISC_ASM_SYSCALL_H
-+
-+#include <linux/uaccess.h>
-+#include <asm/unistd.h>
-+#include <asm/ptrace.h>
-+#include <asm/syscall.h>
-+#include <uapi/asm-generic/dovetail.h>
-+
-+#define raw_put_user(src, dst)  __put_user(src, dst)
-+#define raw_get_user(dst, src)  __get_user(dst, src)
-+
-+static inline bool
-+is_valid_inband_syscall(unsigned int nr)
-+{
-+	return nr < NR_syscalls;
-+}
-+
-+static inline bool is_compat_oob_call(void)
-+{
-+	return false;
-+}
-+
-+#endif /* !_EVL_RISC_ASM_SYSCALL_H */
-diff --git a/arch/riscv/include/asm/evl/thread.h b/arch/riscv/include/asm/evl/thread.h
-new file mode 100644
-index 000000000000..70a07d5bfdbb
---- /dev/null
-+++ b/arch/riscv/include/asm/evl/thread.h
-@@ -0,0 +1,12 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _EVL_RISCV_ASM_THREAD_H
-+#define _EVL_RISCV_ASM_THREAD_H
-+
-+#include <asm/csr.h>
-+
-+static inline bool evl_is_breakpoint(int trapnr)
-+{
-+	return trapnr == EXC_BREAKPOINT;
-+}
-+
-+#endif /* !_EVL_RISCV_ASM_THREAD_H */
-diff --git a/arch/riscv/include/dovetail/irq.h b/arch/riscv/include/dovetail/irq.h
-new file mode 100644
-index 000000000000..f214e2f6ee2b
---- /dev/null
-+++ b/arch/riscv/include/dovetail/irq.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _EVL_DOVETAIL_IRQ_H
-+#define _EVL_DOVETAIL_IRQ_H
-+
-+#ifdef CONFIG_EVL
-+#include <asm-generic/evl/irq.h>
-+#else
-+#include_next <dovetail/irq.h>
-+#endif
-+
-+#endif /* !_EVL_DOVETAIL_IRQ_H */
-diff --git a/arch/riscv/include/dovetail/mm_info.h b/arch/riscv/include/dovetail/mm_info.h
-new file mode 100644
-index 000000000000..e38b97d1f50f
---- /dev/null
-+++ b/arch/riscv/include/dovetail/mm_info.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _EVL_DOVETAIL_MM_INFO_H
-+#define _EVL_DOVETAIL_MM_INFO_H
-+
-+#ifdef CONFIG_EVL
-+#include <asm-generic/evl/mm_info.h>
-+#else
-+#include_next <dovetail/mm_info.h>
-+#endif
-+
-+#endif /* !_EVL_DOVETAIL_MM_INFO_H */
-diff --git a/arch/riscv/include/dovetail/net.h b/arch/riscv/include/dovetail/net.h
-new file mode 100644
-index 000000000000..34062fd4dd13
---- /dev/null
-+++ b/arch/riscv/include/dovetail/net.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _EVL_DOVETAIL_NET_H
-+#define _EVL_DOVETAIL_NET_H
-+
-+#ifdef CONFIG_NET_OOB
-+#include <asm-generic/evl/net.h>
-+#else
-+#include_next <dovetail/net.h>
-+#endif
-+
-+#endif /* !_EVL_DOVETAIL_NET_H */
-diff --git a/arch/riscv/include/dovetail/netdevice.h b/arch/riscv/include/dovetail/netdevice.h
-new file mode 100644
-index 000000000000..ad3e7e99f1c0
---- /dev/null
-+++ b/arch/riscv/include/dovetail/netdevice.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _EVL_DOVETAIL_NETDEVICE_H
-+#define _EVL_DOVETAIL_NETDEVICE_H
-+
-+#ifdef CONFIG_NET_OOB
-+#include <asm-generic/evl/netdevice.h>
-+#else
-+#include_next <dovetail/netdevice.h>
-+#endif
-+
-+#endif /* !_EVL_DOVETAIL_NETDEVICE_H */
-diff --git a/arch/riscv/include/dovetail/poll.h b/arch/riscv/include/dovetail/poll.h
-new file mode 100644
-index 000000000000..7196d625d0d9
---- /dev/null
-+++ b/arch/riscv/include/dovetail/poll.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _EVL_DOVETAIL_POLL_H
-+#define _EVL_DOVETAIL_POLL_H
-+
-+#ifdef CONFIG_EVL
-+#include <asm-generic/evl/poll.h>
-+#else
-+#include_next <dovetail/poll.h>
-+#endif
-+
-+#endif /* !_EVL_DOVETAIL_POLL_H */
-diff --git a/arch/riscv/include/dovetail/skbuff.h b/arch/riscv/include/dovetail/skbuff.h
-new file mode 100644
-index 000000000000..c6ee9016a37a
---- /dev/null
-+++ b/arch/riscv/include/dovetail/skbuff.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _EVL_DOVETAIL_SKBUFF_H
-+#define _EVL_DOVETAIL_SKBUFF_H
-+
-+#ifdef CONFIG_NET_OOB
-+#include <asm-generic/evl/skbuff.h>
-+#else
-+#include_next <dovetail/skbuff.h>
-+#endif
-+
-+#endif /* !_EVL_DOVETAIL_SKBUFF_H */
-diff --git a/arch/riscv/include/dovetail/thread_info.h b/arch/riscv/include/dovetail/thread_info.h
-new file mode 100644
-index 000000000000..bfef01471f0c
---- /dev/null
-+++ b/arch/riscv/include/dovetail/thread_info.h
-@@ -0,0 +1,11 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _EVL_DOVETAIL_THREAD_INFO_H
-+#define _EVL_DOVETAIL_THREAD_INFO_H
-+
-+#ifdef CONFIG_EVL
-+#include <asm-generic/evl/thread_info.h>
-+#else
-+#include_next <dovetail/thread_info.h>
-+#endif
-+
-+#endif /* !_EVL_DOVETAIL_THREAD_INFO_H */
+ 	return features;
+ }
+ 
 diff --git a/arch/riscv/include/uapi/asm/evl/fptest.h b/arch/riscv/include/uapi/asm/evl/fptest.h
-new file mode 100644
-index 000000000000..a404662b12be
---- /dev/null
+index a404662b12be..dd20d20f817e 100644
+--- a/arch/riscv/include/uapi/asm/evl/fptest.h
 +++ b/arch/riscv/include/uapi/asm/evl/fptest.h
-@@ -0,0 +1,16 @@
-+/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
-+ *
-+ * Copyright (C) 2026 Siemens AG
-+ * Author:       Tobias Schaffner <tobias.schaffner@siemens.com>.
+@@ -8,9 +8,130 @@
+ 
+ #include <linux/types.h>
+ 
+-#define evl_riscv_fp  0x1
++#define evl_riscv_fpsimd  0x1
++#define evl_riscv_sve	 0x2
+ 
+-#define evl_set_fpregs(__features, __val)
+-#define evl_check_fpregs(__features, __val, __bad) 0
++/*
++ * CAUTION: keep this code strictly inlined in macros: we don't want
++ * GCC to apply any callee-saved logic to fpsimd registers in
++ * evl_set_fpregs() before evl_check_fpregs() can verify their
++ * contents, but we still want GCC to know about the registers we have
++ * clobbered.
 + */
-+#ifndef _EVL_RISCV_ASM_UAPI_FPTEST_H
-+#define _EVL_RISCV_ASM_UAPI_FPTEST_H
 +
-+#include <linux/types.h>
++#define evl_set_fpregs(__features, __val)				\
++	do {								\
++		unsigned int __i;					\
++		__u64 __e[32];						\
++									\
++		if (__features & evl_riscv_fpsimd) {			\
++			for (__i = 0; __i < 32; __i++)			\
++				__e[__i] = (__val);			\
++			__asm__ __volatile__(				\
++				".option push\n"			\
++				".option arch, +d\n"			\
++				"fld  f0, 0(%0)\n"			\
++				"fld  f1, 8(%0)\n"			\
++				"fld  f2, 16(%0)\n"			\
++				"fld  f3, 24(%0)\n"			\
++				"fld  f4, 32(%0)\n"			\
++				"fld  f5, 40(%0)\n"			\
++				"fld  f6, 48(%0)\n"			\
++				"fld  f7, 56(%0)\n"			\
++				"fld  f8, 64(%0)\n"			\
++				"fld  f9, 72(%0)\n"			\
++				"fld  f10, 80(%0)\n"			\
++				"fld  f11, 88(%0)\n"			\
++				"fld  f12, 96(%0)\n"			\
++				"fld  f13, 104(%0)\n"			\
++				"fld  f14, 112(%0)\n"			\
++				"fld  f15, 120(%0)\n"			\
++				"fld  f16, 128(%0)\n"			\
++				"fld  f17, 136(%0)\n"			\
++				"fld  f18, 144(%0)\n"			\
++				"fld  f19, 152(%0)\n"			\
++				"fld  f20, 160(%0)\n"			\
++				"fld  f21, 168(%0)\n"			\
++				"fld  f22, 176(%0)\n"			\
++				"fld  f23, 184(%0)\n"			\
++				"fld  f24, 192(%0)\n"			\
++				"fld  f25, 200(%0)\n"			\
++				"fld  f26, 208(%0)\n"			\
++				"fld  f27, 216(%0)\n"			\
++				"fld  f28, 224(%0)\n"			\
++				"fld  f29, 232(%0)\n"			\
++				"fld  f30, 240(%0)\n"			\
++				"fld  f31, 248(%0)\n"			\
++				: /* No outputs. */			\
++				: "r"(&__e[0])				\
++				: "f0", "f1", "f2", "f3", "f4", "f5",	\
++				  "f6", "f7", "f8", "f9", "f10", "f11",	\
++				  "f12", "f13", "f14", "f15", "f16",	\
++				  "f17", "f18", "f19", "f20", "f21",	\
++				  "f22", "f23", "f24", "f25", "f26",	\
++				  "f27", "f28", "f29", "f30", "f31",	\
++				  "memory");				\
++		}							\
++	} while (0)
 +
-+#define evl_riscv_fp  0x1
 +
-+#define evl_set_fpregs(__features, __val)
-+#define evl_check_fpregs(__features, __val, __bad) 0
-+
-+#endif /* !_EVL_RISCV_ASM_UAPI_FPTEST_H */
++#define evl_check_fpregs(__features, __val, __bad)			\
++	({								\
++		unsigned int __result = (__val), __i;			\
++		__u64 __e[32];						\
++									\
++		if (__features & evl_riscv_fpsimd) {			\
++			for (__i = 0; __i < 32; __i++)			\
++				__e[__i] = __val;			\
++									\
++			__asm__ __volatile__(				\
++				".option push\n"			\
++				".option arch, +d\n"			\
++				"fsd f0, 0(%0)\n"			\
++				"fsd f1, 8(%0)\n"			\
++				"fsd f2, 16(%0)\n"			\
++				"fsd f3, 24(%0)\n"			\
++				"fsd f4, 32(%0)\n"			\
++				"fsd f5, 40(%0)\n"			\
++				"fsd f6, 48(%0)\n"			\
++				"fsd f7, 56(%0)\n"			\
++				"fsd f8, 64(%0)\n"			\
++				"fsd f9, 72(%0)\n"			\
++				"fsd f10, 80(%0)\n"			\
++				"fsd f11, 88(%0)\n"			\
++				"fsd f12, 96(%0)\n"			\
++				"fsd f13, 104(%0)\n"			\
++				"fsd f14, 112(%0)\n"			\
++				"fsd f15, 120(%0)\n"			\
++				"fsd f16, 128(%0)\n"			\
++				"fsd f17, 136(%0)\n"			\
++				"fsd f18, 144(%0)\n"			\
++				"fsd f19, 152(%0)\n"			\
++				"fsd f20, 160(%0)\n"			\
++				"fsd f21, 168(%0)\n"			\
++				"fsd f22, 176(%0)\n"			\
++				"fsd f23, 184(%0)\n"			\
++				"fsd f24, 192(%0)\n"			\
++				"fsd f25, 200(%0)\n"			\
++				"fsd f26, 208(%0)\n"			\
++				"fsd f27, 216(%0)\n"			\
++				"fsd f28, 224(%0)\n"			\
++				"fsd f29, 232(%0)\n"			\
++				"fsd f30, 240(%0)\n"			\
++				"fsd f31, 248(%0)\n"			\
++				: /* No outputs */			\
++				: "r"(&__e[0])				\
++				: "memory");				\
++									\
++			for (__i = 0; __i < 32; __i++) {		\
++				if (__e[__i] != __val) {		\
++					__result = __e[__i];		\
++					(__bad) = __i;			\
++					break;				\
++				}					\
++			}						\
++		}							\
++		__result;						\
++	})
+ 
+ #endif /* !_EVL_RISCV_ASM_UAPI_FPTEST_H */
 -- 
 2.43.0
 
