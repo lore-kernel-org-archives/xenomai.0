@@ -1,176 +1,218 @@
-Received: from m16.mail.163.com (m16.mail.163.com [220.197.31.4])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5872E46D2DD
-	for <xenomai@lists.linux.dev>; Tue,  4 Aug 2026 10:10:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=220.197.31.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 496D443CE4E
+	for <xenomai@lists.linux.dev>; Tue,  4 Aug 2026 10:38:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1785838217; cv=none; b=NQy8WzjV0d00PPc/PX5mkaE99N2VxQOKhDQ9Vp35PwiaidpdLc115Nwx1S03z+e9ZQUlFHIdsR+jT3+q6NjX7aBh8KMmuGUX+YrvHfiyRChbPOOEEu3V52Lx81tL/elOXAdiU9oQVfgb+hpifhFeWHeDXUkx6EpeiEbIbTKrUCU=
+	t=1785839912; cv=none; b=oqMww4BVlNJmqgJd/XT2A30snWijUzz9HjgBD7lDWiVE1fC8kjDSG4ujRqN5hKjmtIsBPYdYZQZj8IpTxOp0GD68m60E8Aep9FpUuO+75/6RtqjBHXH3ppL7nsI0NPVy3ueK/Lc13pCFkSHjLzNuXgnG69rYE249pjNOn9Po/nU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1785838217; c=relaxed/simple;
-	bh=skn5aZk4QI7HBt4dFkAK3B3dvLF22/vkzB+uIVPK1Vc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:Content-Type:
-	 MIME-Version:Message-ID; b=N4rSPc2QX/heg2xYWNIVFMHtlpUuqtjnsk0zEWPlV7prHA5jFvGxDS/kAzY9V0YBrGe6BsBzsXQQg18Z40/eyDL1d1K+SGiBKo2te6km1yqsupb5/NBYoRpCcUshcH0IzQFjJ07MzUw21rCBUKPUKHgXTQbBG7L4w6alxHRUbAA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com; spf=pass smtp.mailfrom=163.com; dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b=IpWUhIjW; arc=none smtp.client-ip=220.197.31.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=163.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=163.com
+	s=arc-20240116; t=1785839912; c=relaxed/simple;
+	bh=9ReT2Mku5eRGpZuCmZZBVaADw3MBMrnE0wkHDRrE+EM=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=SjIQId9X4nHWEud/0cWIf1ON/G6j7dYv/KGVuBH4kNAsApHZxxuoqgynM4fBm89Fr9MG6t0yRZzddgKo3U2Hhb8pgJun245eKXpws1TCcSL3/4eE+MIh60Ror+ad/7o6GG6Fjrv8LPg6Ks/Q2P7qVRmfzOECAEED+s5ex0n+2zs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=WVpwcNpv; arc=none smtp.client-ip=185.136.65.226
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=163.com header.i=@163.com header.b="IpWUhIjW"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-	s=s110527; h=Date:From:To:Subject:Content-Type:MIME-Version:
-	Message-ID; bh=skn5aZk4QI7HBt4dFkAK3B3dvLF22/vkzB+uIVPK1Vc=; b=I
-	pWUhIjWPzkoZiJoUePNmpmS71M6M8C+W3qjCqWsXmiiIQv6ppzave071k21UVI2j
-	1s18z33yqIF4kUhfe6eal9RJPsoDZd1bWUCL5nVmh1DZQyoy2UODms/IWA7UcQd2
-	FMOQD/swztf30HaNLxKLCtxT02jibPolNyNJNz+XjE=
-Received: from powertree$163.com ( [219.142.137.151] ) by
- ajax-webmail-wmsvr-40-115 (Coremail) ; Tue, 4 Aug 2026 18:10:07 +0800 (CST)
-Date: Tue, 4 Aug 2026 18:10:07 +0800 (CST)
-From: linz  <powertree@163.com>
-To: "Florian Bezdeka" <florian.bezdeka@siemens.com>
-Cc: "Philippe Gerum" <rpm@xenomai.org>, jan.kiszka@siemens.com,
-	xenomai@lists.linux.dev
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="WVpwcNpv"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20260804095802d74bc3341e0002071d
+        for <xenomai@lists.linux.dev>;
+        Tue, 04 Aug 2026 11:58:02 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=9ReT2Mku5eRGpZuCmZZBVaADw3MBMrnE0wkHDRrE+EM=;
+ b=WVpwcNpvWx2LYhxf+eeRC7RzbrfjgjhYUxbhiZqx/K6Pf7MoZjvzlRBiIOv3to/3ntjUUA
+ kwDuj41DNjdTrfKHWWDssEs5Qe0OJG2jJjPfRXOa1YW5wq2SpbrCR+h+htj5RG3Sk7gUvpqy
+ I7QjjDgdFqKOUvEFOp/C3Mt1sT2zKpdI+KVjD1usQRFepjtelynt7BSE2QdGiTJ7dexzlMWr
+ OF7p6NBUZAGUIcejx6LESiX0u/1rOlX77/ZK6Kk6FR/mTPsBPrj+txfI6xEjtWoXFnx4uu0G
+ bB2UvyGjW6OYOjzyd+3C1D2q4pKx0Onr+ZKJZzXSfTjlaqClRZhPrkCA==;
+Message-ID: <692f56b728b199b1d30b5a471e9be92cf6f0d50d.camel@siemens.com>
 Subject: Re: [PATCH v4] irqchip: gic-v3-its: irq_pipeline: Fix OOB context
  in-band lock warning for ITS lock
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version 2023.4-cmXT build
- 20260511(2e539873) Copyright (c) 2002-2026 www.mailtech.cn 163com
-In-Reply-To: <692f56b728b199b1d30b5a471e9be92cf6f0d50d.camel@siemens.com>
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: linz <powertree@163.com>
+Cc: Philippe Gerum <rpm@xenomai.org>, jan.kiszka@siemens.com, 
+	xenomai@lists.linux.dev
+Date: Tue, 04 Aug 2026 11:58:01 +0200
+In-Reply-To: <4217319b.79c1.19fcc1bff5b.Coremail.powertree@163.com>
 References: <3747c1b9.703e.19fcbfac7b2.Coremail.powertree@163.com>
- <e2a0f99724a2b5bd4591e704935b59acc672162c.camel@siemens.com>
- <4217319b.79c1.19fcc1bff5b.Coremail.powertree@163.com>
- <692f56b728b199b1d30b5a471e9be92cf6f0d50d.camel@siemens.com>
-X-NTES-SC: AL_Qu2TB/SYt0or4SGbbOkckk8bhes9Wsa4s/ki3YBXc/0EiTri6D4seX1lDHrf++u3KCyAij+RbiFyy8hHXod0OPuxAhoft99Xgyda0ZU7Eg==
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+	 <e2a0f99724a2b5bd4591e704935b59acc672162c.camel@siemens.com>
+	 <4217319b.79c1.19fcc1bff5b.Coremail.powertree@163.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Message-ID: <21efcd7b.808c.19fcc4080ab.Coremail.powertree@163.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID:cygvCgD3n7N_unFq13wrAA--.9220W
-X-CM-SenderInfo: psrzv2pwuhvqqrwthudrp/xtbCxh-EWmpxun9oIgAA3T
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-CkF0IDIwMjYtMDgtMDQgMTc6NTg6MDEsICJGbG9yaWFuIEJlemRla2EiIDxmbG9yaWFuLmJlemRl
-a2FAc2llbWVucy5jb20+IHdyb3RlOgo+T24gVHVlLCAyMDI2LTA4LTA0IGF0IDE3OjMwICswODAw
-LCBsaW56IHdyb3RlOgo+PiBBdCAyMDI2LTA4LTA0IDE2OjU5OjAwLCAiRmxvcmlhbiBCZXpkZWth
-IiA8Zmxvcmlhbi5iZXpkZWthQHNpZW1lbnMuY29tPiB3cm90ZToKPj4gPiBPbiBUdWUsIDIwMjYt
-MDgtMDQgYXQgMTY6NTMgKzA4MDAsIGxpbnogd3JvdGU6Cj4+ID4gPiBUaGUgd2FybmluZyBzaG93
-biBiZWxvdyBjb3VsZCBiZSBvYnNlcnZlZCBvbiBEb3ZldGFpbCA2LjYgd2l0aCBhcm02NAo+PiA+
-ID4gYXJjaGl0ZWN0dXJlIHdoZW4gQ09ORklHX0RFQlVHX0lSUV9QSVBFTElORSBpcyBlbmFibGVk
-Lgo+PiA+ID4gCj4+ID4gPiBUaGUgcmVhc29uIGlzIHRoZSB1c2FnZSBvZiBhIHJhd19zcGlubG9j
-a190IGluIGhhcmQgSVJRIG1hc2tpbmcgY29kZQo+PiA+ID4gcGF0aC4gQSBtaWdyYXRpb24gdG8g
-aGFyZF9zcGlubG9ja190IGZpeGVzIHRoaXMgaXNzdWUuCj4+ID4gPiAKPj4gPiA+IFvCoCDCoCAx
-LjUxMDkwM10gSVJRIHBpcGVsaW5lOiBzb21lIGNvZGUgcnVubmluZyBpbiBvb2IgY29udGV4dCAn
-WGVub21haScKPj4gPiA+IMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKgIMKg
-IMKgY2FsbGVkIGFuIGluLWJhbmQgb25seSByb3V0aW5lCj4+ID4gPiBbwqAgwqAgMS41MTA5MTJd
-IENQVTogMCBQSUQ6IDAgQ29tbTogc3dhcHBlci8wIFRhaW50ZWQ6IEcgU8KgIMKgIMKgIMKgIMKg
-IMKgIMKgIMKgIMKgNi42LjYzLWRvdmV0YWlsMiAjOAo+PiA+ID4gW8KgIMKgIDEuNTEwOTE4XSBI
-YXJkd2FyZSBuYW1lOiBQZTIyMDQgREVNTyBERFI0IChEVCkKPj4gPiA+IFvCoCDCoCAxLjUxMDky
-MF0gSVJRIHN0YWdlOiBYZW5vbWFpCj4+ID4gPiBbwqAgwqAgMS41MTA5MjNdIENhbGwgdHJhY2U6
-Cj4+ID4gPiBbwqAgwqAgMS41MTA5MjZdwqAgZHVtcF9iYWNrdHJhY2UrMHg5MC8weGU0Cj4+ID4g
-PiBbwqAgwqAgMS41MTA5NDBdwqAgc2hvd19zdGFjaysweDE0LzB4MWMKPj4gPiA+IFvCoCDCoCAx
-LjUxMDk0Nl3CoCBkdW1wX3N0YWNrX2x2bCsweDg0LzB4YzgKPj4gPiA+IFvCoCDCoCAxLjUxMDk1
-M13CoCBkdW1wX3N0YWNrKzB4MTQvMHgxYwo+PiA+ID4gW8KgIMKgIDEuNTEwOTU3XcKgIGNoZWNr
-X2luYmFuZF9zdGFnZSsweGIwLzB4YzgKPj4gPiA+IFvCoCDCoCAxLjUxMDk2NV3CoCBpbmJhbmRf
-aXJxX3NhdmUrMHhjLzB4MjgKPj4gPiA+IFvCoCDCoCAxLjUxMDk3MV3CoCBfcmF3X3NwaW5fbG9j
-a19pcnFzYXZlKzB4MTQvMHg5MAo+PiA+ID4gW8KgIMKgIDEuNTEwOTc3XcKgIGl0c19zZW5kX3Np
-bmdsZV9jb21tYW5kKzB4MjQvMHgxNTQKPj4gPiA+IFvCoCDCoCAxLjUxMDk4NF3CoCBscGlfdXBk
-YXRlX2NvbmZpZysweDljLzB4MTQ0Cj4+ID4gPiBbwqAgwqAgMS41MTA5OTBdwqAgaXRzX21hc2tf
-aXJxKzB4MmMvMHg2NAo+PiA+ID4gW8KgIMKgIDEuNTEwOTk3XcKgIGlycV9jaGlwX21hc2tfcGFy
-ZW50KzB4MTgvMHgyMAo+PiA+ID4gW8KgIMKgIDEuNTExMDA1XcKgIGl0c19tYXNrX21zaV9pcnEr
-MHgxYy8weDI4Cj4+ID4gPiBbwqAgwqAgMS41MTEwMTJdwqAgaGFuZGxlX2Zhc3Rlb2lfaXJxKzB4
-MWNjLzB4MmI0Cj4+ID4gPiBbwqAgwqAgMS41MTEwMTZdwqAgZ2VuZXJpY19waXBlbGluZV9pcnFf
-ZGVzYysweDZjLzB4YTQKPj4gPiA+IFvCoCDCoCAxLjUxMTAyMV3CoCBnZW5lcmljX2hhbmRsZV9k
-b21haW5faXJxKzB4MTgvMHgyMAo+PiA+ID4gW8KgIMKgIDEuNTExMDI4XcKgIGdpY19oYW5kbGVf
-aXJxKzB4NGMvMHgxMjAKPj4gPiA+IFvCoCDCoCAxLjUxMTAzMl3CoCBoYW5kbGVfaXJxX3BpcGVs
-aW5lZCsweDQwLzB4NjQKPj4gPiA+IFvCoCDCoCAxLjUxMTAzOF3CoCBjYWxsX29uX2lycV9zdGFj
-aysweDI0LzB4MzAKPj4gPiA+IFvCoCDCoCAxLjUxMTA0NF3CoCBkb19pbnRlcnJ1cHRfaGFuZGxl
-cisweDEzOC8weDE1OAo+PiA+ID4gW8KgIMKgIDEuNTExMDUwXcKgIGVsMV9pbnRlcnJ1cHQrMHg0
-MC8weDExMAo+PiA+ID4gW8KgIMKgIDEuNTExMDU1XcKgIGVsMWhfNjRfaXJxX2hhbmRsZXIrMHgx
-NC8weDFjCj4+ID4gPiBbwqAgwqAgMS41MTEwNjFdwqAgZWwxaF82NF9pcnErMHg2NC8weDY4Cj4+
-ID4gPiBbwqAgwqAgMS41MTEwNjRdwqAgZGVmYXVsdF9pZGxlX2NhbGwrMHgzMC8weDc4Cj4+ID4g
-PiBbwqAgwqAgMS41MTEwNzFdwqAgZG9faWRsZSsweDEyOC8weDE1MAo+PiA+ID4gW8KgIMKgIDEu
-NTExMDc3XcKgIGNwdV9zdGFydHVwX2VudHJ5KzB4MzQvMHgzOAo+PiA+ID4gW8KgIMKgIDEuNTEx
-MDgxXcKgIGtlcm5lbF9pbml0KzB4MC8weDFkNAo+PiA+ID4gW8KgIMKgIDEuNTExMDg4XcKgIGFy
-Y2hfcG9zdF9hY3BpX3N1YnN5c19pbml0KzB4MC8weDgKPj4gPiA+IFvCoCDCoCAxLjUxMTA5Nl3C
-oCBzdGFydF9rZXJuZWwrMHg1MDQvMHg1Y2MKPj4gPiA+IFvCoCDCoCAxLjUxMTEwM13CoCBfX3By
-aW1hcnlfc3dpdGNoZWQrMHhiYy8weGM0Cj4+ID4gPiAKPj4gPiA+IEJleW9uZCB0aGF0LCBub3Rl
-IHRoYXQgSVJRIGNoaXAgaGFuZGxlcnMgc3VjaCBhcyBpcnFfbWFzayAvIGlycV91bm1hc2sgcnVu
-IGluCj4+ID4gPiBPT0IgY29udGV4dC4gRm9yIGluc3RhbmNlLCBhbnkgY29kZSBwYXRoIGNhbGxp
-bmcgbHBpX3VwZGF0ZV9jb25maWcoKSBtdXN0Cj4+ID4gPiBiZSBvb2LigJFjYXBhYmxlLCBzbyBn
-aWNfZGF0YV9yZGlzdF9jcHUoY3B1KS0+cmRfbG9jayBhbmQgaXRzX3ZwZS0+dnBlX2xvY2sgYXJl
-Cj4+ID4gPiBtb2RpZmllZCBpbiB0aGlzIHBhdGNoLgo+PiA+ID4gCj4+ID4gPiBDb252ZXJ0Ogo+
-PiA+ID4gLSBpdHNfbm9kZS0+bG9jawo+PiA+ID4gLSByZGlzdHMucmRfbG9jawo+PiA+ID4gLSBp
-dHNfdnBlLT52cGVfbG9jawo+PiA+ID4gZnJvbSByYXdfc3BpbmxvY2tfdCB0byBoYXJkX3NwaW5s
-b2NrX3QuCj4+ID4gPiAKPj4gPiA+IFNpZ25lZC1vZmYtYnk6IGxpbnogPHBvd2VydHJlZUAxNjMu
-Y29tPgo+PiA+ID4gLS0tCj4+ID4gPiDCoGRyaXZlcnMvaXJxY2hpcC9pcnEtZ2ljLXYzLWl0cy5j
-wqAgwqB8IDIgKy0KPj4gPiA+IMKgaW5jbHVkZS9saW51eC9pcnFjaGlwL2FybS1naWMtdjMuaCB8
-IDIgKy0KPj4gPiA+IMKgaW5jbHVkZS9saW51eC9pcnFjaGlwL2FybS1naWMtdjQuaCB8IDIgKy0K
-Pj4gPiA+IMKgMyBmaWxlcyBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0p
-Cj4+ID4gPiAKPj4gPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lycWNoaXAvaXJxLWdpYy12My1p
-dHMuYyBiL2RyaXZlcnMvaXJxY2hpcC9pcnEtZ2ljLXYzLWl0cy5jCj4+ID4gPiBpbmRleCAwZTU3
-NzM1ZWFjLi4zZjJiMDJiOGY0IDEwMDY0NAo+PiA+ID4gLS0tIGEvZHJpdmVycy9pcnFjaGlwL2ly
-cS1naWMtdjMtaXRzLmMKPj4gPiA+ICsrKyBiL2RyaXZlcnMvaXJxY2hpcC9pcnEtZ2ljLXYzLWl0
-cy5jCj4+ID4gPiBAQCAtOTQsNyArOTQsNyBAQCBzdHJ1Y3QgaXRzX2RldmljZTsKPj4gPiA+IMKg
-ICogbGlzdC4KPj4gPiA+IMKgICovCj4+ID4gPiDCoHN0cnVjdCBpdHNfbm9kZSB7Cj4+ID4gPiAt
-wqAgwqAgcmF3X3NwaW5sb2NrX3TCoCDCoCDCoCDCoCBsb2NrOwo+PiA+ID4gK8KgIMKgIGhhcmRf
-c3BpbmxvY2tfdMKgIMKgIMKgIMKgIGxvY2s7Cj4+ID4gPiDCoCDCoCDCoHN0cnVjdCBtdXRleMKg
-IMKgIMKgIMKgIGRldl9hbGxvY19sb2NrOwo+PiA+ID4gwqAgwqAgwqBzdHJ1Y3QgbGlzdF9oZWFk
-wqAgwqAgZW50cnk7Cj4+ID4gPiDCoCDCoCDCoHZvaWQgX19pb21lbcKgIMKgIMKgIMKgICpiYXNl
-Owo+PiA+ID4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvaXJxY2hpcC9hcm0tZ2ljLXYzLmgg
-Yi9pbmNsdWRlL2xpbnV4L2lycWNoaXAvYXJtLWdpYy12My5oCj4+ID4gPiBpbmRleCA3Mjg2OTEz
-NjU0Li45ZGNiZjRiMzMxIDEwMDY0NAo+PiA+ID4gLS0tIGEvaW5jbHVkZS9saW51eC9pcnFjaGlw
-L2FybS1naWMtdjMuaAo+PiA+ID4gKysrIGIvaW5jbHVkZS9saW51eC9pcnFjaGlwL2FybS1naWMt
-djMuaAo+PiA+ID4gQEAgLTYxMyw3ICs2MTMsNyBAQAo+PiA+ID4gwqAKPj4gPiA+IMKgc3RydWN0
-IHJkaXN0cyB7Cj4+ID4gPiDCoCDCoCDCoHN0cnVjdCB7Cj4+ID4gPiAtwqAgwqAgwqAgwqAgcmF3
-X3NwaW5sb2NrX3TCoCDCoCByZF9sb2NrOwo+PiA+ID4gK8KgIMKgIMKgIMKgIGhhcmRfc3Bpbmxv
-Y2tfdMKgIMKgIHJkX2xvY2s7Cj4+ID4gPiDCoCDCoCDCoCDCoCDCoHZvaWQgX19pb21lbcKgIMKg
-ICpyZF9iYXNlOwo+PiA+ID4gwqAgwqAgwqAgwqAgwqBzdHJ1Y3QgcGFnZcKgIMKgICpwZW5kX3Bh
-Z2U7Cj4+ID4gPiDCoCDCoCDCoCDCoCDCoHBoeXNfYWRkcl90wqAgwqAgcGh5c19iYXNlOwo+PiA+
-ID4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvaXJxY2hpcC9hcm0tZ2ljLXY0LmggYi9pbmNs
-dWRlL2xpbnV4L2lycWNoaXAvYXJtLWdpYy12NC5oCj4+ID4gPiBpbmRleCBiZjllMDY0MDI4Li5k
-N2FmZDlkMmNkIDEwMDY0NAo+PiA+ID4gLS0tIGEvaW5jbHVkZS9saW51eC9pcnFjaGlwL2FybS1n
-aWMtdjQuaAo+PiA+ID4gKysrIGIvaW5jbHVkZS9saW51eC9pcnFjaGlwL2FybS1naWMtdjQuaAo+
-PiA+ID4gQEAgLTY4LDcgKzY4LDcgQEAgc3RydWN0IGl0c192cGUgewo+PiA+ID4gwqAgwqAgwqAg
-KiBFbnN1cmVzIG11dHVhbCBleGNsdXNpb24gYmV0d2VlbiBhZmZpbml0eSBzZXR0aW5nIG9mIHRo
-ZQo+PiA+ID4gwqAgwqAgwqAgKiB2UEUgYW5kIHZMUEkgb3BlcmF0aW9ucyB1c2luZyB2cGUtPmNv
-bF9pZHguCj4+ID4gPiDCoCDCoCDCoCAqLwo+PiA+ID4gLcKgIMKgIHJhd19zcGlubG9ja190wqAg
-wqAgwqAgwqAgdnBlX2xvY2s7Cj4+ID4gPiArwqAgwqAgaGFyZF9zcGlubG9ja190wqAgwqAgwqAg
-wqAgdnBlX2xvY2s7Cj4+ID4gCj4+ID4gQ2FuIHlvdSBwbGVhc2Ugc2hhcmUgdGhlIGNhbGwgc3Rh
-Y2sgd2hlcmUgdGhpcyBsb2NrIGlzIGludm9sdmVkIGluIGFuCj4+ID4gT09CIGNvZGUgcGF0aD8K
-Pj4gPiAKPj4gPiBUaGUgb3RoZXIgdHdvIGxvY2tzIGFyZSBmaW5lLiBJJ20gdW5zdXJlIGFib3V0
-IHRoaXMgb25lIGhlcmUuCj4+IAo+PiA+IAo+PiBUaGUgdnBlX2xvY2sgY2FuIGJlIHRha2VuIGlu
-IE9PQiBjb250ZXh0IHZpYSB0aGUgZm9sbG93aW5nIGNhbGwgY2hhaW4gd2hlbgo+PiBoYW5kbGlu
-ZyB2TFBJIGludGVycnVwdCBtYXNraW5nOgo+PiAKPj4gaXRzX21hc2tfaXJxKCkKPj4gwqAgwqAg
-bHBpX3VwZGF0ZV9jb25maWcoKQo+PiDCoCDCoCDCoCDCoCBkaXJlY3RfbHBpX2ludigpCj4KPlRo
-aXMgb25lIGhlcmUgaXMgcHJvdGVjdGVkIGJ5IGlzX3Y0XzEoKSwgd2hpY2ggc2VlbXMgZ2ljLXY0
-IHNwZWNpZmljLgo+VGhlIGxvY2F0aW9uIChhcm0tZ2ljLXY0LmgpIGlzIGFsc28gcG9pbnRpbmcg
-aW4gdGhhdCBkaXJlY3Rpb24uIE1vc3QKPmxpa2VseSB0aGUgcmVhc29uIHdoeSB5b3UgbmV2ZXIg
-c2F3IGFueSB3YXJuaW5nIGZvciB0aGF0IGxvY2suIFlvdSBhcmUKPm9uIHYzLCByaWdodD8KPgo+
-VGhlIGNoYW5nZSBpdHNlbGYgaXMgY29ycmVjdCBidXQgdjQgc3BlY2lmaWMgYW5kIG1lcmdlZCBp
-bnRvIGEgcGF0Y2gKPnRpdGxlZCB2My4gVGhhdCdzIGNvbmZ1c2luZy4KPgo+UHJvcG9zYWw6IFNr
-aXAgdGhhdCBsb2NrIGZvciBub3cgYW5kIHJldmlzaXQgaXQgb25jZSB0aGUgdjQgaXJxIGNoaXAg
-aXMKPm1hZGUgT09CIGF3YXJlLiAoTmljZSBhZGRpdGlvbmFsIGNvbnRyaWJ1dGlvbiBwb3NzaWJp
-bGl0eSA7LSkpCj4KPlBoaWxpcHBlLCBhbnkgY29tbWVudHMgZnJvbSB5b3VyIHNpZGU/Cgo+Cllv
-dSBhcmUgcmlnaHQsIG15IHRlc3QgcGxhdGZvcm0gaXMgaW5kZWVkIHVzaW5nIEdJQ+KAkXYzLiBJ
-IGFncmVlIHdpdGggeW91ciBzdWdnZXN0aW9uLiBJZiB0aGVyZSBhcmUgbm8gZnVydGhlciBvYmpl
-Y3Rpb25zIGZyb20gb3RoZXJzLCBJIHdpbGwgdXBkYXRlIHRoZSBwYXRjaCwgcmV0ZXN0IGFuZCBy
-ZXN1Ym1pdCBpdC4KPj4gwqAgwqAgwqAgwqAgwqAgwqAgX19kaXJlY3RfbHBpX2ludigpCj4+IMKg
-IMKgIMKgIMKgIMKgIMKgIMKgIMKgIGlycV90b19jcHVpZF9sb2NrKCkKPj4gwqAgwqAgwqAgwqAg
-wqAgwqAgwqAgwqAgwqAgwqAgdnBlX3RvX2NwdWlkX2xvY2soKQo+PiDCoCDCoCDCoCDCoCDCoCDC
-oCDCoCDCoCDCoCDCoCDCoCDCoCByYXdfc3Bpbl9sb2NrX2lycXNhdmUoJnZwZS0+dnBlX2xvY2ss
-ICpmbGFncyk7Cj4+IAo+PiBTaW5jZSBpdHNfbWFza19pcnEoKSBleGVjdXRlcyBmcm9tIHRoZSBv
-dXTigJFvZuKAkWJhbmQgc3RhZ2UKPj4gdW5kZXIgRG92ZXRhaWzigJlzIGlycSBwaXBlbGluZSwg
-cmF3X3NwaW5sb2NrX3QgaGVyZSB3b3VsZCB0cmlnZ2VyIHRoZQo+PiBDT05GSUdfREVCVUdfSVJR
-X1BJUEVMSU5FIHdhcm5pbmcuCj4+IAo+PiBJIGhhdmUgbm90IHBoeXNpY2FsbHkgb2JzZXJ2ZWQg
-YSBwcmludGVkIGNhbGwgdHJhY2UgZm9yIHZwZV9sb2NrIHlldCwKPj4gYnV0IGNvZGUgaW5zcGVj
-dGlvbiBjb25maXJtcyB0aGlzIGxvY2sgaXMgcmVhY2hhYmxlIGZyb20gT09CIGNvbnRleHQuCj4+
-IFNvIEkgY29udmVydCBpdHNfdnBlLT52cGVfbG9jayB0byBoYXJkX3NwaW5sb2NrX3QgdG9nZXRo
-ZXIgd2l0aCB0aGUKPj4gb3RoZXIgdHdvIGxvY2tzLgo+PiA+ID4gwqAgwqAgwqAvKgo+PiA+ID4g
-wqAgwqAgwqAgKiBUaGlzIGNvbGxlY3Rpb24gSUQgaXMgdXNlZCB0byBpbmRpcmVjdCB0aGUgdGFy
-Z2V0Cj4+ID4gPiDCoCDCoCDCoCAqIHJlZGlzdHJpYnV0b3IgZm9yIHRoaXMgVlBFLiBUaGUgSUQg
-aXRzZWxmIGlzbid0IGludm9sdmVkIGluCj4+ID4gPiAtLcKgCj4+ID4gPiAyLjM0LjEK
+On Tue, 2026-08-04 at 17:30 +0800, linz wrote:
+> At 2026-08-04 16:59:00, "Florian Bezdeka" <florian.bezdeka@siemens.com> w=
+rote:
+> > On Tue, 2026-08-04 at 16:53 +0800, linz wrote:
+> > > The warning shown below could be observed on Dovetail 6.6 with arm64
+> > > architecture when CONFIG_DEBUG_IRQ_PIPELINE is enabled.
+> > >=20
+> > > The reason is the usage of a raw_spinlock_t in hard IRQ masking code
+> > > path. A migration to hard_spinlock_t fixes this issue.
+> > >=20
+> > > [=C2=A0 =C2=A0 1.510903] IRQ pipeline: some code running in oob conte=
+xt 'Xenomai'
+> > > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
+ =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0called an in-band only routine
+> > > [=C2=A0 =C2=A0 1.510912] CPU: 0 PID: 0 Comm: swapper/0 Tainted: G S=
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A06.6.63-doveta=
+il2 #8
+> > > [=C2=A0 =C2=A0 1.510918] Hardware name: Pe2204 DEMO DDR4 (DT)
+> > > [=C2=A0 =C2=A0 1.510920] IRQ stage: Xenomai
+> > > [=C2=A0 =C2=A0 1.510923] Call trace:
+> > > [=C2=A0 =C2=A0 1.510926]=C2=A0 dump_backtrace+0x90/0xe4
+> > > [=C2=A0 =C2=A0 1.510940]=C2=A0 show_stack+0x14/0x1c
+> > > [=C2=A0 =C2=A0 1.510946]=C2=A0 dump_stack_lvl+0x84/0xc8
+> > > [=C2=A0 =C2=A0 1.510953]=C2=A0 dump_stack+0x14/0x1c
+> > > [=C2=A0 =C2=A0 1.510957]=C2=A0 check_inband_stage+0xb0/0xc8
+> > > [=C2=A0 =C2=A0 1.510965]=C2=A0 inband_irq_save+0xc/0x28
+> > > [=C2=A0 =C2=A0 1.510971]=C2=A0 _raw_spin_lock_irqsave+0x14/0x90
+> > > [=C2=A0 =C2=A0 1.510977]=C2=A0 its_send_single_command+0x24/0x154
+> > > [=C2=A0 =C2=A0 1.510984]=C2=A0 lpi_update_config+0x9c/0x144
+> > > [=C2=A0 =C2=A0 1.510990]=C2=A0 its_mask_irq+0x2c/0x64
+> > > [=C2=A0 =C2=A0 1.510997]=C2=A0 irq_chip_mask_parent+0x18/0x20
+> > > [=C2=A0 =C2=A0 1.511005]=C2=A0 its_mask_msi_irq+0x1c/0x28
+> > > [=C2=A0 =C2=A0 1.511012]=C2=A0 handle_fasteoi_irq+0x1cc/0x2b4
+> > > [=C2=A0 =C2=A0 1.511016]=C2=A0 generic_pipeline_irq_desc+0x6c/0xa4
+> > > [=C2=A0 =C2=A0 1.511021]=C2=A0 generic_handle_domain_irq+0x18/0x20
+> > > [=C2=A0 =C2=A0 1.511028]=C2=A0 gic_handle_irq+0x4c/0x120
+> > > [=C2=A0 =C2=A0 1.511032]=C2=A0 handle_irq_pipelined+0x40/0x64
+> > > [=C2=A0 =C2=A0 1.511038]=C2=A0 call_on_irq_stack+0x24/0x30
+> > > [=C2=A0 =C2=A0 1.511044]=C2=A0 do_interrupt_handler+0x138/0x158
+> > > [=C2=A0 =C2=A0 1.511050]=C2=A0 el1_interrupt+0x40/0x110
+> > > [=C2=A0 =C2=A0 1.511055]=C2=A0 el1h_64_irq_handler+0x14/0x1c
+> > > [=C2=A0 =C2=A0 1.511061]=C2=A0 el1h_64_irq+0x64/0x68
+> > > [=C2=A0 =C2=A0 1.511064]=C2=A0 default_idle_call+0x30/0x78
+> > > [=C2=A0 =C2=A0 1.511071]=C2=A0 do_idle+0x128/0x150
+> > > [=C2=A0 =C2=A0 1.511077]=C2=A0 cpu_startup_entry+0x34/0x38
+> > > [=C2=A0 =C2=A0 1.511081]=C2=A0 kernel_init+0x0/0x1d4
+> > > [=C2=A0 =C2=A0 1.511088]=C2=A0 arch_post_acpi_subsys_init+0x0/0x8
+> > > [=C2=A0 =C2=A0 1.511096]=C2=A0 start_kernel+0x504/0x5cc
+> > > [=C2=A0 =C2=A0 1.511103]=C2=A0 __primary_switched+0xbc/0xc4
+> > >=20
+> > > Beyond that, note that IRQ chip handlers such as irq_mask / irq_unmas=
+k run in
+> > > OOB context. For instance, any code path calling lpi_update_config() =
+must
+> > > be oob=E2=80=91capable, so gic_data_rdist_cpu(cpu)->rd_lock and its_v=
+pe->vpe_lock are
+> > > modified in this patch.
+> > >=20
+> > > Convert:
+> > > - its_node->lock
+> > > - rdists.rd_lock
+> > > - its_vpe->vpe_lock
+> > > from raw_spinlock_t to hard_spinlock_t.
+> > >=20
+> > > Signed-off-by: linz <powertree@163.com>
+> > > ---
+> > > =C2=A0drivers/irqchip/irq-gic-v3-its.c=C2=A0 =C2=A0| 2 +-
+> > > =C2=A0include/linux/irqchip/arm-gic-v3.h | 2 +-
+> > > =C2=A0include/linux/irqchip/arm-gic-v4.h | 2 +-
+> > > =C2=A03 files changed, 3 insertions(+), 3 deletions(-)
+> > >=20
+> > > diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-g=
+ic-v3-its.c
+> > > index 0e57735eac..3f2b02b8f4 100644
+> > > --- a/drivers/irqchip/irq-gic-v3-its.c
+> > > +++ b/drivers/irqchip/irq-gic-v3-its.c
+> > > @@ -94,7 +94,7 @@ struct its_device;
+> > > =C2=A0 * list.
+> > > =C2=A0 */
+> > > =C2=A0struct its_node {
+> > > -=C2=A0 =C2=A0 raw_spinlock_t=C2=A0 =C2=A0 =C2=A0 =C2=A0 lock;
+> > > +=C2=A0 =C2=A0 hard_spinlock_t=C2=A0 =C2=A0 =C2=A0 =C2=A0 lock;
+> > > =C2=A0 =C2=A0 =C2=A0struct mutex=C2=A0 =C2=A0 =C2=A0 =C2=A0 dev_alloc=
+_lock;
+> > > =C2=A0 =C2=A0 =C2=A0struct list_head=C2=A0 =C2=A0 entry;
+> > > =C2=A0 =C2=A0 =C2=A0void __iomem=C2=A0 =C2=A0 =C2=A0 =C2=A0 *base;
+> > > diff --git a/include/linux/irqchip/arm-gic-v3.h b/include/linux/irqch=
+ip/arm-gic-v3.h
+> > > index 7286913654..9dcbf4b331 100644
+> > > --- a/include/linux/irqchip/arm-gic-v3.h
+> > > +++ b/include/linux/irqchip/arm-gic-v3.h
+> > > @@ -613,7 +613,7 @@
+> > > =C2=A0
+> > > =C2=A0struct rdists {
+> > > =C2=A0 =C2=A0 =C2=A0struct {
+> > > -=C2=A0 =C2=A0 =C2=A0 =C2=A0 raw_spinlock_t=C2=A0 =C2=A0 rd_lock;
+> > > +=C2=A0 =C2=A0 =C2=A0 =C2=A0 hard_spinlock_t=C2=A0 =C2=A0 rd_lock;
+> > > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0void __iomem=C2=A0 =C2=A0 *rd_base;
+> > > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0struct page=C2=A0 =C2=A0 *pend_page=
+;
+> > > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0phys_addr_t=C2=A0 =C2=A0 phys_base;
+> > > diff --git a/include/linux/irqchip/arm-gic-v4.h b/include/linux/irqch=
+ip/arm-gic-v4.h
+> > > index bf9e064028..d7afd9d2cd 100644
+> > > --- a/include/linux/irqchip/arm-gic-v4.h
+> > > +++ b/include/linux/irqchip/arm-gic-v4.h
+> > > @@ -68,7 +68,7 @@ struct its_vpe {
+> > > =C2=A0 =C2=A0 =C2=A0 * Ensures mutual exclusion between affinity sett=
+ing of the
+> > > =C2=A0 =C2=A0 =C2=A0 * vPE and vLPI operations using vpe->col_idx.
+> > > =C2=A0 =C2=A0 =C2=A0 */
+> > > -=C2=A0 =C2=A0 raw_spinlock_t=C2=A0 =C2=A0 =C2=A0 =C2=A0 vpe_lock;
+> > > +=C2=A0 =C2=A0 hard_spinlock_t=C2=A0 =C2=A0 =C2=A0 =C2=A0 vpe_lock;
+> >=20
+> > Can you please share the call stack where this lock is involved in an
+> > OOB code path?
+> >=20
+> > The other two locks are fine. I'm unsure about this one here.
+>=20
+> >=20
+> The vpe_lock can be taken in OOB context via the following call chain whe=
+n
+> handling vLPI interrupt masking:
+>=20
+> its_mask_irq()
+> =C2=A0 =C2=A0 lpi_update_config()
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 direct_lpi_inv()
+
+This one here is protected by is_v4_1(), which seems gic-v4 specific.
+The location (arm-gic-v4.h) is also pointing in that direction. Most
+likely the reason why you never saw any warning for that lock. You are
+on v3, right?
+
+The change itself is correct but v4 specific and merged into a patch
+titled v3. That's confusing.
+
+Proposal: Skip that lock for now and revisit it once the v4 irq chip is
+made OOB aware. (Nice additional contribution possibility ;-))
+
+Philippe, any comments from your side?
+
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 __direct_lpi_inv()
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 irq_to_cpuid_lock=
+()
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 vpe=
+_to_cpuid_lock()
+> =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 raw_spin_lock_irqsave(&vpe->vpe_lock, *flags);
+>=20
+> Since its_mask_irq() executes from the out=E2=80=91of=E2=80=91band stage
+> under Dovetail=E2=80=99s irq pipeline, raw_spinlock_t here would trigger =
+the
+> CONFIG_DEBUG_IRQ_PIPELINE warning.
+>=20
+> I have not physically observed a printed call trace for vpe_lock yet,
+> but code inspection confirms this lock is reachable from OOB context.
+> So I convert its_vpe->vpe_lock to hard_spinlock_t together with the
+> other two locks.
+> > > =C2=A0 =C2=A0 =C2=A0/*
+> > > =C2=A0 =C2=A0 =C2=A0 * This collection ID is used to indirect the tar=
+get
+> > > =C2=A0 =C2=A0 =C2=A0 * redistributor for this VPE. The ID itself isn'=
+t involved in
+> > > --=C2=A0
+> > > 2.34.1
