@@ -1,70 +1,53 @@
-Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011052.outbound.protection.outlook.com [52.101.65.52])
+Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011014.outbound.protection.outlook.com [52.101.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0469C37AA91
-	for <xenomai@lists.linux.dev>; Tue, 11 Aug 2026 07:36:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DFB141A922
+	for <xenomai@lists.linux.dev>; Tue, 11 Aug 2026 08:52:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.14
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786433775; cv=fail; b=eMfthWT6mxC6xaC3Fl24STGHaDbhSzZVextjzrFRiHeDGKAwn4Nd9TY2lg5+Qm5JPqbVypm/LU7IOMswYgXR9ApQSfMMhUe2LHTuOwcmQ1rp//+McEze8LcEO00cfDGYuBKpt+iPYbofjIaiDvoub8RVlphxkrdcVs0Yx9YulWA=
+	t=1786438358; cv=fail; b=jZiU2lLdDSwjLXjInaKMGxbDL1IKs7K/JTk1pD2CsyQl+O+aBToeKDkhOEuKe09nWLVH2zVjBfm8SZNCc1NO+OmAUvEEebLLPJmES5c2urEMXQFffoMlCEbRahuRCUKc1Q3mmek/OHmZRJTdlyNQHyLSArWq8fZAxSA30seMpdI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786433775; c=relaxed/simple;
-	bh=e/iNJaA2jNiK1OnZIaJVMsJkwmmn2k819asKwuyah6I=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=gKLCIRJBYMGWjDHGbXifTAhrgjiqDb4MUr/8Egah3T3++gA3AsVasZxtUb75lyqOigUbsoTp/AcgGqjumFfsk2v95sH3aslilrTfDum78btdb4vkARJghd56JXGJ95Fp1nxh9+2umJ/Us6kbGeTUzglLcNST7GYu7MRfCDTaEv4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=PbVBC91A; arc=fail smtp.client-ip=52.101.65.52
+	s=arc-20240116; t=1786438358; c=relaxed/simple;
+	bh=k4/+RX8VAc0tq6P/nrjOeE5UOoHogAL5ynADeDXYX1c=;
+	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=L4GMRLYvWJlfWXjvxP7wu6sP1Q8OsLJtgfODCsJk/hLuUkO9UrSN9t/3CHXJqbvI3TWOBQa3YSya1nXEetq2wjhwNntKcnWsEApg85kLISHcbQwcCIKQKSZVJ2VmwaK+k2dqDkHjd7qDGQ33+EBD1KD0ZrlWK9xHFJqH6XwasqY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=qVn1ylWH; arc=fail smtp.client-ip=52.101.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="PbVBC91A"
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="qVn1ylWH"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=GCeyK+gG6C4uZh21VzXQtN4a5TJ2qOlNeVK/i+fBMPNPI4UHjDyCCS7yb7H8cmt7gD35DlfhUO7SxhM64Dfk2eNnJ+F1vSjFdIgFWpLyYQlPk+W6qk1QsjZwXasZJXTq1UxCF34cKrhiWMwyDC9zUUYLNk8ZB8mKmQJSd4KcB7pzTa2bziJIJATHdGRFe1X2nmevBZfi7GQLeWSKEYmRnAQLTnzN7NQQWGbJiaMouZwddx5yV3HChabnwcqpyVfZ5u8pXvGI7s+aHkLOKhYhWr+UQAwGGzqExGKknSyJYA+hGEo+hnIqIOg7TuXz8Z+2x/YZZmHmIeU8+f1Wg4/6iw==
+ b=awRo30P16/SazVPtWZthKQGDf2xvECwSG/MVWuuDG0OlxZVhGuBU03H08PTD6P46IryZjtpNUdwUVQTTYq3y+2qV6ZWbzfORchfUim9wifrYV4+nbi5fyyJcNEtrdbzDavX9fyQ/dIyIevsJsr9lvWlLSaTttynOHuXbrh0jxOpd6Wfh1yUIvutK6vcAS2tHgoneYWJFGSvL7J/4ZcUIB3fl7JcdJ6B4Cqp5nFUy28AlToOxyo6Ar3mrVeUvgofv56iKq/eY5RTgBMV4k35oklGBUoJQqyOJ3ITDi8wmFqOSoXq6IEsDzThtlpCjQ52X4HLJLNnQCYhiF5RD7IsUUg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=lUR25Aivq59dSAy+fBCeWfrUHJies+JPO7t6YjeMntQ=;
- b=PM/ATpKek3e491hSGjsfRe7JjmXN2ZFcDNZtB2Le97Xd1MrbQliidnlN3Vi+FqW3bJkJ5rUom6tAAdWGY8lQ5iyg4iU8+D9sh6GG0ByrDqUEcBcxhSPYs++xpMt6dhFnoa2md8nOSqNgWABhopTUk0/lX+p3qJg8wAbU+/nbPZx4B1Tm/kfsckY1AgwM9bCQzhckiBUidTqoP10QmmpIBiF3zsW3D89QaCSIkQGdI6IwixJf90bj6YZTcpbYzUVoj+lBYy73KhYK0oX6GGYeGRMDRSW+KDmzWGrePBOFcB9pc0NnPzJIzzml34rAnqI2ER7JME2zpoLbDOxVotZSpQ==
+ bh=qg/F+4miYJqzZ2kfQIhThBFnF3LPNSxibX8HvAnkSBQ=;
+ b=GK/WKq1dF29DV1rwB5ssc41IqdNjz+s123IfqoeXsBI/1mcF1IF2RvO8v5Wlp+4VIxwR2MIwKsXDYtrrTerLA/BnLbfYfWD5wauIxhmyZnFRF/Qe7BlzsOH5edg5VdC2yXwoZvH080Lr/PKIkvMHJXRpE/koNheIxMTePa27P6r3hRg9pLSgFyYu4BlhbcXmnAXEtUPlSAYXapTBbTRP59cHT4inSHLjW8WNZMDVVtH+KEkbeIhZBJZCM5LWU/s0VEtO3YCUwJCtvYamwp6pc0nbr3mDWRvSWos4WmygykqqyUienKfn2NL48SeXO/BtujKnCjW10PQykmMqF//E/g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=lUR25Aivq59dSAy+fBCeWfrUHJies+JPO7t6YjeMntQ=;
- b=PbVBC91APpsqLW2BvMX87zi+OGYNqGiHHv/H7YiIGRVSeWcfhYQhXbZxzNm75j74pdrV4mAXeDpGDCdNq3hzOM+B/pOEKEiAzPcpcqSWY4bakW3znWOFeqWySwbjU7IeW9YbtRow8K46Jrdhd3+GuhpRB60zYZVcUYjJp2SIJJ4VeuUutavF6r4+/7RC0UJP1XXuNww47gUc5Cn/+zMtI4eTpTqCnMLeFxXmtt2X0xzC5i/noeC56oWltIm8kXqesLNwm2B48cTfX/2wFGY9QWF4WQ9SZJknAqFYw1BnvWoWW66TTzesKo5NtdWBjjDcnnUfyKCwqWhaGQQWaYudOQ==
+ bh=qg/F+4miYJqzZ2kfQIhThBFnF3LPNSxibX8HvAnkSBQ=;
+ b=qVn1ylWHSxrIKSUcUsmju1qTBO4KR52iATDdYozh2amdPjowGYsill+kXJCBoQCMtQIB2Ls7El8LixX5/nLciwWu5mMBCWzjKVXSWqJsMuwGwaVj+8C0Z4pjzehGp4dE+k1MQKAnL4T3xqU1Tgkenu844wEJnvLMcY4cAI3PjFV+fSzDQk6NryEQ9kW1L7t1xONI9SbOsqciHC6BudMv/ZfD2D0/PTq4YLCGqXxio0algq3B+4fb173hc+3BE3ET+fH6eEAia/A0YypaQWRP6oWNKin6LAHExLs/xkwZvlqpix8JxI/ZVL/jFYwwMFZjxBHCaHGrtMM001ppHQyDDQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by DB9PR10MB5404.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:333::17) with
+ by AM7PR10MB3589.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:136::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.292.25; Tue, 11 Aug
- 2026 07:36:09 +0000
+ 2026 08:52:33 +0000
 Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::be9f:e8ca:ee9:83e1%2]) with mapi id 15.21.0292.024; Tue, 11 Aug 2026
- 07:36:09 +0000
-Message-ID: <e6caf0a7-8a76-48dd-a523-3c6fcf8fbf3b@siemens.com>
-Date: Tue, 11 Aug 2026 09:36:08 +0200
+ 08:52:33 +0000
+Message-ID: <8bc74e8b-69d5-4ae6-83d8-bdf746a81606@siemens.com>
+Date: Tue, 11 Aug 2026 10:52:31 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: Random system freezes with Linux 6.12 + Xenomai 3.3.1 on Intel
- Ultra 5 125H
-To: Florian Bezdeka <florian.bezdeka@siemens.com>,
- =?UTF-8?B?5YiY5p2o?= <liuyang@sinsegye.com.cn>,
- Philippe Gerum <rpm@xenomai.org>
-Cc: xenomai <xenomai@lists.linux.dev>, =?UTF-8?B?5a6L5YGl546u?=
- <songjianwei@sinsegye.com.cn>, =?UTF-8?B?5p2O5bCP5a6B?=
- <lixiaoning@sinsegye.com.cn>, =?UTF-8?B?6ams5ZCb?= <majun@sinsegye.com.cn>
-References: <ed7c43ef85386e7d9b7bfcd2895307dc2948cb81.3e5e7d15.7682.47ce.94bc.841347b177b8@feishu.cn>
- <2b95f251-e2a6-4c7f-bffc-7cbc15d9eed3@siemens.com>
- <ed7c43ef85386e7d9b7bfcd2895307dc2948cb81.09468bbe.a918.4120.abc3.991d1d35a187@feishu.cn>
- <ed7c43ef85386e7d9b7bfcd2895307dc2948cb81.06d37e0f.d9fe.473b.a955.bacccbca8173@feishu.cn>
- <ed7c43ef85386e7d9b7bfcd2895307dc2948cb81.8107967f.ab56.4b5f.bc5e.7ddd5ae2be4c@feishu.cn>
- <1c7d4293-6754-4690-bf73-aba6e17d0c0e@siemens.com>
- <ed7c43ef85386e7d9b7bfcd2895307dc2948cb81.c699737c.9d30.43b7.9ed8.a2a9042fb8f3@feishu.cn>
- <67ed5d8f-0a4c-432b-ab59-a4cbcbe91a34@siemens.com>
- <ed7c43ef85386e7d9b7bfcd2895307dc2948cb81.feee15f9.216e.4b39.b573.9ad554d5eb50@feishu.cn>
- <ed7c43ef85386e7d9b7bfcd2895307dc2948cb81.30d266af.c20f.4e5e.b7f2.5899ed8cff1b@feishu.cn>
- <ed7c43ef85386e7d9b7bfcd2895307dc2948cb81.016f3d46.7d4b.4b85.be4a.b6c524f3b5d7@feishu.cn>
- <b1da1fc4a8a4e44d3b398ef4d514bdb738f0598d.camel@siemens.com>
+Subject: Re: Cobalt scheduler preemption behavior
+To: C Smith <csmithquestions@gmail.com>, Xenomai <xenomai@lists.linux.dev>
+References: <CA+K1mPGqEW4d+HOhyaNhDLe3tv9TFgcUtTFa6hH_7SPq892pXA@mail.gmail.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
 Content-Language: en-US
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
@@ -110,11 +93,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <b1da1fc4a8a4e44d3b398ef4d514bdb738f0598d.camel@siemens.com>
+In-Reply-To: <CA+K1mPGqEW4d+HOhyaNhDLe3tv9TFgcUtTFa6hH_7SPq892pXA@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR0P281CA0013.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:15::18) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR4P281CA0379.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:f7::11) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -123,191 +106,108 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DB9PR10MB5404:EE_
-X-MS-Office365-Filtering-Correlation-Id: 75da4702-b20a-4627-899b-08def77b361f
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AM7PR10MB3589:EE_
+X-MS-Office365-Filtering-Correlation-Id: 3199438a-7aa7-4353-8d66-08def785e20f
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|376014|366016|1800799024|6133799003|10067099003|4143699003|56012099006|11063799006|22082099003|18002099003|55112099003;
+	BCL:0;ARA:13230040|23010399003|366016|376014|1800799024|6133799003|10067099003|56012099006|11063799006|22082099003|18002099003|55112099003;
 X-Microsoft-Antispam-Message-Info:
-	iZphrg8ZIXZDWB53slJ5LOOQact0Uc2iKySpQlWhaaovAJGyNP0Yo0XaHfJoTfvBBkGhwYKK+jtOINGUjSuNfFnRGipPFk0n/j4ghKIxMBYRnSt3zAkW9fn1hZwxmfXRrgA0BlfQSuqEZUiSCBhiBipwPUUKe+i5gaSivzdJZh5f7L5J0CDhy/ZqBxB7CpVn326mw/JVT7aE5NQlMzurmubTIjA+gSaRf6llIbQMn83Bm5FI7xdFFqayD7+auzwSFlS0GQ/T5ON32G0FtAYg8UVC5iiuYUp6Fbuv/odyaC3MbFTUXGgbLgotnHNcGa0/8lDWHsVK/ws6kfT9g2lgZpoxscFHgmDYFM+RnVsfqv/3jS0SJDOUkwYCjk+zsXO4OcYOqgMTE+zA+SIW9g0UEWo6QF6pemtxdZHjcAZrTz8DkZ59OxP0XrljRPLBrSvKiEJnPoOBLnqU0mblJFmx00RpmJJn0069+emOSMBuhC3pbCpVAXwkL7NP3UrV56sYopw6bAGAfQL8l5nrybjH0AL56Kr0qCOqMW1myYsA1uvTTt9MvI/tOKi9aNPPGlQ7bBtDSSBt6P/pW5+SJJGplOhfTZ3z2wSdgY94oWhgB4Cuj5cChvzApjf3vNZSnrdmigEEWMKQkvyGIp+SjgJHfsWjiySHWOEFXAld9l7xGjE=
+	Pd9BKTh+oNWHoKhJxh03M30dztMtfAuRc+DOC8equzrxlj3GoqD6HcDj43abP84qAHGe/jdgHC8re3lQzL+kMqj38Pj1xEVGO3OiJffHYGhdrxLMEA0poZyNWDU/iQsqeYCdBwV5sTVLTD1yYUdTHNzBlHyugvUgY+mxZUs1KRdmqf3DpAYp6C5MWQuK2+hWQqe2qcJODGwe0ItKFuoH61FXKZAEOpYrj7AOTeJycc4d6Qey0Si5spjmg75eebmJwY51Jd3PzH9h0bJOWVSoiIwh4S8hu6OxIPuuHXbDKnitF1S7xakdFWxgb1jyqsxw5RlJEXEgexevZPcwQfup8BdBmZ5WDeAO+l4QJBsMsltHR7xKRs41h95ZhOXyEO135JB1HCasPmkDjlxJMnLw3OF91qCTP2lntLrJ4LuOFdLuptV+rS19Ad0BOn1c7BAJLS8tVUA85UTFjLh5/SYmkanoBEY3mLfrmXXmy1PEOX48eY1UgnUjQfCge1juYEz3zwY4/qOdHLunaoPo6sCMCaZfzfkS3hRlB7KUisuP1VMCwWHmj8oMZvPhIcd4qfKsARUOeXijVeGS6d73OTyUJE85pjf/LKYBpiL03hUBUe2RdYR/VvMSpvmXOYYsGRvuY5uALnwcailZ0NUERU1rn0Pg7lqSFnRJ4f+GBllnlIc=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(366016)(1800799024)(6133799003)(10067099003)(4143699003)(56012099006)(11063799006)(22082099003)(18002099003)(55112099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(376014)(1800799024)(6133799003)(10067099003)(56012099006)(11063799006)(22082099003)(18002099003)(55112099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?N2NJMWxvMmZtWWdKSysyUVB1WmlZcFArK3FrYjQrSThvb29ISmtnSHYrRW1Q?=
- =?utf-8?B?dmtRbFQxZmtKaGZyMHNzNjh5UEI2ZDN2VDM1T21GMG5jSVd2NXg3UnZuemNo?=
- =?utf-8?B?d292aEs4OVpFQ0JUV0Y1TzZWZFZqYVB2OTBZMUxSYVNrUUVTZ3dlRW1ycWdq?=
- =?utf-8?B?bEhNT1JWYVU5Q2Fwd0tFUW9ZOG9zbjBHalVPMkxuTFRjamdiMHBFaUg5bGN6?=
- =?utf-8?B?WUZibFlzVzdzUnhwQUkwYlVQNEcwL1h2VkRGVFMwWS9aQXdHeWMxMkhQZVYr?=
- =?utf-8?B?QndMUHc4TC9VZmx4Qk1VQzRpQWtQdlFWVzNJVFRmaC9rRFdxS0t4UUNDenND?=
- =?utf-8?B?TDE5ay94TXFMYkpubFZKU0daWm9jUlRLYmI3SHk1b1FNVmJrdFFDeExOL3VX?=
- =?utf-8?B?VnhJaTBGcjM5c0tsVi9kdjRGRjE5eU1VUDAzd1lqRmJNRCtRZFpzN3UwNEV3?=
- =?utf-8?B?YjYrN1Z1Y0szbjJlMGR4ZlRxZVd4ZGlNSEJNWEFPWXltVzhxWVNmaElDcm9y?=
- =?utf-8?B?OFlvbnVBRTByTktCUXR3MXpEeWhjNW9PVGs4ME9uS1I1RjlJZkRlUVE0TFJ6?=
- =?utf-8?B?bFFTQTNLY2NySUZyak96aE5IT3JMZ3RtcVZUT3Y1YlpQVTBMbDlUaXRZblBO?=
- =?utf-8?B?MWk1Y2FOMzNZS3NBNVM5a2NaOVhkeDJjOVBjeHgrZThmdzBoR3RMbVh6dUlD?=
- =?utf-8?B?Mjk2NnZBY3FURlFZNkw0dW1CdnNLVlZJYVRuSjRacERXRGpxcDVEbVhteUNF?=
- =?utf-8?B?OVRuWGZDZHJmdEEvM1JGam1VZHVwSzAzZFh0L3ByblFKankxaXJWeDdqWjlS?=
- =?utf-8?B?TTRMODhlMWdkZ2ppSDVPYi9jNHdvZklJRUYrR0pwbXdtTEZweGJ0UDJISTQ1?=
- =?utf-8?B?VDRhSmV2dmlscklya3NWYTRzQzZhUU9icDlMb3hOUkdaR0JyQVpnNW9lQ2tH?=
- =?utf-8?B?TG12Wk5ISVZkSk1DT3c2dHJZRC84akZkOE1oMW5pbUtBSkdQNng2WDg2bGpZ?=
- =?utf-8?B?c3MzdFJsb2djdTRZTjNDRHJzTDBZWkNVckw2WGRBZk93RmxSWVBKTlpzbEVS?=
- =?utf-8?B?WTFUcTBVYXp3dXl0UTJzWGVWRnZReE03eXdDQXNnS1M5RnhEdGI2Sm50aUFq?=
- =?utf-8?B?VWJDSjBqNmVuRWdTYWpTZU9XNTY5VXBwN0ZtaWV3Rjc5OWRiejRoQVhLS2lF?=
- =?utf-8?B?UlczVWFCWEc4bWY0OHNjT1pBNS9KdDZMMXhJbGE4SnYvcmRmbU53cVQ4WFMr?=
- =?utf-8?B?S2htNG9lc1VSR1N1VGZONjdpZXovU0VMUm5oaC9Ea2piYzhqRmduc0FCNVhK?=
- =?utf-8?B?bFhteEUrWDhVT1p2RVRrakpSS1NFRlpqK0d0RkpGRi81NnZscGFvOHFKcXRI?=
- =?utf-8?B?MlN5OVBaTVRvekRzOXliMFZ1aytXQlpVUnVUMk9mZWwwQXhiR3Y0N01PdHU4?=
- =?utf-8?B?My95YVZhMHMwN3BLaGhqK2Y4RmJ2anpLWVNyellGUVZ0dzBnM2h6NkV6cDNC?=
- =?utf-8?B?R0xnRXR2NE8zRlhndEJzQ0xSY3ZKZXhadU5mMUVwbEwxTGllQy9BeFpTalYr?=
- =?utf-8?B?em8vZ1ZwVEl6ajd5c0g5THFxaURvcHBuSGZoNkh3RWhwQkFKMEF4Vy9CdHgy?=
- =?utf-8?B?QURrbVRQa1dUUy9aUXZTL2Z5TjNnYll4UldGQWJqbktrUDVZS3FLSTdCbFRi?=
- =?utf-8?B?UHhBaTJmZ0NRSngybGlXaThoQWRhZ1JXZFFCYTI4UnB3dUZHYWkxcGpGUzlJ?=
- =?utf-8?B?RmlXK09PVzZUbi9kQk5kWWJoQXZVWlBobVpkSXRYVkdJcjF1RVhBRDAyc095?=
- =?utf-8?B?Mkl0NFNsTEFrQjJxRVRnQkZwdEhvUzZRNU9JeUxqQXlzK1pQaXZ6Z0hJRmZq?=
- =?utf-8?B?Mm11aDRwS29qN2JqSWVURWo0RHM1OXVENFhBZmVmZFZtUzQzMVAwdi93MXdT?=
- =?utf-8?B?L2dPMjNVRXI2QllGdWt0RXdVbUg1VDNmUnhQNUtpRzFrb0FkSlhxMDZxNnE2?=
- =?utf-8?B?T3FWMzJ4WFAvcFd0TUQ1elFBMWEwcXpVbGg4L2hGS3paV2Q0MUsxcGFLdmFv?=
- =?utf-8?B?UHBXL3JzL0szcUZJSk5vUnVsWUFRSUVPYUxmRi9iSGlnOENTKzdNSUxrZDZJ?=
- =?utf-8?B?MWN5Z1huajhlb3EyNm9scXFxZndaSEdTMnpkZlhPZGNEaWxzRXJ6NS8zS2ls?=
- =?utf-8?B?NU5mL0V4UVBDdGNKT0l4MlBBSG50ejBsMjg3V0VzNFRkUTRxVGR5MkNRaEhC?=
- =?utf-8?B?ZUJjdHlrMkloc2dFT3ZndE9aVUgrMlhYQ3d2Qm94NWpUTy9nbUVRaDJkVGVT?=
- =?utf-8?B?S2FsRTk5RUpyNEdvT0hOdHhSY09mZlJjK1M2S2c3UzJkbmV4cUkwZz09?=
+	=?utf-8?B?alZCdDEyT0ZOd3cvUlZPUG9FNmJjTU1GZXhvTUpFaURWSHFQU0JaQmxoTExm?=
+ =?utf-8?B?aFJZWXRMRmdSbC9IMll1MDZQUGIvNisxWDNGd1VkVXRPYWFDck1xUllFOC9C?=
+ =?utf-8?B?R3lndDlEVldESUN2R3RZSk1mYndHL0E5RjJUVUpQT3JnRnBua1Nldjl4NGhq?=
+ =?utf-8?B?VHkzeE03SzZ1dzNqYVUvMmg5dWpqVVZteFk4MTJkZVg3dGNKeldKMTlaSDgw?=
+ =?utf-8?B?dlBLWmllWWRQUGIxUkhTRVRndlpaQU41OTdHbE0wYkRSQzFHNlY1WTlUdzhP?=
+ =?utf-8?B?RzV1K2pZMnpDWWFxTS9CYTZkd2pwWjgyeEtzU1h4UUZWei9QcVhRY3QzQTU5?=
+ =?utf-8?B?ci9SWWRIektuK252WkluQVlRdjZSSUk5VlpNQkFSTXJ3WHZtMDRiWldmWXc1?=
+ =?utf-8?B?cCs0V1cyeGtiWEJBVFY1a0FvR0hDNDlaR2hidzJHZjhhUGJmQ2V3SlIrUElr?=
+ =?utf-8?B?WDI5aGVPclg3OFR2SVRBNmpKT0tCa2xSb2oyblRYZzA2bjNMaGFkejc1RmFq?=
+ =?utf-8?B?RVBGaVZBbVFNakFtRGEzL3lOWFdRanp4YUM0bFBGVXNTZWR2Qm5CK0JyNjNo?=
+ =?utf-8?B?ZU1FaUp3akdCMUNyMHVqVG5GUFd5V2Y2US9xZ1pWTjBhN21ETnduZ2Izdk9u?=
+ =?utf-8?B?VXFuS2UrZk40ekpUVEtUS3k2QXNtMGJTeE9xTUlkTk5BNVhLalRoZmc4b3Bj?=
+ =?utf-8?B?alovZmpCZW96OGdPUUc1YVVYM1hqVTVIN1JHY0w0alZVNTloam1vMHAybmJy?=
+ =?utf-8?B?a2s2UXUwczZxNytXRTJMTGNxM3NHZ3EyTGlwc3ZmWTAvbGxsbVc1OEN6MFdN?=
+ =?utf-8?B?blJDYmluL2ovbzdueVdWRHczMXpwM3BhRzVDamp6Z3BzRGl5TmdiMkZJSUtx?=
+ =?utf-8?B?YkYveUVFYTBzYThGUVdRaWRIbG5DWjU4Tkt6RG95RG9YUjN2TUU1cDE0T1Y4?=
+ =?utf-8?B?UVVwWWcraEdaZlhvSU9PdGNGbHNmYnc2UFd3MFZ5d3hvSGtQVE80ZlMxRDdR?=
+ =?utf-8?B?MFRtRXE3Yk9qMDdtR2Z5WGVEZGdtNEtwbXRLTldNTkFVUjBkbGtVMDdWSk9H?=
+ =?utf-8?B?MzlZMXlWUCtpem9TKzFRbnphVC9vVkNoanpaZUo2U0ZUU3N5cjVwaTZzRHRY?=
+ =?utf-8?B?clF2b0ZPb2M0aUs4Vlh6T0p5TzJyUzRydzl4ZFF3bVJCNHN2Um5pZGFqNEIy?=
+ =?utf-8?B?cVpueituOHVJZlVkTWJSeDJ3TURpUm9DWTkwc0s0MFllbkY1SWFiRit1REdw?=
+ =?utf-8?B?a3pvZWp5eXFwbmY2Nnp5ZmdNcjhsREN1MEZUZS9uTld5cStMZkpZRC91L0Ns?=
+ =?utf-8?B?cExwNkZkRXMxekJ6MkJBaXEwelZLamF5V3l1Y1RBL2U4NmVmUFdZOWc4YWVZ?=
+ =?utf-8?B?TDZmMWVqc0ZFMU9HUE5LcVpRNHhCREdNbzRYd2M5YlpqdnQzZVNjRjdzM2tZ?=
+ =?utf-8?B?VFZUbExHTTkrd2Q0Y2hrNkJMcGdKS2RwMUJuOTZqdFBxTmYyTnFoVHVmODhy?=
+ =?utf-8?B?OGo1Smo4OTNKaHN1WHMxWWpDSkZpOVZXSzhvN1daK1U3VFBURlBzL2JDdnlO?=
+ =?utf-8?B?R08xSnpIM3ZXOThFUkFUaXkxVmtyTkZ6ZHh6dEpLRHR3NG13OExVb1pYbUFz?=
+ =?utf-8?B?RTZsZ0FyVTh6QXVOT3dGaU1IaVIzOCtJNE12bHJnbGlLcmZzMUpxVDdSeHRq?=
+ =?utf-8?B?WlZ3c0x3b3hiMmNSRDR5d3g3RFdZUFNNU2xtOTlGTnpTOTRGZnFMK1Zqb3g0?=
+ =?utf-8?B?T05yYlF6bi9zN3RyS1lXNGJmQXk4ZWxVc25ITWREY3VUMHNxQ0wyODNYSC95?=
+ =?utf-8?B?OGpmUHVlUXJTZEVVNkREU3QwVnpYMEptdnIwV0thc1pSdERiMlg2andja2dk?=
+ =?utf-8?B?VDZmZkhhWVdYR2crTUpLV3l3SXIrUXFjUmZ4U2RsRmo2ZzY5RHZPNFh4TEov?=
+ =?utf-8?B?MUlpdjRLZFRPdTFwMFMwNk1iUUEwRTgwWjQ0OTFONnhJWUVUQ2tTVVM3SlJy?=
+ =?utf-8?B?QmlFZDlPclhQcWUwYzREN3U0czU3V2FUaGN1cTZTUU0yWHhxZnNsR0xqR1ZN?=
+ =?utf-8?B?SDNsWEU1aGtxTndsSmZtVEZhekV6RVg5SzJkWitxZjFuSUxHeWxtSmNUaWU3?=
+ =?utf-8?B?UkVmTWFYZzhqemtvQ0FqMVBsTUlWeGhpU2hHOFRYTUhkMXFDNHdWeGxJS3JT?=
+ =?utf-8?B?RXNaSFp0UkJKa3M5OVI2MXhyTk5TNTV5dzNEQWwrUGlvSUxhL2c3VUVkVFFL?=
+ =?utf-8?B?Q09vRldwSlBOQkZ6c2dtbElpcTdteGgzZGJzWkxOc0JqcDc2OGxIT1R2czJ0?=
+ =?utf-8?B?cVJKaUdpY2dFVWlXZlFCbTRmQ2NleXJLaFRuckdBdytzK1ZhLzhDUitDeUVy?=
+ =?utf-8?Q?mMNa9MPfYFNI8T0I=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 75da4702-b20a-4627-899b-08def77b361f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3199438a-7aa7-4353-8d66-08def785e20f
 X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2026 07:36:09.6150
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Aug 2026 08:52:33.3587
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: eM8gEmcBn+ggkCilA2pjlB1r+Q+o6RFL8yAeUYe6A2AyU1pxk/dygAvBFb2hUJuy6fIOrrsLbStgpync6M81qA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB5404
+X-MS-Exchange-CrossTenant-UserPrincipalName: gf2gqxqA0Z2KNxLLFjFHvE8ZDB4tqELU7/BlSW9n2rvMDNiXpmmjnTrpi2nHF3xDr8FjGaOxy/ojruaI5vnUlA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3589
 
-On 11.08.26 09:19, Florian Bezdeka wrote:
-> On Tue, 2026-08-11 at 10:17 +0800, 刘杨 wrote:
->> Hi,
->> We captured the following on the serial console during an RCU stall. CPU 4 was interrupted in the idle/nohz path and spun on the timer lock inside the thermal handler:
->>
->> [ 2205.999617] Sending NMI from CPU 8 to CPUs 4:
->> [ 2205.999619] NMI backtrace for cpu 4
->> [ 2205.999620] CPU: 4 UID: 0 PID: 0 Comm: swapper/4 Tainted: G     U  W  OE      6.12.90-13-rkernel-cip24-x64-industry #metaOS
->> [ 2205.999621] Tainted: [U]=USER, [W]=WARN, [O]=OOT_MODULE, [E]=UNSIGNED_MODULE
->> [ 2205.999622] Hardware name: Sinsegye SP8000-C340/SP8000-C340, BIOS SP80000020260708B 07/08/2026
->> [ 2205.999622] IRQ stage: Linux
->> [ 2205.999623] RIP: 0010:native_queued_spin_lock_slowpath+0x78/0x380
->> [ 2205.999625] Code: 2c 24 08 0f 92 c2 41 8b 04 24 0f b6 d2 c1 e2 08 30 e4 09 d0 a9 00 01 ff ff 75 5c 85 c0 74 14 41 0f b6 04 24 84 c0 74 0b f3 90 <41> 0f b6 04 24 84 c0 75 f5 b8 01 00 00 00 66 41 89 04 24 5b 41 5c
->> [ 2205.999626] RSP: 0018:ffffb065802dce38 EFLAGS: 00000002
->> [ 2205.999627] RAX: 0000000000000001 RBX: ffff9334dfaaa428 RCX: 0000000000000000
->> [ 2205.999627] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff9334dfa53580
->> [ 2205.999628] RBP: ffffb065802dce58 R08: 0000000000000001 R09: 0000000000000000
->> [ 2205.999629] R10: 0000000000000000 R11: ffffb065802dcff8 R12: ffff9334dfa53580
->> [ 2205.999629] R13: 0000000000000000 R14: 0000000029f00004 R15: ffff9334dfa53580
->> [ 2205.999630] FS:  0000000000000000(0000) GS:ffff9334dfa00000(0000) knlGS:0000000000000000
->> [ 2205.999631] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> [ 2205.999631] CR2: 00007f56540d1b68 CR3: 00000001637a8005 CR4: 0000000000772ef0
->> [ 2205.999632] PKRU: 55555554
->> [ 2205.999633] Call Trace:
->> [ 2205.999633]  <IRQ>
->> [ 2205.999634]  do_raw_spin_lock+0xbe/0xd0
->> [ 2205.999636]  _raw_spin_lock_irqsave+0x59/0x70
->> [ 2205.999638]  ? lock_timer_base+0x7b/0xa0
->> [ 2205.999641]  lock_timer_base+0x7b/0xa0
->> [ 2205.999643]  add_timer_on+0x70/0x140
->> [ 2205.999646]  __queue_delayed_work+0xac/0x110
->> [ 2205.999648]  queue_delayed_work_on+0x94/0xb0
->> [ 2205.999650]  therm_throt_process+0x164/0x180
->> [ 2205.999653]  intel_thermal_interrupt+0x12b/0x350
->> [ 2205.999655]  __sysvec_thermal+0x46/0x180
->> [ 2205.999658]  sysvec_thermal+0x9f/0xc0
->> [ 2205.999660]  </IRQ>
->> [ 2205.999660]  <TASK>
->> [ 2205.999661]  asm_sysvec_thermal+0x1f/0x30
->> [ 2205.999663] RIP: 0010:_raw_spin_unlock+0x0/0x50
->> [ 2205.999665] Code: 01 00 00 00 31 c9 ba 01 00 00 00 31 f6 41 bc 01 00 00 00 e8 32 04 2c ff 58 48 8d 65 f0 44 89 e0 5b 41 5c 5d c3 0f 1f 44 00 00 <f3> 0f 1e fa 0f 1f 44 00 00 55 48 89 e5 41 54 49 89 fc 48 83 c7 18
->> [ 2205.999666] RSP: 0018:ffffb065801c3e00 EFLAGS: 00000246
->> [ 2205.999666] RAX: 0000000000000001 RBX: 0000000100161a47 RCX: 0000000000000001
->> [ 2205.999667] RDX: 0000000000000004 RSI: ffffffff90217c1e RDI: ffff9334dfa54840
->> [ 2205.999668] RBP: ffffb065801c3e58 R08: 0000000000000001 R09: 0000000000000000
->> [ 2205.999668] R10: 0000000000000001 R11: 0000000000000c2c R12: ffff9334dfa53580
->> [ 2205.999669] R13: ffff9334dfa54840 R14: 00000197236c7580 R15: ffffb065801c3e7f
->> [ 2205.999672]  ? __get_next_timer_interrupt+0x132/0x380
->> [ 2205.999676]  timer_base_try_to_set_idle+0x17/0x30
->> [ 2205.999678]  tick_nohz_stop_tick+0x70/0x370
->> [ 2205.999681]  tick_nohz_idle_stop_tick+0x72/0xd0
->> [ 2205.999683]  do_idle+0xb8/0x150
->> [ 2205.999685]  cpu_startup_entry+0x30/0x40
->> [ 2205.999688]  start_secondary+0x10e/0x130
->> [ 2205.999690]  common_startup_64+0x13e/0x141
->> [ 2205.999694]  </TASK>
->>
->> We addressed this with a local kernel patch, and the issue no longer reproduces on our side after applying it.
->> Could you please review whether this change is correct and acceptable upstream?
->>
->> diff --git a/arch/x86/include/asm/idtentry.h b/arch/x86/include/asm/idtentry.h
->> index 1b9264e5b..bbd20cfe2 100644
->> --- a/arch/x86/include/asm/idtentry.h
->> +++ b/arch/x86/include/asm/idtentry.h
->> @@ -803,7 +803,7 @@ DECLARE_IDTENTRY_SYSVEC(DEFERRED_ERROR_VECTOR,              sysvec_deferred_error);
->>  # endif
->>
->>  # ifdef CONFIG_X86_THERMAL_VECTOR
->> -DECLARE_IDTENTRY_SYSVEC(THERMAL_APIC_VECTOR,           sysvec_thermal);
->> +DECLARE_IDTENTRY_SYSVEC_PIPELINED(THERMAL_APIC_VECTOR,         sysvec_thermal);
->>  # else
->>  # define fred_sysvec_thermal                           NULL
->>  # endif
->> diff --git a/arch/x86/kernel/irq.c b/arch/x86/kernel/irq.c
->> index aecdb2d02..c432c22ed 100644
->> --- a/arch/x86/kernel/irq.c
->> +++ b/arch/x86/kernel/irq.c
->> @@ -605,7 +605,8 @@ static void smp_thermal_vector(void)
->>                        smp_processor_id());
->>  }
->>
->> -DEFINE_IDTENTRY_SYSVEC(sysvec_thermal)
->> +DEFINE_IDTENTRY_SYSVEC_PIPELINED(THERMAL_APIC_VECTOR,
->> +                                 sysvec_thermal)
->>  {
->>         trace_thermal_apic_entry(THERMAL_APIC_VECTOR);
->>         inc_irq_stat(irq_thermal_count);
->> diff --git a/arch/x86/kernel/irq_pipeline.c b/arch/x86/kernel/irq_pipeline.c
->> index 8c9d587bf..c7ade9c2c 100644
->> --- a/arch/x86/kernel/irq_pipeline.c
->> +++ b/arch/x86/kernel/irq_pipeline.c
->> @@ -164,6 +164,11 @@ static void do_sysvec_inband(struct irq_desc *desc, struct pt_regs *regs)
->>                 run_sysvec_on_irqstack_cond(__sysvec_apic_timer_interrupt,
->>                                         regs);
->>                 break;
->> +#ifdef CONFIG_X86_THERMAL_VECTOR
->> +       case THERMAL_APIC_VECTOR:
->> +               run_sysvec_on_irqstack_cond(__sysvec_thermal, regs);
->> +               break;
->> +#endif
->>         default:
->>                 printk_once(KERN_ERR "irq_pipeline: unexpected event"
->>                         " on vector #%.2x (irq=%u)", vector, irq);
->>
+On 08.08.26 08:17, C Smith wrote:
+> I am using Xenomai 3.1, Cobalt kernel 4.19.229 X8664  (I know it's old
+> but this is a legacy system our company still develops).  I am
+> wondering about expected Cobalt scheduler behavior on a single core. I
+> have set isolcpus to reserve core 1, my first real time task sets
+> affinity to core 1, the priority is 99.
 > 
-> Yes, the THERMAL_APIC_VECTOR implementation has a pipelining problem.
+> ret = rt_task_create(&main_task, "my_rt_task", 0, 99, T_JOINABLE);
+> CPU_ZERO(&cpus);
+> CPU_SET(1, &cpus);
+> rt_task_set_affinity(&main_task, &cpus)
 > 
-> Main question: Should the event handling take place in-band (Linux) or
-> out-of-band (cobalt/evl)?
+> Then I do the same with a second RT task, giving it the same priority
+> (99) and same CPU core 1 affinity.
 > 
-> You selected the first option, which looks sane to me. You now delay the
-> handling to the in-band stage.
+> First Question: If the first RT task is executing, and the second RT
+> task wakes up from a sleep, can I expect the scheduler to preempt the
+> first RT task to run the second RT task on that same CPU core?
 
-It's rather unlikely that there will be any oob handler for the thermal
-thing.
+Same prio and SCHED_FIFO (used when prio > 0) means that the first task
+runs until completion (exit, self-suspend, blocked on wait-condition)
+before the second in that FIFO queue for the same prio level is run.
 
-At the same time, the occurrence of a thermal event is very likely
-already a problem of its own (which does not mean we should not fix its
-handling). Is your system overheated? Will it possibly die soon when you
-continue like that? At least, it may go into thermal throttling, and
-that will not make your RT workload happier.
+> 
+> I put DIO pulses around both tasks and the oscilloscope says 'yes',
+> the second task preempts the first. I'm a bit confused about that, as
+> I expected FIFO non-preemptable behavior from the Cobalt kernel.  ie:
+> I thought the first task would finish, then the second task would run.
+> 
+> Second question: Is there a way to configure the Cobalt kernel, or my
+> two RT tasks, such that they can't preempt one another, but when there
+> is contention the first to run is allowed to finish before the second
+> runs?
+> 
+
+To achieve preemption, you need different prio levels or some
+time-slicing configuration (rt_task_slice).
 
 Jan
 
