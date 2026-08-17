@@ -1,320 +1,159 @@
-Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11013059.outbound.protection.outlook.com [52.101.83.59])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17637445AD1
-	for <xenomai@lists.linux.dev>; Fri, 14 Aug 2026 10:26:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.83.59
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEA6318DB1F
+	for <xenomai@lists.linux.dev>; Mon, 17 Aug 2026 06:35:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.43
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1786703180; cv=fail; b=Vs6yPuu7kiSvOUhCITgI8udCd4NGfSzkr/fGjUUY4C98riF9tv2Y7XDfkT4k2Gwvp32CcZwktE3ns7ouYdb6GqUT7uMlxJk0fq8LZJVDepNb527mm8KojfGXzDyBVKeNBnL8yeCZGbC9PR3i7YzpeBc5ZiEW4ckYuqrt5ubRqbE=
+	t=1786948515; cv=pass; b=uWGdde1AFjP61p77TVkbxfTsS2kzlparr1iAYGrkbU/ZLUkhSRF9jIqyt5BnbQqVUA193Jm8yg63spZT34bdeBYwXzE3t6k0vEQVuyPl8pVOFDEgEIPEDabQy3s/vaF9sOCUmiDeS+Bw0LiZtUy1uaBctL83ASaROdzT8uvD/U0=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1786703180; c=relaxed/simple;
-	bh=t/uyIBQ7QglkZZyNfsnmWH/Vr3B0X7jgjm8Q96GWb0Y=;
-	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=Bjg3yxotrRh2I2hSETRLUUQmeHl5xii5Dw6K0nOBgMpXJ2moHD47woylfWHNFl0xQmvzMAVevbxo6Y4ltQ0M7B44SPeg/U9sIqiwqcRxArBTydjalfOS+3VjhsrciLcHLCNohA38Gt0lydMY/iNtb5qkubbP5wwOHAKcfDAdnjQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=Wq6Ddsg4; arc=fail smtp.client-ip=52.101.83.59
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+	s=arc-20240116; t=1786948515; c=relaxed/simple;
+	bh=dnhGxfX2CFMnwME23XZy9AXNRZ5Qm5+IHSNRFBR/njM=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=iz50BRhmRSAu3kQ/KbBj0XzGhgSiMjuLTIKaBAQe2IWPTSREOoOsbBH3FAflS1uzqIwEkDgesx7G5bPfoWo7Uj3XBpwUp4FINkhkXEhWmIoJLE/ABrAoxs1hWPDmxQa6af2mrVbEVIfCqVS8oG1F1wM+PITpviNF1SXf1/GyYGA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lmi3d.com; spf=pass smtp.mailfrom=lmitechnologies.com; dkim=pass (1024-bit key) header.d=lmi3d.com header.i=@lmi3d.com header.b=fVVje8Oq; arc=pass smtp.client-ip=209.85.218.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lmi3d.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lmitechnologies.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="Wq6Ddsg4"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=K8ZOSJfyakg9vxfFoWxiSxTXEwltfHusyoy4pnPYjunzU6v6YXg5KvhaTuEdiiJcIy3x44+fq37c9R0k+XkPvf865J7TqNZxfPpfiZlyk/+KcGx33EizGq0uzpKc9kuWPPU4ehjVVwujYaUNi0MSuyiIATARkGCkqzKQLks0A7SWVOPpmCXrsyiYe4amDT2VeZ3eAMQIPU49WM/1cC/XzQXpX5KAV1CNiqWldeeXZFZ7xMFnCqNqumyxUMsDlyfP5TDF+R3YI2kKDHI4PlNmITzJs/mAlHSVMP/YZmu5BYTRY8Vft1J5We+vceG1sEUnfsrf9ZveJ8a/7TaqsdTEKQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6C0hb6i20g38CARAQ724qjM74YbuWA86OBcD2WiIsGU=;
- b=Azwwmz/KfzkZBBcV6JreaDNvncB4kewWQ93KG95okAJy4yrcl1Ss/5bMvRX8Cj66x1ygimJrowFNStnpttMl6n1rZfchGjzyx2S+tjRdqcHgzpsUpl+wXyybGcOlJbyr5ZXSXsDUBR+Rqm1+fB5Z6jhjhlmRTnP3xdpzmp6MG4NN/znqDKEkHiE/X7T03ojfkjFMuUAIcqiI+4I/PucbwHmAFuVSew1ho/aSUBtE9LILohWqyHcz7L7gtbvUdCO5db7SmFk4+ZSaRE+89H68S9R6uoxOUrbXM2REXgTkboq6NhLfLh4NNkXWX2dbnHN2UYVu4C7yFvqNSVz741P2lA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6C0hb6i20g38CARAQ724qjM74YbuWA86OBcD2WiIsGU=;
- b=Wq6Ddsg4SBQ7Wvj6Ci/fbzmDDeGWC6+VM8C74AIKx43C2CZp6jOUNl1HPCDl8/S5DiApB8bKbRvfHIxQsCfCrod0qsgWa3mGNQCe5LCmfSpXlZHXIGoDOWimhr5oqKTkCPJn6mCobzwWVlCKA4/SXEzNpImiESp3zILWSgnTRcF1Aq0xAZxyth+yqma5sxKwNRSh3L3RFdFQEQzmX4CLU+EG6qyO5LGJGCnzsSGM8fli+eBmxYIfUO58gk9TxB/4v9bDfyDhXaEIVMapP07sU9d3hh6kZVcnpPUKBLFyv6Qj/NwCOapstkfmA6gDrrLjyKgBzmqnRCK4/QTPcrfc2w==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by AM7PR10MB3826.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:171::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.315.15; Fri, 14 Aug
- 2026 10:26:03 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::be9f:e8ca:ee9:83e1%2]) with mapi id 15.21.0315.012; Fri, 14 Aug 2026
- 10:26:03 +0000
-Message-ID: <b4798eab-0466-4a16-a7c7-a898dfeca125@siemens.com>
-Date: Fri, 14 Aug 2026 12:25:59 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] debian: Replace SysV init script with native systemd
- unit
-To: Clara Kowalsky <clara.kowalsky@siemens.com>, xenomai@lists.linux.dev
-References: <20260731085316.4122942-1-clara.kowalsky@siemens.com>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Content-Language: en-US
-Autocrypt: addr=jan.kiszka@siemens.com; keydata=
- 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
-In-Reply-To: <20260731085316.4122942-1-clara.kowalsky@siemens.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: BN9PR03CA0427.namprd03.prod.outlook.com
- (2603:10b6:408:113::12) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+	dkim=pass (1024-bit key) header.d=lmi3d.com header.i=@lmi3d.com header.b="fVVje8Oq"
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-c15d111ca99so315323566b.0
+        for <xenomai@lists.linux.dev>; Sun, 16 Aug 2026 23:35:13 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1786948512; cv=none;
+        d=google.com; s=arc-20260327;
+        b=OvUfQhpAe7wD4BGELBUTmgnyzXWhwUnwPp6yqeyMMBa56KnpZ714CmvCDcEWRUajxd
+         leAAM8YJgsiVCSKbkpTNeTgpMSZGwgI3RJ8INpAh+2cIOmHnA09PvFuJa+v4MsiMG3sr
+         nq3dQ2x1AQU2iBgxpuWvhFSz9IQa1EczBIUBF0FQmA8s6J/q1eSHdqDnSnJRjESAgjau
+         RvTfGB32/ZTsZN/hPbuUu94KQDJLklSBBNynqf5rcCkSjV87Pz1FrUaLHSNNmp9yzXrT
+         /yoX+0q7c7+HeKS1PdAG+fH7hU8PuezT5bsjfav8HpuA6Tw2sZmipqDU5WLl9wlAnn8I
+         sWaQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=qSiamwU4q5LcQkoRc9hnJT78w30efABFLSMkR2iTSKQ=;
+        fh=YB3B87WifQ96wNOuamgxI2TmGE/J/7vmGnp4rylPnkg=;
+        b=DNFCI/nlujPOJV3BHPNtOoi0Jj0u36Sqod1hf9v+maPpbDZsr4LipunWXaC/E8CV5f
+         Njlw0qagC0hTymqEjDECyQHn5y2oUp+8dcyoJ7IrfjBP/kCPJkZbvNF4u18eoh3wThY/
+         13tZp2uzz4CkWtrORnGoRi9E0UzjTUepIy0Ao5BIH+jqZby+s6/pgPbS5gsWUpTqaB0Z
+         HKz07fbN+XgxXK/C3TmD1JeHt59LhmOk1YaumCh90Ojoy6l2FtZaGcHiS1EEj41tPAxi
+         QUaUXgsh5rGhFdWZ1p+UsJQtT3v+KvqDuOdWALzjEZQ2tv9Iogy8OzmS2zZ8CjxN9f9B
+         j0xA==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=lmi3d.com; s=google; t=1786948512; x=1787553312; darn=lists.linux.dev;
+        h=content-type:to:subject:message-id:date:from:mime-version:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=qSiamwU4q5LcQkoRc9hnJT78w30efABFLSMkR2iTSKQ=;
+        b=fVVje8OqroswlLa+aDnbagFRXTJ1J59vkesWBsWvEluk5DXcIRb0mFtHWIzOT6YcP9
+         fw24qW+6B91jf74oA7bmmNY+KpLZsZcPtFxkoyZ1OW7A6VQUq1ETCSg/MTdoTho+L1Bj
+         yiCkeF5VUt63rbGEWLLF6+BYWl8nYxCJV5kZw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1786948512; x=1787553312;
+        h=content-type:to:subject:message-id:date:from:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=qSiamwU4q5LcQkoRc9hnJT78w30efABFLSMkR2iTSKQ=;
+        b=oPI5SFDZ8/1ZYW/pKFI0TpBT/+MXMMd3rj+/RJ7xYU3HYbKgGe5LYWm/YYSGve9ZqJ
+         YCsMlgQC7HReHZQkBxwLX0hnOTZFzjA1qw9QjX72+eFrT35A8g7f0lc0SYGvg1ZuDyv5
+         ocTk3JqE9ucCDAobY/2F8xDpNd7erO9weZ75+MrmHUz7K5cKiVZJkZS9XI6T5j/Ar0O5
+         I8qWQrYxZM4PgX3kkLB3aWbbsHC/1SwYxZxcwxXmHxWTfM/EgFsfsWT7PgiV6aXAjiZC
+         g6zdemOXIgrDvUt46ybwSj4B366mx59MB9VjWfBsKH8Up2Qgi5pYktjY+EnptI7pyWM8
+         oozA==
+X-Gm-Message-State: AOJu0YwgCiWVobwFE2hSPn18sJYHl9dOa0DKjPMgiGMam0668bLsJZtI
+	vXuuOVxznKdKx5aLJS14kJHcOalF45kk/vqpdIQd2st0k2nFPDjNrxjPA8dlrvdcm8j3McIxKDX
+	aytOPBIkLx+NclayL9UtmRC2O0ZnFFUl/T71MYxPK6bAVGz0VfxYElJj9l8z7eptIBwg5wJduB5
+	YUz7ocnb0U+ZKlFWOm5lviHrm2HgzY8cWHawZP1fVZtNL/jPyjG/wtY0a+GM20J1sl/zoIPgFYq
+	fCOnLOfEQQumiM2rBnJZUZ+hGnRv+UTt8iNHIneTj/KdDAbCOQI
+X-Gm-Gg: AR+sD11wWR8yDTI2RxEgDxKvGLqQerPO7Dui9dukvv8C6Q+/Dwtk0h9oZPAUTmln1X4
+	di/EO17UWDOwyc6lYV7HeZaAZpEvQI16Nbs4I6GURjf/ISpM97pAN0zhbfzk1C9YOLcxmSaQjwM
+	gJEg5TxIbYH8vZvRyZICH4t2XMeLbBzE6ZwdyNz/6etwt+6YQi3I/NMNlY8LOJwZueqqqy9Z050
+	SrXlNbbQlWIzc2LszmWXNIt0mIYItoKuPhN2ReH/Mqk1zwMMFwp+3Pd5+b8aVs/2OaQfKPMMVdL
+	Xg3OkpZsHpC53pnpcmTmR4U0O2Tui+q7NG3D2KysQp1uCcDDQbL+4MP7EKBATe3O+Lmb8crjeUu
+	UgTBZY4fDsQy5l8+dc+QmYIZQ0QGIOlPg8PnhjBvI445QDyi17I0yTybf2hTiHVc=
+X-Received: by 2002:a17:906:9c95:b0:c20:f529:2d6a with SMTP id
+ a640c23a62f3a-c212a309111mr987686566b.22.1786948511858; Sun, 16 Aug 2026
+ 23:35:11 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|AM7PR10MB3826:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9b445321-0838-4c84-e6ab-08def9ee7140
-X-MS-Exchange-AtpMessageProperties: SA
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|366016|23010399003|376014|10067099003|56012099006|6133799003|3023799007|11063799006|22082099003|18002099003|55112099003;
-X-Microsoft-Antispam-Message-Info:
-	IZSOzJftY2SuZGIwjExeP7vNbnlhKpVPjU8nexEQjmqWxkeCbPin/1bEHQBkZYaQW5qv82aho248zg5Ke1647dfpSoZljDXEOSF1zhVpW1xPymZQD5YSiNwAp4flSeM5eyqz+gRU7449IH2dbPlgxEw6eKaeuVGQSK2wwuy+DX/GnFzsBWFMPCTDByaXpWEDKdwqDulOqLhN8ZbnlDuZoUOA3rN5WTyOC4FBXsmcXP7yuxrvU2aRTdCqMoTew7oIKPOCIR3zu0f1Fs0U74kojc6Pwh+hyhXQlImkIfIs0Z1nUk+hwTtK3TeDDVkLgb+ZjIZwkdAZVBjYXsd5Az7pSE7YP5z3yWhWWSV7buNfgQulcSDgHkaKPdSZy1I+16tnuQrAVzJJfW5DkZTlY3za68r+yZOB/tsHUgqHB7LHWdJSW6JV7IOqZPKjZaoeRWtdXD3PFNx2mtPVNrZyIG+0vk5FEHOkG3+ow7F7V4j+pc6CiS+6oBjJFKlH0Bv3ODx3q3qAAgas2PE5d+0yJ24LEF7fxDBCMskCpLKETo4NPKBGxQsGgAHW0cRgiFHwJUFyA80bN96ajkid+jiiqpR7aMPrSiIaoYwJB6tc92LXCeJJQ10lQ7/5RSPQXw49+NxwUwRBL7puyr6WOBPs2qYVBL85XeSiR2UnGyHFHiPTQRY=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(23010399003)(376014)(10067099003)(56012099006)(6133799003)(3023799007)(11063799006)(22082099003)(18002099003)(55112099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?STIrWUdlelNiU28zak5GbWhKbm44bTRUcHU1QU1OQU9CTHBpZkhNblNCbVhh?=
- =?utf-8?B?U3Qxa0VKMzdvbmFFbVVzVnZKVy9ZcktxNG03WnQzR25lYUgyVDZ2TVQ2bG5z?=
- =?utf-8?B?YXFlaUc5VlBDUzlpYi8ydnVDNVl3K0tvanJwSXhHMHJaN0dXdUpVZHM3Wjd4?=
- =?utf-8?B?bEx1TjcrRkhRQm5GYk42TjJMTnNiSm9JL2pvODlFOHNuVCs1Wnp3ZXM2dVd4?=
- =?utf-8?B?bEtmUTZVbndSMnNYelVxRkpvdEtwNEt3WWhJZkFqbXJMYVNKRHFzV0JLMkg2?=
- =?utf-8?B?MjkyRE85RmRQcUV4SHRzM2o4eEVlaWtmZUY5MGtKeHkwUWh6WU94a3dtTlQz?=
- =?utf-8?B?UzJDVWJDYlFaU0JKcmEvV1pYSnAzYnc0T3JHT3NiQWFtY1ZPMm5icGZPaWlV?=
- =?utf-8?B?akFMOFpQUnhSWE1tUy9oMjBMOFlDYXhyemdsRmFVazBsV1BEWVMrQUhNZys2?=
- =?utf-8?B?OXRZcnc5OUF5c0wrOStXTkNNeGx0d3VPT0NQRkFPVm1PcnNveWJtNUo2Ulpt?=
- =?utf-8?B?cmYrcFBFNGkrbUFJZ0JwWDllTG5XZURPcFFycjQzRUIzRXdDZTFpRmpodkt6?=
- =?utf-8?B?dnZSSmpMWWFJajZ0OHJLcGZRRnloWkIxOE1lajhOd0I2T2VrZlY3eDJoN01X?=
- =?utf-8?B?UjRxYkV1bGtTRG1UTFJ3SnNlVFZ1OGhuTU9pZjhpMWE5YjJ5YTV3cGtvd0RF?=
- =?utf-8?B?Y3RNTVp5Y0ZWaXZrMm9hMjZEeWR0VjJ1MXo4Z1JtMHFUbGIvWmtBUTJRMytl?=
- =?utf-8?B?b2swYW5VUEtEMDh4ZmhVL3Fla2lxU3k3QkJSRXZ1ajVidW5NNDVhcmFGd3dC?=
- =?utf-8?B?MFVjNTlHMEtaeFZ3WnlycWtwZ3NVaklvalR5aWdtcWV2RjFQamhtRERkVDhz?=
- =?utf-8?B?Rklndzl1M09sN1ZyWTFNa3QvRytwQnZZb0hCcHJBM0g0V2s3L0wyK1puaXhz?=
- =?utf-8?B?WWhZdDRzUTcxQ3dsVDhuKzdiMWhlK2tMaVNMQmdBZDhPaGxIcGIyVmRxRTJH?=
- =?utf-8?B?djNVMFlFM2hkTVNka00xS2JKaGthTlIwMlB4WW0zSFNMVTl4U0pQNldyZS90?=
- =?utf-8?B?VE9KcGVmUG16SU1TMmZOYWZhNXRJUk5LYjdnRlZwUkpQdDh0R0dET1E3MExp?=
- =?utf-8?B?aThMRkNQQldEWm1OVG5RanpIanNpdnh5Zk0vZjh2WEZpSnBaN2dmR0xSS0x4?=
- =?utf-8?B?MytvWUQ3NmNqZ3dqeVFSOThyZndjV3dXTHBvaDd5b1FTamtmT0dJWitsbFJI?=
- =?utf-8?B?QXY4QTU2dVdFN2lLcUgwOE9wejVKejZMZ2w3ZFhCZkszSDdtWFE2RFFJSE0x?=
- =?utf-8?B?d1J3VVprZXU2VktZK1ZmVE80Q1V6QXFlem8zeEM0Y1AzMmRJckdtRW9VcG5T?=
- =?utf-8?B?ZGc2dWZsSGczZGFzQk1WYWJNMndBeVZ4SmM4bWJ3b2dVZzhkcEVvcytkUHpw?=
- =?utf-8?B?S2l4d1FzYWhTblBoOU9jYkh5SFNpTXdrZkVnWXZnZlM0OW11dXRSb20wTzY5?=
- =?utf-8?B?WVJPUmV5cmdVY0p5bzlmVHlMRXRKUEFJc3c2VG1UKzYvTWdtZS9hQnFvQ1I1?=
- =?utf-8?B?ZEI4Mk1sU2JSNHcwZ0lGWlYvWWI3YmU2TlM3NUY1N1VKeXgwWXJwM3d1R1I2?=
- =?utf-8?B?U0xnOWxNR0RqZE1sN3FOY2VuWkkxbTFMNmMzVkw0b2RlTTA5NXdDc2hMd3dF?=
- =?utf-8?B?WThoM1Evb09udHUzK3JGbFVRbStVYWZhbzVUQ3g1aTNjdWVKdmlla09Wa3k1?=
- =?utf-8?B?VDhGY2N1ektIT0xZbVhNb29rWVpEaWpOUDVoVFk5d3NhMFBKRXRsc2Y3ODlG?=
- =?utf-8?B?bU5FZjdwNGh5NCtRbXdHUG5TMFNsaVVUTjg3THNJcWlGOUpmbnpoSEhheUM5?=
- =?utf-8?B?MUFSdFBBQWZrMEdad2NUR21VcGxlU3AxaEpBaTZBMkVZOTJWckc5SXR2a0Fm?=
- =?utf-8?B?US9vak1LNGFtdVVNcWtrSDdxY3kxdVZvZ1p5MFBiSm1xZHVOMktiaE44dkpJ?=
- =?utf-8?B?OEFCQ05DeWt4WFBCMnJiSnRXdktFQ2d3MFlOaUdpQlVUNDRRMGdzYVhRY1E0?=
- =?utf-8?B?bEc0bEpzT2ROeTl1STNqM214STRzMldlRlJKRHc0WU5IOU9mc0N0U1owdDRz?=
- =?utf-8?B?YTNrSjVLNlRuL0dGWjZnTTh2TDRDc3hxajRpcmRVbTljVHBsTWh4YnMxaTd2?=
- =?utf-8?B?NVJnbTA1SE9qb1RyQlpQOVA1UlRNN1QrOFFpMjIwdUpvQTdlQXJkbjdmYm9V?=
- =?utf-8?B?anAvb3BwUTY0bXQyY05VRkRXV1IxWjRDVDNscy9icnpoWjdkdXpLVHozZ2hm?=
- =?utf-8?B?UlFRNzhjSng2eDdDZnlyeElHeUNuVDQ4NGZTek91NGJPeHVZWTZ3bzJqVmVx?=
- =?utf-8?Q?1IVMy8BLHHTTH28M=3D?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9b445321-0838-4c84-e6ab-08def9ee7140
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2026 10:26:03.3393
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oHM4Sy/drP9gsUkw2c46ZfnX6ZJPgINA+A+6aBrP/VNBWMESDGRyiQKN1+NBZmvGMVjKNDNq4jNACKNm45PB8Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3826
+From: Gerte Hoogewerf <ghoogewerf@lmi3d.com>
+Date: Mon, 17 Aug 2026 08:34:44 +0200
+X-Gm-Features: AcwNN1V2ZydDAZwrdGip6pPUG_MqEEppqseW2OJ9yMRXkCz1HR3NgvMDF9Bz6MA
+Message-ID: <CAKndYJGo5Yu7Ak694tX=cqRjtJneXs22DPjz=UDVkUcNJMWyOA@mail.gmail.com>
+Subject: The state of Xenomai 4 on Xilinx Zynq-7000 (or ARM32 in general)
+To: xenomai@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 
-On 31.07.26 10:53, Clara Kowalsky wrote:
-> Debian trixie warns when relying on the generated compatibility unit for
-> /etc/init.d/xenomai.
-> 
-> This addresses
-> 
-> systemd-sysv-generator[1423]: SysV service '/etc/init.d/xenomai' lacks a native systemd unit file, automatically generating a unit file for compatibility.
-> systemd-sysv-generator[1423]: Please update package to include a native systemd unit file.
-> systemd-sysv-generator[1423]: ⚠ This compatibility logic is deprecated, expect removal soon. ⚠
-> 
-> The systemd unit uses the script /usr/lib/xenomai/xenomai-group for GID
-> handling.
-> See #54.
-> 
-> Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
-> ---
->  debian/libxenomai1.xenomai-group   | 26 +++++++++++++++++++++
->  debian/libxenomai1.xenomai.init    | 36 ------------------------------
->  debian/libxenomai1.xenomai.service | 12 ++++++++++
->  debian/rules                       |  3 ++-
->  4 files changed, 40 insertions(+), 37 deletions(-)
->  create mode 100644 debian/libxenomai1.xenomai-group
->  delete mode 100644 debian/libxenomai1.xenomai.init
->  create mode 100644 debian/libxenomai1.xenomai.service
-> 
-> diff --git a/debian/libxenomai1.xenomai-group b/debian/libxenomai1.xenomai-group
-> new file mode 100644
-> index 000000000..ecb99ff20
-> --- /dev/null
-> +++ b/debian/libxenomai1.xenomai-group
-> @@ -0,0 +1,26 @@
-> +#!/bin/sh -e
-> +
-> +GROUP=xenomai
-> +FILENAME=/sys/module/xenomai/parameters/allowed_group
-> +GID=$(getent group "$GROUP" | cut -d: -f3)
-> +
-> +test -e "$FILENAME" || exit 0
-> +test -n "$GID" || exit 0
-> +
-> +case "$1" in
-> +  start)
-> +        echo "$GID" > "$FILENAME"
-> +        ;;
-> +  stop)
-> +        echo "-1" > "$FILENAME"
-> +        ;;
-> +  restart|force-reload)
-> +        "$0" start
-> +        ;;
-> +  *)
-> +        echo "Usage: $0 {start|stop|restart|force-reload}" >&2
-> +        exit 1
-> +        ;;
-> +esac
-> +
-> +exit 0
-> diff --git a/debian/libxenomai1.xenomai.init b/debian/libxenomai1.xenomai.init
-> deleted file mode 100644
-> index 811fe25fd..000000000
-> --- a/debian/libxenomai1.xenomai.init
-> +++ /dev/null
-> @@ -1,36 +0,0 @@
-> -#!/bin/sh -e
-> -### BEGIN INIT INFO
-> -# Provides:          xenomai
-> -# Required-Start:    mountkernfs
-> -# Required-Stop:
-> -# Default-Start:     2 3 4 5
-> -# Default-Stop:      0 1 6
-> -# Short-Description: Set Xenomai group
-> -### END INIT INFO
-> -
-> -GROUP=xenomai
-> -INITNAME=/etc/init.d/xenomai
-> -FILENAME=/sys/module/xenomai/parameters/allowed_group
-> -GID=$(getent group $GROUP | cut -d: -f3)
-> -
-> -test -e $FILENAME || exit 0
-> -test -n "$GID" || exit 0
-> -
-> -case "$1" in
-> -  start)
-> -        echo "$GID" > $FILENAME
-> -        ;;
-> -  stop)
-> -        echo "-1" > $FILENAME
-> -        ;;
-> -  restart|force-reload)
-> -        $0 start
-> -        ;;
-> -  *)
-> -        echo "Usage: $INITNAME {start|stop|restart|force-reload}"
-> -        exit 1
-> -        ;;
-> -esac
-> -
-> -exit 0
-> -
-> diff --git a/debian/libxenomai1.xenomai.service b/debian/libxenomai1.xenomai.service
-> new file mode 100644
-> index 000000000..50ca3bcc1
-> --- /dev/null
-> +++ b/debian/libxenomai1.xenomai.service
-> @@ -0,0 +1,12 @@
-> +[Unit]
-> +Description=Set Xenomai group
-> +After=systemd-modules-load.service
-> +
-> +[Service]
-> +Type=oneshot
-> +RemainAfterExit=yes
-> +ExecStart=/usr/lib/xenomai/xenomai-group start
-> +ExecStop=/usr/lib/xenomai/xenomai-group stop
-> +
-> +[Install]
-> +WantedBy=multi-user.target
-> diff --git a/debian/rules b/debian/rules
-> index 9e56de260..0ef5557fa 100755
-> --- a/debian/rules
-> +++ b/debian/rules
-> @@ -75,6 +75,7 @@ install: build
->  	    cat $$f >> $(CURDIR)/debian/libxenomai1/etc/udev/xenomai.rules ; \
->  	done
->  	install -m 644 debian/libxenomai1.modprobe $(CURDIR)/debian/libxenomai1/etc/modprobe.d/xenomai.conf
-> +	install -D -m 755 debian/libxenomai1.xenomai-group $(CURDIR)/debian/libxenomai1/usr/lib/xenomai/xenomai-group
->  	# remove empty directory
->  	rm -rf $(CURDIR)/debian/xenomai-doc/usr/share/doc/xenomai-doc/ps
->  	cp debian/libxenomai1.lintian $(CURDIR)/debian/libxenomai1/usr/share/lintian/overrides/libxenomai1
-> @@ -103,7 +104,7 @@ binary-indep: build install
->  binary-arch: build install
->  	dh_testdir -a
->  	dh_testroot -a
-> -	dh_installinit -a --name=xenomai
-> +	dh_installsystemd -a --name=xenomai
->  	dh_installman -a
->  	dh_installdocs -a -A README
->  	dh_link -a
+Hi Xenomai team,
 
-Thanks, applied.
+At LMI, we are in the machine vision industry, where some applications
+require predictable and bounded ISR latency.   Although we are
+gradually migrating our installations to Xilinx Zynq UltraScale+, most
+field installations still run on the older Xilinx Zynq-7000 SoC.
 
-Jan
+We've been running Xenomai on our customized Zynq-7000 boards since
+2021 or so.  Our products have been shipping with Xenomai 3, ipipe,
+kernel 4.14 all this time.  Although it still runs and performs well,
+the age of the stack is starting to affect security certification.
+
+On multiple occasions, I've tried newer versions of Xenomai.   The
+most recent version that still functions properly was kernel 5.4 (i.e.
+the last version to support ipipe + Xenomai 3).  I was never able to
+successfully boot anything newer than that version.
+
+It typically hangs partway through boot, like this:
+
+[    0.000000] Booting Linux on physical CPU 0x0
+[    0.000000] Linux version 6.18.29-01121-g5d9e6ccea5cc
+(ghoogewerf@NLKRLTF0FQR04) (arm-none-linux-gnueabihf-gcc (LMI3D G++
+11.4.1-p1) 11.4.1 20240321, GNU ld (LMI3D G++ 11.4.1-p1) 2.40) #2 SMP
+PREEMPT EVL Mon Jul 13 12:06:58 CEST 2026
+[    0.000000] CPU: ARMv7 Processor [413fc090] revision 0 (ARMv7), cr=18c5387d
+[.....]
+[    0.815404] io scheduler kyber registered
+[    0.820358] zynq-pinctrl 700.pinctrl: zynq pinctrl initialized
+[    0.831589] dma-pl330 f8003000.dma-controller: Loaded driver for
+PL330 DMAC-241330
+[    0.839180] dma-pl330 f8003000.dma-controller:
+DBUFF-128x8bytes Num_Chans-8 Num_Peri-4 Num_Events-16
+[    0.857446] brd: module loaded
+[    0.865454] loop: module loaded
+[    1.260102] Freeing initrd memory: 5620K
+<======    HANG    ======>
+
+The peculiar thing is that either "CONFIG_EVL=n" or "CONFIG_SMP=n"
+works around this problem.  But that's not a good solution for obvious
+reasons.
+
+I am curious where Xenomai 4 stands regarding support for Zynq-7000
+(or ARM32 in general).  Are you aware of problems with these older
+boards?  Is there anything we can do ourselves to debug this further?
+We are happy to share the full boot log, kernel config, and device
+tree if that would help.  Any guidance or support you can offer would
+be appreciated.
+
+Thanks,
 
 -- 
-Siemens AG, Foundational Technologies
-Linux Expert Center
+Gerte Hoogewerf
+Senior Software Team Lead
+LMI Technologies
+Wiebachstraat 25b, Kerkrade 6466 NG, The Netherlands
+
+-- 
+
+
+This
+email and any attachment(s) it may contain is confidential and is 
+intended
+solely for the use of the individual(s) to whom it is addressed. 
+If you are not
+the intended recipient of this email, you must not take 
+action based on the
+contents, nor distribute, nor expose any part of the 
+content(s) to entities or
+person(s) beyond the original distribution list. 
+Please contact the sender and
+delete the email if you have received it in 
+error. Thank you.
