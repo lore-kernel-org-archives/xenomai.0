@@ -1,113 +1,115 @@
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBA573C3C14
-	for <xenomai@lists.linux.dev>; Fri, 28 Aug 2026 07:49:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.198
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93EA3364059
+	for <xenomai@lists.linux.dev>; Fri, 28 Aug 2026 15:35:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1787903368; cv=none; b=eCMf3YanpNN1Fz1MDYiVJ9wDhDuJY+YZHUN/sZe0iBqY+/HWfEWp1mK4VXsAPPSzh0a8dsRnFhMDY0qnkorS0isFHw/xnWTrJn2MB1faH6FYwbO4Nd7fiH9xqCCl6j8EKCqezpFODAvUYkLoXGth7vPHBJkvxKZ++3k0F5QqCek=
+	t=1787931309; cv=none; b=pXwHbnvkcncEIB83yrQ4+feM2WIpLCvOLlTKqydUGnYBLe7fJasIKI4ozjy95ByYQ4OmBsBjSz3fZGMY2/r3hARReipGxxzrbfKW5bC5a25Eejq7cl147e6/ginLQUBvJr85+LK7oIw/qCymSIBeY1aEP47Nv4S88eWg0XIiHFY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1787903368; c=relaxed/simple;
-	bh=tXzqIuUsr0n9/hPHovgy609KSfae9yTOB9M0qngbYWs=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=OY0nZSRJiCLOpIJkth+im4E1u9dvhl+zke/G/4Q2xChY7S3RxUj8krJSuNjPTvUE2eiybHxjWKtTHJMoCEevXtT4mXPHB+4hZLKDp99A9gIewkcuJ6zaiqdIU57qJcxfnYO+1coQMfqMMn9m8VNMtoIQKk3gAPFAvAk97y5MZXE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=ndHCcRfy; arc=none smtp.client-ip=217.70.183.198
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1787931309; c=relaxed/simple;
+	bh=e/Z0D9dEDg4w8wAf0XlklM2edf2QmkP5s5Zpnk1jQ7Y=;
+	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=hEDGXijdBo+E18DEXfRs5lDPEL5ACv7j2lWPJ69qmurvPdSgwf6Vb5t97htCNEYGZQm2ADDsAMd2aMktlFefD1zF9ojSXaKR62GioxnnR0jjmxG3Z0q04F1aqgvDRWH7ORXry9kfzAVJDXXCBP72AO3lMtcZF/3ZFwF3cUyaZuc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b=KM612seM; arc=none smtp.client-ip=185.136.64.227
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="ndHCcRfy"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id B8F873F5B3;
-	Fri, 28 Aug 2026 07:49:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1787903357;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=4pHVhjXhkZCvuMrDU+YTx7DEOHSJldjnStGr/LcJUDM=;
-	b=ndHCcRfyrFzYDRCRyEocGcI9gNHXCjKmdog5dg4sh1nUkRG+t/mVsDrK65cdxoDMZQNyJa
-	jZU3dA3+O/XdfbHAq/kchfdR7wWhdyffCPfTKSNLD2T+6DnwZW8488NcFeE0I+FI3cOJfX
-	XymxNqOVpAxyzHTpfd4cgEnVhcT8W4uZCzek9AqvyBf8Ru5iFZKp4Z4ghoR31aXYSFD9DX
-	hfgCjjNF9nxVKK4HFp59cc54BgoxmFd9j2TbgyO6PRqUiJIqIE+JpCzAo/Vxw9UxeIe+TP
-	wcM1fYMeXS5EkkwAU2ejp3bEFE7GhgSxlVAICDtwx7x0HcQ62ZjFFkFv3KOT5Q==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: [libevl][PATCH] tests: sched-quota-accuracy: Fix test cpu
- selection
-In-Reply-To: <a5498e33-54ca-4c7c-b260-3c8922685dfc@siemens.com> (Jan Kiszka's
-	message of "Fri, 28 Aug 2026 07:46:27 +0200")
-References: <a5498e33-54ca-4c7c-b260-3c8922685dfc@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Fri, 28 Aug 2026 09:49:16 +0200
-Message-ID: <87tsoebs77.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=jan.kiszka@siemens.com header.b="KM612seM"
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 2026082815345702c76da7690002077d
+        for <xenomai@lists.linux.dev>;
+        Fri, 28 Aug 2026 17:34:57 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=jan.kiszka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
+ bh=wh38Gz1CzgsOJ5cabFDLzLhk4LbOfR79/8R0fpjD1SE=;
+ b=KM612seMAatMdCiIUcod/Yg704cu3XBKc8VkWhKG2U0RhrskBj9dvytjNT2YfdztK3ILrd
+ vJdRmhmIikzEL1wAmruA7b6+RxnoKNLGCML5A4EJSLZIpYhqPCmxYJhUMsGT0QcHaGS38hvh
+ v8+RjHblasiVBpqhprbRAPJPCNGW0XAjf7HjpGne9enlLF8oql0ACH885TyHL146Imv9XDTy
+ QTi7PwEmXnTQWQRFQx2GG2quplvVqlhw5OpMba7oKeEna7Fw1xRxO9GZWl+e+yQj8CbPnD0Z
+ lN1Y6ohqtS3IQh58LebaltODS456kkb9T6WHRokHXrP6juNaHuUE0Zcg==;
+From: Jan Kiszka <jan.kiszka@siemens.com>
+To: xenomai@lists.linux.dev
+Subject: [xenomai-images][PATCH 5/5] Switch to rootless builds
+Date: Fri, 28 Aug 2026 17:34:56 +0200
+Message-ID: <eb82698af1ef62819a085c92941857a592f40d7c.1787931296.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1787931296.git.jan.kiszka@siemens.com>
+References: <cover.1787931296.git.jan.kiszka@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: dmFkZTGX3clCgi3/O1mdA/e8hLI7c6wRNQauLepgvnHSz0LGQoKWnmKdyw/2ZEoZgv3DPLgrgGCwHeqIqqUBVTyp/6WnuTbvs1KPVmYSGWeKeSi9Lw0cjR8Sy7jJxbxAA00DLsQOYmL8O6mjzpMONWQ7RwuPyiuNBR7ydhw20YgKUp3UJlgGI74Ukn33R0ZVTxJyu+EMuKVywVTNkvAihpg/xx/uqmPSneK+LGLo4+hfB8zdLuni48j2bQEdSDOorvgskq42I0gBAQEbdT3aJc7MUoiOg2R39u6crx4+uQ71UiNoi15fZb1GQHnPSdVUBnh017631dyJqispjRNS7oPinEcYA2OUe625xfnBxff0VDtHlHCsMzo3/8ohZu//QckYKzEJbX+OWcTnOIYPfl8Y2VbGL0vfGUvL/upa1IOkfHUhsX5rQGxrGpKscFsDmU8E4gXUCLLz3sjfRHcl5ahZVvXo8dLlKWNn8PV31dmYbZmvnLUHkrI5iqhhaoaO/v7R6wR7eodCHUBKrB+ZZzkZY9cL9EpJtL9r81oJxPrNPi9vWOocoNGIhTee8ok7tiWCJ26C5+3qljyRw0g7YnYTQpCJlQjVBNpph5a6dJF1nnm1Wfc7F16WULBBzVHTf26fRQVhiECSvGYcTnBXeHGj/KV0p8V3OaWsaSQae1RE4bWl3Q
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-294854:519-21489:flowmailer
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-> From: Jan Kiszka <jan.kiszka@siemens.com>
->
-> pick_test_cpu() is adjusting test_cpu to the system's possibilities.
-> That is 0 for a single-core machine, but it can also be something else
-> on multicore machines if the OOB cpuset is restricted. And this causes
-> the test to fail:
->
-> sched-quota-accuracy: ** BROKEN
-> ../tests/sched-quota-accuracy.c:96: FAILED: sched_setaffinity(0, sizeof(affinity), &affinity) (=Operation not permitted)
->
-> Fixes: 245a2eac29eb ("tests: sched-quota-accuracy: extend measurement to preemption noise")
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  tests/sched-quota-accuracy.c | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
->
-> diff --git a/tests/sched-quota-accuracy.c b/tests/sched-quota-accuracy.c
-> index 2c4daed..2a2dc38 100644
-> --- a/tests/sched-quota-accuracy.c
-> +++ b/tests/sched-quota-accuracy.c
-> @@ -389,15 +389,6 @@ int main(int argc, char *argv[])
->  	}
->  
->  	atexit((void (*)(void))cleanup_group);
-> -	set_cpu_affinity();	/* All test threads inherit this. */
-> -
-> -	param.sched_priority = MAIN_PRIO;
-> -	__Tcall_assert(ret, pthread_setschedparam(pthread_self(), SCHED_FIFO, &param));
-> -	__Tcall_assert(ret, evl_attach_self("quota-accuracy:%d", getpid()));
-> -
-> -	__Tcall_assert(ret, evl_new_sem(&ready, "quota-ready:%d", getpid()));
-> -	__Tcall_assert(ret, evl_new_event(&barrier, "quota-barrier:%d", getpid()));
-> -	__Tcall_assert(ret, evl_new_mutex(&lock, "quota-lock:%d", getpid()));
->  
->  	/*
->  	 * We need all threads to be pinned on the same (oob-capable)
-> @@ -407,6 +398,15 @@ int main(int argc, char *argv[])
->  	 */
->  	test_cpu = pick_test_cpu(test_cpu, false, NULL);
->  	do_trace("picked CPU%d for execution", test_cpu);
-> +	set_cpu_affinity();	/* All test threads inherit this. */
-> +
-> +	param.sched_priority = MAIN_PRIO;
-> +	__Tcall_assert(ret, pthread_setschedparam(pthread_self(), SCHED_FIFO, &param));
-> +	__Tcall_assert(ret, evl_attach_self("quota-accuracy:%d", getpid()));
-> +
-> +	__Tcall_assert(ret, evl_new_sem(&ready, "quota-ready:%d", getpid()));
-> +	__Tcall_assert(ret, evl_new_event(&barrier, "quota-barrier:%d", getpid()));
-> +	__Tcall_assert(ret, evl_new_mutex(&lock, "quota-lock:%d", getpid()));
->  
->  	if (nrthreads <= 0)
->  		nrthreads = 3;
+This removes the need to add a user to the docker group if podman is
+used.
 
-Merged, thanks.
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ Kconfig   | 10 +++++++++-
+ README.md |  4 +++-
+ kas.yaml  |  2 +-
+ 3 files changed, 13 insertions(+), 3 deletions(-)
 
+diff --git a/Kconfig b/Kconfig
+index 5337d37..b574c8c 100644
+--- a/Kconfig
++++ b/Kconfig
+@@ -1,3 +1,11 @@
++#
++# Xenomai Real-Time System
++#
++# Copyright (c) Siemens AG, 2021-2026
++#
++# SPDX-License-Identifier: MIT
++#
++
+ mainmenu "Xenomai Reference Images"
+ 
+ config KAS_INCLUDE_MAIN
+@@ -6,7 +14,7 @@ config KAS_INCLUDE_MAIN
+ 
+ config KAS_BUILD_SYSTEM
+ 	string
+-	default "isar-privileged"
++	default "isar-rootless"
+ 
+ config ARCH_X86
+ 	bool
+diff --git a/README.md b/README.md
+index 7e6ebeb..cfa7906 100644
+--- a/README.md
++++ b/README.md
+@@ -11,7 +11,9 @@ from scratch.
+ 
+ ## Building Target Images
+ 
+-Install Docker and make sure you have the required permissions to start containers.
++Install Podman (recommended) or Docker. If using Docker, see
++[kas documentation](https://kas.readthedocs.io/en/latest/userguide/kas-container.html)
++for more details.
+ 
+ Next, invoke the configuration menu to select the desired image configuration
+ and start the build:
+diff --git a/kas.yaml b/kas.yaml
+index cc5202a..bd4ecc2 100644
+--- a/kas.yaml
++++ b/kas.yaml
+@@ -12,7 +12,7 @@
+ header:
+   version: 14
+ 
+-build_system: isar-privileged
++build_system: isar-rootless
+ 
+ distro: xenomai-demo
+ target: demo-image
 -- 
-Philippe.
+2.47.3
+
