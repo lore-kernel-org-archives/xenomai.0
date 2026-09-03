@@ -1,77 +1,191 @@
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8701A40099A
-	for <xenomai@lists.linux.dev>; Thu,  3 Sep 2026 07:20:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.193
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C119C440647
+	for <xenomai@lists.linux.dev>; Thu,  3 Sep 2026 08:35:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788420047; cv=none; b=Y3e8rk5nMtZC91XOkzGapPdj3EOCSHxKU/KLhXOK3gYuv/sK3XdMhtCvhW32iW9zLtSxSa7EVVg7v3avp2b/xjZbJhOORECOhbPAlGbkmzkCkwruKeBZJ67c84LBaTAFnyQxjFHOSn6npBSQra30yMvU480VreR3Ozbq6XFBqvE=
+	t=1788424506; cv=none; b=o4hvXcdEWPbcxl2dngk18PY2ir8y5RBOssKKcXiaKxu4M6J2XFi8rIcdVJtSHaiKKWHwGPBUnWPRmg71wvDffOTswE1yCTcxj/lb+42v1wJhPGbTzZN2sTOFyYg8duDkqLUeYC/THxokNHw9yCifj3XmBf0d6NUwsgh2Ic4V9eg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788420047; c=relaxed/simple;
-	bh=Z9PAnHkjquclQ/RrMneUiWkYe6ezE5xtkjZ8/ChZ080=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=XAHolsp4Tp51sf//R+wyoZ1FRMXS2HgrBxhPVlOeSyx722O6FD/MExx1f1XPnIDUg2ppyB/2ipYZfy4LWkIh4iSXqmPirXKOXd0UjIyzolhdDHt1LnNqT2DDzN9jIAxpZPlpjm12Eh8KXYQgrd50vh1vIwLqvKL9aStjPHt8htw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=ZPnCWP6j; arc=none smtp.client-ip=217.70.183.193
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1788424506; c=relaxed/simple;
+	bh=ZkEA0T+W3pplgpeIBjc4krhWn3sE3qSbDkP8J+QVawI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Gy+2sgeZqJTJnX0Np4XoXB9Und7is6lHRWJoZDvgVMRO8/q9h3dSC53KIwcmWCThCbFkvaa+pz4S5tms1PtnVV26Uh+mQeARU+ehIP5lDADSwi8qzZVP6CMBdbKMmV2x3D6biqrlMpYUtiu/mPRIafK3YjwHdcaiWcyi0I9pc8w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=CSNuJf9r; arc=none smtp.client-ip=185.136.65.225
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="ZPnCWP6j"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 7637B3ED3D;
-	Thu,  3 Sep 2026 07:20:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1788420034;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=wJpTLSC6FUscw/u6jo2EzrwHAMdpCPNtrv5/Aw0ErFU=;
-	b=ZPnCWP6j7ncKT7GuYqu9IoLtL3A0fKlkcov10dZR3JAGxaJvV9kiLmFOiEpvIx7NOjIMlX
-	Tz17pwXkr2G4ftad14JHFCeAcBAlnVHui5gw5oL1uXhvC4j/JDCc69JrAu4dGBeWyWycs9
-	IX+KzSQ6eR8s+OHNSbW6Fm9UKd8K7kyTXQMig8A3r7qvodNjq3EIlWjW0WjRJKvIyr0tl/
-	7FOAnvWydxKQoW8vkYTwwI4EcxI9ezL8eSUyLm0+ngDFZrbxJdzp/gbjAw0ZZtm1uJLB34
-	6NxNzt7IAZuaOr7pqfwrMExsg7XnvPN+MAbn+jDZigTELvylraXKZ0bwA9WDZw==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: libevl: sched-quota test lacks success check
-In-Reply-To: <86d6990a-349c-42f3-a054-494422298386@siemens.com> (Jan Kiszka's
-	message of "Mon, 31 Aug 2026 14:48:01 +0200")
-References: <86d6990a-349c-42f3-a054-494422298386@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Thu, 03 Sep 2026 09:20:33 +0200
-Message-ID: <878q5issvy.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="CSNuJf9r"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20260903083500e27014cca30002075b
+        for <xenomai@lists.linux.dev>;
+        Thu, 03 Sep 2026 10:35:00 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=clara.kowalsky@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=KKpJPzU2I220HMB+Tp8k7h/Xfq96wAWgY0XdSVD7NWY=;
+ b=CSNuJf9rTfvbfomJZD8g4jSFpD/tO9YDTE4f9Vg+ABpc509md2vCgGZWvnuhsnPhXo6ksn
+ 0LK90JyYV5A0VZt3iCEgW+1QnGtINC1Nu3lkb2Yv04X3LBuw3Gubyb3Dmy96+k0G0aFuXWkh
+ vMZp/HuHLG6iqpmIJj+oTv0/dm1hP2zN9py0c6zzkGWV7CL1c48YtGO1/MAczPPEvW/mGKpE
+ htLwwFVQyleJpD1Fav9pQT8imL4ymbnIrhE85eG2mDnXco3LWYzWeqLjVl12iC/Q7G+mM9Xv
+ PxTgVHpd9/CLjW2iptWFvfF3gBdOdpaXPJIFfPHUOxW2J15GyieKsUPQ==;
+From: Clara Kowalsky <clara.kowalsky@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: jan.kiszka@siemens.com,
+	Clara Kowalsky <clara.kowalsky@siemens.com>
+Subject: [PATCH 3/3] docs: Match actual return type for RTDM doxygen declarations
+Date: Thu,  3 Sep 2026 10:34:47 +0200
+Message-ID: <20260903083447.2220024-3-clara.kowalsky@siemens.com>
+In-Reply-To: <20260903083447.2220024-1-clara.kowalsky@siemens.com>
+References: <20260903083447.2220024-1-clara.kowalsky@siemens.com>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: dmFkZTE/kt97N247ib24xwE81WPDZyio11TsycCi/BvwHY8Te3ZT6Vb0JDtEXFYPfKZLhWKXeYxaV4J578y+5SU8k1Iw0YjmiWbHGcNzP6lFsYetR+YyMk7SK8ksRsu7CtiDYU+PApWw2B43DyjwdKj+HoEhWrCbkPbzLtnKtwsz1gRNbqIIfXzwOumS9S1fbW/IrvChuuC+abJzi5KiKiY/DpQtJcO4pbbY3lL+MyfXg99JcU4yjo4X5aVeFLXEFkTgkxB9BZ1CCMKnEBOtd1fxaObXm4YxLJT7yrkqStH3XIge93G8u6guFojwYV8DYXdSgatm1YCDHd3dtuV0+zKbsHkPP4LCppy884csA2q1T2z5F06RxUQEj9b+28nkGcCgz4Av+cXGe1tvRk+FbElGnD/VkSJDI2jCVOa/+UDQ8ni2RvPgFqDuBbHcwMyJLYKT5qtIreX0ukD8nM+3hn6VIA1MqUs6wyKwe8m3cBExE9/Gjrrisebau1wJ+UDpdYgSZ9+oEBWyjgPurWOJlyvcYs23gRP/3r96dgBfrcQPMjqRvPaFmWVXEDFQ1bT2JsER8E/dqK/a6M+q3W3To6bfD+Kn+cccR9IQDmV5Rx47r3CQyismT5bLYbR/5H9rsR/hwG0belKFg94lBS74BUtPlEDnWc977exwa6jf71sjJ7ea0w
+Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-1047747:519-21489:flowmailer
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+The RTDM doxygen-only declarations were corrected to match the actual
+return semantics (int instead void).
 
-> Hi Philippe,
->
-> trying to port the sched-quota fixes back to xenomai 3, I had a look at
-> again at the libevl test. And since [1], it always succeeds (unless some
-> function returns an error), no more checking of percentage boundaries.
-> That's not helpful for CI, though. Would it make sense to re-introduce
-> this, just with an exception for VM hosts? That what we do in xenomai3.
->
-> Jan
->
-> [1]
-> https://gitlab.com/Xenomai/xenomai4/libevl/-/commit/22ed65d951dd49b159e52c498dda49b2492138f7
+This fixes warnings such as
 
-Yes, I'd be fine with that, although the acceptable score could be
-arguably different even across hw platforms, so we would have to pick a
-conservative value to declare success/failure unless the test adapts
-based on some heuristics. This said, I agree that running_on_vm() is our
-friend to fully disable such check only on VM since the figure does not
-make much sense there.
+kernel/cobalt/rtdm/core.c:420: warning: found documented return type for rtdm_timedwait that does not return anything
 
+See #18.
+
+Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
+---
+ kernel/cobalt/rtdm/core.c   | 28 ++++++++++++++--------------
+ kernel/cobalt/rtdm/drvlib.c |  2 +-
+ 2 files changed, 15 insertions(+), 15 deletions(-)
+
+diff --git a/kernel/cobalt/rtdm/core.c b/kernel/cobalt/rtdm/core.c
+index f30055a79..002fb51cf 100644
+--- a/kernel/cobalt/rtdm/core.c
++++ b/kernel/cobalt/rtdm/core.c
+@@ -414,7 +414,7 @@ rtdm_timedwait_condition(struct rtdm_wait_queue *wq, C_expr condition,
+ 			 nanosecs_rel_t timeout, rtdm_toseq_t *toseq);
+ 
+ /**
+- * @fn void rtdm_timedwait(struct rtdm_wait_queue *wq, nanosecs_rel_t timeout, rtdm_toseq_t *toseq)
++ * @fn int rtdm_timedwait(struct rtdm_wait_queue *wq, nanosecs_rel_t timeout, rtdm_toseq_t *toseq)
+  * @brief Timed sleep on a waitqueue unconditionally
+  *
+  * The calling task is put to sleep until the waitqueue is signaled by
+@@ -443,11 +443,11 @@ rtdm_timedwait_condition(struct rtdm_wait_queue *wq, C_expr condition,
+  *
+  * @coretags{primary-only, might-switch}
+  */
+-void rtdm_timedwait(struct rtdm_wait_queue *wq,
++int rtdm_timedwait(struct rtdm_wait_queue *wq,
+ 		    nanosecs_rel_t timeout, rtdm_toseq_t *toseq);
+ 
+ /**
+- * @fn void rtdm_timedwait_locked(struct rtdm_wait_queue *wq, nanosecs_rel_t timeout, rtdm_toseq_t *toseq)
++ * @fn int rtdm_timedwait_locked(struct rtdm_wait_queue *wq, nanosecs_rel_t timeout, rtdm_toseq_t *toseq)
+  * @brief Timed sleep on a locked waitqueue unconditionally
+  *
+  * The calling task is put to sleep until the waitqueue is signaled by
+@@ -481,7 +481,7 @@ void rtdm_timedwait(struct rtdm_wait_queue *wq,
+  *
+  * @coretags{primary-only, might-switch}
+  */
+-void rtdm_timedwait_locked(struct rtdm_wait_queue *wq,
++int rtdm_timedwait_locked(struct rtdm_wait_queue *wq,
+ 			   nanosecs_rel_t timeout, rtdm_toseq_t *toseq);
+ 
+ /**
+@@ -509,7 +509,7 @@ void rtdm_timedwait_locked(struct rtdm_wait_queue *wq,
+ rtdm_wait_condition(struct rtdm_wait_queue *wq, C_expr condition);
+ 
+ /**
+- * @fn void rtdm_wait(struct rtdm_wait_queue *wq)
++ * @fn int rtdm_wait(struct rtdm_wait_queue *wq)
+  * @brief Sleep on a waitqueue unconditionally
+  *
+  * The calling task is put to sleep until the waitqueue is signaled by
+@@ -526,10 +526,10 @@ rtdm_wait_condition(struct rtdm_wait_queue *wq, C_expr condition);
+  *
+  * @coretags{primary-only, might-switch}
+  */
+-void rtdm_wait(struct rtdm_wait_queue *wq);
++int rtdm_wait(struct rtdm_wait_queue *wq);
+ 
+ /**
+- * @fn void rtdm_wait_locked(struct rtdm_wait_queue *wq)
++ * @fn int rtdm_wait_locked(struct rtdm_wait_queue *wq)
+  * @brief Sleep on a locked waitqueue unconditionally
+  *
+  * The calling task is put to sleep until the waitqueue is signaled by
+@@ -551,7 +551,7 @@ void rtdm_wait(struct rtdm_wait_queue *wq);
+  *
+  * @coretags{primary-only, might-switch}
+  */
+-void rtdm_wait_locked(struct rtdm_wait_queue *wq);
++int rtdm_wait_locked(struct rtdm_wait_queue *wq);
+ 
+ /**
+  * @fn void rtdm_waitqueue_lock(struct rtdm_wait_queue *wq, rtdm_lockctx_t context)
+@@ -585,7 +585,7 @@ void rtdm_waitqueue_lock(struct rtdm_wait_queue *wq, rtdm_lockctx_t context);
+ void rtdm_waitqueue_unlock(struct rtdm_wait_queue *wq, rtdm_lockctx_t context);
+ 
+ /**
+- * @fn void rtdm_waitqueue_signal(struct rtdm_wait_queue *wq)
++ * @fn int rtdm_waitqueue_signal(struct rtdm_wait_queue *wq)
+  * @brief Signal a waitqueue
+  *
+  * Signals the waitqueue @a wq, waking up a single waiter (if
+@@ -598,10 +598,10 @@ void rtdm_waitqueue_unlock(struct rtdm_wait_queue *wq, rtdm_lockctx_t context);
+  *
+  * @coretags{unrestricted, might-switch}
+  */
+-void rtdm_waitqueue_signal(struct rtdm_wait_queue *wq);
++int rtdm_waitqueue_signal(struct rtdm_wait_queue *wq);
+ 
+ /**
+- * @fn void rtdm_waitqueue_broadcast(struct rtdm_wait_queue *wq)
++ * @fn int rtdm_waitqueue_broadcast(struct rtdm_wait_queue *wq)
+  * @brief Broadcast a waitqueue
+  *
+  * Broadcast the waitqueue @a wq, waking up all waiters. Each
+@@ -614,10 +614,10 @@ void rtdm_waitqueue_signal(struct rtdm_wait_queue *wq);
+  *
+  * @coretags{unrestricted, might-switch}
+  */
+-void rtdm_waitqueue_broadcast(struct rtdm_wait_queue *wq);
++int rtdm_waitqueue_broadcast(struct rtdm_wait_queue *wq);
+ 
+ /**
+- * @fn void rtdm_waitqueue_flush(struct rtdm_wait_queue *wq)
++ * @fn int rtdm_waitqueue_flush(struct rtdm_wait_queue *wq)
+  * @brief Flush a waitqueue
+  *
+  * Flushes the waitqueue @a wq, unblocking all waiters with an error
+@@ -630,7 +630,7 @@ void rtdm_waitqueue_broadcast(struct rtdm_wait_queue *wq);
+  *
+  * @coretags{unrestricted, might-switch}
+  */
+-void rtdm_waitqueue_flush(struct rtdm_wait_queue *wq);
++int rtdm_waitqueue_flush(struct rtdm_wait_queue *wq);
+ 
+ /**
+  * @fn void rtdm_waitqueue_wakeup(struct rtdm_wait_queue *wq, rtdm_task_t waiter)
+diff --git a/kernel/cobalt/rtdm/drvlib.c b/kernel/cobalt/rtdm/drvlib.c
+index d9de62946..c2e7e1195 100644
+--- a/kernel/cobalt/rtdm/drvlib.c
++++ b/kernel/cobalt/rtdm/drvlib.c
+@@ -2270,7 +2270,7 @@ EXPORT_SYMBOL_GPL(rtdm_get_iov_flatlen);
+  *
+  * @coretags{unrestricted}
+  */
+-void rtdm_printk_ratelimited(const char *format, ...);
++int rtdm_printk_ratelimited(const char *format, ...);
+ 
+ /**
+  * Allocate memory block
 -- 
-Philippe.
+2.55.0
+
