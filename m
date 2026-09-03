@@ -1,78 +1,115 @@
-Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 54CBF3655EA
-	for <xenomai@lists.linux.dev>; Thu,  3 Sep 2026 08:35:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6CB03ECBE5
+	for <xenomai@lists.linux.dev>; Thu,  3 Sep 2026 09:48:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788424509; cv=none; b=d3TuKNJJoOqncT47i1/kVSKvTj+IezLA1vZfmAirS4upu6G5Gn+XV0xLBETSXImbO3fCJ2D1h5P+knn5akENQVysg7nkzcQEjirOlAmt6WjrgnJXpcFAnjb3ea7/YGm+kR7lzL3xRAThgBakRRNtbqDUlufF6+CowGUFULTlzIw=
+	t=1788428900; cv=none; b=dbuYzXBsHBRfqCb8tFnxSzxRY8aQjJNIF9oZP4zrCqUcBGDtzac1ik+o8DkQ0XUwujZXVz77kJUo3V3b31JkszDSccWbtcROFxjk5KdomySNrgH0RXRXY579XN/mS28ZdrHLhjng7KLa44HmXvY5vP4T/w0yT9n1ZGmjd+jekag=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788424509; c=relaxed/simple;
-	bh=o0Ys5++bNpK/9lYSq3iJIxg74SC/aMaiaaA53w0FBD0=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=CJWnw/aSRHq1xxTOD7B7gZU+NQ3f3O0YjVfIJOEISahTPy35vYLSdcfjbdD1+mx6G5b7q5ko3ugyjbk60TCqr3mQmN4rbLkgJxNAP/vHX/XEksiCSh/K0fKN2AqTwnsNNmqT32J+vHUnrzYi4l6wVl3vlDrwK4Oq7AGL3po7zX4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b=OPCfvGYo; arc=none smtp.client-ip=185.136.65.225
+	s=arc-20240116; t=1788428900; c=relaxed/simple;
+	bh=h7DJrtxVjzVbmNwiyYAgvX9LATJYhnwPjEqI4Xw9oK0=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=XKkb2jcj8mR22plpFYQkMi+yM/KSp8DuDyZ155W63gd1HBOlkDW7UF0vZtejXshc3GTtZ0f8qDk7/OcY1jtVOM7bLYBQ92hAJc6Mu9GlVkuiTinIA6chGocPaJt4blMiIM1W6bZVLzLDNB51C0FVD6H5vglOS+5fkw7TCG4L88c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=Uej/p1oq; arc=none smtp.client-ip=185.136.65.227
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=clara.kowalsky@siemens.com header.b="OPCfvGYo"
-Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 20260903083456abeaef5dd50002074c
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="Uej/p1oq"
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202609030948030f05eb410d00020791
         for <xenomai@lists.linux.dev>;
-        Thu, 03 Sep 2026 10:34:56 +0200
+        Thu, 03 Sep 2026 11:48:03 +0200
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=clara.kowalsky@siemens.com;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=0Zen1vaEiEiEQfrDSmYSy5wGj3fBfBE5u3pizYtBD9c=;
- b=OPCfvGYoEhtFa7um8dQYZK8QLSdDiFT+SUdKT4h5dIJ+VDRHl6JuxhE8M1uswjGuvKa7Ya
- FlGoqf7LAKdu4QHRNfapBBA163Ipp0n8xZvOOtd9ptHJTW+ltBnIDRpa367QuWq/8GcImxND
- FYGA5U4e4JLoGabV57NX6XYHzTlvddpo5xnOstel9Nxp8SoEtzCyUuVaKjtvNpd9jDvIT7qR
- tBANVIFbRQieLlPaWEjWSu0KF6qKeKbzRz9AkeU474FQLsdGje/it6xEhBHw/mefyXSWsT5f
- 7t/0Bj3a5GID9/sIlSWdBqaqXs6IkOgrF7W0T1NFSKjNbSE6jUhsQhYw==;
-From: Clara Kowalsky <clara.kowalsky@siemens.com>
-To: xenomai@lists.linux.dev
-Cc: jan.kiszka@siemens.com,
-	Clara Kowalsky <clara.kowalsky@siemens.com>
-Subject: [PATCH 2/3] docs: Fix a2x warning for PDF builds
-Date: Thu,  3 Sep 2026 10:34:46 +0200
-Message-ID: <20260903083447.2220024-2-clara.kowalsky@siemens.com>
+ bh=nOxLs+4uwBSS+26+lXifDypEFad3iEnSgnlD9NzGkBE=;
+ b=Uej/p1oqu5Z34aDo287Sgof1b+Vc78sQPYM6fLlW1Wj+lyGV6ttwfppx3iNQeWcWTEKgqq
+ MaVtSJin8yH8KRKQC4OwphtrjKT/gWMQHSpq0Wt7VVb35D/lZIzYcvfMPLPcFOvDG0322Lqf
+ fJyyf5QyzeaDtJutSW1IijSQx5gb7S07rXaVLcJqqSlyGazBjz4WlXM2d329NgK5/A5O7NU4
+ 4pab72l5+5e5MBq7ZyxE9nDr0cadUWoNfuR/tcu5gD72ddIH2JR/nsBBEJee6X/3QKea4swM
+ 0q/ac5tAQQHTPByurY0nbU9caTQuYq0OKu1l2Il1XTxFbwtFbrlCN38g==;
+Message-ID: <6af60166194fe03a0058c8cd3429d054125ef948.camel@siemens.com>
+Subject: Re: [PATCH 1/3] docs(xeno3): Fix doxygen parsing of
+ COBALT_IMPL_TIME64 wrappers
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Clara Kowalsky <clara.kowalsky@siemens.com>, xenomai@lists.linux.dev
+Cc: jan.kiszka@siemens.com
+Date: Thu, 03 Sep 2026 11:48:03 +0200
 In-Reply-To: <20260903083447.2220024-1-clara.kowalsky@siemens.com>
 References: <20260903083447.2220024-1-clara.kowalsky@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-1047747:519-21489:flowmailer
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-The documentation PDF build passes "-D" to a2x, raising warnings such
-as
+On Thu, 2026-09-03 at 10:34 +0200, Clara Kowalsky wrote:
+> The doxygen configuration lacks a definition for COBALT_IMPL_TIME64().
+> Therefore doxygen does not see the expanded wrapper prototype in
+> wrappers_time64.c and instead tries to match @param entries against the
+> macro call.
+>=20
+> This raises warnings at doc build such as
+>=20
+> lib/cobalt/wrappers_time64.c:42: warning: argument 'clock_id' of command =
+@param is not found in the argument list of COBALT_IMPL_TIME64(int, clock_g=
+etres, __clock_getres64,(clockid_t clock_id, struct timespec *tp))
+>=20
+> as doxygen is seeing the raw macro form
+>=20
+> COBALT_IMPL_TIME64(int, clock_getres, __clock_getres64,
+>           (clockid_t clock_id, struct timespec *tp))
+>=20
+> With the fix, doxygen rewrites the macro to
+>=20
+> int clock_getres(clockid_t clock_id, struct timespec *tp)
 
-a2x: WARNING: --destination-dir option is only applicable to HTML and manpage based outputs
+Hm. The generated documentation should be "generic", right?=20
 
-Drop the unsupported option for PDF builds.
-See #18.
+Depending on the chosen build configuration clock_getres OR
+__clock_getres64 would be correct, but that is also hidden from the user
+in glibc land, so we should probably do the same "hiding" here.=20
 
-Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
----
- doc/asciidoc/Makefile.am | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+That said: LGTM.
 
-diff --git a/doc/asciidoc/Makefile.am b/doc/asciidoc/Makefile.am
-index 782c7a23f..669decaeb 100644
---- a/doc/asciidoc/Makefile.am
-+++ b/doc/asciidoc/Makefile.am
-@@ -91,7 +91,7 @@ html/%: %.adoc Makefile
- 	$(A2X) -f manpage -D man1 $(ASCIIDOC_MAN_OPTS) $<
- 
- %.pdf: %.adoc Makefile
--	$(A2X) -f pdf -D . $(ASCIIDOC_PDF_OPTS) $<
-+	$(A2X) -f pdf $(ASCIIDOC_PDF_OPTS) $<
- 
- $(tmpdir)/%.txt: %.adoc Makefile plaintext.conf plaintext.xsl
- 	@$(mkdir_p) $(tmpdir)
--- 
-2.55.0
+>=20
+> It uses the first macro argument (return type), the second (function
+> name) and fourth (parameter list), but ignores the third (alternate
+> function name, unneeded).
+> By this, doxygen sees the actual public function prototype.
+> See #18.
+>=20
+> Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
+> ---
+>  doc/doxygen/xeno3prm-common.conf.in | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/doc/doxygen/xeno3prm-common.conf.in b/doc/doxygen/xeno3prm-c=
+ommon.conf.in
+> index 71db05686..ee4ede10d 100644
+> --- a/doc/doxygen/xeno3prm-common.conf.in
+> +++ b/doc/doxygen/xeno3prm-common.conf.in
+> @@ -647,6 +647,7 @@ PREDEFINED =3D DOXYGEN_CPP			\
+>          "EXPORT_SYMBOL_GPL(symbol)=3D//"		\
+>          "DECLARE_BITMAP(symbol, nr)=3Dunsigned long symbol[BITS_TO_LONGS=
+(nr)]" \
+>  	"COBALT_IMPL(T,I,A)=3DT I A"		\
+> +	"COBALT_IMPL_TIME64(T,I,N,A)=3DT I A"	\
+>  	"COBALT_DECL(T,P)=3DT P"			\
 
+No complains about COBALT_DECL_TIME64? Would have expected something
+similar...
+
+>  	"COBALT_SYSCALL(N,M,T,A)=3DT N A"		\
+>  	"COBALT_SYSCALL_DECL(N,T,A)=3DT N A"
+> --=20
+> 2.55.0
+
+Question to the complete series: Is
+https://gitlab.com/Xenomai/xenomai3/xenomai/-/work_items/18 completely
+closed with this series applied?
