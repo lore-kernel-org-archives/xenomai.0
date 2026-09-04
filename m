@@ -1,45 +1,47 @@
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+Received: from mslow3.mail.gandi.net (mslow3.mail.gandi.net [217.70.178.249])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 842902C11E7
-	for <xenomai@lists.linux.dev>; Fri,  4 Sep 2026 09:22:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.195
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 653EC37A829
+	for <xenomai@lists.linux.dev>; Fri,  4 Sep 2026 10:27:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.249
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788513761; cv=none; b=GULyu8Mv1lyDWW97gNVP9MUyMmx50iD4509nJzxv6hofx2kHJRjFIYBd17sVydXdVzIOkNtO0c5IZvidVRo0v30sJ5OQTFEnjiM6rlMBWrlKcAyXM3IvGP1E68qvDOjp2O5/6yapfvjGSm5JVd1BszjlSdsyvOXcHWbjzBIQPEU=
+	t=1788517644; cv=none; b=nmvoVRag6u6zoN3iTarmuWteGPqJkGe7lNbyMOGq4ng86zlprTDdRMdbLKwa2AgY/gmWhWP8ihTtJuxI+lW7TnPygfMrL4T8g1Qkazj8JC5REXgKYjiNhnFdPMWrYsmGPefAVBWp6ZJjojvZUsAstPFwaElRKJPtkX0YsmtIZiI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788513761; c=relaxed/simple;
-	bh=fcl738yzK9lAp4vn6vrV8Dsk1Dg1RyVJ5AfNrwmS0Rk=;
+	s=arc-20240116; t=1788517644; c=relaxed/simple;
+	bh=90CHD8QOhQwIFcfNamfr1RzCkTkYKoinaao4+rGDp/Y=;
 	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=UhbwXeNrdj/sPpGTZtebPfQqpAlmX3ZsPrHJvayMZMnusS96wyOBoSiTQpQcAF8ws38v2DSn6V6k38CM7LxSCyYZxi3BXGNMjtRqJ1t8I7/T6lapprGNZUhgwQUuYfcypMUvqok7D276eXnklBkdjIfc6DfYsg7K9bhSX2D3q20=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=gm9BSv+7; arc=none smtp.client-ip=217.70.183.195
+	 MIME-Version:Content-Type; b=FJY5Ys3uMZlVMC+bvapcwjnISc/sihI56N1Hr84cM22GkjRdytYVsgJz0Vrw7vBwLB1UvSG7gxwQDDh5oSibZRj6+J6bYpC8pcECuKypS2UoHCmwEjmqV1SS/Wj5vU/2Y+FY9dOTfKEnYXuedHaKJxqosX8BCgEpCXD2hjl051s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=Oc5AbItV; arc=none smtp.client-ip=217.70.178.249
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="gm9BSv+7"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 2C5DD20CC8;
-	Fri,  4 Sep 2026 09:22:20 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="Oc5AbItV"
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
+	by mslow3.mail.gandi.net (Postfix) with ESMTP id 270EA586500
+	for <xenomai@lists.linux.dev>; Fri,  4 Sep 2026 09:26:06 +0000 (UTC)
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 053EE3E97F;
+	Fri,  4 Sep 2026 09:26:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1788513741;
+	t=1788513964;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=WcDKiVL9g8DkgyEnTA9Mq4y7YJyA9oEVG9n/4E3s7AE=;
-	b=gm9BSv+7nX4cqMn032NV3gugQl0j4Nkh1oS7GZd5upnyIl/ffqvJwoRX+pOa2fcDdXiiY9
-	B4r+CpMaimyxm5yNwAEEfX0trWA85299B8KJPkpAKNKBTL0g6orjNzHgDiN2xACn4dRcJV
-	zHyiFGnZhAaBRgO+bZFSHTpHGRbgWJRl/l2Q0QJ9SL0yGoh+5/rkhfkPmKjM9u45MS+658
-	xW1xVKErE9Kk9G/g0yQbvb3oGxIiTpSmGYOHPH6f+ls0R2Jur7ioOKGBpdmQ+tyjudx2yD
-	YlDm3Bbu4TML1wcJS5cwtuWEnG29ImyK+3AqY87qgRExj/I5R6BnE007aTmKxg==
+	bh=9cgf76sZPCZ7ch9IF2ne/W1LJYEv4ITgYapH5VWsDBI=;
+	b=Oc5AbItVjeIOW2ljII/y2UM4JYe42wikFpJtWwPfbfRrVUb473qHZ8o/DlwxBrAcY+IvGd
+	c9tO8xKQBjhiSC70KuQ/S5VKIbzhvG4SHr9/J3GSMohhsHu0DWnEVKdvJyX5y7uZBCC3VT
+	GerwpdQFx4AfrfDh207HJWfJONxwzto5ar5iOucC8m6VP/05voRWC5oWvWFnOfggtlh0sl
+	4K+Y7hTPW+TEJXVZT38st1zvYzsSYcp3fQ6IMrDOhub49xULKIWAQt3NkjR2FsdM9Bvaa7
+	DNp1XLtKuKVilFbps+Wrg+4roMuU4twSSq2sQBKkiTFPPjG8mkSc30ZkgFi50Q==
 From: Philippe Gerum <rpm@xenomai.org>
 To: Jan Kiszka <jan.kiszka@siemens.com>
 Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: [libevl][PATCH] tests: sched-quota: Perform calibration without
- quota again
-In-Reply-To: <b78962e2-2109-49c8-9c88-8acb4b282f67@siemens.com> (Jan Kiszka's
-	message of "Mon, 31 Aug 2026 16:56:35 +0200")
-References: <b78962e2-2109-49c8-9c88-8acb4b282f67@siemens.com>
+Subject: Re: [libevl][PATCH] tests: sched-quota: Simplify disruption
+In-Reply-To: <72486647-41b3-448b-bfe3-85135c1ad53f@siemens.com> (Jan Kiszka's
+	message of "Mon, 31 Aug 2026 19:50:25 +0200")
+References: <72486647-41b3-448b-bfe3-85135c1ad53f@siemens.com>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Fri, 04 Sep 2026 11:22:20 +0200
-Message-ID: <87cxutfk1f.fsf@xenomai.org>
+Date: Fri, 04 Sep 2026 11:26:03 +0200
+Message-ID: <877bl1fjv8.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -48,65 +50,135 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-GND-Sasl: rpm@xenomai.org
-X-GND-Score: -100
-X-GND-Cause: dmFkZTEhJeKkYA2AYI4ApzErhFgJ33Rn1zVYTaGMCJ3H2EWnCmzmj28A8C4ef7AZE2TBstYXU89biRkG1fE0skp8s3NI3bxsxZxK4WetC/hZnQc1tXPV3qULrJNDol9S2/mezh84msxiMJoyXXOzmMRco2JzjJt8BKmEk+zvCqtDu69n5ktTa96v/rk5Iq7TVbrus+RhPuSK8Uk0NQWn5QcXB9AvoiIYtSk7msM2tXa3ABlHOJncLvOUyBZixiDURMCS5VcHEnKVBciZ2z6iNozYE2hZPUHyb+Pb5Qehz8NHtLD6dYbkNdCfCzu5Zvbdwh4Dp0etzEOGstUc8pfrRTkarZCXOCmumiawwO6WLDf4PfDr40nZ15pplxhUMpz97O3qPWksRYDX2J8N8f9tCEjcfB+F7X5uG8ep7lwKLCO7Nlzw+tMTk2e5fko3cPJZNs3BHlyVqS9vSEVCJHkY1XZHVmadlFevX3ai1fXMG10AXCLLG2nNFuqIh0BRI1qAlJVqeeqQL9smNs/+ppzu0QUZLM0E+QczNifznzGfkWiAjSDh6S++h6pRcKIAhLgaWZI5rQxXFgIVnIeYqrppKPdKSRrbAy8BCt2jM6MMingsp1PoPChUTh6WyZxiXsfdEPNqnUNrftdsafYU2CHYUrjKdhnVtPYOId8nG3/qztoGN3gUjQ
 X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: dmFkZTF+ycvcnhyU/kVVwGmVp74xwaZiJ0ie3mDlFYDeuYyRAYt6wBjC+dpCVLYsfCb9kw1jxmErAiQZe5J12+TlRQBzUU8IH4CS4UU5Saw5Qtqvv5O5S2hmhc2hry66lrOBTiB9ilJcGObpQpOsF9HsOdqPaEjtUrcbpYKHux+hH6S5r65N16DwbPsZTYqSq9Zg7Tf0up6J+V0Rc8/CP2bd5HL00pijYr3OxUu1KlwWfw+vdGctVdSq3pCclSUY68iLwlLfxIMV/eTNJG1FwCVUaBFA/lxeL7d/99i79Rvv1sanqQIs+ZSVrOt8pRH3f8ygvZYeIrJA9MAoqYwWTlabLiVQccfaqrmWvYUmdjXJ23d8sRuul32xmGHszmT08FZr9/mUNJSkHJ3a5ivcwjB5YMfclZbGaM7q0jDvH/MKfI4yrqEK7GBw1G0Kq8KBAXBLV74uUP/xbOubobSODH7f02dkHEA7HExrBIXl2ce538Vclw+14JPz7mi+woYqVk0VK5zVrgtz1HrSphojfNh2he/iemqSLkzJGiwu/yu3CpPP1IwhI4xUlcr++tN1v9x1v/rrVZ/I5+NHR8TfbxWgxw8QiqDPVcFvYogqVSILW67uvl2se1AJeJV+Mk3A7frIUM+Hb77JYEFfTQf8iwziUYQzo8g6P7tRNNRzvU7Kmgl6Aw
 
 Jan Kiszka <jan.kiszka@siemens.com> writes:
 
 > From: Jan Kiszka <jan.kiszka@siemens.com>
 >
-> It defeats the purpose of the test when we calibrate under quota as we
-> can no longer compare the actual cap against the configured value.
+> No need to spawn an extra thread here and also play ping-pong with it to
+> generate an oscillating load. The main thread can do the very same thing
+> within a few lines of code.
 >
 > Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 > ---
->  tests/sched-quota-accuracy.c | 14 ++++++++------
->  1 file changed, 8 insertions(+), 6 deletions(-)
+>
+> On top of my previous patches.
+>
+>  tests/sched-quota-accuracy.c | 52 +++---------------------------------
+>  1 file changed, 3 insertions(+), 49 deletions(-)
 >
 > diff --git a/tests/sched-quota-accuracy.c b/tests/sched-quota-accuracy.c
-> index 1bf5eb9..ac04449 100644
+> index ac04449..251ea30 100644
 > --- a/tests/sched-quota-accuracy.c
 > +++ b/tests/sched-quota-accuracy.c
-> @@ -171,15 +171,15 @@ static void *quota_thread(void *arg)
->  	__Tcall_assert(t->efd, evl_attach_self("quota-runner:%d.%d",
->  						getpid(), serial));
+> @@ -26,15 +26,13 @@
 >  
-> +	wait_phase(calibration_phase);
-> +
-> +	do_work(t, PERIOD_NS * NR_PERIODS);
-> +
->  	attrs.sched_policy = SCHED_QUOTA;
->  	attrs.sched_priority = QUOTA_PRIO;
->  	attrs.sched_quota_group = tgid;
->  	__Tcall_assert(ret, evl_set_schedattr(t->efd, &attrs));
+>  #define MAX_THREADS	8
+>  #define QUOTA_PRIO	1
+> -#define DISRUPTOR_PRIO	2
+> -#define MAIN_PRIO	3
+> +#define MAIN_PRIO	2
 >  
-> -	wait_phase(calibration_phase);
+>  enum runtime_phase {
+>  	idle_phase,
+>  	calibration_phase,
+>  	accuracy_measurement_phase,
+>  	noise_measurement_phase,
+> -	disruption_phase,
+>  } current_phase = idle_phase;
+>  
+>  static struct quota_thread_desc {
+> @@ -111,23 +109,6 @@ static void wait_phase(enum runtime_phase phase)
+>  	__Tcall_assert(ret, evl_unlock_mutex(&lock));
+>  }
+>  
+> -static void wait_edge(enum runtime_phase phase)
+> -{
+> -	enum runtime_phase old_phase = phase;
+> -	int ret;
 > -
-> -	do_work(t, PERIOD_NS * NR_PERIODS);
+> -	__Tcall_assert(ret, evl_lock_mutex(&lock));
+> -	for (;;) {
+> -		if (current_phase == phase) {
+> -			current_phase = old_phase;
+> -			break;
+> -		}
+> -		old_phase = current_phase;
+> -		__Tcall_assert(ret, evl_wait_event(&barrier, &lock));
+> -	}
+> -	__Tcall_assert(ret, evl_unlock_mutex(&lock));
+> -}
 > -
->  	wait_phase(accuracy_measurement_phase);
+>  static void start_phase(enum runtime_phase phase)
+>  {
+>  	int ret;
+> @@ -191,24 +172,6 @@ static void *quota_thread(void *arg)
+>  	return NULL;
+>  }
 >  
->  	do_work(t, PERIOD_NS * NR_PERIODS);
-> @@ -338,7 +338,8 @@ static struct accuracy_results run_quota(void)
->  	 * expressed as a percentage. The closest to the QUOTA_PERCENT
->  	 * target, the better.
->  	 */
-> -	results.accuracy = ((double)loops_at_accuracy * 100.0) / (double)loops_at_calibration;
-> +	results.accuracy = 100.0 *
-> +		((double)loops_at_accuracy * 100.0 / QUOTA_PERCENT) / (double)loops_at_calibration;
+> -static void *disruptor_thread(void *arg)
+> -{
+> -	int ret;
+> -
+> -	__Tcall_assert(ret, evl_attach_self("quota-disruptor:%d", getpid()));
+> -
+> -	wait_phase(noise_measurement_phase);
+> -
+> -	for (;;) {
+> -		wait_edge(disruption_phase);
+> -		do_trace("(...disrupting...)");
+> -		do_work(NULL, DISRUPT_NS);
+> -		start_phase(noise_measurement_phase);
+> -	}
+> -
+> -	return NULL;
+> -}
+> -
+>  static int cleanup_group(void)
+>  {
+>  	union evl_sched_ctlparam p;
+> @@ -236,7 +199,6 @@ static struct accuracy_results run_quota(void)
+>  	union evl_sched_ctlparam p;
+>  	union evl_sched_ctlinfo q;
+>  	struct timespec now, next;
+> -	pthread_t disruptor;
+>  	struct sigaction sa;
+>  	int ret, n;
 >  
->  	/*
->  	 * Level of noise observed for the disrupted run compared to
-> @@ -346,7 +347,8 @@ static struct accuracy_results run_quota(void)
->  	 * run was faster than the calibration one, which would still
->  	 * be correct.
->  	 */
-> -	results.noise = 100.0 - (((double)loops_with_disruption * 100.0) / (double)loops_at_calibration);
-> +	results.noise = 100.0 - (100.0 *
-> +		((double)loops_with_disruption * 100.0 / QUOTA_PERCENT) / (double)loops_at_calibration);
+> @@ -304,10 +266,6 @@ static struct accuracy_results run_quota(void)
 >  
->  	__Tcall_assert(ret, cleanup_group());
+>  	do_trace("CPU%d: starting noise measurement", test_cpu);
+>  
+> -	/* Start the disruptor thread then wait for sync. */
+> -	new_thread(&disruptor, SCHED_FIFO, DISRUPTOR_PRIO, disruptor_thread, NULL);
+> -	__Tcall_assert(ret, evl_get_sem(&ready));
+> -
+>  	reset_quota_period(PERIOD_NS);
+>  	start_phase(noise_measurement_phase);
+>  
+> @@ -316,17 +274,13 @@ static struct accuracy_results run_quota(void)
+>  		evl_read_clock(EVL_CLOCK_MONOTONIC, &now);
+>  		timespec_add_ns(&next, &now, DISRUPT_NS);
+>  		__Tcall_assert(ret, evl_sleep_until(EVL_CLOCK_MONOTONIC, &next));
+> -		start_phase(disruption_phase);
+> -		wait_phase(noise_measurement_phase);
+> -		__Tcall_assert(ret, evl_get_sem(&ready));
+> +		do_trace("(...disrupting...)");
+> +		do_work(NULL, DISRUPT_NS);
+>  	}
+>  
+>  	for (n = 0; n < nrthreads; n++)
+>  		pthread_join(threads[n].tid, NULL);
+>  
+> -	pthread_cancel(disruptor);
+> -	pthread_join(disruptor, NULL);
+> -
+>  	for (n = 0, loops_with_disruption = 0; n < nrthreads; n++) {
+>  		loops_with_disruption += threads[n].loops;
+>  		do_trace("CPU%d: noise: quota_thread[%d]: loops=%llu",
 
 Merged, thanks.
 
