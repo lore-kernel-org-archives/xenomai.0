@@ -1,146 +1,142 @@
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+Received: from AM0PR02CU008.outbound.protection.outlook.com (mail-westeuropeazon11013012.outbound.protection.outlook.com [52.101.72.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CF3C3939C2
-	for <xenomai@lists.linux.dev>; Fri,  4 Sep 2026 15:55:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788537337; cv=none; b=pLk7CpSdNTxOYFTcCVHsagzcKBiZDrNiTCjDy62bAEJXgfxXO+0yh/zZW0wNpq9TBXDWRUG9SeK2GwVpeLiOLj4MXnBS87wXlYGhfKj4EvBON2qd60SH9rRFFc5KqpbvlCC/x61imFf/2UULmHhkhHbUL23WmJDgW6igAjVG7vg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788537337; c=relaxed/simple;
-	bh=CV5NsPWAl1XPxFizQN8JjLWXA/ker3ZjhUDbWGvC6Iw=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=UxJmr2XilgvwdeOtEHpBEeSHJBy0r7RDEpLwi0cBIs27zX2T94p6nCew/7gE3RJpI/Ku2rxytGPj7t2vHc2JPUV3OJ3aejCmaNm5Y6g5jSFIJsMHBWyqOZsYpcRJax8HlaeQYX3IIRy0B1S2L8wraxf6fUgEt76+/FyNBC6w1L4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=XNIUsQ/J; arc=none smtp.client-ip=185.136.65.226
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 390553AE1B4
+	for <xenomai@lists.linux.dev>; Fri,  4 Sep 2026 16:07:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.72.12
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788538041; cv=fail; b=ApgJSyhLas0UMQxRxzJpBtsHu+q/GKH7GBtozZQ5a1b3eDsaR8/QyCHr0JFrjU1PdD8UHbN/qWAfOEwVf7Ep5/XfcRN2pnU/1+LA+jpQ+RBsczQhnZYfJnKN1K2298trbhap6NuiSrng/urGWP3Wqe0nqcl88NJ7/12fOOMzBIc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788538041; c=relaxed/simple;
+	bh=lCpaUSlML3USiqJaT98akdDYYAYuLrgf4+CyKho1eio=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=f+T++wEnncLpMv5QBtLOaNx4wBr8oVQ6/uIxtc64w+axjxatGbr5ruiU/idWjuHcekWQQ2WEf8vsHnGTleGclUBnysr8UwgRFGj5EoP5l5Yiqm1/lj1WUHcaU5ivRNeHUvtS22c16iGCw++I1h9O3TbskUVExXEoAVTWygP0zJU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=GRiGWjpW; arc=fail smtp.client-ip=52.101.72.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="XNIUsQ/J"
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20260904155529337caafd920002074b
-        for <xenomai@lists.linux.dev>;
-        Fri, 04 Sep 2026 17:55:29 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=X/YufYB4EbFvReittqBeJQS1h6l+LWKgNzTUCRc1MSo=;
- b=XNIUsQ/JzPd2dlG38qqkZbe+yPTZGZZB42nP3yJUbbZPZDWYDEWZgtIgDuyqTD8jLWUmnN
- yZvo11g54zMQyY33Nm8I28BcCeg/Q1LQypav7YdVsOmqCuL2eOJornVHofkDlkIlfE0oUNnF
- NJXBW3RmuGomzRwyhNE6RhvLhT6bEcHaLItOvUj7Nk18AObqI7qXNEparjewtEOroOwBLf73
- 6qwDt0l1PAk7/I9KJIe7zzMhxczWedkZLMvxOtn7K8TAEIeIslFv54Y0jTtgabFr/7x5y0Dl
- 5qMMO3+dY6KFkhwyervpjyyoxFeVzw4/JUFFePUk7VJXeeWCGFX5L/ig==;
-Message-ID: <e729ab55695799eac6eadd30078b72169d932219.camel@siemens.com>
-Subject: Re: perf getting all-zeroes IP on STM32MP1
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Andrew MacPherson <andrew@elk.audio>, xenomai@lists.linux.dev
-Date: Fri, 04 Sep 2026 17:55:29 +0200
-In-Reply-To: <87wlt1cafu.fsf@xenomai.org>
-References: 
-	<CACiVkw=Vs1KUgfZ=Mq-rXU=4gPFDtmuoNoMv=rzy_kvV7KgpKg@mail.gmail.com>
-		<9e0b7d3e72a19bd900a14faa6c459f5a2e093982.camel@siemens.com>
-	 <87wlt1cafu.fsf@xenomai.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="GRiGWjpW"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Adf77mJ6cAxoDNfI48emi2IzL8uPVeguFHgYa20NRkRHa9PHto9CtTdKzVy/UnShBykaLQy0KaYAu/ot7D6i4e3msZMmfKsqh0/3MivrW/7I7VLBXlcsq3X35OgiwO22mhiU0HnY8cAh8A2KE9U2D5njai53rp1wyjXd9LEARemdPCoH2RU3vZuddQmUavZbw8OvfYMHFdVNBr+uJ93Dc8cwAElApvpz10Oqo0OhXvRIzD1vy+0gGtA0p5lgUYEom24IuttcMCEa8yclQ2bV9+7FVIkVk/OtwcHjjAZnWW16abFFkyqCTzMGqqKygXqhgR7eY+tDCl+qrVkU0j9F+Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=DWb7xumNPeJB8nQvE553jh8X28OE93tYptjalNgxhss=;
+ b=j7aSOjxNcP0+RKSC2GdpgNRrWutUS8dWJv6zO8CfFLq5rpkeJNh1jQjkwwDfxZxRZme0hy63NPtnse9GsYqa4ohNIP0fRW/XS0iuAqslDRNnlgrRi2rFAh+cdJRUNASyOWwjzenIG8ZrwD2VOIzquyzaXb2CL2sSd41FXY+es18M6L7JlFbGzVmY24BEiXwocBoc6NuIBx0FrZjUeJDv8LRasQZGjeTSfInXja6dtsbRK+gh1v6OPN8JEq3ID+Z6nqVtJD5fzAD3gvf4/PGeyvcPZ/jjM99Dnd0/cXef7kKgOdllXzzy+i3HipC1qzHCaxiH58cC5ghJiXnTH9BJXw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DWb7xumNPeJB8nQvE553jh8X28OE93tYptjalNgxhss=;
+ b=GRiGWjpWW6toHtxFFeCpE/KPc8cXVtAwZs5TTtB66Ggq4PqNkESEQQUDcdjA8kpGFNFncR46caaFPPNyfgOHit7rUgnyI6EgNO5TO3T2O0KT8zXEZ4x1flefLuBB3zSnWZOY7k1pIzuc5rQbfu1J+sMcYaQcozQdswfZr1tAfXQ8XqF2ODmySdGSb1epvxqwTyStRp50voalqvbyQPbIv0ZvYgRS7ORo2MN1/WlKmytLvLjGrQYc7E3pjKcyNBsaPFDmMT5kJv/KN1YU6gMHPxtbLvpIU0uurSF5gGrGUPTyNbWL1MKR7z/ToiL+iKqx0686uNXFuoJePMA1GuBXoQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:3dd::5)
+ by PAVPR10MB6914.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:102:30d::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.360.13; Fri, 4 Sep
+ 2026 16:07:17 +0000
+Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::5f49:b0e9:d295:22d8]) by AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::5f49:b0e9:d295:22d8%6]) with mapi id 15.21.0339.008; Fri, 4 Sep 2026
+ 16:07:17 +0000
+From: Tobias Schaffner <tobias.schaffner@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: jan.kiszka@siemens.com,
+	Tobias Schaffner <tobias.schaffner@siemens.com>
+Subject: [PATCH xenomai-images] linux-xenomai: drop the custom riscv branch override
+Date: Fri,  4 Sep 2026 18:07:10 +0200
+Message-ID: <20260904160710.1502327-1-tobias.schaffner@siemens.com>
+X-Mailer: git-send-email 2.43.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: FR4P281CA0282.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:e6::7) To AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:3dd::5)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|PAVPR10MB6914:EE_
+X-MS-Office365-Filtering-Correlation-Id: d9c44287-9700-4dd4-580e-08df0a9e974d
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|10070799003|23010399003|376014|1800799024|10067099003|3023799007|56012099006|11063799006|18002099003|55112099003;
+X-Microsoft-Antispam-Message-Info:
+	ovHbPre4HikS/Ivp60Ey7juEgwCQ0xkGglXDzlaquzMLIyDvTjMR7dTS+DVomy+/d1QmdgFRGOmI/xg91sbhg9v2OBB9vsQzL2/lJCGwZT9m8+E3qvGHwUyRlDrfqXfQef6ndN6Z0OOUecCChpMVBR2GmZ0m5ztwUPws2ZwtX7X1mOZzEt1DHu5mq+HWFXOtrEDThBhhLq7tawx8fim99r5V+n3leI+XpCZ3O/7C3uiJTkVbAdLulSScvzzU19bGFy6UEiDZJthhNoXyA0O1LmVsG4jt05HQqX05Mq6isMmtvPd2qxFMoaFbn9gcCnQtXX5Wnu30GdAAiOa33KC2zbWCCOCB+V5tuOZrQe1oU0lSeQTcNAmCJxAu+WETUP9DJKIqj6OuTrcMC3HNL2LUixppZdTk8jCt/rXE40raPb1r1F7OcFCSeMyTQb+Y9v26ewEb6g2UwK7NdfUctftzJctubhPbVpSuvdjtgrtMQkb+fAla1mnxr47uVTbN+Y+e88rSRnSn+22/xvuwB7dJ9ncTaIwWmScvBojyHGohzJdVIl0EXqHQA9MbgeoSn+3F3ETRaitpiIgVFE5w5m0ybLmKJBVAtX7YFEqLYTI59YnVSY9nuwUZcFaC3DQvm7l6wJ5CvKNnW0QX8TS6+CJMINTholxRxaiqos5AlqOSrBo=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(10070799003)(23010399003)(376014)(1800799024)(10067099003)(3023799007)(56012099006)(11063799006)(18002099003)(55112099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?n3+WdTlkcRtxG9zHBhRJ4tpm3SQ782UxdFuO9qlcyznHG6wVd1D6YoWf+54w?=
+ =?us-ascii?Q?Q5sMrkwGl7TERQfDfo2rjPIP2rfUqVZEDqFWaOVc+zL2lGX++d/SHeuY+Pkd?=
+ =?us-ascii?Q?hqvnExWblIVJvsXXvylV3r93yPvuRlISbkcdSaUUkzLyoaWZdumllHijrxKJ?=
+ =?us-ascii?Q?+Esp4G11Ah6/kVrX47f0etfzvG2PpmpWD5LSv8ReqzDBCxo3rO4Ulc8pWdvk?=
+ =?us-ascii?Q?76VX263wL3CNNXLPPvtzO50mDcDxhxQGzsIH+C6ve3BaB9uuzs86gT67LNtD?=
+ =?us-ascii?Q?qZjjsCSWZaFCl/nqtZsjtdtjhsUEhcQg8fyHJ62oeqTEiD8PX4iPz/08lSOS?=
+ =?us-ascii?Q?16sQAm/0b+AwY/hbyrdaIG+5VZmagmXG75BV9ZfxosAOIXigVeg+ouvFblOv?=
+ =?us-ascii?Q?UZgWU4A7DO4Ol7sCWglbmrv7rWz83VFc06lFOwbT08w++U8g7UTJ5OodQSx5?=
+ =?us-ascii?Q?IZkapro3fK/kHxQC6xNK8y/ejwLuf/jWy1G0hngG9wunk+T4J8+zuDO0HQ6N?=
+ =?us-ascii?Q?JuoDz13jkdVJ186JGXSDzAVO7rAXqTXiaUlvgda7FeNUBdbRu5A+43hGOjz4?=
+ =?us-ascii?Q?s5W1bI/2qX9h6I9ANOwR2CfLoSZyZPlmV1jHsJ5XGq18c2SRcMNy4ZQGh7K3?=
+ =?us-ascii?Q?ld/JryFuw5wyhatt6+1JXp27sFV3xKfwLmAr8X/TIGY42FhbpTGI3tIuB0qz?=
+ =?us-ascii?Q?tZtRJFITTIhzl4BgNqgH8KAe4AWpwLxOexLKGRZC6Rg5Qrz3z/ttU5zPG3/L?=
+ =?us-ascii?Q?eCiDwujBB+5naUTjyT4NT2nI4fyO7yt7fWack89Yx+Ef9B4wSqLW6KhjKLCG?=
+ =?us-ascii?Q?6J0qq6cMSF/dgIW03IvIkz+BSo22RPloTVA26q0WCr0Qs5aw9p+Gjy31hPQe?=
+ =?us-ascii?Q?6h73vqH3gjRyeJKJBsfqd1Rn4kDqIjsdH3lUQ1eV9wImMZq6/b50M3ddDU7t?=
+ =?us-ascii?Q?AH1WHrpn/Jpg7uki/exOfeXq/bhjhRsR8IUt2cYYDTvIUpMgOUC6x08LwkL1?=
+ =?us-ascii?Q?miqGpDGLjwqHwQ5MCsVzXZZCtybhGdBcXRr7VcFw8bJWjWVm4VjwchkdqruD?=
+ =?us-ascii?Q?M+0uobPE0P6NnjUcfGbaXzZR+JmMx3CyhcL1ziK64LmyBq5FAbvsyvFHQ0tF?=
+ =?us-ascii?Q?6fFvLcHHPo7M7xqlWReP51EtLXzUfM9ddqMJAw9IqFKwVrZk+HSaCm38+w2Y?=
+ =?us-ascii?Q?NTvjZ0jVwu26yvqT/JQuZbHrcg7Nw4fFcLA1aWGfPdeMajKdzSRDeHrAraOm?=
+ =?us-ascii?Q?UttuFcxrukb9VSLxvHfDaydwroUsIcgEdArjR11LTxnwD2q7uygxEGvkBDMh?=
+ =?us-ascii?Q?yeQIIsqdoFfusQ1c9oAWmpr739Fi/CmqMUZZGN9Hd9TjxSqyXfkjHAp0NjwU?=
+ =?us-ascii?Q?B1LRkwa9WXXGcYvC70GmzVlmECZtYO+kwlUgsYIDoerl8PsSJyt3UoWf9DuA?=
+ =?us-ascii?Q?obewQRD65WbxdNXnr3JFTp6ezX7fTUMRwxgx7udxZ/xCTY+mFDxkhXHGMsem?=
+ =?us-ascii?Q?gPdv8ladfbPZTJeNsA+l8ZZAEW/V8JsxOjLhzIf+1SMrG8YZC2b3bXW8aL+r?=
+ =?us-ascii?Q?YhT6DskbpNZE/0eSXkUwwo/ZRp3Xu/IMC9uvEGLWKo1Yw7itG2UAc8XiNfhB?=
+ =?us-ascii?Q?n2kfYATI53jRBFj55FwYCIc9+Lo+aCvcXoHtWHClVUWDpZKEbGd8kWRIOOV6?=
+ =?us-ascii?Q?kYkqYMoZ1h77ZAHGovTis0+9QFtMCKzZFOOWceGsPUWb43NP4gzzEFgEHKda?=
+ =?us-ascii?Q?uZJJMH1VbdlZ6w4Qnn+htW6TafOW7fJ5EcjIxlnC3I1yWT3wBMt429L82m84?=
+X-MS-Exchange-AntiSpam-MessageData-1: kzxmRPnwpRPhkVvowDFS0dVU7raGA3pJHGU=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d9c44287-9700-4dd4-580e-08df0a9e974d
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Sep 2026 16:07:17.2345
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XPNtvHUEFDXji8UKNBMfOvYdvgCyy5bh9UgsiTTrHXsHJekkg7+b1YtZWxp3tGF2BcXLchhFfITrtMneLkGatHCVDDQKA6u20gUn2OA7XQo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAVPR10MB6914
 
-On Fri, 2026-09-04 at 17:17 +0200, Philippe Gerum wrote:
-> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
->=20
-> > Hi Andrew,
-> >=20
-> > [CC + Philippe]
-> >=20
-> > On Fri, 2026-09-04 at 15:26 +0200, Andrew MacPherson wrote:
-> > > Hello,
-> > >=20
-> > > We're working on an STM32MP1-based system running Xenomai and found
-> > > that perf top shows every symbol as "unknown [00000000]", i.e.
-> > > profiling is collecting samples, but they all point at address zero.
-> > >=20
-> > > I'm not a kernel developer but went through a few debug kernel builds
-> > > with an agent which eventually led to the attached patch. This change
-> > > does resolve the issue with perf, however I'm not sure if it's the
-> > > correct solution.
-> > >=20
-> > > The reasoning is that arm_arch_timer.c's percpu IRQ registration neve=
-r
-> > > sets IRQF_TIMER, so Dovetail's copy_timer_regs() never populates
-> > > tick_regs, leaving get_irq_regs() to always return an all-zero
-> > > pt_regs, which in turn breaks perf's sample IP.
-> >=20
-> > Yep, that is wrong. The patch you provided looks OK to me. I'm just
-> > wondering if that should be addressed in Linux as well / first.
-> >=20
->=20
-> In fact, Dovetail is somewhat abusing IRQF_TIMER in that the only bit in
-> that mask we should care about is __IRQF_TIMER, which is only used for
-> recovering from misrouted IRQs these days, specifically excluding some
-> descriptors from the polling loop which tries to find a proper
-> handler. Problem is that we also carry the no-suspend semantics attached
-> to this mask when using it, which is not what we mean.
->=20
-> I think that the mainline code simply acknowledges the fact that per-CPU
-> interrupt handlers should never be polled for solving a misrouted IRQ
-> issue by definition, so there is no point in tagging those lines with
-> __IRQ_TIMER in the first place, which applies to the architected timer
-> interrupt as well. IIRC, that was the point of the recent set of
-> upstream changes to request_percpu_irq(), dropping those flags. Such
-> change prompted us to put back a secondary interface accepting flags so
-> that we can keep on passing IRQF_TIMER.
->=20
-> > @Philippe: Any additional thoughts? Should we take it already?
-> >=20
->=20
-> I believe that we should not live much longer with this hack, we should
-> provide a dedicated IRQF_* flag introduced by Dovetail instead that
-> would specifically say "this line generates deferred tick events" or
-> something along these lines.
->=20
->=20
+RISC-V support has now been merged into next/v7.2-evl-rebase, which
+will be autoselected from now on.
 
-Would the qualify as starting point? We would have to identify all the
-dovetail specific IRQF_TIMER usages, but that should be doable:
+Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+---
+ recipes-kernel/linux/linux-xenomai-4_latest.bb | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
-index 61a1e33cb2ca3..8258fbaf54a2d 100644
---- a/include/linux/interrupt.h
-+++ b/include/linux/interrupt.h
-@@ -76,6 +76,8 @@
-  *            handler any time interrupts are enabled in the CPU,
-  *            regardless of the (virtualized) interrupt state
-  *            maintained by local_irq_save/disable().
-+ * IRQF_TIMER_DEFERRED - Dovetail: The interrupt line generates deferred
-+ *                       tick events
-  */
- #define IRQF_SHARED		0x00000080
- #define IRQF_PROBE_SHARED	0x00000100
-@@ -93,6 +95,7 @@
- #define IRQF_NO_DEBUG		0x00100000
- #define IRQF_COND_ONESHOT	0x00200000
- #define IRQF_OOB		0x00400000
-+#define IRQF_TIMER_DEFERRED	0x00800000
-=20
- #define IRQF_TIMER		(__IRQF_TIMER | IRQF_NO_SUSPEND | IRQF_NO_THREAD)
-=20
-diff --git a/kernel/irq/pipeline.c b/kernel/irq/pipeline.c
-index de401973c6230..31fd2fc70f74d 100644
---- a/kernel/irq/pipeline.c
-+++ b/kernel/irq/pipeline.c
-@@ -1065,7 +1065,8 @@ void copy_timer_regs(struct irq_desc *desc, struct pt=
-_regs *regs)
- {
- 	struct irq_pipeline_data *p;
-=20
--	if (desc->action =3D=3D NULL || !(desc->action->flags & __IRQF_TIMER))
-+	if (desc->action =3D=3D NULL ||
-+	    !(desc->action->flags & IRQF_TIMER_DEFERRED))
- 		return;
- 	/*
- 	 * Given our deferred dispatching model for regular IRQs, we
+diff --git a/recipes-kernel/linux/linux-xenomai-4_latest.bb b/recipes-kernel/linux/linux-xenomai-4_latest.bb
+index 345809e..e0f743b 100644
+--- a/recipes-kernel/linux/linux-xenomai-4_latest.bb
++++ b/recipes-kernel/linux/linux-xenomai-4_latest.bb
+@@ -34,7 +34,6 @@ GIT_BRANCH = "${@ \
+     'v6.12.y-cip-evl-rebase' if is_kernel(d, '6.12') \
+     else 'v6.18.y-evl-rebase' if is_kernel(d, '6.18') \
+     else d.getVar('LATEST_KERNEL_BRANCH') }"
+-GIT_BRANCH:riscv64 = "wip/evl-riscv"
+ 
+ SRC_URI += "git://gitlab.com/Xenomai/xenomai4/linux-evl.git;protocol=https;branch=${GIT_BRANCH}"
+ SRCREV = "${AUTOREV}"
+-- 
+2.43.0
+
