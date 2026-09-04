@@ -1,80 +1,151 @@
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D133A49251A
-	for <xenomai@lists.linux.dev>; Fri,  4 Sep 2026 13:00:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788526806; cv=none; b=KdiEVosgsvbyjbxt1DKQIdPPrSOeOb0OYsbBzSDrF13L+dl30Ea/bMR4zkyNGjgeshQXR3ZeZjVt0+spP2Z/+PfdekM1w+RBet2bju6Zi6MCBCi4BQMMgw5anOYtuuaVVdnHDD/AIsBfEw//isr0GoeLWrU/QYYrrXYGPSYodwo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788526806; c=relaxed/simple;
-	bh=PU9ilqKjKJTBfJp4fnmr6zixGedQvH3fHSJMFDqZ+Qw=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=qpMXrzzulHcvkHkBAwQLMBGcFsP2zG/CxsNzNIAPm77tD/vHQe1C5ZnRppFJMor5VMh6Q9pzTxSO+ehyXFp4VULsa3tJY6h9ikIVxRHeDOgy3+0czCnBpwqmedXZ1NGqpOQwQVqPCLk3WDHeQ5xfGrcLCLqZ6rjgT2ytMw5+R2Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=hXo7JNhs; arc=none smtp.client-ip=217.70.183.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91B30334688
+	for <xenomai@lists.linux.dev>; Fri,  4 Sep 2026 13:26:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.182
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788528419; cv=pass; b=XZeBq7fOBRJWTe2hIYLPnAVoN4TQIzWz5518+r8ScEgRIfxOzacpNFzp+uM3I7j0HLxs6pfB8YBgJtExM/Q354nBmetHASBDutKjHIXKnMa5z0cY5IfGiKoQ4hdjesPen3A5cqDN2+O7/jTs+7O1YAjWzQf52XF9mGERM2krFBM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788528419; c=relaxed/simple;
+	bh=yCW3wnGhVfmeFnfs/VeksP8XSavenN53Ld93nZrwtnU=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=QokyOfe1T9ibYWD5v9BCNa97gO+JuJ1yIswYRC9Y1Q880XS05ObcvMN7NWxZm/mhZZsqPVPWHy/uwi6/CBXAwIgcgOyCyfffvR19g3lDn+/Lee63zJiu579URZ7ocinhygnSWrVdMZlKS2qIq+ls5tDmD47uirmDbnclUM3Gpas=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=elk.audio; spf=fail smtp.mailfrom=elk.audio; dkim=pass (2048-bit key) header.d=elk-audio.20251104.gappssmtp.com header.i=@elk-audio.20251104.gappssmtp.com header.b=HSUurhf6; arc=pass smtp.client-ip=209.85.128.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=elk.audio
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=elk.audio
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="hXo7JNhs"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 867C53EC8C;
-	Fri,  4 Sep 2026 13:00:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1788526802;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=U9KCxnZ5R1Ng75cWI/pYTK/P81FLeBfkoySi/DN9OYs=;
-	b=hXo7JNhs8rh4yvIUkHN+WAAIoTQS5/RkhvVXsO57iXsjk2ffjps1VY+VygNO9lJvN5lWUN
-	V2DAdRx+zcQV5C6FBHf/Q0+R0S68dUsIRcc8QXRs6GkT0du/Y+aZkYweIMnxApNlTBuFRS
-	Y6FGVUrz8WbQ8img2YxVb1ro1AfDr9XRF1W+UJHY84OZttjtsU4Zu3rdhtmzTNH/Yg19qi
-	RHMnCKQyJWutW5Fa5nX98Se37WWq0CW38Zc1ls5axrQtWkKL4lOwsx9AbbP7l+CiSvRlhI
-	uDm2yoR1qZezOUtSaJBV0kr5EHY8hUBvQKZrS073eCriKYthUoeCmVKyaUMZ9Q==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Tobias Schaffner <tobias.schaffner@siemens.com>
-Cc: xenomai@lists.linux.dev
-Subject: Re: Dovetail + EVL: RISC-V + 7.2
-In-Reply-To: <776fa79b-bd7b-4309-95c1-bb659793d63d@siemens.com> (Tobias
-	Schaffner's message of "Fri, 4 Sep 2026 14:46:03 +0200")
-References: <878q5he1ei.fsf@xenomai.org>
-	<776fa79b-bd7b-4309-95c1-bb659793d63d@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Fri, 04 Sep 2026 15:00:02 +0200
-Message-ID: <8733vpdve5.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=elk-audio.20251104.gappssmtp.com header.i=@elk-audio.20251104.gappssmtp.com header.b="HSUurhf6"
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-867edb54b0bso660957b3.1
+        for <xenomai@lists.linux.dev>; Fri, 04 Sep 2026 06:26:57 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788528416; cv=none;
+        d=google.com; s=arc-20260327;
+        b=sY+80ni4GMlPg9HSBQtnm2wl5+Sml2aVNxvKDig/RfqqK+1pCM1XJ8NGTrgBFvBe5s
+         nqtHIVwvmL1zsld4pEk8TxIPo3cEZYi3A/jZM1scmnUj6cTz6IXjnzx8c894LNMYcbAw
+         Q4E0mgB7PG4cPDyWxuNR3MsNipXTmboCOXylKbQoVlNLfHjD/RIw3sxk+wv8eoODBEYL
+         oRX1+B5XbnPrxIAFO2cWp3CxtMEUhV9Qt7Co2MC6Zk5YLPRiMdQO1IvCJ9KYIdfdfbS9
+         ZBcyPVYCuP70bHAPnkVrbvLzsDN85gGsd22lEwlfvtZZuI1HZs+67EgkONv6JYGXH+yh
+         x6Nw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=yCW3wnGhVfmeFnfs/VeksP8XSavenN53Ld93nZrwtnU=;
+        fh=YB3B87WifQ96wNOuamgxI2TmGE/J/7vmGnp4rylPnkg=;
+        b=brJlNp0U+HWavaUpU+3ENUnPVdhjz3tkM8gTfEJRskxjxe6NqaYf06PcR9UbUQ/9+j
+         OPtICTZMWnVkzU4R/YlpaLHZclfVx5RWXflNAFJB2ZbEd+STcHIyylK0jbhsYCoteK3Q
+         LnNROjPBZksRSYYdOXX4SqYD1+p+1Z5ttR/1nCK6+/Hd/AQAtZ2lQSkeDcMP4sJWQxeu
+         FwsyZuiTIRAWBSYsSm5L1gbN7j2Bk32v+BI2ki8D/mkk9Iji7zddd4dTDlmzCXpqgT1Q
+         boJaGCY08c6X4uRIiNpenLWp08L6UH3UDabwIhGs3/IQHAQ72b1LZMCahuwf2XDBvrVZ
+         Zm4A==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=elk-audio.20251104.gappssmtp.com; s=20251104; t=1788528416; x=1789133216; darn=lists.linux.dev;
+        h=content-type:to:subject:message-id:date:from:mime-version:from:to
+         :cc:subject:date:message-id:reply-to:content-type;
+        bh=yCW3wnGhVfmeFnfs/VeksP8XSavenN53Ld93nZrwtnU=;
+        b=HSUurhf6bpzLUG1IgCDMOvn4o74FwiTOXV9hGTn7BwhTi1VRV4d/tHtTznZ0i1CUe1
+         buMqwHayZbjL2ur72pwfJepqCyMRFGeHJU1w3D6MXw3WIAHFw+blwYdXSTyKmKY6gNy/
+         KbMBBsOi+0J5uIvfQv6pIeVh/nUkbVcq3L1ZQpGhM5MqbOlqtK/VjAh2YLROsBwCTgi+
+         zJ2CrUvNSxV8AjkKoTt/aI9SWDjxKjwEHh2XsdEMI8y7+oURWS6HgO3JS3hFMX0zpevI
+         +Lv5isKXvOb/jP+9iyzonbDj1MbEuD4zsV+Oq59QX1KYFg28dUazRFt/GgOP+CIvwN5i
+         FSIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788528416; x=1789133216;
+        h=content-type:to:subject:message-id:date:from:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=yCW3wnGhVfmeFnfs/VeksP8XSavenN53Ld93nZrwtnU=;
+        b=HBym2bD+oJ2/LL3JURL8w8N9jajQ8/Thj2GQwmTCVuWpzC0fUKnu2ntRHVpkzxlXXQ
+         siAJmZIeOeeACI8bEKne1y2nJdvtXHOpcvzzHKo08NkQZg3p4lxyw/rZiw1OX2F0dYQt
+         6eBpb/SXmtClZPY0Ckplr1KyzKxaahNuqRHQzUyOCW9BI5HhMT3CmesMazX25CGxtA6R
+         jJg1taK9iiCqIGMsmPQI28qZZDbz63umfV3sA4oDJ/gd4FY5EVBFJUctyzaXvnircJVj
+         XE6VVnvI+kPRAp1Bv5E5QYtPSlMJ2lmHibx9PeHnNPrVLBSB6zH/BAZ2B1LZWTKfzazJ
+         EYVg==
+X-Gm-Message-State: AFuF++k49puSK4ux4slDow/NelD7AfKOgs8GO+cr2Fr8MT+xHWxi1jIk
+	u2s9/NvwwRnVsFg21unwIhnmODZcF/EcsvB6HsubEt++pCxe6urQvCIYZHUQyS8llM+kdA2J8I3
+	w91XPflFUyjqefKEktGGpxJmBPlMUgsnINQ0+kuipUZ9+fRpp3bwwtaA=
+X-Gm-Gg: AYBFou21nmI9Lx+rESeWHWWjPUH5+FrV33typbmowl40JccXrCKRACSeNCjDHu5D3v6
+	NTw+4goOyg70+F++KKX7nUXwvifSgifRoLS31cy9zCGPC0lWGzmU0Klk/TFDJTyxg6oPvCo40Tk
+	gxBLqwFYmQx5X3lHqKtQZ2kGhT4vZwFhIX72PpwAGqdvLAjjourI4BqaHsTEbLfIjE4MU4LRm8c
+	ce6yUUhuK8ont6px05RAPsb5FozzspLUGJmr6UNL/BdFPWP8FauV7ZR6pJrrFaW07mnpysWGgFV
+	a3o7TgUYZwgf6b/xt/+IKSWBPJHsaqw1UCtAC0k9z+ws
+X-Received: by 2002:a05:690c:680e:b0:820:18ab:ff72 with SMTP id
+ 00721157ae682-87127d2b0b6mr29115327b3.3.1788528416151; Fri, 04 Sep 2026
+ 06:26:56 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Cause: dmFkZTEk1Xzk7kd06I3tI28fKVA4sb/TdVrDzh8akf1qAG42u6uu0EzJpOeOx2NzhP2WV7EnAfBXyj0v+EJJJ7OaIl/D3COLRzmGra+HYvtqUhDNNL2BQeFlF14iTJbxmRtfi/0HdBi10TDBM5u2t3jBb2Z/JQ50VTOetOo9vVZbpDNwmftutmT9iTVdXsLcziLB0pwj0rg5Jd04TsD4D/7G2zGw3IN5GqQcEd98PccSyrYn7CMuocgch1IlmqfLyUX6d9jkSBw7Y3oKCBpbd7HTcUsv/I3raIE5HlBaKY3v/le0Nnr1y6xuBrl3nBchEltK/gpng0+cL1vOJ81BUs2zSXGsFirTyoMWszO3koc7WPqwD4PIAFnCA5H5sMzkPETX9co2X3nhkEKzl4wSyqfC9cOcmj24ErMP4fPn0WjpQyJi6uv1DCZbpwSwqqr4Qxud8LA/lHqLNbAv1Wpo9GQZH4DkELcG9wTXZU2xtnopi95dpmbu+hp35dg8rHY7NUSk3agKi307FnKTB6TYcMyzNd8sjud3K9u9TRLM8iwC1DD8xckdsjUd+RV4tJpTesSBc4RI2PmFd53NIE9MF1Hxo4InoB4UkAJUIpRj6jH6+L3FLiEpG9AcYB9Nw32ZnuHvdoPf3pyu+qgerFQHfK185tNk5ZPdJk2Y2g0lwGBPMftN1Q
-X-GND-State: clean
-X-GND-Score: -100
+From: Andrew MacPherson <andrew@elk.audio>
+Date: Fri, 4 Sep 2026 15:26:45 +0200
+X-Gm-Features: AcwNN1V7DSUjfQkM8G5jN9ceZBqgnPSk7qKz2hzvvvq_kGGBlfCoWTREOFHm8PE
+Message-ID: <CACiVkw=Vs1KUgfZ=Mq-rXU=4gPFDtmuoNoMv=rzy_kvV7KgpKg@mail.gmail.com>
+Subject: perf getting all-zeroes IP on STM32MP1
+To: xenomai@lists.linux.dev
+Content-Type: multipart/mixed; boundary="000000000000eada68065aa83873"
 
-Tobias Schaffner <tobias.schaffner@siemens.com> writes:
+--000000000000eada68065aa83873
+Content-Type: text/plain; charset="UTF-8"
 
-> On 9/4/26 12:50, Philippe Gerum wrote:
->> The (slightly overdue) Dovetail and xenomai4 (aka EVL core)
->> implementation targeting the 7.2 kernel is now available from our
->> development trees [1][2]. Starting from this release, we support the
->> RISC-V architecture, thanks to Tobias's work.
->
-> Thanks Philippe!
->
->> Building applications for 7.2 requires libevl r61.
->> [1]
->> https://gitlab.com/Xenomai/linux-dovetail/-/tree/v7.2-dovetail-rebase?ref_type=heads
->> [2]
->> https://gitlab.com/Xenomai/xenomai4/linux-evl/-/tree/v7.2-evl-rebase?ref_type=heads
->> 
->
-> Will there again be a evl/next/v7.2-evl-rebase branch or is there no
-> next branch needed anymore from this release on?
->
+Hello,
 
-linux-evl/next/v7.2-evl-rebase is now open. next/ branches are here to
-stay, matching libevl -next.
+We're working on an STM32MP1-based system running Xenomai and found
+that perf top shows every symbol as "unknown [00000000]", i.e.
+profiling is collecting samples, but they all point at address zero.
 
--- 
-Philippe.
+I'm not a kernel developer but went through a few debug kernel builds
+with an agent which eventually led to the attached patch. This change
+does resolve the issue with perf, however I'm not sure if it's the
+correct solution.
+
+The reasoning is that arm_arch_timer.c's percpu IRQ registration never
+sets IRQF_TIMER, so Dovetail's copy_timer_regs() never populates
+tick_regs, leaving get_irq_regs() to always return an all-zero
+pt_regs, which in turn breaks perf's sample IP.
+
+We're on kernel 6.6.48, i.e. an older revision of the (now-deprecated)
+v6.6.y-evl-rebase branch, so entirely possible that this is fixed in a
+later version, though the code appears to be the same.
+
+Just wondering if anyone has any more insight around this and thanks
+for any help!
+
+Cheers,
+Andrew
+
+--000000000000eada68065aa83873
+Content-Type: application/octet-stream; name="arm_arch_timer_flag.patch"
+Content-Disposition: attachment; filename="arm_arch_timer_flag.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_mtmyz7g60>
+X-Attachment-Id: f_mtmyz7g60
+
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvY2xvY2tzb3VyY2UvYXJtX2FyY2hfdGltZXIuYyBiL2RyaXZl
+cnMvY2xvY2tzb3VyY2UvYXJtX2FyY2hfdGltZXIuYwppbmRleCAwMDAwMDAwMDAwMDAwLi4wMDAw
+MDAwMDAwMDAwIDEwMDY0NAotLS0gYS9kcml2ZXJzL2Nsb2Nrc291cmNlL2FybV9hcmNoX3RpbWVy
+LmMKKysrIGIvZHJpdmVycy9jbG9ja3NvdXJjZS9hcm1fYXJjaF90aW1lci5jCkBAIC0xMjM1LDI1
+ICsxMjM1LDI1IEBACiAJcHBpID0gYXJjaF90aW1lcl9wcGlbYXJjaF90aW1lcl91c2VzX3BwaV07
+CiAJc3dpdGNoIChhcmNoX3RpbWVyX3VzZXNfcHBpKSB7CiAJY2FzZSBBUkNIX1RJTUVSX1ZJUlRf
+UFBJOgotCQllcnIgPSByZXF1ZXN0X3BlcmNwdV9pcnEocHBpLCBhcmNoX3RpbWVyX2hhbmRsZXJf
+dmlydCwKLQkJCQkJICJhcmNoX3RpbWVyIiwgYXJjaF90aW1lcl9ldnQpOworCQllcnIgPSBfX3Jl
+cXVlc3RfcGVyY3B1X2lycShwcGksIGFyY2hfdGltZXJfaGFuZGxlcl92aXJ0LAorCQkJCQkgSVJR
+Rl9USU1FUiwgImFyY2hfdGltZXIiLCBhcmNoX3RpbWVyX2V2dCk7CiAJCWJyZWFrOwogCWNhc2Ug
+QVJDSF9USU1FUl9QSFlTX1NFQ1VSRV9QUEk6CiAJY2FzZSBBUkNIX1RJTUVSX1BIWVNfTk9OU0VD
+VVJFX1BQSToKLQkJZXJyID0gcmVxdWVzdF9wZXJjcHVfaXJxKHBwaSwgYXJjaF90aW1lcl9oYW5k
+bGVyX3BoeXMsCi0JCQkJCSAiYXJjaF90aW1lciIsIGFyY2hfdGltZXJfZXZ0KTsKKwkJZXJyID0g
+X19yZXF1ZXN0X3BlcmNwdV9pcnEocHBpLCBhcmNoX3RpbWVyX2hhbmRsZXJfcGh5cywKKwkJCQkJ
+IElSUUZfVElNRVIsICJhcmNoX3RpbWVyIiwgYXJjaF90aW1lcl9ldnQpOwogCQlpZiAoIWVyciAm
+JiBhcmNoX3RpbWVyX2hhc19ub25zZWN1cmVfcHBpKCkpIHsKIAkJCXBwaSA9IGFyY2hfdGltZXJf
+cHBpW0FSQ0hfVElNRVJfUEhZU19OT05TRUNVUkVfUFBJXTsKLQkJCWVyciA9IHJlcXVlc3RfcGVy
+Y3B1X2lycShwcGksIGFyY2hfdGltZXJfaGFuZGxlcl9waHlzLAotCQkJCQkJICJhcmNoX3RpbWVy
+IiwgYXJjaF90aW1lcl9ldnQpOworCQkJZXJyID0gX19yZXF1ZXN0X3BlcmNwdV9pcnEocHBpLCBh
+cmNoX3RpbWVyX2hhbmRsZXJfcGh5cywKKwkJCQkJCSBJUlFGX1RJTUVSLCAiYXJjaF90aW1lciIs
+IGFyY2hfdGltZXJfZXZ0KTsKIAkJCWlmIChlcnIpCiAJCQkJZnJlZV9wZXJjcHVfaXJxKGFyY2hf
+dGltZXJfcHBpW0FSQ0hfVElNRVJfUEhZU19TRUNVUkVfUFBJXSwKIAkJCQkJCWFyY2hfdGltZXJf
+ZXZ0KTsKIAkJfQogCQlicmVhazsKIAljYXNlIEFSQ0hfVElNRVJfSFlQX1BQSToKLQkJZXJyID0g
+cmVxdWVzdF9wZXJjcHVfaXJxKHBwaSwgYXJjaF90aW1lcl9oYW5kbGVyX3BoeXMsCi0JCQkJCSAi
+YXJjaF90aW1lciIsIGFyY2hfdGltZXJfZXZ0KTsKKwkJZXJyID0gX19yZXF1ZXN0X3BlcmNwdV9p
+cnEocHBpLCBhcmNoX3RpbWVyX2hhbmRsZXJfcGh5cywKKwkJCQkJIElSUUZfVElNRVIsICJhcmNo
+X3RpbWVyIiwgYXJjaF90aW1lcl9ldnQpOwogCQlicmVhazsKIAlkZWZhdWx0OgogCQlCVUcoKTsK
+--000000000000eada68065aa83873--
