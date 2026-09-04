@@ -1,47 +1,39 @@
-Received: from mslow3.mail.gandi.net (mslow3.mail.gandi.net [217.70.178.249])
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 653EC37A829
-	for <xenomai@lists.linux.dev>; Fri,  4 Sep 2026 10:27:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.178.249
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BABB3F54A4
+	for <xenomai@lists.linux.dev>; Fri,  4 Sep 2026 10:50:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.197
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788517644; cv=none; b=nmvoVRag6u6zoN3iTarmuWteGPqJkGe7lNbyMOGq4ng86zlprTDdRMdbLKwa2AgY/gmWhWP8ihTtJuxI+lW7TnPygfMrL4T8g1Qkazj8JC5REXgKYjiNhnFdPMWrYsmGPefAVBWp6ZJjojvZUsAstPFwaElRKJPtkX0YsmtIZiI=
+	t=1788519024; cv=none; b=PR6V+uoULhB0a9RZHeo/Rxuyr/4Q2Zd7bR4JMPoEznAgfIYmmypDHfoWDH8SUeuU1w9yXQdEk8eZ3XOY9ilgU8Tf1ipUwoenrvSIajQqHL1lzx5lhiUkuC2KqzKhDZUBGZzl6AxFWaCHTQyVo79aQMOyCW7AGRS4XCBaiNd8X4o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788517644; c=relaxed/simple;
-	bh=90CHD8QOhQwIFcfNamfr1RzCkTkYKoinaao4+rGDp/Y=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=FJY5Ys3uMZlVMC+bvapcwjnISc/sihI56N1Hr84cM22GkjRdytYVsgJz0Vrw7vBwLB1UvSG7gxwQDDh5oSibZRj6+J6bYpC8pcECuKypS2UoHCmwEjmqV1SS/Wj5vU/2Y+FY9dOTfKEnYXuedHaKJxqosX8BCgEpCXD2hjl051s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=Oc5AbItV; arc=none smtp.client-ip=217.70.178.249
+	s=arc-20240116; t=1788519024; c=relaxed/simple;
+	bh=1IWPjZ5HeGI2ZZ7lqy+eDj/jVdYodBQ5spbAom15Ew8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=tK0wWq2w7yjslR+ecbzjiuT1/0eHBLrrF5329v82ytDZCuMFnIaHVbclaSTfYO5bZTgdlN9sl1jrnWGcnV3+E0Ln7K75IfABLB55c+p/N1ygfzbSkBIpwOz7cRLGdiGOf0enIxYQYL4YC1VsJBZzOvuWGIGju+bC2zFGo8QMrzI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=R0rQt/Z1; arc=none smtp.client-ip=217.70.183.197
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="Oc5AbItV"
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-	by mslow3.mail.gandi.net (Postfix) with ESMTP id 270EA586500
-	for <xenomai@lists.linux.dev>; Fri,  4 Sep 2026 09:26:06 +0000 (UTC)
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 053EE3E97F;
-	Fri,  4 Sep 2026 09:26:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="R0rQt/Z1"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 822D23EB86;
+	Fri,  4 Sep 2026 10:50:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1788513964;
+	t=1788519013;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=9cgf76sZPCZ7ch9IF2ne/W1LJYEv4ITgYapH5VWsDBI=;
-	b=Oc5AbItVjeIOW2ljII/y2UM4JYe42wikFpJtWwPfbfRrVUb473qHZ8o/DlwxBrAcY+IvGd
-	c9tO8xKQBjhiSC70KuQ/S5VKIbzhvG4SHr9/J3GSMohhsHu0DWnEVKdvJyX5y7uZBCC3VT
-	GerwpdQFx4AfrfDh207HJWfJONxwzto5ar5iOucC8m6VP/05voRWC5oWvWFnOfggtlh0sl
-	4K+Y7hTPW+TEJXVZT38st1zvYzsSYcp3fQ6IMrDOhub49xULKIWAQt3NkjR2FsdM9Bvaa7
-	DNp1XLtKuKVilFbps+Wrg+4roMuU4twSSq2sQBKkiTFPPjG8mkSc30ZkgFi50Q==
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+	bh=CvhLk3m79m3fR5p0/zwelekhjfXxLVpU6EFIhB1RZ9g=;
+	b=R0rQt/Z1EEhGANvd7DUzpdSIq/IRNXr4n3KfZH36I3daOr9CHvfp7uFVu21B4zVHiR3jUP
+	Y/f53nxk4l11O6XARdlq6ktfM2EieBQHQ/DiimBz3iPrAMZPKppgZ4U0lV9d/q0A/1kB3f
+	4wKMsKV9pM1sjxcrWDdpZKdLjaq+Gy9OV6xbHLYsOCp4uHfQEIVfdsDDzhd61D9ie7/IcF
+	AW+fiQO3Te6F+G7/wfYOBb1Bcis+rP18MUoRSgDTWmBpVhbj6zi4YPb7H5yKoGhxjrWJuO
+	EWbZsepPDeRrnCG0UbG5VGXjtquiqEO2z18l2v9GoR579Adf0de6Cl5RMNWsvw==
 From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: [libevl][PATCH] tests: sched-quota: Simplify disruption
-In-Reply-To: <72486647-41b3-448b-bfe3-85135c1ad53f@siemens.com> (Jan Kiszka's
-	message of "Mon, 31 Aug 2026 19:50:25 +0200")
-References: <72486647-41b3-448b-bfe3-85135c1ad53f@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: Tobias Schaffner <tobias.schaffner@siemens.com>
+Subject: Dovetail + EVL: RISC-V + 7.2
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Fri, 04 Sep 2026 11:26:03 +0200
-Message-ID: <877bl1fjv8.fsf@xenomai.org>
+Date: Fri, 04 Sep 2026 12:50:13 +0200
+Message-ID: <878q5he1ei.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -50,137 +42,21 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-GND-Sasl: rpm@xenomai.org
+X-GND-Cause: dmFkZTE0Ksx0k1g4lm5YfBPxmCIKjUxSU/GDqq6aDsky16SZ05O65RlMdoyy/b0TdCA4mCZ+/Xw/x8FSckerPY/2VwJm0kDNZ9NWO9euPOZiqqnj9+bUSTGoREQWvFJ4JVPkkEdmVPlzrM72zCPEEObUKTRKpRB0al7R9PDnYR922TGdKFLRCUuGOYWntBU2Eu/Ho2/WRW+b40AC+Bch56RqVZcYOkolXb7wPWlaad9pkP3xuPrkT196nr9rqux0et8u1tbVUL1THqxpRgyGpXAQSMa0lYvzO5QZNvChnGvqo8wZuN77rVUiVfWzj2+8yVu8Kx/h//vdYVZBbttg4sOZmiGdXafgF8PxzwKKuc5wyaLFdepZxEjrIbH/WtMWmc+kaQGY/dH/SFCzkvQ+RWo2TU/6WPuYAjP1uxRjZF7uQHDXGWm5fFWFkqpUc4t/YEuzszb3EeaZNc6WvPVbHfjLRuC05YvjZo548Ni/m6bpFckV7KP23noNy4rqHeCCd4PRWx2J+A5Hk1yIkmo6gV08hpPawZh4ZMnDz7pm7mbM/UGr2WvCfgt0zOlm65NTyJqzC56/V8fUbCgtTrLOZbh/4v1dsgdFj16OMUkEw19qg4s8yjQM+ZMTeX/90/8WEHdn0P5hW3hwN0s70Zqh+XxdKZHQLWC/ibmOKmhYZVk9jGX5lg
 X-GND-State: clean
 X-GND-Score: -100
-X-GND-Cause: dmFkZTF+ycvcnhyU/kVVwGmVp74xwaZiJ0ie3mDlFYDeuYyRAYt6wBjC+dpCVLYsfCb9kw1jxmErAiQZe5J12+TlRQBzUU8IH4CS4UU5Saw5Qtqvv5O5S2hmhc2hry66lrOBTiB9ilJcGObpQpOsF9HsOdqPaEjtUrcbpYKHux+hH6S5r65N16DwbPsZTYqSq9Zg7Tf0up6J+V0Rc8/CP2bd5HL00pijYr3OxUu1KlwWfw+vdGctVdSq3pCclSUY68iLwlLfxIMV/eTNJG1FwCVUaBFA/lxeL7d/99i79Rvv1sanqQIs+ZSVrOt8pRH3f8ygvZYeIrJA9MAoqYwWTlabLiVQccfaqrmWvYUmdjXJ23d8sRuul32xmGHszmT08FZr9/mUNJSkHJ3a5ivcwjB5YMfclZbGaM7q0jDvH/MKfI4yrqEK7GBw1G0Kq8KBAXBLV74uUP/xbOubobSODH7f02dkHEA7HExrBIXl2ce538Vclw+14JPz7mi+woYqVk0VK5zVrgtz1HrSphojfNh2he/iemqSLkzJGiwu/yu3CpPP1IwhI4xUlcr++tN1v9x1v/rrVZ/I5+NHR8TfbxWgxw8QiqDPVcFvYogqVSILW67uvl2se1AJeJV+Mk3A7frIUM+Hb77JYEFfTQf8iwziUYQzo8g6P7tRNNRzvU7Kmgl6Aw
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-> From: Jan Kiszka <jan.kiszka@siemens.com>
->
-> No need to spawn an extra thread here and also play ping-pong with it to
-> generate an oscillating load. The main thread can do the very same thing
-> within a few lines of code.
->
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->
-> On top of my previous patches.
->
->  tests/sched-quota-accuracy.c | 52 +++---------------------------------
->  1 file changed, 3 insertions(+), 49 deletions(-)
->
-> diff --git a/tests/sched-quota-accuracy.c b/tests/sched-quota-accuracy.c
-> index ac04449..251ea30 100644
-> --- a/tests/sched-quota-accuracy.c
-> +++ b/tests/sched-quota-accuracy.c
-> @@ -26,15 +26,13 @@
->  
->  #define MAX_THREADS	8
->  #define QUOTA_PRIO	1
-> -#define DISRUPTOR_PRIO	2
-> -#define MAIN_PRIO	3
-> +#define MAIN_PRIO	2
->  
->  enum runtime_phase {
->  	idle_phase,
->  	calibration_phase,
->  	accuracy_measurement_phase,
->  	noise_measurement_phase,
-> -	disruption_phase,
->  } current_phase = idle_phase;
->  
->  static struct quota_thread_desc {
-> @@ -111,23 +109,6 @@ static void wait_phase(enum runtime_phase phase)
->  	__Tcall_assert(ret, evl_unlock_mutex(&lock));
->  }
->  
-> -static void wait_edge(enum runtime_phase phase)
-> -{
-> -	enum runtime_phase old_phase = phase;
-> -	int ret;
-> -
-> -	__Tcall_assert(ret, evl_lock_mutex(&lock));
-> -	for (;;) {
-> -		if (current_phase == phase) {
-> -			current_phase = old_phase;
-> -			break;
-> -		}
-> -		old_phase = current_phase;
-> -		__Tcall_assert(ret, evl_wait_event(&barrier, &lock));
-> -	}
-> -	__Tcall_assert(ret, evl_unlock_mutex(&lock));
-> -}
-> -
->  static void start_phase(enum runtime_phase phase)
->  {
->  	int ret;
-> @@ -191,24 +172,6 @@ static void *quota_thread(void *arg)
->  	return NULL;
->  }
->  
-> -static void *disruptor_thread(void *arg)
-> -{
-> -	int ret;
-> -
-> -	__Tcall_assert(ret, evl_attach_self("quota-disruptor:%d", getpid()));
-> -
-> -	wait_phase(noise_measurement_phase);
-> -
-> -	for (;;) {
-> -		wait_edge(disruption_phase);
-> -		do_trace("(...disrupting...)");
-> -		do_work(NULL, DISRUPT_NS);
-> -		start_phase(noise_measurement_phase);
-> -	}
-> -
-> -	return NULL;
-> -}
-> -
->  static int cleanup_group(void)
->  {
->  	union evl_sched_ctlparam p;
-> @@ -236,7 +199,6 @@ static struct accuracy_results run_quota(void)
->  	union evl_sched_ctlparam p;
->  	union evl_sched_ctlinfo q;
->  	struct timespec now, next;
-> -	pthread_t disruptor;
->  	struct sigaction sa;
->  	int ret, n;
->  
-> @@ -304,10 +266,6 @@ static struct accuracy_results run_quota(void)
->  
->  	do_trace("CPU%d: starting noise measurement", test_cpu);
->  
-> -	/* Start the disruptor thread then wait for sync. */
-> -	new_thread(&disruptor, SCHED_FIFO, DISRUPTOR_PRIO, disruptor_thread, NULL);
-> -	__Tcall_assert(ret, evl_get_sem(&ready));
-> -
->  	reset_quota_period(PERIOD_NS);
->  	start_phase(noise_measurement_phase);
->  
-> @@ -316,17 +274,13 @@ static struct accuracy_results run_quota(void)
->  		evl_read_clock(EVL_CLOCK_MONOTONIC, &now);
->  		timespec_add_ns(&next, &now, DISRUPT_NS);
->  		__Tcall_assert(ret, evl_sleep_until(EVL_CLOCK_MONOTONIC, &next));
-> -		start_phase(disruption_phase);
-> -		wait_phase(noise_measurement_phase);
-> -		__Tcall_assert(ret, evl_get_sem(&ready));
-> +		do_trace("(...disrupting...)");
-> +		do_work(NULL, DISRUPT_NS);
->  	}
->  
->  	for (n = 0; n < nrthreads; n++)
->  		pthread_join(threads[n].tid, NULL);
->  
-> -	pthread_cancel(disruptor);
-> -	pthread_join(disruptor, NULL);
-> -
->  	for (n = 0, loops_with_disruption = 0; n < nrthreads; n++) {
->  		loops_with_disruption += threads[n].loops;
->  		do_trace("CPU%d: noise: quota_thread[%d]: loops=%llu",
+The (slightly overdue) Dovetail and xenomai4 (aka EVL core)
+implementation targeting the 7.2 kernel is now available from our
+development trees [1][2]. Starting from this release, we support the
+RISC-V architecture, thanks to Tobias's work.
 
-Merged, thanks.
+Building applications for 7.2 requires libevl r61.
+
+[1] https://gitlab.com/Xenomai/linux-dovetail/-/tree/v7.2-dovetail-rebase?ref_type=heads
+[2]
+https://gitlab.com/Xenomai/xenomai4/linux-evl/-/tree/v7.2-evl-rebase?ref_type=heads
 
 -- 
 Philippe.
