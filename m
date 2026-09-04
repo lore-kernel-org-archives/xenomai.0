@@ -1,155 +1,98 @@
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F130427F8A
-	for <xenomai@lists.linux.dev>; Fri,  4 Sep 2026 06:27:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB8AE36D9EB
+	for <xenomai@lists.linux.dev>; Fri,  4 Sep 2026 09:21:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788503245; cv=none; b=oKmxG7jKS/VawpKRE54JGD3FfvGLg3ln4iipSQaJpAPw3f9IRTI0uVjFa/DgxP2UKGjdfbcQacSQxvqgxr62QH5unbYpK545xd7ffQ8ARaSo2QIQN2fYGGg7mKSjZKyVFem+XuvbYKntJhelB/DN+ciWC1Juexuq4UUjFwEuduY=
+	t=1788513698; cv=none; b=KBG9ebd8DnGvU1wNxmwp7D9DANjp4hN6RHZChcqIr0Y5L9nW+4GFkxhiORluVhDmEqYOQiZTox2UvhmmTN0LxpE6NSiOzR+TBEM0zJcbasOqxYi7/n4w9vfNHjjy3pG0nL+BZM9ATysxvEwfodWl01eLxYX1Bqw4MHPvuQ2rxb4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788503245; c=relaxed/simple;
-	bh=gJ9lfl0DuMQt9wFfeb3PLKoTEizOIm7izreb1vJoUXc=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=U77LeN17bhzUosvZE9jKTlD5gbe0bKmT97tDhv0LRNXLyPgt4dFRQY9CEtoKQYvyBOl7zFG2F8ErnNdxIXKY3mBzApNZaB0zbccJj/lSJM7qFa0wWVAKOn67iV2wygNHC7H1ooqvzO+6Fxa+fy1xYVQo9gRNHSl/v5FS09lgH5c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=g7Xhq6NB; arc=none smtp.client-ip=185.136.65.227
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1788513698; c=relaxed/simple;
+	bh=zPoFJOO5zsq3eStUXtpVwhe9xXdx3Pf/kwwHZXAv5xA=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=gbUL/hcLv1WnfOtQpVIjavSzqh3qnQqp/Vq2xwWLS/bSKbQui68Fp2sv7h5+HyEjMEgVeA7+9G2oxnTkKpurcbXPiQ3jmICq56IRYeIPZPKcVrnQIcLQ2Mia2W0l0Tvj3k4Nb+Ppei5VHsk/Vj2+gmXShephzPbccfU6WxgWeJA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=docqkut4; arc=none smtp.client-ip=217.70.183.201
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="g7Xhq6NB"
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20260904062715d9f918e08000020764
-        for <xenomai@lists.linux.dev>;
-        Fri, 04 Sep 2026 08:27:15 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=gJ9lfl0DuMQt9wFfeb3PLKoTEizOIm7izreb1vJoUXc=;
- b=g7Xhq6NBPsfySjRR9s/1Thbs9L6Th2YwOvbU0mWAwgRo9vHBs4odeIQ5uE2fHPOIHa1TZL
- Sg5eGU+TuBD1Y2AWa7WcvxYQCciJVERUX9AEPuFSgOydDbtvcRlAjVGu12/8qXuiN4RoHS9S
- PLFK0aXWP8Au1aXkFEYjzJpDLwkKfFljml87h11+G8rnP0Y0tDs0Kf2Oz2ssuvbnM+DAHMFT
- 2SLIwJZwZWI8nedyJqBIkVFBvbnLX28s7UR/A1TWUK5leO4lAu4eTE0tojzN/mYWU1RbgNWQ
- RhgdIKlKnS8CBb3zsXRWge8Mb6xg+KCQgB78XZbRfv+tp0TeJzwUth2Q==;
-Message-ID: <6ec6b7025d5ba370b4fefe411a9ff9b00c891c68.camel@siemens.com>
-Subject: Re: [PATCH 1/3] docs(xeno3): Fix doxygen parsing of
- COBALT_IMPL_TIME64 wrappers
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Jan Kiszka <jan.kiszka@siemens.com>, Clara Kowalsky
-	 <clara.kowalsky@siemens.com>, xenomai@lists.linux.dev
-Date: Fri, 04 Sep 2026 08:27:14 +0200
-In-Reply-To: <ca8fd24a-9e40-4d4d-ab9a-eccb3f2d9dda@siemens.com>
-References: <20260903083447.2220024-1-clara.kowalsky@siemens.com>
-	 <6af60166194fe03a0058c8cd3429d054125ef948.camel@siemens.com>
-	 <541bece4-4a55-4be6-9886-228fb23b9da2@siemens.com>
-	 <ca8fd24a-9e40-4d4d-ab9a-eccb3f2d9dda@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="docqkut4"
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 615EE3E985;
+	Fri,  4 Sep 2026 09:21:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1788513693;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=7RI2PZc55IcMxq87en5NlJMFc6jwRLuqL1Yk5JkPmSI=;
+	b=docqkut4YYtuvLLeP9sgsUa+cp9UgQJ9GCHxXfkJZT5vtD/S90NzH/NjIeKWLtKsGxiiNs
+	e+TqA5LkPTnzklauhzXthGyt7pg/HEn0eTPYXSIZ2h06j+hKXl6lgoqgNVwZA677NffAZx
+	DmaOSngrIUBo3J+qNEX+6pt/y6QpeZLxvqWPg2D3Jpe5zhRnWbV+NbCgxPbFPxx8uvSvCg
+	CQhwSW6f31X78Q0XX5CSKZUVGspN65dD+0Vw6R0XTgR0jBvlbNZgwIrvMbsH8jNpEfH3+7
+	YexUkGTxA7RGW1UNxMQz8EW6SDf49gHW7KJymQhpXTV1AHbqAaTOhQL7ZWskGw==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@lists.linux.dev>
+Subject: Re: [libevl][PATCH] tests: sched-quota: Synchronize all threads
+ before readings stats
+In-Reply-To: <2776b343-0622-4f57-b806-094f0120b220@siemens.com> (Jan Kiszka's
+	message of "Mon, 31 Aug 2026 15:30:14 +0200")
+References: <2776b343-0622-4f57-b806-094f0120b220@siemens.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Fri, 04 Sep 2026 11:21:32 +0200
+Message-ID: <87ik4lfk2r.fsf@xenomai.org>
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Content-Type: text/plain
+X-GND-Sasl: rpm@xenomai.org
+X-GND-Cause: dmFkZTEhJeKkYA2AYI4ApzErhFgJ33Rn1zVYTaGMCJ3H2EWnCmzmj28A8C4ef7AZE2TBstYXU89biRkG1fE0skp8s3NI3bxsxZxK4WetC/hZnQc1tXPV3qULrJNDol9S2/mezh84msxiMJoyXXOzmMRco2JzjJt8BKmEk+zvCqtDu69n5ktTa96v/rk5Iq7TVbrus+RhPuSK8Uk0NQWn5QcXB9AvoiIYtSk7msM2tXa3ABlHOJncLvOUyBZixiDURMCS5VcHEnKVBciZ2z6iNozYE2hZPUHyb+Pb5Qehz8NHtLD6dYbkNdCfCzu5Zvbdwh4Dp0etzEOGstUc8pfrRTkarZCXTfqGlJZuDohCKozrhk9/kFyp+lV5sdN5HR0VfO6aCKDpCRKXYbjeN9NJtumYW8iF1Gqw8YnW9PYPv23z/qvZxBZsxxSV970xFFEfeARoiUr60hngbZzxqibpMl0N6jbqpCORy9tzpHnCVMKMwNNGFDbegAj/6HxpEkkii4lKZRMhsw6ONrPZu2ooNCRC4dJaFuDc67oqvxy00mSKLX30oNesfAUfM7+dynmsw66ZS8+Y/djzaUiMkGIaGVj3Y/7ABFRl+XVsG4nBt50hQIRn6dcrxJXHQ0Okx1JdYWCDb9Vjv189omBhjPg0s870HQJnjp0vide9++/w+d+L3VJM3w
+X-GND-State: clean
+X-GND-Score: -100
 
-On Thu, 2026-09-03 at 12:58 +0200, Jan Kiszka wrote:
-> On 03.09.26 12:34, Clara Kowalsky wrote:
-> >=20
-> >=20
-> > On 9/3/26 11:48, Florian Bezdeka wrote:
-> > > On Thu, 2026-09-03 at 10:34 +0200, Clara Kowalsky wrote:
-> > > > The doxygen configuration lacks a definition for COBALT_IMPL_TIME64=
-().
-> > > > Therefore doxygen does not see the expanded wrapper prototype in
-> > > > wrappers_time64.c and instead tries to match @param entries against=
- the
-> > > > macro call.
-> > > >=20
-> > > > This raises warnings at doc build such as
-> > > >=20
-> > > > lib/cobalt/wrappers_time64.c:42: warning: argument 'clock_id' of
-> > > > command @param is not found in the argument list of
-> > > > COBALT_IMPL_TIME64(int, clock_getres, __clock_getres64,(clockid_t
-> > > > clock_id, struct timespec *tp))
-> > > >=20
-> > > > as doxygen is seeing the raw macro form
-> > > >=20
-> > > > COBALT_IMPL_TIME64(int, clock_getres, __clock_getres64,
-> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 (clock=
-id_t clock_id, struct timespec *tp))
-> > > >=20
-> > > > With the fix, doxygen rewrites the macro to
-> > > >=20
-> > > > int clock_getres(clockid_t clock_id, struct timespec *tp)
-> > >=20
-> > > Hm. The generated documentation should be "generic", right?
-> > >=20
-> > > Depending on the chosen build configuration clock_getres OR
-> > > __clock_getres64 would be correct, but that is also hidden from the u=
-ser
-> > > in glibc land, so we should probably do the same "hiding" here.
-> > >=20
-> > > That said: LGTM.
-> >=20
-> > The doxygen mapping should describe the stable public API, not whicheve=
-r
-> > internal symbol is emitted for a particular time ABI. So the generated
-> > docs should expose only the generic API name clock_getres, regardless
-> > which build variant is selected.
-> > >=20
-> > > >=20
-> > > > It uses the first macro argument (return type), the second (functio=
-n
-> > > > name) and fourth (parameter list), but ignores the third (alternate
-> > > > function name, unneeded).
-> > > > By this, doxygen sees the actual public function prototype.
-> > > > See #18.
-> > > >=20
-> > > > Signed-off-by: Clara Kowalsky <clara.kowalsky@siemens.com>
-> > > > ---
-> > > > =C2=A0 doc/doxygen/xeno3prm-common.conf.in | 1 +
-> > > > =C2=A0 1 file changed, 1 insertion(+)
-> > > >=20
-> > > > diff --git a/doc/doxygen/xeno3prm-common.conf.in b/doc/doxygen/
-> > > > xeno3prm-common.conf.in
-> > > > index 71db05686..ee4ede10d 100644
-> > > > --- a/doc/doxygen/xeno3prm-common.conf.in
-> > > > +++ b/doc/doxygen/xeno3prm-common.conf.in
-> > > > @@ -647,6 +647,7 @@ PREDEFINED =3D DOXYGEN_CPP=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 \
-> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "EXPORT_SYMB=
-OL_GPL(symbol)=3D//"=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 \
-> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "DECLARE_BIT=
-MAP(symbol, nr)=3Dunsigned long
-> > > > symbol[BITS_TO_LONGS(nr)]" \
-> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "COBALT_IMPL(T,I,A)=3DT I A"=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 \
-> > > > +=C2=A0=C2=A0=C2=A0 "COBALT_IMPL_TIME64(T,I,N,A)=3DT I A"=C2=A0=C2=
-=A0=C2=A0 \
-> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "COBALT_DECL(T,P)=3DT P"=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 \
-> > >=20
-> > > No complains about COBALT_DECL_TIME64? Would have expected something
-> > > similar...
-> >=20
-> > I built the documentation with:
-> > ./scripts/bootstrap
-> > ./configure --enable-doc-build
-> > make -C doc -B V=3D1 2>&1 | tee /tmp/xeno-doc-build.log
-> >=20
-> > And checked for warnings:
-> > rg -i warn /tmp/xeno-doc-build.log
-> >=20
-> > I didn't get any warnings for COBALT_DECL_TIME64.
-> >=20
->=20
-> I guess that's because function docs are normally attached to the
-> implementation, not the declaration.
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-Normally COBALT_IMPL and COBALT_IMPL_TIME64 as well as COBALT_DECL and
-COBALT_DECL_TIME64 should be treated synchronously / in lock step.
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+>
+> The quota threads may complete their work in a random order. Wait for
+> them all first before starting to read out their stats. This avoids
+> inconsistencies.
+>
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>  tests/sched-quota-accuracy.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>
+> diff --git a/tests/sched-quota-accuracy.c b/tests/sched-quota-accuracy.c
+> index 2a2dc38..1bf5eb9 100644
+> --- a/tests/sched-quota-accuracy.c
+> +++ b/tests/sched-quota-accuracy.c
+> @@ -275,8 +275,9 @@ static struct accuracy_results run_quota(void)
+>  	 * number of loops we should be able to run during the
+>  	 * allotted quota, even in case of runtime disruption.
+>  	 */
+> -	for (n = 0, loops_at_calibration = 0; n < nrthreads; n++) {
+> +	for (n = 0; n < nrthreads; n++)
+>  		__Tcall_assert(ret, evl_get_sem(&ready));
+> +	for (n = 0, loops_at_calibration = 0; n < nrthreads; n++) {
+>  		do_trace("CPU%d: calibration: quota_thread[%d]: %llu loops",
+>  			test_cpu, n, threads[n].loops);
+>  		loops_at_calibration += threads[n].loops;
+> @@ -292,8 +293,9 @@ static struct accuracy_results run_quota(void)
+>  	 * Wait for the accuracy measurement to end, then collect the
+>  	 * numbers.
+>  	 */
+> -	for (n = 0, loops_at_accuracy = 0; n < nrthreads; n++) {
+> +	for (n = 0; n < nrthreads; n++)
+>  		__Tcall_assert(ret, evl_get_sem(&ready));
+> +	for (n = 0, loops_at_accuracy = 0; n < nrthreads; n++) {
+>  		do_trace("CPU%d: accuracy: quota_thread[%d]: %llu loops",
+>  			test_cpu, n, threads[n].loops);
+>  		loops_at_accuracy += threads[n].loops;
 
-COBALT_DECL_TIME64 is missing here, but maybe COBALT_DECL is not needed
-as well?
+Merged, thanks.
 
-Florian
-> >=20
+-- 
+Philippe.
