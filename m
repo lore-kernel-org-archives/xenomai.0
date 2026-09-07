@@ -1,142 +1,252 @@
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx2-f12.google.com (mail-yx2-f12.google.com [74.125.224.140])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64DD44AA40D
-	for <xenomai@lists.linux.dev>; Mon,  7 Sep 2026 12:41:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.193
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788784896; cv=none; b=HgL2AKYJnfB3A7yHkApxUN8DXye2OI0hiK9ULWFsQN0tUDGeaWZ4gNxy7/tTbg8sWTrrAxGdb4BEqllttj/Zt2ZWPVHR2+7SMnU3ymqErkLc4cYu2el/UBbNgcoFFAeALLAQrE0VnIdq7iCa24ILYeqJGOfyVunNl59pUR3IkSo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788784896; c=relaxed/simple;
-	bh=ZmSDzHXgOWCApFnJ1K2cDapLB6Wq2rxgEHAgD2vVvTw=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=rhR1Q+2Tr7In9G+7S9ODRrr4QddnpggVLs9lbMotkabPN60mc+EqAQtIrDaLn8dilruUuW+S+zQIFCfE5BjglE0G/XC6IdfbPy8LCJfsWLUJ6Muw31Gq+fXVf2Bv8kg4nuP5ExCadpeNLfLvlPpNd2IsziCdDolCJMQ2ORDSSUQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=pdF20j9X; arc=none smtp.client-ip=217.70.183.193
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 230C0481648
+	for <xenomai@lists.linux.dev>; Mon,  7 Sep 2026 12:51:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.140
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788785485; cv=pass; b=M5/n7ts9q4qEpcuxDfgpEy6noRzhimV3WyQhVhgyjtDD+tJfwTPeU9RVvgsgTgk0ty1ts+Dvw66CNniAY1CipVeptiiXacWV9ZuKQYk4hCbEE7Ql4qBlKBJryN3UhsogaiVAph/FDwefmYzkDhj94BEh5GAzBnb7zNTb5GkT1ZM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788785485; c=relaxed/simple;
+	bh=Rn02oMjOh5KkwR0hEo6kN4SHI1V+cIqTkRZokH+deWw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=rZ6IlAO2XtaxUZE9dU5KnrCzgjgCKwiNo+ScwdEoks07nlfEv7iVjGAWuGlS179gvDJDCXR88Fzf4ZsAK8S7wnWkTKQMGE3zQWAAy5ZCdu621sgEPLBxJiDu6HkWP0OVlDKx4AOFJPyzebO15mCNnydrJ6c5ii9GWMH6ARRdpos=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=elk.audio; spf=fail smtp.mailfrom=elk.audio; dkim=pass (2048-bit key) header.d=elk-audio.20251104.gappssmtp.com header.i=@elk-audio.20251104.gappssmtp.com header.b=AwSDkMKN; arc=pass smtp.client-ip=74.125.224.140
+Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=elk.audio
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=elk.audio
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="pdF20j9X"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 66FAB3E970;
-	Mon,  7 Sep 2026 12:41:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1788784891;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=hPViZ8ypSiK5qXFoC/RzjXyz3n8HgyVRdwfCDZBdSbU=;
-	b=pdF20j9XlhXiiRmBWy3GFQwf/x4BxcAIyIAzfa0T/QYWftS85KEWuCv1H/TSpw7GMk47FU
-	T6lT6s6SVt0UU7U6AlfZMZldaMZnuBProtHYId2AcOeVsW2VoC9B6JU5399g6606x0ehVS
-	agTPO4Z1DcbM0rybcTYbYi1k/B0/qDi/kFpnIgPEO1pa9PxfapVPDnbP8n9k5mqoQcF4Qa
-	GCBkmFkkJPR7NJDNaBessHNEcDOYN3gKaaYdQ/ND8Xk4i7bnmOLWcaj+rzUQIxPI3qV5+8
-	ac+8DLUFUOVPfh2u8pMHJ9oJWi4yIy8vY3PWDPyXkpzVs7ZtVz4djqoYaPqoWw==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: Andrew MacPherson <andrew@elk.audio>,  xenomai@lists.linux.dev,  Gerte
- Hoogewerf <ghoogewerf@lmi3d.com>
-Subject: Re: perf getting all-zeroes IP on STM32MP1
-In-Reply-To: <dc1c6765187854e0758378af34098a64a8f7bf3b.camel@siemens.com>
-	(Florian Bezdeka's message of "Mon, 07 Sep 2026 13:34:22 +0200")
-References: <CACiVkw=Vs1KUgfZ=Mq-rXU=4gPFDtmuoNoMv=rzy_kvV7KgpKg@mail.gmail.com>
-	<9e0b7d3e72a19bd900a14faa6c459f5a2e093982.camel@siemens.com>
-	<CACiVkwkc6nzD1qv7yzUR=a3GMPO+b9kp53sBVVKQpiW0NJX65w@mail.gmail.com>
-	<dc1c6765187854e0758378af34098a64a8f7bf3b.camel@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Mon, 07 Sep 2026 14:41:30 +0200
-Message-ID: <87cxupgrnp.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=elk-audio.20251104.gappssmtp.com header.i=@elk-audio.20251104.gappssmtp.com header.b="AwSDkMKN"
+Received: by mail-yx2-f12.google.com with SMTP id 956f58d0204a3-66d20c35573so276580d50.1
+        for <xenomai@lists.linux.dev>; Mon, 07 Sep 2026 05:51:22 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788785482; cv=none;
+        d=google.com; s=arc-20260327;
+        b=o1PnnWoW5n2TGyXm5FxeI5G6KN7dTXHuuMY0U/Pb7PbRtK6xZlEy88nIV7mNKcdxMg
+         FuSFaCNcn7A9MrLeulYL+CDC7Dgzd3EcXCiyfo4ptwbtd9MDEna1pXbc062PL08fyKOy
+         w/2NVhl/oRnfkWUNLu736pqv0DSDjscIlBTu3CHLqgZ2sEhCojbSy9JhRARsljH/tHy1
+         0YWQib5ii0BPbqmKBLUXWwhsxYLO2peMT2fu950q79iJJaGA0y110kYaj3VcDa33Ism0
+         obxdxnqv0+RoVf16MzI1zTDKQVubTPEBo9YVKz5O127umLjPRezESNz4AETuboRRJ3Zb
+         vUUQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=FYyD0CEd/7kgAnjNuYRLJyFKuQnWMAbHlQSKa5do9uE=;
+        fh=zOOzAiozDfEnXfBrtfQ7xhiNGoTBCrCahxTPlVPjjWc=;
+        b=ldmZ4mxYgTkjWVVAv+Rs1FFg0tRkXDzSetvloIt+ESY+wuDdJpjn+pAMtxu8PaPBZN
+         inu+aRx20xSoWNCEY1l6tc8pkwbbxPtwEFnDebL4rvV6BfhsFnT9cru9odN58yABMT6/
+         XZGPlswELznnO4wsK5NQc4htlezWO5ZYgb68g2lKa3FWVVCKZwi7t3qaGQvQ5yH2Heyp
+         eOOXjRDhQHx1uVnMBMkx5P8x21lG5cf46bJKEs4+NWvGP/89ySgP5e88fFYGOEQNGO4v
+         tMNnc5WKlvCy4xMIivYS213WiyVeU6NXrpU0ezDGUmHbvY6ByMqLnJfzpZEjt84K27Tk
+         vhmQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=elk-audio.20251104.gappssmtp.com; s=20251104; t=1788785482; x=1789390282; darn=lists.linux.dev;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=FYyD0CEd/7kgAnjNuYRLJyFKuQnWMAbHlQSKa5do9uE=;
+        b=AwSDkMKNdfLPDUc8K7wB4nEhKWaYarqj8huH2wGJAScR2y+lA6pc5t6yryCY3TbhMm
+         1eVm9qIxO7w9bBXAJBLEVIrk8Vb70YmgpJga4230c7OtbouwGjGOxEs1kE3PtAuOSFtb
+         5EaXy23hIXxyVGw2l6KmHO45Ww5fPFqg5Pq8VzNl+6RhOb2CBaKzetMm0E43s3nx3X66
+         B0kKjVaJbxC+B/wKobwwi6jxF4ZscXHbWkg5LbVUsm9tALBfwGL4SYkcbzdX4iMBBUVU
+         pZVXczRZxjtnhp5qHruYQbJEWowBGv0CnTcAhUXxCq/Zo7O154ZSlZqZ9mGIPdrEmZu0
+         /7nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788785482; x=1789390282;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=FYyD0CEd/7kgAnjNuYRLJyFKuQnWMAbHlQSKa5do9uE=;
+        b=Q078tYzpo1pGsLdkK+OiXCIJzRTvj+9fYGVBRujnzENCz9n60s35xLhYNmw3wEMAGD
+         KLN8ffIreDExF86jhWZ2KNGfaVjNbWLKigmKZ4zMZxvFb5YwzaOT57BYYk4fh815XnB7
+         X39bOqUoh0lsmWLdQezC6AyD5tHimg5Ojwa6fHgNddhxCy7b1/MMBqxsmZDs/P9C380J
+         3nhDKPyZ2Ydb8Zbo5tD+g+JjVBZ6F8ugWO9TAKjgDiMJB0WH5d2tISrbV1hKjjxt+GQ7
+         QN/9v3Qv3/L8vaNR9yzvu9DFycZOxCpDkcfBaJKbSgaMNf7DSKjLw7K0zNr7BrqitZZ7
+         R4aA==
+X-Gm-Message-State: AFuF++kqZ6iW6GThqLxbUWq3RkGSPyxmtDiHkn15/QsnmgffQlu4wWiI
+	RGvgqlSn61GU+vd7JCivDiQ+jxYAaMmPO/l5x+CqKkdlM27tO6yDjIx4hFWYEGgXTuNi3ZF9okF
+	D7yZ676cJwrNH3wG84FUbedVWoUG6JZLn5As3APVoftOuP1igWRMy
+X-Gm-Gg: AYBFou0O2aSoxHRa1bRNOCBd2b+1srMR5aYpgAwysbn3uVypuEmrfNPxI7g9up4w0N/
+	97dGwh6jGS3Y674kLokjVf+d3/CPcAy0E+BldkNxYSRn4CNUMZnq0JGIRjUecJ0niSE512hccPq
+	MgtuyZYEQa1rMrEwh0WQ6FaF5qcJz25FwGjzA+PR7TgVSpcF0gnF33fzqHOx/RdQSRzXWv1u3OL
+	16g8etfDI+EiwV11cyX4mMNyTePe4P0ykfw3xbJ+1bbL4p4wshDptiryIiMeJI8z32EwWNch9M/
+	sK8SAnVMG8m7LpYAmAbAmX5zr2TaMnREiBu3yojfSQqiaw==
+X-Received: by 2002:a05:690c:48c1:b0:862:bb29:a715 with SMTP id
+ 00721157ae682-873f2720d26mr45845927b3.3.1788785481955; Mon, 07 Sep 2026
+ 05:51:21 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: dmFkZTEgG6xB8i6cR8L3R4GCm3FtPdAQtfQ5LDLpTIR4eoZd6n2f0fO4MdNXGxS1DCMS4gb/iVaspg8H7nPrlXeLcYQap2rZzdxEzEkp3ofM9AUoPkYDyyar2Sx1NKMFjvp+fKYRJVhd+37QBuwx/yWV4Fs3U8sAoJIAJbQ2i6Z5AVHkstPk62bB+QM9hgnMhMTlDNd8O3Rm2S0Yh1wahNJiNsCRzldVSlbJGed3Aj5nibi0Vzeq9tTu5xuxiUrM+4GKNrCg6tWtQT7TuN8OpV/pDebD27m4Ct/xtFPPiWCP/r1Y6n+8yWR2XF7Jvd3loEvudIQ67b+nE6tu1hpDDVGK+r9vJRBPylPCjTCOQvip1P5sDp67EmLsHlsQ5Xi2WbBhIpT4T2+48CGD11rJqKvQBwO9t5Ivqz2Rs+CBaI0VuWoZG8DLMUCLXB1f/RT9SPsZbVgCpMpjyy1XTItdg9NLlk8XMeLry/sAOWsbp5tQEIIr4a/JTHyIYNRqBxYeRkc6Wu8QXTCIohU7sPGha7/wDkQOc3w0ZcoOmpd26EaxSwz5IfQ3CZJZOLq5pZr3tqikbuueHbxCNENdcfUkmPZEJ+O1J6teH+GwVajz5iOcv+0cb450E7snm1sNbFjUxu9iyyDs9jNU1k/hFmMEHRwZ6X9zT36o860tql4KvxOJRwRbTQ
+References: <CACiVkw=Vs1KUgfZ=Mq-rXU=4gPFDtmuoNoMv=rzy_kvV7KgpKg@mail.gmail.com>
+ <9e0b7d3e72a19bd900a14faa6c459f5a2e093982.camel@siemens.com>
+ <CACiVkwkc6nzD1qv7yzUR=a3GMPO+b9kp53sBVVKQpiW0NJX65w@mail.gmail.com> <dc1c6765187854e0758378af34098a64a8f7bf3b.camel@siemens.com>
+In-Reply-To: <dc1c6765187854e0758378af34098a64a8f7bf3b.camel@siemens.com>
+From: Andrew MacPherson <andrew@elk.audio>
+Date: Mon, 7 Sep 2026 14:51:11 +0200
+X-Gm-Features: AcwNN1XJhv5SGEo0vRrZJKaJFX11hiAb9_KrQaqAwb1tHzAGXrvdPseFBDaDmwg
+Message-ID: <CACiVkwmm_TuY_m-qqXqJ-JQOsd4eaFQ1dt1b7D+nC4cqG2R+OQ@mail.gmail.com>
+Subject: Re: perf getting all-zeroes IP on STM32MP1
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: xenomai@lists.linux.dev, Philippe Gerum <rpm@xenomai.org>, 
+	Gerte Hoogewerf <ghoogewerf@lmi3d.com>
+Content-Type: text/plain; charset="UTF-8"
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
-
+On Mon, 7 Sept 2026 at 13:34, Florian Bezdeka
+<florian.bezdeka@siemens.com> wrote:
+>
 > On Mon, 2026-09-07 at 10:57 +0200, Andrew MacPherson wrote:
->> On Fri, 4 Sept 2026 at 16:08, Florian Bezdeka
->> <florian.bezdeka@siemens.com> wrote:
->> > 
->> > Hi Andrew,
->> > 
->> > [CC + Philippe]
->> > 
->> > On Fri, 2026-09-04 at 15:26 +0200, Andrew MacPherson wrote:
->> > > Hello,
->> > > 
->> > > We're working on an STM32MP1-based system running Xenomai and found
->> > > that perf top shows every symbol as "unknown [00000000]", i.e.
->> > > profiling is collecting samples, but they all point at address zero.
->> > > 
->> > > I'm not a kernel developer but went through a few debug kernel builds
->> > > with an agent which eventually led to the attached patch. This change
->> > > does resolve the issue with perf, however I'm not sure if it's the
->> > > correct solution.
->> > > 
->> > > The reasoning is that arm_arch_timer.c's percpu IRQ registration never
->> > > sets IRQF_TIMER, so Dovetail's copy_timer_regs() never populates
->> > > tick_regs, leaving get_irq_regs() to always return an all-zero
->> > > pt_regs, which in turn breaks perf's sample IP.
->> > 
->> > Yep, that is wrong. The patch you provided looks OK to me. I'm just
->> > wondering if that should be addressed in Linux as well / first.
->> > 
->> > @Philippe: Any additional thoughts? Should we take it already?
->> > 
->> > 
->> > @Andrew: Could you please provide a formal patch with proper signed-off
->> > and LLM notice (assuming agent means AI ;-)) targeting the dovetail 7.2.
->> > branch? That should help to speed things up. Thanks!
->> > 
->> > Florian
->> > 
->> > --
->> > Siemens AG, Foundational Technologies
->> > Linux Expert Center
->> > 
->> > 
->> 
->> Hi Florian,
->> 
->> I've submitted a patch now against dovetail 7.2, let me know if you
->> need anything else and thanks for the help!
->> 
->> 
+> > On Fri, 4 Sept 2026 at 16:08, Florian Bezdeka
+> > <florian.bezdeka@siemens.com> wrote:
+> > >
+> > > Hi Andrew,
+> > >
+> > > [CC + Philippe]
+> > >
+> > > On Fri, 2026-09-04 at 15:26 +0200, Andrew MacPherson wrote:
+> > > > Hello,
+> > > >
+> > > > We're working on an STM32MP1-based system running Xenomai and found
+> > > > that perf top shows every symbol as "unknown [00000000]", i.e.
+> > > > profiling is collecting samples, but they all point at address zero.
+> > > >
+> > > > I'm not a kernel developer but went through a few debug kernel builds
+> > > > with an agent which eventually led to the attached patch. This change
+> > > > does resolve the issue with perf, however I'm not sure if it's the
+> > > > correct solution.
+> > > >
+> > > > The reasoning is that arm_arch_timer.c's percpu IRQ registration never
+> > > > sets IRQF_TIMER, so Dovetail's copy_timer_regs() never populates
+> > > > tick_regs, leaving get_irq_regs() to always return an all-zero
+> > > > pt_regs, which in turn breaks perf's sample IP.
+> > >
+> > > Yep, that is wrong. The patch you provided looks OK to me. I'm just
+> > > wondering if that should be addressed in Linux as well / first.
+> > >
+> > > @Philippe: Any additional thoughts? Should we take it already?
+> > >
+> > >
+> > > @Andrew: Could you please provide a formal patch with proper signed-off
+> > > and LLM notice (assuming agent means AI ;-)) targeting the dovetail 7.2.
+> > > branch? That should help to speed things up. Thanks!
+> > >
+> > > Florian
+> > >
+> > > --
+> > > Siemens AG, Foundational Technologies
+> > > Linux Expert Center
+> > >
+> > >
+> >
+> > Hi Florian,
+> >
+> > I've submitted a patch now against dovetail 7.2, let me know if you
+> > need anything else and thanks for the help!
+> >
+> >
 >
 > Thanks! We might consider merging that while working on a better
 > solution - as suggested by Philippe.
 >
+> The following is build + boot tested on arm, arm64 and x86 using qemu.
+> Would be nice to get some early feedback.
+>
+> It should fix the problems reported by Andrew and Gerte.
+>
+> diff --git a/include/linux/clockchips.h b/include/linux/clockchips.h
+> index a46872cf1384b..553243174368d 100644
+> --- a/include/linux/clockchips.h
+> +++ b/include/linux/clockchips.h
+> @@ -16,6 +16,9 @@
+>  # include <linux/ktime.h>
+>  # include <linux/notifier.h>
+>  # include <linux/irqstage.h>
+> +# include <linux/preempt.h>
+> +# include <asm-generic/irq_regs.h>
+> +# include <asm/irq_pipeline.h>
+>
+>  struct clock_event_device;
+>  struct module;
+> @@ -259,9 +262,30 @@ struct clock_proxy_device {
+>
+>  void tick_notify_proxy(void);
+>
+> +static inline void copy_timer_regs(void)
+> +{
+> +       struct pt_regs *regs = get_irq_regs();
+> +       struct irq_pipeline_data *p;
+> +
+> +       if (!in_pipeline())
+> +               return;
+> +
+> +       /*
+> +        * Given our deferred dispatching model for regular IRQs, we
+> +        * record the preempted context registers only for the latest
+> +        * timer interrupt, so that the regular tick handler charges
+> +        * CPU times properly. It is assumed that no other interrupt
+> +        * handler cares for such information.
+> +        */
+> +       p = raw_cpu_ptr(&irq_pipeline);
+> +       arch_save_timer_regs(&p->tick_regs, regs);
+> +}
+> +
+>  static inline
+>  void clockevents_handle_event(struct clock_event_device *ced)
+>  {
+> +       copy_timer_regs();
+> +
+>         /*
+>          * If called from the in-band stage, or for delivering a
+>          * high-precision timer event to the out-of-band stage, call
+> diff --git a/kernel/irq/pipeline.c b/kernel/irq/pipeline.c
+> index 85ec0cbf5fb1e..d160d99e32c5f 100644
+> --- a/kernel/irq/pipeline.c
+> +++ b/kernel/irq/pipeline.c
+> @@ -1059,24 +1059,6 @@ bool handle_oob_irq(struct irq_desc *desc)
+>         return true;
+>  }
+>
+> -static inline
+> -void copy_timer_regs(struct irq_desc *desc, struct pt_regs *regs)
+> -{
+> -       struct irq_pipeline_data *p;
+> -
+> -       if (desc->action == NULL || !(desc->action->flags & __IRQF_TIMER))
+> -               return;
+> -       /*
+> -        * Given our deferred dispatching model for regular IRQs, we
+> -        * record the preempted context registers only for the latest
+> -        * timer interrupt, so that the regular tick handler charges
+> -        * CPU times properly. It is assumed that no other interrupt
+> -        * handler cares for such information.
+> -        */
+> -       p = raw_cpu_ptr(&irq_pipeline);
+> -       arch_save_timer_regs(&p->tick_regs, regs);
+> -}
+> -
+>  static __always_inline
+>  struct irq_stage_data *switch_stage_on_irq(void)
+>  {
+> @@ -1123,7 +1105,6 @@ void restore_stage_on_irq(struct irq_stage_data *prevd)
+>   */
+>  int generic_pipeline_irq_desc(struct irq_desc *desc)
+>  {
+> -       struct pt_regs *regs = get_irq_regs();
+>         int irq;
+>
+>         if (!desc)
+> @@ -1137,7 +1118,6 @@ int generic_pipeline_irq_desc(struct irq_desc *desc)
+>         }
+>
+>         trace_irq_pipeline_entry(irq);
+> -       copy_timer_regs(desc, regs);
+>         generic_handle_irq_desc(desc);
+>         trace_irq_pipeline_exit(irq);
+>
 
-Unfortunately, thinking a bit more/better, we'd still have an issue with
-what I suggested. i.e. There are three contexts we need to care about in
-this case:
+Just adding that this patch also appears to fix our issues with perf,
+tested as a backport against our 6.6.48 kernel.
 
-1. when a timer tick can be immediately delivered to its handler
-   (i.e. hw irqs on) from a line tagged with IRQF_OOB.
-
-2. when a timer tick can be immediately delivered (i.e. in-band stage is
-   installed) from a line set for in-band delivery (i.e. not tagged with
-   IRQF_OOB). In this case, the interrupt log is synchronized before
-   leaving handle_irq_pipelined_finish().
-
-3. when a timer tick /should/ but cannot be delivered to the in-band stage
-   because the latter is stalled, i.e. need for deferral via the
-   interrupt log.
-
-In the first two cases, postponing the copy logic to
-clockevents_handle_event() would be ok, because the interrupt frame of
-the timer event would still be active, therefore using get_irq_regs() to
-find the regs to copy would be correct.
-
-In case #3, we have a deferral, therefore the interrupt frame is
-certainly gone when the in-band stage is unstalled. Since other
-interrupts could happen in between, we are toast.
-
-IOW, close, but no cigar. Back to the drawing board.
-
--- 
-Philippe.
+Andrew
