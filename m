@@ -1,198 +1,160 @@
-Received: from GVXPR05CU001.outbound.protection.outlook.com (mail-swedencentralazon11013009.outbound.protection.outlook.com [52.101.83.9])
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D593C3A48CE
-	for <xenomai@lists.linux.dev>; Mon,  7 Sep 2026 14:25:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.83.9
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788791123; cv=fail; b=ON59NF6HQYi1tYhvOh8zvswCRI+jjiDFtzAkUk5oc5TWs8GZpynlSSSd51DusPmulvDmmF6qJerT3RCmb0u3esNRwEWV5XpdHFIfkVdb1DXy1sPpfryQv4w9OxsY0CQTGzQTOHGAolOu/xSPAPs/YZatZRiwkNEuTePT47bYxxI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788791123; c=relaxed/simple;
-	bh=zxYFTp60I0j77/xyvlKamwrggmM5cRkUr2KPl8MIlRI=;
-	h=Message-ID:Date:From:To:Subject:Cc:Content-Type:MIME-Version; b=YlTFdCdGST6Xck3hO8Q0rQ4DltlY+p08YySjVS73SMfyeOoFQmVTmDv2Ca4sIVocwBv+TQWqkn1uPU26uhEhKZoUoFiHZWapoNDEcLJgrzHcVdfiD9H3l5LxX0DlVlZRz4g5eOjOiepoZeamr+fzROTReSVt029g6Ajgg6m8etI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=DTazkE3Z; arc=fail smtp.client-ip=52.101.83.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 323E33A9D8B
+	for <xenomai@lists.linux.dev>; Mon,  7 Sep 2026 14:39:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.225
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788791983; cv=none; b=g0vzZrPexeKxhZSM6rY/Xzt1HZif+WdmVR2lNrQacxTh64n1e9mmnk3vzPgv7qUmkaCjdxGIDNR69CGNXehBRbw6A037NW/xVVaYxTWaq+7jE4PL/YDFJN05mCwH0YtKkEabTvE3SMifBTLPHOE1x1v68jKyjJSDvdgb4qCYULE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788791983; c=relaxed/simple;
+	bh=KsRMxelKir79pAHTvCVqwlqZRCGpERm9Va0KvDQTtwQ=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=i2PJ80djscW09LLTgnFO60zGfXa+HIcHZOLo5q48Rkg5/VgN905mpgnvISV/dFsdtu/Rp8wL9MISibFGSnkE+CWbWSVve7Mu8CNHODTG5FbyrCXIZNGIxOarzs5bXkLM0Mf8oonp51sNs9oEVSp8RvyOESeX/P6lzOcO2GkpGvQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=F3tiBHB0; arc=none smtp.client-ip=185.136.65.225
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="DTazkE3Z"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=dZbQSrqhvKmTQT548lziJMkoiNXs9aE53HI4AlkQVeTXfP0VxNBGM0e8sWoEB8QxJuUYLs46Qn4s5f3EJPd4+AiX2Jx7J1x3Usgqz0JRN0oYrdaodFJ11cxYDXOF/llElHn5cO3LtUrbr/mriZXGrXElwp6rewpVrlpbpgpNHwLjEH1u0G8d5/5kyMlcZYVCv8BUdbpUXus7IqvDLFuas8OUiXMCrHPsF40/vuYFWFIj4wm3+pWEfMpk2ZBle76bFvtKJCVSdzrIFCC0FqGxBh+hIGFlX860zajvsRFwwVQgmoddNLV4RmMpMomuneozOaRIoo0PInseC0rENI+JUw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=n+LT+fASihqQKyLWwyIJ4olBkdUt2Q8OSd1t9rC/mng=;
- b=gV0JXh9Zv/l3juXTSxNPyz+tiUlDcWXlO1r9lmOYHsZJMpnpcbFIdrLQz7kS77GRByufBntZWkW28LtQMdOdtaYWv99M/9rE7SomrxrfEz+TGNkNsUgxeZ4cTFx1qj8q7n6Cahyy+mAT6AAW4lY7xr+TC/llXKUF97lnIrBGhjmTzHt8leZv9KhtpglsuibtyukAbUQaueIF9zuPzB+EcHCyp2FBuqGrwqMuq29wzwAiyU4FCKNdr9AKMIM1CFbYrrSmJL/5X+b9M3R6+I0QqezpoI8dOtiDfR8p6gELiPXoCYtjFeVlbKjYpSqiFX7vo1gHwMNI9vIBpkmwujZ8bw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=n+LT+fASihqQKyLWwyIJ4olBkdUt2Q8OSd1t9rC/mng=;
- b=DTazkE3ZZhaxHPBwVTE7m1sTEw/cDt1HuhxrM/4PPSubCLZKD2/U6WrC3uUFTxnrLeuUKhLG4cxzOc7l7mXVvawADqQgwLLKJ8QL8drakLAxxBMrPseLge3oByAj4uXLzaYTKmv7EG2zXKXKUaKOdDd4cfqoyEJOm9OFX+MPq0v3nHmHknHTOtnmupugHaxVjTSEZYBeUuHcCnL4RzDuFrcjg69c84sBV80ogdGwjlzztu1I1x+LVEy4kTk8nmOeZ+Lq8zsDEeFIRoUfvuzUSMK7MvaA1X+V+AES/S0IDCQicCY+VlqSslIUVgWeHR2T1P4nBDBBb1O5MZ4+ywySmA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
- by GV2PR10MB8038.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:150:bc::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.382.15; Mon, 7 Sep
- 2026 14:25:10 +0000
-Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::be9f:e8ca:ee9:83e1%2]) with mapi id 15.21.0382.014; Mon, 7 Sep 2026
- 14:25:10 +0000
-Message-ID: <e4e3a6ba-d736-4338-9638-445f27b4a842@siemens.com>
-Date: Mon, 7 Sep 2026 16:25:09 +0200
-User-Agent: Mozilla Thunderbird
-From: Jan Kiszka <jan.kiszka@siemens.com>
-To: Xenomai <xenomai@lists.linux.dev>
-Subject: [PATCH] ci: Switch bullseye apt sources to snapshot
-Content-Language: en-US
-Cc: Florian Bezdeka <florian.bezdeka@siemens.com>
-Autocrypt: addr=jan.kiszka@siemens.com; keydata=
- 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
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR4P281CA0119.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:bb::14) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:588::19)
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="F3tiBHB0"
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 2026090714392220b006fd84000207af
+        for <xenomai@lists.linux.dev>;
+        Mon, 07 Sep 2026 16:39:22 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=BfoXELjM2ob2RIvMdwt6Xp7W5qhXIi+ynCM5Q+shSvY=;
+ b=F3tiBHB0noqDJjQPF9GZQ1Ux9QmMJbouZNEr5DDbd0MmiHY5w2IoXovgL+zsO5tUL2jW+7
+ t3G6kL2YXYswlYmCCBJY0htF07ZmkI3bZTxU0iSAgdJiS8xShJWjdnBi9NNR3oY31jUrKHGH
+ wYoYf8WvOWvLGPJEVtCDk2OCfFpm6kcWcfFBSKZWp+GM6JzgLiYyZUFb40jB9H8KLGcmozeT
+ Z5JHahMdvsNhdYOf4sD2ZOmNXDh8/lAfbxbKwMka2mC0cAZlZ8PQoX0rQcE/YTdz65+42DVT
+ zrwNnlH3x5U7G8KvrCy+owj1YCdH4IzPeX+gopbXiWHvxDDZ7XMroDrQ==;
+Message-ID: <a14e0d0f9ec97f6064a1b2fb221f3ee5015e2241.camel@siemens.com>
+Subject: Re: perf getting all-zeroes IP on STM32MP1
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Andrew MacPherson <andrew@elk.audio>, xenomai@lists.linux.dev, Gerte
+ Hoogewerf <ghoogewerf@lmi3d.com>
+Date: Mon, 07 Sep 2026 16:39:21 +0200
+In-Reply-To: <87cxupgrnp.fsf@xenomai.org>
+References: 
+	<CACiVkw=Vs1KUgfZ=Mq-rXU=4gPFDtmuoNoMv=rzy_kvV7KgpKg@mail.gmail.com>
+		<9e0b7d3e72a19bd900a14faa6c459f5a2e093982.camel@siemens.com>
+		<CACiVkwkc6nzD1qv7yzUR=a3GMPO+b9kp53sBVVKQpiW0NJX65w@mail.gmail.com>
+		<dc1c6765187854e0758378af34098a64a8f7bf3b.camel@siemens.com>
+	 <87cxupgrnp.fsf@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|GV2PR10MB8038:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2e97d22a-60b7-4425-4606-08df0cebd2ce
-X-MS-Exchange-AtpMessageProperties: SA
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|376014|23010399003|366016|6133799003|10067099003|18002099003|11063799006|56012099006|55112099003;
-X-Microsoft-Antispam-Message-Info:
-	+nyRjIHJVfwDgb7G7hmaxYBFRUUS7y1dkSjNC7LrJOmJr9XRvOQrtQT4sRy9fRz7WpcnTFkx2UP6GRkpfKNBsMR+7I0La1d24RoOeF/vDa/ZIvVerdwAhWPySWHCWfYMKUQi6NG955/8BtASLeQna8adVe087EUTPt6Rf+cdwTf8WkYzs0HaiLKoQ3DCt7NfoJKUGS8ofjXMOdabIuhurIGfnCHLJRDgJsh3FwEDGMWvEQ3vJqNGKgXjykrOw0BPANZP4VwX0P9C0jDb6IdAE5fahVvNMXUvlsKOgA6yYQOqni3KsKtrbG4WQvTTVufkF+XbVLP94LcXws69haUQLAZGZmJpGmHdOdtEOmeFdHdKHr+HebLM49Yf8qnDjG4jtkeMmOFok4av2YmG80RNUVheT6mEQH3JPKaZsDSRl3BoHA7oCdUhmuKzUtjJ1O0dfbLorFAD3y4ideceHGjVzzLMibV1phiCxFiMSt/xpkuL7wsjWtSoWw3SuDQV57tqxtgJtFg3YqBbwEq9jRWP3ws0kMzPYOV9VHtZ7u4zz4vFrI84PyYbE1k7qg+BxSS/PVJEDi38gMYiHXaf3qdTVjJhgReY7rju33jpwxYez6IGRuNkGZxHGNEFY9AQIAcHs5VBTzK9zxbj5oANL/MilIXld5FZ2zRtC3bJax2xfMA=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(23010399003)(366016)(6133799003)(10067099003)(18002099003)(11063799006)(56012099006)(55112099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?djBGOC8xeUJIUEQ0cUFaT243MzFHb2R0bWpGZnBlUU1jR0RDU3VVQjZJNzc5?=
- =?utf-8?B?VzVXclIzd2ZEYWhrS1V2SVp3U3d6STMrWkE5dzhMaHdJdmFYeStzMHA3Mjkz?=
- =?utf-8?B?OTJTRjhJVjN3TGpnNlIrQWxoWXViMDBWM09kWU1Ga2Y3bzhRNmVoaGlPL0p3?=
- =?utf-8?B?UmgwN3BuOVlRRXRXa1VRS0lXRGtYZkhIWWJVZy9kODUrdVhaSHJGSVRhMkJ1?=
- =?utf-8?B?M20wM1NkMVZLeVIvSTErdURxaEZYVm9Qc3BxWWVieEplQUpzcEVOWklDZW1S?=
- =?utf-8?B?YjFYMEFDenlTRHVDNHUzOE1DSFA2QjB6NmkyMUhhbFdoZ1hFaHBYQ0c5cldu?=
- =?utf-8?B?STIvS3FHOFl0THRjSnVkbU1Pd0V2cUFCMHZsUXpyZFFuZklJcFg1T2dsMHUx?=
- =?utf-8?B?OGFJWHRBcVk5M2d5MVM2cUo0VzY2b3NQSmFYdjJ1ZWVNcE5hbU9GdjJZNTlT?=
- =?utf-8?B?NlFjYWpWMmlJS1RjekwzK0RrUzVaSjJ6NHpMNWZGR09WeWhOQndHRUkwM2Ey?=
- =?utf-8?B?YWo0V25FZ2h0QnU5VHhvdHh1cGY5bW81bGM4cEwzYlRpekdwWlhUa2xrM1pj?=
- =?utf-8?B?ckUrT1pld0hmMWE3Q01sWU16bFRDSURadVg1anRzM1Iwckx4dUhoZXRVUnRv?=
- =?utf-8?B?ZFJLZXJXYVVnTS80MGdmUDVmM0Ntc3JUUU92dzZ3WnlRWTkybzBaNjNmVTVL?=
- =?utf-8?B?MjRmNFg1SStSVmpPZVlRNTR4S0tuYXFSOXVLT2s3anFFay9oQ1E2VDJ3dG5i?=
- =?utf-8?B?TFlOLzJQb2l4cVVhZG5icG4wa3U1dk9kMlRPL3ZmbjFjU3hpLzlYS2tVaEhJ?=
- =?utf-8?B?QWMwcmwrTGJCbnJheC8wbEtGMGI2LzlycDhsUkJWN0toR3lnU2Z2ZmszMDhL?=
- =?utf-8?B?Uks4R3ZOSDdLWHhLMUNhYWdJTjNwMjlvaDl0U3YyT296NzVZRnVJUDhFVWxW?=
- =?utf-8?B?bGR3WDVUYmlpajJ1THltQWQyUkFjQ25hQldyVmFsb3hFejVoOWlIdk56a0RT?=
- =?utf-8?B?R1lmbklEN1lHWEU4blZ5OEIzU3Z4cWJYTWEyQmtiT1UrcXNscTczeHJSTk1C?=
- =?utf-8?B?SXNMR1BUREhpSmNLQlo1NW5pR2JJSFVtQ3hWaDhMVEk3UE5BSmdmNU9nbWVZ?=
- =?utf-8?B?bTBReTdtSStBTGVVK2REMmFTKzgwbUtsMnE1djNBWmdDK1Q1RzdOTGJ6RFVN?=
- =?utf-8?B?N2xHUEpoOXU5Mld6MkVuSVpIZElwV2FqSWlBcmNXNkJuOVl1c2ZTdGhQYVc1?=
- =?utf-8?B?QjNxRzlyMVArdktWM0tVS2tPajBWZG5uaDc2U2tXb1pWUUROa0RXd0hKSC9I?=
- =?utf-8?B?NXdiZUdCV2V2TWk4akp3YUdIQ2pVYVpQbzMvR3ZmdXBKcWliQXRQK2gwc0Vh?=
- =?utf-8?B?WHB1Zy9GNmVUWFJNOXNlMnAvbHlsTUh4eVZLMFk4c052bEVFbGpoWG9ONm1h?=
- =?utf-8?B?S0Z3dWZIdDNGd2Jwdk8zNTBSQk51b2RUVGdxMFNFSXRoblpLUmpwL2dzbXRp?=
- =?utf-8?B?MFV4RU44MVF4b0RDaU9lNDE1VWdBWlhHZkpVa290V01tamdyZVlNcURabE9P?=
- =?utf-8?B?c3BIaXVMUFAxSHNiSWpMNTdZQllKUi9TMzkwRURpbWt0Qm1vOGRtREJVbS9E?=
- =?utf-8?B?NFd1bGN3RG5kY2xubG9QVWVIYW1oQUpNQ0pNdTNNMloxRTVMWWtaMDUvZy9v?=
- =?utf-8?B?azJ2c1V5aTVvR2YxVXVqSzNRcmdjeHlzRGFWYUM5SUtpUXBqTG4yRDZ3SWNB?=
- =?utf-8?B?UFVLN2E5QUdtR3NyZlhLbGozVGRpOE9TRVpZRm53MmdIYnBiREZOaWphY0kv?=
- =?utf-8?B?anZ4MGZKVVAyYUhPOHhPSHdjK1UyeTdGWVpJV2dtVzgrRmsyalZqU3JMMU1I?=
- =?utf-8?B?R0l0ZU9PeGpJdXprQitkdG90VDRKbmUxY3ozbkg2RDdVamlQeTVybWlONy9T?=
- =?utf-8?B?aDl2clFFR2NqZjR4dCt1SmRDckg0Njl2MmdaOW9ZeExWb3FrRXlxYUhmeS9P?=
- =?utf-8?B?ZmtDendkcjNyZ0Z4K1VYMlppN3BMUVVlc2JDejBKOTMxbFZpY1NMUlJWbGxF?=
- =?utf-8?B?U0lSV3FYRW9jMTdsMHA0Q3dlNkU0OWN2ZTliL2M5Y1dVaUREcHpEL2drWml4?=
- =?utf-8?B?dzliblR0VEErTFh4bitYZDBRNk1WYmVXYmhrZGFQM2k5UGRBbDNNb00wREl3?=
- =?utf-8?B?b1JqaGtBWnI3eHZVN2toeVlTVDFBMXNSWFNYUkxvUVNudjZ5aEhlSkhpcTFm?=
- =?utf-8?B?SUxidGtieGtxakFEbzVMMzJNL0NHU2hSRVgrWUNQblk0MG01SWVZYmh3REM2?=
- =?utf-8?B?VXE1cDRtbWwxNGdWbEo4MzBDRVFjSkxUUitMeVJFNVFPQkk5ajNPQT09?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2e97d22a-60b7-4425-4606-08df0cebd2ce
-X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Sep 2026 14:25:10.5174
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Eg4Yq3a+5/Lt84u8iSQsaFAhmQqPkTOCrOKPU97lKcjbgsFXyq2wSojW+USsSq1jK5LNtzJi3eNaZhrd4RUNIw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV2PR10MB8038
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On Mon, 2026-09-07 at 14:41 +0200, Philippe Gerum wrote:
+> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+>=20
+> > On Mon, 2026-09-07 at 10:57 +0200, Andrew MacPherson wrote:
+> > > On Fri, 4 Sept 2026 at 16:08, Florian Bezdeka
+> > > <florian.bezdeka@siemens.com> wrote:
+> > > >=20
+> > > > Hi Andrew,
+> > > >=20
+> > > > [CC + Philippe]
+> > > >=20
+> > > > On Fri, 2026-09-04 at 15:26 +0200, Andrew MacPherson wrote:
+> > > > > Hello,
+> > > > >=20
+> > > > > We're working on an STM32MP1-based system running Xenomai and fou=
+nd
+> > > > > that perf top shows every symbol as "unknown [00000000]", i.e.
+> > > > > profiling is collecting samples, but they all point at address ze=
+ro.
+> > > > >=20
+> > > > > I'm not a kernel developer but went through a few debug kernel bu=
+ilds
+> > > > > with an agent which eventually led to the attached patch. This ch=
+ange
+> > > > > does resolve the issue with perf, however I'm not sure if it's th=
+e
+> > > > > correct solution.
+> > > > >=20
+> > > > > The reasoning is that arm_arch_timer.c's percpu IRQ registration =
+never
+> > > > > sets IRQF_TIMER, so Dovetail's copy_timer_regs() never populates
+> > > > > tick_regs, leaving get_irq_regs() to always return an all-zero
+> > > > > pt_regs, which in turn breaks perf's sample IP.
+> > > >=20
+> > > > Yep, that is wrong. The patch you provided looks OK to me. I'm just
+> > > > wondering if that should be addressed in Linux as well / first.
+> > > >=20
+> > > > @Philippe: Any additional thoughts? Should we take it already?
+> > > >=20
+> > > >=20
+> > > > @Andrew: Could you please provide a formal patch with proper signed=
+-off
+> > > > and LLM notice (assuming agent means AI ;-)) targeting the dovetail=
+ 7.2.
+> > > > branch? That should help to speed things up. Thanks!
+> > > >=20
+> > > > Florian
+> > > >=20
+> > > > --
+> > > > Siemens AG, Foundational Technologies
+> > > > Linux Expert Center
+> > > >=20
+> > > >=20
+> > >=20
+> > > Hi Florian,
+> > >=20
+> > > I've submitted a patch now against dovetail 7.2, let me know if you
+> > > need anything else and thanks for the help!
+> > >=20
+> > >=20
+> >=20
+> > Thanks! We might consider merging that while working on a better
+> > solution - as suggested by Philippe.
+> >=20
+>=20
+> Unfortunately, thinking a bit more/better, we'd still have an issue with
+> what I suggested. i.e. There are three contexts we need to care about in
+> this case:
+>=20
+> 1. when a timer tick can be immediately delivered to its handler
+>    (i.e. hw irqs on) from a line tagged with IRQF_OOB.
+>=20
+> 2. when a timer tick can be immediately delivered (i.e. in-band stage is
+>    installed) from a line set for in-band delivery (i.e. not tagged with
+>    IRQF_OOB). In this case, the interrupt log is synchronized before
+>    leaving handle_irq_pipelined_finish().
+>=20
+> 3. when a timer tick /should/ but cannot be delivered to the in-band stag=
+e
+>    because the latter is stalled, i.e. need for deferral via the
+>    interrupt log.
+>=20
+> In the first two cases, postponing the copy logic to
+> clockevents_handle_event() would be ok, because the interrupt frame of
+> the timer event would still be active, therefore using get_irq_regs() to
+> find the regs to copy would be correct.
 
-With Debian 11 having left LTS, it was also removed from the official
-archives. Switch to the container snapshot URL instead.
+Agree.
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- .gitlab-ci.yml | 5 +++++
- 1 file changed, 5 insertions(+)
+>=20
+> In case #3, we have a deferral, therefore the interrupt frame is
+> certainly gone when the in-band stage is unstalled. Since other
+> interrupts could happen in between, we are toast.
+>=20
 
-diff --git a/.gitlab-ci.yml b/.gitlab-ci.yml
-index 1188222d7c..7b47306e4d 100644
---- a/.gitlab-ci.yml
-+++ b/.gitlab-ci.yml
-@@ -265,6 +265,11 @@ i386-userland-y2038-unavailable:
-   image: debian:bullseye
-   variables:
-     GCC_VERSION: "10"
-+  before_script:
-+    - sed -e 's|^# deb http://snapshot\.|deb http://snapshot.|g'
-+          -e '/^deb http:\/\/deb\./d' -i /etc/apt/sources.list
-+    - echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/use-snapshot.conf
-+    - !reference [.build, before_script]
- 
- trigger-xenomai-images:
-   stage: test
--- 
-2.47.3
+Hm, when setting up the proxy device, we mark the affected IRQs as OOB
+IRQs. Doesn't that mean that we end up in clockevents_handle_event() for
+those IRQs as well? That seems to be the case, if my debugging here is
+right.
+
+We want to copy the registers of the last OOB timer tick, no? That looks
+doable, but I might miss something or just did not run into the "inband
+stalled" case.
+
+Florian
