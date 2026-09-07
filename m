@@ -1,135 +1,83 @@
-Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3A182576E
-	for <xenomai@lists.linux.dev>; Mon,  7 Sep 2026 06:03:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788760988; cv=pass; b=i3dzxNtc4lVANsL/WMmbZJjyMWmbMv+LjYYb1/TUZCG8/2YfDdMtpBz/kb3duJw8agPi9TLVIdnkmvKk4/BETy3i3WxhX2G2/req/xTeP7/MBUDZAMYX/+t4dBnhh3olL2Y1L+CPqJXlDZ/vhV3zELGmfmKh6uq0JBZko01Lyek=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788760988; c=relaxed/simple;
-	bh=G4Mstngb4b9PrYr6sBLuKy+WU/VT0oG24x6V0Iba3ak=;
-	h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type; b=QGhze2eZnlUpClAFxx5ibO3HSFlUFGDTwCnJ23wK4qGRnQ3I/YDDcuf88gI74GGNg7qA6Ba4qAWNG0EUOMeIFVVEZTSZU45mxluLbnTc8YBz89yY4MonlO6oxKSPMFPqOO4juJkfM1Kbfkcv6BTuCbDkb7z2EO+nXnS777yq1oA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lmi3d.com; spf=pass smtp.mailfrom=lmitechnologies.com; dkim=pass (1024-bit key) header.d=lmi3d.com header.i=@lmi3d.com header.b=ic3KNkwM; arc=pass smtp.client-ip=209.85.208.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lmi3d.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lmitechnologies.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0345E395AF1
+	for <xenomai@lists.linux.dev>; Mon,  7 Sep 2026 06:24:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788762252; cv=none; b=KUPw8weaCYuHgOAzz0wyYgDveEvOjMHCzZZpTl+wFtNOg5lhpTPKS69tG0uhCHwjODeXsMaE6TwxPyVZf/0vnPphc5M7XntCe2N5KWW4aEr1w8iCL2DwnhA/83BTQCPKK2xVKgZKewD/kAMEoBN5v+Ul6+9VZDH+UYWzCNP6mSw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788762252; c=relaxed/simple;
+	bh=VefnOOxAqI7fllRco7iRrKcTrBptGRsUOdoaJ3+O3HA=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=O6m3i5E3wVu01KDT33iI6Fnln2IxPOhyFzE/ydh6SwKCdhtp7w3WRhAk0H0YfXCOefW3MUQwQkkIck3qHmT+K+UghPIO79BLbb/79knHbNQbhcUerLH3fdKHVOWAbR8bq3dkD+p9OXUfuzHDEFRoq77claJyRR/sVtmNG23nydU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=TufdblQ8; arc=none smtp.client-ip=185.136.65.227
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lmi3d.com header.i=@lmi3d.com header.b="ic3KNkwM"
-Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-6a682579c72so3872120a12.1
-        for <xenomai@lists.linux.dev>; Sun, 06 Sep 2026 23:03:06 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1788760985; cv=none;
-        d=google.com; s=arc-20260327;
-        b=eDTmz8iHGeJ4HlrssEa3Q49bngLKRf/iQoPCT15z7kO7A1tAgJCzfhmfsjLy7micLi
-         A7w2PbYamy6+MObbwY5vgUOLE7/6nvMzZs3auKGfY1sCDNYt9H/7B6HxZSzwt7pRJNsb
-         WDx3ITiBBWdMlKq9PDfytOmmP+ZH+D2yrR0OWpRpyTlRIUdrYUUFvKvLbmVumJon0Pv2
-         1MOHtpI1pNbhX9nZMTdTq7eI+TY9rGnR5LwTN1ITu/VMu11tI9QF6E9tGKefR8hIErCa
-         Um9qT/RsZK/h6nPt6Oqh1qRI5RFlmAyDhGNDS62+Oul0O9MeeiXoS4CyBFOiwi1wqe1Y
-         wpZw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=to:subject:message-id:date:from:mime-version:dkim-signature;
-        bh=vw5srFVdCEP7MJHDl7UiquJMXm7XSVx4QfUnyURlVFM=;
-        fh=YB3B87WifQ96wNOuamgxI2TmGE/J/7vmGnp4rylPnkg=;
-        b=jCgvCU+UjTcYDThcL4zx6nYLsD4ggCzJNzRXVgY8FozY2WWkNFtG6qEfseuvweo/eg
-         Fhm3wrbKC3L/DYitRJpiCrF7zNyWjxEbF6yswBuQV7rUAcJ6qODziKu3/A1WoOAqCnG7
-         yUHwocVjhbh7HbLMFBbr3r7x6U3qCYpG4Qjogr/1O5ZLhPUpbIRf2RDiHQ54yP/vi0Sv
-         yHjmUe9exUdk18jBJMvswsZb5hoxFxhILObz+HhtOVjARxwZEBYOysYW1bfnfJRwuEeo
-         xV6A75OEMUTuK/6apwhxbWREqpLciX3EB4GJ0d0oNv1uNKg30OJ3WUJe0/xXhiErmVY9
-         DECw==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lmi3d.com; s=google; t=1788760985; x=1789365785; darn=lists.linux.dev;
-        h=content-type:to:subject:message-id:date:from:mime-version:from:to
-         :cc:subject:date:message-id:reply-to:content-type;
-        bh=vw5srFVdCEP7MJHDl7UiquJMXm7XSVx4QfUnyURlVFM=;
-        b=ic3KNkwMzVvsiJAZoVsDKpQW0tNUNpVr0GhfgEzgTyfFsAVz6jo7Kg4OSqzsbfNAgo
-         9Yg9cFn4sRoWLDN5OoVvsDGAu3NclbdrvUBrTa+BWGLxmC72R/5F+Amsu9LdLmOrAqeZ
-         Ra2Z4hfDzi8+jgc3aJHAoaOVRsAdB2dJ4SAIg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1788760985; x=1789365785;
-        h=content-type:to:subject:message-id:date:from:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=vw5srFVdCEP7MJHDl7UiquJMXm7XSVx4QfUnyURlVFM=;
-        b=W+U5PeYOuCfLHxrVF/aXQI7xs67hgXOYuDGvevpCkACNETT+b6mCqyR2ODOlnmUofv
-         PSfm8YtFgPQ3lP/qAqGyjzyg3o8/c4FxiPIxvppLwcPrHDg9a2rxynegtybDVrjk7yHx
-         PWsMkDHkY8l43GCusNrbjMG+RBUYRXeTWZglu+5IlTGwUQJ8LJZ92qz7FndNHCM9i8Td
-         0RKdYbRVqSHjmZj33bwBzRVIBHdTri7rhP4xXHbokP1lbaK0pWroCD9AKnFY16Vj80wI
-         MlCifTlFS0fwxqJ8OVlQ4qcO3ArdW8ox//Yrty6SI+q0yKf0TzExVzMyonNWJQ16EVr2
-         EvTw==
-X-Gm-Message-State: AFuF++kWd37Hnz8ZeRGpNtydc2OBfvWuRVerq+4a3zZKHc80efOiOeJf
-	BmOzm2A5JpZGqag+8qn/Rdth4A9EbwXxZV682oq2Z1JKZarDegvi1yrhRR/VmNO1NXotUkgvRqz
-	boZnnyZijYo9nQOwCFBcDTt35ZdDb66IhrCjsEz88O0ZB7NZk8w1Cg5tnIxb1OfasutGjnwwDz5
-	nEJAsDXP5i6aUmmdiR4XvqW/CB0evfPObz72DESBi3Fs/qQuCYcLr51YFvlARDRCLPn7Aj6YzV1
-	P0GszVYIpQkKHaeO6qjPExWP1BEa13mAam7omMgn6X4XARxKA==
-X-Gm-Gg: AYBFou3ffJTpNH3jFss22W3IKvbDJy9EhvXhEZP3KA8o+IFR0o2sQ789gdM4mWkR3Yx
-	gr+8oasWdxHPYvG1KauGweUSja7EDEA8M0tbx6pKs7nG0kNnyFWejv9Krl8aYB5liLfQwqL8eq7
-	5EzNyef6KOAQQG1WlbdruvjyU8g5vsvbpCVz2ctpzhsnKTpfzRKxUowo7A0V2gfsHwVv7dxWvPA
-	R2XjZee5p83jJTjGvPSy66LrfwDGKD4hBnabyOLlZrRtMZc8YuHCHbBhOxgQJJeE3ExzC6VkvcF
-	hQjUgl2u+9y43x+HB386GpLhafBlxwyKFJNzcu5hedmLSDCn6ZZSKRcViI3u0L5uzN2dN27uIkQ
-	4dccn/qnzvLlZHH1OcpV1UFYr66mOEB/+RrvBXyr3/ebsL5umo3lKqsuHNw+dQ1s=
-X-Received: by 2002:a05:6402:27cd:b0:6a4:21c6:1d14 with SMTP id
- 4fb4d7f45d1cf-6a7e85e4d77mr11933219a12.0.1788760985014; Sun, 06 Sep 2026
- 23:03:05 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="TufdblQ8"
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20260907062353e4f3c63e900002075e
+        for <xenomai@lists.linux.dev>;
+        Mon, 07 Sep 2026 08:23:54 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=VefnOOxAqI7fllRco7iRrKcTrBptGRsUOdoaJ3+O3HA=;
+ b=TufdblQ85LYnQZbmfy/mOvLBJgqTsC5lUNEv6DlBOI8wATnFNsjL1ivVIzLyoLLzn+enX4
+ j+F3xy8STOo7mv+dILhnCZxgbVaJJvUG2hm7JE5IF4vXu5E+JWdJuoNrawfZp6hi+5B5sJso
+ Rn3tzWQKxegF71y11t4aMU/h/LZT+TdCqZmj0g2odfCN/8m8ApiQiVFenAnwd4ZgeFeDO3Fr
+ FE4dcIacrRMHoz4B7+1i01hkGV2TOPYgHGYQcWZUOCLOMBIZ9RQ2OnguEMqDRAZT9+PHIXsY
+ wVdcgvQWm9Nkniev85j6MmKgI9XizmWfLnjyCcPoS7/bT8I+228P/xjA==;
+Message-ID: <23b48beb746e3c998d704e2e2a1b4f5a5ffea3ca.camel@siemens.com>
+Subject: Re: Idle measurement problem on arm_arch_timer (ARM64)
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Gerte Hoogewerf <ghoogewerf@lmi3d.com>, xenomai@lists.linux.dev
+Cc: Andrew MacPherson <andrew@elk.audio>, Philippe Gerum <rpm@xenomai.org>
+Date: Mon, 07 Sep 2026 08:23:53 +0200
+In-Reply-To: <CAKndYJGoGdwKkFV8Kd2O+VkAJuqeqxsmL6OLSxhyca5k5R++ZA@mail.gmail.com>
+References: 
+	<CAKndYJGoGdwKkFV8Kd2O+VkAJuqeqxsmL6OLSxhyca5k5R++ZA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-From: Gerte Hoogewerf <ghoogewerf@lmi3d.com>
-Date: Mon, 7 Sep 2026 08:08:07 +0200
-X-Gm-Features: AcwNN1W-A_Iuii7jZ6W1FkSJ-9resFybkbNLK7SKVHHhmVZCnvcw_FZ9xZmPMSY
-Message-ID: <CAKndYJGoGdwKkFV8Kd2O+VkAJuqeqxsmL6OLSxhyca5k5R++ZA@mail.gmail.com>
-Subject: Idle measurement problem on arm_arch_timer (ARM64)
-To: xenomai@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi Xenomai team,
+On Mon, 2026-09-07 at 08:08 +0200, Gerte Hoogewerf wrote:
+> Hi Xenomai team,
+>=20
+> Using "v6.18.29-dovetail3-rebase", I recently tested Zynq-7000 and
+> Zynq UltraScale+, and I found an issue on the latter.
+>=20
+> My config on this system is as follows:
+> CONFIG_IRQ_PIPELINE=3Dy
+> CONFIG_ARM64=3Dy
+> CONFIG_ARM_ARCH_TIMER=3Dy
+> CONFIG_HZ_PERIODIC=3Dy
+> CONFIG_NO_HZ_IDLE=3Dn
+>=20
+> Crucially, when NO_HZ_IDLE is off, the system shows 0.0% idle, even
+> though the system is doing nothing. The quickest "reproducer" is
+> "/bin/top", which shows 100% CPU load (usr). I can provide sample code
+> if needed. Flagging the PPI as a timer IRQ resolves the issue. Four
+> similar call sites in arch_timer_register() from
+> drivers/clocksource/arm_arch_timer.c need to undergo the following
+> edit:
+>=20
+> - err =3D request_percpu_irq(ppi, arch_timer_handler_virt, "arch_timer",
+> arch_timer_evt);
+> + err =3D __request_percpu_irq(ppi, arch_timer_handler_virt, IRQF_TIMER,
+> "arch_timer", arch_timer_evt);
+>=20
+> I'm not sure this is the best fix, but I wanted to share this with
+> you. If desired, I'm happy to test alternative approaches too.
 
-Using "v6.18.29-dovetail3-rebase", I recently tested Zynq-7000 and
-Zynq UltraScale+, and I found an issue on the latter.
+Most likely the same issue that we discussed in [1] a couple of days
+ago.=20
 
-My config on this system is as follows:
-CONFIG_IRQ_PIPELINE=y
-CONFIG_ARM64=y
-CONFIG_ARM_ARCH_TIMER=y
-CONFIG_HZ_PERIODIC=y
-CONFIG_NO_HZ_IDLE=n
-
-Crucially, when NO_HZ_IDLE is off, the system shows 0.0% idle, even
-though the system is doing nothing. The quickest "reproducer" is
-"/bin/top", which shows 100% CPU load (usr). I can provide sample code
-if needed. Flagging the PPI as a timer IRQ resolves the issue. Four
-similar call sites in arch_timer_register() from
-drivers/clocksource/arm_arch_timer.c need to undergo the following
-edit:
-
-- err = request_percpu_irq(ppi, arch_timer_handler_virt, "arch_timer",
-arch_timer_evt);
-+ err = __request_percpu_irq(ppi, arch_timer_handler_virt, IRQF_TIMER,
-"arch_timer", arch_timer_evt);
-
-I'm not sure this is the best fix, but I wanted to share this with
-you. If desired, I'm happy to test alternative approaches too.
-
-Thoughts?
-Thanks,
-Gerte Hoogewerf -- LMI3d
-
--- 
-
-
-This
-email and any attachment(s) it may contain is confidential and is 
-intended
-solely for the use of the individual(s) to whom it is addressed. 
-If you are not
-the intended recipient of this email, you must not take 
-action based on the
-contents, nor distribute, nor expose any part of the 
-content(s) to entities or
-person(s) beyond the original distribution list. 
-Please contact the sender and
-delete the email if you have received it in 
-error. Thank you.
+[1] https://lore.kernel.org/xenomai/87bjacoy6l.fsf@xenomai.org/T/
