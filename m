@@ -1,466 +1,230 @@
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010029.outbound.protection.outlook.com [52.101.69.29])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B1FF51475C
-	for <xenomai@lists.linux.dev>; Tue,  8 Sep 2026 11:08:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.227
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788865714; cv=none; b=nOVV7Nau4w5bbm9izVzK0lHmHXUmZR1I8Jy24QKNqHCmZSJaib2sTVDvtsK/3Su6ULIeIQF77XEEHIfkZCvV25RTetQ+K3kFKt1GKLi2Fxh7dxgh3ucf8M6yRREcCUAfk2xk7Ic2992W0xPTFBYKhmJHoEMn1R3+S7+MfMJRXXI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788865714; c=relaxed/simple;
-	bh=M73pymIAIf/XdO14QXoKmRCaG8BoIhp4a4KkG1r4zcg=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=kO67I7jaGtCyavLLzKmxIXsLCGFUqErpeV9buCASTuTv2ipErSMlkDwq8WwLXZkGMYnBc2hWs4TBkwSxgIPb+f+VmwM8iuByYoNPv8fWb13LGMhJKeSih5JsogYFNd7kuiJO7MADhiJ9pPyau+ZNmMJvMrXuq61Qe1QhcgGLBC0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=SNClEGbb; arc=none smtp.client-ip=185.136.65.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D98753CA68
+	for <xenomai@lists.linux.dev>; Tue,  8 Sep 2026 12:32:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.29
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788870768; cv=fail; b=a28Bkp6kIlLh/8JRHptZDA+OLCrtZ7gb/3hKniXxSEGPt6LgMVNjB4IapTjPRPmEejTXSsZZA2zDZ4FdzTlS7xyruEZ4GZKy2GqvnFPL0W87hLEIrMRwpW9vN7I4IV4EL2ZOB2jYdlofL6ffVsapv0xf1hn+XjHE/l5ieEArCM4=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788870768; c=relaxed/simple;
+	bh=+1hKc2EsTusiM8RhqrdIldBrSLUXxM410UN/QEXvaJc=;
+	h=Message-ID:Date:Subject:To:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=uZnGnmdjEw1QKAhK1hwaBwFzQwJ/llNGwR9evg6lFmRGrJtsHQbcqffnlXe7KwclY7XhjpDzvrTGf9ROkt3hkRXjpuVQcPLmeUOTqzPDJR4flWDRJMXrYaDwxELnPyPzBWFzcF7ik0sa682LXVG9yHwd4ydYChQMpDIQKGyuIos=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=PzQDxQM7; arc=fail smtp.client-ip=52.101.69.29
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="SNClEGbb"
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202609081108220892700686000207b7
-        for <xenomai@lists.linux.dev>;
-        Tue, 08 Sep 2026 13:08:22 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=ovV3JGJbT9kntAzGRUOlJexh5WGK92t4xv/8hwstLMw=;
- b=SNClEGbbCWIuQwvy1jiuoLiXqv8tr+oBS6sdLJkYgpCW0xX2zrkwMCKqi/54eWPweMIxwr
- DskA7CDZ9wxcggixwjmApcfcB0qnMk1m193THGfetOSr6wDPB8VeQ+DhHkLRM8mzFr2jXOfG
- VZ+BCVwkddADGskRVYVepkQAUL/XEHY//vuQaYFeMHkvfvXVhsfqg+SSjfbDrIIDbOtyj6nE
- yKKFBjW2sriGfvGPwxKpdlXq9kqF4wNkbxpYPLy0nf3MMIvU7C3xnmKO0NpBIbL1mYXJa4ER
- 6X10dTAUoecXSt8voNoKakjFAWxSHSDVW0hpb1sgf0EYtKF3fEPTnIcQ==;
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Tue, 08 Sep 2026 13:08:21 +0200
-Subject: [PATCH 1/2] cobalt: Replace strncpy() with strscpy()
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="PzQDxQM7"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=iAcl5Br2LV+8I7LimM25HMj/A49lzhtZZmV1crZj+SIIiBvlnrMx+Mkt0xmQhVmx4kKMSy/oPwgRPmOrx+qpo0sNeNLqG0igYKWfcyimQqE14oFuXGGQyS8JSULa3SINacGzI8723iQBq4OASaJwMfGPHi4m6LTApksbhYLWtDA90CORRxPiEoXXrTjiIynPfGWO08Amn4E2ncRN8964Y+JdQQqSd8FLeMEYkBeazsbH51g+MsOWKIyWl3XORMQJdZhI3IUWZSX0p3ZesOJBANPp2uOUAzqykbwJmFgfAXHV405+CVpSfGjyJlWGU9WfwHDuHZSESJ5s8qmdEVpb4A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=c8O+Tp/6rr++6mkW2iBp+zKCIp9q5W5/y4XpbdKuolA=;
+ b=m3NGjW1wq6PWHoRc68S3nSvYfi/FfddmBDnT9YfASEc/rEmA20MpE8eKYIVV/+D6jPYXL+DyZkzje3QRl9g+Fm1M4LRSQSJD2S12suEFY4bUdE2uxaaWAaQeIhXIvFCXtIxuqrUvy7iTXgu7dOruil383U/W8h7H+dUeK4CNvf4HEoJdl+hTJb7Dv2VPt9Qrn2U8zRR2FGGiX3Py9AVPWxAcv0sQhXu6xt8/sLxS3lKSy9KXd4s/kD9bk34th0hPEBTlNGp/op0Kcmt5nL4cR1FAlirfgOsHxwXAR6uwUBlUOdHD/f4xwTdIMQlLOSj2Rk9bGWMvdAiZ4LkWiR+ETQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=c8O+Tp/6rr++6mkW2iBp+zKCIp9q5W5/y4XpbdKuolA=;
+ b=PzQDxQM7PTgbVzXAMQmyFeXpJdR15d/jGFPP9UFt95QTi8nOAJso7G8IwdHE+ET/vSFNGWdh3BiEDhA0PT6Ic1BqhF2ULjIH7e18cuoXyyeQknelS63GR1QY53y7MiWyxoVqCVH1zCiU6NA01qT7bg/jzfKMa+GGQuUtJ1DCs1XG10ildV9BkDMOuPgzkm4Ps6b0png6DEMEMfvjNMupmSH4/ZXEtrg9sSmCtfLXFJrN4PSWGaQ2QO3HS65NTvYS2ZgX+qRyNpnx3i4lquZ0QVdgcVqgUIdEDv4WWGj0xBxQjkBh1ZVgD9ncZHhndQQz/IQjcn8bmFVairaBVOf2AA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:588::19)
+ by DB9PR10MB7956.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:305::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.382.15; Tue, 8 Sep
+ 2026 12:32:35 +0000
+Received: from AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::be9f:e8ca:ee9:83e1]) by AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::be9f:e8ca:ee9:83e1%2]) with mapi id 15.21.0382.014; Tue, 8 Sep 2026
+ 12:32:35 +0000
+Message-ID: <b41b125c-e243-439f-ab5e-2d410f88298b@siemens.com>
+Date: Tue, 8 Sep 2026 14:32:34 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/2] xenomai 3: Add support for Dovetail 7.2
+To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
+References: <20260908-wip-flo-prepare-for-7-2-v1-0-eaf975a56944@siemens.com>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Content-Language: en-US
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ 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
+In-Reply-To: <20260908-wip-flo-prepare-for-7-2-v1-0-eaf975a56944@siemens.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BE1P281CA0335.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:b10:7d::28) To AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:588::19)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260908-wip-flo-prepare-for-7-2-v1-1-eaf975a56944@siemens.com>
-References: <20260908-wip-flo-prepare-for-7-2-v1-0-eaf975a56944@siemens.com>
-In-Reply-To: <20260908-wip-flo-prepare-for-7-2-v1-0-eaf975a56944@siemens.com>
-To: xenomai@lists.linux.dev
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, 
- Florian Bezdeka <florian.bezdeka@siemens.com>
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AS4PR10MB6181:EE_|DB9PR10MB7956:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5279f999-f20e-4ce4-478b-08df0da542a0
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|366016|376014|23010399003|6133799003|10067099003|11063799006|56012099006|22082099003|18002099003|55112099003;
+X-Microsoft-Antispam-Message-Info:
+	Nfz5gIM27fljtsKF2RK7i5CMLQ/F2IFjiwh9CVKdhqrmM9Xr4uaTB6qcOAvujzoql+/5CLAmNlybd11qQUv4TOByoxBudMc6f+PHzeC3UaCp21wBBLhmLViaVfaghw3MWdb9X7ahtn0s5srdTxEnXSkiGwuF1CIeSEre5uolLW1A5u7huyMFIESDqO9BJ0dTY3TqtoFzZY3woYX/ee4Kb+2cIn97FQhHqsduBt0mEMXosng7MQ3lZitW27EITu06oKOfXrMVZyQReMOV2iQsJrHzuau1fj9f4dlAh0QWy/pVxELFVfXqiDHPLq/CQ6+c8nxMVNoU8XK+Qe8I3/EFm1PiYuX7MVCiV70fNJXidGVIbDrPzA29uJH0sAD4QFMJkRE4hwuCmrXXBz1nsiPgrW9aRMu94QtT/YN8/LCUJxkPbzPLA5vd7NBPWibjCmMbIHN6VP7ngtHdEgXSvape2PGg1WE70vTMVO0UOmuOjHt4nyZXKRb+ypqCH94VEXGN/7pFq7Q/MdK/dwykO+mfAq1s2ELdA0PM2vE3qegmZ8nWqPeZwSTNveFW3lpTuK4Jn2xbN3KxsgOetNjFwn/P7PehWTA51+ps8wmg9Uyhl+rz+9PJ4xTyBzzM7leqFbs4W8rJfUmF73cNB/JZI0k6KTs34WrE4o71+F0kvahYrgU=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(23010399003)(6133799003)(10067099003)(11063799006)(56012099006)(22082099003)(18002099003)(55112099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?SmFheWtFWlNSaUkxMGxOOXpveXdPWlFMN0czVVVXY3FIOFNEeEE3YjRjVTRF?=
+ =?utf-8?B?SG1aY1p6cDdkOHNyVEZUM3dWdkNqQnRKeE0ycDlJbmRtYnZhUlhFNDFmZm0x?=
+ =?utf-8?B?UEhhSmsxVEpMT0tDS2RoU1N4b3NRaGZxZDJEM0w3QnQ0Q0FOS0h0em9SRlpX?=
+ =?utf-8?B?WVRyZlA2c2lKUEFFcVhIdTZsZWZ4UVNxdjZQOUpxZVJJaFF6QW1hQ2xsZjRH?=
+ =?utf-8?B?cXFQeG5JaUxEL2xKT3IreCtkMkhmNGp2empEbWtWNllBR0RkbUp3RW93YjRD?=
+ =?utf-8?B?Z1ZpditXZUZxbUh6TmpNZ0dxUVprS2FHYVhpSmRoN0xIUGwyMnhrb3FqMUhw?=
+ =?utf-8?B?aEJOMWI3RTVWL0MyOFhJRm90c1l1cHFmR3B5aUNpaEExMXl5bm9zV2N2K3Nn?=
+ =?utf-8?B?MUhMMGNSSElNVXR1SzFiS2VKRTdhWXNrYklueVh4Z0lJeVdMSFQyM1duUjEz?=
+ =?utf-8?B?Y1BvRWhmdTBPZFpLWldtcTh0d1FsMll3MkFLZVBWUjZhbHlmZlFXM3doU25Z?=
+ =?utf-8?B?dGk0VE5Ra0hoN0t1R1NFZUZYdEhhUTVZOG16UWFrYncrU3pZQVVkeE5IT2dn?=
+ =?utf-8?B?YVBxeGFCNHFoZ3pUWlBYbGdGMlg3eDZ5UW0zcE1ES2FrenZ6Ky9yOXd6Y3Yv?=
+ =?utf-8?B?cG5udk1YaXlLdjNjUFZiUUZxUVRPRnF3d0ZMSnQzbUFobjd6OUttRzlCbDJB?=
+ =?utf-8?B?Z0hyWDlxcDBxVXM4WFY2bHRFdGRGMW83akxFU01jVnNSRUxseWdvNTV5bzVX?=
+ =?utf-8?B?OHAxNXA0UDVscHB0aVZyY3pOMFJETmR0TnJ5OUoxSk5pQk0rWW1UaXFOcE9x?=
+ =?utf-8?B?M0Vza21xcExySUZOcHJhV1lzRmtuYjBKM2F0Sm92ZTF0b1Z6VCtKbitXZHJU?=
+ =?utf-8?B?SGdCaHRJU1JmcFkxVU5JemYwYm4wVXQyRkYyUVoxeHovdUg3aUtJWm5HY05H?=
+ =?utf-8?B?RjFBOFJtdloxeEFtaVRQVE10Z3JTRjRaRVA4VEMybGlyZEsrclFSY1JRNU5t?=
+ =?utf-8?B?cHZaTEF6MWd6UkwzYzcrQjlhNHZjanpmZy9ONTNkck9rQVJ1SlVWNHlycHRH?=
+ =?utf-8?B?RDFEVVJkUVpmdnZSQ1ZOMnlBL1VaenR1dTJKaHFUUHZNZ3M0U0RXUjdYVVNl?=
+ =?utf-8?B?Rm9YeEhwRFZZcDNtbUtqaDg2UWNsV09XaWFDSlhIeFJOaGYwUUZKS2x0RlRO?=
+ =?utf-8?B?SVZ3TGd0QzhDdWErck5RSGloS3ZRY0ZCaUZ4QmVCQWYyVUpmZ1lUOTFTM2NO?=
+ =?utf-8?B?REVxZ2JZWGE0WExUQVM2YXRLOTk0VWRPQjRET3lNNWVzZVFlWnVHTHpueTlz?=
+ =?utf-8?B?UThWK0JCZUkyVGJMblRoWGxmMnVWWWJrWW9Va1c2cWNac3FGMldYSFVtN0R4?=
+ =?utf-8?B?WklFRU9mSXJRTEFEZFZDQmtKbUI3RDVSQ3ZmWVhEbnFndkxFTzZyd0hEY1pC?=
+ =?utf-8?B?Y2pLT2RxYmt5Nk9RdmJHQUFiSDArSlVtbWxYK2NNaGJvSXdBbnI4WVpvRFFS?=
+ =?utf-8?B?U3cvK01VdXVGSUtOMHp0ZTRvbzBVYWgraWpXdElmWG9ueVUvczRMUGZnT0Rs?=
+ =?utf-8?B?cGYwOEg1NHhjQTdhWGszSSs4NzlvaXJCcmJIbTdDTFQwaC9xc01uem91bUha?=
+ =?utf-8?B?QTJXWi9Jd3gvdlJPR0ExWitHOWpuenVDdkpYV1dTVlFITlpRa2w0Ry8rZ0Vh?=
+ =?utf-8?B?UVNEeGorT2FpTUtlekR4T050WXJVa1c0ZTdPemVKdTRBbGYxaS8ySmlNUW40?=
+ =?utf-8?B?VU1KMnZCVlMyMzB6QUNGUDc4NEttYzRBT3NUWnZjZVhxcjQzeTczdXBqMDRq?=
+ =?utf-8?B?ZVBjbHpLWFVjVm4wYXJxYnJ4bVV1bjVsOWdnaEJxVGpxK00rYjNwN21iSXho?=
+ =?utf-8?B?bW83THNoZGVycXFNc0kxcWdjazhmNlVySm9TZHhiVFpLTnVSRm1RaWxONlRD?=
+ =?utf-8?B?S2dCWEI5eUlHSzg5Q3ppeTBFTEU0ZXlMVXhlVjZleUxJRnhzSGRCbFVXMXVO?=
+ =?utf-8?B?WWliNTA1eDNabGFHWVltNmtPU1FIWnAxS0NwUmRUamxJNlNzOFRpbHg2Mldz?=
+ =?utf-8?B?UG02YUZDSFR4elZ3d2EvSTBvQldKK3BlMmlQMzZJODlVa2ZlZkY2VnU5Mk52?=
+ =?utf-8?B?cFg2OG9vREd6NllCRUtOcWpHdERJWnZORVdKamsyOFRXbzNCMDdvV2JLVU1z?=
+ =?utf-8?B?dThYV2tTbUxVa2RsbzJxSUJYSi82QWc3VWdrV0Jndmo4bmdQa1VjdTJFSTNk?=
+ =?utf-8?B?VkV5bXdxRnRCZ00rRjdYbFFoRTVKVnVyTFB2TVgwcHRMSE9KNDlpelh6cmxo?=
+ =?utf-8?B?WlZEOVc2cWNLRzZhMWxUUmlNSE9LTE10elpsUittbVp4RHArOG5IRlhNamRk?=
+ =?utf-8?Q?JaKlEBMSYjUMjXys=3D?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5279f999-f20e-4ce4-478b-08df0da542a0
+X-MS-Exchange-CrossTenant-AuthSource: AS4PR10MB6181.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Sep 2026 12:32:35.0159
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: CSupHYXGdwvS4JZbtbxw/HBazm6vb5diJcp1D7xaIGqVYTPE1Z6MJaI1it/o5TF1G4o0yO4rWTQ989DkFNxkBA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB7956
 
-strncpy() has been "deprecated" for some time and was finally removed
-with Linux 7.2, so that dovetail does not provide it from 7.2 on as
-well.
+On 08.09.26 13:08, Florian Bezdeka wrote:
+> Hi all,
+> 
+> Turns out the code base needs - at least - the following adjustments to
+> build against Dovetail 7.2.
+> 
+> This series has been build tested against Dovetail 6.1 and 7.2. There
+> was no CI run this time - I had to move on.
+> 
+> To: xenomai@lists.linux.dev
+> Cc: Jan Kiszka <jan.kiszka@siemens.com>
+> 
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+> Florian Bezdeka (2):
+>       cobalt: Replace strncpy() with strscpy()
+>       cobalt/x86: Replace {wr,rd}msrl() with {wr,rd}msrq()
+> 
+>  include/cobalt/kernel/ancillaries.h                        |  3 +--
+>  kernel/cobalt/arch/x86/c1e.c                               |  5 +++--
+>  kernel/cobalt/include/asm-generic/xenomai/wrappers.h       |  2 ++
+>  kernel/drivers/can/c_can/rtcan_c_can_platform.c            |  2 +-
+>  kernel/drivers/can/peak_canfd/rtcan_peak_canfd.c           |  2 +-
+>  kernel/drivers/can/rtcan_dev.c                             |  2 +-
+>  kernel/drivers/can/rtcan_flexcan.c                         |  2 +-
+>  kernel/drivers/can/rtcan_module.c                          | 14 +++++++-------
+>  kernel/drivers/can/rtcan_virt.c                            |  2 +-
+>  kernel/drivers/can/sja1000/rtcan_adv_pci.c                 |  2 +-
+>  kernel/drivers/can/sja1000/rtcan_ems_pci.c                 |  2 +-
+>  kernel/drivers/can/sja1000/rtcan_esd_pci.c                 |  2 +-
+>  kernel/drivers/can/sja1000/rtcan_isa.c                     |  2 +-
+>  kernel/drivers/can/sja1000/rtcan_ixxat_pci.c               |  2 +-
+>  kernel/drivers/can/sja1000/rtcan_mem.c                     |  2 +-
+>  kernel/drivers/can/sja1000/rtcan_peak_dng.c                |  2 +-
+>  kernel/drivers/can/sja1000/rtcan_peak_pci.c                |  2 +-
+>  kernel/drivers/can/sja1000/rtcan_plx_pci.c                 |  2 +-
+>  kernel/drivers/net/drivers/e1000e/netdev.c                 |  6 +++---
+>  .../drivers/net/drivers/experimental/e1000/e1000_ethtool.c |  8 ++++----
+>  kernel/drivers/net/drivers/experimental/e1000/e1000_main.c |  2 +-
+>  kernel/drivers/net/drivers/igb/igb_main.c                  |  2 +-
+>  kernel/drivers/net/drivers/igc/igc_main.c                  |  2 +-
+>  kernel/drivers/net/stack/ipv4/route.c                      |  2 +-
+>  kernel/drivers/net/stack/rtdev.c                           |  2 +-
+>  25 files changed, 39 insertions(+), 37 deletions(-)
+> ---
+> base-commit: f40522cb9f6d971872c510028f2a44a7f19ba22f
+> change-id: 20260908-wip-flo-prepare-for-7-2-a3e5125e70c6
+> 
+> Best regards,
 
-strscpy() is the replacement that should be used for all kernels that
-xenomai/next is supporting - as long as we keep the third (size)
-parameter. On modern kernels strscpy() is a macro where the third
-parameter is only necessary if the size of dst is unknown to the
-compiler. In most cases the size is known, so that the parameter could
-be removed. We keep it to stay backward compatible.
+Thanks, applied. Let's see if the full CI passes again.
 
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- include/cobalt/kernel/ancillaries.h                        |  3 +--
- kernel/drivers/can/c_can/rtcan_c_can_platform.c            |  2 +-
- kernel/drivers/can/peak_canfd/rtcan_peak_canfd.c           |  2 +-
- kernel/drivers/can/rtcan_dev.c                             |  2 +-
- kernel/drivers/can/rtcan_flexcan.c                         |  2 +-
- kernel/drivers/can/rtcan_module.c                          | 14 +++++++-------
- kernel/drivers/can/rtcan_virt.c                            |  2 +-
- kernel/drivers/can/sja1000/rtcan_adv_pci.c                 |  2 +-
- kernel/drivers/can/sja1000/rtcan_ems_pci.c                 |  2 +-
- kernel/drivers/can/sja1000/rtcan_esd_pci.c                 |  2 +-
- kernel/drivers/can/sja1000/rtcan_isa.c                     |  2 +-
- kernel/drivers/can/sja1000/rtcan_ixxat_pci.c               |  2 +-
- kernel/drivers/can/sja1000/rtcan_mem.c                     |  2 +-
- kernel/drivers/can/sja1000/rtcan_peak_dng.c                |  2 +-
- kernel/drivers/can/sja1000/rtcan_peak_pci.c                |  2 +-
- kernel/drivers/can/sja1000/rtcan_plx_pci.c                 |  2 +-
- kernel/drivers/net/drivers/e1000e/netdev.c                 |  6 +++---
- .../drivers/net/drivers/experimental/e1000/e1000_ethtool.c |  8 ++++----
- kernel/drivers/net/drivers/experimental/e1000/e1000_main.c |  2 +-
- kernel/drivers/net/drivers/igb/igb_main.c                  |  2 +-
- kernel/drivers/net/drivers/igc/igc_main.c                  |  2 +-
- kernel/drivers/net/stack/ipv4/route.c                      |  2 +-
- kernel/drivers/net/stack/rtdev.c                           |  2 +-
- 23 files changed, 34 insertions(+), 35 deletions(-)
-
-diff --git a/include/cobalt/kernel/ancillaries.h b/include/cobalt/kernel/ancillaries.h
-index b957310c78e273846e12cdfa04e46abb50d055e1..43ac2458cf39d3f3bfdfaa770537a68d47654d2f 100644
---- a/include/cobalt/kernel/ancillaries.h
-+++ b/include/cobalt/kernel/ancillaries.h
-@@ -58,8 +58,7 @@ void __knamecpy_requires_character_array_as_destination(void);
- 	({								\
- 		if (!__builtin_types_compatible_p(typeof(__dst), char[])) \
- 			__knamecpy_requires_character_array_as_destination();	\
--		strncpy((__dst), __src, sizeof(__dst));			\
--		__dst[sizeof(__dst) - 1] = '\0';			\
-+		strscpy((__dst), (__src), sizeof(__dst));		\
- 		__dst;							\
- 	 })
- 
-diff --git a/kernel/drivers/can/c_can/rtcan_c_can_platform.c b/kernel/drivers/can/c_can/rtcan_c_can_platform.c
-index aef6f8895c5242b5b5d458e1f17a8600815329d6..97ab549ccceaa13d8d149f959e0a251202a7a984 100644
---- a/kernel/drivers/can/c_can/rtcan_c_can_platform.c
-+++ b/kernel/drivers/can/c_can/rtcan_c_can_platform.c
-@@ -411,7 +411,7 @@ static int c_can_plat_probe(struct platform_device *pdev)
- 	dev->state = CAN_STATE_STOPPED;
- 
- 	/* Give device an interface name */
--	strncpy(dev->name, DEV_NAME, IFNAMSIZ);
-+	strscpy(dev->name, DEV_NAME, IFNAMSIZ);
- 
- 	ret = rtcan_c_can_register(dev);
- 	if (ret) {
-diff --git a/kernel/drivers/can/peak_canfd/rtcan_peak_canfd.c b/kernel/drivers/can/peak_canfd/rtcan_peak_canfd.c
-index 5214159b3123c7c8a09ecad570c8e4b891e79af8..ab352b260cdf690bde6b59d70344857da9148214 100644
---- a/kernel/drivers/can/peak_canfd/rtcan_peak_canfd.c
-+++ b/kernel/drivers/can/peak_canfd/rtcan_peak_canfd.c
-@@ -601,7 +601,7 @@ struct rtcan_device *alloc_peak_canfd_dev(int sizeof_priv, int index)
- 		return NULL;
- 
- 	/* RTCAN part initialization */
--	strncpy(rdev->name, RTCAN_DEV_NAME, IFNAMSIZ);
-+	strscpy(rdev->name, RTCAN_DEV_NAME, IFNAMSIZ);
- 	rdev->ctrl_name = RTCAN_CTRLR_NAME;
- 	rdev->can_sys_clock = 80*1000*1000;	/* default */
- 	rdev->state = CAN_STATE_STOPPED;
-diff --git a/kernel/drivers/can/rtcan_dev.c b/kernel/drivers/can/rtcan_dev.c
-index bd741e1db3f053c1db7f01bffc1c5f5dbf849723..25c7913ac6fa38d288b8fa8a55e97ed7d8850821 100644
---- a/kernel/drivers/can/rtcan_dev.c
-+++ b/kernel/drivers/can/rtcan_dev.c
-@@ -130,7 +130,7 @@ void rtcan_dev_alloc_name(struct rtcan_device *dev, const char *mask)
-     for (i = 0; i < RTCAN_MAX_DEVICES; i++) {
- 	ksformat(buf, IFNAMSIZ, mask, i);
- 	if ((tmp = rtcan_dev_get_by_name(buf)) == NULL) {
--	    strncpy(dev->name, buf, IFNAMSIZ);
-+	    strscpy(dev->name, buf, IFNAMSIZ);
- 	    break;
- 	}
- #ifdef RTCAN_USE_REFCOUNT
-diff --git a/kernel/drivers/can/rtcan_flexcan.c b/kernel/drivers/can/rtcan_flexcan.c
-index 48febe4d5fae3496bed92c1add9f6592df9bd0c4..2ca3a78c3726cf6bb71ff32067af03716305abe2 100644
---- a/kernel/drivers/can/rtcan_flexcan.c
-+++ b/kernel/drivers/can/rtcan_flexcan.c
-@@ -1465,7 +1465,7 @@ static int flexcan_probe(struct platform_device *pdev)
- 	dev->do_set_bit_time = flexcan_copy_bittiming;
- 	dev->bittiming_const = &flexcan_bittiming_const;
- 	dev->state = CAN_STATE_STOPPED;
--	strncpy(dev->name, DEV_NAME, IFNAMSIZ);
-+	strscpy(dev->name, DEV_NAME, IFNAMSIZ);
- 	
- 	err = register_flexcandev(dev);
- 	if (err) {
-diff --git a/kernel/drivers/can/rtcan_module.c b/kernel/drivers/can/rtcan_module.c
-index 8fc7a699c581d325986a368af7fa1172db4e5c5c..9c43a6d65ed722c3c85166c07eda1643284be954 100644
---- a/kernel/drivers/can/rtcan_module.c
-+++ b/kernel/drivers/can/rtcan_module.c
-@@ -66,9 +66,9 @@ static void rtcan_dev_get_state_name(can_state_t state,
- {
-     if (state >= CAN_STATE_ACTIVE &&
- 	state <= CAN_STATE_SLEEPING)
--	strncpy(name, rtcan_state_names[state], max_len);
-+	strscpy(name, rtcan_state_names[state], max_len);
-     else
--	strncpy(name, "unknown", max_len);
-+	strscpy(name, "unknown", max_len);
- }
- 
- static void rtcan_dev_get_baudrate_name(can_baudrate_t baudrate,
-@@ -76,10 +76,10 @@ static void rtcan_dev_get_baudrate_name(can_baudrate_t baudrate,
- {
-     switch (baudrate) {
-     case CAN_BAUDRATE_UNCONFIGURED:
--	strncpy(name, "undefined", max_len);
-+	strscpy(name, "undefined", max_len);
- 	break;
-     case CAN_BAUDRATE_UNKNOWN:
--	strncpy(name, "unknown", max_len);
-+	strscpy(name, "unknown", max_len);
- 	break;
-     default:
- 	ksformat(name, max_len, "%d", baudrate);
-@@ -107,7 +107,7 @@ static void rtcan_dev_get_bittime_name(struct can_bittime *bit_time,
- 		 bit_time->btr.btr0, bit_time->btr.btr1);
- 	break;
-     default:
--	strncpy(name, "unknown", max_len);
-+	strscpy(name, "unknown", max_len);
- 	break;
-     }
- }
-@@ -116,7 +116,7 @@ static void rtcan_get_timeout_name(nanosecs_rel_t timeout,
- 				   char* name, int max_len)
- {
-     if (timeout == RTDM_TIMEOUT_INFINITE)
--	strncpy(name, "infinite", max_len);
-+	strscpy(name, "infinite", max_len);
-     else
- 	ksformat(name, max_len, "%lld", (long long)timeout);
- }
-@@ -195,7 +195,7 @@ static int rtcan_read_proc_sockets(struct seq_file *p, void *data)
- 	    if (ifindex) {
- 		dev = rtcan_dev_get_by_index(ifindex);
- 		if (dev) {
--		    strncpy(name, dev->name, IFNAMSIZ);
-+		    strscpy(name, dev->name, IFNAMSIZ);
- 		    rtcan_dev_dereference(dev);
- 		}
- 	    } else
-diff --git a/kernel/drivers/can/rtcan_virt.c b/kernel/drivers/can/rtcan_virt.c
-index 1e3b2c024465402afa3b471564acf3d2d8317f08..9d2ddb9025718200b74dee30b766d9554486472b 100644
---- a/kernel/drivers/can/rtcan_virt.c
-+++ b/kernel/drivers/can/rtcan_virt.c
-@@ -129,7 +129,7 @@ static int __init rtcan_virt_init_one(int idx)
- 
- 	rtcan_virt_set_mode(dev, CAN_MODE_STOP, NULL);
- 
--	strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
-+	strscpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
- 
- 	dev->hard_start_xmit = rtcan_virt_start_xmit;
- 	dev->do_set_mode = rtcan_virt_set_mode;
-diff --git a/kernel/drivers/can/sja1000/rtcan_adv_pci.c b/kernel/drivers/can/sja1000/rtcan_adv_pci.c
-index 33724a4c4fc11b64f3bcf6010bc5d422895b828d..d26b9983341c120f7bcb6e32b3edbb29f74f98e7 100644
---- a/kernel/drivers/can/sja1000/rtcan_adv_pci.c
-+++ b/kernel/drivers/can/sja1000/rtcan_adv_pci.c
-@@ -194,7 +194,7 @@ static int rtcan_adv_pci_add_chan(struct pci_dev *pdev,
- 	/* Clock divider register */
- 	chip->cdr = ADV_PCI_CDR;
- 
--	strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
-+	strscpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
- 
- 	/* Make sure SJA1000 is in reset mode */
- 	chip->write_reg(dev, SJA_MOD, SJA_MOD_RM);
-diff --git a/kernel/drivers/can/sja1000/rtcan_ems_pci.c b/kernel/drivers/can/sja1000/rtcan_ems_pci.c
-index 2e3001b05c9f3c2bde82425d1709e2b4f03317d4..2184bc1279301195dbe6acb0e1aecf00ed089e29 100644
---- a/kernel/drivers/can/sja1000/rtcan_ems_pci.c
-+++ b/kernel/drivers/can/sja1000/rtcan_ems_pci.c
-@@ -310,7 +310,7 @@ static int ems_pci_add_card(struct pci_dev *pdev,
- 			goto failure_cleanup;
- 		}
- 
--		strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
-+		strscpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
- 		dev->board_name = ems_pci_board_name;
- 		dev->board_priv = card;
- 
-diff --git a/kernel/drivers/can/sja1000/rtcan_esd_pci.c b/kernel/drivers/can/sja1000/rtcan_esd_pci.c
-index 795e9f676ba68eec0d470f5b0d3674bd5a0f4a0d..28e665fa5e471862f0018c70fb15aa23579d9f26 100644
---- a/kernel/drivers/can/sja1000/rtcan_esd_pci.c
-+++ b/kernel/drivers/can/sja1000/rtcan_esd_pci.c
-@@ -188,7 +188,7 @@ static int rtcan_esd_pci_add_chan(struct pci_dev *pdev, int channel,
- 	chip->ocr = ESD_PCI_OCR;
- 	chip->cdr = ESD_PCI_CDR;
- 
--	strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
-+	strscpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
- 
- 	chip->irq_flags = RTDM_IRQTYPE_SHARED;
- 	chip->irq_num = pdev->irq;
-diff --git a/kernel/drivers/can/sja1000/rtcan_isa.c b/kernel/drivers/can/sja1000/rtcan_isa.c
-index 9c56b047ed4ff60462f535744db7629fc6dccc83..80b0b6a9e6fa6280b238a7a852d93c8fa88a4331 100644
---- a/kernel/drivers/can/sja1000/rtcan_isa.c
-+++ b/kernel/drivers/can/sja1000/rtcan_isa.c
-@@ -133,7 +133,7 @@ static int __init rtcan_isa_init_one(int idx)
- 	else
- 		chip->cdr = SJA_CDR_CAN_MODE | SJA_CDR_CLK_OFF | SJA_CDR_CBP;
- 
--	strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
-+	strscpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
- 
- 	ret = rtcan_sja1000_register(dev);
- 	if (ret) {
-diff --git a/kernel/drivers/can/sja1000/rtcan_ixxat_pci.c b/kernel/drivers/can/sja1000/rtcan_ixxat_pci.c
-index ff91c6a121af92f06ab2fccc672fbdd780d9025e..69ff81550534e165cee33a30582e41f6310cc297 100644
---- a/kernel/drivers/can/sja1000/rtcan_ixxat_pci.c
-+++ b/kernel/drivers/can/sja1000/rtcan_ixxat_pci.c
-@@ -169,7 +169,7 @@ static int rtcan_ixxat_pci_add_chan(struct pci_dev *pdev,
-     /* Clock divider register */
-     chip->cdr = SJA_CDR_CAN_MODE;
- 
--    strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
-+    strscpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
- 
-     /* Enable PCI interrupts */
-     intcsr = inb(board->conf_addr + IXXAT_INTCSR_OFFSET);
-diff --git a/kernel/drivers/can/sja1000/rtcan_mem.c b/kernel/drivers/can/sja1000/rtcan_mem.c
-index 980eba9793d2ff4a998345335d1f993e54ff8fad..76626f74b47c461aca84b18f86108cd682278616 100644
---- a/kernel/drivers/can/sja1000/rtcan_mem.c
-+++ b/kernel/drivers/can/sja1000/rtcan_mem.c
-@@ -142,7 +142,7 @@ static int __init rtcan_mem_init_one(int idx)
- 	else
- 		chip->cdr = SJA_CDR_CAN_MODE | SJA_CDR_CLK_OFF | SJA_CDR_CBP;
- 
--	strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
-+	strscpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
- 
- 	ret = rtcan_sja1000_register(dev);
- 	if (ret) {
-diff --git a/kernel/drivers/can/sja1000/rtcan_peak_dng.c b/kernel/drivers/can/sja1000/rtcan_peak_dng.c
-index e201bf2adf3c415d8208477cd6132520a0986495..650c249edc4b0b3718487362c10a23403d866c7d 100644
---- a/kernel/drivers/can/sja1000/rtcan_peak_dng.c
-+++ b/kernel/drivers/can/sja1000/rtcan_peak_dng.c
-@@ -277,7 +277,7 @@ static int __init rtcan_peak_dng_init_one(int idx)
- 
-     sja->cdr = SJA_CDR_CAN_MODE;
- 
--    strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
-+    strscpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
- 
-     rtcan_peak_dng_enable(dev);
- 
-diff --git a/kernel/drivers/can/sja1000/rtcan_peak_pci.c b/kernel/drivers/can/sja1000/rtcan_peak_pci.c
-index dfae45a87a1a5df1a9ca69f44386b1c97e6945fd..d12c31775c1776ebd434ea98c8ea4722b27d9c28 100644
---- a/kernel/drivers/can/sja1000/rtcan_peak_pci.c
-+++ b/kernel/drivers/can/sja1000/rtcan_peak_pci.c
-@@ -250,7 +250,7 @@ static int rtcan_peak_pci_add_chan(struct pci_dev *pdev, int channel,
-     else
- 	chip->cdr = PELICAN_SINGLE;
- 
--    strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
-+    strscpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
- 
-     /* Register and setup interrupt handling */
-     chip->irq_flags = RTDM_IRQTYPE_SHARED;
-diff --git a/kernel/drivers/can/sja1000/rtcan_plx_pci.c b/kernel/drivers/can/sja1000/rtcan_plx_pci.c
-index 4da14f2cc5da016800bf7bda913e53b37268abbf..2caead6a47a2838e8d32e774872152ce77ec25c9 100644
---- a/kernel/drivers/can/sja1000/rtcan_plx_pci.c
-+++ b/kernel/drivers/can/sja1000/rtcan_plx_pci.c
-@@ -502,7 +502,7 @@ static int plx_pci_add_card(struct pci_dev *pdev,
- 			goto failure_cleanup;
- 		}
- 
--		strncpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
-+		strscpy(dev->name, RTCAN_DEV_NAME, IFNAMSIZ);
- 		dev->board_name = (char *)ci->name;
- 
- 		card->rtcan_dev[i] = dev;
-diff --git a/kernel/drivers/net/drivers/e1000e/netdev.c b/kernel/drivers/net/drivers/e1000e/netdev.c
-index dad685eb7b8881312be1361052338bc1fe293daf..09df363ac2872bfb4ed03015c9b52eca71570b28 100644
---- a/kernel/drivers/net/drivers/e1000e/netdev.c
-+++ b/kernel/drivers/net/drivers/e1000e/netdev.c
-@@ -3801,7 +3801,7 @@ static void e1000_print_device_info(struct e1000_adapter *adapter)
- 	ret_val = e1000_read_pba_string_generic(hw, pba_str,
- 						E1000_PBANUM_LENGTH);
- 	if (ret_val)
--		strncpy((char *)pba_str, "Unknown", sizeof(pba_str) - 1);
-+		strscpy((char *)pba_str, "Unknown", sizeof(pba_str));
- 	e_info("MAC: %d, PHY: %d, PBA No: %s\n",
- 	       hw->mac.type, hw->phy.type, pba_str);
- }
-@@ -3969,7 +3969,7 @@ static int e1000_probe(struct pci_dev *pdev,
- 	//netdev->get_stats = e1000_get_stats;
- 	netdev->map_rtskb = e1000_map_rtskb;
- 	netdev->unmap_rtskb = e1000_unmap_rtskb;
--	strncpy(netdev->name, pci_name(pdev), sizeof(netdev->name) - 1);
-+	strscpy(netdev->name, pci_name(pdev), sizeof(netdev->name));
- 
- 	netdev->mem_start = mmio_start;
- 	netdev->mem_end = mmio_start + mmio_len;
-@@ -4131,7 +4131,7 @@ static int e1000_probe(struct pci_dev *pdev,
- 	if (!(adapter->flags & FLAG_HAS_AMT))
- 		e1000e_get_hw_control(adapter);
- 
--	strncpy(netdev->name, "rteth%d", sizeof(netdev->name) - 1);
-+	strscpy(netdev->name, "rteth%d", sizeof(netdev->name));
- 	err = rt_register_rtnetdev(netdev);
- 	if (err)
- 		goto err_register;
-diff --git a/kernel/drivers/net/drivers/experimental/e1000/e1000_ethtool.c b/kernel/drivers/net/drivers/experimental/e1000/e1000_ethtool.c
-index 4ead3b5791ee9c44ae617c639867d00f22ea90be..e22a5d25e012571f142ccefe7eebbc38ca548172 100644
---- a/kernel/drivers/net/drivers/experimental/e1000/e1000_ethtool.c
-+++ b/kernel/drivers/net/drivers/experimental/e1000/e1000_ethtool.c
-@@ -627,8 +627,8 @@ static void e1000_get_drvinfo(struct net_device *netdev,
- 	char firmware_version[32];
- 	u16 eeprom_data;
- 
--	strncpy(drvinfo->driver,  e1000_driver_name, 32);
--	strncpy(drvinfo->version, e1000_driver_version, 32);
-+	strscpy(drvinfo->driver,  e1000_driver_name, 32);
-+	strscpy(drvinfo->version, e1000_driver_version, 32);
- 
- 	/* EEPROM image version # is reported as firmware version # for
- 	 * 8257{1|2|3} controllers */
-@@ -649,8 +649,8 @@ static void e1000_get_drvinfo(struct net_device *netdev,
- 		sprintf(firmware_version, "N/A");
- 	}
- 
--	strncpy(drvinfo->fw_version, firmware_version, 32);
--	strncpy(drvinfo->bus_info, pci_name(adapter->pdev), 32);
-+	strscpy(drvinfo->fw_version, firmware_version, 32);
-+	strscpy(drvinfo->bus_info, pci_name(adapter->pdev), 32);
- 	drvinfo->n_stats = E1000_STATS_LEN;
- 	drvinfo->testinfo_len = E1000_TEST_LEN;
- 	drvinfo->regdump_len = e1000_get_regs_len(netdev);
-diff --git a/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c b/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
-index 071b6524433ecc165c3eb1a473800c6e6db9544a..315d5dc9d6804260e9e837e948a9858bcc681ea3 100644
---- a/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
-+++ b/kernel/drivers/net/drivers/experimental/e1000/e1000_main.c
-@@ -1139,7 +1139,7 @@ static int e1000_probe(struct pci_dev *pdev,
- #ifdef CONFIG_NET_POLL_CONTROLLER
- 	netdev->poll_controller = e1000_netpoll;
- #endif
--	strncpy(netdev->name, pci_name(pdev), sizeof(netdev->name) - 1);
-+	strscpy(netdev->name, pci_name(pdev), sizeof(netdev->name));
- 
- 	adapter->bd_number = cards_found;
- 
-diff --git a/kernel/drivers/net/drivers/igb/igb_main.c b/kernel/drivers/net/drivers/igb/igb_main.c
-index aedf526b63f8c7af78ed00bcd41a2b24367abf39..1e4f5f36af77118162afd38715e0818c98f6e82b 100644
---- a/kernel/drivers/net/drivers/igb/igb_main.c
-+++ b/kernel/drivers/net/drivers/igb/igb_main.c
-@@ -2073,7 +2073,7 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	netdev->watchdog_timeo = 5 * HZ;
- #endif
- 
--	strncpy(netdev->name, pci_name(pdev), sizeof(netdev->name) - 1);
-+	strscpy(netdev->name, pci_name(pdev), sizeof(netdev->name));
- 
- 	netdev->mem_start = pci_resource_start(pdev, 0);
- 	netdev->mem_end = pci_resource_end(pdev, 0);
-diff --git a/kernel/drivers/net/drivers/igc/igc_main.c b/kernel/drivers/net/drivers/igc/igc_main.c
-index a3a6b711353b7acdac8c31287f6424baa34adb3e..10f6f72c235bd242eb2c00cca6e490aa51c270f3 100644
---- a/kernel/drivers/net/drivers/igc/igc_main.c
-+++ b/kernel/drivers/net/drivers/igc/igc_main.c
-@@ -3837,7 +3837,7 @@ static int igc_probe(struct pci_dev *pdev,
- 	 */
- 	igc_get_hw_control(adapter);
- 
--	strncpy(netdev->name, "rteth%d", IFNAMSIZ);
-+	strscpy(netdev->name, "rteth%d", IFNAMSIZ);
- 	err = rt_register_rtnetdev(netdev);
- 	if (err)
- 		goto err_register;
-diff --git a/kernel/drivers/net/stack/ipv4/route.c b/kernel/drivers/net/stack/ipv4/route.c
-index 172eac3ec82bada81018ce04c4e115e7a3027553..ddcae72b5de85a92d72d187afd791aec61ca0825 100644
---- a/kernel/drivers/net/stack/ipv4/route.c
-+++ b/kernel/drivers/net/stack/ipv4/route.c
-@@ -702,7 +702,7 @@ int rt_ip_route_get_host(u32 addr, char *if_name, unsigned char *dev_addr,
- 		     rt->dest_host.rtdev->local_ip == rtdev->local_ip)) {
- 			memcpy(dev_addr, rt->dest_host.dev_addr,
- 			       rt->dest_host.rtdev->addr_len);
--			strncpy(if_name, rt->dest_host.rtdev->name, IFNAMSIZ);
-+			strscpy(if_name, rt->dest_host.rtdev->name, IFNAMSIZ);
- 
- 			rtdm_lock_put_irqrestore(&host_table_lock, context);
- 			return 0;
-diff --git a/kernel/drivers/net/stack/rtdev.c b/kernel/drivers/net/stack/rtdev.c
-index 9bf867e95e68ad5b5c85b2e39a3bf6a94c3aa0bb..cc112acf66c803c8647f5b277ad3a340654f13e5 100644
---- a/kernel/drivers/net/stack/rtdev.c
-+++ b/kernel/drivers/net/stack/rtdev.c
-@@ -216,7 +216,7 @@ void rtdev_alloc_name(struct rtnet_device *rtdev, const char *mask)
- 	for (i = 0; i < MAX_RT_DEVICES; i++) {
- 		snprintf(buf, IFNAMSIZ, mask, i);
- 		if ((tmp = rtdev_get_by_name(buf)) == NULL) {
--			strncpy(rtdev->name, buf, IFNAMSIZ);
-+			strscpy(rtdev->name, buf, IFNAMSIZ);
- 			break;
- 		} else
- 			rtdev_dereference(tmp);
+Jan
 
 -- 
-2.55.0
-
+Siemens AG, Foundational Technologies
+Linux Expert Center
