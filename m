@@ -1,266 +1,272 @@
-Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF3B1576EB5
-	for <xenomai@lists.linux.dev>; Wed,  9 Sep 2026 14:33:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.225
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1788964394; cv=none; b=FyFLIVHbJ8TkbkolJSl+8/8I9iwbbi2LcFJWjKcGrxyAy88a4W8wo8NqiUZhgCZFvf/Zmg21zvVDGMR+spqw31dS/sKbRaOlyl8sVor72azdLZbHoaR16YfQb1HGirNT19BfDOYQjy3wyY8f9800pJSgrIdqNBAXdzIxoAcZxFc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1788964394; c=relaxed/simple;
-	bh=qC6IOYOM8sZbMR4UfZTy5fRn1ViDQFpEWdWlaj77ub4=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=IfQatIwUVHYFBKJvmrwEQx48BCbi9Of8dBLiEsnQ3s9nVVI1x+vqSS+8/3PayHp5my+BTn/suPIxYAmhBsGnxIuFs443BCSKCLhJlS1i7PEkNmFaVG5VRN90wNUm1XKUGgSdwytxtIxYbntirxb74wuxCPRkJ55/lvO5Jh7UcFs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=C9mQNoYT; arc=none smtp.client-ip=185.136.64.225
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 242BD56510E
+	for <xenomai@lists.linux.dev>; Wed,  9 Sep 2026 15:38:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1788968317; cv=pass; b=nEa/IhdxG1rKN/ugJu0nDrt3fuLr9wTseL/ZS+Kpk4LCedZCKkdDrXoqJ57K4PlSgXQzx7flalr1NBR4MjigUKCNs/VH7nc5muNSR1Kc4x8wBbIU0VxsSTLrAmHVDwkUIkLe2mJeUcDP+LdiJp4ns+4g+GXL/9qgXILoKkQ/TiQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1788968317; c=relaxed/simple;
+	bh=5pSmr8uK7Hyk6YzaNaAIurAdDm5YDgJFuFmc8eYHnW4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=At0w7kncO2WIi8rklpqVP3+dbzl9wwjiy2YCO3BYBUeo9e8H0YOXUnel32DfR0hM/JUavwhMtsW++VrOD8HhdziCxKzAEzURnjAVZl07oI5VYPl2gCCX0iBscUQ91wopr5L9MOwJhZZujet70k/s8Is0p6zciVgac61sH5v5BQU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lmi3d.com; spf=pass smtp.mailfrom=lmitechnologies.com; dkim=pass (1024-bit key) header.d=lmi3d.com header.i=@lmi3d.com header.b=CwLXi84R; arc=pass smtp.client-ip=209.85.208.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lmi3d.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lmitechnologies.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="C9mQNoYT"
-Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 202609091433011e59807dd600020708
-        for <xenomai@lists.linux.dev>;
-        Wed, 09 Sep 2026 16:33:01 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=c+xWNJidFNhSuZmadk7OK/1dQqP3hlM0ZfrU2pRN3es=;
- b=C9mQNoYT7M/uZ3STIfXVc83rfKb/F8OyTHFraU+suMAtqgN9JhWt4oB1KZ1GcP4lWQJkJT
- P8ksV3MTNwEItrsLCXPVpgN11BOKqIh/3VGJ/q/an3pPrhyfcDVC+FaGGRtFT/0Xa2AaA3cv
- UFCKU5wnqxgc864l7WKT0PMhL/lw+klO9Tjd1L/9x/mq9Whvm+YC9EHlgDmu338NCSOU2asU
- w5raJWYzulLdX8ImsH4naqgW2pEx432EC34PJJFtWvWZ6cWZ8mLUF6BjnQnmlAN4RjKaDEy4
- 0M93sz79/3lXyjN611Ebt24PEchO6PDws+3/XT57EtGJ9VM9ertbrY4w==;
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-Date: Wed, 09 Sep 2026 16:32:59 +0200
-Subject: [PATCH Dovetail 2/2] irq_pipeline: Introduce IRQ_TICK to obsolete
- IRQF_TIMER on tick IRQs
+	dkim=pass (1024-bit key) header.d=lmi3d.com header.i=@lmi3d.com header.b="CwLXi84R"
+Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-6a0de062db5so8846050a12.1
+        for <xenomai@lists.linux.dev>; Wed, 09 Sep 2026 08:38:34 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1788968313; cv=none;
+        d=google.com; s=arc-20260327;
+        b=oVzbWojYib0wIzYEYHnPXtIl6dainXq9GO1hfcTJFbhk+Hy6B6F0lBpWoTqvnncqUg
+         TFVv0nmtP/9qDpxS4VNdFLbrqrNvlgdUd0Dk90+/WCKvAGPHwAzVri97DBzw86uFjvFp
+         nn5aE1TH4Ewh6pxRgVO+ipbvoxRKnSL9ixPdsKqVvLuBtF6lbb9HLrp9x655PuKqsYrs
+         omAq1eZI4xuXI/39x1OPR6hsIwwYjmjD7WmCqUD5699GUx8phynrslDiOO+qA7652u9Y
+         tUDjdO92WODyJlQ/5U3MZchCL/p2Fzgv3R0jY1xpjYBPHKfJelSdeaXVi9HH1KSKn53I
+         8xug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=Y68jGvKd8uM97I8KYa0FUDbCiirQwOf+GxpXgdPS/xg=;
+        fh=OYGbdDOOPOd5R8onVcDt0u4Fd0R4j7YxJAFw1KOHXFQ=;
+        b=FXbkjrAtUv+zZTnAPUiRoly5rlikMsiZbxfX19iGEu4d7eyAi/PM3SbVEZjjTLZAME
+         5McqSvJODyd97G/Etz7SEeoiyygdO60Ah9jk9+mkTREqQYjsAMQiHB34tMn3rSVkT6oy
+         NlUfkZbTJrVKnjl0VPcDJJMllQtxqXxxzZcf5PFRJnztH4h51limW/Rn+qlzV1W/jsAO
+         Zg7sErWR5ib9tXy3dV5jnD0Dmg0nDvFrqiGcmjs4ildN6DLwxUOzwMLpfsDUMeQIOSlT
+         op1kqLTfGe52EsFuyfU9M1AYcK6vbKZ3IMJmd3jZYdNAKSu4rl6WMv05qLlSB7gCE+GH
+         p1Ag==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=lmi3d.com; s=google; t=1788968313; x=1789573113; darn=lists.linux.dev;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=Y68jGvKd8uM97I8KYa0FUDbCiirQwOf+GxpXgdPS/xg=;
+        b=CwLXi84RFTQTdBKkAU24aeS5sIrWOnrW/J6aQg4SKJ7pHPtlimK+Uuz458r80exlGb
+         h75Eu1W4hu9CPww16IdvnImL7JrNKPdJhu+v/WKIrXnDuLY6htOkMP4II89hV1voeG6u
+         qUoV5z4KywRUtrVm5SIQH2mcDtpOO2LITgjw0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1788968313; x=1789573113;
+        h=content-type:cc:to:subject:message-id:date:from:in-reply-to
+         :references:mime-version:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to:content-type;
+        bh=Y68jGvKd8uM97I8KYa0FUDbCiirQwOf+GxpXgdPS/xg=;
+        b=dewWt3DLt/dsHoEP9CPEdO3sQ/c95E9Y6wa7WrnFcGExEFn4oVl/vmAEvFSGv9Zrgj
+         771vjU9OjxsSPhB53fS2IbRfQjwaimriUJTyhNGEecDej1dLSbyCFaI79Xhd1tqUsgBW
+         oPHAdHLIn4q13PE3ETEKkW41J8gF6Y8e6XvztpDBMX7SzDpiMkGzWm+wPlNpDThl9np6
+         1Qd0zL9t0+xTcVaH6R6xmsvlLSKz2yComvHHMXxDKQiWTsM+7MwP7nCfb7Ps2VtmT8ug
+         X/ofCfFd+X4AF5FLLlCEYKD5UycReVXnph69bcVy9sn4oqfKfYetxpjaujfy0ZrrMEQd
+         u+hA==
+X-Gm-Message-State: AFuF++kRJfLuiVdONUmxhlpuoir3/IsfS/BAiRew8hjuOEFc5sPfaz7q
+	3DYKJ2sGbB2RNWFmaCu+zQJmLCppRfn3Xa8d1J9cFAlcyx1m4SmZVIT8b5iSdGQxD89c0zMRN1A
+	a+exgyhc+YgIcQDK7rYDFTrlykfw0I+5Gp3IGZBj15kzI6CKLgvn/C85gd2QuudP8kUVNuZPxKD
+	3MGg3Oa3suOTuMaH1MaMxsZLkOMvpsCeUdTEFVgFlsBi2PTHS6r5JslAWwkuAhvbRuidz1N4xQf
+	K/0M2slWD3v9CIftRBJxdT1c9k3xaU=
+X-Gm-Gg: AYBFou0b41W2P8wDFuK9dUh6JWM1eShMFhzFM2gpLULw6IFEyU9gD1a8USHuAlf2u55
+	sezw2uwyA57QgP6ehwW5xQ9hClcUD8RCcQ0zEbEh9ICrb/reNx0xHA/YEhM9ntrxZy64U3tiUa2
+	nNT///mtmoiw9uJMR6ZAKhUU+lQs/skgJ5eyIGYV1jdlsHvt375CzBjE4lQ5zoefpMn6V7tuL1o
+	tTc5Pz10URCd3dDa/iknCf6viqbCLkjiPGpXS+W1HxiSH14LKkfD+5J/kBNJJSnNJmo8SSdFoj4
+	yBeQ3IeM1zug2/u2WNHbwRJS8nxPY/KweF/kx4OB5G2u11tYX2wuzedpVuHlre0qDYiMbRjsFSy
+	A1oEfKT24UezqmJs58F4nH0mL52GlajGteU5pW0OY4l4vZXsvr5JpmaSyphzQKe5L/Kkl0wsqBw
+	==
+X-Received: by 2002:a05:6402:2b97:b0:6a8:3962:36d4 with SMTP id
+ 4fb4d7f45d1cf-6a839623809mr4721310a12.6.1788968313145; Wed, 09 Sep 2026
+ 08:38:33 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260909-wip-flo-v7-2-irq-cleanup-v1-2-825a908785ae@siemens.com>
 References: <20260909-wip-flo-v7-2-irq-cleanup-v1-0-825a908785ae@siemens.com>
 In-Reply-To: <20260909-wip-flo-v7-2-irq-cleanup-v1-0-825a908785ae@siemens.com>
-To: Xenomai <xenomai@lists.linux.dev>
-Cc: Philippe Gerum <rpm@xenomai.org>, 
- Gerte Hoogewerf <ghoogewerf@lmi3d.com>, 
- Andrew MacPherson <andrew@elk.audio>, 
- Florian Bezdeka <florian.bezdeka@siemens.com>
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+From: Gerte Hoogewerf <ghoogewerf@lmi3d.com>
+Date: Wed, 9 Sep 2026 17:43:34 +0200
+X-Gm-Features: AcwNN1WOyWi-7VcL25TEjzmC2C0wXjKc12GnIGtQXRlQBzBIPyuIiwWcFKc3y5g
+Message-ID: <CAKndYJF986dZQDMQEm8A=w-6LOSZkZ3+nkKyVukwZww+OUwWjA@mail.gmail.com>
+Subject: Re: [PATCH Dovetail 0/2] Obsolete marking tick IRQs with IRQF_TIMER
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: Xenomai <xenomai@lists.linux.dev>, Philippe Gerum <rpm@xenomai.org>, 
+	Andrew MacPherson <andrew@elk.audio>
+Content-Type: multipart/mixed; boundary="000000000000d21fc4065b0ea49a"
 
-Currently, all clock tick IRQs need to be marked with the IRQF_TIMER
-flag, so that the registers could be saved when handling a pipeline
-entry for timer IRQs / ticks.
+--000000000000d21fc4065b0ea49a
+Content-Type: text/plain; charset="UTF-8"
 
-It turned out that it is quite easy to miss that flag when enabling
-the drivers for the pipelining case. In addition, IRQF_TIMER also
-includes setting IRQF_NO_SUSPEND and IRQF_NO_THREAD, which is
-misleading.
+Hi Florian,
 
-We hook into the clock event device registration now and check for
-the CLOCK_EVT_FEAT_PIPELINE flag on the event device. If this flag
-is set, we mark the underlying IRQ as IRQ_TICK.
+> The following is the try to fix the problems reported by Gerte and Andrew.
 
-The IRQ_TICK flag is only used for that pipeline internal purpose.
+This seems to work for me. I will test this further in the coming days.
 
-Suggested-by: Philippe Gerum <rpm@xenomai.org>
-Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
----
- include/linux/irq.h       | 11 +++++++++--
- kernel/irq/debug.h        |  1 +
- kernel/irq/manage.c       | 11 +++++++++++
- kernel/irq/pipeline.c     |  3 ++-
- kernel/irq/settings.h     | 17 +++++++++++++++++
- kernel/time/clockevents.c |  3 +++
- kernel/time/tick-common.c |  5 +++++
- 7 files changed, 48 insertions(+), 3 deletions(-)
+Caveat: our US+ board is not yet on version 7.2. I had to back-port it to 6.18.
 
-diff --git a/include/linux/irq.h b/include/linux/irq.h
-index b13e4e90ab18f027e43b4f892ca37ef482a6cf0a..5f7a2c78b3ca7a7a23894f68e16503c785eb5686 100644
---- a/include/linux/irq.h
-+++ b/include/linux/irq.h
-@@ -81,6 +81,7 @@ enum irqchip_irq_state;
-  *                                when pipelining is enabled (CONFIG_IRQ_PIPELINE),
-  *                                regardless of the (virtualized) interrupt state
-  *                                maintained by local_irq_save/disable().
-+ * IRQ_TICK                     - Interrupt is a timer tick source.
-  */
- enum {
- 	IRQ_TYPE_NONE		= 0x00000000,
-@@ -109,14 +110,15 @@ enum {
- 	IRQ_HIDDEN		= (1 << 20),
- 	IRQ_NO_DEBUG		= (1 << 21),
- 	IRQ_OOB			= (1 << 22),
--	IRQ_RESERVED		= (1 << 23),
-+	IRQ_TICK		= (1 << 23),
-+	IRQ_RESERVED		= (1 << 24),
- };
- 
- #define IRQF_MODIFY_MASK	\
- 	(IRQ_TYPE_SENSE_MASK | IRQ_NOPROBE | IRQ_NOREQUEST | \
- 	 IRQ_NOAUTOEN | IRQ_LEVEL | IRQ_NO_BALANCING | \
- 	 IRQ_PER_CPU | IRQ_NESTED_THREAD | IRQ_NOTHREAD | IRQ_PER_CPU_DEVID | \
--	 IRQ_IS_POLLED | IRQ_DISABLE_UNLAZY | IRQ_HIDDEN | IRQ_OOB)
-+	 IRQ_IS_POLLED | IRQ_DISABLE_UNLAZY | IRQ_HIDDEN | IRQ_OOB | IRQ_TICK)
- 
- #define IRQ_NO_BALANCING_MASK	(IRQ_PER_CPU | IRQ_NO_BALANCING)
- 
-@@ -1258,6 +1260,7 @@ static inline struct irq_chip_type *irq_data_get_chip_type(struct irq_data *d)
- 
- #ifdef CONFIG_IRQ_PIPELINE
- int irq_switch_oob(unsigned int irq, bool on);
-+void irq_switch_tick(unsigned int irq, bool on);
- void irq_clear_deferral(struct irq_desc *desc);
- void irq_clear_forward(struct irq_desc *desc);
- #else
-@@ -1266,6 +1269,10 @@ static inline int irq_switch_oob(unsigned int irq, bool on)
- 	return 0;
- }
- 
-+static inline void irq_switch_tick(unsigned int irq, bool on)
-+{
-+}
-+
- static inline void irq_clear_deferral(struct irq_desc *desc) { }
- static inline void irq_clear_forward(struct irq_desc *desc) { }
- #endif	/* !CONFIG_IRQ_PIPELINE */
-diff --git a/kernel/irq/debug.h b/kernel/irq/debug.h
-index 4eafd04a629628553c11d639b4958d5007bbc012..9813c8ec66a447e4acde5ac2ca2fa1f8ab70021b 100644
---- a/kernel/irq/debug.h
-+++ b/kernel/irq/debug.h
-@@ -34,6 +34,7 @@ static inline void print_irq_desc(unsigned int irq, struct irq_desc *desc)
- 	___P(IRQ_NOTHREAD);
- 	___P(IRQ_NOAUTOEN);
- 	___P(IRQ_OOB);
-+	___P(IRQ_TICK);
- 
- 	___PS(IRQS_AUTODETECT);
- 	___PS(IRQS_REPLAY);
-diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index 1c1920f5fbc083ec299433dcddd4fae53e0d6ce8..a10d1081bea8c8887c61cb3ef5a87b274e1c9e08 100644
---- a/kernel/irq/manage.c
-+++ b/kernel/irq/manage.c
-@@ -949,6 +949,17 @@ int irq_switch_oob(unsigned int irq, bool on)
- }
- EXPORT_SYMBOL_GPL(irq_switch_oob);
- 
-+void irq_switch_tick(unsigned int irq, bool on)
-+{
-+	scoped_irqdesc_get_and_lock(irq, 0) {
-+		if (on)
-+			irq_settings_set_tick(scoped_irqdesc);
-+		else
-+			irq_settings_clr_tick(scoped_irqdesc);
-+	}
-+}
-+EXPORT_SYMBOL_GPL(irq_switch_tick);
-+
- #endif /* CONFIG_IRQ_PIPELINE */
- 
- /*
-diff --git a/kernel/irq/pipeline.c b/kernel/irq/pipeline.c
-index 85ec0cbf5fb1e1fa38dee98d1f79a3ee4ae18774..88911489aeb632a00aab9784407f09ff835f7861 100644
---- a/kernel/irq/pipeline.c
-+++ b/kernel/irq/pipeline.c
-@@ -1064,8 +1064,9 @@ void copy_timer_regs(struct irq_desc *desc, struct pt_regs *regs)
- {
- 	struct irq_pipeline_data *p;
- 
--	if (desc->action == NULL || !(desc->action->flags & __IRQF_TIMER))
-+	if (!irq_settings_is_tick(desc))
- 		return;
-+
- 	/*
- 	 * Given our deferred dispatching model for regular IRQs, we
- 	 * record the preempted context registers only for the latest
-diff --git a/kernel/irq/settings.h b/kernel/irq/settings.h
-index 27a37d992f237f6429f58b0b51eb9db39a62e8f7..c4b48d22d271a24e49951c4289784e44090f02dd 100644
---- a/kernel/irq/settings.h
-+++ b/kernel/irq/settings.h
-@@ -19,6 +19,7 @@ enum {
- 	_IRQ_HIDDEN		= IRQ_HIDDEN,
- 	_IRQ_NO_DEBUG		= IRQ_NO_DEBUG,
- 	_IRQ_OOB		= IRQ_OOB,
-+	_IRQ_TICK		= IRQ_TICK,
- 	_IRQ_PROC_VALID		= IRQ_RESERVED,
- 	_IRQF_MODIFY_MASK	= IRQF_MODIFY_MASK,
- };
-@@ -37,6 +38,7 @@ enum {
- #define IRQ_HIDDEN		GOT_YOU_MORON
- #define IRQ_NO_DEBUG		GOT_YOU_MORON
- #define IRQ_OOB			GOT_YOU_MORON
-+#define IRQ_TICK		GOT_YOU_MORON
- #define IRQ_RESERVED		GOT_YOU_MORON
- #undef IRQF_MODIFY_MASK
- #define IRQF_MODIFY_MASK	GOT_YOU_MORON
-@@ -210,3 +212,18 @@ static inline void irq_settings_set_oob(struct irq_desc *desc)
- {
- 	desc->status_use_accessors |= _IRQ_OOB;
- }
-+
-+static inline bool irq_settings_is_tick(struct irq_desc *desc)
-+{
-+	return desc->status_use_accessors & _IRQ_TICK;
-+}
-+
-+static inline void irq_settings_clr_tick(struct irq_desc *desc)
-+{
-+	desc->status_use_accessors &= ~_IRQ_TICK;
-+}
-+
-+static inline void irq_settings_set_tick(struct irq_desc *desc)
-+{
-+	desc->status_use_accessors |= _IRQ_TICK;
-+}
-diff --git a/kernel/time/clockevents.c b/kernel/time/clockevents.c
-index 0ed4122d40986708bd57f32ebf825aef60756f7d..d8d2dd43baaa0053a73bb18764ece562e8b49024 100644
---- a/kernel/time/clockevents.c
-+++ b/kernel/time/clockevents.c
-@@ -12,6 +12,7 @@
- #include <linux/init.h>
- #include <linux/module.h>
- #include <linux/smp.h>
-+#include <linux/irq.h>
- #include <linux/device.h>
- 
- #include "tick-internal.h"
-@@ -177,6 +178,8 @@ void clockevents_shutdown(struct clock_event_device *dev)
- 	clockevents_switch_state(dev, CLOCK_EVT_STATE_SHUTDOWN);
- 	dev->next_event = KTIME_MAX;
- 	dev->next_event_forced = 0;
-+	if (dev->features & CLOCK_EVT_FEAT_PIPELINE)
-+		irq_switch_tick(dev->irq, false);
- }
- 
- /**
-diff --git a/kernel/time/tick-common.c b/kernel/time/tick-common.c
-index 90fae659e4ea68578a8ab5a739eccc1184ed5ff9..97e3ff40405dfbe670fe45aebdff015163cb6f31 100644
---- a/kernel/time/tick-common.c
-+++ b/kernel/time/tick-common.c
-@@ -12,7 +12,9 @@
- #include <linux/err.h>
- #include <linux/hrtimer.h>
- #include <linux/interrupt.h>
-+#include <linux/irq.h>
- #include <linux/nmi.h>
-+#include <linux/irq.h>
- #include <linux/percpu.h>
- #include <linux/profile.h>
- #include <linux/sched.h>
-@@ -244,6 +246,9 @@ static void tick_setup_device(struct tick_device *td,
- 	if (!cpumask_equal(newdev->cpumask, cpumask))
- 		irq_set_affinity(newdev->irq, cpumask);
- 
-+	if (newdev->features & CLOCK_EVT_FEAT_PIPELINE)
-+		irq_switch_tick(newdev->irq, true);
-+
- 	/*
- 	 * When global broadcasting is active, check if the current
- 	 * device is registered as a placeholder for broadcast mode.
+Attached is the code I tested with (base-commit: f01f7033b0 -- tag:
+v6.18.29-dovetail3-rebase).
+
+I'm not asking you to do anything with this.  I'm just illustrating
+that I'm currently testing a slightly different variant (there were
+minor merge conflicts).
+
+Thank you so much.
+Cheers,
 
 -- 
-2.55.0
 
+
+This
+email and any attachment(s) it may contain is confidential and is 
+intended
+solely for the use of the individual(s) to whom it is addressed. 
+If you are not
+the intended recipient of this email, you must not take 
+action based on the
+contents, nor distribute, nor expose any part of the 
+content(s) to entities or
+person(s) beyond the original distribution list. 
+Please contact the sender and
+delete the email if you have received it in 
+error. Thank you.
+
+--000000000000d21fc4065b0ea49a
+Content-Type: text/plain; charset="US-ASCII"; 
+	name="0001-irq_pipeline-Introduce-IRQ_TICK-to-obsolete-IRQF_TIM.patch"
+Content-Disposition: attachment; 
+	filename="0001-irq_pipeline-Introduce-IRQ_TICK-to-obsolete-IRQF_TIM.patch"
+Content-Transfer-Encoding: base64
+Content-ID: <f_mtu9mdug0>
+X-Attachment-Id: f_mtu9mdug0
+
+RnJvbSA3YTRlNGMxZjc4MTE5MjU4OGIxZTZiNDVhNzIxNWZjNTA1OWViZTE3IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBHZXJ0ZSBIb29nZXdlcmYgPGdob29nZXdlcmZAbG1pM2QuY29t
+PgpEYXRlOiBXZWQsIDkgU2VwIDIwMjYgMTc6MDQ6NTkgKzAyMDAKU3ViamVjdDogW1BBVENIXSBp
+cnFfcGlwZWxpbmU6IEludHJvZHVjZSBJUlFfVElDSyB0byBvYnNvbGV0ZSBJUlFGX1RJTUVSIG9u
+CiB0aWNrIElSUXMKCkN1cnJlbnRseSwgYWxsIGNsb2NrIHRpY2sgSVJRcyBuZWVkIHRvIGJlIG1h
+cmtlZCB3aXRoIHRoZSBJUlFGX1RJTUVSCmZsYWcsIHNvIHRoYXQgdGhlIHJlZ2lzdGVycyBjb3Vs
+ZCBiZSBzYXZlZCB3aGVuIGhhbmRsaW5nIGEgcGlwZWxpbmUKZW50cnkgZm9yIHRpbWVyIElSUXMg
+LyB0aWNrcy4KCkl0IHR1cm5lZCBvdXQgdGhhdCBpdCBpcyBxdWl0ZSBlYXN5IHRvIG1pc3MgdGhh
+dCBmbGFnIHdoZW4gZW5hYmxpbmcKdGhlIGRyaXZlcnMgZm9yIHRoZSBwaXBlbGluaW5nIGNhc2Uu
+IEluIGFkZGl0aW9uLCBJUlFGX1RJTUVSIGFsc28KaW5jbHVkZXMgc2V0dGluZyBJUlFGX05PX1NV
+U1BFTkQgYW5kIElSUUZfTk9fVEhSRUFELCB3aGljaCBpcwptaXNsZWFkaW5nLgoKV2UgaG9vayBp
+bnRvIHRoZSBjbG9jayBldmVudCBkZXZpY2UgcmVnaXN0cmF0aW9uIG5vdyBhbmQgY2hlY2sgZm9y
+CnRoZSBDTE9DS19FVlRfRkVBVF9QSVBFTElORSBmbGFnIG9uIHRoZSBldmVudCBkZXZpY2UuIElm
+IHRoaXMgZmxhZwppcyBzZXQsIHdlIG1hcmsgdGhlIHVuZGVybHlpbmcgSVJRIGFzIElSUV9USUNL
+LgoKVGhlIElSUV9USUNLIGZsYWcgaXMgb25seSB1c2VkIGZvciB0aGF0IHBpcGVsaW5lIGludGVy
+bmFsIHB1cnBvc2UuCi0tLQogaW5jbHVkZS9saW51eC9pcnEuaCAgICAgICB8ICA5ICsrKysrKysr
+LQoga2VybmVsL2lycS9kZWJ1Zy5oICAgICAgICB8ICAxICsKIGtlcm5lbC9pcnEvbWFuYWdlLmMg
+ICAgICAgfCAxMSArKysrKysrKysrKwoga2VybmVsL2lycS9waXBlbGluZS5jICAgICB8IDEwICsr
+KystLS0tLS0KIGtlcm5lbC9pcnEvc2V0dGluZ3MuaCAgICAgfCAxNyArKysrKysrKysrKysrKysr
+Kwoga2VybmVsL3RpbWUvY2xvY2tldmVudHMuYyB8ICAzICsrKwoga2VybmVsL3RpbWUvdGljay1j
+b21tb24uYyB8ICA0ICsrKysKIDcgZmlsZXMgY2hhbmdlZCwgNDggaW5zZXJ0aW9ucygrKSwgNyBk
+ZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2lycS5oIGIvaW5jbHVkZS9s
+aW51eC9pcnEuaAppbmRleCA0NTBmYmNhNzNjYTIuLjk1NmE3ZmFjNTdmMiAxMDA2NDQKLS0tIGEv
+aW5jbHVkZS9saW51eC9pcnEuaAorKysgYi9pbmNsdWRlL2xpbnV4L2lycS5oCkBAIC03OCw2ICs3
+OCw3IEBAIGVudW0gaXJxY2hpcF9pcnFfc3RhdGU7CiAgKiAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgcmVnYXJkbGVzcyBvZiB0aGUgKHZpcnR1YWxpemVkKSBpbnRlcnJ1cHQgc3RhdGUK
+ICAqICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBtYWludGFpbmVkIGJ5IGxvY2FsX2ly
+cV9zYXZlL2Rpc2FibGUoKS4KICAqIElSUV9DSEFJTkVEICAgICAgICAgICAgICAgICAgLSBJbnRl
+cnJ1cHQgaXMgY2hhaW5lZC4KKyAqIElSUV9USUNLICAgICAgICAgICAgICAgICAgICAgLSBJbnRl
+cnJ1cHQgaXMgYSB0aW1lciB0aWNrIHNvdXJjZS4KICAqLwogZW51bSB7CiAJSVJRX1RZUEVfTk9O
+RQkJPSAweDAwMDAwMDAwLApAQCAtMTA3LDEzICsxMDgsMTQgQEAgZW51bSB7CiAJSVJRX05PX0RF
+QlVHCQk9ICgxIDw8IDIxKSwKIAlJUlFfT09CCQkJPSAoMSA8PCAyMiksCiAJSVJRX0NIQUlORUQJ
+CT0gKDEgPDwgMjMpLAorCUlSUV9USUNLCQk9ICgxIDw8IDI0KSwKIH07CiAKICNkZWZpbmUgSVJR
+Rl9NT0RJRllfTUFTSwlcCiAJKElSUV9UWVBFX1NFTlNFX01BU0sgfCBJUlFfTk9QUk9CRSB8IElS
+UV9OT1JFUVVFU1QgfCBcCiAJIElSUV9OT0FVVE9FTiB8IElSUV9MRVZFTCB8IElSUV9OT19CQUxB
+TkNJTkcgfCBcCiAJIElSUV9QRVJfQ1BVIHwgSVJRX05FU1RFRF9USFJFQUQgfCBJUlFfTk9USFJF
+QUQgfCBJUlFfUEVSX0NQVV9ERVZJRCB8IFwKLQkgSVJRX0lTX1BPTExFRCB8IElSUV9ESVNBQkxF
+X1VOTEFaWSB8IElSUV9ISURERU4gfCBJUlFfT09CKQorCSBJUlFfSVNfUE9MTEVEIHwgSVJRX0RJ
+U0FCTEVfVU5MQVpZIHwgSVJRX0hJRERFTiB8IElSUV9PT0IgfCBJUlFfVElDSykKIAogI2RlZmlu
+ZSBJUlFfTk9fQkFMQU5DSU5HX01BU0sJKElSUV9QRVJfQ1BVIHwgSVJRX05PX0JBTEFOQ0lORykK
+IApAQCAtMTI1Myw2ICsxMjU1LDcgQEAgc3RhdGljIGlubGluZSBzdHJ1Y3QgaXJxX2NoaXBfdHlw
+ZSAqaXJxX2RhdGFfZ2V0X2NoaXBfdHlwZShzdHJ1Y3QgaXJxX2RhdGEgKmQpCiAKICNpZmRlZiBD
+T05GSUdfSVJRX1BJUEVMSU5FCiBpbnQgaXJxX3N3aXRjaF9vb2IodW5zaWduZWQgaW50IGlycSwg
+Ym9vbCBvbik7Cit2b2lkIGlycV9zd2l0Y2hfdGljayh1bnNpZ25lZCBpbnQgaXJxLCBib29sIG9u
+KTsKIHZvaWQgaXJxX2NsZWFyX2RlZmVycmFsKHN0cnVjdCBpcnFfZGVzYyAqZGVzYyk7CiB2b2lk
+IGlycV9jbGVhcl9mb3J3YXJkKHN0cnVjdCBpcnFfZGVzYyAqZGVzYyk7CiAjZWxzZQpAQCAtMTI2
+MSw2ICsxMjY0LDEwIEBAIHN0YXRpYyBpbmxpbmUgaW50IGlycV9zd2l0Y2hfb29iKHVuc2lnbmVk
+IGludCBpcnEsIGJvb2wgb24pCiAJcmV0dXJuIDA7CiB9CiAKK3N0YXRpYyBpbmxpbmUgdm9pZCBp
+cnFfc3dpdGNoX3RpY2sodW5zaWduZWQgaW50IGlycSwgYm9vbCBvbikKK3sKK30KKwogc3RhdGlj
+IGlubGluZSB2b2lkIGlycV9jbGVhcl9kZWZlcnJhbChzdHJ1Y3QgaXJxX2Rlc2MgKmRlc2MpIHsg
+fQogc3RhdGljIGlubGluZSB2b2lkIGlycV9jbGVhcl9mb3J3YXJkKHN0cnVjdCBpcnFfZGVzYyAq
+ZGVzYykgeyB9CiAjZW5kaWYJLyogIUNPTkZJR19JUlFfUElQRUxJTkUgKi8KZGlmZiAtLWdpdCBh
+L2tlcm5lbC9pcnEvZGVidWcuaCBiL2tlcm5lbC9pcnEvZGVidWcuaAppbmRleCA0MGY3MjY4NDU3
+NDguLjllMTg0NDU3MDI5NiAxMDA2NDQKLS0tIGEva2VybmVsL2lycS9kZWJ1Zy5oCisrKyBiL2tl
+cm5lbC9pcnEvZGVidWcuaApAQCAtMzUsNiArMzUsNyBAQCBzdGF0aWMgaW5saW5lIHZvaWQgcHJp
+bnRfaXJxX2Rlc2ModW5zaWduZWQgaW50IGlycSwgc3RydWN0IGlycV9kZXNjICpkZXNjKQogCV9f
+X1AoSVJRX05PQVVUT0VOKTsKIAlfX19QKElSUV9PT0IpOwogCV9fX1AoSVJRX0NIQUlORUQpOwor
+CV9fX1AoSVJRX1RJQ0spOwogCiAJX19fUFMoSVJRU19BVVRPREVURUNUKTsKIAlfX19QUyhJUlFT
+X1JFUExBWSk7CmRpZmYgLS1naXQgYS9rZXJuZWwvaXJxL21hbmFnZS5jIGIva2VybmVsL2lycS9t
+YW5hZ2UuYwppbmRleCBiNzg5OWFjMjE2MzQuLjBmODc0MDIzMWRlYSAxMDA2NDQKLS0tIGEva2Vy
+bmVsL2lycS9tYW5hZ2UuYworKysgYi9rZXJuZWwvaXJxL21hbmFnZS5jCkBAIC05MzgsNiArOTM4
+LDE3IEBAIGludCBpcnFfc3dpdGNoX29vYih1bnNpZ25lZCBpbnQgaXJxLCBib29sIG9uKQogfQog
+RVhQT1JUX1NZTUJPTF9HUEwoaXJxX3N3aXRjaF9vb2IpOwogCit2b2lkIGlycV9zd2l0Y2hfdGlj
+ayh1bnNpZ25lZCBpbnQgaXJxLCBib29sIG9uKQoreworCXNjb3BlZF9pcnFkZXNjX2dldF9hbmRf
+bG9jayhpcnEsIDApIHsKKwkJaWYgKG9uKQorCQkJaXJxX3NldHRpbmdzX3NldF90aWNrKHNjb3Bl
+ZF9pcnFkZXNjKTsKKwkJZWxzZQorCQkJaXJxX3NldHRpbmdzX2Nscl90aWNrKHNjb3BlZF9pcnFk
+ZXNjKTsKKwl9Cit9CitFWFBPUlRfU1lNQk9MX0dQTChpcnFfc3dpdGNoX3RpY2spOworCiAjZW5k
+aWYgLyogQ09ORklHX0lSUV9QSVBFTElORSAqLwogCiAvKgpkaWZmIC0tZ2l0IGEva2VybmVsL2ly
+cS9waXBlbGluZS5jIGIva2VybmVsL2lycS9waXBlbGluZS5jCmluZGV4IGQyYmJlMjI2M2UwMS4u
+YzY0ZWJlNjJiZDdjIDEwMDY0NAotLS0gYS9rZXJuZWwvaXJxL3BpcGVsaW5lLmMKKysrIGIva2Vy
+bmVsL2lycS9waXBlbGluZS5jCkBAIC0xMDYzLDEwICsxMDYzLDYgQEAgYm9vbCBoYW5kbGVfb29i
+X2lycShzdHJ1Y3QgaXJxX2Rlc2MgKmRlc2MpCiBzdGF0aWMgaW5saW5lCiB2b2lkIGNvcHlfdGlt
+ZXJfcmVncyhzdHJ1Y3QgaXJxX2Rlc2MgKmRlc2MsIHN0cnVjdCBwdF9yZWdzICpyZWdzKQogewot
+CXN0cnVjdCBpcnFfcGlwZWxpbmVfZGF0YSAqcDsKLQotCWlmIChkZXNjLT5hY3Rpb24gPT0gTlVM
+TCB8fCAhKGRlc2MtPmFjdGlvbi0+ZmxhZ3MgJiBfX0lSUUZfVElNRVIpKQotCQlyZXR1cm47CiAJ
+LyoKIAkgKiBHaXZlbiBvdXIgZGVmZXJyZWQgZGlzcGF0Y2hpbmcgbW9kZWwgZm9yIHJlZ3VsYXIg
+SVJRcywgd2UKIAkgKiByZWNvcmQgdGhlIHByZWVtcHRlZCBjb250ZXh0IHJlZ2lzdGVycyBvbmx5
+IGZvciB0aGUgbGF0ZXN0CkBAIC0xMDc0LDggKzEwNzAsMTAgQEAgdm9pZCBjb3B5X3RpbWVyX3Jl
+Z3Moc3RydWN0IGlycV9kZXNjICpkZXNjLCBzdHJ1Y3QgcHRfcmVncyAqcmVncykKIAkgKiBDUFUg
+dGltZXMgcHJvcGVybHkuIEl0IGlzIGFzc3VtZWQgdGhhdCBubyBvdGhlciBpbnRlcnJ1cHQKIAkg
+KiBoYW5kbGVyIGNhcmVzIGZvciBzdWNoIGluZm9ybWF0aW9uLgogCSAqLwotCXAgPSByYXdfY3B1
+X3B0cigmaXJxX3BpcGVsaW5lKTsKLQlhcmNoX3NhdmVfdGltZXJfcmVncygmcC0+dGlja19yZWdz
+LCByZWdzKTsKKwlpZiAoaXJxX3NldHRpbmdzX2lzX3RpY2soZGVzYykpIHsKKwkJc3RydWN0IGly
+cV9waXBlbGluZV9kYXRhICpwID0gcmF3X2NwdV9wdHIoJmlycV9waXBlbGluZSk7CisJCWFyY2hf
+c2F2ZV90aW1lcl9yZWdzKCZwLT50aWNrX3JlZ3MsIHJlZ3MpOworCX0KIH0KIAogc3RhdGljIF9f
+YWx3YXlzX2lubGluZQpkaWZmIC0tZ2l0IGEva2VybmVsL2lycS9zZXR0aW5ncy5oIGIva2VybmVs
+L2lycS9zZXR0aW5ncy5oCmluZGV4IDFmNWM0OTU0NWE4OC4uNzBmZGUxZmEwOTgyIDEwMDY0NAot
+LS0gYS9rZXJuZWwvaXJxL3NldHRpbmdzLmgKKysrIGIva2VybmVsL2lycS9zZXR0aW5ncy5oCkBA
+IC0yMCw2ICsyMCw3IEBAIGVudW0gewogCV9JUlFfTk9fREVCVUcJCT0gSVJRX05PX0RFQlVHLAog
+CV9JUlFfT09CCQk9IElSUV9PT0IsCiAJX0lSUV9DSEFJTkVECQk9IElSUV9DSEFJTkVELAorCV9J
+UlFfVElDSwkJPSBJUlFfVElDSywKIAlfSVJRRl9NT0RJRllfTUFTSwk9IElSUUZfTU9ESUZZX01B
+U0ssCiB9OwogCkBAIC0zOCw2ICszOSw3IEBAIGVudW0gewogI2RlZmluZSBJUlFfTk9fREVCVUcJ
+CUdPVF9ZT1VfTU9ST04KICNkZWZpbmUgSVJRX09PQgkJCUdPVF9ZT1VfTU9ST04KICNkZWZpbmUg
+SVJRX0NIQUlORUQJCUdPVF9ZT1VfTU9ST04KKyNkZWZpbmUgSVJRX1RJQ0sJCUdPVF9ZT1VfTU9S
+T04KICN1bmRlZiBJUlFGX01PRElGWV9NQVNLCiAjZGVmaW5lIElSUUZfTU9ESUZZX01BU0sJR09U
+X1lPVV9NT1JPTgogCkBAIC0yMTQsMyArMjE2LDE4IEBAIHN0YXRpYyBpbmxpbmUgdm9pZCBpcnFf
+c2V0dGluZ3NfY2xyX2NoYWluZWQoc3RydWN0IGlycV9kZXNjICpkZXNjKQogewogCWRlc2MtPnN0
+YXR1c191c2VfYWNjZXNzb3JzICY9IH5fSVJRX0NIQUlORUQ7CiB9CisKK3N0YXRpYyBpbmxpbmUg
+Ym9vbCBpcnFfc2V0dGluZ3NfaXNfdGljayhzdHJ1Y3QgaXJxX2Rlc2MgKmRlc2MpCit7CisJcmV0
+dXJuIGRlc2MtPnN0YXR1c191c2VfYWNjZXNzb3JzICYgX0lSUV9USUNLOworfQorCitzdGF0aWMg
+aW5saW5lIHZvaWQgaXJxX3NldHRpbmdzX2Nscl90aWNrKHN0cnVjdCBpcnFfZGVzYyAqZGVzYykK
+K3sKKwlkZXNjLT5zdGF0dXNfdXNlX2FjY2Vzc29ycyAmPSB+X0lSUV9USUNLOworfQorCitzdGF0
+aWMgaW5saW5lIHZvaWQgaXJxX3NldHRpbmdzX3NldF90aWNrKHN0cnVjdCBpcnFfZGVzYyAqZGVz
+YykKK3sKKwlkZXNjLT5zdGF0dXNfdXNlX2FjY2Vzc29ycyB8PSBfSVJRX1RJQ0s7Cit9CmRpZmYg
+LS1naXQgYS9rZXJuZWwvdGltZS9jbG9ja2V2ZW50cy5jIGIva2VybmVsL3RpbWUvY2xvY2tldmVu
+dHMuYwppbmRleCBkYzIxODQwYTYwODAuLjNjOWVjZTBhZGE4NiAxMDA2NDQKLS0tIGEva2VybmVs
+L3RpbWUvY2xvY2tldmVudHMuYworKysgYi9rZXJuZWwvdGltZS9jbG9ja2V2ZW50cy5jCkBAIC0x
+Miw2ICsxMiw3IEBACiAjaW5jbHVkZSA8bGludXgvaW5pdC5oPgogI2luY2x1ZGUgPGxpbnV4L21v
+ZHVsZS5oPgogI2luY2x1ZGUgPGxpbnV4L3NtcC5oPgorI2luY2x1ZGUgPGxpbnV4L2lycS5oPgog
+I2luY2x1ZGUgPGxpbnV4L2RldmljZS5oPgogCiAjaW5jbHVkZSAidGljay1pbnRlcm5hbC5oIgpA
+QCAtMTczLDYgKzE3NCw4IEBAIHZvaWQgY2xvY2tldmVudHNfc2h1dGRvd24oc3RydWN0IGNsb2Nr
+X2V2ZW50X2RldmljZSAqZGV2KQogewogCWNsb2NrZXZlbnRzX3N3aXRjaF9zdGF0ZShkZXYsIENM
+T0NLX0VWVF9TVEFURV9TSFVURE9XTik7CiAJZGV2LT5uZXh0X2V2ZW50ID0gS1RJTUVfTUFYOwor
+CWlmIChkZXYtPmZlYXR1cmVzICYgQ0xPQ0tfRVZUX0ZFQVRfUElQRUxJTkUpCisJCWlycV9zd2l0
+Y2hfdGljayhkZXYtPmlycSwgZmFsc2UpOwogfQogCiAvKioKZGlmZiAtLWdpdCBhL2tlcm5lbC90
+aW1lL3RpY2stY29tbW9uLmMgYi9rZXJuZWwvdGltZS90aWNrLWNvbW1vbi5jCmluZGV4IGY1MzMy
+NGM4OWM5Zi4uYTBkYjU5NjE0MTMzIDEwMDY0NAotLS0gYS9rZXJuZWwvdGltZS90aWNrLWNvbW1v
+bi5jCisrKyBiL2tlcm5lbC90aW1lL3RpY2stY29tbW9uLmMKQEAgLTEzLDYgKzEzLDcgQEAKICNp
+bmNsdWRlIDxsaW51eC9ocnRpbWVyLmg+CiAjaW5jbHVkZSA8bGludXgvaW50ZXJydXB0Lmg+CiAj
+aW5jbHVkZSA8bGludXgvbm1pLmg+CisjaW5jbHVkZSA8bGludXgvaXJxLmg+CiAjaW5jbHVkZSA8
+bGludXgvcGVyY3B1Lmg+CiAjaW5jbHVkZSA8bGludXgvcHJvZmlsZS5oPgogI2luY2x1ZGUgPGxp
+bnV4L3NjaGVkLmg+CkBAIC0yNDMsNiArMjQ0LDkgQEAgc3RhdGljIHZvaWQgdGlja19zZXR1cF9k
+ZXZpY2Uoc3RydWN0IHRpY2tfZGV2aWNlICp0ZCwKIAlpZiAoIWNwdW1hc2tfZXF1YWwobmV3ZGV2
+LT5jcHVtYXNrLCBjcHVtYXNrKSkKIAkJaXJxX3NldF9hZmZpbml0eShuZXdkZXYtPmlycSwgY3B1
+bWFzayk7CiAKKwlpZiAobmV3ZGV2LT5mZWF0dXJlcyAmIENMT0NLX0VWVF9GRUFUX1BJUEVMSU5F
+KQorCQlpcnFfc3dpdGNoX3RpY2sobmV3ZGV2LT5pcnEsIHRydWUpOworCiAJLyoKIAkgKiBXaGVu
+IGdsb2JhbCBicm9hZGNhc3RpbmcgaXMgYWN0aXZlLCBjaGVjayBpZiB0aGUgY3VycmVudAogCSAq
+IGRldmljZSBpcyByZWdpc3RlcmVkIGFzIGEgcGxhY2Vob2xkZXIgZm9yIGJyb2FkY2FzdCBtb2Rl
+LgotLSAKMi41NS4wCgo=
+--000000000000d21fc4065b0ea49a--
