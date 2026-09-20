@@ -1,74 +1,78 @@
-Received: from smtp6-g21.free.fr (smtp6-g21.free.fr [212.27.42.6])
+Received: from out28-169.mail.aliyun.com (out28-169.mail.aliyun.com [115.124.28.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DFBA50AC24
-	for <xenomai@lists.linux.dev>; Fri, 18 Sep 2026 15:23:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.27.42.6
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC3BB33B6F1
+	for <xenomai@lists.linux.dev>; Sun, 20 Sep 2026 03:22:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.28.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1789745006; cv=none; b=LtgN9JHISRf4k+/nrzpu5RnP9zdS8F94NHCdm73ppnWA0DCZaS7lQQVs8/6/1kiYPgkl2EeMHh9dq3+lbNMEqYFscLSd5cPMLyfcG7hbBETE3UfFNRT2TBh0E/GZ6crWArvVJjAkDfO5vUykEK0ogT1xdiV6Pb7Mvxrr0cixYdY=
+	t=1789874552; cv=none; b=JLw8nxT1tJW7F2oo0/T/ANWeHuvrcz/TbvRUWlDavgxHRYXQFAe7SHYpZFTyy3CLPItshJIce/2fxKllfLIT+zPNRqqxSBy1rPrMpSkizeKjdF8EdZwULyJ9OGYw53SNDn3JY65n33aBIHyUGEaJh8LGyznHZIimd7GD5UgwVxg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1789745006; c=relaxed/simple;
-	bh=CVz9ir2pElNhuVDqMzf+lg4fet9/gjYSZUboV6wXll0=;
-	h=From:To:MIME-Version:Date:Subject:Message-ID:Content-Type; b=pD0l3momxzgjevAFHAwYVLgkPgBxWAzgEcpsleQn3wFomUE9k0KB2jTA/AJxQkA7N3JD8S0PgZGL7sZrJ2hj5pM+VCSYNFeNtu7s86BqpEO7hUs52AcOKedqNDULZRo2tbLu/BNFdg32qilnh0Eocez/3iPVIoCl2+rMBl2HVTk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eventlab.fr; spf=pass smtp.mailfrom=eventlab.fr; dkim=permerror (0-bit key) header.d=eventlab.fr header.i=@eventlab.fr header.b=ZUwz2LuB; arc=none smtp.client-ip=212.27.42.6
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eventlab.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=eventlab.fr
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=permerror (0-bit key) header.d=eventlab.fr header.i=@eventlab.fr header.b="ZUwz2LuB"
-Received: from mail.thom.fr.eu.org (unknown [82.64.149.25])
-	by smtp6-g21.free.fr (Postfix) with ESMTPS id C983C780515
-	for <xenomai@lists.linux.dev>; Fri, 18 Sep 2026 17:23:19 +0200 (CEST)
-Authentication-Results: smtp6-g21.free.fr;
-	dkim=permerror header.d=eventlab.fr header.i=@eventlab.fr header.a=ed25519-sha256 header.s=default header.b=ZUwz2LuB;
-	dkim-atps=neutral
-Received: from localhost ([127.0.0.1])
-	by mail.thom.fr.eu.org (8.15.2/8.15.2/Debian-22+deb11u3) with ESMTP id 68IFNIiH3768580
-	for <xenomai@lists.linux.dev>; Fri, 18 Sep 2026 17:23:19 +0200
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/simple; d=eventlab.fr;
-	s=default; t=1789744999;
-	bh=CVz9ir2pElNhuVDqMzf+lg4fet9/gjYSZUboV6wXll0=;
-	h=From:To:Date:Subject;
-	b=ZUwz2LuBh5tu36poV1uYb3brxzWd0WBq8B/4jEvNQwr+H3E3fAk96sv3J+c024h+i
-	 T55cIBFBcKEwGvw0pCLYxSZCzicrNil7qMdMPwQvA7NC01sFtP/SVbMe1afR2wkj9i
-	 bicuD0fCwQHTQ/hbeizCZT6unESAMQ02jrZAKWuQb5OK1HweL2r/B1BRYsLCbEzHkF
-	 BCq1T48r8aAOh6l4//mp/K+HTK8NG+yUaUlcdo0CbJwY2ek1ponoDjOGTvpwi1FNxg
-	 BZpyM56GOSIxK6MF+syYsrKGm1hVjD1b33/JSXj0gdEV1Dz1KfRiuHlWcC1KUEgmTm
-	 uhK7BVGpaUJ/Q==
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <francois.legal@eventlab.fr>
+	s=arc-20240116; t=1789874552; c=relaxed/simple;
+	bh=AhEVHrPAIZJK3ivA/QwDWF63z4qT55giUSG+oeZos30=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=bia3gfU6fHcv/wLxiz2GtEDb3iNDROb5nWnpyR0hyVOi5YMXA1Pro1og3BsMDDLSMz7huXJ/d8dU2rWQLGzuTfnr5kGa79lRMSg6hHmbHttgGtDqMe3JoVywTMJ0loee1D4iJkSSqOPIiD39U0eCZqKgmLxE4Im8P3Ktuy3v1yA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sinsegye.com.cn; spf=none smtp.mailfrom=sinsegye.com.cn; arc=none smtp.client-ip=115.124.28.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sinsegye.com.cn
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=sinsegye.com.cn
+X-Alimail-AntiSpam:AC=CONTINUE;BC=0.404954|-1;CH=green;DM=|CONTINUE|false|;DS=CONTINUE|ham_system_inform|0.0868475-0.0138493-0.899303;FP=16698074300429520353|0|0|0|0|-1|-1|-1;HT=maildocker-contentspam033037071049;MF=liuyang@sinsegye.com.cn;NM=1;PH=DS;RN=3;RT=3;SR=0;TI=SMTPD_---.jHpqDUR_1789874538;
+Received: from sinsegye..(mailfrom:liuyang@sinsegye.com.cn fp:SMTPD_---.jHpqDUR_1789874538 cluster:ay29)
+          by smtp.aliyun-inc.com;
+          Sun, 20 Sep 2026 11:22:19 +0800
+From: liuyang <liuyang@sinsegye.com.cn>
 To: xenomai@lists.linux.dev
-User-Agent: SOGoMail 5.0.1
+Cc: songjianwei@sinsegye.com.cn,
+	liuyang <liuyang@sinsegye.com.cn>
+Subject: [PATCH] KVM: SVM: Fix physical interrupt handling during vmentry/vexit
+Date: Sun, 20 Sep 2026 11:22:19 +0800
+Message-ID: <20260920032219.1799313-1-liuyang@sinsegye.com.cn>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Date: Fri, 18 Sep 2026 17:23:18 +0200
-Subject: RTDM Monotonic clock diverging from userland monotonic clock
-Message-ID: <1209-6aad5780-37-5a2d1100@173656648>
-X-Forward: 217.109.173.233, 194.9.103.72
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 1.4.3 at tls-srv-02
-X-Virus-Status: Clean
+Content-Transfer-Encoding: 8bit
 
-Hello,
+commit b2a37d35 ("KVM: SVM: Use raw_local_irq_{disable,enable} in
+svm_vcpu_enter_exit") replaced the explicit cli/sti around VMRUN with
+raw_local_irq_disable()/raw_local_irq_enable().
 
-working on a xenomai 3.2 + linux 5.4 platform using network packets tim=
-estamping in kernel, I need to compare the network packets timestamp (r=
-etrieved with rtdm=5Fclock=5Fread=5Fmonotonic()) to userland monotonic =
-clock (clock=5Fgettime(CLOCK=5FMONOTONIC, & time).
+As a result, the pipeline may still believe that physical interrupts are enabled
+while they are actually masked. If a physical interrupt is taken during the
+VMRUN/VMEXIT window, the out-of-band stage can observe an inconsistent
+interrupt state, leading to a stuck vCPU.
 
-This seem to work fine when no network time synchronisation is used, bu=
-t whenever I start a PTP time sync daemon on the platform, the time fro=
-m kernel and from userland start to diverge quickly.
+Restore the explicit sti/cli around VMRUN so that the Dovetail pipeline stays
+consistent across the guest entry/exit path.
 
-I'm surprised because clock monotonic should not be modified by time sy=
-nchronisation scheme.
+Fixes: b2a37d35 ("KVM: SVM: Use local_irq_{disable,enable}_full in svm_vcpu_enter_exit")
+Signed-off-by: liuyang <liuyang@sinsegye.com.cn>
+---
+ arch/x86/kvm/svm/svm.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Can anybody help me ?
-
-Thanks in advance
-
-Fran=C3=A7ois
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index e02a38da5..0e19d42b7 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -4406,7 +4406,7 @@ static noinstr void svm_vcpu_enter_exit(struct kvm_vcpu *vcpu, bool spec_ctrl_in
+ 	 * IRQs are being enabled/disabled.  Note!  GIF=0 for the entirety of
+ 	 * this path, so IRQs aren't actually unmasked while running host code.
+ 	 */
+-	raw_local_irq_enable();
++	local_irq_enable_full();
+ 
+ 	amd_clear_divider();
+ 
+@@ -4416,7 +4416,7 @@ static noinstr void svm_vcpu_enter_exit(struct kvm_vcpu *vcpu, bool spec_ctrl_in
+ 	else
+ 		__svm_vcpu_run(svm, spec_ctrl_intercepted);
+ 
+-	raw_local_irq_disable();
++	local_irq_disable_full();
+ 
+ 	guest_state_exit_irqoff();
+ }
+-- 
+2.34.1
 
