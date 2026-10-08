@@ -1,207 +1,117 @@
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+Received: from smtp6-g21.free.fr (smtp6-g21.free.fr [212.27.42.6])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BB2D46F4A0
-	for <xenomai@lists.linux.dev>; Wed,  7 Oct 2026 12:50:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.227
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F9D2441619
+	for <xenomai@lists.linux.dev>; Thu,  8 Oct 2026 09:48:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.27.42.6
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791377438; cv=none; b=TqY0I589hxrCDCtkWgABJSnFZo4PamM9TIyBRhP7KqWThhmPOu0ghZZL1fpideAXp/Jv8bfKZbxOOIXvKjiVArJNbaUy36gTwIr5WXnGrhxuLAYBv2J/ZrKWSyIGYkHuhCg+cIOqZwnHfQLm/Jso4IlAoTi1EpHcF1H9IeNIZjE=
+	t=1791452886; cv=none; b=ChVpNE3F9ObkNauNce71fkD1PuVhMnEnEWd6gXpD+Eq7x+LNFRAvbCWKo6U8VpL7Ah1n2juSXnZDHzJHZe2D/CGDVB6RSoXIlQtvdL+XmBzhXwTf/TIL8Oj8dJOUkucrEKEP5h9d5JK/TZrhicpdKBE573EFVEvpedmA70QPkck=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791377438; c=relaxed/simple;
-	bh=XONiW7BgjG4Me9LnY4vQBJc/NwTQ4ZelGXXB0rvaCfA=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=mXVXljlwVRQpxjOX6r4LSWT+b6F0kv9FeuAxYwgbuQEiGNy/obhGF+wu+gSZxwzFS6P7sYzgBoXv99HipsCkVE+DI9/kbwhXWT2qiPShW2Nxj3mkCojcErfDxyJlA6pwIWhg6vdj+1U6XhNRJdiI0un2BBMWnO6qLfZmAPvIF7Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=K7Z6tppE; arc=none smtp.client-ip=185.136.64.227
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	s=arc-20240116; t=1791452886; c=relaxed/simple;
+	bh=8EITpcNYU2ZoT3QiuCCfcsF7rfai/VakHLMBqPqttm4=;
+	h=From:To:MIME-Version:Date:Subject:Message-ID:Content-Type; b=F68LDC4nTOz10F2bO4EjXouOiPQJbarwhGSGjjwMeq8d/PXJ5lsdH+HdrYBYPWHUxM55JJXKi5dWx8hKCUcV06L81XNS2qm9tLBeVH9q4Z/AV9MA+mKqMdfQ8iIDj0FpTFFsSrGJk2Wz4qiPniyIQQSwHQMS1hFoLPXFi5VaxS8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eventlab.fr; spf=pass smtp.mailfrom=eventlab.fr; dkim=permerror (0-bit key) header.d=eventlab.fr header.i=@eventlab.fr header.b=s6VD3NR1; arc=none smtp.client-ip=212.27.42.6
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eventlab.fr
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=eventlab.fr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="K7Z6tppE"
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20261007125020eb94f6a8920002079d
-        for <xenomai@lists.linux.dev>;
-        Wed, 07 Oct 2026 14:50:20 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=hYjqqe6W17gE6tKsLq3ak2UxkYeSKK39K1sgVyLpMX8=;
- b=K7Z6tppEGwHJxxpcTtzr1+c6M41IukmkroWtUiX8fBOUzIej8JFzG1bfUb74rW77j05+Tv
- u8SSGG1xJ7Ha3xLCIm+wuqKDONt/5qzKSUxRRFzt0lx+UY9uzsbNoWjBLeRE/xw3lpYG7+2Z
- uux+zy55uT0OKJEh4ogbgRFcurH+W7vnqRWIu0VC1YoIhjN0x8CGj2KY33vEGtsSWwUBXBgV
- m3bYya90es595EqBjhk0mOXJf2JSeQV4rjSH3rC+V97rezeMWpVJ2cM2ND9mzOGQHn5FFfrB
- ycebuxcP0BR9WF5U2hmF+NAnRJU+Bi7eE2W6xTe+iM/q5qvg1ljcnp7A==;
-Message-ID: <5d811de1976bf98599300ffd787865fee291ebab.camel@siemens.com>
-Subject: Re: Issue using recvmsg
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: =?ISO-8859-1?Q?Fran=E7ois?= Legal <francois.legal@eventlab.fr>
-Cc: xenomai@lists.linux.dev
-Date: Wed, 07 Oct 2026 14:50:20 +0200
-In-Reply-To: <1207-6ac63b00-37-3e404bc0@80343493>
-References: <1207-6ac63b00-37-3e404bc0@80343493>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=permerror (0-bit key) header.d=eventlab.fr header.i=@eventlab.fr header.b="s6VD3NR1"
+Received: from mail.thom.fr.eu.org (unknown [82.64.149.25])
+	by smtp6-g21.free.fr (Postfix) with ESMTPS id 87244780395
+	for <xenomai@lists.linux.dev>; Thu,  8 Oct 2026 11:48:01 +0200 (CEST)
+Authentication-Results: smtp6-g21.free.fr;
+	dkim=permerror header.d=eventlab.fr header.i=@eventlab.fr header.a=ed25519-sha256 header.s=default header.b=s6VD3NR1;
+	dkim-atps=neutral
+Received: from localhost ([127.0.0.1])
+	by mail.thom.fr.eu.org (8.15.2/8.15.2/Debian-22+deb11u3) with ESMTP id 6989m09s484861
+	for <xenomai@lists.linux.dev>; Thu, 8 Oct 2026 11:48:00 +0200
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/simple; d=eventlab.fr;
+	s=default; t=1791452880;
+	bh=8EITpcNYU2ZoT3QiuCCfcsF7rfai/VakHLMBqPqttm4=;
+	h=From:To:Date:Subject;
+	b=s6VD3NR11Qx5/a0SQvIikZHKsjfDr0D2Hq5OObm2ifCTHk1sbtsZZisTGi7ue18L6
+	 AXMmEQNtmKO8l0662k0np24jIZPUYRd7hTgbG3xzixVW8X9PlNZLPe+kosQoWeJyGW
+	 BddyCvSXfOgX94ZwTuAHDfAV2gn0C7EqyTgqWOBGaYbXlZXOZ069bS0rwIxNomQ8We
+	 uSfAqT/HGE1BofXYbvl5ZHDOtQbb4L3IrZnr/7/pBsRTgGUmFv91HFgAYp/jI5kWoD
+	 sx8qaOOYt9IrXROtKQ9NzC2m2UaSD7xSz52+PrSyOP/TAttM9RSwN+ePrsS7icmP/Q
+	 2ezPuTNWjlz1Q==
+From: =?utf-8?q?Fran=C3=A7ois_Legal?= <francois.legal@eventlab.fr>
+To: xenomai@lists.linux.dev
+User-Agent: SOGoMail 5.0.1
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+Date: Thu, 08 Oct 2026 11:48:00 +0200
+Subject: [patch] fixed missing time64 wrappers
+Message-ID: <1208-6ac76700-4b-2c92e940@166990483>
+X-Forward: 80.13.28.252, 194.9.100.114
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 1.4.3 at tls-srv-02
+X-Virus-Status: Clean
 
-On Wed, 2026-10-07 at 14:28 +0200, Fran=C3=A7ois Legal wrote:
-> Le Mercredi, Octobre 07, 2026 14:17 CEST, Florian Bezdeka <florian.bezdek=
-a@siemens.com> a =C3=A9crit:=20
-> =C2=A0
-> > On Wed, 2026-10-07 at 09:36 +0200, Fran=C3=A7ois Legal wrote:
-> > > Le Mardi, Octobre 06, 2026 23:41 CEST, Florian Bezdeka <florian.bezde=
-ka@siemens.com> a =C3=A9crit:=20
-> > > =C2=A0
-> > > > On Tue, 2026-10-06 at 09:09 +0200, Fran=C3=A7ois Legal wrote:
-> > > > > Hello,
-> > > > >=20
-> > > > > still porting my system from Xenomai 3.2 + linux 5.4 Ipipe to Xen=
-omai 3.3 + linux 6.12 dovetail, I'm having what looks like a weird build is=
-sue :
-> > > > > I'm using the recvmsg call to get network message + ancillary dat=
-a. On my new system, it returns -1 + errno set to 88 (ENOTSOCK). So I dug a=
- little, and it happens that recvmsg64 gets called, which does not seem to =
-be wrapped by libcobalt to xenomai SC.
-> > > > >=20
-> > > > > The fix for this is decorating the recvmsg call with a __RT() or =
-__COBALT() macro
-> > > > >=20
-> > > > > Is it expected ?
-> > > >=20
-> > > > Not sure yet. Probably not.
-> > > >=20
-> > > > Can you please elaborate which (g)libc version is being used and fo=
-r
-> > > > full transparency write down the code from your application and the
-> > > > necessary prototypes from your standard libc library.
-> > > >=20
-> > > > The wrappers in place are matching glibc, where the 64 bit variant =
-of
-> > > > recvmsg() is named __recvmsg64.
-> > > >=20
-> > > >=20
-> > > > Note: There is a conference week going on. Expect some delays. I wi=
-ll
-> > > > try to come back to that topic.
-> > >=20
-> > > Do you need the complete code of the app ?
-> > >=20
-> > > My glibc version is 2.35.
-> > >=20
-> > > It looks like a preprocessor issue, or a build system issue.
-> > > By looking at the preprocessed file, I found these lines :
-> > >=20
-> > > # 178 "/opt/sdk_recorder/sysroots/cortexa9hf-neon-oe-linux-gnueabi/us=
-r/include/sys/socket.h" 3 4
-> > > extern ssize_t sendmsg (int __fd, const struct msghdr *__message, int=
- __flags) __asm__ ("" "__sendmsg64")
-> > >=20
-> > > # 219 "/opt/sdk_recorder/sysroots/cortexa9hf-neon-oe-linux-gnueabi/us=
-r/include/sys/socket.h" 3 4
-> > > extern ssize_t recvmsg (int __fd, struct msghdr *__message, int __fla=
-gs) __asm__ ("" "__recvmsg64")
-> > >=20
-> > > # 108 "/opt/sdk_recorder/sysroots/cortexa9hf-neon-oe-linux-gnueabi/us=
-r/include/sys/select.h" 3 4
-> > > extern int select (int __nfds, fd_set *__restrict __readfds, fd_set *=
-__restrict __writefds, fd_set *__restrict __exceptfds, struct timeval *__re=
-strict __timeout) __asm__ ("" "__select64")
-> > >=20
-> > > which comes from :
-> > > #ifndef __USE_TIME_BITS64
-> > > extern ssize_t recvmsg (int __fd, struct msghdr *__message, int __fla=
-gs);
-> > > #else
-> > > # ifdef __REDIRECT
-> > > extern ssize_t __REDIRECT (recvmsg,
-> > > =C2=A0			=C2=A0=C2=A0 (int __fd, struct msghdr *__message, int __flag=
-s),
-> > > =C2=A0			=C2=A0=C2=A0 __recvmsg64);
-> > > # else
-> > > extern ssize_t __recvmsg64 (int __fd, struct msghdr *__message, int _=
-_flags);
-> > > #=C2=A0 define recvmsg __recvmsg64
-> > > # endif
-> > > #endif
-> > >=20
-> > > with __REDIRECT being defined in sys/cdefs.h :
-> > >=20
-> > > =C2=A0/* __asm__ ("xyz") is used throughout the headers to rename fun=
-ctions
-> > > =C2=A0=C2=A0 at the assembly language level.=C2=A0 This is wrapped by=
- the __REDIRECT
-> > > =C2=A0=C2=A0 macro, in order to support compilers that can do this so=
-me other
-> > > =C2=A0=C2=A0 way.=C2=A0 When compilers don't support asm-names at all=
-, we have to do
-> > > =C2=A0=C2=A0 preprocessor tricks instead (which don't have exactly th=
-e right
-> > > =C2=A0=C2=A0 semantics, but it's the best we can do).
-> > >=20
-> > > =C2=A0=C2=A0 Example:
-> > > =C2=A0=C2=A0 int __REDIRECT(setpgrp, (__pid_t pid, __pid_t pgrp), set=
-pgid); */
-> > >=20
-> > > #if (defined __GNUC__ && __GNUC__ >=3D 2) || (__clang_major__ >=3D 4)
-> > >=20
-> > > # define __REDIRECT(name, proto, alias) name proto __asm__ (__ASMNAME=
- (#alias))
-> > > # ifdef __cplusplus
-> > > #=C2=A0 define __REDIRECT_NTH(name, proto, alias) \
-> > > =C2=A0=C2=A0=C2=A0=C2=A0 name proto __THROW __asm__ (__ASMNAME (#alia=
-s))
-> > > #=C2=A0 define __REDIRECT_NTHNL(name, proto, alias) \
-> > > =C2=A0=C2=A0=C2=A0=C2=A0 name proto __THROWNL __asm__ (__ASMNAME (#al=
-ias))
-> > > # else
-> > > #=C2=A0 define __REDIRECT_NTH(name, proto, alias) \
-> > > =C2=A0=C2=A0=C2=A0=C2=A0 name proto __asm__ (__ASMNAME (#alias)) __TH=
-ROW
-> > > #=C2=A0 define __REDIRECT_NTHNL(name, proto, alias) \
-> > > =C2=A0=C2=A0=C2=A0=C2=A0 name proto __asm__ (__ASMNAME (#alias)) __TH=
-ROWNL
-> > > # endif
-> > > # define __ASMNAME(cname)=C2=A0 __ASMNAME2 (__USER_LABEL_PREFIX__, cn=
-ame)
-> > > # define __ASMNAME2(prefix, cname) __STRING (prefix) cname
-> > >=20
-> > > Fran=C3=A7ois
-> >=20
-> > Thanks.
-> >=20
-> > So,
-> > =C2=A0=C2=A0 - glibc version is in the expected range
-> > =C2=A0=C2=A0 - the aml redirect feature should work
-> >=20
-> > How does the code in the application look like?
-> >=20
-> > Expected:
-> > =C2=A0=C2=A0 - application calling recvmsg()
-> > =C2=A0=C2=A0 - redirection to __recvmsg64() (on asml level), but
-> > =C2=A0=C2=A0 - __recvmsg64() being wrapped by Xenomai
-> >=20
-> > I can't see how recvmsg64() (as reported) would be involved, but you
-> > reported that...
->=20
-> I made a mistake. it is clearly __recvmsg64, but, I can see not track of =
-__recvmsg64 in cobalt-glibc-time64.wrappers.
-> only __recvmmsg64 is wrapped :=20
->=20
+There are missing wrappers for 64 bits time in xenomai 3.3 :
+- =5F=5Frecvmsg64
+- =5F=5Fsendmsg64
+- =5F=5Fsendmmsg64
 
-Seems we missed __recvmsg64() and __sendmsg64() while doing the y2038
-implementation. Most likely because the time32 problem is not in one of
-the function arguments but one level down in the argument list.
+Signed-off-by: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
+---
+diff --git a/lib/cobalt/cobalt-glibc-time64.wrappers b/lib/cobalt/cobal=
+t-glibc-time64.wrappers
+index 0bf895ca9..483a8ce24 100644
+--- a/lib/cobalt/cobalt-glibc-time64.wrappers
++++ b/lib/cobalt/cobalt-glibc-time64.wrappers
+@@ -8,7 +8,10 @@
+ --wrap =5F=5Fmq=5Ftimedsend=5Ftime64
+ --wrap =5F=5Fmq=5Ftimedreceive=5Ftime64
+ --wrap =5F=5Fsigtimedwait64
++--wrap =5F=5Frecvmsg64
+ --wrap =5F=5Frecvmmsg64
++--wrap =5F=5Fsendmsg64
++--wrap =5F=5Fsendmmsg64
+ --wrap =5F=5Fpthread=5Fcond=5Ftimedwait64
+ --wrap =5F=5Ftimer=5Fsettime64
+ --wrap =5F=5Ftimer=5Fgettime64
+diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
+index 00c1aaf4b..264de8ace 100644
+--- a/lib/cobalt/rtdm.c
++++ b/lib/cobalt/rtdm.c
+@@ -254,7 +254,7 @@ static ssize=5Ft do=5Frecvmsg(int fd, struct msghdr=
+ *msg, int flags)
+ 	return ret;
+ }
+ 
+-COBALT=5FIMPL(ssize=5Ft, recvmsg, (int fd, struct msghdr *msg, int fla=
+gs))
++COBALT=5FIMPL=5FTIME64(ssize=5Ft, recvmsg, =5F=5Frecvmsg64, (int fd, s=
+truct msghdr *msg, int flags))
+ {
+ 	int ret;
+ 
+@@ -301,7 +301,7 @@ static ssize=5Ft do=5Fsendmsg(int fd, const struct =
+msghdr *msg, int flags)
+ 	return ret;
+ }
+ 
+-COBALT=5FIMPL(ssize=5Ft, sendmsg, (int fd, const struct msghdr *msg, i=
+nt flags))
++COBALT=5FIMPL=5FTIME64(ssize=5Ft, sendmsg, =5F=5Fsendmsg64, (int fd, c=
+onst struct msghdr *msg, int flags))
+ {
+ 	int ret;
+ 
+@@ -312,7 +312,7 @@ COBALT=5FIMPL(ssize=5Ft, sendmsg, (int fd, const st=
+ruct msghdr *msg, int flags))
+ 	return =5F=5FSTD(sendmsg(fd, msg, flags));
+ }
+ 
+-COBALT=5FIMPL(int, sendmmsg, (int fd, struct mmsghdr *msgvec,
++COBALT=5FIMPL=5FTIME64(int, sendmmsg, sendmmsg64, (int fd, struct mmsg=
+hdr *msgvec,
+ 			    unsigned int vlen, unsigned int flags))
+ {
+ 	int ret, oldtype;
 
-Xenomai is missing a proper wrapper for those two. The code base should
-be prepared for those an additional wrapper. It just needs someone to
-sit down and implement it. I would happily do the review in case you
-want to give it a try.
-
->=20
-[snip]
-> --wrap __recvmmsg64
-
-Close. I ignored the double "m" here.
