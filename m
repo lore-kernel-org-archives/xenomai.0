@@ -1,43 +1,64 @@
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+Received: from mail.elvac.eu (mail.elvac.eu [193.85.188.218])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28D544F85B1
-	for <xenomai@lists.linux.dev>; Mon, 12 Oct 2026 21:34:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.64.226
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791840887; cv=none; b=cY9TnXjHH7JskBWsu+rEgxVcZW9ucLWkOtrmLIbfbWQuU2kvYc2gPPQirceSYRrDDa17DGnatE0iCgz6ZlSItV82+fNpN+IWUiJ6QFeNABze5Ld1FYx3vtzBaH4ySqp+p4xV4yPhjCPHq523Psm41rPwmiUDf3BqqAK3TyL5ARo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791840887; c=relaxed/simple;
-	bh=L3R8UcISIAO+2AS9NcJsuNklNcGxscHFdy3qHzaE8lw=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=MAJoX65r+IdBrkWCjxRaKFTYI47zhkj6eAGp95gYwPUikiLuF8z7+zDKVLjy2BBbhh8l6lOWf9I+OcF04NqNouQnKfsOKWLwFqmlQIA8XNypECN1TQtyd80Fc4YUs6+9tQx6rVc7XqF2PENYUVxtR71w4T3RGBdKDnd1c9TQJks=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=c+nS3iAn; arc=none smtp.client-ip=185.136.64.226
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14D953644A3
+	for <xenomai@lists.linux.dev>; Tue, 13 Oct 2026 07:21:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=193.85.188.218
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791876103; cv=pass; b=n+R+mJOq4+Kz6ozjcUUDJ3j4C1zXarYD/zMPOS9QKCFENoKaoUyPRnUcpFkFKhNndYZ1mYTNMokynXOw2sOXLlmY6v44cRkALB2zELVtKI2tsG6GW1p5l8jthij/N76N43HgVRoRe2vidJEUFIYHBKd59BlSittSBnNcMerd890=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791876103; c=relaxed/simple;
+	bh=Wi9FxYZ7byXFGq1Kpk4n6FrE4zlsazwpn6JGLJ+A3pc=;
+	h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version; b=Jx6oT8mn9i/Uf4IUabcRLI7KVG+i0wynM1mS1+mBmetiB3B3hYGviRacbCJ9C438bLrnD6+psh6o61UNgTJn9rH0T5Nv14nPF3sKSrjTY+gkUpGI6qCqtlBazozRuFWCR00p5w16VTr8sNL7gTJkPtSmmGMJhmRgrS9mRwLBbiY=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=elvac.eu; spf=pass smtp.mailfrom=elvac.eu; dkim=pass (2048-bit key) header.d=elvac.eu header.i=@elvac.eu header.b=n5S+Vf0Z; arc=pass smtp.client-ip=193.85.188.218
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=elvac.eu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=elvac.eu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="c+nS3iAn"
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202610121954033bd2f38310000207d3
-        for <xenomai@lists.linux.dev>;
-        Mon, 12 Oct 2026 21:54:03 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=rmQHZmoDe1SLkNtnguNE6dpAxUYhEojRa2a6pIpWKUM=;
- b=c+nS3iAn3HBIfLFaNThFFm1xL0vZnQgYtRiTcmGmy/5eKVGL9pYZyo5wtNx7x+aUbSKAlb
- oP5fdbXUaSD3gAxDq2ac6T/yPjFuARDaBYkkCd6OlcmKMVXrv18lzHx3zg0JnSZ2ePv91uY2
- PQ/JBpkO9Fi1Mm9f9yDG1vzOjPb5Of8MK/esRBWw5VztAoEnxMXqrGuHD2jU1750qGHik+Og
- KuS2XvmZfTW0S/tQa9nJVS3/kn3rqKB7kIVeZ2sUsH8ba9uhPpsGYJ5jqbPNPX7xWAJ7sjIS
- ORA2bO9Jlh3MhW02B8iddSHdMhlrduT64jr6GQOpr/GlAFD7+0hL5X4Q==;
-Message-ID: <5875120ff1595793c7034a279d1a3c36571381f0.camel@siemens.com>
-Subject: Re: [PATCH v2] Fix missing time64 wrappers
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: =?ISO-8859-1?Q?Fran=E7ois?= Legal <francois.legal@eventlab.fr>, 
-	xenomai@lists.linux.dev
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
-Date: Mon, 12 Oct 2026 21:54:03 +0200
-In-Reply-To: <1209-6acd0f80-73-5a2d1100@131663125>
-References: <1209-6acd0f80-73-5a2d1100@131663125>
-Content-Type: text/plain; charset="UTF-8"
+	dkim=pass (2048-bit key) header.d=elvac.eu header.i=@elvac.eu header.b="n5S+Vf0Z"
+ARC-Seal: i=1; a=rsa-sha256; t=1791875190; cv=none; d=elvac.eu; s=fm2026;
+ b=J2jX7WrGLkGaT+pfrHKyehrjHcFSJ5GTjK8bX8yPea8IYOifBVbCdbdg78RWHdGn51DS+c4MY4ra
+	dLhe5t0Ii639jXNGVz6TnCCKrCy20SBVUNxHcHRlDJ/1xRI8AjeKvaB1oSjyJZWUtNB9NFPzGSRT
+	OBO3LV90yCkdhULvQMI2MumBNsJvfwZuA2cNobsPPI9sHjnL9ePvlRHYpkRAHZk2In+lFYJ8DW7n
+	/1cJe78cwzJfFH4dun46gnb1CDZxzenFpCTdwEvKwd9fF+Nvonwoh3eEv9UTzyh3FuPFJKk0u+aA
+	Cq9zLTeS66Z7SmKhL6B1sTiXh32sDS5bszqWhw==
+ARC-Message-Signature: i=1; a=rsa-sha256; d=elvac.eu; s=fm2026; c=relaxed/relaxed;
+ h=from:to:subject:date:message-id:content-type:mime-version:dkim-signature;
+ bh=4KC1PFGhtZK972DS17Fa29gfOaBgoRnr1vaeE9e0gqg=;
+ b=V35gad46gpryp9YE/xKmzDQotzUprl2tlLfNUpkpD2rnfPPHN5NelKvCaLZAy84NMKmZF5+65vpz
+	feWg3BYl5pY4lGFjy3dpI5CSHEArTwH7dqqHz63ZQqaqGEF3CRL2L78lJAXWGahOjqgU9GrUrQug
+	cWrLRF8tgG+Wm5BM3bjjr6OLJtlrMSTaglNUl7CfvwgiJAZY0Q1+PyvcEtvGfRdwIa92wDetVJwJ
+	ZMuRjsJHKj1Eg1I7NokR/bN23KEabo4TSZEJPKZy+g8r33u+79/HXHOivFBtfA6Yrj64w6MtuXZC
+	reJXwxFfTxvlmkTaT1J6Zf3nnmLQ9x2zY2UxrQ==
+ARC-Authentication-Results: i=1; mail.elvac.eu;
+	spf=pass (elvac.eu: domain of petr.martinek@elvac.eu designates 2001:af0:8002:701::193:17 as permitted sender) smtp.mailfrom=petr.martinek@elvac.eu;
+Authentication-Results: mail.elvac.eu;
+	spf=pass (elvac.eu: domain of petr.martinek@elvac.eu designates 2001:af0:8002:701::193:17 as permitted sender) smtp.mailfrom=petr.martinek@elvac.eu;
+Received: from mail.elvac.eu ([10.0.193.17])
+	by mail.elvac.eu  with ESMTPS id 69D76T1P020092-69D76T1R020092
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL)
+	for <xenomai@lists.linux.dev>; Tue, 13 Oct 2026 09:06:29 +0200
+Received: from srv-email.elcomgroup.cz (2001:af0:8002:701::193:17) by
+ srv-email.elcomgroup.cz (2001:af0:8002:701::193:17) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.49; Tue, 13 Oct 2026 09:06:29 +0200
+Received: from srv-email.elcomgroup.cz ([10.0.193.17]) by
+ srv-email.elcomgroup.cz ([10.0.193.17]) with mapi id 15.02.2562.049; Tue, 13
+ Oct 2026 09:06:29 +0200
+From: =?iso-8859-1?Q?Mart=EDnek_Petr?= <petr.martinek@elvac.eu>
+To: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
+Subject: linux-evl 7.2 compilation without SMP 
+Thread-Topic: linux-evl 7.2 compilation without SMP 
+Thread-Index: AQHdWuCXkneT9oiTYkKcoI5U64R6og==
+Date: Tue, 13 Oct 2026 07:06:29 +0000
+Message-ID: <27ae5abdf65c4fd2aff3949c6d424354@elvac.eu>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-gfi-smtp-submission: 1
+x-gfi-smtp-hellodomain: srv-email.elcomgroup.cz
+x-gfi-smtp-remoteip: 2001:af0:8002:701::193:17
+Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
@@ -45,92 +66,87 @@ List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+X-FEAS-BEC-Info: WlpIGw0aAQkEARIJHAEHBlJSCRoLAAEeDUhZUEhYSFhIWkhZXkguLT4lWFo8JVpeWFhYXVFcSFhISFpaSBgNHBpGBQkaHAEGDQMoDQQeCQtGDR1IWUhaW0gQDQYHBQkB
+ KAQBGxwbRgQBBh0QRgwNHkhYSFpIWl1IWlhYWVIJDlhSUFhYWlJfWFlSUllRW1JZX0heSFhIWEhZSFhIWEhYSFpbSBANBgcFCQEoBAEbHBtGBAEGHRBGDA0eSFg=
+X-FEAS-Client-IP: 10.0.193.17
+X-FE-Last-Public-Client-IP: 2001:af0:8002:701::193:17
+X-FE-Policy-ID: 2:1:3:SYSTEM
+X-FE-Hostname: mail.elvac.eu
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; d=elvac.eu; s=fm2026; c=relaxed/relaxed;
+ h=from:to:subject:date:message-id:content-type:mime-version;
+ bh=4KC1PFGhtZK972DS17Fa29gfOaBgoRnr1vaeE9e0gqg=;
+ b=n5S+Vf0ZxQGNbJqMw6xjn6C334uo+PQig53Gx00mswx1Nqu5MIG3mWoB21WZUVCFR6FfkAeBRqUB
+	I/QwPoj+r2NCRe3v4+ctognDGOGA35ajRCNH8VqhNlZGK1pIHM4WJXQE8jUpibeXS5gIFPkPjpBX
+	gWyJRW+yAQLIe6sFn73kEX5pZ/Uvu2xN5cuc6BJghFFjlNL6H7BPPt7Wo1MnOeRPf7spASGjx4o6
+	WsTeSu7h87sQk1jttUyfWIx2PSoauC1YaCjBUtecP8NLnsI6YICHflNoH2DRAW2ejvxGqrEYqS1t
+	saHqSnODX48W+0mgz1iY1PomB51tfdCZjqIsHg==
 
-Hi Fran=C3=A7ois,
+It is not possible to compile linux-evl 7.2 without SMP due to bad port of
+include/linux/spinlock_api_up.h code and kernel/irq/pipeline.c
+pipeline_percpu_data being inside define for SMP, while being used without =
+it.
+Included are patches to fix compilation.
 
-thanks a lot for v2. Some minor stuff below, Jan might even fix that up
-on merge.
-
-On Mon, 2026-10-12 at 18:49 +0200, Fran=C3=A7ois Legal wrote:
-> There are missing wrappers for 64 bits time in xenomai 3.3 :
-> - __recvmsg64
-> - __sendmsg64
-> - __sendmmsg64
->=20
-> For __recvmsg64, the only options which shall write to msghdr.msg_control=
- are :
-> -RTCAN_RTIOC_TAKE_TIMESTAMP which always writes RTCAN_TIMESTAMP_SIZE (64)=
- bits
-> so it is correct to route the time64 service to ne native "time_t" syscal=
-l.
-                                                  ^^^
-Typo.
-s/ne/the
-
-Should we add an additional note that we do not implement anything
-regarding TX? Seems we do not support something like SO_TIMESTAMP,
-SO_TIMESTAMPNS or SCM_TIMESTAMPING. Thats the reason why the send{m}msg
-services are fine.
-
->=20
-> Signed-off-by: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
-> ---
-> diff --git a/lib/cobalt/cobalt-glibc-time64.wrappers b/lib/cobalt/cobalt-=
-glibc-time64.wrappers
-> index 0bf895ca9..483a8ce24 100644
-> --- a/lib/cobalt/cobalt-glibc-time64.wrappers
-> +++ b/lib/cobalt/cobalt-glibc-time64.wrappers
-> @@ -8,7 +8,10 @@
->  --wrap __mq_timedsend_time64
->  --wrap __mq_timedreceive_time64
->  --wrap __sigtimedwait64
-> +--wrap __recvmsg64
->  --wrap __recvmmsg64
-> +--wrap __sendmsg64
-> +--wrap __sendmmsg64
->  --wrap __pthread_cond_timedwait64
->  --wrap __timer_settime64
->  --wrap __timer_gettime64
-> diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
-> index 00c1aaf4b..264de8ace 100644
-> --- a/lib/cobalt/rtdm.c
-> +++ b/lib/cobalt/rtdm.c
-> @@ -254,7 +256,7 @@ static ssize_t do_recvmsg(int fd, struct msghdr *msg,=
- int flags)
->  	return ret;
->  }
-> =20
-> -COBALT_IMPL(ssize_t, recvmsg, (int fd, struct msghdr *msg, int flags))
-> +COBALT_IMPL_TIME64(ssize_t, recvmsg, __recvmsg64,
-> +		(int fd,struct msghdr *msg, int flags))
-                       ^^
-Missing space.
-
->  {
->  	int ret;
-> =20
-> @@ -301,7 +301,7 @@ static ssize_t do_sendmsg(int fd, const struct msghdr=
- *msg, int flags)
->  	return ret;
->  }
-> =20
-> -COBALT_IMPL(ssize_t, sendmsg, (int fd, const struct msghdr *msg, int fla=
-gs))
-> +COBALT_IMPL_TIME64(ssize_t, sendmsg, __sendmsg64,
-> +		(int fd, const struct msghdr *msg, int flags))
->  {
->  	int ret;
-> =20
-> @@ -312,7 +312,7 @@ COBALT_IMPL(ssize_t, sendmsg, (int fd, const struct m=
-sghdr *msg, int flags))
->  	return __STD(sendmsg(fd, msg, flags));
->  }
-> =20
-> -COBALT_IMPL(int, sendmmsg, (int fd, struct mmsghdr *msgvec,
-> +COBALT_IMPL_TIME64(int, sendmmsg, sendmmsg64, (int fd, struct mmsghdr *m=
-sgvec,
->  			    unsigned int vlen, unsigned int flags))
->  {
->  	int ret, oldtype;
+Signed-off-by: Petr Mart=EDnek <petr.martinek@elvac.eu>
+---
+diff -Naur a/include/linux/spinlock_api_up.h b/include/linux/spinlock_api_u=
+p.h
+--- a/include/linux/spinlock_api_up.h	2026-09-23 08:39:20.000000000 +0200
++++ b/include/linux/spinlock_api_up.h	2026-10-08 14:21:40.410814000 +0200
+@@ -62,22 +62,22 @@
+   do { local_irq_restore(flags); __UNLOCK(lock, ##__VA_ARGS__); } while (0=
+)
+=20
+ #define __HARD_LOCK(lock) \
+-  do { ___LOCK_##__VA_ARGS__(lock); } while (0)
++  do { ___LOCK_(lock); } while (0)
+=20
+ #define __HARD_LOCK_IRQ(lock) \
+-  do { hard_local_irq_disable(); __HARD_LOCK(lock, ##__VA_ARGS__); } while=
+ (0)
++  do { hard_local_irq_disable(); __HARD_LOCK(lock); } while (0)
+=20
+ #define __HARD_LOCK_IRQSAVE(lock, flags) \
+-  do { flags =3D hard_local_irq_save(); __HARD_LOCK(lock, ##__VA_ARGS__); =
+} while (0)
++  do { flags =3D hard_local_irq_save(); __HARD_LOCK(lock); } while (0)
+=20
+ #define __HARD_UNLOCK(lock) \
+-  do { ___UNLOCK_##__VA_ARGS__(lock); } while (0)
++  do { ___UNLOCK_(lock); } while (0)
+=20
+ #define __HARD_UNLOCK_IRQ(lock) \
+-  do { hard_local_irq_enable(); __HARD_UNLOCK(lock, ##__VA_ARGS__); } whil=
+e (0)
++  do { hard_local_irq_enable(); __HARD_UNLOCK(lock); } while (0)
+=20
+ #define __HARD_UNLOCK_IRQRESTORE(lock, flags) \
+-  do { hard_local_irq_restore(flags); __HARD_UNLOCK(lock, ##__VA_ARGS__); =
+} while (0)
++  do { hard_local_irq_restore(flags); __HARD_UNLOCK(lock); } while (0)
+=20
+ #define _raw_spin_lock(lock)			__LOCK(lock)
+ #define _raw_spin_lock_nested(lock, subclass)	__LOCK(lock)
+diff -Naur a/kernel/irq/pipeline.c b/kernel/irq/pipeline.c
+--- a/kernel/irq/pipeline.c	2026-09-23 08:39:20.000000000 +0200
++++ b/kernel/irq/pipeline.c	2026-10-08 14:30:08.315420000 +0200
+@@ -75,6 +75,9 @@
+ 	unsigned long flat[IRQ_FLAT_MAPSZ];
+ };
+=20
++struct pipeline_percpu_data { };
++static DEFINE_PER_CPU(struct pipeline_percpu_data, pipeline_percpu_data);
++
+ #ifdef CONFIG_SMP
+=20
+ static struct irq_event_map bootup_irq_map __initdata;
+@@ -92,9 +95,6 @@
+ 	},
+ };
+=20
+-struct pipeline_percpu_data { };
+-static DEFINE_PER_CPU(struct pipeline_percpu_data, pipeline_percpu_data);
+-
+ static irqreturn_t smp_call_function_ipi_handler(int irq, void *dev_id)
+ {
+ 	smp_flush_oob_call_function_queue();=
