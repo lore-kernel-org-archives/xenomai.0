@@ -1,494 +1,186 @@
-Received: from out28-1.mail.aliyun.com (out28-1.mail.aliyun.com [115.124.28.1])
+Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010003.outbound.protection.outlook.com [52.101.69.3])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 033FD3BE16C
-	for <xenomai@lists.linux.dev>; Tue, 13 Oct 2026 23:56:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=115.124.28.1
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1791935822; cv=none; b=oM8NZArVuigBIt50WQl4pl024YKLDvkRQF/EOdzC1plPyWkirSwxXbdOOGCayFsRTdLhN59+2/j/ukZc4XnDhBFjZgJqw4y7RSdylMWuJiF6HKQ56fcoN2t2Thz+BkUUZudDJ7ZRZGd9Vlw5jBcRnerHgwPfss+e+o4quI4O0A4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1791935822; c=relaxed/simple;
-	bh=YVR7eiYA1G09E7lAEgMKMDIjEneUeL7rMxNNk5FOiZI=;
-	h=Message-Id:To:Cc:References:In-Reply-To:Date:Subject:From:
-	 Mime-Version:Content-Type; b=nclsxA3Hd7V641l6wxZxT/BelNRXxZFzPjq+ePlsxpdOBgekTgfQNz6lSWST2X6+Qq5JvVZk/1PEqPwr8xnZ3ykf/9WFqzRcH0Ptk/4zz6wWvPs7pueAyqhqN17dwf94xXbGARXu52lBNu/Qwn6wp/xfAzV3Dktgdml26UCq3kY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sinsegye.com.cn; spf=none smtp.mailfrom=sinsegye.com.cn; arc=none smtp.client-ip=115.124.28.1
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sinsegye.com.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=sinsegye.com.cn
-X-Alimail-AntiSpam:AC=CONTINUE;BC=0.06834763|-1;BR=01201311R161ec;CH=green;DM=|CONTINUE|false|;DS=SPAM|spam_ad|0.986721-0.000201543-0.0130775;FP=17148009799601448299|0|0|0|0|-1|-1|-1;HT=maildocker-contentspam033068016216;MF=liuyang@sinsegye.com.cn;NM=1;PH=DS;RN=5;RT=5;SR=0;TI=SMTPD_---.jc8GsmN_1791935812;
-Received: from localhost(mailfrom:liuyang@sinsegye.com.cn fp:SMTPD_---.jc8GsmN_1791935812 cluster:ay29)
-          by smtp.aliyun-inc.com;
-          Wed, 14 Oct 2026 07:56:53 +0800
-Message-Id: <ed7c43ef85386e7d9b7bfcd2895307dc2948cb81.73962a4a.e628.4a00.aded.2f4a807b8f01@feishu.cn>
-To: "Florian Bezdeka" <florian.bezdeka@siemens.com>
-Cc: "Jan Kiszka" <jan.kiszka@siemens.com>, 
-	"Philippe Gerum" <rpm@xenomai.org>, <xenomai@lists.linux.dev>, 
-	<songjianwei@sinsegye.com.cn>
-References: <20260920032219.1799313-1-liuyang@sinsegye.com.cn> <b75042383d2c13a7714aa538c4cbbaf59575add1.camel@siemens.com> <ed7c43ef85386e7d9b7bfcd2895307dc2948cb81.27e5e5db.849f.4897.86af.4aed0afaa453@feishu.cn> <8f3e2103-29a1-405e-b664-f1f1af82c4c5@siemens.com> <ed7c43ef85386e7d9b7bfcd2895307dc2948cb81.5bb5075f.c6ee.417d.8f02.9923dc98b410@feishu.cn> <00f73467-9ce0-44fb-b969-9861f415cc46@siemens.com>
-	<e8d56be0e119bb0c7fa030eb23d3e899e9ac20b8.camel@siemens.com>
-In-Reply-To: <e8d56be0e119bb0c7fa030eb23d3e899e9ac20b8.camel@siemens.com>
-Date: Wed, 14 Oct 2026 07:56:50 +0800
-Subject: Re: [PATCH] KVM: SVM: Fix physical interrupt handling during vmentry/vexit
-From: =?utf-8?q?=E5=88=98=E6=9D=A8?= <liuyang@sinsegye.com.cn>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 251E92EDD78
+	for <xenomai@lists.linux.dev>; Wed, 14 Oct 2026 05:10:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.69.3
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1791954642; cv=fail; b=J5bUNDSor9nbXofo3Mkm8N6IULeJcS3uns7z/3SHlo4TonTVgOi2yjVxFxKpT/3cRMrZ4na19dmua9K4V9hxMLt87BYuC89SrZ/YbUSAnKInRzjWce40nJ6KOBAYVBtk9XLEHaIQCyLp0ixg50lkhKG0wvdm1KwbisSQz/5z5Vw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1791954642; c=relaxed/simple;
+	bh=p6Y550kNoT/zuUG2aG819e8HFehUOYlGlPoC3J8dLyU=;
+	h=Message-ID:Date:From:To:Cc:Subject:Content-Type:MIME-Version; b=OPr/nD3QBleZM9UPGRHP/E2QEUsMwxmrxD/6ds5cH94Yb0fDCyBzJA1pglheUl8uoErNLsxgBMVpHgNW5i3N2eoiWK7FXuYIOu/k0qZMlnB71iDFutv8XcPBiPb6SGvrUvAcfF9Zg+8E5UB2Vs5Tzoa/csNSgN6Zv4Nlme3nk54=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b=etSToEkb; arc=fail smtp.client-ip=52.101.69.3
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=@siemens.com header.b="etSToEkb"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=vDjEqPtFxD38T5qADJq2vOdSYAmB21pId3kzKFdtGaN3mxCVQPFxpwB7hxYzVRfnLy3y/fOhxyxX43fwjIDVqAaK0Asr89QyIF3dayX7BWqTa0v5kuGt3vaZquDJTIniaTRQvnvsvuY352LhilaJjEhHZBhQBOd187ks9wUsejQXXqgh+w2aPimIBh5W+1nPY02cB5EbVElxWWtYmx92NvxybOZjoB/BKyXp0QIZSWSp3dQ3mucOxXtBkZfnTxPiQYCo9Y7p7MnE2ZLnrtFTnNL0k1mTgo01CbxIZUit+G/wFwvPJgJTK+68ROYwCAnAki/GuDkjdvY3K0L8yo9hwA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=kiYSZcZh8qFuSjE+Ku5p5sotsrBv+2ovM2SqewaSpTA=;
+ b=XOnfP4N4INPg/tQ5lg89BzI8Lylat7nrd61E92QyOhaiRDZS8lked/aeUT3RTfYZqanc8KWzD1iAwi6a6q5fna4I5E1SfpTqSfAxaKcHOp4KrvIVyxdzrMWM7wxHUvBf2BmjeZA/46erwtBpuo66aqbfFmzsLK4OQzhdgdAUA6VyQofkrH9SSGryD6oV+kPr0dCVgC1KWvOyKysbqSpV4dWEVAxzlDHLXYRJ8D1jRKp+Stdyajs5J1Hv5ToyIC79ipjzvbUWGeQ6uwxdAjD81nUGd6cY7YemDrIb1gUAwBkHBBI6PXRzLz0c6FxZNigvdXOhbMG+UphRJ5es0g5KcQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kiYSZcZh8qFuSjE+Ku5p5sotsrBv+2ovM2SqewaSpTA=;
+ b=etSToEkbNJxdfnUMsrHXbW85zQrMvR/FebMQyCC8lKx4fxwb+sd3pk38Q5RfnCs40ooidrQGxXvfpbceVpSWBz27OI0AW/Do12mbXeCpGkv+u4BRXCnMnH9pRkyiVOjBnXWFrmEN25s6/lIZcvm9ABr9pNKKY36Jzs7znuEk+Tjyc+2Shia+ZHKmEqAUo0CqoVFXu812VRsbW7QNTDfftqVEP2JWKOobcByspKWEPnLgENiD7hAMUaaOIWw9+OzjP3vP+jvCLA8X5fS14pI7HUWobfXCPQ/eP4Ob/YhimCeHyVdLN3yveM373GPs1K8/CqPKXJTATek0iczZlu4ZMg==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:785::10) by MI9PR10MB427317.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:290:c0::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.522.13; Wed, 14 Oct
+ 2026 05:10:37 +0000
+Received: from AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::fbce:789a:27cf:d1e]) by AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::fbce:789a:27cf:d1e%5]) with mapi id 15.21.0522.012; Wed, 14 Oct 2026
+ 05:10:37 +0000
+Message-ID: <98caad22-455d-41ca-bfaa-f32289c7c8e8@siemens.com>
+Date: Wed, 14 Oct 2026 07:10:35 +0200
+User-Agent: Mozilla Thunderbird
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Content-Language: en-US
+To: Xenomai <xenomai@lists.linux.dev>
+Cc: Florian Bezdeka <florian.bezdeka@siemens.com>,
+ "guangfeng.wang" <guang_feng_wang@163.com>
+Subject: Call today
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ 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
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR2P281CA0182.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:9f::10) To AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:785::10)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
-Mime-Version: 1.0
-X-Lms-Return-Path: <lba+16acec543+296618+xenomai.org+liuyang@sinsegye.com.cn>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AMCPR10MB992291:EE_|MI9PR10MB427317:EE_
+X-MS-Office365-Filtering-Correlation-Id: 4a5449b4-8bc5-4528-cc51-08df29b17be6
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|23010399003|376014|1800799024|366016|6133799003|55112099003|18002099003|10067099003|11063799006|56012099006;
+X-Microsoft-Antispam-Message-Info:
+	cVHTTyzaQZY1zmRUyh1rV42edA5t/3V970W+A/6WUx9ZiQag9kyv+3JurXA7qIRa+SSmeeL78FaIPg2a4MV28TR/hkkIkV+r9cvBscP3T12gIzh4NOIvr4ZmcDxEUlK9E3zDC7RCZNwXQffoP0k7U5yyvHbtILREslTQNsgbjSxasHaTaexEMJ4VY/qgtGz4gZPZ+lQebElBYnC91hzPOGpkHyYEL2UmfV1ETm3kWjnBvrd1Xr6TLTydwpS8JCgdLnLC3qIXFfgHpHvgtzsdCEfgC/IQPnMRMRmxW1FljJ3sLF7Y+iVP9LMj7HX0e0CzU5eTrVNyvw41sc9EaYhOdkEhc5XxRRvK3zCGkrnbKbEhgbwlZnb+OEFul9TfUOMV0qaIZoQ9VeBNMkpvRt88FtjttWPkkDlH1Ij4MEsP1+5Zrn7tb39A6nBVdCIlr8ISC7yRCc2hgq9yd6PD5SSNy9qagqbXC5lYvmwfUVdXUX/cVT8BQTm/YeCbEs22RCzUGfEj0Ie97qh3F9+rzB6tU6jB0xvyydPs5bvCUot4xoxsk0wx5PKH4zq1u2F8AUSOUKbmCoFwRbShkPBxI7RCc/w/pkpzcArZJA7iGPgM7yeZMS7wQYzHe99O47ZirK28dQTkQP424inyaoCmDPbEHJZ0cKZFQfEwNgJoJrz0i7s=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(1800799024)(366016)(6133799003)(55112099003)(18002099003)(10067099003)(11063799006)(56012099006);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?aWFycFBIOVV0OEhMMzJ4SmRGQ2sycjFFWXpIUEQxNTdVUEppYUNPejRwelE3?=
+ =?utf-8?B?a1FmRHhDbUpjZGFDOW1FNGRxN2hjN3lZNm1mdlJua2xKVGRwTWNjVC9EN1lZ?=
+ =?utf-8?B?K28rOVZ3ZVd3V2RBcHVSQThpeTJmMUdTRlp2YTFSbkVuQzY0NmZxSFFaSXc0?=
+ =?utf-8?B?WEhFb29PdVV3bU43bzZjOVhqeVpyeFVBa0oxWVRTV2VVTlRHZ1hTWVNlMHZO?=
+ =?utf-8?B?TjVyUDVnNlZyOHhlbVVQRDNyTVdBNzRYZjJEOVVqQlNvSjRuRlBIQ25LeUxi?=
+ =?utf-8?B?VFk1SWo0ckg2cExFRXdvSDFOblVZY0NnWmVSR01xbkwrQ2Y5M2xRYStVdy9w?=
+ =?utf-8?B?ZnpLR3hXYjc4Ynl5RkRTcGh1TzFNVS9mNWFscHlidWIxMm9WTytBZ0MvV2hT?=
+ =?utf-8?B?TC9iOHpScm00a0xCYlV5ZEIyZmxKc204Z2xVTEZOQjQwdUZ1LzJhdWZYNkE4?=
+ =?utf-8?B?R2JLUGNzcFYraW12YmNKNVM0QUJwSThybWowaXY2eWJwQzdyNFZFVm1LV0Nn?=
+ =?utf-8?B?YWkwV2JwRUMvc3lSMm1nRUhwMmJaR1VlcnBkS0JWcFdzTDRNSXh2OWhZUngw?=
+ =?utf-8?B?bXJuSncxd2F3cGdRV2xrUmRscnBRNFdMQlFWV2VrMlJ0SkdhbnB3RSt4OVYw?=
+ =?utf-8?B?MHhidTBLWVRvUHhJWERPZnhJT25YbVFxN0xtMFBZb1JVUGpMRlBPRVNESDJ4?=
+ =?utf-8?B?cVNtTzNRaEFidDhISEN6bnRRa2FwcEFGMnE1aWdqUUtVZXQyQldZUkJkbFJS?=
+ =?utf-8?B?d0tGallKa2NRVCtJTU1FelU5NmVZMWZURjRoMVdCT1BLNDNSWDRDRlFSakJB?=
+ =?utf-8?B?cnRJMmdhWHZFRFdPYTRLNzhaZThyd1J6T0ZvVVl6QUZUMzFWTzlLdG5TRTR0?=
+ =?utf-8?B?R0ZqaFk3UjZPYnU5ckdTYSt4Q01sTXV2TW9vUkdHYlBQNzdrMTd6SnVkMWtY?=
+ =?utf-8?B?UTRqQjlkNlNWWXFsSUY4U1FWeFEzWlB5NGJiQ3MyODh0SFhrWjVkNmRPdWpH?=
+ =?utf-8?B?bTFiaURkenkrVzRKWHpDcndsNy9ZS0t0TVZ0V3RqZ1Y1VFB6RUVkcmJlMjd3?=
+ =?utf-8?B?SVljUFJsZXZVenFSRFVnRHRiUXFVZy9zYU5lcW5jTW0yK2UvYnpjc3A0Vmlh?=
+ =?utf-8?B?ajBWVzZOTjR0dEtQc0NkVzZITDZYVkNtZDRaMU9wbFFoMDE3WjNZUC80M0tL?=
+ =?utf-8?B?S25jSEFtNk5QVFRRSEhiQk11UHlwb3FRU0o3aTNTd2dnYkRZMFFCZk8vRGV0?=
+ =?utf-8?B?WWVQejdzSWY5NE8zQWhoYWJKQXVSQ1Jmd0VzcnlidmNaMW5pQTh1bkRSNjFS?=
+ =?utf-8?B?YkI0SkZUSHNYNXJVUzBrbEdXVHBCeWJ1NnhFZWJEVGJTcFFjN09QTlVoZFE2?=
+ =?utf-8?B?ajM4RWxBUGxZU3FJYUh3MTlHQkxRaTFqc0xCRVhwYU9Vd0JvY1l4SFU2ZlpV?=
+ =?utf-8?B?eEVLRStZTTZMZDErQzJqQTRTYXRYV1JETk5HTllLNE5wVGJuYVFzSDc2Rk9i?=
+ =?utf-8?B?WmFwbFZEMjg5QllSY21ySGZ4TGgxZFpLSDdyZnQ0OVZoZWc0blpYWlZYL2JX?=
+ =?utf-8?B?c2ZXeXZ4MlEwTCtNRmRIYmc5RElLMWN3OWxQVDQxY1AyczVMSEpuMXgzcG5j?=
+ =?utf-8?B?V3hXdnVYVTRKQWUvdUdoQW5kS3duQm5mQVBpeW1CNFRtTmlVOTJPN2k2eWY2?=
+ =?utf-8?B?SURnWlhYVmFVZmRCUk5GRnNLN0dabEpNVkE1VGlpZTFhcTRTV1hUU3NQOWVK?=
+ =?utf-8?B?cGE1R1VWVVA2VUVrckhpbDVjenRUNUFoTXlhWkFZMEgxUStwN1V1bmd3bGNs?=
+ =?utf-8?B?dTBBYVFPVWt6ckR3WXJBaTFRcTU2aXVHTGlGVWNrejhMd1AwQW0vKy9NMUVu?=
+ =?utf-8?B?ekgzSU5kR0x4SFZNSWRFUzdHR1RVNFpFQ3FVR0R4Z21PMlNMdGZTMlNtK0hL?=
+ =?utf-8?B?TjBpYU1TcDBvYnJ1UmVWZnpwcngvdEZOQXlYMmgwZUpDWnp2bHkrS2VJNVA2?=
+ =?utf-8?B?V3A5blFHYmVnTTQxTk9UeEZaL1hmMHdBOWp2RGExSHpRZXphMnh3YmpvbnF5?=
+ =?utf-8?B?VXpONXZWVkloeDg4VHVEZHhiUnNiUlVtSXJHMUJMYmFGLzJISm1Vc09SNElx?=
+ =?utf-8?B?Q0sxL2lvUTM1QUt4UXgwWXVjR280YzhoUDh3WUI4a05IaEd2cVFkS1Q3QzBa?=
+ =?utf-8?B?dENIekNaaFdJSU4xVkpiQmE2WHIxbzI5WkxEM1hRV3luelNUMTFOMFJ0Q1FR?=
+ =?utf-8?B?RkFMUjM5TUtheHk0N3h4N3VsdzByRm4rWDdRZnJBdHpoUmtyeURFQUdwa3lG?=
+ =?utf-8?B?dkh1SXMrQ0l1V3hqb1pZNEF5U3lQNUtuOXM4NjB4d0NseXlDOFlnUT09?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4a5449b4-8bc5-4528-cc51-08df29b17be6
+X-MS-Exchange-CrossTenant-AuthSource: AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Oct 2026 05:10:37.5516
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 97qEfaIoy+uw9mdOErQOSwUY19/CexdMmYe9ib/JHlUX3GiGSmpNw8AY/VkphtcGKh+mTAfIFDG4ilzEmhkppg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MI9PR10MB427317
 
-Hi
-=C2=A0=C2=A0=C2=A0 I used the `stress` tool on Linux to generate load on di=
-sk, memory and CPU. Meanwhile inside the VM, I ran `stressmypc` to apply th=
-e same set of pressure on disk, memory and CPU. After a 24-hour stress test=
-, no further issues were observed.
+Hi all,
 
-My test env:
-=C2=A0=C2=A0=C2=A0 platform: AMD Ryzen 7 7700 / AMD Ryzen 7 8845HS
-=C2=A0=C2=A0=C2=A0 bios: enable AMD-V
-=C2=A0=C2=A0=C2=A0 libvirt xml:
-=C2=A0=C2=A0 <domain type=3D'kvm' xmlns:qemu=3D'http://libvirt.org/schemas/=
-domain/qemu/1.0'>
-=C2=A0 <name>sp5020-A221-vm</name>
-=C2=A0 <uuid>a9f1c255-35be-41cc-a440-42adbb1934a9</uuid>
-=C2=A0 <metadata>
-=C2=A0=C2=A0=C2=A0 <libosinfo:libosinfo xmlns:libosinfo=3D"http://libosinfo=
-.org/xmlns/libvirt/domain/1.0">
-=C2=A0=C2=A0 =C2=A0=C2=A0 <libosinfo:os id=3D"http://microsoft.com/win/10"/=
->
-=C2=A0=C2=A0=C2=A0 </libosinfo:libosinfo>
-=C2=A0 </metadata>
-=C2=A0 <memory unit=3D'KiB'>10485760</memory>
-=C2=A0 <currentMemory unit=3D'KiB'>10485760</currentMemory>
-=C2=A0 <memoryBacking>
-=C2=A0=C2=A0=C2=A0 <hugepages/>
-=C2=A0 </memoryBacking>
-=C2=A0 <vcpu placement=3D'static'>6</vcpu>
-=C2=A0 <iothreads>1</iothreads>
-=C2=A0 <os>
-=C2=A0=C2=A0=C2=A0 <type arch=3D'x86_64' machine=3D'q35'>hvm</type>
-=C2=A0=C2=A0=C2=A0 <loader readonly=3D'yes' type=3D'pflash'>/usr/share/OVMF=
-/OVMF_CODE_4M.fd</loader>
-=C2=A0=C2=A0=C2=A0 <boot dev=3D'hd'/>
-=C2=A0=C2=A0=C2=A0 <smbios mode=3D'host'/>
-=C2=A0 </os>
-=C2=A0 <features>
-=C2=A0=C2=A0=C2=A0 <acpi/>
-=C2=A0=C2=A0=C2=A0 <apic/>
-=C2=A0=C2=A0=C2=A0 <hyperv mode=3D'custom'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <relaxed state=3D'on'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <vapic state=3D'on'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <spinlocks state=3D'on' retries=3D'8191'/>
-=C2=A0=C2=A0=C2=A0 </hyperv>
-=C2=A0=C2=A0=C2=A0 <vmport state=3D'off'/>
-=C2=A0 </features>
-=C2=A0 <cpu mode=3D'host-passthrough' check=3D'none' migratable=3D'off'>
-=C2=A0=C2=A0=C2=A0 <topology sockets=3D'1' dies=3D'1' cores=3D'6' threads=
-=3D'1'/>
-=C2=A0 </cpu>
-=C2=A0 <clock offset=3D'localtime'>
-=C2=A0=C2=A0=C2=A0 <timer name=3D'rtc' tickpolicy=3D'catchup'/>
-=C2=A0=C2=A0=C2=A0 <timer name=3D'hypervclock' present=3D'yes'/>
-=C2=A0 </clock>
-=C2=A0 <on_poweroff>destroy</on_poweroff>
-=C2=A0 <on_reboot>restart</on_reboot>
-=C2=A0 <on_crash>destroy</on_crash>
-=C2=A0 <pm>
-=C2=A0=C2=A0=C2=A0 <suspend-to-mem enabled=3D'no'/>
-=C2=A0=C2=A0=C2=A0 <suspend-to-disk enabled=3D'no'/>
-=C2=A0 </pm>
-=C2=A0 <devices>
-=C2=A0=C2=A0=C2=A0 <emulator>/usr/bin/qemu-system-x86_64</emulator>
-=C2=A0=C2=A0=C2=A0 <disk type=3D'block' device=3D'disk'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <driver name=3D'qemu' type=3D'raw' cache=3D'none'=
- io=3D'native' discard=3D'unmap' iothread=3D'1'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <source dev=3D'/dev/nvme0n1'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <target dev=3D'vda' bus=3D'virtio'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-05' slot=3D'0x00' function=3D'0x0'/>
-=C2=A0=C2=A0=C2=A0 </disk>
-=C2=A0=C2=A0=C2=A0 <controller type=3D'pci' index=3D'0' model=3D'pcie-root'=
-/>
-=C2=A0=C2=A0=C2=A0 <controller type=3D'pci' index=3D'1' model=3D'pcie-root-=
-port'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <model name=3D'pcie-root-port'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <target chassis=3D'1' port=3D'0x8'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-00' slot=3D'0x01' function=3D'0x0' multifunction=3D'on'/>
-=C2=A0=C2=A0=C2=A0 </controller>
-=C2=A0=C2=A0=C2=A0 <controller type=3D'pci' index=3D'2' model=3D'pcie-root-=
-port'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <model name=3D'pcie-root-port'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <target chassis=3D'2' port=3D'0x9'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-00' slot=3D'0x01' function=3D'0x1'/>
-=C2=A0=C2=A0=C2=A0 </controller>
-=C2=A0=C2=A0=C2=A0 <controller type=3D'pci' index=3D'3' model=3D'pcie-root-=
-port'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <model name=3D'pcie-root-port'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <target chassis=3D'3' port=3D'0xa'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-00' slot=3D'0x01' function=3D'0x2'/>
-=C2=A0=C2=A0=C2=A0 </controller>
-=C2=A0=C2=A0=C2=A0 <controller type=3D'pci' index=3D'4' model=3D'pcie-root-=
-port'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <model name=3D'pcie-root-port'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <target chassis=3D'4' port=3D'0xb'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-00' slot=3D'0x01' function=3D'0x3'/>
-=C2=A0=C2=A0=C2=A0 </controller>
-=C2=A0=C2=A0=C2=A0 <controller type=3D'pci' index=3D'5' model=3D'pcie-root-=
-port'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <model name=3D'pcie-root-port'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <target chassis=3D'5' port=3D'0xc'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-00' slot=3D'0x01' function=3D'0x4'/>
-=C2=A0=C2=A0=C2=A0 </controller>
-=C2=A0=C2=A0=C2=A0 <controller type=3D'pci' index=3D'6' model=3D'pcie-root-=
-port'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <model name=3D'pcie-root-port'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <target chassis=3D'6' port=3D'0xd'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-00' slot=3D'0x01' function=3D'0x5'/>
-=C2=A0=C2=A0=C2=A0 </controller>
-=C2=A0=C2=A0=C2=A0 <controller type=3D'pci' index=3D'7' model=3D'pcie-root-=
-port'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <model name=3D'pcie-root-port'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <target chassis=3D'7' port=3D'0xe'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-00' slot=3D'0x01' function=3D'0x6'/>
-=C2=A0=C2=A0=C2=A0 </controller>
-=C2=A0=C2=A0=C2=A0 <controller type=3D'pci' index=3D'8' model=3D'pcie-root-=
-port'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <model name=3D'pcie-root-port'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <target chassis=3D'8' port=3D'0xf'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-00' slot=3D'0x01' function=3D'0x7'/>
-=C2=A0=C2=A0=C2=A0 </controller>
-=C2=A0=C2=A0=C2=A0 <controller type=3D'pci' index=3D'9' model=3D'pcie-root-=
-port'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <model name=3D'pcie-root-port'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <target chassis=3D'9' port=3D'0x10'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-00' slot=3D'0x02' function=3D'0x0' multifunction=3D'on'/>
-=C2=A0=C2=A0=C2=A0 </controller>
-=C2=A0=C2=A0=C2=A0 <controller type=3D'pci' index=3D'10' model=3D'pcie-root=
--port'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <model name=3D'pcie-root-port'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <target chassis=3D'10' port=3D'0x11'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-00' slot=3D'0x02' function=3D'0x1'/>
-=C2=A0=C2=A0=C2=A0 </controller>
-=C2=A0=C2=A0=C2=A0 <controller type=3D'pci' index=3D'11' model=3D'pcie-root=
--port'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <model name=3D'pcie-root-port'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <target chassis=3D'11' port=3D'0x12'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-00' slot=3D'0x02' function=3D'0x2'/>
-=C2=A0=C2=A0=C2=A0 </controller>
-=C2=A0=C2=A0=C2=A0 <controller type=3D'pci' index=3D'12' model=3D'pcie-root=
--port'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <model name=3D'pcie-root-port'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <target chassis=3D'12' port=3D'0x13'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-00' slot=3D'0x02' function=3D'0x3'/>
-=C2=A0=C2=A0=C2=A0 </controller>
-=C2=A0=C2=A0=C2=A0 <controller type=3D'pci' index=3D'13' model=3D'pcie-to-p=
-ci-bridge'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <model name=3D'pcie-pci-bridge'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-0c' slot=3D'0x00' function=3D'0x0'/>
-=C2=A0=C2=A0=C2=A0 </controller>
-=C2=A0=C2=A0 =C2=A0 =C2=A0=C2=A0 <controller type=3D'usb' index=3D'0' model=
-=3D'qemu-xhci' ports=3D'15'/>
-=C2=A0=C2=A0=C2=A0 <controller type=3D'sata' index=3D'0'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-00' slot=3D'0x1f' function=3D'0x2'/>
-=C2=A0=C2=A0=C2=A0 </controller>
-=C2=A0=C2=A0=C2=A0 <controller type=3D'virtio-serial' index=3D'0'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-02' slot=3D'0x00' function=3D'0x0'/>
-=C2=A0=C2=A0=C2=A0 </controller>
-=C2=A0=C2=A0=C2=A0 <interface type=3D'network'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <mac address=3D'52:54:00:8a:b7:73'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <source network=3D'network'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <model type=3D'virtio'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'pci' domain=3D'0x0000' bus=3D'0x=
-00' slot=3D'0x05' function=3D'0x0'/>
-=C2=A0=C2=A0=C2=A0 </interface>
-=C2=A0=C2=A0=C2=A0 <channel type=3D'unix'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <source mode=3D'bind' path=3D'/var/lib/libvirt/qe=
-mu/f16x86_64.agent'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <target type=3D'virtio' name=3D'org.qemu.guest_ag=
-ent.0'/>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <address type=3D'virtio-serial' controller=3D'0' =
-bus=3D'0' port=3D'1'/>
-=C2=A0=C2=A0=C2=A0 </channel>
-=C2=A0=C2=A0=C2=A0 <input type=3D'mouse' bus=3D'ps2'/>
-=C2=A0=C2=A0=C2=A0 <input type=3D'keyboard' bus=3D'ps2'/>
-=C2=A0=C2=A0=C2=A0 <audio id=3D'1' type=3D'none'/>
-=C2=A0=C2=A0=C2=A0 <video>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <model type=3D'none'/>
-=C2=A0=C2=A0=C2=A0 </video>
-=C2=A0=C2=A0 =C2=A0 =C2=A0=C2=A0 <memballoon model=3D'virtio'>
-=C2=A0=C2=A0 =C2=A0=C2=A0 <stats period=3D'10'/>
-=C2=A0=C2=A0=C2=A0 </memballoon>
-</domain>
+sorry all, I won't make it again today for our regular call. If there
+are topics, please drop a note if someone would still like to hold the call.
 
-=C2=A0 =C2=A0 Test method: Run `stress -c 8 -d 8 -i 8 --vm 10` on the host.=
- Inside the Win10 guest, run `stressmypc`. Also execute `latency -P99 -p100=
- -t0 -c1 -h` on the host.
+I will also have troubles to arrange the call in two weeks due to
+traveling far East. But there is an in-person meetup in preparation if
+you happen to be in Beijing on the 28th - details will follow.
 
-=C2=A0=C2=A0 =C2=A0 Expected result:
-=C2=A0=C2=A0=C2=A0 The whole system and the virtual machine operate normall=
-y without issues after 24h.
-=C2=A0=C2=A0 =C2=A0
-=C2=A0=C2=A0 =C2=A0
-Best regards
-liuyang
+Jan
 
-> From: "Florian Bezdeka"<florian.bezdeka@siemens.com>
-> Date:=C2=A0 Tue, Oct 13, 2026, 22:29
-> Subject:=C2=A0 Re: [PATCH] KVM: SVM: Fix physical interrupt handling duri=
-ng vmentry/vexit
-> To: "Jan Kiszka"<jan.kiszka@siemens.com>, "=E5=88=98=E6=9D=A8"<liuyang@si=
-nsegye.com.cn>, "Philippe Gerum"<rpm@xenomai.org>
-> Cc: <xenomai@lists.linux.dev>, <songjianwei@sinsegye.com.cn>
-> Hi all,
->=C2=A0
-> how do we proceed with this patch? As already expressed, the patch
-> itself looks good to me, I'm just a bit unsure if that is all that needs
-> to be done to properly support SVM.
->=C2=A0
-> @Philippe: Any comments on that from your side?
->=C2=A0
-> That brings me back to the questions regarding testing.
->=C2=A0
-> @liuyang:
->=C2=A0
-> - Did you run more stress tests in the meantime?
-> - Do you plan to bring in a proper test case for SVM? Maybe something
-> =C2=A0 as suggested by Jan based on qemu/kvm?
->=C2=A0
-> Once merged without improving the test situation first, the "test
-> improvement" will most likely never happen.
->=C2=A0
-> Best regards,
-> Florian
->=C2=A0
->=C2=A0
-> On Wed, 2026-09-23 at 08:03 +0200, Jan Kiszka wrote:
-> > On 23.09.26 07:52, =E5=88=98=E6=9D=A8 wrote:
-> > > Hi Florian, Jan,
-> > >=C2=A0
-> > > Thank you for your feedback and for reviewing the patch. I would like=
- to clarify my test setup, as I may have given a wrong impression earlier.
-> > >=C2=A0
-> > > Regarding stress testing: I did not run any stress or IO workload on =
-either the host or the guest. The issue reproduces simply by booting the sy=
-stem=C2=A0
-> > > and starting a virtual machine. About one minute after the VM starts,=
- the whole system hangs. After applying the patch, everything works normall=
-y.=C2=A0
-> > > I tested this on AMD Ryzen 7 8845HS and AMD Ryzen 7 7700.
-> > >=C2=A0
-> > > More importantly, we have been using linux-dovetail + AMD KVM on a 5.=
-15 kernel with Xenomai 3.2.3 for a long time without any such problem.=C2=
-=A0
-> > > The hang only appeared after we upgraded to the 6.12 kernel.
-> > >=C2=A0
-> >=C2=A0
-> > And that is exactly why we need test cases so that it does not take you
-> > to update to 7.4 one day and find the next regression only late.
-> > Anything which runs as part of CI can catch things already when we are
-> > porting to the next kernel version.
-> >=C2=A0
-> > Jan
-> >=C2=A0
-> > > Best regards,
-> > > liuyang
-> > >=C2=A0
-> > > > From: "Jan Kiszka"<jan.kiszka@siemens.com>
-> > > > Date:=C2=A0 Wed, Sep 23, 2026, 13:34
-> > > > Subject:=C2=A0 Re: [PATCH] KVM: SVM: Fix physical interrupt handlin=
-g during vmentry/vexit
-> > > > To: "=E5=88=98=E6=9D=A8"<liuyang@sinsegye.com.cn>, "Florian Bezdeka=
-"<florian.bezdeka@siemens.com>
-> > > > Cc: <xenomai@lists.linux.dev>, <songjianwei@sinsegye.com.cn>, "Phil=
-ippe Gerum"<rpm@xenomai.org>
-> > > > On 23.09.26 04:08, =E5=88=98=E6=9D=A8 wrote:
-> > > > > Thank you for your reply. My test setup is as follows:=C2=A0
-> > > > > We use KVM+QEMU on an AMD platform, with CPU passthrough and AMD =
-integrated GPU passthrough.=C2=A0
-> > > > > The codebase is linux-dovetail 6.12.90 + Xenomai 3.3.2. The issue=
- I encountered was=C2=A0that=C2=A0about one minute
-> > > > > =C2=A0after the virtual machine started, the entire system would =
-hang. After I tried applying the above patch,=C2=A0
-> > > > > everything=C2=A0is running normally now. I'm not sure if there ar=
-e other places that also need to be modified.
-> > > > > =C2=A0I have tested on both AMD Ryzen 7 8845HS and AMD Ryzen 7 77=
-00.
-> > > > > You can use an AMD platform and start any virtual machine on the =
-latest linux-dovetail kernel.
-> > > > > =C2=A0
-> > > > =C2=A0
-> > > > ...or fully emulate SVM in QEMU - much slower but possibly also exp=
-osing
-> > > > remaining races (if any) differently.
-> > > > =C2=A0
-> > > > In any case and I as already pointed out the last time KVM came up:=
- We
-> > > > need KVM workload aside RT in our regular test pipeline. Could be
-> > > > combined with switchtest or at least become part of the background =
-load
-> > > > that we run during latency tests. And if that requires having a phy=
-sical
-> > > > AMD machine in test rack, then we need to add one. But maybe QEMU i=
-s
-> > > > sufficient for that as well.
-> > > > =C2=A0
-> > > > > Thanks.
-> > > > > > From: "Florian Bezdeka"<florian.bezdeka@siemens.com>
-> > > > > > Date:=C2=A0 Tue, Sep 22, 2026, 21:15
-> > > > > > Subject:=C2=A0 Re: [PATCH] KVM: SVM: Fix physical interrupt han=
-dling during vmentry/vexit
-> > > > > > To: "liuyang"<liuyang@sinsegye.com.cn>, <xenomai@lists.linux.de=
-v>
-> > > > > > Cc: <songjianwei@sinsegye.com.cn>, "Philippe Gerum"<rpm@xenomai=
-.org>
-> > > > > > Hi,
-> > > > > > =C2=A0
-> > > > > > first of all:=C2=A0
-> > > > > > Thanks for reporting that issue. Highly appreciated.=C2=A0
-> > > > > > Some comments below.
-> > > > > > =C2=A0
-> > > > > > [ Cc: +Philippe ]
-> > > > > > =C2=A0
-> > > > > > On Sun, 2026-09-20 at 11:22 +0800, liuyang wrote:
-> > > > > > > commit b2a37d35 ("KVM: SVM: Use raw_local_irq_{disable,enable=
-} in
-> > > > > > > svm_vcpu_enter_exit") replaced the explicit cli/sti around VM=
-RUN with
-> > > > > > > raw_local_irq_disable()/raw_local_irq_enable().
-> > > > > > =C2=A0
-> > > > > > The translation into the dovetail world:
-> > > > > > commit b2a37d35 removed updating the hardware interrupt state.
-> > > > > > =C2=A0
-> > > > > > The code below now touches both states, the hardware + virtual =
-IRQ mask.
-> > > > > > That is not an 1:1 replacement.
-> > > > > > =C2=A0
-> > > > > > > =C2=A0
-> > > > > > > As a result, the pipeline may still believe that physical int=
-errupts are enabled
-> > > > > > > while they are actually masked. If a physical interrupt is ta=
-ken during the
-> > > > > > > VMRUN/VMEXIT window, the out-of-band stage can observe an inc=
-onsistent
-> > > > > > > interrupt state, leading to a stuck vCPU.
-> > > > > > > =C2=A0
-> > > > > > > Restore the explicit sti/cli around VMRUN so that the Dovetai=
-l pipeline stays
-> > > > > > > consistent across the guest entry/exit path.
-> > > > > > > =C2=A0
-> > > > > > > Fixes: b2a37d35 ("KVM: SVM: Use local_irq_{disable,enable}_fu=
-ll in svm_vcpu_enter_exit")
-> > > > > > =C2=A0
-> > > > > > The Fixes part is not really correct. We never touched / suppor=
-ted the
-> > > > > > AMD / SVM part of KVM on dovetail.
-> > > > > > =C2=A0
-> > > > > > Looking at the Intel / VMX part (see commit=C2=A0
-> > > > > > f6885fab3c2b ("KVM: x86: dovetail: enable coexistence with out-=
-of-band
-> > > > > > scheduling") in 7.2-dovetail-rebase, I assume there is more wor=
-k to do.
-> > > > > > =C2=A0
-> > > > > > How did you test that? Did you (IO) stress the host as well as =
-the
-> > > > > > guest?
-> > > > > > =C2=A0
-> > > > > > Seems I have no AMD system at hand ATM, so unclear how I could =
-test
-> > > > > > that.
-> > > > > > =C2=A0
-> > > > > > =C2=A0
-> > > > > > > Signed-off-by: liuyang <liuyang@sinsegye.com.cn>
-> > > > > > > ---
-> > > > > > > =C2=A0arch/x86/kvm/svm/svm.c | 4 ++--
-> > > > > > > =C2=A01 file changed, 2 insertions(+), 2 deletions(-)
-> > > > > > > =C2=A0
-> > > > > > > diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-> > > > > > > index e02a38da5..0e19d42b7 100644
-> > > > > > > --- a/arch/x86/kvm/svm/svm.c
-> > > > > > > +++ b/arch/x86/kvm/svm/svm.c
-> > > > > > > @@ -4406,7 +4406,7 @@ static noinstr void svm_vcpu_enter_exit=
-(struct kvm_vcpu *vcpu, bool spec_ctrl_in
-> > > > > > > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 * IRQs are being enabled/d=
-isabled. =C2=A0Note! =C2=A0GIF=3D0 for the entirety of
-> > > > > > > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 * this path, so IRQs aren'=
-t actually unmasked while running host code.
-> > > > > > > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 */
-> > > > > > > - =C2=A0 =C2=A0 =C2=A0 =C2=A0raw_local_irq_enable();
-> > > > > > > + =C2=A0 =C2=A0 =C2=A0 =C2=A0local_irq_enable_full();
-> > > > > > > =C2=A0
-> > > > > > =C2=A0
-> > > > > > local_irq_enable_full() enables both, the hardware as well as t=
-he
-> > > > > > virtual IRQs. The virtual part of that should be fine, I'm unsu=
-re if we
-> > > > > > should (unconditionally) touch the hardware state.
-> > > > > > =C2=A0
-> > > > =C2=A0
-> > > > This should be fine, look at the comment of the original code above=
-.
-> > > > =C2=A0
-> > > > I vaguely recall that guest entry has another IRQ mask that protect=
-s the
-> > > > atomic section between the host switching certain bits to the guest
-> > > > state and the actual guest entry instruction that switches the rest=
-,
-> > > > sets the guests virtual IRQ mask, and restores that GIF to 1 so tha=
-t the
-> > > > host will receive IRQs targeting itself (via a guest exit).
-> > > > =C2=A0
-> > > > Jan
-> > > > =C2=A0
-> > > > > > > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0amd_clear_divider();
-> > > > > > > =C2=A0
-> > > > > > > @@ -4416,7 +4416,7 @@ static noinstr void svm_vcpu_enter_exit=
-(struct kvm_vcpu *vcpu, bool spec_ctrl_in
-> > > > > > > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0else
-> > > > > > > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0__svm_vcpu_run(svm, spec_ctrl_intercepted);
-> > > > > > > =C2=A0
-> > > > > > > - =C2=A0 =C2=A0 =C2=A0 =C2=A0raw_local_irq_disable();
-> > > > > > > + =C2=A0 =C2=A0 =C2=A0 =C2=A0local_irq_disable_full();
-> > > > > > > =C2=A0
-> > > > > > > =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0guest_state_exit_irqoff();
-> > > > > > > =C2=A0}
-> > > > > > > --=C2=A0
-> > > > > > > 2.34.1
-> > > > > > =C2=A0
-> > > > > > Best regards,
-> > > > > > Florian
-> > > > > > =C2=A0
-> > > > > > --=C2=A0
-> > > > > > Siemens AG, Foundational Technologies
-> > > > > > Linux Expert Center
-> > > > > > =C2=A0
-> > > > > =C2=A0
-> > > > =C2=A0
-> > > > =C2=A0
-> > > > --=C2=A0
-> > > > Siemens AG, Foundational Technologies
-> > > > Linux Expert Center
-> > > > =C2=A0
-> >=C2=A0
-> >=C2=A0
-> > --=C2=A0
-> > Siemens AG, Foundational Technologies
-> > Linux Expert Center
->=C2=A0
+-- 
+Siemens AG, Foundational Technologies
+Linux Expert Center
+
