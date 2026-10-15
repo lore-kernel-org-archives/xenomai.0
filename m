@@ -1,106 +1,124 @@
-Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 346A450B426
-	for <xenomai@lists.linux.dev>; Thu, 15 Oct 2026 10:19:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.200
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAD715172DB
+	for <xenomai@lists.linux.dev>; Thu, 15 Oct 2026 10:32:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.136.65.226
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792059599; cv=none; b=RbJabWTLWXUuLgglfZxCc3LBZ9+XXe/3QgfpObSQ5W+mY1KyTNDpvzg+UDTVmaz7kZ0T+v4qiJvGpKp4DuMa5gHkhAhU7NOlr8jCsWgvSZ3S5NsrZvgpmI4vFU9j2Zn5IZpY/taVH7+WfnGO80hBIxDnhPwYdF4fI0Q+Q6lsBSY=
+	t=1792060329; cv=none; b=EKPXkPL9hyrqjQdHIrFwb/c8cnXtibINNrr9L6aJgxuxXhNQvPb1L7THtFBNYU4/CEjbDKsaAYxaQfGq1/SRp9NoFf5uWfLDST4V37SQHROUWR/MOo/Y/z0nVuk1Isk73ACXd1v72M6K/X5Cxe7bt2W6M8OPgM2ZBDPfBO7frzA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792059599; c=relaxed/simple;
-	bh=ul0nUPuQZROn9dXisj7IddhY0c/uG01RZSiYGaoeKzI=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=QcZWYCCTt7S2fagbIMkfuQRQ1rKsDrdHYmBPp/MTLQhalWaR/9YNJO3u4Gtc8YNNGbkwe/VJiRc7QnVBMdUg5/BsUmA0fiL0smxSZBOz3kr0BCci+l401Psk/DZiDUFLs06Zz2TiCreu1TVxAG4svqRebghQiLgGDSRlr5uhxTo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=oVrgLAuv; arc=none smtp.client-ip=217.70.183.200
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	s=arc-20240116; t=1792060329; c=relaxed/simple;
+	bh=8IZCaV6EIc2M7XknCNS//oQGQRii10SPZGC8j+xb6kw=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=bUOvWcaz6nMnzQdAOv1pTJMp7HYLYAhYkg+Hl7uC0tsiEe9WmzU568Eumak0pv4WUP3AWgzfMjSe5QMh5zC3Enfa+MdP5yOzsC61nLwT0XP0HNKu4k0ll91Y0+PVavGfVmulEgIhmbdeVtFYq1j2k0smP5VceSG7TWWjYbuyZQo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com; dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b=kT2hSHMm; arc=none smtp.client-ip=185.136.65.226
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="oVrgLAuv"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 409C73E95C;
-	Thu, 15 Oct 2026 10:19:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1792059588;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=mgjPbUOAbadGIdvA/bhWgk66CydSGDLkIIO/ov8Kyrs=;
-	b=oVrgLAuvJqFb1welCsdNc8h5hDGxY67HYXWsKZo8ywCUHu4Ty4mEGmzMojn2q93j97BqEn
-	PeVP+GuE0Rw5C+GofcODDZvb+B9s2eGGr6DvkKkZyMoCp6Znp009htR/U63hMzp9jaWsN4
-	ZoPVR597WACcGxuJVBaJ0+pN5eck5Bzt0se+/+KTado8iKI1WT/mNWBmfEHTkgkrzgk4sF
-	4J6eLOOvMxHreu5fjmtSLypLunk/RIhKaEIOmqUxaRNxBTHFde47rvGl3hTibAMyKK33QL
-	M+fg56EvSFirBsbEbk1FLD5eDhXBDXuMnxDT3Q2LzwNM+vcGfozGSjusktg/eA==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: xenomai@lists.linux.dev,  Jan Kiszka <jan.kiszka@siemens.com>
+	dkim=pass (2048-bit key) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.b="kT2hSHMm"
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20261015103155e8b794167800020702
+        for <xenomai@lists.linux.dev>;
+        Thu, 15 Oct 2026 12:31:55 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=lWXegwgLpLp84Rk+aQYdKXv63dsQXsjaZw7dLDxw7Js=;
+ b=kT2hSHMmaqqMa0HqYPzZAihjCl7cMOQp7rn243mma6Gq90/rlYZatnEBueVOI2Kkn1nbUz
+ Phx1kF9aAVi9oecqjGdhnjLHzdYADEVXVgC3KH7oHBah9oHJ9M0DFQNhnEi13XfBH7elpBUb
+ +wz575sgmanfvG55udNQZF0M5QU/BIyKkwcGwpEttWsu6MhB6XnU+qikL+mHyMs2SX5RblKA
+ sm5Fa4/3ZxIExUavyxzo0UNSeRA3lVevaj2eB2WZVNE4E6bfFlJJ5BuHgyE6T/GqmmxtxxXn
+ bkcjb+kXRv76Cm+8xcCCVWS2sBOvz7SgL5U0/rPgddRHPZywEqKVoHXQ==;
+Message-ID: <697ef196b2868a3d1ea292b1a5c9064bef7d4e64.camel@siemens.com>
 Subject: Re: [PATCH Dovetail] arm: irq_pipeline: Fix IRQ state checking in
  do_page_fault()
-In-Reply-To: <20260929-wip-flo-7-2-arm-pipeline-fix-v1-1-300c70cfae7f@siemens.com>
-	(Florian Bezdeka's message of "Tue, 29 Sep 2026 22:55:09 +0200")
-References: <20260929-wip-flo-7-2-arm-pipeline-fix-v1-1-300c70cfae7f@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Thu, 15 Oct 2026 12:19:46 +0200
-Message-ID: <87tsmnl0zh.fsf@xenomai.org>
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: xenomai@lists.linux.dev, Jan Kiszka <jan.kiszka@siemens.com>
+Date: Thu, 15 Oct 2026 12:31:54 +0200
+In-Reply-To: <87tsmnl0zh.fsf@xenomai.org>
+References: 
+	<20260929-wip-flo-7-2-arm-pipeline-fix-v1-1-300c70cfae7f@siemens.com>
+	 <87tsmnl0zh.fsf@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Score: -100
-X-GND-Cause: dmFkZTEdVqHTI5J2LoZb8AIddOvRyuYGWIOHF5YvWMp+gfXW7gemIOLokgcqayWYgHRHCyZ1h7wDeZ5BAOlWkrtPRcJkzDYOVbPqjsh49MdQ+U5j1PFzdd6RrdLQc0PHSLeWmb+qbxgKjFI97oPcnB67z/xyKGFagNAW3/jYX4svrtCJEAXdnizFsXoWVkLmD6bJbHD2iyU1WJ5dSz6q1BGXW0zB65JEPAearJGit6aLDQ7+cRm9UsQAqP/Ba3+2XWxAgwWWa3XWjLNZSeDQs8lPMBJ3q3EpBIHOT15nWglIf6NJiZWzNlQb9F4s3Rsw6B9aTpvZnAhkT+WLJkboFle/I1YFb/lIdCtFoi50mh8m7QRJZFv8dtgasmfenQ/5Q6DzVJinhkAa2TWNBrnouVU9VW+JayVN4hA+1xONO5SjSnofan/xUiBvUiV0BHyBf/L7K3cKy2JLD5KyKkNazl8p/5o/aUTKGRS84Qmz99f09N/EOCtX//V4lZPEOyMdKmEvNZ11atJmLDJNYEQ3uJRGLuyxdvkAG7MWpmHd8ktVNE389H6EqakU+p8teYeMJazoliLTBXFlZD9n6/Oes6lgGcGAFkh/BwQZM4QW1K9ypfridH5RXkzT72M0lry2a5G/X6eNt1MGFUE7NacfyMU8+9zI0VpjsVxk+MvCwp4jAtRsTQ
-X-GND-State: clean
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+On Thu, 2026-10-15 at 12:19 +0200, Philippe Gerum wrote:
+> Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+>=20
+> > When correcting some fault handlers in the patch series referenced belo=
+w
+> > one call site was missed. That is corrected now.
+> >=20
+> > do_page_fault() migrates to the inband stage and enabled the inband IRQ=
+s
+> > depending on the hardware state. Instead, we have to check if the inban=
+d
+> > stage was stalled on kernel entry.
+> >=20
+> > Link: https://lore.kernel.org/xenomai/20260610-wip-flo-v7-1-arm-pipelin=
+ing-fixes-v2-6-62c9c477f8f2@siemens.com/
+> > Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> > ---
+> > Found while scanning the code for necessary 7.3-rc adjustments.
+> >=20
+> > To: xenomai@lists.linux.dev
+> > Cc: Philippe Gerum <rpm@xenomai.org>
+> > Cc: Jan Kiszka <jan.kiszka@siemens.com>
+> > ---
+> >  arch/arm/mm/fault.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >=20
+> > diff --git a/arch/arm/mm/fault.c b/arch/arm/mm/fault.c
+> > index 8f7feb1a228fc12c2d14389f865b13e23d11460d..91d0afe7985d55b424009cc=
+29d8f3343cfca90fd 100644
+> > --- a/arch/arm/mm/fault.c
+> > +++ b/arch/arm/mm/fault.c
+> > @@ -376,7 +376,7 @@ do_page_fault(unsigned long addr, unsigned int fsr,=
+ struct pt_regs *regs)
+> >  	irqflags =3D dovetail_fault_entry(ARM_TRAP_ACCESS, regs);
+> > =20
+> >  	/* Enable interrupts if they were enabled in the parent context. */
+> > -	if (interrupts_enabled(regs))
+> > +	if (!arch_kentry_test_stalled(regs))
+> >  		local_irq_enable();
+> > =20
+> >  	/*
+> >=20
+> > ---
+> > base-commit: 58e8e0f74c2b20f6228b7d327ec2e955ffd5b491
+> > change-id: 20260929-wip-flo-7-2-arm-pipeline-fix-939fc6370fb2
+> >=20
+> > Best regards,
+>=20
+> This patch [1] uncovered an issue with the series introducing
+> dovetail_fault_entry() and friends. Fixed by that patch [2] living in
+> next/evl-6.12.y-cip-evl for now, on top of a backport of the series
+> mentioned above. Tests look ok so far, I'll update all the affected
+> branches next.
+>=20
+> [1] https://lore.kernel.org/xenomai/20260929-wip-flo-7-2-arm-pipeline-fix=
+-v1-1-300c70cfae7f@siemens.com/T/#u
+> [2] https://gitlab.com/Xenomai/xenomai4/linux-evl/-/commit/020af735209333=
+b180993f03534baf078fcddfb9
 
-> When correcting some fault handlers in the patch series referenced below
-> one call site was missed. That is corrected now.
->
-> do_page_fault() migrates to the inband stage and enabled the inband IRQs
-> depending on the hardware state. Instead, we have to check if the inband
-> stage was stalled on kernel entry.
->
-> Link: https://lore.kernel.org/xenomai/20260610-wip-flo-v7-1-arm-pipelining-fixes-v2-6-62c9c477f8f2@siemens.com/
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
-> Found while scanning the code for necessary 7.3-rc adjustments.
->
-> To: xenomai@lists.linux.dev
-> Cc: Philippe Gerum <rpm@xenomai.org>
-> Cc: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  arch/arm/mm/fault.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/arch/arm/mm/fault.c b/arch/arm/mm/fault.c
-> index 8f7feb1a228fc12c2d14389f865b13e23d11460d..91d0afe7985d55b424009cc29d8f3343cfca90fd 100644
-> --- a/arch/arm/mm/fault.c
-> +++ b/arch/arm/mm/fault.c
-> @@ -376,7 +376,7 @@ do_page_fault(unsigned long addr, unsigned int fsr, struct pt_regs *regs)
->  	irqflags = dovetail_fault_entry(ARM_TRAP_ACCESS, regs);
->  
->  	/* Enable interrupts if they were enabled in the parent context. */
-> -	if (interrupts_enabled(regs))
-> +	if (!arch_kentry_test_stalled(regs))
->  		local_irq_enable();
->  
->  	/*
->
-> ---
-> base-commit: 58e8e0f74c2b20f6228b7d327ec2e955ffd5b491
-> change-id: 20260929-wip-flo-7-2-arm-pipeline-fix-939fc6370fb2
->
-> Best regards,
+Thanks for debugging this!
 
-This patch [1] uncovered an issue with the series introducing
-dovetail_fault_entry() and friends. Fixed by that patch [2] living in
-next/evl-6.12.y-cip-evl for now, on top of a backport of the series
-mentioned above. Tests look ok so far, I'll update all the affected
-branches next.
+I have to go an check why my testing did not reveal that.
 
-[1] https://lore.kernel.org/xenomai/20260929-wip-flo-7-2-arm-pipeline-fix-v1-1-300c70cfae7f@siemens.com/T/#u
-[2] https://gitlab.com/Xenomai/xenomai4/linux-evl/-/commit/020af735209333b180993f03534baf078fcddfb9
+I will combine [1], this patch and [2] in a new version of the patch
+series. I will publish that once I applied it on top of 7.3 - as soon as
+I have 7.3 available...
 
--- 
-Philippe.
+PS: I'm currently rebasing against latest 7.2 stable releases. Having
+fun with arm64 right now...
+
+Best regards,
+Florian
