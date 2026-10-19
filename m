@@ -1,110 +1,125 @@
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8845349B15
-	for <xenomai@lists.linux.dev>; Sun, 18 Oct 2026 08:45:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=217.70.183.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792313117; cv=none; b=RDzmt3dw+ut6sOv7dFqxMXR/uHfsMC37h36MpH7XNYHjIdBUnnZ9g22jJbfMsqAv+sjJJ8xbSZ8+skal8jd+ZeFQWcxm/Nq5O+drTPOj1FsM2e7z5Xk7rWz1XFfLdDy3ipjKNcgfnpL1rjaA1Pt+GW6Kf0zLNAG8lNulNSg35mk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792313117; c=relaxed/simple;
-	bh=WqGIIHyQcEZiA6zVUskjUiZAgOu7DaUsEJbvyhCZsAc=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=SHDOgysr/mDRxDbUjiq1rMlGqXVdG92/+xZJdNMnVi2A843tIdXIPMf3Jz96rd/jhm4wbNBCOU2XkEzV+XsVLWsMnwLnF1bu9mgA8OMhzxKd2HJJK0cy1DMEEFP/hDh69pPaOfHELHXiwdmh5vhFpiMAHZYwwRFVGoLk9jp/2XY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org; spf=pass smtp.mailfrom=xenomai.org; dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b=WrQeZkZj; arc=none smtp.client-ip=217.70.183.201
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEE414C4602
+	for <xenomai@lists.linux.dev>; Mon, 19 Oct 2026 14:41:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.215.180
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1792420866; cv=pass; b=UmCw8HSD9BWflNTGgflGsG4KsGYKtkzABhz+JT0s+mvlQ0hdoU/xZ/wc3rSA9zq+WmOMo/dUGSRj/ujnsSi0Wt2/KRC3Tc3KCQuBQPCREqgdJpTiRQRBb0m6H4egngD0f5rhPPfLEGX9LhOTRK5ktiz9iWKmRqecKT0avYHSOvQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1792420866; c=relaxed/simple;
+	bh=l+FFyDc+dP+ZSUTrcNh3vM0JVJxZ3XRjwV8j4NXdIXs=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=hagjsdz1Snql5Y6c+HzGwTX92KdbX6cnwFtwpxq2lem7iTLxLZCoOtEAh9asqg03q5FdHwsAdmq32QUaDtazKkJJ5JxG6e5sAl1V484B726kAQGH7+HG39fJZNOtnSU7oJbHgTkGnDxZ3HiL/7Tub+kkUIGXW23HwywXxR04HLA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lmi3d.com; spf=pass smtp.mailfrom=lmitechnologies.com; dkim=pass (1024-bit key) header.d=lmi3d.com header.i=@lmi3d.com header.b=nyy2hLr0; arc=pass smtp.client-ip=209.85.215.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lmi3d.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lmitechnologies.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=xenomai.org header.i=@xenomai.org header.b="WrQeZkZj"
-Received: by mail.gandi.net (Postfix) with ESMTPSA id A373E3EBAF;
-	Sun, 18 Oct 2026 08:45:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1792313107;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=nC5u/EoS8l6MDsTskyYk0ixuj/gymYEXxaNiknoyxEY=;
-	b=WrQeZkZjXQCS0d4ZJlDBR1+5vQAWXdmXbsP/v6MJUnYTKKckIaFAAhVGpEr2fRFZdoa/TU
-	O8tNg75/lSW+Qil1jteQ4USaxLjgcLJ8lGYBY1oxoNokGvoQs4fhPgkFSaMKigi+oHMWaY
-	hLPtgxg35WqA9i7y1wSkhlmN3c7aQ3t7Yu9KQauqKRQAV+UnT8XcxdHR0ckz07bqw9psLh
-	goTyMV3QuvbSmqRvhq4egV01aRTUHbzJtrDiNJwtuNFo5EeksFO4o+TrpPKy1e7e+Pak2p
-	dJa/FVtuw/BIQ0smU8QJLSrFtp83gSXBPcO9KiInWWyNMcihibE8tT9OCZiF2g==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>,  Gerte Hoogewerf
- <ghoogewerf@lmi3d.com>,  Andrew MacPherson <andrew@elk.audio>
-Subject: Re: [PATCH Dovetail 0/2] Obsolete marking tick IRQs with IRQF_TIMER
-In-Reply-To: <20260909-wip-flo-v7-2-irq-cleanup-v1-0-825a908785ae@siemens.com>
-	(Florian Bezdeka's message of "Wed, 09 Sep 2026 16:32:57 +0200")
-References: <20260909-wip-flo-v7-2-irq-cleanup-v1-0-825a908785ae@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Sun, 18 Oct 2026 10:45:05 +0200
-Message-ID: <87fqy3wg6m.fsf@xenomai.org>
+	dkim=pass (1024-bit key) header.d=lmi3d.com header.i=@lmi3d.com header.b="nyy2hLr0"
+Received: by mail-pg1-f180.google.com with SMTP id 41be03b00d2f7-cc758830601so1505129a12.2
+        for <xenomai@lists.linux.dev>; Mon, 19 Oct 2026 07:41:04 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1792420864; cv=none;
+        d=google.com; s=arc-20260327;
+        b=orvc4F2KTCvBEPZR4sRAd3gIHdUfwQ+zqNzusoABiplJz/HfuOk9UamHZAv4RWHLWo
+         svd/L599fI8idaa0rys9++y9/u1Zynm9FcTls7fde/waou+nC6mY0enq9VbtP6IMvpP5
+         awe3I7XgaTCMLMSgmYfF0FF9dW4KI6RmJQiKMDFpzzxTBOjm0kQ4Txe/XZ0qQjlN3f33
+         Q4e3AgifbgZCqwr1U91QtqGWJOKkYnAaobdeDA8WlkzyhlOazY56R/vXA9A40Mv2miLY
+         YvqAWezglLnOKmrU2nUk+7tb/NLjStWWsh79CIFkpaYnQzDqfGj7/rcySaVZ4ESIsQdC
+         X3CQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=l+FFyDc+dP+ZSUTrcNh3vM0JVJxZ3XRjwV8j4NXdIXs=;
+        fh=QKHGZcrTvPpEJFgnKAfh6GC1slc1hcuBCSC43Kq+Hvk=;
+        b=lk65fTRI01gTDalLmRUex0+xuypnbUbx4QUEIMO0xGUniX4xcQaIsMrBpfzVmOVFE3
+         IvX+cigcqCOJxdiaiE19bLRc9CfdaOtAH34RjHyTaje/KnhjvKj+KJF0W/GDetUC/+oP
+         xDtohdTg5F5uarR800gQlTmLX1LR9tZWog1O/R2qnN9dPwJeQnsg1P5EKQOBFWBQlBVU
+         HNsQ5hHx2oE8QPlukFC0KjrKqFUExvMJQYytQLtPZZthuvuD2IhRofHm8PwEgMg3fKk9
+         zorTPG8VUU5J9f8qsDzKpQ4VyyFKUJUdaZX5lqsVo1jB4jWlXP94EA2/BDNAWnRsbtb9
+         a0lQ==;
+        darn=lists.linux.dev
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=lmi3d.com; s=google; t=1792420864; x=1793025664; darn=lists.linux.dev;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
+         :date:message-id:reply-to:content-type;
+        bh=l+FFyDc+dP+ZSUTrcNh3vM0JVJxZ3XRjwV8j4NXdIXs=;
+        b=nyy2hLr02zwSoBubFubjRgx5AZyZRgOCS8bmCl67I4wKkTsKRmqbAt5uTXUU5af0Oq
+         tkgVg6VTe2zwSYEuTTY+zx/+1V1HMExrSM8QWJGIoDqeyZl7y/YLrPSTlyf2VmF88uaH
+         bWJIx03XdCHQd3ad00xRq/PF0mLLl5KodXEBA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1792420864; x=1793025664;
+        h=content-transfer-encoding:content-type:cc:to:subject:message-id
+         :date:from:in-reply-to:references:mime-version:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
+         :content-type;
+        bh=l+FFyDc+dP+ZSUTrcNh3vM0JVJxZ3XRjwV8j4NXdIXs=;
+        b=gRRZ9LIBiBHv6KgRC/tz2sIB5rYWIvmf+eeEyLvK3njczeTQHW2uDV58NgnRDb/mel
+         7U7KdI3My1dEWTLz4y65gTmy5qzJWr32xHW+A7bTJTZQYoiv2aaaOhfx+9473X8iZhov
+         dq38nhXINOjV2d5S4qbXaY5AfRN2mBcK/NFizYwl0WZpZfNwiP2v+lPe6AJgRa1tW7N4
+         XsXGVa1qYLOV/F+gQWJ6iMR/6FiDFuKVWR0cU/LTfKaJCyUvnybMT1ocYr0yNPFC3f2k
+         hQgqdN0cQmq9yXcY+5ZMuC1jTQpmJcMPwpnTRMuJMiKG0uCIExQ0zRmV7tvhPXRfBip0
+         tLeA==
+X-Forwarded-Encrypted: i=1; AKwUvBw64Tm1rpvyYpOpCwfcGuY/+o6tUSnzP+aWlB/hj++CUqOhFT9KZAg0WzcdSUo4lM/YyeanpcWP@lists.linux.dev
+X-Gm-Message-State: AFq9FYJ/LLz0KD7JfDUkOumR1TrEa8UfbiGx5GW2pxCeeDc+Y/CA+qD/
+	EmgpBzKz0dG+kejb6vWsfCWWfH2zS9Zd051xrbtwLpCcr94Hb82rSLaYYmoBlXoCcMr6vEpsezF
+	cBz+UWNLoVx9/xH2UVv2X/u/ZTgKotbXf2dWCX8i71nLbbNgSL60pLk3jIMiiPrw3Xh07WnuXEY
+	4pp+q/4eVg1xv4dUD9wZLdtKHTxJfV6pMxnm2hcUcMSlEYTPBCn+igbpPgv9EECuIacUFz0tMTC
+	pJHew90sG+Sz7eFB4k1A5rH6kceuOw=
+X-Gm-Gg: AYBFou3lKirqTxNnFNHfPa/V5UlME3fv2qCQlsrMp3baZ8qtLlEzl1bwNKJjQgdQYPh
+	BKeflBuXVYZNXQOQ9AMZIlkKTGlizJmcT+rzYeMkX3mk613teK8aDDQb6DVp4aXHLJSbXlR9MU2
+	FL4qpxBWjF1wye9SCvfC9iBooiYh/DaWk9YeKmmNw9B9Oiockfw6hjqaf09XoZg3eke6eBsxDJe
+	rePvVZU3oEscbd04Y5mgTcAuuO30Ghw+M9psIJPjsdjoDR6iJARQvCTTzr/oFcKmuSKcsrhrfbO
+	wLVHgBijmYFUDhVSsM7vZgouhmhurhUmoNoXh5q9i8peaiz/5ZTyGymZZOb4Ec85I0TmcexD4f7
+	rGDz5k+WzDi1Bf/3G09+2Jb7dXsXOG24iOiIr+WJx3gf0XVlcX5qq7Z8NF4Rq59bzqRpHQJ1Cy7
+	m+zIdwky7F6ltYVmSYIn8UOb7ghYg=
+X-Received: by 2002:a05:6a20:20c3:b0:3de:456a:6e07 with SMTP id
+ adf61e73a8af0-3e2263d37f6mr6372432637.46.1792420863966; Mon, 19 Oct 2026
+ 07:41:03 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Cause: dmFkZTE1z09YK58XC+QDrq2laVs9WMtonBAPGbePGUfHomb+/4JRRTvJNz4H9FxPshinKe8kbCOQjo2WZezNT1zIOvBiZbP9H33GeVlUHoHehrcpb6/LHe6S+5WqO26EYMpr3vJIFIAxdh/YjfXqjnaxGj0CJ66LSmFldXi3NlZmK0mY8wbzeT83h0E6ek8H03raaKZQiSJ8KBPJtohNbXzBvrg4zPz/O9kbC9v+LTT8Yfnq7mSh+Cb7emRzYuDfsnsE28iaacS0hK9/t4B+oh6sjPQG9qU8zlohuUJ38xOzp7/tWAPHMTdqnugQnIHerZVDn3TBUg41wNzraHMztUsTF6+0jjBGxvA6/N2/lGpkV908/7mdWPbihk0R2tM1l+vrTEnr47qV/VlqphOHC9nSmBlNzvoN1s+rMh0nERvQk3epeasycRUvDTHCgknxBoz9a42Sw7oWR/3Zq1ke34n4Ae2Hs156VHfX37D9i873e4MAvzABH8TlBZjnIDBehhB+9q7ZBlrybT2z4OwdkGvfJvpUXJkPDu5bYAtN7KZM65f+i3T5Gmvxus46rpU8mARjz4rbw9GCdXkKr+0XlBd0NBARUIwv4rLiNyEVovqls29R0BE2WjElPFurgVXZyhhpueLS4AK2/evv+o6XyyIR9Sz54f7zE5Oejc0NtCSnq2u/zw
-X-GND-State: clean
-X-GND-Score: -100
+References: <20260909-wip-flo-v7-2-irq-cleanup-v1-0-825a908785ae@siemens.com> <87fqy3wg6m.fsf@xenomai.org>
+In-Reply-To: <87fqy3wg6m.fsf@xenomai.org>
+From: Gerte Hoogewerf <ghoogewerf@lmi3d.com>
+Date: Mon, 19 Oct 2026 16:46:51 +0200
+X-Gm-Features: AclHuK-Pz0uamWTF-X1AmiyFKNJJdXw2ojf6_yqe6WpUlVNeo6AFFYqoZCvzH8E
+Message-ID: <CAKndYJES9912iO1fih3Ps55aj5T+udqGSQ-yD4EJG+XMMsH7jw@mail.gmail.com>
+Subject: Re: [PATCH Dovetail 0/2] Obsolete marking tick IRQs with IRQF_TIMER
+To: Philippe Gerum <rpm@xenomai.org>
+Cc: Florian Bezdeka <florian.bezdeka@siemens.com>, Xenomai <xenomai@lists.linux.dev>, 
+	Andrew MacPherson <andrew@elk.audio>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+Hi,
 
-> Hi all,
->
-> The following is the try to fix the problems reported by Gerte and Andrew.
-> We forgot to add the IRQF_TIMER to some of the arm/arm64 clocksource
-> drivers.
->
-> While the patch provided by Andrew [3] is correct, I tried to find a way
-> to get rid of this Dovetail specific IRQF_TIMER marking, as it could
-> easily be forgotten.
->
-> Review comments and intensive testing is highly appreciated.
-> Tests were done on qemu for arm, arm64 and x86.
->
-> If accepted / merged we should clean up the dovetail IRQF_TIMER markers
-> afterwards.
->
-> Best regards,
-> Florian
->
-> [1] https://lore.kernel.org/xenomai/CAKndYJF00RPbfD7U8YCAn_vzxDFdtwz5m9O=JVqhH5fdXHxY9w@mail.gmail.com/T/
-> [2] https://lore.kernel.org/xenomai/CACiVkw=Vs1KUgfZ=Mq-rXU=4gPFDtmuoNoMv=rzy_kvV7KgpKg@mail.gmail.com/
-> [3] https://lore.kernel.org/xenomai/20260907083708.2566-1-andrew@elk.audio/T/#u
->
-> To: Xenomai <xenomai@lists.linux.dev>
-> Cc: Philippe Gerum <rpm@xenomai.org>
-> Cc: Gerte Hoogewerf <ghoogewerf@lmi3d.com>
-> Cc: Andrew MacPherson <andrew@elk.audio>
->
-> Suggested-by: Philippe Gerum <rpm@xenomai.org>
-> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
-> ---
-> Florian Bezdeka (2):
->       genirq: irq_pipeline: Remove irq_is_oob()
->       irq_pipeline: Introduce IRQ_TICK to obsolete IRQF_TIMER on tick IRQs
->
->  include/linux/irq.h       | 11 +++++++++--
->  include/linux/irqdesc.h   |  5 -----
->  kernel/irq/debug.h        |  1 +
->  kernel/irq/manage.c       | 11 +++++++++++
->  kernel/irq/pipeline.c     |  3 ++-
->  kernel/irq/settings.h     | 17 +++++++++++++++++
->  kernel/time/clockevents.c |  3 +++
->  kernel/time/tick-common.c |  5 +++++
->  8 files changed, 48 insertions(+), 8 deletions(-)
-> ---
-> base-commit: 58e8e0f74c2b20f6228b7d327ec2e955ffd5b491
-> change-id: 20260907-wip-flo-v7-2-irq-cleanup-65fb73c34f9c
->
-> Best regards,
+On Sun, Oct 18, 2026 at 10:45=E2=80=AFAM Philippe Gerum <rpm@xenomai.org> w=
+rote:
+> Series merged with backports to v6.12.y-cip, v6.18.y, thanks.
 
-Series merged with backports to v6.12.y-cip, v6.18.y, thanks.
+I tested 6.18 (5dcafd54) on our end: ZynqMP and Zynq7k. Thanks for the
+backports.
 
--- 
-Philippe.
+Cheers,
+
+--=20
+
+
+This
+email and any attachment(s) it may contain is confidential and is=20
+intended
+solely for the use of the individual(s) to whom it is addressed.=20
+If you are not
+the intended recipient of this email, you must not take=20
+action based on the
+contents, nor distribute, nor expose any part of the=20
+content(s) to entities or
+person(s) beyond the original distribution list.=20
+Please contact the sender and
+delete the email if you have received it in=20
+error. Thank you.
