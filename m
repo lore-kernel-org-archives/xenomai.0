@@ -1,125 +1,96 @@
-Received: from mail-pg1-f180.google.com (mail-pg1-f180.google.com [209.85.215.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.183.193
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1792422102;
+	b=aFzUAurkgIsw9hm6jQrAcPbf2xBLHueigHYceEqchYVfzrwabf54LC5hVjt7lxT59Ma3
+	 3RX3/n0zxeWr3bwlPKlYL3toRFJGVltKqPUY6TQTdAAhwDkNyv7cbiYoeiIaJCMwU6aG6
+	 YN0/eMZI5Ea4rjgXEIUqW/4JnNLqzPN+uzkIKkfjWAJOFSiaN/Nq27GjtTH4YQ1iZl+7z
+	 f2mWIynKyK7uhCn/N1lRRsR5QqqbViY+1xkdjaS7kct3DS2eGZqXxITt3AY1RIB7M1Jyv
+	 6oze5BYaa7lfFHv7sXgci8sNspC6gCCMhwixSkkH//Klsrc5fnLE1RRpVycwSpqTNYA==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1792422102;
+	h=DMARC-Filter:Received:DKIM-Signature:From:To:Cc:Subject:In-Reply-To:
+	 References:User-Agent:Date:Message-ID:MIME-Version:Content-Type:
+	 Content-Transfer-Encoding:X-GND-Sasl:X-GND-State:X-GND-Score:
+	 X-GND-Cause;
+	bh=9y91e3oHOAAeC6LBcWQmtFVa6alXJcUFL4ZazyIShKE=;
+	b=wZzq9WuvtlO3gQrDy9R8prwhfh3nMdAuut8iXjCcIYIoZX4O6RhuIatpzQqczb6fqu/B
+	 IyZAhIDnsudj+XNMSMuu49phejRgPcuR7fmt8D6KDIOvAyivhgXDmmG0uLCm/KTHK604K
+	 hB0Ybm2/f8T82GhJmW2jRWeD5qiEy+42k5lB+cJXaEHmF7aS+QJhHEBp7OMIz/4tv2ain
+	 EeN7Yh9Bo08tc8B9b5FlVMNL0U98UBM75eoKXaVcNXERWFIfDo2a4gN6t77VXV8FJzY4L
+	 /bu7KBf2l9vHJCq1OpZpYKm/WEBsa3/9Q7jblJvYLFxK1nW6c9Ovf7wRZn9Tn+kAKRg==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
+	dmarc=none header.from=xenomai.org;
+	spf=pass smtp.mailfrom=xenomai.org;
+	dkim=pass header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=LMQkfsHQ;
+	arc=none smtp.remote-ip=217.70.183.193
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CEE414C4602
-	for <xenomai@lists.linux.dev>; Mon, 19 Oct 2026 14:41:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.215.180
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1792420866; cv=pass; b=UmCw8HSD9BWflNTGgflGsG4KsGYKtkzABhz+JT0s+mvlQ0hdoU/xZ/wc3rSA9zq+WmOMo/dUGSRj/ujnsSi0Wt2/KRC3Tc3KCQuBQPCREqgdJpTiRQRBb0m6H4egngD0f5rhPPfLEGX9LhOTRK5ktiz9iWKmRqecKT0avYHSOvQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1792420866; c=relaxed/simple;
-	bh=l+FFyDc+dP+ZSUTrcNh3vM0JVJxZ3XRjwV8j4NXdIXs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=hagjsdz1Snql5Y6c+HzGwTX92KdbX6cnwFtwpxq2lem7iTLxLZCoOtEAh9asqg03q5FdHwsAdmq32QUaDtazKkJJ5JxG6e5sAl1V484B726kAQGH7+HG39fJZNOtnSU7oJbHgTkGnDxZ3HiL/7Tub+kkUIGXW23HwywXxR04HLA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lmi3d.com; spf=pass smtp.mailfrom=lmitechnologies.com; dkim=pass (1024-bit key) header.d=lmi3d.com header.i=@lmi3d.com header.b=nyy2hLr0; arc=pass smtp.client-ip=209.85.215.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lmi3d.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lmitechnologies.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C696C607AF22
+	for <xenomai@lists.linux.dev>; Mon, 19 Oct 2026 15:01:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C696C607AF22
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lmi3d.com header.i=@lmi3d.com header.b="nyy2hLr0"
-Received: by mail-pg1-f180.google.com with SMTP id 41be03b00d2f7-cc758830601so1505129a12.2
-        for <xenomai@lists.linux.dev>; Mon, 19 Oct 2026 07:41:04 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1792420864; cv=none;
-        d=google.com; s=arc-20260327;
-        b=orvc4F2KTCvBEPZR4sRAd3gIHdUfwQ+zqNzusoABiplJz/HfuOk9UamHZAv4RWHLWo
-         svd/L599fI8idaa0rys9++y9/u1Zynm9FcTls7fde/waou+nC6mY0enq9VbtP6IMvpP5
-         awe3I7XgaTCMLMSgmYfF0FF9dW4KI6RmJQiKMDFpzzxTBOjm0kQ4Txe/XZ0qQjlN3f33
-         Q4e3AgifbgZCqwr1U91QtqGWJOKkYnAaobdeDA8WlkzyhlOazY56R/vXA9A40Mv2miLY
-         YvqAWezglLnOKmrU2nUk+7tb/NLjStWWsh79CIFkpaYnQzDqfGj7/rcySaVZ4ESIsQdC
-         X3CQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20260327;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=l+FFyDc+dP+ZSUTrcNh3vM0JVJxZ3XRjwV8j4NXdIXs=;
-        fh=QKHGZcrTvPpEJFgnKAfh6GC1slc1hcuBCSC43Kq+Hvk=;
-        b=lk65fTRI01gTDalLmRUex0+xuypnbUbx4QUEIMO0xGUniX4xcQaIsMrBpfzVmOVFE3
-         IvX+cigcqCOJxdiaiE19bLRc9CfdaOtAH34RjHyTaje/KnhjvKj+KJF0W/GDetUC/+oP
-         xDtohdTg5F5uarR800gQlTmLX1LR9tZWog1O/R2qnN9dPwJeQnsg1P5EKQOBFWBQlBVU
-         HNsQ5hHx2oE8QPlukFC0KjrKqFUExvMJQYytQLtPZZthuvuD2IhRofHm8PwEgMg3fKk9
-         zorTPG8VUU5J9f8qsDzKpQ4VyyFKUJUdaZX5lqsVo1jB4jWlXP94EA2/BDNAWnRsbtb9
-         a0lQ==;
-        darn=lists.linux.dev
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=lmi3d.com; s=google; t=1792420864; x=1793025664; darn=lists.linux.dev;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=l+FFyDc+dP+ZSUTrcNh3vM0JVJxZ3XRjwV8j4NXdIXs=;
-        b=nyy2hLr02zwSoBubFubjRgx5AZyZRgOCS8bmCl67I4wKkTsKRmqbAt5uTXUU5af0Oq
-         tkgVg6VTe2zwSYEuTTY+zx/+1V1HMExrSM8QWJGIoDqeyZl7y/YLrPSTlyf2VmF88uaH
-         bWJIx03XdCHQd3ad00xRq/PF0mLLl5KodXEBA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1792420864; x=1793025664;
-        h=content-transfer-encoding:content-type:cc:to:subject:message-id
-         :date:from:in-reply-to:references:mime-version:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=l+FFyDc+dP+ZSUTrcNh3vM0JVJxZ3XRjwV8j4NXdIXs=;
-        b=gRRZ9LIBiBHv6KgRC/tz2sIB5rYWIvmf+eeEyLvK3njczeTQHW2uDV58NgnRDb/mel
-         7U7KdI3My1dEWTLz4y65gTmy5qzJWr32xHW+A7bTJTZQYoiv2aaaOhfx+9473X8iZhov
-         dq38nhXINOjV2d5S4qbXaY5AfRN2mBcK/NFizYwl0WZpZfNwiP2v+lPe6AJgRa1tW7N4
-         XsXGVa1qYLOV/F+gQWJ6iMR/6FiDFuKVWR0cU/LTfKaJCyUvnybMT1ocYr0yNPFC3f2k
-         hQgqdN0cQmq9yXcY+5ZMuC1jTQpmJcMPwpnTRMuJMiKG0uCIExQ0zRmV7tvhPXRfBip0
-         tLeA==
-X-Forwarded-Encrypted: i=1; AKwUvBw64Tm1rpvyYpOpCwfcGuY/+o6tUSnzP+aWlB/hj++CUqOhFT9KZAg0WzcdSUo4lM/YyeanpcWP@lists.linux.dev
-X-Gm-Message-State: AFq9FYJ/LLz0KD7JfDUkOumR1TrEa8UfbiGx5GW2pxCeeDc+Y/CA+qD/
-	EmgpBzKz0dG+kejb6vWsfCWWfH2zS9Zd051xrbtwLpCcr94Hb82rSLaYYmoBlXoCcMr6vEpsezF
-	cBz+UWNLoVx9/xH2UVv2X/u/ZTgKotbXf2dWCX8i71nLbbNgSL60pLk3jIMiiPrw3Xh07WnuXEY
-	4pp+q/4eVg1xv4dUD9wZLdtKHTxJfV6pMxnm2hcUcMSlEYTPBCn+igbpPgv9EECuIacUFz0tMTC
-	pJHew90sG+Sz7eFB4k1A5rH6kceuOw=
-X-Gm-Gg: AYBFou3lKirqTxNnFNHfPa/V5UlME3fv2qCQlsrMp3baZ8qtLlEzl1bwNKJjQgdQYPh
-	BKeflBuXVYZNXQOQ9AMZIlkKTGlizJmcT+rzYeMkX3mk613teK8aDDQb6DVp4aXHLJSbXlR9MU2
-	FL4qpxBWjF1wye9SCvfC9iBooiYh/DaWk9YeKmmNw9B9Oiockfw6hjqaf09XoZg3eke6eBsxDJe
-	rePvVZU3oEscbd04Y5mgTcAuuO30Ghw+M9psIJPjsdjoDR6iJARQvCTTzr/oFcKmuSKcsrhrfbO
-	wLVHgBijmYFUDhVSsM7vZgouhmhurhUmoNoXh5q9i8peaiz/5ZTyGymZZOb4Ec85I0TmcexD4f7
-	rGDz5k+WzDi1Bf/3G09+2Jb7dXsXOG24iOiIr+WJx3gf0XVlcX5qq7Z8NF4Rq59bzqRpHQJ1Cy7
-	m+zIdwky7F6ltYVmSYIn8UOb7ghYg=
-X-Received: by 2002:a05:6a20:20c3:b0:3de:456a:6e07 with SMTP id
- adf61e73a8af0-3e2263d37f6mr6372432637.46.1792420863966; Mon, 19 Oct 2026
- 07:41:03 -0700 (PDT)
-Precedence: bulk
+	dkim=pass (2048-bit key, unprotected) header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=LMQkfsHQ
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 01A4D3F086;
+	Mon, 19 Oct 2026 15:01:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1792422093;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=9y91e3oHOAAeC6LBcWQmtFVa6alXJcUFL4ZazyIShKE=;
+	b=LMQkfsHQ4UKdJkKHALpslX6pSNa5XFTz287SqukrxzzvTxzlHl5jouO1Lme2rRyoYuDUt0
+	qQIR1B4xyGAMjSmMJ9QNyJAUq28f1/otJPGy/wVpcMYaVCXOapZMbTLKJT00XspPFBFENa
+	yFmZ5vc4IOFV06gG4UKtXGjYFLoLYd55bvHc+C3uUfFkYf0bTwAFL1Tp4VsJfbIDe3Ny2/
+	uJhiybSh+OU6D4YtW7xPIb1Rn3I7WjoTyXFkt2cdM+WV/Ar66i+iH7c/j+FYND4DngKyah
+	fJ5YxupI3aiiL3/LlCdPFZYcdSXkj5TZhaDHoj8+BgROoko7ByhV9Y0VIOTEvA==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Gerte Hoogewerf <ghoogewerf@lmi3d.com>
+Cc: Florian Bezdeka <florian.bezdeka@siemens.com>,  Xenomai
+ <xenomai@lists.linux.dev>,  Andrew MacPherson <andrew@elk.audio>
+Subject: Re: [PATCH Dovetail 0/2] Obsolete marking tick IRQs with IRQF_TIMER
+In-Reply-To: <CAKndYJES9912iO1fih3Ps55aj5T+udqGSQ-yD4EJG+XMMsH7jw@mail.gmail.com>
+	(Gerte Hoogewerf's message of "Mon, 19 Oct 2026 16:46:51 +0200")
+References: <20260909-wip-flo-v7-2-irq-cleanup-v1-0-825a908785ae@siemens.com>
+	<87fqy3wg6m.fsf@xenomai.org>
+	<CAKndYJES9912iO1fih3Ps55aj5T+udqGSQ-yD4EJG+XMMsH7jw@mail.gmail.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Mon, 19 Oct 2026 17:01:31 +0200
+Message-ID: <87ld7t3fas.fsf@xenomai.org>
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
+List-Post: <mailto:xenomai@lists.linux.dev>
+List-Help: <mailto:xenomai+help@lists.linux.dev>
 List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
+List-Owner: <mailto:xenomai+owner@lists.linux.dev>
+Precedence: list
 MIME-Version: 1.0
-References: <20260909-wip-flo-v7-2-irq-cleanup-v1-0-825a908785ae@siemens.com> <87fqy3wg6m.fsf@xenomai.org>
-In-Reply-To: <87fqy3wg6m.fsf@xenomai.org>
-From: Gerte Hoogewerf <ghoogewerf@lmi3d.com>
-Date: Mon, 19 Oct 2026 16:46:51 +0200
-X-Gm-Features: AclHuK-Pz0uamWTF-X1AmiyFKNJJdXw2ojf6_yqe6WpUlVNeo6AFFYqoZCvzH8E
-Message-ID: <CAKndYJES9912iO1fih3Ps55aj5T+udqGSQ-yD4EJG+XMMsH7jw@mail.gmail.com>
-Subject: Re: [PATCH Dovetail 0/2] Obsolete marking tick IRQs with IRQF_TIMER
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Florian Bezdeka <florian.bezdeka@siemens.com>, Xenomai <xenomai@lists.linux.dev>, 
-	Andrew MacPherson <andrew@elk.audio>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
+X-GND-Sasl: rpm@xenomai.org
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: dmFkZTF1M8rKmQR5R0pPvsuYbhJ1pT2GO/6OaR6/mTOlypRkrWT5nAEeaj1/ptr7MsxvMEH1KvHwXeKU0Z/8hu5ovfsKUp1VYOVxajm3xzhGlzX7T+8jKnASYpB23hvKaewLa0NflfqKGw5glmOMHMh3BCtlfCGuQxOlYJcGPmd7AXaF42bWzwy52J8z/0ADILXfFty635ab2QsU/TKtuuEfjANxz+6CjfRlEhbK3v30vsJqndDd9IaYd+BIAxQxUx4vhzPvzMHO3Tyq1KGGg0bfwSrt6Af4j4iPSDtsGgqEVqBsrOt35+LXp8MMN3w+bjGE3pIhlqdWep3fZgY7gZkJDQMgI1yARfarhS51lbCWiJo36gti6/o7fK/dqNc+GXsnNmHKVvi02DQsTiQd1ArhqWWmOjOREO9rJY4+hv/4bexg79OkgVal1guBXDK3+cGBt8nAPwgcIe5V0iRP/URnaJ6jM/jBMvOsbwip31eL2qda5914pCcriHvF9Mik0nEcf4Ps2rODiYt+602QqW9w18EG0N+f14zeNRQJIBQR8ngX6xahc0v2LNoSewlk7KGK/4dR35rL1y2hlpS/yaRxTSM2YUAWFL59zNi0sIRzkr2BQFFWSikoPJKw1P1C3EZo+ZhFbufOUwFZf6ZisHTKK9Gqd0zHm7qVfV09R9Wu/MphwQ
 
-Hi,
+Gerte Hoogewerf <ghoogewerf@lmi3d.com> writes:
 
-On Sun, Oct 18, 2026 at 10:45=E2=80=AFAM Philippe Gerum <rpm@xenomai.org> w=
-rote:
-> Series merged with backports to v6.12.y-cip, v6.18.y, thanks.
+> Hi,
+>
+> On Sun, Oct 18, 2026 at 10:45=E2=80=AFAM Philippe Gerum <rpm@xenomai.org>=
+ wrote:
+>> Series merged with backports to v6.12.y-cip, v6.18.y, thanks.
+>
+> I tested 6.18 (5dcafd54) on our end: ZynqMP and Zynq7k. Thanks for the
+> backports.
+>
+> Cheers,
 
-I tested 6.18 (5dcafd54) on our end: ZynqMP and Zynq7k. Thanks for the
-backports.
-
-Cheers,
+Ack. Thanks for the feedback.
 
 --=20
-
-
-This
-email and any attachment(s) it may contain is confidential and is=20
-intended
-solely for the use of the individual(s) to whom it is addressed.=20
-If you are not
-the intended recipient of this email, you must not take=20
-action based on the
-contents, nor distribute, nor expose any part of the=20
-content(s) to entities or
-person(s) beyond the original distribution list.=20
-Please contact the sender and
-delete the email if you have received it in=20
-error. Thank you.
+Philippe.
