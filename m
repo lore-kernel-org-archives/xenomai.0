@@ -1,136 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.66.10
-ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1793903489;
-	b=pyb4dRJ/LUXjVFyouSEOHOSgoKzGM65TQSbvVerX2O+OoAGVvcLBNSZn2lWTNYCQbFsI
-	 3fCucDTirA/jDOlE3iyNC7WMWX+ib+ReAO+49iFUXuVDJlO5bmDD89YagZOxFdetybpMJ
-	 xCpN4J8Xkq5Ky9lfn6AwzsHeLZZk5g/DkzZWwRW2fq3kXCkey00DGT0OKamPhfXDeOtS2
-	 PrzEjz7zq3+MoWkoifKyJTpveCEJQL0LHyfxQOLq12YjapW5SBZo7ErYUHugUZylVVEn7
-	 dAuOpHtoxJDsclUYWEUVlxqArgkf8Etppuy7mYnCwEnUOKBBY8TmX0zn2T38tdN4ZOg==
-ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1793903489;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:References:From:Content-Language:Autocrypt:
-	 In-Reply-To:Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:
-	 MIME-Version:X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:
-	 X-MS-Exchange-AtpMessageProperties:X-MS-Exchange-SenderADCheck:
-	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
-	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
-	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
-	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
-	 X-MS-Exchange-CrossTenant-Network-Message-Id:
-	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
-	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
-	 X-MS-Exchange-CrossTenant-FromEntityHeader:
-	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
-	 X-MS-Exchange-CrossTenant-UserPrincipalName:
-	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=HC32DjMB4yXT4jbipzvLoSBJo76q/Z2g07WlTpHdCoY=;
-	b=u+BkLFM6SnT01lxdLFUXZ19kWKqBEPHsearU9j/Le1xnM8OOLethkfborKgL9REGpyRl
-	 iZrhFo7pGLE+tkFkMMYe6ugiymCbUoueEyEtXGYfeVe7ndt0mLw3GSbt/V4k814flm1NE
-	 lbpkpYEzY5NmSW7JO6SWGqd3yWzjtl9ixJEJj6E3nyAs8rjPxGoVewiDvpnDwysvmx/jR
-	 kuCbc6oIP49ZudyWlkit/+c40luzw2QM375EYN/1mD9EpFiBiy0Ai5Yl85AJyceDqb7c2
-	 430KhSveeGWIWRO6A+3kvRtCvATViWLQPL9fhX6RSyG+U/ubyuPduklIiwSiMiSZbww==
-ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.136.64.225
+ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
+	t=1793908837;
+	b=cdrY0vk+HJ/fQX6OTUPKcOBtr8Na6p2u0MdXVRu3xUTWNSLEETadbEbFBxCNYNf4yfpj
+	 blypn8t052Vh+mB/T9KvlP4KJWh10PisZsT9R2DaVnO3/ou4pewxgMXs5WW/2crZTwj/2
+	 VHqnIBtJkuBF8P5EWq2g6JXQTCNfWddg/FLFqYeICmJWaaQD9+2b8uIlGl0F5YdIHn8LO
+	 UUftTwTXtCHi5XjgSdP5mh+VDFbampKSShoKPqu1u6BAaJAeL/XFstMO215EG7dtJqskn
+	 VdI/Y+n3sXezD1slzxJtjPGPYbJDQ8JNka4pYvCRLQnrufBbVmunlXYDHuuwdbZghlw==
+ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1793908837;
+	h=DMARC-Filter:Received:DKIM-Signature:Message-ID:Subject:From:To:Cc:
+	 Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
+	 MIME-Version:X-Flowmailer-Platform:Feedback-ID;
+	bh=PCTVdDAQ4qVVImTr8yebRb1ZE/UXX1bIfCmD9fS3IEg=;
+	b=K/E/eiAsEXoIr1TtxaSuW3LNzKZ7bvqbyh/lTRJtmbgHAjiHKG2Zgv3blAfkt4PLKBFr
+	 U29LfydeE9SEQMG0+lN19ZiZGQGO5vtRS4kQ9iWZB1PXMiNHR61L41B9a4gfH14CUdhZx
+	 wI2ry5jEOo7vE7oPakR1liL2OK6u+O4u2v1BI887kpcU5bNe36Y4VpZHzQSCGIXYKQmTz
+	 yAx/Vy27ZxhDewuo/T+AhXNi+I5klwaLZNJ3+OzYwmJfvW0DnuIPRbQ8UQbpfRFWAVQiu
+	 1h1anrU3NVNyNfFES5YdSkeQ5klkdg/gp84AXVLeYLCN+ybhCMVG0PcefqZ+9k22wlA==
+ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=siemens.com;
-	spf=pass smtp.mailfrom=siemens.com;
-	dkim=pass header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=utFu0L1Q;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.66.10
-Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11012010.outbound.protection.outlook.com [52.101.66.10])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
+	spf=pass smtp.mailfrom=rts-flowmailer.siemens.com;
+	dkim=pass header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm2 header.b=gmZDw+0I;
+	arc=none smtp.remote-ip=185.136.64.225
+Received: from mta-64-225.siemens.flowmailer.net (mta-64-225.siemens.flowmailer.net [185.136.64.225])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3197B606A31B
-	for <xenomai@lists.linux.dev>; Thu,  5 Nov 2026 18:31:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3197B606A31B
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30113606A32F
+	for <xenomai@lists.linux.dev>; Thu,  5 Nov 2026 20:00:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 30113606A32F
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=utFu0L1Q
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=QzdXAr0dspbWY5StZHi6LqjlOh7hlOUAtDcQ30yBWC4GicK3ak86H+OewFHl8jN5kBSl7KEHIqqix6Y78YyrhQv6hzGT4/SmWUJt402QW1Mr0HgaTsUqDpmVeE/NLEBFysTPKz7FgxzsMk2DZfSzZ89iMg2smDBbc9d2MH3vxkHSg+eTDZrDQXqrAomO/eqQS2/r2vTeH1XqOB4qW/Sv68Lp68Q02HoEKtGrObvLfqsRnJ92GkzoR7U0a4kQS0in93RBA9eKox2Eu288qC8BfFdpUn4zKyRO4o6H5tT6OghP9u0Bwb1aaeB2BW2yxMtgA48OCNlE0Yz7sObGe6q2nA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HC32DjMB4yXT4jbipzvLoSBJo76q/Z2g07WlTpHdCoY=;
- b=MHH2qqNDqvUJNYxAcvkviqU9Tc+sMv9HMRJMV77j50IMxRK9N3TqawMSfT2W1Lw/1gyyBDsDu1Ke2Xrr9aTOts9RE+Q6oWuhk2vTFGwGojGvjasud0PomOnyMPFK69+qmMw7FNJLOpvyT0C9C5nXnPX5ROaoDNtRDbd1ncwraSw4gdiiMWqUmKKVeyM8TEQCyKl7vl1aSGXttQN4n7RQX8l0hvpyXNhxRd2BmPPl9Qahsav02QATKwKscSGL0HzF3yjqd1jDse+yrl5nRNyRMMiSuZJp1LA4SzQFdfHp005gxY/GWZQJRqQUX69gD7gV1eAtJsAJHHyjign2Xm3r5g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
- dkim=pass header.d=siemens.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HC32DjMB4yXT4jbipzvLoSBJo76q/Z2g07WlTpHdCoY=;
- b=utFu0L1Q561V2ubSZQS5J0wC3YT4hBDMqF4ePLCrqCJ2RtQ/hFdRzttHJlWrTrWqFcU6Iy7XLrvIWCW+6YEd7GI21Y4D1tNm/oRUp7vmo0I6dFZLT8K8DT5AWAXVfXEaAd+QE/UAPzeaRzMXbbkojS3FVSrim1zWmFyIdDZ9lLK2wNkFSx5kAsyOYKDxEtrxM76bnHyS9LbF3GoTn7CCL07JuFpY9JDgVWlxwoXaJETK/sb9Hn/OT0ilj6n4kP5tOfLcKps3IPkKC9GN+SkndYAAyh7kfLrSxjO3eWSYm9tbLschp6ookl7AjLP+pvVgqKm+F3SvaYDgadT4oTrnGA==
-Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:785::10) by VI0PR10MB9694.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:800:33a::16) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.4; Thu, 5 Nov 2026
- 18:31:24 +0000
-Received: from AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::fbce:789a:27cf:d1e]) by AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::fbce:789a:27cf:d1e%5]) with mapi id 15.21.0615.003; Thu, 5 Nov 2026
- 18:31:24 +0000
-Message-ID: <6d2dc7fb-83c4-4056-aacd-825a77868872@siemens.com>
-Date: Thu, 5 Nov 2026 19:31:21 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3] Fix missing time64 wrappers
-To: =?UTF-8?Q?Fran=C3=A7ois_Legal?= <francois.legal@eventlab.fr>,
- xenomai@lists.linux.dev, Florian Bezdeka <florian.bezdeka@siemens.com>
-References: <115efd-6ae0b780-3-36f80d40@211094435>
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Content-Language: en-US
-Autocrypt: addr=jan.kiszka@siemens.com; keydata=
- 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
-In-Reply-To: <115efd-6ae0b780-3-36f80d40@211094435>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR0P281CA0096.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:a9::9) To AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:785::10)
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm2 header.b=gmZDw+0I
+Received: by mta-64-225.siemens.flowmailer.net with ESMTPSA id 202611052000263d8df224e700020738
+        for <xenomai@lists.linux.dev>;
+        Thu, 05 Nov 2026 21:00:27 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm2;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=PCTVdDAQ4qVVImTr8yebRb1ZE/UXX1bIfCmD9fS3IEg=;
+ b=gmZDw+0IDzHCD5M5KHMW595oTI/B85WBQz3uSTqdXER/sfWkQVBSZJlXR2IcgJ3TwjcoH7
+ Y8e9+6g2PqEMRPZK7WuFTHnY/qqu72HlrKLUKk0966Hs8/7yzduxvWJET9fM9qNCUK59cRYf
+ BnECm4wVi7SgBTJjePDNyenASkEJU0s5C/iJ9kXP3iE3p65heXtbnd+VeEojoWibYnOmAtfL
+ Z2kGvOkvQKaUZ27/MyTqxHE+79pPCJAd1gWcgCBjLUtj2Q6rv6Qwhsvi1Yuibn/DQYj2WAlX
+ MCOCdhZqV8EbNdoVhjgJbdFTqt6thcaTIiWlS7zZn1EU4Qhn88lVTtbw==;
+Message-ID: <7636bed28170d3058f4d8db55fd6e4f997617332.camel@siemens.com>
+Subject: Re: BUG at system boot
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: =?ISO-8859-1?Q?Fran=E7ois?= Legal <francois.legal@eventlab.fr>, 
+	xenomai@lists.linux.dev
+Cc: rpm@xenomai.org, jan.kiszka@siemens.com
+Date: Thu, 05 Nov 2026 21:00:25 +0100
+In-Reply-To: <1207-6aeca000-53-3e404bc0@80379397>
+References: <1207-6aeca000-53-3e404bc0@80379397>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -140,148 +64,289 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AMCPR10MB992291:EE_|VI0PR10MB9694:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0c9b1c27-662e-4354-e523-08df3b6afef5
-X-MS-Exchange-AtpMessageProperties: SA
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|376014|366016|1800799024|11063799006|56012099006|261009223027099003|261021121427099003|261102123227099003|261026121527099003|261026140227099003|261022105027099003|261028144727099003|10067099003|18002099003|55112099003|22082099003|6133799003;
-X-Microsoft-Antispam-Message-Info:
-	od+ut+LIbxn2g3DrZ39T/i1HMguT3OGuS029aNsSFtzF3BWwvrZ3InDW0P0wSQLdFHpaR0cFtkq5gNIMCn9+kW23i5ZWBWCrnCtN64/wTEGKWjniv8vg8OGRrejhYtX6u+zl1t9hhPDSM02s3CVt5rG2SUs+1qxdluvFEdmowoKQCFbSjQYywHn0PTqb3CrXfbNo6dKUrQ7zt1Ps3vZYGou9wRD2FsT33qed0qkdtt/C0ePlEBMJEkS4m1pBmAIR8xOMg2i9MqhyMeqIs6cRCpv9ZjzwRKRJBZSEQaGSL2SzGjjBtLB+Ch+Gdm6iF9DplQbl9jlInr+yE+kcsk2lqoIS2hS8KtSRul1bBsm6HguUVFAxGepIt6sQkybyrYQnrn+paWdWwGUDSx1t7eJDSeeDq5+IoAVeDsKWTeNTsbOs5sQv4pZimsOxyPCSbTYQ/J5nQ4wtEP0O36AB0W6aJ7vHhcY7XjOiaTexoRMW+JYvWTuAaYw2Iu5CGhHDvKhI3injK624Mm/Z+jzGL5KFNnzwMQmxU/OLz6F1FDPgZuUNzciNdKEKKQ7ZmaD/Mit52NDbLwjf+WB15HXx+h2tqoMiA/62ZGEyQwA9Db+3E4vhM9cfDyKXCcCH+RFMVXCpxbFoOnSXpiuw2RxyfycHrLpCqN0bfkq6HCszA/FM9M4=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(376014)(366016)(1800799024)(11063799006)(56012099006)(261009223027099003)(261021121427099003)(261102123227099003)(261026121527099003)(261026140227099003)(261022105027099003)(261028144727099003)(10067099003)(18002099003)(55112099003)(22082099003)(6133799003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Wi9ETUFhcXYwSlcyYTlnL3FoNmFtM0Q1T1VTem8yRXI3RjJxL2JMWk53OVVv?=
- =?utf-8?B?b0V0bUdiUnB4TFRNVWxSeWhVR0RmL2xjTXpYODkreWo1bzJVSEZvMUd5aTNv?=
- =?utf-8?B?M0twR1dCbWpaSlJRbDZmOFNUQXNUTFN4amVYZjhoVDdsZUZmVHN1UTRPK2hs?=
- =?utf-8?B?bFdrRjB6UkFvODR3dStlMitvWkZhMGZJZllURTFLakpkNzBQM1gyYjNhMjN2?=
- =?utf-8?B?Y0lUcGRsL3NNQmdKUXl6TXpkRGFnMFZJcWE4L1l6bnRIMXQwUjdnYS8zM0I5?=
- =?utf-8?B?RlRSRXZEcDdudGlEa1pUUmtCNXN1TXNRbXowTUliejEwdkpuK2FDZmVzcFo0?=
- =?utf-8?B?Y3lxUWJHNWtxTkdXQS9IRzNLUVo0ZUVvZlE2dmgrSitDYnBVanpOd2tXNFJR?=
- =?utf-8?B?SDkzQ0l6dTNXYUZpK2RpSVJVWHAydjVYaGxiQyt0U3hCR1NxaXlhTUplYk5T?=
- =?utf-8?B?eVppN3ozT1hvUURlbXlyNnpNS2Q1dU5vYVFhSDJ3ajBSWjBvSVkrZ0RmdVJQ?=
- =?utf-8?B?TGFNR2pYdzVpUXN6TzUrenZoNDgvdHVyN3FnL1Iwc210WjZwMERVNEJ0Vmln?=
- =?utf-8?B?MmZ5TmhtM0pYN29iSnNpalhTTW5WaGUvd05hcmlXOG5ucG1PZitWNWs0UG1D?=
- =?utf-8?B?ZFFCdGJaOTE5Z09NaytZczRjV0lhUGVWNlVzNWlrUHVrL1prSzl0b2hsYnpt?=
- =?utf-8?B?Nmx4T0h1aGJDalFSTUdGd1pPa0ZOc3d5d0hWTkZJWWcyVVJqZjBTWW16a2Mr?=
- =?utf-8?B?WkdmbFlhK3JqVmt4UUVIeFJCb3NMcitwTGJiMHNkTFFKMVZQaHdwV21vdFp5?=
- =?utf-8?B?bURaOVZOYWM4Vy8xQUpPWDljbm1wc0VzOUpPaHJlOFg1M3MzU2VXRGxQbndJ?=
- =?utf-8?B?aW02bXZiKzJlNzdzb3RwSURlMVVKRTIzV3BwYks0OVZ5VjAzMGdQcUY1ZEFt?=
- =?utf-8?B?NFZjZkVPK29YbFNSR3RHZG90WVV5SUo0ZEplam0wWmtjOEMyQXNZUGx6SDhx?=
- =?utf-8?B?L2IwT0pYUVpWdUFZNklJNXFiRVJpUGVCb0FRdjJqR3Y0TkFGaWZKdzU0dHVH?=
- =?utf-8?B?TGxoTitjSW41bTZUQkYrbmxSZW1qOFk1U3J0QUNDdkZHN2ZQejVlMUJ5VkRQ?=
- =?utf-8?B?Z01kMHZOaDZsTGJDbWNoM3ltcWZKNk9VdTEvM1RTQTZ5d3JudG42dm13U2Nj?=
- =?utf-8?B?TFpYWWlOVVZUbUxhOEJrUHhoQTZYcEpFSGxFOW01VHJsQzE4MnQ0Zkk1MDh6?=
- =?utf-8?B?Q1ZYcGEzNXErWG9VWnFtZHo3a2RIcks3UzJWU3cwOHJleVA5T3g1cEUwTGtD?=
- =?utf-8?B?RjRFL2k5bExUMElQOVU5WXAzSjkwTzBCNkNCLzRYeTNSZTM1SGQ3cS9uTG5v?=
- =?utf-8?B?UFZsTWFzMjZxa0xvSzIwbVBtWXFNMWVrMWxQQTZOUVd4QnNKWWFRbWxWd2pU?=
- =?utf-8?B?WXU1OFV1WTgyK3hCZncrZG44NmE3cFBJQnZMUnRLVzFYYUFBSm9CdHEyUUc4?=
- =?utf-8?B?NjNQK05sQXJIeUxsOFVIY0J5YlgyeDhtWVlGS2NaMkx1Q1dCRTRwbzhLTnNw?=
- =?utf-8?B?VjlUbk5hUktCb3BnZkNYTlV6YlVGVGQvZ3BBaUtVczhpV1Ava1BFUUhWT2t6?=
- =?utf-8?B?R2lJdUU5QjhyUUQ0bzVmaHFoZ2dubGpOYlRCblYvREV4VFFUZEZMaXc4TUd0?=
- =?utf-8?B?K2RnZCtVNFRVT3JhSlVWbEd4OWR1OHdLSmZVRFB0bXo5NWVoTmc2NmJiemYw?=
- =?utf-8?B?Q0FjdFJRM0l6b3hTeDl5NFdPcGJRK0dqVXZuSk1XcXVVcDN3VEhCUWtJNGhq?=
- =?utf-8?B?US92NnYrbklPNTJSL1I0bGtMditib2dIWCtaNU82VTJrMllTbUhIOG51aGRh?=
- =?utf-8?B?QnNncisxaEFyMjhTMHhIbFlFa0d3TEZOMzAxMXFrTnZ5TERyc2xZSnE3ekxs?=
- =?utf-8?B?NlZkeEQyZEtoQnBtcXpONEtObThKZTJhOHcwamprTDBmdi9tV003OCt5bnZ3?=
- =?utf-8?B?eFl5ekpKNWErbCs4QkF2dTZIcFdyc3VIbG95RVB6dzVzeVl2Tmtkdis5MUtm?=
- =?utf-8?B?TEhnZTBIYmZqc0VGNDcwazM1MVlIYTVTalNDSW1sdjRqeUFhVjZSbi9mOUQz?=
- =?utf-8?B?dUtxcnhGR3VZZUpYQ3o3SmpqdU9kZGlEWHpGSXBPa0dlQTdyQitQSC9MRlhx?=
- =?utf-8?B?SjFpcEJmV2hIVjZtcnVTUUtmcVFXRVgzdWhtYW5ZeUZydGR4MEJhdElJM3Vt?=
- =?utf-8?B?L2pjNWFtUm00b3pGQU1qWjA2L1NYTTNoKzNvcm9leUovazBRWGtubnpmR2R5?=
- =?utf-8?B?SnlUeU9GanpXa3hXUm9LU2ZYVmtRQ0M0NzZRNjhPdU9mYXNnV3RTQT09?=
-X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0c9b1c27-662e-4354-e523-08df3b6afef5
-X-MS-Exchange-CrossTenant-AuthSource: AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Nov 2026 18:31:24.1510
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: afTWLUMHDA86HPKhilyp4SxRtjbc0xdMaR7IJZYXiLKkYkU4AqnIvWbHvBL9mxC3aUW7ewb7UBWXWDj/QTWIWQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI0PR10MB9694
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On 27.10.26 15:39, François Legal wrote:
-> There are missing wrappers for 64 bits time in xenomai 3.3 :
-> - __recvmsg64
-> - __sendmsg64
-> - __sendmmsg64
-> 
-> For __recvmsg64, the only options which shall write to msghdr.msg_control are :
-> -RTCAN_RTIOC_TAKE_TIMESTAMP which always writes RTCAN_TIMESTAMP_SIZE (64) bits
-> so it is correct to route the time64 services to the native "time_t" syscall.
-> 
+On Thu, 2026-11-05 at 16:25 +0100, Fran=C3=A7ois Legal wrote:
+> Le Jeudi, Novembre 05, 2026 11:54 CET, Fran=C3=A7ois Legal <francois.lega=
+l@eventlab.fr> a =C3=A9crit:=20
+> =C2=A0
+> > Le Lundi, Novembre 02, 2026 14:27 CET, Florian Bezdeka <florian.bezdeka=
+@siemens.com> a =C3=A9crit:=20
+> > =C2=A0=20
+> > > On Fri, 2026-10-30 at 11:11 +0100, Fran=C3=A7ois Legal wrote:
+> > > > Le Jeudi, Octobre 29, 2026 14:26 CET, Florian Bezdeka <florian.bezd=
+eka@siemens.com> a =C3=A9crit:=20
+> > > > =C2=A0=20
+> > > > > On Wed, 2026-10-28 at 17:37 +0100, Fran=C3=A7ois Legal wrote:
+> > > > > > Le Mercredi, Octobre 28, 2026 11:15 CET, Florian Bezdeka <flori=
+an.bezdeka@siemens.com> a =C3=A9crit:=20
+> > > > > > =C2=A0
+> > > > > > > On Wed, 2026-10-28 at 09:36 +0100, Fran=C3=A7ois Legal wrote:=
+> > > > > > Le Mardi, Octobre 27, 2026 16:08 CET, Florian Bezdeka <florian.=
+bezdeka@siemens.com> a =C3=A9crit:=20
+> > > > > > > > =C2=A0
+> > > > > > > > > On Tue, 2026-10-27 at 15:44 +0100, Fran=C3=A7ois Legal wr=
+ote:
+> > > > > > > > > > Switching my setup from linux 5.4 Ipipe + Xenomai 3.2 t=
+o Linux 6.12 + dovetail + Xenomai 3.3, I experience the follwing BUG() at s=
+ystem boot. Machine is zynq7000 SoC :
+> > > > > > > > > >=20
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] L2C: platform modifies au=
+x control register: 0x02060000 -> 0x02460000
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] L2C: DT/platform modifies=
+ aux control register: 0x02060000 -> 0x02460000
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] L2C-310 enabling early BR=
+ESP for Cortex-A9
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] L2C-310 full line of zero=
+s enabled for Cortex-A9
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] L2C-310 dynamic clock gat=
+ing enabled, standby mode enabled
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] L2C-310 cache controller =
+enabled, 8 ways, 512 kB
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] L2C-310: CACHE_ID 0x41000=
+0c8, AUX_CTRL 0x46460001
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] ------------[ cut here ]-=
+-----------
+> > > > > > > > >=20
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] WARNING: CPU: 0 PID: 0 at=
+ kernel/irq/pipeline.c:1873 irq_pipeline_init+0x40/0x158
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] CPU: 0 UID: 0 PID: 0 Comm=
+: swapper/0 Not tainted 6.12.90-cip24-yocto-standard-arksv #1
+> > > > > > > > >=20
+> > > > > > > > > That version is a bit outdated already. Could you please =
+repeat the test
+> > > > > > > > > with the current version in the v6.12.y-cip-dovetail-reba=
+se branch, just
+> > > > > > > > > to make sure the problem has not already been fixed.
+> > > > > > > > >=20
+> > > > > > > > > On first glance that looks like an IRQ pipeline state cor=
+ruption. I
+> > > > > > > > > fixed some of them recently, so please give it a try.
+> > > > > > > > >=20
+> > > > > > > > > The non-rebase branch - the version you are using - has n=
+ot been updated
+> > > > > > > > > yet. Let's wait for your test results. If successful we c=
+an ask Jan to
+> > > > > > > > > do a stable release.
+> > > > > > > > >=20
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] Hardware name: Xilinx Zyn=
+q Platform
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] IRQ stage: Linux
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] Call trace:=20
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 dump_backtrace from=
+ show_stack+0x18/0x1c
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 r7:c0c08f40 r6:c0a9=
+4cc8 r5:00000000 r4:00000080
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 show_stack from dum=
+p_stack_lvl+0x94/0xc8
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 dump_stack_lvl from=
+ dump_stack+0x18/0x1c
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 r7:00000751 r6:0000=
+0009 r5:c0b0e65c r4:c0a65b0c
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 dump_stack from __w=
+arn+0x80/0xe0
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 __warn from warn_sl=
+owpath_fmt+0x1b0/0x1bc
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 r7:00000000 r6:c0a6=
+5b0c r5:c0c08f40 r4:c0b4268c
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 warn_slowpath_fmt f=
+rom irq_pipeline_init+0x40/0x158
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 r8:1eb76000 r7:0000=
+0000 r6:00000000 r5:c0c97038 r4:c0c97000
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 irq_pipeline_init f=
+rom start_kernel+0x3f8/0x568
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 r5:c0c97038 r4:c0c9=
+7000
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 start_kernel from 0=
+x0
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 r7:00000000
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] ---[ end trace 0000000000=
+000000 ]---
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] IRQ pipeline enabled
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] rcu: srcu_init: Setting s=
+rcu_struct sizes based on contention.
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] zynq_clock_init: clkc sta=
+rts at (ptrval)
+> > > > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] Zynq clock init
+> > > > > > > > > >=20
+> > > > > > > > > > I don't really know how to chase this.
+> > > > > > > > > >=20
+> > > > > > > > > > Fran=C3=A7ois
+> > > > > > > > =C2=A0
+> > > > > > > > =C2=A0I switched to the tip of that branch. I get the same =
+result :
+> > > > > > > >=20
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] L2C-310 dynamic clock gating =
+enabled, standby mode enabled
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] L2C-310 cache controller enab=
+led, 8 ways, 512 kB
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] L2C-310: CACHE_ID 0x410000c8,=
+ AUX_CTRL 0x46460001
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] ------------[ cut here ]-----=
+-------
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] WARNING: CPU: 0 PID: 0 at ker=
+nel/irq/pipeline.c:1866 irq_pipeline_init+0x40/0x158
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] CPU: 0 UID: 0 PID: 0 Comm: sw=
+apper/0 Not tainted 6.12.96-cip28-yocto-standard-arksv #1
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] Hardware name: Xilinx Zynq Pl=
+atform
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] IRQ stage: Linux
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] Call trace:
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 dump_backtrace from sho=
+w_stack+0x18/0x1c
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 r7:c0c08f40 r6:c0a951a4=
+ r5:00000000 r4:00000080
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 show_stack from dump_st=
+ack_lvl+0x94/0xc8
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 dump_stack_lvl from dum=
+p_stack+0x18/0x1c
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 r7:0000074a r6:00000009=
+ r5:c0b0e65c r4:c0a65fe8
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 dump_stack from __warn+=
+0x80/0xe0
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 __warn from warn_slowpa=
+th_fmt+0x1b0/0x1bc
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 r7:00000000 r6:c0a65fe8=
+ r5:c0c08f40 r4:c0b4268c
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 warn_slowpath_fmt from =
+irq_pipeline_init+0x40/0x158
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 r8:1eb76000 r7:00000000=
+ r6:00000000 r5:c0c97038 r4:c0c97000
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 irq_pipeline_init from =
+start_kernel+0x3f8/0x568
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 r5:c0c97038 r4:c0c97000=
+> > > > > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 start_kernel from 0x0> > > =
+> > > [=C2=A0=C2=A0=C2=A0 0.000000]=C2=A0 r7:00000000
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] ---[ end trace 00000000000000=
+00 ]---
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] IRQ pipeline enabled
+> > > > > > > > [=C2=A0=C2=A0=C2=A0 0.000000] rcu: srcu_init: Setting srcu_=
+struct sizes based on contention.
+> > > > > > > >=20
+> > > > > > > >=20
+> > > > > > >=20
+> > > > > > > Might be related:=20
+> > > > > > > https://lore.kernel.org/xenomai/CAKndYJGo5Yu7Ak694tX=3DcqRjtJ=
+neXs22DPjz=3DUDVkUcNJMWyOA@mail.gmail.com/
+> > > > > > >=20
+> > > > > > > Quote:
+> > > > > > >=20
+> > > > > > > > It actually booted as soon as I disabled the "scutimer" clo=
+ck source
+> > > > > > > > via the DTB.=C2=A0 This made the kernel fall back to "arm_g=
+lobal_timer" and
+> > > > > > > > now it boots properly.
+> > > > > > >=20
+> > > > > >=20
+> > > > > > Well, I had this problem a while back at my first dovetail atte=
+mpt (was on linux 5.15 IIRC). Switching to 6.12, the system started correct=
+ly at first try (except for that BUG signaled).
+> > > > > > I even experience pretty good RT performance (about the same I =
+had with IPIPE)
+> > > > > >=20
+> > > > > > > There are a couple of "hacks" mentioned in the mail thread th=
+at you
+> > > > > > > could try and report back.
+> > > > > > >=20
+> > > > > > > Couple of questions:
+> > > > > > >=20
+> > > > > > > - Does the board boot up with CONFIG_IRQ_PIPELINE disabled?
+> > > > > > > - Have you tried enabling=20
+> > > > > > > =C2=A0=C2=A0=C2=A0 - CONFIG_DEBUG_IRQ_PIPELINE
+> > > > > > > =C2=A0=C2=A0=C2=A0 - CONFIG_IRQ_PIPELINE_TORTURE_TEST> > > > =
+>=20
+> > > > > > > Best regards,
+> > > > > > > Florian
+> > > > > > =C2=A0
+> > > > > > I can see no differences with these options activated (apart fr=
+om custom kernel driver that need to be fixed, but that will be another thr=
+ead if I can't fix it myself).
+> > > > > > You can find the complete bootlog attached.
+> > > > > >=20
+> > > > >=20
+> > > > > The hardware IRQ state is unexpected in your case. Hard IRQs are =
+enabled
+> > > > > where they are expected to be disabled. Quite early in the boot p=
+rocess.
+> > > > >=20
+> > > > > It might help to enable CONFIG_PROVE_LOCKING (enable lockdep). Th=
+at
+> > > > > might tell us where hard IRQs were enabled before we reached the =
+check.=20
+> > > > >=20
+> > > >=20
+> > > > I just tried the CONFIG_PROVE_LOCKING option. Unfortunately, it see=
+ms the detector gets activated way after the inital BUG occurs.
+> > > >=20
+> > > > I also reviewed the Zynq clock init part, however, I'm not really s=
+ur to know what I'm looking for. I can tell that this is registering the cl=
+ock tree elements within the kernel, and that some couples of spin_lock_irq=
+save/spin_lock_irqrestore are in the way.
+> > > >=20
+> > >=20
+> > > I just send out a patch [1] for another trap handling issue that Jan
+> > > found while trying to do some stable updates. I have no other idea AT=
+M.
+> > >=20
+> > > [1] https://lore.kernel.org/xenomai/20261102125420.702769-1-florian.b=
+ezdeka@siemens.com/T/#u
+> > >=20
+> > > Any further ideas from Philippe or Jan?
+> > =C2=A0=20
+> > The patch did not help. Same result. So I checked what happens inmain b=
+efore calling=C2=A0 irq_pipeline_init
+> > IRQs are disabled until the call to init_IRQ(), after which there enabl=
+ed. I don't checked where (and possibly why it is so) nor if it's expected.
+> >=20
+> > I'll post updates.
+> >=20
+>=20
+> Here it is, coming from init_IRQ(), I get the follwing call trace
+>=20
+> stop_machine_cpuslocked
+> patch_text
+> __arch_jump_label_transform
+> arch_jump_label_transform
+> jump_label_cmp
+> static_key_disable_cpuslocked
+> gic_of_init
+> of_irq_init
+> irq_chip_init
+> zynq_irq_init
+> init_IRQ
+>=20
+> And there, in stop_machine_cpuslocked, I see a cpsie i (which enables the=
+ interrupts to the core) and a then a call to __inband_irq_enable.
+> >=20
 
-So, in-tree has no RX legacy where we would have to differentiate the
-between 32 and 64-bit entry. And TX does not use the field at all in our
-tree, as Florian noted (and asked for a remark here).
+This stop_machine_cpuslocked() is unconditionally enabling hard IRQs. It
+seems this call is unexpected at this stage, even before initializing
+the pipelining core, which is expecting hard IRQs off at initialization.
 
-But downstream drivers have no chance to handle that case, right? We
-should note that as well.
+Maybe worth a try:
 
-The change is basically just pleasing the linking issue that arises from
-glibc trying to differentiate the compat from the time64 case, enabling
-separate handling that we do not support.
-
-Jan
-
-> Signed-off-by: François LEGAL <devel@thom.fr.eu.org>
-> ---
-> diff --git a/lib/cobalt/cobalt-glibc-time64.wrappers b/lib/cobalt/cobalt-glibc-time64.wrappers
-> index 0bf895ca9..483a8ce24 100644
-> --- a/lib/cobalt/cobalt-glibc-time64.wrappers
-> +++ b/lib/cobalt/cobalt-glibc-time64.wrappers
-> @@ -8,7 +8,10 @@
->  --wrap __mq_timedsend_time64
->  --wrap __mq_timedreceive_time64
->  --wrap __sigtimedwait64
-> +--wrap __recvmsg64
->  --wrap __recvmmsg64
-> +--wrap __sendmsg64
-> +--wrap __sendmmsg64
->  --wrap __pthread_cond_timedwait64
->  --wrap __timer_settime64
->  --wrap __timer_gettime64
-> diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
-> index 00c1aaf4b..264de8ace 100644
-> --- a/lib/cobalt/rtdm.c
-> +++ b/lib/cobalt/rtdm.c
-> @@ -254,7 +256,7 @@ static ssize_t do_recvmsg(int fd, struct msghdr *msg, int flags)
->  	return ret;
->  }
->  
-> -COBALT_IMPL(ssize_t, recvmsg, (int fd, struct msghdr *msg, int flags))
-> +COBALT_IMPL_TIME64(ssize_t, recvmsg, __recvmsg64,
-> +		   (int fd,struct msghdr *msg, int flags))
->  {
->  	int ret;
->  
-> @@ -301,7 +301,7 @@ static ssize_t do_sendmsg(int fd, const struct msghdr *msg, int flags)
->  	return ret;
->  }
->  
-> -COBALT_IMPL(ssize_t, sendmsg, (int fd, const struct msghdr *msg, int flags))
-> +COBALT_IMPL_TIME64(ssize_t, sendmsg, __sendmsg64,
-> +		(int fd, const struct msghdr *msg, int flags))
->  {
->  	int ret;
->  
-> @@ -312,7 +312,7 @@ COBALT_IMPL(ssize_t, sendmsg, (int fd, const struct msghdr *msg, int flags))
->  	return __STD(sendmsg(fd, msg, flags));
->  }
->  
-> -COBALT_IMPL(int, sendmmsg, (int fd, struct mmsghdr *msgvec,
-> +COBALT_IMPL_TIME64(int, sendmmsg, sendmmsg64, (int fd, struct mmsghdr *msgvec,
->  			    unsigned int vlen, unsigned int flags))
->  {
->  	int ret, oldtype;
-> 
-> 
-
--- 
-Siemens AG, Foundational Technologies
-Linux Expert Center
+diff --git a/kernel/stop_machine.c b/kernel/stop_machine.c
+index cc7a2c6431ea6..912adf6016acc 100644
+--- a/kernel/stop_machine.c
++++ b/kernel/stop_machine.c
+@@ -601,15 +601,16 @@ int stop_machine_cpuslocked(cpu_stop_fn_t fn, void *d=
+ata,
+ 		 * early in boot before stop_machine() has been
+ 		 * initialized.
+ 		 */
++		unsigned long irqflags;
+ 		unsigned long flags;
+ 		int ret;
+=20
+ 		WARN_ON_ONCE(msdata.num_threads !=3D 1);
+=20
+ 		local_irq_save(flags);
+-		hard_irq_disable();
++		irqflags =3D hard_cond_local_irq_save();
+ 		ret =3D (*fn)(data);
+-		hard_irq_enable();
++		hard_cond_local_irq_restore(irqflags);
+ 		local_irq_restore(flags);
+=20
+ 		return ret;
