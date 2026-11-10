@@ -1,18 +1,17 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.69.15
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.130.46
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794333672;
-	b=c04k9DB68KmX6Hbj+gLzRAUYiRxyA2gRYUSLEBYG/TYRHXK1e5AOGeQVz0byzIaudpah
-	 iXbfzq5XJ64pdNu+8JoufWn0p03qeqBdoNkusSKN84VvOcci7/CiT+smTjOFHu5ph5dXq
-	 5LGkTTVPZg8Bu6MzUAifJnjXtE5UwKQLwadSUYfo1hup03bmHDHln1055Gx6T5KPTMTtf
-	 mO/30LwyLgAi4nz+38s+97OJc/D34fqZat9+4043q9Elk5+zf/RliGaOeAG1ofQNBp0JI
-	 psxsC3aRyW4Ep418QG3EekJlGrtVlUTLnjfjnj+bfclbrGdD7swFI+8v2xJs97mqbXQ==
+	t=1794334121;
+	b=rdf9JrzUAO4hY83iwlaUEUegpf6AF8swwpwQaway9w/PXl8g1FT+cOyngopabPlT+vqY
+	 eLCrJzsmCz0jvAmGlz0Cpi3w1FrC5DJvfaKBv8SudiUjpS3ohpErJR2mrTdblJ53aWEgi
+	 oJcDTDUDSUFM+NVMopsubbsjsEA6iOFRLHr7AbhnCA+VYgF9j/pUSfepzBTGMCaWDIz7m
+	 l5tnfpk/boZPJ0f57wwlLVZkJsnbihtmp154n0cSIJg6iUQIxvHjJG2Ob4y4dBVx/CzXO
+	 Sjfeoxdgbo6p2t8fkOFtyDIw8utJ3S+ilKUyc8oG9YaImy2LkVFXU+7ShhfFF0+DhOQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794333672;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:From:To:Cc:References:Content-Language:Autocrypt:
-	 In-Reply-To:Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:
-	 MIME-Version:X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:
+	a=rsa-sha256; c=relaxed/relaxed; t=1794334121;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:Content-Transfer-Encoding:Content-Type:
+	 X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
 	 X-MS-Exchange-AtpMessageProperties:X-MS-Exchange-SenderADCheck:
 	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
 	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
@@ -25,116 +24,68 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=C8FhImQ+UQ7vuU7uOjmRWOR5OkD6tRKJpQRGTyT+zMA=;
-	b=0VWwHzMpEnrCi19ibpvqsHtB2PFKzokVyejZ2tA5EFdepxDdQaH20AhR0haa+2JLglXS
-	 R13PR5ZBg+13vNQWwhRw6Gu3SdOgu4Ip/wgElQPv0Rt0h80RdUEANDVes3HFZAdHVhRJx
-	 pmwuPlNN54iq87a66yKxLdNcGVNCZsQ5dV1T+RclUvxQ4x7KSZ2Vqd0gXqeq53tSmWhRw
-	 5YrDQU1cj6EL3OOgg5L1ENHFTWu/un/sMw9Wdy56MdIlEYC7aeMori4gfw1YBtUnIaFNJ
-	 vsVyIbP4Zz/b3cgRZe7MPanib6nLH7bFt4eswzapXhIelmQLurTZnl41ZUb3vYnXWjw==
+	bh=ZQ2Y4UsPzJaFfy6Pv+A7f+w4RB/6FKhDNwmOGQS4vFY=;
+	b=3kcToRQRWvHpoQMT1RUlYpW9THWt32x/R0xDw2NfAvM1T3j1iTJxaeYEUnhno/a8lTR/
+	 rwXuXGltIQFfyI34xuEA1hrg7GQQTTfYbBJJqy2+S3lidb1qsoWsOLzIqRR9gq7pTksiv
+	 Ii5lYwV7SLJ1IuwnsuVZlTrVWxy++fRrI83G8v8zg6t/ZUbpf3XZvyfksTQjfeDptFTmO
+	 iMaOVUQPdCRONfG45e4S1JyvgmYVZgblM9cwTdsNsTp8BfKXR413OVTVkrcQcf1gQVtBU
+	 pdLnevXgRZj3tduqSOTkRAfekTc9azT1XvWQqFJtxPE2WnLbQJd0gW4575JXftGbW9A==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=siemens.com;
 	spf=pass smtp.mailfrom=siemens.com;
-	dkim=pass header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=s9wW3cSy;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.69.15
-Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010015.outbound.protection.outlook.com [52.101.69.15])
+	dkim=pass header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=khhrpjC6;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.130.46
+Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011046.outbound.protection.outlook.com [40.107.130.46])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 160A3606A325
-	for <xenomai@lists.linux.dev>; Tue, 10 Nov 2026 18:01:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 160A3606A325
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF1FE606A320
+	for <xenomai@lists.linux.dev>; Tue, 10 Nov 2026 18:08:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CF1FE606A320
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=s9wW3cSy
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=khhrpjC6
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=olgf9mjJl2O9WYEiJVAJxv9BcMfyIdwty+gDTrEelmT9BdB7urSPApY02La/N8kBcQA9hHNjCL9imvoSELhR27cb7vNQ/X3AHS0lYPbDMnbKINWt+38ToHODi6D+2oV/7HEi7iHlufmkwKfnwMkTpB3V0oOKrOdvd+QxatbA9Hg28jK8T43+dpr1aTKtffCnbXjEP4pEWlBp+h0TZL2wIXy8JA0FsCDERbUmdm60Qc7BWftkfJ2yNEoRiTgMPE9FCjhLtBDExTlT/C9pu560BvCw3bXIzoWqDYzdJTYcHzouxfuYPb6KMGERnyUwYK2+I1bGgu8a5k8f0mtNP7j6/w==
+ b=PSMFZkoVrlr4LqViUyAGRDSSRCpFWLx881YJFq2sDdEJBVIOdKT1PhTayzMpvd9B2BiN0Sr5nhYzIOOdml8jAnFuQ1oyk7P4omZMfDGes+gR8h3kcW+A97W0hY5CoPcGWyULna3WH0h5EcDI1e49Wy83ybQVBNI23faAcqz4cEqfljGIf7LfNyhOMQhpCn1/deIO0NE7iw9oOnpAuWHjiX7Fc674NIGjeiicjYX3PnSqFCy+QmSM2pvSdr+Jb3IB06NyrT82aVp7+owEtuRrMLgt54axIBIfQaT3BPjaVfhKRp6P0HGgcSwxCe93aW3N8DyBIaY1Zcsnk+9ZqXmDfw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=C8FhImQ+UQ7vuU7uOjmRWOR5OkD6tRKJpQRGTyT+zMA=;
- b=Yn+59D7QflBd6Gvo/0G/AeiG09OOGNTgdXAfv4oRI+EsL+UuH2dasYMlbBFVMIY65pONFysDYh/qG0HY3e0xUjWDfxIX8XCXg6zhy5DG+gHAczTRkul6/75mXBoQEaYzULuSE/z0NPfzkvc9dUqBHguC1BTYJIOOwnEJbEemWYGRndM2NJ1zUPYonb+xHpSfhgP2CocWqzBEY3s1SoHXm75IOUMWpB/bo2YM/CP4lNp9SYDbOesymcxXG9TlVSay9ZsSMvcLm4EXfsn5hW4fs2tQz4s2NgcP1DYqR6o4L8ZTnJtTpxFmI0gHgzn+2EGkpdaxLYPSI6DNW9V8rBVwBg==
+ bh=ZQ2Y4UsPzJaFfy6Pv+A7f+w4RB/6FKhDNwmOGQS4vFY=;
+ b=XRFFKmpt/NM1medTTBbeR4nMpMZRUSVZ32nq+GAx4DBOWKDX79JyWDJY1jg+pnUkP3E67rvL6nQDJh84p3wk/hj6fT751pAv8lsBL/yLQ/cfH9uMBGNHSbkrIvwzFmnKCgTj3Xjl8rmT+nFHKpX+YSNDzp+3LvVJS/rdYveRO2R53+xSIG2e0WyGe3Lqm2fVCwUyJ5VnbPVznJ4/khjdAJkBitU9Xk362ADgWEXaTYAo1m6Ehmj6XOo/bxSqzcTzZKEVCT0+vkw4a4d2cXaV2PG9ywO0Sovl4Owl9bTfOHkn7p7Ksszr2/vySW6x2HqB/RfBIE9uFcB5aUjl9RtsKg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=C8FhImQ+UQ7vuU7uOjmRWOR5OkD6tRKJpQRGTyT+zMA=;
- b=s9wW3cSy+C9f+l1sO3a3tpceyP3OAvXlhP9sdr1tx8KiPZ1aEJF+SAIIj+jw9Zjcw//3pluNrglOdgkvjlBB0jBsTvlHOlHD1M8vL9t3ZVY3iOSgOOkuYTMSuHqM9f6uvu8owN5ixXLCLGXRlG997It44qIjhGCEQbcznnSJgndjJL9YyeOIElHPl6v74HtlAXzdedna1LtHFKvi0jJXoTA3DLIbxU03ZbR9Oy8LU42RqOWPH0stxF0B98/3kOP23nLYjvvQkHcsFBDHqEHqwH39ycAer5sQ7zezSH8DcXxjGgLx1JeAn2wVehSPm7KZU7tgj4V0DzHEGA6raqhJ6g==
+ bh=ZQ2Y4UsPzJaFfy6Pv+A7f+w4RB/6FKhDNwmOGQS4vFY=;
+ b=khhrpjC67SWWFCBtGsOif/S1dECy90GR7f30fpOWbcJKamwGJaTuaf56kGg3icMPiudRfkQAyvF29k8Kri6KbLXmP1TZocz4GaH+WBUxk7DdejC2S8cozjDXXClhVcY+xBPEtHhkLIqObyv5nJ+TbXd6f62bxgfy1ecn0OuTVunpMtJNHcTsGTeQJPIxu0MzyPaOj1SbMIoowMLzrgUbOa4rj3d9CfMbPm+hVpyYsAEnolWOgVt3xODovwwi4fiX7iikKzQ3BRqCEVK8+3foZuA2OWssiJ2FzuyWW+eIQ2yhqp/dt93AvwRr8KJQV9iKbY0/ojvO3eNF1Q/RyRBGeg==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
-Received: from AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:785::10) by PA2PR10MB8679.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:102:41b::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.4; Tue, 10 Nov
- 2026 18:01:06 +0000
-Received: from AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::fbce:789a:27cf:d1e]) by AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::fbce:789a:27cf:d1e%5]) with mapi id 15.21.0615.007; Tue, 10 Nov 2026
- 18:01:06 +0000
-Message-ID: <614c806a-79ad-47d6-a5b8-ebfa0ebcffb3@siemens.com>
-Date: Tue, 10 Nov 2026 19:01:05 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [dovetail][PATCH] arm64: dovetail: Notify the core about compat
- alignment fixups
-From: Jan Kiszka <jan.kiszka@siemens.com>
-To: Philippe Gerum <rpm@xenomai.org>
-Cc: Xenomai <xenomai@lists.linux.dev>,
- Florian Bezdeka <florian.bezdeka@siemens.com>
-References: <4d7b7926-4a09-40c0-b4e8-d5512f8107ef@siemens.com>
- <87wlqk6332.fsf@xenomai.org>
- <2d9eac38-825e-4038-8b9d-9b15dc1c1b4e@siemens.com>
-Content-Language: en-US
-Autocrypt: addr=jan.kiszka@siemens.com; keydata=
- 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
-In-Reply-To: <2d9eac38-825e-4038-8b9d-9b15dc1c1b4e@siemens.com>
-Content-Type: text/plain; charset=UTF-8
+Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:3dd::5)
+ by AMCPR10MB992240.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:781::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.615.8; Tue, 10 Nov
+ 2026 18:08:37 +0000
+Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::5f49:b0e9:d295:22d8]) by AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::5f49:b0e9:d295:22d8%6]) with mapi id 15.21.0615.007; Tue, 10 Nov 2026
+ 18:08:37 +0000
+From: Tobias Schaffner <tobias.schaffner@siemens.com>
+To: xenomai@lists.linux.dev
+Cc: rpm@xenomai.org,
+	jan.kiszka@siemens.com,
+	Tobias Schaffner <tobias.schaffner@siemens.com>
+Subject: [RFC PATCH dovetail 0/7] rv: runtime verification monitors for Dovetail
+Date: Tue, 10 Nov 2026 19:08:40 +0100
+Message-ID: <20261110180847.633167-1-tobias.schaffner@siemens.com>
+X-Mailer: git-send-email 2.53.0
 Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: AS9P251CA0006.EURP251.PROD.OUTLOOK.COM
- (2603:10a6:20b:50f::11) To AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:785::10)
+Content-Type: text/plain
+X-ClientProxiedBy: AS4PR10CA0001.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:5dc::17) To AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:3dd::5)
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -145,161 +96,180 @@ List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AMCPR10MB992291:EE_|PA2PR10MB8679:EE_
-X-MS-Office365-Filtering-Correlation-Id: a3b10b0c-97f6-4d25-2295-08df3f5497b9
+X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|AMCPR10MB992240:EE_
+X-MS-Office365-Filtering-Correlation-Id: 27bc22e1-4fad-4d09-6467-08df3f55a47e
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|1800799024|376014|366016|6133799003|18002099003|55112099003|22082099003|3023799007|56012099006|261022105027099003|261021123027099003|4143699003|261102123227099003|261022115727099003|261022075727099003|261021121427099003|261028144727099003|261009223027099003|10067099003|261026121527099003|11063799006|261026140227099003;
+	BCL:0;ARA:13230040|376014|1800799024|366016|23010399003|11063799006|261009223027099003|56012099006|261022105027099003|261021121427099003|261026121527099003|261026140227099003|261022075727099003|261021123027099003|261028144727099003|261102123227099003|10067099003|20046099003|55112099003|18002099003|6133799003;
 X-Microsoft-Antispam-Message-Info:
-	KJ/fjDcyfvqpBu6U9rke5aEQuHgmzywdVrY+Onm+sBYvzIVsopVpUPL7WLNlbtaMttkYTbtpOtBYhoxefKiKwl5ZSbGjxguuf2gM+EwZrtZKqOxqFE5t7W2L9NNctx8g1WnoalAnlOekrwWVrA0Ki5WVFnHpxEtvMc+3KEyI6FKkSBJg8BJNcWNOx1dkY0o+gaO/dZ4Xe4HX72apQfWw5CbrezYX1cMAOGze2gh5NA4pl1+mS2Xna+pRrNt72qKzZB53Q655ZNWI56LZqe9yqFT8Hy6lbaLvkPol4r2M/ZTRfBpjbp0WZs3FCIHOkhrX/Cr1FB4YpHEO2gAK0gC39ICqJgAWSnHKeYY2KTm73GR8RZ/nY2ZA4y24Z0gX8Aj9zyVJ4i2eonsCmpeXBrPd46RVwnMI+iuo/WVSIk3gRc/MOJkcWSObtEo3np74xd7IKSFrRKxlIaXtWWbVLSA1GL2mZ/DWphP/C2tAJrl6IvWubK8U6qKicLmiq22vp0o5szX2J3AucxXeleIYXMVw8AVYxQn52sANuBj5ZiLktxSgGxrPm4Q0wLYQtWk3D2buetvCVtQ56P+JRKqWCD8XhQBWjyLnlYDBQotGolKC90ANlZGULt54jdMnYv2To7e7vr8X+qaxI4zVcxiQx5/jwak3MnnHR9t50VXjWNzRF68=
+	BZQuRwIMn68gfv4uIs2HSEhw9TEL/A/u5MUOpfaNPquBdKX5zKJ8br6x4JC3n/ryCgq/ojH69P6YlEQ0CLuJb5UsECfeuaQGi0OL9i3vrfDjJ8z/eOYlLHN0hkCoN8AdkvT1XituU3LSLxoFTyFGawkFpPDu3XSjMKNOH0iqzhGDZ+YqKvLwc+YOQTcG/+aqhlxLgUfCcms/rZxLYFlQ9IvHAutq7IyiVR3NH2wQjDNSY90TpN7QiMk+nDtsULSP+GycLjpvPXAfq78o18NMOozlL056IqznxuXqDj3nTdwYNskRe5o7bJWtrawqHrhF6Y/e7Z3jog2FmHmsFihwgLMEOq2KXAPkOszul59+skxt4/emx8pc1DO/yAbWJ5j6U4Pc8TSvXebBkIsqfGW8ipnZ6RzVT47UE67xmq0JQl570kZUu0A84JpW1TxJenQkj3AMfQETbE1nMLYWupV2MJOH2rihM9scIOQEHniM/XYyRHpLU7qMsctrkX0NrSJXtRfcQITQ9WwfLbXc8tS6gC0qIHf0TDtaucxriYhsp2XX83kFD9kZ5ZTCjqRlMtyKdr+Ha+gKi7JHipqRJMj5xtGieXBN3uTdq3Fr283C4hCmO2DgxvheY+ZItZDQF9SW
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(376014)(366016)(6133799003)(18002099003)(55112099003)(22082099003)(3023799007)(56012099006)(261022105027099003)(261021123027099003)(4143699003)(261102123227099003)(261022115727099003)(261022075727099003)(261021121427099003)(261028144727099003)(261009223027099003)(10067099003)(261026121527099003)(11063799006)(261026140227099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(23010399003)(11063799006)(261009223027099003)(56012099006)(261022105027099003)(261021121427099003)(261026121527099003)(261026140227099003)(261022075727099003)(261021123027099003)(261028144727099003)(261102123227099003)(10067099003)(20046099003)(55112099003)(18002099003)(6133799003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?aTlvazVHZGNyU0tQNkJJaFQ0QkhpVWRqS3RIaVdldXF5aGN5bDUwZXV4b3NM?=
- =?utf-8?B?WkozNVZDeHp2eTZwVHlYb2k4cHJwSjhqVVI2bWM0aDFmYkovaHZPelluRTV1?=
- =?utf-8?B?SDNQdGlHWXhLcmR5V0g4VGEvaVFseStSTytlRnJ1TzhPdUx4YnZiMHk1eW5t?=
- =?utf-8?B?MEprSCswUndMS1FJKzh4WTVhQS9STFhzUUh0aFNaekdWdmxIa0lHbGZhb2N4?=
- =?utf-8?B?SzVDVzdOQU1QQ3JIMFpHei9WelUvUFpPaDRRVE5GMjNXOTM3ZXlmcTJWa0hP?=
- =?utf-8?B?cDBOMzl0YlZHUGlRVk5LY2ZycHdhRVUza0tkeXBjemtQejBoQ01GOG9yL1h2?=
- =?utf-8?B?RTBUWmJPc24vUUxkRWJ0MlE1VS84VmxWcFczWGJ2Zlh0NWxZNVZxQWw4TUdv?=
- =?utf-8?B?dXA4N2xWMUFOb21LL3kyQUs5a1grdktybnNESjZhOFk5OGJaelV6dTMyOEFV?=
- =?utf-8?B?NjdDa3FiQUdqdWZVb2U4ZWs1RFBabWQxY0pjdUxSMkdTeEYwamdrQzl6eXpa?=
- =?utf-8?B?OEI3enBneWY5RHRyUFR0bnY2R2U4VlBibm9KdGlkOTQ1NUxSaHptT2JHeEw1?=
- =?utf-8?B?ejVTYWsyZDYzVmhtMXNRRnBaTmxCZENlRkQwc0RkRGdrall0Vlk1dzlWS3pl?=
- =?utf-8?B?MUNvZ0xDOXFLZjZ4T1hFMWFZYVluZnFaUnlEcHdrRVVIUGFVR1hxVTNSYzhz?=
- =?utf-8?B?QkxicGUrQlNSNXdRS0ZZL2JwR0NCMnFhaGFZc0tPWlozSFQ1L1M3czBqUkY3?=
- =?utf-8?B?TTZkY2tHdU94REpFczZKdzlwaWRob0xwV0dWTkRZL2YxOEtGOFUzdGVKVGM4?=
- =?utf-8?B?bHdtQjhabGpWbE5ib3hvbGlxRXBleS82N0hJUE1QRlBUd2N4WGl3SmNkbDVp?=
- =?utf-8?B?MzV5YjZDKytVRUw4NU1IdWtnZXlFRGJBdzhTRlRFUlgrakV3Z0pvaHo3Wk90?=
- =?utf-8?B?QWpVR1ZHRXJvZ1k5NnN1SG9DaitBalBVSVBRcnB6cGc3TVZIN0tuS1BPRmRH?=
- =?utf-8?B?ZEp3ZldjQ3JlZStta1RkTysySkg3NjNpSzJDa0QvM3d3TDRmd3ppSkRFbjBZ?=
- =?utf-8?B?WXI1cWtHRys2R0JRNFNMTTBIR1NPTVArMlV5S0VsY2N5L1kzVmVHUlBSZ1RW?=
- =?utf-8?B?WndyYWpieHdJRjRHQ0lEbWxtcE1yTHgwUU9KOGp3RHErZGE3aS9vT2lzdjV3?=
- =?utf-8?B?ZytWdUdkaHJJakZpK0hxS0F4eUlQTDdPd1VhOGxZS0VYbXVDdXJYcXd0Y3U3?=
- =?utf-8?B?ZkREYU0xSitWYWpCNXNLWUlRcWJ1VHZXaDVkTW9xWHM2UW42bjlwWHZEYW5I?=
- =?utf-8?B?bExibTA3NDlYQmdzLzA1WWRnOStHNDlaWlJoSkVYY1I0R2VVQmtqQngvaDl0?=
- =?utf-8?B?VUhkTkN2SEVaNkR3VGdXY0owSlJ5RlhVNkFXL2tlalBoMzMwSlZzckR0RzM3?=
- =?utf-8?B?ZG9qZ2p5NlZzTm9KUGhNNGdueXBpeU10Y3JKUVppMFh6emlNTjdTTDkycU0z?=
- =?utf-8?B?YjNjdXhmT1lzNVZJSmtHVDUwOVVHZTdTWkgxQmgyNm5GNy9WVTFmRHBPS29h?=
- =?utf-8?B?T3ZOczZxbVhjK242VFQ2anZKcTl5M1oxRzZuTTFid3NHRFUwbThmbVpKSU9l?=
- =?utf-8?B?d0xlR0NHZXhsYzZORlVmOHNuTVJpTFdJR2YxUjJwSmFpWnI3SG13ZXFYMDJD?=
- =?utf-8?B?NEs0c3NtK1ZMME05cDRoSVZtN2RWR0RKazhhQzNpUUJkY3dnaTk1MnFVUzdi?=
- =?utf-8?B?UldITXduQ0FXejZrVmV4V0NESEJ4TE5PbzIvQkttc2w1ZU4vRUVIMUttb0JG?=
- =?utf-8?B?MFpZbjk3VEh0Q1NEMHNPWThqbjYzSXVvRWhPaTRwaE96VkN0bUYrVHBvcFl0?=
- =?utf-8?B?NkVjbFJOLzU2ZWJXcnZsSTNUVit1b2psR1NWNkhwYmR6WkRYaGhyL1RUcHJn?=
- =?utf-8?B?YTBmU0RqSmFDZ3lDRXc4eWJIdHZNanZRRStZV2xscSs5Sk9vTUMyU1lQMElT?=
- =?utf-8?B?R3FNNTNtT0U5eHUzSDgvYmhUdnhKMHFyVlhEekU4M1ZsRXltMms2RnNLd2M2?=
- =?utf-8?B?cFkvM2lsNHM4VjBYdnRBSDFKMzM2SnBxNzF3b29XV2FhTXlhckl4U2wyV3Az?=
- =?utf-8?B?aDJtVmh5dWg1VjZ5djVua1FJT3ZSUG5PcVNGMnpsNEVRZDNIbHRpMWVURGlh?=
- =?utf-8?B?RExsVzRTMlpRQit4TFBjQytHTHdQaExzVVZ5WkQrbFJTZ3djUWFubGRMNGxG?=
- =?utf-8?B?Q1kxejJRYm1PUk4ycEwzaHFYYmRNZmxSL1pMc1dpZjJaYUF5Q3NQdExyVEx5?=
- =?utf-8?B?T1lCV1N5SVZCc2pvL1BmVXIweDkvSHZZclRrT0Z5NnZaMlF6SG10dz09?=
+	=?us-ascii?Q?CasdWk8z93SHuVOkHqX4NbnoA9tPrt/mrLa7lc6ttNRq3LKCN7lflOqqT9Un?=
+ =?us-ascii?Q?Jdaw2Wr4FjUCrGcWuoxasWZs6udVOCz8SaMw4NBWrq6mrlZ+v6tYXMrkQWlL?=
+ =?us-ascii?Q?b42teKKFuqCepQosL2XkMJOT36M9Eyk/aXn2iUI2xXGuiBrm1FWIHdsVd8eJ?=
+ =?us-ascii?Q?HI0ujWB+rI/pFfMOameGAiHTGMImNnCu8rx+kFXn0yV7o1II0JEaBK1sern5?=
+ =?us-ascii?Q?YHXebePFEgkB+58DQHSg7OSwIIqX0ngH3S32+4k4zkHLfmWaVBMa5R8Q2YK4?=
+ =?us-ascii?Q?yh4t9M0y/FfNmAIBGaTg4BvnSEd7rEDO33BhKBNUOoSHy5/9KXR3kbWYPzWI?=
+ =?us-ascii?Q?c0W45d9Gt2UzsJrsfCIAFH9T7F7daMnUzbuZeqpUYQBaMx6PePrPTHwmPI7s?=
+ =?us-ascii?Q?XSA+XMkI3MDw5tl3uCx6IQkAFF7AdndjEkCdRkTNECjbVFXeCDz2kuBYbLZS?=
+ =?us-ascii?Q?wR9A2yvOeCsLpVP0HwHbw4T1SWbWXzrKsRCGfh9nGSqM7aDBdAoqS6AuwnFI?=
+ =?us-ascii?Q?kENY9JcaY0Mut4oLyqyJyj9jWr385bwehjT2RGD1dp23t13SWyWYqzKl6wao?=
+ =?us-ascii?Q?k1fCTKQqLO0JrAzGnfK/r24YHng5FxvzcPeDXPyjLOqgp4rfefvyJTKZo6JP?=
+ =?us-ascii?Q?v+dBf9MkplgKo2xEQZURrepZ6/TEwus5gOC5dN+sfJu6eGeB7sG/9NtRA1Xb?=
+ =?us-ascii?Q?u6xJSJtgiz2CzfOqWiJnwJGgnuOWt97BA5LFAxgqUmioLpcJkwYTn6sZiofi?=
+ =?us-ascii?Q?K7/Ace1ilwxkaOqJkgGQSydF0zJIGl4+xVTVBTgx25ZLr+714mwTgu5FRNxn?=
+ =?us-ascii?Q?4Ys3M6NNWJ+kzsP9+TWAgH0GW/yvAU+UinPCIlO9iTiMkG9VcojCR+H3aan7?=
+ =?us-ascii?Q?fnTqtyYqacNrzvd8hfT1zxEZZ4Kq2Z6L3OAjnkbaUGHZS2xPUAwsTN4JqEK2?=
+ =?us-ascii?Q?i4cwNy+9SGF8Cg1z2JhnRjowu2fO8pVkklgzF2iKmjEFI5XtJBhOn3Z4568G?=
+ =?us-ascii?Q?ROmMbjqAnLgiEwwY1aGP4So0Z/M5AE76l0Yio1EuIKgS6ZpuegiYiE+gHbVj?=
+ =?us-ascii?Q?+VHjwrwyMsnqjedKmbd6bw45AEfHtN45O7c/4Tz/cpJSzA7HYCV8mWWTQv81?=
+ =?us-ascii?Q?xqwJm2+3bYKBu4Ht31Z0ndiz3HYR66l8CcRkJy8QSXPVyObI3gdWR7RtHOjh?=
+ =?us-ascii?Q?/q+RfgfCY+PZ3uZnrVnGt8MT9o/7IKbqizpmR5UPQLvO4ycGeQIp2Vmzokdq?=
+ =?us-ascii?Q?mWrl68S2eHKpKIA1b3JpJM9zsPhNXiL5oX40q7GbOBK7PyPmJMuhe2cqwV+7?=
+ =?us-ascii?Q?r1bVmKRcpN1C5kNe9RF3MRo+uIqD0C37RKVzxbMATd94kAyIDQz+xPSDhsHP?=
+ =?us-ascii?Q?RTXbmCqMTbstfsNTgceXsqpOM+7CA9QiD1w4x46q/r3eu2ldXGFcRf1VSmQ/?=
+ =?us-ascii?Q?R7W1IendaqTcv/zviEZ2N43htUdQZSyLDkRTbhtWu10jcJ92uFsORPdPvk4a?=
+ =?us-ascii?Q?x+kT7lagNSvzcUd56MciDv1s+py/rDpyaY/mdnenzbVYOOKlPJ7qrPF8RAGM?=
+ =?us-ascii?Q?QAXNdoa4oLQm1PFBzEFin8cR2T2lIuWX1wCHqur2/4R409SRoqx6/CMcjhMz?=
+ =?us-ascii?Q?YDEYXdqlOuoV1TEk81KkeuXTVEJg9GVGEWwvvPWiy2+8uDslcfRxQoZvPuPi?=
+ =?us-ascii?Q?BqWSLS1v/0RiptID+e/INgO33POJ8B1MVK0p9iLgtP1g/l5QXAtnzPU4IBl/?=
+ =?us-ascii?Q?OJPosTxrligO5IbgIBYEbi4zpYwf65Y=3D?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a3b10b0c-97f6-4d25-2295-08df3f5497b9
-X-MS-Exchange-CrossTenant-AuthSource: AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: 27bc22e1-4fad-4d09-6467-08df3f55a47e
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Nov 2026 18:01:06.5988
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Nov 2026 18:08:37.8173
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XUc85xKR+tLawKv5ycGLCclG7iPFPTcQezaf7GKKqQh58UXKTZr56Nywl0QR7eNqMhXrZpPxOa7JoSzgIDIP3Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA2PR10MB8679
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6lP+Wgruf6fG4yO0XtTUYAK6FTEffJ1TwB0XZPvagdvDV3MZicj5spuSmJHa7HMjFrDXWejr19XEewcjL1UDjHR7AmrDD1IHo+Pvundo9ro=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AMCPR10MB992240
 
-On 10.11.26 18:47, Jan Kiszka wrote:
-> On 10.11.26 17:52, Philippe Gerum wrote:
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>
->>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>>
->>> With CONFIG_COMPAT_ALIGNMENT_FIXUPS, misaligned multi-word loads and
->>> stores of 32-bit tasks are emulated by do_compat_alignment_fixup(),
->>> called from do_alignment_fault() via do_mem_abort(). The companion
->>> core is only told about the trap when the fixup fails and
->>> do_mem_abort() falls back to signal injection. If the fixup succeeds,
->>> an oob thread runs the whole emulation from the oob stage: it fetches
->>> the faulting instruction, emulates it by accessing user memory, which
->>> may fault in pages, and accounts a perf event, none of which is
->>> oob-safe. On arm, the equivalent path in do_alignment() is annotated.
->>>
->>> Notify the core before attempting the fixup, reporting the trap as
->>> ARM64_TRAP_ACCESS like do_bad_area() does for the same fault when the
->>> fixups are disabled. If the fixup fails, the notification is unwound
->>> before do_mem_abort() goes on, so its own annotation pairs as usual.
->>>
->>> Assisted-by: opencode:Opus-5.5
->>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>> ---
->>>
->>> This was a found by pure code analysis as most setups have
->>> CONFIG_COMPAT_ALIGNMENT_FIXUPS off. It was not tested yet, working on a 
->>> setup.
->>>
->>>  arch/arm64/mm/fault.c | 10 ++++++++--
->>>  1 file changed, 8 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/arch/arm64/mm/fault.c b/arch/arm64/mm/fault.c
->>> index 2726eb3fa2d46..c3532ff0440ad 100644
->>> --- a/arch/arm64/mm/fault.c
->>> +++ b/arch/arm64/mm/fault.c
->>> @@ -867,9 +867,15 @@ static int __kprobes do_translation_fault(unsigned long far,
->>>  static int do_alignment_fault(unsigned long far, unsigned long esr,
->>>  			      struct pt_regs *regs)
->>>  {
->>> +	int ret;
->>> +
->>>  	if (IS_ENABLED(CONFIG_COMPAT_ALIGNMENT_FIXUPS) &&
->>> -	    compat_user_mode(regs))
->>> -		return do_compat_alignment_fixup(far, regs);
->>> +	    compat_user_mode(regs)) {
->>> +		mark_trap_entry(ARM64_TRAP_ACCESS, regs);
->>> +		ret = do_compat_alignment_fixup(far, regs);
->>> +		mark_trap_exit(ARM64_TRAP_ACCESS, regs);
->>> +		return ret;
->>> +	}
->>>  	do_bad_area(far, esr, regs);
->>>  	return 0;
->>>  }
->>
->> If oob, we can expect MMF_DOVETAIL to be set for the current address
->> space, so .text pages of the caller should have been committed. In the
->> (unexpected) event some are not, get_user() and friends would still
->> recursively bump us to do_page_fault()/do_translation_fault() on a
->> subsequent synchronous exception path, which would mark the trap entry
->> eventually, causing the core to downgrade the task before damage is
->> done. This should work now that pipelined faults can pile up
->> safely. Anyway, I'll wait for some testing, things might be more
->> complicated.
->>
-> 
-> Working on it. Key questions remain, though, why we have to (or not?) do
-> this differently on ARM and if things like the perf handling are
-> acttualy OOB-safe today. The LLM is rather brief here, I could also
-> challenge it while finishing the test case.
-> 
+Hi all,
 
-And it's still an LLM: After poking a bit, it admits that there is no
-major OOB problem, and the main reason for the patch is to align
-reporting with what we do on 32-bit ARM. It still claims, though, that a
-"sampling event (perf record -e alignment-faults, BPF program on it)" is
-not OOB-safe:
+with this RFC I would like to propose using the Linux kernel Runtime
+Verification (RV) system [1] for runtime verification of Dovetail based
+cokernels.
 
-"So the concrete failure needs a sampling alignment-faults event. With
-CONFIG_DEBUG_IRQ_PIPELINE, check_inband_stage() then prints "IRQ
-pipeline: some code running in oob context '…' called an in-band only
-routine" with a stack dump. It also sets irq_pipeline_oopsing, which
-turns off every later pipeline debug check. Without the debug option,
-the irqsave guard's restore calls __inband_irq_enable() from oob, which
-flips the stall bit and runs sync_current_irq_stage() on the oob stage.
-That's an API violation, but I found no real damage beyond it. The BPF
-case is worse: an oob thread can spin on a lock held by in-band code on
-another CPU, with no bound on how long."
+Running a system with RV monitors active should ensure that the system
+behaves as described in the model. As this is checked at runtime we can
+verify if the system is even behaving as inteded when it is running the
+real workload.
 
-Jan
+My ultimate goal is not only to use it for verification but also for wakeup
+latency tracing and decomposition in EVL by describing the whole wakeup
+path. I am working on upstreaming dwell time measurements in the RV system
+in parallel for that [2].
 
+This would allow us not only to get a worst case latency and decomposition
+for a latency evaluation tool like latmus but to get a worst case latency
+for any load applied to the system (e.g. the real application of the user).
+
+This patch set proposes three Dovetail monitors bundled in one container:
+
+ * offstage checks that Linux leaves a task alone while it runs out-of-band. It
+must neither schedule the task nor let it raise a signal on itself.
+
+ * oob_trap checks that every out-of-band trap notification is unwound for the
+same trap before the task goes out-of-band again.
+
+ * oob_signal checks that a task receiving a signal out-of-band is kicked
+in-band. Once the cokernel handled the notification, the task must not return
+to user mode out-of-band without a mayday pending. I think his monitor found
+a present bug in EVL: since "evl/sched: get rid of this_evl_rq_thread()"
+evl_kick_thread() skips the mayday for a thread running out-of-band on a
+remote CPU, so the thread ignores all signals, even SIGKILL.
+
+For the monitors the series adds a few bare tracepoints to Dovetail. They are
+not exposed in tracefs.
+
+The monitors can be built by setting CONFIG_RV_DOVETAIL, which enables RV,
+the monitors and the printk reactor. oob_signal is not available on 32-bit
+arm yet, as the out-of-band syscall fast path there is written in assembly.
+
+To execute them:
+
+  # cd /sys/kernel/tracing/rv
+  # echo printk > monitors/dovetail/reactors
+  # echo 1 > monitors/dovetail/enable
+
+Looking forward to your feedback, input and ideas on how to use and improve
+this further.
+
+Best,
+Tobias
+
+[1] https://docs.kernel.org/trace/rv/runtime-verification.html
+[2] https://lore.kernel.org/linux-trace-kernel/20260827072400.45734-1-tobias.schaffner@siemens.com
+
+Tobias Schaffner (7):
+  dovetail: factor out the mayday check on return to user mode
+  dovetail: trace stage switches
+  rv: add dovetail container and offstage monitor
+  dovetail: trace out-of-band trap notifications
+  rv: add oob_trap monitor
+  dovetail: trace signal notifications and out-of-band returns
+  rv: add oob_signal monitor
+
+ Documentation/trace/rv/index.rst              |   1 +
+ Documentation/trace/rv/monitor_dovetail.rst   | 124 +++++++++++++++
+ include/linux/dovetail.h                      |  19 ++-
+ include/trace/events/dovetail.h               |  40 +++++
+ kernel/Kconfig.dovetail                       |  14 ++
+ kernel/dovetail.c                             |  35 ++++-
+ kernel/irq/pipeline.c                         |   4 +-
+ kernel/sched/core.c                           |   2 +
+ kernel/trace/rv/Kconfig                       |   5 +
+ kernel/trace/rv/Makefile                      |   4 +
+ kernel/trace/rv/monitors/dovetail/Kconfig     |  13 ++
+ kernel/trace/rv/monitors/dovetail/dovetail.c  |  41 +++++
+ kernel/trace/rv/monitors/dovetail/dovetail.h  |   3 +
+ kernel/trace/rv/monitors/offstage/Kconfig     |  15 ++
+ kernel/trace/rv/monitors/offstage/offstage.c  | 114 ++++++++++++++
+ kernel/trace/rv/monitors/offstage/offstage.h  |  61 ++++++++
+ .../rv/monitors/offstage/offstage_trace.h     |  15 ++
+ kernel/trace/rv/monitors/oob_signal/Kconfig   |  16 ++
+ .../trace/rv/monitors/oob_signal/oob_signal.c | 114 ++++++++++++++
+ .../trace/rv/monitors/oob_signal/oob_signal.h |  74 +++++++++
+ .../rv/monitors/oob_signal/oob_signal_trace.h |  15 ++
+ kernel/trace/rv/monitors/oob_trap/Kconfig     |  14 ++
+ kernel/trace/rv/monitors/oob_trap/oob_trap.c  | 144 ++++++++++++++++++
+ kernel/trace/rv/monitors/oob_trap/oob_trap.h  |  61 ++++++++
+ .../rv/monitors/oob_trap/oob_trap_trace.h     |  19 +++
+ kernel/trace/rv/rv_trace.h                    |   3 +
+ tools/verification/models/offstage.dot        |  14 ++
+ tools/verification/models/oob_signal.dot      |  23 +++
+ tools/verification/models/oob_trap.dot        |  14 ++
+ 29 files changed, 1013 insertions(+), 8 deletions(-)
+ create mode 100644 Documentation/trace/rv/monitor_dovetail.rst
+ create mode 100644 include/trace/events/dovetail.h
+ create mode 100644 kernel/trace/rv/monitors/dovetail/Kconfig
+ create mode 100644 kernel/trace/rv/monitors/dovetail/dovetail.c
+ create mode 100644 kernel/trace/rv/monitors/dovetail/dovetail.h
+ create mode 100644 kernel/trace/rv/monitors/offstage/Kconfig
+ create mode 100644 kernel/trace/rv/monitors/offstage/offstage.c
+ create mode 100644 kernel/trace/rv/monitors/offstage/offstage.h
+ create mode 100644 kernel/trace/rv/monitors/offstage/offstage_trace.h
+ create mode 100644 kernel/trace/rv/monitors/oob_signal/Kconfig
+ create mode 100644 kernel/trace/rv/monitors/oob_signal/oob_signal.c
+ create mode 100644 kernel/trace/rv/monitors/oob_signal/oob_signal.h
+ create mode 100644 kernel/trace/rv/monitors/oob_signal/oob_signal_trace.h
+ create mode 100644 kernel/trace/rv/monitors/oob_trap/Kconfig
+ create mode 100644 kernel/trace/rv/monitors/oob_trap/oob_trap.c
+ create mode 100644 kernel/trace/rv/monitors/oob_trap/oob_trap.h
+ create mode 100644 kernel/trace/rv/monitors/oob_trap/oob_trap_trace.h
+ create mode 100644 tools/verification/models/offstage.dot
+ create mode 100644 tools/verification/models/oob_signal.dot
+ create mode 100644 tools/verification/models/oob_trap.dot
+
+
+base-commit: a3ad77d7ba3eac8a73f64026272747c01dd84fc6
 -- 
-Siemens AG, Foundational Technologies
-Linux Expert Center
+2.53.0
+
