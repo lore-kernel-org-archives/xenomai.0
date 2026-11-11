@@ -1,67 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.183.196
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.136.64.227
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794421073;
-	b=pEnT+j7P6gVBtt9LdFqaeftGFyFJ6dHVO9Md3zRHR6xe6y55OGrZUszbaKvLfdTpEc+h
-	 RKx40r/F/eeKnbTs7dAJdbuRBKJEn7WIDX/AoEoTKUxqzf2SPEKmkCAnCmDE1ALu1XawV
-	 5HGVg/OpuDN9w7u2R0FvXU0cMR0+NNv7ljQFIePSpeWbGz+dfsaujNPo0U6oZO4/92e9D
-	 ie+slBOeItAl+1rYZ8O3xGz1g5SqqjMjD2iDhCR2zYfKk1xJDwy2RyQbArAYUy2NHcbSb
-	 LOuPuec4Qi1lO8Rf0VRvFcs423Iz2TY+q8h2X4IuquV2OTMBUW2MRTX0AmQKUQzEw9g==
+	t=1794433656;
+	b=SnG2hZMnEwvywrZ2CCQaoi+yCdDlR3NSk9ZZtLDSLZoUCdlHHDOPJ8VDXmHA/B4mndbB
+	 EoZ74UUWNIx1Ar22S6h1f2Vrau3mGXEsmLCxFtLsa6YZ5+3xlCjbztrExoqqNRCemZNPZ
+	 RTxKqFeBJf3LWyRRm65ZeIQ61ls+DH6RJJTY761lg5zo3NexQ8xHiA68BwEx6RC5CIWPB
+	 7aXbruG40SDgcxpi+hSrxVjNDA3RrRf3Fc8hUI6MgtffBBHb2UIUf/LVt44okUcP7XiXo
+	 /VO9rWr/gzqnDL5nud6YU25yJLF1Xt/gXePLKpgaE0LhY+PC0Lbazs/xfP6OwGXhwHA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794421073;
-	h=DMARC-Filter:Received:DKIM-Signature:From:To:Cc:Subject:In-Reply-To:
-	 References:User-Agent:Date:Message-ID:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:X-GND-Sasl:X-GND-Score:X-GND-Cause:
-	 X-GND-State;
-	bh=lHErYtQGTgdVR5dimZCfOnUkDW84zRoTlGp2PVMM7A4=;
-	b=vj4migUmW1IxAGIipTCibPGjaoxXr/rcsdeghgOOQO+gW5qLmFugBHzTsQQ+nkBEVV24
-	 m50+yaVpcs48AWYATIk+cvSUdSDLV0Kw3GDA1wNflgc6C2MhQRq/+M+OOcBD+/XBH+4mA
-	 vtPW54/m+NukFs6fN4SCfx82i5ZU3tWpIzs1ocOz8BSgdTxbwtvqYa6HuHzQHSUebIyNV
-	 YQmf9fqbm6rfydy3A38MaXBJq1B/cRmXrzYsNCFpj6z6/fKYAYdUMT5We/MEUg3ZgTiWB
-	 3CdqCVMm0SrYSULwRWMSn8mKQ/usiLZ0RmzZVxaNAJbVOigA2YxFs6M0Jqadl4lrmkw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794433656;
+	h=DMARC-Filter:Received:DKIM-Signature:Message-ID:Subject:From:To:Cc:
+	 Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
+	 MIME-Version:X-Flowmailer-Platform:Feedback-ID;
+	bh=8S4/lY38BJBMX319Y1BGhaxowUtbcYu+Xzrzecb6hpE=;
+	b=jSSG+jcCBc/4LdiB/CQwpxxh4KwEm1exeezfKQKPSEAZn4TJOLIcXJ4XptF/DfAXVSY6
+	 mLvW2LW93n7EAAE/VcSveleivHveE37K7a9VusnL12l7P8w8derK1sWVfbNIg8ZArHg4Z
+	 CVE3hzpxcQrdhxpMcyEqy9tBIjjHbXda/gkzRt+9AToveK+spuWo6+wtQKcWkEYbtYTIo
+	 t7jAw2PuC45kt+PbMZgrCE4aorqDGM4HwFJe00bAochCF+wUTcI3dSl2pEJeFJBpQezvF
+	 FLziKmw15Pz7RRDY0BQjleP06fgMfFz4C0UGEpAm+Nv4UJ1jBgGtvpQYQtLoT6tUjyw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=xenomai.org;
-	spf=pass smtp.mailfrom=xenomai.org;
-	dkim=pass header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=RpPxhRop;
-	arc=none smtp.remote-ip=217.70.183.196
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1))
+	dmarc=pass header.from=siemens.com;
+	spf=pass smtp.mailfrom=rts-flowmailer.siemens.com;
+	dkim=pass header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=FQdt0Tz7;
+	arc=none smtp.remote-ip=185.136.64.227
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6544B606A89A
-	for <xenomai@lists.linux.dev>; Wed, 11 Nov 2026 18:17:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6544B606A89A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7E4E606A324
+	for <xenomai@lists.linux.dev>; Wed, 11 Nov 2026 21:47:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E7E4E606A324
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=RpPxhRop
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 25ADD3F5C3;
-	Wed, 11 Nov 2026 18:17:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1794421070;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=lHErYtQGTgdVR5dimZCfOnUkDW84zRoTlGp2PVMM7A4=;
-	b=RpPxhRopKiBySinZNrP4aQLB2OaNZhXPzRhv/HGxdLIFNXlCly0jSG7hAztlORtSgg1tcm
-	iAEyTVo1q+KzawSQpXjLKyzX1wwXPi8PVs2HAMdqfYKcgc5wSiI4jXyGXsBV5JZYDaOhXC
-	VL9S/kui+3yg1vWpUjFu5zzY5W+4Gz5zFOn0C6PQwVQ0LtYNvAJpAd8CSeOlMDcLscenh+
-	yop0eHJxfBsC4GPMpeZgm8+b7lmvIEvkV1VX0JQn041y8pHrV4kb91zZLn2Q5juE3f8o5z
-	A/i+/rNwMSlMAbAB1z7khx5j2mY+BJUHP73h83foypqehASAoDA1OcKkc1GbpA==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=FQdt0Tz7
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20261111214724b54ff4bae10002072d
+        for <xenomai@lists.linux.dev>;
+        Wed, 11 Nov 2026 22:47:24 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=8S4/lY38BJBMX319Y1BGhaxowUtbcYu+Xzrzecb6hpE=;
+ b=FQdt0Tz779wAhcGH61RKzFqnj9Ey/YDRpi+NmCqPDEAYfxmeI7i+96rMQ8oPmTs+sf1Tj1
+ ggz4TqunbeOQUf2dRSzgsjcoWrjSHPfRGIyILF3rHoMVLnZLdJavp0io5VxTA8EaZA1tokZf
+ aC/ImzUBC0/mpJ8Vv5ygziP4lmvRaJUBhsRovBEDvBaEEwphibWyHvgWRy/NBFA7yiitNcuD
+ mogIJKi0jBqoJJSr+o/tvS01NbjpnqDIdxaKBiVx6+UIrcEItoK01QibcCUWeMVE788s4CGv
+ keP0s0q5vo9IiJ4J6A/xic6oixzOBP17uBcfJJxR4xXjoKXCi3WylR4w==;
+Message-ID: <df7cb91395df478c36022cd72f22dde93cc63ab7.camel@siemens.com>
+Subject: Re: [dovetail 7.3][PATCH] arm: dovetail: Deduplicate dovetail fault
+ stubs
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Philippe Gerum <rpm@xenomai.org>
 Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: O_OOB ABI
-In-Reply-To: <10791d06-65b9-48b3-800d-383e8f50c99d@siemens.com> (Jan Kiszka's
-	message of "Wed, 11 Nov 2026 18:55:31 +0100")
-References: <18f772e8-118f-46f6-963a-58db46724e24@siemens.com>
-	<87v76346l0.fsf@xenomai.org>
-	<dda83d6a-554f-48bf-8f00-5d1a1deaa82d@siemens.com>
-	<875wy345kz.fsf@xenomai.org>
-	<10791d06-65b9-48b3-800d-383e8f50c99d@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Wed, 11 Nov 2026 19:17:49 +0100
-Message-ID: <87zevf2pwy.fsf@xenomai.org>
+Date: Wed, 11 Nov 2026 22:47:24 +0100
+In-Reply-To: <ca829aa7-2caf-493e-be78-e5a97e624e0e@siemens.com>
+References: <ca829aa7-2caf-493e-be78-e5a97e624e0e@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -71,55 +64,85 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Score: -100
-X-GND-Cause: dmFkZTGcYqiD9402hUGyvUhvFTMrEucS5gCFQ/xwaXUZvDk7/5oDUKQXoQWlMD7QcNshNjx7MPkB/yNZDG6D/Zj/7QBUB6e/BoERICenWHLklyVOwNUNtorFihSnv2CbBVD58VMWnEPlH+ofGQVSoh7GhIaakRAlHsEijRIsoDeqSQKYF8xn+neE0Opj10PdILmX0AB+yu2S08McOJPWqMxf+vl4ac95GBVZoyqh4cjYV0YAiWoC4VeowpXfr3R/Gi+CJVbrTrcjly7B25NYaODibWFlLt6Xhrxz6RlqKSzwENNO9MRcT4Bqmv+URX+G4YO14yOg7x4lBMDb7H5qJf34XC8ZVSMbprplM2GuY4aBxAdubNwjC9nj63QgvF5Q23cRi3R2p02DgZ1EbQaK1hMFP4uJDEDa4kQQH/tcrV/e1ohWyDgTVBgEdDFR6mOPCEf1hxEFdonkqCeJYcQnbWKlmPRkIUqrREW38BoYnsIk44ViQwmNOdCMPbBZP131EFr6IxmDX2AW1ooSbymNaEd+j72eKWapALBD87oawb6P5iTCfeRJ+sKyobzkh3ObtWGhns0jRMIFFTK6/EsUD03LVc3g97znwmMwRD1efM4t9EFfUnjju6wP71fSkFw9NA7aji4vGo5dJhMMFgxWReUWiPyV+38aqGatZ1sw0zM20nT7Vw
-X-GND-State: clean
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+On Wed, 2026-11-11 at 17:31 +0100, Jan Kiszka wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
+>=20
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>=20
+> BTW, the backport of these to <7.3 went wrong, or 7.3 was fixed up=20
+> without fixing older kernels.
 
-> On 11.11.26 18:54, Philippe Gerum wrote:
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>=20
->>> On 11.11.26 18:32, Philippe Gerum wrote:
->>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>
->>>>> Hi Philippe,
->>>>>
->>>>> FYI. I assume this is an evl-only topic - if at all:
->>>>>
->>>>> "O_OOB changed from 010000000000 (1<<30) to (1 << 29) starting with t=
-he
->>>>> v7.2 port. That changes the userspace ABI compared with 6.18 and =E2=
-=89=A47.1."
->>>>> (opus-5.5, while reviewing my 6.18 rebase)
->>>>>
->>>>
->>>> Correct. Only the evl core enables the oob capability for regular
->>>> drivers, which userland may request by setting O_OOB in the open
->>>> flags. This is out of scope for cobalt.
->>>>
->>>
->>> OK, but shifting the bit was no problem for existing evl applications?
->>=20
->> It was 'only' an issue for applications built against ABI <=3D 46 which
->> could not run on a 7.2+ kernel as a consequence of this upstream change.
->>=20
->>> Handled by the ABI matching between kernel and library?
->>>
->>=20
->> Yes, this has triggered ABI 47.
->>=20
->
-> Thanks for clarifying - maybe the AI will find this thread and avoid to
-> flag this again. ;)
->
+I fixed that up during the 7.3 forward port. But: I cannot send
+backports for something that has not been released yet.
 
-Maybe an AI will end up writing the whole thing and start complaining
-about its own mistakes before fixing them, blaming the insufficient
-effort level of "the other guy". Like humans usually do.
+In addition, if i get this right, this is just a cosmetic change. This
+is one of the files that has to be regularly rebased. We try to do that
+with pure additions / removals, to keep the process simple.
 
---=20
-Philippe.
+That may require some minimal code duplication from time to time. This
+seems to be the case here.
+
+
+>=20
+>  arch/arm/include/asm/trap_entry.h | 25 +++----------------------
+>  1 file changed, 3 insertions(+), 22 deletions(-)
+>=20
+> diff --git a/arch/arm/include/asm/trap_entry.h b/arch/arm/include/asm/tra=
+p_entry.h
+> index 2af401098cec4..a332f90d8843d 100644
+> --- a/arch/arm/include/asm/trap_entry.h
+> +++ b/arch/arm/include/asm/trap_entry.h
+> @@ -5,8 +5,7 @@
+>  #include <asm/dovetail.h>
+>  #include <asm/trace/exceptions.h>
+> =20
+> -#ifdef CONFIG_MMU
+> -#ifdef CONFIG_IRQ_PIPELINE
+> +#if defined(CONFIG_MMU) && defined(CONFIG_IRQ_PIPELINE)
+> =20
+>  #include <linux/irqstage.h>
+> =20
+> @@ -55,7 +54,7 @@ static inline void dovetail_fault_exit(int exception, s=
+truct pt_regs *regs,
+>  =09hard_local_irq_restore(flags);
+>  }
+> =20
+> -#else /* !CONFIG_IRQ_PIPELINE */
+> +#else /* !CONFIG_MMU || !CONFIG_IRQ_PIPELINE */
+> =20
+>  static inline unsigned long dovetail_fault_entry(int exception,
+>  =09=09=09=09=09=09 struct pt_regs *regs)
+> @@ -72,24 +71,6 @@ static inline void dovetail_fault_exit(int exception, =
+struct pt_regs *regs,
+>  =09(void)regs;
+>  =09(void)combo;
+>  }
+> -#endif /* !CONFIG_IRQ_PIPELINE */
+> -
+> -#else /* CONFIG_MMU */
+> -static inline unsigned long dovetail_fault_entry(int exception,
+> -=09=09=09=09=09=09 struct pt_regs *regs)
+> -{
+> -=09(void)(exception);
+> -=09(void)(regs);
+> -=09return 0;
+> -}
+> -
+> -static inline void dovetail_fault_exit(int exception, struct pt_regs *re=
+gs,
+> -=09=09=09=09       unsigned long combo)
+> -{
+> -=09(void)exception;
+> -=09(void)regs;
+> -=09(void)combo;
+> -}
+> -#endif /* !CONFIG_MMU */
+> +#endif /* !CONFIG_MMU || !CONFIG_IRQ_PIPELINE */
+> =20
+>  #endif
+> --=20
+> 2.47.3
