@@ -1,68 +1,68 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.178.231
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1794399058;
-	b=aJtXVZNa4YxUweT+x2YqtfqKjWkOxdIQWkeuedKZRUAvNfHsG8Ain9mWK2DhTPzyLMIs
-	 TUJAuqCs1t0sDX6kaoNrhWmWNp49SMTQ20CxK4KITeoEBQLbbJqAy5X47+dXUw/FyoMWs
-	 Pu6MBC3eRVpUGVxtiF8ZUhWRgAZJtCZpQJq1IXkUZjD6YWR7PXFDJAF1fKuSf2j5YMm2C
-	 CzV27nzc0n71jnZ0KBzjh8iqxININ7/FzxOBS/m6QywjI9+lSFZCLZalR15shVtaaU66g
-	 +nOy3HFNSfnsHvqd4tntmhi+lZxRaJnc6+P2RjQKzys+waYWlv0MRSR9FZbuyQYiaPQ==
+	b=38Zr++6zky6T9fX9fp7Nc24SOg0rvXIPAOTPWg04iS58GCD2/dlihweLbnPb5GBilyXJ
+	 tV/stY6lU2cmXZ8w6UsIn1SSgW9ZzvFYNLAlaFDEG9MyzfuKXf0y6meu8A+4Hox4Dd/Ed
+	 kIFdPJ65jTp4OcFmqjA61FOmqFYzzJ4/vYX5NFSXT33xP4Y67bKZDAgmOPDtCLIdPCWsN
+	 2siSaAJZKoG/gURUMHGWJIDjTLkPeRT/4Oo9FuAty5LVT2Y1dcpf58FSTDOcmaA2RC5jJ
+	 JMcg5gPv/6y6a2BjKs2daKjJjpzbw1GYZswC+kzd4uqDG5gGNcY12OJo9bsMFxvIPbQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1794399058;
 	h=DMARC-Filter:Received:Received:Received:DKIM-Signature:From:To:
 	 Subject:Date:Message-ID:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding:X-Flowmailer-Platform:Feedback-ID:
 	 X-GND-Cause:X-GND-State:X-GND-Score;
-	bh=jG5tGH9uwtxyc64uQ4slEsGZEMpOA1TZsXOtyCl+Ol0=;
-	b=T4SEO482CO98L27H4msf/4ayxT+8wrDjS2fIxhi1ufES9Ge82mCS53A2bg9BhIug13si
-	 18zGGStbDn/FI7ffmTfACjf7Xt8UKUtcsfGcDVsNfPSfgboR81aD5HoxTC1KiJYHwwcyz
-	 gBQwv/jBh+ZHy1gO3vwRC5pVkTjgl5T2atsJfSpjr+PCkvT7AE7wElL0GDBfG8UxK8/Sj
-	 ME/XxbH77CFNfC7aupTlCOLBbiH1m9RYEiDCOf6Qy07As4tLhBvxzTQgiU77K5i/FwVAw
-	 75gx6CSoGBAZx4aprDVydKYXra58RQh62VOS2+AS4fvWcTwf4lmUElK+29xoOLvS6Ww==
+	bh=9+QP5VgC260cGjYUL9TgCLgVdCTH+trB/n69utDzyqo=;
+	b=mpXUCJ1Qgpp27IKXMLMm0jj5ZBbSrwXZkleI8V4Bn8SlEFCcyGUVOclI1dmFj/80/wuC
+	 oQAS0RB2tprBtMxiJhxlhCBGG81+mQHRJDomhz8uOoc3DQYY2wubhYtt1QV3PzVTQY2o/
+	 srw4NhEyGwlI9zCZlxe4NLPp0YO3SnDcQEPm7a9MYw88tP0kyJSWtVmhOtifaKQf3Dk8/
+	 CK8aJpn34b9i+SuRsH8XNYSTjFiX51fI/5UFxcAiarQ+ZbOIsecxoq402/Q0RRtODzvck
+	 DzzJQSkoabcFSkkKkZMI1wBGyKfCXbwBor2hzMzumuFZ1YZorV1eqIzkDZfOIVrgJ9g==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=siemens.com;
 	spf=pass smtp.mailfrom=redirect.mail.gandi.net;
-	dkim=pass header.d=siemens.com header.i=jan.kiszka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=h5jSwudM;
+	dkim=pass header.d=siemens.com header.i=jan.kiszka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=JskwZdQV;
 	arc=none smtp.remote-ip=217.70.178.231
 Received: from redirect.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3667F606A330
-	for <xenomai@lists.linux.dev>; Wed, 11 Nov 2026 12:10:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3667F606A330
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DECC606A338
+	for <xenomai@lists.linux.dev>; Wed, 11 Nov 2026 12:10:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3DECC606A338
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=jan.kiszka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=h5jSwudM
-Received: from spool.mail.gandi.net (spool4.mail.gandi.net [217.70.178.213])
-	by relay11.mail.gandi.net (Postfix) with ESMTPS id E444A3EE88
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=jan.kiszka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=JskwZdQV
+Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
+	by relay11.mail.gandi.net (Postfix) with ESMTPS id 9A07B3ECB3
 	for <xenomai@lists.linux.dev>; Wed, 11 Nov 2026 12:10:50 +0000 (UTC)
-Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 874C65600D0
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 4618027E0274
 	for <xenomai@xenomai.org>; Wed, 11 Nov 2026 12:10:50 +0000 (UTC)
 Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=siemens.com header.s=fm1 header.b=h5jSwudM;
-	spf=pass (spool.mail.gandi.net: domain of fm-294854-202611111210491a46dba13e000207e0-XX_bT9@rts-flowmailer.siemens.com designates 185.136.65.227 as permitted sender) smtp.mailfrom=fm-294854-202611111210491a46dba13e000207e0-XX_bT9@rts-flowmailer.siemens.com;
+	dkim=pass header.d=siemens.com header.s=fm1 header.b=JskwZdQV;
+	spf=pass (spool.mail.gandi.net: domain of fm-294854-2026111112104955b7e48bfd000207ed-vohNpP@rts-flowmailer.siemens.com designates 185.136.65.225 as permitted sender) smtp.mailfrom=fm-294854-2026111112104955b7e48bfd000207ed-vohNpP@rts-flowmailer.siemens.com;
 	dmarc=pass (policy=reject) header.from=siemens.com
-Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202611111210491a46dba13e000207e0
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 2026111112104955b7e48bfd000207ed
         for <xenomai@xenomai.org>;
         Wed, 11 Nov 2026 13:10:49 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
- bh=jG5tGH9uwtxyc64uQ4slEsGZEMpOA1TZsXOtyCl+Ol0=;
- b=h5jSwudMehHSOmf+FmuXhTyJxU96WpMrnFpb/KUNgNReZxanetHvJPy6TW/wg0p7lI/0N6
- pipGQedUbcnCGk3JIcNdfWp6kyAcwkEWP1KUuxb8wA2ArRGIjKtHnpL/j3wf+s94JszLsWL+
- xerSUcmuLY2aflwCzfI+X666t5Jek7FtBzjuhC+Yo6Gaw03zzurijL9Y4qpNlfSq9VTLoSCY
- SFWXUYFfQtrOmh8I8VndEBia+zcqgutkZlHnjDTK/KrHA/7x3Syx8qO89zL7CQZWPLpEEASj
- 3tqBDQ9mCVqqBczrsJ0MjXS3/PkuXT34aQlNiVorOsBlj0rD2Vyrj6tA==;
+ bh=9+QP5VgC260cGjYUL9TgCLgVdCTH+trB/n69utDzyqo=;
+ b=JskwZdQVy7yKMXtt5eW38/pctTp6PiPYoTlKQNv6BgyHuR2NtDYGVfQTvkCA6JFymsBar9
+ QYa+gNcU4XTFbMJnxQRxYIkoX2BhF3EEnwY6QzMV4qnoDscvLPn9lnxzXace00u+0w9xCWMX
+ 8mRN+1BO7bM8tFbsyzGLlmLYtBiLukwoElvgyWfzI7TV4W/493YqieGjiG5J0bKZgXcTK6N8
+ l6yKBvO+4J/H1NEG7sxsLvvovESlXYCAa6jsKirnfT67OPtYSenLi4M5KsSdGVQZHtGRpVPG
+ 1OL4XPFKCEx3+a09SAHvl/9Nz1+w4b7s9ntN2D9ezX3pYqkQj8Ft0yXQ==;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: Philippe Gerum <rpm@xenomai.org>,
 	Florian Bezdeka <florian.bezdeka@siemens.com>,
 	xenomai@xenomai.org
-Subject: [dovetail][PATCH v2 4/4] ARM: dovetail: Fix VFP exception trap notification
-Date: Wed, 11 Nov 2026 13:10:47 +0100
-Message-ID: <d37403e68eecae282d169dafe0a582acc273a607.1794399047.git.jan.kiszka@siemens.com>
+Subject: [dovetail][PATCH v2 3/4] ARM: dovetail: Notify the core about undefined instruction traps from user mode
+Date: Wed, 11 Nov 2026 13:10:46 +0100
+Message-ID: <7184813b876d9e138cb8d93802ba19b97dadf177.1794399047.git.jan.kiszka@siemens.com>
 In-Reply-To: <cover.1794399047.git.jan.kiszka@siemens.com>
 References: <cover.1794399047.git.jan.kiszka@siemens.com>
 X-Mailing-List: xenomai@lists.linux.dev
@@ -77,122 +77,170 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-294854:519-21489:flowmailer
-X-GND-Cause: dmFkZTFEuMWFhQbo1YFDxks+CGkCk3E6JqAJB/kulAOV3ku3Xw7hxtb9ytyR92m3d7czrNFdgsLaBNjo8CnXcZmC5TkA4XocQ6Rj+Ni17pUp1ReOKNB7/DrEDG5JMs3as7rVAS6Zzc6bxOkNF+rc3WGMcEqCTinKpkGl4Nsccru4yLGgd6AiOseB2u44R9NvJlQfvJwgPokSMqhjo7KoHq92CBAX61aFz6L8Nvl0x2yzJYa1kzq0r23vDtjd5DJIKgGQ/pdiDMic6jYE9N5urYNSU6HK5Wg1QdkprRqs03/+CgpPiGfvqOepUql2aGcKFoS0mVLI2LAKvQirAmHJqzgX2HBISOV/JpSDU0j/8t6choAUaVnU0HU9lHhlE4UB76MhZPNKPmNtL7YTKKpcAxUKNwlusSnjlBEL4BrwSC3zGhcf9cvTChlQ9kQZu46TBx63TTS84FWMrPjFnSb1SArQ3WTmfAfF/21G9+PgBl4DzIN+/sWPu0sVqqCQpMubZKUGSspCeIZvcJrmaFkQvtxYe84uC6BiuUyRunMmt98jS6vZtuR8q78hUONGeWAftwr7egmaQ8YtunvqiN3Wdh1CM37ddaQUHaDpVGsM34ttU8bchJHyd2SIaPm/ps4RbDXFvlsrFlWoL/PczTWpRdOwsSe0VnaI2NC63dtg2dMa0EaRGg
+X-GND-Cause: dmFkZTGVONs7jqIhW0VdlqRSqfb7y0Kvn7XVihjBeBze4/kEiFBhyS34TbN0PtjLLY+JTjoybjgoJDK90bIpPnEnl+xbkr9bDZ6ozwDiOe5rgewHfTCybAwwjt3AL3eR63R9Rx0EtzVJ3ffr3IW8LIuuNfo6PXD4sBC7WwC4e68UCWr2wzR6/PU86gUUzQbJKTCxGfz1qTkBtrdVKcLMmnEOH/ULfrf2hxldcIPTfGXFRecreEodcLAxMiStU26SOR/aklyQUpK1K61zewNC9AEDtlXL1tKGYKB4bhYKs4IhsLLtNzet1fkb322Ws54vm/pr2Wx4gg8XMBY+8gfeq7ecmllOLoW/CYVVo4J0UaoBluZIVXW+ijZmik0Vk6YANEEViQQPude26XqtZMI1c0E39TJ57OezWxQ1MEu77iZWxX0n83WFA7pCM7v6m/cKdVjWzXcsHMN8BWwVhFjYm92H+Fd6FvmBYPtf53QOPDPBsBL/QzOujG4YckpbBxdH8/2q1vrVggRVpZ+s/aiKWV7zwIur+fdDAgm1G6hhNzo6U2IzG5DA2JFvXc9HD5kjQtrVdv4RjEuKGOmcuTh3IychljcE15eZeGmfRm+CpdGwk3oaItAGOJmChIEKj9+Vu/cUftBsjtSI6JqcddxMKVxFht8cBQGDFpMaLqcJxFZa5dq1EQ
 X-GND-State: clean
 X-GND-Score: -100
 
 From: Jan Kiszka <jan.kiszka@siemens.com>
 
-The trap annotation of the VFP bounce path predates upstream
-commit c0b5195bad63 ("ARM: 9426/1: vfp: Move sending signals outside of vfp_state_hold()ed section.")
-which turned vfp_raise_exceptions() into returning the si_code,
-deferring vfp_raise_sigfpe() to the exit of VFP_bounce() after
-vfp_state_release(). The Dovetail hunk was kept in place verbatim,
-which is now wrong in three ways:
+Unlike the kernel mode entry (__und_svc), the user mode undefined
+instruction path does not inform the companion core at all. This is
+intended for the undef hooks which must stay oob-capable, like the
+lazy VFP state restore in vfp_support_entry(), but leaves the in-band
+fallbacks of that path unannotated, so an oob thread may run them
+from the oob stage:
 
-- for VFP_EXCEPTION_ERROR, SIGFPE is sent twice: once from the
-  annotated block in vfp_raise_exceptions(), once more from the exit
-  path of VFP_bounce() via the returned si_code,
+- do_undefinstr() raising SIGILL when no hook claimed the instruction
+  or the instruction could not be read from user memory,
 
-- the deferred signals for regular FP exceptions enabled in FPSCR
-  (divide by zero, overflow, ...) are not annotated at all, so an oob
-  thread sends them from the oob stage,
+- swp_handler() emulating SWP{B}, which accesses user memory (and may
+  fault in pages), takes the mmap lock and raises SIGSEGV on errors,
 
-- the annotated block runs within the vfp_state_hold() section, which
-  under Dovetail is a hard_preempt_disable() section. If the core
-  demotes the thread to in-band from there, hard_preempt_enable()
-  pairs an oob-stage hard_preempt_disable() which did not touch the
-  preemption count with an in-band preempt_enable_no_resched(),
-  unbalancing it. Besides, that was the very reason for the upstream
-  change on PREEMPT_RT.
+- uprobe_trap_handler(), which depends on the in-band return to user
+  path for running the probe handlers, a path an oob thread skips.
 
-Move the notification to the exit path of VFP_bounce(), after the
-VFP state was released: if any signal is to be raised, have the
-companion core demote the thread, or skip the signal if the core
-decided to handle the trap from the oob stage. This mirrors what
-arm64 does for ARM64_TRAP_FPE in do_fpsimd_exc().
+Annotate them. do_undefinstr() uses the conditional form, since the
+companion core may want to handle an undefined instruction of an oob
+thread entirely from the oob stage, in which case it does not demote
+the thread and we must not inject the in-band signal (this is the
+behavior arm64 implements in do_el0_undef()). Kernel mode faults are
+already covered by the notification issued from __und_svc, don't
+notify twice.
 
-vfp_raise_exceptions() does not need the register frame anymore,
-restore its upstream signature.
+swp_handler() and uprobe_trap_handler() are restricted to user mode
+by their hook descriptors and always need the in-band stage, so they
+use the strict form like break_trap() does.
 
 Assisted-by: opencode:Fable-5.1
 Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
 ---
- arch/arm/vfp/vfpmodule.c | 27 +++++++++++++++++++--------
- 1 file changed, 19 insertions(+), 8 deletions(-)
+ arch/arm/kernel/swp_emulate.c  | 22 ++++++++++++++++++----
+ arch/arm/kernel/traps.c        | 12 ++++++++++++
+ arch/arm/probes/uprobes/core.c | 10 ++++++++++
+ 3 files changed, 40 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/vfp/vfpmodule.c b/arch/arm/vfp/vfpmodule.c
-index 4bbe92c619f2d..5589eb76379b5 100644
---- a/arch/arm/vfp/vfpmodule.c
-+++ b/arch/arm/vfp/vfpmodule.c
-@@ -283,7 +283,7 @@ static void vfp_panic(char *reason, u32 inst)
- /*
-  * Process bitmask of exception conditions.
-  */
--static int vfp_raise_exceptions(u32 exceptions, u32 inst, u32 fpscr, struct pt_regs *regs)
-+static int vfp_raise_exceptions(u32 exceptions, u32 inst, u32 fpscr)
+diff --git a/arch/arm/kernel/swp_emulate.c b/arch/arm/kernel/swp_emulate.c
+index fdce83c95acb0..39b45c598f7f0 100644
+--- a/arch/arm/kernel/swp_emulate.c
++++ b/arch/arm/kernel/swp_emulate.c
+@@ -23,6 +23,7 @@
+ #include <linux/sched/mm.h>
+ #include <linux/syscalls.h>
+ #include <linux/perf_event.h>
++#include <linux/dovetail.h>
+ 
+ #include <asm/opcodes.h>
+ #include <asm/system_info.h>
+@@ -161,6 +162,14 @@ static int swp_handler(struct pt_regs *regs, unsigned int instr)
  {
- 	int si_code = 0;
- 
-@@ -291,10 +291,6 @@ static int vfp_raise_exceptions(u32 exceptions, u32 inst, u32 fpscr, struct pt_r
- 
- 	if (exceptions == VFP_EXCEPTION_ERROR) {
- 		vfp_panic("unhandled bounce", inst);
--		if (mark_cond_trap_entry(ARM_TRAP_VFP, regs)) {
--			vfp_raise_sigfpe(FPE_FLTINV, regs);
--			mark_trap_exit(ARM_TRAP_VFP, regs);
--		}
- 		return FPE_FLTINV;
- 	}
- 
-@@ -437,7 +433,7 @@ static void VFP_bounce(u32 trigger, u32 fpexc, struct pt_regs *regs, unsigned lo
- 		 * unallocated VFP instruction but with FPSCR.IXE set and not
- 		 * on VFP subarch 1.
- 		 */
--		si_code = vfp_raise_exceptions(VFP_EXCEPTION_ERROR, trigger, fpscr, regs);
-+		si_code = vfp_raise_exceptions(VFP_EXCEPTION_ERROR, trigger, fpscr);
- 		goto exit;
- 	}
- 
-@@ -462,7 +458,7 @@ static void VFP_bounce(u32 trigger, u32 fpexc, struct pt_regs *regs, unsigned lo
- 	 */
- 	exceptions = vfp_emulate_instruction(trigger, fpscr, regs);
- 	if (exceptions)
--		si_code2 = vfp_raise_exceptions(exceptions, trigger, orig_fpscr, regs);
-+		si_code2 = vfp_raise_exceptions(exceptions, trigger, orig_fpscr);
- 
- 	/*
- 	 * If there isn't a second FP instruction, exit now. Note that
-@@ -476,13 +472,28 @@ static void VFP_bounce(u32 trigger, u32 fpexc, struct pt_regs *regs, unsigned lo
- emulate:
- 	exceptions = vfp_emulate_instruction(trigger, orig_fpscr, regs);
- 	if (exceptions)
--		si_code = vfp_raise_exceptions(exceptions, trigger, orig_fpscr, regs);
-+		si_code = vfp_raise_exceptions(exceptions, trigger, orig_fpscr);
- exit:
- 	vfp_state_release(flags);
-+
-+	if (!si_code && !si_code2)
-+		return;
+ 	unsigned int address, destreg, data, type;
+ 	unsigned int res = 0;
++	int ret = 0;
 +
 +	/*
-+	 * Dovetail: the companion core may handle the FP exception of
-+	 * an oob thread entirely from the oob stage, in which case it
-+	 * does not demote us to in-band and we must not raise the
-+	 * signal. Otherwise, we run in-band from this point.
++	 * Dovetail: emulating the access may fault on user memory,
++	 * and failures are reported by signal. We need to run
++	 * in-band for this, have the companion core demote us.
 +	 */
-+	if (!mark_cond_trap_entry(ARM_TRAP_VFP, regs))
-+		return;
++	mark_trap_entry(ARM_TRAP_UNDEFINSTR, regs);
+ 
+ 	perf_sw_event(PERF_COUNT_SW_EMULATION_FAULTS, 1, regs, regs->ARM_pc);
+ 
+@@ -171,12 +180,14 @@ static int swp_handler(struct pt_regs *regs, unsigned int instr)
+ 	case ARM_OPCODE_CONDTEST_FAIL:
+ 		/* Condition failed - return to next instruction */
+ 		regs->ARM_pc += 4;
+-		return 0;
++		goto out;
+ 	case ARM_OPCODE_CONDTEST_UNCOND:
+ 		/* If unconditional encoding - not a SWP, undef */
+-		return -EFAULT;
++		ret = -EFAULT;
++		goto out;
+ 	default:
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto out;
+ 	}
+ 
+ 	if (current->pid != previous_pid) {
+@@ -220,7 +231,10 @@ static int swp_handler(struct pt_regs *regs, unsigned int instr)
+ 		set_segfault(regs, address);
+ 	}
+ 
+-	return 0;
++out:
++	mark_trap_exit(ARM_TRAP_UNDEFINSTR, regs);
 +
- 	if (si_code2)
- 		vfp_raise_sigfpe(si_code2, regs);
- 	if (si_code)
- 		vfp_raise_sigfpe(si_code, regs);
-+
-+	mark_trap_exit(ARM_TRAP_VFP, regs);
++	return ret;
  }
  
- static void vfp_enable(void *unused)
+ /*
+diff --git a/arch/arm/kernel/traps.c b/arch/arm/kernel/traps.c
+index 8ca5ba26d2598..059a1dc900431 100644
+--- a/arch/arm/kernel/traps.c
++++ b/arch/arm/kernel/traps.c
+@@ -483,6 +483,16 @@ asmlinkage void do_undefinstr(struct pt_regs *regs)
+ 		return;
+ 
+ die_sig:
++	/*
++	 * Dovetail: the companion core may handle an undefined
++	 * instruction raised by an oob thread entirely from the oob
++	 * stage, in which case it does not demote us to in-band and
++	 * we must not apply the in-band fixup. The kernel mode case
++	 * was notified from __und_svc already.
++	 */
++	if (user_mode(regs) &&
++	    !mark_cond_trap_entry(ARM_TRAP_UNDEFINSTR, regs))
++		return;
+ #ifdef CONFIG_DEBUG_USER
+ 	if (user_debug & UDBG_UNDEFINED) {
+ 		pr_info("%s (%d): undefined instruction: pc=%px\n",
+@@ -493,6 +503,8 @@ asmlinkage void do_undefinstr(struct pt_regs *regs)
+ #endif
+ 	arm_notify_die("Oops - undefined instruction", regs,
+ 		       SIGILL, ILL_ILLOPC, pc, 0, 6);
++	if (user_mode(regs))
++		mark_trap_exit(ARM_TRAP_UNDEFINSTR, regs);
+ }
+ NOKPROBE_SYMBOL(do_undefinstr)
+ 
+diff --git a/arch/arm/probes/uprobes/core.c b/arch/arm/probes/uprobes/core.c
+index 0e1c6b9e7e54a..06b3b5e37e73d 100644
+--- a/arch/arm/probes/uprobes/core.c
++++ b/arch/arm/probes/uprobes/core.c
+@@ -10,6 +10,7 @@
+ #include <linux/sched.h>
+ #include <linux/uprobes.h>
+ #include <linux/notifier.h>
++#include <linux/dovetail.h>
+ 
+ #include <asm/opcodes.h>
+ #include <asm/traps.h>
+@@ -185,6 +186,13 @@ static int uprobe_trap_handler(struct pt_regs *regs, unsigned int instr)
+ {
+ 	unsigned long flags;
+ 
++	/*
++	 * Dovetail: uprobe handling runs from the in-band return to
++	 * user path, which an oob thread would skip. Have the
++	 * companion core demote us first.
++	 */
++	mark_trap_entry(ARM_TRAP_BREAK, regs);
++
+ 	local_irq_save(flags);
+ 	instr &= 0x0fffffff;
+ 	if (instr == (UPROBE_SWBP_ARM_INSN & 0x0fffffff))
+@@ -193,6 +201,8 @@ static int uprobe_trap_handler(struct pt_regs *regs, unsigned int instr)
+ 		uprobe_post_sstep_notifier(regs);
+ 	local_irq_restore(flags);
+ 
++	mark_trap_exit(ARM_TRAP_BREAK, regs);
++
+ 	return 0;
+ }
+ 
 -- 
 2.47.3
 
