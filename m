@@ -1,68 +1,70 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.178.232
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.178.231
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1794399058;
-	b=y8FcFQCgIKj/YYSV0N5kNinUJSWf3TTqN3ySCFVNEdtliPm6Iekt31uYd8ZNB3Xvd9X4
-	 yMlwOQ4sJWbAHn4LUkjRS+KEPZH0Zlp7XzrurB04pEWLKuImGjHjFO9zOYsgolGsQm6UJ
-	 ZgQGiuJ41fHLKQZFDPzwQHYpr33D2+XrdLlUwF7UHbjWMErNULi/egup2P1SC/2hkIjfV
-	 kz/B4EwmisTYjpYh9yO4BSmv/pxCqK1evGztFN8oZZnhOzKLt1pb+K+yvZej7s5Qyl+wX
-	 Lz3pNR0wbXqM5hyhd+qN7NFUg1ombQtJDH3V42+JFi69SXbUfmpNouqsaI9how+dpKw==
+	b=aJtXVZNa4YxUweT+x2YqtfqKjWkOxdIQWkeuedKZRUAvNfHsG8Ain9mWK2DhTPzyLMIs
+	 TUJAuqCs1t0sDX6kaoNrhWmWNp49SMTQ20CxK4KITeoEBQLbbJqAy5X47+dXUw/FyoMWs
+	 Pu6MBC3eRVpUGVxtiF8ZUhWRgAZJtCZpQJq1IXkUZjD6YWR7PXFDJAF1fKuSf2j5YMm2C
+	 CzV27nzc0n71jnZ0KBzjh8iqxININ7/FzxOBS/m6QywjI9+lSFZCLZalR15shVtaaU66g
+	 +nOy3HFNSfnsHvqd4tntmhi+lZxRaJnc6+P2RjQKzys+waYWlv0MRSR9FZbuyQYiaPQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1794399058;
 	h=DMARC-Filter:Received:Received:Received:DKIM-Signature:From:To:
-	 Subject:Date:Message-ID:MIME-Version:Content-Transfer-Encoding:
-	 X-Flowmailer-Platform:Feedback-ID:X-GND-State:X-GND-Score:
-	 X-GND-Cause;
-	bh=I8otwS/eVDPGBRG6FQ80TuKfV+4z2ibmXqGEWoTYlU8=;
-	b=sIqXn9i580VM5nloUW56koUiTDK60jLRGFeTPXAiAQ27q9KLq2YTT7+07R/zxaHqvIDm
-	 Vfr9XBXMN07fgj1wEzJmS23iLESvGoG/ZC+NuFtPGVRNWp2LL0HU6fEhkFAZA94GZtrX4
-	 PMBFfpUayObMyczclJ5sOcCrMLd/TpiGa+h11Z6LdqxWbP/SQj1PKvDYiqZWbP9nKUnK7
-	 XdUVFQMEmyRqUemV4voxsnkdEpt3876a5lFv0jAcDPFoh5KYYR79FGYiJxhQdgfnQTdZh
-	 3AQizArsxk6uSX8OmpQ6o/4x6v0ygyEB/RqVONfQ3X1UGLkhBoM6TZgTebqckDkvASA==
+	 Subject:Date:Message-ID:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding:X-Flowmailer-Platform:Feedback-ID:
+	 X-GND-Cause:X-GND-State:X-GND-Score;
+	bh=jG5tGH9uwtxyc64uQ4slEsGZEMpOA1TZsXOtyCl+Ol0=;
+	b=T4SEO482CO98L27H4msf/4ayxT+8wrDjS2fIxhi1ufES9Ge82mCS53A2bg9BhIug13si
+	 18zGGStbDn/FI7ffmTfACjf7Xt8UKUtcsfGcDVsNfPSfgboR81aD5HoxTC1KiJYHwwcyz
+	 gBQwv/jBh+ZHy1gO3vwRC5pVkTjgl5T2atsJfSpjr+PCkvT7AE7wElL0GDBfG8UxK8/Sj
+	 ME/XxbH77CFNfC7aupTlCOLBbiH1m9RYEiDCOf6Qy07As4tLhBvxzTQgiU77K5i/FwVAw
+	 75gx6CSoGBAZx4aprDVydKYXra58RQh62VOS2+AS4fvWcTwf4lmUElK+29xoOLvS6Ww==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=siemens.com;
 	spf=pass smtp.mailfrom=redirect.mail.gandi.net;
-	dkim=pass header.d=siemens.com header.i=jan.kiszka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=RZxtQUMn;
-	arc=none smtp.remote-ip=217.70.178.232
-Received: from redirect.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
+	dkim=pass header.d=siemens.com header.i=jan.kiszka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=h5jSwudM;
+	arc=none smtp.remote-ip=217.70.178.231
+Received: from redirect.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FD42606A321
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3667F606A330
 	for <xenomai@lists.linux.dev>; Wed, 11 Nov 2026 12:10:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6FD42606A321
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3667F606A330
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=jan.kiszka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=RZxtQUMn
-Received: from spool.mail.gandi.net (spool1.mail.gandi.net [217.70.178.210])
-	by relay12.mail.gandi.net (Postfix) with ESMTPS id 94EA73E978
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=jan.kiszka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=h5jSwudM
+Received: from spool.mail.gandi.net (spool4.mail.gandi.net [217.70.178.213])
+	by relay11.mail.gandi.net (Postfix) with ESMTPS id E444A3EE88
 	for <xenomai@lists.linux.dev>; Wed, 11 Nov 2026 12:10:50 +0000 (UTC)
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 3C65BC00482
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 874C65600D0
 	for <xenomai@xenomai.org>; Wed, 11 Nov 2026 12:10:50 +0000 (UTC)
 Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=siemens.com header.s=fm1 header.b=RZxtQUMn;
-	dmarc=pass (policy=reject) header.from=siemens.com;
-	spf=pass (spool.mail.gandi.net: domain of fm-294854-202611111210493d8672ea4b0002071c-_CDm8e@rts-flowmailer.siemens.com designates 185.136.64.226 as permitted sender) smtp.mailfrom=fm-294854-202611111210493d8672ea4b0002071c-_CDm8e@rts-flowmailer.siemens.com
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202611111210493d8672ea4b0002071c
+	dkim=pass header.d=siemens.com header.s=fm1 header.b=h5jSwudM;
+	spf=pass (spool.mail.gandi.net: domain of fm-294854-202611111210491a46dba13e000207e0-XX_bT9@rts-flowmailer.siemens.com designates 185.136.65.227 as permitted sender) smtp.mailfrom=fm-294854-202611111210491a46dba13e000207e0-XX_bT9@rts-flowmailer.siemens.com;
+	dmarc=pass (policy=reject) header.from=siemens.com
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202611111210491a46dba13e000207e0
         for <xenomai@xenomai.org>;
         Wed, 11 Nov 2026 13:10:49 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=jan.kiszka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding;
- bh=I8otwS/eVDPGBRG6FQ80TuKfV+4z2ibmXqGEWoTYlU8=;
- b=RZxtQUMnL770Bomdtvj36vY5VTQp1bLxMOtBE95jU4S9OZdB9Z6zfrm2fg/VHg3iOANrrJ
- joxp25HtoEeGFYFf3EW0336OUqs3EvMk3u0os3/u3enntsNofvjqDkT1eUYHl0d3woNqTu+K
- yCQR9aKE8qnNisZsvqKdTvlcpr+x4sMoy8gnXj+BAQr48bL/pdcF/cSpsxeMEQnC0eS0Hc3s
- b0lKzE6s68vz6rlHwu4dEZcMGADIQsX6wH/5/hPU1tLGYROsMYoqQgg0VLTH4DaR9PMIfo5i
- IS7lPV02ST6/OETtQMBfFsQo307weNaUA5CTqLSVOSZX0NFYblQNAB8w==;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:References:In-Reply-To;
+ bh=jG5tGH9uwtxyc64uQ4slEsGZEMpOA1TZsXOtyCl+Ol0=;
+ b=h5jSwudMehHSOmf+FmuXhTyJxU96WpMrnFpb/KUNgNReZxanetHvJPy6TW/wg0p7lI/0N6
+ pipGQedUbcnCGk3JIcNdfWp6kyAcwkEWP1KUuxb8wA2ArRGIjKtHnpL/j3wf+s94JszLsWL+
+ xerSUcmuLY2aflwCzfI+X666t5Jek7FtBzjuhC+Yo6Gaw03zzurijL9Y4qpNlfSq9VTLoSCY
+ SFWXUYFfQtrOmh8I8VndEBia+zcqgutkZlHnjDTK/KrHA/7x3Syx8qO89zL7CQZWPLpEEASj
+ 3tqBDQ9mCVqqBczrsJ0MjXS3/PkuXT34aQlNiVorOsBlj0rD2Vyrj6tA==;
 From: Jan Kiszka <jan.kiszka@siemens.com>
 To: Philippe Gerum <rpm@xenomai.org>,
 	Florian Bezdeka <florian.bezdeka@siemens.com>,
 	xenomai@xenomai.org
-Subject: [dovetail][PATCH v2 0/4] ARM trap fixes and generic handling of trap nesting
-Date: Wed, 11 Nov 2026 13:10:43 +0100
-Message-ID: <cover.1794399047.git.jan.kiszka@siemens.com>
+Subject: [dovetail][PATCH v2 4/4] ARM: dovetail: Fix VFP exception trap notification
+Date: Wed, 11 Nov 2026 13:10:47 +0100
+Message-ID: <d37403e68eecae282d169dafe0a582acc273a607.1794399047.git.jan.kiszka@siemens.com>
+In-Reply-To: <cover.1794399047.git.jan.kiszka@siemens.com>
+References: <cover.1794399047.git.jan.kiszka@siemens.com>
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -75,101 +77,122 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-294854:519-21489:flowmailer
+X-GND-Cause: dmFkZTFEuMWFhQbo1YFDxks+CGkCk3E6JqAJB/kulAOV3ku3Xw7hxtb9ytyR92m3d7czrNFdgsLaBNjo8CnXcZmC5TkA4XocQ6Rj+Ni17pUp1ReOKNB7/DrEDG5JMs3as7rVAS6Zzc6bxOkNF+rc3WGMcEqCTinKpkGl4Nsccru4yLGgd6AiOseB2u44R9NvJlQfvJwgPokSMqhjo7KoHq92CBAX61aFz6L8Nvl0x2yzJYa1kzq0r23vDtjd5DJIKgGQ/pdiDMic6jYE9N5urYNSU6HK5Wg1QdkprRqs03/+CgpPiGfvqOepUql2aGcKFoS0mVLI2LAKvQirAmHJqzgX2HBISOV/JpSDU0j/8t6choAUaVnU0HU9lHhlE4UB76MhZPNKPmNtL7YTKKpcAxUKNwlusSnjlBEL4BrwSC3zGhcf9cvTChlQ9kQZu46TBx63TTS84FWMrPjFnSb1SArQ3WTmfAfF/21G9+PgBl4DzIN+/sWPu0sVqqCQpMubZKUGSspCeIZvcJrmaFkQvtxYe84uC6BiuUyRunMmt98jS6vZtuR8q78hUONGeWAftwr7egmaQ8YtunvqiN3Wdh1CM37ddaQUHaDpVGsM34ttU8bchJHyd2SIaPm/ps4RbDXFvlsrFlWoL/PczTWpRdOwsSe0VnaI2NC63dtg2dMa0EaRGg
 X-GND-State: clean
 X-GND-Score: -100
-X-GND-Cause: dmFkZTFHEZzFgGXpZZfr6IAOmq7ola5WNfyQSnYF6LCb6f1KMkgZa4qHjCqK2uwNi5lo53zPGBo7LDHZdet9q5I/rBsO7mYZPYcUHmDnRSBj3QTHGK8XCfIUabA4owcyUCpat5SDL5jtpg/EzlPTAvfZ9kMTVx+Jq5Yn6Jfc3Gnwik48nyq3kK9u6OYJSbOlHdYCLeVfGLKic5i7LqDCecBujBJwI6Hv2Y60PpP3d9XNM7x4j7rYsPbpdKfxriyrV319I1tSDLB8CbioxqfT3ZiYNYFu+c1MkaVsWVtH6E9BGta/ZC7ZZO8e6p8wxp2ltCtBWEMTtu8sJmVrWp3JyOv5sKtDjfXKu0rDRBSgrE1MNAFf5tv7b2y4Y4h0bJq36ku2wuT8Cx1GatEvSffpQ7vxqiVAGpA9jfNLT4TpAxq5Kb+qj/2gtyE/pR2X3JZzudv60DC9RgEyAonsy2oss29dD+H4UlHu00q2vUXGMLvaQ4hzrmoV7fnBelzdABScn2iWHvjbw0n1zcNOnwl4ISJfXn8snoH/3R/jDy1DBkdDaMxUy4k9IMb6nSCKFcNAqERu6Zi9B4zco3yTHN7uDpTCSy4fPL6MWz2igVrFGaUqCAThDXRW1aDwIqtJrnWPB343pVyHlNajvFrELj1+7ct1WeWtov7X7HLuETkjkxS8Laaslw
 
-[v2: rebased without changes, resent due to delivery issues of v1]
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-This is both an expression of personal laziness as well as an experiment
-update about AI support for Xenomai core development - and it seems it
-was fairly successful:
+The trap annotation of the VFP bounce path predates upstream
+commit c0b5195bad63 ("ARM: 9426/1: vfp: Move sending signals outside of vfp_state_hold()ed section.")
+which turned vfp_raise_exceptions() into returning the si_code,
+deferring vfp_raise_sigfpe() to the exit of VFP_bounce() after
+vfp_state_release(). The Dovetail hunk was kept in place verbatim,
+which is now wrong in three ways:
 
-After noticing [1], I simply prompted in Opencode using Fable 5.1 to
-review the ARM trap entry paths for inconsistencies:
+- for VFP_EXCEPTION_ERROR, SIGFPE is sent twice: once from the
+  annotated block in vfp_raise_exceptions(), once more from the exit
+  path of VFP_bounce() via the returned si_code,
 
-"in arch/arm, analyse the annotation of trap entries with
-dovetail_fault_entry and mark_trap_entry regarding completness and also
-corresponding dovetail_fault_exit / mark_trap_exit"
+- the deferred signals for regular FP exceptions enabled in FPSCR
+  (divide by zero, overflow, ...) are not annotated at all, so an oob
+  thread sends them from the oob stage,
 
-For that, I just presented the wip/flo/v7.3-dovetail-rebase branch. And
-the model came back with finding on [2] as well was these patches here.
-Next, I asked for a review of arm64 and x86 as well, but there were no
-findings.
+- the annotated block runs within the vfp_state_hold() section, which
+  under Dovetail is a hard_preempt_disable() section. If the core
+  demotes the thread to in-band from there, hard_preempt_enable()
+  pairs an oob-stage hard_preempt_disable() which did not touch the
+  preemption count with an in-band preempt_enable_no_resched(),
+  unbalancing it. Besides, that was the very reason for the upstream
+  change on PREEMPT_RT.
 
-Finally, I asked for the extension of smokey with some trap test cases
-that demonstrate the ARM issues and test similar paths on arm64 and x86.
-That turned out to be quite wasteful - I should have filtered out
-irrelevant traps first, namely:
+Move the notification to the exit path of VFP_bounce(), after the
+VFP state was released: if any signal is to be raised, have the
+companion core demote the thread, or skip the signal if the core
+decided to handle the trap from the oob stage. This mirrors what
+arm64 does for ARM64_TRAP_FPE in do_fpsimd_exc().
 
-- ARM VFP exceptions - no hardware exit to stress them. But I'm leaving
-  the related kernel patch in here because the code was already
-  instrumented, just apparently incorrectly now.
+vfp_raise_exceptions() does not need the register frame anymore,
+restore its upstream signature.
 
-- x86 Alignment Checks - can be enabled by userspace, but everything
-  left and right in common libs will then explode. IOW, they have no use
-  case in modern software. At the same time, some patching of libcobalt
-  would be needed to handle SIGDEBUG for an #AC migration.
+Assisted-by: opencode:Fable-5.1
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ arch/arm/vfp/vfpmodule.c | 27 +++++++++++++++++++--------
+ 1 file changed, 19 insertions(+), 8 deletions(-)
 
-I will share the lengthy test case as well once I'm done with stripping
-it down further (if possible). What the tests already demonstrated is
-that unpatched kernels crash.
-
-These patches here are almost completely generated. One of my few
-contributions was to encode _TLF_OOBTRAP into oob_trap_regs. The idea
-of having oob_trap_regs as a nesting detector came from the AI, though.
-
-As usual, AI is still rather verbose in descriptions and comments. Some
-of them I already shortened, but most is still left. We can cut down
-further, but I would first of all like to have another review round.
-
-While doing that, keep in mind that AI tends to ignore issues left and
-right when being told to do a specific task. It may have simply missed
-further preexisting issues or even created new ones now. Watch out!
-
-That said, it is definitely impressing to see that a frontier model is
-able to build up decent understanding of the Dovetail architecture
-without further hand-holding. I would not blindly trust them yet, but
-they seem to be ready now to act as debugging agent or at least
-companion, even in complex scenarios. Giving some LLM access to a CI
-pipeline may even result in automatic regression handling, probably
-already today. Also, I want to explore what is helpful and reasonably
-needed to support stable kernel maintenance.
-
-Jan
-
-PS: If someone is interested in the token costs: Due to my inefficient
-model usage, the counter stopped at about 170 EUR. Most tokes went into
-test case development and its debugging (#AC issues, e.g.). These
-patches here likely costed about 40 EUR with Fable 5.1, checking the
-other archs maybe another 30 EUR.
-
-[1] https://lore.kernel.org/xenomai/8ecd3d1a-86d1-4f39-b175-b712c0be6eec@siemens.com/
-[2] https://lore.kernel.org/xenomai/2e3b8eec-7911-4abe-8082-97296000e88d@siemens.com/
-
-Jan Kiszka (4):
-  dovetail: Track the owner of a trap notification by exception frame
-  ARM: dovetail: Fix trap unwind condition in __und_svc
-  ARM: dovetail: Notify the core about undefined instruction traps from
-    user mode
-  ARM: dovetail: Fix VFP exception trap notification
-
- arch/arm/include/asm/thread_info.h   |  1 -
- arch/arm/include/asm/traps.h         |  2 ++
- arch/arm/kernel/asm-offsets.c        |  2 --
- arch/arm/kernel/entry-armv.S         | 20 ++++----------------
- arch/arm/kernel/swp_emulate.c        | 22 ++++++++++++++++++----
- arch/arm/kernel/traps.c              | 27 +++++++++++++++++++++++++++
- arch/arm/probes/uprobes/core.c       | 10 ++++++++++
- arch/arm/vfp/vfpmodule.c             | 27 +++++++++++++++++++--------
- arch/arm64/include/asm/thread_info.h |  1 -
- arch/riscv/include/asm/thread_info.h |  1 -
- arch/x86/include/asm/thread_info.h   |  2 --
- include/linux/dovetail.h             | 12 ++++++++++--
- include/linux/sched.h                |  5 +++++
- kernel/dovetail.c                    | 10 ++++++++--
- 14 files changed, 103 insertions(+), 39 deletions(-)
-
+diff --git a/arch/arm/vfp/vfpmodule.c b/arch/arm/vfp/vfpmodule.c
+index 4bbe92c619f2d..5589eb76379b5 100644
+--- a/arch/arm/vfp/vfpmodule.c
++++ b/arch/arm/vfp/vfpmodule.c
+@@ -283,7 +283,7 @@ static void vfp_panic(char *reason, u32 inst)
+ /*
+  * Process bitmask of exception conditions.
+  */
+-static int vfp_raise_exceptions(u32 exceptions, u32 inst, u32 fpscr, struct pt_regs *regs)
++static int vfp_raise_exceptions(u32 exceptions, u32 inst, u32 fpscr)
+ {
+ 	int si_code = 0;
+ 
+@@ -291,10 +291,6 @@ static int vfp_raise_exceptions(u32 exceptions, u32 inst, u32 fpscr, struct pt_r
+ 
+ 	if (exceptions == VFP_EXCEPTION_ERROR) {
+ 		vfp_panic("unhandled bounce", inst);
+-		if (mark_cond_trap_entry(ARM_TRAP_VFP, regs)) {
+-			vfp_raise_sigfpe(FPE_FLTINV, regs);
+-			mark_trap_exit(ARM_TRAP_VFP, regs);
+-		}
+ 		return FPE_FLTINV;
+ 	}
+ 
+@@ -437,7 +433,7 @@ static void VFP_bounce(u32 trigger, u32 fpexc, struct pt_regs *regs, unsigned lo
+ 		 * unallocated VFP instruction but with FPSCR.IXE set and not
+ 		 * on VFP subarch 1.
+ 		 */
+-		si_code = vfp_raise_exceptions(VFP_EXCEPTION_ERROR, trigger, fpscr, regs);
++		si_code = vfp_raise_exceptions(VFP_EXCEPTION_ERROR, trigger, fpscr);
+ 		goto exit;
+ 	}
+ 
+@@ -462,7 +458,7 @@ static void VFP_bounce(u32 trigger, u32 fpexc, struct pt_regs *regs, unsigned lo
+ 	 */
+ 	exceptions = vfp_emulate_instruction(trigger, fpscr, regs);
+ 	if (exceptions)
+-		si_code2 = vfp_raise_exceptions(exceptions, trigger, orig_fpscr, regs);
++		si_code2 = vfp_raise_exceptions(exceptions, trigger, orig_fpscr);
+ 
+ 	/*
+ 	 * If there isn't a second FP instruction, exit now. Note that
+@@ -476,13 +472,28 @@ static void VFP_bounce(u32 trigger, u32 fpexc, struct pt_regs *regs, unsigned lo
+ emulate:
+ 	exceptions = vfp_emulate_instruction(trigger, orig_fpscr, regs);
+ 	if (exceptions)
+-		si_code = vfp_raise_exceptions(exceptions, trigger, orig_fpscr, regs);
++		si_code = vfp_raise_exceptions(exceptions, trigger, orig_fpscr);
+ exit:
+ 	vfp_state_release(flags);
++
++	if (!si_code && !si_code2)
++		return;
++
++	/*
++	 * Dovetail: the companion core may handle the FP exception of
++	 * an oob thread entirely from the oob stage, in which case it
++	 * does not demote us to in-band and we must not raise the
++	 * signal. Otherwise, we run in-band from this point.
++	 */
++	if (!mark_cond_trap_entry(ARM_TRAP_VFP, regs))
++		return;
++
+ 	if (si_code2)
+ 		vfp_raise_sigfpe(si_code2, regs);
+ 	if (si_code)
+ 		vfp_raise_sigfpe(si_code, regs);
++
++	mark_trap_exit(ARM_TRAP_VFP, regs);
+ }
+ 
+ static void vfp_enable(void *unused)
 -- 
 2.47.3
 
