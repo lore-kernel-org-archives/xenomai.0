@@ -1,72 +1,73 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.178.232
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794479497;
-	b=14mxpNzUx4OoXE15GPaH6Y6SCsrOKCaQAtbKNIdx0dz2mCgcF/txVfOJ68Y2GP6b7Ntr
-	 iNk5ocw5DiEm7GLyOdCYCkCstOXuRRQTKpfN9O1ytFlQRPfwdNvwXPWDTnxABVASrQD4P
-	 A9n2hSHK2gKNDlLzcDoNzfW4SNY85I8io63UdXG76FtD6ZSeY2kMKHFZ2M4njgYt4SJp6
-	 2UsE+2Bohd90GXr6MiHSzGJ9xp7F9GXG2PNOx7gGkTTAMCOqrMxOlLVVGoUrhD16ik4UF
-	 uza/+TtcUm+P1v5YNpBmUgbvoYiJ7SRBDZ1qQNeeo9z8MNkw//jXp1L1N5ygWx1igTw==
+	t=1794481555;
+	b=Fsem1dGJWfnz791PQR32boVANRC3c4iA0l2g6lvJjKylG1I5MM1/GlwFZOGh5TTA9Fz/
+	 dUFuVjQWhKkviDf5723+d4qSy/hJ00IEnEeo3IFFtkBYXJdvmZB5s9XVwci0pVg9E/Bxv
+	 hkJcs8XNn9wMCejd+53yLgi9peZYxpAK7/Fk9OjZyXPnLM5e03VUUx2+NJfdCEzAqbbqw
+	 1Cci3qd5qkjFQWMVBVqXvmgask11hhQzrUqldDjw+hGzk8ju3Gs4CtJaBYx5M34YiSysL
+	 9ft0qITtM95KyRU9zt2O0fT5UEtopE80pDdKiYKFhi5pQQPXVKmJpVqmKjxiZgtVDcw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794479497;
-	h=DMARC-Filter:Received:Received:Received:DKIM-Signature:From:To:Cc:
-	 Subject:In-Reply-To:References:User-Agent:Date:Message-ID:
-	 MIME-Version:Content-Type:X-GND-State:X-GND-Score:X-GND-Cause;
-	bh=KiK+BFi8FKL/5cZBWDLYefHOOLen9UMztcr8kikiu8M=;
-	b=iVXM2PcT4T+slpsgD6xjkf4jJIAE3cO8lhyzvU6CGIam98XFU33pGpbb8uIiZseJkpL5
-	 ve0JWBcA2amdlMIfXO0GK2dOSA/E/PUhvPOX10pORAwN7+SD00PAe06KA5PlZQaqRqC/1
-	 XrcAsrTu6S8gU5UGSz7Kg05Acj11YkBpFj9FCpzwTPrQrLbTS6gu84+kSPFl2U4XVT5M4
-	 5irLa1x3Mv/ss/TftvxWeAADuYjKcTlXLV5PPjENZ+AXy92vZwLt6i/UR3LtwDio2aqE+
-	 hvIRHhKShT4VKvpsMZMw55z6Zl3okC66u5dN5rW2/zSq9N7G3NmaUCVHedewOap5Ibg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1794481555;
+	h=DMARC-Filter:Received:Received:Received:DKIM-Signature:Message-ID:
+	 Subject:From:To:Cc:Date:In-Reply-To:References:Content-Type:
+	 Content-Transfer-Encoding:MIME-Version:X-Flowmailer-Platform:
+	 Feedback-ID:X-GND-State:X-GND-Score:X-GND-Cause;
+	bh=oeaOkLLpb+QvqQ1GTHWxz1X47H3o3iY1I30bZb9ghA8=;
+	b=Zt9VtJCkWjCviwA8y933Y8+4G6h9m9pfQEqubIPN2JzdXUTXUs4PhQmA5KmnLBERpgkx
+	 ehsnhiUhdaQovyVruUIb8HY6WvUuy7D6B+mpx8QuMRuEFnPBQYQVCQSL81n+a717jwTQC
+	 zNuIipxcZZyZG+GG9sX96VxTlQck/PppAMjtxRpefMpGddjtSc66Q99VfLyav3qrnbTin
+	 INA01xkczok3XS9Vibb2pf2511S0L/XXivvsF/ajU4UD7dlp3xr/Je0X3STsbXqbtDKib
+	 16p/PwGL7HgaEcBKlRxGXNZQCMsHsGI8/ImhV+EY5lt+UVF0241+Ps4epNoRCcIbD7Q==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=xenomai.org;
+	dmarc=pass header.from=siemens.com;
 	spf=pass smtp.mailfrom=redirect.mail.gandi.net;
-	dkim=pass header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=TJq3qRq1;
+	dkim=pass header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b="Nl3Ydy/d";
 	arc=none smtp.remote-ip=217.70.178.232
 Received: from redirect.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 601B3606A331
-	for <xenomai@lists.linux.dev>; Thu, 12 Nov 2026 10:31:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 601B3606A331
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=xenomai.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7D78606A323
+	for <xenomai@lists.linux.dev>; Thu, 12 Nov 2026 11:05:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A7D78606A323
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=TJq3qRq1
-Received: from spool.mail.gandi.net (spool3.mail.gandi.net [217.70.178.212])
-	by relay12.mail.gandi.net (Postfix) with ESMTPS id 3921D3E9E3
-	for <xenomai@lists.linux.dev>; Thu, 12 Nov 2026 10:31:34 +0000 (UTC)
-Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::228])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 96734268011E
-	for <xenomai@xenomai.org>; Thu, 12 Nov 2026 10:31:33 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=Nl3Ydy/d
+Received: from spool.mail.gandi.net (spool1.mail.gandi.net [217.70.178.210])
+	by relay12.mail.gandi.net (Postfix) with ESMTPS id 1DD493EA3A
+	for <xenomai@lists.linux.dev>; Thu, 12 Nov 2026 11:05:51 +0000 (UTC)
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
+	by spool.mail.gandi.net (Postfix) with ESMTPS id 9F74AC006E2
+	for <xenomai@xenomai.org>; Thu, 12 Nov 2026 11:05:50 +0000 (UTC)
 Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=xenomai.org header.s=gm1 header.b=TJq3qRq1;
-	dmarc=none;
-	spf=pass (spool.mail.gandi.net: domain of rpm@xenomai.org designates 2001:4b98:dc4:8::228 as permitted sender) smtp.mailfrom=rpm@xenomai.org
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 3A07A3E985;
-	Thu, 12 Nov 2026 10:31:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1794479493;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=KiK+BFi8FKL/5cZBWDLYefHOOLen9UMztcr8kikiu8M=;
-	b=TJq3qRq1wvKlD0sScClqNhhqLACjB8/Jt4I+g0FNst81tajWg/buMR1NQu85bF9O5GxEuR
-	HRQjVPqdf+K22Dl0bKvHpvhZU17modQgp1L4lN23Wf7WCK+YI0iuuobz4XI/1Fm33NjBcb
-	HOH8OCb8ULBV1+dyXJ72ewDovW+gFYsVhwxcsYeRfvdQTls4YOBArliljAaU3/Wcw6CRZ5
-	Ngo+zout39iQLlkL3FO+OTMEaTyyuPq0T6fNJzJogjUuVTxcTDTAW9ca04v3XQHfII5/6p
-	OaP5nAkd3bj3FAQpOjJDDvCjVScC5RKWHoYajiZrDmFLKvYI6YrdFBJS/V4U/A==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Florian Bezdeka <florian.bezdeka@siemens.com>,  xenomai@xenomai.org
+	dkim=pass header.d=siemens.com header.s=fm1 header.b="Nl3Ydy/d";
+	dmarc=pass (policy=reject) header.from=siemens.com;
+	spf=pass (spool.mail.gandi.net: domain of fm-68982-202611121105490ba83aa4390002072d-7NDFFi@rts-flowmailer.siemens.com designates 185.136.64.228 as permitted sender) smtp.mailfrom=fm-68982-202611121105490ba83aa4390002072d-7NDFFi@rts-flowmailer.siemens.com
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 202611121105490ba83aa4390002072d
+        for <xenomai@xenomai.org>;
+        Thu, 12 Nov 2026 12:05:50 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=oeaOkLLpb+QvqQ1GTHWxz1X47H3o3iY1I30bZb9ghA8=;
+ b=Nl3Ydy/dyOcnFeyvypJfu6SAQbjDYwrinBUWAqNAx+/ygcv79zs0F2A292ackb2VlWli4A
+ vIEZFH2tHojrIomGWLVY/33zvB0g6LUntLgIpDltTrOBafTGZtkdC768GfDc0oDtdPFUFKqe
+ nT+Gn35xnhhmgCp2yIcqTzWs03y8PrjKRkF+KY1XacGGz06Rs6MTKtaukRl6qeTgp1tJetss
+ y01uhoHJw1EfAjOhyoI+/Nxlu64JPyNLkS1OrxS1jbokpIbZYn9hvykw0pG1rxlNaBz+3llB
+ CW+aMTzmXBGsAzJ9gBxDgWCtXxGmH8LZtc8siy/n3Q8yC1ghkK6kzhKg==;
+Message-ID: <f91999aa3245c9e4759abb00d9113712226e884f.camel@siemens.com>
 Subject: Re: [dovetail][PATCH v2 0/4] ARM trap fixes and generic handling of
  trap nesting
-In-Reply-To: <cover.1794399047.git.jan.kiszka@siemens.com> (Jan Kiszka's
-	message of "Wed, 11 Nov 2026 13:10:43 +0100")
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Philippe Gerum <rpm@xenomai.org>, Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@xenomai.org
+Date: Thu, 12 Nov 2026 12:05:49 +0100
+In-Reply-To: <87cxsa2vej.fsf@xenomai.org>
 References: <cover.1794399047.git.jan.kiszka@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Thu, 12 Nov 2026 11:31:32 +0100
-Message-ID: <87cxsa2vej.fsf@xenomai.org>
+	 <87cxsa2vej.fsf@xenomai.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -76,33 +77,38 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 X-GND-State: clean
 X-GND-Score: -100
-X-GND-Cause: dmFkZTGrsyZpw/HGjsDtW3mazAvwO3EX8LR/UxB3cpT2UjQqOV+jgg/YJImIiwuvTTcixq97r/qbm51d5ERJxOWY/vpXZK9wixuTblBgoIcb8FiF+bf/w2wK9DKdLf1LCX3BjbIsE8zLiPgAEVFAKzncQBgQ5z6J3BOeJagBhh3ArnQnkqMVtQIXbT4G4pERORv5Yi5PZPdY9XN6D+gJmjH/VspCrTqC/pUneF/yppMeEfwiIfsEfjwxtizC1A01e/cjc3O5C/AJZiAe/XTtf9F/FT+gYRoBDQtJdVKiDSmpMnTfUMMk133uTyiqKKTxgjj3oxlbbgVLwn+yS+3IG4Q0tTezcBepzEcwgY5BAvUrzxw1RGIopGoaii9KSe6O1aGDXZAR1LUoLKoRNaye8atXeBpmobFVmPyNNEBnJOUswCnIrwBrtLq9iYid/mTH0/R7SoZGSdrCwwBmA3SdApmOmj+d7xE6S9mVc/gJyyHBRFX86JKYawwiFqm4v3fCK5ZVBraKoxu0Be7vjOH9DpIIbJJB7fhPx8hYTbzYTEjsXL7bSmJvQKP34RiHooIi2DY9QwX6ri9T59/nBUCfy61aD4boOfZaUn5MEfnjgDesaa6EaX2ZQLSNUFte9y9v1DiyrhJGXeExSFGxQRy2Bc+1WgUfe7lkj6DRZpLe+JjC9ck9oQ
+X-GND-Cause: dmFkZTFIrBll36v0pA4KvH+I7cwYMc+oEdIHiotLUyctQfG53g8y+xzqW1CAQSr/F+xqb2INAYpKSwWoBGud0LnjT8XBxQFYCtNvv+K/OGgUmrkLsdJQRbGlpit4fIa99TheLnWLSPf8Za20HRS2HV1PmZcLHKJaWzzw9jgJ0GardbnOUgSxKYkyWL8ELsFNSw6FPZKCMt5aJiEUotW4SdsJAOyH9HRYxWv9IgJl5oC16E8OqOqBvW0YDvv1g3a5NmMr+E9SKMMD/jjdPjaI8uQJBkAnGjRp5W6A24Yf+x8w8VlwB46kb1Ufda7cAzpOlj9OWlNdj3sw1HWF3lPAp/jWvlwJh5Te+d0E88qmAT2BNhN+jfQtZ04KUWcb26Z8MIl869Aax2aswC8tv+213fcwOqeklussFrlMIuSCC1nHsZkoPuQ+hgP8oD/GBu3StoNdLsYfTjo/+94hJAUyLGoYIQHCZXZVDEDrxiiisksEAkMfa++4DmuDP6Gv5OoBc63QCJamRThqeZVl9Cu2Ab/oR9sUeTKLMD7agymcWl5kGFPue1Bp73F/IICZI8/rTqw9U3D8qKzYupEMCUxHEhzcoDMghn98lQjWgdLkTQpKsu1ykWqbBCTl1L04j1+uONGS5y18CDD6voEutl+uLLjF1g4nfBjWCTdcU5n9nS6lt1/0sQ
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+On Thu, 2026-11-12 at 11:31 +0100, Philippe Gerum wrote:
+> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>=20
+> >=20
+> > I will share the lengthy test case as well once I'm done with stripping
+> > it down further (if possible). What the tests already demonstrated is
+> > that unpatched kernels crash.
+> >=20
+> > These patches here are almost completely generated. One of my few
+> > contributions was to encode _TLF_OOBTRAP into oob_trap_regs. The idea
+> > of having oob_trap_regs as a nesting detector came from the AI, though.
+> >=20
+> > As usual, AI is still rather verbose in descriptions and comments. Some
+> > of them I already shortened, but most is still left. We can cut down
+> > further, but I would first of all like to have another review round.
+> >=20
+> > While doing that, keep in mind that AI tends to ignore issues left and
+> > right when being told to do a specific task. It may have simply missed
+> > further preexisting issues or even created new ones now. Watch out!
+> >=20
+>=20
+> It looks like patches 1-3 have landed into v6.18.Y already, which means
+> that you are confident with those changes eventually.
+>=20
 
->
-> I will share the lengthy test case as well once I'm done with stripping
-> it down further (if possible). What the tests already demonstrated is
-> that unpatched kernels crash.
->
-> These patches here are almost completely generated. One of my few
-> contributions was to encode _TLF_OOBTRAP into oob_trap_regs. The idea
-> of having oob_trap_regs as a nesting detector came from the AI, though.
->
-> As usual, AI is still rather verbose in descriptions and comments. Some
-> of them I already shortened, but most is still left. We can cut down
-> further, but I would first of all like to have another review round.
->
-> While doing that, keep in mind that AI tends to ignore issues left and
-> right when being told to do a specific task. It may have simply missed
-> further preexisting issues or even created new ones now. Watch out!
->
+Those patches should not go anywhere until they reached the latest
+development branch. The common "upstream first" rule.
 
-It looks like patches 1-3 have landed into v6.18.Y already, which means
-that you are confident with those changes eventually.
-
--- 
-Philippe.
+Everything else will add a lot of confusion.
