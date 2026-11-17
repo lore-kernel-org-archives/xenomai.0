@@ -1,17 +1,17 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.84.28
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.159.63
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1794892010;
-	b=fv799/UeaKQlz4DN9JrsG/3/gHREfYswPnEIieR8Nt+M3NfoggNXA1fkqVCL3gRyO7XJ
-	 s3QB70ER4F2Yy8baow5aszD2zDsdqjdjkCYSOwH6iG91reXGTFj8MJI5QDwvMH9Bg0Kg7
-	 x+o0eyLPS/uWvZBUP1I7oL9koe0iOP3BBRYTIUYLjhDqYaJxKxlKLY6/KiH5AzSFfqRDT
-	 otzvC6mXkRHKvzRY/b9OG9/cwj0zcYt3iYnbrqlf1dPEIOq+A/dbe7OpWU4JE95i9NgF2
-	 Ny0olY42hSox0UgKIfbJPODRyvW6eN4AOr4emRJdhJ78v0Pa9Ys7jJU/0PeMV7r4y8w==
+	t=1794895591;
+	b=NJtpoU1x8KmmxXw+JEt+peQmLZTJi4Z3QRnCgQvsVmDZe+sgXvUIuDxfzv1uEwsVyIAY
+	 hCVpF+zsHOEkH1MfZw8zj24cL5BnVipoP7+voq9fRQ/WI6tzidGGhj4qLSEhR67OW20I/
+	 0hCFXf/pEX+41q4N3PQFO58tnu4RBhKtpuPiQ5yuH2GSkrdVFQFbMftzVrVrid+FTQR14
+	 pFMXkaVAu05CYvQYdkxPVBDbsCZ6HeGQvKAtLD4BaAhUD5wLf2j22XVU+iutk+Vlihl0L
+	 +fqrJkLDKsfQA7ikiWpQpu8of7M35kRTv3DcHaSbpu2CGal4DTNN3NEjd0Vq1qAzK2w==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794892010;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794895591;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:From:Subject:Content-Language:To:Autocrypt:Content-Type:
-	 Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 User-Agent:Subject:To:Cc:References:From:Content-Language:Autocrypt:
+	 In-Reply-To:Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:
+	 MIME-Version:X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
 	 X-MS-Office365-Filtering-Correlation-Id:
 	 X-MS-Exchange-AtpMessageProperties:X-MS-Exchange-SenderADCheck:
 	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
@@ -25,62 +25,67 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=ayDfAPKD/Zb2jJQ9eyPdXUNqr+K3WNB3fZyMaE8oynQ=;
-	b=rFRyStdCvDSEXTEpb6i9YUSVWadhAJBlcs8KroAOi+V0NB8vtVzC4slpr8eLa6QBpQog
-	 rWNCyv8Mpvv+bSpMKN1CyCPKCeNP01g7Uqi91Ff9+AaXppyqfhnSbhRPN5/Rr7WBfO1wL
-	 6dwxVJcgE75JLPbSqbjzzQ7yFEHVaJ3PrcSuWY2wn9T0vLLNbZaf0tHVW7g6qoTxvCIok
-	 elVhbIxwrdOLRY3Kc8Pxd2mhVeOneMxNccoRdPF+4N/tMrYOtjnli6oaeTIwOO0+JH7EM
-	 6YouIoKS75cBhQDpesedwCwv2HeW/ZiDnU0qnWrKEJdso+l+LCA6DTs8I3s+0kV2ZaQ==
+	bh=v9HkrPH1sTbM+/jMYkcFB5tx/z3Emj4wuFq3YVElPM4=;
+	b=A2E7VXz56u69Wq9CUYgApUuattaYojbohL58h33q6OXNYFUCekh/VA3uJgoBzWhVQbel
+	 ElDq3EPCbXGrClDHIz8t0pzpeJJ6esWao6sMUjwlEQ33fuZHmEJOignjmZa4Gmg0JmtfD
+	 vYtHb64aTyTuAhJFBU2acyNc71XFXuje3SqlmpO9VUPjZv0EObvoCRAHqGs5BJeoz1DnH
+	 zboeOjnjag782fVt62BBG6+UQl8ETtUVkM//BH3IiTXENX0AMiz0rvmKuxoreDLYQCkpG
+	 PnlPffCM3noZw0HDOzcrL6+3AzKGvUx1/Z1aJYTM+pIyGkkIkb6Ilhj57Be1ax8jEbw==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=siemens.com;
 	spf=pass smtp.mailfrom=siemens.com;
-	dkim=pass header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=PqDx40pA;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.84.28
-Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11010028.outbound.protection.outlook.com [52.101.84.28])
+	dkim=pass header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=hYRdjQBT;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.159.63
+Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013063.outbound.protection.outlook.com [40.107.159.63])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C99C606A323
-	for <xenomai@lists.linux.dev>; Tue, 17 Nov 2026 05:06:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 0C99C606A323
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B506606A31C
+	for <xenomai@lists.linux.dev>; Tue, 17 Nov 2026 06:06:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 8B506606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=PqDx40pA
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=hYRdjQBT
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=MbxCLxRY5l7Ep8LLDW8nfbw7dIQnvPpGIOs1iRjnAN0CNPqaM9+jmqRepQLOxdsvSQrdXzC1P60yEvjB9C3akX2z6ujt0KFIZG+7Opokb0p9/unQWuyy5N1/M4wYwg04RemOwv/3jgewH1lAnNKmlBYcqad2iuSIKOtq49VFCFlvADH3SvdSDt85Phac0smzT7ciPdhaynsAt1yDfUdcxV2Vfjhj+ukt6eJDThPaGJk6PxloeaoDeipVX2faWtG40IRL77NvkfkXeANGVojWPbXvI5YLBlmDuqik0RgnNuvVu9bW+LuHuqyiFPrujUcnlcBXn+kcMLuX2DsY9zsQag==
+ b=V7ZhCEp2QFXoQnqIq3NfKXrY8m1N9ATJtgf1zfAYYxGFvf9xf0DfrKjgzBNYsOYXiQzA76rAOdYePEHW72lGOmb2tMrf11wwxxQnufagdKzPb0Pua9/tVxo5tKWBIUBUxDHg59nocQPAlFySAkYV3inhvY+fkBA//eZRlJcwmuwprMY4WFY4G6MFEWsCNt5zzWruTCt3o9VykpBMqlFklmAsC7/YeNfLO4eBE2jTEQE5vMFgvDkEU+/xD1ASq0ZE7B9ltBjUEt1x12hnwMGztKYhAG4e3dYjKlaVPhOdiTKzKQrc3NwWDciaTxx8BN4DeDOeBVUzjuw0vAfnxs0eMg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ayDfAPKD/Zb2jJQ9eyPdXUNqr+K3WNB3fZyMaE8oynQ=;
- b=DjxU7hyJX9MCVqrEjvLtmSzqYDVqshlWEBIuYA1U1pUvKqCAdO/YzAbKp7R9vi1+XcPRsQ1f5uFGIN+2JSJD81sflED8idVkcu0+brzwmVliUO+l0j2CsFodssO4LKsCtZCLyyYmFaaGuSoP+eAuNspRkMlaToliwKOGLMMNAIXNbkaBGKzdl3xizw0aJnchi6H+5VSjrq+5WY3niKBcB022nyBMs4nbhoU83YaDWb1UwoMsvO4+kUOAtuTFs/5w+p33u95nlhBHR7sqXbO9Qxj3XO9ECu9KmSCFHnM4LNUVLS+UH+bmd+3iBz2Wule5XouV04yhSS8PDj3JlCoFyw==
+ bh=v9HkrPH1sTbM+/jMYkcFB5tx/z3Emj4wuFq3YVElPM4=;
+ b=UMO+VIj2xV7WJuFl0lvQeqkL6OWxTeiOlaAuEEGLmp6iSGxhSHyj0YCJlVP0U8mnQ95tW5Z/As5mavGFNEGJ84PlB/dTNnWtuY5joscGiapUS2uoRuSxSDrckTWs3CzhjwRxu0K1GLboE2KOJ58khPbttXuaYHTZwj+A8Qkk0GSUyugFoySC4sHokEp1x07OgKeWTj0GOL8AhapiMKvbTaj+zt+SH8EkKAYlPwgZHkOLS+8g82VyDcWOR/Wdu2QjXAqoHhyTT6xJf/scJlm0DQMTGsV9UyWgP98h7ejV1RY2v0XQiPROUsfQ58yJtUpzMvbtTBNALHSSc0q0TQCbZA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ayDfAPKD/Zb2jJQ9eyPdXUNqr+K3WNB3fZyMaE8oynQ=;
- b=PqDx40pAw2qL4l8TS0Hah77cPdnyyfTPqcG66ZMtVeJSLV5I5vh4y1wEBI2PCJHqSrreYCFHRBjNWHBSw3FxTnLqstuvo0AI0bTteIGttxiQD/Pn/G7gNOZT4u98dvGzptXjMpiV9iLnv7ThHB6UX9nM/T7YysU3mPugrF3qw2Q3v5tUrvKv6XNsX7jsnmtSXbSBW+c5bwkS4O7kg2HF/vQWtjmObMcObaU8w1ukMuVL/5ajhbZsxAv8pPD54hBaDuaIwQXwfWG5fYMGFOlAsisWHPrnlBYGuAccsxviESv9D1JrDsSatoLNzEgFpVlt11ShrcW2DtT0ucqG/f6Glw==
+ bh=v9HkrPH1sTbM+/jMYkcFB5tx/z3Emj4wuFq3YVElPM4=;
+ b=hYRdjQBThYB6nmVnFuKR3xVxt3TYvMQrO7WlGbTAW12rABlifJe1uIAMA3vre9bUet75wNzueyzsblW+vz8f6cKUW9yzMocAJgWnGpmePQI75m+XiKV0SOyG0fkoxG0lYJkPQYw6NZRCn/mjvQ/A/74DsbdaaXaTMKu3SRg2m4gSUDhw6CRqPVNwtBW0+JYjflmdsRk7//WuIlnE900UJGOb+TPFJZ/FkeolEXmwmjPfbYpZP4BmTBsJoDsREEY7p5qE03PxflOvqBUJyyUszwgpuk4AJ2+TvFyeZjvuRCHftffXQkhOpteiMUKjcsmLkxdWTengV4D8/tbMVzElnA==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:785::10) by DB9PR10MB5504.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:10:307::15) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10a6:20b:785::10) by PAXPR10MB5232.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:102:28d::9) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.639.8; Tue, 17 Nov
- 2026 05:06:47 +0000
+ 2026 06:06:25 +0000
 Received: from AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::fbce:789a:27cf:d1e]) by AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::fbce:789a:27cf:d1e%5]) with mapi id 15.21.0639.006; Tue, 17 Nov 2026
- 05:06:47 +0000
-Message-ID: <5a8651c3-9f93-4ae2-b1b4-0fcbdc5a1501@siemens.com>
-Date: Tue, 17 Nov 2026 06:06:46 +0100
+ 06:06:25 +0000
+Message-ID: <9b439d13-7d33-419d-9d4a-2b224bf5db7d@siemens.com>
+Date: Tue, 17 Nov 2026 07:06:23 +0100
 User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH Dovetail 2/2] irq_pipeline: Introduce IRQ_TICK to obsolete
+ IRQF_TIMER on tick IRQs
+To: Florian Bezdeka <florian.bezdeka@siemens.com>,
+ Xenomai <xenomai@lists.linux.dev>, Philippe Gerum <rpm@xenomai.org>
+Cc: Gerte Hoogewerf <ghoogewerf@lmi3d.com>,
+ Andrew MacPherson <andrew@elk.audio>
+References: <20260909-wip-flo-v7-2-irq-cleanup-v1-0-825a908785ae@siemens.com>
+ <20260909-wip-flo-v7-2-irq-cleanup-v1-2-825a908785ae@siemens.com>
 From: Jan Kiszka <jan.kiszka@siemens.com>
-Subject: [dovetail][PATCH] clocksource/exynos_mct: irq_pipeline: set
- clockevent IRQs
 Content-Language: en-US
-To: Xenomai <xenomai@lists.linux.dev>, Philippe Gerum <rpm@xenomai.org>
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
  uNUqthIkgLGWzKugodvkcCK8Wbyw+1vxcl4Lw56WezLsOTfu7oi7Z0vp1XkrLcM0tofTbClW
@@ -124,10 +129,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
+In-Reply-To: <20260909-wip-flo-v7-2-irq-cleanup-v1-2-825a908785ae@siemens.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR4P281CA0245.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:f5::9) To AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR3P281CA0120.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a3::18) To AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:785::10)
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -139,105 +145,311 @@ List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AMCPR10MB992291:EE_|DB9PR10MB5504:EE_
-X-MS-Office365-Filtering-Correlation-Id: 9a0f6d4c-5d12-4ea8-370d-08df4468950c
+X-MS-TrafficTypeDiagnostic: AMCPR10MB992291:EE_|PAXPR10MB5232:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5ed8de7a-1f7a-4bfa-945d-08df4470e977
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|23010399003|366016|1800799024|18002099003|55112099003|11063799006|56012099006|10067099003|261021121427099003|261009223027099003|261102123227099003;
+	BCL:0;ARA:13230040|376014|23010399003|366016|1800799024|18002099003|22082099003|6133799003|55112099003|5023799004|11063799006|4143699003|56012099006|10067099003|261026121527099003|261026140227099003|261022075727099003|261022105027099003|261028144727099003|261021123027099003|261021121427099003|261009221727099003|261009221227099003|261009223027099003|261102130727099003|261009223327099003|261009220027099003|261102123227099003;
 X-Microsoft-Antispam-Message-Info:
-	4wGHvsN1gJ0VTg1spM8QwKuC/RF+kYwMhwMfAVt7bbR8pEGEQNjomZmTM4pA9ErTdtBDd6v0R/Fgizs1QNaYCeIMKfysPnNvp33XWUrm5cwSqtAm5F8FMrM5sfli1MsOWYNespulSLmA0okz3l9usHzX86A52KPR/fJ992Mor2b4vIcqW7UhwV2kU8GE9TJRRbwx1pHi3thhm5dGlje458XSDzjuT6nPmbB4JFZ8Dw24E/eYIPl42ebVbCrh28ZPs0W2hvXnn6CBO3KPw2Cw3TXxbToivNU4QE7xDJSIQwRCiMKXWd7/ZbcHzpW7gOxGLiulcmeHVndJTf9bSsPu2wfrA4rqyC/KdwvHrVha1TWex+xXPyd9zBXnisj17dK7SGdiTs0ObUjd3IJvNeF5Sk/UrAHaphis4TRpw6kmQZzi+zbbu7D/BXvctDfwvDAwOMtz7ibzKcaYbJpGiJyM0yqY2xM4IXnD89IInyKwKJGdGiV357TIw4/mDDYDqeFJD45m5BUwcywAcdMkM0gpOsl2JcvPXuiYZrRDbYOnkY4gAPbqMwSugz160amPJzTugExrZvhnN+4ufiIdTwVTLO/urAT9P7UvYCF8m6m6RU88hWmJipRGEU5UHMCBwIp4S+R6oHkruDBm9pmIS5vfruqTcnVJZaJ2l9MeJXBDp3M=
+	fpcHRLoetYO6qZV8eXagWmclqb1dKT/hTtN6HhShYMWmsFCA1pRs6iy8+sbBeu9mAHHTDWXU+cqysQaRRA8O2OHaT1eNHA1FY8Ba+JV+4gGl6oPMoRnalpgPDVnORLRnM17PhIY3UHO87h4tFV0z57Vn3PcfMEJK1HXBnfEJExM+OZ2xSR9m81uvd+goehVuNqYo6U4qJ/RfQWKpelKkKVbvgm7Vx4SHLrrUPCYWGVHBAJtbmQayV5wVbkYqVeYMmr6efNpQiw2LId5M2rghJHDn5m7gniFR6H5vNH/y3lusrIIISjmkn7LAecsg6mJQssq9bsc4iXO0yPsv4LOgb2kUx5PQdzVmtEUTRt/tbr+hi45I1lWam+41InjAqZujZkEmFTwTqC129LTXq37Eejb7vdj8uvvVyUCvz+rcoZ34wLqWOjDzoaQeFlt9Pc6C1qqmxV3TiQl5MBoHB1dpQqIqrNnHPF+Wu5WdpP/9JoG+pAH57g92ES8xn29UIvMkpXcD8ekOmfTPMQpyrjozaEyoiSCuJxE/EXLTg27FEE42NclV4tAKuj9m4qMg+IgMCX/nzDFilktiULSloGP/pKuzS5383o3v4ylWrL027zAhwVuR75sm5RNPT+8XI9GrGIKqpk+GwNRgvkxpQx4vZMBGT/wwqzh8witrj4cEczU=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(366016)(1800799024)(18002099003)(55112099003)(11063799006)(56012099006)(10067099003)(261021121427099003)(261009223027099003)(261102123227099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(366016)(1800799024)(18002099003)(22082099003)(6133799003)(55112099003)(5023799004)(11063799006)(4143699003)(56012099006)(10067099003)(261026121527099003)(261026140227099003)(261022075727099003)(261022105027099003)(261028144727099003)(261021123027099003)(261021121427099003)(261009221727099003)(261009221227099003)(261009223027099003)(261102130727099003)(261009223327099003)(261009220027099003)(261102123227099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?aTV0K2xMWlJSKyt1am1ZS3lyZkY2SnhCc01pVTRCVWJOVlF1dENpWGdlR0xK?=
- =?utf-8?B?Yk1tMjlyajgyVDJ2a1RqM1NIVTBidTJDVlIycVFHalVsTHZIZ0pkSGRvL2VD?=
- =?utf-8?B?MnlKMXZjV1lHQnF6WEpmL3I3bVYzeERZb2hZaXlNS1Q1REI5dW9EYWt5REpS?=
- =?utf-8?B?WHMzSy92L0paU2VqQmZIc2VyN2pKYjAwYVc3V2orWGwzcTYwV1dDVWdGK2J2?=
- =?utf-8?B?MkVWWmlXbUJoUDBiWUZxTWtUSm5jYzcyZWFxNVNteTJ6VHZLTjJINVdOc2pa?=
- =?utf-8?B?am10Z01WeC9PeWpmT0xheUt3UXhFTlRPd1d2bFJmbHQvZFJkTFBZajU2bFV5?=
- =?utf-8?B?eFhENS84d1ZuL2duMmR3UmZHYWZZTi9FdjcvWGsvSVBXRUt4OThTOHdJL2tu?=
- =?utf-8?B?aEh0ODlNNHh3d2dXWmkxaTlUaVBrajJBTHpqdFdhZjgrUW5XK2ZWbjQzNUMz?=
- =?utf-8?B?RHNJVzgrcldEVFNLWkI4cEx1aTdGZVZ5VXF1Zmk5OC81bWZLSytHVzA1NGpq?=
- =?utf-8?B?QmxUc2toSkM2MHZCblFHRzZjT1NDa0FtUGcyTzdjbHFBdHN0VWd6dFI0MStD?=
- =?utf-8?B?d0E3ZTRMWkZpVTBSMVI0cDdyQ3VpSTloMkFrbE9QRjcvdFlTZndSeWlKNGJw?=
- =?utf-8?B?ZzRxWXZUVGdGSUVrbmhvTFk4VWFZcU1tK0NUaW80RVBWRHZ4SWRaVnR1Sncr?=
- =?utf-8?B?NkZmRm5WSXh1WkxGbUNFUVBFMmh5Q1hFaUEyK2dXMTZDTVBVNFEyZjJFQUtp?=
- =?utf-8?B?TEFxT0lvSkRhME9RRkxNVkpZOWhHRzlQUm5sNmVCamcwcXpKU2RrQWpVemUz?=
- =?utf-8?B?c243R2hvLzFMaXgraW9zSU9Ya0dUcmFEcEEvY0t2cSt2N09BSjhUQ01HMThP?=
- =?utf-8?B?K3A0VW1WV2x2a3poTng1ZkJqa0Q5aHpRYmpQb2ZoWmZ0YWE2eTlhOFp4S0FE?=
- =?utf-8?B?Sk84c1cyVDZ3R0U2L2RYUGsvWUNYQ28xcHFWTm5saHVlSDhpWjJWcFd3SkNI?=
- =?utf-8?B?aEMwOHA0WmsrVCswYUdIOG1Fc1RKem1CMlBBZmtDZnVHVGc5QWRlUXVBRmJ1?=
- =?utf-8?B?am0rMm90bUFTV2hTaXh3THArTUF1Tnd2WDJnN2NRRG43cnkyejFBV0dYK05M?=
- =?utf-8?B?dE5OTnIwNVJUWnloQzhRRjEweE9oYmM3L1NrNXJ6Q2VTTyt5UFNMbS9GeFhM?=
- =?utf-8?B?dE9FUE5pNFV3VkpRTlNVMWtyK0J6N1FybDN5anNRS2JKeXhsM0N5T1RhNm9I?=
- =?utf-8?B?eXZlN2kxbmNudUhVZGkvVUdtbm5sMmFlTUUxODVOdFgvT0x3YXRhd3QyQVpE?=
- =?utf-8?B?THhCL3NkNFMwMnh4c1lZTkVHR2w4c3BtWTBTSXphazVJa1ZNWFgvUkkxVmQ3?=
- =?utf-8?B?R0JMYUxnTnE4bUZjL3c2UXF5MElhUkVTa2ZnN2d0TnU2YXI5Z1FLSWxOZjA5?=
- =?utf-8?B?ZGtuZVNGSk1ZMEZRQ1BzcjgzQ2Y4U3d0YjRiSDZCZGJ5N3ZvQjF5M3BmZjVW?=
- =?utf-8?B?eFpPZ2F5R3YwMm84TEdNYzNnbXRwcmJVM1ZLWUZqTFBVU1R3TnlBMHdmR1N5?=
- =?utf-8?B?ZDlKVE01Nk0xcnNRNmtsMkd1c05oWFMrN1QvM0ZSWXA2ZDdSdWJ3bHRuNTlL?=
- =?utf-8?B?UVg4ZFd6TXhWZldLNEE0TmVCSVppcmRVVGtXL2R1cTFuOW1SclpQMXNGazIz?=
- =?utf-8?B?aVNJM2N3OXpDNTVEZ2w1MzVBL2J5clhqSkh6TFhJSDdnd2lOVjdhczFHZDd5?=
- =?utf-8?B?N2xyenJlNGxqYzY3RlNiUSt0aExzWm1jOGM0Z1JGZDdxaElpS0J4bE8xek9X?=
- =?utf-8?B?V1JVNGJLWEpzcnlWb21rYUlYdGlMSlROaEZpNkdkUEREeGVUU0NqRmhjZmpL?=
- =?utf-8?B?dWNwclloSW4wZlNnb3c3V3N0eUdQNFFHeEdZblYvR3ZaK0QxMFkyMW10UWpV?=
- =?utf-8?B?WXhYdXBWZFNveXR6c0VuQ21FVm5nQmY2WEJYYmF5bzY5RnJjTVorZURvcXJK?=
- =?utf-8?B?cDFvRldyb0l3cmNHK2t0LzFDcGFwK0xRam5TOEVlemlHOFhGSVlhcUdZUG04?=
- =?utf-8?B?a2pYWEFXOVlPNDZKOFY5ZnE3YTc1T2RwV21VbmVuK2lSbnhvdU54dnY1c01H?=
- =?utf-8?B?TzJUVk1qVjJiWFFwZUZ1aDVVcGVzWnkwd1I4OWFHMzVRenJTd1ZTNEpob3dp?=
- =?utf-8?B?cGpRdmcreXR4emRLaGpjYW1LYVY3TWtqS2hVTmczSVJyUEsxZFdEQitqQTlC?=
- =?utf-8?B?MS9Mb0RKMDF0RzlSN0FJeTE3QnFJdlU5UllKckZ3ZndRUHd6bk9pUlA5dEM1?=
- =?utf-8?B?TFNGeE1sYUQ3aGg4dHV5ZnorZC9wTEpJNm1vS0V1eUhnRCt2Zzl2UT09?=
+	=?utf-8?B?MCtNOVk4ZElTMmJBSjVWV1ZlbG81WE5WbjgzbkRSSnQ4aHo4aTExZWwweWdi?=
+ =?utf-8?B?SmIvYXFick1DTDZWRFpFYzd6d1RFc1BIUU5YekV1VWpYVFFVVEJFWVJSUDZY?=
+ =?utf-8?B?WE44cDlETFIzejdCZjlCOU5tM0Y3S3hUVWtoU2I2T1BidkRFS2NWV2Uwb1o4?=
+ =?utf-8?B?THNSTDJRc0VzR0gxbHFZOXRNTk8xbzZwUi9xaDZUcS90N2o0eUsvWmNxcnVy?=
+ =?utf-8?B?MENQa0JKaHo5dUN5TXRmSFllVFBBRXgxblNnZHdKVmhwNHAvNkxLL2FmVkc3?=
+ =?utf-8?B?QWZsU3J4ZTVKUjQ2OFpDZmlQWUxqeSthbmthcHpnbjJZV2Y1d3ZLRHBVWmcw?=
+ =?utf-8?B?cXNLOW83Z3ppeEczY0NkM2gvTjZSTG96VnptWjhDZFQwQjdCd0tLZ1dTTFlj?=
+ =?utf-8?B?VDI0aGpBYXlsMUE2SGc4ZFJtWXRVSU5aM0JWcEtYdXJQUHdOZSs0VjBTYVNw?=
+ =?utf-8?B?a29iUkt5OGN0ZUtWYVVzVFpOZnIrcGlFTjEwY3RsRi9URFYwTFZnaEEyT0tB?=
+ =?utf-8?B?bmd5azQ2aG91Z1Z1Z2ErSEpLQWFoZytxcEdEZTRoUFNrVFBhREtDcVdMbU5l?=
+ =?utf-8?B?RTlWNVc1Q3I4bGw2OG9vb2FtMVdydVFjbnNTL3VVb0lIYVErczlHU3NwWHVT?=
+ =?utf-8?B?cXZEeUNPd2pKaTZ3YUlhWHRvQzBoUHF0aEZzM0FQTStJRnBnYjhycENGMDJN?=
+ =?utf-8?B?ZFpsZ1FCcklUYlJOZkM2NHJJWG5zb0Jxc0hqeDQvK1MyWkQ3R0tFY1JZUjFI?=
+ =?utf-8?B?U045TWRPY1NRRHAya2pKbXczdWZTcDFGbFFnbE4rd293RFVmNVBCWVNONll0?=
+ =?utf-8?B?bVAyMWM1THh2L1AzRU4wQXpWM0Z3RHNGS1ZCYlVrZEVFOFhZTWVxWW9ldmpm?=
+ =?utf-8?B?Z2dIU2xKYUFVbzVIUDVnNkVOK1l2QUJ6am5CMk5EMUpoVUtaS3hJZ3FkOWl5?=
+ =?utf-8?B?SHdaMmhJVGlWb3pNMXpWcjdrdUVWS0dLSWU3b2M3OGsvZ0tqckdyalZuYzFV?=
+ =?utf-8?B?VHFhL0xYT0VYbnNac29MT09QeUNGWW42cWtjVmpNSkFlMVRMK0dScmxzUDIr?=
+ =?utf-8?B?aytCS3hFcXFUYWRMNWFTdHFKODhyNUd6aUFzTGJvTTVLNEE5WHFBVXQzOVNw?=
+ =?utf-8?B?Q01CQzFGZTU0RDB6eERpRVpYaElUd0V6Y1NvS05rV3doeTZacFRWNytwSitv?=
+ =?utf-8?B?aUVWMktPcUdIMGgraDkxSnUyeWFoa0Q4MGVYTzI2bEF2b2ZoTnBTUnBPMHQ5?=
+ =?utf-8?B?YW1kakdNbklwWGxwZHdkYjlXZVBNMW1NVVdPYXFFN3Zna213WTU1VXZLSkMy?=
+ =?utf-8?B?cUI2SDFSSTZYYzVUMG0zT1FkK3VweEpLOG5ua0F0T0NaajNINGNRR09FbjNn?=
+ =?utf-8?B?RFFoNnZXUWozMWh3OEhseSs4SGowdENYSWNTdkpmY3lFQ2xVNGVrcXZDZkxs?=
+ =?utf-8?B?ZzQvTnk5U2FhUHpqUFV5NTVFc3lwYVNUb2JZMkFVYmJpSmJhUDhybDZFUWFs?=
+ =?utf-8?B?WTNQTjl5UUM5RGE0WmdIbVdDaU9EMm9JdGFhQ2Rrc0swSTZCYjVHak5UOFNS?=
+ =?utf-8?B?QUpSaWRpNFNSZDZPREd1WXFKY2h4L2xPdXU5Q1ZWcXI1aVd6ZXZmZytGMzUz?=
+ =?utf-8?B?K2NER0dFVnBSY2ZvZGJjWTBiUkFWZnlMY2MzMzNJb2hlZVdFUFdzNWJVWGVt?=
+ =?utf-8?B?cENWcnJvSllMbDVnd0xRb1k0UVl0aVBaeDFyam5oMHN4aW0zSlFXR0dLdnVi?=
+ =?utf-8?B?ekdKNW5sVGwyZlN3WGl4VnBOa2t4MTc1cXZLRXZjSVp4M3p1cVZyZlg1bmxC?=
+ =?utf-8?B?Smt0Z0JmS1JnWHJTMnNHK0JsMnFjOFRsNld6SGdQYWMwaUlPT25HSEVERFlJ?=
+ =?utf-8?B?cFZVdTFpblFPNzdDWHpNUFB6ZnZKZE02ZTRrd0VFMEsxR1grbXZHbHNjeXg2?=
+ =?utf-8?B?L3h0RU9FL0RZb2UwN1BKYjdPRktsT25YM08wZXVxRmJvT0JYb1p1STdJSVRw?=
+ =?utf-8?B?eEhxTHN6SDFGaEVvc2ZjdXVoWnVpMWhJRWU4VkJ4c1VBa29naEQyK2FjajBB?=
+ =?utf-8?B?K2pXbWJUZ0pHK2NMRVA5VWxjZGtHaC9QMFE0TzRSK1lGMUgyMXhCemxJTFlh?=
+ =?utf-8?B?eHhMazk1REdYdzhDK0RaMm4yNk1MdjBNcHU1bmhBR3BVa2o3a3lPQzBPZFR1?=
+ =?utf-8?B?bHF2TEt4T1R4dm4zMFRObHBQYWUzanNhVTBNU0dYK21EWjFKMXFoa0E5UTd2?=
+ =?utf-8?B?b1FBYWNUZmdpbE13bG9JRG1xanVPTWl0T081cVBIYXU2ZDdha0toQ3lJcUwr?=
+ =?utf-8?B?TGtreWF2cG1qWnB6M2NjNXJGTHVRZ0E0RzJZazRGVUdBNUNiNkhvdz09?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9a0f6d4c-5d12-4ea8-370d-08df4468950c
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5ed8de7a-1f7a-4bfa-945d-08df4470e977
 X-MS-Exchange-CrossTenant-AuthSource: AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2026 05:06:47.8253
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2026 06:06:25.5081
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: e/x9GM5GnyjJ7tTXaWJnepzHqiaq1PuZhmIjJswI9zIlSkmR5i2z99PcCOrSPW0cPIRc4uLUsPejJOV/mgYr2A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR10MB5504
+X-MS-Exchange-CrossTenant-UserPrincipalName: gPiutrc75kVxQNTfwMndd5wyIsgdM/jLcQCwPnmLg/HPbdNciB2HiPPp7OlU9D4FHx151mVk4n7tyF9l7cJfyA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR10MB5232
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+On 09.09.26 16:32, Florian Bezdeka wrote:
+> Currently, all clock tick IRQs need to be marked with the IRQF_TIMER
+> flag, so that the registers could be saved when handling a pipeline
+> entry for timer IRQs / ticks.
+> 
+> It turned out that it is quite easy to miss that flag when enabling
+> the drivers for the pipelining case. In addition, IRQF_TIMER also
+> includes setting IRQF_NO_SUSPEND and IRQF_NO_THREAD, which is
+> misleading.
+> 
+> We hook into the clock event device registration now and check for
+> the CLOCK_EVT_FEAT_PIPELINE flag on the event device. If this flag
+> is set, we mark the underlying IRQ as IRQ_TICK.
+> 
+> The IRQ_TICK flag is only used for that pipeline internal purpose.
+> 
+> Suggested-by: Philippe Gerum <rpm@xenomai.org>
+> Signed-off-by: Florian Bezdeka <florian.bezdeka@siemens.com>
+> ---
+>  include/linux/irq.h       | 11 +++++++++--
+>  kernel/irq/debug.h        |  1 +
+>  kernel/irq/manage.c       | 11 +++++++++++
+>  kernel/irq/pipeline.c     |  3 ++-
+>  kernel/irq/settings.h     | 17 +++++++++++++++++
+>  kernel/time/clockevents.c |  3 +++
+>  kernel/time/tick-common.c |  5 +++++
+>  7 files changed, 48 insertions(+), 3 deletions(-)
+> 
+> diff --git a/include/linux/irq.h b/include/linux/irq.h
+> index b13e4e90ab18f027e43b4f892ca37ef482a6cf0a..5f7a2c78b3ca7a7a23894f68e16503c785eb5686 100644
+> --- a/include/linux/irq.h
+> +++ b/include/linux/irq.h
+> @@ -81,6 +81,7 @@ enum irqchip_irq_state;
+>   *                                when pipelining is enabled (CONFIG_IRQ_PIPELINE),
+>   *                                regardless of the (virtualized) interrupt state
+>   *                                maintained by local_irq_save/disable().
+> + * IRQ_TICK                     - Interrupt is a timer tick source.
+>   */
+>  enum {
+>  	IRQ_TYPE_NONE		= 0x00000000,
+> @@ -109,14 +110,15 @@ enum {
+>  	IRQ_HIDDEN		= (1 << 20),
+>  	IRQ_NO_DEBUG		= (1 << 21),
+>  	IRQ_OOB			= (1 << 22),
+> -	IRQ_RESERVED		= (1 << 23),
+> +	IRQ_TICK		= (1 << 23),
+> +	IRQ_RESERVED		= (1 << 24),
+>  };
+>  
+>  #define IRQF_MODIFY_MASK	\
+>  	(IRQ_TYPE_SENSE_MASK | IRQ_NOPROBE | IRQ_NOREQUEST | \
+>  	 IRQ_NOAUTOEN | IRQ_LEVEL | IRQ_NO_BALANCING | \
+>  	 IRQ_PER_CPU | IRQ_NESTED_THREAD | IRQ_NOTHREAD | IRQ_PER_CPU_DEVID | \
+> -	 IRQ_IS_POLLED | IRQ_DISABLE_UNLAZY | IRQ_HIDDEN | IRQ_OOB)
+> +	 IRQ_IS_POLLED | IRQ_DISABLE_UNLAZY | IRQ_HIDDEN | IRQ_OOB | IRQ_TICK)
+>  
+>  #define IRQ_NO_BALANCING_MASK	(IRQ_PER_CPU | IRQ_NO_BALANCING)
+>  
+> @@ -1258,6 +1260,7 @@ static inline struct irq_chip_type *irq_data_get_chip_type(struct irq_data *d)
+>  
+>  #ifdef CONFIG_IRQ_PIPELINE
+>  int irq_switch_oob(unsigned int irq, bool on);
+> +void irq_switch_tick(unsigned int irq, bool on);
+>  void irq_clear_deferral(struct irq_desc *desc);
+>  void irq_clear_forward(struct irq_desc *desc);
+>  #else
+> @@ -1266,6 +1269,10 @@ static inline int irq_switch_oob(unsigned int irq, bool on)
+>  	return 0;
+>  }
+>  
+> +static inline void irq_switch_tick(unsigned int irq, bool on)
+> +{
+> +}
+> +
+>  static inline void irq_clear_deferral(struct irq_desc *desc) { }
+>  static inline void irq_clear_forward(struct irq_desc *desc) { }
+>  #endif	/* !CONFIG_IRQ_PIPELINE */
+> diff --git a/kernel/irq/debug.h b/kernel/irq/debug.h
+> index 4eafd04a629628553c11d639b4958d5007bbc012..9813c8ec66a447e4acde5ac2ca2fa1f8ab70021b 100644
+> --- a/kernel/irq/debug.h
+> +++ b/kernel/irq/debug.h
+> @@ -34,6 +34,7 @@ static inline void print_irq_desc(unsigned int irq, struct irq_desc *desc)
+>  	___P(IRQ_NOTHREAD);
+>  	___P(IRQ_NOAUTOEN);
+>  	___P(IRQ_OOB);
+> +	___P(IRQ_TICK);
+>  
+>  	___PS(IRQS_AUTODETECT);
+>  	___PS(IRQS_REPLAY);
+> diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+> index 1c1920f5fbc083ec299433dcddd4fae53e0d6ce8..a10d1081bea8c8887c61cb3ef5a87b274e1c9e08 100644
+> --- a/kernel/irq/manage.c
+> +++ b/kernel/irq/manage.c
+> @@ -949,6 +949,17 @@ int irq_switch_oob(unsigned int irq, bool on)
+>  }
+>  EXPORT_SYMBOL_GPL(irq_switch_oob);
+>  
+> +void irq_switch_tick(unsigned int irq, bool on)
+> +{
+> +	scoped_irqdesc_get_and_lock(irq, 0) {
+> +		if (on)
+> +			irq_settings_set_tick(scoped_irqdesc);
+> +		else
+> +			irq_settings_clr_tick(scoped_irqdesc);
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(irq_switch_tick);
+> +
+>  #endif /* CONFIG_IRQ_PIPELINE */
+>  
+>  /*
+> diff --git a/kernel/irq/pipeline.c b/kernel/irq/pipeline.c
+> index 85ec0cbf5fb1e1fa38dee98d1f79a3ee4ae18774..88911489aeb632a00aab9784407f09ff835f7861 100644
+> --- a/kernel/irq/pipeline.c
+> +++ b/kernel/irq/pipeline.c
+> @@ -1064,8 +1064,9 @@ void copy_timer_regs(struct irq_desc *desc, struct pt_regs *regs)
+>  {
+>  	struct irq_pipeline_data *p;
+>  
+> -	if (desc->action == NULL || !(desc->action->flags & __IRQF_TIMER))
+> +	if (!irq_settings_is_tick(desc))
+>  		return;
+> +
+>  	/*
+>  	 * Given our deferred dispatching model for regular IRQs, we
+>  	 * record the preempted context registers only for the latest
+> diff --git a/kernel/irq/settings.h b/kernel/irq/settings.h
+> index 27a37d992f237f6429f58b0b51eb9db39a62e8f7..c4b48d22d271a24e49951c4289784e44090f02dd 100644
+> --- a/kernel/irq/settings.h
+> +++ b/kernel/irq/settings.h
+> @@ -19,6 +19,7 @@ enum {
+>  	_IRQ_HIDDEN		= IRQ_HIDDEN,
+>  	_IRQ_NO_DEBUG		= IRQ_NO_DEBUG,
+>  	_IRQ_OOB		= IRQ_OOB,
+> +	_IRQ_TICK		= IRQ_TICK,
+>  	_IRQ_PROC_VALID		= IRQ_RESERVED,
+>  	_IRQF_MODIFY_MASK	= IRQF_MODIFY_MASK,
+>  };
+> @@ -37,6 +38,7 @@ enum {
+>  #define IRQ_HIDDEN		GOT_YOU_MORON
+>  #define IRQ_NO_DEBUG		GOT_YOU_MORON
+>  #define IRQ_OOB			GOT_YOU_MORON
+> +#define IRQ_TICK		GOT_YOU_MORON
+>  #define IRQ_RESERVED		GOT_YOU_MORON
+>  #undef IRQF_MODIFY_MASK
+>  #define IRQF_MODIFY_MASK	GOT_YOU_MORON
+> @@ -210,3 +212,18 @@ static inline void irq_settings_set_oob(struct irq_desc *desc)
+>  {
+>  	desc->status_use_accessors |= _IRQ_OOB;
+>  }
+> +
+> +static inline bool irq_settings_is_tick(struct irq_desc *desc)
+> +{
+> +	return desc->status_use_accessors & _IRQ_TICK;
+> +}
+> +
+> +static inline void irq_settings_clr_tick(struct irq_desc *desc)
+> +{
+> +	desc->status_use_accessors &= ~_IRQ_TICK;
+> +}
+> +
+> +static inline void irq_settings_set_tick(struct irq_desc *desc)
+> +{
+> +	desc->status_use_accessors |= _IRQ_TICK;
+> +}
+> diff --git a/kernel/time/clockevents.c b/kernel/time/clockevents.c
+> index 0ed4122d40986708bd57f32ebf825aef60756f7d..d8d2dd43baaa0053a73bb18764ece562e8b49024 100644
+> --- a/kernel/time/clockevents.c
+> +++ b/kernel/time/clockevents.c
+> @@ -12,6 +12,7 @@
+>  #include <linux/init.h>
+>  #include <linux/module.h>
+>  #include <linux/smp.h>
+> +#include <linux/irq.h>
+>  #include <linux/device.h>
+>  
+>  #include "tick-internal.h"
+> @@ -177,6 +178,8 @@ void clockevents_shutdown(struct clock_event_device *dev)
+>  	clockevents_switch_state(dev, CLOCK_EVT_STATE_SHUTDOWN);
+>  	dev->next_event = KTIME_MAX;
+>  	dev->next_event_forced = 0;
+> +	if (dev->features & CLOCK_EVT_FEAT_PIPELINE)
+> +		irq_switch_tick(dev->irq, false);
+>  }
+>  
+>  /**
+> diff --git a/kernel/time/tick-common.c b/kernel/time/tick-common.c
+> index 90fae659e4ea68578a8ab5a739eccc1184ed5ff9..97e3ff40405dfbe670fe45aebdff015163cb6f31 100644
+> --- a/kernel/time/tick-common.c
+> +++ b/kernel/time/tick-common.c
+> @@ -12,7 +12,9 @@
+>  #include <linux/err.h>
+>  #include <linux/hrtimer.h>
+>  #include <linux/interrupt.h>
+> +#include <linux/irq.h>
+>  #include <linux/nmi.h>
+> +#include <linux/irq.h>
+>  #include <linux/percpu.h>
+>  #include <linux/profile.h>
+>  #include <linux/sched.h>
+> @@ -244,6 +246,9 @@ static void tick_setup_device(struct tick_device *td,
+>  	if (!cpumask_equal(newdev->cpumask, cpumask))
+>  		irq_set_affinity(newdev->irq, cpumask);
+>  
+> +	if (newdev->features & CLOCK_EVT_FEAT_PIPELINE)
+> +		irq_switch_tick(newdev->irq, true);
+> +
+>  	/*
+>  	 * When global broadcasting is active, check if the current
+>  	 * device is registered as a placeholder for broadcast mode.
+> 
 
-The MCT driver only fills clock_event_device::irq for the local timers
-in SPI mode. In PPI mode (samsung,exynos4412-mct), the per-CPU tick
-devices were left with IRQ 0, so the proxy tick device never switched
-the local timer interrupt to out-of-band mode, and the in-band tick ran
-on registers which were never saved, making every tick look like a
-user mode tick on ARM. The global comparator device had the same
-omission.
+The LLM is unhappy about this, and I'm still not sure how to fix it
+best. This is what it remarks:
 
-Assisted-by: opencode:Opus-5.5
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- drivers/clocksource/exynos_mct.c | 2 ++
- 1 file changed, 2 insertions(+)
+"Several paths shut down a tick device and restart it later without
+going through tick_setup_device():
 
-diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
-index 23d39bf9bdaf9..a548ac338f3bc 100644
---- a/drivers/clocksource/exynos_mct.c
-+++ b/drivers/clocksource/exynos_mct.c
-@@ -350,6 +350,7 @@ static irqreturn_t exynos4_mct_comp_isr(int irq, void *dev_id)
- static int exynos4_clockevent_init(void)
- {
- 	mct_comp_device.cpumask = cpumask_of(0);
-+	mct_comp_device.irq = mct_irqs[MCT_G0_IRQ];
- 	clockevents_config_and_register(&mct_comp_device, clk_rate,
- 					0xf, 0xffffffff);
- 	if (request_irq(mct_irqs[MCT_G0_IRQ], exynos4_mct_comp_isr,
-@@ -487,6 +488,7 @@ static int exynos4_mct_starting_cpu(unsigned int cpu)
- 		irq_force_affinity(evt->irq, cpumask_of(cpu));
- 		enable_irq(evt->irq);
- 	} else {
-+		evt->irq = mct_irqs[MCT_L0_IRQ];
- 		enable_percpu_irq(mct_irqs[MCT_L0_IRQ], 0);
- 	}
- 	clockevents_config_and_register(evt, clk_rate / (TICK_BASE_CNT + 1),
+ - tick_suspend_local() / tick_resume_local(), on suspend to RAM and
+   on suspend to idle (tick_freeze/tick_unfreeze).
+ - tick_broadcast_control(TICK_BROADCAST_ON) while the broadcast
+   device runs in periodic mode, undone by tick_setup_periodic() on
+   TICK_BROADCAST_OFF.
+
+In addition, per-CPU clock event devices share a single interrupt
+descriptor, so shutting down the device on one CPU clears the mark
+for all CPUs, including those still receiving ticks over it."
+
+The simplest approach would be to refrain from clearing IRQ_TICK
+(irq_switch_tick -> irq_enable_tick, no disable anymore). That feels a
+bit strange to me, though the LLM claims that it "is harmless". Asking
+it to come back with a disabling approach, the LLM had to introduce a
+tick usage counter to irq_desc - fairly invasive.
+
+In addition, we now have to keep an eye on clock_event_device::irq to be
+properly initialized by all drivers, see my two patches of today. Given
+that the goal was to simplify driver conversion, I'm not sure this
+change actually achieved it.
+
+Jan
+
 -- 
-2.47.3
+Siemens AG, Foundational Technologies
+Linux Expert Center
