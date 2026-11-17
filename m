@@ -1,57 +1,59 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.136.65.228
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.136.65.226
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1794942993;
-	b=xyypn0bXo/cZsA97Xl81Ir8s1wvZOwv+B2EvHux1jJtaEE3Hxn6DH3NXgo3TSfFi92Xo
-	 o+P6gXmSZp719YpDQHoyq3ye3B2lZLNsdF6ttyJSyMHgfs1s2Jg2MnzI3CvPExcbxuzaH
-	 xWtgtc3vCR9df3uaZkHZF2IRCHAsyxQ2yLKPs4JxpqXBOZnBPzjATi7WdtXG7s89XqO2e
-	 4oSczbyrW/cQYCzv0Tz61UR/zBV6/CtfAkTQZNCzq/KZA74QLCjER/w1K+jfTTCOPlfg+
-	 AA4ilUyAQivXdlloZnGg9kj3SwEWpvvymFWxK8cuDLPG+Tqfu1oQEjPFSfolER4WacA==
+	t=1794943470;
+	b=vYocfPA16KywjP2oAg7utbbgNrIA4wYKfYNk8nQxtDXs11CuS9BF20Vm/z/bMH8WbAVm
+	 Ni5QCiFplaWuHyUVMd3xebAw4VsHA/yAeNZXDgmM+ot1MgtpwBFqzEayrH2kSk62iqdhu
+	 zbU/AKuAvxhGHiCV3xf6zG0TriezxQkQWMsCIQvxG1CLvmpYaNKPE+/QkJUk1h8NrX7em
+	 yJoQcEQihDxWBH8Fkjbg1gMmZPyfi+sgR7S8ZJjMFWJJEhx/qPhM3iiPSss1eFU/QELas
+	 mCmtK6qIGfTMUvDdkv8gX5Bu5H6pHULxctj9Bwt3tdz878leCxL+bYbq2qIKvmZ0FXw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1794942993;
+	a=rsa-sha256; c=relaxed/relaxed; t=1794943470;
 	h=DMARC-Filter:Received:DKIM-Signature:Message-ID:Subject:From:To:Cc:
 	 Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
 	 MIME-Version:X-Flowmailer-Platform:Feedback-ID;
-	bh=XLh+f9KUUbmBqOAyA9q845/ygmyL/jzUVG2A5HhG9X4=;
-	b=0QsgtdVBGX3CZkFY+96KKQj6ORE1GL0z2WFpCvWlc7cJVSddgQzUNyWm12UK2uxz/ktc
-	 4GUTKsTG61H9SsbpA/HqnYK1P5KFsOvNdH+qOXWx6xKilMbBqlwwLLPihh0mHRV8HwP5h
-	 DLHZHu5JG05kx1NDQt7x3KEDMgwfFYVvXtBvyRR9NOngK5hhye2hANoeRX6feyJG5kz+D
-	 q0P/sYpEfexJD3R8zW1D/TlmVKtDVPuD1smJB53DlwGPIR5iBcb7KQ602j6RWLjD1+kSP
-	 c6J8zSs8lZC/n0QFxX8UOT9yR5gu2fhfv3osqLaln3KRKBTn78WT1uItimY9upESZlg==
+	bh=2ZkzjHHq1JatWbqVflijXbIkNUjSn9v6gjUKs7uFgFY=;
+	b=1yQGUSztdkcdKHPHJQqyz81uBXAlcbzy4m8Xv0SxUQV27exoeMkvSRL1FhWMZ4ztZ4b5
+	 LM1UlkbqoQHmIWXyGywZhcePxjblRgUFIRFT8v2FHun11I9UxK6DYG/gt/wyXDQUH7hyC
+	 4s7EEFaT8iY69sZOwab45sF+kF/a1FLM5sX6MgQVK6JfHcnok2joM3+fVyPonTWNRNNBy
+	 AZW5dbXoK9dT11LA5a/u4wvNaPyBT6p3fAj52KvCzewMRkolY1EWMxE6eMFa2r/LYgvZF
+	 Dye3h2C+oqExxzrdoNoUwb+9i7B6gaKe5JqkMGYi8lcesIsC4xDs+FFHTf6Mv9IbR/w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=siemens.com;
 	spf=pass smtp.mailfrom=rts-flowmailer.siemens.com;
-	dkim=pass header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=IVQG8X5W;
-	arc=none smtp.remote-ip=185.136.65.228
-Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
+	dkim=pass header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=nG6fM0bS;
+	arc=none smtp.remote-ip=185.136.65.226
+Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 359E3606A32F
-	for <xenomai@lists.linux.dev>; Tue, 17 Nov 2026 19:16:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 359E3606A32F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45957606A32A
+	for <xenomai@lists.linux.dev>; Tue, 17 Nov 2026 19:24:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 45957606A32A
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=IVQG8X5W
-Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 202611171916226feda85b2f000207ab
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=nG6fM0bS
+Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 2026111719242123254b324d000207b6
         for <xenomai@lists.linux.dev>;
-        Tue, 17 Nov 2026 20:16:22 +0100
+        Tue, 17 Nov 2026 20:24:21 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=XLh+f9KUUbmBqOAyA9q845/ygmyL/jzUVG2A5HhG9X4=;
- b=IVQG8X5WE/tfnhbteOzzGeU4EeTFjxIwFWkit1Qm180JTmXjSEDrIkCbjym1L3uX7HErzD
- AY+ndURVCSX5Lh+3T2+Zo8qB9d8CYV/o8xSSPrw3Lz9yhFdVHWG6zOrrx1expWAvPt2e02oU
- K+MV/HwZrMYj7+VKxXrlnGqGkb49DggeYbfbRpmnJ1C11j1TEZcPx+frEl7Gi/C9P0bpti0J
- 6l28v7c0JqfF1wS13jP1/BmLlLp0o5XS/ujNJgo47VsSC0H9BFiu/fbdbdb5HBlGyzwyO7MR
- f0j/O82PCoq5L0V6ZAWup32mKdSjRgXfvY4gxs9F8xFRGsqO/wxi1Uig==;
-Message-ID: <72d9742fd8baa9ea9735d241af0b738be56e85bc.camel@siemens.com>
-Subject: Re: [PATCH dovetail 0/5] riscv: dovetail: trap handling fixes
+ bh=2ZkzjHHq1JatWbqVflijXbIkNUjSn9v6gjUKs7uFgFY=;
+ b=nG6fM0bSakqG4emzqUJLavT5f8N9+qziKGCABJcexD2gCYTQ1wU+bHeInHRmSAPVwAlwEK
+ iVbS57fJuPeubiMRf9h8Vb8oHSt9Xae+PY1vLEKiwfu4SbytGl6oBQpaLYE8iltv4v6s5ZzK
+ FsbyEW9V5eDyyD9xUSafEaGtxfuIlIrz3d0ax+dxqP1Z4h/HysuYakWWQIMpfbdwYagNqBKO
+ hInpaJaWWy8hihAAJBFIxBtNI7FN3DPrv8xrFzhGCOr1AbGCbcZ9QKk1LUudZnViSMoU+peY
+ UuEOnDWu54K8Zou0aKlcfotgy1BUDhxKNLnebS//FD2F8nE6bcsXF+Fw==;
+Message-ID: <3b8d95a887bd9740e8ea877e0ac276d6588fc87f.camel@siemens.com>
+Subject: Re: [PATCH dovetail 4/5] riscv: dovetail: keep hard irqs off for
+ page faults handled out-of-band
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
 Cc: rpm@xenomai.org, jan.kiszka@siemens.com
-Date: Tue, 17 Nov 2026 20:16:22 +0100
-In-Reply-To: <20261117123925.597027-1-tobias.schaffner@siemens.com>
+Date: Tue, 17 Nov 2026 20:24:20 +0100
+In-Reply-To: <20261117123925.597027-5-tobias.schaffner@siemens.com>
 References: <20261117123925.597027-1-tobias.schaffner@siemens.com>
+	 <20261117123925.597027-5-tobias.schaffner@siemens.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: xenomai@lists.linux.dev
@@ -67,50 +69,78 @@ X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
 On Tue, 2026-11-17 at 13:39 +0100, Tobias Schaffner wrote:
-> Hi all,
+> do_page_fault() enables hard irqs for kernel mode faults whether the
+> companion core demoted the current context or not. A kernel mode fault
+> the core leaves out-of-band, e.g. a faulting kprobe fetch argument within
+> a kernel trap, then runs the fault handler over the out-of-band stage
+> with hard irqs on, where an out-of-band interrupt may reschedule in the
+> middle of the outer trap. With CONFIG_DEBUG_DOVETAIL, the BUG_ON()
+> checking for a demotion fires instead.
 >=20
-> this series fixes the riscv trap handling of Dovetail.
+> Toggle hard irqs and the in-band stall only if the core demoted us, and
+> keep the debug check for user mode faults.
 >=20
-> Thanks to Jan for sharing his AI reviews on this which made me have
-> a look at this.
+> Fixes: 1d1fdeccecef ("riscv: dovetail: add core support")
+> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+> ---
+>  arch/riscv/kernel/traps.c | 17 +++++++++++------
+>  1 file changed, 11 insertions(+), 6 deletions(-)
 >=20
-> The bugs were verified by running a trap matrix test, which raises
-> every kind of trap from an out-of-band EVL thread, with a more detailed
-> oob_trap RV monitor from the Dovetail RV RFC enabled.
+> diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
+> index dddb30711440..9f8dc6bd7b85 100644
+> --- a/arch/riscv/kernel/traps.c
+> +++ b/arch/riscv/kernel/traps.c
+> @@ -489,21 +489,26 @@ asmlinkage __visible __trap_section void do_trap_so=
+ftware_check(struct pt_regs *
+>  asmlinkage __visible noinstr void do_page_fault(struct pt_regs *regs)
+>  {
+>  =09irqentry_state_t state =3D irqentry_enter(regs);
+> +=09bool inband =3D mark_trap_entry(regs);
+> =20
+> -=09mark_trap_entry(regs);
+> -
+> -=09BUG_ON(dovetail_debug() && !running_inband());
+> +=09/*
+> +=09 * Dovetail: a kernel mode fault the core did not demote for, e.g.
+> +=09 * a faulting kprobe fetch within a kernel trap, is handled over
+> +=09 * the out-of-band stage with hard irqs off.
+> +=09 */
+> +=09BUG_ON(dovetail_debug() && !inband && user_mode(regs));
+> =20
+> -=09if (!user_mode(regs))
+> +=09if (!user_mode(regs) && inband)
+>  =09=09hard_cond_local_irq_enable();
 
-Where are those tests?
+Handle with care, just a 30 sec scan:
 
-The problem with that approach (fixes first, tests later) is quite
-simple: Once the fixes are in, interest in automating the necessary
-testsuite is gone.
+That one looks strange. !user_mode() means fault over kernel code. But
+what if the hard IRQs are disabled in the parent context?
 
-Solution: Tests have to arrive at the same time.
+We can only (unconditionally) enable/disable (hard) IRQs over user
+context.
 
-In case they were on the list already: Please add a reference here.
+Seems that was already wrong during first riscv integration. Or: Wrong
+API? _save() _restore()?
 
->=20
-> Testing was done on v7.3 with EVL under QEMU riscv64: the trap matrix
-> test, the libevl suite and kprobe tests hitting out-of-band syscalls,
-> IRQ handlers and nested faults all pass with a clean kernel log and no
-> monitor reaction. Reverting the fixes one at a time reproduces each
-> bug except the last one.
->=20
-> Thanks,
-> Tobias
->=20
-> Tobias Schaffner (5):
->   riscv: dovetail: do not notify traps again from do_trap()
->   riscv: dovetail: run kernel trap handlers the core did not demote for
->   riscv: dovetail: do not nest the unknown trap handler in software
->     checks
->   riscv: dovetail: keep hard irqs off for page faults handled
->     out-of-band
->   riscv: dovetail: read the CFI trap value from the saved registers
->=20
->  arch/riscv/kernel/traps.c | 60 +++++++++++++++++++++------------------
->  1 file changed, 32 insertions(+), 28 deletions(-)
->=20
->=20
-> base-commit: de6ccdbc1027fda48257c4033c90d57da3e676ea
+> =20
+>  =09handle_page_fault(regs, state);
+> =20
+> -=09local_irq_disable();
+> +=09if (inband)
+> +=09=09local_irq_disable();
+
+That was clearly a bug.
+
+> =20
+>  =09mark_trap_exit(regs);
+> =20
+> -=09if (!user_mode(regs))
+> +=09if (!user_mode(regs) && inband)
+>  =09=09hard_cond_local_irq_disable();
+
+Most likely the same follow up problem.
+
+> =20
+>  =09irqentry_exit(regs, state);
 > --=20
 > 2.53.0
