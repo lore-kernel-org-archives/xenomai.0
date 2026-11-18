@@ -1,59 +1,59 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.136.64.227
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.136.64.228
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795003363;
-	b=3L46tj7R7M2DraBsns2r5K9nU5sOb4ouijh6MGZDCFXkMxrZB7IzcutwKIxTagL4JQNW
-	 NSOMqmJSCqOjRih830DdahsGf06BwX/4PQUuJyn2F2bwml8WvPIr6fIh33CRjCPvDwITn
-	 zRmltl6oArKhepDbvmJRBtlxfp/tvJhkK7tPFx1oRvz0ciPyvzyAfTUid3oqyATg6l3LO
-	 nHyp1PGXmLusk6ORWPGNTQH7+nHkC1FKm6kcLZ0fYFhpsqEHsQwf3XChO1b605KRCbM2Y
-	 Rg+QviTKEzqSZ8qPMSQ9WSft1RwkmrET2DneMmrWWtewBPUt13+/o0uaInD2NKhRcRg==
+	t=1795003524;
+	b=ROyDvG2NI/IFSgkYcMZSF1s9avd7xken9FKBuUwc2KY1jCjA7nINGWr9fyDQ4O6FIqwo
+	 2GayWe+E8HG6ZmgLjsL9+Uq3YF9kG/nrT9XVJ10tUR4YFDY0DSw3Cyx/V1cQKLQpPCkat
+	 E6xI0Gn44p4cmjb66531tgnNsRJ9Eqppr0dM4jpwMnTXJLEsehyPimi5Ba5eml2SMc1aU
+	 dqLpi5HkHbl//Pc1gFqN9t7HTaiYJ2J0nXS0ctT37fDcjzrNYBDHwKJgmtuKEWhxEkivS
+	 1ws6U+j8M43NXH91SJBmuqAQC1niUPTDCUnc44RddyT/yfxOjzOvvP1GAn5pkovvMAw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795003363;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795003524;
 	h=DMARC-Filter:Received:DKIM-Signature:Message-ID:Subject:From:To:Cc:
 	 Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
 	 MIME-Version:X-Flowmailer-Platform:Feedback-ID;
-	bh=PH8agYCB1qLUUZKPoaoEG0Ceqk+UZoQtV1M/sM7gvVQ=;
-	b=d0VdHXD3VN8QxVOR7lzzHRnCY3qECyAbQlJymCnFTmVKXg8KuxpHY/KCoFr0MfBFYM0M
-	 od3/k98THjxpO5qsUDCleCLgMqLykePBvZ4TxnVb+GqIpE5Me9tGS7bvmj80dLSws+41u
-	 6SyuBTEoRBHupu1tp59nElvoE+G5LWgza51BkyuXVaWCxwTHmz+i2vBfTjy+qWocw9hht
-	 NX1x6tDb1mHYg2vuSALYcXFg6ZuO9WiA+ICogmv/ybko5CLNyp1mFO2wLmyP2YH9zyO5O
-	 JV3+dwkMxgoCDlEAyz9NxCNtN7uja1q8JqcqzKJGEYEkO1zj4JzZNCZJ6vjS8TZH25Q==
+	bh=dMtsIRsBQERGcTADstR7B9li+Alae8BrJ9pKXayWUFs=;
+	b=hdwekxyKgTpIrUbYsmz1rX70KCEPeQTZfzKA2qxBvW/TNhOdtCwSHESesEnjBMHZKcaP
+	 t43m00HRIoGWn5GkW/cCUuspzn/brlveEAcei4g0glo9je8rNni2f3xr7j1cNPNJdJ5R2
+	 9Tqo4Wi+tlTyrKCrmITcYZGmhgMOg23SF2iLrkX2h3+KDrWN8YJZFCSE3SZ5lVKdi3StS
+	 MHYrL7zOLEaNpw4kgmFEL23DOj1Qa3Gy0mp2Q34h3I7jgu/M2jefGmXAdW9Ce/bszSpVO
+	 7tzd4fbi9BLbBNXgqgrYaljQnnidW4GO+OWeXhOO/bUpJY67B6wVVWbKj0hlCqH4irQ==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=siemens.com;
 	spf=pass smtp.mailfrom=rts-flowmailer.siemens.com;
-	dkim=pass header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b="bj2ueN/A";
-	arc=none smtp.remote-ip=185.136.64.227
-Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+	dkim=pass header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=Nmve1KLC;
+	arc=none smtp.remote-ip=185.136.64.228
+Received: from mta-64-228.siemens.flowmailer.net (mta-64-228.siemens.flowmailer.net [185.136.64.228])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE365606A325
-	for <xenomai@lists.linux.dev>; Wed, 18 Nov 2026 12:02:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org CE365606A325
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6123606A31C
+	for <xenomai@lists.linux.dev>; Wed, 18 Nov 2026 12:05:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E6123606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=bj2ueN/A
-Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 20261118120235dc5efae5390002079c
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=Nmve1KLC
+Received: by mta-64-228.siemens.flowmailer.net with ESMTPSA id 20261118120515903ccbddbd000207cf
         for <xenomai@lists.linux.dev>;
-        Wed, 18 Nov 2026 13:02:35 +0100
+        Wed, 18 Nov 2026 13:05:15 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=PH8agYCB1qLUUZKPoaoEG0Ceqk+UZoQtV1M/sM7gvVQ=;
- b=bj2ueN/Ae+bSuTXhl7LkcSxI9jCOsYpZT5FogEO3tqFNhNlT8hoNM6OhW4HFO30Tv79NrU
- mpgR8CywP8rkt1r7yY0t486K2y0AmInE/nascsvCbIyQ7ckHgYKQUZLIfPzj4STWkC5cOi+K
- 2ozjTI7zBQmOBhbfdbVnK48z92utkk0w+OeK3uDPtYyEOgaFIJyYBrGLf9hRcnilZuqHrKkj
- 3/+EM6eBN4njxKCZmXi93fgSFcmLJaP4XxUcp7ZZ4rRewq4KvAcXmrlZGrsl270oFTSg4If3
- LjWjwdC369DKZz6xK+1v9PEMBefkNkmnHcRTbmCIG8KeWyEHtxDpcUPA==;
-Message-ID: <b15f902cee6017dd0eddc10312979fe555c2d6ae.camel@siemens.com>
-Subject: Re: [PATCH 3/5] testsuite/smokey/sched-tp: Fix build with C23
- strstr()
+ bh=dMtsIRsBQERGcTADstR7B9li+Alae8BrJ9pKXayWUFs=;
+ b=Nmve1KLClMxmLj59g2j3/A/VO/eRdglzNtC4c41LqC/chxwsx/Wc94DvQh0IxrfmnPvHPh
+ N/Kz/7QzWULCJGy5mn3JIK4vn78akVE85yMczz2Eu9NruYVFPhxF1rywh30F420MkgCDikNl
+ oJZLXV3xdFDPRtiJ1TUxwmWmy5/rzNthhCUXK9KZYc4Oy70mCCqdzbEliJZv6qpoIT0N5nHk
+ HZk/FNpQoq+Loc06HQMhiFc1fBOwA86HwWEMOZXdJIiecOn6TlatcHjfCHoJJhPIvhAwK4kP
+ zb6Uz/redRzasBV+wMNoCdxx6KpyCk04VBhTotOcCOxbfnWSqIq6qGfg==;
+Message-ID: <a63ac0285f72b17aaa1dad38853c8840a962f829.camel@siemens.com>
+Subject: Re: [PATCH 5/5] testsuite/smokey: Fix unused variable warnings with
+ GCC 16
 From: Florian Bezdeka <florian.bezdeka@siemens.com>
 To: Yegor Yefremov <yegorslists@googlemail.com>, xenomai@lists.linux.dev
 Cc: Jan Kiszka <jan.kiszka@siemens.com>
-Date: Wed, 18 Nov 2026 13:02:35 +0100
-In-Reply-To: <20261118114909.3030884-4-yegorslists@googlemail.com>
+Date: Wed, 18 Nov 2026 13:05:15 +0100
+In-Reply-To: <20261118114909.3030884-6-yegorslists@googlemail.com>
 References: <20261118114909.3030884-1-yegorslists@googlemail.com>
-	 <20261118114909.3030884-4-yegorslists@googlemail.com>
+	 <20261118114909.3030884-6-yegorslists@googlemail.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: xenomai@lists.linux.dev
@@ -69,21 +69,28 @@ X-Flowmailer-Platform: Siemens
 Feedback-ID: 519:519-68982:519-21489:flowmailer
 
 On Wed, 2026-11-18 at 12:49 +0100, Yegor Yefremov wrote:
-> Since glibc 2.43, strstr() returns a const pointer when passed a const
-> string in C23 mode, which is the default since GCC 15. As
-> ref_schedule is const, assigning the result to a non-const pointer
-> fails due to -Werror:
+> GCC 16 now warns about variables that are only incremented, which
+> breaks the build of the pSOS and VxWorks tests due to -Werror:
 >=20
->   sched-tp.c:233:11: error: assignment discards 'const' qualifier from po=
-inter target type [-Werror=3Ddiscarded-qualifiers]
+>   task-2.c:19:42: error: variable 'count' set but not used [-Werror=3Dunu=
+sed-but-set-variable=3D]
+>   rn-1.c:15:22: error: variable 'alloc_size' set but not used [-Werror=3D=
+unused-but-set-variable=3D]
+>   rn-1.c:16:18: error: variable 'n' set but not used [-Werror=3Dunused-bu=
+t-set-variable=3D]
 >=20
-> The result is only compared, so make s a const pointer.
+> In task-2, count only makes the background task busy-wait. Making it
+> volatile is not enough, as GCC 16 still warns about it, so drop it and
+> use compiler_barrier() in the loop instead, as the Alchemy task-2 test
+> does. In rn-1, alloc_size and n are not needed, so drop them.
 >=20
 > Assisted-by: Claude:claude-opus-5-5
 > Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
 > ---
->  testsuite/smokey/sched-tp/sched-tp.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  testsuite/smokey/psostests/rn-1.c      | 7 +++----
+>  testsuite/smokey/psostests/task-2.c    | 5 +++--
+>  testsuite/smokey/vxworkstests/task-2.c | 5 +++--
+>  3 files changed, 9 insertions(+), 8 deletions(-)
 >=20
 
-Already done. See commit 8109051556b438cd4c280e75c2a45ae3b43d7f7e
+Already done. See commit 8e4c4e836f45ddf46a090abbeb76e0152a5dec93
