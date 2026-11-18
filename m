@@ -1,94 +1,93 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.43
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.53
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795010801;
-	b=nu0E5txawNqs9YSNyRdAjTXzFoeEVCRy+kPJonjW5gGVQIomV9J1+IkDrqOevf31OPxp
-	 8wDGwIXwEuou1HJkuvPZrbM/ZPS9Hhnt3ISDM/bNvlsUWWX9No8RORCs58ldWZRF6SBWJ
-	 0q65NHPKCqwaQAsUv/h3oEnjiFXKQ4evFmSPcA7/HBpNfQCNdG4monwdZgwzqnJTewNzh
-	 dmmdXv+OhWOOsvBgoAGqonZ+B3pOCjhPYEbSe0WwohIfjBF9F9H0DAK/FBo9FJT4xwb0n
-	 eNEbcGseeGeiZZ2xgEFD+lefAC9ajPf/VKqWhIr6v77kZly1ofet3oDwCNUe2G2Qw1A==
+	t=1795010803;
+	b=tukIqPt4xUp4raFnCtq5S/s7JskdLAaVovFcnoARV8tuDOWcYqM2YdOfdCjWg0vtaYDQ
+	 AIQ+a94r1zXH8O12sd5Balw2rOPPQusAa1fd+bYQYGhxUp1WQGELCag5tRrGBDp6h18JA
+	 NCkU3vnZwL0kif/tZjUXWU/XvTf8a1l/QpdW9DVaBfCJUHvpZc47SYDausmIyZK0DG/wh
+	 IQq3I3KJesx9fibNTkFW6ZDCxUfhL+4ZBcof7x774aWZFpNDizYSXMwbqQLdK/MelyKx7
+	 e2k3rhCCboVir2uGmuDsxuNEd/4OucLS+LY/WEutfnTURssnpWQSeXdhTxS+jb3prkA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795010801;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795010803;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
 	 Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=0nDzGx33z7BLHpijyCRfZcpNSRPZo3e6MzzshecdTRk=;
-	b=NRvAxW8gQs3NYExV0GjrsGniwYgHsCkXAlkKXT6EOSAstAugbo4fv64RRzufVWyl+CSc
-	 cEJs3YkOcdIrcOgC7uwGDGAC2V+Q4TgZeguLC3qFCMCCWdxo24mThEDW2ZgQL1DbTf7YA
-	 dM03TvfV7Sp/8VyYE6mpSark/fTG6/9D+yAsx4GzqIhXDYKIxpfnNC6LNJviW9SCXKvyQ
-	 ZwZe8h0KgnOoIueuM0Q/cBvB0lmZ0itlEzqdFxxo/SBCBobgqiqkSKRgbQUkNpbFKAc6v
-	 d8Y9OMIggjV4AP2TKGndlLDNkbbwSeEoFScjzc/vCnQjdU7v1VtgTFEAQEexxh8G6/A==
+	bh=/hvcH8klzTffDabk3aGpZYTQAOinAuI/zE+W/Zmsvlw=;
+	b=l0yDVHg0b0BEkLG8Ge6n1AQAINQs6fHOWtAhV3y9oECWLg6iUXd8xlKsjpmCs/IUroFg
+	 LnKM+S/jcqkujlwBIhfrYDgUyI419Fg1nfu7+svttiDVeDt8oy1cTCFt/4QhymbUHWGqu
+	 B2ZXzVYQSPfatCHPGLHgpoaokfLZcHiHETfd1/LxIMSS8YcfSbL25ArMz+Y1kUG9fPRsW
+	 0deZ4+9fbZtWkZuUsQzh43z8K5vkkikPP/Sd2S2k4wfULc6E4PPclJs2h1pfoQF5O2UbJ
+	 uijVPtSnSbWMPFO44bdxT+xeLvsQETbSht+RyeJdIwjjRAndgrtLUQ8CAGMU/N0VmIA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=googlemail.com;
 	spf=pass smtp.mailfrom=googlemail.com;
-	dkim=pass header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=UT7LtSox;
-	arc=none smtp.remote-ip=209.85.218.43
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+	dkim=pass header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=ERsyzzCn;
+	arc=none smtp.remote-ip=209.85.208.53
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E0FA606A338
-	for <xenomai@lists.linux.dev>; Wed, 18 Nov 2026 14:06:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7E0FA606A338
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5660606A336
+	for <xenomai@lists.linux.dev>; Wed, 18 Nov 2026 14:06:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B5660606A336
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=googlemail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=googlemail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=UT7LtSox
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-c505186727fso141755566b.3
-        for <xenomai@lists.linux.dev>; Wed, 18 Nov 2026 06:06:41 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=ERsyzzCn
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-6b7ddb99db4so1444464a12.0
+        for <xenomai@lists.linux.dev>; Wed, 18 Nov 2026 06:06:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20260707; t=1795010800; x=1795615600; darn=lists.linux.dev;
+        d=googlemail.com; s=20260707; t=1795010801; x=1795615601; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=0nDzGx33z7BLHpijyCRfZcpNSRPZo3e6MzzshecdTRk=;
-        b=UT7LtSoxagJH1sE6nZUxbWBZ+cjLHFCeP50zHc71QR6xPbgQeRs+JbAdmCwlIAZ5uP
-         eNwNsZKGX7ri3VwQUEko9sGJ0RwiB6E7d/DE6iM1fiHbyMb0QAOX2ZNxCRmva1AmL4rl
-         CIMr3f5a9wDF46OFVuA3cl/fdmjUVyaa2rFz4tA6+Dsz9DhJHWK+tlInL2gAPEenWGTH
-         ly8ZJXvEeyU7vhUK7y5ZDBqgFNC6usseFISwFYppZ6URY3qn2RrO3zHglV5TdwiE8SG0
-         RzMBFle5/ejQ9lSYxW+nmxL7Hvp7c6JWonqxa/qqo1ZbI1YMvj9Ycliq7lc+d9Xp4Rsi
-         brWw==
+        bh=/hvcH8klzTffDabk3aGpZYTQAOinAuI/zE+W/Zmsvlw=;
+        b=ERsyzzCnGamgK5in+QUaQvX0FAnl+8k3sjWk+hS8fRevAPLIZjfHNpLl/3ue8FOc8M
+         6HBxU8LRBiMiUTw/kEgh47/9NHSWc4i5KRE5NvDDCIf09QHd9QHLIP2NlVze4d/TzRay
+         ehDcSM6K/V2ApUfE1Bhitbbxz8E1ps/TxfgoF0zXPgYqaBxPK5hF7xyqdOp5hA37EhAh
+         xLySes3VFuRid83t4rV7LpmQHsYnKYH5Urw+cdSTnWrqAnWaYPj5JRVXtHyNhcFN2SeV
+         RNhZkv2tSeMMZei7/5IW8ts870q/S45VC2um7T22vqC+hr4wTeOCzJvC7Mx0vGlLSFBn
+         9ejA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795010800; x=1795615600;
+        d=1e100.net; s=20260707; t=1795010801; x=1795615601;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=0nDzGx33z7BLHpijyCRfZcpNSRPZo3e6MzzshecdTRk=;
-        b=J7+OTkzXFRGxbbTyWHFYI6n36iMbeIVRbvGkioc3Q+LWc4aUTq4myk8r0lYov68ZZO
-         puBJejWjWRbxG7KjWT80XwRt/tg7BI/DlmetIRE7dlyWuaWqIh8mUm0w0hrGAVtFxds+
-         +jHG/EkU7fTTf5vo8MO4pphrzghC+h33msAZXhKqc+asQxgPBpzfXF/1EioyPpiN3sex
-         ZLhoQkYtsP0RWTZIPnR4ORi0aknTGIzo4OhYWVB7fCEnNE7zRbf7Jj+GVjInvx3iCwo2
-         xjwq8fwi7xIpexRmW7MV91/1QT7O1l8lYfx1SXLD4SAkjXPmSUrSGST2xT3ASvuWEapO
-         yyGg==
-X-Gm-Message-State: APuU4Z87XbnSJEBMbbA/hXfVCUGvbvtqdhOAbhg7912eEmJ8XuxCsAW/
-	Ct7imkeCLmpVCvHgv/hfOIAlu3jtzi/+uf8VD0T+AFEt2knRWRaKS/v4inr+Tg==
-X-Gm-Gg: AYBFou0l19Xkg7sK3D34PBSppn04dh5w4RBbPYKJdNgZfaXhOKZ4nOHCGjHYs7hxd2T
-	iZ6Ed0fzKSYSkD3O32w022VLk4ec8PrOYHEhyIcdmmITXUJLZF2c1kp+FjlcyWmx4sSevwsyiVD
-	/0qjk3SFW9NE8nkBtevFl3qp2O+e5H1ph01fN8AMbFEx2hCqvkov4jhxnzG5Hrqo+UeLeCJNAWU
-	Afsrg2oP4gtywhz7JxvDFMqKqhybmtZumLQ9tAtNFcC3nqCzdhNqhntOPHlHzfwohTh4CycYbOO
-	SxN9JfAm697zLq0HsGYjAoCxAiabKc8gWbNHaTBmZbYz9xOeLqKWkTRdbUxT5CLwfxyNqrCifRI
-	t/lTAL8TaC9OCvz1fa17HrdQEu4Sik0gF1dP/Zy6rCstEa/WdNzTEYFHbRcdzwd/QJH5AZduX6b
-	z7yia53nZKJD7yWAg9tWpv1lmB+81x2/PKwJGWyXOm6uFw3rFADu44H9TdYzaqZa0Tr3LW+E55/
-	CNWqk5tAUik+CT1Tcr+NF3AkZjNNWYjwAxkOUyiU0WW6BigmIku77dL/X+MXq9J/fw5XEPXpQ7L
-	VZZiIrk36i8Z8Q9GmAen58P9ytmSMRF/yo/QSm05nNQaJYVBXYGbKna636zfq5T6MOrx+j/q0nQ
-	W3P9BN9Hw
-X-Received: by 2002:a17:906:99c4:b0:c3e:d0ca:d2fd with SMTP id a640c23a62f3a-c510e15a1c2mr259350266b.12.1795010799754;
-        Wed, 18 Nov 2026 06:06:39 -0800 (PST)
+        bh=/hvcH8klzTffDabk3aGpZYTQAOinAuI/zE+W/Zmsvlw=;
+        b=leEGKxno+iXbVG/tGoYZ/avNAj1OSfd4LSCSsmjCVkkB6F0TJ0StaoYZjdh1XVaNSd
+         WICsYAs1MjSLUR99iI1hyKRf2+STZiivAHL2Hp4qK9l0jWSVSHxYl15t9GT2/RMaqkmO
+         U2mgJDZLzecwU1xVdJ+53iBCGQ5vtJLs96QvSka2YNaGNFV6LhTZLDdt81HFGOQ0hrtE
+         Jswdczi1s9yhiahxz1ZkjoD+tzm0Okj/ctdCKXRlNfH5lQUGfuE1C0hxgb7d1ZSJj68M
+         B+84bDpL1Ty8AsAQ2QaV6dMO3Irr8JqpSbIHLypOdlUw11dB9IsHQW4XChwK0mnw66dk
+         Usrg==
+X-Gm-Message-State: APuU4Z8nRJ/X4hE7ezbuEXNH3M+cGB8wt7KTaGTaElrXv5T/I3MmnUDv
+	VoDwJ0c8HKHE54MfgYa6nVAuc4lj9aMlWzr4pzsESAcU2rToPEFKONTT
+X-Gm-Gg: AYBFou3t2ZbIieYfGEKboOcGUrdbuhs5cuol6ZI9U9yNHndC2l9vy16aCi52IeDXei1
+	BiomNUpUgH9sgzbRHu5Y9smTaONzRyjCvotlliZrnycPVYHNvemHfewTtGRPDALWqOtRlSy2klx
+	+vKSFzc+IWPAQBOAfdwS6J5y84hojNHBVjA+OjNBy4IIi5hZJ5CdmxVQ3JZFFQ0au9PkZCL1Lql
+	h9lgtf9iFZeoyfCYZdAIcql86cX8lOvkZ6oNy1RZRK+3k9tXqLE99Dwj1UfSVa9GkywAW/nkvbu
+	HXxQwnEJpKv0CXc3l+W7ldDCaBKgMa4DVa3tmUEUERqvpiUv5q7l7m+SR/nYa/hHeWnCAM53T+L
+	EEP5O9Y/8Tq1SzfjVDMytXYR71Lqcq5P/Pnqc+KwH9Q4D+Fe/nU24TenxNMs2Tf5pWp/fLj8Ixr
+	gGLQa8AHL/JETZXD/p865IjmtHHMOXOB33/J3EdTwZnyEwpgd5TlHqjPeKQBxOceay+vAvqraqZ
+	hSzPsoL6IeIniK0w8F2LEdDiJuRDOzWO46kG8FmaJBQlx9FgcLB47zcOjoPJ6JWKtCkIFmJuXuT
+	YLEW3gWrhJdvVs7OW1K6+olH/631EUy57Ihx/ef2FpxxXXoctz6KiE0Ul6FoT00NQWZ89g2bRWH
+	5itjhg9UK
+X-Received: by 2002:a05:6402:a514:10b0:6b7:6485:23cf with SMTP id 4fb4d7f45d1cf-6b887ef57f2mr1694848a12.42.1795010800961;
+        Wed, 18 Nov 2026 06:06:40 -0800 (PST)
 Received: from development2.visionsystems.local (mail.visionsystems.de. [213.209.99.202])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c512346c84esm1024966b.56.2026.11.18.06.06.36
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b889c24bc2sm1073816a12.20.2026.11.18.06.06.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Nov 2026 06:06:36 -0800 (PST)
+        Wed, 18 Nov 2026 06:06:40 -0800 (PST)
 From: Yegor Yefremov <yegorslists@googlemail.com>
-To: xenomai@lists.linux.dev
-Cc: Jan Kiszka <jan.kiszka@siemens.com>,
-	Florian Bezdeka <florian.bezdeka@siemens.com>,
-	Yegor Yefremov <yegorslists@googlemail.com>
-Subject: [PATCH v2 4/4] testsuite/gpiobench: Include stdarg.h
-Date: Wed, 18 Nov 2026 15:06:32 +0100
-Message-Id: <20261118140632.1080213-5-yegorslists@googlemail.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: xenomai@lists.linux.dev,
+	Florian Bezdeka <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH 0/5] Build fixes for Mercury, GCC 16 and glibc 2.43
+Date: Wed, 18 Nov 2026 15:06:39 +0100
+Message-Id: <20261118140639.1080228-1-yegorslists@googlemail.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20261118140632.1080213-1-yegorslists@googlemail.com>
-References: <20261118140632.1080213-1-yegorslists@googlemail.com>
+In-Reply-To: <90eddfb3-0a7c-4f14-b718-e77662527fae@siemens.com>
+References: <20261118114909.3030884-1-yegorslists@googlemail.com> <90eddfb3-0a7c-4f14-b718-e77662527fae@siemens.com>
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -100,35 +99,25 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-gpiobench uses va_list, va_start() and va_end(), but stopped including
-<stdarg.h> indirectly when <xenomai/init.h> was dropped. With the
-Cobalt core, the header still comes in through other headers, but
-building the Mercury core fails:
+Hi Jan,
 
-  gpiobench.c:268:9: error: unknown type name 'va_list'
-  gpiobench.c:283:9: error: implicit declaration of function 'va_start' [-Wimplicit-function-declaration]
+On 18.11.26 12:54, Jan Kiszka wrote:
+> Means you validated the next branch with your fixes?
 
-Include <stdarg.h> directly.
+Not for v1, sorry: I only tested on top of v3.3.3 and missed the next
+branch. Patches 2, 3 and 5 duplicate Florian's GCC 16 fixes already in
+next, so please drop them.
 
-Fixes: 17defbb7bb64 ("testsuite: Cleanup of unused includes")
-Assisted-by: Claude:claude-opus-5-5
-Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
----
- testsuite/gpiobench/gpiobench.c | 1 +
- 1 file changed, 1 insertion(+)
+I have now built next with Buildroot. The Mercury core and its
+testsuite still need patches 1 and 4, plus two more missing includes,
+so I'll send a v2 based on next.
 
-diff --git a/testsuite/gpiobench/gpiobench.c b/testsuite/gpiobench/gpiobench.c
-index f2cbb2549..44f04ff4d 100644
---- a/testsuite/gpiobench/gpiobench.c
-+++ b/testsuite/gpiobench/gpiobench.c
-@@ -21,6 +21,7 @@
-  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-  */
- 
-+#include <stdarg.h>
- #include <stdlib.h>
- #include <stdio.h>
- #include <string.h>
--- 
-2.34.1
+> Fixing all these is primarily driven by your desire to fix the build
+> recipes, or do you also have a use case for Mercury?
 
+Mainly the build recipe: Mercury is the default core in Buildroot, so
+it's what the Buildroot autobuilders and most users without a Dovetail
+kernel build, and with v3.3.x it doesn't build at all.
+
+Thanks,
+Yegor
