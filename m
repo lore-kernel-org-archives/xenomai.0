@@ -1,91 +1,91 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.48
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.41
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795002555;
-	b=rC1bnLGENGuF3hSoVcqbyqAuU07Nq2Y5AKW2TzwiGRnAwnVQo+w16p4Wao59NGHF2kvi
-	 clFujAYciRmjg+/9OnLZX3xu24Ag5u47XsjYMN2VpbgjcWlX9oZDiY+PN+HJvg86CNmnV
-	 oIzb/oTKEeqKZ/58m+NbYNg3HJsixTwjUcyk24Q1F5Rn4/EwHqkMQrF4HsSpM+8ubVz5S
-	 S4NnbVxzpri/+s/EV9rQJlpMFLnI2XUnOiE7u/jt3qWjKMCduajro960x1BCmb9xhfsO5
-	 VQE1Tp2aOBl5emuqoPpS2LZPGLZlb5BEj4zhTT32/KRv8I2AM20wJk5ORa6FtIZsxIw==
+	t=1795002560;
+	b=ep9AJ/mpskirnVVWaCuWYqik7h1uf4/goo2b5goqSeysSAeL4Yb4wUcymQd4eyYO0yr2
+	 ZR9BvAV6c0ZrIeFWLR7k3M9ETzJEtoKFeQX/fdHdlkfTz1E2AX7gs+NAIYzRJFGJ2gxRb
+	 gPuTj0tai7dv4p0P2gDu7H2DPgVIHSLF81WAyFba6iFA9CsqV0wqXzuFKcnfmvhZeFKah
+	 Vpq3VEM2A1pM7F9T601nibKMQMUoRsDVUsKRCPMT4qNEYRq/MI2pnlxxDPTKF/eb8CtCQ
+	 OXJY5cBW1GTTUtaqN7gGAGERsBW+OjDV9szZcfdXAlUaCL5pRxzdnbOKnRzGOJEJTvA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795002555;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795002560;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
 	 Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=sF3nOitx/RXFFWxE27aBo75MPzJ4caEtQ40JlQmXOB0=;
-	b=hBLGSz2wbo8k/siGP7Qe2H0AENiCRyICsGTTsMd/paMSuSIae7ADZOrCkaRQ82txT/Pj
-	 8EYToAOQ3R2CP7EvRdUEwRwSZ4uxXlcLtoakFoGjUe3ELRW/UzJ/lK+aVGoVeGd7OIGGg
-	 QOVnzexc3YMurIH5OswbX4xupPf0p7iIVhFejQVqVptDVanB85HtorQJ5TSPfjMZZw16a
-	 Rzce9lBt9+tYELRuuuBfoMYFg4/u47gxQn2NX2KpKSEX8wyGN8yJ7eSC+qkbc13kve7eB
-	 55O8DzQn434J08RgqiSuIT2lyLGNrGo1D9a1T5GAT0P9N1zfrLhHK6nB2ZCp7ocSvyg==
+	bh=xpY7TNarCsh/Ar12crUpnMy/5kxXErx3+WnLASvs7MA=;
+	b=dKldiLQjCn6iYZtZqi5vNpDWTcL1Jc7GJM4Nlu4dYhL4yINjx+W+NkO6pXzkwpdJRMhf
+	 IbY9zni4J2vEn/gDru0CJxaz9bQFr4DoNiIGWI5LZDtjkMdK7BXk7XAsOGWf4Lfb6SzHr
+	 jXIUjYTibP6vGDTpUPYmM4bQyGzE/bBg3iCZUI2MwnbFsESwqmdJ9R4b8b7cqV3BSXHFe
+	 Q8T29JCjF3POYnrMrzSugKmbJ3s9lAYP+FqYX4CacFFt6dsKATXcHZcTjg5tKDan6qDwz
+	 s2au4/h3ACz6GFyIoL3yaHwB7To0DDsCw3VPEU/7oA+YEJSZWl+J96fhQ4mpDPcaCxA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=googlemail.com;
 	spf=pass smtp.mailfrom=googlemail.com;
-	dkim=pass header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=DscBKn2t;
-	arc=none smtp.remote-ip=209.85.208.48
-Received: from mail-ed1-f48.google.com (mail-ed1-f48.google.com [209.85.208.48])
+	dkim=pass header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=y2jEnbYp;
+	arc=none smtp.remote-ip=209.85.208.41
+Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com [209.85.208.41])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 90ED3606A31C
-	for <xenomai@lists.linux.dev>; Wed, 18 Nov 2026 11:49:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 90ED3606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9880606A31C
+	for <xenomai@lists.linux.dev>; Wed, 18 Nov 2026 11:49:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D9880606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=googlemail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=googlemail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=DscBKn2t
-Received: by mail-ed1-f48.google.com with SMTP id 4fb4d7f45d1cf-6a642495d81so1556043a12.2
-        for <xenomai@lists.linux.dev>; Wed, 18 Nov 2026 03:49:15 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=y2jEnbYp
+Received: by mail-ed1-f41.google.com with SMTP id 4fb4d7f45d1cf-6b8a52db5f9so393836a12.3
+        for <xenomai@lists.linux.dev>; Wed, 18 Nov 2026 03:49:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20260707; t=1795002554; x=1795607354; darn=lists.linux.dev;
+        d=googlemail.com; s=20260707; t=1795002558; x=1795607358; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=sF3nOitx/RXFFWxE27aBo75MPzJ4caEtQ40JlQmXOB0=;
-        b=DscBKn2tCGdy4c5DRHzIvYs7GRKPYMmuyd5Xfj76dkRstkpWBPjbjxsE+bbfmS7Qhw
-         SBCCpLBi02UXT+HOPsU7nkoSmFC0bF6/5ntdS7ZJGU9jKW0LDV61FShBUFl7sNVVnGoK
-         ajiLyjG6PoqHIY7L+mvdsm6gBUSGatG2Sx2P0nmdrf1h1Y8Mvg1blPFrQJKffG6r6eJB
-         6y3JmA94kf6ou5IVvyTXF7kWIPvlMh4Wwnpm69mdFS4YB7xlkAa7r/RLep4U8MzUk9nS
-         dPVFTtrKQjLSkkS4FJerg2qZYzuK8RnC1BGABQxpibRt2SRiopn7vZ9MRUGNC8Ee8i39
-         stDg==
+        bh=xpY7TNarCsh/Ar12crUpnMy/5kxXErx3+WnLASvs7MA=;
+        b=y2jEnbYpr0BKFjlSIWMxJjfq2eTnRHBSncc9DDE/qHtYdTE3Bxq6WXAnGcGpvb8xJ7
+         bejdS6vxW9ZH0CY8S7/moXtma7s6rG/7X5srAHCPTsbIW7BLyGWcEfgYYkEjMO0e6yeG
+         5akVsB9Gc7E3v8uS9pj8QseoANK9b3njzkAgiFToAhx6/l5OYvLloiGACwAVA9ZZnu8E
+         BQgG+wfuXM0MXrYqE//SP1JkdLo4p9bd27VFqh8U4IXSSp+dY6LrI6CwdEBflI4e1x2D
+         U/xILwrfK5H/tQqMzVBtjw+kUG2hhQuWd8X96Zz5ix6TVCTupuODKCo9A+/+rIk2eSX0
+         jAuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795002554; x=1795607354;
+        d=1e100.net; s=20260707; t=1795002558; x=1795607358;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=sF3nOitx/RXFFWxE27aBo75MPzJ4caEtQ40JlQmXOB0=;
-        b=puT/EPlVWOiyh49rhNjZ9nClfgt5gTde2x09GF+2QG040m/omFylWOmM1PJXEadLKT
-         NK5+gVzGXpq+Km9O3S6uAfdNNRlI52sZFVN8Li9kHlHxwJQfehdC65KKf5nDycjd2XML
-         lkP5raEmf7gyoW9FnXvwvpE3qEAXSAeaE5GR1Njf0vwepZlHzj0d0Qpo8DHng4ljJlIX
-         iVxlGBMNIXhRsYquYOMys8m4GcfRs29t+cU1YLsErGtk0Rki3Il6tc3pqGGMnKDmXV/Z
-         rMPOeDMVxBVjDZsphIU5iqnlDqadMvlx1RkafdR8HWsaKalg516n0ed+c3pFrRLUW6Mv
-         0APw==
-X-Gm-Message-State: APuU4Z9P5U+7DvZHLuDNC2uAS8iqZzmU4k5S9ELXQqM+Io3pY+5Ftyw4
-	94zjkQj2wW7u/aoqKycODyNUl5IirH8gf7FGBPUX7Xldg6oTcnXJjzmoZLnFuQ==
-X-Gm-Gg: AYBFou2vwMKoj5NB/Q3NDFBDu/rB4aV7UopM2I0XKEDzZ6HW0oifa5uKjZFjw9TKNJd
-	fekpLydaiAxJs4ePRm9ATf8e2FtV+0AwNOSHTVPf76BMZhIuiOFehdzlaPLA5Dvuzyw5rKYaS8Q
-	zqV6rD0HIgDmsWzSV6TUSxYouI3RHvC9FLJkqSYLNyxHj3kcHGsS5HXEVP5JmTw6QvHrJ16KmRM
-	YMLw3a3v6ay3i5U/yvbakaAOVaf74yDMR3+I9YFdIxPa2RCKnmJFuq+cQDSrCwJXlVt6sLM38AZ
-	4qPQkjqgqParIvQwunSTXGapvMNhAWwY4yj+Ys/h0ltRfu0OzoYy3fP0SHRLuyGRgv2Krb7Knz8
-	1SOlnJhSUvYB9IatzW2PWFj8z4RxtvC+arJ/owo6yXHs5n6CbgpvE7F2cHcdc6sbNlGgvhIbN9M
-	kf6PY/Tp/F58Ubo1OuGr4nPPMrc4gTGzPy/KrmFFcPt/L4dIAiV694pn5UIM36ODV5NHIJDCrko
-	cfhWrz0hl4HKFgF/tHG8SH6uLvak+I8qMDi+yWu418+vLcw39qty8HH43vg/Dok3BuYnMsv0t3+
-	zhHuGueiVVlkvj7wKJJwjgonyMDBUfKteQEkFDDAI9xuFqfpAup3eyVlDs8hc2AK+YTUFDKZjzf
-	LKMbYUrOn6A==
-X-Received: by 2002:a05:6402:a514:10b0:6b7:6485:23cf with SMTP id 4fb4d7f45d1cf-6b887ef57f2mr1357592a12.42.1795002553963;
-        Wed, 18 Nov 2026 03:49:13 -0800 (PST)
+        bh=xpY7TNarCsh/Ar12crUpnMy/5kxXErx3+WnLASvs7MA=;
+        b=TeKVOTBs0lDtpqwI7zIGOR/gAmCJz3EhIXP2+11YbfeEOcab7LLAMuCxsKFSVhQgCG
+         fhbDqVJOtGlHXFArmJ94xq7oeUF7s5rxtmHyagdMcNkrqZ00nzIw9dclm4cABmZYXXsT
+         xhM75b4Re+ib9xicWRsmIVXii6cTv2CkBFjCDjKTQQtWlPt2GSzI1idrgb+4djdjPYVm
+         wLqOrNBnduLm07J2KDNUNM3HsqFJFLANebUrXHBkwAM/w8/YKryQqnBj4+MDKPsQ4TAM
+         bzXGzABM05YXjujZuaE6+/bD2ym3w8EA705b0WyohO9Y4ubte90FO4dcK1BopWhEuo9/
+         YyVg==
+X-Gm-Message-State: APuU4Z9iNc+YD1gNyCEiaK1TsvwsEHbRVAxlIB7gfYkb9/fVCgga6nO9
+	8AYSLoLujgKx70gFLyG6pcaTGrtARospCZsX0qzqwU6PlHrfBRc5cAB10mJ75A==
+X-Gm-Gg: AYBFou00dbRoz7pm1VCyKyLxnI3skfKjaxQXbPoFWU+pPUc7g2AuRlA98iuX+m5+T2Y
+	ENDp2xUmfE3JYreuaz1Nut+Tk/LiymAo5KmUd9YhmyPsILpYzcocilQhUo09qekIiQVK/TwPYGn
+	6YUUyuiSHF3HqZcqc5rB890BwOoJWPuIFrI17RvWKiASy2VtB1VYnqH/adwlQ+zUM7hE4U9nS9Q
+	MX8nYWNwRDsjolyX0eYBuRnx2s59EhJsgLayFzeL/J7plb/ETLMwqBgzggA7dpoQ0xIUHy5jlMI
+	5q42Wb/FsYE0LHl4pP2mn2mnVWNBiUtyZI8YTGMwEjP4yZwzgWrcI1N+7SHmz13GbWEUapY7dSv
+	3gnZurB9xPh+T1/7jjEHt0wKxcHxXMAnOvzBbWCXRJI5CFH+vqpBgTyh7PCqpfZUZ8fi1BGk5QO
+	JNQfav6MFw5p3UCJRt1HuuZiqw/4B3cbUBBYMwehEosr7SbqZTz05hRm8rQMKaqejR+Yp/oVXN6
+	fwUmixvqBZfp/pLM5yFfu4xIu1rO4Wez32KzMl6bv9eZjVgnK+2SvUl06wPngFiIEpmrtPgVSeJ
+	jZhVCrbOgHVY1uWcOprXGDPIA7p1/7XX1zovLfPF7Zqve9GO3bTH4dukmVRY5VhBmFYZFBaGz3L
+	56y6LERqC
+X-Received: by 2002:aa7:d1d9:0:b0:6b6:f5b0:889a with SMTP id 4fb4d7f45d1cf-6b887ec0972mr1353132a12.35.1795002557980;
+        Wed, 18 Nov 2026 03:49:17 -0800 (PST)
 Received: from development2.visionsystems.local (mail.visionsystems.de. [213.209.99.202])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b888ef94a5sm917931a12.4.2026.11.18.03.49.12
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b888ef94a5sm917931a12.4.2026.11.18.03.49.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Nov 2026 03:49:12 -0800 (PST)
+        Wed, 18 Nov 2026 03:49:14 -0800 (PST)
 From: Yegor Yefremov <yegorslists@googlemail.com>
 To: xenomai@lists.linux.dev
 Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 	Florian Bezdeka <florian.bezdeka@siemens.com>,
 	Yegor Yefremov <yegorslists@googlemail.com>
-Subject: [PATCH 3/5] testsuite/smokey/sched-tp: Fix build with C23 strstr()
-Date: Wed, 18 Nov 2026 12:49:07 +0100
-Message-Id: <20261118114909.3030884-4-yegorslists@googlemail.com>
+Subject: [PATCH 4/5] testsuite/smokey/alchemytests: Add missing includes
+Date: Wed, 18 Nov 2026 12:49:08 +0100
+Message-Id: <20261118114909.3030884-5-yegorslists@googlemail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20261118114909.3030884-1-yegorslists@googlemail.com>
 References: <20261118114909.3030884-1-yegorslists@googlemail.com>
@@ -100,34 +100,46 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Since glibc 2.43, strstr() returns a const pointer when passed a const
-string in C23 mode, which is the default since GCC 15. As
-ref_schedule is const, assigning the result to a non-const pointer
-fails due to -Werror:
+With the Mercury core, the alchemy tests fail to build, as some
+declarations are only pulled in indirectly by the Cobalt headers:
 
-  sched-tp.c:233:11: error: assignment discards 'const' qualifier from pointer target type [-Werror=discarded-qualifiers]
+  alchemytests.c:43:17: error: implicit declaration of function 'fprintf' [-Wimplicit-function-declaration]
+  alchemytests.c:43:25: error: 'stderr' undeclared (first use in this function)
+  task-2.c:34:17: error: implicit declaration of function 'compiler_barrier' [-Wimplicit-function-declaration]
 
-The result is only compared, so make s a const pointer.
+Include <stdio.h> and <boilerplate/atomic.h>.
 
+Fixes: 61fc9ff4b721 ("alchemytests: Set cpu-affinity by env var")
+Fixes: 10d898c40e26 ("alchemytests: Fix task-2")
 Assisted-by: Claude:claude-opus-5-5
 Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
 ---
- testsuite/smokey/sched-tp/sched-tp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ testsuite/smokey/alchemytests/alchemytests.c | 1 +
+ testsuite/smokey/alchemytests/task-2.c       | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/testsuite/smokey/sched-tp/sched-tp.c b/testsuite/smokey/sched-tp/sched-tp.c
-index c2c3e41ed..e4d233201 100644
---- a/testsuite/smokey/sched-tp/sched-tp.c
-+++ b/testsuite/smokey/sched-tp/sched-tp.c
-@@ -123,7 +123,7 @@ static int run_sched_tp(struct smokey_test *t, int argc, char *const argv[])
- 	union sched_config *p;
- 	int ret, n, policies;
- 	size_t len;
--	char *s;
-+	const char *s;
- 
- 	ret = cobalt_corectl(_CC_COBALT_GET_POLICIES, &policies, sizeof(policies));
- 	if (ret || (policies & _CC_COBALT_SCHED_TP) == 0)
+diff --git a/testsuite/smokey/alchemytests/alchemytests.c b/testsuite/smokey/alchemytests/alchemytests.c
+index b596a1e17..bd01fe227 100644
+--- a/testsuite/smokey/alchemytests/alchemytests.c
++++ b/testsuite/smokey/alchemytests/alchemytests.c
+@@ -1,4 +1,5 @@
+ // SPDX-License-Identifier: GPL-2.0
++#include <stdio.h>
+ #include <string.h>
+ #include <stdlib.h>
+ #include <smokey/smokey.h>
+diff --git a/testsuite/smokey/alchemytests/task-2.c b/testsuite/smokey/alchemytests/task-2.c
+index ca2225ad7..80ad90bc7 100644
+--- a/testsuite/smokey/alchemytests/task-2.c
++++ b/testsuite/smokey/alchemytests/task-2.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #include <stdio.h>
+ #include <stdlib.h>
++#include <boilerplate/atomic.h>
+ #include <copperplate/traceobj.h>
+ #include <alchemy/task.h>
+ #include <alchemy/sem.h>
 -- 
 2.34.1
 
