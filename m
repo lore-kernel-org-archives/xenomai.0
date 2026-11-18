@@ -1,90 +1,94 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.53
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.53
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1795010796;
-	b=RRnKy7tzvA5Kn/fJF4lKhLRvlPuPk6Bv9bxdJBRKe1bLHsFJ1LPVhSC4Dke6kNwRrHoy
-	 imNgU6+PZXuwMlBusnUwi584ASsg7WeFLWtH8kSoxov3cj/qPSSvy02+FS6bVo1Y9kg+H
-	 kr747Drvkl32u+ghgO0m25k+RLDuONLpuu7t4lt0jj2S82bmoVuefJ9MZBflJl0UCQ9cb
-	 HhdDkEqKxCsFDDR0tlFeB7IXQM5FdNxXNeNhCoBVCxhKgNjbIoHKScKYNOpXvuI4k1auw
-	 MTbBqBkDg4hyTlt3I0J6eI9fPZvlthX4La8c7+/kRppkdF0orS2JJH91UFEvBxYuOow==
+	b=N/uJp6OGSZrbBn96yIf0T6DNpqsDlDRRc+Ce3pMlcjNshcPnvoZALinfz1wtjFCFIR03
+	 LelueG9G3oEd9T5Bk0D9ub0kwpeBLJU8s8NcvaZE5Jn8TAnEWyFDMzde1F1pxBGfKfDco
+	 hhHCWALku49F6nBjwhMEIpdHasXzQvKdu3H2rad7kBezH5ZAQCjTS/DAT93T2l2otC/Y0
+	 tppug1lRwoT5NOtn1HdQ5fL6QIEt9ynkXzTOuKaOhJ2uMPhLnAqXFnpWfwQmYd1A1auTv
+	 Vd8C2dv9ZxkwoCBXozKiQ2vfSkg8zesBi1ZIxrUYPWRr399fPvqYrooBLAv+TG6JjqQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1795010796;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
-	 Date:Message-Id:X-Mailer:MIME-Version:Content-Transfer-Encoding;
-	bh=CtgKZ0+uTA2KyOSygA1PHzXPKvPvyagHsIDLgV8fofE=;
-	b=0uZbpH+c3sS5Hvu0IncxiU1sxO+Qh2DkaRwTDz6V8iUPEfqKKYRj7PBwUI2WFuitf+Fq
-	 GSAmAI4FTQzZc5Lk0JANITmRv5Fh+SMDkwvmVIKF6grXznyiorhEUtNgIPcFgMQzuzmqp
-	 FcZ/IJSDVKG7UQ+PojwFSev+8h5vHe8c+LJX6W/z8Ey8vpcua8M2Te57ywqhB1BaJEGTp
-	 ni1NnmvJVQh4JK85d9SR8eL7i4ByVQ79IegGgNNAfGdd1URsP297olV0/Ce68eNLOihCi
-	 /pHHbk3V9ZIlSyouFs8UmLgmYgkK6h38qsSrsdq9sbgPHMhvZw4q9WZ7s8y11yFvDaQ==
+	 Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=Ks1C6uQA71xoi7fGf0JAMvW7r/mEhSB5XkEzG0MvdLE=;
+	b=wBk/BSi6rse86RspNf+SZIjC0FGMexuOqXSoDFm61VL38ckdR7wV/Af6VVNSYUti3kCR
+	 s4ZlcK0Rh8dXdCuUHCNBGnMxG2q8J4j7vkqB0ABxVEv38CtpnDiG9bsWG3SEJ9EC7O9fg
+	 V2+MJxi1o7smY0ZugAQtK52XBMGroDIJ9e2ObdZhvx+iDPSuRQn07QpglsG++0APYBhE6
+	 hRYj802QdlsdWq8D8WMb6Xswj9vJPdexcsiQe0ExkBZwE4NWqqc6U0a6tUUEDQX16N7Bo
+	 5SyDnWZy5lVkfkA/YqPsCnpJ0t4HU+lNcyPHANsn+opboiDMko4EqHf40icr2NoJU/A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=googlemail.com;
 	spf=pass smtp.mailfrom=googlemail.com;
-	dkim=pass header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=llmsytRI;
-	arc=none smtp.remote-ip=209.85.218.53
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+	dkim=pass header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=KuQoTlVc;
+	arc=none smtp.remote-ip=209.85.208.53
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3D26606A31C
-	for <xenomai@lists.linux.dev>; Wed, 18 Nov 2026 14:06:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org D3D26606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66460606A325
+	for <xenomai@lists.linux.dev>; Wed, 18 Nov 2026 14:06:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 66460606A325
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=googlemail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=googlemail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=llmsytRI
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-c4d5b2db4bbso227482566b.0
-        for <xenomai@lists.linux.dev>; Wed, 18 Nov 2026 06:06:35 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=KuQoTlVc
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-6b87a240de3so1478791a12.1
+        for <xenomai@lists.linux.dev>; Wed, 18 Nov 2026 06:06:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20260707; t=1795010794; x=1795615594; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=CtgKZ0+uTA2KyOSygA1PHzXPKvPvyagHsIDLgV8fofE=;
-        b=llmsytRIM15UxEKD8+xuzkigg1tIcQCDn98m0zahO2mLr8oZ0GqJZgqolH3mw6IRzw
-         BpW8G+lcHC2oiBYGkCHGjHQSmYtR1keYvohFbnemWnA8/vv5HizPgKsv/ryaO/Ccnq5D
-         5byK/qUB6UX1/en15TeuDq260SNxDFj98lwf38Gk6BOMj0xJFHu7pVMBLvMeAHpH9j+0
-         hihj06JoifKl+x6q2Fn1gRo1PMqv2lGU0GHjjHuuPrAh6JGdWoQMrL+xFSfU0KimLaYe
-         XmpmMiZAVoANn40Dd7ZedWt9uRz7EYgh+YwBGEi/YtRcTMgXsKWL/N9MFo3VHS0PDFhD
-         abwA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795010794; x=1795615594;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=googlemail.com; s=20260707; t=1795010795; x=1795615595; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=CtgKZ0+uTA2KyOSygA1PHzXPKvPvyagHsIDLgV8fofE=;
-        b=v2PNlSiMwlWiOSKdub1dMH8d5UV10oBPiTZ93Zmt7rG7yy3aBlKJGiKVxLfyM5t8CX
-         //pFMH63zvz3jQBgBOd1w2sVFs1R5J3Tx6h4eAPFgg2Xra3BdXqnvVJKaDUrUkicFxH5
-         MUaSjjfxLM/DdonkmevMznEm61DlMSDtHsoxXyEHMaTQG4QNk5AtYTne9rKtreIJUsf6
-         jwj5+Xju60RTqzrmfwQhDzvzFlrn301oAoybGR/Ou4OPWIKosw25FlbR/Iw/rLF4fcH2
-         s4CFMoakonB7tEXHepR59Kad9MdRcd2xKSvK6YnFYNMjMOWVjyX+CY4TdU6Lo2q+4rQq
-         sdEQ==
-X-Gm-Message-State: APuU4Z+acVeWw6CNzhfwZsvc8oqVexSZWsG1vzXHYaNyTK6W+O+JLL56
-	/i4DxFwys/ZXUfOvlPUHDWTFsB17nNgpoQz+AhuoMyHsNhEFf3SGNVzWKtTz7w==
-X-Gm-Gg: AYBFou2bujvjfSstQiX06Bx9ZygG/LSodB1FyZl1ag6QM4xEKFpqFNgSg0zKyd+mZm/
-	K34w7EuqVGl+PCLWy8xYUMjzIT326RtO7iBq//mUhegMS+6X91Tq6XqcFPGjqm0hiIkiZOAoMGI
-	EreV0UeSHDw/6c1kADQ6jWmY7eWqVD7vSeBLz4nNrw8Aj3g/vPO14wZDtwNtdErAD1PX3FriQGs
-	m8zGmRmXjd5wE/8RA3LyY1NPFKcteRv6J3kmenVdi+d40mE0WDQK9b+2C0gFlari4z+bgPn0xx8
-	ytyCq9QWnKM48MqO6IlIK3qkHSeD+Hzc14bYTBtm+HWCwbTzoKRo4+h4cWB0IKswRzgjyY99g7p
-	x6IBw4aFD8k5HXW2+SuH4ZrAa5Rdo9vKce+CZFLrlihIK5eOkrkNdRthzCdZXO1PquT2cebPAFj
-	mbeBzedyM4yHxisQ1/xGcP5LPj1PYVK5YYV+6efFL3zFyIj66kwMuPpGqZTpexeMFQ67J3tXfX2
-	U92BQO6y2x8JNW88f4kwhPwo1CUSLhgGiRtnkCrqTVtlwljT8IvZAd89jmubFrAxsFFE2NzMmDk
-	i0NBq6frwUhnw+kXssZz8cKjf+NY9GA600rR3dktskW0rDZmS09/a6ZKygalfzarE4eORUES43G
-	37NUn5v8r
-X-Received: by 2002:a17:907:2d9f:b0:c2e:4397:7c82 with SMTP id a640c23a62f3a-c510e15767fmr245999366b.6.1795010794100;
+        bh=Ks1C6uQA71xoi7fGf0JAMvW7r/mEhSB5XkEzG0MvdLE=;
+        b=KuQoTlVcuS0cNcL79akM69kuR+AFf57kbjtwkI/iTh0cPTLo8MCHhNaFxWOhpNeIzq
+         LTidIqNnoS6fLJX4zN4+k7mpDCrmiGFIb84mgovM0tlul59o/rBTjNu14THtkuHY52oh
+         4Ux8VdZiTLdv/5DOBa3tAj89T1KdqvQtF2wLG82Pl0BgVGSvsMfIhxJJJtwMS86bc983
+         CokPYX6IfoYEaGpAUdTvAnLnepPbvj/Srh1peU6itGL9KwogNBY4F9hznPVqLNM+iekS
+         YYJhpZ90qtNE1fisP16XZtnDRCoxesYPidVa0Uy81lDOBjnslQLUHBTe9hX0miMdfDhT
+         Ocqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795010795; x=1795615595;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Ks1C6uQA71xoi7fGf0JAMvW7r/mEhSB5XkEzG0MvdLE=;
+        b=ZuaHcvv2tBzZxjl5IP0pbND3muKTzdgWg9H282qxcdcY1g+wD/64jUzLOVbLiN1YmK
+         gRfzJFwN4y29S+qy1Tj8PkPAOpBFbYoHF7pb2EGXEAHzrRZRTYL1wAOdQe2degVNIHRe
+         9X0JrcnStZQEmyrIAk2o14RmgAkuTmJkkReWQMG+aj41CLwAg4Ru4SJJkcsMHRCctwZI
+         8B/uu9DAShN846a4ZKq1OVgG0Tj9RPx5Eak5X0vQVS7p57MzJRwbo/s1Xb6qQG8BsnkO
+         DQlY+2xChjoOgxlQdGZJWnvn06sYzMMtBbC1UDL9gUXACXCYqNJR84IvGyCoUev8Kj9H
+         /52Q==
+X-Gm-Message-State: APuU4Z9wY5lEQpYe1oiW3tZIZmKyvQCb5nC5V14XEX9ukgAZKncJmEBZ
+	+YS8VmnIQyLm5tVFHPbKOc3MUaouGP+MWawLWils2lNNN6DBXzyAnOm39MesMg==
+X-Gm-Gg: AYBFou3+LjBbRhrN8PfQKgIrh+CwPcOmBhWtH8FeCV0AfGEAqdngPk34GHPBe5OyTHx
+	gB5IF1FCXsz1Xv0FEy8rzjim8qPr91is6qMxfo6Z6Fbas6XU0oIwlsRIqKqTf3h7QtPLheOMlbI
+	6Cd/jPGFNKSCE6yKL/b6G9aqgbqG5o33piB5mGBQ4YjeoEW0ArCMZMaWGny2RZOneaZKR3Q/G4S
+	uESGSczU1UTRBSrOD/OVFcHDFOtFtRLjupW+DPJMu771fhwOeCwsXFHiNGc1jBnqCeUVVVJllDv
+	WakeJaQ+FNPhokbEbdEJXppLuxchPJQCf8DGA9q9mzWQSD0Y3w7H5uBX8NAYYoKgoKEBC0RC2lD
+	4+Mv0icGAkCfOsTXUhUiBaYd+sCOdbMRlOz45wCfmggAbJ2xOtGkP9AynRywlJdCYXJ55mpe8+P
+	srbtuJg8Lx8GQ+BXEGEbdj1/HyMTO69a3swqofb2wSqhjUJIU+pKMucUT+QEelgCpOSP4UFitFr
+	g9fjFTqeSSZ0a8Yt8pVnicLE/rNzVVTU8zZ9LEU6nn2NxR6GNikJnx7bifiCvsY9Xrhi2KDJ8fG
+	sC5GDxvnfc+tH2N0fAmHzhzM3wHutK5w5ORKMNxhw8URwDQ3h81PSg/hiqNvL2PkXkviAhBQvKr
+	vsozBhDV5
+X-Received: by 2002:a17:907:728a:b0:c4d:8e7:29b9 with SMTP id a640c23a62f3a-c510deba35cmr248611866b.5.1795010794695;
         Wed, 18 Nov 2026 06:06:34 -0800 (PST)
 Received: from development2.visionsystems.local (mail.visionsystems.de. [213.209.99.202])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c512346c84esm1024966b.56.2026.11.18.06.06.32
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c512346c84esm1024966b.56.2026.11.18.06.06.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Nov 2026 06:06:32 -0800 (PST)
+        Wed, 18 Nov 2026 06:06:34 -0800 (PST)
 From: Yegor Yefremov <yegorslists@googlemail.com>
 To: xenomai@lists.linux.dev
 Cc: Jan Kiszka <jan.kiszka@siemens.com>,
 	Florian Bezdeka <florian.bezdeka@siemens.com>,
 	Yegor Yefremov <yegorslists@googlemail.com>
-Subject: [PATCH v2 0/4] Mercury build fixes
-Date: Wed, 18 Nov 2026 15:06:28 +0100
-Message-Id: <20261118140632.1080213-1-yegorslists@googlemail.com>
+Subject: [PATCH v2 1/4] lib: Restore includes needed by the Mercury core
+Date: Wed, 18 Nov 2026 15:06:29 +0100
+Message-Id: <20261118140632.1080213-2-yegorslists@googlemail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20261118140632.1080213-1-yegorslists@googlemail.com>
+References: <20261118140632.1080213-1-yegorslists@googlemail.com>
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -96,53 +100,59 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The Mercury core and its testsuite no longer build on next, as several
-includes are only pulled in indirectly with Cobalt. This series fixes
-that, based on next this time.
+Commits 41de7cc7196f ("lib/boilerplate: Cleanup includes") and
+7b7ddf4a3658 ("lib/copperplate: Cleanup includes") dropped headers
+that are still needed by the Mercury-only code paths. With the Cobalt
+core, that code is not built, but building the Mercury core fails:
 
-Tested by building next plus this series with Buildroot:
-- Mercury, with and without the testsuite and the Alchemy, pSOS and
-  VxWorks skins, for armv5 (uClibc), armv7 (glibc), aarch64 (glibc,
-  GCC 6) and a static uClibc arm toolchain. The Mercury testsuite
-  also needs Florian's 454ae865 ("testsuite/smokey/alchemytests: Fix
-  build failure with core !cobalt") from wip/flo/refactor-includes,
-  which I applied for testing.
-- Cobalt with the testsuite and all skins for armv7 and aarch64, and
-  for x86_64 with GCC 16 together with a 6.12 Dovetail kernel. With
-  uClibc, Cobalt fails as before on __OPEN_NEEDS_MODE in rtdm.c and
-  on the missing <sys/auxv.h> in parse_vdso.c, which this series
-  doesn't touch.
+  setup.c: In function '__xenomai_init':
+  setup.c:606:23: error: implicit declaration of function 'mlockall' [-Wimplicit-function-declaration]
+  setup.c:606:32: error: 'MCL_CURRENT' undeclared (first use in this function)
+  setup.c:606:46: error: 'MCL_FUTURE' undeclared (first use in this function)
 
-Patches 1, 2 and 4 also apply to stable/v3.3.x, patch 3 only partly,
-as most of the affected bool users were added after v3.3.
+  internal.c:108:24: error: '__NR_tkill' undeclared (first use in this function)
 
-Changes v1 -> v2:
-- Rebased on next.
-- Dropped the autotune, sched-tp and pSOS/VxWorks GCC 16 fixes, which
-  are already in next (thanks Florian).
-- Patch 1: include the headers only for the Mercury core
-  (suggested by Florian).
-- New patches 3 and 4: further missing includes found when building
-  the Mercury testsuite.
+Include <sys/mman.h> and <sys/syscall.h> again, only for the Mercury
+core, after xeno_config.h has been pulled in.
 
-Yegor Yefremov (4):
-  lib: Restore includes needed by the Mercury core
-  testsuite/smokey/alchemytests: Add missing includes
-  testsuite/smokey: Include stdbool.h where needed
-  testsuite/gpiobench: Include stdarg.h
+Fixes: 41de7cc7196f ("lib/boilerplate: Cleanup includes")
+Fixes: 7b7ddf4a3658 ("lib/copperplate: Cleanup includes")
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
+---
+ lib/boilerplate/setup.c    | 3 +++
+ lib/copperplate/internal.c | 4 ++++
+ 2 files changed, 7 insertions(+)
 
- lib/boilerplate/setup.c                      | 3 +++
- lib/copperplate/internal.c                   | 4 ++++
- testsuite/gpiobench/gpiobench.c              | 1 +
- testsuite/smokey/alchemytests/alchemytests.c | 1 +
- testsuite/smokey/alchemytests/event-1.c      | 1 +
- testsuite/smokey/alchemytests/mq-2.c         | 1 +
- testsuite/smokey/alchemytests/task-11.c      | 1 +
- testsuite/smokey/alchemytests/task-2.c       | 2 ++
- testsuite/smokey/psostests/task-2.c          | 1 +
- testsuite/smokey/vxworkstests/task-2.c       | 1 +
- 10 files changed, 16 insertions(+)
-
+diff --git a/lib/boilerplate/setup.c b/lib/boilerplate/setup.c
+index 7bb24f6f4..e4ebfb54f 100644
+--- a/lib/boilerplate/setup.c
++++ b/lib/boilerplate/setup.c
+@@ -30,6 +30,9 @@
+ #include <assert.h>
+ 
+ #include <xeno_config.h>
++#ifdef CONFIG_XENO_MERCURY
++#include <sys/mman.h>
++#endif
+ #include <boilerplate/lock.h>
+ #include <boilerplate/ancillaries.h>
+ #include <xenomai/init.h>
+diff --git a/lib/copperplate/internal.c b/lib/copperplate/internal.c
+index ed3f2e4fa..103af3a3c 100644
+--- a/lib/copperplate/internal.c
++++ b/lib/copperplate/internal.c
+@@ -31,6 +31,10 @@
+ #include <copperplate/threadobj.h>
+ #include "internal.h"
+ 
++#ifdef CONFIG_XENO_MERCURY
++#include <sys/syscall.h>
++#endif
++
+ static int thread_spawn_prologue(struct corethread_attributes *cta);
+ 
+ static int thread_spawn_epilogue(struct corethread_attributes *cta);
 -- 
 2.34.1
 
