@@ -1,64 +1,63 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.183.197
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.183.200
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795082434;
-	b=HXu0AVOsuPBBwTX6EoPNKYueM9D/Ntcqx9jZImJuSig0Lea26aczTknOK2tplv3UU0Eq
-	 u2GyKz02Vzhl+1yomNYe/NcD73JW1rVugsyra4SqqxgEcKGQ7Ek1TZ4coLBo9zkmscnKm
-	 7Ym8npDplg+1TxjN8u2f5F6W9ZEx//PsZf3kVVnV8WRrXkzLt6keEQwa8rlMyJ74zi49C
-	 PfySkea1iPZx68EtzGyvQp6udWr3YZZv/ekkmtvT/l8R5rOZE8bG/P+EYDWVKzxQdOSIt
-	 duoqHs9JVZ10KacxMlRtVKPVuwqww/jQB2lv2eI7e5e7UgeRVaS4SffBR76YS14pX4Q==
+	t=1795093487;
+	b=PZkt2uhpG94SXibS5/TCRvVaaB1pomPZ7oQgmYS8a/Zju7puZi+fk+1u1aF6+VbYQOjr
+	 9xYpoWzVm0uDCe0ZYez9dyFrTSCtwpveVZKoDqVjD27x8+VtBPQAOCe37uTsjk0BFa/iu
+	 5k6KnMdZAb67grQa1BhZ8WqhZTWNEfAlpGZaBdeSHajmLboBxJTOO/ZiWiojezGY+pP5N
+	 5XrRjg48d5hO0CLpFfb9El/sQzlYac+oBX8TSKVDXf1OueAyEuTjL0AhfmeBvyyJXlclq
+	 MEsrGPvaMkDmPcQ8iTXJSHEZDUGgVaLRQAgXBmlgQWf/N/uiW3q32mQvIWrjq3XbZEg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795082434;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795093487;
 	h=DMARC-Filter:Received:DKIM-Signature:From:To:Cc:Subject:In-Reply-To:
 	 References:User-Agent:Date:Message-ID:MIME-Version:Content-Type:
 	 X-GND-Sasl:X-GND-State:X-GND-Score:X-GND-Cause;
-	bh=IeE++4VgIGFeuZSpDsJ7tz8to9rnvz+CZHWTAqf55s4=;
-	b=ceAvtMwwSfPatmgV+uUGoZrzjls0itmpQJ67uRnNVuFN1YIY1mddSNKZhS05BKhxiZMe
-	 r1scQ3AHcfQStk8PzPkJ6dRGv22DxfHIpq8kdDs/vNfqHFO9qLS3XiI6/plugsDNQxwve
-	 ifRLetVKu0+pyVFwDO/ZlPyF97nW3HWzTGrw+b1ZKMYy8jSMPGqu+VsdyG/IXQWoJYjG5
-	 VIFtcvf3qu8oBxkZ1vezb3IGttQL7bWr1iDDQHmye+2Pnxoq+D8VH7Whys+3OONaAc9fD
-	 bkye1W7BpzcQv6hf05C7E5mirKgSWEonPNpX9nC+e8WpZIYRRVNA9ne00Qf+dyu+Y3A==
+	bh=bToYbfeVDkHCI+CFF0e9U/g4MdNaB/atnwufCfOpqjg=;
+	b=fUjS82x00GOINNHW36LOVPLtBpK/FdhJKMQ1lPd0Y498UW2olpvAK1PmrQ+f/25BA+wT
+	 7o2CUhVCKNBJ6tWtxHFpffeWKjKmOFBfLAqn2DKlW5uogPT4KioxCrNF1TL8i7Nj1ZAlL
+	 D47u6AWL2cnjmtRukH55TOjL9fo8YstDCJb1k8i1doiIB5lmzG8cVX+hs+gz7z+BCkoR5
+	 o2etni3duZPEBDPNZR/VLw+6xWEZUk5tzRPe2IiDIv5xToA/8F71Ypo7XBaB/ZgtfFzux
+	 W/pVel+hNezyYfbB0FD/moTQ9QdE8OHNc98zB3GctYPcN4yBI7hqbulZk8Mjpnz38dw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=xenomai.org;
 	spf=pass smtp.mailfrom=xenomai.org;
-	dkim=pass header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=aDxnwI5T;
-	arc=none smtp.remote-ip=217.70.183.197
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+	dkim=pass header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=hxcPuWQR;
+	arc=none smtp.remote-ip=217.70.183.200
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [217.70.183.200])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAE64606A33D
-	for <xenomai@lists.linux.dev>; Thu, 19 Nov 2026 10:00:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DAE64606A33D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD921606A326
+	for <xenomai@lists.linux.dev>; Thu, 19 Nov 2026 13:04:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org BD921606A326
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=aDxnwI5T
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 9CB563E80D;
-	Thu, 19 Nov 2026 10:00:22 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=hxcPuWQR
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 6BB623ECAB;
+	Thu, 19 Nov 2026 13:04:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1795082422;
+	t=1795093477;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=IeE++4VgIGFeuZSpDsJ7tz8to9rnvz+CZHWTAqf55s4=;
-	b=aDxnwI5TTlQhAGvn1GaRykMZQGy84GR53S/EHvmsVw0MOQCUOe3rB58QRnFV6SgwV5Ll9i
-	Wqt3q2kZLiaHtIBC2u6n4GHaFfEHV2q4BLVEq/Mm2H+EC/0s4bjJ86fdRRdGViAXT9xpnR
-	qh1zFSQzAWFSWk/qPIa/6Kc6zJM+htdv7EVocfvdPRat4vlXF09JVjvw8821p+OJ/DuMqO
-	h63V6OVMWkQNOebj12JR6lcAC0wSe3dXqeU5TItA3Yh6WJiCCYB/NQw7wRGVjTQWWBM4wP
-	Fc93P7R6PWR1OD9Q966INcJ4plfIc1Gb7IYI1pJtO/dR9Mi9qBwvb6yaCP0mVA==
+	bh=bToYbfeVDkHCI+CFF0e9U/g4MdNaB/atnwufCfOpqjg=;
+	b=hxcPuWQRIaJgCaiHKDCBTRcxzcTYzCuyc/rFhywbTYt3bK3RLWw9s6Au2D4zJ3SvxWsNGz
+	BaRr57FHhJgTAnDQmpdQRuLltxy+nk+pd+qzZUrc7SP0r76GKtNUPVxtB4zUcXkVboHC38
+	1QoSE8e0Sfc+CqnmVH6I0IgXLm9s+o7V3qTQVwX2LJZDzDaRiSihD6QVifWAAAhg/U5Aga
+	gfNAkCqwSidOxXXb9WvWF8WhZGNmXhhM0LSKXMZqCC7zR8P+oNsUaB+tKod1qoZvApWyCf
+	uNbuyXFQGsqN9J970qEM26d29a7xxm5w0j3Ya9a1tZDfAMVg+lmRkkrO9Z9xBw==
 From: Philippe Gerum <rpm@xenomai.org>
 To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: [dovetail][PATCH] clocksource/exynos_mct: irq_pipeline: set
- clockevent IRQs
-In-Reply-To: <adf07ac3-1539-4a65-9344-b5c66d4e8fa4@siemens.com> (Jan Kiszka's
-	message of "Thu, 19 Nov 2026 07:40:27 +0100")
-References: <5a8651c3-9f93-4ae2-b1b4-0fcbdc5a1501@siemens.com>
-	<87mrr6ecc5.fsf@xenomai.org>
-	<adf07ac3-1539-4a65-9344-b5c66d4e8fa4@siemens.com>
+Cc: Xenomai <xenomai@lists.linux.dev>,  Florian Bezdeka
+ <florian.bezdeka@siemens.com>
+Subject: Re: [dovetail][PATCH] irq_pipeline: tick: keep IRQ_TICK set on
+ shutdown
+In-Reply-To: <42645f8a-126f-42dc-bae5-c23230041fe8@siemens.com> (Jan Kiszka's
+	message of "Tue, 17 Nov 2026 19:32:53 +0100")
+References: <42645f8a-126f-42dc-bae5-c23230041fe8@siemens.com>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Thu, 19 Nov 2026 11:00:21 +0100
-Message-ID: <8733sxp2dm.fsf@xenomai.org>
+Date: Thu, 19 Nov 2026 14:04:37 +0100
+Message-ID: <87wlq9nfa2.fsf@xenomai.org>
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -72,58 +71,158 @@ Content-Type: text/plain
 X-GND-Sasl: rpm@xenomai.org
 X-GND-State: clean
 X-GND-Score: -100
-X-GND-Cause: dmFkZTGolq67ZbJD5psV8Vm9UGsd3FRnGQcXkCnYJS0isYibisB2Scwj6pYrTqnh3y+idkzRyNaJSv0usmFudDJPKmXN4VFj+cqvfuD7rOAXYkO+YVQNCWrIaXeCuasepZetwXN/N1WQ7ObeYaGeCCA+Kp1G3SWvrL7aoqT+kU+tmbzUCy1KxnSdU+m1KugvUbOb1fK0JAfATH9WgIXpttCEVO9mahdvUXRsjYZ9Ti1yDQp+fftUhh40MH/eBh8YIxPyJQZn8ZczYvoki2EKSEX/Y7pcRfIn2ZOFec1fA9HNdFzRe+Vcksv8a1daHEXn8HwJgIOjdQnCV3a8+dMBa4DBzpAGh6DbvGWgDHwo48w+pE2FWLVhawLiXF/TQBOWb81ZOaReYI9IuSL0CCsYf8oE/LU6tEBmZr5+4I/TKvEn9+JKTLLLr9UaiaWJILD69Bd8SnsWKs+W50XlJN72GxalHRRwL1HrLpVWdSi7edrVzLcto6AydCfm/DzESRkafO1s18O8Q0w+7i1hnT1YFFbeDIk/p049NhhY2qtS3F1mW9GRQhCLeEYM31aiEBj7bCGKXm3QpST3ln+TTNQ+U7GtkFiV9LEEz7RNlMZoi24/zzHe2jVNgsardsY0+9xIp77qlyHoDQkliFWGIXfA9CSrSGi8DixwyWR1B6JNKmYRKqAXdg
+X-GND-Cause: dmFkZTGhSEWPNzH4TkKRh/ufJFTd1CqHfJLN1JVBG3S0LYwo9DMWIX1r7Zhx8/onQlalGAtJ/9IWaaimguwd4YBtRjJGTFBzaVnKiEOfX1c6XA3O9zzOpOi4d0V7Y0dECIKv4wkCKum/6XQQpLd7/IP0idJvYFDFauCR18/lRgQpZ/1kP/GvSWyd6pmni/lfn0LnKoGKCPodLjspkkhMIXafUeihkL/SgvdsGrYJ78fkqycrqiBlRU2Heo9yAn7kvWRE41sZft99gS46ipgakI3RK3veMz8DLmOTIc3/ixR5wv/EOdKgCxsXPB7PuOpLhTNG5VbY07jb0jTzDUPcfTVj8yCAlHLl7BE+aFHWYV3MLSNY1bMNHl1AnQ7qLrYJeisIK5FsskbmhBQJqT99O/SKaXUEJWQ+Mh5N7gS+RWTH+BJU/7l0Wi7MovKcjT2a/y83eocX4Q8o8zu7VmRaBi3Wweps09yvq9OkjAzVxK34SM9Br9DtjCQDKPVRbHtezCh7PpnnN/2Q5Inw9pd3et8y6AnKWW7tDUsuE5Xl4/MqXU+QiD97TF2l9YXnmB41J1NsGNlnnxyQGBzxyQkvH5IIEqluEAdAdtslv1/dJy2ibt+KhTWzXIvBJqh6/Cmmlmh6G28ntDQOQAaCBFR5kL1tFlFLDSpF+zg0e0rGOOmwuN/AdQ
 
 Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-> On 18.11.26 10:08, Philippe Gerum wrote:
->> Jan Kiszka <jan.kiszka@siemens.com> writes:
->> 
->>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>>
->>> The MCT driver only fills clock_event_device::irq for the local timers
->>> in SPI mode. In PPI mode (samsung,exynos4412-mct), the per-CPU tick
->>> devices were left with IRQ 0, so the proxy tick device never switched
->>> the local timer interrupt to out-of-band mode, and the in-band tick ran
->>> on registers which were never saved, making every tick look like a
->>> user mode tick on ARM. The global comparator device had the same
->>> omission.
->>>
->>> Assisted-by: opencode:Opus-5.5
->>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>> ---
->>>  drivers/clocksource/exynos_mct.c | 2 ++
->>>  1 file changed, 2 insertions(+)
->>>
->>> diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
->>> index 23d39bf9bdaf9..a548ac338f3bc 100644
->>> --- a/drivers/clocksource/exynos_mct.c
->>> +++ b/drivers/clocksource/exynos_mct.c
->>> @@ -350,6 +350,7 @@ static irqreturn_t exynos4_mct_comp_isr(int irq, void *dev_id)
->>>  static int exynos4_clockevent_init(void)
->>>  {
->>>  	mct_comp_device.cpumask = cpumask_of(0);
->>> +	mct_comp_device.irq = mct_irqs[MCT_G0_IRQ];
->>>  	clockevents_config_and_register(&mct_comp_device, clk_rate,
->>>  					0xf, 0xffffffff);
->>>  	if (request_irq(mct_irqs[MCT_G0_IRQ], exynos4_mct_comp_isr,
->>> @@ -487,6 +488,7 @@ static int exynos4_mct_starting_cpu(unsigned int cpu)
->>>  		irq_force_affinity(evt->irq, cpumask_of(cpu));
->>>  		enable_irq(evt->irq);
->>>  	} else {
->>> +		evt->irq = mct_irqs[MCT_L0_IRQ];
->>>  		enable_percpu_irq(mct_irqs[MCT_L0_IRQ], 0);
->>>  	}
->>>  	clockevents_config_and_register(evt, clk_rate / (TICK_BASE_CNT + 1),
->> 
->> Merged, thanks.
->> 
+> From: Jan Kiszka <jan.kiszka@siemens.com>
 >
-> Thanks for merging the first bits. Do you plan to push soon, or are more
-> merges or tests on the list first?
+> IRQ_TICK is set on the interrupt of a pipelined clock event device by
+> tick_setup_device(), but cleared again by every call to
+> clockevents_shutdown(). Several paths shut down a tick device and
+> restart it later without going through tick_setup_device():
 >
+> - tick_suspend_local() / tick_resume_local(), on suspend to RAM and
+>   on suspend to idle (tick_freeze/tick_unfreeze).
+> - tick_broadcast_control(TICK_BROADCAST_ON) while the broadcast
+>   device runs in periodic mode, undone by tick_setup_periodic() on
+>   TICK_BROADCAST_OFF.
+>
+> In addition, per-CPU clock event devices share a single interrupt
+> descriptor, so shutting down the device on one CPU clears the mark
+> for all CPUs, including those still receiving ticks over it.
+>
+> Once the mark is lost, the pipeline entry code stops saving the
+> interrupted registers for the in-band tick, which then accounts the
+> CPU time and reports RCU quiescent states based on stale registers.
+>
+> Restoring the mark from clockevents_tick_resume() would only cover
+> the suspend paths. Make it sticky instead: once an interrupt has
+> driven a tick device, keep it marked. If the device stops being used
+> for ticks, the mark only causes the registers of a more recent
+> interrupt to be recorded, which is harmless.
+>
+> As irq_switch_tick(irq, false) is no longer used, rename it to
+> irq_mark_tick() and clean up related bits.
+>
+> Assisted-by: opencode:Opus-5.5
+> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+> ---
+>
+> This is now one option to address the issue brought forward in
+> https://lore.kernel.org/xenomai/9b439d13-7d33-419d-9d4a-2b224bf5db7d@siemens.com/T/#u.
+>
+>  include/linux/irq.h       |  4 ++--
+>  kernel/irq/manage.c       | 11 +++--------
+>  kernel/irq/settings.h     |  5 -----
+>  kernel/time/clockevents.c |  3 ---
+>  kernel/time/tick-common.c |  7 ++++++-
+>  5 files changed, 11 insertions(+), 19 deletions(-)
+>
+> diff --git a/include/linux/irq.h b/include/linux/irq.h
+> index b9e4f12271ed3..0862d64b7ee4f 100644
+> --- a/include/linux/irq.h
+> +++ b/include/linux/irq.h
+> @@ -1260,7 +1260,7 @@ static inline struct irq_chip_type *irq_data_get_chip_type(struct irq_data *d)
+>  
+>  #ifdef CONFIG_IRQ_PIPELINE
+>  int irq_switch_oob(unsigned int irq, bool on);
+> -void irq_switch_tick(unsigned int irq, bool on);
+> +void irq_mark_tick(unsigned int irq);
+>  void irq_clear_deferral(struct irq_desc *desc);
+>  void irq_clear_forward(struct irq_desc *desc);
+>  #else
+> @@ -1269,7 +1269,7 @@ static inline int irq_switch_oob(unsigned int irq, bool on)
+>  	return 0;
+>  }
+>  
+> -static inline void irq_switch_tick(unsigned int irq, bool on)
+> +static inline void irq_mark_tick(unsigned int irq)
+>  {
+>  }
+>  
+> diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+> index bbd7c0208444f..943541b1c9fff 100644
+> --- a/kernel/irq/manage.c
+> +++ b/kernel/irq/manage.c
+> @@ -950,16 +950,11 @@ int irq_switch_oob(unsigned int irq, bool on)
+>  }
+>  EXPORT_SYMBOL_GPL(irq_switch_oob);
+>  
+> -void irq_switch_tick(unsigned int irq, bool on)
+> +void irq_mark_tick(unsigned int irq)
+>  {
+> -	scoped_irqdesc_get_and_lock(irq, 0) {
+> -		if (on)
+> -			irq_settings_set_tick(scoped_irqdesc);
+> -		else
+> -			irq_settings_clr_tick(scoped_irqdesc);
+> -	}
+> +	scoped_irqdesc_get_and_lock(irq, 0)
+> +		irq_settings_set_tick(scoped_irqdesc);
+>  }
+> -EXPORT_SYMBOL_GPL(irq_switch_tick);
+>  
+>  #endif /* CONFIG_IRQ_PIPELINE */
+>  
+> diff --git a/kernel/irq/settings.h b/kernel/irq/settings.h
+> index 0a57c2080cacd..d1336b82c248f 100644
+> --- a/kernel/irq/settings.h
+> +++ b/kernel/irq/settings.h
+> @@ -218,11 +218,6 @@ static inline bool irq_settings_is_tick(struct irq_desc *desc)
+>  	return desc->status_use_accessors & _IRQ_TICK;
+>  }
+>  
+> -static inline void irq_settings_clr_tick(struct irq_desc *desc)
+> -{
+> -	desc->status_use_accessors &= ~_IRQ_TICK;
+> -}
+> -
+>  static inline void irq_settings_set_tick(struct irq_desc *desc)
+>  {
+>  	desc->status_use_accessors |= _IRQ_TICK;
+> diff --git a/kernel/time/clockevents.c b/kernel/time/clockevents.c
+> index 3cf30dead25d1..5138c17fd567d 100644
+> --- a/kernel/time/clockevents.c
+> +++ b/kernel/time/clockevents.c
+> @@ -12,7 +12,6 @@
+>  #include <linux/init.h>
+>  #include <linux/module.h>
+>  #include <linux/smp.h>
+> -#include <linux/irq.h>
+>  #include <linux/device.h>
+>  
+>  #include "tick-internal.h"
+> @@ -178,8 +177,6 @@ void clockevents_shutdown(struct clock_event_device *dev)
+>  	clockevents_switch_state(dev, CLOCK_EVT_STATE_SHUTDOWN);
+>  	dev->next_event = KTIME_MAX;
+>  	dev->next_event_forced = 0;
+> -	if (dev->features & CLOCK_EVT_FEAT_PIPELINE)
+> -		irq_switch_tick(dev->irq, false);
+>  }
+>  
+>  /**
+> diff --git a/kernel/time/tick-common.c b/kernel/time/tick-common.c
+> index bfb26d9d687ab..56e3ec9c754b3 100644
+> --- a/kernel/time/tick-common.c
+> +++ b/kernel/time/tick-common.c
+> @@ -245,8 +245,13 @@ static void tick_setup_device(struct tick_device *td,
+>  	if (!cpumask_equal(newdev->cpumask, cpumask))
+>  		irq_set_affinity(newdev->irq, cpumask);
+>  
+> +	/*
+> +	 * This mark is never cleared: tick devices may be shut down and
+> +	 * restarted without passing here again (suspend, periodic broadcast),
+> +	 * and per-CPU devices share a single interrupt descriptor.
+> +	 */
+>  	if (newdev->features & CLOCK_EVT_FEAT_PIPELINE)
+> -		irq_switch_tick(newdev->irq, true);
+> +		irq_mark_tick(newdev->irq);
+>  
+>  	/*
+>  	 * When global broadcasting is active, check if the current
 
-Still two patches to review first.
+Merged, thanks.
 
 -- 
 Philippe.
