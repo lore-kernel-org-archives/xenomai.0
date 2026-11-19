@@ -1,94 +1,64 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.52
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.183.197
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795072674;
-	b=CZC6OzdtJkl/51WKmgRaIwN1m9b8Os8gQremrWR/I7VRpMhlvm3onWdcRXp8csFcmuJo
-	 6+JQvO4ACEAY6py1ReS0TbQw98YmsjO2Xj2ZxbpMmBXZJCMn/GvGVcN6mLcZw5jC3jijn
-	 MNyQs1CYpLh8oITQaM3tLGl2hO0dKbbe8aBgxa7wPcSGiP0MjzJf7KDHTFkLBFcddbYHW
-	 hlT2a1JoygGEJOnqn6oJEr0VKdkhD2F9L4XROMhYwp2CL6O7J3ixiKNq/LAvkyVGj+1+m
-	 7mRhXpgdgo05aMi/jsCNmD0x99rhV10RIBg2Npwag2EkK6gsDuiKmlIHlOzAVt1HjOg==
+	t=1795082434;
+	b=HXu0AVOsuPBBwTX6EoPNKYueM9D/Ntcqx9jZImJuSig0Lea26aczTknOK2tplv3UU0Eq
+	 u2GyKz02Vzhl+1yomNYe/NcD73JW1rVugsyra4SqqxgEcKGQ7Ek1TZ4coLBo9zkmscnKm
+	 7Ym8npDplg+1TxjN8u2f5F6W9ZEx//PsZf3kVVnV8WRrXkzLt6keEQwa8rlMyJ74zi49C
+	 PfySkea1iPZx68EtzGyvQp6udWr3YZZv/ekkmtvT/l8R5rOZE8bG/P+EYDWVKzxQdOSIt
+	 duoqHs9JVZ10KacxMlRtVKPVuwqww/jQB2lv2eI7e5e7UgeRVaS4SffBR76YS14pX4Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795072674;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
-	 Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
-	 Content-Transfer-Encoding;
-	bh=0nDzGx33z7BLHpijyCRfZcpNSRPZo3e6MzzshecdTRk=;
-	b=isifmwHPQEQIAmkvhc5cstm9WGVHgdyUqvzPc/56FXuuq+ZxxW/sf1syk5tMzM+RnQXh
-	 ZVkS+p0M5Eo91TCPIcqu3sQsCDQF0TtjkeVmhuAUFKHzKAyZBGcTtmPP512N9z3HbjVN0
-	 xH3Zv5xlHnfpuGX6CJFthjeF0V0ENhz++V9zylHi2bVcq+c8V76DC+COz58Y3AFZqyzWI
-	 9sgDhzxDfvNErumbBd84OMBlDI2JhawE14K3U3xmgUk0ImoUGXXgwTITBCNmsUEfAF3Kf
-	 v86CINXceKVoyRQpcYx5SNBzPScneD31raxXxb2Zf0ejRS7xjDiRhjvcgWxzA3cHzyg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795082434;
+	h=DMARC-Filter:Received:DKIM-Signature:From:To:Cc:Subject:In-Reply-To:
+	 References:User-Agent:Date:Message-ID:MIME-Version:Content-Type:
+	 X-GND-Sasl:X-GND-State:X-GND-Score:X-GND-Cause;
+	bh=IeE++4VgIGFeuZSpDsJ7tz8to9rnvz+CZHWTAqf55s4=;
+	b=ceAvtMwwSfPatmgV+uUGoZrzjls0itmpQJ67uRnNVuFN1YIY1mddSNKZhS05BKhxiZMe
+	 r1scQ3AHcfQStk8PzPkJ6dRGv22DxfHIpq8kdDs/vNfqHFO9qLS3XiI6/plugsDNQxwve
+	 ifRLetVKu0+pyVFwDO/ZlPyF97nW3HWzTGrw+b1ZKMYy8jSMPGqu+VsdyG/IXQWoJYjG5
+	 VIFtcvf3qu8oBxkZ1vezb3IGttQL7bWr1iDDQHmye+2Pnxoq+D8VH7Whys+3OONaAc9fD
+	 bkye1W7BpzcQv6hf05C7E5mirKgSWEonPNpX9nC+e8WpZIYRRVNA9ne00Qf+dyu+Y3A==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=googlemail.com;
-	spf=pass smtp.mailfrom=googlemail.com;
-	dkim=pass header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=0vGCHWbK;
-	arc=none smtp.remote-ip=209.85.218.52
-Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	dmarc=pass header.from=xenomai.org;
+	spf=pass smtp.mailfrom=xenomai.org;
+	dkim=pass header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=aDxnwI5T;
+	arc=none smtp.remote-ip=217.70.183.197
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EB65606A320
-	for <xenomai@lists.linux.dev>; Thu, 19 Nov 2026 07:17:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6EB65606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=googlemail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=googlemail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAE64606A33D
+	for <xenomai@lists.linux.dev>; Thu, 19 Nov 2026 10:00:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org DAE64606A33D
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xenomai.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=0vGCHWbK
-Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-c50933bdf4bso158133666b.1
-        for <xenomai@lists.linux.dev>; Wed, 18 Nov 2026 23:17:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20260707; t=1795072673; x=1795677473; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=0nDzGx33z7BLHpijyCRfZcpNSRPZo3e6MzzshecdTRk=;
-        b=0vGCHWbKTQVAdepJOFz00WMaje8Bex6RfVTaa9k+7zSPYJY7lRGhkova98SJyXYv2D
-         UjqTp/9CCvEx7+ucP+ipy3gcjmMmymZ562rUgPMsUagYYgxeGvJx/1VKLUu6x18F/8HM
-         NY+U3vVNsKPMyQ98/anKIiYEbP1BMzBu8bSHS7oo4wrzXWEDT9thZXg8KM9ceLHEmalW
-         D3VSX0sppT88EyyKhPNrlC5SG18E7lXgehjoD0oNuHKUIlFfaki+AF4LSPTWLiSlMdto
-         h5i+FjOybi7nQ6qbaQl5xt4rSoT15nVp4I83m9E/hqHO8Ye0I+2lmiYaelBj8mZQG6ub
-         Yktg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795072673; x=1795677473;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=0nDzGx33z7BLHpijyCRfZcpNSRPZo3e6MzzshecdTRk=;
-        b=g/XzI8jtOz+2aMPcCh5/wUG13ryyQerZi8iyb2NwffcbTV6d603Jjobrt6kgkZVJ0E
-         fCSFWdRbVVg2KUjdBMMgvY3c0rgEmh+sf46L8tQsNHYvg5RG/+SHBO42PMxTfzpNyfEw
-         N9Vd/9/r4JmIWf/+2K9nj+e96EK6bMhVyNmrzm0rs6x6d6mcA8eY75e8ZpoFobflrxvp
-         6+aIeNCvplNnTQA4q2ZeUQEE+0Ih3igc4g+fa8ZisffTaqQ3dAbbqlzUOyI/UoxxREhk
-         nDBPDYNvSoT2REVVJkd3E9qkXEEAZFZHerar1Ufro6VFng4k3M4s9qMDWj+oGX7hUJpf
-         ovSQ==
-X-Gm-Message-State: APuU4Z/LmXonN8o/oXe4jfcR95aXzU1Ty3QeMvdE0JebAkr8mTvG5S9H
-	9Wc8TcVG9bLLAxeYhz7QqtwlI1rTI9z/UBhGGkqnsvQH9C0iL7OTqb3D/1Bcaw==
-X-Gm-Gg: AYBFou1ldTc+2qp3W2Cpe2lyh8HQNWC257Cib5go7Svc6MdavYyz/l7LPK2jFvyvr+y
-	5O9q9m+JIKVxcuw6NlP5E5i2K6MEt7eAEwYyEC/Ob8mfdphzbyzBQ5ZqIEOccQMM9tBC+f48r1K
-	rHjgk/UiljLIrQZoHtBQG9FeB7mpm8UOjE262r1DvhcoJA8v67meOHEqlEdL23mzgU1aUO19BAc
-	AW2PnoImpSG4C/L6TW2404dgmCT0vw25aASwzlC4lDrlN02zwC8S4NM/gbSNwRYIJItUvl/coaR
-	1dlkaPZQyQouzNj/o0G1vVWrt+vfXelvgXpjSQKQKNZtaz+XiLgXZBGE7j7IblIOhjfo6Pv3rEj
-	SbkzusIHA6CZHrRxwBr/cyzN9sHmqq4cAuquLQHTPtSiTJqpqQHzriDZse8xvCFNBeJwj3Z+Rf2
-	7qHWDfDmtf729MWeKObWiyy3vu/rwBvK+nEe/Z+96OdGN2xn+Laum09f2+Gbi2uZTL+a9Tq42W5
-	GFWwi09BvuV5QwdZ3kzjDPTXVX5pan7Ob1aVtsaN1Ycv3P0agHKvxfwJ/xDO8VrHsVwD9VQP0W4
-	eVTt/kO+uWuNlFHcgP0nFmaIWCVCApYc8gy2zFNwiQAt4w/W9tI2cpe/zqmWP5wTjNl9KZyC+h7
-	lGLy88f0vjw==
-X-Received: by 2002:a17:907:968c:b0:c51:205e:6e8e with SMTP id a640c23a62f3a-c51319b6e77mr26035266b.24.1795072672767;
-        Wed, 18 Nov 2026 23:17:52 -0800 (PST)
-Received: from development2.visionsystems.local (mail.visionsystems.de. [213.209.99.202])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6b889a3315dsm2061733a12.10.2026.11.18.23.17.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Nov 2026 23:17:51 -0800 (PST)
-From: Yegor Yefremov <yegorslists@googlemail.com>
-To: xenomai@lists.linux.dev
-Cc: Florian Bezdeka <florian.bezdeka@siemens.com>,
-	Jan Kiszka <jan.kiszka@siemens.com>,
-	Yegor Yefremov <yegorslists@googlemail.com>
-Subject: [PATCH v3 5/5] testsuite/gpiobench: Include stdarg.h
-Date: Thu, 19 Nov 2026 08:17:45 +0100
-Message-Id: <20261119071745.2409665-6-yegorslists@googlemail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20261119071745.2409665-1-yegorslists@googlemail.com>
-References: <20261119071745.2409665-1-yegorslists@googlemail.com>
+	dkim=pass (2048-bit key, unprotected) header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=aDxnwI5T
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 9CB563E80D;
+	Thu, 19 Nov 2026 10:00:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
+	t=1795082422;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 in-reply-to:in-reply-to:references:references;
+	bh=IeE++4VgIGFeuZSpDsJ7tz8to9rnvz+CZHWTAqf55s4=;
+	b=aDxnwI5TTlQhAGvn1GaRykMZQGy84GR53S/EHvmsVw0MOQCUOe3rB58QRnFV6SgwV5Ll9i
+	Wqt3q2kZLiaHtIBC2u6n4GHaFfEHV2q4BLVEq/Mm2H+EC/0s4bjJ86fdRRdGViAXT9xpnR
+	qh1zFSQzAWFSWk/qPIa/6Kc6zJM+htdv7EVocfvdPRat4vlXF09JVjvw8821p+OJ/DuMqO
+	h63V6OVMWkQNOebj12JR6lcAC0wSe3dXqeU5TItA3Yh6WJiCCYB/NQw7wRGVjTQWWBM4wP
+	Fc93P7R6PWR1OD9Q966INcJ4plfIc1Gb7IYI1pJtO/dR9Mi9qBwvb6yaCP0mVA==
+From: Philippe Gerum <rpm@xenomai.org>
+To: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Xenomai <xenomai@lists.linux.dev>
+Subject: Re: [dovetail][PATCH] clocksource/exynos_mct: irq_pipeline: set
+ clockevent IRQs
+In-Reply-To: <adf07ac3-1539-4a65-9344-b5c66d4e8fa4@siemens.com> (Jan Kiszka's
+	message of "Thu, 19 Nov 2026 07:40:27 +0100")
+References: <5a8651c3-9f93-4ae2-b1b4-0fcbdc5a1501@siemens.com>
+	<87mrr6ecc5.fsf@xenomai.org>
+	<adf07ac3-1539-4a65-9344-b5c66d4e8fa4@siemens.com>
+User-Agent: mu4e 1.12.12; emacs 30.2
+Date: Thu, 19 Nov 2026 11:00:21 +0100
+Message-ID: <8733sxp2dm.fsf@xenomai.org>
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -98,37 +68,62 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-GND-Sasl: rpm@xenomai.org
+X-GND-State: clean
+X-GND-Score: -100
+X-GND-Cause: dmFkZTGolq67ZbJD5psV8Vm9UGsd3FRnGQcXkCnYJS0isYibisB2Scwj6pYrTqnh3y+idkzRyNaJSv0usmFudDJPKmXN4VFj+cqvfuD7rOAXYkO+YVQNCWrIaXeCuasepZetwXN/N1WQ7ObeYaGeCCA+Kp1G3SWvrL7aoqT+kU+tmbzUCy1KxnSdU+m1KugvUbOb1fK0JAfATH9WgIXpttCEVO9mahdvUXRsjYZ9Ti1yDQp+fftUhh40MH/eBh8YIxPyJQZn8ZczYvoki2EKSEX/Y7pcRfIn2ZOFec1fA9HNdFzRe+Vcksv8a1daHEXn8HwJgIOjdQnCV3a8+dMBa4DBzpAGh6DbvGWgDHwo48w+pE2FWLVhawLiXF/TQBOWb81ZOaReYI9IuSL0CCsYf8oE/LU6tEBmZr5+4I/TKvEn9+JKTLLLr9UaiaWJILD69Bd8SnsWKs+W50XlJN72GxalHRRwL1HrLpVWdSi7edrVzLcto6AydCfm/DzESRkafO1s18O8Q0w+7i1hnT1YFFbeDIk/p049NhhY2qtS3F1mW9GRQhCLeEYM31aiEBj7bCGKXm3QpST3ln+TTNQ+U7GtkFiV9LEEz7RNlMZoi24/zzHe2jVNgsardsY0+9xIp77qlyHoDQkliFWGIXfA9CSrSGi8DixwyWR1B6JNKmYRKqAXdg
 
-gpiobench uses va_list, va_start() and va_end(), but stopped including
-<stdarg.h> indirectly when <xenomai/init.h> was dropped. With the
-Cobalt core, the header still comes in through other headers, but
-building the Mercury core fails:
+Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-  gpiobench.c:268:9: error: unknown type name 'va_list'
-  gpiobench.c:283:9: error: implicit declaration of function 'va_start' [-Wimplicit-function-declaration]
+> On 18.11.26 10:08, Philippe Gerum wrote:
+>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>> 
+>>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>>>
+>>> The MCT driver only fills clock_event_device::irq for the local timers
+>>> in SPI mode. In PPI mode (samsung,exynos4412-mct), the per-CPU tick
+>>> devices were left with IRQ 0, so the proxy tick device never switched
+>>> the local timer interrupt to out-of-band mode, and the in-band tick ran
+>>> on registers which were never saved, making every tick look like a
+>>> user mode tick on ARM. The global comparator device had the same
+>>> omission.
+>>>
+>>> Assisted-by: opencode:Opus-5.5
+>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>> ---
+>>>  drivers/clocksource/exynos_mct.c | 2 ++
+>>>  1 file changed, 2 insertions(+)
+>>>
+>>> diff --git a/drivers/clocksource/exynos_mct.c b/drivers/clocksource/exynos_mct.c
+>>> index 23d39bf9bdaf9..a548ac338f3bc 100644
+>>> --- a/drivers/clocksource/exynos_mct.c
+>>> +++ b/drivers/clocksource/exynos_mct.c
+>>> @@ -350,6 +350,7 @@ static irqreturn_t exynos4_mct_comp_isr(int irq, void *dev_id)
+>>>  static int exynos4_clockevent_init(void)
+>>>  {
+>>>  	mct_comp_device.cpumask = cpumask_of(0);
+>>> +	mct_comp_device.irq = mct_irqs[MCT_G0_IRQ];
+>>>  	clockevents_config_and_register(&mct_comp_device, clk_rate,
+>>>  					0xf, 0xffffffff);
+>>>  	if (request_irq(mct_irqs[MCT_G0_IRQ], exynos4_mct_comp_isr,
+>>> @@ -487,6 +488,7 @@ static int exynos4_mct_starting_cpu(unsigned int cpu)
+>>>  		irq_force_affinity(evt->irq, cpumask_of(cpu));
+>>>  		enable_irq(evt->irq);
+>>>  	} else {
+>>> +		evt->irq = mct_irqs[MCT_L0_IRQ];
+>>>  		enable_percpu_irq(mct_irqs[MCT_L0_IRQ], 0);
+>>>  	}
+>>>  	clockevents_config_and_register(evt, clk_rate / (TICK_BASE_CNT + 1),
+>> 
+>> Merged, thanks.
+>> 
+>
+> Thanks for merging the first bits. Do you plan to push soon, or are more
+> merges or tests on the list first?
+>
 
-Include <stdarg.h> directly.
+Still two patches to review first.
 
-Fixes: 17defbb7bb64 ("testsuite: Cleanup of unused includes")
-Assisted-by: Claude:claude-opus-5-5
-Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
----
- testsuite/gpiobench/gpiobench.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/testsuite/gpiobench/gpiobench.c b/testsuite/gpiobench/gpiobench.c
-index f2cbb2549..44f04ff4d 100644
---- a/testsuite/gpiobench/gpiobench.c
-+++ b/testsuite/gpiobench/gpiobench.c
-@@ -21,6 +21,7 @@
-  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-  */
- 
-+#include <stdarg.h>
- #include <stdlib.h>
- #include <stdio.h>
- #include <string.h>
 -- 
-2.34.1
-
+Philippe.
