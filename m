@@ -1,74 +1,63 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.178.231
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.183.193
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795112982;
-	b=Ebt+1GaVUMbwjruHu+qeGgclxRZx+9Wnh9D0HP7U4UxUOeOPOEH7Qp3cPt6iluWAEx5d
-	 2o5AHN17yb/uy5CGyD/JV3lgBfh1DiNHgR9IenSglC09RHPhaDqvz9NNlPIje8O4UR+M6
-	 G997qgPiGOZdMDkKwy/DRz10drdcdl0gwe30MwEwT7fRQ39Z0dQX6guuuYeDfnepBQN3x
-	 n8WLvEDTWVoKEF8+tr/dtydz35zZSzQRdmOZOAhFyv63d0t1cbo8dsk834K9pmQOFILM+
-	 hlWlMVuj0JDFLlCn7K8+FpqXs1lvbiH/TMsSFDWGHDGkSrV8KAEYN9rolIFAok2B0Eg==
+	t=1795115260;
+	b=cOVv+EF3KWujYDRek18KtGoRaPZLz08aO19jM6t+mALX8+Y3ME2An/2Ss/QcvFkgthrI
+	 mXcpSN9Dns/AawPrlb03jt7Kx6DSqymgs/U5PBeTKTptCQjkDJ5DhwFUT27+g/HRtKbSL
+	 WU8Yqoc1cz25VoUsTTOALvffL6flVTc6op8yW1lnGtMtjEmLYqglh7RCnQGoxQpeRHO7k
+	 dzSTxC4u7uwUaeGo9WQfByq/7CmhEU1HXfS9xrSMWecGlnJz7R7lcnNdHJhyMIIzZSy57
+	 rXczdqdnUFEan4Hvtl/8pGiLCnm7IB0M28w0sd8zOQ92ofNNch9jaLczxZytU8WkDOg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795112982;
-	h=DMARC-Filter:Received:Received:Received:DKIM-Signature:From:To:Cc:
-	 Subject:In-Reply-To:References:User-Agent:Date:Message-ID:
-	 MIME-Version:Content-Type:X-GND-Cause:X-GND-State:X-GND-Score;
-	bh=7XM5McGHGmiwrs4g2LTGn1vy/tHwZBwH+fJaNNdJ52M=;
-	b=zNiQCtT77wvfZvJByNDtDNqYKnOgPo0lgNHUmOsW11Ln3AsVjF+nbP2VK6jREUy/3TgW
-	 eaU4NYmUKzSym2GMOaFZyunduDtAttgbVEHIyNrmvJ1NWRDYNcVm0qfQjIT86T3GiHqlh
-	 A6MdoiUVPybFgg2AunnwshOEc6w/AjBo+mlkY0DtwcdZGO9t8ZXs/rEzMvkQ0Q9ghF2IA
-	 crzsoBqU+FcLdnynxPxM99lNkGAp5QiaB2S/RAuacQJDeqQBDP0l5SoHr7yN89ep/8SPi
-	 wOa60rZ8NSe/KE1e8MTtsQDag6CNecuvnczKOkIw+YXAz/A/1eo+SAMl9FSZHbPlouA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795115260;
+	h=DMARC-Filter:Received:DKIM-Signature:From:To:Cc:Subject:In-Reply-To:
+	 References:User-Agent:Date:Message-ID:MIME-Version:Content-Type:
+	 X-GND-Sasl:X-GND-Score:X-GND-Cause:X-GND-State;
+	bh=prc98a8BFxlKFRWU+YyYTqqUm2A40DaqFEUJk/TdQQI=;
+	b=PHmodz+bQ8FRiftOIb/FhJHjnK5Nep6/W1DixHOBL+peIWmBjFEOycX8lwJhl7SbE68A
+	 XxzZkjROLGMikBNwddCLRW8wHfAaumTz5ZonfPN9OLFHGlKgAp9BR3KcHBWSn8L+fcvLm
+	 e9n2vGq3NC93DvDEOGmeqiPQlnv/bgGPi1y7+HHChGIpxGNQkyuDroSyeTS4oodP2TVpX
+	 nLZANsAZCtYIdStxeLV+vlKt5U3TkgkTCDYWicRhZACVUZ1Z+XbhOUJT/Nk/+PpvRSG9W
+	 RxWlealtgPGtrKONZYuSZcsf8XeggdvR/0ah1VyUOBatmN81Mmk/K3e6PBE3Gt/RdKg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=xenomai.org;
-	spf=pass smtp.mailfrom=redirect.mail.gandi.net;
-	dkim=pass header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=Mdann2CB;
-	arc=none smtp.remote-ip=217.70.178.231
-Received: from redirect.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
+	spf=pass smtp.mailfrom=xenomai.org;
+	dkim=pass header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=KLG3CzZa;
+	arc=none smtp.remote-ip=217.70.183.193
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [217.70.183.193])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39AEB606A334
-	for <xenomai@lists.linux.dev>; Thu, 19 Nov 2026 18:29:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 39AEB606A334
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6E50606A8F8
+	for <xenomai@lists.linux.dev>; Thu, 19 Nov 2026 19:07:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org C6E50606A8F8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=Mdann2CB
-Received: from spool.mail.gandi.net (spool2.mail.gandi.net [217.70.178.211])
-	by relay11.mail.gandi.net (Postfix) with ESMTPS id 981EE3E88B
-	for <xenomai@lists.linux.dev>; Thu, 19 Nov 2026 18:29:33 +0000 (UTC)
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 608B727E0030
-	for <xenomai@xenomai.org>; Thu, 19 Nov 2026 18:29:33 +0000 (UTC)
-Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=xenomai.org header.s=gm1 header.b=Mdann2CB;
-	spf=pass (spool.mail.gandi.net: domain of rpm@xenomai.org designates 217.70.183.197 as permitted sender) smtp.mailfrom=rpm@xenomai.org;
-	dmarc=pass (policy=none) header.from=xenomai.org
-Received: by mail.gandi.net (Postfix) with ESMTPSA id E25213E96B;
-	Thu, 19 Nov 2026 18:29:32 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=KLG3CzZa
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 57C933EBC0;
+	Thu, 19 Nov 2026 19:07:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1795112973;
+	t=1795115250;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=7XM5McGHGmiwrs4g2LTGn1vy/tHwZBwH+fJaNNdJ52M=;
-	b=Mdann2CBt+6JdLhWMPPBiT7InaQmcP7uarf7i8CpIelWjgd/1MJFqr4/p4oEHGLpG0qt0G
-	SuJKEh9dmgQU9DjEyy9Gjk8ecLbo0ruWD4KrR7oVcyVYaL0NzmD9uDf6oJ93tZgnhmt2+o
-	Neh3ePjJ1vxMA7oLvEyiK/65LT6QrL3i3fOdLlLRR0pa96irMEAY2jgtXh+/sP2DPVpVgT
-	5HFVZEUO25amWLZ2C8DF7lULSrlfZQl9M8duZ88uhNS6tkcaJ7mEl5Rog4KQLnDegfdJum
-	ugCLUIbFNHD0ylMpymCjAPtHESybHx8TA+xhtou+upI1aQU3maEpyYv0MRSM0A==
+	bh=prc98a8BFxlKFRWU+YyYTqqUm2A40DaqFEUJk/TdQQI=;
+	b=KLG3CzZaIH7Z0qpvmifzGr7LMoJht9SbIIWlWRSO3zCzovi2/+XHhGppuxueW6hyY3gOiz
+	8bhKkHvIjisg8YEkI73UGsSj+5nMd0SeiTmnFizljTJ90SnuVPPFqfXPyDYNJ3jsuPJZhX
+	FB6KR+hlQQVznQZRkMCjQGxdA5B3AbaTaRQ4Tgn2gWJDipQJTCt8/AqzoGpvIrCn6Iuxis
+	X5dash7jNxq7pRBkQBm6n0dYc7aPALAhwYKx8uc6cvDiJb3pQC9tRONLvSyJKZLl4MFpLw
+	R+FVKCj2BX7bY7lP1qKoVVZNUme1Mk1nYF1hoGi88K3/nqFdePi0u4D29LDD+g==
 From: Philippe Gerum <rpm@xenomai.org>
 To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Florian Bezdeka <florian.bezdeka@siemens.com>,  xenomai@xenomai.org
-Subject: Re: [dovetail][PATCH v2 1/4] dovetail: Track the owner of a trap
- notification by exception frame
-In-Reply-To: <576b2607-3fb6-4aa7-b96f-e76ac2f542c1@siemens.com> (Jan Kiszka's
-	message of "Thu, 19 Nov 2026 17:52:59 +0100")
-References: <cover.1794399047.git.jan.kiszka@siemens.com>
-	<d40c9a22e1e450a83533ef7d781f88010c2aacc6.1794399047.git.jan.kiszka@siemens.com>
-	<576b2607-3fb6-4aa7-b96f-e76ac2f542c1@siemens.com>
+Cc: Tobias Schaffner <tobias.schaffner@siemens.com>,  xenomai@lists.linux.dev
+Subject: Re: [RFC PATCH dovetail 2/7] dovetail: trace stage switches
+In-Reply-To: <4c0e980d-32d8-4b2a-b369-ecfb6f190f9e@siemens.com> (Jan Kiszka's
+	message of "Wed, 11 Nov 2026 08:40:14 +0100")
+References: <20261110180847.633167-1-tobias.schaffner@siemens.com>
+	<20261110180847.633167-3-tobias.schaffner@siemens.com>
+	<4c0e980d-32d8-4b2a-b369-ecfb6f190f9e@siemens.com>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Thu, 19 Nov 2026 19:29:32 +0100
-Message-ID: <87h5hcoesz.fsf@xenomai.org>
+Date: Thu, 19 Nov 2026 20:07:29 +0100
+Message-ID: <87bj7kod1q.fsf@xenomai.org>
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -79,111 +68,126 @@ List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 Content-Type: text/plain
-X-GND-Cause: dmFkZTFUz/5/55GzfDisfK9sozcF2sOtpliGYY/v40COfNz/i3mOYDFYF0WxkCYQ7YioDfrcMD0U+IWZ9TP2E3EyK4/tjUam+TXNM685QAH769pZvLQJMqi76uiSco6MnN/xZyOHm2WZr82BF8JEFPv4x5+bncI0oRdW+TBQYWMe8+7dfTnMW/EKh0BCLuIhn0TOWzTxJfvNAZBFyuqdoJI8HOIrEHOYn48oVLC5NSHXCkyKaPGZiYMjr40+2cN1aHMDmD2l7ltDA8H8RJ0Pqhpudtd/SE4cS9er1Ek1GCbyMDmtYpz8dMcO1kcufKefjyqk2npsI4xms1o6F1YQBalvJnsgFmd6NoIftacrQjhYuEarMp453ihhyG/Kf/qOLYi+A9YsefRT+O8Gejj9u/Enz3FJw5to2FvXyua0n/099sQWQ3893B0Ck2pdILqOjpLzToncJDWkhUhPQf1ToYIqqTuoAYVq6KABQhJqZabxX4gDCclfeZunkCT4nVPrUPWKKnfHG/ubxoGNap4tl9gBTt/pxXvMSALlriIA8CykgEOl9fq1HIyjlDSuy9SNYdQ9tac8/HsWoFzGla5j5Lknt/65tUtHNgL7QOLq1LvnBYkdThHyocxMgIVs6FAZcJrCYnCbMBxnPIphcn4La8Sm8HLYzOKY4S3Nta07oxWZ6w0neQ
-X-GND-State: clean
+X-GND-Sasl: rpm@xenomai.org
 X-GND-Score: -100
+X-GND-Cause: dmFkZTGyCu3fJd6H8Rmbz/rEcqe+LHqsAFNfd6wyXp5C8bFM0f64kpLNye8nmDHgTrtU+JpZqZULw1fE0mMxVZkdrVJ8kBoCHzfV8Im0NNQierhWDO8UWScTCXiszEIM3Q281HNWLHyS3r5WW+8nkF3cJqB05iBc0dVXUG4g+z9o8dGcE7Jr5y5o4RAEc/wBp93q1syObLw5Hy9W5h6CtFz3RUaVHKoOTf//NZACDP2AWLGlS8QEaCfVHcLSNCjGhFRTbQ73jrB3w2nYL8OWNrohd68NWxRxaysw7xlGj3rFoMzIJrVLfW0LLWTb8ar9SZYdaBEpe5sd2SpnHeGky5Xaay2jm7pYWIn48bATfBMtKJJes5kwH3RStMvpUD2tSXSAtOwWnmT6GwVGRx5sRPixBBbGY63jNeJM66JO4l5HA+LPenae1f9ovOL423ws5xuxXFF2xqftMn+E2QD4boJwkiy705rh3nVawv09nNk1i1Lz4EdOl1F27sXPVyfqLNGH/Vh4Ya5QmCsU33exbm4wZiSsrZPXb4dAP6DQnYFdrP6k5GpNjXtfW+fHf2rjPetnYooXUf3pRR+Lsv7mHZ0LQ5aFDTHjKgWPI5Gxi3tSa1MVyR4jCBMSQAtIU5plcl9Barwby0EmjRwne1TivtqsmuWycmNKrUZsQsJYqC29JCHHjg
+X-GND-State: clean
 
 Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-> On 11.11.26 13:10, Jan Kiszka wrote:
->> From: Jan Kiszka <jan.kiszka@siemens.com>
+> On 10.11.26 19:08, Tobias Schaffner wrote:
+>> Add tracepoints for a task leaving the in-band and the out-of-band stage,
+>> for use by the Dovetail RV monitors.
 >> 
->> Trap notifications are guarded by _TLF_OOBTRAP: oob_trap_notify() only
->> calls into the companion core if the flag is clear, and sets it;
->> oob_trap_unwind() calls the exit handler and clears the flag whenever
->> it is set.
->> 
->> This does not cope with nested traps. A trap handler running on behalf
->> of an oob thread may trigger another trap before it reaches its own
->> exit annotation, e.g. a user access from an emulation handler faulting
->> in a not yet resident page on ARM:
->> 
->>   do_alignment()                      <- notify, _TLF_OOBTRAP set
->>     do_alignment_ldmstm()
->>       ldrt/strt to user address       <- translation fault (SVC mode)
->>         do_DataAbort()
->>           do_page_fault()
->>             dovetail_fault_entry()    <- notify suppressed, fine
->>             handle_mm_fault()
->>             dovetail_fault_exit()     <- unwind fires: wrong trap number,
->>                                          wrong frame, and the core may
->>                                          switch us back to oob
->>     ...emulation continues oob...
->>   dovetail_fault_exit()               <- no-op, flag already clear
->> 
->> Since _TLF_OOBTRAP is per-thread and the thread does not change across
->> nesting levels, the flag alone cannot tell which trap occurrence owns
->> the notification. The exception frame can: every nesting level pushes
->> its own pt_regs on the kernel stack, and the frame is already passed
->> to both the notify and unwind helpers.
->> 
->> Record the owning frame in the task struct when notifying, and only
->> unwind when the frame passed to oob_trap_unwind() matches. Inner trap
->> exits become no-ops, the outer exit unwinds with the trap number and
->> frame the core was notified with. oob_trap_regs can in fact encode the
->> semantic of the _TLF_OOBTRAP flag, thus drop it.
->> 
->> A forking parent can never be inside a trap handler, so neither the
->> flag nor the owner frame can legitimately be set when a new task
->> inherits its state. Add a debug assertion for this in
->> inband_task_init(), which turns an unbalanced trap entry into a
->> loud warning on the next fork instead of silently propagating the
->> stuck state to the children.
->> 
->> Assisted-by: opencode:Fable-5.1
->> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
 >> ---
->>  arch/arm/include/asm/thread_info.h   |  1 -
->>  arch/arm64/include/asm/thread_info.h |  1 -
->>  arch/riscv/include/asm/thread_info.h |  1 -
->>  arch/x86/include/asm/thread_info.h   |  2 --
->>  include/linux/dovetail.h             | 12 ++++++++++--
->>  include/linux/sched.h                |  5 +++++
->>  kernel/dovetail.c                    | 10 ++++++++--
->>  7 files changed, 23 insertions(+), 9 deletions(-)
+>>  include/linux/dovetail.h        |  9 +++++++++
+>>  include/trace/events/dovetail.h | 23 +++++++++++++++++++++++
+>>  kernel/dovetail.c               | 13 +++++++++++++
+>>  kernel/sched/core.c             |  2 ++
+>>  4 files changed, 47 insertions(+)
+>>  create mode 100644 include/trace/events/dovetail.h
 >> 
->> diff --git a/arch/arm/include/asm/thread_info.h b/arch/arm/include/asm/thread_info.h
->> index 23cae59037c1e..12ab7e49b7b76 100644
->> --- a/arch/arm/include/asm/thread_info.h
->> +++ b/arch/arm/include/asm/thread_info.h
->> @@ -196,7 +196,6 @@ extern int vfp_restore_user_hwstate(struct user_vfp *,
->>  #define _TLF_OOB		0x0001
->>  #define _TLF_DOVETAIL		0x0002
->>  #define _TLF_OFFSTAGE		0x0004
->> -#define _TLF_OOBTRAP		0x0008
+>> diff --git a/include/linux/dovetail.h b/include/linux/dovetail.h
+>> index b41ea0f8fc4e..5ab07e69152a 100644
+>> --- a/include/linux/dovetail.h
+>> +++ b/include/linux/dovetail.h
+>> @@ -18,6 +18,7 @@ struct files_struct;
+>>  #include <linux/mm.h>
+>>  #include <linux/thread_info.h>
+>>  #include <linux/irqstage.h>
+>> +#include <linux/tracepoint-defs.h>
+>>  #include <uapi/asm-generic/dovetail.h>
+>>  #include <asm/dovetail.h>
 >>  
->>  #endif /* __KERNEL__ */
->>  #endif /* __ASM_ARM_THREAD_INFO_H */
->> diff --git a/arch/arm64/include/asm/thread_info.h b/arch/arm64/include/asm/thread_info.h
->> index 48563d782a99a..934b080246146 100644
->> --- a/arch/arm64/include/asm/thread_info.h
->> +++ b/arch/arm64/include/asm/thread_info.h
->> @@ -144,7 +144,6 @@ void arch_setup_new_exec(void);
->>  #define _TLF_OOB			0x0001
->>  #define _TLF_DOVETAIL			0x0002
->>  #define _TLF_OFFSTAGE			0x0004
->> -#define _TLF_OOBTRAP			0x0008
->>  #define _TLF_KERNEL_FPU_PREEMPTED	0x0010	/* Dovetail: kernel mode FPSIMD section preempted by OOB */
+>> @@ -163,8 +164,16 @@ void dovetail_stop_altsched(void);
 >>  
->>  #endif /* __ASM_THREAD_INFO_H */
->> diff --git a/arch/riscv/include/asm/thread_info.h b/arch/riscv/include/asm/thread_info.h
->> index 820a596d9bf65..11164e12317fa 100644
->> --- a/arch/riscv/include/asm/thread_info.h
->> +++ b/arch/riscv/include/asm/thread_info.h
->> @@ -140,6 +140,5 @@ int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src);
->>  #define _TLF_OOB		0x0001
->>  #define _TLF_DOVETAIL		0x0002
->>  #define _TLF_OFFSTAGE		0x0004
->> -#define _TLF_OOBTRAP		0x0008
+>>  __must_check int dovetail_leave_inband(void);
 >>  
->>  #endif /* _ASM_RISCV_THREAD_INFO_H */
+>> +DECLARE_TRACEPOINT(dovetail_leave_inband_tp);
+>> +void __trace_dovetail_leave_inband(struct task_struct *p);
+>> +
+>> +DECLARE_TRACEPOINT(dovetail_leave_oob_tp);
+>> +void __trace_dovetail_leave_oob(void);
+>> +
+>>  static inline void dovetail_leave_oob(void)
+>>  {
+>> +	if (tracepoint_enabled(dovetail_leave_oob_tp))
+>> +		__trace_dovetail_leave_oob();
+>>  	clear_thread_local_flags(_TLF_OOB|_TLF_OFFSTAGE);
+>>  	clear_thread_flag(TIF_MAYDAY);
+>>  }
+>> diff --git a/include/trace/events/dovetail.h b/include/trace/events/dovetail.h
+>> new file mode 100644
+>> index 000000000000..785a653252d3
+>> --- /dev/null
+>> +++ b/include/trace/events/dovetail.h
+>> @@ -0,0 +1,23 @@
+>> +/* SPDX-License-Identifier: GPL-2.0 */
+>> +#undef TRACE_SYSTEM
+>> +#define TRACE_SYSTEM dovetail
+>> +
+>> +#if !defined(_TRACE_DOVETAIL_H) || defined(TRACE_HEADER_MULTI_READ)
+>> +#define _TRACE_DOVETAIL_H
+>> +
+>> +#include <linux/tracepoint.h>
+>> +
+>> +struct task_struct;
+>> +
+>> +DECLARE_TRACE(dovetail_leave_inband,
+>> +	TP_PROTO(struct task_struct *p),
+>> +	TP_ARGS(p));
+>> +
+>> +DECLARE_TRACE(dovetail_leave_oob,
+>> +	TP_PROTO(struct task_struct *p),
+>> +	TP_ARGS(p));
+>> +
+>> +#endif /* _TRACE_DOVETAIL_H */
+>> +
+>> +/* This part must be outside protection */
+>> +#include <trace/define_trace.h>
+>> diff --git a/kernel/dovetail.c b/kernel/dovetail.c
+>> index da4016697b67..98892f0a63da 100644
+>> --- a/kernel/dovetail.c
+>> +++ b/kernel/dovetail.c
+>> @@ -12,6 +12,19 @@
+>>  #include <asm/syscall.h>
+>>  #include <uapi/asm-generic/dovetail.h>
+>>  
+>> +#define CREATE_TRACE_POINTS
+>> +#include <trace/events/dovetail.h>
+>> +
+>> +void __trace_dovetail_leave_inband(struct task_struct *p)
+>> +{
+>> +	trace_dovetail_leave_inband_tp(p);
+>> +}
+>> +
+>> +void __trace_dovetail_leave_oob(void)
+>> +{
+>> +	trace_dovetail_leave_oob_tp(current);
+>> +}
+>> +
+>>  static bool dovetail_enabled;
+>>  
+>>  void __weak arch_inband_task_init(struct task_struct *p)
+>> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+>> index 3ec77a682c4a..b2ad0ab0626c 100644
+>> --- a/kernel/sched/core.c
+>> +++ b/kernel/sched/core.c
+>> @@ -10689,6 +10689,8 @@ int dovetail_leave_inband(void)
+>>  	 */
+>>  	if (likely(__schedule(SM_NONE))) {
+>>  		arch_dovetail_switch_finish(false);
+>> +		if (tracepoint_enabled(dovetail_leave_inband_tp))
+>> +			__trace_dovetail_leave_inband(p);
 >
-> This hunk was forgotten while merging the patch.
+> Why does trace point have to be conditional? Rather unusual.
 >
-> Jan
 
-Not sure how that can ever happen since I'm applying patches with mu4e
-directly from the MUA (mu4e-action-git-apply-mbox). Anyway, ... fixed.
+I guess that the upside of having a static key to fully skip the
+tracepoint prep dynamically may be wanted here. Granted,
+dovetail_leave_inband() should not be on the hot path, but we are
+nevertheless on the switch tail path to oob.
 
 -- 
 Philippe.
