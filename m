@@ -1,64 +1,136 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=212.27.42.6
-ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795163529;
-	b=f196X9Ms39NkyRq6nyn9EsFF8ZoylQxc1V7+gEERa1s5jsZ1HgU4H4mmoDqOkAH7xp0C
-	 wOzDXQwsaTny67TKOtElrEcAyzP9kjsABftUCVWSvwyuEpIrqaXoJ6IczHYsb7lK6Yl6J
-	 0Dz0nb6UhDc/x/ejIBUoIjD/GZ+8ypYam/SituYwwyNQi6wNM1NtbCMmP7gwMSJ/1aniu
-	 8rVJ84KtK+BGdEwUgi+gKacKgmtXDJH2hrknGw7q8DYG/Y9Z6hAq2YfKgu6uPD1cF7459
-	 ZbsI6Ff95YrT90D4H67EwaZDCleaxjtpaO5zi9RcIDmmuSmiivTQnz8E3ns1EGuhQiQ==
-ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795163529;
-	h=DMARC-Filter:Received:Received:DKIM-Signature:From:In-Reply-To:
-	 Content-Type:X-Forward:Date:Cc:To:MIME-Version:Message-ID:Subject:
-	 User-Agent:Content-Transfer-Encoding:X-Virus-Scanned:X-Virus-Status;
-	bh=5uGZr/OSxQDKH3Ti9A5TjVWx7tK4Ods5pFQTdLl9E0w=;
-	b=kglQrTz6D2MzQ41ss1hi+TY6/J9eZO0h/DN9g5dRVTk/k80FP2+5ba13gxVQ0wRNLx/x
-	 w0mXSQ/SyCrhotSN2KUrxiuYIUp7u74u5ZyCftl7jNCXpLDSutt8/fC6eKV2tbuYIAIpi
-	 ePGJZQ+OZiGxpx6jMNozalMxcYvnqNHCAmIgsMBaQozlBnUq/MFxacloapk85rNAlcvrg
-	 JYUHX/09UKe/NwdxYMFY4HffmdZRqnbF6s0vK9K/QnWxENf0N6pYx95l51T4lfQ+72ruG
-	 i+8OnHFKBDiAW5hUAiov6wWnwLgrS01+6gbA2pcplD/5f3Kx63fp6FQulWQKU6Yo9kw==
-ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=none header.from=eventlab.fr;
-	spf=pass smtp.mailfrom=eventlab.fr;
-	dkim=permerror header.d=eventlab.fr header.i=@eventlab.fr header.a=ed25519-sha256 header.s=default header.b=vIgmr3WY;
-	arc=none smtp.remote-ip=212.27.42.6
-Received: from smtp6-g21.free.fr (smtp6-g21.free.fr [212.27.42.6])
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.162.18
+ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
+	t=1795163859;
+	b=JvUes4DvvzqYp9U0LMccTD3m1/8ZlVeA7DfOEBtYNtqalkieTd9+8SIghX0te7mnqv3m
+	 JJLpG90OSIJa+6gype3PL56s+4ZljkWV+KQzke4sxLg2uNKTZZFYt5ryYkNwvck+zZrJ3
+	 QWf92esyipQaetSnLflmLdWptZH/1lGgcWzpbUerjxEXO1CGCWvKG0qQ7Oa4OXdLUZJPN
+	 KNLXBa6MfjPX9bc8diIVkQjYr5n8YaPwYH5LqHxB3yvsONYYbOCOwYNCAXY/f8KB+h7MB
+	 zTSvRDJscuwlx+QGV58atdx5tOZf/ALb98N+FTvbyOpJiOBx+GwUJrMeVnqIRQ1Hxzg==
+ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795163859;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
+	 User-Agent:Subject:To:Cc:References:From:Content-Language:Autocrypt:
+	 In-Reply-To:Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:
+	 MIME-Version:X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 X-MS-Office365-Filtering-Correlation-Id:
+	 X-MS-Exchange-AtpMessageProperties:X-MS-Exchange-SenderADCheck:
+	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
+	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+	 X-MS-Exchange-AntiSpam-MessageData-ChunkCount:
+	 X-MS-Exchange-AntiSpam-MessageData-0:X-OriginatorOrg:
+	 X-MS-Exchange-CrossTenant-Network-Message-Id:
+	 X-MS-Exchange-CrossTenant-AuthSource:X-MS-Exchange-CrossTenant-AuthAs:
+	 X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+	 X-MS-Exchange-CrossTenant-FromEntityHeader:
+	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+	 X-MS-Exchange-CrossTenant-UserPrincipalName:
+	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
+	bh=G4KlgOQlxOzMmgkKcxM/1GZZmUf+V10qCPudur/493w=;
+	b=XE/KpHC4ENcbOkU/Cft+iLzGzsn3fonWpu8MEM9Qv8d5QpStYZiv7cCcduxgLY1BA72t
+	 my9mQ4rjxdNEbfKRgWAi/l/OFysjQ2kn7narJS8/yn6A3QFLtibI/rdDyytv/nfOOX7ql
+	 5kIFJjtJ/2uZiqjILgod4wEhq8s14INs9mNf1lmGd/hg9ZLV6S4DqZh0TUJ0ajGD65m1H
+	 A4j++UhousAS8uwTOdezPP/teGkX5NWWK4MaOGUKdehWpQpVeUNL6L3Z1FPVwRTbRucKD
+	 +0UiS0jpPqCF4X5DepzizaVUNg7pqNFidv+c2zaOk8Iy0ES828t23W699bO7vLHFaqw==
+ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
+	dmarc=pass header.from=siemens.com;
+	spf=pass smtp.mailfrom=siemens.com;
+	dkim=pass header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=TrTxORBw;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.162.18
+Received: from PA4PR04CU001.outbound.protection.outlook.com (mail-francecentralazon11013018.outbound.protection.outlook.com [40.107.162.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57367606A320
-	for <xenomai@lists.linux.dev>; Fri, 20 Nov 2026 08:32:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 57367606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=eventlab.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=eventlab.fr
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FEE8606A325
+	for <xenomai@lists.linux.dev>; Fri, 20 Nov 2026 08:37:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6FEE8606A325
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=permerror header.d=eventlab.fr header.i=@eventlab.fr header.a=ed25519-sha256 header.s=default header.b=vIgmr3WY
-Received: from mail.thom.fr.eu.org (unknown [82.64.149.25])
-	by smtp6-g21.free.fr (Postfix) with ESMTPS id 66116780371;
-	Fri, 20 Nov 2026 09:32:03 +0100 (CET)
-Authentication-Results: smtp6-g21.free.fr;
-	dkim=permerror header.d=eventlab.fr header.i=@eventlab.fr header.a=ed25519-sha256 header.s=default header.b=vIgmr3WY;
-	dkim-atps=neutral
-Received: from localhost ([127.0.0.1])
-	by mail.thom.fr.eu.org (8.15.2/8.15.2/Debian-22+deb11u3) with ESMTP id 6AK8W0W03267503;
-	Fri, 20 Nov 2026 09:32:01 +0100
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/simple; d=eventlab.fr;
-	s=default; t=1795163521;
-	bh=AmXabNAGwOBY3b6ic2itmDoAka1FT8sCpOg8uKvKWzo=;
-	h=From:In-Reply-To:Date:Cc:To:Subject;
-	b=vIgmr3WYPm8A1E+PCPCNFQD92zOjRSPrSMTDtNHggGJDlXKitqrO/cC7KZo+/oMpZ
-	 eE9qA+1wJ9uo9WahelmxpGjRtKP8Ne3wehi8K0+aDNgHyPBydO6okl0IBB7Vgr65Ju
-	 7ib+/e0++134nxFPibDrf9lMrjFEaPx7ZeBdpfVOk91r3ndgdzIr5xfrHKatJMeR6G
-	 02CWUNtNVTIhJBszdSjax2+LYhbHrOLUHFOB1ZTPMmDANTfs8/BBm+W9Fll1Q4ZzVP
-	 bjB1x9REV7EblFbdfiSqqeFIieDrgrUK/etpmsluakSBhJAhEsN0/O6mdQIqOM3n58
-	 /YWH2AEi421aA==
-From: =?utf-8?q?Fran=C3=A7ois_Legal?= <francois.legal@eventlab.fr>
-In-Reply-To: <f0f8dc2a-bf6a-4a48-9ed3-4b3bc45b995d@siemens.com>
-Content-Type: text/plain; charset="utf-8"
-X-Forward: 217.109.173.233, 194.9.103.72
-Date: Fri, 20 Nov 2026 09:32:00 +0100
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=TrTxORBw
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=clwpO3yATVdoPjQIlAAT1WUK6ShyZ8wNLUQYYQLBsbS9atG1DAuIitJ6a8u4sTedDFER7etMR4xpkCeU5nhj5YbiA+yYaWiKjp0TSu+biBEHDdsNdD8FACi6rqWcdyJAwVrBzqFcLDoIBoX3t9dq7MBcGDfGKLYqbleSsKudU4qm+xUVswMCIRGn1oh3OiVfhD7KtIA3lAUDEzvCbMHJH7fqmpx/EW1pQqjxm45HERzlu2Z4bvABhFH1cwipkaGQ+6HoXfytoVYOktzuLn3/E+jxHphYUS5w3dQAW5ttS/8NBzUSNGvMbDuwzDTM9Wq/RF240OXNaqWygkjPLRI4BA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=G4KlgOQlxOzMmgkKcxM/1GZZmUf+V10qCPudur/493w=;
+ b=qIarl0Pj7j/kan64jeB1ME1QGLJrNOjU5el4jJxDuH3VqhZQE419IgVp8G6+TPqwhFdcGbbAxmc5MnabbIRSjxeLyuvf9aywuBa8hhQpHCQN5UFoLvySyiGE5z8uWbgHyWgHqIf8UgIRGyt8Tsm1BHmM09ZPoMEYmOjlF8cxZyWKX06CX7TBwOf8EI6wAP9c+mIRMCY3ciWFe4UKGdOP/+goqp4XZRvlAAjEJ6+Ez9Uo/YV5+zca8P77yL+rzdIAtzJ5XMjIES2l2Zs+r7WnLvqDcIcb1Pi/UJzRXyEOaWkN7tm662rqAYKsXG02NgV7Fk0fdKhfNphs61wtFjJePQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
+ dkim=pass header.d=siemens.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=G4KlgOQlxOzMmgkKcxM/1GZZmUf+V10qCPudur/493w=;
+ b=TrTxORBwM3x+/Wlx5ot2xhmnjRMuRN+z7WBKtG62SOEcFNkXtfd10pTw8Sv8gLDljCh+pSsk1f2RBXHh8FdUmXwiDfeAo5si36NghzIQ24Mf/mh3nZ3Bc9QbFZwSZqP+aE5EBIVywdC4p6Bze4EnjR3csujItBPLyTnPjTof0BRAGFHKPVg/p2DzShGZl/2MdORUwy+JAiaiBmGLA9zYYd0+bVxO7zjhk7kKQtaixGi0ZXq/a3LzHEtwBrGWvJ1rV5jOPtCazId7kNhP3Xs5NAMJf6h3WgEwrUVE7M+Q5zsonu6QHRT9U/ARVtCOxHl/qNydUMsvHNX2cToxX3DNmw==
+Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=siemens.com;
+Received: from AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:785::10) by PR3PR10MB3962.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:102:4f::18) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.1; Fri, 20 Nov
+ 2026 08:37:35 +0000
+Received: from AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::fbce:789a:27cf:d1e]) by AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::fbce:789a:27cf:d1e%5]) with mapi id 15.21.0662.000; Fri, 20 Nov 2026
+ 08:37:35 +0000
+Message-ID: <585e5c5b-dd25-4566-b0bc-4bebb04d891d@siemens.com>
+Date: Fri, 20 Nov 2026 09:37:34 +0100
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] Fixes broken mmap patching on 32bits archs
+To: =?UTF-8?Q?Fran=C3=A7ois_Legal?= <francois.legal@eventlab.fr>
 Cc: xenomai@lists.linux.dev
-To: "Jan Kiszka" <jan.kiszka@siemens.com>
+References: <115efd-6b000580-3f-36f80d40@101056808>
+From: Jan Kiszka <jan.kiszka@siemens.com>
+Content-Language: en-US
+Autocrypt: addr=jan.kiszka@siemens.com; keydata=
+ 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
+In-Reply-To: <115efd-6b000580-3f-36f80d40@101056808>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR4P281CA0332.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:ea::18) To AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:785::10)
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -68,579 +140,261 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Message-ID: <115efd-6b000580-3f-36f80d40@101056808>
-Subject: =?utf-8?q?Re=3A?= [PATCH] Fixes broken mmap patching on 32bits archs
-User-Agent: SOGoMail 5.0.1
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 1.4.3 at tls-srv-02
-X-Virus-Status: Clean
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AMCPR10MB992291:EE_|PR3PR10MB3962:EE_
+X-MS-Office365-Filtering-Correlation-Id: a67c6564-f3d9-4f8f-c2a4-08df46e186c7
+X-MS-Exchange-AtpMessageProperties: SA
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|366016|1800799024|376014|23010399003|10067099003|261102123227099003|11063799006|56012099006|261026140227099003|261021121427099003|261022105027099003|261009223027099003|261028144727099003|261026121527099003|55112099003|22082099003|18002099003|6133799003;
+X-Microsoft-Antispam-Message-Info:
+	RIJxq4Ydnj3W9scxX5mcC7QDBWEvLtNrodnpGHTvvGzC4nw3u4Ro3ILWyxZwlFEqgNVNcAlwQora0iU6W3qXsl8lAEeMjp7JDBGSmv+zO4/UhvGM9MKcZImffAkaP9r0E5Iion1DORI1wqkUeV8oRiWtjla+DtrVVIFR+JZsl1yQqQt8BLvFZadftkYujpqmPvBxYcvm/P9tHb1LLLo5n3mWSrGb1v2HWFebpNu5R1sJdqSNCWJeYAoaYokkPC+KljAGK+4PyUisfya2N5WC/K5OIHa0KmTU5VOcvGWfyX6dDLnMYvJZKfRZD3Oogm+kFPf/j0rgRi9VOX1cqKFsmVjO02veXCRieGdQ5noDlAWp+4irSzJl61qpPrDPJokzSWbVpmdUiBUhg0HnrGA+MZsMBwEAu64i+X/781e6IIHPSx9vv2jvS/XExY7m1IZHPBIp+UMTwMBi9lChSHl2WKZmIyg8PzN2dbfcpQeikUUdXQzX5btDspVe7U5qbjMn7n/3vcwNV84j4BolPlZ/VIhhT4wL/+9H/YdMfbE0ERpM6X9PI6MigpwPP/uq2bz6Fc3oyJQj6/krOZebJfKvBfo8OCHLZkG2DG5JthkTS22M+bKflzKFtBhYUGuSfTxAmmcyIlGTsOHeCCBfS55emnjBh3rraO/2DQzEUzDNVlY=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(23010399003)(10067099003)(261102123227099003)(11063799006)(56012099006)(261026140227099003)(261021121427099003)(261022105027099003)(261009223027099003)(261028144727099003)(261026121527099003)(55112099003)(22082099003)(18002099003)(6133799003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?cmNRUUdmVm5uM2pyZ1p0WUxIaXFNNXhGalV6SVdKTnhsbDRXcG15K2lLVzNJ?=
+ =?utf-8?B?dEE4K0tOT0ZBTERPVXpqa0haRVpjcHM3NWkxdGZCVXRrZkpUcnlySUVSbFA0?=
+ =?utf-8?B?ak9aTFQ1VTQ4S1pjUUVxd1BXdXZ5VDAvRDNvRktTWVkvenpKdm1tUVYySFU5?=
+ =?utf-8?B?NWllOUZBb2V2ZVNxMCt6QzJMZTU0SkU0dEN4NWlubCt1K2RhcUM4QVViVlR2?=
+ =?utf-8?B?ZHoxWGhYYnJiVHFUTHk0WmlOVHVaTmhaS3BXWkhyMGE1SE5LUWxSY2lRZ3B5?=
+ =?utf-8?B?WmhoWW54YkQ4K1FZMW5uVnpTamVJTVdSZGNkSHNKSFRJYkxNZ0djNHIzeFg2?=
+ =?utf-8?B?b25QTk5lamxSTTZaNVZSRmFVdE9nR1pVNXpYMmM0b1MxVEI2bnpKK2Fwakky?=
+ =?utf-8?B?NXFFeVQ3VTVPNmNqZ0dObnhTT1RSQWZlNk5sa3BhMEhaZzlWaGdTTExHRmVQ?=
+ =?utf-8?B?UVc5TzVZdHFDcjgvRmNjYXVRUVRJNGN0MTJjelZ0SDhkVDIwaStpR1VqTU96?=
+ =?utf-8?B?S2hQWEk3WUdEMmxQZWlwc0FOWW1tZEJnRHdYc0NqdEEvMXpwRS9YajlybGl6?=
+ =?utf-8?B?RDNTSE95NXQ0RmJCSTgvL0NzR0pZVHp6bllPbzNSL0hMc1hIY28za0Flc3lW?=
+ =?utf-8?B?UTUwQUhNa1pRVnpBVkgzMnpwWWI2SGpsYUZWa3hTK08xZHVhVmZYV3lsOUdn?=
+ =?utf-8?B?MGorelpEcDhNU2JoRGhCT3E0NlYxWE5EYkZyblBRRGVJZG1LQnc5NEN4aWpO?=
+ =?utf-8?B?WktXNzBxV3ppcC9aT09zMWpqa3ZTMElsVHBKT2N4cTB6V3A4bjU4QlBnTk02?=
+ =?utf-8?B?UTB4cTAvaTBZWU56VHp1WFVrVFlUb0J1Qy9SUmRuMS81bXM2aTdsd0E5czMv?=
+ =?utf-8?B?S1JsU1NPd2NMcnpuTy9HZk90V25NbnB3UmFwaHZ3dkJKaXFTU3NkMUVRdmNj?=
+ =?utf-8?B?TDd1dVlFTmFxQjhRYUdBRzYrTWIzdHpxeWpwUnRoZWd4eGFKSTZtQmM0K1JQ?=
+ =?utf-8?B?dmZTQ20zU3BsUUZKMm5uRTc4aTBmZDhzalIyS25JaUg3NVB2blBXSURmemRC?=
+ =?utf-8?B?RERqTHVnYmxQL0lSMU1GcERJWFpONWsrWjBFVmVTTFR5REhxYUd5d296bWZU?=
+ =?utf-8?B?UFp5RmVFbkVXbGJUVld2Q3BEWTNzOVpXNHdHeGVndDA1ZzhCRW5JZ1VFWGVV?=
+ =?utf-8?B?ZEVQaGYvQmdSUmlpZVVqTGtORjA1M2t1cElYR3c2UDJFZ1pJZVF5STNQRUxH?=
+ =?utf-8?B?VXZMT082b2UxVHNzbmNpcFhJT1RyVktQMWsrL2J1czRFUkhrcEZMTUtFMVQ2?=
+ =?utf-8?B?bFpEQm9TSmVoZ2JjSkRKRXlYWG8rZjFpQkx1Z3I4Sm4vajVhaW0zaUxCUnFF?=
+ =?utf-8?B?WEpmemlvRzhpeCs3VDFQWUlJa2VwY1Bta0xUcUxkUjFqeGN0YkRJUktKNnZH?=
+ =?utf-8?B?NWRlTjhtQ0VkczlBNGVhcTRQQTlrRGdNSTA1NkppcFRkVjVBZXpnZXNVWWdW?=
+ =?utf-8?B?VXNZYkdaQnNzbEhxd3FicHJiNHZFNFdkZkpmMEQ0MUIxekdmQ2tNUkVUb0hS?=
+ =?utf-8?B?R3ROdVJ2SkFDU01WbFBVWUd3VnVRejQ5OVpuZUxPQm9SVnYzQzdYRTI4elQx?=
+ =?utf-8?B?cDlyRWJxM1pFTUptSEZCODFJT25LUW5aWXkzcVVkVWlnYXAyM0F3VHV0NWZv?=
+ =?utf-8?B?YjFpOERFUDllS1dsbCtZUVM5YVA3KzNxR0drbjF2VXhyWDFQSDMwNW81TFJ0?=
+ =?utf-8?B?U3psWHkwYkcwTXVFbkNZaWEzMTBLb3ZJM2EybkxSaTY3eFBRRlhKQVo4RTRL?=
+ =?utf-8?B?dGJ5VlRzSmlheGJmVytkTHR0UTFLK0o2cDVyaTFKVzRUMTYzMEh6WVJZdjR2?=
+ =?utf-8?B?dXhrNS9Qd3plUE93RE1IR21RU3JFZHhhV3Nndk5jWFpWcjlwRGpZaXoyQlN0?=
+ =?utf-8?B?bk8yOXEvVzN3Y0hCT1NYeEJ1bHVxMHhEQnJYS2Faa0I1R25UQmswSDdoZFYy?=
+ =?utf-8?B?Y2pxR0JJdll1SThyb1VtTXc4TXNGNlQra25MQjZZcFRIU2R0REVzOVMrS28x?=
+ =?utf-8?B?Qk9UOHpCZ0JrY1IzQ0xiK2dnOEVjZU9Sb0lEV3RvUm9NVWJla2lGazgxYjVk?=
+ =?utf-8?B?Vklpa0hldU9pSG5WeDNLMXA0Mm1JN2gxdlp4ZWdpMzRZQytBVFhjZU9WdFNt?=
+ =?utf-8?B?UlFySDFQRnpHWnZxaU5udy9vd2ZoZGg0VldDZjdybG9ERDlMWW5Rcm5YbzBX?=
+ =?utf-8?B?cndtVGR3bGJjTFJNU1dvNllTRFMzeFBlREtJa1Q4OXdoSWhtS2RZK0srcGZx?=
+ =?utf-8?B?UmYyRnZlMXp2Z3JYTDBSSmtMSWtSSm1kK1Vmd0RvM21abW8zaEFjZz09?=
+X-OriginatorOrg: siemens.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a67c6564-f3d9-4f8f-c2a4-08df46e186c7
+X-MS-Exchange-CrossTenant-AuthSource: AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Nov 2026 08:37:35.3530
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: zvExqekOq5cztyzU5YwwNYjTwUtkM13kIjj2eU+Uc7Z7lqw17IX4iwiOS1Sein9ITNFtnANmxBEEfdC3MUkv9w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR10MB3962
 
-Le Vendredi, Novembre 13, 2026 13:20 CET, Jan Kiszka <jan.kiszka@siemen=
-s.com> a =C3=A9crit: 
- 
-> On 12.11.26 19:11, Fran=C3=83=C2=A7ois Legal wrote:
-> > mmap is broken on 32 bits arch when =5F=5FUSE=5FTIME=5FBITS64 and =5F=
-=5FUSE=5FFILE=5FOFFSET64 are set
-> > in that case, libc translate calls of mmap to mmap64 because file o=
-ffset argument is a 64 bit value.
-> > We fail to catch that with the decoration logic (=5F=5FSTD/=5F=5FRT=
-) and plain libc mmap is called.
-> > 
-> > Signed-off-by: Fran=C3=A7ois LEGAL <devel@thom.fr.eu.org>
-> > --
-> > diff --git a/include/cobalt/sys/mman.h b/include/cobalt/sys/mman.h
-> > index e291f50ef..b6d650876 100644
-> > --- a/include/cobalt/sys/mman.h
-> > +++ b/include/cobalt/sys/mman.h
-> > @@ -28,16 +28,10 @@
-> >  extern "C" {
-> >  #endif
-> >  
-> > -COBALT=5FDECL(void *, mmap,
-> > +COBALT=5FDECL=5FOFF64(void *, mmap, mmap64,
-> >  	    (void *addr, size=5Ft length, int prot, int flags, int fd,
-> >  	     off=5Ft offset));
-> >  
-> > -#if defined(=5FLARGEFILE64=5FSOURCE) || defined(=5FGNU=5FSOURCE)
-> > -COBALT=5FDECL(void *, mmap64,
-> > -	    (void *addr, size=5Ft length, int prot, int flags, int fd,
-> > -	     off64=5Ft offset));
-> > -#endif
-> > -
-> >  #ifdef =5F=5Fcplusplus
-> >  }
-> >  #endif
-> > diff --git a/include/cobalt/wrappers.h b/include/cobalt/wrappers.h
-> > index a5645a1d4..82c9aaa69 100644
-> > --- a/include/cobalt/wrappers.h
-> > +++ b/include/cobalt/wrappers.h
-> > @@ -46,6 +46,23 @@
-> >  #define COBALT=5FDECL=5FTIME64(T, FN, FN=5F64, I) COBALT=5FDECL(T,=
- FN, I)
-> >  #endif
-> >  
-> > +#if =5F=5FUSE=5FFILE=5FOFFSET64 && =5F=5FWORDSIZE =3D=3D 32
-> > +/*
-> > + * Make =5F=5FRT() and =5F=5FSTD() usable in combination with time=
-64=5Ft related services.
-> > + */
-> > +#define COBALT=5FIMPL=5FOFF64(T, FN, FN=5F64, I)                  =
-                  \
-> > +	=5F=5Ftypeof=5F=5F(T) =5F=5Fwrap=5F##FN=5F64 I                   =
-                      \
-> > +		=5F=5Fattribute=5F=5F((alias("=5F=5Fcobalt=5F" =5F=5Fstringify(F=
-N)), weak));     \
-> > +	COBALT=5FIMPL(T, FN, I)
-> > +#define COBALT=5FDECL=5FOFF64(T, FN, A, I)                        =
-                \
-> > +	=5F=5Ftypeof=5F=5F(T) =5F=5FSTD(A) I;                            =
-                  \
-> > +	extern T =5F=5FREDIRECT=5FNTH(=5F=5FSTD(FN), I, =5F=5Freal=5F##A)=
-;                     \
-> > +	COBALT=5FDECL(T, FN, I)
-> > +#else
-> > +#define COBALT=5FIMPL=5FOFF64(T, FN, FN=5F64, I) COBALT=5FIMPL(T, =
-FN, I)
-> > +#define COBALT=5FDECL=5FOFF64(T, FN, FN=5F64, I) COBALT=5FDECL(T, =
-FN, I)
-> > +#endif
-> > +
-> >  /*
-> >   * 
-> >   * Each "foo" Cobalt routine shadowing a POSIX service may be
-> > diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
-> > index 00c1aaf4b..11a6e86e6 100644
-> > --- a/lib/cobalt/rtdm.c
-> > +++ b/lib/cobalt/rtdm.c
-> > @@ -542,7 +542,7 @@ COBALT=5FIMPL(int, shutdown, (int fd, int how))=
-
-> >  	return =5F=5FSTD(shutdown(fd, how));
-> >  }
-> >  
-> > -COBALT=5FIMPL(void *, mmap64, (void *addr, size=5Ft length, int pr=
-ot, int flags,
-> > +COBALT=5FIMPL=5FOFF64(void *, mmap, mmap64, (void *addr, size=5Ft =
-length, int prot, int flags,
-> >  			     int fd, off64=5Ft offset))
-> >  {
-> >  	struct =5Frtdm=5Fmmap=5Frequest rma;
-> > @@ -574,8 +574,3 @@ regular:
-> >  #endif
-> >  }
-> >  
-> > -COBALT=5FIMPL(void *, mmap, (void *addr, size=5Ft length, int prot=
-, int flags,
-> > -			   int fd, off=5Ft offset))
-> > -{
-> > -	return =5F=5FCOBALT(mmap64(addr, length, prot, flags, fd, offset)=
-);
-> > -}
-> > 
-> 
-> The LLM is not convinced: On 32-bit arm with time64 libs, this versio=
-n 
-> will map =5F=5FRT(mmap()) to a variant that expects 64-bit off=5Ft, w=
-hile a 
-> caller which uses 32-bit off=5Ft would rightfully expect mmap to be 3=
-2-bit 
-> then.
-> 
-> Its counter-proposal:
-> 
-> diff --git a/include/cobalt/sys/mman.h b/include/cobalt/sys/mman.h
-> index e291f50ef..54c028ad9 100644
-> --- a/include/cobalt/sys/mman.h
-> +++ b/include/cobalt/sys/mman.h
-> @@ -28,9 +28,9 @@
->  extern "C" {
->  #endif
+On 20.11.26 09:32, François Legal wrote:
+> Le Vendredi, Novembre 13, 2026 13:20 CET, Jan Kiszka <jan.kiszka@siemens.com> a écrit: 
 >  
-> -COBALT=5FDECL(void *, mmap,
-> -	    (void *addr, size=5Ft length, int prot, int flags, int fd,
-> -	     off=5Ft offset));
-> +COBALT=5FDECL=5FOFF64(void *, mmap, mmap64,
-> +		  (void *addr, size=5Ft length, int prot, int flags, int fd,
-> +		   off=5Ft offset));
->   #if defined(=5FLARGEFILE64=5FSOURCE) || defined(=5FGNU=5FSOURCE)
->  COBALT=5FDECL(void *, mmap64,
-> diff --git a/include/cobalt/wrappers.h b/include/cobalt/wrappers.h
-> index 6d826eedf..9dd022a75 100644
-> --- a/include/cobalt/wrappers.h
-> +++ b/include/cobalt/wrappers.h
-> @@ -45,6 +45,21 @@
->  #define COBALT=5FDECL=5FTIME64(T, FN, FN=5F64, I) COBALT=5FDECL(T, F=
-N, I)
->  #endif
+>> On 12.11.26 19:11, FranÃ§ois Legal wrote:
+>>> mmap is broken on 32 bits arch when __USE_TIME_BITS64 and __USE_FILE_OFFSET64 are set
+>>> in that case, libc translate calls of mmap to mmap64 because file offset argument is a 64 bit value.
+>>> We fail to catch that with the decoration logic (__STD/__RT) and plain libc mmap is called.
+>>>
+>>> Signed-off-by: François LEGAL <devel@thom.fr.eu.org>
+>>> --
+>>> diff --git a/include/cobalt/sys/mman.h b/include/cobalt/sys/mman.h
+>>> index e291f50ef..b6d650876 100644
+>>> --- a/include/cobalt/sys/mman.h
+>>> +++ b/include/cobalt/sys/mman.h
+>>> @@ -28,16 +28,10 @@
+>>>  extern "C" {
+>>>  #endif
+>>>  
+>>> -COBALT_DECL(void *, mmap,
+>>> +COBALT_DECL_OFF64(void *, mmap, mmap64,
+>>>  	    (void *addr, size_t length, int prot, int flags, int fd,
+>>>  	     off_t offset));
+>>>  
+>>> -#if defined(_LARGEFILE64_SOURCE) || defined(_GNU_SOURCE)
+>>> -COBALT_DECL(void *, mmap64,
+>>> -	    (void *addr, size_t length, int prot, int flags, int fd,
+>>> -	     off64_t offset));
+>>> -#endif
+>>> -
+>>>  #ifdef __cplusplus
+>>>  }
+>>>  #endif
+>>> diff --git a/include/cobalt/wrappers.h b/include/cobalt/wrappers.h
+>>> index a5645a1d4..82c9aaa69 100644
+>>> --- a/include/cobalt/wrappers.h
+>>> +++ b/include/cobalt/wrappers.h
+>>> @@ -46,6 +46,23 @@
+>>>  #define COBALT_DECL_TIME64(T, FN, FN_64, I) COBALT_DECL(T, FN, I)
+>>>  #endif
+>>>  
+>>> +#if __USE_FILE_OFFSET64 && __WORDSIZE == 32
+>>> +/*
+>>> + * Make __RT() and __STD() usable in combination with time64_t related services.
+>>> + */
+>>> +#define COBALT_IMPL_OFF64(T, FN, FN_64, I)                                    \
+>>> +	__typeof__(T) __wrap_##FN_64 I                                         \
+>>> +		__attribute__((alias("__cobalt_" __stringify(FN)), weak));     \
+>>> +	COBALT_IMPL(T, FN, I)
+>>> +#define COBALT_DECL_OFF64(T, FN, A, I)                                        \
+>>> +	__typeof__(T) __STD(A) I;                                              \
+>>> +	extern T __REDIRECT_NTH(__STD(FN), I, __real_##A);                     \
+>>> +	COBALT_DECL(T, FN, I)
+>>> +#else
+>>> +#define COBALT_IMPL_OFF64(T, FN, FN_64, I) COBALT_IMPL(T, FN, I)
+>>> +#define COBALT_DECL_OFF64(T, FN, FN_64, I) COBALT_DECL(T, FN, I)
+>>> +#endif
+>>> +
+>>>  /*
+>>>   * 
+>>>   * Each "foo" Cobalt routine shadowing a POSIX service may be
+>>> diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
+>>> index 00c1aaf4b..11a6e86e6 100644
+>>> --- a/lib/cobalt/rtdm.c
+>>> +++ b/lib/cobalt/rtdm.c
+>>> @@ -542,7 +542,7 @@ COBALT_IMPL(int, shutdown, (int fd, int how))
+>>>  	return __STD(shutdown(fd, how));
+>>>  }
+>>>  
+>>> -COBALT_IMPL(void *, mmap64, (void *addr, size_t length, int prot, int flags,
+>>> +COBALT_IMPL_OFF64(void *, mmap, mmap64, (void *addr, size_t length, int prot, int flags,
+>>>  			     int fd, off64_t offset))
+>>>  {
+>>>  	struct _rtdm_mmap_request rma;
+>>> @@ -574,8 +574,3 @@ regular:
+>>>  #endif
+>>>  }
+>>>  
+>>> -COBALT_IMPL(void *, mmap, (void *addr, size_t length, int prot, int flags,
+>>> -			   int fd, off_t offset))
+>>> -{
+>>> -	return __COBALT(mmap64(addr, length, prot, flags, fd, offset));
+>>> -}
+>>>
+>>
+>> The LLM is not convinced: On 32-bit arm with time64 libs, this version 
+>> will map __RT(mmap()) to a variant that expects 64-bit off_t, while a 
+>> caller which uses 32-bit off_t would rightfully expect mmap to be 32-bit 
+>> then.
+>>
+>> Its counter-proposal:
+>>
+>> diff --git a/include/cobalt/sys/mman.h b/include/cobalt/sys/mman.h
+>> index e291f50ef..54c028ad9 100644
+>> --- a/include/cobalt/sys/mman.h
+>> +++ b/include/cobalt/sys/mman.h
+>> @@ -28,9 +28,9 @@
+>>  extern "C" {
+>>  #endif
+>>  
+>> -COBALT_DECL(void *, mmap,
+>> -	    (void *addr, size_t length, int prot, int flags, int fd,
+>> -	     off_t offset));
+>> +COBALT_DECL_OFF64(void *, mmap, mmap64,
+>> +		  (void *addr, size_t length, int prot, int flags, int fd,
+>> +		   off_t offset));
+>>   #if defined(_LARGEFILE64_SOURCE) || defined(_GNU_SOURCE)
+>>  COBALT_DECL(void *, mmap64,
+>> diff --git a/include/cobalt/wrappers.h b/include/cobalt/wrappers.h
+>> index 6d826eedf..9dd022a75 100644
+>> --- a/include/cobalt/wrappers.h
+>> +++ b/include/cobalt/wrappers.h
+>> @@ -45,6 +45,21 @@
+>>  #define COBALT_DECL_TIME64(T, FN, FN_64, I) COBALT_DECL(T, FN, I)
+>>  #endif
+>>  
+>> +#if defined(__USE_FILE_OFFSET64) && !defined(__COBALT_NO_OFF64_REDIRECT__)
+>> +/*
+>> + * Make __RT() and __STD() usable in combination with off_t related
+>> + * services: the libc redirects them to their 64-bit variants in this
+>> + * case, follow suit. Code implementing the native variants opts out,
+>> + * as some libcs enforce 64-bit file offsets (e.g. uClibc-ng).
+>> + */
+>> +#define COBALT_DECL_OFF64(T, FN, FN_64, I)                                     \
+>> +	extern T __REDIRECT_NTH(__STD(FN), I, __real_##FN_64);                 \
+>> +	extern T __REDIRECT_NTH(__RT(FN), I, __cobalt_##FN_64);                \
+>> +	extern T __REDIRECT_NTH(__WRAP(FN), I, __wrap_##FN_64)
+>> +#else
+>> +#define COBALT_DECL_OFF64(T, FN, FN_64, I) COBALT_DECL(T, FN, I)
+>> +#endif
+>> +
+>>  /*
+>>   *   * Each "foo" Cobalt routine shadowing a POSIX service may be
+>> diff --git a/lib/cobalt/mmap.c b/lib/cobalt/mmap.c
+>> index d30b1722d..bf8772f6a 100644
+>> --- a/lib/cobalt/mmap.c
+>> +++ b/lib/cobalt/mmap.c
+>> @@ -18,6 +18,12 @@
+>>    USA.
+>>   */
+>>  
+>> +/*
+>> + * We implement mmap() for the native off_t next to mmap64(): keep their
+>> + * names apart, even if the libc enforces 64-bit file offsets.
+>> + */
+>> +#define __COBALT_NO_OFF64_REDIRECT__
+>> +
+>>  #include <sys/mman.h>
+>>  #include <rtdm/rtdm.h>
+>>  #include <cobalt/uapi/syscall.h>
+>>
+>>
+>> I challenged it why we need that __COBALT_NO_OFF64_REDIRECT__:
+>>
+>> "Why the time64 pattern doesn't carry over
+>>
+>> - __USE_TIME_BITS64 && __TIMESIZE == 32 works without a marker because
+>>   the native-time_t implementations are compiled with -U_TIME_BITS, so
+>>   the condition is false in exactly those files.
+>> - With glibc, the same works for mmap.c, which is built with
+>>   -U_FILE_OFFSET_BITS. The counterpart of __TIMESIZE == 32 is
+>>   !defined(__OFF_T_MATCHES_OFF64_T), which glibc and uClibc-ng define
+>>   when off_t is 64-bit anyway.
+>> - uClibc-ng 1.0.58 and later always define __USE_FILE_OFFSET64, so
+>>   -U_FILE_OFFSET_BITS has no effect. On 32-bit targets
+>>   __OFF_T_MATCHES_OFF64_T isn't defined, so the property test is true
+>>   inside mmap.c as well. That brings back "__wrap_mmap aliased to
+>>   undefined symbol __cobalt_mmap". Only an explicit opt-out by the file
+>>   that implements both variants avoids it."
+>>
+>> Jan
+>>
+>> -- 
+>> Siemens AG, Foundational Technologies
+>> Linux Expert Center
 >  
-> +#if defined(=5F=5FUSE=5FFILE=5FOFFSET64) && !defined(=5F=5FCOBALT=5F=
-NO=5FOFF64=5FREDIRECT=5F=5F)
-> +/*
-> + * Make =5F=5FRT() and =5F=5FSTD() usable in combination with off=5F=
-t related
-> + * services: the libc redirects them to their 64-bit variants in thi=
-s
-> + * case, follow suit. Code implementing the native variants opts out=
-,
-> + * as some libcs enforce 64-bit file offsets (e.g. uClibc-ng).
-> + */
-> +#define COBALT=5FDECL=5FOFF64(T, FN, FN=5F64, I)                    =
-                 \
-> +	extern T =5F=5FREDIRECT=5FNTH(=5F=5FSTD(FN), I, =5F=5Freal=5F##FN=5F=
-64);                 \
-> +	extern T =5F=5FREDIRECT=5FNTH(=5F=5FRT(FN), I, =5F=5Fcobalt=5F##FN=5F=
-64);                \
-> +	extern T =5F=5FREDIRECT=5FNTH(=5F=5FWRAP(FN), I, =5F=5Fwrap=5F##FN=5F=
-64)
-> +#else
-> +#define COBALT=5FDECL=5FOFF64(T, FN, FN=5F64, I) COBALT=5FDECL(T, FN=
-, I)
-> +#endif
-> +
->  /*
->   *   * Each "foo" Cobalt routine shadowing a POSIX service may be
-> diff --git a/lib/cobalt/mmap.c b/lib/cobalt/mmap.c
-> index d30b1722d..bf8772f6a 100644
-> --- a/lib/cobalt/mmap.c
-> +++ b/lib/cobalt/mmap.c
-> @@ -18,6 +18,12 @@
->    USA.
->   */
->  
-> +/*
-> + * We implement mmap() for the native off=5Ft next to mmap64(): keep=
- their
-> + * names apart, even if the libc enforces 64-bit file offsets.
-> + */
-> +#define =5F=5FCOBALT=5FNO=5FOFF64=5FREDIRECT=5F=5F
-> +
->  #include <sys/mman.h>
->  #include <rtdm/rtdm.h>
->  #include <cobalt/uapi/syscall.h>
+> Hi Jan,
 > 
+> I had a hard time making your patch apply to my tree and build (it came a little bit garbled in the message).
+> Anyway, I ended up succeeding. It works. However, to make it build correctly, I slight modification is required in [1].
+> So for the records, I paste below the mix of both patches, the one that actually build and work.
 > 
-> I challenged it why we need that =5F=5FCOBALT=5FNO=5FOFF64=5FREDIRECT=
-=5F=5F:
-> 
-> "Why the time64 pattern doesn't carry over
-> 
-> - =5F=5FUSE=5FTIME=5FBITS64 && =5F=5FTIMESIZE =3D=3D 32 works without=
- a marker because
->   the native-time=5Ft implementations are compiled with -U=5FTIME=5FB=
-ITS, so
->   the condition is false in exactly those files.
-> - With glibc, the same works for mmap.c, which is built with
->   -U=5FFILE=5FOFFSET=5FBITS. The counterpart of =5F=5FTIMESIZE =3D=3D=
- 32 is
->   !defined(=5F=5FOFF=5FT=5FMATCHES=5FOFF64=5FT), which glibc and uCli=
-bc-ng define
->   when off=5Ft is 64-bit anyway.
-> - uClibc-ng 1.0.58 and later always define =5F=5FUSE=5FFILE=5FOFFSET6=
-4, so
->   -U=5FFILE=5FOFFSET=5FBITS has no effect. On 32-bit targets
->   =5F=5FOFF=5FT=5FMATCHES=5FOFF64=5FT isn't defined, so the property =
-test is true
->   inside mmap.c as well. That brings back "=5F=5Fwrap=5Fmmap aliased =
-to
->   undefined symbol =5F=5Fcobalt=5Fmmap". Only an explicit opt-out by =
-the file
->   that implements both variants avoids it."
-> 
-> Jan
-> 
-> -- 
-> Siemens AG, Foundational Technologies
-> Linux Expert Center
- 
-Hi Jan,
 
-I had a hard time making your patch apply to my tree and build (it came=
- a little bit garbled in the message).
-Anyway, I ended up succeeding. It works. However, to make it build corr=
-ectly, I slight modification is required in [1].
-So for the records, I paste below the mix of both patches, the one that=
- actually build and work.
+I suppose your problems relate to backporting the patch from next to
+3.3, right? Because it applied and was testing on next IIRC.
 
-Fran=C3=A7ois
+Anyway, let me send it out properly. Once it's validated over
+next/master, we can also backport what is needed.
 
-[1] https://gitlab.com/Xenomai/xenomai3/xenomai/-/commit/0bb6608b6fa712=
+Jan
 
-
-From d7905501b97604e252550030698cf6b2fdc43dc5 Mon Sep 17 00:00:00 2001
-From: Jan Kiszka <jan.kiszka@siemens.com>
-Date: Fri, 30 Jan 2026 07:46:12 +0100
-Subject: [PATCH] lib/cobalt: Avoid making mmap offset argument uncondit=
-ionally
-
- 64-bit
-
-When =5FFILE=5FOFFSET=5FBITS is 64, mmap is handled by the mmap64 symbo=
-l of
-glibc. The original mmap continues to expect native off=5Ft size, i.e.
-32 bits on 32-bit archs.
-
-While we require applications to be rebuilt with the same settings
-Xenomai was built with as well (either both =5FTIME=5FBITS and
-=5FFILE=5FOFFSET=5FBITS set to 64 or both left unset) which practically=
-
-shadows this issue, it remains wrong to change the wrapped mmap functio=
-n
-in a way that is incompatible with glibc.
-
-To avoid running into conflicts between enabling and disabling
-=5FTIME=5FBITS=3D64 and, thus, also =5FFILE=5FOFFSET=5FBITS=3D64, facto=
-r out the
-affected mmap wrappers as well as their =5F=5Freal stubs into a separat=
-e
-code module.
-
-There is one catch: The cobalt-call to mmap in umm.c needs to be forced=
-
-to mmap64 to become agnostic to =5FFILE=5FOFFSET=5FBITS used by the cob=
-alt
-core internally.
-
-Fixes: fb2bd6e647a9 ("y2038: build: Introduce new build parameter --dis=
-able-y2038")
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
----
- include/cobalt/sys/mman.h |  6 +--
- include/cobalt/wrappers.h | 15 +++++++
- lib/cobalt/Makefile.am    | 15 +++++++
- lib/cobalt/mmap.c         | 83 +++++++++++++++++++++++++++++++++++++++=
-
- lib/cobalt/rtdm.c         | 38 ------------------
- lib/cobalt/umm.c          |  4 +-
- lib/cobalt/wrappers.c     | 17 --------
- 7 files changed, 118 insertions(+), 60 deletions(-)
- create mode 100644 lib/cobalt/mmap.c
-
-diff --git a/include/cobalt/sys/mman.h b/include/cobalt/sys/mman.h
-index e291f50ef..54c028ad9 100644
---- a/include/cobalt/sys/mman.h
-+++ b/include/cobalt/sys/mman.h
-@@ -28,9 +28,9 @@
- extern "C" {
- #endif
- 
--COBALT=5FDECL(void *, mmap,
--	    (void *addr, size=5Ft length, int prot, int flags, int fd,
--	     off=5Ft offset));
-+COBALT=5FDECL=5FOFF64(void *, mmap, mmap64,
-+		  (void *addr, size=5Ft length, int prot, int flags, int fd,
-+		   off=5Ft offset));
- 
- #if defined(=5FLARGEFILE64=5FSOURCE) || defined(=5FGNU=5FSOURCE)
- COBALT=5FDECL(void *, mmap64,
-diff --git a/include/cobalt/wrappers.h b/include/cobalt/wrappers.h
-index a5645a1d4..3d9ec7dda 100644
---- a/include/cobalt/wrappers.h
-+++ b/include/cobalt/wrappers.h
-@@ -46,6 +46,21 @@
- #define COBALT=5FDECL=5FTIME64(T, FN, FN=5F64, I) COBALT=5FDECL(T, FN,=
- I)
- #endif
- 
-+#if defined(=5F=5FUSE=5FFILE=5FOFFSET64) && !defined(=5F=5FCOBALT=5FNO=
-=5FOFF64=5FREDIRECT=5F=5F)
-+/*
-+ * Make =5F=5FRT() and =5F=5FSTD() usable in combination with off=5Ft =
-related
-+ * services: the libc redirects them to their 64-bit variants in this
-+ * case, follow suit. Code implementing the native variants opts out,
-+ * as some libcs enforce 64-bit file offsets (e.g. uClibc-ng).
-+ */
-+#define COBALT=5FDECL=5FOFF64(T, FN, FN=5F64, I)                      =
-               \
-+	extern T =5F=5FREDIRECT=5FNTH(=5F=5FSTD(FN), I, =5F=5Freal=5F##FN=5F6=
-4);                 \
-+	extern T =5F=5FREDIRECT=5FNTH(=5F=5FRT(FN), I, =5F=5Fcobalt=5F##FN=5F=
-64);                \
-+	extern T =5F=5FREDIRECT=5FNTH(=5F=5FWRAP(FN), I, =5F=5Fwrap=5F##FN=5F=
-64)
-+#else
-+#define COBALT=5FDECL=5FOFF64(T, FN, FN=5F64, I) COBALT=5FDECL(T, FN, =
-I)
-+#endif
-+
- /*
-  * 
-  * Each "foo" Cobalt routine shadowing a POSIX service may be
-diff --git a/lib/cobalt/Makefile.am b/lib/cobalt/Makefile.am
-index 4318adf18..b5b184b55 100644
---- a/lib/cobalt/Makefile.am
-+++ b/lib/cobalt/Makefile.am
-@@ -7,9 +7,12 @@ noinst=5FHEADERS =3D	\
- 
- lib=5FLTLIBRARIES =3D libcobalt.la libmodechk.la
- 
-+noinst=5FLTLIBRARIES =3D libcobaltnativeoff.la
-+
- libcobalt=5Fla=5FLDFLAGS =3D @XENO=5FLIB=5FLDFLAGS@ -version-info 2:0:=
-0 -lpthread -lrt
- 
- libcobalt=5Fla=5FLIBADD =3D \
-+	libcobaltnativeoff.la			\
- 	arch/@XENO=5FTARGET=5FARCH@/libarch.la	\
- 	../boilerplate/libboilerplate.la
- 
-@@ -43,6 +46,18 @@ libcobalt=5Fla=5FCPPFLAGS =3D			\
- 	-I$(top=5Fsrcdir)/include/cobalt	\
- 	-I$(top=5Fsrcdir)/include
- 
-+# source files that require native off=5Ft size
-+libcobaltnativeoff=5Fla=5FSOURCES =3D	\
-+	mmap.c
-+
-+libcobaltnativeoff=5Fla=5FLDFLAGS =3D @XENO=5FLIB=5FLDFLAGS@
-+
-+libcobaltnativeoff=5Fla=5FCPPFLAGS =3D	\
-+	@XENO=5FCOBALT=5FCFLAGS@		\
-+	-I$(top=5Fsrcdir)/include/cobalt	\
-+	-I$(top=5Fsrcdir)/include		\
-+	-U=5FTIME=5FBITS -U=5FFILE=5FOFFSET=5FBITS
-+
- libmodechk=5Fla=5FLIBADD =3D libcobalt.la
- 
- libmodechk=5Fla=5FSOURCES =3D	\
-diff --git a/lib/cobalt/mmap.c b/lib/cobalt/mmap.c
-new file mode 100644
-index 000000000..cc304bf80
---- /dev/null
-+++ b/lib/cobalt/mmap.c
-@@ -0,0 +1,83 @@
-+/*
-+ * Copyright (C) 2005 Jan Kiszka <jan.kiszka@web.de>.
-+ * Copyright (C) 2005 Heikki Lindholm <holindho@cs.helsinki.fi>.
-+ *
-+ * This library is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU Lesser General Public
-+ * License as published by the Free Software Foundation; either
-+ * version 2 of the License, or (at your option) any later version.
-+ *
-+ * This library is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-+ * Lesser General Public License for more details.
-+
-+ * You should have received a copy of the GNU Lesser General Public
-+ * License along with this library; if not, write to the Free Software=
-
-+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-130=
-7
-+  USA.
-+ */
-+
-+/*
-+ * We implement mmap() for the native off=5Ft next to mmap64(): keep t=
-heir
-+ * names apart, even if the libc enforces 64-bit file offsets.
-+ */
-+#define =5F=5FCOBALT=5FNO=5FOFF64=5FREDIRECT=5F=5F
-+
-+#include <sys/mman.h>
-+#include <rtdm/rtdm.h>
-+#include <cobalt/uapi/syscall.h>
-+#include <asm/xenomai/syscall.h>
-+
-+COBALT=5FIMPL(void *, mmap64, (void *addr, size=5Ft length, int prot, =
-int flags,
-+			     int fd, off64=5Ft offset))
-+{
-+	struct =5Frtdm=5Fmmap=5Frequest rma;
-+	int ret;
-+
-+	if (fd < 0) /* We don't do anonymous mappings. */
-+		goto regular;
-+
-+	/* RTDM ignores the address hint, and rejects MAP=5FFIXED. */
-+	rma.length =3D length;
-+	rma.offset =3D offset;
-+	rma.prot =3D prot;
-+	rma.flags =3D flags;
-+
-+	ret =3D XENOMAI=5FSYSCALL3(sc=5Fcobalt=5Fmmap, fd, &rma, &addr);
-+	if (ret !=3D -EADV && ret !=3D -ENOSYS) {
-+		if (ret) {
-+			errno =3D -ret;
-+			return MAP=5FFAILED;
-+		}
-+
-+		return addr;
-+	}
-+
-+regular:
-+#if mmap64 =3D=3D mmap
-+	return =5F=5FSTD(mmap(addr, length, prot, flags, fd, offset));
-+#else
-+	return =5F=5FSTD(mmap64(addr, length, prot, flags, fd, offset));
-+#endif
-+}
-+
-+COBALT=5FIMPL(void *, mmap, (void *addr, size=5Ft length, int prot, in=
-t flags,
-+			   int fd, off=5Ft offset))
-+{
-+	return =5F=5FCOBALT(mmap64(addr, length, prot, flags, fd, offset));
-+}
-+
-+=5F=5Fweak
-+void *=5F=5Freal=5Fmmap(void *addr, size=5Ft length, int prot, int fla=
-gs,
-+		  int fd, off=5Ft offset)
-+{
-+	return mmap(addr, length, prot, flags, fd, offset);
-+}
-+
-+=5F=5Fweak
-+void *=5F=5Freal=5Fmmap64(void *addr, size=5Ft length, int prot, int f=
-lags,
-+		  int fd, off64=5Ft offset)
-+{
-+	return mmap64(addr, length, prot, flags, fd, offset);
-+}
-diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
-index 264de8ace..98513925a 100644
---- a/lib/cobalt/rtdm.c
-+++ b/lib/cobalt/rtdm.c
-@@ -541,41 +541,3 @@ COBALT=5FIMPL(int, shutdown, (int fd, int how))
- 
- 	return =5F=5FSTD(shutdown(fd, how));
- }
--
--COBALT=5FIMPL(void *, mmap64, (void *addr, size=5Ft length, int prot, =
-int flags,
--			     int fd, off64=5Ft offset))
--{
--	struct =5Frtdm=5Fmmap=5Frequest rma;
--	int ret;
--
--	if (fd < 0) /* We don't do anonymous mappings. */
--		goto regular;
--
--	/* RTDM ignores the address hint, and rejects MAP=5FFIXED. */
--	rma.length =3D length;
--	rma.offset =3D offset;
--	rma.prot =3D prot;
--	rma.flags =3D flags;
--
--	ret =3D XENOMAI=5FSYSCALL3(sc=5Fcobalt=5Fmmap, fd, &rma, &addr);
--	if (ret !=3D -EADV && ret !=3D -ENOSYS) {
--		ret =3D set=5Ferrno(ret);
--		if (ret)
--			return MAP=5FFAILED;
--
--		return addr;
--	}
--
--regular:
--#if mmap64 =3D=3D mmap
--	return =5F=5FSTD(mmap(addr, length, prot, flags, fd, offset));
--#else
--	return =5F=5FSTD(mmap64(addr, length, prot, flags, fd, offset));
--#endif
--}
--
--COBALT=5FIMPL(void *, mmap, (void *addr, size=5Ft length, int prot, in=
-t flags,
--			   int fd, off=5Ft offset))
--{
--	return =5F=5FCOBALT(mmap64(addr, length, prot, flags, fd, offset));
--}
-diff --git a/lib/cobalt/umm.c b/lib/cobalt/umm.c
-index c0d4489d3..6b4303b72 100644
---- a/lib/cobalt/umm.c
-+++ b/lib/cobalt/umm.c
-@@ -58,8 +58,8 @@ static void *=5F=5Fmap=5Fumm(const char *name, uint32=
-=5Ft *size=5Fr)
- 		return MAP=5FFAILED;
- 	}
- 
--	addr =3D =5F=5FRT(mmap(NULL, statbuf.size, PROT=5FREAD|PROT=5FWRITE,
--			 MAP=5FSHARED, fd, 0));
-+	addr =3D =5F=5FRT(mmap64(NULL, statbuf.size, PROT=5FREAD|PROT=5FWRITE=
-,
-+			   MAP=5FSHARED, fd, 0));
- 	=5F=5FRT(close(fd));
- 
- 	*size=5Fr =3D statbuf.size;
-diff --git a/lib/cobalt/wrappers.c b/lib/cobalt/wrappers.c
-index 18c237734..3a0063f05 100644
---- a/lib/cobalt/wrappers.c
-+++ b/lib/cobalt/wrappers.c
-@@ -28,7 +28,6 @@
- #include <sys/select.h>
- #include <sys/socket.h>
- #include <sys/time.h>
--#include <sys/mman.h>
- #include <stdio.h>
- #include <stdarg.h>
- #include <stdlib.h>
-@@ -384,22 +383,6 @@ int =5F=5Freal=5Fselect (int =5F=5Fnfds, fd=5Fset =
-*=5F=5Frestrict =5F=5Freadfds,
- 	return select(=5F=5Fnfds, =5F=5Freadfds, =5F=5Fwritefds, =5F=5Fexcept=
-fds, =5F=5Ftimeout);
- }
- 
--=5F=5Fweak
--void *=5F=5Freal=5Fmmap(void *addr, size=5Ft length, int prot, int fla=
-gs,
--		  int fd, off=5Ft offset)
--{
--	return mmap(addr, length, prot, flags, fd, offset);
--}
--
--#if mmap64 !=3D mmap
--=5F=5Fweak
--void *=5F=5Freal=5Fmmap64(void *addr, size=5Ft length, int prot, int f=
-lags,
--		  int fd, off64=5Ft offset)
--{
--	return mmap64(addr, length, prot, flags, fd, offset);
--}
--#endif
--
- =5F=5Fweak
- int =5F=5Freal=5Fvfprintf(FILE *stream, const char *fmt, va=5Flist arg=
-s)
- {
-
+-- 
+Siemens AG, Foundational Technologies
+Linux Expert Center
