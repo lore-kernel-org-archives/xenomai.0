@@ -1,78 +1,95 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.178.231
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.43
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795172591;
-	b=FN9LLvRr/lr7BUBBF9mhI3I3knwjJj1S+Z7V/5sZtQlE1uoCfMWPecjSCoTiWJ5aZ+1m
-	 Z5ip4Ok2HAC+M9n9Ze8qjmnBQSga1cdqAIzRsF1aXAuvIQQebdydnvcnCHfkdOzOaHjC0
-	 uIsXb7PbmXxn4nltYFF+zBasH2Zoz+ygQCC5jghIvOzviOD7mvHOlloPiaDEpdbjExGSM
-	 ALjaZcjgK2avCchsoQ5ZBD8yBxnn3zaSNxnHgISRtiFDdmHXo49xtAZgc5mpR3OmWyiXh
-	 DAyTgzlq4LJi0exCWI/EKDsveAj4kNZqJvFg0LC0mRyqWGTa/R0aW/VRRvJzL4em+Ng==
+	t=1795210822;
+	b=GM3kmstFkfr1f1h0gKgGq+PHUAjm0przwBjbA/qtvBFaGoT2hOVoEIspyHgZl/S9kGQZ
+	 QBgsamofaUcDaCakR9wouA5t6Ho7H2EPzYK2QL7pM9CAuSuICHRc5lT+fF9V4HPW9B5HR
+	 UrT5gRGuY9xLX4u8fxeVikF0hBLF9Ke3RPRPvoyhMCTw18JObDZIOwuhAdXA2P0xWLy2G
+	 6eUSAxXRIRs0NS2kuiDW7TiEfCngs0x1EJ6wZ+cLpyySiDOfPGlvDR/vBQA18ip7QZRvP
+	 6NJMdvTgeH0qCzsr33T5PW/uIVu2qg89KDKgxBcPFSy25cND+aJjr2IWd3nSVd1mORw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795172591;
-	h=DMARC-Filter:Received:Received:Received:DKIM-Signature:From:To:Cc:
-	 Subject:In-Reply-To:References:User-Agent:Date:Message-ID:
-	 MIME-Version:Content-Type:X-GND-Cause:X-GND-State:X-GND-Score;
-	bh=MANXhxCkO9KG13mmOjsTTCyaWUtwhbkT85NvbjaOhZU=;
-	b=p/F2nYwYeLR8lzTknloJ1VvluKSpkWufjIXYqgNYR2uXw92cvrDXdnjVk+WS4mm+V6uS
-	 S3xavo5cOsUCsvSKov0pr2/zmTGZieLFnPEACuLcA1bjafzRg1eq2TAG0n5aGUfLtKhhH
-	 SgWzfWSHnr9M/lYZU8g3Ki6hecWS793VvQCZzbhsrlxTBXZxagmkOn2BEvh86imkGzO45
-	 ydw3/Fv0tYhRo5JHYQoJ/3gaQ99+pdOwmfqZzoJzX0CcbEBkndte8MN/a4QD9ecMJ9xyM
-	 ITkGoZSiwZ2iza7HWcZrlXFOgmrAWSjmeHy+Wta2ZsaeQqb5LdbZ9AlLk+6dTABT6vA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795210822;
+	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
+	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
+	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:
+	 MIME-Version:Content-Transfer-Encoding;
+	bh=Y1Y/YiU7fgyuongufAXLcbOUC06O0+nVQOq73hfDiLg=;
+	b=a//xZeax6EXeebn0GPPEfAaDV8iZctn9pgEk6dOL5qsCVteaNECOMBkJsU9FAc6WfXuq
+	 URtHlMorlkBX+o18+cRJ9oNF51vqcb84bjS1h+dQ26bK2CDDWTq8TlUm+Ag1jCFB57vLu
+	 3Tl0dIFdbRiukTFyhJMpxG7mQrWASNNE5VWHXxLqfY2WyBZb65TrvhNn90uh9IsoJoSpU
+	 rfNAe+97eOC4qV7+/61ERXsKj6nFobA6ixaoc9tpP0MDw5tLb9SVJV+QQvKanluTXq6yx
+	 H5wOKEwE+cdE/dFI1PTc7PQ64WyTHIhh04/BYIBpwJ+Mnewp1v0BrU0c2HWgta8qmOg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=xenomai.org;
-	spf=pass smtp.mailfrom=redirect.mail.gandi.net;
-	dkim=pass header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b="AznAl52/";
-	arc=none smtp.remote-ip=217.70.178.231
-Received: from redirect.mail.gandi.net (relay11.mail.gandi.net [217.70.178.231])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	dmarc=pass header.from=googlemail.com;
+	spf=pass smtp.mailfrom=googlemail.com;
+	dkim=pass header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=OjNnXAwC;
+	arc=none smtp.remote-ip=209.85.218.43
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51581606A320
-	for <xenomai@lists.linux.dev>; Fri, 20 Nov 2026 11:03:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 51581606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=redirect.mail.gandi.net
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0CB4606A6AB
+	for <xenomai@lists.linux.dev>; Fri, 20 Nov 2026 21:40:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F0CB4606A6AB
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=googlemail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=googlemail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=AznAl52/
-Received: from spool.mail.gandi.net (spool4.mail.gandi.net [217.70.178.213])
-	by relay11.mail.gandi.net (Postfix) with ESMTPS id 672D73ECC4
-	for <xenomai@lists.linux.dev>; Fri, 20 Nov 2026 11:03:07 +0000 (UTC)
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-	by spool.mail.gandi.net (Postfix) with ESMTPS id 2938F560685
-	for <xenomai@xenomai.org>; Fri, 20 Nov 2026 11:03:07 +0000 (UTC)
-Authentication-Results: spool.mail.gandi.net;
-	dkim=pass header.d=xenomai.org header.s=gm1 header.b="AznAl52/";
-	spf=pass (spool.mail.gandi.net: domain of rpm@xenomai.org designates 2001:4b98:dc4:8::221 as permitted sender) smtp.mailfrom=rpm@xenomai.org;
-	dmarc=pass (policy=none) header.from=xenomai.org
-Received: by mail.gandi.net (Postfix) with ESMTPSA id B4CF03EBE0;
-	Fri, 20 Nov 2026 11:03:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1795172587;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=MANXhxCkO9KG13mmOjsTTCyaWUtwhbkT85NvbjaOhZU=;
-	b=AznAl52/BdmspdNQ01g20pGMNX4Lvzb7xsBGu1DNc/jreVr/94P4s1spXTONyb7w1Ns1pr
-	Z/6TSiPcAC6GC+e9QIOCFw15KRrhK04OQcUyos0dLlamNfrXOM14mYuoyvwka4oFk66heX
-	K2JDsQFiDeOy3APBlkC1aHh2vjhsuIDsQpJZwOZVKqx4ynhRLPFXIiFsnbk1Dv7tFDHhHJ
-	vE6Z2Tq9ORSZfwv/Ur/SJz24QoCr7500+aF+NhHmaHEpvKJhroCdK+QorYjrtOcbxN87fv
-	NLRDA3C0AJokrQH3CykUp4XiqD3HlTZ1fyLtNWMA5I2jNFeJ34PC2s2IiNFLbw==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Florian Bezdeka <florian.bezdeka@siemens.com>,  xenomai@xenomai.org
-Subject: Re: [dovetail][PATCH v2 1/4] dovetail: Track the owner of a trap
- notification by exception frame
-In-Reply-To: <216ea921-e542-40b7-b0fe-3d76649ef4b1@siemens.com> (Jan Kiszka's
-	message of "Fri, 20 Nov 2026 11:45:47 +0100")
-References: <cover.1794399047.git.jan.kiszka@siemens.com>
-	<d40c9a22e1e450a83533ef7d781f88010c2aacc6.1794399047.git.jan.kiszka@siemens.com>
-	<576b2607-3fb6-4aa7-b96f-e76ac2f542c1@siemens.com>
-	<87h5hcoesz.fsf@xenomai.org>
-	<c37dc798-282b-4b4d-bd9c-f2c2f498e08c@siemens.com>
-	<878q2namrv.fsf@xenomai.org> <8733svam8s.fsf@xenomai.org>
-	<216ea921-e542-40b7-b0fe-3d76649ef4b1@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Fri, 20 Nov 2026 12:03:06 +0100
-Message-ID: <87qzgf934l.fsf@xenomai.org>
+	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=OjNnXAwC
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-c247f6687dcso210878266b.2
+        for <xenomai@lists.linux.dev>; Fri, 20 Nov 2026 13:40:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20260707; t=1795210819; x=1795815619; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to:content-type;
+        bh=Y1Y/YiU7fgyuongufAXLcbOUC06O0+nVQOq73hfDiLg=;
+        b=OjNnXAwCLsKGko4+9/rPZqubdaEkbU+Yjho4CpIECHv0S2d/QLz+Rhq/Oc2sVAh/el
+         JK7DUYkHuFu1M/rLbyBcZqC9aoGIX3Nbk6qacNKjH6NHX/iejRbgFU5dKa0upe1StIjA
+         5zJC+5zGtk2FZSjv9RACQxHVPwMKEB+0jwk0ier95rdvmqwkr6gvL1+T7t8olKst6Xrw
+         Hd+eWLy5KLlUoC8X+eKXx8S/QIOpnXDCF320K3AIR21fq5OYRg83y6CVe5gOHcwYuMOi
+         GiUBJchtpthvRLwWHnAUyqvqZlWm892zb3FyCzuwACKxu38TWsKRHmv4lSfLg0K1YWlK
+         cD3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795210819; x=1795815619;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=Y1Y/YiU7fgyuongufAXLcbOUC06O0+nVQOq73hfDiLg=;
+        b=X2GgQ/9nFNlj0ZvmtLaDBnTzY4gE2xVo6+zxzgeIcpWRRfNvqSL5DUnFX+cgM9IrdT
+         hl7xeIpYi4OWkF19ADk6pG2whgXnBYPumK111WINq5djYqX93K0DqIr62gzOUOFRUZx3
+         Wba7h9IAi6TDlyYJkc0t9wpsRIoO4+fHkaUOXPJmNP4JY/l6DyZIprIj8RkcAdUke/5n
+         g7dztoPvRK7L51FE9xs8Wxv83bYJuYA+T/Ux0vmBW2Wlgf4w85yf0SQdo4rZ1iamKykc
+         5xnIdiHkc169PBczHk6QxUkcu4QHaHLlDNv30QAzFrfZYNi+p5s5Tk5UDfgKElKhJF7d
+         zvog==
+X-Forwarded-Encrypted: i=1; AL+hErFWfmOXE//+Ce5nI17uWPhsc63uACPRwKS6QOH2P8BIakipcxJxgeZj4qr3XQ1Crsyav3ayVn29@lists.linux.dev
+X-Gm-Message-State: APuU4Z9dgOmCWrj9uLsk49M5xMt2WVMJR04I1/V3gKJkkTJdrgyBjK7P
+	JVfVc303Nk7eHXGg9NPb8yTi/PkP8Z1EdE+agod2t+ryamOQdIk5bmwk
+X-Gm-Gg: AZFdTZc20MC0jqnbEagNsMp95H3RiuCithOqZlwqzrqTsaWP4f3WjO2SD5LyaV3bTSc
+	v2l+cfvxWlbpBD9mrV+3V6lVaoBPC1hnGPoXyGhqpTBxQ0A+pv/S7IF5khtA/oiYggKsdkvUSGD
+	cEdGEoa7u7zVhEipsVbTXMJxiBo2iXyh5CFMZMs9bZsBq82BvsZS5/ZlCuky4GqmcotVqDCDxvx
+	vnchFzu6DvSFS0ScSOmqlN8IGhMxr1e1hCv0R2RXOdDXJTc96VNvYbtoSQlWYxRVAbNtDdhuwMY
+	b4E97FelzQ/5XFKK71uXVU1DGNHUJzjBdJH8jjKfKYpPvaMprXHMwHQ1EUZiZWoDE3D4bCtO5Qp
+	rBVQpoJMfv6MfpS/5axAcgL5Am6eA2J9KxyWHjDihnH3uyswHvHIlzhoSOHOwiep1WwEvnCFwH0
+	m74+LAiaInba2l2z7SPX4qb6xCHCvlyqCCSRGRnl8zGhlyJFVqL1rMJ103SWETyme/7XQrrxcn3
+	gyPmHAXERYFyYLo99HWhMuqGJNbZ7xKJcSNSEyMAZM2NP6E8ryYfcFJ6UvZg3WaJI07wu4hJAa4
+	G99DGkzTyQ4+i/i7afWn9VmetZJrTYiJFgIRFVIb1jGUhM8CnOB5TzItVLJ8cLR916Mik39CwtC
+	QcphF4MLE
+X-Received: by 2002:a17:906:7d90:b0:c4c:f85f:aa12 with SMTP id a640c23a62f3a-c513aac3559mr347529966b.31.1795210819085;
+        Fri, 20 Nov 2026 13:40:19 -0800 (PST)
+Received: from development2.visionsystems.local (mail.visionsystems.de. [213.209.99.202])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c513aea3537sm133445666b.36.2026.11.20.13.40.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Nov 2026 13:40:18 -0800 (PST)
+From: Yegor Yefremov <yegorslists@googlemail.com>
+To: Florian Bezdeka <florian.bezdeka@siemens.com>
+Cc: Yegor Yefremov <yegorslists@googlemail.com>,
+	xenomai@lists.linux.dev,
+	Jan Kiszka <jan.kiszka@siemens.com>
+Subject: Re: [PATCH v2 0/4] Mercury build fixes
+Date: Fri, 20 Nov 2026 22:40:18 +0100
+Message-Id: <20261120214018.3745861-1-yegorslists@googlemail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <231ed4e64e4210b736a9ef7eb41a9b86abfd5ebe.camel@siemens.com>
+References: <20261118140632.1080213-1-yegorslists@googlemail.com> <9222017bd591f01dd92d6cbfd34b90f5e7abe93a.camel@siemens.com> <20261118214521.2292680-1-yegorslists@googlemail.com> <231ed4e64e4210b736a9ef7eb41a9b86abfd5ebe.camel@siemens.com>
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -82,138 +99,77 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Cause: dmFkZTE2ndG5yHfww46EIankTZM4yz9ofjYyeIB1YNH8jLs+e7OBdAXhWyfNB+eP0XehqhuED+j+LX4r1F8i/v2VlAhJm/xFsjiD959Vi/xHGsRb1fBLJaF0ZtYwFiiijUAOhklY/PqSjnvL1xTp/Ikqq6GlvgelvJZSO5BCYx6BQkrf93fAaz83KWFjxsIqLaLQ4/qhkCN70ehV0ffe0p8siAufEIZjr66kcUj2zgEL/m2awBu/9mi+stPSMc9fhAiZIYwEG8Uu9QyGdu1yqovlQNq4zmeUCs9BfIFyDPPySGCZ71zF63lV1437+IpWyPj2HEQjfmtly7fClLstvY43YvV5C0xRB8wO0JExJx+DI+yqzDZ7VZU2Q8ddihbQAu/2IqXQFrG9n+HSLS6sI8defjEF+aYKJ5arSvSFgP+xGb8XwDiHb+aF+hRps9vTT8+lRV2gBGa6NdurffViaPIozR1HLBjXOJxJmyE1XwKBg4f3LWdAaTK9AjyvG1lWN8x95d3+o39VHz6GTQ6OvxYoQjjxxXwqP/hGIBc9JMJekauDu1N3CujAmWcK8MxQBjBfaT8dFO4KdaE3Ju3yhNMmkAfW14aLlJNK0LVFLCAENwBrGs5sFyj6oEUTcOl9S4erTHdmkOab2PUpCmR76nTaPYOwgc/I/wfYmYlyUxRkApSdXA
-X-GND-State: clean
-X-GND-Score: -100
+Content-Transfer-Encoding: 8bit
 
-Jan Kiszka <jan.kiszka@siemens.com> writes:
+Hi Florian,
 
-> On 20.11.26 10:24, Philippe Gerum wrote:
->> Philippe Gerum <rpm@xenomai.org> writes:
->> 
->>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>
->>>> On 19.11.26 19:29, Philippe Gerum wrote:
->>>>> Jan Kiszka <jan.kiszka@siemens.com> writes:
->>>>>
->>>>>> On 11.11.26 13:10, Jan Kiszka wrote:
->>>>>>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>>>>>>
->>>>>>> Trap notifications are guarded by _TLF_OOBTRAP: oob_trap_notify() only
->>>>>>> calls into the companion core if the flag is clear, and sets it;
->>>>>>> oob_trap_unwind() calls the exit handler and clears the flag whenever
->>>>>>> it is set.
->>>>>>>
->>>>>>> This does not cope with nested traps. A trap handler running on behalf
->>>>>>> of an oob thread may trigger another trap before it reaches its own
->>>>>>> exit annotation, e.g. a user access from an emulation handler faulting
->>>>>>> in a not yet resident page on ARM:
->>>>>>>
->>>>>>>   do_alignment()                      <- notify, _TLF_OOBTRAP set
->>>>>>>     do_alignment_ldmstm()
->>>>>>>       ldrt/strt to user address       <- translation fault (SVC mode)
->>>>>>>         do_DataAbort()
->>>>>>>           do_page_fault()
->>>>>>>             dovetail_fault_entry()    <- notify suppressed, fine
->>>>>>>             handle_mm_fault()
->>>>>>>             dovetail_fault_exit()     <- unwind fires: wrong trap number,
->>>>>>>                                          wrong frame, and the core may
->>>>>>>                                          switch us back to oob
->>>>>>>     ...emulation continues oob...
->>>>>>>   dovetail_fault_exit()               <- no-op, flag already clear
->>>>>>>
->>>>>>> Since _TLF_OOBTRAP is per-thread and the thread does not change across
->>>>>>> nesting levels, the flag alone cannot tell which trap occurrence owns
->>>>>>> the notification. The exception frame can: every nesting level pushes
->>>>>>> its own pt_regs on the kernel stack, and the frame is already passed
->>>>>>> to both the notify and unwind helpers.
->>>>>>>
->>>>>>> Record the owning frame in the task struct when notifying, and only
->>>>>>> unwind when the frame passed to oob_trap_unwind() matches. Inner trap
->>>>>>> exits become no-ops, the outer exit unwinds with the trap number and
->>>>>>> frame the core was notified with. oob_trap_regs can in fact encode the
->>>>>>> semantic of the _TLF_OOBTRAP flag, thus drop it.
->>>>>>>
->>>>>>> A forking parent can never be inside a trap handler, so neither the
->>>>>>> flag nor the owner frame can legitimately be set when a new task
->>>>>>> inherits its state. Add a debug assertion for this in
->>>>>>> inband_task_init(), which turns an unbalanced trap entry into a
->>>>>>> loud warning on the next fork instead of silently propagating the
->>>>>>> stuck state to the children.
->>>>>>>
->>>>>>> Assisted-by: opencode:Fable-5.1
->>>>>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
->>>>>>> ---
->>>>>>>  arch/arm/include/asm/thread_info.h   |  1 -
->>>>>>>  arch/arm64/include/asm/thread_info.h |  1 -
->>>>>>>  arch/riscv/include/asm/thread_info.h |  1 -
->>>>>>>  arch/x86/include/asm/thread_info.h   |  2 --
->>>>>>>  include/linux/dovetail.h             | 12 ++++++++++--
->>>>>>>  include/linux/sched.h                |  5 +++++
->>>>>>>  kernel/dovetail.c                    | 10 ++++++++--
->>>>>>>  7 files changed, 23 insertions(+), 9 deletions(-)
->>>>>>>
->>>>>>> diff --git a/arch/arm/include/asm/thread_info.h b/arch/arm/include/asm/thread_info.h
->>>>>>> index 23cae59037c1e..12ab7e49b7b76 100644
->>>>>>> --- a/arch/arm/include/asm/thread_info.h
->>>>>>> +++ b/arch/arm/include/asm/thread_info.h
->>>>>>> @@ -196,7 +196,6 @@ extern int vfp_restore_user_hwstate(struct user_vfp *,
->>>>>>>  #define _TLF_OOB		0x0001
->>>>>>>  #define _TLF_DOVETAIL		0x0002
->>>>>>>  #define _TLF_OFFSTAGE		0x0004
->>>>>>> -#define _TLF_OOBTRAP		0x0008
->>>>>>>  
->>>>>>>  #endif /* __KERNEL__ */
->>>>>>>  #endif /* __ASM_ARM_THREAD_INFO_H */
->>>>>>> diff --git a/arch/arm64/include/asm/thread_info.h b/arch/arm64/include/asm/thread_info.h
->>>>>>> index 48563d782a99a..934b080246146 100644
->>>>>>> --- a/arch/arm64/include/asm/thread_info.h
->>>>>>> +++ b/arch/arm64/include/asm/thread_info.h
->>>>>>> @@ -144,7 +144,6 @@ void arch_setup_new_exec(void);
->>>>>>>  #define _TLF_OOB			0x0001
->>>>>>>  #define _TLF_DOVETAIL			0x0002
->>>>>>>  #define _TLF_OFFSTAGE			0x0004
->>>>>>> -#define _TLF_OOBTRAP			0x0008
->>>>>>>  #define _TLF_KERNEL_FPU_PREEMPTED	0x0010	/* Dovetail: kernel mode FPSIMD section preempted by OOB */
->>>>>>>  
->>>>>>>  #endif /* __ASM_THREAD_INFO_H */
->>>>>>> diff --git a/arch/riscv/include/asm/thread_info.h b/arch/riscv/include/asm/thread_info.h
->>>>>>> index 820a596d9bf65..11164e12317fa 100644
->>>>>>> --- a/arch/riscv/include/asm/thread_info.h
->>>>>>> +++ b/arch/riscv/include/asm/thread_info.h
->>>>>>> @@ -140,6 +140,5 @@ int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src);
->>>>>>>  #define _TLF_OOB		0x0001
->>>>>>>  #define _TLF_DOVETAIL		0x0002
->>>>>>>  #define _TLF_OFFSTAGE		0x0004
->>>>>>> -#define _TLF_OOBTRAP		0x0008
->>>>>>>  
->>>>>>>  #endif /* _ASM_RISCV_THREAD_INFO_H */
->>>>>>
->>>>>> This hunk was forgotten while merging the patch.
->>>>>>
->>>>>> Jan
->>>>>
->>>>> Not sure how that can ever happen since I'm applying patches with mu4e
->>>>> directly from the MUA (mu4e-action-git-apply-mbox). Anyway, ... fixed.
->>>>>
->>>>
->>>> Please fold the fixup commit into the original one, or we will have this
->>>> commit twice in the 7.3 and 7.2 trees.
->>>>
->>>
->>> Not yet, this will go away when the whole stack is squashed per topic
->>> next time.
->> 
->> Unless it breaks some of your tooling.. But if you can live with it
->> until dovetail 7.4 is out, this duplicate will be gone by then.
->> 
+On Fri, Nov 20, 2026 at 10:40 AM Florian Bezdeka
+<florian.bezdeka@siemens.com> wrote:
+> Thanks! Just wondering if mercury is really (still) used. At least from
+> my perspective I/we did not care much about this in the recent past.
+
+Buildroot offers both cores, and Mercury is the only option on boards
+without a Dovetail kernel. The Buildroot autobuilders build it with
+random configurations, which is how these failures showed up.
+
+> - All, especially armv5, uClibc-ng 1.0.59, GCC 15
+> What is the situation regarding time64_t in this scenario? Is that
+> properly handled? (relevant mapping, libc macros, ...)
+
+uClibc-ng has no _TIME_BITS opt-in: with UCLIBC_USE_TIME64 (the default,
+enabled in Buildroot with kernel headers >= 5.1), time_t is always
+64-bit on 32-bit targets. features.h then defines __USE_TIME_BITS64,
+but not __TIMESIZE. In the armv5 and armv7 uClibc-ng toolchains,
+sizeof(time_t) is 8 and sizeof(struct timespec) is 16.
+
+For Mercury this is fine: nothing outside lib/cobalt depends on these
+macros, so it uses the 64-bit time_t of the C library. The only issue is
+that configure only recognizes glibc >= 2.34, so on 32-bit uClibc-ng it
+sets CONFIG_XENO_LIBS_TIME64=no and warns "You're affected by the time_t
+overflow in 2038", which is not true there.
+
+Since you asked, I also built the Cobalt libraries from next for armv7
+with uClibc-ng 1.0.59 (Bootlin armv7-eabihf uclibc stable-2026.08) and
+found two problems:
+
+1. lib/cobalt/rtdm.c does not build: __OPEN_NEEDS_MODE() is a glibc
+   specific macro from <fcntl.h> that uClibc-ng doesn't have. This
+   has been there since 89f00a2e5 ("lib/cobalt: Wrap __open_2/__open64_2
+   to support _FORTIFY_SOURCE"), so Cobalt on uClibc-ng doesn't build
+   since v3.1.1.
+
+2. With a local fallback for that macro, libcobalt builds, but the vDSO
+   lookup and struct timespec don't match. lib/cobalt/wrappers_time64.c
+   checks only __USE_TIME_BITS64 and uses the 64-bit syscalls, which is
+   right. lib/cobalt/arch/{arm,x86}/include/asm/xenomai/time.h checks
+   "__USE_TIME_BITS64 && __TIMESIZE == 32", which is false without
+   __TIMESIZE, so libcobalt resolves the 32-bit __vdso_clock_gettime
+   (with glibc it resolves __vdso_clock_gettime64). cobalt_read_ns(),
+   and therefore copperplate's clockobj, then passes a 16-byte struct
+   timespec to a function that fills an 8-byte old_timespec32. I could
+   not run it on Cobalt hardware, but calling a function with the same
+   ABI that way under qemu-arm gives 8680820741732130394 ns instead of
+   1000500000000 ns.
+
+I can send patches for both, e.g. falling back to __WORDSIZE == 32 when
+__TIMESIZE is not defined, and teaching the configure check about
+uClibc-ng's __UCLIBC_USE_TIME64__, if that's the direction you prefer.
+
+> - All:
+> We mainly test and build for the current Debian releases, with default
+> compiler/toolchain versions.
 >
-> 7.3 is likely the next LTS. Latest by then, this inconsistency should be
-> cleanups as that tree would live longer.
+> If you need more than that, we have to make sure that we build and test
+> against those versions as well. At least some build tests should be
+> added. Otherwise, we will most likely break it again.
 >
+> Will you look into that?
 
-Makes sense, will fold it then.
+Yes. Buildroot's autobuilders build Xenomai with many toolchains (glibc,
+uClibc-ng, old and new GCC), so I'll report and fix breakages from
+there. I can also add a few build-only CI jobs, e.g. Mercury and Cobalt
+with a uClibc-ng toolchain and an older GCC, if you're fine with using
+Bootlin's prebuilt toolchains for that.
 
--- 
-Philippe.
+Regards,
+Yegor
