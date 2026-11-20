@@ -1,63 +1,61 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.183.198
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.136.65.227
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795167503;
-	b=BrSqGzmcNntDODprUFayA3f/H9chRp28Osx6eV+gmfCf8/M3q6kUDHHurOWT3KvcTEVG
-	 T2I7FfGyIiX/Y2lHxxJzKitqTDe/h5RfxJ83H3W3L0QHdmrhW/Bb/YLlGIIAUepMZksla
-	 FLJstyNYrjbNP1qXUcklWYrHqCbY8HO4LQEYTnGT8ma+olTzqK2h7JQbxDEGW4bYhAq2i
-	 GiZMRiecmt1kZuL0kIRQQLCQZbb1WYaRr4HdFj99l1GSAO8d3+1zZT1KAo5ZjYTjgQ3W7
-	 9BIkUu2O5iMD09FggIC0uowSkQuTYkVSEZ0Z2GMJJvsF0tckkVcwUORpsvLjr9xTO6w==
+	t=1795167625;
+	b=wzoi/WvZHElAOKndEikYGlhANVDueWpsx6v8EfqVgE3JG8Sk36pI14J1ZwQ3y1k4hxXR
+	 BqM9M88PF1NZQ/8wzAxoXqFBJ0QOorjn+QTfYLwXSmAbkmEyGJ1UolI+c32RIpAe2i4mz
+	 z0E/Qte4uIsmhu/DgMAjjlkseIz8wMh44Klpso1OZX+iRGkib7yENHsdlrnCb5Dbp/aEh
+	 QaeyUTucd2uwiQjBbZp/yu/VzKZQgqaKT3+sjn0qKLSj//8a3vkMlAK3HXi+3gMAKeYal
+	 uTyu0KFp5AcCTTX7/c5dTgz0J7xr6Q7OE3JOkMQCRbLGE6JNjoWDFy2a8vgkv5gBOBQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795167503;
-	h=DMARC-Filter:Received:DKIM-Signature:From:To:Cc:Subject:In-Reply-To:
-	 References:User-Agent:Date:Message-ID:MIME-Version:Content-Type:
-	 Content-Transfer-Encoding:X-GND-Sasl:X-GND-Score:X-GND-Cause:
-	 X-GND-State;
-	bh=A2eCIDvGZ5L4WeqHhberSYz4fvX/ifIaGic4SN5uVjs=;
-	b=ppp3rxn3YPXCwN/OVEbmx2vDtDnBKm6acP2HcUPPNqnAbsNDF/cdT0mdFl8ZRYqFOsDR
-	 HNFJIigkyjiT8I/JAOVzeHtZIUTzQ2kBT0r1x1OOgi5EgOs2lrz7XzcdGOXwSv48rlmUD
-	 owXrXN0WwXQ/WSBpAaWuFnmbeVmeJFrTARTMjY2YF037DZiIQjHhUX9eW8JMutN8wCl57
-	 DfCt3h6pKsj6WkmmWzTcsxzjHpzL2BxSk+QtvdHpGi4zHxTChiFB7vnMa2K7veExZCxlq
-	 bidXZg0MW8hmiabDe5hJEzVhfbspUQG29adXdM2EI+ewnkEDXYwu1fE6hPBrNjcYJRQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795167625;
+	h=DMARC-Filter:Received:DKIM-Signature:Message-ID:Subject:From:To:Cc:
+	 Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
+	 MIME-Version:X-Flowmailer-Platform:Feedback-ID;
+	bh=FCJFChkFZASatLUZQAvMzx8T4P2iSTbjmQpDKQD9Jxo=;
+	b=S/tGksLmBtILfDq3G609LjTs4GgkP6OqKIQbM6z9L3ML0qATYBvsHj06Me9dvfGhqkj1
+	 FBd33IBCUCEuyMaWNn1nVi006V80tJCRwmwPX9IVIANH9Jec14p7RHDl66S0keJi7VZEF
+	 KI52Ms9KGsw91YwPUfPqj6TyiOUveQXYrfC52QSic9107uAiviZYUtt6qdzQmA1405xI/
+	 HhLEDnfhEmlwuhpCUJYPinVutW8c604K5nMzs7SMI/M3S75C4wq/lD//y0YCFhU+bDClq
+	 2bue4T6qFeAHAZFA8Lp4/7Zx0H0Wt1Ld1fgga1sHnN5ws9FS4gjAT6yRmVOWA0zBpWA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=xenomai.org;
-	spf=pass smtp.mailfrom=xenomai.org;
-	dkim=pass header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=PlYtE27G;
-	arc=none smtp.remote-ip=217.70.183.198
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=siemens.com;
+	spf=pass smtp.mailfrom=rts-flowmailer.siemens.com;
+	dkim=pass header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=RYJsjzsm;
+	arc=none smtp.remote-ip=185.136.65.227
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F9AC606A320
-	for <xenomai@lists.linux.dev>; Fri, 20 Nov 2026 09:38:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 7F9AC606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52015606A320
+	for <xenomai@lists.linux.dev>; Fri, 20 Nov 2026 09:40:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 52015606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=PlYtE27G
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 0DBBA3E9BB;
-	Fri, 20 Nov 2026 09:38:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1795167495;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=A2eCIDvGZ5L4WeqHhberSYz4fvX/ifIaGic4SN5uVjs=;
-	b=PlYtE27GZlAMuybd5AsOnnlk1Y43p+4ysSvpt93oyWMxJgrIkIAG0w4Qiw3ro2lvmYc0ii
-	b1FT4Cu2SyzinzRwtEuy/UucQTBKImKV8Cigxv6smELYqavFlWl05d3CTnTN3bZf7tVhRy
-	0pdumOJlCmjqJ7yuV5+F+nCW0G2QVzdzhT/zIIy+T/FJ0ApGbG953EwCWWQ2OMNhLBEeH+
-	ndTnKucCvXxkUZ3WYYGhmRyNfKLsVRUZ7swJm2Cs2ANvTbqHeg/cYMrQ4pTwJkJA8O1694
-	r+ampeMLodHfuSLQWep3omJ4xZ6WWC86AKA4PJhN3npIUIgS8BXgHrgQZF7olQ==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: "xenomai@lists.linux.dev" <xenomai@lists.linux.dev>
-Subject: Re: Dovtail: Question regarding stop_machine
-In-Reply-To: <951a56b5307da18a8326bc07e84a6faf3c109c93.camel@siemens.com>
-	(Florian Bezdeka's message of "Thu, 19 Nov 2026 20:42:36 +0100")
-References: <951a56b5307da18a8326bc07e84a6faf3c109c93.camel@siemens.com>
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Fri, 20 Nov 2026 10:38:14 +0100
-Message-ID: <87wlq79721.fsf@xenomai.org>
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=RYJsjzsm
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 202611200940198fe70df8ea0002078c
+        for <xenomai@lists.linux.dev>;
+        Fri, 20 Nov 2026 10:40:19 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=FCJFChkFZASatLUZQAvMzx8T4P2iSTbjmQpDKQD9Jxo=;
+ b=RYJsjzsmqlZ4FJXO6UaJX/JlrwjEPfQFVQRlh8ckwyw5fx/RSwz8c8oNAPlYiRfugo6jUY
+ dwUMtjiPA791rEBt4UCcfpK006sl0Ex3Y19Um/cJRdKo3wj2asA4sO3mPGa4KA9ECFzvEAHF
+ ug3E4AUs7pB4gRQVtpyaYexTZtjffuBtN+aVFmQlLKfb3ZO37uKeADVjZtsvriGcqk+/d5dZ
+ gD2wxFS6HPvw32OlrPUhbGZCY911lGnHg8qXTdslz9tOBjkiaeTl9NdiGbgakXyn3eowDAOg
+ ArT0qFSceeRsB3pf0rt9UMS6UOOy8ph3c4Q4z7HeFnOBtnWqbSFs9snQ==;
+Message-ID: <231ed4e64e4210b736a9ef7eb41a9b86abfd5ebe.camel@siemens.com>
+Subject: Re: [PATCH v2 0/4] Mercury build fixes
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Yegor Yefremov <yegorslists@googlemail.com>
+Cc: xenomai@lists.linux.dev, Jan Kiszka <jan.kiszka@siemens.com>
+Date: Fri, 20 Nov 2026 10:40:19 +0100
+In-Reply-To: <20261118214521.2292680-1-yegorslists@googlemail.com>
+References: <20261118140632.1080213-1-yegorslists@googlemail.com>
+	 <9222017bd591f01dd92d6cbfd34b90f5e7abe93a.camel@siemens.com>
+	 <20261118214521.2292680-1-yegorslists@googlemail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -67,42 +65,84 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Score: -100
-X-GND-Cause: dmFkZTF2niRswLyeTntV95tqP4bIDwuwfy8XbOz0yemMmLuMbv8OzdbaGYGrg9zVTBqOlA7RIvyvhWSTXUNdjpJHJiKcGi42yQ2ilsxml46e1tnG7xwMjQyDES05vN8XwKpAB82TL0cHbNiqZ0KWlL7JEvEE8sX6VkKrauaNfKAYgPGc/TDHXti1XBwXSH1jfHGeTOOsTaPKRJotkY6YT8eMwyANTqpArizig9cTe9m51awBsbAYGG9NPYgU134f9MVk0EQ0VzT9NB1WfPlaCKQx7FpqUITuJXA+0UiiuE6SQ6Rv15Y6QcXXFboDcqp1D1JBpqFgy1LaomaZr6+DI+Mlbuaal0pGuCwpM2T2/RhIL785Tyj1nK5mDeYZenfh58463tBBY5wsINgo6R9VUbxSmdrjb5aLrDsXwSZLUBl7xfWAjWa5oMzKvyOp9Kk0S+8b1oIE+FoJxXKSOjwm7QUnxyF5FuI3uUPJYlZw6UAL9soSNnA0yDZhXhPSTieZ2/Bm5Yw/GW+fs2opEXnOfyKWO8XNCASjKa/2aZYDyx/GkYq/Bo+ysoYTxJBzFEzbS7aBqcJ9TrdiWPaWQut6i//5aCMux6BRuyvaRXbutsObATgN7ZNavDz29z+kjw1PcrPW/NnsOZ+gta9eB/WBXbZYVyJIWRQDY1F4Cq+lFqBAhx34TA
-X-GND-State: clean
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Florian Bezdeka <florian.bezdeka@siemens.com> writes:
+On Wed, 2026-11-18 at 22:45 +0100, Yegor Yefremov wrote:
+> On Wed, Nov 18, 2026 at 8:05 PM Florian Bezdeka
+> <florian.bezdeka@siemens.com> wrote:
+> > > The Mercury testsuite
+> > > also needs Florian's 454ae865 ("testsuite/smokey/alchemytests: Fix
+> > > build failure with core !cobalt") from wip/flo/refactor-includes,
+> > > which I applied for testing.
+> >=20
+> > Feel free to integrate that patch into your series already.
+>=20
+> OK, I'll include it in v3.
+>=20
+> > Could you please share the exact build configuration (./configure
+> > arguments) and glibc version that you are using?
+> >=20
+> > I want to learn if the missing includes are related to the glibc versio=
+n
+> > or not. Should be easy to figure out. I want to make sure the ongoing
+> > refactoring doesn't introduce any regression.
+>=20
+> Buildroot runs (apart from the usual --host/--prefix/... options):
+>=20
+>   ./configure --with-core=3Dmercury --enable-smp --disable-registry \
+>       --enable-testsuite --includedir=3D/usr/include/xenomai/
 
-> Hi Philippe,
->
-> while cleaning up my todo list I came along the following thread:
->
-> https://lore.kernel.org/xenomai/1207-6aed9780-55-3e404bc0@80379430/T/#t
->
+Thanks! Just wondering if mercury is really (still) used. At least from
+my perspective I/we did not care much about this in the recent past.
 
-Mm, this one slipped through the cracks too.
+>=20
+> and only "-O2 -D_FILE_OFFSET_BITS=3D64 -D_FORTIFY_SOURCE=3D1" in CFLAGS.
+>=20
+> To answer the glibc question, I built next plus 454ae865 outside of
+> Buildroot with these options, plain "-O2" and "make -k", so that all
+> errors show up:
+>=20
+>   aarch64, glibc 2.24, GCC 6
+>   armv7, glibc 2.44, GCC 16
+>   armv5, uClibc-ng 1.0.59, GCC 15
+>   x86_64 host, glibc 2.35, GCC 11
 
-> Seems that you handled that with=C2=A0
->
-> 5c39a0e4f186 ("stop_machine: irq_pipeline: preserve hard irq state in loc=
-al stop context")
->
-> already (which sneaked in within the last days).
->
-> Meanwhile, I would have migrated to local_irq_{save,restore}_full(),
-> mainly because we touch the code already and it saves us one long at the
-> stack.
->
-> That should also work, no?
->
+Thanks for that matrix.
 
-This would be equivalent, however the _full() variants are
-stage-adaptive, so we'd have a couple of useless conditional branches
-checking for oob context although the stop_machine trampoline always
-runs in-band.
+- All, especially armv5, uClibc-ng 1.0.59, GCC 15
+What is the situation regarding time64_t in this scenario? Is that
+properly handled? (relevant mapping, libc macros, ...)
 
---=20
-Philippe.
+- All:
+We mainly test and build for the current Debian releases, with default
+compiler/toolchain versions.
+
+If you need more than that, we have to make sure that we build and test
+against those versions as well. At least some build tests should be
+added. Otherwise, we will most likely break it again.
+
+Will you look into that?
+
+I'm normally ahead of time and try to compile with recent gcc as soon as
+they are released. Older versions run out of scope at the moment.
+
+>=20
+> The missing includes are not related to the C library. Every toolchain
+> fails on the same lines:
+>=20
+>   lib/boilerplate/setup.c: mlockall, MCL_CURRENT, MCL_FUTURE
+>   lib/copperplate/internal.c: __NR_tkill
+>   alchemytests.c: fprintf, stderr
+>   alchemytests task-2.c: compiler_barrier
+>   gpiobench.c: va_start, va_end (with uClibc also va_list)
+>=20
+> The only one that depends on the toolchain is bool. It is missing with
+> GCC 6 and GCC 11 (in event-1.c, mq-2.c, task-11.c and task-2.c), but
+> not with GCC 15 and 16, which default to C23, where bool is a keyword.
+>=20
+> With the v2 series on top, the GCC 6 and GCC 11 builds complete
+> without errors.
+>=20
+> Regards,
+> Yegor
