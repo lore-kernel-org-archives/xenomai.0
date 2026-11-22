@@ -1,15 +1,15 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.69.37
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.66.54
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795280662;
-	b=bXs1DDiGkrd4k8glW3aEeO2mX8CcbOQMbBI1U9XP39aNdwney4AEWIrmKu0C71mB3RGu
-	 VTTVtT1YEZTJZkdmS9xv7MiMlfD81J0v+DJMAafpdoKwf8nRBadpjPS8ysanJF93n8i9+
-	 3AJYVMrZXdFD+bC/DRxGUgQLf0uJIxTOGxLOyjH0cwzm+1Ttke5UuUyNBrZ16vavwN4fp
-	 UUbSulC/bxibe7TzLjnGM21zq1H13YxGU69m5ER2w414TOU4R8xNkJ6O/LDbLyhEoeKj+
-	 AnEvZIKOSUykuzQX/awsdLB+EEyqDGk4rRdEGUbjYbDBi8/7TutyIRbnAno/ZoN7INg==
+	t=1795340270;
+	b=tABAGzrwUurml8kuFyiX7ewLpa5dv30Fvh9aWhfhjB13VxI5bQfdP7vUEFBiLkPfCnSa
+	 KyOptIcaN9akU+U7IIK0Z7lMSxxWuOWUTGmoFutKImDttWkSXbBzps64T5Z28jVmj2ilw
+	 kobd+qKs5DcrKJgkkWw/a1tq5Aa11RnZah6x4U9HEm9RxDBkFTsBr4gC8GVst/peLVRYm
+	 Asmo9vMyzXGSmosGWEHU1R62i5OcROH98rqv+MUhAVaQL95mEfsVkmSUSZHxgoC5pWLd5
+	 yhjkw7Bej5HNQzPt+4kj7PEN7BzaGaG5JX60YeU4vCwzTAlQIF8mFB0iQcWPVxx3crw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795280662;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795340270;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:From:Subject:To:Cc:References:Content-Language:In-Reply-To:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
 	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
 	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
 	 X-MS-Office365-Filtering-Correlation-Id:
@@ -26,72 +26,70 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=xRIpxQCbAltKz8bsPi6CTakWW7p3N1+lABTClTyvJAA=;
-	b=b0jEToilaYPYnGA2ocXBcbxVTwQAzohiSDNLKFCaBhvYuRH4/TB0IExb9qTkG+J5/Lp+
-	 ChSV7PTfXRt707Y9Kyw4VCkkSxk7eFoq+TCf6BrZAlDz8D9yWCeuOZ5KmP8HcKMjHzLac
-	 v5ZiWeFYxN3hBOg73LQcdViN5Sq0TrrdGQPVE516rE7jXFBYV637q9oSGF8i7pRCCiRXa
-	 rVyAerEFLkfKKLdWnIouQ3VldDynJipktmKK6UvFQV9NSTQHVcRpuukhzG/cnT4c85CZm
-	 1Y+bkVztPVjyLApAtOL29sbCdyawBCAs4F0Xkw8KdY0ASDOxTJhcFV4TCipXQR8So6Q==
+	bh=SANYw3d2LmVUWqZIK8xq7Co9wWdMlvNWQ8aOTlXMHqs=;
+	b=V56hUlQ7LPnSNA75FTqLKPhNnJ7/8Mmb/LjOX6gxrn9JJM3GI1rGCL6LtkayRJvG007X
+	 drovoWrGiEnzRumDY1nWvUg78DXi7h2GY6zDdlRjWkncyIl5QFSXU2l6aF2piM/jjY7R6
+	 5Gh5eylFRMKnoB1sxgtDYUUfG3CwdSDshL5l+PQ4L1Zp6LT3H0uwnIqAoNuxqGZRb5Qoo
+	 EduN3RPlWkelxZ0Imf6p76YoY5aIjqqGt7Wks1Qj+wIGS0oLOhmfJ91yuWYeWjXRb22Ej
+	 S/JIPavZY5O5er2fr2jIDehFNIV27q5BYwUnXpNxebpMM1y3PIHMazc1NIZnSlCpgtQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=siemens.com;
 	spf=pass smtp.mailfrom=siemens.com;
-	dkim=pass header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=W5gdUeBF;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.69.37
-Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010037.outbound.protection.outlook.com [52.101.69.37])
+	dkim=pass header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=FYaxOVZP;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.66.54
+Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11012054.outbound.protection.outlook.com [52.101.66.54])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46292606A320
-	for <xenomai@lists.linux.dev>; Sat, 21 Nov 2026 17:04:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 46292606A320
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3578F606A33D
+	for <xenomai@lists.linux.dev>; Sun, 22 Nov 2026 09:37:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 3578F606A33D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=W5gdUeBF
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=FYaxOVZP
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=n8l/bCJJhuKRdYRM+UguSRKMEvPs5AlivrAlHtIV/wTQsoMINn+W8huGkMn8iOQT9Ven9xE49jcMESeGgsEfMRC/9/SseHINPVLUnKsnYvGJwqCdKN0IlrxkVCRnRF1qHWGEpNyn0mZnBn06fLGKitvoc/MraOHKJo2nYugjnt9TcxQc/2Igu787ZT9x5hQbb1fU/9CdTve0if9megvkS9KAeJlc/nNCHToiZwh720qPTRK8tM8iSQ6/ICZJoMKXvg9fnhW8/YfONvGF6c+T6f/wciSlilcrrO1p8rzlxNDvWg8Sn07OzB5SprrKd9TCrblFNCrUZjQv0TyK4xtUbA==
+ b=Iey6A50AQyjmU9/b5LEA7nDBzph3qVF6IJfxmtNE5l2bLuOcD8hJ078/YmXaMedZJTu1UIFD+7OgDrV4XplFilDuppULJBcJAVU0ieBPZ0n/lEV3TGW5D7IQu1o2F9saZNPVE0ixGI9ygpFamG85z7mH0UTBcOi17PEpqOgt7904cdhHrj8/037cUqIZjNaDibKZAxl+ts8lnPKuCNHvClpwMlfggrXT9Kan0bX2nQFkSIgAuIua9onye5Cga0uiKoVfIrAPI73um5qejecEmrkqnjwnbwDpm2kOFLcuDWOZ1d1JSX5/uPtobcJz+Pcet5i3dxOGaLY0FKIT1AceJw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=xRIpxQCbAltKz8bsPi6CTakWW7p3N1+lABTClTyvJAA=;
- b=TjcLbJg6EckZX5wC0HIfUfOVAVis+s/+JwtEu7sxDHz2QicC4GMKbLV5uFV0DW5Ze/tUSc+du5e0Ftd98bO5PD3BsIrmf9po9K9FD3q+VrTtRmjF7EOuC2JVtGjnfh7Vvak5wyA7SdVIO/jB6fyt80NpOkFJMknnmV+S8m0e+wOomVwnry+F5lXrS02Yp4yKQs9DoZepyMf6cuRu3/CIyt1tsMJ6aklIyK9flmrzlykKCMKXs7Lr6jXdu3qKn9LQ0djL8tokjgDuyFkN97LCCSqgdpgQuR+sGSz52j3xF7cLkXVaUT90ikdLEbugA1Rl9IbUcURRXgkAPvTGbiStKQ==
+ bh=SANYw3d2LmVUWqZIK8xq7Co9wWdMlvNWQ8aOTlXMHqs=;
+ b=SFsWkQWMgJkVuvO/3Ahe5+JIEx/C0zCtVgOiABIG0wUhRL4dEOpVgrT+5+GQbSMHNW3S4LnOUPCxsIN76utJAKqN7516oFJWmXvidMdw9GS/H4kqwLsQR4HomuAQOonFX7xjOj7JQ0xJl63fl3lRz+ycXUfJln+s4ztWk5j35M6Go5rduc17weJJUxoFJKFJDUTgjCg6WPs/VL3Qk/EpGIIPI5qlgOhA3Rjq/P3XUxkXxOpueokJ6tIs2Es6yuT7qauRGlhWrf3n8/6dpkJcn0o5fx0SGgQcn6eJb+/fHbgwpBFq8vCpyWZ8oFD+3bVZ1kIYOu7FHJC0lihd2XYXSg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xRIpxQCbAltKz8bsPi6CTakWW7p3N1+lABTClTyvJAA=;
- b=W5gdUeBFOOQ0Q93NMDmUnDPEexAr3KlghOGYLBAlg4PrgyZEbukhlnHSKzyQT7/Euk3yx3YvpL9eisRTA8NjdEORiCnP7dNu/vu44CkYjkz6SRWHbweOtR7VJNee93OON56aW6MW+3sRUvouKPzaoYvUFGIFpMNURpDRJ2QKuflJmARfguYtsfJUJetmyAoC39xDkugxgiY6BU+JEQxJ/s7t9eNRnsi7zJP5hPfgxoP/VwlSoSAOXxaHSLTnCeFuapgrQb9c99cx/LjAUWz9HmEhlrEvnTCqdnfJqMPoMRwvtrnFeLAbQqb4pFJyd4ijeccs1gOSFzPUazyW1EfDJA==
+ bh=SANYw3d2LmVUWqZIK8xq7Co9wWdMlvNWQ8aOTlXMHqs=;
+ b=FYaxOVZPymLTm2leApYAhXu7b3hjyt6hWmuGP/KSsB5hWQPw95VYq50T0nFBH1/sx1o9LHM6MbiiIP71t1WCWE3DyqSk1adhIAw6BFJiJICFHP/KL+GTtffgTIm9Rrl1wzDZ+92M39FD+DvNMQGmXy+aPn2E1pqDh3wiq4UmCh1tsPwRrm7W8UQNV1WgoIk3oFwQlu3zxjwqGCPVVTezOqY6C3FAWo8cYha69cTqUejuxB+TFVg8zWrIRemqcs0+vwdWJke6g56jcwMomAg4JEoMcPIiPaqa58/Wjh7IfU+J6K93ZsPffmzf8XQkRsPO5CC6vTq1o2zkJiZzncjKRw==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:3dd::5)
- by AS2PR10MB7024.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:598::13) with
+ by AS2PR10MB6614.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:55d::6) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.1; Sat, 21 Nov
- 2026 17:04:18 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.4; Sun, 22 Nov
+ 2026 09:37:47 +0000
 Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::5f49:b0e9:d295:22d8]) by AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::5f49:b0e9:d295:22d8%6]) with mapi id 15.21.0662.001; Sat, 21 Nov 2026
- 17:04:18 +0000
-Message-ID: <4f118759-234c-4ed1-afe2-fbefe849e369@siemens.com>
-Date: Sat, 21 Nov 2026 18:04:39 +0100
+ ([fe80::5f49:b0e9:d295:22d8%6]) with mapi id 15.21.0662.001; Sun, 22 Nov 2026
+ 09:37:47 +0000
+Message-ID: <e20f3719-de64-4124-a974-51b500254620@siemens.com>
+Date: Sun, 22 Nov 2026 10:38:08 +0100
 User-Agent: Mozilla Thunderbird
-From: Tobias Schaffner <tobias.schaffner@siemens.com>
-Subject: Re: [RFC][PATCH] smokey: Add traps test for trap routing of primary
- mode threads
-To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@lists.linux.dev>
-Cc: Florian Bezdeka <florian.bezdeka@siemens.com>,
- Philippe Gerum <rpm@xenomai.org>
-References: <31921289-e2ce-4370-bb21-97d66de8e566@siemens.com>
- <37fbdf8e-9116-4b36-840a-612d49fc7f55@siemens.com>
- <e78f2129-6875-4b5e-87c7-088950b69785@siemens.com>
+Subject: Re: [RFC PATCH dovetail 2/7] dovetail: trace stage switches
+To: Jan Kiszka <jan.kiszka@siemens.com>, xenomai@lists.linux.dev
+Cc: rpm@xenomai.org
+References: <20261110180847.633167-1-tobias.schaffner@siemens.com>
+ <20261110180847.633167-3-tobias.schaffner@siemens.com>
+ <4c0e980d-32d8-4b2a-b369-ecfb6f190f9e@siemens.com>
 Content-Language: en-US
-In-Reply-To: <e78f2129-6875-4b5e-87c7-088950b69785@siemens.com>
+From: Tobias Schaffner <tobias.schaffner@siemens.com>
+In-Reply-To: <4c0e980d-32d8-4b2a-b369-ecfb6f190f9e@siemens.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: FR4P281CA0064.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:ce::16) To AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: FR4P281CA0040.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:c7::20) To AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:3dd::5)
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -103,211 +101,200 @@ List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|AS2PR10MB7024:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3fe6f785-dad3-4b15-42fb-08df47f17aa9
+X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|AS2PR10MB6614:EE_
+X-MS-Office365-Filtering-Correlation-Id: 9e75a20b-01ac-4326-3461-08df487c447a
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|1800799024|10070799003|376014|23010399003|11063799006|261022075727099003|4143699003|56012099006|261022105027099003|261022113327099003|261022115727099003|10067099003|261026140227099003|261021121427099003|261021130227099003|261021123027099003|261028144727099003|261026121527099003|261102123227099003|261009223027099003|18002099003|55112099003|22082099003|6133799003|3023799007;
+	BCL:0;ARA:13230040|366016|1800799024|376014|10070799003|23010399003|10067099003|4143699003|11063799006|56012099006|261021135927099003|261021121427099003|261022105027099003|261022075727099003|261009223027099003|261026121527099003|261028144727099003|261026140227099003|261102123227099003|55112099003|22082099003|18002099003;
 X-Microsoft-Antispam-Message-Info:
-	X8+wwL14JJLFRK6Uno/LI6ESKIDpxsjavaa3GdMK+lYQmSJySgEWqeK3Izfz3IlC0T3+pyCP58ODmJThBV12HQiJL3B2MG/LAPA2zyt0uhTogmt7i8RHNZikaAn4n4DWEx/PUGyz8Q/c6LXsubT0NXPPfPDDdjGqZa5fcZc/PWaqu/t3YBQkw1bIhaqXTaZZWESuoOf8TvO57dmaisQxyPp79Lo5dYnoX2LjnwgmUQewVUywWcG5CYJB2uU1MHNFlsrFwhji0EiPEcvO0eHcpemTQ6ZbKl0MFpp0zI8FrfEcKe+2/bfy6uiJVMmYadMkQmC79QwAUdZOIRgLzqlWiyXKDfSEn+hz7ke5NhUeWIvUa0JYxv7oqVl4voAbg8Yec3UrtrGStt74FtHKQYNAbINJNNAq3TQrjpGSPUDsJtXryc+9df/DtTpOjB8G4rz5QkzdSDzRjff5Kz/0pOdI54ZS1Yaw3LRUINYor5IrCJImCvZd+7D9Zq2Im9vCEYQMuy21+gihx4pMe9LyW4efrWyLL4rlOp9w6kK/KhinkVPOzpnypTbI2h6pk0HYas45Oyt/WQjr8zKcF6geMiS6ui47GJUhU8K7G0U9CK3en1oC+hkU0AtxonEgFyGQNcKL0BGl2EpTnbLp/LWhIf2k8SBCJP86MOCVHIDWZdOi5cA=
+	DMHVmhY8yJITZlzU26MQY0dH+VW/QVTaZlui6udKqYNjGB4eG/BLUkLzUh/X6RyOOwlbeOVG9G/7HukqYLzqAnnokowNqpWwdVhnhy3QhMIDMHWVxWy04eMtFEI0U1k3ZfjykgliaHSP5+rCW12qJexuP22t4T9xDSXpgLSf0oWshXLHVjjwKumXppq+VezhYv2CsgHCqD64bYqvptWYq4u8+V5Oxc78vUOF+GkPhzDawbQ60TPFQzuMGScEfKOvM943S2TiVfuqAxeB5/XKYf322afah3sZcHoXIGvzLe5mo7hGLHjGF+Z7Xi9PBkLmD+HVEUvMgdJL9zir4BOF+3pgn9qt1CP5PGLM8ghk+cG3Hkq9+s6fYf272fBzPxRivrSIg3UOI+bMSfebhqnNSozLLQFuRDF29in7yVMjeXfFaJYZdYpJhSivOG4WrSC+OH/HX+GRnMXFs309FuG9vHlfsmHDAGqDihqdiEc7L02uCw5R5EEym6Tnil9yvepnw/Q1BB/B3W13kz1FhsYlEpNJRQaOWpv42N9t2YesXolSXNogNg5moyZgRrwlt3ZatNuV6g16AifpZVodsaDXNSNPsyn5b9pbnWX+mVDSZmLBF4lcsMZilOp2leaLSeUhiPtb84LFU/UO0AWO6YA8Zizdrqm5rPlfbkSSWjg/EW0=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(10070799003)(376014)(23010399003)(11063799006)(261022075727099003)(4143699003)(56012099006)(261022105027099003)(261022113327099003)(261022115727099003)(10067099003)(261026140227099003)(261021121427099003)(261021130227099003)(261021123027099003)(261028144727099003)(261026121527099003)(261102123227099003)(261009223027099003)(18002099003)(55112099003)(22082099003)(6133799003)(3023799007);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(376014)(10070799003)(23010399003)(10067099003)(4143699003)(11063799006)(56012099006)(261021135927099003)(261021121427099003)(261022105027099003)(261022075727099003)(261009223027099003)(261026121527099003)(261028144727099003)(261026140227099003)(261102123227099003)(55112099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?OHAzcUQ4U3JkeTExc0Q3b3E4ZE1IUDI1TE5jQmVBMHNXNkFkOWEzcXpIY2hy?=
- =?utf-8?B?RXhOVlM2UnIyU0I4YmxMQnVhZi9VbWtFNDZ2NzJtT3ljZGViWWI2d2hyK2Fm?=
- =?utf-8?B?MTJnWWoyWVFCSFljK3UrVDlidE8rbXRZTk9uTzIwRTNmUFFnN09xV1JhTDdJ?=
- =?utf-8?B?QXhCWEwvZ0JWY3IvdTJabWUzVm9TNitMWUlFN1ZvNGpPN00rRGVQZndLTTFZ?=
- =?utf-8?B?V2c1ZmRPY016TUlFdmowWmtvaVh1OGlhQkh0QjEwaHZRNmhoMHorVHg1Y3VB?=
- =?utf-8?B?VktjaVc4ckd0UXBGdWF1dG5FQWZqWEhnY2RJejdUTklNZG9NZkwzTHdERy9R?=
- =?utf-8?B?RmpPczl5bzZVNmFSQjJ2WnI5M0JoNENmNUJEa0JSbWRqUlBUb1M2R0RWalJQ?=
- =?utf-8?B?cmpSTk40OGFsOEd6dG4zdElwRGtrYjZXYzhLOHc0cnRoS0pvWWg3L0ZWcXYy?=
- =?utf-8?B?NXAwSUg3My9ZZHRNM0g5V1gvc2crcDlQWjMwOUlBMmc4UUEzRXBSUEc4N2ta?=
- =?utf-8?B?cnRKVUZubWRWY2tlTEljalpneXBuOHJybVV5cnU1SVllNFBuRDU5Uk55REpG?=
- =?utf-8?B?aTZTdUFZcHRJRHJPRDhPNWtJdnIvQ0N4eFF5RzU2WE5COGJxYnhGUlVYcHFV?=
- =?utf-8?B?YitNTFZGREV2TXZHMDhRV3hpUGhhNmZRT1Y5bmdrSTFTR1c1cmJrODlFTWFa?=
- =?utf-8?B?L0pTRFg0YzJJQVpRUWNLd0t4Z0VEd1g0NGZCZ0ZwMlU0ZFpkcVRXYTNYSnpi?=
- =?utf-8?B?K3dmVmpXMWFvc011TlJ4bjlKMHg4djlSWUUzazgwUnBNb3lFV1AvbzhPZmlD?=
- =?utf-8?B?MUdnclRIY2hUdzJ4a2gxaGEvajhlWEc0MEV1MG5GS0NVTkJOQkMvU20vakJp?=
- =?utf-8?B?czYxbHFQSkVJOVBzMEE0TmNPdmtnNXR2TWFPU0ZadEJ2eENkNzMwQU5yMGhW?=
- =?utf-8?B?NzVHUWpTT2N0L1lNVlRaajQwQ3h2OEs2enZWWFNkVklLMjJYRU80OTNBQ0Fz?=
- =?utf-8?B?TXNoS0NvUll3TlV5ZXpHam1abTYxUW02RzFaaVBKT3lYU2czSzh1Q3EyR2Vw?=
- =?utf-8?B?dmZkT3AvZUlBcnBqRlpsRU96QitvZ2VQSTVzV0hhYVJ6NGxkNGR0ek0zM01H?=
- =?utf-8?B?TTBoOHlWQkttL3VvY29vay8rKzBGa2VPS2VaMytNWVB5R3RTL0txV2NuZkNl?=
- =?utf-8?B?ejUwNE1Dc0FvMzJmaEZaS0U4MHR4QVNRMzlhZ0IrNXlBbUU1ZTBycm8rZVBq?=
- =?utf-8?B?R05BOFUyTUgvQTk1TDk4Mk5KcEl0S2tsdERjelh0bXJSZkJabVdmaVl3OGVi?=
- =?utf-8?B?UHlwQUMwTzFYVXgzT044SG4xSCsxaUZBbC9CMGRZeW52ZWZwUnFrT3d0K3hx?=
- =?utf-8?B?aXdqMmRCMUhSb0VFS2t3Zi83MEU2YW9RVkdOMFpMMk84MHdBQWZnMlljUmJE?=
- =?utf-8?B?OWpPTXh5dWQ1dEtiMlVwcFcxY0RRQUpkTFFObWJwUmhCRXJRRkNkS21yVEVC?=
- =?utf-8?B?UG5kOTBYeitvbnQvbEVpM3FUOHhIUGNpOHV3aEtkMmZUT01sQkxZK2VDMFEw?=
- =?utf-8?B?eHFhSSt0SVpCYVpTOTFXNEN1T0RqSGJYYkx3c0xnaVdtVU44UTB0YWdOQkQ0?=
- =?utf-8?B?dG1UUEhrZjVZejFDTWdMVGNHaXVRMUhHd2pjaHJiNnRqbWJYZmJ6NmJEc1VJ?=
- =?utf-8?B?czVkUmw0THk3SGhzNmh5STU5MG5pSzRhTkNzcmpiNEFCN05EVjhHOGVFaTVP?=
- =?utf-8?B?eS9zL3d2TXNYSWhiSEdWdFMzSDVyRkdrQzZOcWhVclAwanBoK1J5SGtVMGxl?=
- =?utf-8?B?ZHVtOE4zVkg3SUo1MWYzaWJ0RUtjcWdLK0VkTkRRTHZyNk9kVGpWSytQc29N?=
- =?utf-8?B?b051TEpHdm5PaDFTci9LS05LWUtGTEFJUXR5R2RsanV5dlk2VjNMeHVRRFBo?=
- =?utf-8?B?TXBxRkdta1NNeWRxMitqTzNtYWdOZTBMaWNVSGpKRzhWclk5eXV3NjdTQlA4?=
- =?utf-8?B?cjJXbTRENVZxWUVoWHc5Mk85aGdGSi9qcWdlRWtsTVFyTTNZM2FsSW5XdmZB?=
- =?utf-8?B?M3FHT1A5NWhjV2tZRklFV1UvdUxoOGgvZzY5QXA4UnlMN3pZSUI2eEJLaWxo?=
- =?utf-8?B?NEZFMktnblFUbXJyN1BsaGpWWi9CZ3BKbFhzeS9sTnNRajE2cUNoZ1gvMUhM?=
- =?utf-8?B?M3B0eCszcEdwcUVjeDd5UmVDMXFISlFrNTU0ZHhnc2h0dDdHbVdKVlYwRGpn?=
- =?utf-8?B?TTFmeFA2ZEFXemVveXp2bW1JY0lTREg3aVhkZi9GZENnbXR5Wm5UcjVCcHhx?=
- =?utf-8?B?RjRhSmZYZGFxWnRjOUZLWkYwNXZPNUFycWlsUE5mNTJ3U1RZL1VISFNJQ3Jz?=
- =?utf-8?Q?jZri0fKqciQGaFWpq+9UU7seoGcrASAdX+UzR49nWJpPB?=
-X-MS-Exchange-AntiSpam-MessageData-1: B6KmmEAx3OQImZgIqimArKidv/ysvKLD/YY=
+	=?utf-8?B?Ykh3VjVrOHMwR3hPbklzV1cxTmRlL25tOUNROVNEdE1aY1FsWVRlN3JkUjlV?=
+ =?utf-8?B?SXhsK0c1UmQxREhGU1BTaXNMdUp0SldIUldqOGlyS1NWbExGMUpXQktRMlJw?=
+ =?utf-8?B?RUlpc3ZOSmNkNTF6clFpS1d5U0cyUmpzV0FQS1hwVW5jSGdCMGl3Q3lTdmlP?=
+ =?utf-8?B?a2RmNHY3bDc5RTZGOEhIbTlxRE0vT2l5UWhWUW42aTdmS3c3WE9XOXdVUEl1?=
+ =?utf-8?B?L3NjT1g0SE9mNmxtK1hjOGV3SzVhQnM2UmdCK1pJYW1SWUdTMDAweEJJc2lH?=
+ =?utf-8?B?eDNNZnZTaXlhQ2ZZQjFHeVA1S25LazRQV1pZWmtCcElKWDhMQnMvSnhVY1BS?=
+ =?utf-8?B?emR2L2pKWHlnSjJ5MVRHZmdsa3FzTVVVU1N5RlRZUHFjVjB5bVRhSDJ5QkZx?=
+ =?utf-8?B?WjNmRHpzbHg0ZFliQ1NGcHVhWGNCRDU0MzBxR2ZORjZMNm1RZVhpalRpRTdz?=
+ =?utf-8?B?QjJxTERzMWJWQUtGYU9xSW9GWmg4TU85N0pTeVhyZTZHL21oOXVRcGJWeWlr?=
+ =?utf-8?B?V2ZWY05Gc3ZtaGo2QkxydXdzblJMWEZrVmkyTDBZaXl6Rm9rUTJWN1g1cmhG?=
+ =?utf-8?B?eHpuMGUvdTk0SHRuaGdlN3lJcTY0WkNUVFpyMEVuQ1RmenpxWG53Y2NkaUM2?=
+ =?utf-8?B?ZWNPdXdnelkrajVCUmw2c1duZTVnNkhQcHlhbzdMVWljajlFTzgxcFdaWnQz?=
+ =?utf-8?B?ZXErUVE5RlByQUlvODA1VVNUSkFNRHZPcG1XM3lqVlB2eXVXcmhlR0hLcHYr?=
+ =?utf-8?B?Z3VyaG92SDZrVHM1MEhEYjNaaVo1ejV0alV5emN5d1BrWU85V29ZWGdVanZj?=
+ =?utf-8?B?QzF6SC9EeVhQbmJLWEFUbFhjWEtVWjJCdlVKTDRtazlTeHhsOGdXT2ROa1lJ?=
+ =?utf-8?B?dU5aeFpsRE1hTTRzVjU1MGlzK2p4TktUM0lzQWM4ckJaZ2ZwTWNDTjFlVjZY?=
+ =?utf-8?B?SzNtTVVGamNIcUNqOEVTdlY2QVZReXAzUFJ3OWpSSzhFTGtEdjR6ZVZCL2JB?=
+ =?utf-8?B?UkIyQ1hsbmJNZXhRSS9XR21TeTJ6NlVZUDEwVnZtZFFaMktRNTJFNlhNbHBS?=
+ =?utf-8?B?OWFCdHQyUnpsR1R2c0kxM3RWU1M0VUVLUElOU1R3cU5oN2dQMGJTbWZnQ0V6?=
+ =?utf-8?B?N2Y2SzlHZnlySHkwcjAyOXIrWnJUeWRSbG1neTkxM0prWmZvQlRUV1BIajRQ?=
+ =?utf-8?B?Y1N2SkZBU1c3ckdPSkFpWXNORjRoa0s1cVJNay93cGxtS0NCSHdURDdXaXlK?=
+ =?utf-8?B?Y1gwYjhZb2tLa0ZYbW1PM2xKS2ZFblUxSWlqU29DS2pDUWVjaG9ERVN1aGZs?=
+ =?utf-8?B?WmxTZSt3bUlDSC84ekt6NWRCVExEYlNpTS8yWEdyZDB3N2JBT0VXWTNwQ2RH?=
+ =?utf-8?B?eWc2UnhldVE2UDVwVlpGc0gzeTcxUmZZdzM4aC93VlljKzdTTGNFWWNVQzRz?=
+ =?utf-8?B?Nmo0ZlQzNGdBU24walVleXFJVXllOVMxbzlLSjZmZTBGZjVTMlR6bWd4eVFm?=
+ =?utf-8?B?d09ENUp6elJEVmNzQnhmMFlCRkFreU9qV0lJeXgvT0xWY3JFS2svWFlkNUJD?=
+ =?utf-8?B?NmhOTHlwK3UwUS9lMUZwQ1BSc0xPcHhEUU04a2JjbW1GZENtQTZGTWxMTmxC?=
+ =?utf-8?B?L2l6YjhmOEEvWHRTWTZXd3RQb3VHa2dpMGdpTnRCNWRvUTRnaGxrajN6d0Vy?=
+ =?utf-8?B?OWNEMDVOeDRSd3IwTG5RaEJ2VFNRRUxQTlBlRko1eXM1VTZkTEtXYXN1aEJK?=
+ =?utf-8?B?REVRaDFMWFJXZjRvNHFHbUY5S0dSc0s4UTFkMURlWmdRVnBta0dNT2w4S25I?=
+ =?utf-8?B?QjJPZWlUakZHNUVrTHpSL2NQRGdBaUpxRGJVNFUyVGRFRUp5UFZyNmhmVUp2?=
+ =?utf-8?B?dEtNd2djclUvbllyZnVaakZFbXlFbXdYa2dORks3Y3AzMTJxRVZtSW53eE5O?=
+ =?utf-8?B?QlZhU1VPNzJZR2ZOSk9zK3hBV1BDbDFjUFNoUVNab0EwcTRhck85a05UbXJv?=
+ =?utf-8?B?MFZjVVZzUWVjWmZGRHlSZjg3Qlc0cElhNFc5d0NQMTQ4ZXpQYW5pckRnYk5K?=
+ =?utf-8?B?VnBLRC95VmpmVDZuaXpmRWdCdWQvMUFHZ0NpaUJvMWQzejFrVGxSN0VKbjZq?=
+ =?utf-8?B?cEpLNjlRTEMwRWRmeGZwQ01UajZ0a0dXQnJ3bFpqOTRLYk5EQXluS1ZJa3lC?=
+ =?utf-8?B?MFo3QkJKcy9UZ0dPZVdLSDNGaGI1RGVoZUErYXJWUVYrQ2ZVNlFXRDllclMz?=
+ =?utf-8?B?QzdJdWpuQXdOdU5XWFNpNUp6THFyZWFwK29zK3N6TUlPRHUvbThROUtDZWlG?=
+ =?utf-8?B?Y3RveER2RTR0dVlMOU1TMlpueWZTOWIwLzZkZVhIc0N6OHRYNmFqZWxpbENj?=
+ =?utf-8?Q?ePiDD0z3mznoiMe7TlXkXBJnvdLjD4Ycj0rsQAGt4moeR?=
+X-MS-Exchange-AntiSpam-MessageData-1: Hux6dOJ0bPeYwf4+iYxFu6+lvgoPmjpH99o=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3fe6f785-dad3-4b15-42fb-08df47f17aa9
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9e75a20b-01ac-4326-3461-08df487c447a
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Nov 2026 17:04:18.1741
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Nov 2026 09:37:47.2987
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FCJsWDewP5YWL8lx58KFcNjjg8eu0GGxRCCfWq26RfDskzl5jcC/c0AM7XIh3hTP7i7uXnCAvVSM2DkdYtyHrFbc14er291+sAfZ1D/9Q9U=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS2PR10MB7024
+X-MS-Exchange-CrossTenant-UserPrincipalName: 7Jje7FGqx/qOUFK0ZBZKP5fk6PjILRR1Xq2DB4qyFqgxJ+dQQjeaLROTP7MdgNsstIStLbPWJ1xQ08t/ufhNls7IQ+DqrtUe6HBpP6nFPfU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS2PR10MB6614
 
-On 11/17/26 18:28, Jan Kiszka wrote:
-> On 17.11.26 10:27, Tobias Schaffner wrote:
->> On 11/12/26 18:44, Jan Kiszka wrote:
->>> From: Jan Kiszka <jan.kiszka@siemens.com>
->>>
->>> A thread running in primary mode which takes a synchronous exception must
->>> be reported to the Cobalt core by the Dovetail layer exactly once per
->>> trap, before the in-band kernel applies its fixup. Cobalt then relaxes
->>> the thread, accounts the trap and sends SIGDEBUG_MIGRATE_FAULT when
->>> asked for. Only the page fault flavor of this was covered so far, by
->>> the sigdebug test.
->>>
->>> Add a test which triggers one specific trap per case from a primary mode
->>> thread and checks that the expected in-band fixup happened. Most traps
->>> for x86, arm, and arm64 are covered here. Left out are those that are
->>> practically irrelevant: AC for unaligned accesses on x86 and VFP
->>> exceptions
->>> on ARM. Not yet covered is RISC-V, but it should be easy to add on
->>> top.
->>>
->>> See extensive AI generated explanation at the top of traps.c for more
->>> details.
->>>
->>> This test may become useful for checking future OBB trap reporting by
->>> extending it only slightly.
->>>
->>> Assisted-by: opencode:Fable-5.1/Opus-5.5 Signed-off-by: Jan Kiszka
->>> <jan.kiszka@siemens.com> ---
->>>
->>> I know this is huge. Therefore, it is also something that we likely would
->>> not have done without LLM support - way too much effort for testing
->>> corner cases.
->>>
->>> I went through it, but not in all details. The tests fail when they
->>> are expected to on unfixed kernels, they apparently pass on fixed
->>> one, at least on our CI hardware. "Should be OK"...
->>>
->>> BTW, if we merge this, we implicitly document parts of our so far
->>> unwritten
->>> AI policy ("yes, we take generated code"). I still need to think
->>> about which of the templates out there to use best, then I will propose
->>> one.
+On 11/11/26 08:40, Jan Kiszka wrote:
+> On 10.11.26 19:08, Tobias Schaffner wrote:
+>> Add tracepoints for a task leaving the in-band and the out-of-band stage,
+>> for use by the Dovetail RV monitors.
 >>
->> Hi Jan,
+>> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+>> ---
+>>   include/linux/dovetail.h        |  9 +++++++++
+>>   include/trace/events/dovetail.h | 23 +++++++++++++++++++++++
+>>   kernel/dovetail.c               | 13 +++++++++++++
+>>   kernel/sched/core.c             |  2 ++
+>>   4 files changed, 47 insertions(+)
+>>   create mode 100644 include/trace/events/dovetail.h
 >>
->> Following your input, I spent some time last week on RISC-V trap
->> handling in EVL. To verify the proposed patches, I ended up with a
->> similar trap matrix test generated for EVL.
->>
->> With the number of fixes we can now produce with AI support, I think it
->> is right, and important, to put more time into test infrastructure.
->> I think it makes sense to pin down in more detail how Dovetail and the
->> co-kernels built on top are supposed to behave to make sure this is not
->> changed by AI without us noticing when these tools are trusted more and
->> more.
->>
->> I am asking myself if we want to keep some kind of human readable
->> source of truth that tells us how this is supposed to work. If we start
->> generating both sides and both sides are hard to understand (at least
->> for me, the kernel side still is) I feel like it will be hard to notice
->> if the tools start to slowly change the design.
->>
+>> diff --git a/include/linux/dovetail.h b/include/linux/dovetail.h
+>> index b41ea0f8fc4e..5ab07e69152a 100644
+>> --- a/include/linux/dovetail.h
+>> +++ b/include/linux/dovetail.h
+>> @@ -18,6 +18,7 @@ struct files_struct;
+>>   #include <linux/mm.h>
+>>   #include <linux/thread_info.h>
+>>   #include <linux/irqstage.h>
+>> +#include <linux/tracepoint-defs.h>
+>>   #include <uapi/asm-generic/dovetail.h>
+>>   #include <asm/dovetail.h>
+>>   
+>> @@ -163,8 +164,16 @@ void dovetail_stop_altsched(void);
+>>   
+>>   __must_check int dovetail_leave_inband(void);
+>>   
+>> +DECLARE_TRACEPOINT(dovetail_leave_inband_tp);
+>> +void __trace_dovetail_leave_inband(struct task_struct *p);
+>> +
+>> +DECLARE_TRACEPOINT(dovetail_leave_oob_tp);
+>> +void __trace_dovetail_leave_oob(void);
+>> +
+>>   static inline void dovetail_leave_oob(void)
+>>   {
+>> +	if (tracepoint_enabled(dovetail_leave_oob_tp))
+>> +		__trace_dovetail_leave_oob();
+>>   	clear_thread_local_flags(_TLF_OOB|_TLF_OFFSTAGE);
+>>   	clear_thread_flag(TIF_MAYDAY);
+>>   }
+>> diff --git a/include/trace/events/dovetail.h b/include/trace/events/dovetail.h
+>> new file mode 100644
+>> index 000000000000..785a653252d3
+>> --- /dev/null
+>> +++ b/include/trace/events/dovetail.h
+>> @@ -0,0 +1,23 @@
+>> +/* SPDX-License-Identifier: GPL-2.0 */
+>> +#undef TRACE_SYSTEM
+>> +#define TRACE_SYSTEM dovetail
+>> +
+>> +#if !defined(_TRACE_DOVETAIL_H) || defined(TRACE_HEADER_MULTI_READ)
+>> +#define _TRACE_DOVETAIL_H
+>> +
+>> +#include <linux/tracepoint.h>
+>> +
+>> +struct task_struct;
+>> +
+>> +DECLARE_TRACE(dovetail_leave_inband,
+>> +	TP_PROTO(struct task_struct *p),
+>> +	TP_ARGS(p));
+>> +
+>> +DECLARE_TRACE(dovetail_leave_oob,
+>> +	TP_PROTO(struct task_struct *p),
+>> +	TP_ARGS(p));
+>> +
+>> +#endif /* _TRACE_DOVETAIL_H */
+>> +
+>> +/* This part must be outside protection */
+>> +#include <trace/define_trace.h>
+>> diff --git a/kernel/dovetail.c b/kernel/dovetail.c
+>> index da4016697b67..98892f0a63da 100644
+>> --- a/kernel/dovetail.c
+>> +++ b/kernel/dovetail.c
+>> @@ -12,6 +12,19 @@
+>>   #include <asm/syscall.h>
+>>   #include <uapi/asm-generic/dovetail.h>
+>>   
+>> +#define CREATE_TRACE_POINTS
+>> +#include <trace/events/dovetail.h>
+>> +
+>> +void __trace_dovetail_leave_inband(struct task_struct *p)
+>> +{
+>> +	trace_dovetail_leave_inband_tp(p);
+>> +}
+>> +
+>> +void __trace_dovetail_leave_oob(void)
+>> +{
+>> +	trace_dovetail_leave_oob_tp(current);
+>> +}
+>> +
+>>   static bool dovetail_enabled;
+>>   
+>>   void __weak arch_inband_task_init(struct task_struct *p)
+>> diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+>> index 3ec77a682c4a..b2ad0ab0626c 100644
+>> --- a/kernel/sched/core.c
+>> +++ b/kernel/sched/core.c
+>> @@ -10689,6 +10689,8 @@ int dovetail_leave_inband(void)
+>>   	 */
+>>   	if (likely(__schedule(SM_NONE))) {
+>>   		arch_dovetail_switch_finish(false);
+>> +		if (tracepoint_enabled(dovetail_leave_inband_tp))
+>> +			__trace_dovetail_leave_inband(p);
 > 
-> Good point. I'm currently fairly impressed how much the models
-> understood about the current dovetail architecture by just reading the
-> kernel patches. Maybe they consumed some documents upfront, but
-> definitely not while answering prompts.
+> Why does trace point have to be conditional? Rather unusual.
 > 
-> That said, we more guardrails, also for models that might be cheaper,
-> more sovereign (local open-weight...), but also less smart could be
-> useful. Question remains how to encode things best to have both side
-> understand the same.
-> 
->> In addition, I feel like most of the tests are Dovetail functionality
->> tests and not specific to cobalt/EVL. I think we should at least try to
->> find a way to tackle this with joined forces for cobalt, EVL and what
->> ever other co-kernel using the infrastructure.
-> 
-> Yeah, valid point. Maybe the availability of a POSIX interface for EVL
-> will once allow to write more portable test cases or even share the same
-> code base.
-> 
->>
->> I think that RV can maybe help here. It would allow us to decouple some
->> of the checks from the triggering of the test cases. Triggering could be
->> in the co-kernel projects while most of the verification lives in
->> Dovetail.
->>
->> I created a POC of a more detailed trap monitor paired with a matrix
->> test that solely triggers the traps from the different contexts in
->> cobalt here:
->> https://github.com/TobiasSchaffner/linux/commits/tobsch/trap-monitor-
->> rfc-proposal-nofixes/
->>
->> Asking Opus 5.5 about a comparison to your proposed RFC it tells me:
->> ```
->> Not covered:
->> - SIGDEBUG with SIGDEBUG_MIGRATE_FAULT, exactly once. That's Cobalt's
->>    notification to the application, and we don't check it.
->> - The counters in /proc/xenomai/faults: the right trap +1, all others
->>    unchanged. That's Cobalt's accounting.
->> - The exact mode-switch count (Cobalt's msw statistics).
->>
->> On top of the RFC, it covers (checks no user-space test can see):
->> - the handler level of the unwind, through the stack frame;
->> - irqs off on trap exit;
->> - demotion only from task context;
->> - no IRQ in NMI context;
->> - no sched-out during a kprobe;
->> - the time limit.
->> - more fault cases: read-null, write-ro, write-retry, exec-nx, bus-eof,
->> fresh, fork-write, kernel-fault, kernel-fresh, misaligned.
->> ```
->>
->> The output makes sense cause the POC has no cobalt API specific checks
->> anymore while the monitor adds more kernel internal checks.
->>
->> The hole approach Monitor + Triggering matrix is smaller than your test
->> while the monitor part could be reused. A rendering of the monitor is
->> attached.
->>
->> Maybe you want to consider it or spend some tokens for further analysis
->> if this can be valuable.
->>
-> 
-> "Smaller" triggers me for sure! Would be worth to see the outcome in
-> code. And we may still consider addressing potential gaps on top in the
-> userland. Key is that the userland test orchestrator and stimulus
-> generator and also read back the result of the RV monitor run.
-> 
-> But what might be more challenging: we would have to backport your
-> infrastructure to all kernels we are maintaining. Is that realistic? At
-> least down to 5.10?
-
-Hmm... I did not have this on my radar... The RV subsystem was merged in
-6.0 and the Hybrid Automata that I build on was introduced in 7.1. I
-think that back porting the whole subsystem as well as all the needed
-tracepoints would be a huge lift.
-
 > Jan
+
+Yes this one is technically not needed. We could directly call
+trace_dovetail_leave_inband_tp() instead of using a guarded helper.
+
+Its counterpart __trace_dovetail_leave_oob is a helper that was created
+for the usage of its tracepoint in dovetail.h because calling a
+tracepoint in an .h file is discouraged by the kernel docs.
+
+Guarding the helper with the check if the inner tracepoint is enabled is
+saving us a function call.
+
+I applied the same pattern for trace_dovetail_leave_inband_tp to handle
+both sides in a consistent way but if the result is more confusion maybe
+that's pointless.
+
+>>   		return 0;
+>>   	}
+>>   
+> 
 > 
 
