@@ -1,95 +1,64 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.54
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.136.65.228
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795358095;
-	b=Vd8H9F/xs3jnygW8Sjf0yo6t6ILX6f8eiqmG5sjz3j2KCKvRV6ZlSuDBnsOBDFYvnZwz
-	 0sy7B7g8pn4FnXhPVWi/rt74I7rqAr0pX3IEVsXCgP5GG3zvRBWyQJMoKZFJSv+s1cLrv
-	 Eypt6wbL8fj8+uOMThmXYqZ3meLLN8D5q5V2A2gWFxq0Mg+CsFtgKq99Nswljwl8JUzr+
-	 ux21KXxJSI12rc2AYDps+ahiTZF+wBuvXX4CflZ9Rd/m7s8YnIk8jIdHUPPXSv2ZwN6PF
-	 NDSW9yW9XYDtxIV1rtYZv8QQeB+dYHRhueieQ67uQDbzOJp1D6myf3F3X8Mh0kNxhYw==
+	t=1795359140;
+	b=0OWlM1fCJPIVjFF8WtQDTj1wdlHLOQIKXu2yyK+vv6fUQqxYrhyiOMFfIVkbfInEGLkY
+	 eN8an5IbqI3+kMQx1bj4QgczOO4kxAAPW0fd8ES+Rm2+Ear+8gHnzPGIOUetbr1YKAonH
+	 EDu1Y8nPk27l6r4/+homN4Oz8W93hVdPWmOYhNkVYU6eimTXMTcyDeizQJU8gBwikDB/k
+	 MRo3Txy5dX3Adltuh9ibrpWeMb2sXU1gIVHP0Tu2y47a6xpLtmRJh+iGyxknJ1S9L+CNq
+	 aPaQox2wgryroqf7+yn1LZs+NcU0Rcv8+P9zWkoCSewa9wAappqgHa08eciYG0Pta8Q==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795358095;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding;
-	bh=prs4FsvUZbz9MGKQ7dm+Cs7eH0CojOm/PWBV/EQHPMg=;
-	b=1TQd2x6Iccz9VMEgQ+hCN/PdEu/4WUPmAH9E6BaB0dvAksaWK0LQ7I50iTjcsr6RExIU
-	 /bz39Di0Tt+Mr3vcxpDMNysFTq6+QRo2e4fr9m8xL1EG10glCDmVzVVEod9e53XZfGyxq
-	 eqpR5m1R4czMMmm0zK6ScdFJcHqmlSabGm3ZeZDoAiKz4KSY2XhciZh2vdIyzky9fSnEu
-	 w/lYiP29vxfma0uZuAYNPNkcytuoUj5JSMK4xSddVWyJOf1ooHA2yrj+iDG2efaYqY8YA
-	 pqy8cOssQdI3ng9St3QhNoKKnzkWHTcXdhLrHz1NvHc/ePXm+QjjS203zgE2zaJ4vqQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795359140;
+	h=DMARC-Filter:Received:DKIM-Signature:Message-ID:Subject:From:To:Cc:
+	 Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
+	 MIME-Version:X-Flowmailer-Platform:Feedback-ID;
+	bh=OrA702rOThZFya+I1OSF/6doKC5OovuHLfuEQK7BjFc=;
+	b=d7Z6VD5aWsvPsF564hGIkvlcvoNwz0RsdTvFCRXdFxC84tJv/tfpvFq/HRbH800U9WpE
+	 0DIogSyzLGZwVRIAOjVJUzwd7pZL95YadP/DE82bZswp6YKOjCHeuwmpbyZI/UmV4DGzy
+	 L2b9vshwiYom6qKesk0JHmXJKdpf7Cfq2V5Bg8AFXYCVA5TULiIMydjpm0xodeacRM7hq
+	 EFFpUCS91Ru1WozxbaJY54FRM3RCUFzeDA/YSaPTUtCTrD9ZG2GPRv7YgYIFyIAhsYhRp
+	 4vj7ZWovOCroaOJC8KhPZsrmTTR3cWM2DDePTIvbi0trAO2A51CkkF00N5bdiW9fmlw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=googlemail.com;
-	spf=pass smtp.mailfrom=googlemail.com;
-	dkim=pass header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=eqZZMQ1k;
-	arc=none smtp.remote-ip=209.85.218.54
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=siemens.com;
+	spf=pass smtp.mailfrom=rts-flowmailer.siemens.com;
+	dkim=pass header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=jRZqJRKK;
+	arc=none smtp.remote-ip=185.136.65.228
+Received: from mta-65-228.siemens.flowmailer.net (mta-65-228.siemens.flowmailer.net [185.136.65.228])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5ECFF606A320
-	for <xenomai@lists.linux.dev>; Sun, 22 Nov 2026 14:34:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5ECFF606A320
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=googlemail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=googlemail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60915606A320
+	for <xenomai@lists.linux.dev>; Sun, 22 Nov 2026 14:52:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 60915606A320
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=eqZZMQ1k
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-c4cac7a7d3cso342623066b.3
-        for <xenomai@lists.linux.dev>; Sun, 22 Nov 2026 06:34:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20260707; t=1795358094; x=1795962894; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to:content-type;
-        bh=prs4FsvUZbz9MGKQ7dm+Cs7eH0CojOm/PWBV/EQHPMg=;
-        b=eqZZMQ1k0R5y4a02f4rURdBlkiNj/REkTl8+ANn+TuxYzmcIjhGrz5AE2pp9R5Kb1O
-         wGXMbcR3raTdqPRY3aEvO3iTade7h7Sp5WYL799VRnK/pWcZp/f13fYphl735j3tPw6/
-         BrPMDQeIf/+1sKuyoOMmFyrAAMRayvbc2z+5gAJObjW4uARaWXgd3Eg0GYXyfqH0iXwM
-         /vApkAaIAtqtPqJV/Yiuut2JZ5RN7Q5mtR49LlV1NCiJCtrx0OSz4lgnl92xUnWQxy+V
-         tz9vp1Mp/dg2chcx6epOVCQCyCKrPsm4V06mEcKBlB1OyEDibbnSYDLZZV/EEA9NSLXx
-         6yjg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795358094; x=1795962894;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=prs4FsvUZbz9MGKQ7dm+Cs7eH0CojOm/PWBV/EQHPMg=;
-        b=xO2YjOUfgVJ/yD1AXkeVhi6b+GBF1mQlGWeDAXP+Tn/4qcaGsp86KN3TTH4BO8MCcl
-         xh/zWa8bM3PFh1+TWjntrU+Xq6GgdF0ehUhzhSCW4XRs5UnSE3e4qrFeQvkbsGH959g3
-         XDMFh2MSx+trfu7LwAK7uJV3CofbPwb47W66sBP38pjXVaDSfeEIyaPI1L829ofuLyAB
-         PBe/rW9SRTZ4rH4etdwgmCQGIWLwbo/jD+1ci00i38tTDQ3GQVWW8lO0Kx2rXZWtaT3b
-         g/egqY8OmmHdFXNyDlu9FDLqocNgJBTtBnnEElcsXgsMAiqlR6rgMfrbYFFIMzVa7K80
-         35Kg==
-X-Forwarded-Encrypted: i=1; AL+hErHJoyzF8330UrQf/hPpsaTofk4295qykt5ID3Zu6wTOeVPDfJp0un1ncqpIwu4Am1O4i3e2pkpM@lists.linux.dev
-X-Gm-Message-State: APuU4Z/gK4daIhIGS51ydY/i5cLgVeP8Xvx4NsBZU7ZKy7SmIJwwJ2Ug
-	lqe6Dh0jWolbbCtmOtD6d4ppJjUzKr5qoCcqn6sHc3Mx4OJyW63pjRCn
-X-Gm-Gg: AZFdTZcTFj2CMcgtdK4G+rLlTPdfjNr4FB3kvji1NhZjvyO4hHHPBijrYEiiNIVtw09
-	PmX7QllV/s+Q8y1zftTCOM+6gKAnUAf+OjneyBgTZnEUqtKCAwFVFg39QV4dm/huvVu6X1Hq+7m
-	dFbrRdzkZmsNheZHm02PpilNpR5CK4lHRE7dhWfJdL9KZWemyBPaZJhqW4Bwvh99PlCXi9yAQzn
-	svg71o26ONfgp/vS0LeZkcY+m9usKI3zwGJfyhHHa4WMv5C8t/a1Vp7niw7hUf05foTDlnO4l3s
-	BzbDg49ATZYm4KfEArQiYDA1mkaLMdMUjYXgXGymV11DDfyzLfP17zPuuADj4+EINzJdqzyDcOl
-	5piIM/NqJN2V5tWoGD+xwcPMGKR04f0H3jp/518qHr45komEB7ZMOrwefmZQ33fPFwIw2//ocB2
-	1YMvceu9m6JPAUuKwn5220iztFoPj8XGEVxa4BM+SEW3TaUyE3zE0qQA2kPAX/DOSzITPE70W21
-	T05JWcGROHUK7HzvWkMbwx+EUaOQMBnjTKBwRZBS5YtjEfnrjlmk4AujoYkvhuVE7uj7pUFPYCf
-	SlTZJe/kodYehsJ1MbINxJT+yE3iTjTa90qjjA5lv/eHedYO1gw0ZPPlbsjxwljYHyxDrbIl1sA
-	ClKqG+WSYxVnvV0Ro7DITYmcOFclrEw==
-X-Received: by 2002:a17:906:231a:b0:c42:4750:8d49 with SMTP id a640c23a62f3a-c513aad2400mr507961866b.25.1795358093594;
-        Sun, 22 Nov 2026 06:34:53 -0800 (PST)
-Received: from development2.visionsystems.local (mail.visionsystems.de. [213.209.99.202])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c513ae65965sm323553066b.23.2026.11.22.06.34.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Nov 2026 06:34:52 -0800 (PST)
-From: Yegor Yefremov <yegorslists@googlemail.com>
-To: Florian Bezdeka <florian.bezdeka@siemens.com>
-Cc: Yegor Yefremov <yegorslists@googlemail.com>,
-	xenomai@lists.linux.dev,
-	Jan Kiszka <jan.kiszka@siemens.com>
-Subject: Re: [PATCH v2 0/4] Mercury build fixes
-Date: Sun, 22 Nov 2026 15:34:52 +0100
-Message-Id: <20261122143452.2973777-1-yegorslists@googlemail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <9ce50b6edee8bf79bdb9bccb37decc9418857628.camel@siemens.com>
-References: <20261118140632.1080213-1-yegorslists@googlemail.com> <9222017bd591f01dd92d6cbfd34b90f5e7abe93a.camel@siemens.com> <20261118214521.2292680-1-yegorslists@googlemail.com> <231ed4e64e4210b736a9ef7eb41a9b86abfd5ebe.camel@siemens.com> <20261120214018.3745861-1-yegorslists@googlemail.com> <9ce50b6edee8bf79bdb9bccb37decc9418857628.camel@siemens.com>
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=jRZqJRKK
+Received: by mta-65-228.siemens.flowmailer.net with ESMTPSA id 202611221452097cd924599d0002076f
+        for <xenomai@lists.linux.dev>;
+        Sun, 22 Nov 2026 15:52:10 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=OrA702rOThZFya+I1OSF/6doKC5OovuHLfuEQK7BjFc=;
+ b=jRZqJRKKiGfku9H2Ly8PPSjzl909lHHpySGGQIcGHYgwNwcMUDDEiyf/QFY+Gj+hcGktVR
+ hcFwHgFbb5gGG5LOGSb/2RI8cUNM+QxsUddyGKtbwjhJRQo7ztc8PZodmAdD2Gdx374NQMZA
+ fVcmb/s2go+PQ95fDzUG1B67byNoOPJ+0u6USwAL2f5IZ28FHcAW6WUbXrivO+FU3GVsuukA
+ Mttk8ulWmrZpLwju4+5G9aBEwy6G6Z27/Y7HGODxyqJKEoxhlYrYGd9ZmgjQte3p+V4SmDYQ
+ OtJtXn0mqjakl5Vi198Fk3cTwwVbIDISWKH0tnciCaSG+nY3tWu1FTRQ==;
+Message-ID: <b533b6ad250bf960948765d5829fea34f26b99c3.camel@siemens.com>
+Subject: Re: [RFC][PATCH] smokey: Add traps test for trap routing of primary
+ mode threads
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Tobias Schaffner <tobias.schaffner@siemens.com>, Jan Kiszka
+	 <jan.kiszka@siemens.com>, Xenomai <xenomai@lists.linux.dev>
+Cc: Philippe Gerum <rpm@xenomai.org>
+Date: Sun, 22 Nov 2026 15:52:09 +0100
+In-Reply-To: <4f118759-234c-4ed1-afe2-fbefe849e369@siemens.com>
+References: <31921289-e2ce-4370-bb21-97d66de8e566@siemens.com>
+	 <37fbdf8e-9116-4b36-840a-612d49fc7f55@siemens.com>
+	 <e78f2129-6875-4b5e-87c7-088950b69785@siemens.com>
+	 <4f118759-234c-4ed1-afe2-fbefe849e369@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -99,70 +68,180 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-Hi Florian,
+On Sat, 2026-11-21 at 18:04 +0100, Tobias Schaffner wrote:
+> On 11/17/26 18:28, Jan Kiszka wrote:
+> > On 17.11.26 10:27, Tobias Schaffner wrote:
+> > > On 11/12/26 18:44, Jan Kiszka wrote:
+> > > > From: Jan Kiszka <jan.kiszka@siemens.com>
+> > > >=20
+> > > > A thread running in primary mode which takes a synchronous exceptio=
+n must
+> > > > be reported to the Cobalt core by the Dovetail layer exactly once p=
+er
+> > > > trap, before the in-band kernel applies its fixup. Cobalt then rela=
+xes
+> > > > the thread, accounts the trap and sends SIGDEBUG_MIGRATE_FAULT when
+> > > > asked for. Only the page fault flavor of this was covered so far, b=
+y
+> > > > the sigdebug test.
+> > > >=20
+> > > > Add a test which triggers one specific trap per case from a primary=
+ mode
+> > > > thread and checks that the expected in-band fixup happened. Most tr=
+aps
+> > > > for x86, arm, and arm64 are covered here. Left out are those that a=
+re
+> > > > practically irrelevant: AC for unaligned accesses on x86 and VFP
+> > > > exceptions
+> > > > on ARM. Not yet covered is RISC-V, but it should be easy to add on
+> > > > top.
+> > > >=20
+> > > > See extensive AI generated explanation at the top of traps.c for mo=
+re
+> > > > details.
+> > > >=20
+> > > > This test may become useful for checking future OBB trap reporting =
+by
+> > > > extending it only slightly.
+> > > >=20
+> > > > Assisted-by: opencode:Fable-5.1/Opus-5.5 Signed-off-by: Jan Kiszka
+> > > > <jan.kiszka@siemens.com> ---
+> > > >=20
+> > > > I know this is huge. Therefore, it is also something that we likely=
+ would
+> > > > not have done without LLM support - way too much effort for testing
+> > > > corner cases.
+> > > >=20
+> > > > I went through it, but not in all details. The tests fail when they
+> > > > are expected to on unfixed kernels, they apparently pass on fixed
+> > > > one, at least on our CI hardware. "Should be OK"...
+> > > >=20
+> > > > BTW, if we merge this, we implicitly document parts of our so far
+> > > > unwritten
+> > > > AI policy ("yes, we take generated code"). I still need to think
+> > > > about which of the templates out there to use best, then I will pro=
+pose
+> > > > one.
+> > >=20
+> > > Hi Jan,
+> > >=20
+> > > Following your input, I spent some time last week on RISC-V trap
+> > > handling in EVL. To verify the proposed patches, I ended up with a
+> > > similar trap matrix test generated for EVL.
+> > >=20
+> > > With the number of fixes we can now produce with AI support, I think =
+it
+> > > is right, and important, to put more time into test infrastructure.
+> > > I think it makes sense to pin down in more detail how Dovetail and th=
+e
+> > > co-kernels built on top are supposed to behave to make sure this is n=
+ot
+> > > changed by AI without us noticing when these tools are trusted more a=
+nd
+> > > more.
+> > >=20
+> > > I am asking myself if we want to keep some kind of human readable
+> > > source of truth that tells us how this is supposed to work. If we sta=
+rt
+> > > generating both sides and both sides are hard to understand (at least
+> > > for me, the kernel side still is) I feel like it will be hard to noti=
+ce
+> > > if the tools start to slowly change the design.
+> > >=20
+> >=20
+> > Good point. I'm currently fairly impressed how much the models
+> > understood about the current dovetail architecture by just reading the
+> > kernel patches. Maybe they consumed some documents upfront, but
+> > definitely not while answering prompts.
+> >=20
+> > That said, we more guardrails, also for models that might be cheaper,
+> > more sovereign (local open-weight...), but also less smart could be
+> > useful. Question remains how to encode things best to have both side
+> > understand the same.
+> >=20
+> > > In addition, I feel like most of the tests are Dovetail functionality
+> > > tests and not specific to cobalt/EVL. I think we should at least try =
+to
+> > > find a way to tackle this with joined forces for cobalt, EVL and what
+> > > ever other co-kernel using the infrastructure.
+> >=20
+> > Yeah, valid point. Maybe the availability of a POSIX interface for EVL
+> > will once allow to write more portable test cases or even share the sam=
+e
+> > code base.
+> >=20
+> > >=20
+> > > I think that RV can maybe help here. It would allow us to decouple so=
+me
+> > > of the checks from the triggering of the test cases. Triggering could=
+ be
+> > > in the co-kernel projects while most of the verification lives in
+> > > Dovetail.
+> > >=20
+> > > I created a POC of a more detailed trap monitor paired with a matrix
+> > > test that solely triggers the traps from the different contexts in
+> > > cobalt here:
+> > > https://github.com/TobiasSchaffner/linux/commits/tobsch/trap-monitor-
+> > > rfc-proposal-nofixes/
+> > >=20
+> > > Asking Opus 5.5 about a comparison to your proposed RFC it tells me:
+> > > ```
+> > > Not covered:
+> > > - SIGDEBUG with SIGDEBUG_MIGRATE_FAULT, exactly once. That's Cobalt's
+> > >  =C2=A0 notification to the application, and we don't check it.
+> > > - The counters in /proc/xenomai/faults: the right trap +1, all others
+> > >  =C2=A0 unchanged. That's Cobalt's accounting.
+> > > - The exact mode-switch count (Cobalt's msw statistics).
+> > >=20
+> > > On top of the RFC, it covers (checks no user-space test can see):
+> > > - the handler level of the unwind, through the stack frame;
+> > > - irqs off on trap exit;
+> > > - demotion only from task context;
+> > > - no IRQ in NMI context;
+> > > - no sched-out during a kprobe;
+> > > - the time limit.
+> > > - more fault cases: read-null, write-ro, write-retry, exec-nx, bus-eo=
+f,
+> > > fresh, fork-write, kernel-fault, kernel-fresh, misaligned.
+> > > ```
+> > >=20
+> > > The output makes sense cause the POC has no cobalt API specific check=
+s
+> > > anymore while the monitor adds more kernel internal checks.
+> > >=20
+> > > The hole approach Monitor + Triggering matrix is smaller than your te=
+st
+> > > while the monitor part could be reused. A rendering of the monitor is
+> > > attached.
+> > >=20
+> > > Maybe you want to consider it or spend some tokens for further analys=
+is
+> > > if this can be valuable.
+> > >=20
+> >=20
+> > "Smaller" triggers me for sure! Would be worth to see the outcome in
+> > code. And we may still consider addressing potential gaps on top in the
+> > userland. Key is that the userland test orchestrator and stimulus
+> > generator and also read back the result of the RV monitor run.
+> >=20
+> > But what might be more challenging: we would have to backport your
+> > infrastructure to all kernels we are maintaining. Is that realistic? At
+> > least down to 5.10?
+>=20
+> Hmm... I did not have this on my radar... The RV subsystem was merged in
+> 6.0 and the Hybrid Automata that I build on was introduced in 7.1. I
+> think that back porting the whole subsystem as well as all the needed
+> tracepoints would be a huge lift.
+>=20
+>=20
 
-On Fri, Nov 20, 2026 at 11:17 PM Florian Bezdeka
-<florian.bezdeka@siemens.com> wrote:
-> I guess the first thing to clarify is: Do we want to support that? Seems
-> nobody is using it as it is broken for ~6 years already. I don't have an
-> opinion on that yet.
+The Linux RV monitor is usable since 7.3, before that it simply had to
+much overhead when compiled in, even if not being used. With 7.3 you can
+build enable it without any impact unless you start using it.
 
-Fair enough, that's for you and Jan to decide. I've asked on the
-Buildroot list who uses Xenomai there and with which core and C
-library, and will report back. If Cobalt on uClibc-ng is not supported,
-I'll make Cobalt depend on glibc in Buildroot, so users get a clear
-limitation instead of a build failure.
+That said, I don't think that we should backport that at all. If someone
+is interested in validation =3D> use a modern kernel.
 
-> Whenever we can re-use / share the time64_t services for the native case
-> it's enough to check for __USE_TIME_BITS64. If not - e.g. because of a
-> different ABI / memory layout we need to check for __TIMESIZE == 32 to
-> identify the compat case.
-
-Thanks for the explanation. I won't send anything there unless you
-decide to support uClibc-ng.
-
-> That's good, but too late.  We should know on "merge" or "before
-> release" if something got broken. Not afterwards. Or is that
-> infrastructure building regularly any next/development branches?
-
-No, the Buildroot autobuilders only build the released version that
-Buildroot packages, so they find problems only after a release.
-
-To catch them before merge, the place would be your GitLab CI. Right now
-it builds only Cobalt, with the Debian trixie GCC 14 cross compilers
-and the bullseye GCC 10 i386-userland job. Mercury isn't built at all,
-which is how the missing includes went unnoticed. I could add
-userland-only jobs next to i386-userland, e.g.:
-
-- Mercury with the existing Debian arm/arm64 cross compilers
-- Mercury with a 32-bit arm uClibc-ng toolchain from Bootlin's prebuilt
-  toolchains
-
-Each job would just run configure and make. Would that be acceptable?
-
-For a broader check before a release, Buildroot's utils/test-pkg can
-build any Xenomai commit against Buildroot's set of prebuilt
-toolchains (glibc and uClibc-ng, various architectures and GCC
-versions; Buildroot doesn't offer Xenomai with musl). It only needs a
-Buildroot checkout and a config snippet:
-
-  $ cat xenomai.config
-  BR2_PACKAGE_XENOMAI=y
-  BR2_PACKAGE_XENOMAI_CUSTOM_GIT=y
-  BR2_PACKAGE_XENOMAI_REPOSITORY="https://gitlab.com/xenomai/xenomai3/xenomai.git"
-  BR2_PACKAGE_XENOMAI_REPOSITORY_VERSION="<sha1 or tag>"
-  BR2_PACKAGE_XENOMAI_MERCURY=y   # or BR2_PACKAGE_XENOMAI_COBALT=y
-  $ ./utils/test-pkg -c xenomai.config -p xenomai      # default subset
-  $ ./utils/test-pkg -c xenomai.config -p xenomai -a   # all toolchains
-
-Toolchains the package doesn't support are skipped, and failed builds
-can be re-run after a fix. For example, current next (9fe2f61f3) with
-Mercury and the armv5 uClibc-ng toolchain fails in 2.5 minutes with the
-lib/boilerplate/setup.c mlockall()/MCL_CURRENT error that v3 of this
-series fixes. I'm happy to run this on a release candidate
-or on next before a release and report the results, if you ping me.
-
-Regards,
-Yegor
