@@ -1,49 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.136.65.226
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.136.65.225
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795385547;
-	b=IAX747+ARA+mPWRGu7SlTCea27+JbHKfmZ2m5xu6ZcRrNHWbT9+qMXM/eyJgctParxzt
-	 BrJon2kme5qJLe+wV7eSAPpWg5t+oWMdPTl/YzYeD7q/yRQNRRffB1O6OFg+yxGn7uxos
-	 /pXRk3uzKNKAyuRMcyvSEZATGxMLUcsT/mWwlKDkX6J9CXVVf1llYrMjkGcvSz/kQ/Iib
-	 0FO8jm9nTwKIb59eT+Fk88OdtfHnpubGNsCIK4zQly+hXU2tWZs9Q1uUuJqtQkuX5Vgde
-	 cxZYj6NXIY4p/FOsOBd3gGYqa13vUB67C946C4FRuFTUMp1dNz+TPANN59CaswksjLQ==
+	t=1795385935;
+	b=1cMkkObDVJV+fDQNAcE/yTtqBHVaQNIM4nirjFM5e8KL71WSok6JvYijmOXnMOPKIWmn
+	 4zW7sTNl/zPI8Pb4yFhf79wQyObD899C5qdrEfUnYLzVbxTUhl+47rg4OOw09bOIjBQQH
+	 +zy5LjhmIcBCKKXdCQDGEY1sqsxXB3yLStMTSB6DsZswr5i3l0eGo0Rd0rHcqSCpKrpd4
+	 zEs7aHJGaAQxA9yj2GlGyAYTemOQBhEmWHZ/xwwRM3WicanlLPxFcg05pkUfTQ3vPVWyE
+	 EPzFgoqKpl9H45Wv8wYxLP3KjiVLLquxuqPyWg7qL9mZiYZI4IsRuOnjSvfZwYhTlqA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795385547;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795385935;
 	h=DMARC-Filter:Received:DKIM-Signature:Mime-Version:
 	 Content-Transfer-Encoding:Content-Type:Date:Message-Id:Cc:Subject:
 	 From:To:References:In-Reply-To:X-Flowmailer-Platform:Feedback-ID;
-	bh=GYLbK8308aBAcS0E0Sk8g4fIYSw57gf/x7cWtQSB614=;
-	b=b/hAG03uMK3/PXu1WXBjfUx7jSzGZD/iXPXWrk8yl8o2GvusyzKdXcm5WYuESPynGIBH
-	 isdUMIZiIxzAf69DPCFyxwk7mlIfrt+48v9O9771gCX7ElvZOlI1h42+dyq3BptyR0DAA
-	 6wuoXHIfHUnAT1uiRTXHyusYU8SGGQ+mItAj5UjENIfILulqRw1aUyN8AyKiJdQ8a8YuQ
-	 ChEKBOR2ekbCJx59beSNVk6N3bL1TW6VpU0tWeSQ28lOAdukKfOj6dA9XE1IFSWSjZC7A
-	 SES6u6FwT2EIFuNBSbakLKbt+dqbPv4565yhouCmhTEKtZhuaBTuMVVD8+zjVT5TdZQ==
+	bh=BZODCDBcx3a+28ILYn0BtaEP8iyY8goBXB3SKC5on6s=;
+	b=2s3pFjiQHcJebvT0ZnRaOMy5Blfox+whH5ayXUWgMDOzwwo9qMCisi9vHX3/gpJ+++LB
+	 69dUcTaPBOzGSvLD+rUhxfM60/GE9faRNlo0iYMbyDDCje9Z36Z2YzrlIlgCSvDa9vl6d
+	 I94k66ZOAJohxE6wWLpYQnoNJ7zI6GW3XQd6Ud2XDPirhJyHopAxDnN0Nz26YzQRAKkC8
+	 oF+y9n3LLc12kuB3JkPel7XGqjJNZpe+mbCdh45mkX7DOh1v5vs6xMuDI4C/+XrQOrwSq
+	 F3yVQDjg4AIgu2OHWCm2UH7SH3uFynda9T3EgsEG628shP2jtXvC9cpRZAKHsf+Atmg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=siemens.com;
 	spf=pass smtp.mailfrom=rts-flowmailer.siemens.com;
-	dkim=pass header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=SvO3cpxq;
-	arc=none smtp.remote-ip=185.136.65.226
-Received: from mta-65-226.siemens.flowmailer.net (mta-65-226.siemens.flowmailer.net [185.136.65.226])
+	dkim=pass header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=puV99m09;
+	arc=none smtp.remote-ip=185.136.65.225
+Received: from mta-65-225.siemens.flowmailer.net (mta-65-225.siemens.flowmailer.net [185.136.65.225])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6196A606A31A
-	for <xenomai@lists.linux.dev>; Sun, 22 Nov 2026 22:12:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 6196A606A31A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE3B9606A31D
+	for <xenomai@lists.linux.dev>; Sun, 22 Nov 2026 22:18:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org AE3B9606A31D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=SvO3cpxq
-Received: by mta-65-226.siemens.flowmailer.net with ESMTPSA id 20261122221221618a3226dc000207e4
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=puV99m09
+Received: by mta-65-225.siemens.flowmailer.net with ESMTPSA id 2026112222185063ca90ab3a0002071b
         for <xenomai@lists.linux.dev>;
-        Sun, 22 Nov 2026 23:12:21 +0100
+        Sun, 22 Nov 2026 23:18:50 +0100
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
  d=siemens.com; i=florian.bezdeka@siemens.com;
  h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=GYLbK8308aBAcS0E0Sk8g4fIYSw57gf/x7cWtQSB614=;
- b=SvO3cpxqZs5bO7hxxt3u2kzP/WKPbbPAD6rECqeHlw72adq3A16bc/5y9pBs58wVGtkjm2
- 7bS7atC/exZqYnM9X3dfEn7E7GzYDPzpD0qAsbp5TQEjOkgHoL4nSw6VprTNOSvLskqCHjzb
- 9vpU7On2sr1bxOu0pMVrkuLaA60vRqPqYVs5i43y0Mzd6aXxRB7e8C0dZKzigBGMMowRl4UD
- DmD5ZgL7fzKWRfecQJs1KsTmNqEc/jcVe5BwOxylHx1aX+9+c5339o9P/Y1Na8aiaIiDA70W
- YlXm6a7cAhfJRHqXpoDeUB4oRwnoq3x7s25iageObVDkDStHHcDcX4AA==;
+ bh=BZODCDBcx3a+28ILYn0BtaEP8iyY8goBXB3SKC5on6s=;
+ b=puV99m09Ep8puVbjvfQRDxVczA6BBs6mbVXawwbcidj08K6wgSZhf9MiMH0Adw76lx+NqF
+ jFH3NOLthgbaGnYgNO3+yO6Ghr+P7n9+qMuVk7nnhZpXccp+7bjguUgzsfbq2KG+4giCNHxD
+ Ydkw3Yml9lPMu8yhomfL4vfjaGoUPUvX1SRe1WNgUVH+7eGjE8/5Ihs63n7njLa3fA+rSq/o
+ CeRvGfWgOIS9OnFUTnhwDy8KlWI6+8eG995ANoTU/qIBmgtg/8Ks1Ko2JAGSf+fMI5DfZZ0N
+ OAhNm/I6MfAWS9CMDRpkQZmUmmAT2EDk0O0Djws36Apanmk4ER4QhStg==;
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -55,8 +55,8 @@ Precedence: list
 Mime-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain; charset=UTF-8
-Date: Sun, 22 Nov 2026 23:12:21 +0100
-Message-Id: <DN2323C4FVPZ.13C4TOTZPDADX@siemens.com>
+Date: Sun, 22 Nov 2026 23:18:49 +0100
+Message-Id: <DN2371TJAB7G.334DTWMEPJTQI@siemens.com>
 Cc: <rpm@xenomai.org>, <jan.kiszka@siemens.com>
 Subject: Re: [PATCH dovetail v2 3/4] riscv: dovetail: inherit the hard irq
  state on kernel page faults
@@ -131,21 +131,22 @@ y_state_t state)
 > +			local_irq_enable();
 > +	}
 
-Is that aligned with any of the other architectures?
+Is that part aligned with any of the other architectures?
 
-I'm asking because the pattern used here seems to have an ordering
+I'm asking because it seems that the pattern used here has an ordering
 problem.
 
-Once hard_local_irq_enable() enabled the hard IRQs, hardware events
-might come in, hitting a stalled inband stage. Means we log the events=20
-into the IRQ log.
+Once we enabled hard IRQs with hard_local_irq_enable() hardware events
+might come in, hitting an stalled inband stage. Means we log all the
+events into the IRQ log.
 
-Afterwards, we unstall the inband stage with local_irq_enable() call,
-which will bring us full IRQ log synchronization.
+When we unstall the inband stage with local_irq_enable(), that will
+bring us a full IRQ log synchronization - over page fault handling.
 
-local_irq_enable_full() would do it the other way around.
-Unstall first, than IRQ enable at the hardware layer. That looks like
-the proper ordering.
+As local_irq_enable_full() does it the other way around as well, I
+think that the ordering is wrong.
+
+If taken / aligned from/with an other arch: we should check that as well.
 
 >  #else
 >  	if (!regs_irqs_disabled(regs))
