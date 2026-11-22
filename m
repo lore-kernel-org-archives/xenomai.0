@@ -1,58 +1,49 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.183.197
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.136.65.227
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795379494;
-	b=p618ayrzlFus3j31NqYTd6fwgF5RyTfJEoxvV2FR3iUc9VTmz058CBKrG2C99zbsG9Lc
-	 jSAii+6gD5PZhm2rA/UulG4HD/PrmcMCGnhfEvEjw90YTc9/tXOew0wJoL9f2pFoBnr8L
-	 J5Pm/Y/PR1s3cGbHOwcw11tJ/N9K6WNBMWvtL4SsUqCauiK+yI0Qgai1rHOyY5E6GeZH0
-	 hxdqa1DvYJh5BLbStsxUtUF5x81YYLuHlK2bUOl/YeScizfxBvQGzfCQ1takD+IKqvCHO
-	 h3oDcMmc4HunufnEIOfZ2LeqwSGaQ4zBxWS3E8jgx/JNmGY5mBs0xSNZzz7nVa25ZLw==
+	t=1795380178;
+	b=Mkm6CHQtNfAKylPLJVsY1zds6ETypPUmkM89qlYFjiGCaR5IrOiZmWzr3JnWgJJEe8Nl
+	 lqc6uqOz5fWHDTt255avEDu13yboZQgOfbm8SWTWM347jLH5s3B6Bffzt8O4AuzVtGUgF
+	 Im4HpFrlSPcCE50YGLyWqRInYAz2Nhv4PbS3HNyp92GvK4ksthZhJLcEIsU9Nse7Fis73
+	 0JSpgKZ/at/JsNOt1aLC5UAcrJhYUSwAI9hjlAZWnFa3IOhXxQz/u/RcPXeOGHrjG6TXH
+	 2ZIdBbO1GJ+WUsRW0flDVNvP+OoRyLKu/Hl3MzIb6Hok0fnLYWBYX5ubsZK0zjZQUtQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795379494;
-	h=DMARC-Filter:Received:DKIM-Signature:From:To:Cc:Subject:User-Agent:
-	 Date:Message-ID:MIME-Version:Content-Type:X-GND-Sasl:X-GND-State:
-	 X-GND-Score:X-GND-Cause;
-	bh=/dbhGRPqySrE3aOS7Wdq6qUrhuKJb6QVnG+5oYzAYq4=;
-	b=ZF/NZQ43nNEEWyj+7483lprehTa2VAq0sqxTpagyrgfWHIJZuayGYqwNupEcm1Wr3bC2
-	 dVzK0Phj3oDTffzKWLM3Gc0TYPWKusnUl5OMnDx5OzDyWXa1fHqcWV14xIhpcbjLun9NB
-	 q+8yeLTUnC178G546S9yMXTrcOpxIhkhiTHzjC43eiEsRWbduylNlc8EgKWMEbJTqbKp9
-	 9rHAOcOCrHkumQqKck5/Y4z8fWYBUoENHHLhVi94Ub+bmvpPXNC/AAZnO6F+4ZZRIT7cf
-	 LFjnZ63IFPLzy4Dz2h8LSkBr2T4qnboqrx8XucuaxWFFGINpo4N3ymal6ULYDEz6ktA==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795380178;
+	h=DMARC-Filter:Received:DKIM-Signature:Mime-Version:
+	 Content-Transfer-Encoding:Content-Type:Date:Message-Id:Cc:Subject:
+	 From:To:References:In-Reply-To:X-Flowmailer-Platform:Feedback-ID;
+	bh=CtiiQ77fA06AVyhRidgrkN186bmvJlNgd8Hvroy5LcM=;
+	b=YWY0Jls96XDLrtvv0hqPQpfo8RH6g+PpTEsjimctS2+YakL/HRZ4RxuUmcItuPRu2X7/
+	 uo4mjpX/TcM0EMXYn2mSGeqZvVKrVczA7h6ZhA5J0Qvm53qX5msNvsSVlzkA8TZzfLoo6
+	 KuEZD/Wk6SVYX9OgIrSCNnRKFOyGDOGoTp+I3uWpWpIgUWLqtrdTuc5vsQT7/3sH5xq7P
+	 iBRGFRT+nQnV29wSO19PEg97Ls4hrABdRQr4SX+cwtzfpb3cO4e0V1CUBrAxKs85x2XRx
+	 6n5JFvUeQSIPPW+4J7zLdjnRmmYjml/xn8U/GqESVkEDoOq50fLXnzJb3rCsUmgMeQA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=xenomai.org;
-	spf=pass smtp.mailfrom=xenomai.org;
-	dkim=pass header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=jjGvs22u;
-	arc=none smtp.remote-ip=217.70.183.197
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=siemens.com;
+	spf=pass smtp.mailfrom=rts-flowmailer.siemens.com;
+	dkim=pass header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=rez2fbwc;
+	arc=none smtp.remote-ip=185.136.65.227
+Received: from mta-65-227.siemens.flowmailer.net (mta-65-227.siemens.flowmailer.net [185.136.65.227])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E80E7606A31A
-	for <xenomai@lists.linux.dev>; Sun, 22 Nov 2026 20:31:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E80E7606A31A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 511F8606A31A
+	for <xenomai@lists.linux.dev>; Sun, 22 Nov 2026 20:42:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 511F8606A31A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=jjGvs22u
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 6C4843E80D;
-	Sun, 22 Nov 2026 20:31:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1795379484;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-	bh=/dbhGRPqySrE3aOS7Wdq6qUrhuKJb6QVnG+5oYzAYq4=;
-	b=jjGvs22uJ+vHk0KI+TchM3lSHUlEu3Wx4XElC+CIS6kLQTNNKKXZDjQW4aEMVD+hBogpCi
-	P9+vUeeCC7nlxSOi2paeyWer3LeUTRYKb6dbElcya1w9x++fs6m2mAYhLTA0QzvghUAK0Z
-	pqeXRKGjJMcm90Bas+sW6+NZXwVCYE0+kKrtpdQmvJlKyeLma9s9vs8bCwwf47E21TfaaF
-	G6tDuztNZAUCmimijxjUO6XGdt4KHh4URBXe0c+u9fJlqM4jEbEh1gUl89VoA0w2POIDSv
-	6sipoawnAHshZTQ/fgQYweECCTMBO3LMGUZvIaol5Saqv/24/wMaYkpxTXbxkw==
-From: Philippe Gerum <rpm@xenomai.org>
-To: Xenomai <xenomai@lists.linux.dev>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>, Florian Bezdeka
- <florian.bezdeka@siemens.com>
-Subject: [EVL] A POSIX interface has landed
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Sun, 22 Nov 2026 21:31:23 +0100
-Message-ID: <877bi4bobo.fsf@xenomai.org>
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=rez2fbwc
+Received: by mta-65-227.siemens.flowmailer.net with ESMTPSA id 20261122204247f24d39f37d00020709
+        for <xenomai@lists.linux.dev>;
+        Sun, 22 Nov 2026 21:42:47 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=CtiiQ77fA06AVyhRidgrkN186bmvJlNgd8Hvroy5LcM=;
+ b=rez2fbwc8oPAnaYOAdwBknQK6H6j3+u/oqdHsw52pbvDWerYgn45fmBKs520pBs2ZY6n/v
+ GsbZn1SKRVZh0zlzjcukRTt5tZk/n0zSptK0t7ERUqy/45JdKQ5eCXQBdDMKPgGLDSU+Zgwd
+ QkH91mcyZG8njCpbXAJOm8HETTYC+oPpGM2wnf9F43doC0ye3ZvoCnbZ8nrsboszTKOSwcRP
+ G2H7Ei/aFDJtTtCqMvjeJC77c3IrXMVrW0tEOSswQBLruOVvmDPoBD8LPuuT5O0Uut/6MOBJ
+ 0gUkEBVmjwOd4CIklWxVzrNb+lg+rCUeCsatBkUt1MWpx9932UlU6F6Q==;
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -61,66 +52,65 @@ List-Subscribe: <mailto:xenomai+subscribe@lists.linux.dev>
 List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
-MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-State: clean
-X-GND-Score: -100
-X-GND-Cause: dmFkZTFN7RwvZHMX9OhdZvEugxNm41Cobd4vR1gf3/ay8VNIOIxe2N/iAWj0cMn9xD6YVl8i6RzruuGN2KXc1+2t1eaEMtRZKGeKjJJhjBiE3XUcA53Gk4Nj1sR5YS7fvOyYJCDrpppy/Kg5UbpHKZONq5xO1iKvvNqOoMuBGnM5ULhFyeaM2psAKlCGnEmjFh7eakEFXq8+JcOR9pj10WX7zo5FlOTm2dA+hO4TBZYK7GCzi5Fi5CoS51g9iq5plM034ni8CLdpEFrlg2Y6dufzBq6osXPyN3aty7IILqOz/V3B9ceBspYDNGpAnnWuJ7frgUrVXWE70kNZpeTg88AdlJ5BAWhOu5P/G5CrPDVQoIqejRPqMGvM+p4o8HApsdnFNH5u0MxQ0AjF1qDqkGzgWgNsdXVALUP6xsRf/pwRgF6gKEEOdniyAil3pN7nMEJ5buxUZgzf0cL0uh2bcrDPpB1/pbMihGHBzFKW5Ray37s+siprscoNY1sgzrxAysS/AhmRMGd9G46g3wTpYuAhDWPaxpal/iXytqV3cH+F3SfKXMmM+HHfyLWrASRd3WzlZNPcSrRcioPWNP050ZNqN+YMZwzkDRC19OPmQYdeRLj42xg4utMzrjDrl/eYxKb8SQ49bb6Znrr7a54zNKqav9KUBZrrtw+5yHQTz2bBVNQFSg
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Sun, 22 Nov 2026 21:42:47 +0100
+Message-Id: <DN215IH102NW.2BHKNDG4JR4VV@siemens.com>
+Cc: "Philippe Gerum" <rpm@xenomai.org>
+Subject: Re: [RFC][PATCH] smokey: Add traps test for trap routing of primary
+ mode threads
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: "Tobias Schaffner" <tobias.schaffner@siemens.com>, "Jan Kiszka"
+ <jan.kiszka@siemens.com>, "Xenomai" <xenomai@lists.linux.dev>
+References: <31921289-e2ce-4370-bb21-97d66de8e566@siemens.com>
+ <37fbdf8e-9116-4b36-840a-612d49fc7f55@siemens.com>
+ <e78f2129-6875-4b5e-87c7-088950b69785@siemens.com>
+ <4f118759-234c-4ed1-afe2-fbefe849e369@siemens.com>
+ <b533b6ad250bf960948765d5829fea34f26b99c3.camel@siemens.com>
+ <ba91a81f-a52a-4742-b4f9-4c9c3437ef8c@siemens.com>
+ <6c4a73ca6be802d564e770baecd5d90220627d13.camel@siemens.com>
+ <66709223-4a90-4073-8068-8f5d24118aca@siemens.com>
+In-Reply-To: <66709223-4a90-4073-8068-8f5d24118aca@siemens.com>
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
+On Sun Nov 22, 2026 at 8:46 PM CET, Tobias Schaffner wrote:
+>> Close to free is not acceptable for production systems. Depending on the
+>> workload you could easily run into problems (pre 7.3).
+>>=20
+>> My own experiments (especially with the RV monitor), the discussions we
+>> had at plumbers this year and especially John's talk about the RV at the
+>> RT user forum in Prague (see
+>> https://www.youtube.com/watch?v=3DjO4M5dx52Vw) would be he references yo=
+u
+>> are looking for.
+>
+> 1. Nobody is talking about using this in production. RV was proposed as
+> a testing tool in this project.
 
-After several iterations, pauses and rewrites, a POSIX-conforming
-interface is finally available with libevl, alongside the original EVL
-API. 'libcobalt.so' is generated and installed with its headers
-side-by-side with 'libevl.so'. We can use any of them or both,
-separately or combined in a single application. The main goal is to
-cover what x3's libcobalt provides feature-wise, and even more in some
-cases. An optional compat mode wraps some v3-specific services when
-needed. The target spec is a subset of POSIX.1-2024 for evl, although
-this only meant adding pthread_cond_clockwait(),
-pthread_mutex_clocklock() and sem_clockwait() so far.
+Why not? Something similar to the rtapp RV monitor (as we have it for
+PREEMPT_RT meanwhile) would be very valuable.
 
-libcobalt is not an emulation of POSIX calls on top of the original API,
-it is a standalone implementation sharing a set of intrinsics with the
-latter. These low-level intrinsics talk to the evl core, keeping the
-nitty-gritty details out of the window dressing, i.e. the user-facing
-APIs.  They are part of libevl.so, and both APIs use them the way they
-see fit. If you plan to write your own real-time API leveraging the evl
-core services, go with the intrinsics in libevl, this is their basic
-purpose.
+You compile it in, with zero impact, and enable it once you ran into a
+problem.
 
-Documentation is not there yet (how odd?!). This said, there is an
-ongoing work revamping the x4 website in order to introduce this new API
-and some kind of versioning as well, so everything will land in one go.
+> 2. John is talking about the rtapp RV monitor when talking about
+> overhead in his talk not about RV in general. Are you mixing these two
+> up?
 
-Crash course: libevl builds the POSIX API by default, you only need to
-pass -Dcompat=true to meson for enabling the full v3 compat shim. Once
-installed, use `pkgconfig --libs|--cflags cobalt` to retrieve the build
-flags for using libcobalt. evl-test runs the POSIX test suite if present
-along with the test suite of the original API.  That's it (_that_ was
-short!).
+Maybe to some degree, but the infrastructure behind is the same.
 
-The implementation required additional services from the core, so
-changes went to linux-evl as well. The core stays POSIX-free, but it
-does provide a couple of new general-purpose services which are
-convenient for implementing a POSIX API in user-space (e.g. see the new
-'depot' element).
+> 3. The improvements that have been merged into RV between 7.2 and 7.3
+> are not measurable in my setups. Having a more sophisticated HA monitor
+> in 7.2 enabled adds about 1us of overhead in my tests. That is not
+> "unusable" from my point of view.
 
-NOTE: The code stops short of one aspect: it does not provide symbol
-wrapping like v3 does (using ld's --wrap trick); explicit annotation
-using __EVL(call), __COBALT(call) or __RT(call) [all aliases] is
-required at the moment. This is deliberate, this needs more thought
-because symbol wrapping the way v3 implements it proved to have nasty
-pitfalls over the years, as it comes with hidden edge cases. I plan to
-RFC on this in a separate thread.
+That highly depends on the workload and the scenario. Which non-rt=20
+workloads are you running in parallel? Networking? Containers? GPU?
+That is where the most challenges come in.
 
-I merged the POSIX support and its test suite to the next/ branches in
-linux-evl and libevl; the kernel part should move to the plain rebase
-branches once the CI says that all is fine with its test configs. At the
-moment, evl-6.12.y-cip, evl-6.18.y and evl-7.2 are up to date with the
-POSIX support. evl-v7.3 is late, but almost ready and will appear in the
-coming days (I'm almost late for v7.4 which means that everything is
-going -*cough*- as planned). Keep Calm and Rebase.
+The rtapp RV monitor has made significant progress in 7.3 in this regard
+already. Other parts of the RV infrastructure were discussed but that=20
+will take some more cycles to arrive.
 
--- 
-Philippe.
