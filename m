@@ -1,56 +1,65 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.183.198
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.136.64.226
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795466039;
-	b=4ExItaLHdbwH93zryfgbYQkP+9io9WiEGw5NWxXKvgKOiyQmVqMkp1/wzlOIdb3UUzHW
-	 25cYQJZxVXV/lkA9w9AD72G49VtIOBNQaAbrG8tBS/X88Eg3UDpII+Azj6KUqC+SRTUk3
-	 p5fryrSUZ4aZ3L8XbITSp6/r7VVgVZe1XH81KyJtPOrvxextWh4uR+X567brCfCChAKzT
-	 KTdZNCWkKPj/iClD+ur2JOMVuqcUPzgRga49v5oteKX1arHy/qeaa0l/AfpyD8v/6YVLr
-	 rUJ7YrLJhV6vGNCTwWpGjZazTt4MMVikaAIIIoel4pHAgYZJpQMP8Bvd5BaED5k9Clg==
+	t=1795471942;
+	b=zf5ZpY8KpCQ4DNKWfZcsco/F2JWZBgayI5mJCi+USIUwoGJjWCCgP99ScxCtXWdmU3x5
+	 lfxxbLhXEgGNafItk7WfxPWclXZeEdVYS+givXO99WnJi1huo7NsXeQ/dxaCQFCILV4gX
+	 vcFgD1WiRdiwHkULnRmxU3A9v5vLMGy91dNtO/Aj6jH3Ny5rFiwAX+JAkso+P6TUht18d
+	 6cz0WIL/MSCuS1dPATZoCl3XZZKZH0+oxeffExzQuwS9Y4u3kAhIAGCQwDduYwdyXltTq
+	 0W1cuBgKnUMWVG2x4x0HO+CVq3qktpfOGNYtjHbbKoypP/rUDFsTf/lyjO6rmvPozbg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795466039;
-	h=DMARC-Filter:Received:DKIM-Signature:From:To:Subject:User-Agent:Date:
-	 Message-ID:MIME-Version:Content-Type:X-GND-Sasl:X-GND-Score:
-	 X-GND-Cause:X-GND-State;
-	bh=ZWicu2wMnhtBfb2T79qO8P9V3a1hibnfCdJJHWMyjBk=;
-	b=guk1uP4b5TlplTpHPQyO9O7e9IVj9k5AKpNTVRA0vxNbSanJDQBbgTUOG4onfe/ZRbmj
-	 Ix/h5m8daGpWvLLpwkoDubEAjSxpYKSdm1Uf2Gmm8vbI4EDuNLQTLzlzQmAO36fYeR/v1
-	 xGNrezIAV3PxmhRbE6oQmRKRjBjjl+Uzq/nb9D5YrC5NfeMrlE8vcy+6wzxUdzyLBvmhE
-	 TXtbvNbHPcFTF7X5OG6lmXUbCHy1SiHYs9M0Ycwv0bhQvDFqby7Hw//O5rnmKvrgWKt8a
-	 CTrI07hn1MJbYJsHTJdOfV0WtJCfBa5YbjC1HX7YbNg4mtenUSEJCXJ7Sqw3qPcMoUw==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795471942;
+	h=DMARC-Filter:Received:DKIM-Signature:Message-ID:Subject:From:To:Cc:
+	 Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
+	 MIME-Version:X-Flowmailer-Platform:Feedback-ID;
+	bh=+rmpkX/jJAzZN75lz4TFazXvGTX7YFzmlxEc0ss7ZEk=;
+	b=TeeMDms8oG1VanUIY4O9Bm3sirSqaRnpsmIKWAdrBncefMPQZcu/orbNck5uBiGFdRfQ
+	 X3Ml/d/f9WcxihQ+eInsAeTTC0XL8UbqrR0Veu6+K5ZvJ9m//peEkS8igSuaH5VmwtbyJ
+	 n7ZeFa7e6XbDlcGWnr8UrpXX0UCQKPGp8B1OfwwtRPE3IUPmntDGdR0m4S8k/Fp5Ywf7Z
+	 B2TVBUpjn+p3ZFdNkjJm6NgUOxeNN1y6VXGl2mHbnANzB0K+Oxuu/bI+uNyIwdY77z5bz
+	 pSY2OHem7YTUh10oz1VY6n4KAhLCm101cu+SAHVvwSJ255HZg6dQlG5th2h17cz+SEg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=xenomai.org;
-	spf=pass smtp.mailfrom=xenomai.org;
-	dkim=pass header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=ohvlp7hu;
-	arc=none smtp.remote-ip=217.70.183.198
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=siemens.com;
+	spf=pass smtp.mailfrom=rts-flowmailer.siemens.com;
+	dkim=pass header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=P7dx+ohK;
+	arc=none smtp.remote-ip=185.136.64.226
+Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10359606A31E
-	for <xenomai@lists.linux.dev>; Mon, 23 Nov 2026 20:33:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 10359606A31E
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xenomai.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67F64606A33A
+	for <xenomai@lists.linux.dev>; Mon, 23 Nov 2026 22:12:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 67F64606A33A
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=ohvlp7hu
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 384A43E806
-	for <xenomai@lists.linux.dev>; Mon, 23 Nov 2026 20:33:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1795466030;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:mime-version:mime-version:content-type:content-type;
-	bh=ZWicu2wMnhtBfb2T79qO8P9V3a1hibnfCdJJHWMyjBk=;
-	b=ohvlp7huoHyHQvXkc/GWDq69jcKzB/MAcqxaR/wv/BCq+CL34h/p32yJXo0gJ4Vqvfxi3B
-	yVSNrlSlwWZujeNqW02ybbjHaHchQ63VUXBc66K/65+F3ZjMRla4E1AGfI3k0fLrqDZFSa
-	AYLI5GiczfXBrgS2U7CcS/nqGr9/bmJHwGvGN8CokrmoEUTa+qUD26OtAC8g9yA1lqQRQh
-	NhNGyewGJUPJMT/LbgWhZEODwxw3TaUuQOkWZ2aCaYh0qN6HDqVprAEA6xaWULvpBia9Lk
-	1I1jOyMxBNLhTyzcvAg+7ig8ee6JFyvZA5MMO/85kz+RjJBqRlA9064/gUs3ow==
-From: Philippe Gerum <rpm@xenomai.org>
-To: "Xenomai" <xenomai@lists.linux.dev>,
-Subject: [RFC] symbol wrapping for libcobalt
-User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Mon, 23 Nov 2026 21:33:49 +0100
-Message-ID: <877bi3thhu.fsf@xenomai.org>
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=P7dx+ohK
+Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202611232212118f8790f2ea00020750
+        for <xenomai@lists.linux.dev>;
+        Mon, 23 Nov 2026 23:12:11 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=+rmpkX/jJAzZN75lz4TFazXvGTX7YFzmlxEc0ss7ZEk=;
+ b=P7dx+ohKnHWj3TCWzxsRZ52VBQldp+J3rEXWSPeGpuylcrezJIb9aem8jW0MiyADzgTsiX
+ j2yYC2IJ6gIA+U3Z5Pv1yGOptGeK1G0ggKd3issaV7eMXpB6lO89gcFDYXfCtvxonbNFFf3Q
+ F6R96XK1I+mx1rrmXAtNFvsqHG7K5UP6OaLqiyjRHhjtiO5SBWadr5hm0EzeUD4DfmDD7blg
+ tDci9triazQFzAKM61sQVjuxwqP3PzWxzQ0HVUEaSWwoeyW+vYGn5UUwcVo+1awdCi6YjNQY
+ droi21Bgz5juWJ2UCHmzVrz2aJ5RWWvpmrwm0S3MyBUOFsGW0MhB/JNA==;
+Message-ID: <e55022378f5d521c20e037597c04a8698b615a15.camel@siemens.com>
+Subject: Re: [PATCH dovetail v2 3/4] riscv: dovetail: inherit the hard irq
+ state on kernel page faults
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
+Cc: rpm@xenomai.org, jan.kiszka@siemens.com
+Date: Mon, 23 Nov 2026 23:12:11 +0100
+In-Reply-To: <5e8681d8-7d2a-4337-807d-80eab19d36cc@siemens.com>
+References: <20261121165933.57310-1-tobias.schaffner@siemens.com>
+	 <20261121165933.57310-4-tobias.schaffner@siemens.com>
+	 <DN2371TJAB7G.334DTWMEPJTQI@siemens.com>
+	 <915d53fb-fc8b-4c07-935f-a9d4680ee8a5@siemens.com>
+	 <87afa16be7aada0d995e63364bb9e7785af24675.camel@siemens.com>
+	 <5e8681d8-7d2a-4337-807d-80eab19d36cc@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -60,173 +69,136 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Type: text/plain
-X-GND-Sasl: rpm@xenomai.org
-X-GND-Score: 0
-X-GND-Cause: dmFkZTGRGXYHpQbfTayHNz5/HRv1IZP/q+ceBccBD/yonegSTtxzzyJVJJmVXfWHHLCU+saAILV3Cj91gdActgj/Tvrzb3Yz8Wj2zxqdfm54bXX/MlMrcd81Fn9DvRzwbGNaJ3Pd8Pjs9iR8dnx/0vol83SjwmrMvSykkqTk9hXgvmgPKZi+287Poz/0USqlRvcwQSeFpeCSKN3gb0jTKT/e3ynbAf3gJMNIJNxT+WWGEnWdm7MZc/dnE0Oh0TNn44wUlQ2NkwWZlYy10hq4cXKR290oVty0+wxXFU4c9HHVCbZpUub8+I+qJ5P4bzId2YkzzUxkqW2D3SOEqjezryV8QrhJqezmF/o/o+ArldmzoE09+zQcwYw7rRawRrY6Um5lrcCpNFOOLwdoNmgXN6RpUnUoVSI/NxRWfe8Jn2p7w44dYxIE91LjJ+pxb8sTdamBRDNmZBOwkcRDt85dEu0dNqjcMaqVqLKNumIDUKhTFGpQOssT8eqLYKAYZx+fHQoOrKRMk66I0AMlqfzTiZ/1uXDu8bBh0I526zZgsBRlc43FwDelon0cefwWSr6SfRgg+WWSmjMPuAALdmkZanqAHjbbDqYqDQlVeyrsFusrDsGQwSBi4DVH9xiaykrRRCmKOHhcmY0WEDApR+RH0c45GZbUuS2I24YPbQWJWU+wQK/zqQ
-X-GND-State: clean
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
+On Mon, 2026-11-23 at 14:43 +0100, Tobias Schaffner wrote:
+> On 11/23/26 13:05, Florian Bezdeka wrote:
+> > On Mon, 2026-11-23 at 12:39 +0100, Tobias Schaffner wrote:
+> > > On 11/22/26 23:18, Florian Bezdeka wrote:
+> > > > On Sat Nov 21, 2026 at 5:59 PM CET, Tobias Schaffner wrote:
+> > > > > A page fault may hit kernel code which runs with hard irqs off, e=
+.g. a
+> > > > > kprobe whose fetch argument faults within the breakpoint trap. Th=
+e fault
+> > > > > handler still enables hard irqs for every kernel mode fault, so a=
+n
+> > > > > interrupt may break into that code. If the fault is handled out-o=
+f-band,
+> > > > > the handler also unstalls the in-band stage over the out-of-band =
+stage.
+> > > > >=20
+> > > > > Enable hard irqs in handle_page_fault() only if the faulting code=
+ had
+> > > > > them on and we run in-band, and stall the in-band stage on exit o=
+nly if
+> > > > > we run in-band.
+> > > > >=20
+> > > > > Fixes: 1d1fdeccecef ("riscv: dovetail: add core support")
+> > > > > Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
+> > > > > ---
+> > > > >    arch/riscv/kernel/traps.c | 11 ++++-------
+> > > > >    arch/riscv/mm/fault.c     |  7 +++++--
+> > > > >    2 files changed, 9 insertions(+), 9 deletions(-)
+> > > > >=20
+> > > > > diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.=
+c
+> > > > > index a8e37ec27cc2..47799f18fa7d 100644
+> > > > > --- a/arch/riscv/kernel/traps.c
+> > > > > +++ b/arch/riscv/kernel/traps.c
+> > > > > @@ -488,17 +488,14 @@ asmlinkage __visible __trap_section void do=
+_trap_software_check(struct pt_regs *
+> > > > >    asmlinkage __visible noinstr void do_page_fault(struct pt_regs=
+ *regs)
+> > > > >    {
+> > > > >    =09irqentry_state_t state =3D irqentry_enter(regs);
+> > > > > +=09bool inband =3D mark_trap_entry(regs);
+> > > > >   =20
+> > > > > -=09mark_trap_entry(regs);
+> > > > > -
+> > > > > -=09BUG_ON(dovetail_debug() && !running_inband());
+> > > > > -
+> > > > > -=09if (!user_mode(regs))
+> > > > > -=09=09hard_cond_local_irq_enable();
+> > > > > +=09BUG_ON(dovetail_debug() && !inband && user_mode(regs));
+> > > > >   =20
+> > > > >    =09handle_page_fault(regs, state);
+> > > > >   =20
+> > > > > -=09local_irq_disable();
+> > > > > +=09if (inband)
+> > > > > +=09=09local_irq_disable();
+> > > > >   =20
+> > > > >    =09mark_trap_exit(regs);
+> >=20
+> > Below comes another hard_cond_local_irq_disable() call that is a
+> > duplicate as already handled by mark_trap_exit(). =3D> More code to be
+> > removed.
+>=20
+> One is for user_mode and one for !user_mode().
 
-Since its very inception, the POSIX API in xenomai3 enables automatic
-wrapping of POSIX calls to their libcobalt counterpart using a linker
-trick (-Wl,--wrap), so that applications can use the pristine POSIX
-routine names to invoke Xenomai services. For instance, the following
-snippet:
+Can't follow here, but I agree: Some on the confusion is/was on my side.
+Let's bring back the complete sequence:
 
-      ret = pthread_create(&tid, &attr, foo_routine, NULL);
+=09mark_trap_entry(regs); [1]
 
-would translate internally to:
+=09if (!user_mode(regs))
+=09=09hard_cond_local_irq_enable(); [2]
 
-      ret = __wrap_pthread_create(&tid, &attr, foo_routine, NULL);
+=09handle_page_fault(regs, state); [3]
 
-which is a weak symbol alias to:
+=09local_irq_disable(); [4]
 
-      ret = __cobalt_pthread_create(&tid, &attr, foo_routine, NULL);
+=09mark_trap_exit(regs); [5]
 
-The significant part of this wrapping is that we go from symbol_x in the
-source code to __cobalt_symbol_x at link time, with libcobalt
-implementing the latter.
+=09if (!user_mode(regs))
+=09=09hard_cond_local_irq_disable(); [6]
 
-Over the years, we noticed several issues with this scheme:
+[1] and [5] open/close the trap handling section. Entry into this area
+and exit from it should match. But: [2] is inside the section while it's
+counterpart [6] is outside the section. That's a mismatch (even if the
+code does the right thing, more later).
 
-- because turning on wrapping only happens at link time, there is no
-  indication whatsoever that some object file does expect wrapping to be
-  applied by the linker when producing the executable. For instance,
-  compiling such object file with build flags obtained from `xeno-config
-  --cobalt --cflags` then linking with `xeno-config --posix --ldflags`
-  would successfully create an executable, which would send all POSIX
-  calls to the underlying *libc, which may or may not be the intent,
-  depending on which xeno-config call was wrong. When building an
-  application from multiple parts which are not necessarily maintained
-  and built in the same team/organization which uses them (e.g. 3rd
-  party libs), this issue is a source of headaches. At the very least,
-  we need some guardrails to prevent this from going unnoticed.
+[2] and [6] must be in lock-step. In v2 only [2] has been removed on my
+request, because it is a partial duplicate, right, but removal likely
+leads to confusion.
 
-- symbols in static archives are always wrapped although we may not want
-  this. Likewise, symbols in shared libs are not wrapped although we may
-  want the opposite. We have to resort to wrap-link.sh to accommodate
-  complex library dependencies, which makes the process quite brittle
-  since correctness here depends on the order of appearance of each
-  object and dependency in the link args. A badly ordered link sequence
-  successfully produces an executable, but the latter behaves
-  incorrectly.
+[4] must only be called when running inband.
 
-  For instance, say we have lib3dparty.a which is a mere in-band library
-  that does not know about Xenomai, but is used by a Xenomai application
-  for non-rt business by threads it starts using some mundane library
-  service (e.g. libstdc++, via std::thread). Some foo() service
-  lib3dparty.a provides serializes callers using a pthread_mutex_t lock.
+Now the most confusing part, at least on my end: My expectation was that
+you follow the same pattern as x86 does. But that is not the case. The
+page fault handler on x86 does not use mark_trap_entry/exit() at all.
 
-  We then link our rt app using wrap-link.sh, with lib3dparty.a
-  appearing before libcobalt because this seems to be the most natural
-  order to most users at first glance. Which would give this under the
-  hood:
+That's why cond_reenable_irqs_{user,kernel} exist. That is - so to say -
+the IRQ mask touching counterpart of mark_trap_{entry,exit}() on riscv.
+The fault handler itself is directly calling oob_trap_notify() on x86.
 
-        g++ -static -pthread -o app main.o -Wl,@cobalt.wrappers -lthirdparty -lcobalt -lpthread
-        # stage 1: g++ -o app.tmp -r -nostdlib -static -pthread main.o -Wl,@cobalt.wrappers -lthirdparty
-        # stage 2: g++ -o app app.tmp -static -pthread -lcobalt -lpthread
+hard IRQ enablement inside the page fault handler:
+I went to x86 today and reviewed the code again, mostly to make sure
+we're not following a broken pattern. Outcome: I consider the x86
+implementation as correct.
 
-    Because lib3dparty.a comes before -lcobalt, the library goes into
-    the --wrap stage, and its lock is set up as a Cobalt mutex by some
-    init call in that library. Statically linking against libstdc++.a
-    does not help, because this dependency is injected on stage 2 when
-    wrapping is no more enabled in the link args. Mere dynamic linking
-    against libstdc++.so would not help either, since symbols defined in
-    a DSO escape wrapping entirely.
+The main logic (on x86):
 
-    And now the fireworks are set off: when the std::thread workers
-    attempt to lock the mutex using the plain glibc service, they
-    fail. At best by crashing, at worse with EPERM. Not everyone checks
-    pthread_mutex_lock() return codes, right?  So now we have multiple
-    workers stepping on each others toes when accessing a shared
-    resource. Zero indication of this happening except maybe weird
-    application output or crash. Perfect day.
+1) Re-enable interrupts following the following rules:
 
-  We could use C11 thrd_create() the same way to create workers and get
-  into the exact same pitfalls without involving libstdc++ at all.
-  
-- a POSIX object such as a mutex, condvar or semaphore can be set up on
-  one side and used on another, and we have no way to detect it; we
-  usually receive obscure errors at runtime, in the best case the
-  application crashes. Things get uglier with C++ when inline header
-  code gets wrapped and out-of-line parts are not.
+   - Fault over user space: Enable hard IRQs and in addition,
+     when running inband: enable inband IRQs=C2=A0
+     (see cond_reenable_irqs_user())
 
-- the y2038 issue makes things worse: v3 needs to keep yet another
-  hand-written list of wrappers for this,
-  i.e. cobalt-glibc-time64.wrappers so that time64 calls in 32bit builds
-  end up at the right place. The day the underlying *libc decides to
-  redirect other symbols to whatever build-specific counterpart (not
-  exclusively time64), we can only notice this after a runtime
-  breakage.
+   - Fault over kernel space: Enable hard IRQs and in case the=C2=A0
+     inband stage was unstalled on fault entry: enable inband IRQs
+     (see cond_reenable_irqs_kernel())
 
-  Also, since the glibc headers know nothing about the __real_* symbols,
-  they won't redirect them to the proper 64bit implementation but keep
-  branching to their legacy 32bit variant, unless they are declared with
-  COBALT_DECL_TIME64. It looks like v3 may have at least fcntl, and all
-  the socket *msg calls escaping redirection right now. There is another
-  example, which is harmless this time fortunately, with wrapping
-  pthread_yield(). A recent glibc installs a redirection for this
-  routine:
+2) Notify the co-kernel, by calling oob_trap_notify()
 
-  extern int __REDIRECT_NTH (pthread_yield, (void), sched_yield)
+3) Call the fault handler=20
 
-  This means that __cobalt_pthread_yield() is not called when such
-  redirect is in place. The only reason that keeps it working is that
-  pthread_yield() is redirected to sched_yield(), and we do intercept
-  sched_yield() anyway.
+4) Restore IRQ state (see cond_disable_irqs())
 
-- when link-time optimization is involved, any references the
-  intermediate representation may add escapes wrapping. Once again, this
-  is 100% opaque to us, we have no idea what happens under the hood.
+Coming back to risc-v now: Starting in do_page_fault(), I see a
+completely different order of things. Starting with mark_trap_entry()
+being called which notifies the co-kernel first, without doing 1) as on
+x86. At least the notification has to take place under the same
+conditions as on other archs. Otherwise we might confuse the co-kernel.
 
-- there is a cost to implicit wrapping for I/O calls such as open(),
-  read(), write(), ioctl() and friends: we have to try the Xenomai side
-  first, then fallback to the regular *libc side if that fails. Granted,
-  this is only a problem for in-band code, but still: although
-  SCHED_WEAK threads are running in-band by convention and oob by
-  exception, they should not have to pay twice the price for each
-  wrapped I/O system call.
-
-- on a more general note, we times and often recommend that a clear
-  real-time vs non real-time split be enforced in any application which
-  runs in a dual kernel environment (I'd argue that this should be a
-  rule of thumb for all rt designs, even those served by native
-  preemption as well). Doing so is basic sanity, so that
-  responsibilities and constraints are obvious from the get go when
-  reviewing the implementation, and we don't create situations in which
-  rt-unsafe code is called from a time-critical path too easily. In that
-  sense, symbol wrapping blurs the boundaries between rt and non-rt,
-  which contradicts this recommendation.
-
-I believe that the last point carries a lot of weight in favor of
-explicit annotation of libcobalt calls in the application code
-(i.e. __COBALT(), __RT(), __EVL()). However, I'm not recommending that
-link-wrapping is dropped from v4, especially since we need an easy
-migration path from v3, but at the very least v4 should prevent misuses,
-help in figuring out where problems lie with symbol wrapping. What I'd
-like to see in v4:
-
-- a way to somehow mark the object files that did include the libcobalt
-  headers, so that linking them without -Wl,--wrap fails.
-
-- conversely, a way to mark the object files that did _not_ include the
-  libcobalt headers but the regular glibc ones, so that linking them
-  _with_ -Wl,--wrap fails when the wrap list contains inconsistently
-  used symbols.
-
-This metadata could be used by a checker tool that would answer the
-following question: "where the heck each call to libcobalt services
-actually goes for this executable"? It could also be used to generate
-the wrap list on the fly for symbols which carry the 'wrapped' marker
-by inspecting the object list.
-
-Icing on the cake, it should even be possible to use this information to
-implement auto-annotation of source code by reading a wrapped binary,
-i.e. patching in the __COBALT() annotations mechanically, for those who
-want an easy way to depart from symbol wrapping for an existing
-application.
-
-Thoughts welcome.
-
--- 
-Philippe.
+I hope that helps (and makes sense).
