@@ -1,91 +1,91 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.54
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.208.45
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1795531910;
-	b=YL1rSKl9L56rvcEH9AB72wwAtt93iCuWA62ujW0mVjdbYEuATOmjWKQ0Zv5R5gcP+Swj
-	 FMaUDntYC2m35IZVLvwdaGFGXwtNdEqWV5+gIy9q9NPxO4U5maqH71oPJf+K09ZTMxW4S
-	 C39Vyz5mSppO8VfWMoedzs4Ovt4x0Q6e3JzbUDGAn3bFU5RhQN+pY+3Woyvny6qRPL76b
-	 twSx1MI/OftwLhb7kaacDVquSPIM4LmXGtPQc/TQvmynp+PtSC5v9TW0GmISOBHKdsvzv
-	 meeVGQlZ6l9gWg0AUFSz0jK09QaxWp50Rg7RMzgWsBhIO8kL4NXC6ACHRG/k1U8Hwjw==
+	b=LqsggWgDR6DnDd1U7r5lKQAY6dAjOBiWUqv4aw8EPth+W+bL97K+FRz6CgTih0EXHoCA
+	 +AWTMRcVeYWcqp0JtpfRVEnGlvG+2AqxaGNMyjQ90lzcBaRmEFoguomCkLLUzgCo/N8WY
+	 IyKiFhAbcF7enjGVRqx7zDLDo6KTVP2WFTzjX0S6spNIvNzSHawLNfgxpC6XCqI3HxnEf
+	 sGXWNh+Cq3+4aisrzzVKdEElm7VE8fURJC1v3qzoatodRvAtnmzy6ppIdOP/1QKR2rq3i
+	 hAvJ3Y6m050/rgXBN6kl2RhlqyLFJFhAOijf9PvSwZomM1DDuIiV+36pZpk4n/j30kQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1795531910;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
 	 Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
 	 Content-Transfer-Encoding;
-	bh=BvdMybXpVDbNm7Nq4/RGkosTbWPNsmemJDVrhwb859g=;
-	b=zPNaNxfCECfxN+FBGGu4IUzm6xdBI9oWRaLohRhMJOFiDVguuLPcYVPynG36b744ISYz
-	 TcM+gvRMNiLqNyPdEE+KAsXw8raJuA8Y+huApE8FBwMGtbIDeORwIyqaFODS0eyfXdDap
-	 QwtsohDVsvnXk/DK9kupo7IiVSGyCbH4DZUo6BFxBfYxHkS17jzg1SdHiGqUEK6UuN1mj
-	 BUiK9UjdKqiC9k/Sotf6YrmPAYmqKRbsDxl5P45dBtFJz/Obf12cwJ9UEhEoOqGd7/Hcx
-	 IKXcOwOYahkNQfrinrtyr4R+B4qNi3mZAFkEPsM4anY5DLRXjfD3p+V0GM02mAEdIIQ==
+	bh=BNBl41T24axJj+7RGimeQQqyb/HDH8u6of9d4xxwWqk=;
+	b=QqflFE4CWL3NMJ+GWhi0aMi4GZS/OcFHfYSPAXE1p9Y+4OQnXl/e4IwQT1gSXKSbAVox
+	 1mE1lCrfu3zf2K6eV5i+ruP5B2c/8A2JpSnrOOWeQG7jyP/vJXiihXYy8wY4pSnbCI6XZ
+	 T/14l6Z2BiGwYLKEX1OvI8Im98SpK3mnPmRjiAs34AgtpNdf8f3WCQ8BDvjMkol/EemM2
+	 4qgduldWcyWbYBtqnU52eiQxBbueqpvhp0ZMR3o9T53FjFSehWDGzdEAWKwG6+euD5KhI
+	 7rpX4VRC1kY+dOmqlF1sZtnvjN/qlsBQtmXCxgiHtE0cSAI4H0sApA9IftyIa10jHKA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=googlemail.com;
 	spf=pass smtp.mailfrom=googlemail.com;
-	dkim=pass header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=SbUvpUn4;
-	arc=none smtp.remote-ip=209.85.208.54
-Received: from mail-ed1-f54.google.com (mail-ed1-f54.google.com [209.85.208.54])
+	dkim=pass header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=KfU9SjLU;
+	arc=none smtp.remote-ip=209.85.208.45
+Received: from mail-ed1-f45.google.com (mail-ed1-f45.google.com [209.85.208.45])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E4A9B606A331
-	for <xenomai@lists.linux.dev>; Tue, 24 Nov 2026 14:51:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org E4A9B606A331
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 63743606A32D
+	for <xenomai@lists.linux.dev>; Tue, 24 Nov 2026 14:51:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 63743606A32D
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=googlemail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=googlemail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=SbUvpUn4
-Received: by mail-ed1-f54.google.com with SMTP id 4fb4d7f45d1cf-6b587538a37so6881585a12.2
-        for <xenomai@lists.linux.dev>; Tue, 24 Nov 2026 06:51:49 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=KfU9SjLU
+Received: by mail-ed1-f45.google.com with SMTP id 4fb4d7f45d1cf-6b8a2518f7cso5369814a12.2
+        for <xenomai@lists.linux.dev>; Tue, 24 Nov 2026 06:51:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20260707; t=1795531908; x=1796136708; darn=lists.linux.dev;
+        d=googlemail.com; s=20260707; t=1795531909; x=1796136709; darn=lists.linux.dev;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=BvdMybXpVDbNm7Nq4/RGkosTbWPNsmemJDVrhwb859g=;
-        b=SbUvpUn40GRokvMtzhX07WMtowW+dsHVhR9pE1II8CltwW2QAW2cAoiFSYMvnGfmFP
-         Ws/29UiYQT9X+RgcJocPCCSd1B0z5UpZCUOOH4/msDKEBP2mxvhyewsMLG0SJBmNUg0o
-         dRpENVDhtRL9gOAlYDcrHq+VzHsGSeL8uuwuWhYMFsyc4DsSWdaYMqRdH2PP9vabFn8J
-         pL+MV1JS5nwDDj/MTd6u92GGZyhv0KGCw4x/a5jsNn7XRMRbd52A1i4EdBEJNITb+DAY
-         EMajsie9QxkLXwl9ae44wjje4a4t425t+Aw54hLM5c035jzpFnooE6OjXLETcApGM656
-         qTZQ==
+        bh=BNBl41T24axJj+7RGimeQQqyb/HDH8u6of9d4xxwWqk=;
+        b=KfU9SjLUcxwbv6iOCjHyI8SgGZeI5QeQdxlT7f5QmDPWj0SDUyjtTPmr4ypH2pZkzA
+         SE3U6aw6eYyMfjreoz7RUUHOrSejzLG5FizSlyJutJSspP0HczVseNBLTdE0HMuUeqRf
+         fVSYy94LOuHVk696562BCKDKbMZrJUg9hRyQcuEARO99Udl5rukyHajZL1+iz3668T9o
+         ri5dpzoVExXVLKMb32bZh3sU1y5N+pzNlOoxWmDpvo+yCGwgrrBhcOaSS9+6+cpf7TnR
+         zwRPcxOQSHHd6SiRfM7pkbLSz960vzg6fosZ0amlvKSxsMOmmteY9htD9nvlF5ITXBx6
+         RqYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795531908; x=1796136708;
+        d=1e100.net; s=20260707; t=1795531909; x=1796136709;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to:content-type;
-        bh=BvdMybXpVDbNm7Nq4/RGkosTbWPNsmemJDVrhwb859g=;
-        b=yqJOhksG/1X8fixnBs+/WoEWyhzHgPD4F8N29abHGXQxSUOm++SOGv969lLDI3deN5
-         BOgKlWqMnijuV49jBE5wrEgjQA8/iBRueVv5F2viZH+odQ5K/ag2hqN9QTg5sICW9eBb
-         eS6nev+sq/aSQubyClbxpV1957rpX3q21NNWW35H22KS6LDKpc+Gq4QjWoun+eX94/Yg
-         ls4vv3cvAG2TWKNs2lqLjovUptcucyloWCzwaOcTUu90TjTREyJcQpC9kHaL56EZfpQm
-         FqL3DyCb7pq7e+8QF8lVC36TBBhm86IeT23C2ZkV1wQh8tuTCa4uiVlTiPs3ptBX2JCs
-         gbPA==
-X-Gm-Message-State: APuU4Z/wejIUYQTHOT8v9JfbipW1eQObhhc3qjuCvdrXFg+QwgbI3AMe
-	Y9DtRuvtSkqxCj+1VoX8VtdCyr5kqrOb2FqUPHFmtRDqADdNM5rJtyFC6saKxA==
-X-Gm-Gg: AZFdTZcoyUrFcMEgr2RRSpwJfuctDfD18Kz61s5Y9Ot1y2KpiSM2jvo+T7cAJhPk6u1
-	wV2WL6MwAwe2edvGPUE3qE1w2h0jP0KfhQkFF6Hs2aeFN5m2iLpazamWfb6B4kiRWLNPpUS4/qL
-	TfWBaA8sJwlZ5oYY67OjDk0q2D/uScFUh7XOqe5xUjvLOEeZgYs42sEZGw/dU8LPO+9O/RvujPO
-	NOZIx+9swZKxkxLMZzaW5If6d0bq6NUtqb8cCAfmgSBn/eHAWh2exnQLFvf4zvlYFCfMFDGoul3
-	S1X8mKWujv3L7fRpZ/Jimp/4hvWXjismccC84zmu8n5735U9EUtIkJ/YG+GXh7N0qOQ4E9T5pak
-	SyShs89xPTUZy3yBaQNMG+ZxsQq4lsjDAOQ0WXhTB/3l1ENe7n0TJhS/vWZiUO6vj1dcvvbSCbW
-	oZtf4WeP3GfF2MoaINaCpGeMBzFg0uj/LtWK/vr4GyxK1HvLaAII5DtRFeP/dLPWb5Fd6hJv2hA
-	IjleFpbxe8gbuhkP5LIr+gW5jEO6hMuqenrKxah9MVdcvDS3ns1yinkyBk92DrN0C/4DuBkTI4V
-	FGuOiNzpsIt8sgoJslHQmW9PRlKlblncVLHB4UuC4PnV1eDbSwGkBYMf5rG1HNdI180NN4BU0PY
-	r2xHgQSsG
-X-Received: by 2002:a05:6402:1cc7:b0:6b7:bffa:6f24 with SMTP id 4fb4d7f45d1cf-6ba37ac5eb3mr10171954a12.0.1795531908208;
+        bh=BNBl41T24axJj+7RGimeQQqyb/HDH8u6of9d4xxwWqk=;
+        b=AleITrE3C5gdrslKtmCeMVLvKkTMsVTxlVbAWzgOXx0/XJ5QY5LjxX7IqZ4XfVRP7c
+         9wMctD7hSUeLzNnAw04AQ/k7Lg1MA05tFX4fk5rErtzj03wF9Ruj1wnduWYHEtnzSM8o
+         XU9sRyPdb8ZnV3ZMxJXuSGECM1GMbF1551giONnaBQkq7SKAVCz5ejh5SU+QVfDcx5Wk
+         c+ghi3pmiFj8ave8JbL0IVlN7ayGAI2wQXFUhIt0INPyFq0btL1JClOe3cQGl6FYMAw5
+         8uffF9DnnQ1/+ng/YzCL8RMVvHIQ/XuTXBql7i9NKlPao9FJDjgmEYm4mMnYE3ZcSrZM
+         pvOg==
+X-Gm-Message-State: APuU4Z9zgdPCJLpM2ElY40Y7aDOuTpOYDHbM3zxLfHCYaMOt0EAOuafI
+	CJV+5nObz29vNvZ/AYyUSKY3t+VePtzm3UqRm1+0DHQ13mn3Ek52BDJLSxWh/A==
+X-Gm-Gg: AZFdTZeoRUjabJvThwrVt8OIdBf242XUkn2uUv7xjjXa2Eh92wLR0k9SaMEnDeMFu9b
+	x74B1s2WzR4rbBpE5WWQUzHWsJGDn+db5QTrK+wdexrBdnIE3EkJpGVhxELMbtliRhNr9bzKhTe
+	gHHaCnt4AqNHxz0QaeZbieHY4Q9006qqfvaFkSvVrvltZR4VCMgTrAI0/Z3T+j4D2bB5aJy5ALT
+	Jx6mQCbdYuCp1qPQFH1trW6lYSpYMBzMiWpPJ/CZJhib8ocM1iRlAHcGcQogSFhaTDl5BpPbqt7
+	eAyEU8+hXhYBisUI+1OVKooMUHf9s2K8hNyInIU/SwNnx4mSgHNm8icRUrqCXvjoGHxNpNs0qdE
+	y3yeQrIjsQlEzdxi6NUVM13mAOV+cNJJ9lQIGlEw+uqnCPCFp++Pbop7KqIOjHpbHxdYxnYuBOo
+	InzcN20JPowzaIkPU7o9l32CIbs1GiGOeLsLlw9qGTItiylN3kWsS4NVzKJ1X8pmvPQsXFVNUz0
+	YjueuQ4CSXHMYmB5f9lCkXfL0shsFDhVbsYlc2bCa3anborUT3+FW8RzdYgCnAZjWG7NhTXR+HQ
+	PFQ5ZKRHh0RqfWTOKw+/QgE3lqt0u1mdSGScXZOFv9Ng2Bt0qr5xuP6/q+RwjN+WXnKRIDxarnY
+	/EAWNloCP
+X-Received: by 2002:aa7:c0d0:0:b0:6ba:144f:ae43 with SMTP id 4fb4d7f45d1cf-6ba37c7b138mr7699149a12.6.1795531908788;
         Tue, 24 Nov 2026 06:51:48 -0800 (PST)
 Received: from development2.visionsystems.local (mail.visionsystems.de. [213.209.99.202])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6ba370e8ad0sm6937861a12.18.2026.11.24.06.51.47
+        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6ba370e8ad0sm6937861a12.18.2026.11.24.06.51.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Nov 2026 06:51:47 -0800 (PST)
+        Tue, 24 Nov 2026 06:51:48 -0800 (PST)
 From: Yegor Yefremov <yegorslists@googlemail.com>
 To: xenomai@lists.linux.dev
 Cc: Yegor Yefremov <yegorslists@googlemail.com>,
 	Jan Kiszka <jan.kiszka@siemens.com>,
 	Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH v2 2/3] lib/cobalt: Select the time64 vDSO call without __TIMESIZE
-Date: Tue, 24 Nov 2026 15:51:43 +0100
-Message-Id: <20261124145144.3411177-3-yegorslists@googlemail.com>
+Subject: [PATCH v2 3/3] testsuite/smokey/y2038: Define ADJ_SETOFFSET if missing
+Date: Tue, 24 Nov 2026 15:51:44 +0100
+Message-Id: <20261124145144.3411177-4-yegorslists@googlemail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20261124145144.3411177-1-yegorslists@googlemail.com>
 References: <20261124145144.3411177-1-yegorslists@googlemail.com>
@@ -100,83 +100,37 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The clock_gettime() vcall is chosen by checking for __TIMESIZE == 32,
-which only glibc defines. uClibc-ng built with time64 support
-(__UCLIBC_USE_TIME64__, as e.g. Buildroot builds it) and musl >= 1.2
-define __USE_TIME_BITS64 and use a 64-bit time_t on 32-bit targets, but
-have no __TIMESIZE. libcobalt then picks __vdso_clock_gettime, which
-fills in a 32-bit struct timespec: the seconds and nanoseconds both end
-up in the 64-bit tv_sec of the caller, and tv_nsec is left untouched.
+The <sys/timex.h> of uClibc-ng and musl lacks ADJ_SETOFFSET, so the y2038
+test fails to build:
 
-Fall back to the size of long if __TIMESIZE is not defined. Nothing
-changes for glibc, and on 64-bit targets.
+  syscall-tests.c:412:22: error: 'ADJ_SETOFFSET' undeclared (first use in this function)
 
-Fixes: fb112c2fdc69 ("y2038: lib/cobalt: Switch vdso to gettime64")
+Fall back to the value from the kernel UAPI, as the test already does
+for the time64 data types.
+
+Fixes: fa89ca44e33d ("y2038: testsuite/smokey/y2038: testcase for adjtime64")
 Assisted-by: Claude:claude-opus-5-5
 Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
 ---
- lib/cobalt/arch/arm/include/asm/xenomai/time.h   | 8 +++++++-
- lib/cobalt/arch/arm64/include/asm/xenomai/time.h | 8 +++++++-
- lib/cobalt/arch/x86/include/asm/xenomai/time.h   | 8 +++++++-
- 3 files changed, 21 insertions(+), 3 deletions(-)
+ testsuite/smokey/y2038/syscall-tests.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/lib/cobalt/arch/arm/include/asm/xenomai/time.h b/lib/cobalt/arch/arm/include/asm/xenomai/time.h
-index c260acf46..014668b6e 100644
---- a/lib/cobalt/arch/arm/include/asm/xenomai/time.h
-+++ b/lib/cobalt/arch/arm/include/asm/xenomai/time.h
-@@ -12,7 +12,13 @@
+diff --git a/testsuite/smokey/y2038/syscall-tests.c b/testsuite/smokey/y2038/syscall-tests.c
+index 4318712cc..27deb80e5 100644
+--- a/testsuite/smokey/y2038/syscall-tests.c
++++ b/testsuite/smokey/y2038/syscall-tests.c
+@@ -17,6 +17,11 @@
+ #include <sched.h>
+ #include <rtdm/ipc.h>
  
- #define COBALT_VDSO_VERSION	"LINUX_2.6"
++/* not provided by all C libraries, e.g. uClibc-ng and musl */
++#ifndef ADJ_SETOFFSET
++#define ADJ_SETOFFSET 0x0100
++#endif
++
+ smokey_test_plugin(y2038, SMOKEY_NOARGS, "Validate correct y2038 support");
  
--#if __USE_TIME_BITS64 && __TIMESIZE == 32
-+/*
-+ * Use the time64 vcall whenever time_t is 64-bit on a 32-bit target. Not
-+ * all C libraries define __TIMESIZE (e.g. uClibc-ng and musl), so fall back
-+ * to the word size.
-+ */
-+#if __USE_TIME_BITS64 &&						\
-+	(__TIMESIZE == 32 || (!defined(__TIMESIZE) && __SIZEOF_LONG__ == 4))
- #define COBALT_VDSO_GETTIME	"__vdso_clock_gettime64"
- #else
- #define COBALT_VDSO_GETTIME	"__vdso_clock_gettime"
-diff --git a/lib/cobalt/arch/arm64/include/asm/xenomai/time.h b/lib/cobalt/arch/arm64/include/asm/xenomai/time.h
-index 06992e709..d6c5880e0 100644
---- a/lib/cobalt/arch/arm64/include/asm/xenomai/time.h
-+++ b/lib/cobalt/arch/arm64/include/asm/xenomai/time.h
-@@ -12,7 +12,13 @@
- 
- #define COBALT_VDSO_VERSION	"LINUX_2.6.39"
- 
--#if __USE_TIME_BITS64 && __TIMESIZE == 32
-+/*
-+ * Use the time64 vcall whenever time_t is 64-bit on a 32-bit target. Not
-+ * all C libraries define __TIMESIZE (e.g. uClibc-ng and musl), so fall back
-+ * to the word size.
-+ */
-+#if __USE_TIME_BITS64 &&						\
-+	(__TIMESIZE == 32 || (!defined(__TIMESIZE) && __SIZEOF_LONG__ == 4))
- #define COBALT_VDSO_GETTIME	"__vdso_clock_gettime64"
- #else
- #define COBALT_VDSO_GETTIME	"__kernel_clock_gettime"
-diff --git a/lib/cobalt/arch/x86/include/asm/xenomai/time.h b/lib/cobalt/arch/x86/include/asm/xenomai/time.h
-index 36e027329..91993d99f 100644
---- a/lib/cobalt/arch/x86/include/asm/xenomai/time.h
-+++ b/lib/cobalt/arch/x86/include/asm/xenomai/time.h
-@@ -12,7 +12,13 @@
- 
- #define COBALT_VDSO_VERSION	"LINUX_2.6"
- 
--#if __USE_TIME_BITS64 && __TIMESIZE == 32
-+/*
-+ * Use the time64 vcall whenever time_t is 64-bit on a 32-bit target. Not
-+ * all C libraries define __TIMESIZE (e.g. uClibc-ng and musl), so fall back
-+ * to the word size.
-+ */
-+#if __USE_TIME_BITS64 &&						\
-+	(__TIMESIZE == 32 || (!defined(__TIMESIZE) && __SIZEOF_LONG__ == 4))
- #define COBALT_VDSO_GETTIME	"__vdso_clock_gettime64"
- #else
- #define COBALT_VDSO_GETTIME	"__vdso_clock_gettime"
+ /*
 -- 
 2.34.1
 
