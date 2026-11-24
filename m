@@ -1,65 +1,63 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.136.64.226
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=141.95.128.206
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795471942;
-	b=zf5ZpY8KpCQ4DNKWfZcsco/F2JWZBgayI5mJCi+USIUwoGJjWCCgP99ScxCtXWdmU3x5
-	 lfxxbLhXEgGNafItk7WfxPWclXZeEdVYS+givXO99WnJi1huo7NsXeQ/dxaCQFCILV4gX
-	 vcFgD1WiRdiwHkULnRmxU3A9v5vLMGy91dNtO/Aj6jH3Ny5rFiwAX+JAkso+P6TUht18d
-	 6cz0WIL/MSCuS1dPATZoCl3XZZKZH0+oxeffExzQuwS9Y4u3kAhIAGCQwDduYwdyXltTq
-	 0W1cuBgKnUMWVG2x4x0HO+CVq3qktpfOGNYtjHbbKoypP/rUDFsTf/lyjO6rmvPozbg==
+	t=1795507100;
+	b=MP5eR/aRjj/lQT8fhLDkDQmmzt4gnMdobkGzTGsf1uboFUJSoMctV9s2L6QxGiMK6tO7
+	 R/LjeiJz4KU3I4aK4TF5WAyxDQ7agyB5beF2XNpRyvDnOnLwDFEi5A/0SBOyrZ6DAXi/a
+	 sH9OQAklGLmSygGWE5I/AXHO8UTrnycayaFrnbnAQCEYCX92fPAKiqJmehu5f2Ft1mm7w
+	 8vDGePp8QDpET1UXlv0MfeiihyvLWyheNj/lttEKiK8WWv8cNHjM1/Fh6cXqLT+J8XL+b
+	 cvBu+ZstiZwcViXb6fifail7Vpd5Po3uzqqEdd7aHc2vFe+tRvdYY0Whp85rJHs5ROA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795471942;
-	h=DMARC-Filter:Received:DKIM-Signature:Message-ID:Subject:From:To:Cc:
-	 Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
-	 MIME-Version:X-Flowmailer-Platform:Feedback-ID;
-	bh=+rmpkX/jJAzZN75lz4TFazXvGTX7YFzmlxEc0ss7ZEk=;
-	b=TeeMDms8oG1VanUIY4O9Bm3sirSqaRnpsmIKWAdrBncefMPQZcu/orbNck5uBiGFdRfQ
-	 X3Ml/d/f9WcxihQ+eInsAeTTC0XL8UbqrR0Veu6+K5ZvJ9m//peEkS8igSuaH5VmwtbyJ
-	 n7ZeFa7e6XbDlcGWnr8UrpXX0UCQKPGp8B1OfwwtRPE3IUPmntDGdR0m4S8k/Fp5Ywf7Z
-	 B2TVBUpjn+p3ZFdNkjJm6NgUOxeNN1y6VXGl2mHbnANzB0K+Oxuu/bI+uNyIwdY77z5bz
-	 pSY2OHem7YTUh10oz1VY6n4KAhLCm101cu+SAHVvwSJ255HZg6dQlG5th2h17cz+SEg==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795507100;
+	h=DMARC-Filter:Received:Received:From:To:Subject:Thread-Topic:
+	 Thread-Index:Date:Message-ID:References:In-Reply-To:Accept-Language:
+	 Content-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:
+	 x-originating-ip:Content-Type:Content-ID:Content-Transfer-Encoding:
+	 MIME-Version:DKIM-Signature;
+	bh=/hxpmF3s7YOcR3wt6ZP5/8CQuMSvJvGH1srpklZtSmo=;
+	b=B2IRWaQANz+ZKT8Oo++Gny2/e/To8juZDCYQc1K1fBB7IYE0lXUSGaIKTnLE86yNtbF6
+	 kpAabcDKVE40V0n6L1ddt3QyeEwZ58wPDfKwzLhdiJS85OwsF/PRr2Cdc2DaRN4ZmVweP
+	 4HKADWDQOlZrWa1hJlSg3+ywRt1JfZcdSuKpFcaqBr5/YkAjUFM5Twj8gItWa45lT/Son
+	 YncCCjceDcSagvl8PD0B2vdgJmXe9hgxNUJpJSrKLTc8dL9Rw/E1jmk/qVSlQ0GCtCOvb
+	 aB1wf9xeoa0RraJ1LNzqzTmncORkHg9LuaRsKEfSHBSFEAbNgsgHb4D7esj+KlcOROA==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=siemens.com;
-	spf=pass smtp.mailfrom=rts-flowmailer.siemens.com;
-	dkim=pass header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=P7dx+ohK;
-	arc=none smtp.remote-ip=185.136.64.226
-Received: from mta-64-226.siemens.flowmailer.net (mta-64-226.siemens.flowmailer.net [185.136.64.226])
+	dmarc=pass header.from=sprinte.eu;
+	spf=pass smtp.mailfrom=sprinte.eu;
+	dkim=pass header.d=sprinte.eu header.i=@sprinte.eu header.a=rsa-sha256 header.s=ovhex803668-selector1 header.b=ZccRz4ui;
+	arc=none smtp.remote-ip=141.95.128.206
+Received: from mail.sprinte.eu (mail.sprinte.eu [141.95.128.206])
 	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67F64606A33A
-	for <xenomai@lists.linux.dev>; Mon, 23 Nov 2026 22:12:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 67F64606A33A
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DFCB606A31E
+	for <xenomai@lists.linux.dev>; Tue, 24 Nov 2026 07:58:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5DFCB606A31E
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sprinte.eu
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sprinte.eu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=P7dx+ohK
-Received: by mta-64-226.siemens.flowmailer.net with ESMTPSA id 202611232212118f8790f2ea00020750
-        for <xenomai@lists.linux.dev>;
-        Mon, 23 Nov 2026 23:12:11 +0100
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
- d=siemens.com; i=florian.bezdeka@siemens.com;
- h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
- bh=+rmpkX/jJAzZN75lz4TFazXvGTX7YFzmlxEc0ss7ZEk=;
- b=P7dx+ohKnHWj3TCWzxsRZ52VBQldp+J3rEXWSPeGpuylcrezJIb9aem8jW0MiyADzgTsiX
- j2yYC2IJ6gIA+U3Z5Pv1yGOptGeK1G0ggKd3issaV7eMXpB6lO89gcFDYXfCtvxonbNFFf3Q
- F6R96XK1I+mx1rrmXAtNFvsqHG7K5UP6OaLqiyjRHhjtiO5SBWadr5hm0EzeUD4DfmDD7blg
- tDci9triazQFzAKM61sQVjuxwqP3PzWxzQ0HVUEaSWwoeyW+vYGn5UUwcVo+1awdCi6YjNQY
- droi21Bgz5juWJ2UCHmzVrz2aJ5RWWvpmrwm0S3MyBUOFsGW0MhB/JNA==;
-Message-ID: <e55022378f5d521c20e037597c04a8698b615a15.camel@siemens.com>
-Subject: Re: [PATCH dovetail v2 3/4] riscv: dovetail: inherit the hard irq
- state on kernel page faults
-From: Florian Bezdeka <florian.bezdeka@siemens.com>
-To: Tobias Schaffner <tobias.schaffner@siemens.com>, xenomai@lists.linux.dev
-Cc: rpm@xenomai.org, jan.kiszka@siemens.com
-Date: Mon, 23 Nov 2026 23:12:11 +0100
-In-Reply-To: <5e8681d8-7d2a-4337-807d-80eab19d36cc@siemens.com>
-References: <20261121165933.57310-1-tobias.schaffner@siemens.com>
-	 <20261121165933.57310-4-tobias.schaffner@siemens.com>
-	 <DN2371TJAB7G.334DTWMEPJTQI@siemens.com>
-	 <915d53fb-fc8b-4c07-935f-a9d4680ee8a5@siemens.com>
-	 <87afa16be7aada0d995e63364bb9e7785af24675.camel@siemens.com>
-	 <5e8681d8-7d2a-4337-807d-80eab19d36cc@siemens.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key, unprotected) header.d=sprinte.eu header.i=@sprinte.eu header.a=rsa-sha256 header.s=ovhex803668-selector1 header.b=ZccRz4ui
+Received: from S1044812.EX793143.lan (2001:41d0:11b:2f00::8d5f:80ce) by
+ S1044812.EX793143.lan (2001:41d0:11b:2f00::8d5f:80ce) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.2562.57; Tue, 24 Nov 2026 08:58:11 +0100
+Received: from S1044812.EX793143.lan ([fe80::90d1:6ba3:6aa1:fae0]) by
+ S1044812.EX793143.lan ([fe80::90d1:6ba3:6aa1:fae0%6]) with mapi id
+ 15.02.2562.057; Tue, 24 Nov 2026 08:58:11 +0100
+From: Julien Blanc <julien.blanc@sprinte.eu>
+To: "rpm@xenomai.org" <rpm@xenomai.org>, "xenomai@lists.linux.dev"
+	<xenomai@lists.linux.dev>
+Subject: Re: [RFC] symbol wrapping for libcobalt
+Thread-Topic: [RFC] symbol wrapping for libcobalt
+Thread-Index: AQHde4n+LItG+NsfR0yca7L/vWjUJrc8y4eA
+Date: Tue, 24 Nov 2026 07:58:11 +0000
+Message-ID: <bb6109e28cbd8d8d90a9638644041980e731a22b.camel@sprinte.eu>
+References: <877bi3thhu.fsf@xenomai.org>
+In-Reply-To: <877bi3thhu.fsf@xenomai.org>
+Accept-Language: fr-FR, en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <11379E65DD51104C90445589313FD025@EX793143.lan>
+Content-Transfer-Encoding: base64
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -69,136 +67,41 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-X-Flowmailer-Platform: Siemens
-Feedback-ID: 519:519-68982:519-21489:flowmailer
+DKIM-Signature: v=1; a=rsa-sha256; d=sprinte.eu; s=ovhex803668-selector1;
+ c=relaxed/relaxed; t=1795507091; h=from:to:subject:date;
+ bh=/hxpmF3s7YOcR3wt6ZP5/8CQuMSvJvGH1srpklZtSmo=;
+ b=ZccRz4ui6OmMBQC4rhUUELCz1Pr2pWjvO8slCggXClbWVAtwxp5Te7W4qwXt3nFDQHPEnPlhcK5M0ITcHaItrD3Vc/570T6bvZBjM6QBdWGT7DC7T/WD0PdJKkr/5+jBFnG6AiWmWx5iCYUd12Z4sjjIvfzYfV41D6ShmoeKivo9b3YmhvwJv8vMncHV5+eMcRSh6Ho7xyAIyvRikFzKizRy9c+uuyhny6njg4baNDZkD/10w33kxO01f68L8lSAm0LiklNwAbIlzWGGpGfzLSxSlQYA+jeVx8d/e/mIGNCx8Q55j76dW4AsnCS7Fd3O974Nl5x/NjP6h3opRVey1Q==
 
-On Mon, 2026-11-23 at 14:43 +0100, Tobias Schaffner wrote:
-> On 11/23/26 13:05, Florian Bezdeka wrote:
-> > On Mon, 2026-11-23 at 12:39 +0100, Tobias Schaffner wrote:
-> > > On 11/22/26 23:18, Florian Bezdeka wrote:
-> > > > On Sat Nov 21, 2026 at 5:59 PM CET, Tobias Schaffner wrote:
-> > > > > A page fault may hit kernel code which runs with hard irqs off, e=
-.g. a
-> > > > > kprobe whose fetch argument faults within the breakpoint trap. Th=
-e fault
-> > > > > handler still enables hard irqs for every kernel mode fault, so a=
-n
-> > > > > interrupt may break into that code. If the fault is handled out-o=
-f-band,
-> > > > > the handler also unstalls the in-band stage over the out-of-band =
-stage.
-> > > > >=20
-> > > > > Enable hard irqs in handle_page_fault() only if the faulting code=
- had
-> > > > > them on and we run in-band, and stall the in-band stage on exit o=
-nly if
-> > > > > we run in-band.
-> > > > >=20
-> > > > > Fixes: 1d1fdeccecef ("riscv: dovetail: add core support")
-> > > > > Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
-> > > > > ---
-> > > > >    arch/riscv/kernel/traps.c | 11 ++++-------
-> > > > >    arch/riscv/mm/fault.c     |  7 +++++--
-> > > > >    2 files changed, 9 insertions(+), 9 deletions(-)
-> > > > >=20
-> > > > > diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.=
-c
-> > > > > index a8e37ec27cc2..47799f18fa7d 100644
-> > > > > --- a/arch/riscv/kernel/traps.c
-> > > > > +++ b/arch/riscv/kernel/traps.c
-> > > > > @@ -488,17 +488,14 @@ asmlinkage __visible __trap_section void do=
-_trap_software_check(struct pt_regs *
-> > > > >    asmlinkage __visible noinstr void do_page_fault(struct pt_regs=
- *regs)
-> > > > >    {
-> > > > >    =09irqentry_state_t state =3D irqentry_enter(regs);
-> > > > > +=09bool inband =3D mark_trap_entry(regs);
-> > > > >   =20
-> > > > > -=09mark_trap_entry(regs);
-> > > > > -
-> > > > > -=09BUG_ON(dovetail_debug() && !running_inband());
-> > > > > -
-> > > > > -=09if (!user_mode(regs))
-> > > > > -=09=09hard_cond_local_irq_enable();
-> > > > > +=09BUG_ON(dovetail_debug() && !inband && user_mode(regs));
-> > > > >   =20
-> > > > >    =09handle_page_fault(regs, state);
-> > > > >   =20
-> > > > > -=09local_irq_disable();
-> > > > > +=09if (inband)
-> > > > > +=09=09local_irq_disable();
-> > > > >   =20
-> > > > >    =09mark_trap_exit(regs);
-> >=20
-> > Below comes another hard_cond_local_irq_disable() call that is a
-> > duplicate as already handled by mark_trap_exit(). =3D> More code to be
-> > removed.
->=20
-> One is for user_mode and one for !user_mode().
-
-Can't follow here, but I agree: Some on the confusion is/was on my side.
-Let's bring back the complete sequence:
-
-=09mark_trap_entry(regs); [1]
-
-=09if (!user_mode(regs))
-=09=09hard_cond_local_irq_enable(); [2]
-
-=09handle_page_fault(regs, state); [3]
-
-=09local_irq_disable(); [4]
-
-=09mark_trap_exit(regs); [5]
-
-=09if (!user_mode(regs))
-=09=09hard_cond_local_irq_disable(); [6]
-
-[1] and [5] open/close the trap handling section. Entry into this area
-and exit from it should match. But: [2] is inside the section while it's
-counterpart [6] is outside the section. That's a mismatch (even if the
-code does the right thing, more later).
-
-[2] and [6] must be in lock-step. In v2 only [2] has been removed on my
-request, because it is a partial duplicate, right, but removal likely
-leads to confusion.
-
-[4] must only be called when running inband.
-
-Now the most confusing part, at least on my end: My expectation was that
-you follow the same pattern as x86 does. But that is not the case. The
-page fault handler on x86 does not use mark_trap_entry/exit() at all.
-
-That's why cond_reenable_irqs_{user,kernel} exist. That is - so to say -
-the IRQ mask touching counterpart of mark_trap_{entry,exit}() on riscv.
-The fault handler itself is directly calling oob_trap_notify() on x86.
-
-hard IRQ enablement inside the page fault handler:
-I went to x86 today and reviewed the code again, mostly to make sure
-we're not following a broken pattern. Outcome: I consider the x86
-implementation as correct.
-
-The main logic (on x86):
-
-1) Re-enable interrupts following the following rules:
-
-   - Fault over user space: Enable hard IRQs and in addition,
-     when running inband: enable inband IRQs=C2=A0
-     (see cond_reenable_irqs_user())
-
-   - Fault over kernel space: Enable hard IRQs and in case the=C2=A0
-     inband stage was unstalled on fault entry: enable inband IRQs
-     (see cond_reenable_irqs_kernel())
-
-2) Notify the co-kernel, by calling oob_trap_notify()
-
-3) Call the fault handler=20
-
-4) Restore IRQ state (see cond_disable_irqs())
-
-Coming back to risc-v now: Starting in do_page_fault(), I see a
-completely different order of things. Starting with mark_trap_entry()
-being called which notifies the co-kernel first, without doing 1) as on
-x86. At least the notification has to take place under the same
-conditions as on other archs. Otherwise we might confuse the co-kernel.
-
-I hope that helps (and makes sense).
+TGUgbHVuZGkgMjMgbm92ZW1icmUgMjAyNiDDoCAyMTozMyArMDEwMCwgUGhpbGlwcGUgR2VydW0g
+YSDDqWNyaXTCoDoNCj4gDQo+IFNpbmNlIGl0cyB2ZXJ5IGluY2VwdGlvbiwgdGhlIFBPU0lYIEFQ
+SSBpbiB4ZW5vbWFpMyBlbmFibGVzIGF1dG9tYXRpYw0KPiB3cmFwcGluZyBvZiBQT1NJWCBjYWxs
+cyB0byB0aGVpciBsaWJjb2JhbHQgY291bnRlcnBhcnQgdXNpbmcgYSBsaW5rZXINCj4gdHJpY2sg
+KC1XbCwtLXdyYXApLCBzbyB0aGF0IGFwcGxpY2F0aW9ucyBjYW4gdXNlIHRoZSBwcmlzdGluZSBQ
+T1NJWA0KPiByb3V0aW5lIG5hbWVzIHRvIGludm9rZSBYZW5vbWFpIHNlcnZpY2VzLiBGb3IgaW5z
+dGFuY2UsIHRoZSBmb2xsb3dpbmcNCj4gc25pcHBldDoNCj4gDQo+IMKgwqDCoMKgwqAgcmV0ID0g
+cHRocmVhZF9jcmVhdGUoJnRpZCwgJmF0dHIsIGZvb19yb3V0aW5lLCBOVUxMKTsNCj4gDQo+IHdv
+dWxkIHRyYW5zbGF0ZSBpbnRlcm5hbGx5IHRvOg0KPiANCj4gwqDCoMKgwqDCoCByZXQgPSBfX3dy
+YXBfcHRocmVhZF9jcmVhdGUoJnRpZCwgJmF0dHIsIGZvb19yb3V0aW5lLCBOVUxMKTsNCj4gDQo+
+IHdoaWNoIGlzIGEgd2VhayBzeW1ib2wgYWxpYXMgdG86DQo+IA0KPiDCoMKgwqDCoMKgIHJldCA9
+IF9fY29iYWx0X3B0aHJlYWRfY3JlYXRlKCZ0aWQsICZhdHRyLCBmb29fcm91dGluZSwgTlVMTCk7
+DQo+IA0KPiBUaGUgc2lnbmlmaWNhbnQgcGFydCBvZiB0aGlzIHdyYXBwaW5nIGlzIHRoYXQgd2Ug
+Z28gZnJvbSBzeW1ib2xfeCBpbiB0aGUNCj4gc291cmNlIGNvZGUgdG8gX19jb2JhbHRfc3ltYm9s
+X3ggYXQgbGluayB0aW1lLCB3aXRoIGxpYmNvYmFsdA0KPiBpbXBsZW1lbnRpbmcgdGhlIGxhdHRl
+ci4NCj4gDQo+IE92ZXIgdGhlIHllYXJzLCB3ZSBub3RpY2VkIHNldmVyYWwgaXNzdWVzIHdpdGgg
+dGhpcyBzY2hlbWU6DQoNCj4gW1NuaXBdDQoNCkp1c3Qgc2F5aW5nIHRoYXQgYXMgYSB4ZW5vbWFp
+IHVzZXIsIHdlIHNoYXJlIGFsbCBvZiB0aGVzZSBjb25jZXJucy4gQW5vdGhlcg0KaXNzdWUgaXMg
+aW50ZXJvcCB3aXRoIGVnIHJ1c3QgY29kZSA6IGkgaGF2ZSBubyBpZGVhIHdoYXQgaGFwcGVucyB3
+aGVuIGEgcnVzdA0Kc3RhdGljIGxpYiBpcyBsaW5rZWQgb250byB0aGUgZXhlY3V0YWJsZSByZWdh
+cmRpbmcgdGhlIGNhbGxzIGl0IG1heSBkbyB0byB0aGUNCnB0aHJlYWQgYXBpICh0aGlzIG9uZSBp
+cyBhY3R1YWxseSBhIGJpZyBjb25jZXJuIGZvciB1cyBmb3IgcnVzdCBjb2RlIGludGVncmF0aW9u
+DQppbnRvIHRoZSBydCBkb21haW4sIGFuZCBldmVuIHRoZSBub24tcnQgZG9tYWluIGFzIGl0J3Mg
+dW5zdXJlIGhvdyBpdCB3aWxsDQpiZWhhdmUpLg0KDQpXZSd2ZSBncmFkdWFsbHkgbWlncmF0ZWQg
+dG8gZXhwbGljaXQgY2FsbHMgZXZlcnl3aGVyZSwgd2l0aCB0aGUgZ29hbCB0byBnZXQgcmlkDQpv
+ZiB3cmFwcGluZyBlbnRpcmVseS4gSXQgbG9va3MgdG8gbWUgdGhhdCB0aGUgd3JhcHBpbmcgcHJv
+Y2VzcyBpcyB0b28gZnJhZ2lsZQ0KaW5kZWVkLiBGb3IgdXMgY29tcGxldGVseSBkcm9wcGluZyB0
+aGUgd3JhcHBpbmcgd291bGQgYmUgZmluZSwgYXMgaXQncyBvbiBvdXINCnJvYWRtYXAgYW55d2F5
+Lg0KDQpBY3R1YWxseSwgdGhlcmUncyBvbmUgZmVhdHVyZSB0aGF0IHdlIHJlbHkgdXBvbiA6IGJl
+aW5nIGFibGUgdG8gY29tcGlsZSBmb3IgYm90aA0KYW4gUlQgY29yZSBhbmQgYSBzdGFuZGFyZCBr
+ZXJuZWwuIEJ1dCB0aGF0IGlzIHF1aXRlIGVhc3kgdG8gZG8gYnkganVzdA0KcmVkaWZpbmluZyB0
+aGUgX19SVCBhbmQgX19TVEQgbWFjcm9zLCB3cmFwcGluZyBpcyBub3QgcmVhbGx5IHJlbGV2YW50
+IGhlcmUuDQoNClJlZ2FyZHMsDQoNCkp1bGllbg0K
