@@ -1,17 +1,17 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.130.11
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.69.71
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795523412;
-	b=rTw1ZG7buzrCW+tzfojI8sbqJV4GOtk9sC2ViMJyPKQ+nQypQnyePD3xflZx8TearFAy
-	 fxDfQI94+YG55K4gZtGyg3jZC+TIfniD76rnWWm/aJQwHCvSmKTnXPCj/CoDKc2myZJSm
-	 bWXx3bOp235/Ts1MrcepowMJxXqWOpwcV/GWhs8cib/8g3wIP/EXHws0Cy0b6iDg9ct3J
-	 i8hzsu95rzRzM+8fjktIcpQSrfgaPY/zbF3kDUgc491+beAnzbBh2V2BHybIMrrGHVS2+
-	 Tjj+R0xqdPwq7SMz6Qjh/aFEkmhl4Vmej7ULdaXCqlcRimQ8lOpdwdBNKwkcTq8PdjA==
+	t=1795525206;
+	b=0HyJYxcyBo4YjSSljdnohctuh5QPUI7leC/tYHMqucsX56crzVFPEbN1IlHAphY4NISN
+	 PZEbEhahV0xzuoDYblSxuJG0KjZbrRPK+Tg3pFqWeszE5LGXtbX03RFnMt9Qe5RdnrzaO
+	 OznHcLS1zoKxAagVb0Kgn9Z0WBHQy9nZbCjR6NOij8TFOIzEAE352+UvmNeeMA6qgwzQV
+	 6qMaMhPfdBcGnE7k+0w0bzXjfl7Y0sdCalNPWXSDHkYzELsZj+4PphpoQg7AtnL4kE2M7
+	 L8sI+Jjl+2m7fupJKCSy3osyvON3vUAPyE1HDIazVzUg/qVvaZxKpAHaE6FHQ+69KSw==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795523412;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795525206;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:References:Content-Language:From:Autocrypt:
-	 In-Reply-To:Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:
-	 MIME-Version:X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
+	 User-Agent:From:Subject:Content-Language:To:Cc:Autocrypt:Content-Type:
+	 Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
+	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
 	 X-MS-Office365-Filtering-Correlation-Id:
 	 X-MS-Exchange-AtpMessageProperties:X-MS-Exchange-SenderADCheck:
 	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
@@ -25,62 +25,64 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=v6XQb/VFcX/n+CIqK5TYHyi+QTXxCkxO7YyakuPHXZ4=;
-	b=iSj/pxDp84Pf55OM9yU/9RfCDYCPl1xDvM40lTNEEA0w9hPK9Owy7cvZr1i+xnQB0zlg
-	 kHnmUnpGki/dHe2zFuolSlH0DT1Gn0xJovq8r1WKUDEMSw8iyvkHVTLA6U5LNo1hZeyDj
-	 67k/H3xLplDyqzQ6Jp5Iw9PgcFj94Gg1VRLGnBOdzDVr+mJHC9YPbs7u4tXq7P82dQVl2
-	 9YBzm5hmhp1rbK2Xa4YcSevreLDp7Cnbd8VYkr5vjib174Dx7L3rxgdD/wZqB0ud4nCw6
-	 +7CnXR/SsiZOIzfRgn/WEdTgddLqhXD4mdotTShl1E0gSLrjnUsctdox8lvCgkdglzw==
+	bh=0P2sC7fZ13JmdhIvUovRTcCyIVuX+P8tJo0+s6/sTkM=;
+	b=S5zkZXS9UXUfePnD0Qx7g29I8vAAkuIDR7Vir6PP2hn/ZUT85K/1MXZhEZhPvE1IK6Hr
+	 WkSrl7eLjQRd9kQ0EBaCEgAFv0cIYApyETeCVPuF8IlDlE8VURWEHS2ZFWQVn8k7HOG8r
+	 yjD7sKhvLa15YfBoYsXMaNW4uILdFtyZp5BulfiCPfH6lsQMJKz9UFise63M13OR4b8QI
+	 LLoRk2fHQZXJkKg08Xe4OMh6kuGsfA4+rpMmIdGoW41ksi6BpbB25ZRfIq1vBs1HTwDjb
+	 a1Xw9p+j5udmNmihqbM+cjhYY9m43KSU47xefGfM+29zmQXKzf0kpihlu6BeuKGXkAQ==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=siemens.com;
 	spf=pass smtp.mailfrom=siemens.com;
-	dkim=pass header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=yKf9CwwY;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=40.107.130.11
-Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11011011.outbound.protection.outlook.com [40.107.130.11])
+	dkim=pass header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=pj0h5oUq;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.69.71
+Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010071.outbound.protection.outlook.com [52.101.69.71])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A04D2606A32A
-	for <xenomai@lists.linux.dev>; Tue, 24 Nov 2026 12:30:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org A04D2606A32A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46227606A332
+	for <xenomai@lists.linux.dev>; Tue, 24 Nov 2026 13:00:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 46227606A332
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=yKf9CwwY
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=pj0h5oUq
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=IDS9oQkzjfvHfMr0TK8UYMVGtrOcokobpUArfEHHQaWJoHCJ9hW42W9qBggFEl+DUSAYskpGU5Xx+taQoG8s+TfmjtuScMyAkrEjYaFxFb9lccmEjIb7QovY7daR20nAAl0CSXplgttDW5qufRZYVM97zY+JaFxFwcyBJm+UlCG4OEplVAeolWYII8TckDeIkSG7jnrgX2x85WtEs7PDta+MlYPmsL/7Gf+n+uVSufD7oEmyxQbcgCvxDMpCW1KczM2k0zHCdgfnp5frVLPzzM/z8v1zrm/8GLZm0LEGZHisk4esKjs7MrOcWt4CknxrvGTlKJtt1mcBYUBJmqE52Q==
+ b=aqXPWALDUuq+RVPxaBCaQFkfuRzZHY54OcjvWtpoL+iQPKpZMdQqRHIm/lH/lL+TnC543UbDUxPXf272OLSkpWw0qf2EEUXSdrYkR/qbxheEIRTCHH39R3mFsK8mSUhvf2HDrpTotdZHT7zF0vuIp7pi5cS9Zr9yGMjpER03knVxD8aUn/nT5l0aYiZ4b004KhaTsfSmH9wb69KYWC1LDXQIKwtXHllXDtGLUCZrMiEg0QZNjtN7PzHBx996tMF7p0aYJJwmPbbJWDdKVhqwJCk0cgE25C/rgz6A9HzBHcCPqRJt3vuXGJwHMaDrpIv14GeIyufiVJJSPrwtM2Fc2A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v6XQb/VFcX/n+CIqK5TYHyi+QTXxCkxO7YyakuPHXZ4=;
- b=Aqda4Dt2vTL7ZzDwzR816uPU+Y0pi7utl44Ddhjc1Tsp55FE03rnT9Nsp+YHGCXa1+iHJx2s8ILs1Jm9Vx7VV2i8zXmBChcUZA21hvzjWrgsSn+C6jETClmbUsGmcwYWu6GPiVSWC9mMd/qqKthzc2pY00G7VhNKar16Zv0S3XtGrldjIipVmBrXtY2O3T5f1IXAH6osIyYH4mLO8NxafkLNJeg4BL2NWOqABIWZNEUgx99ZQwR8SpozdXPnohp1RVA7UF5Jn2VNu3O5pb4GaVyHXlTVupp3v0T6RKCGSPRc/KUzh6pILUw4vjxZIpmK+ep9KnFGsYQ+uo6SHCTo+A==
+ bh=0P2sC7fZ13JmdhIvUovRTcCyIVuX+P8tJo0+s6/sTkM=;
+ b=E8TOAiZtPvfD85t3JbzCaY4XTj2R1/MW5lPoREp2UWDVK7VvSxcycR0ItIosmNWc31/k0jNbBmJtWLQ2xMLAzou8GMjCeFIPsECcdxqa3VDxZUcZykxddrmemXXZlwwyreLMIxrK7nAP7wukZp8vqEdzX3elmO9xu7oUcrtsyQC8Utp9F1sUdm/GgBsKqGZepdTs8E3hYLON/VL2RkhPgUx/6/T5xzELQG6O0UmbDbWuLfjwmG0b86/hqZp1TwbtYP6H7pwIOnFj8iE9plRCimUBpnw+sztmH2esp3krxbYKxoAKI4W48NklR44d5Ko6o8dD3ZMPvx/csY24qhPFsQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v6XQb/VFcX/n+CIqK5TYHyi+QTXxCkxO7YyakuPHXZ4=;
- b=yKf9CwwYxD1+CWhF/oa/hgSGgxPZKQAEp/Frjgi+NzRcsADd5UBxWlH8RXCyL+io/Gafu4Xrpw2IzR4ZF14k7g7WlQqQi6IdJ1l6djTo3mSeMZj1n/YcSI8TFRjeyg4DSjkeb8jM6RPVLMlZTVBGBC/kdbHr1EP9AAtgC9Emu5ga+0O9Vw7I+kTEMoBrUDvmTSvMId6s+uVVkFcQIuqYUQIjF4BvHeCsXuDKKZMmO1vHU2SGoS0TEnEHt6MrcErE8JAY3i3yJqI+Ol967agzyKPQV6isKLKS42sJkfKXYIT8GTW6aSTFvdDtbiFKTEeMS5uiEu+TRarQ1PWjeox7Aw==
+ bh=0P2sC7fZ13JmdhIvUovRTcCyIVuX+P8tJo0+s6/sTkM=;
+ b=pj0h5oUqUpYPEz1TK3lNlMas5HLlZyuG+LgB5HyqKc5Zv+qYuI34+O/K5uKEc+phOy2vC0asT7Fay0mGt4b/x9PVnAhgXpu/u/DWuXy9fAA1uNhQKEtccpLehIlGGUBaImkjySgIMtn8P3jvQ71KRX+4v1VpK1vw5P6dzd5jF06YU92SVv65ov8bgz440GGFTfrlGQd8k1+dr/2kNU9W1Momz6QBOFK3zSCFM/TETOXOQ1WKj5qbLOjdlgQjEjFj2kMOuper6rDrln2GeuBmavfqG6xdePxuWdUXOyAtUFr+sANMfSScEFn4Fm98cCh2eG/a8fcjYFoiOnA7ERnDtw==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:785::10) by AS1PR10MB7957.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:481::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.4; Tue, 24 Nov
- 2026 12:30:08 +0000
+ (2603:10a6:20b:785::10) by PA4PR10MB5609.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:102:262::6) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.3; Tue, 24 Nov
+ 2026 13:00:01 +0000
 Received: from AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::fbce:789a:27cf:d1e]) by AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::fbce:789a:27cf:d1e%5]) with mapi id 15.21.0662.001; Tue, 24 Nov 2026
- 12:30:08 +0000
-Message-ID: <ccfe86ea-2afd-4047-bc65-4dd1a35820fc@siemens.com>
-Date: Tue, 24 Nov 2026 13:30:05 +0100
+ 13:00:00 +0000
+Message-ID: <d0919a84-e71f-4e08-86e3-8900b30f9e5f@siemens.com>
+Date: Tue, 24 Nov 2026 13:59:57 +0100
 User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC] symbol wrapping for libcobalt
-To: Philippe Gerum <rpm@xenomai.org>, Xenomai <xenomai@lists.linux.dev>
-References: <877bi3thhu.fsf@xenomai.org>
-Content-Language: en-US
 From: Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH] lib/cobalt: Let __STD() and __RT() of mmap follow the off_t
+ redirection
+Content-Language: en-US
+To: Xenomai <xenomai@lists.linux.dev>
+Cc: =?UTF-8?Q?Fran=C3=A7ois_Legal?= <francois.legal@eventlab.fr>,
+ Florian Bezdeka <florian.bezdeka@siemens.com>
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
  uNUqthIkgLGWzKugodvkcCK8Wbyw+1vxcl4Lw56WezLsOTfu7oi7Z0vp1XkrLcM0tofTbClW
@@ -124,11 +126,10 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <877bi3thhu.fsf@xenomai.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR0P281CA0233.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:b2::6) To AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: FR4P281CA0061.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:ce::7) To AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:785::10)
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -140,253 +141,166 @@ List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AMCPR10MB992291:EE_|AS1PR10MB7957:EE_
-X-MS-Office365-Filtering-Correlation-Id: 229a1d66-4721-444c-a109-08df4a26ad61
+X-MS-TrafficTypeDiagnostic: AMCPR10MB992291:EE_|PA4PR10MB5609:EE_
+X-MS-Office365-Filtering-Correlation-Id: 6656d9b9-881a-4887-08fb-08df4a2ad91d
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|366016|376014|23010399003|1800799024|10067099003|261028144727099003|11063799006|5023799004|261022075727099003|261022105027099003|261021121427099003|261021135927099003|261026140227099003|261102123227099003|261026121527099003|56012099006|6133799003|22082099003|55112099003|18002099003|3023799007;
+	BCL:0;ARA:13230040|376014|23010399003|366016|1800799024|261026140227099003|10067099003|56012099006|11063799006|261026121527099003|261022105027099003|261009223027099003|261021123027099003|261021121427099003|261102123227099003|261028144727099003|261022075727099003|18002099003|55112099003;
 X-Microsoft-Antispam-Message-Info:
-	d400lpbJDV14ql7j9PkK3MmfmIzQt5+lnYD9bsdHcsXv66zDVcB2RvHDcJEB+q9tcU5ymGnDfhIoQq0Otq7rO92kRIGJnmkH10GmUdyXT6DXkRD6Gh4QNfN45pz/xsWBajcYp49z09MxM8uVt9hDcX1XxEigi140pqOhcyi92stTWjvLxeIRkvEdsnRo2ou8mTcRR5FYxP8tpO5oqxJBCWge9WE/w/GMrAJJ+0iEq6GvNfqnEjxBksdLS9HK8GJdgh8O9cSqB3y0Olsa7CT2oO6+cLsPycUfL/uxSDeR/rDYgaZSen1B4JZBLQ6NLxOV0aOGsvcX9yOIZdnjCO1Y1uzVUOt7vSbXe/yxMxiIRlVHz/07I8MTlyNPHxdguzdsbVn/joFoPPtWH+Bhe3LvV1eNtjtpgm/jf3o2eDz/pwJSvB0lKDLF2c+Q5nv7bAvFSyfNJpvBAOZiquPVYTNV+9Z+hyKMKLh2c+lhLYUacJOh/d620072rWaU2OGP59rCMjh+OzK93onrFnrJAQg7kjNSsf3zj7ltvNTeWdkxBZMhzmHSMLkRvpVtEHFD+YyiOfaIImJZMcNTwERgvePxIdZZEr48bHrpX4MLbAFJgMRfdqzve6vWFzh6JP5u7FiyyLOZSOXdSyRAuH7sK/BI2z7H7XcLsxUY8ET6ivhY7m0=
+	1xdHIBQBLNOsJomo817tMDjdApdZ0C/XU/5knb9Ul/y4SU4Cnbx8vcuK1TPZW0RC1wgdbx5INmeKmit1bNyS4gVvAORt4cfMxWba3CROhSiTiGLUsNQVzPQ2Wj/C+0i81CnHKkq0u3kGkToJNyyZufjKkNwK1hMBOWHismqzRD6b9NLJSuOYlQSrb6dV8xDlmY08vzHsHhmVnb1UUa4HAaF3+LSWoa19S9V9x+JCd3tG4ujITYenTeNkyVW/Yoy0WTfV8o2IHRntWfa5AgGkwQI4F644sk4KgaLCf3XbAZugG1/CiCJm6Z3JIi8OJxCDg1k9VnbvqOIYyGBj1LQg1yTAtHsgovOYXArd9O6bG8VHe5O3WILPxTCedxN4ZYvtZJSr+27BqRxbrAquKGqgraNZIXAuIc8EYDDBs8cUBg37/bfmFkSgoUUvxY3vCMN0dku3ZyZd+K8VLSZJBI7ZvoeGBKFTGket9rqRqozprnA4hB+Zs3eC0UiS9p22MXyTu+Jc3L79VR8VvDUf04ezgGzK2SwCaNRTvhneZak84aq7s2Ha/IF+oRtIf+ye2L+RizVX6/5vclPczrSerixUK8H17aHx9r/NhiAj/v4RjJbb0GM7FsOn5Q3QR8fxqzbHZk/+66/1zz0uvrZS9eahbqXkjvjph5gW3UgnZ8tUf8w=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(23010399003)(1800799024)(10067099003)(261028144727099003)(11063799006)(5023799004)(261022075727099003)(261022105027099003)(261021121427099003)(261021135927099003)(261026140227099003)(261102123227099003)(261026121527099003)(56012099006)(6133799003)(22082099003)(55112099003)(18002099003)(3023799007);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(23010399003)(366016)(1800799024)(261026140227099003)(10067099003)(56012099006)(11063799006)(261026121527099003)(261022105027099003)(261009223027099003)(261021123027099003)(261021121427099003)(261102123227099003)(261028144727099003)(261022075727099003)(18002099003)(55112099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?aU9XZVIxOTRqWkdLZFExZjlvWGlRblhIZmwyTG9EdTRYZXlHM2VrTWN0OCtr?=
- =?utf-8?B?UENzemVTc1JUZkt0Z2R0azVTVWdTZGc5S1YxWmhYUTV0V2ovZG9jaUVYT3B1?=
- =?utf-8?B?U2FoU2tHUUVEc2U1Q2VvRHQzcnBDWmtnQm9ZMkZnUzNzQmZ4MTkzbDRlcDBa?=
- =?utf-8?B?UDVlQmt1bDlJT0ZRYjNMUThOcDlheVY5dW4xYUdOdWVPckVWN1Q2QTRBMW85?=
- =?utf-8?B?KysybTlWOXlZVWlxR1RtRXZEaDBDL20zZ2hlVmpOS1Vua1dJZm1IWi83U05m?=
- =?utf-8?B?QVBzczNyRVRCdDVmaEZnMXZBSmozWm5kMW90eDB0MGk3UkZZWTRSWTlxQy96?=
- =?utf-8?B?T2RWMlNPYVZQdlB6TXVvdmN6QlIyU0dMdjBSekh6Y2pqR3VuSFY4cFF1TVpI?=
- =?utf-8?B?cUNvYVhnNWRBdUFrZ1c2VCsrUmwvTk93RjdkZFNpcFo5SDVjd250d2poNlZh?=
- =?utf-8?B?eFpNTk9jVXQzamUyMXVLMXFDbzJEZm5HeEJ5Rzl2TWNuM0Y4dXpPbDdPK1Rz?=
- =?utf-8?B?ZUJPY0JRd2RZR1RRRWJ6V0dIT1B6YXZZbHRTSklidmZJbTNTajZ4Ymw5OFlE?=
- =?utf-8?B?OG4relBJU3VEYzlndGpUcXJlZFVzU3phSklkc1FSMFVTMHpzSGpqb0x3UXNr?=
- =?utf-8?B?b3AxVy80Qm1OTi9od3BjaGdBQXhIa1kxejNpR29FbFlwQ0lJRXpqc1RLVjIz?=
- =?utf-8?B?OWJIWWJEQmdWd1F2V0p0cHh6UmRJNGFCYUgwRlFkUzVLSzZYWStabmsvRzN4?=
- =?utf-8?B?RzlGaWhGQkNxTTJXQUlpc1kveWJjQ0NKbVA0UlBSU203amJERVdkNW5KWHVN?=
- =?utf-8?B?a2czL2pZRjQ2RVRJM3VXYUVVbFMxMjAzVFlnMndzdzJieitQWUgzczg3WmVP?=
- =?utf-8?B?MWdDVXJUaTFOT3ZlSzFhMFEvTkswaCtZcGFsVERVbHVubXZVMjJ3Z0JnOEdl?=
- =?utf-8?B?NCttcytlbURiNWJBR1VzdlFpd1NUbWFYUDVVbU5jeTdjL3JRV3JQSXAvRTBD?=
- =?utf-8?B?OExvN0N3dkVsV3d5OUhBQ0JOdnowRkk5eHVWZ3VNNmhiZjZDeS92cDk0dW1U?=
- =?utf-8?B?T1YyOTh6WS85ME1VOG5RbzNEV2pod0VGdjFyY1FiSWJtTGV0Z0g2Q1k0aVVH?=
- =?utf-8?B?TXNpN2NMbytCN2UxcitNekdxZElhZUIyWGFUejE3SGMyYkxjSjVvVHpnbWhz?=
- =?utf-8?B?R2h5YmdCWFF6R1Y5dEp3UkJvZlh0V2JVMUlob2F2VVFQR0I4TldubzY3RzhD?=
- =?utf-8?B?QTNQTnNkOWFqY09hRllvRE9GL0loTzdkQ0R6ck5nbGJXZGNBUWpLU05Ec2xY?=
- =?utf-8?B?WTlDdHg1cks0T1pHWlZ5L2tYMlhFb1B0cm9lQU1EcHpjKzZVTTZvSU9oMnpU?=
- =?utf-8?B?ZERzL1UrbDAyVFFhTUlucE1hRHNjMG84UzNHTW5YODNZWHVDaTJHbWh1SGZy?=
- =?utf-8?B?R3d3UkVoaS9sSy9HaVorRmhZa1ZtMUZOczA0Zk5pSFhGdE9NT0RCa3M5Qmcr?=
- =?utf-8?B?OEV4ZnpCQ3ZHRS82SWtZN203MWlKRXVXemRzWWlvelRlbmh5dmRvalVRZkJm?=
- =?utf-8?B?dzY2WEZXVG9jaXBTZ3Bia3NtVUdmWmczY1daRWNjV0FHaG9WMm1remJkbHpZ?=
- =?utf-8?B?N0lWVGhMS2xNYWxLWHZKclU4azAxNVZCS0l3SmVjVVkybnpaTDhWZW1JcDQw?=
- =?utf-8?B?STJ3Vkw5ZklIVjZvVDFlazJibFB6UkR1NjE4TEdXclpUMGs4V1RJaFBjRExD?=
- =?utf-8?B?OUdjamY4OVNVRDlNZ1BaVnUyOHhVaS9SaHEvdVZPU1hGR3hVN3hkRzc5M0ky?=
- =?utf-8?B?NVVCWFVUTHRUU2lKclBKNStmRnVtYkpQSHNoSk5qd2pPSFp2RnJIVU94NE94?=
- =?utf-8?B?b0Zsa1cwM1UvdUVtT0hQMlM1dnJxNkJlSCt1Z0t3d0xzQ1pOQmdYU2xROFhk?=
- =?utf-8?B?VVFncFhjdmx4VFdIbVZJRjNsSml3bU91dmVBcDA4YjFQd3EyVzRRcEZVWjhj?=
- =?utf-8?B?ZHNlRWd1LzNWRmZUMExlNFZFK3RPK0FvRWRXZEtub2ZMbFhWaUd2dTBZMjZw?=
- =?utf-8?B?Q3o3ZDNmaTF5TVREVkIra1pHK0hSVmh4dWl3aXJrbzNmVlVPNnpldXNTZnJi?=
- =?utf-8?B?N3p6U3NjanBXb2NRSGlSVWp3K3dkeVY3czVWVmhlYVlpdWpwbWVHWWdrNkRF?=
- =?utf-8?B?OVNKNkRtSVZKVEU5ME0xNzNOcHVSYnFidDN5QWt2MXZWNU5rbC9YZ1pXeFor?=
- =?utf-8?B?VEpRaW1Mc0ZiVmovazR1N1JmdzRMOXVJSDJjWng5MWJSbmVUS1FyaXQ2WHNs?=
- =?utf-8?B?VURyUUpKMEF0clI4WGRLeGtYYVBZZHMrcHJkSnc5dFNiVDBqODBHdz09?=
+	=?utf-8?B?czRBQzl0Zm5tRUVRT0tkdlBvRHovanFmNmsrMXJFcWd2bHdUNnB2amJERWEv?=
+ =?utf-8?B?OThYVHo5M2Urck1hdlM0WlNVMnY1VlN1UzFwWjF0K21TNjkzN0Z0blhRWm5S?=
+ =?utf-8?B?NlFSU0N6RitITnNRQTNDaWRnSXNKT2FJQWVzVXBBM1V2bkhDbWhuLzVqaS8x?=
+ =?utf-8?B?dFYvdmRPK1lybkJvaStFUnpvTkR4YllpSHBEMlZnNE9QQjVWYk5JOHZISGxY?=
+ =?utf-8?B?MFMyZ1cvYjdIV2pnNTNuRlBNK0llalRoZTVRNi8zQ003cnVrZk42cUZxM2pE?=
+ =?utf-8?B?bFpXTElQWU5DNEcrR29sTVZWZ1dYR2UvTWNyMEFYZEVMbGtGZkNISmVhMlEx?=
+ =?utf-8?B?UEVsSmtHbTlLS3Y5VzF6YkxwdUVFTkFzamdMaVhmSm8zZEJYN0FqM3Q5Nkha?=
+ =?utf-8?B?NGlrN2FOVjJFOXFpSmI3L1FZY05iQlo0ZmJ6TWU0ZndMSFlJZ3pUZkdvazFL?=
+ =?utf-8?B?Sk8wekZUd005UGVuSUtJM1lEeDlhcHBkbzNQcVJzTWlhT28rSTg2cnRFNXFV?=
+ =?utf-8?B?aUpjeUppZndKUm95aWEyeTUvM05pL1lZUGlBT3ViZStDRytMdGpwVVJ3Y3Nv?=
+ =?utf-8?B?UVlSR2VJOWt5WjQwVnJFRmhWaGRUQVdKSWthcDZENTFTL0JTZ2p1UzEyVWNS?=
+ =?utf-8?B?aWd1WHFEQTZpQkl2aFdTb29DOHRROVJhODU3TTYrb0tiNERPUWdKc2dnZlZk?=
+ =?utf-8?B?K2lLT0dKcEx4aVR1LzVaWlBnakRDTGovZ21NZHBHRlljSHhmMThYUlZPb0Uy?=
+ =?utf-8?B?V2xwV2JDUEI4cHp1dlpPcDNac2c4TVUyTWVtYThlQkFDUDlwaWgrVVp1RDB6?=
+ =?utf-8?B?RFpSNnRUMGRnQS8rV2ZSZmhlckZBMkt3M251S0lIK25QVjRPTDRrMU9RQ1k0?=
+ =?utf-8?B?SUczQTlTV0RDZnUwZlQ4SGZBTzkwWmI3cTQwbUUrT3NKeGVUMW9KUE9hb0w4?=
+ =?utf-8?B?ejdvWUlpZ0ZNKzhlNlZHbWFCZE9VRlJYVlR2UmsrQXdLcndYdkxyNi9zZ3Nv?=
+ =?utf-8?B?RzFXSXlUY2VkT3RoYmU1L3NFTGFRaWhYMW5UKy9QVUd4aFpwa0ZVVWowUjlx?=
+ =?utf-8?B?UXZnUjQrRWJhVUxrbFBmWlRGem1OdElOUkk0bENwRHBKY1hleXJ2Q1F4d1Ar?=
+ =?utf-8?B?aDkyTGpCU0lhZXY3cHk5SUVrRTZWQWJURFVveTJzWUZxQm00K3FWL3pNb2Fr?=
+ =?utf-8?B?bEQ0Qzd1d0J2Y1czK2p0eHdiV0owKytBQWJFaSsrMlhVa0JRbURYNEpvQmQ4?=
+ =?utf-8?B?T056emd0Y09taEpZekxzUjQybStuWC92MXpjZE13V3FNa1ZlRU1uNXFNMndp?=
+ =?utf-8?B?K2phTWFBRXpMS0pBRGFwSTErd25QdmlXaFRRZFQ5ajZXZ3JiZnRRcGI2SUpI?=
+ =?utf-8?B?bTkzaGZkSTUxbWdaM2Jlb0R0MWkvdXd6OGF4U3FOa0RmQnN2aEJULzRnMU9o?=
+ =?utf-8?B?QVNBSURWZm9VeVlXMzBibUdtQ3ZOeXhzQkxOT0NRTkxwWmE4aWFTWWthSUE4?=
+ =?utf-8?B?b1JyYmRjenl1SUpDZVFTcmdzeXRncUlVRTJxL3JzSSsyTlNndFpCd0E0OEdy?=
+ =?utf-8?B?N1BMZUg3NjF2eDYwc1BhU0tVUWJFWmZwUFhDTFNpSElONlVLRVU0OGN6Y3pC?=
+ =?utf-8?B?Z29NeFd4Q2M3YVdJSHBMSno0bnhteTgrNzRseHV0NHQ1L2o5VzlVdFM2Rlhp?=
+ =?utf-8?B?YzlsNUJtczNScXJvWFJ4UFU5V0ZpaDR0WWVaSDJKMHhsTy9mRDhBYnQxblRp?=
+ =?utf-8?B?VnZ2d001VjJUdkU5YmVwUlBOUVNMck1XVHllUXpPdDk1MkxwTDYyb0h5K01M?=
+ =?utf-8?B?Z29FTHNkTFJEMkV3SDhhbU5XdFBwVXRSdzVBTU5ESlFxMDhRTGtsWGdBU0Ft?=
+ =?utf-8?B?NkhVbThabTlRd1ZqKzI3ZFNrZG0wYzZOSnBia2IxbzRHTHVybEVJa0JvT3p6?=
+ =?utf-8?B?VW5QU2JmYktFck5PV2hPUXBRUDFhSnJhN25qdWV2Q255aVZEbXgzQlVKaFdM?=
+ =?utf-8?B?eXpnbnhiemxhcUhMSXRCRGR0Y25YeWZ2WkNoOWxCcFJFcjkyb2VFbTNDZFpY?=
+ =?utf-8?B?K0l5Q2VXbkh5anN4eUVSa0R4c0hyRERaVHhoYkhvYTFOUEZNMkhpN0RUcVgv?=
+ =?utf-8?B?RkpPSjVBVWk0MmJxRE5GNzZ6bThkMXlMTFVrSU1jTURZTHFLQlFzMTd2OGNS?=
+ =?utf-8?B?dzhmb29iaVh1QUZyTGlVT3NkRWFoMVZVVFhrZjA2WmZPTGRPNW84VHRJWDNi?=
+ =?utf-8?B?SlVZaW9oL3MreHBwN0p6TnduZkxBQ2cvZTQxSGlKajdqTEIvNVBpU1RCd0JT?=
+ =?utf-8?B?RVFCcFlXa3JuWG40MkRvVHBaK3d4RlpnSTgxMFU4czNCTDZsbkxyZz09?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 229a1d66-4721-444c-a109-08df4a26ad61
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6656d9b9-881a-4887-08fb-08df4a2ad91d
 X-MS-Exchange-CrossTenant-AuthSource: AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2026 12:30:08.9108
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2026 13:00:00.2266
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OPS0nVMLMZBM/k/ScvURFVtRd2jvhpmO2boOI5/aG7hmqqvgy4k4xxZOQNyW8ygbWXB0rKvI/puw3ZMubcVLZw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR10MB7957
+X-MS-Exchange-CrossTenant-UserPrincipalName: E/I7Px7AxTbMsZxfbJo1kwP6sA2/d+zIUGRWYVjVFI53F6jSclx7DtiCgD/HyNRxkyD7T8p84Jr5XKZgDDC4Tg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR10MB5609
 
-On 23.11.26 21:33, Philippe Gerum wrote:
-> 
-> Since its very inception, the POSIX API in xenomai3 enables automatic
-> wrapping of POSIX calls to their libcobalt counterpart using a linker
-> trick (-Wl,--wrap), so that applications can use the pristine POSIX
-> routine names to invoke Xenomai services. For instance, the following
-> snippet:
-> 
->       ret = pthread_create(&tid, &attr, foo_routine, NULL);
-> 
-> would translate internally to:
-> 
->       ret = __wrap_pthread_create(&tid, &attr, foo_routine, NULL);
-> 
-> which is a weak symbol alias to:
-> 
->       ret = __cobalt_pthread_create(&tid, &attr, foo_routine, NULL);
-> 
-> The significant part of this wrapping is that we go from symbol_x in the
-> source code to __cobalt_symbol_x at link time, with libcobalt
-> implementing the latter.
-> 
-> Over the years, we noticed several issues with this scheme:
-> 
-> - because turning on wrapping only happens at link time, there is no
->   indication whatsoever that some object file does expect wrapping to be
->   applied by the linker when producing the executable. For instance,
->   compiling such object file with build flags obtained from `xeno-config
->   --cobalt --cflags` then linking with `xeno-config --posix --ldflags`
->   would successfully create an executable, which would send all POSIX
->   calls to the underlying *libc, which may or may not be the intent,
->   depending on which xeno-config call was wrong. When building an
->   application from multiple parts which are not necessarily maintained
->   and built in the same team/organization which uses them (e.g. 3rd
->   party libs), this issue is a source of headaches. At the very least,
->   we need some guardrails to prevent this from going unnoticed.
-> 
-> - symbols in static archives are always wrapped although we may not want
->   this. Likewise, symbols in shared libs are not wrapped although we may
->   want the opposite. We have to resort to wrap-link.sh to accommodate
->   complex library dependencies, which makes the process quite brittle
->   since correctness here depends on the order of appearance of each
->   object and dependency in the link args. A badly ordered link sequence
->   successfully produces an executable, but the latter behaves
->   incorrectly.
-> 
->   For instance, say we have lib3dparty.a which is a mere in-band library
->   that does not know about Xenomai, but is used by a Xenomai application
->   for non-rt business by threads it starts using some mundane library
->   service (e.g. libstdc++, via std::thread). Some foo() service
->   lib3dparty.a provides serializes callers using a pthread_mutex_t lock.
-> 
->   We then link our rt app using wrap-link.sh, with lib3dparty.a
->   appearing before libcobalt because this seems to be the most natural
->   order to most users at first glance. Which would give this under the
->   hood:
-> 
->         g++ -static -pthread -o app main.o -Wl,@cobalt.wrappers -lthirdparty -lcobalt -lpthread
->         # stage 1: g++ -o app.tmp -r -nostdlib -static -pthread main.o -Wl,@cobalt.wrappers -lthirdparty
->         # stage 2: g++ -o app app.tmp -static -pthread -lcobalt -lpthread
-> 
->     Because lib3dparty.a comes before -lcobalt, the library goes into
->     the --wrap stage, and its lock is set up as a Cobalt mutex by some
->     init call in that library. Statically linking against libstdc++.a
->     does not help, because this dependency is injected on stage 2 when
->     wrapping is no more enabled in the link args. Mere dynamic linking
->     against libstdc++.so would not help either, since symbols defined in
->     a DSO escape wrapping entirely.
-> 
->     And now the fireworks are set off: when the std::thread workers
->     attempt to lock the mutex using the plain glibc service, they
->     fail. At best by crashing, at worse with EPERM. Not everyone checks
->     pthread_mutex_lock() return codes, right?  So now we have multiple
->     workers stepping on each others toes when accessing a shared
->     resource. Zero indication of this happening except maybe weird
->     application output or crash. Perfect day.
-> 
->   We could use C11 thrd_create() the same way to create workers and get
->   into the exact same pitfalls without involving libstdc++ at all.
->   
+From: Jan Kiszka <jan.kiszka@siemens.com>
 
-To be fair, using language provided threading and locking is generally
-are recipe for desaster on PREEMPT-RT as well because most are non-RT only.
+With _FILE_OFFSET_BITS=64, glibc redirects mmap() to mmap64() on 32-bit
+archs. Applications get this setting by default since y2038 support was
+added, as xeno-config passes it along with _TIME_BITS=64, and some
+toolchains even predefine both (e.g. Debian armhf). uClibc-ng enforces
+64-bit file offsets unconditionally since release 1.0.58.
 
-> - a POSIX object such as a mutex, condvar or semaphore can be set up on
->   one side and used on another, and we have no way to detect it; we
->   usually receive obscure errors at runtime, in the best case the
->   application crashes. Things get uglier with C++ when inline header
->   code gets wrapped and out-of-line parts are not.
-> 
-> - the y2038 issue makes things worse: v3 needs to keep yet another
->   hand-written list of wrappers for this,
->   i.e. cobalt-glibc-time64.wrappers so that time64 calls in 32bit builds
->   end up at the right place. The day the underlying *libc decides to
->   redirect other symbols to whatever build-specific counterpart (not
->   exclusively time64), we can only notice this after a runtime
->   breakage.
-> 
->   Also, since the glibc headers know nothing about the __real_* symbols,
->   they won't redirect them to the proper 64bit implementation but keep
->   branching to their legacy 32bit variant, unless they are declared with
->   COBALT_DECL_TIME64. It looks like v3 may have at least fcntl, and all
->   the socket *msg calls escaping redirection right now. There is another
->   example, which is harmless this time fortunately, with wrapping
->   pthread_yield(). A recent glibc installs a redirection for this
->   routine:
-> 
->   extern int __REDIRECT_NTH (pthread_yield, (void), sched_yield)
-> 
->   This means that __cobalt_pthread_yield() is not called when such
->   redirect is in place. The only reason that keeps it working is that
->   pthread_yield() is redirected to sched_yield(), and we do intercept
->   sched_yield() anyway.
-> 
-> - when link-time optimization is involved, any references the
->   intermediate representation may add escapes wrapping. Once again, this
->   is 100% opaque to us, we have no idea what happens under the hood.
-> 
-> - there is a cost to implicit wrapping for I/O calls such as open(),
->   read(), write(), ioctl() and friends: we have to try the Xenomai side
->   first, then fallback to the regular *libc side if that fails. Granted,
->   this is only a problem for in-band code, but still: although
->   SCHED_WEAK threads are running in-band by convention and oob by
->   exception, they should not have to pay twice the price for each
->   wrapped I/O system call.
-> 
-> - on a more general note, we times and often recommend that a clear
->   real-time vs non real-time split be enforced in any application which
->   runs in a dual kernel environment (I'd argue that this should be a
->   rule of thumb for all rt designs, even those served by native
->   preemption as well). Doing so is basic sanity, so that
->   responsibilities and constraints are obvious from the get go when
->   reviewing the implementation, and we don't create situations in which
->   rt-unsafe code is called from a time-critical path too easily. In that
->   sense, symbol wrapping blurs the boundaries between rt and non-rt,
->   which contradicts this recommendation.
-> 
-> I believe that the last point carries a lot of weight in favor of
-> explicit annotation of libcobalt calls in the application code
-> (i.e. __COBALT(), __RT(), __EVL()). However, I'm not recommending that
-> link-wrapping is dropped from v4, especially since we need an easy
-> migration path from v3, but at the very least v4 should prevent misuses,
-> help in figuring out where problems lie with symbol wrapping. What I'd
-> like to see in v4:
-> 
-> - a way to somehow mark the object files that did include the libcobalt
->   headers, so that linking them without -Wl,--wrap fails.
-> 
+__STD(mmap()) and __RT(mmap()) do not follow this redirection: they
+expand to __real_mmap() and __cobalt_mmap(), declared with the 64-bit
+off_t of the caller. But with the Cobalt wrappers, __real_mmap() binds
+to the libc's mmap(), and __cobalt_mmap() is built with native off_t,
+so both take a 32-bit offset. They read it from the padding word in
+front of the 64-bit argument and fail with EINVAL or map the wrong
+page.
 
-Already some idea for how this could be implemented?
+Internal users built with 64-bit off_t are affected as well:
+cobalt_unmap_umm(), the pshared heap of copperplate and the TLSF pool
+of boilerplate all bind to the native-off_t __real_mmap() of libcobalt.
 
-> - conversely, a way to mark the object files that did _not_ include the
->   libcobalt headers but the regular glibc ones, so that linking them
->   _with_ -Wl,--wrap fails when the wrap list contains inconsistently
->   used symbols.
+Add COBALT_DECL_OFF64(), which redirects the __STD(), __RT() and
+__WRAP() symbols of a service to its 64-bit variant whenever the libc
+does so, and use it for mmap(). This relies on libcobalt providing
+__real_mmap64(). lib/cobalt/mmap.c implements both variants and opts
+out via __COBALT_NO_OFF64_REDIRECT__: building it with native off_t is
+not sufficient if the libc enforces 64-bit file offsets.
 
-Well, the absence of the marker above must be enough in order to detect
-pre-built standard libs.
+Reported-by: François Legal <francois.legal@eventlab.fr>
+Fixes: fb2bd6e647a9 ("y2038: build: Introduce new build parameter --disable-y2038")
+Assisted-by: opencode:Opus-5.5
+Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ include/cobalt/sys/mman.h |  6 +++---
+ include/cobalt/wrappers.h | 15 +++++++++++++++
+ lib/cobalt/mmap.c         |  6 ++++++
+ 3 files changed, 24 insertions(+), 3 deletions(-)
 
-> 
-> This metadata could be used by a checker tool that would answer the
-> following question: "where the heck each call to libcobalt services
-> actually goes for this executable"? It could also be used to generate
-> the wrap list on the fly for symbols which carry the 'wrapped' marker
-> by inspecting the object list.
-> 
-> Icing on the cake, it should even be possible to use this information to
-> implement auto-annotation of source code by reading a wrapped binary,
-> i.e. patching in the __COBALT() annotations mechanically, for those who
-> want an easy way to depart from symbol wrapping for an existing
-> application.
-> 
-> Thoughts welcome.
-> 
-
-Having wrapping as an opt-in layer on top of an explicit
-POSIX-compatible API sounds fair to me. Then only users who need the
-wrapping for a good reason can select that separately. Technically,
-users could already do that with Xenomai 3 today, but it is not
-presented that way, thus likely only few will do it.
-
-Jan
-
+diff --git a/include/cobalt/sys/mman.h b/include/cobalt/sys/mman.h
+index e291f50ef..54c028ad9 100644
+--- a/include/cobalt/sys/mman.h
++++ b/include/cobalt/sys/mman.h
+@@ -28,9 +28,9 @@
+ extern "C" {
+ #endif
+ 
+-COBALT_DECL(void *, mmap,
+-	    (void *addr, size_t length, int prot, int flags, int fd,
+-	     off_t offset));
++COBALT_DECL_OFF64(void *, mmap, mmap64,
++		  (void *addr, size_t length, int prot, int flags, int fd,
++		   off_t offset));
+ 
+ #if defined(_LARGEFILE64_SOURCE) || defined(_GNU_SOURCE)
+ COBALT_DECL(void *, mmap64,
+diff --git a/include/cobalt/wrappers.h b/include/cobalt/wrappers.h
+index 6d826eedf..9dd022a75 100644
+--- a/include/cobalt/wrappers.h
++++ b/include/cobalt/wrappers.h
+@@ -45,6 +45,21 @@
+ #define COBALT_DECL_TIME64(T, FN, FN_64, I) COBALT_DECL(T, FN, I)
+ #endif
+ 
++#if defined(__USE_FILE_OFFSET64) && !defined(__COBALT_NO_OFF64_REDIRECT__)
++/*
++ * Make __RT() and __STD() usable in combination with off_t related
++ * services: the libc redirects them to their 64-bit variants in this
++ * case, follow suit. Code implementing the native variants opts out,
++ * as some libcs enforce 64-bit file offsets (e.g. uClibc-ng).
++ */
++#define COBALT_DECL_OFF64(T, FN, FN_64, I)                                     \
++	extern T __REDIRECT_NTH(__STD(FN), I, __real_##FN_64);                 \
++	extern T __REDIRECT_NTH(__RT(FN), I, __cobalt_##FN_64);                \
++	extern T __REDIRECT_NTH(__WRAP(FN), I, __wrap_##FN_64)
++#else
++#define COBALT_DECL_OFF64(T, FN, FN_64, I) COBALT_DECL(T, FN, I)
++#endif
++
+ /*
+  * 
+  * Each "foo" Cobalt routine shadowing a POSIX service may be
+diff --git a/lib/cobalt/mmap.c b/lib/cobalt/mmap.c
+index d30b1722d..bf8772f6a 100644
+--- a/lib/cobalt/mmap.c
++++ b/lib/cobalt/mmap.c
+@@ -18,6 +18,12 @@
+   USA.
+  */
+ 
++/*
++ * We implement mmap() for the native off_t next to mmap64(): keep their
++ * names apart, even if the libc enforces 64-bit file offsets.
++ */
++#define __COBALT_NO_OFF64_REDIRECT__
++
+ #include <sys/mman.h>
+ #include <rtdm/rtdm.h>
+ #include <cobalt/uapi/syscall.h>
 -- 
-Siemens AG, Foundational Technologies
-Linux Expert Center
+2.47.3
