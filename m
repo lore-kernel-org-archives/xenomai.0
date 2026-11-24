@@ -1,90 +1,94 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.53
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.218.52
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
 	t=1795528991;
-	b=VIpnwuI+QzQxZf8whVSfrOnEVOGKt5MzT0lO8RRvyg5A/XgEh6nX53k+O4D3Es5te70y
-	 1q9Co6Jx9qFgwdUafi7rClUV7c3Mk/qKSbVArg5vNeReffnxrshnrBrzVhoom4PWVaf/I
-	 qcXyljr/PYqqZiIbtsO78aAb0oX8i4GZwbI1BgKi24OINcOcFA2uswbc9RM9EChhvftga
-	 1NRTcm8Ay4vSkE2Sh4I8LNoYcbTjku/iyPv8gOQtqgyBIVYEfLJxj/xDCAZEmxg5Xcn/y
-	 orKjq6s0POlzaPn1cI//5Jih5OY5sm3CXJhUbPnT26ZiXWVol6Q7/A9jSRZLt6+yYnQ==
+	b=ZrXDv9xjpkchjAo7yyphjdujFJDlcUsmcul09qwClyAyjPFK24t/daerDEn/VdLgT7gt
+	 usy0udvzK9f3eAIcbEG+ay/lNZ2ng2ZaRLzV2joqwNMP97wJkzWk/Ev3+MRkYbChlJgd6
+	 Ug0ipi8ZiwCaI1i0+mUqF6M9EsPHKspc41mbcyV6BCW4r41dl8B2N/IlD2sgog03zk3yr
+	 op9VU+uKDZW/B2RGnW/y+bM7iOcJdK+gkUANv6h6Wa1oOiLXrJCiOqVMB2ZaIpA5vIqB7
+	 O69v917OZC+wSezCpDnLsqmw6BhLNwZ35mITyN6lFj88RpUdhiGo+9f9aisRoy51Dgg==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
 	a=rsa-sha256; c=relaxed/relaxed; t=1795528991;
 	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
 	 X-Gm-Message-State:X-Gm-Gg:X-Received:Received:From:To:Cc:Subject:
-	 Date:Message-Id:X-Mailer:MIME-Version:Content-Transfer-Encoding;
-	bh=C6m6Hursx0rGz2OyuhTbRKg1Q0Lw4T6aap1gaxd9jKs=;
-	b=raVO3FI3hnbjY0YKbMzHu/lxW2Uvx9ePGWC2YhprkQx2m8+1pZq6vBzxBPZtEmMvh5Lh
-	 EC9pSFOPFrs8PYixp1MwDG8rBwcN/FYft1CBX6Fxn8ap26BM/LBJRPAEcH7LDhaJKo555
-	 Gd4s/tyVqEAB4Ujh586Se+2ees/40GY70Z8/rtuOVx3+9HlJrsh3GH0YFiDD/Q+W+x8z4
-	 g1gRmeh+zZNMo9Z0lnCvkBPJOgGFAoNDxBXoUd0+UzdQwLm/RQUf4Cg8gjBs8kf/knMHy
-	 1yPUU0aZxzadAXtICfG1o0TjWwcrwUfNIVLL0dmB3+PA88ORvhiLiNBO2MMXWG0Ivcw==
+	 Date:Message-Id:X-Mailer:In-Reply-To:References:MIME-Version:
+	 Content-Transfer-Encoding;
+	bh=OYvsskZPh2HKNncyj2wSG/6a2wt4ZL94BdQJiOt5lU0=;
+	b=03PE8lTXkLVqoK3FrIqJ84IrFAH2kBBsFvpzx7GiVd32bPaNj4TRyHMR2mDDU19svwJ+
+	 slNXF1mcSltiDMhQ49miDI7kbQnEFEMxi3BVCFRBe4ClsDb9DnYD8bd220wAXpk0yuQsz
+	 FpdgwowhKr8oLDj1imNy3c7u2ybzlD5nM92VAvZL76zWXvJuGDIud/RpJFqFCaVlFEceQ
+	 Va7lVoYRMzC162HmBaqJ226K6jVy/JkGd9Gxb5dkxVlDZ6eMrMdzbGN0mgDQ/vMRX2Gdh
+	 IS/lzhqGMpJQ5x7+XhtihUMBl5rryJ9fLxwgK43C8abV9wQmvw1+Pzexj+ujqF/2+Uw==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=googlemail.com;
 	spf=pass smtp.mailfrom=googlemail.com;
-	dkim=pass header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=cdrHevhK;
-	arc=none smtp.remote-ip=209.85.218.53
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+	dkim=pass header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b="p/xddrfA";
+	arc=none smtp.remote-ip=209.85.218.52
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
 	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1814606A685
-	for <xenomai@lists.linux.dev>; Tue, 24 Nov 2026 14:03:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F1814606A685
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EA28606A335
+	for <xenomai@lists.linux.dev>; Tue, 24 Nov 2026 14:03:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5EA28606A335
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=googlemail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=googlemail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=cdrHevhK
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-c50a4a2132cso662777466b.3
-        for <xenomai@lists.linux.dev>; Tue, 24 Nov 2026 06:03:10 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.a=rsa-sha256 header.s=20260707 header.b=p/xddrfA
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-c5127c7abd5so713540266b.3
+        for <xenomai@lists.linux.dev>; Tue, 24 Nov 2026 06:03:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20260707; t=1795528989; x=1796133789; darn=lists.linux.dev;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to:content-type;
-        bh=C6m6Hursx0rGz2OyuhTbRKg1Q0Lw4T6aap1gaxd9jKs=;
-        b=cdrHevhKnOBl2ny4aOPx01+EukSrdr8fUS2n7B04S4SkePOwMO0VPCLkFv9MIwN4r8
-         xb/NOlTcfoFYv9DWZqYjfi9YB4VmkJOztG8jtYbIpygEL2AAnm223uZIpwAw9PASYMBn
-         B+PdVuuQJyAYWOWcuWfojwIttp/zoe+BAS9Jv8/Qz5Q1672t6CcdiTaSKW7zN0dCCUqi
-         rI1sxkY48XK/MtCmHjEftNlXhHrmqadSfwWUkbbgqZOFVRLR6/HcZ9G0fk4P1EWuEV8U
-         HQ68+FkHCdI8BZ2uGqDPEbOgljBG07e0dLLXsa9doXl5m6oQ5R94dcL6pVuS6Qh7a0hp
-         kjnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795528989; x=1796133789;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=googlemail.com; s=20260707; t=1795528990; x=1796133790; darn=lists.linux.dev;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to:content-type;
-        bh=C6m6Hursx0rGz2OyuhTbRKg1Q0Lw4T6aap1gaxd9jKs=;
-        b=lYQ/0uNGaBbPo1Dkt4Ix19YFs1FBQn4/bcPt1KxIdU41HJet1g049obm0KYZQspM2V
-         cHJKXcONKSJRLVcJtY3jo2VNxdjARA+swA1/M3miWEyvMHiS3y6WMpVlRcwtqravtyCl
-         mpP6Q+hO6Smv/n4mowRTp6osAQ/VA920cDRPRj5hsPEuLkppIft131P32h5UnV8YzlzB
-         CHaMgrA7Knvf9AWNU+QWC5pzEPwlnHrsTKel9YuiMgyOsV2fahwbckKso1+l/f2WL/ET
-         iilHeZy7oHvSoBpAkh7HMfe8vJ2auIfFZ8uWDDbkAHvShAKFhgp84e15O3pPukcTvGi0
-         nMKg==
-X-Gm-Message-State: APuU4Z9FtXhkXfKVmFhSrs14jyvCPoNeo5g/gqVBUNMgimS+27n87why
-	r0ivTva1dJxdZ5ngICNNCo6703oeKPciqqGDq8upBZaXYotg+dzmEXZp03X05Q==
-X-Gm-Gg: AZFdTZez5DOJUpBQ3YZwRwcUVLdKpJAo9RaZZg+Z5ml5U6lUHwY2aV0EafeSx4bcVqq
-	FBOqIbaQ9skg6D39D41RhP3RB3P29K3B+qf1miED4ju3kEQDJdtIj2GxZpVLUqGN1LEfg84pDNA
-	7gM6WrIXa3cuwZ/o2rcsdZOAhA+xOPY7eRzsi9N8DiyjtzB7jAcahlVi4PKYELcGnF0YeYgxTSq
-	nC+VLyXFV6rcoKm/67RQPZqNW4DrEgUvOxsCbz2vV6RqvEkjoHpUb7EZoddT+MH2jfVPtoRz5Jk
-	KDBxGSPDEQsD1SNqeaUSd/s4LHlyxbjbhSLHarzTsV7OGw6eljoxqgEQHnhm8TDorSQNkk26y8v
-	rZVzw6oyfzQz35ps1x6wWvlKQVIFZO3aHVIfkhNmBcDLHYBLdcgchX11JTA+unBGThHnllfVEao
-	znTCiZ6RvCTDxYPIkzHv4ZoM+hV8L530AshGYWdUurFLwwudpvBO9mrdX7O2o4kjVxX5LreZgUk
-	EcsFp8kYjJJMtK15jbGOaVKQhZtUyyjCS+EB0HialynyBDHvSxHHpI98WAYGEaetFVdCamgG8Iz
-	sQSDp8awOIcEC7D0EWy+6uV3Fli0edbp/lVeG2DI/2fkyG58vdgPts9a3pTWiBenJ5tYgpTfFEc
-	1fFPFeRbR
-X-Received: by 2002:a17:907:608c:b0:c2e:6a4f:a88b with SMTP id a640c23a62f3a-c513a1f5c8cmr1239372866b.0.1795528988047;
-        Tue, 24 Nov 2026 06:03:08 -0800 (PST)
+        bh=OYvsskZPh2HKNncyj2wSG/6a2wt4ZL94BdQJiOt5lU0=;
+        b=p/xddrfAHCkUKfUdITQOwoMR29nMw98zyN2Udjc36kAh6ARdBlX2geqyaDm6MSTiFC
+         OdSR8uL/RnS0pXEOQgNVwjNA0weSvaRKAybxT94EPrdzBXZEwPUMOe9uQzhAta09epyS
+         p4Rctjz3G7D1WuC5zB4WUQn1LA4EDVnfzLv6QmP1hajDb5E7TGN5vbso3rWCkQ0Qj67A
+         bXKTOvdsmHI0a/RwBtKQUfFPsJkfeKdMkpP5ke2sgolBg+9Y5AAYjw3OnDb2AV9x8Lue
+         xKMKSK+4JDLd4MTw9DVVsFjh8zkWeOMZT6+JyZFEVpExWpoxj+0P6Xr0wqR4CSfAJKLc
+         63hA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20260707; t=1795528990; x=1796133790;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to:content-type;
+        bh=OYvsskZPh2HKNncyj2wSG/6a2wt4ZL94BdQJiOt5lU0=;
+        b=EA1Vvm/86PsjpG2LFEyTtDUuB9kUsyVyvu9OAhlsSb2ALNmBjqVukmwXHMMK5tAReA
+         upDA8hAXgU6kLBpMWE5fjSXZpFYFLZBAFEsG59fLUuXK+9NOVrsb3tIjkKLcuTW1uB/a
+         Nx9RMug8WOlKcyoQP5Bat47sFTfkCUYTE68z0yhKFXV76p7JQeQ39p4YNKd8s3s5xpnQ
+         zTPV0zi5CXgc+i3tUll70b0utMJSaApjwt43y78Za4uy2f5V5cLoWfgjoqxPm2C1zTcs
+         V3ZwSTMAaYQSh3+rv81mfLOGKR4I9KBBbS39/Ip3PewWkoJUuwCPF4U07iKOid24++jh
+         Pbsw==
+X-Gm-Message-State: APuU4Z9xnoufbBBiEq8caU/YjOwsa7Y1/NXY+pCcQp/pWHWWWFAI2TZ5
+	umsSBWObU+gqs7OThFdpQhMxmm7Iuq5MdL1HQPs5nOjq0/FOcJMjX4JzyqCO7A==
+X-Gm-Gg: AZFdTZf+SxPlYYCbKcrtEcHXmr8xaYxu562CgLggwdljC/tLeIj0XKlAA+Ck+sbGzea
+	gIjptLXorkd5rjUMuRKOtqZSrDrdOCPjKCunRBhwqD182nKG7DV8nOrs5dYUZlT3wfmvX2SXMs6
+	sqM4YD4lThP+EmgOtlcGEysiDpjcA1SXxjDffGcS7TeEbEJ4GCzzlSMNEZyDs2K/ThOzF5Yv6K1
+	n5cjIrgCb0MREIxnixZIMqeImI8AEHjeX/L0R1rdP6AbAJCatTOfMfAM6D0QokBy6HIyvc+Nqsc
+	8J4GW1aAVom33Tk+MrdaQzT9ysA3pYE9G8iEM4rwy08B3O5iocBBg1idoaceFfn8zxB93NLJjZd
+	lLjQLAovU58GM76KIesW50YuM11/IMqZ0njQQY4bDoe9fxp/R2GW2iKVnmr3AHgc/OynUDWoc7l
+	flKHQr8ipTAhWuy96U4fwF/ueDJmP6nFk+famvdaYDE5cb+8ofjWHBPiyz9UkXCDLZnn0qf24vd
+	bEr6SmI0HCT1CVi/xZ+2Sx5UyUcOVoS2+X6MSnYy40O3Z5Eeuv4MmHTeOv7DYCXVkgX3dJtYZKm
+	Bn6gvbAi48Z2aFN4C2PXArBu01DICAah5JEYsXIkN3Wcn+H/5fE13DHu6tSONm+lGr4Af0vkstJ
+	tPh0cE68k
+X-Received: by 2002:a17:906:eec9:b0:c51:5589:35a1 with SMTP id a640c23a62f3a-c515589d211mr886099666b.5.1795528989251;
+        Tue, 24 Nov 2026 06:03:09 -0800 (PST)
 Received: from development2.visionsystems.local (mail.visionsystems.de. [213.209.99.202])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c513a8678cdsm510486566b.0.2026.11.24.06.03.03
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-c513a8678cdsm510486566b.0.2026.11.24.06.03.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Nov 2026 06:03:04 -0800 (PST)
+        Tue, 24 Nov 2026 06:03:08 -0800 (PST)
 From: Yegor Yefremov <yegorslists@googlemail.com>
 To: xenomai@lists.linux.dev
 Cc: Yegor Yefremov <yegorslists@googlemail.com>,
 	Jan Kiszka <jan.kiszka@siemens.com>,
 	Florian Bezdeka <florian.bezdeka@siemens.com>
-Subject: [PATCH 0/4] Cobalt build fixes for uClibc-ng
-Date: Tue, 24 Nov 2026 15:02:59 +0100
-Message-Id: <20261124140303.3336015-1-yegorslists@googlemail.com>
+Subject: [PATCH 1/4] lib/cobalt: Don't rely on glibc's __OPEN_NEEDS_MODE
+Date: Tue, 24 Nov 2026 15:03:00 +0100
+Message-Id: <20261124140303.3336015-2-yegorslists@googlemail.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20261124140303.3336015-1-yegorslists@googlemail.com>
+References: <20261124140303.3336015-1-yegorslists@googlemail.com>
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -96,51 +100,74 @@ Precedence: list
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Cobalt has not built with uClibc-ng since v3.1.1. These patches fix
-the build, plus the clock_gettime() vDSO selection, which picks the
-32-bit call for uClibc-ng with 64-bit time_t. They complement Jan's
-mmap() off_t fix for uClibc-ng >= 1.0.58, now in next.
+__OPEN_NEEDS_MODE() is an internal helper of glibc's <fcntl.h>, so
+libcobalt fails to build with other C libraries such as uClibc-ng:
 
-Patch 2 is only needed for uClibc-ng releases before 1.0.43, which lack
-getauxval(). The Buildroot autobuilders still use such a toolchain
-(br-arm-full-static, uClibc-ng 1.0.36).
+  rtdm.c:94:13: error: implicit declaration of function '__OPEN_NEEDS_MODE'
 
-Tested with Buildroot's test-pkg on next plus this series, building
-Cobalt with the testsuite, RTCAN, Analogy and the pSOS and VxWorks
-skins:
-- armv5 uClibc-ng 1.0.59 (time64), GCC 15
-- arm static uClibc-ng 1.0.36, GCC 9 (getauxval() fallback in use)
-- armv7 glibc 2.44, GCC 16
-- aarch64 glibc 2.24, GCC 6
+Factor out the check open() and open64() already do into a local
+helper and use it in __open_2() and __open64_2() as well.
 
-Without the series, both uClibc-ng builds fail on __OPEN_NEEDS_MODE,
-and the older one also fails on <sys/auxv.h>. The ADJ_SETOFFSET error
-only showed up once these were fixed.
+Fixes: 89f00a2e5458 ("lib/cobalt: Wrap __open_2/__open64_2 to support _FORTIFY_SOURCE")
+Assisted-by: Claude:claude-opus-5-5
+Signed-off-by: Yegor Yefremov <yegorslists@googlemail.com>
+---
+ lib/cobalt/rtdm.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
 
-For patch 3, I compared the vDSO symbol the preprocessor picks before
-and after: __vdso_clock_gettime64 instead of __vdso_clock_gettime on
-uClibc-ng time64, and no change for armv7 glibc with or without
-_TIME_BITS=64. I have not run it on uClibc-ng hardware.
-
-musl is not covered. It defines neither __USE_TIME_BITS64 nor
-__TIMESIZE, so libcobalt would use the 32-bit time syscalls there as
-well. That needs a separate look.
-
-Yegor Yefremov (4):
-  lib/cobalt: Don't rely on glibc's __OPEN_NEEDS_MODE
-  lib/cobalt: Provide getauxval() fallback for the vDSO parser
-  lib/cobalt: Select the time64 vDSO call without __TIMESIZE
-  testsuite/smokey/y2038: Define ADJ_SETOFFSET if missing
-
- configure.ac                                  |  3 +-
- .../arch/arm/include/asm/xenomai/time.h       |  8 ++++-
- .../arch/arm64/include/asm/xenomai/time.h     |  8 ++++-
- .../arch/x86/include/asm/xenomai/time.h       |  8 ++++-
- lib/cobalt/parse_vdso.c                       | 31 ++++++++++++++++++-
- lib/cobalt/rtdm.c                             | 14 ++++++---
- testsuite/smokey/y2038/syscall-tests.c        |  5 +++
- 7 files changed, 68 insertions(+), 9 deletions(-)
-
+diff --git a/lib/cobalt/rtdm.c b/lib/cobalt/rtdm.c
+index df7aa7eb6..58d943804 100644
+--- a/lib/cobalt/rtdm.c
++++ b/lib/cobalt/rtdm.c
+@@ -36,6 +36,12 @@
+ #define O_TMPFILE (020000000 | 0200000)
+ #endif
+ 
++/* like __OPEN_NEEDS_MODE(), which only glibc provides */
++static inline int open_needs_mode(int oflag)
++{
++	return (oflag & O_CREAT) || (oflag & O_TMPFILE) == O_TMPFILE;
++}
++
+ static int do_open(const char *path, int oflag, mode_t mode)
+ {
+ 	int fd, oldtype;
+@@ -62,7 +68,7 @@ COBALT_IMPL(int, open, (const char *path, int oflag, ...))
+ 	mode_t mode = 0;
+ 	va_list ap;
+ 
+-	if ((oflag & O_CREAT)  || (oflag & O_TMPFILE) == O_TMPFILE) {
++	if (open_needs_mode(oflag)) {
+ 		va_start(ap, oflag);
+ 		mode = va_arg(ap, int);
+ 		va_end(ap);
+@@ -76,7 +82,7 @@ COBALT_IMPL(int, open64, (const char *path, int oflag, ...))
+ 	mode_t mode = 0;
+ 	va_list ap;
+ 
+-	if ((oflag & O_CREAT)  || (oflag & O_TMPFILE) == O_TMPFILE) {
++	if (open_needs_mode(oflag)) {
+ 		va_start(ap, oflag);
+ 		mode = va_arg(ap, int);
+ 		va_end(ap);
+@@ -91,7 +97,7 @@ COBALT_IMPL(int, __open_2, (const char *path, int oflag))
+ 	 * parameter to the functionality of open(). It may be used when the macro
+ 	 * _FORTIFY_SOURCE is defined when compiling the application code.
+ 	 */
+-	if (__OPEN_NEEDS_MODE(oflag)) {
++	if (open_needs_mode(oflag)) {
+ 		const char *msg =
+ 			"invalid open call: O_CREAT or O_TMPFILE without mode\n";
+ 		ssize_t n = __STD(write(STDERR_FILENO, msg, strlen(msg)));
+@@ -105,7 +111,7 @@ COBALT_IMPL(int, __open_2, (const char *path, int oflag))
+ COBALT_IMPL(int, __open64_2, (const char *path, int oflag))
+ {
+ 	/* just like __open_2() and open64() */
+-	if (__OPEN_NEEDS_MODE(oflag)) {
++	if (open_needs_mode(oflag)) {
+ 		const char *msg =
+ 			"invalid open64 call: O_CREAT or O_TMPFILE without mode\n";
+ 		ssize_t n = __STD(write(STDERR_FILENO, msg, strlen(msg)));
 -- 
 2.34.1
 
