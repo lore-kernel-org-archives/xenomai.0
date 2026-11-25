@@ -1,61 +1,65 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.183.195
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=217.70.183.196
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795616105;
-	b=R0FSXoLrD20Cn9kmp1sYz6ujPhNKlZBt2Ttvw07ps19nDXBFSTRAnK6CTBeBZ8MD/T4h
-	 lpzUkAx6LKriRxzYwf3zuek6hg6ZCF88x4xHqZyBTRAnSN0hL28lwD/ZX52Huf2eDfxae
-	 IMJXW4NDJWyF7ZmgPc/Yxn8ElKQtQG/xlDb4PpLSLhTpmk26Ak0tKod20tWJXL8Onzv+X
-	 D2GVxiM36OpekOUpEtqomXtcYes4eCipJTm/6XZaQU6uGN8/sZtQCc8fwI8h3Z4p/g4cU
-	 MsLGIfEoc66aVl8a80woLVhrstbqxJrZv4wFAg8s+h/1Xnxp7BFLrjrYDssitCzmgVQ==
+	t=1795616323;
+	b=gK4DQCyU8DQEeAGrR5tzLYbkDx92fN5O2+0NTUPOYkt8ZstUpvPOFVFsdHBr539qxIcc
+	 wKxPTgcICD7tNGGPrjr5oheKmlqwhQcZlvuOCYxuSRDMlrOLP13bv83fKm4OSQ+OQshoq
+	 Ciu17vOgIVsalb2j5CA3DzugP15POH/CSLHT9idXTzsdvbf9Q7rK5iYyQM5AsDyBIdqX/
+	 9QXXWPC8iAySqJuXPAkQfvHC0z0slHN/iq8joyfitYiItwOe+USwaIqAACMOQifPhW5M3
+	 W0l0EY3t5md78ihn1eJ+/9yD8LYdKjM+9HhIu52fV5IJMMl9OBhQok3egIZet2uhrDQ==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795616105;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795616323;
 	h=DMARC-Filter:Received:DKIM-Signature:From:To:Cc:Subject:In-Reply-To:
 	 References:User-Agent:Date:Message-ID:MIME-Version:Content-Type:
 	 X-GND-Sasl:X-GND-Score:X-GND-Cause:X-GND-State;
-	bh=ZN/EJIUIdSuwCNUTT9uQsS8j9fhg2xELfvKOJaCUksM=;
-	b=LjJmPPJSNeVj8TPm65rqHFYhdR0nbO/ubyFBfdE5ZMmhLFTvaiWu+2wmfzFyNckSNz0l
-	 amE4Fnrw/cEjgKFS4OHQ38KeNu9JyL5ipsrySUxucMpKHwFO5KmlD/VOiuTCoJ8ZjwPll
-	 2P5w5YPRSWoiPHskwMVuB0n37dev9BNy2Xt91aq+lxw3ZBUib2+E26/FIRdz1slCR7pj7
-	 B52kRfIB/wxCaz4o89wvoVi+X/KkRG6/Mi6g+azr8RaslLcqKTgXpS1+9T9fAMoPWVLWh
-	 k8ZupBhH8uPhNTTSTVuQBLuKZD4Gsc4JAyDCd+4NFL3tU6LRLxUkTjkg90ZpxqLmfOA==
+	bh=FozgVW2H9Z244JKY5b6JFwxiChPfASaPwPdG1B8IlCw=;
+	b=SUk7/gkACTyfwIWVnZk8FlyyKFzaulMHTqDnKbFIdvT6u2I3YTrlE4nCcjYmu987FhFw
+	 EdmkrQl4vWOELQ0t5JKlQfNm1pl0Y4mDDfGrNyuSMk5SvmM9DWUEW3YdwQbAprfGjnAQ2
+	 Mi2XQOWcQyvs7JGs9tcSrcMplQho6A359ABMvEUKDYZN/QpAaprd9vIOVyglknIqWi29G
+	 5ko6FNMAe2si71AVv+MtSp89C3dozr1dr1U76/ri7FkkiKhc3atDLdZJHpSYwRg009APa
+	 L9IYxebT7DA/f4euT+cZOGxNubNaXOBd75x3cRQrpNZXj+Jv29qyYGhhqzQ8LlSQ1cg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=xenomai.org;
 	spf=pass smtp.mailfrom=xenomai.org;
-	dkim=pass header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=bpkCba5t;
-	arc=none smtp.remote-ip=217.70.183.195
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+	dkim=pass header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=ONbI75gs;
+	arc=none smtp.remote-ip=217.70.183.196
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9327C606A33F
-	for <xenomai@lists.linux.dev>; Wed, 25 Nov 2026 14:15:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9327C606A33F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33966606A333
+	for <xenomai@lists.linux.dev>; Wed, 25 Nov 2026 14:18:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 33966606A333
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=xenomai.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=bpkCba5t
-Received: by mail.gandi.net (Postfix) with ESMTPSA id 183FE21FD6;
-	Wed, 25 Nov 2026 14:14:55 +0000 (UTC)
+	dkim=pass (2048-bit key, unprotected) header.d=xenomai.org header.i=@xenomai.org header.a=rsa-sha256 header.s=gm1 header.b=ONbI75gs
+Received: by mail.gandi.net (Postfix) with ESMTPSA id 181E53EDBC;
+	Wed, 25 Nov 2026 14:18:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=xenomai.org; s=gm1;
-	t=1795616096;
+	t=1795616321;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 in-reply-to:in-reply-to:references:references;
-	bh=ZN/EJIUIdSuwCNUTT9uQsS8j9fhg2xELfvKOJaCUksM=;
-	b=bpkCba5tDOFfZW3L8KuiVrV/1dK+o38Gvfm9Qm7FZ64KJlYePWeNbgFVLZhowktEGc+Mkn
-	G/4RCvIoebiouEJzCBfzOWdq4+cWulfYmZxnwTJ2fKQkC7PTAAi4vdX80wk0C2SQd3MS7e
-	7Q1cN0k9Msjq1V/ibaoFqhXzNWp/4aYCQJ8km1GJHxNo+kHOGE/lUVWtB+RXkCpsHlGsUk
-	XQw30t6WnkGx4H57Tmk5IILaI3UVOvSEPDbyxlrvp6MF734fFgNv/Spkfm6Gc/xwVnX/yQ
-	O4VXZgbCo41l7pVu2iRgmtPDja3doYMjIxIfxiI/jLIpTx/Y//o3ULzWi12EeQ==
+	bh=FozgVW2H9Z244JKY5b6JFwxiChPfASaPwPdG1B8IlCw=;
+	b=ONbI75gs/wy9E91Vwg4I84yeC+K0lAX+6C3xt/lhIkD37qHQJv9U54NU63JhLT5FwCO/gw
+	n27mvVU5WtB0VOwBc7aIg+Ticq2loW5beNaMgX2xKsXuj62URMdSNmbdRTizF22f16pOsL
+	JR9QE6YZPSUyZU4ANLTNLHFOCjRoBUtlJZOoas3UGYzoj/lXAW7RxTecGu7ZBtQGvNxsQc
+	VKdByJSf7nDrsAjrUgbFLCj/z2Rrs2IKVpqYUTSC/Y4hNL7z/n6k7//VlkBDx8gFcI49Xh
+	BXwHtFmtmAkfphS45mFmikFXRIaUv8Y/AIjTS5pmBYb7Jvjd2Sp8UEkJdhhdyg==
 From: Philippe Gerum <rpm@xenomai.org>
 To: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Xenomai <xenomai@lists.linux.dev>
-Subject: Re: [PATCH] dmaengine: imx-sdma: dovetail: Fix duplicate unlock
-In-Reply-To: <5b39f820-a86d-4265-93a0-74b5569b71a8@siemens.com> (Jan Kiszka's
-	message of "Wed, 25 Nov 2026 12:44:14 +0100")
-References: <5b39f820-a86d-4265-93a0-74b5569b71a8@siemens.com>
+Cc: Xenomai <xenomai@lists.linux.dev>,  Florian Bezdeka
+ <florian.bezdeka@siemens.com>
+Subject: Re: [PATCH 7.2.y] net: dovetail: Restore accidentally lost mp_ops
+ cleanup
+In-Reply-To: <9a4375f6-be1e-4626-91d9-ad906eec7571@siemens.com> (Jan Kiszka's
+	message of "Wed, 25 Nov 2026 12:35:41 +0100")
+References: <660c8205-c3d1-414d-8977-6ee6ce1ebe1c@siemens.com>
+	<874ie0topt.fsf@xenomai.org>
+	<9a4375f6-be1e-4626-91d9-ad906eec7571@siemens.com>
 User-Agent: mu4e 1.12.12; emacs 30.2
-Date: Wed, 25 Nov 2026 15:14:54 +0100
-Message-ID: <87tsl50zhd.fsf@xenomai.org>
+Date: Wed, 25 Nov 2026 15:18:40 +0100
+Message-ID: <87o6bd0zb3.fsf@xenomai.org>
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -68,37 +72,49 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-GND-Sasl: rpm@xenomai.org
 X-GND-Score: -100
-X-GND-Cause: dmFkZTEC+nPDTban0y0SuokQkUKYraGkBNPMU4IxPNE/G+Ki0X5GifnZaBdddpMhpm9eisZHdQA5VBbtrWQo6bT2vTUpFD06VoXCKwFYdexZM76vEmHkFUdK8amKUuByxc72X6zBb5AhIby8xMHxb7jNyKiFGV139bkV7vXeTcgswI6CNdlLyRAspp1TvtpkucYv2J1u2JH4XUTKpc3gTwUwGFDqr4PAmPnKSBbFABTu3BO0QqJdtn95V6GoO0ofUzgXGciDB4G1NQK30RARZM/ZGBRrt7IrLE3hu5N3JxyKiLnvhj/jwBjkUiA1RgmXBzkapLKda81ejqRCuXnLbL0y71JKQ4/rG7UMAQt5Y99jaqvwrIFt/tLr8HnCyKBRc+nf9jcv3mJq5W2cq7CviW2o03drTWrXzba7jz1y566c6m85P37KvOQR4vlurP7SSdHpnVsgU9kdpqquRk1CPXDb6sJ1CGmzEcCvp6vApJeJ9EopHUApgcqGVbHuP6yYlSgtziKWyo7K+P+x5hVTBQGud1YIdAP3AIWKiHxMYKCrAufIocK7j/rxsd7gWtopBMix+fZq3oYT0Qdt5cCc2nxrJWjqN3YydKyB5T+rD5XvWTNILdEWblKkOy7J5XZ2bzmXC0I1NymTB5IDv7bjQrOJngk3KJWEutUVc1n+zZJTm8O5IQ
+X-GND-Cause: dmFkZTE0RDVY/Frx7zIxC/NTrIShJ6DrGJtBPVpyyOJJvOj8x1GzImQp28Ge9xkIbAOZupUAzvTtUhtZyXFpG5iZ7DoJ2Ujk6lUfkPD7erlJ8josVYvig6wwNSjdqxZpwkYOdEOuEvritjsU3G38eoTLt0/X8fxYSTNY79nfZwen5lI8vn5WbW/XgGs7WNdYRzn7UpFboXSVh7lMbysXLCLjegBygs9NUSpOJQVqWmZQU6V1zhcPb+KNpwzWENRcoEYJRoHpSRx+ecA9YO7oH7qHmDACF+9yGA2VWmPedg7yjH1APG6ZcI1m9EdAiYr/pfDhzZPEigfpm4gOBmtVNOjE7SMzWvEtEnpl9Y+TScmkZ+yLXBuuQ3aYNlw9oY5fKjtj0wGdCV7TixREe3oqisuiuvNzzLozT2L9sozLg3nWYQGLRoiF5ei6ZBdYYNXEk0Qki4va8AYay1BaaT2ohfWq1Dxqeoalvk2j5kLoPIl6lcwx57BbGLOfoHE4PzTx7bg1g7RPxK6TklzLUbFg1uQGFNhMRBeCK++WaqS2wUB1KpVWR78BcPMqzW3lqEIVNqh3W5AkZueLm4vdAJVkHN3olnGYCJ7RBGa6va5XXcbLM6eohS+g3hU0yqskREN0QJWd5o8vDOg7Um6YzA5PKcGljzKdVROZjmSI1rBPaK+koQuh+g
 X-GND-State: clean
 
 Jan Kiszka <jan.kiszka@siemens.com> writes:
 
-> From: Jan Kiszka <jan.kiszka@siemens.com>
+> On 01.11.26 19:02, Philippe Gerum wrote:
+>> Jan Kiszka <jan.kiszka@siemens.com> writes:
+>> 
+>>> From: Jan Kiszka <jan.kiszka@siemens.com>
+>>>
+>>> Fixes: 2db757ed1c20 ("net: dovetail: enable out-of-band networking")
+>>> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
+>>> ---
+>>>
+>>> Should go into 7.3 as well.
+>>>
+>>>  net/core/page_pool.c | 5 +++++
+>>>  1 file changed, 5 insertions(+)
+>>>
+>>> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+>>> index 13ef7c723a89c..6136471425fe3 100644
+>>> --- a/net/core/page_pool.c
+>>> +++ b/net/core/page_pool.c
+>>> @@ -338,6 +338,11 @@ static void page_pool_uninit(struct page_pool *pool)
+>>>  	if (!pool->system)
+>>>  		free_percpu(pool->recycle_stats);
+>>>  #endif
+>>> +
+>>> +	if (pool->mp_ops) {
+>>> +		pool->mp_ops->destroy(pool);
+>>> +		static_branch_dec(&page_pool_mem_providers);
+>>> +	}
+>>>  #ifdef CONFIG_PAGE_POOL_OOB
+>>>  	kfree(pool->alloc.cache);
+>>>  #endif
+>> 
+>> Merged into 7.2, thanks. Noted for 7.3.
+>> 
 >
-> The dovetail conversion forgot to drop the spin_unlock which is supposed
-> to be replaced with the vchan_unlock some lines later.
+> ...but forgotten now (AI finding): please apply to v7.3.
 >
-> Reported-by: opencode:Opus-5.5
-> Fixes: 187b1d6237e5, v7.1-dovetail-rebase ("dmaengine: imx-sdma: dovetail: enable out-of-band operations")
-> Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-> ---
->  drivers/dma/imx-sdma.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/drivers/dma/imx-sdma.c b/drivers/dma/imx-sdma.c
-> index 22c7cccc60179..5414df2269d4d 100644
-> --- a/drivers/dma/imx-sdma.c
-> +++ b/drivers/dma/imx-sdma.c
-> @@ -986,7 +986,6 @@ static unsigned long sdma_do_channels(struct sdma_engine *sdma,
->  			}
->  		}
->  
-> -		spin_unlock(&sdmac->vc.lock);
->  		__clear_bit(channel, &stat);
->  	next:
->  		vchan_unlock(&sdmac->vc);
 
-Merged, thanks.
+Oopsie! Done.
 
 -- 
 Philippe.
