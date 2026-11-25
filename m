@@ -1,51 +1,51 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795642473;
-	b=quFB1YpaQQs2LaqAKlsAK7/VDI2jqi/BTZS2l+pADrNYbOcxIehm8hGwGAvpB4edMOaC
-	 VH6kkKAeOCkUkF26QkINuXPLsWeBuw5N4mVWwgIJnxDORQK+WXUZi+v46Cfr0N2n/tjaJ
-	 R/lazKT7eRiSHP7MWrKOCoZLo3gxDR5E4t8H/Nh0r2QEV/yd6uVjSteGiNSzSsyTS6Sqx
-	 Og2DYo83SnPhE/jnhk4HjOQk0yCZchBHVjQYyZCPz43LmyEarh9JqvmNsnwB5dkmM6cEP
-	 rHcXgC0GIT51k7SBHES4H0ZY33KA8YRUez4OFy315x689UQSEmyHBgcx0tR8K/WqUbg==
+	t=1795642476;
+	b=gWziIpvTy3Em9eg6lz6zEir1f4iVMXaafMexjes+sis2FVo5evivIrCs8wx17CSJSJWG
+	 wjSk1Cl1dpuxs+l4ueAN6tEyLZvCfI4eKqUGP0e/haKCix3gYfkFcF84/mJG/yfZLIyUP
+	 tqxB+3m8bxWzgW7PZl9ADwS2QLOdue8OxcSxcPEHINDEUUJbNeCG3gH9wyjCT+ZeBrzuQ
+	 7L2fRn7dL7HhAmmOD/B4EkJVxzAxNaW/lfW8j/nHPVCeGYjS6Nh7A7CkPhkPimmWW6Nk9
+	 6S+l1H2R5ckVgX0391E6UjY12QwqT39w+SI+ZSEsAPutLgkCOMkIAZsJrS2v4K/Wu0A==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795642473;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795642476;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=cRQwgvwyYwHVqPS/uenPIX5KhWukZxBssNh2xKaEdeg=;
-	b=MkFrufx+jbHYTGDMWAXWBZmcnuta60UXjvwhQkINtNGmcZZj9t6HssJLV+8QQt0W08Ad
-	 ZMHRH1n8qimjSCraMRZO1y4CrWgDxLJpTb0cQSlWVIDj97fPL8nfP1MEoE+2ZZPeEaOnC
-	 LBKlc++yZUvL1qwtvxlk6vG4FpU+ZwsyctQvRIBeMGYObQqxCrjbgx0N9WGzjuAtcGJBf
-	 bhh8Ic8ba3PPjNNF15RLF1Arc9NUIocigGXuYzda0xYG/ZOblL4PKg8b8ZJGuHyCIiJ38
-	 bDWsn3OkiPYVYP4ddzXYe8srH8r3P/mKqFuXDxywxTED0af/9YIRPJ7AMqSIfowbOBQ==
+	bh=lByh1otLEtdYMnk5j6ky3ViUYZE/edglwzyJ6UQ2sAM=;
+	b=aB/Qeonq/sWGgvP58RJDp32kH+09oW76AsT4V/3JLTjyfsLx5x5mXI4Mt3XPJ8vtojCD
+	 OSns62pH2MYqufcEOpdz49MFN6n0nqZuCFg4+sVebuKqNwGRlHY4CwKKNVPxVPe4J1Nnf
+	 QCh/uhTa2kQloOFIqi1agLq+5R487tVXdmy3l+Ocg0yf6av3cfpQxPAPukA/hJlFEHesR
+	 cMbuqNtbQ7W+kdtJSRpcrQtJ9ZGUmF6oUIEDz4WmN4AONAv9BzKFPwEr1Pjqs63fXm2e5
+	 v+VeNQoo22OnlFMk7VOMBtb9neigKsWUC7oFbAevUIQ29wLCFqWEnOcKELPPsjLj6Pg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hZjPz+qt;
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="l091JT/G";
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA8E2606A321
-	for <xenomai@lists.linux.dev>; Wed, 25 Nov 2026 21:34:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B59F606A32C
+	for <xenomai@lists.linux.dev>; Wed, 25 Nov 2026 21:34:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=hZjPz+qt
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6BB71F000CA;
-	Wed, 25 Nov 2026 21:34:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=l091JT/G
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46A061F000C4;
+	Wed, 25 Nov 2026 21:34:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795642473;
-	bh=cRQwgvwyYwHVqPS/uenPIX5KhWukZxBssNh2xKaEdeg=;
+	s=k20260515; t=1795642475;
+	bh=lByh1otLEtdYMnk5j6ky3ViUYZE/edglwzyJ6UQ2sAM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=hZjPz+qtaP113Pu3vXlzT17X6pVmvlFkUVugeHS+43+FCwwTNgGpuq4PwrJBbJ4Ui
-	 5N2GLsyovWh7P9aHXTEYEQP3qQJPvpHkoPTE+JNxB9UMp5GGRcIJM4aM6k7N193TDU
-	 M+8592YVhhIBPxKxufsIAbOXUzyIFHbXs30BPKwAU+1ycrIGSttaaXLVbSKyRYGofL
-	 iByv4bta8/R8SuJJbu1CEUAza32VKPRQxq2znYmjN8SNk1yJ33VkkLRBX4MpxuSAmV
-	 SGtdFmQM0hBOt8nJDfFuMsYlaL8QHV07jGUMmk+hMRbYdWFm8m4NkPbBKwuo8hbXum
-	 3owOuSmRYk0DQ==
+	b=l091JT/G4htSkfNOmoufQZvyPH1deEB3KaIQSd2nXxRMQ2x0L68O/aQpPl1GDPTZi
+	 +KZU9gpdUDPvfq/ch3/T4D/ldMyFkUc29jiCh8rWGIvEwHMfiE/wA8uHc0UO9P4Qch
+	 a3yd2D82480zuGD0LPIubYCq8CBrN5QWgkXoNbEjqVJi2hmeZg/dlxmSV13yQN+Odk
+	 r3BKCsf7OaBiZ36APMBi1wj3XkOjWKlDVwhqtFZONyFWWApX2V7sAB5MT+E1qVFPhp
+	 pCv11D0dk5LaWBVJgiqRGdTuXi7zrQhKrV0DRrr8g3MvakwRb80eiyrcgtWuaUr36x
+	 usM2QGLsURHUw==
 From: "Richard Weinberger (sigma star gmbh)" <rw@kernel.org>
 To: xenomai@lists.linux.dev
 Cc: upstream+xenomai@sigma-star.at,
 	Richard Weinberger <richard@nod.at>
-Subject: [PATCH 4/7] lib/alchemy/pipe: Do not require a Xenomai task for blocking reads
-Date: Wed, 25 Nov 2026 22:34:16 +0100
-Message-ID: <20261125213419.2363742-5-rw@kernel.org>
+Subject: [PATCH 5/7] lib/alchemy/event: Require a Xenomai task only for waiting over Mercury
+Date: Wed, 25 Nov 2026 22:34:17 +0100
+Message-ID: <20261125213419.2363742-6-rw@kernel.org>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20261125213419.2363742-1-rw@kernel.org>
 References: <20261125213419.2363742-1-rw@kernel.org>
@@ -62,48 +62,61 @@ Content-Transfer-Encoding: 8bit
 
 From: Richard Weinberger <richard@nod.at>
 
-rt_pipe_read*() block in the RTDM socket layer, the Copperplate TCB is
-not used. Allow any Cobalt thread to wait, only reject asynchronous
-contexts.
+Over Cobalt, rt_event_wait*() is based on a Cobalt event which any
+Cobalt thread may wait for. Only the Mercury implementation needs a
+Copperplate TCB, and only when actually waiting. Move the check there
+and keep rejecting blocking calls from asynchronous contexts.
 
 Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- lib/alchemy/pipe.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ lib/alchemy/event.c        | 10 +++++-----
+ lib/copperplate/eventobj.c |  5 +++++
+ 2 files changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/lib/alchemy/pipe.c b/lib/alchemy/pipe.c
-index b5ada2c7d..a289f150d 100644
---- a/lib/alchemy/pipe.c
-+++ b/lib/alchemy/pipe.c
-@@ -327,7 +327,7 @@ ssize_t rt_pipe_read(RT_PIPE *pipe,
- 	if (timeout == TM_NONBLOCK)
- 		flags = MSG_DONTWAIT;
- 	else {
--		if (!threadobj_current_p())
-+		if (threadobj_irq_p())
- 			return -EPERM;
- 		if (timeout != TM_INFINITE) {
- 			clockobj_ticks_to_timespec(&alchemy_clock, timeout,
-@@ -420,8 +420,8 @@ ssize_t rt_pipe_read(RT_PIPE *pipe,
-  * waiting for a message. In such event, @a pipe is no more valid upon
+diff --git a/lib/alchemy/event.c b/lib/alchemy/event.c
+index 8428db539..c08b224c7 100644
+--- a/lib/alchemy/event.c
++++ b/lib/alchemy/event.c
+@@ -378,10 +378,10 @@ out:
+  * sleeping on it. In such a case, @a event is no more valid upon
   * return of this service.
   *
 - * - -EPERM is returned if this service was not called from a Xenomai
-- * task, unless @a abs_timeout is { .tv_sec = 0, .tv_nsec = 0 }.
+- * task, unless @a abs_timeout is { .tv_sec = 0, .tv_nsec = 0 }. Over
+- * Cobalt, this error is also returned if the caller is not a Xenomai
+- * thread.
 + * - -EPERM is returned if this service should block, but was called
-+ * from an asynchronous context.
++ * from an asynchronous context, or over Mercury not from a Xenomai
++ * task. Over Cobalt, this error is also returned if the caller is not
++ * a Xenomai thread.
   *
   * @apitags{xthread-nowait, switch-primary}
   */
-@@ -442,7 +442,7 @@ ssize_t rt_pipe_read_timed(RT_PIPE *pipe,
- 	if (alchemy_poll_mode(abs_timeout))
- 		flags = MSG_DONTWAIT;
- 	else {
--		if (!threadobj_current_p())
-+		if (threadobj_irq_p())
- 			return -EPERM;
- 		if (abs_timeout) {
- 			__RT(clock_gettime(CLOCK_COPPERPLATE, &now));
+@@ -393,7 +393,7 @@ int rt_event_wait_timed(RT_EVENT *event,
+ 	struct alchemy_event *evcb;
+ 	struct service svc;
+ 
+-	if (!threadobj_current_p() && !alchemy_poll_mode(abs_timeout))
++	if (threadobj_irq_p() && !alchemy_poll_mode(abs_timeout))
+ 		return -EPERM;
+ 
+ 	if (mode & ~EVOBJ_ANY)
+diff --git a/lib/copperplate/eventobj.c b/lib/copperplate/eventobj.c
+index 28b7c167f..c5a726a89 100644
+--- a/lib/copperplate/eventobj.c
++++ b/lib/copperplate/eventobj.c
+@@ -229,6 +229,11 @@ int eventobj_wait(struct eventobj *evobj,
+ 		goto done;
+ 	}
+ 
++	if (!threadobj_current_p()) {
++		ret = -EPERM;
++		goto done;
++	}
++
+ 	wait = threadobj_prepare_wait(struct eventobj_wait_struct);
+ 	wait->value = bits;
+ 	wait->mode = mode;
 -- 
 2.55.0
 
