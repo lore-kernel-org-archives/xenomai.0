@@ -1,51 +1,51 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=100.103.45.18
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795642476;
-	b=gWziIpvTy3Em9eg6lz6zEir1f4iVMXaafMexjes+sis2FVo5evivIrCs8wx17CSJSJWG
-	 wjSk1Cl1dpuxs+l4ueAN6tEyLZvCfI4eKqUGP0e/haKCix3gYfkFcF84/mJG/yfZLIyUP
-	 tqxB+3m8bxWzgW7PZl9ADwS2QLOdue8OxcSxcPEHINDEUUJbNeCG3gH9wyjCT+ZeBrzuQ
-	 7L2fRn7dL7HhAmmOD/B4EkJVxzAxNaW/lfW8j/nHPVCeGYjS6Nh7A7CkPhkPimmWW6Nk9
-	 6S+l1H2R5ckVgX0391E6UjY12QwqT39w+SI+ZSEsAPutLgkCOMkIAZsJrS2v4K/Wu0A==
+	t=1795642478;
+	b=LVzBSXsDTOLFDnSkl545hgowDyL5bvgJ3X5tVSoWNsxX2ymGgi7wpMj1k5iQmWQPN+4U
+	 mV3z8xDNAZysBe75fpiHduq5Xp2loXMoLvbP69w5CUIN0Uns2MvlbB7k6TOQTr7RQ2pUr
+	 G7AQs22MbkYwSmWO+Osp6i7KusTA/eFF81JV0h2e/LqsozCxbm2l3FLpPIriA6tIFwruj
+	 SYhuTJ8mPrIO+YFJp2Bclyc6aOltSiUTbz7JQPCf+73gbMUervAJ5DJio7wWQn+4pAWsX
+	 O5eme00xleKC4yCKam0hDIbsmc+Rr8F99vPcFS1iqgPg+ziweeWg7HwTW8UPQIXpiKw==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795642476;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795642478;
 	h=Received:DKIM-Signature:From:To:Cc:Subject:Date:Message-ID:X-Mailer:
 	 In-Reply-To:References:MIME-Version:Content-Transfer-Encoding;
-	bh=lByh1otLEtdYMnk5j6ky3ViUYZE/edglwzyJ6UQ2sAM=;
-	b=aB/Qeonq/sWGgvP58RJDp32kH+09oW76AsT4V/3JLTjyfsLx5x5mXI4Mt3XPJ8vtojCD
-	 OSns62pH2MYqufcEOpdz49MFN6n0nqZuCFg4+sVebuKqNwGRlHY4CwKKNVPxVPe4J1Nnf
-	 QCh/uhTa2kQloOFIqi1agLq+5R487tVXdmy3l+Ocg0yf6av3cfpQxPAPukA/hJlFEHesR
-	 cMbuqNtbQ7W+kdtJSRpcrQtJ9ZGUmF6oUIEDz4WmN4AONAv9BzKFPwEr1Pjqs63fXm2e5
-	 v+VeNQoo22OnlFMk7VOMBtb9neigKsWUC7oFbAevUIQ29wLCFqWEnOcKELPPsjLj6Pg==
+	bh=P3cFt9hF7ELLjUPkcWT/X9GvkKqXtNPW/b4JeY/Nn28=;
+	b=uNHHDexvF5aS1hGsBzDR/+2VUmvq2moD1TtpsO+k1xZUnf+uECxqoUNpI7tCdlTYephq
+	 RwxfWBygEa4ZJOT/ZL3MsXVET4Xg7RZKeavd6PjCpstIo4wppjcvvGoIG5HOqODfOZ5kw
+	 ajLvPhd0mhja0EL/3FiISnihy0Jrc7x3/9fnPbbBF8JUbGCPU1wry8Jn6yVvEuOqbLqN8
+	 CvXVmJ9s7auVv65BEFKIOFwnFfl+6e0C4b3bgMkfbbBSKDDQx+t6cWnqCuQPElxVE5YeD
+	 PkJuc0BPKiPraasyUfXgMEupdO2EF2bE4bY8PaUyKhj8PnQPiW3vlH+ihyU0ZM+88Hg==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b="l091JT/G";
+	dkim=pass header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=SYcHm2Mj;
 	arc=none smtp.remote-ip=100.103.45.18
 Received: from smtp.kernel.org (quasi.space.kernel.org [100.103.45.18])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange X25519 server-signature ECDSA (prime256v1))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B59F606A32C
-	for <xenomai@lists.linux.dev>; Wed, 25 Nov 2026 21:34:36 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 246B7606A327
+	for <xenomai@lists.linux.dev>; Wed, 25 Nov 2026 21:34:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=l091JT/G
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46A061F000C4;
-	Wed, 25 Nov 2026 21:34:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.a=rsa-sha256 header.s=k20260515 header.b=SYcHm2Mj
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 722EF1F000C4;
+	Wed, 25 Nov 2026 21:34:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kernel.org;
-	s=k20260515; t=1795642475;
-	bh=lByh1otLEtdYMnk5j6ky3ViUYZE/edglwzyJ6UQ2sAM=;
+	s=k20260515; t=1795642477;
+	bh=P3cFt9hF7ELLjUPkcWT/X9GvkKqXtNPW/b4JeY/Nn28=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References;
-	b=l091JT/G4htSkfNOmoufQZvyPH1deEB3KaIQSd2nXxRMQ2x0L68O/aQpPl1GDPTZi
-	 +KZU9gpdUDPvfq/ch3/T4D/ldMyFkUc29jiCh8rWGIvEwHMfiE/wA8uHc0UO9P4Qch
-	 a3yd2D82480zuGD0LPIubYCq8CBrN5QWgkXoNbEjqVJi2hmeZg/dlxmSV13yQN+Odk
-	 r3BKCsf7OaBiZ36APMBi1wj3XkOjWKlDVwhqtFZONyFWWApX2V7sAB5MT+E1qVFPhp
-	 pCv11D0dk5LaWBVJgiqRGdTuXi7zrQhKrV0DRrr8g3MvakwRb80eiyrcgtWuaUr36x
-	 usM2QGLsURHUw==
+	b=SYcHm2Mj/1seceOnNS3nPILPDuAAdwblM8sbG5XZmDAGaHJr/hNufibVTKrWDqWKU
+	 MlPavTNAOJNzfXEnvjgoALH3gcgQ2lsqeYz7T+u6rCPrB/+od39Kx1dzUEOGDHZM/3
+	 BIGmLAf19q2ECOrpMBAt9yCwAyzk9y/Aeeuw6B1PvlwiTdKIl9x8B0ou60CsMWZWy1
+	 iMJOJ4cp4arMbeX61EKHcP8tjCVIjjSwTNzsTHbLH/cz8dP23qUvHi3yajsL1obGDg
+	 Zh/M1Lh+3iSCSPMaXYMqV5mVuQGVR4sLPidVLZ5grhQo/YMQ5JyXErCV0FcHOwIInz
+	 W15CdJQ0OfzCQ==
 From: "Richard Weinberger (sigma star gmbh)" <rw@kernel.org>
 To: xenomai@lists.linux.dev
 Cc: upstream+xenomai@sigma-star.at,
 	Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5/7] lib/alchemy/event: Require a Xenomai task only for waiting over Mercury
-Date: Wed, 25 Nov 2026 22:34:17 +0100
-Message-ID: <20261125213419.2363742-6-rw@kernel.org>
+Subject: [PATCH 6/7] lib/alchemy: Require a Xenomai task only when actually waiting
+Date: Wed, 25 Nov 2026 22:34:18 +0100
+Message-ID: <20261125213419.2363742-7-rw@kernel.org>
 X-Mailer: git-send-email 2.55.0
 In-Reply-To: <20261125213419.2363742-1-rw@kernel.org>
 References: <20261125213419.2363742-1-rw@kernel.org>
@@ -62,50 +62,114 @@ Content-Transfer-Encoding: 8bit
 
 From: Richard Weinberger <richard@nod.at>
 
-Over Cobalt, rt_event_wait*() is based on a Cobalt event which any
-Cobalt thread may wait for. Only the Mercury implementation needs a
-Copperplate TCB, and only when actually waiting. Move the check there
-and keep rejecting blocking calls from asynchronous contexts.
+The queue, buffer and heap services refuse non-polling calls from
+threads without a Copperplate TCB upfront, even if the request can be
+satisfied immediately. The TCB is only needed to wait, so check for it
+there.
 
 Signed-off-by: Richard Weinberger <richard@nod.at>
 ---
- lib/alchemy/event.c        | 10 +++++-----
- lib/copperplate/eventobj.c |  5 +++++
- 2 files changed, 10 insertions(+), 5 deletions(-)
+ lib/alchemy/buffer.c | 24 ++++++++++++++----------
+ lib/alchemy/heap.c   | 12 +++++++-----
+ lib/alchemy/queue.c  | 24 ++++++++++++++----------
+ 3 files changed, 35 insertions(+), 25 deletions(-)
 
-diff --git a/lib/alchemy/event.c b/lib/alchemy/event.c
-index 8428db539..c08b224c7 100644
---- a/lib/alchemy/event.c
-+++ b/lib/alchemy/event.c
-@@ -378,10 +378,10 @@ out:
-  * sleeping on it. In such a case, @a event is no more valid upon
-  * return of this service.
+diff --git a/lib/alchemy/buffer.c b/lib/alchemy/buffer.c
+index 4f826fb27..66e37413c 100644
+--- a/lib/alchemy/buffer.c
++++ b/lib/alchemy/buffer.c
+@@ -424,8 +424,8 @@ out:
+  * waiting for data. In such event, @a bf is no more valid upon return
+  * of this service.
   *
 - * - -EPERM is returned if this service was not called from a Xenomai
-- * task, unless @a abs_timeout is { .tv_sec = 0, .tv_nsec = 0 }. Over
-- * Cobalt, this error is also returned if the caller is not a Xenomai
-- * thread.
-+ * - -EPERM is returned if this service should block, but was called
-+ * from an asynchronous context, or over Mercury not from a Xenomai
-+ * task. Over Cobalt, this error is also returned if the caller is not
-+ * a Xenomai thread.
+- * task, unless @a abs_timeout is { .tv_sec = 0, .tv_nsec = 0 }.
++ * - -EPERM is returned if this service should block, but was not
++ * called from a Xenomai task.
+  *
+  * @note A short read (i.e. fewer bytes returned than requested by @a
+  * len) may happen whenever a pathological use of the buffer is
+@@ -468,9 +468,6 @@ ssize_t rt_buffer_read_timed(RT_BUFFER *bf,
+ 	if (len == 0)
+ 		return 0;
+ 
+-	if (!threadobj_current_p() && !alchemy_poll_mode(abs_timeout))
+-		return -EPERM;
+-
+ 	CANCEL_DEFER(svc);
+ 
+ 	bcb = get_alchemy_buffer(bf, &syns, &ret);
+@@ -547,6 +544,11 @@ redo:
+ 			goto redo;
+ 		}
+ 
++		if (!threadobj_current_p()) {
++			ret = -EPERM;
++			goto done;
++		}
++
+ 		if (wait == NULL)
+ 			wait = threadobj_prepare_wait(struct alchemy_buffer_wait);
+ 
+@@ -664,8 +666,8 @@ out:
+  * waiting for buffer space. In such event, @a bf is no more valid
+  * upon return of this service.
+  *
+- * - -EPERM is returned if this service was not called from a Xenomai
+- * task, unless @a abs_timeout is { .tv_sec = 0, .tv_nsec = 0 }.
++ * - -EPERM is returned if this service should block, but was not
++ * called from a Xenomai task.
   *
   * @apitags{xthread-nowait, switch-primary}
   */
-@@ -393,7 +393,7 @@ int rt_event_wait_timed(RT_EVENT *event,
- 	struct alchemy_event *evcb;
- 	struct service svc;
+@@ -687,9 +689,6 @@ ssize_t rt_buffer_write_timed(RT_BUFFER *bf,
+ 	if (len == 0)
+ 		return 0;
  
 -	if (!threadobj_current_p() && !alchemy_poll_mode(abs_timeout))
-+	if (threadobj_irq_p() && !alchemy_poll_mode(abs_timeout))
- 		return -EPERM;
+-		return -EPERM;
+-
+ 	CANCEL_DEFER(svc);
  
- 	if (mode & ~EVOBJ_ANY)
-diff --git a/lib/copperplate/eventobj.c b/lib/copperplate/eventobj.c
-index 28b7c167f..c5a726a89 100644
---- a/lib/copperplate/eventobj.c
-+++ b/lib/copperplate/eventobj.c
-@@ -229,6 +229,11 @@ int eventobj_wait(struct eventobj *evobj,
+ 	bcb = get_alchemy_buffer(bf, &syns, &ret);
+@@ -754,6 +753,11 @@ ssize_t rt_buffer_write_timed(RT_BUFFER *bf,
+ 			goto done;
+ 		}
+ 
++		if (!threadobj_current_p()) {
++			ret = -EPERM;
++			goto done;
++		}
++
+ 		if (wait == NULL)
+ 			wait = threadobj_prepare_wait(struct alchemy_buffer_wait);
+ 
+diff --git a/lib/alchemy/heap.c b/lib/alchemy/heap.c
+index fb3424f5f..06f2598ef 100644
+--- a/lib/alchemy/heap.c
++++ b/lib/alchemy/heap.c
+@@ -408,8 +408,8 @@ out:
+  * waiting for a block. In such event, @a heap is no more valid upon
+  * return of this service.
+  *
+- * - -EPERM is returned if this service was not called from a Xenomai
+- * task, unless @a abs_timeout is { .tv_sec = 0, .tv_nsec = 0 }.
++ * - -EPERM is returned if this service should block, but was not
++ * called from a Xenomai task.
+  *
+  * @apitags{xthread-nowait, switch-primary}
+  *
+@@ -431,9 +431,6 @@ int rt_heap_alloc_timed(RT_HEAP *heap,
+ 	void *p = NULL;
+ 	int ret = 0;
+ 
+-	if (!threadobj_current_p() && !alchemy_poll_mode(abs_timeout))
+-		return -EPERM;
+-
+ 	CANCEL_DEFER(svc);
+ 
+ 	hcb = get_alchemy_heap(heap, &syns, &ret);
+@@ -468,6 +465,11 @@ int rt_heap_alloc_timed(RT_HEAP *heap,
  		goto done;
  	}
  
@@ -114,9 +178,79 @@ index 28b7c167f..c5a726a89 100644
 +		goto done;
 +	}
 +
- 	wait = threadobj_prepare_wait(struct eventobj_wait_struct);
- 	wait->value = bits;
- 	wait->mode = mode;
+ 	wait = threadobj_prepare_wait(struct alchemy_heap_wait);
+ 	wait->size = size;
+ 
+diff --git a/lib/alchemy/queue.c b/lib/alchemy/queue.c
+index e91973920..18ef51f39 100644
+--- a/lib/alchemy/queue.c
++++ b/lib/alchemy/queue.c
+@@ -792,8 +792,8 @@ out:
+  * waiting for a message. In such event, @a q is no more valid upon
+  * return of this service.
+  *
+- * - -EPERM is returned if this service was not called from a Xenomai
+- * task, unless @a abs_timeout is { .tv_sec = 0, .tv_nsec = 0 }.
++ * - -EPERM is returned if this service should block, but was not
++ * called from a Xenomai task.
+  *
+  * @apitags{xthread-nowait, switch-primary}
+  */
+@@ -808,9 +808,6 @@ ssize_t rt_queue_receive_timed(RT_QUEUE *queue, void **bufp,
+ 	ssize_t ret;
+ 	int err = 0;
+ 
+-	if (!threadobj_current_p() && !alchemy_poll_mode(abs_timeout))
+-		return -EPERM;
+-
+ 	CANCEL_DEFER(svc);
+ 
+ 	qcb = get_alchemy_queue(queue, &syns, &err);
+@@ -834,6 +831,11 @@ wait:
+ 		goto done;
+ 	}
+ 
++	if (!threadobj_current_p()) {
++		ret = -EPERM;
++		goto done;
++	}
++
+ 	wait = threadobj_prepare_wait(struct alchemy_queue_wait);
+ 	wait->local_bufsz = 0;
+ 
+@@ -952,8 +954,8 @@ out:
+  * waiting for a message. In such event, @a q is no more valid upon
+  * return of this service.
+  *
+- * - -EPERM is returned if this service was not called from a Xenomai
+- * task, unless @a abs_timeout is { .tv_sec = 0, .tv_nsec = 0 }.
++ * - -EPERM is returned if this service should block, but was not
++ * called from a Xenomai task.
+  *
+  * @apitags{xthread-nowait, switch-primary}
+  */
+@@ -969,9 +971,6 @@ ssize_t rt_queue_read_timed(RT_QUEUE *queue,
+ 	ssize_t ret;
+ 	int err = 0;
+ 
+-	if (!threadobj_current_p() && !alchemy_poll_mode(abs_timeout))
+-		return -EPERM;
+-
+ 	if (size == 0)
+ 		return 0;
+ 
+@@ -995,6 +994,11 @@ wait:
+ 		goto done;
+ 	}
+ 
++	if (!threadobj_current_p()) {
++		ret = -EPERM;
++		goto done;
++	}
++
+ 	wait = threadobj_prepare_wait(struct alchemy_queue_wait);
+ 	wait->local_buf = buf;
+ 	wait->local_bufsz = size;
 -- 
 2.55.0
 
