@@ -1,99 +1,60 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.remote-ip=185.136.64.227
 ARC-Seal: i=1; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=none;
-	t=1795679584;
-	b=dqf+G5IBixd03N7uV0eUhF/dKZqGxdZwT2LT9sZvWmDM1qs86l4+0s8/jHh191vQG08I
-	 xFqvcLxg8OLrWnxxJ/DyU3ng8S4u0gDLcM0eqQHmuBhVFqWHtPV4vNXIEJk7ZvCntnf/o
-	 +ycXKitRuyaCB+5aG7/8ZJmrt2qkt9GjEpDuvF2nnRtXXsKMMv1pwWkYUgZRA7x+YiHrO
-	 oBkFv4NqbsSOoWutDwUpWYyvxlp6YNjxfyrtR/OK5bLRB2visAkrXS9E3AHpN6a0z+n9Y
-	 63tj3ENuSEnBjN6O30gg2/eQgJN1rSsksysjXprmdu26gQ4kfFnOAnmeoqSRsg1CinQ==
+	t=1795685752;
+	b=u7zHcRgGF1OynbGU24fAp9Hm1Vbg3rup3tRAySuZLMtQNl6Kk5tql4xjzCwf+4q2dh/G
+	 q9/+7CcbDBRmyzBMqpAB8+K5yB0nmNoYUX/VnTI00zFiMjKGBdhgvVv5Ur8sPFf5nVpCR
+	 z89zeCGuj8EL749/duZFTmBtJOekxmsBCVjOUz0+sNtR55QeMCDLj+dEDLHDYz0ckB4I1
+	 JttKnQzRXp436+dWwfCvERn+pnE7sZJaukFgUdg9dX1e4pqwms9iWNxW1MI/w25tpKhtr
+	 dGHGijxmt36IlMLRMBw/7sNAOXftIaF1K4gA+W8jeVaIRnKGWbXMf/i3sEJkdMlCHzA==
 ARC-Message-Signature: i=1; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795679584;
-	h=DMARC-Filter:Received:DKIM-Signature:X-Google-DKIM-Signature:
-	 X-Forwarded-Encrypted:X-Gm-Message-State:X-Gm-Gg:X-Received:Received:
-	 From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Transfer-Encoding:Content-Type;
-	bh=4NIZB1s3850k+fH/oMzzQ3kxCIeOCeRQLb1Ds4UEpaQ=;
-	b=yf3gay+qL7bELNYHe9JOurJIZNWvQ60T1RWMneFVq9NCKXkcKg8Aa9tSePMAvhVCWGkK
-	 N15N0GfS4V8cjeTXinu5Ox/oJVXmglSxAGJ5p9oqXv21swvY0CrtScPcTJ6O0oHVEvexi
-	 dBE8udX/zpJSxnN9QQV3vW/6iCG9HsZiZh12mOSU2s0LWChpC1FQafa0oj9TS9tHqYzpJ
-	 6aFQpWXDwoIF9Oqpan1IjG5Y9uKi3MeGSyLSX8RL/jK2VH9G53Oh56D16l/vVTYBxFYoL
-	 P5MdcCOtGrKSbgEyvR9j2u97V0NoxztFnUFUMW/lHlwOG1L0sAwjafA8nr+hkhjHAZQ==
+	a=rsa-sha256; c=relaxed/relaxed; t=1795685752;
+	h=DMARC-Filter:Received:DKIM-Signature:Message-ID:Subject:From:To:Cc:
+	 Date:In-Reply-To:References:Content-Type:Content-Transfer-Encoding:
+	 MIME-Version:X-Flowmailer-Platform:Feedback-ID;
+	bh=l+Wosb12ctBQhhqWHLXlhwcMXSyU3Dvovec26vQ+PCQ=;
+	b=RPcfMDxDmzZgYFwYS075P4VO+94U02G0V5++bhNYTUcPvasbxCKadR943ew5sWb73K4g
+	 bC3o1eVuLfxqaMQx1ASdrlui6zyLnESXoJfnqcoRP4crLT8l5qekjrLj6CmDfWG/onbu0
+	 LnPaaToCl5FO6rgo9HjLjr3fhA2NYsL1TZNe4GaaLTHlV4D2U5xtEQOVud1NoFRakN1Ql
+	 AHk8LBev+6YLc+KmivMTOOMA4lK/fABsFJ58iDrv7qrGezCOcO3k016diRO5RIgVV/gpx
+	 4AWsJ+1DbWEO16QD7HnLOqaZtpCpCWQU39OQIaM/u18BAWyc7IUoIGY+BTWufYZ000w==
 ARC-Authentication-Results: i=1; smtp.subspace.kernel.org; 
-	dmarc=pass header.from=sigma-star.at;
-	spf=pass smtp.mailfrom=sigma-star.at;
-	dkim=pass header.d=sigma-star.at header.i=@sigma-star.at header.a=rsa-sha256 header.s=google header.b=LJtvCRpZ;
-	arc=none smtp.remote-ip=209.85.128.50
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
-	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-	 key-exchange X25519 server-signature ECDSA (prime256v1) server-digest SHA256)
+	dmarc=pass header.from=siemens.com;
+	spf=pass smtp.mailfrom=rts-flowmailer.siemens.com;
+	dkim=pass header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=hcWKfHv9;
+	arc=none smtp.remote-ip=185.136.64.227
+Received: from mta-64-227.siemens.flowmailer.net (mta-64-227.siemens.flowmailer.net [185.136.64.227])
+	(using TLSv1.2 with cipher ECDHE-ECDSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27D2D606A31C
-	for <xenomai@lists.linux.dev>; Thu, 26 Nov 2026 07:53:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 27D2D606A31C
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=sigma-star.at
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sigma-star.at
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44056606A31C
+	for <xenomai@lists.linux.dev>; Thu, 26 Nov 2026 09:35:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 44056606A31C
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=rts-flowmailer.siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=sigma-star.at header.i=@sigma-star.at header.a=rsa-sha256 header.s=google header.b=LJtvCRpZ
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4bb55cda775so41444295e9.0
-        for <xenomai@lists.linux.dev>; Wed, 25 Nov 2026 23:53:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sigma-star.at; s=google; t=1795679581; x=1796284381; darn=lists.linux.dev;
-        h=content-type:content-transfer-encoding:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:from:to:cc:subject
-         :date:message-id:reply-to:content-type;
-        bh=4NIZB1s3850k+fH/oMzzQ3kxCIeOCeRQLb1Ds4UEpaQ=;
-        b=LJtvCRpZ5R5RleqLzYf8lRI9YZ49Ye/r59Ulsfyei/3ulZ8xe4pTIK+tBYmC4zQG9c
-         6Y0m8Akp1HgfJWHA8ybZbzJ5gxZ/nUjmjlk/nts4fWxktxU47bMDZHGAU2INCvOku4M2
-         HfqG7nAZuKaIzFQHXEeSVp/LzsLjHLXjVU4qmp+Duw6uNrblLkj4CavX26Bx8GkRBu77
-         zl+tVS7SoksLS+JFE7B5s32uDinGCwgaBoBJvBr+bmzKQOY++8SZ8bG2hP+ub22/b3zg
-         pNW+oliJQ0lLgAMsC6EfBHe2hC3zDZ4l5OMvQaF4M8iJ+nsRi0KzCpNnvRbIpigFnnDY
-         Ca4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20260707; t=1795679581; x=1796284381;
-        h=content-type:content-transfer-encoding:mime-version:references
-         :in-reply-to:message-id:date:subject:cc:to:from:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to
-         :content-type;
-        bh=4NIZB1s3850k+fH/oMzzQ3kxCIeOCeRQLb1Ds4UEpaQ=;
-        b=wIGdp3qdrUNZ40qewtOaumbqznR7vllUbdQ1u/7DmMai/xJPjosOqXyrdFDncCUABq
-         zSgT7na1iGWBnHzkgdcZGqDGYi/pOulqifP399RuGJnJ6PTcLW1b/RX28UEmmK2OBQ/4
-         K2hYxCjYheINTsc+4xvQL26frM1bm9/7gzecKYVeTXCZgXDJfFX/WhlQr3XmwFEimThR
-         qBlKWOdqQiqbx0SyAOftIxNP1c4TQbubk7CxILdOcRsOUZn9g+5rmoJ86QkqrM0kZPH4
-         uni8N+aP8o0R85WBpU5Ba6yyZAsGW+z65Z28kJUiKLqUTHpCtf1WvaWPFDwFB+hcz4iu
-         +f4w==
-X-Forwarded-Encrypted: i=1; AL+hErHracgRwFCLu6EWf2rT79ufOZZU2jujTZNdrRU52MvhEP2hwjbCqdCrMMMCcRSMw61g8gdAQDQ4@lists.linux.dev
-X-Gm-Message-State: APuU4Z9ertggulJ3ZSSZQIM7EdQnNutGFQmr7JLuHrWE649R7MvTp/Ys
-	lkXLbdf+eLJgjkvRKIy85KnJ7zWoQ7oQqAPErCF69muwytMw/TCNCURLcktVdoE58IsvWbnVEAr
-	/4ViY
-X-Gm-Gg: AZFdTZesyFy3+H/C9vTrk4luUzKHkvdoUQMvWnt7L5J2YofDoUaOteKBliJhYefAyFH
-	Pg0jgyoSEo3pZDH2iyRO0/3MNKS0Otl/U73fE2TWt1tApaQCFxrZuY3vPVzV3pt6JMk4mG1bbhd
-	BC4JkKD9bVpeicpL/nTM3qJQvaTNC0wfEFlPBVfRvZXN3Zomr8JSJYxMw55zqkSdwaJUMURYSrP
-	LdIoZpeXh9SkvkrKXLYieBP2TYRI9Z9640RsOrE60fIvGOXduRLlqmxq7Czxxq0ibpdlXGAW4iI
-	hafXfxIEoFnrnNf/+jmxKCs20TmKDo84lZBfM7mXdsKyUEK10J150SB1GoWYekTRcM2jTbimBkk
-	lZ/CkWrJf4I/IKn4zuWKpGpkOXwT74VTSb19/l4Lnawn6LLL/UjnA+vR2B81b/LogjfT2qdV4oF
-	3HgAbWzyHMU5rs5VkyWYqWIlE37xC93lgst8/ZdqgMVRoEQw22XBuu+kiZxVg/osd6a9n98S4xY
-	pnm2pqpBYEXlyGdoEJXZMgaLOK3XbWLal3T1FbT3JGtE669HtgLA44332adrHmv+EQP5ZgyPC/h
-	bZEthZpGK7WR+EJkZ9bt9tkVkQYAIQ==
-X-Received: by 2002:a05:600c:4f53:b0:4bb:68cc:7b94 with SMTP id 5b1f17b1804b1-4bb8616516cmr508908405e9.18.1795679581033;
-        Wed, 25 Nov 2026 23:53:01 -0800 (PST)
-Received: from somecomputer ([82.150.214.1])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4ab69bf6804sm38219808f8f.10.2026.11.25.23.53.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Nov 2026 23:53:00 -0800 (PST)
-From: Richard Weinberger <richard@sigma-star.at>
-To: "Richard Weinberger (sigma star gmbh)" <rw@kernel.org>,
- xenomai@lists.linux.dev, upstream@sigma-star.at
-Cc: upstream+xenomai@sigma-star.at, Jan Kiszka <jan.kiszka@siemens.com>
-Subject:
- Re: [PATCH 1/7] lib/alchemy/mutex: Allow any Xenomai thread to acquire a
- mutex
-Date: Thu, 26 Nov 2026 08:53:00 +0100
-Message-ID: <cvGNuoMaQjWhCjyESrcF6g@sigma-star.at>
-In-Reply-To: <320f2a18-9b27-4583-8a1c-46b9aeddba2d@siemens.com>
-References:
- <20261125213419.2363742-1-rw@kernel.org>
- <20261125213419.2363742-2-rw@kernel.org>
- <320f2a18-9b27-4583-8a1c-46b9aeddba2d@siemens.com>
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=florian.bezdeka@siemens.com header.a=rsa-sha256 header.s=fm1 header.b=hcWKfHv9
+Received: by mta-64-227.siemens.flowmailer.net with ESMTPSA id 202611260935461c6f39150a000207a3
+        for <xenomai@lists.linux.dev>;
+        Thu, 26 Nov 2026 10:35:46 +0100
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; s=fm1;
+ d=siemens.com; i=florian.bezdeka@siemens.com;
+ h=Date:From:Subject:To:Message-ID:MIME-Version:Content-Type:Content-Transfer-Encoding:Cc:References:In-Reply-To;
+ bh=l+Wosb12ctBQhhqWHLXlhwcMXSyU3Dvovec26vQ+PCQ=;
+ b=hcWKfHv9VKtgc5GtsxaKwzKoOAsI5sv6wIRo/I390wWqz2vQJ04mNNvXi46/4/xRnvzFjQ
+ lMjucoMATeXV11JutKju+jhsZJ6w5fmW92VCdKzk+hpYRpRZyqQhjCzQ9wHDwJL0KeaAY1zl
+ x391zvl07UhoJ9sR+RKYhYqKgEzzfWt9vrkwZ462FnzY1e89C2AmXA7y6h7ibcbi15EyKjpY
+ t+Ib1pS3HrDUh8XHxIf7j45g4R0vF+JoKY7aX00egqqTr7kqF9I2kjxJaGImUAJxP4S26/rH
+ Xb9uC7Zoa5e85Rj4jbXO4TyuJBMnoX1pjeLnXZ1UW2eHZutgfvSjOhkQ==;
+Message-ID: <3c3fdb0d967083b6da9b6387115e89d21bd6c7d3.camel@siemens.com>
+Subject: Re: [PATCH] lib/cobalt: Let __STD() and __RT() of mmap follow the
+ off_t redirection
+From: Florian Bezdeka <florian.bezdeka@siemens.com>
+To: Jan Kiszka <jan.kiszka@siemens.com>, Xenomai <xenomai@lists.linux.dev>
+Cc: =?ISO-8859-1?Q?Fran=E7ois?= Legal <francois.legal@eventlab.fr>
+Date: Thu, 26 Nov 2026 10:35:46 +0100
+In-Reply-To: <d0919a84-e71f-4e08-86e3-8900b30f9e5f@siemens.com>
+References: <d0919a84-e71f-4e08-86e3-8900b30f9e5f@siemens.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
 List-Post: <mailto:xenomai@lists.linux.dev>
@@ -103,26 +64,42 @@ List-Unsubscribe: <mailto:xenomai+unsubscribe@lists.linux.dev>
 List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="utf-8"
+X-Flowmailer-Platform: Siemens
+Feedback-ID: 519:519-68982:519-21489:flowmailer
 
-On Donnerstag, 26. November 2026 07:14 'Jan Kiszka' via upstream wrote:
-> NO_ALCHEMY_TASK =3D=3D no owner - you are changing at least internal
-> semantics, if not worse.
+On Tue, 2026-11-24 at 13:59 +0100, Jan Kiszka wrote:
+> From: Jan Kiszka <jan.kiszka@siemens.com>
 >=20
-> I'm still in favor of fixing the docs, rather than adding this new mode
-> and trying to figure out which corner cases we missed.
+> With _FILE_OFFSET_BITS=3D64, glibc redirects mmap() to mmap64() on 32-bit
+> archs. Applications get this setting by default since y2038 support was
+> added, as xeno-config passes it along with _TIME_BITS=3D64, and some
+> toolchains even predefine both (e.g. Debian armhf). uClibc-ng enforces
+> 64-bit file offsets unconditionally since release 1.0.58.
+>=20
+> __STD(mmap()) and __RT(mmap()) do not follow this redirection: they
+> expand to __real_mmap() and __cobalt_mmap(), declared with the 64-bit
+> off_t of the caller. But with the Cobalt wrappers, __real_mmap() binds
+> to the libc's mmap(), and __cobalt_mmap() is built with native off_t,
+> so both take a 32-bit offset. They read it from the padding word in
+> front of the 64-bit argument and fail with EINVAL or map the wrong
+> page.
+>=20
+> Internal users built with 64-bit off_t are affected as well:
+> cobalt_unmap_umm(), the pshared heap of copperplate and the TLSF pool
+> of boilerplate all bind to the native-off_t __real_mmap() of libcobalt.
+>=20
+> Add COBALT_DECL_OFF64(), which redirects the __STD(), __RT() and
+> __WRAP() symbols of a service to its 64-bit variant whenever the libc
+> does so, and use it for mmap(). This relies on libcobalt providing
+> __real_mmap64(). lib/cobalt/mmap.c implements both variants and opts
+> out via __COBALT_NO_OFF64_REDIRECT__: building it with native off_t is
+> not sufficient if the libc enforces 64-bit file offsets.
+>=20
+> Reported-by: Fran=C3=A7ois Legal <francois.legal@eventlab.fr>
+> Fixes: fb2bd6e647a9 ("y2038: build: Introduce new build parameter --disab=
+le-y2038")
 
-I hoped that you at least won't hate patch 1/7... :-D
-
-But yeah, let's stay on the safe side and fixup the docs.
-
-Thanks,
-//richard
-
-=2D-=20
-=E2=80=8B=E2=80=8B=E2=80=8B=E2=80=8B=E2=80=8Bsigma star gmbh | Eduard-Bodem=
-=2DGasse 6, 6020 Innsbruck, AUT UID/VAT Nr:
-ATU 66964118 | FN: 374287y
+This is where we turned _FILE_OFFSET_BITS=3D64 on by default, but in case
+a user requested that from outside, this never really worked, right?
 
 
