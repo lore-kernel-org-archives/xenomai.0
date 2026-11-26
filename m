@@ -1,15 +1,15 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.69.1
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.70.51
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795673366;
-	b=GVzcCeZ4aLfkwE+OLvKlkmbjcl4crSc1Z00f4s8oc/3rZ1h81cpBWsWdaDJSmmMoucgU
-	 dXH7EvmB5VDiymLKLXpODBPwc9cDgFtSXhcx8aU6xUUR4YIVJa3Nm++Yg7Oyw8oQqBZI0
-	 tYP5CBT3MbYl47PP7F937NjjH4JBN8F0vC79Wq+A2z0W8FlKOCHgDrCMeJNACEHUaL7vt
-	 RX4QJL1TD+YcbYwvlzyvN1HEyNCY9DlHTRmxI87T4IW4wWF4ZnWVIz2y2c9e0JdZk+J9y
-	 eVWDrVSvjqPur43MObg0xzJH/YkNyYCDzS9caHJsynN+wEiR+u6s4YC6UV9rmt6El2A==
+	t=1795673660;
+	b=m67nO/zZcLGdGOWkIN9p1KqlHGk7TqQOaUWjXDyvXSSworHC3LesGcRerLSpxixYyMeA
+	 PDjlhGs1ac6EnIEHLsiz7FJsKqEXDqewwleUV/j/ibc5G+GIRMBKXnssF7pgE2Yk7aD2R
+	 NCPtS+b/7RDiahUN1I/Jd2XXtA9gkHy/Qk4KVfiEXwDwkTQLaYkZnZEgiGnm2gQfaU7R6
+	 cBAHqEy++1QfuzW93GlFMiz9T24THbOYrq2/Vqm5L4AKT2/WMc/cT4kYhzKO3nB1PS/qP
+	 RjuZ5hIlhszPyk/j4+4/XR2vGoEk6gaMN+DR+Q2Zxyhc75uOrr30xVoJjBUb6sdJIpg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795673366;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795673660;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:From:Content-Language:Autocrypt:
+	 User-Agent:Subject:To:Cc:References:Content-Language:From:Autocrypt:
 	 In-Reply-To:Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:
 	 MIME-Version:X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
 	 X-MS-Office365-Filtering-Correlation-Id:
@@ -25,66 +25,66 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=l4BF6pDDs58DSMaCyX7V2Te3lEQaXmib3YLXQbvh1j8=;
-	b=NOYqce4pDgr/hE0Ha+hbOsS2eJPjSBc8jJouAdnCW4eZD9urxmzg7VFoulkbA5p5q2It
-	 ycro+UrBYobzX3Ff8DalMh7xvkcmqjpXz3gNPh4/+J94y72A/Ne0EnesBqqgcdy6EAuuH
-	 pbhkjOQB0KczKYuMWAjl6QRlAgHmYjm4TrN9u2XfEhmH/yhAjfiOMSzLwkRksJrZhLUZK
-	 lxGSKHYM6lC50+O0rCtkoFJJo79WfCqUMqc9yXMpfyZoLZxbmtIzML2M+QAfAKJui9AAp
-	 3ixBHtZnZ28rAdOwFeW+FT0G/hOjYBVyykPpnq+Iu7vBBAt2M74jk9OUhDVGPtTUDig==
+	bh=yBiZA59Xgj55TwqRdt0O2FAoDicWBPUAm9Btezxy4Qk=;
+	b=0h/7MWFE8BQdfW35UBWn2d5rcmaEEjIIY68Vmu0EVx2msAGWXcdGLG6Pvg7GaJ255isK
+	 ghW3zlMOwKWsnUi3O7uLEbIiRjocI5IWrmY5Sp1FSvO9AA53nHJoFslJT44o66PexzGtW
+	 ltrZbQxq8vFJeSgHeY1/G8AHkqD6QAGYcQhiBtheS9UY0/5uShUM+UfckbJ7aD6axRxZa
+	 ob6Q45mUKuy1KtbL3D+E+5mjR51pASqctqUgmef/bRlDD7hlxKhpYxOxuw0Sae0u1N6Ut
+	 85O+Tm5TseZLwZ7SiGEADnGaE5UfV8D/b9j3fFwvpVD2YyoNfCJDiZpYDRIwz/wcRUA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=siemens.com;
 	spf=pass smtp.mailfrom=siemens.com;
-	dkim=pass header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=kOHqshDl;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.69.1
-Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010001.outbound.protection.outlook.com [52.101.69.1])
+	dkim=pass header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=X9E1cJIq;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.70.51
+Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011051.outbound.protection.outlook.com [52.101.70.51])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8273606A31C
-	for <xenomai@lists.linux.dev>; Thu, 26 Nov 2026 06:09:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org B8273606A31C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9EA0C606A31C
+	for <xenomai@lists.linux.dev>; Thu, 26 Nov 2026 06:14:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 9EA0C606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=kOHqshDl
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=X9E1cJIq
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=s9Jj3p08KBuavxNvif2sxbipw2wZBngfNqswTKzmhnBBKhSVD+H+72WyRRn9mFjMFSMHY89hWkywDfLA/Y9Vw3KqqTp7MO7K2+hyAWMuz1H+qtNb8ZVuEYr2QKlmtx6AHLSlSg7zDZQPUyNr6hQ5loi3yCCZ3wC1NL3g9hZWro/bzQerYiRMthKDaZJi2FWzbTqXejlmGFNsUZqyb9EyyIPdpsu1j9WsO1PpesnkUeYsRC3aB1lzT0Cn+N7Pci6QjpqaZULXVv0LwGPV3W6fwiignS3Bi57YL+BJGTvnrINsZ8qJmsf3ghs3A2RZBWoLphx3LvCSpAMGMt5POFyJqw==
+ b=LloAAp6NoeL4/Q/7Ch4emAi97oEf5ut2hc7HnIq1jJohJwa9ik1pUp2HgwmgreJmXElfH0o/a4Uz65YHhHxdrVLfo/SPkikZeAYoPdHEkLCxZu0ZsLOm398r9to4UnEBhBg3192iTlvEBHGmQl/pCWVq92QtSATJcMTwIT3AcNC79TbofE4JzLQJgpKExJx/2zjJEuHtBACsUOMynPnADrkqHxnc20/nTqWKpAwtXvmhJX7PUnNwcJdr4eLiwjXcSQ1Gw5v0DUB5VBlZf3lPgsEnnwgiH4GYHiMLiWcJ6GbCLHGMmBbAk6SUQHIw5pIOLkRwdPwoaQxKQ7yFvbgVIw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=l4BF6pDDs58DSMaCyX7V2Te3lEQaXmib3YLXQbvh1j8=;
- b=VBCDqVQl9G/INELyjgmfSQdZ9C3DOXV1nwGC93KYr2XsJlLuhJXCWBIL02Q2Ee+JwPZrHXXCLrJlFk/gdblvatgM8zFOOIrtPrCNWnHEz+mjSbGk7ht4A+M+FErJ5NgzNMmWdZcQeliqUKiy/7puxofgDKq9+gnFvdE9kwHpF+N9eZkrsCivb2u91qAA+OagSq7hJvZ0Sk+kSPGg0BOUUnwHU/TJ4Oq56Q7fY4FOKjjUCGaHToBnWoPDuxz9/2xFdsoMhvTdW9fZfJew66MRNMb5RRTEDBi+eC6aXKEd/B6xvI9VdsGIkBZDzmt+ZxAE/lutN+n+4R/2wt82PYXreQ==
+ bh=yBiZA59Xgj55TwqRdt0O2FAoDicWBPUAm9Btezxy4Qk=;
+ b=P9vId5q7097ehddyg92ABT7QpiAhWH3qJLjTEmmMC8dNdi13Aet195049xV0+MRC6KJDKJA1QMkW+6jYa2qxewdsxTEAD9kh4gltRDEnwDi/KJZwbMfbvA1nT9Al8/4ApoWbhUnizkNyiCYfePIgUWHA6uIak8a3d0EbYFp0WUTSJ2mmLGoHGLMkY+Jxn4oxuUOpUsM0SY4B0zUvVUcWxKZPJYExadZGfkUd6R2li4Ky6V+M5TGXKNutleaGQTre7PD94dVI0UkvLr2E+5ErGV+c0EN9S8daMj/BWN5A2bj5gsA9P/akuRM3U2mh3Oe9g3uoGsELgXzVDd04/Vt+KQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=l4BF6pDDs58DSMaCyX7V2Te3lEQaXmib3YLXQbvh1j8=;
- b=kOHqshDlreVSH6A4QjzUdYHsnKGV5HaJLQfemQAEBbnDchkR3f37HSj3ETtQ82Kq0dVjUUMjkJhHz6Et2ucdMxHx4RN8pU+TIoHYxashpr93ioqvmZ5+lQS31qTdDJf5cVYIFTxji6j9YNtFURudcxd9SZnNmlGBM1qKgKtJIxaaLNAUiVX7L40HQwBigquHrnDGmxrHAWNwcMu5l7sGh+inrFvPFkmjDg/T5Fd1Qdvd6YPAVBepv1tsKvSe9WygTMiBhQil1BKtNRLqED7RZRd7FlgpShViwq4g0ufCnzvUpT0AkC6z0h9lPwKR0lPFO/8CPbwdPXFOtb671e+10Q==
+ bh=yBiZA59Xgj55TwqRdt0O2FAoDicWBPUAm9Btezxy4Qk=;
+ b=X9E1cJIqXya3QwWR4jpdVMz1hrZXpMRVP/85Bw8NsvVnOKz/bqMzAfnKf43Owf1dkA2q6RygEtHKR2cItaxWvEXbfbS542ZUEwMICqF8IHAAgMnIgOqvJQBFh6ZFArpxof4qdk8F8d+1T6CWV2foWB7kRIlikFHruxgU82YSAUJv+zvZjmKNOIv9CkVKhRvW5iIeaROXj2vyW9zg1zsTp6cBugxlnCPZT1QJYt5RFTlb2pbqTsQ+ivOZjPmgk3m+zoJHxb5bSD3rI/cvoE5FtWsOHr7d5usTFmP7eWVYYGjtecX6StE1L/QHE0nDkkfUjZMscnEldyOmMd0UwQQiJg==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:785::10) by AS2PR10MB8034.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:20b:559::15) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.688.4; Thu, 26 Nov
- 2026 06:09:20 +0000
+ (2603:10a6:20b:785::10) by MI9PR10MB992256.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:290:8b::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.662.6; Thu, 26 Nov
+ 2026 06:14:16 +0000
 Received: from AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::fbce:789a:27cf:d1e]) by AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::fbce:789a:27cf:d1e%5]) with mapi id 15.21.0662.001; Thu, 26 Nov 2026
- 06:09:19 +0000
-Message-ID: <49e03888-e770-48eb-b096-32dedd9a4aa2@siemens.com>
-Date: Thu, 26 Nov 2026 07:09:19 +0100
+ 06:14:16 +0000
+Message-ID: <320f2a18-9b27-4583-8a1c-46b9aeddba2d@siemens.com>
+Date: Thu, 26 Nov 2026 07:14:15 +0100
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 6/7] lib/alchemy: Require a Xenomai task only when
- actually waiting
+Subject: Re: [PATCH 1/7] lib/alchemy/mutex: Allow any Xenomai thread to
+ acquire a mutex
 To: "Richard Weinberger (sigma star gmbh)" <rw@kernel.org>,
  xenomai@lists.linux.dev
 Cc: upstream+xenomai@sigma-star.at, Richard Weinberger <richard@nod.at>
 References: <20261125213419.2363742-1-rw@kernel.org>
- <20261125213419.2363742-7-rw@kernel.org>
-From: Jan Kiszka <jan.kiszka@siemens.com>
+ <20261125213419.2363742-2-rw@kernel.org>
 Content-Language: en-US
+From: Jan Kiszka <jan.kiszka@siemens.com>
 Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  xsFNBGZY+hkBEACkdtFD81AUVtTVX+UEiUFs7ZQPQsdFpzVmr6R3D059f+lzr4Mlg6KKAcNZ
  uNUqthIkgLGWzKugodvkcCK8Wbyw+1vxcl4Lw56WezLsOTfu7oi7Z0vp1XkrLcM0tofTbClW
@@ -128,11 +128,11 @@ Autocrypt: addr=jan.kiszka@siemens.com; keydata=
  qH4kDzsqKX8zzTzfAWFxrkXA/kFpR3JsMzNmvextkN2kOLCCHkym0zz5Y3vxaYtbXG2wTrqJ
  8WpkWIE8STUhQa9AkezgucXN7r6uSrzW8IQXxBInZwFIyBgM0f/fzyNqzThFT15QMrYUqhhW
  ZffO4PeNJOUYfXdH13A6rbU0y6xE7Okuoa01EqNi9yqyLA8gPgg/DhOpGtK8KokCsdYsTbk=
-In-Reply-To: <20261125213419.2363742-7-rw@kernel.org>
+In-Reply-To: <20261125213419.2363742-2-rw@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR2P281CA0106.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:9c::18) To AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
+X-ClientProxiedBy: FR2P281CA0100.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:9c::14) To AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:785::10)
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -144,112 +144,149 @@ List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AMCPR10MB992291:EE_|AS2PR10MB8034:EE_
-X-MS-Office365-Filtering-Correlation-Id: 6b98dc93-54aa-4493-16e3-08df4b83cf31
+X-MS-TrafficTypeDiagnostic: AMCPR10MB992291:EE_|MI9PR10MB992256:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8f835981-ab60-4023-6aea-08df4b84801b
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|366016|1800799024|376014|4143699003|6133799003|261009223027099003|18002099003|22082099003|55112099003|10067099003|56012099006|11063799006|261102123227099003|261028144727099003|261026121527099003|261026140227099003|261022105027099003|261021121427099003|261021123027099003;
+	BCL:0;ARA:13230040|1800799024|23010399003|376014|366016|6133799003|22082099003|55112099003|18002099003|261102123227099003|10067099003|4143699003|56012099006|11063799006|261022105027099003|261028144727099003|261026140227099003|261021123027099003|261026121527099003|261021121427099003;
 X-Microsoft-Antispam-Message-Info:
-	uiM1MFsFV2nAV+iJQEqg81tmUYTowOU6yGMV2qTTBd9ZYM2ogfWZzAsZgHz9G4CBdGskXPu1+T3u5zXWVhMj+UO1+RvVgIZWWJp31P/2kHXN3ct80So0Hj0pHuVQ2cVnC07UHzuGW5SNkEUh5RtzLMLnjOgtDL0dy2/VitB0Z5Sxq/eywgzaY2659Dw8Im1Yj4wl4OhGkEpOiBw793yaJhWflFUCqxiV1WpiCitRBJ0Itw7tApb8HGzzU7bviDrJJOoHciYiVTO5aF4t799ioukHhLr9H3PMSAWMyqSKGnd6NdzT0QRdttway5I1Od6EHoCJ6Hcy/BgPF/gP7EWzM0+6MPgF69WY2Zn3VVXK+CMExyIGeS6ZMSlFcr2gycFbHuUBg1Nqd6k8BY1qtQONv+V5SQXFPwbsvPz8BUJgSNFAhow8nXZrwqH7ELrKVDqwNng25Y41nGIbgOBJFKVHsQAFPahrpfhGzh6+s7uK0Yqi8NjRoaWH6y71fsbhxes+T9cvcN27Fg5p/J2832A41cIaLS159iPkOwIyuh/nb4dh5t8YoaP0oGvkbQiuE9cOJJBY6f2Yfhn3hp64ppGN0g6xwvl0y2Awo1QiCs/GG9/hBS3Qd2au3HJTXbOsM1u8UQcE1xSs8cTJHlr8j/W3Vvr8Xe6eRxurKmZbmtTkdNk=
+	9kV5o4carDvlXt1zKsZREG6PRIFCZ58v148MIHWuTjxgyvQLA/u/cMlSI8QHR/ucmGgKiyxangYux2lyIvC8X3Qk2DoWxAFJuuKKZXd3ty5jgk1YzoFFgnjZj0e6i4ypVsmyiQ73D9i7bKSv5YFBSmnWyv8YIxHwiKx9/9ml6Klnc0pDFpKaCfZ7w8Utnz3GJTAJEggbb2DE7yBsJ5UA0kjGLt4PaTrN86XcL0nU/7HYtT5YWY7izgEb5eSyRyGEsJ7LI3TWCrTQR1N/3AUc5I25ilU9fW95Dq280MKNjx4aVhiIr1rGvbkCuQV4bmzZ7BMYexCIEYEftezCgrnvedRj83bFJk13W29N29AeydVRfyxSJHwHBmfKykdbbUez4UNGBGYDl86byUPf6HbNww56iYg5kW1cFSChPXJ4T/up4kcY2ZS6ilmdMrEf9KoTm7NXAH1e8RA6aii/K3DAiT+OzCr5XQoeKQoP9vFTl/xFNQlIynUq9O5rxR9Rr5QnXDrJdxBkmGfijMYucWe3dpCpYIZOWhS2Sc0Gvu21RwjbS5GEWrTdbLNvKsKFW7q09z/5KxAajHZRyxP4JpobSUf2wF1ilrejsSV7+hRz04Wk62caNpf1C8UV334f2oQ8suuShyDfVmCVXV6nfqgX/dwdbntQ2dHvXTbtP/PqkbM=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(366016)(1800799024)(376014)(4143699003)(6133799003)(261009223027099003)(18002099003)(22082099003)(55112099003)(10067099003)(56012099006)(11063799006)(261102123227099003)(261028144727099003)(261026121527099003)(261026140227099003)(261022105027099003)(261021121427099003)(261021123027099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(23010399003)(376014)(366016)(6133799003)(22082099003)(55112099003)(18002099003)(261102123227099003)(10067099003)(4143699003)(56012099006)(11063799006)(261022105027099003)(261028144727099003)(261026140227099003)(261021123027099003)(261026121527099003)(261021121427099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Q2tQKzduanhwMll2TXhXOTN0aXIzMkdjS0ppRUpsMkxmN01zM3BRdGszaFJE?=
- =?utf-8?B?TnNONEVleEw0YS85M1BKOHozQm9tc0pKN3NEelNMemFSVlNNZFBRY21zS015?=
- =?utf-8?B?T3BHdi81U1Z5dmNwUTZURkFvRkgyYnlJKzZTT2xxd0FYd1NWVWh4bDNheGF4?=
- =?utf-8?B?YitqQ0x1dGNRVGl1cHgvTjFjd1hDM2NHNWRwayt5WWNaWmFNT01nVWozU1BU?=
- =?utf-8?B?UDM5UFcxSGpqbnVRNEQydGhQb2xhSTEzVzVWcWdCK2Z2QTkxTUYzQmJNN2tw?=
- =?utf-8?B?aFZ6alFXd1M5T21MbkFqYzVEdDMrWXNtQVBSeXc0SDdibjJvejZmWEszOHZr?=
- =?utf-8?B?OGNMbElJSGV2VnUrbG9OMTV5TlhycWZDWWxLYjN2M01FUjVhQ0ltamRpSHE4?=
- =?utf-8?B?NGlRYlhjRGpnTWpHQ0p2UzFVSXVlRmExdVliRlN3TEdneVR5R1llV1BpcExT?=
- =?utf-8?B?aG1tOEZvZzdsS3ZjWC8wVXlwUkJxZmVhSjdLa2J5cU5OM2JSYXdpRFJsRnFE?=
- =?utf-8?B?S1U5R0pCTXpHQzlsUU5WUk5QSjQvdXYwbC8wNXI0VGRJaVFyZERmdU9GcXlp?=
- =?utf-8?B?alpEd015bmxleStKWllqYUcySm4wckJxR2poK1Q3aDhKK0V4TjdKMDZLM0dJ?=
- =?utf-8?B?RU1tUFora20yRWdHYlRUSmp3QUNBclN5UzhwemV6Vnh3YlQ0RTBZQlJNV3d0?=
- =?utf-8?B?bGJNY1VUbktJaDd2Rk16c2ZFQTBxSGVvamhZVDljUEk4UE43NmhqVHhIZURR?=
- =?utf-8?B?aEhGNWorR1NPdHJ1SEVmM1oyWXVIUmJFNVBGblJMZDJWQWh2MkxTaEt6Wnpk?=
- =?utf-8?B?cVp4akdxRzZCZzM2L01oZFRwR2RPTWFhQXhQUGtyUHoxUWNNOGdQYkxIL1lL?=
- =?utf-8?B?MnoyNGZFSHArdlNpTW04VWo4OVAzT1BUSmcvMFF6MXh4aUJIcnpER0Zscjhi?=
- =?utf-8?B?N01ULzVqWTY1b1ZWSEdqcVp3aDRIM2cwcmV4a0xUaGU4byt0b3crNnNDZ21N?=
- =?utf-8?B?M3FadlJmdjVTbU5HMFRnZDROY01TRWNHSlpEQ3NBVmNmRlZXc25STWdLZU9n?=
- =?utf-8?B?NXdvNlh5R0dXRmxCRXlmZGc2ZVhEQzRJRXo1RzB2czBZc0NCRGtTTlluSHZn?=
- =?utf-8?B?ajRSZ2NSYXFRck1QR3RpQy9rN09STFpwQSs2VFA3d0kzVGphTGRGbElnNGF1?=
- =?utf-8?B?WS9mSjUvU0xjN1NSaWFWV0VVZWM1K3Z0ZGhFNkhaMzRTUVViNDF2ZTJudWU4?=
- =?utf-8?B?QkhwOURyWG5oMWFkaXFLUXlyb01wU1ovMWhCanY3d094d0R6elhvRHFDQU5X?=
- =?utf-8?B?ZDMvV3Yxc1ZWUllBMCtKSG5NeGU3Qk1IbStVdFNlSElwV1BkMVVTWUQ2T0ti?=
- =?utf-8?B?bTRsNjY2QWNUeWFHVFBOeWo4cWdtMmVNdm1IUUEvdzlKUjU4SWs3dUxVaCtV?=
- =?utf-8?B?aXhXdHBhRWpOQW5pQVRXTUpmUTlaWlYrbVdhQk9NaG5PK1ZwTXFRYU0rRW5o?=
- =?utf-8?B?bUJkMWJWN0JGN3FsQWFFbThEOGpkdk8xc1FHN2FLRE10NUxkSW95WWlsbVdY?=
- =?utf-8?B?ajZWRHJzQ01yeXA1Nlh0ZkVQWmlaZ3p1eUNGLzN6V2NMMUpUQjcwMEsrMmo3?=
- =?utf-8?B?MlRXM3pGRkp4MkdLTVRJWGhZY0E2QkJPc2IzM1R0QWZ3NWZpUjhOektCeDNC?=
- =?utf-8?B?aXJQTnlMWTJUSUp5ak95VUNhVWpURnVOUUcyV1kwOFA0RitBa0dkSnJqTzZD?=
- =?utf-8?B?QUFCYmh0Z1EwNjN3SzFFVm1SdFhuc1ZGcUthNm91cy9iS29TaEdQMjFDcWdz?=
- =?utf-8?B?WHEvMjZMTnZ0cUJ1QmpYaDdJOGZ3SnFJbXhIb1NPdUN6alBSTTBjV3hONnpP?=
- =?utf-8?B?c21ZUnJoYnpQVlZQR3BlbEkzSFdHRlBQY1pCczVKSCsrb290RE9sTlEyOXYx?=
- =?utf-8?B?MHlOK3Nzbk1pdDZjaFdrd3MyaEhPc2hCOFBMNUhpcHdqYW1Jek85SW5VTDd0?=
- =?utf-8?B?M0lSd0tVcHh1Tlo4VFlqTmwxeWkxcGhKWEEzakNldCsxT2s1VVhOUTdDRXh6?=
- =?utf-8?B?MCt0akhEMU9zcnlQc2wyWmtiLzlnSUhHL0pGMFJPYWd1MW5qdlE1VVl5L2Fr?=
- =?utf-8?B?eDYwOGtTVXR5eEpubkpPYWUrSnMyUnpqUTN0UmZwbllBNUR5eHNuTG4zMzFz?=
- =?utf-8?B?MXh5WlI1SUsxZ3hkVi9ONzdDWmpYU0NDT09zekQ4ZDJ4OFNTOGVDUjUydmMy?=
- =?utf-8?B?bjRqb2ZlVW1SU2tMZHE0bjVBbGVOK20yd2I1YzlUaHZaUVRnVSs2Z1RwbDNp?=
- =?utf-8?B?K0Izd29QRmNZYU1DbDBOeDRNazdMWGVvcWJhbHhpYUk3MDgwRVdrZz09?=
+	=?utf-8?B?K1JSQml5Y1h1a2ZvVndUWis2S2xMUHRtNXZsWW8vUXBjR3dUbGZaS2tYU1gr?=
+ =?utf-8?B?Z1dNeWtNYThkY3l1N04xQUNCaENVcG1meW0zQzJyMkNvK3JWUE0xVHBuTVU5?=
+ =?utf-8?B?R1p0ZHVmSlFBZGZOYU5BOTU3S0xZb0FnbHN3bVpLSVVrcVVvYVR1dTYrdGxK?=
+ =?utf-8?B?Ti9ick1sY0JheHlWa1BJaFlkKzdqZ0lDc2hUVStrOVpjcXYraVVYaFVLQjBK?=
+ =?utf-8?B?Q1gveEN5Nkhkdk5nZFVSSjd0UVpEcVg3emt0NGd1WS9xUUN6K0xkZU1MVHNU?=
+ =?utf-8?B?UlBrRlRnMWRXVGhoQ0Z3WndzMGdQWGtLZ3lBOUM0QjYwLy9IV0gxRmQvdjFO?=
+ =?utf-8?B?NXpqbFlTVGEyRHRsZURXUTRMVVo2djdYN09BdnM5bU9sY2h6bHpRUHhtY2JT?=
+ =?utf-8?B?anVYNnkydUdQb2hLL09lYjU0b2c0dFlPeEhPMmJHNFZnbVJhQW5tNzBOZXEw?=
+ =?utf-8?B?WFBkQ0xadmpwWFAwOXZ2eW5yb3BRVTNtaytzZWZScGZxS1l6MFg1Z3dKK3A0?=
+ =?utf-8?B?SEhaWFV3bm9xYnFDT1hhZTBTc1BhRzJtMDdKVnFRWmpGd3BTQ2lhRXhmdUlE?=
+ =?utf-8?B?N0FsVUxDQTRJQlFXbTB6TXJmQ1lUVEhrTmFzbW1oK3grbERNUm8vZmphT0s0?=
+ =?utf-8?B?NGhyV29BdFpURHdLM1pnS0xHNVlaYmY5NnRma1l6cTZLeklLSU9hNVFIWFZy?=
+ =?utf-8?B?N0NSVS9WY1JqeGFLNnZMVlJxRmtSQUNla1pxeGFpWUVWaXBRYW5qTjErT0hQ?=
+ =?utf-8?B?Q3NkUWJidC9aMGxLNU8zYUJuVlB6MXFTZmQ1dXY1ZllQUHA4MlN3UXFUUWF1?=
+ =?utf-8?B?U2U5ckhUUitwNDNFZ1FVMUIzTVpnRmVJUDF5QzJqMGV1UEk2Q01McjZDTHlW?=
+ =?utf-8?B?UmNOb28vZjlDZ2psaHFWRGp5RlZlOUlwQUl6QmtXQndqamxOTEd4L1ZlRWdt?=
+ =?utf-8?B?QkRxTTRtbU1KbUUxMENFcVdzSkJ5VUwxdzUyMm9aTkRQSHFtSTFtSk5peGhH?=
+ =?utf-8?B?TkVlSSt4bzgrNm9na1AvZnExMzBkck82b0ZvLy9tcU92aWFMZFNjWlNoYkpI?=
+ =?utf-8?B?NzFhNXgyNVJCYWNkb2o4ZElaT3pIRExnTnZmYmFxQ0N2VE1YS25PcVRSTTJC?=
+ =?utf-8?B?NXlBV0Z2em1uMU9LRkJqRklqUEJEN3AzUGQwd3c1UWYvWks0aFhRNDVNdXFy?=
+ =?utf-8?B?aTBGSUlEdzduSSsxUkdFSS9LcXE0aVpTRHJoWkNzbGN6YVNhQjBsYnhEMEJO?=
+ =?utf-8?B?RGlxRklNbnFTQlZyalJnaTJaOXF1Mllhc1MvdWZVaWVsUE1COEEwN0RlU3po?=
+ =?utf-8?B?NWV4V3QrdEkvWFlpQkJrQTdVQlF3NWorbDRPS2EzeVJLYlhhekQwdXdIUHRi?=
+ =?utf-8?B?cUZrMU1zNDRxMG0zYzZRNXdTN0pCYlp5RjdmQnR4Z3B4NnJUM0gyc2xQWnRV?=
+ =?utf-8?B?QjU3SnhRTWltcjZLUGkzQ1VwWW1XYXdTK0lKQ05vR2FnNFFlOUtiVjlDMkZq?=
+ =?utf-8?B?YVFDM0pka00zSkc2d1Y3cGJSczYyZlAwdkFaWmNxZVgwbWN2WDVkMWNGbE1I?=
+ =?utf-8?B?UkphRUVTVGZqZGQxL3FpU3UzN1BtSWdRMkEzOXVWd1NNS3M3N0UwZFFqd1ly?=
+ =?utf-8?B?NGlsb0lVVGtFL0FDZ20vWXVMUkJPLy9lR0VSRkJaK1dTYklYOWNyWlFpcXRV?=
+ =?utf-8?B?R01rZjFqZjlmYk03OWtRWHlEY0lDUlp5TnlxOWdqalNIdmdYcXJQZGU2bjZX?=
+ =?utf-8?B?NllwTk0xODFjL0dkREsrWFNHWGVmOW42d2FXV2ZtVjdiQk00NDlzY3UzWFd3?=
+ =?utf-8?B?cnRVZk52ZkhXaEpzUFZOekdGWmRNQ2RnMEJBSWVsMnFJNVp2NENmalpoTzR3?=
+ =?utf-8?B?d2pYelZYbHlPaEhJa1lvUWF2TU56L3Z3UTdYaFFxUlBDWWNrbkszTjRUSEVD?=
+ =?utf-8?B?azY1MWp2aGJQN0tOeUJQdmFHK3V5ZWJzZmQ3YmgzVXJSbEVOUVNLaU4wbStt?=
+ =?utf-8?B?Yi9pY0lvK3ZOWUpxNTlUSkhQSzJDdkVtbHRIcU9BcmNqNm9QRitOdkowVFQw?=
+ =?utf-8?B?K2VoRGVVM0l1bUg1LzhZREF0Uk4zbmZxc0FmQnp2ZHZMUXVDVkdKMUVBUzdM?=
+ =?utf-8?B?U0NUL0p5dmNGNmxFaTVIQ1E1Ky93L3FBb1BpME1zTWJrNDVScllhMHBVSCtt?=
+ =?utf-8?B?R2JHQUdiWE0yZ0htalZOSWFFclhIbXJ4aWRxSC9xNVBGV0d1cFNIdlpKSXEz?=
+ =?utf-8?B?UDlOaVFUMnowWlZCOUgvZGlKczdlcHNMa2NjNmRNOUhVRGxudHBESGJBM08z?=
+ =?utf-8?B?UXpaeHhwYkE4WUdSNHFTS0dPY0wycTZUOUZaR05HNHd3R21WL2RiQT09?=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6b98dc93-54aa-4493-16e3-08df4b83cf31
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8f835981-ab60-4023-6aea-08df4b84801b
 X-MS-Exchange-CrossTenant-AuthSource: AMCPR10MB992291.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Nov 2026 06:09:19.9510
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Nov 2026 06:14:16.7616
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 8fm/FpHl1/nEzsRn03mD2NoXmrzDux316SwRYsBKzVKYocfFMdngRdfH6/ZP6MQh9YNbjjVe8tCP4tOz1MvPbA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS2PR10MB8034
+X-MS-Exchange-CrossTenant-UserPrincipalName: N7PPotTLkYSXWcTBU7k9YsUldv5qJHK50TA1J52oJ4mgGTLWakEDJAAum0qp1Iw8UoW1yAMXJ8aNI5nnIlswMA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MI9PR10MB992256
 
 On 25.11.26 22:34, Richard Weinberger (sigma star gmbh) wrote:
 > From: Richard Weinberger <richard@nod.at>
 > 
-> The queue, buffer and heap services refuse non-polling calls from
-> threads without a Copperplate TCB upfront, even if the request can be
-> satisfied immediately. The TCB is only needed to wait, so check for it
-> there.
+> rt_mutex_acquire_timed() returns -EPERM unless the caller is an
+> Alchemy task, although the lock is a plain POSIX mutex. The Alchemy
+> TCB is only used to record the owner for rt_mutex_inquire().
+> 
+> Only reject asynchronous contexts and report NO_ALCHEMY_TASK as owner
+> for non-Alchemy callers.
 > 
 > Signed-off-by: Richard Weinberger <richard@nod.at>
 > ---
->  lib/alchemy/buffer.c | 24 ++++++++++++++----------
->  lib/alchemy/heap.c   | 12 +++++++-----
->  lib/alchemy/queue.c  | 24 ++++++++++++++----------
->  3 files changed, 35 insertions(+), 25 deletions(-)
+>  include/alchemy/mutex.h |  3 ++-
+>  lib/alchemy/mutex.c     | 19 +++++++++++++------
+>  2 files changed, 15 insertions(+), 7 deletions(-)
 > 
-> diff --git a/lib/alchemy/buffer.c b/lib/alchemy/buffer.c
-> index 4f826fb27..66e37413c 100644
-> --- a/lib/alchemy/buffer.c
-> +++ b/lib/alchemy/buffer.c
-> @@ -424,8 +424,8 @@ out:
->   * waiting for data. In such event, @a bf is no more valid upon return
+> diff --git a/include/alchemy/mutex.h b/include/alchemy/mutex.h
+> index 2c4212f33..ef391a294 100644
+> --- a/include/alchemy/mutex.h
+> +++ b/include/alchemy/mutex.h
+> @@ -42,7 +42,8 @@ typedef struct RT_MUTEX RT_MUTEX;
+>   */
+>  struct RT_MUTEX_INFO {
+>  	/**
+> -	 * Current mutex owner, or NO_ALCHEMY_TASK if unlocked. This
+> +	 * Current mutex owner, or NO_ALCHEMY_TASK if unlocked or
+> +	 * owned by a thread which is not an Alchemy task. This
+>  	 * information is in essence transient, and may not be valid
+>  	 * anymore once used by the caller.
+>  	 */
+> diff --git a/lib/alchemy/mutex.c b/lib/alchemy/mutex.c
+> index 6bec2d9bb..9609f1fa5 100644
+> --- a/lib/alchemy/mutex.c
+> +++ b/lib/alchemy/mutex.c
+> @@ -285,8 +285,13 @@ out:
+>   * waiting on it. In such event, @a mutex is no more valid upon return
 >   * of this service.
 >   *
-> - * - -EPERM is returned if this service was not called from a Xenomai
-> - * task, unless @a abs_timeout is { .tv_sec = 0, .tv_nsec = 0 }.
-> + * - -EPERM is returned if this service should block, but was not
-> + * called from a Xenomai task.
+> - * - -EPERM is returned if this service should block, but was not
+> - * called from a Xenomai thread.
+> + * - -EPERM is returned if this service was called from an
+> + * asynchronous context, or over Cobalt, from a thread which is not a
+> + * Cobalt thread (i.e. a regular POSIX thread which was not shadowed).
+> + *
+> + * @note Any Xenomai thread may acquire an Alchemy mutex, including a
+> + * Cobalt POSIX thread. However, only Alchemy tasks are reported as
+> + * the current owner by rt_mutex_inquire().
 >   *
->   * @note A short read (i.e. fewer bytes returned than requested by @a
->   * len) may happen whenever a pathological use of the buffer is
-> @@ -468,9 +468,6 @@ ssize_t rt_buffer_read_timed(RT_BUFFER *bf,
->  	if (len == 0)
->  		return 0;
+>   * @apitags{xthread-only, switch-primary}
+>   *
+> @@ -303,11 +308,12 @@ int rt_mutex_acquire_timed(RT_MUTEX *mutex,
+>  	struct timespec ts;
+>  	int ret = 0;
 >  
-> -	if (!threadobj_current_p() && !alchemy_poll_mode(abs_timeout))
-> -		return -EPERM;
-> -
->  	CANCEL_DEFER(svc);
+> -	/* This must be an alchemy task. */
+> -	current = alchemy_task_current();
+> -	if (current == NULL)
+> +	if (threadobj_irq_p())
+>  		return -EPERM;
 >  
->  	bcb = get_alchemy_buffer(bf, &syns, &ret);
+> +	/* May be NULL if the caller is not an Alchemy task. */
+> +	current = alchemy_task_current();
+> +
+>  	/*
+>  	 * Try the fast path first. Note that we don't need any
+>  	 * protected section here: the caller should have provided for
+> @@ -362,7 +368,8 @@ done:
+>  		ret = -EWOULDBLOCK;
+>  		break;
+>  	case 0:
+> -		mcb->owner.handle = mainheap_ref(current, uintptr_t);
+> +		mcb->owner.handle = current ?
+> +			mainheap_ref(current, uintptr_t) : NO_ALCHEMY_TASK.handle;
 
-This one takes syncobj_lock. Similar for all the get_alchemy_* below.
+NO_ALCHEMY_TASK == no owner - you are changing at least internal
+semantics, if not worse.
+
+I'm still in favor of fixing the docs, rather than adding this new mode
+and trying to figure out which corner cases we missed.
 
 Jan
 
