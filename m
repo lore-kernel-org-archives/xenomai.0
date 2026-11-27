@@ -1,18 +1,17 @@
-Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.70.40
+Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.69.68
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795782333;
-	b=fsItdQfcXpVfr9SHz9U1FMJkTy6Vxo+g8lEfHvR0ClVtJUnzKrlVIhZUv9qyWv94Ruqj
-	 zLUdAx8chiAZ/XaC1tncN5FNtV7uoOcq5S0dmRsFdhQXudy2o01v9XvGutmNy8buqy0X9
-	 X5I/fs+OQVs0G+hHcpO3HSdgf7Yyxio7PfXb+w4cAmj/4YnA+y/S/Uz8Wtd02ozfrTLwH
-	 iA1d5GuCgm9pU9L4AZmc1qmWRkkiRhgahs3rePYo46Cm2CtUZzYdHKoTRYnqEoO+VqV2H
-	 RcjeS6djEc66qGD1ePkKm88PiNSFu5jbZ3EJUjxopKhuWAh5Ho7tBFmkw6iUI4e/KuQ==
+	t=1795787230;
+	b=UeLxpjU9rRn4T12s446Sz/ywTu2Wl1j56KjO/4mK1lRhUHKVAGQt7kakU44R/ehzkghC
+	 jH6fzXbkpFqsm8RBdxD942Pa/U8aBtSKamZuALm6kiNNOLUjbtET6svWQ1CDNU0Y68dXV
+	 vcvq8al4u0/KgqCwGrdrz1Fgk5d6AMES/KY/m2IYGVf1+MtfONdr6tRJTayYvWjygsBko
+	 kgJ1G8BrtOxRSXKk6JlSl+X7nTh6Elpr/BmVoKsHpPdSAxkQf+26x/IoCa57eLuccz0hl
+	 a7KrMY4Ib7WQDpYVrOPKVPA21nkmis7GPNP05KQjzFHimVxrA6+kp7Ag34Yq5y/ANjg==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795782333;
-	h=DMARC-Filter:DKIM-Signature:Received:Received:Message-ID:Date:
-	 User-Agent:Subject:To:Cc:References:Content-Language:From:In-Reply-To:
-	 Content-Type:Content-Transfer-Encoding:X-ClientProxiedBy:MIME-Version:
-	 X-MS-PublicTrafficType:X-MS-TrafficTypeDiagnostic:
-	 X-MS-Office365-Filtering-Correlation-Id:
+	a=rsa-sha256; c=relaxed/relaxed; t=1795787230;
+	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
+	 Date:Message-ID:X-Mailer:Content-Transfer-Encoding:Content-Type:
+	 X-ClientProxiedBy:MIME-Version:X-MS-PublicTrafficType:
+	 X-MS-TrafficTypeDiagnostic:X-MS-Office365-Filtering-Correlation-Id:
 	 X-MS-Exchange-AtpMessageProperties:X-MS-Exchange-SenderADCheck:
 	 X-MS-Exchange-AntiSpam-Relay:X-Microsoft-Antispam:
 	 X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
@@ -26,77 +25,67 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=5KflJs6l7sznOHctdYqrcU4YgQA6UQoI2sP7zI5RTKk=;
-	b=QjIwOf3HXPX0TGIFVj0SCKPltKzPmWxADI9LYzAgCqql/NlnQijZxf27uiTgAar4i+yB
-	 u04F+cYHdYq2iHSwIhsAlCR6xp4ktn2R0xpI43oaouQ+/Zq8FC1PjSS9cUui8I54iRQVr
-	 C5DqfISAak2g027+N6CJsR46LzQ+9hzo4cfcn1bkJJt5g0o0vNGy1Z+N2OMF0unIynCPc
-	 BUum8n+MxIdQ1KvxqZVw/eS4gWp2cV0ddRVCL+/uY8cOHjVH5VJhWIvEnMUSBh8DqFYk1
-	 ZgNyR/2ywiIYxbMADRz3q3h1WY238KvQvKhwazHSl9ZnKtLnBf4Fix5JpC8b0hyTmFw==
+	bh=yLDiZ0TMzUQfmsuaDh0i1P3qGkB1gbPyezQLAXFnXfs=;
+	b=bgaPWsd5LRplbJ6ii6kE9ctPl6aQdnqcGtbusBKWEU8qFKkSDA4HogN0V4T29U/KJYeT
+	 wyNGwjspm+w6jm0rCuPe79F+64aIteOTtqQRz1F0j4IY5vrzWcvVFr0mQEhgqkxlMuf2t
+	 EqfN+wvafRReGty1pXIBjAsNHPkOXEmXoR6bP2udbp4pq1lT5lgQQwRpaZveukTtszc6m
+	 P9SZxG/lPIlKKVAStYhbiuUfxptaKq3R7QnXfrjIL0xuXRt43NzZjLYMldfWX94QIOgBM
+	 YlL+lrzJPGM8nYSCTndVR7SP7Wlhp5vg/GJfqC4xlIOy+RbOU2XD03zHOthPclqXcUA==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=siemens.com;
 	spf=pass smtp.mailfrom=siemens.com;
-	dkim=pass header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=d6CIgs0o;
-	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.70.40
-Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11011040.outbound.protection.outlook.com [52.101.70.40])
+	dkim=pass header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=AFtspCgl;
+	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.69.68
+Received: from AM0PR83CU005.outbound.protection.outlook.com (mail-westeuropeazon11010068.outbound.protection.outlook.com [52.101.69.68])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CE37606A31F
-	for <xenomai@lists.linux.dev>; Fri, 27 Nov 2026 12:25:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 5CE37606A31F
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2359606A31C
+	for <xenomai@lists.linux.dev>; Fri, 27 Nov 2026 13:47:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org F2359606A31C
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=d6CIgs0o
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=AFtspCgl
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=dWEmO93eMWXg7smILSzjBQLZAQelTpPCNrRyLOy02sDosWPLxy7Z+qrcNQou2P1E+vkt1Jy4SF4K3hOXKDyYWKxNfWFQIkc9H7JZXfgGDOyMANRqWrm5neFyVqdTS1Jr9fKkL/bjKjwc1XlRdwngIUK1+4/YpjxocEhOnyAq9aYIjO1tF2bFd01iYhdk5bcZQ1k64QlEtBuA2460j+6hBXb+FM3VZznJFI3nWmdTCirPiW6yFU3iuOG5Ted2exsZOl/8A5fG4enKFAIWKnZunBVu2ce6Ru5ghwDMAboy7c8mNZZKrALir73KWANwOSAflhpfF8LnmQsSXjLeWYqAfQ==
+ b=nhiHVQPPTcxH98bwFD43p+4ArVY4mKTlkOjODOMxl4tVTaz6wlW0nmxI45OlGnF/XstnjsyDxRPtz7MpXVG93kAfglnblOVkwzOYEcIMndSyrX/XQr76BjlmcbfmCoicGK/38znGWOcrgKtgq/JPXA/F/Vuh/V9j5hwbzaerU4ekfQjEenGx5mAzCLIKosKX52jCk/gFi5p7B56UprpYJmeBOt/mXVcSx6cBpT9tq7Qk8rFb0o0E0Eo8tYH0THMMkRH3gIi6uWe0zaWUK7HhV9t+W0Y+hzAgfW8VDI4dpQFCTLhIx6R1M3IVmNssT+GCo7kmA5HqtX2Lma+ASurxGQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5KflJs6l7sznOHctdYqrcU4YgQA6UQoI2sP7zI5RTKk=;
- b=PN+lqi6+qpSzJJmGA5IYt44uVKbph+VGNJerIncnep4qSHFCNtcy7qcbetSLVjSmTPbaIldV5md4j2ZsVQwwBwnrmXd1Y7t1/RUkmr58Y3ajyUumTNQQ7NTYhSw54EN8X/2bHZhseeRNPwIQFZ4IvzCkMyHy1pfBISE8q+kx8Wg6xvQz0iZh8hqkIv44l9xs4qzp5qzeU3oHUS7NMifpo8QBcahydpXUVm86act8mxFuI8eS/7FrwE1KhyzqjhRrlmRc3lbA038Oo4/xmK/eL7s3IJuSjDxCfgG7U9g2mZdJ/mrGPQMnlYWpfTlAGHr4U6vqqpWb59GAVk9J7aSEWQ==
+ bh=yLDiZ0TMzUQfmsuaDh0i1P3qGkB1gbPyezQLAXFnXfs=;
+ b=Ch1eUcZ+h5KxUW3BBPv5POetv+MFuC6oKJ3uNBf7fm9hZbdV9YB8c4NxDtQNCK2xQjf+VUUpy/4o4vmeH4YRUcLAQboCoRP0UHUxGCdIRMArnnQQZKRRB6t7UNVeumLTNWuvPRq+FY3Uh3xB0MV+gjy5lfsc8PeqiFBHZpt+wOM+YHytKvku+1L0f+35hyjPJceimbJBOYp+37SiI5IRKY7U/QdJuuJLwoa6PupAPG6z0b9VSRUExy7BaFgQDJKD6FeWEMZ+epCs7UI+jwsFT09zbe8MvTkXdKIOtV6WrojQljgbQOKu/3UKMl8ZTRbge+OtL6r1z3VeUTMSoe8Jzg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=5KflJs6l7sznOHctdYqrcU4YgQA6UQoI2sP7zI5RTKk=;
- b=d6CIgs0o4Dipkynjniai0/M2AIqiOyENlXbUgT6fZfwv7mVv5gK7KA5Im7dN/o8Bs5HYbPnAoD5HSd+wEONutKYGhFx9z/sPQJ0MmEXImFyqG269JGW+EqY1ybAnhMSTD10my8evmMSk+e6KNgKhkX+fphc5TpuYQzvU1VHc5YJTAxGSUPES1NhGITNT8VtCbGMCVp31QqCIXwZCcGMPuJ7V3F7sLnJK4Pn/Kw5biAkyOY+a2MXxtrvfjLvu9ZFK0LEVwfw0+wNCjkzX3qgObI8rvu2hNoCm1MH5m0Cd+WIfNXRU3efVz8+INH00ZxTAoYQ0YJN7fT/BQ5jPtmeufw==
+ bh=yLDiZ0TMzUQfmsuaDh0i1P3qGkB1gbPyezQLAXFnXfs=;
+ b=AFtspCglRV18uHHIzl53vZdW2vTPvsPygj7fHXrGSMZoChvZbScQnjSMiUzQo+3vSozdxU29CgNQJVQkOpVTAOcOqEcKo9QYmf6xPLSspQfVOn8fBSalnymRXYnJtY0WPHngFQBh1C8p1hLwmulMl2sZEeRksmKSAptJMbD2ZijMyF3M4x7X0+Reli3dcB8NpQFb4svGYV60WBjGu4wIWmHgkrPyCeNbT3NqV5cuULXzh8HAbcQmgumSa+3qJKmkjv82YKgQcLakNF+U/lheQjh1HjsrNyTVf3qfQkiULECid2g9lesfrgoUyBQ947JlhmarubUOkvaxpFxA6l4Llg==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:3dd::5)
- by AM7PR10MB3654.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:141::15) with
+ by DU4PR10MB9640.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:10:645::24) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.21.688.4; Fri, 27 Nov
- 2026 12:25:29 +0000
+ 2026 13:47:07 +0000
 Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::5f49:b0e9:d295:22d8]) by AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
  ([fe80::5f49:b0e9:d295:22d8%6]) with mapi id 15.21.0688.001; Fri, 27 Nov 2026
- 12:25:29 +0000
-Message-ID: <235eb17a-e818-4434-8c5b-81dc9371e43c@siemens.com>
-Date: Fri, 27 Nov 2026 13:25:54 +0100
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH dovetail v2 3/4] riscv: dovetail: inherit the hard irq
- state on kernel page faults
-To: Florian Bezdeka <florian.bezdeka@siemens.com>, xenomai@lists.linux.dev
-Cc: rpm@xenomai.org, jan.kiszka@siemens.com
-References: <20261121165933.57310-1-tobias.schaffner@siemens.com>
- <20261121165933.57310-4-tobias.schaffner@siemens.com>
- <DN2371TJAB7G.334DTWMEPJTQI@siemens.com>
- <915d53fb-fc8b-4c07-935f-a9d4680ee8a5@siemens.com>
- <87afa16be7aada0d995e63364bb9e7785af24675.camel@siemens.com>
- <5e8681d8-7d2a-4337-807d-80eab19d36cc@siemens.com>
- <e55022378f5d521c20e037597c04a8698b615a15.camel@siemens.com>
- <0a1ae6c1-55ef-4e48-b9c5-b3963923701f@siemens.com>
- <09e0fe247ecf465c589e189338d58ec78f7eba98.camel@siemens.com>
-Content-Language: en-US
+ 13:47:06 +0000
 From: Tobias Schaffner <tobias.schaffner@siemens.com>
-In-Reply-To: <09e0fe247ecf465c589e189338d58ec78f7eba98.camel@siemens.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: FR4P281CA0276.DEUP281.PROD.OUTLOOK.COM
- (2603:10a6:d10:e6::6) To AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
+To: xenomai@lists.linux.dev
+Cc: rpm@xenomai.org,
+	jan.kiszka@siemens.com,
+	Tobias Schaffner <tobias.schaffner@siemens.com>
+Subject: [RFC PATCH dovetail v2 0/7] rv: runtime verification monitors for Dovetail
+Date: Fri, 27 Nov 2026 14:47:18 +0100
+Message-ID: <cover.1795786695.git.tobias.schaffner@siemens.com>
+X-Mailer: git-send-email 2.53.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: FR3P281CA0111.DEUP281.PROD.OUTLOOK.COM
+ (2603:10a6:d10:a3::14) To AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
  (2603:10a6:20b:3dd::5)
 X-Mailing-List: xenomai@lists.linux.dev
 List-Id: <xenomai.lists.linux.dev>
@@ -108,387 +97,185 @@ List-Owner: <mailto:xenomai+owner@lists.linux.dev>
 Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|AM7PR10MB3654:EE_
-X-MS-Office365-Filtering-Correlation-Id: 2434db79-93bf-4115-f1df-08df4c818613
+X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|DU4PR10MB9640:EE_
+X-MS-Office365-Filtering-Correlation-Id: e14c3b19-40d1-4c24-643e-08df4c8ced2a
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|10070799003|376014|366016|23010399003|1800799024|55112099003|10067099003|11063799006|5023799004|4143699003|56012099006|261021123027099003|261102123227099003|261009223027099003|261021121427099003|261022075727099003|261026140227099003|261022105027099003|261026121527099003|261028144727099003|18002099003|22082099003;
+	BCL:0;ARA:13230040|23010399003|1800799024|376014|10070799003|366016|6133799003|18002099003|20046099003|55112099003|11063799006|56012099006|261026121527099003|261026140227099003|261028144727099003|261021121427099003|261022075727099003|261021123027099003|261009223027099003|261022105027099003|261102123227099003|10067099003;
 X-Microsoft-Antispam-Message-Info:
-	ZSJHIvm3HEm70+3cpb60dyWKbAciZuMa/NtMzAuVUx2Nl2Fu+sro/Mug4SInssvCbHes0So8vOOMYIMVK4d4W6jJPYUD/F9810L2Xk/lcQwqq0agTcg1OGjHuU85NQt9hxOWPx6Zz9yQY5br4EckbIeBbtTMjrQPfFiWi4+YDim9jk5qDylNfD87cLYAUEQ/fAKzhySbilUS0mZPf9t7/XkDiHZjquF16xcadnwP6ayWqY9x6aWOimVxymMwPgoedW47srkQWrz4E2+xnSPIqdM8PflM+blTevPzKE2n3gviY84QLF5KrrFvv5xiA+KQqMvlDJX4OAjj0ec4SNmID+N6nP3z3KTWVOrM2NRnO405gUvreCmWiPgDpEWiDxLS6QWOChWGWE3y+594e74lkfXwc8dmUyoAlqt4k7Mw1ZJxApTAzvlLJWAhBwVpaK0gJP1mjD6afbtK+I/BnTeogPcbPf9LavQDHqjj69GNnLME7d9Ml0iyRF75lwiCeeAtLU8toPi4YfxbDh+lOmSBJLeyUjfWnRpsVox4sCvKhtnM/6PIP7mVX0sK4zdEP5V6yaRLl/+5Gc9XolS9M5dZggSVVXajdmNqrA0GjQAE/vQltDqKu8uhmpLeA7KlAADWTDekoIxJs5IJ/Fh1SUwROMcmkfm3fkMvohKqdKm1Jfs=
+	rXNle6e8CAUkqLZnpBc+ozuGX9GADQhrrcpd30NFXq45Nce2T3PSWbZuRreuX9IEhHO4boYOmjt+4L0XLjh854qAE20blu+KmyishDwf1WfxKAaMXgYk4tRQDPVUBOj0A3JTJllFN/hltG6aWJhBevDXov2IDu5Q+t+kTX0wXh5mY8XKr4YjROr+zxSyxhn6eGxhPuQgKQgA8QTSFrx4bj3lzX3A5OMjX272WWBw9ypoAOvKiK8X1yKmZEhfJCFoyX3HqDiGANcurWS55S0/6Is47BL3ML9t974zvcpMXFgXqpVITymukX1iToWDRNiiHIXmFhk5y0hKQh2mqIJ3uiYAPJvcjVrnoOQfYPLIqULMXZChlfb6ZV5O1E5cn5t2myem+wGp/tU1uhlnhiX0OG5AK9PWzsB5F/Pk7JqIbKklhCoz064MWUhzSE61nWcprnCC+f9ujFh0vCqq6ex5VhE2gI9uqqIh8S3tlD8j+lPLEKPoU7fzomb6IOQkJLYu7QG1WsxyigPWMFsG0lqg/70k9FYO4RBofLshsPCqiYJfd30uJLci83ct3fRO0sFV6eqZF9Asc7OGMDBiTPaSkL91jAQTVSX2KeD8iXfB7j/aNXaJprNisOr+PgFs2r4d
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(10070799003)(376014)(366016)(23010399003)(1800799024)(55112099003)(10067099003)(11063799006)(5023799004)(4143699003)(56012099006)(261021123027099003)(261102123227099003)(261009223027099003)(261021121427099003)(261022075727099003)(261026140227099003)(261022105027099003)(261026121527099003)(261028144727099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(1800799024)(376014)(10070799003)(366016)(6133799003)(18002099003)(20046099003)(55112099003)(11063799006)(56012099006)(261026121527099003)(261026140227099003)(261028144727099003)(261021121427099003)(261022075727099003)(261021123027099003)(261009223027099003)(261022105027099003)(261102123227099003)(10067099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?QU5ySHIrckM1Lyt5M2p1a1VVemdQWS9XWnZzeTgzUkEyaGJmaDFUR3VCTFRS?=
- =?utf-8?B?OTR3aVZtOVBiNVJDY0RwZnRXbU9DUzRJVVNMdmUrZXFNem1KOFlIdG02T1Nv?=
- =?utf-8?B?czNZdTBidkxCc2toWEhldzFVNGwrVDB4NlNlNWVtL2xmTThURCtYQmtzVkp1?=
- =?utf-8?B?UXRaOS9xT29FcEFTdmFrWitVRTcra3NtTGI3cTFiVnJ4ektETkQ4Znl0MDFv?=
- =?utf-8?B?dGIwUnAzamlIK0xKK2FZaUZVemh6QTNhWXRiNmZBYW9vV1p6UHM1N25aZ01a?=
- =?utf-8?B?eUNBYWtBeEs5UVlobWw5M2lIbk9EbVBIRy9DMXk3NythZDdGbWtFY3BDUk5y?=
- =?utf-8?B?ZU5DWHlFa1JoREZZeWpQUExDOE9KbVpTZmRUMGFORmJNRlgyNUJYcGl1dURT?=
- =?utf-8?B?c2c2TnBTaFc1YXRaTzZlc3hnYkd3elozYnRkZ2NwK000SmViWUtMZ1ZqaDVZ?=
- =?utf-8?B?Nk84V1BhNnFrWnhEdC9yeExqZlBNZ2F4ZUVXcDVIblYrU0wxMnA5ZkllQVBk?=
- =?utf-8?B?K3ZFSHRqMUdSU3NHOStLbHFUWUZtOTFxd3RlamlXVldvL2JLS1FpQjBjKzg3?=
- =?utf-8?B?cGdCTzNZaEE0SUI5UjNYK3RTa3FzWXBoZ3BtMm5wZTV5OWYrc0NlY2dkTkV1?=
- =?utf-8?B?bi8xYnRIVFdwek5PcXc0aWQ3NGh0bzljUjhKa2MvQVJBNVpmK3NRZGo3ejFz?=
- =?utf-8?B?OE40VHRVZm9tajdhL3d4SzU5TDNFRkFqMytCZ0hrdk5Ud2lRMnJVZ3BQV3RS?=
- =?utf-8?B?emI0YllReFF6N05EK2xjdUQrekF0OXhzU3VDWDl6ZGN6NHBQbEs2R1Eranp4?=
- =?utf-8?B?dEorL2xkby9iR3hpL210Zng1KzlMRXZlVHlMa3krcnJiZWRUOFRxSWZ2YTEz?=
- =?utf-8?B?T25zNlNMNUVFUWwzZkZQTFUzamU2Vzd2VHkrMlV2NDJCaFpEb3VGTnhZQUIx?=
- =?utf-8?B?RG12MEpBL3MvdlIwWlpGd3lpZ3k2UlgwV2puT25zRzFvckVIcGJSMEJjZHBG?=
- =?utf-8?B?a001OGVMSmZ6N3hNa1ZWR2N0UWlMcTRDZmdaakxUcVVQTG5lOWtBOWIycU92?=
- =?utf-8?B?TWkyMmZsR0htM1h0cUphdjU1SlhuZVBSRkttck5BcFFzODVpRytFWjAwQW1U?=
- =?utf-8?B?clNqaGZ5QVkwcUZFUXk2WU1zUHZIcjd3TlFMNjJWWEFEUUk1VEtRcDZvY0cw?=
- =?utf-8?B?bTJSaFU0TWVKVVNFTU80UVA4RlUxYVRmeFc5ViszbW1pdFFQY1hlUUs5V1lB?=
- =?utf-8?B?aXlwdjhiY0xxUmM3cDhlZFl1WDhYazdNcHdkUHRldDczWTB3bUtDb3JyczJq?=
- =?utf-8?B?ZDNvaWgwRDRkREpoT0Qzb3hXTG4rM0QvL1VxNmswWUlkSFA1QmJ5Qkx2M0Q1?=
- =?utf-8?B?QitDMThvUlErd0g0YTEzVE9Na0pRT2NhMEJINjJCYThBUnBDb09lRkszUjBY?=
- =?utf-8?B?NFJoRUh0R0lXTkl6SGEzSi8zSUIzSi8vQk5YWUpSL1U4ZTRTOFZueWxmU3Br?=
- =?utf-8?B?YnpWSFNVaEVuVjlRalVyRmgxN0xZSkRyczJoZng5SURhQ2c0MElkcjUrZUpq?=
- =?utf-8?B?R3VxQ3VIWHV2TWpKTFZBMTZ2UEFGdXJJL2FIbFdmUzN1d0ZqeUxDM2ZWaTZr?=
- =?utf-8?B?V00rcHpzREIwS05wNWFKZks4MkpoMEI2MzUrN3UyZ1RXdEdLR1U2b2dOVllz?=
- =?utf-8?B?T0pONGQ4NUtMRmZZS0dMOGIxa3VWYjJyTkYrYkhYZmVlajY2amw3eVc4NW1P?=
- =?utf-8?B?ZzhGaUlSTFV1cXF5bDV4NXIvckgyR2VyV2xvWkl5cllVK2ZwNjVUbmY0WkZD?=
- =?utf-8?B?UUx5SlJId2RPc29meEZjVWlGNWVVZW96aE5rUlJ3T0NURjFEQnhyR2dNVk1I?=
- =?utf-8?B?NXdEZEVmN05pS1k4MThVU3lwdmRFL0UzV3lCa2Nsbk5BVE92TWdMYnFjRHNR?=
- =?utf-8?B?SzVISzczSDBhQWJ3RU90Wit1dEN6a1hOdXhFKzBsdGJoL1BKVG9nd3lmeGFL?=
- =?utf-8?B?S3BLS1ZFdHhwRENFbSsvUmx3UkJzUUFUbEFrQTZlQUIrUXM2dWN1cSt6YUky?=
- =?utf-8?B?VFRQMlBCNlQxRksvV3gvdHBEclNtbGJ2NW9BWUdzNEVHUjljSEd1QU9VZWtx?=
- =?utf-8?B?M2FCUjgya2hwL3RUaDA4UU1hakl4bXluWGJsd0ZlNEVHd2hheUVObFdEMkVT?=
- =?utf-8?B?SGc3dTl6RVVUN2IySStrTUZRUlhrSWR6M2pycUN5UVFwR1k0YlFselVNcXp3?=
- =?utf-8?B?OUJYT2xneHBXZlJTKzNLaHBQZEJ4TzVJQjRYdERPMmVhODE5R3o1c1lrRDdC?=
- =?utf-8?B?RThUU1JzZnZVZlBFNVBMMk9ndUZOaGNZemhZTHROMTd0WDltVUtCNTZTL2tz?=
- =?utf-8?Q?n6uWumQXl/Ih1sllUvWn3zhXVZTtRfvzsfw+tTYneoavf?=
-X-MS-Exchange-AntiSpam-MessageData-1: 6w02M2KfAGpgkKEGzQAXfm67Bv/rFatl9Dg=
+	=?us-ascii?Q?4jcFnP4EPU4fYsy2DDWkTjWInFcrqDfb9CVGtBdHqpbvVjMQZ7gvUYWbpM7F?=
+ =?us-ascii?Q?8bZOi4PcbH4NQgWZl/VsvDrqATKEtzHSaeDdrmuJNOr+G8gxKzmMXrjp+fEh?=
+ =?us-ascii?Q?EMKudKjmXTsbJhXlcp7quBaCldxxyWlrQBqQMdYPPHWkrVK7lpCLZNU5EDr0?=
+ =?us-ascii?Q?DyUIWPmgqwRvTpV01Lif9QiEyMWxXLx6ivU6jcQBQXMu4328527tnqB3X0e0?=
+ =?us-ascii?Q?DKerWSFJ8YQ822w8N3DQT3MAYFAFc0gxFytpoI/IQ3bxsfsZOk392pJ8xsiv?=
+ =?us-ascii?Q?Ud4fwrEL6+uajJyud3VWb1WAX8qEP3M3uyTyPlYyAuLe/+lNqHHnJ0m7Gl+X?=
+ =?us-ascii?Q?RcB+zg6c9e57R1b4RDO0z6citeAdtYc+SnS9+C8szAd3fkjlPxr8JSMYD5LS?=
+ =?us-ascii?Q?ls2j3lntLHzUf7/gr1uoq49zvycAM7gi89b38DbGeEUxYv5oBTnWhALFQH/1?=
+ =?us-ascii?Q?Zr8DcVVOMkGD0tm0ZjLjEZUkqLEMPOI36iSCw2ZAoHAHfWnnTsG23/WTS32a?=
+ =?us-ascii?Q?BpKwWafxtlvVXkP6VhV+4OdyRchhSIdIj2va1oyb0Pw2xThw2JP15KEmf/Jp?=
+ =?us-ascii?Q?e4be4ljRsE7sEt1qDhgEgqJ1cyLDNB6tgWNt1ntp9fHp/cYe7gleTBU7ocB3?=
+ =?us-ascii?Q?wHyHjO2NKK2nRdBmk/FKmZPL5aziwJ0oP0/y2puK07SclSSmCR9KtBNkma/l?=
+ =?us-ascii?Q?19viF6iHztFzHrvMEGBteuB+RA4gLeEJDeWNjh7uV06LVWDrP6JBSKWJmI3h?=
+ =?us-ascii?Q?B3WbJImMLvWYU7I2GJeb8NzuIe0dOv7Exr+4PLCZWDUs5bE2jgAK/B9Ob0u5?=
+ =?us-ascii?Q?GuY0Wixc45owPPLZ6Ptix0l+6zMoTwPZhR524JJGehrV7SgdVbDFHyKWtWsJ?=
+ =?us-ascii?Q?g/toX/9JsMjGH/bXJtVliEVp2a1m8uvPKdzhyPiHTff3ONK/Uyty/EWtN8Mx?=
+ =?us-ascii?Q?mMUH+ovU5kN4vJJTimy05yymnpp8RL5lk9wVoi8V+zqDVIBofAHGKorP5B7y?=
+ =?us-ascii?Q?SQmWVvnZOKvRkSzm5Fed9F1XNXdy2mISDk6eOv4T5J0F7u8PmbMkDn3rca7V?=
+ =?us-ascii?Q?xU1Uhd7QnhMZJpHG5x0c0edpNKen22xHTt/xBFNGoGvLknWKbdJTP2cWJRLN?=
+ =?us-ascii?Q?atv82LSBYM0ESjxx1bdEcJXpAyZoqc3kz1LtukHRIxrsDd+t3Bq6RgJ11w1G?=
+ =?us-ascii?Q?tdUL20YeGQH0CZQQXrVhAjoKqlw3veaPuxFZDaF+6mce2PGHyPmVL7+lo5Yg?=
+ =?us-ascii?Q?Jv7+rPmGQ/hUeUzW46mTSwl2cOs4cqQZmMWXzDArgdXuf9KjYcI6/mYZ/iuc?=
+ =?us-ascii?Q?UODxXiSvTXvD82Y8eVrTdcuFwZU51ttXyVwRd+bKG+/ndsv0F7MPLMK+6Yan?=
+ =?us-ascii?Q?HTU3gtGeQ2kGDLwQmM+evTKux+h4GN3pK1jnDM6KhjorDZO0STZNgB0HdhDw?=
+ =?us-ascii?Q?Y06hWePAzgKNaMWusG/MXqJnRRgEf1o7UuNLa+9klgH0aQci7Vn7ZL4V4Yw1?=
+ =?us-ascii?Q?1p/JFdWAzdnnvS5i3h+Ulbqj8qcq0pZnxgwUHq3OLyU3sNdFtScHsCcGECJr?=
+ =?us-ascii?Q?afnzeYZLcS7GzX2k8Ej5HGBbqgR47G1r4Nm8nPyxv+JcCXLHj4g2ngB65rDl?=
+ =?us-ascii?Q?FZ3oaYzBQHWh9hHJAO4Q/V8dcH2t6EdRv8RKQ4uPCx+2HHE7gj95B/P9dtZz?=
+ =?us-ascii?Q?kp4g8bInJKy/c5GDtcihMaiPWg4jNETMOtDTAnFKk80pESeJrfvD6XC0IMpa?=
+ =?us-ascii?Q?9hckghVhIvaWmLxdW48wVFnjEi481Pk0pkpTGkLioxkCY8binO8DUYBRxF7E?=
+X-MS-Exchange-AntiSpam-MessageData-1: Mh9hgspRfes+IGSVudGjlc6PISusr+mM/qE=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2434db79-93bf-4115-f1df-08df4c818613
+X-MS-Exchange-CrossTenant-Network-Message-Id: e14c3b19-40d1-4c24-643e-08df4c8ced2a
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2026 12:25:29.5902
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2026 13:47:06.9011
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3IXgsofWwk5SJtztggiIY5qAceRfvomsciQBCM8b36JESe+scKeM5GrWz5/e+2ojjD0cPz9MImGDPCdgVB/ADv1alHDCcrx8wuXlwf2ixWE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM7PR10MB3654
+X-MS-Exchange-CrossTenant-UserPrincipalName: DQVZw4dwld6KBU4Jda1gfl3Gin7m1ECY7vM0i4GvGnjuEW5F2sKMd4h3JQFrJJZME0roZKE1r+HnKbToKtADrmR/vOj7m7vaF2OJ/XsDuco=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU4PR10MB9640
 
-On 11/25/26 12:13, Florian Bezdeka wrote:
-> On Tue, 2026-11-24 at 20:53 +0100, Tobias Schaffner wrote:
->> On 11/23/26 23:12, Florian Bezdeka wrote:
->>> On Mon, 2026-11-23 at 14:43 +0100, Tobias Schaffner wrote:
->>>> On 11/23/26 13:05, Florian Bezdeka wrote:
->>>>> On Mon, 2026-11-23 at 12:39 +0100, Tobias Schaffner wrote:
->>>>>> On 11/22/26 23:18, Florian Bezdeka wrote:
->>>>>>> On Sat Nov 21, 2026 at 5:59 PM CET, Tobias Schaffner wrote:
->>>>>>>> A page fault may hit kernel code which runs with hard irqs off, e.g. a
->>>>>>>> kprobe whose fetch argument faults within the breakpoint trap. The fault
->>>>>>>> handler still enables hard irqs for every kernel mode fault, so an
->>>>>>>> interrupt may break into that code. If the fault is handled out-of-band,
->>>>>>>> the handler also unstalls the in-band stage over the out-of-band stage.
->>>>>>>>
->>>>>>>> Enable hard irqs in handle_page_fault() only if the faulting code had
->>>>>>>> them on and we run in-band, and stall the in-band stage on exit only if
->>>>>>>> we run in-band.
->>>>>>>>
->>>>>>>> Fixes: 1d1fdeccecef ("riscv: dovetail: add core support")
->>>>>>>> Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
->>>>>>>> ---
->>>>>>>>      arch/riscv/kernel/traps.c | 11 ++++-------
->>>>>>>>      arch/riscv/mm/fault.c     |  7 +++++--
->>>>>>>>      2 files changed, 9 insertions(+), 9 deletions(-)
->>>>>>>>
->>>>>>>> diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
->>>>>>>> index a8e37ec27cc2..47799f18fa7d 100644
->>>>>>>> --- a/arch/riscv/kernel/traps.c
->>>>>>>> +++ b/arch/riscv/kernel/traps.c
->>>>>>>> @@ -488,17 +488,14 @@ asmlinkage __visible __trap_section void do_trap_software_check(struct pt_regs *
->>>>>>>>      asmlinkage __visible noinstr void do_page_fault(struct pt_regs *regs)
->>>>>>>>      {
->>>>>>>>      	irqentry_state_t state = irqentry_enter(regs);
->>>>>>>> +	bool inband = mark_trap_entry(regs);
->>>>>>>>      
->>>>>>>> -	mark_trap_entry(regs);
->>>>>>>> -
->>>>>>>> -	BUG_ON(dovetail_debug() && !running_inband());
->>>>>>>> -
->>>>>>>> -	if (!user_mode(regs))
->>>>>>>> -		hard_cond_local_irq_enable();
->>>>>>>> +	BUG_ON(dovetail_debug() && !inband && user_mode(regs));
->>>>>>>>      
->>>>>>>>      	handle_page_fault(regs, state);
->>>>>>>>      
->>>>>>>> -	local_irq_disable();
->>>>>>>> +	if (inband)
->>>>>>>> +		local_irq_disable();
->>>>>>>>      
->>>>>>>>      	mark_trap_exit(regs);
->>>>>
->>>>> Below comes another hard_cond_local_irq_disable() call that is a
->>>>> duplicate as already handled by mark_trap_exit(). => More code to be
->>>>> removed.
->>>>
->>>> One is for user_mode and one for !user_mode().
->>>
->>> Can't follow here, but I agree: Some on the confusion is/was on my side.
->>> Let's bring back the complete sequence:
->>>
->>> 	mark_trap_entry(regs); [1]
->>>
->>> 	if (!user_mode(regs))
->>> 		hard_cond_local_irq_enable(); [2]
->>>
->>> 	handle_page_fault(regs, state); [3]
->>>
->>> 	local_irq_disable(); [4]
->>>
->>> 	mark_trap_exit(regs); [5]
->>>
->>> 	if (!user_mode(regs))
->>> 		hard_cond_local_irq_disable(); [6]
->>>
->>> [1] and [5] open/close the trap handling section. Entry into this area
->>> and exit from it should match. But: [2] is inside the section while it's
->>> counterpart [6] is outside the section. That's a mismatch (even if the
->>> code does the right thing, more later).
->>>
->>> [2] and [6] must be in lock-step. In v2 only [2] has been removed on my
->>> request, because it is a partial duplicate, right, but removal likely
->>> leads to confusion.
->>>
->>> [4] must only be called when running inband.
->>>
->>> Now the most confusing part, at least on my end: My expectation was that
->>> you follow the same pattern as x86 does. But that is not the case. The
->>> page fault handler on x86 does not use mark_trap_entry/exit() at all.
->>>
->>> That's why cond_reenable_irqs_{user,kernel} exist. That is - so to say -
->>> the IRQ mask touching counterpart of mark_trap_{entry,exit}() on riscv.
->>> The fault handler itself is directly calling oob_trap_notify() on x86.
->>>
->>> hard IRQ enablement inside the page fault handler:
->>> I went to x86 today and reviewed the code again, mostly to make sure
->>> we're not following a broken pattern. Outcome: I consider the x86
->>> implementation as correct.
->>>
->>> The main logic (on x86):
->>>
->>> 1) Re-enable interrupts following the following rules:
->>>
->>>      - Fault over user space: Enable hard IRQs and in addition,
->>>        when running inband: enable inband IRQs
->>>        (see cond_reenable_irqs_user())
->>>
->>>      - Fault over kernel space: Enable hard IRQs and in case the
->>>        inband stage was unstalled on fault entry: enable inband IRQs
->>>        (see cond_reenable_irqs_kernel())
->>>
->>> 2) Notify the co-kernel, by calling oob_trap_notify()
->>>
->>> 3) Call the fault handler
->>>
->>> 4) Restore IRQ state (see cond_disable_irqs())
->>>
->>> Coming back to risc-v now: Starting in do_page_fault(), I see a
->>> completely different order of things. Starting with mark_trap_entry()
->>> being called which notifies the co-kernel first, without doing 1) as on
->>> x86. At least the notification has to take place under the same
->>> conditions as on other archs. Otherwise we might confuse the co-kernel.
->>>
->>> I hope that helps (and makes sense).
->>
->> You have a point regarding the ordering. Thanks for putting that much
->> effort in describing this in detail. That helped a lot.
->>
->> I will have to spend some additional time to think this through.
->> When comparing both I also noticed that some kernel traps are not
->> notified at all in x86 and arm64. This will eventually make it a
->> bigger change than I expected it in the first place.
-> 
-> Stay focused on riscv for the moment. I can have a look at the other
-> archs. What do you think is missing/odd? Any pointers?
+Hi all,
 
-Sorry for the late reply.
+with this RFC I would like to propose using the Linux kernel Runtime
+Verification (RV) system [1] for runtime verification of Dovetail based
+cokernels.
 
-X86 and arm64 do not notify kernel pagefaults but tries to fix them
-up and returns in this case. Seems I missed that and tried to handle
-all page faults the same way.
+Running a system with RV monitors active should ensure that the system
+behaves as described in the model. As this is checked at runtime we can
+verify if the system is even behaving as inteded when it is running the
+real workload.
 
-Does the pattern below look good to you? This is nearer to the
-implementations of the other architectures now.
+My ultimate goal is not only to use it for verification but also for wakeup
+latency tracing and decomposition in EVL by describing the whole wakeup
+path. I am working on upstreaming dwell time measurements in the RV system
+in parallel for that [2].
 
-It shows the overall Dovetail and EVL changes on top of vanilla
-7.2 touching page faults. Thought this is easier to review and discuss
-in this case but feel free to directly request the patches if this fits
-your workflow better.
+This would allow us not only to get a worst case latency and decomposition
+for a latency evaluation tool like latmus but to get a worst case latency
+for any load applied to the system (e.g. the real application of the user).
 
-diff --git a/arch/riscv/kernel/traps.c b/arch/riscv/kernel/traps.c
-index 8c62c771a656..689861c7cf5e 100644
---- a/arch/riscv/kernel/traps.c
-+++ b/arch/riscv/kernel/traps.c
-@@ -413,14 +507,75 @@ asmlinkage __visible noinstr void 
-do_page_fault(struct pt_regs *regs)
-  {
-         irqentry_state_t state = irqentry_enter(regs);
+This patch set proposes three Dovetail monitors bundled in one container:
 
--       handle_page_fault(regs);
-+       handle_page_fault(regs, state);
+ * offstage checks that Linux leaves a task alone while it runs out-of-band. It
+must neither schedule the task nor let it raise a signal on itself.
 
--       local_irq_disable();
-+       /* Page fault handling might have reenabled interrupts. */
-+       local_irq_disable_full();
+ * oob_trap checks that every out-of-band trap notification is unwound for the
+same trap before the task goes out-of-band again.
 
-         irqentry_exit(regs, state);
-  }
-  #endif
+ * oob_signal checks that a task receiving a signal out-of-band is kicked
+in-band. Once the cokernel handled the notification, the task must not return
+to user mode out-of-band without a mayday pending. I think his monitor found
+a present bug in EVL: since "evl/sched: get rid of this_evl_rq_thread()"
+evl_kick_thread() skips the mayday for a thread running out-of-band on a
+remote CPU, so the thread ignores all signals, even SIGKILL.
+
+For the monitors the series adds a few bare tracepoints to Dovetail. They are
+not exposed in tracefs.
+
+The monitors can be built by setting CONFIG_RV_DOVETAIL, which enables RV,
+the monitors and the printk reactor. oob_signal is not available on 32-bit
+arm yet, as the out-of-band syscall fast path there is written in assembly.
+
+To execute them:
+
+  # cd /sys/kernel/tracing/rv
+  # echo printk > monitors/dovetail/reactors
+  # echo 1 > monitors/dovetail/enable
+
+Looking forward to your feedback, input and ideas on how to use and improve
+this further.
+
+Changes in v2:
+ * call the dovetail_leave_inband tracepoint directly from
+   dovetail_leave_inband() and drop its helper
+
+Best,
+Tobias
+
+[1] https://docs.kernel.org/trace/rv/runtime-verification.html
+[2] https://lore.kernel.org/linux-trace-kernel/20260827072400.45734-1-tobias.schaffner@siemens.com
+
+Tobias Schaffner (7):
+  dovetail: factor out the mayday check on return to user mode
+  dovetail: trace stage switches
+  rv: add dovetail container and offstage monitor
+  dovetail: trace out-of-band trap notifications
+  rv: add oob_trap monitor
+  dovetail: trace signal notifications and out-of-band returns
+  rv: add oob_signal monitor
+
+ Documentation/trace/rv/index.rst              |   1 +
+ Documentation/trace/rv/monitor_dovetail.rst   | 124 +++++++++++++++
+ include/linux/dovetail.h                      |  16 +-
+ include/trace/events/dovetail.h               |  40 +++++
+ kernel/Kconfig.dovetail                       |  14 ++
+ kernel/dovetail.c                             |  30 +++-
+ kernel/irq/pipeline.c                         |   4 +-
+ kernel/sched/core.c                           |   3 +
+ kernel/trace/rv/Kconfig                       |   5 +
+ kernel/trace/rv/Makefile                      |   4 +
+ kernel/trace/rv/monitors/dovetail/Kconfig     |  13 ++
+ kernel/trace/rv/monitors/dovetail/dovetail.c  |  41 +++++
+ kernel/trace/rv/monitors/dovetail/dovetail.h  |   3 +
+ kernel/trace/rv/monitors/offstage/Kconfig     |  15 ++
+ kernel/trace/rv/monitors/offstage/offstage.c  | 114 ++++++++++++++
+ kernel/trace/rv/monitors/offstage/offstage.h  |  61 ++++++++
+ .../rv/monitors/offstage/offstage_trace.h     |  15 ++
+ kernel/trace/rv/monitors/oob_signal/Kconfig   |  16 ++
+ .../trace/rv/monitors/oob_signal/oob_signal.c | 114 ++++++++++++++
+ .../trace/rv/monitors/oob_signal/oob_signal.h |  74 +++++++++
+ .../rv/monitors/oob_signal/oob_signal_trace.h |  15 ++
+ kernel/trace/rv/monitors/oob_trap/Kconfig     |  14 ++
+ kernel/trace/rv/monitors/oob_trap/oob_trap.c  | 144 ++++++++++++++++++
+ kernel/trace/rv/monitors/oob_trap/oob_trap.h  |  61 ++++++++
+ .../rv/monitors/oob_trap/oob_trap_trace.h     |  19 +++
+ kernel/trace/rv/rv_trace.h                    |   3 +
+ tools/verification/models/offstage.dot        |  14 ++
+ tools/verification/models/oob_signal.dot      |  23 +++
+ tools/verification/models/oob_trap.dot        |  14 ++
+ 29 files changed, 1006 insertions(+), 8 deletions(-)
+ create mode 100644 Documentation/trace/rv/monitor_dovetail.rst
+ create mode 100644 include/trace/events/dovetail.h
+ create mode 100644 kernel/trace/rv/monitors/dovetail/Kconfig
+ create mode 100644 kernel/trace/rv/monitors/dovetail/dovetail.c
+ create mode 100644 kernel/trace/rv/monitors/dovetail/dovetail.h
+ create mode 100644 kernel/trace/rv/monitors/offstage/Kconfig
+ create mode 100644 kernel/trace/rv/monitors/offstage/offstage.c
+ create mode 100644 kernel/trace/rv/monitors/offstage/offstage.h
+ create mode 100644 kernel/trace/rv/monitors/offstage/offstage_trace.h
+ create mode 100644 kernel/trace/rv/monitors/oob_signal/Kconfig
+ create mode 100644 kernel/trace/rv/monitors/oob_signal/oob_signal.c
+ create mode 100644 kernel/trace/rv/monitors/oob_signal/oob_signal.h
+ create mode 100644 kernel/trace/rv/monitors/oob_signal/oob_signal_trace.h
+ create mode 100644 kernel/trace/rv/monitors/oob_trap/Kconfig
+ create mode 100644 kernel/trace/rv/monitors/oob_trap/oob_trap.c
+ create mode 100644 kernel/trace/rv/monitors/oob_trap/oob_trap.h
+ create mode 100644 kernel/trace/rv/monitors/oob_trap/oob_trap_trace.h
+ create mode 100644 tools/verification/models/offstage.dot
+ create mode 100644 tools/verification/models/oob_signal.dot
+ create mode 100644 tools/verification/models/oob_trap.dot
 
 
-diff --git a/arch/riscv/mm/fault.c b/arch/riscv/mm/fault.c
-index 04ed6f8acae4..483537214567 100644
---- a/arch/riscv/mm/fault.c
-+++ b/arch/riscv/mm/fault.c
-@@ -79,6 +79,7 @@ static void show_pte(unsigned long addr)
-  static void die_kernel_fault(const char *msg, unsigned long addr,
-  		struct pt_regs *regs)
-  {
-+	irq_pipeline_oops();
-  	bust_spinlocks(1);
+base-commit: a3ad77d7ba3eac8a73f64026272747c01dd84fc6
+-- 
+2.53.0
 
-  	pr_alert("Unable to handle kernel %s at virtual address " REG_FMT 
-"\n", msg,
-@@ -111,6 +112,9 @@ static inline void no_context(struct pt_regs *regs, 
-unsigned long addr)
-  		msg = "paging request";
-  	}
-
-+	/* Dovetail: switch in-band for the oops. */
-+	oob_trap_notify(regs->cause, regs);
-+
-  	die_kernel_fault(msg, addr, regs);
-  }
-
-@@ -275,7 +279,7 @@ static inline bool access_error(unsigned long cause, 
-struct vm_area_struct *vma)
-   * This routine handles page faults.  It determines the address and the
-   * problem, and then passes it off to one of the appropriate routines.
-   */
--void handle_page_fault(struct pt_regs *regs)
-+void handle_page_fault(struct pt_regs *regs, irqentry_state_t state)
-  {
-  	struct task_struct *tsk;
-  	struct vm_area_struct *vma;
-@@ -314,9 +318,31 @@ void handle_page_fault(struct pt_regs *regs)
-  		return;
-  	}
-
-+#ifdef CONFIG_IRQ_PIPELINE
-+	/* Kernel addresses and hard irqs off code can only be fixed up. */
-+	if (!user_mode(regs) &&
-+	    (addr >= TASK_SIZE || regs_irqs_disabled(regs))) {
-+		tsk->thread.bad_cause = cause;
-+		no_context(regs, addr);
-+		return;
-+	}
-+
-+	/* Enable interrupts if they were enabled in the parent context. */
-+	if (!regs_irqs_disabled(regs)) {
-+		hard_local_irq_enable();
-+		if (state.stage_info == IRQENTRY_INBAND_UNSTALLED)
-+			local_irq_enable();
-+	}
-+
-+	/* Unless it switches us in-band, the core handles the fault. */
-+	oob_trap_notify(cause, regs);
-+	if (!running_inband())
-+		goto out;
-+#else
-  	/* Enable interrupts if they were enabled in the parent context. */
-  	if (!regs_irqs_disabled(regs))
-  		local_irq_enable();
-+#endif
-
-  	/*
-  	 * If we're in an interrupt, have no user context, or are running
-@@ -325,7 +351,7 @@ void handle_page_fault(struct pt_regs *regs)
-  	if (unlikely(faulthandler_disabled() || !mm)) {
-  		tsk->thread.bad_cause = cause;
-  		no_context(regs, addr);
--		return;
-+		goto out;
-  	}
-
-  	if (user_mode(regs))
-@@ -333,7 +359,7 @@ void handle_page_fault(struct pt_regs *regs)
-
-  	if (!user_mode(regs) && addr < TASK_SIZE && unlikely(!(regs->status & 
-SR_SUM))) {
-  		if (fixup_exception(regs))
--			return;
-+			goto out;
-
-  		die_kernel_fault("access to user memory without uaccess routines", 
-addr, regs);
-  	}
-@@ -356,7 +382,7 @@ void handle_page_fault(struct pt_regs *regs)
-  		count_vm_vma_lock_event(VMA_LOCK_SUCCESS);
-  		tsk->thread.bad_cause = cause;
-  		bad_area_nosemaphore(regs, SEGV_ACCERR, addr);
--		return;
-+		goto out;
-  	}
-
-  	fault = handle_mm_fault(vma, addr, flags | FAULT_FLAG_VMA_LOCK, regs);
-@@ -374,7 +400,7 @@ void handle_page_fault(struct pt_regs *regs)
-  	if (fault_signal_pending(fault, regs)) {
-  		if (!user_mode(regs))
-  			no_context(regs, addr);
--		return;
-+		goto out;
-  	}
-  lock_mmap:
-
-@@ -383,7 +409,7 @@ void handle_page_fault(struct pt_regs *regs)
-  	if (unlikely(!vma)) {
-  		tsk->thread.bad_cause = cause;
-  		bad_area_nosemaphore(regs, code, addr);
--		return;
-+		goto out;
-  	}
-
-  	/*
-@@ -395,7 +421,7 @@ void handle_page_fault(struct pt_regs *regs)
-  	if (unlikely(access_error(cause, vma))) {
-  		tsk->thread.bad_cause = cause;
-  		bad_area(regs, mm, code, addr);
--		return;
-+		goto out;
-  	}
-
-  	/*
-@@ -413,12 +439,12 @@ void handle_page_fault(struct pt_regs *regs)
-  	if (fault_signal_pending(fault, regs)) {
-  		if (!user_mode(regs))
-  			no_context(regs, addr);
--		return;
-+		goto out;
-  	}
-
-  	/* The fault is fully completed (including releasing mmap lock) */
-  	if (fault & VM_FAULT_COMPLETED)
--		return;
-+		goto out;
-
-  	if (unlikely(fault & VM_FAULT_RETRY)) {
-  		flags |= FAULT_FLAG_TRIED;
-@@ -437,7 +463,8 @@ void handle_page_fault(struct pt_regs *regs)
-  	if (unlikely(fault & VM_FAULT_ERROR)) {
-  		tsk->thread.bad_cause = cause;
-  		mm_fault_error(regs, addr, fault);
--		return;
-+		goto out;
-  	}
--	return;
-+out:
-+	oob_trap_unwind(cause, regs);
-  }
