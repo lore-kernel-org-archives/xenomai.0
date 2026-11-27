@@ -1,13 +1,13 @@
 Authentication-Results: smtp.subspace.kernel.org; arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.65.66
 ARC-Seal: i=2; d=subspace.kernel.org; s=arc20261015; a=rsa-sha256; cv=pass;
-	t=1795787235;
-	b=OWNveZKxenQi8apiR3GM+y7tmoWJGAIj36InQsoMBl6yaNQRWTa2W3/i2Jl8CPmv3eFD
-	 itchs310aQ6KfBGXTdeXudWXJaIUK2X+ptJeP4w5mDq9YEHlwTrd33vi6Fc3HAT+NoR0o
-	 w13ps1N58xpJcIGXxne8ZNyRV0taeKFR/G4m2EPPlGDPuTU24rX7FjXTGHmBFwHaLWete
-	 i+QaWuZXxS//d3bSBMeyxQ3REz2feXrCQBIRZxB5ErrRp2djIdBTBG4dklEMQ8hiUSNJh
-	 Yd4Y5EU3f6XA1p3a/bxn68Cjb9HNSr7HOnvXHJ532FAJzzRHwTadJKpTeRzsNIkGmFA==
+	t=1795787236;
+	b=3nGn7TXUTTDnPmAhWxYE6lSwoJHsIsmh1yrUOt3fuBIGukrOysQe5LgexiLJFyA5Topn
+	 dqbN7Sl5L7f5Fmm27gXmPKthBeg/J0gzN4ZlWwNRWYcc5FEJvTV6i4GgPdd7tc8bz6SIm
+	 FD2+MvBTEsAULM9wJhgrRz8oU8/6P+dPf/o0F+oWCHEAFctHzoQI/GNVAwGTF1xDsZrmN
+	 BZ7wZkogHkykuKv9sHkrgAnZojxbRmIhI2o7A0DT3lel54zfLlFJD2wMA8PIE9Xo1lNT3
+	 hj2g8dcZ+Tg3ifraFa7x3iQ9MUkBfMt+gbAYLCGOeTr9piqWrJzd0E3qs8ho4F87GLQ==
 ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
-	a=rsa-sha256; c=relaxed/relaxed; t=1795787235;
+	a=rsa-sha256; c=relaxed/relaxed; t=1795787236;
 	h=DMARC-Filter:DKIM-Signature:Received:Received:From:To:Cc:Subject:
 	 Date:Message-ID:X-Mailer:In-Reply-To:References:
 	 Content-Transfer-Encoding:Content-Type:X-ClientProxiedBy:MIME-Version:
@@ -26,43 +26,43 @@ ARC-Message-Signature: i=2; d=subspace.kernel.org; s=arc20261015;
 	 X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
 	 X-MS-Exchange-CrossTenant-UserPrincipalName:
 	 X-MS-Exchange-Transport-CrossTenantHeadersStamped;
-	bh=0x5nwG2+mRQJQz/GXZTNbP0CxNFnF+V2VcBzNx3Akwk=;
-	b=GojgZ6JHgb22rIMRYZq3qYQbviXcbwfGz+jng6fVxIcCwOBbYATWNy2LCwXR1wzRxy18
-	 a5uHu6sMehyD17r7+S9cpx3gx9Qixa58msCEbrIPk4KcjpFTmP/it+5KN2jCb+s6/boi7
-	 pWxncJIlY5ugPcDGo25hqVmQKI+iMYRO1y9csxLEkL1IVCcgJvsZd0V+fJUJ6M0VX3k5i
-	 I7mD3Pj4U/AI8NLOvD9Ea5pB0cEkGEEycUKL9wetZ1FxQdgwKqCaIMmUiAmRXImwKjl3z
-	 Slqiol7Y6/nOiFd943MsgHDh5WHgruk+hFQcTo8eHdmOOlNHs8BKUM61MF65K05h67w==
+	bh=d6P/AYj8t3H8oFKLfVw8MqrAoe0eMYom4pmxD4QZ0v8=;
+	b=fKoiE3H0Va01jjcpiGAGG3kHySMS1KUruO8whGqHXwqtZfWf00xx1Chf3uhsOGKnPTCu
+	 4tIUF8lW8as9SgV44eBtmbRT/hKop9hSwj39tgtV9X3lv2QurIclp3pwETfE4c9H9dsya
+	 YA1ifhgzLSR2UdiqTE1hGM9ScpT3GNg76PLUyyS7bt9BNM8mgWrrVBYvSjdIdeCjM5xxU
+	 HKnqDy0uIB7DLj6MQIvOR2V4dtbxRU2BOyiYYeW0R1qk4+tclQNufGfFTYIeC4jE8OlbX
+	 QtaaCBQLUItoplYZt7sdM/0v3i2xbI4VPnle9kxGKmsbX51HTfxucVQIHWMc5Sb6oow==
 ARC-Authentication-Results: i=2; smtp.subspace.kernel.org; 
 	dmarc=pass header.from=siemens.com;
 	spf=pass smtp.mailfrom=siemens.com;
-	dkim=pass header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=ngZT6Lwt;
+	dkim=pass header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b="KR/Do0HO";
 	arc=pass header.oldest-pass=0 smtp.remote-ip=52.101.65.66
 Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11011066.outbound.protection.outlook.com [52.101.65.66])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange ECDHE (secp384r1) server-signature ECDSA (prime256v1) server-digest SHA256)
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60C15606A324
-	for <xenomai@lists.linux.dev>; Fri, 27 Nov 2026 13:47:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 60C15606A324
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C8F3606A327
+	for <xenomai@lists.linux.dev>; Fri, 27 Nov 2026 13:47:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.2 smtp.subspace.kernel.org 2C8F3606A327
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=siemens.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=siemens.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=ngZT6Lwt
+	dkim=pass (2048-bit key, unprotected) header.d=siemens.com header.i=@siemens.com header.a=rsa-sha256 header.s=selector2 header.b=KR/Do0HO
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Lrurq0qOBvPRq27cQA8EALA806MTDDoh76zrteOi8OhJjYPm3ACpsk/KkEjzsk7jKWEKVhYMPoDN143Vn2dEVldHORb253s21PqI//L1DsH6BjWEES6i7PBOUw2p9Ex9C/xSW/hZsDBcSQqgnIpAU9GdJMljy+1dajV+sDPksLshFEq0m6WkoQSShHPmSbYmgCUKDEHriFBonFTlBW863QNn6EtEV751pwQSCrLHKRPkMaQUuQG74fzOlD3H0n6qy5qAw0gWxISCwfwqtVoNqdxiadQf+L3rqmjX9plOQijS2RI3Yjk5OxQvSniwCt7glyOkRfwCwVestNPiIoYAcQ==
+ b=BmMyfhSZoAwc9aCG4w1wXYAtEcVKk9oA4A93uTmPTU5/xjP6qVc9l+sIjg530M/QoN+hYYVphWLjL2cPZbfv6SoFixFpq/Kjwqpv35Jw0mmgsDDXfAnbuSa0W524yLwiVirhfYV0/Fy6ycM6HR8jaMH74huAAXXsy0P5aq0AAqTx/jtRk7IaTd/h/zebWDLOx+kC8Ev1tgUptQ5WC02sCO27hKJmw/32N1gVMrwaAyAcIdSADOL/+wZtqPGoFEeDiuksfbUR/o/+8ETFUjhJSUe427uS9LLTXfdmrNb1fLybppT1FKJYD8pdqnfcyczIq5une5d2uAseAovgOwtziA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=0x5nwG2+mRQJQz/GXZTNbP0CxNFnF+V2VcBzNx3Akwk=;
- b=BvR+x4ZhvQNAUoZ15hT8DZqcljWnsWiYAcFGLeMN08d7xH53nCkt3cHnHCMdTXjRTJrpf1yvfmJGb0p6FtcxP/eX+Or58ieHxOL/Ww9bs4Kbr3hu+O96W9JnJgoadRL7HSx/kOoeA8j5jooj06iPv8GShPdlDMjWxtGuK9CIhwXgwnLba9atpc5py//c0I6JSwJ3/YVu0OduAW192Z+XRj8fCL4LGTXfm46RCvp/HtGMpyCnAfy324k8sFMeMadORJ4G9YB8pClK6b+mo9ldJPupLIU2zFgO0vvzM+nR/K6pHKiNzfEZqu8VazoLxrsKR3XkHdjbYJqzwz3owq+7qQ==
+ bh=d6P/AYj8t3H8oFKLfVw8MqrAoe0eMYom4pmxD4QZ0v8=;
+ b=dqkU+Y2eaZrnoLleMdeVXvf0E3Ow/WcRoFR60MATdtzuPekIzhyEyWgQtRW3N54R7Ms1rmu/YpoeEyV1+J4Nf7jBH/Z1xCOISujmm24HS+xKEICJ00oGXgl6LSdLjkw27YX03sDk3sYfHdzOyfuMUNIeLvZuWIPegthmNqnquaDfs8Prk7gD2mGCSqUYvzVBJvH+qm4gHZBBcDfh3kPzZhdjh0UxlnTmCK1OnzZDKBfCxeLKdSKMgwhMkcpestAUQ4ZWxyFpMjj+O5X6yIiWykH8r3jxvf3yBBgJ7F2vHFtD7yaV9l3VCbSlIR1J8DwMnm+cZrL01GrF4cXmU+dDIw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=siemens.com; dmarc=pass action=none header.from=siemens.com;
  dkim=pass header.d=siemens.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=siemens.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0x5nwG2+mRQJQz/GXZTNbP0CxNFnF+V2VcBzNx3Akwk=;
- b=ngZT6LwtSK1WwFX4lgBEDXkvea7QU62glMK2ePypvlL7GytXe2mB2XVZKcZuy8ttJa3zsnyzD+T+xBQ7aprX9Zd9vSwZJz/vc4e3eyCszpqtf078NGJgqVC8SycBMVPHOh0QPXBJGQbot5ZuSCUFQ2Rxcc7ns+9XH5dOXOJOq+/2VXzoTtKrY9r9Sb+sSpUM613eOxwtHJh7Dw7phZFu3jjIZERFAbeKfaGyVhur7ryXG0XMr2bWLBkxBbPF2o13eQHPAqABsVd7zQWA1Tv7dR+S6D+PqZJdoWO/OIkWw+fG6Pz3B5ieThnjglDaCEtWlvrC6Jcnyna2tvydHmKaJQ==
+ bh=d6P/AYj8t3H8oFKLfVw8MqrAoe0eMYom4pmxD4QZ0v8=;
+ b=KR/Do0HOx69LzTUC5B+Sk4QxA7XtkpIt3Ohk2/ednAbHF5u+ybWi4xY+lTWgpdHMlpbwLiPDtcgGxdnOZC18c1iZJCSu6spCf7WbRpGVCDX8Ezc5cSqigyTHf6Dzy33+fU2aFj+stxP9s1esoIVShToOmO8LrK+uhgbF3cfCS1YSZTH93SnkS4jTFDTbdoM/sEjPrt+e13tq7HPwCWaeyGAhS8+UonapZE+/6mg2DijkiiqiNa2fFY6AYXCEZ9M7anUSRQY1umKvrcFxUVDok3HBIGVyWNjzCp2mUID7cHZgEmmy3bSWPD7bOPPOzTj2Hn/w30XBNhPTAZe6d1PVDg==
 Authentication-Results: mx.microsoft.com 1; dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=siemens.com;
 Received: from AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:3dd::5)
@@ -79,9 +79,9 @@ To: xenomai@lists.linux.dev
 Cc: rpm@xenomai.org,
 	jan.kiszka@siemens.com,
 	Tobias Schaffner <tobias.schaffner@siemens.com>
-Subject: [RFC PATCH dovetail v2 6/7] dovetail: trace signal notifications and out-of-band returns
-Date: Fri, 27 Nov 2026 14:47:24 +0100
-Message-ID: <c3260d300cf40effc9ad20c328186e4a452110ff.1795786695.git.tobias.schaffner@siemens.com>
+Subject: [RFC PATCH dovetail v2 7/7] rv: add oob_signal monitor
+Date: Fri, 27 Nov 2026 14:47:25 +0100
+Message-ID: <119488604b5ca8f726b485d18939279f3ca53006.1795786695.git.tobias.schaffner@siemens.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <cover.1795786695.git.tobias.schaffner@siemens.com>
 References: <cover.1795786695.git.tobias.schaffner@siemens.com>
@@ -101,137 +101,459 @@ Precedence: list
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AM9PR10MB4992:EE_|PA3PR10MB9260:EE_
-X-MS-Office365-Filtering-Correlation-Id: b146d796-1f52-4b92-4789-08df4c8ceea7
+X-MS-Office365-Filtering-Correlation-Id: 34d028bb-21ee-47b7-fe75-08df4c8ceee5
 X-MS-Exchange-AtpMessageProperties: SA
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|23010399003|10070799003|376014|1800799024|366016|22082099003|55112099003|18002099003|261021123027099003|56012099006|261021121427099003|261022105027099003|11063799006|261026121527099003|261028144727099003|261026140227099003|261009223027099003|10067099003|261102123227099003;
+	BCL:0;ARA:13230040|23010399003|10070799003|376014|1800799024|366016|22082099003|6133799003|55112099003|18002099003|261021123027099003|56012099006|261021121427099003|261022105027099003|11063799006|261026121527099003|261028144727099003|261022075727099003|261026140227099003|261009223027099003|10067099003|261102123227099003;
 X-Microsoft-Antispam-Message-Info:
-	kqH8qZsRzkNTkd++0DMQbw34OvRKLoJbZa6adT+JhXO4WxxlvGBI2PnFvcTNi2ko9laWTa9D+q5pIt57Kjlj0CWprEjOM4Z6iU3hfdWgLDFAeNBIEYA/4a2JORPVvlHWfRgWEr7F7wjWo0Ikl6CJxY1u+WcmX42xFPUo3nmLD8LZP2yXKBFulg+JuuwnyAeIfvZey7ct+AcUTJhiw5eqLkDUaLt0ews3mEc7lggLsQim9975haiwmgBpoPTAQp0liauQkTX+954vb48ZhZ4e7XCXBDset9RGcINwW1LiMm+JywpE/21dehDgQ4ZsrmuIT0UuBZJ1ia8EiFPu29pZh0KoEjulv3/JeBCGMrpKSr5IV+5NVEJdg72uUppSr8A0RQv6hIGlYfOj+bgTXPudGff5XTtsdo0StjTzYnGOy4U0FHNEpkAvW4Y/ejT+DqCo4E5ccejWzhB/nlZlS/HdmyKY3oqdnPZeW/8t14J9+nMS0YJLo5FxyhO3luLw+HeXI40yLOl6SOpBmDoCJ/uMDO1zK+Wc+8gREonzoc22fZN8S6ZlIwvkoeo8rQbW3OBNYDDiRA7jesYm5A7+EF5gjCKoytBnFzSC/8kQPhEbD0mpNpPhIgaskpSuNXn0uHD/VgHLN5RduWQ0EwvUoQEwAp/dDGRI0GF8y2RkgyRsfcY=
+	zuIO2/RnvW6H16FvEJR/WPLo6gn18Hq9xVoMCk3U/PzZF7Wkuv33wkmlNGUKC+h8FOTetnRqDzy5yvVoEcXgQvr3gceTG/eD1ycgoo1zkdCywRUJFJJe648uaJ3L4Cgwa7LByXnh0dw3my3aR3zLBbTH6ZbNeifq4mybTzZzxwF65j2o/HkwC9eRLIpuO1UTtu9UEjzuxZ4lC2C0Ck/xY9LkSpdatPQf7F+eqfWPMR3OtiNLKRkb4YZNBlOD7CQSA8yz/3Sr91nXGB8Af+zjrIiLnzj+JNnpHLTlc1a9SxOCFtIyuzC09g2Ji5frQ1yGrgcncT3NBvLCn2VINMozOWOx8K19sW9jJpovGs2b/hYyqcLKfPE87BpFKy0Xoty8Y4LoTyZ5XzVWEHvM+opZx2Ye2dxFrq6Q+9vabK06gu7uxsV69ByNyT07wuxEkuHnZqZj1MXcJSN2JodW/rjeBeRRzoTtC4S0dLTGpOTyYFJXkJxYc9Lq9j1vAFWTakhjfyGjRaHd+i+rk3nqW+9+0MN606r6qROSeHdJrt7jit76CjwZWbk8eVb3sORzTUseeJx/EYCTTeyI/bPuDdpMnfkJJ7hjrw5IDKvDtRGBDDcmHMHVirrmapxMfzyO79p64bDBVLAqSVExoVcKzQYNroHdSQqN2wrHVQ7KtFv/9rs=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(10070799003)(376014)(1800799024)(366016)(22082099003)(55112099003)(18002099003)(261021123027099003)(56012099006)(261021121427099003)(261022105027099003)(11063799006)(261026121527099003)(261028144727099003)(261026140227099003)(261009223027099003)(10067099003)(261102123227099003);DIR:OUT;SFP:1101;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(23010399003)(10070799003)(376014)(1800799024)(366016)(22082099003)(6133799003)(55112099003)(18002099003)(261021123027099003)(56012099006)(261021121427099003)(261022105027099003)(11063799006)(261026121527099003)(261028144727099003)(261022075727099003)(261026140227099003)(261009223027099003)(10067099003)(261102123227099003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?GzNntbZ7vEjKW1m5XAXcklISXDPtZ3dqpD5ruD3YDWuNqChKfo7+2H6Eo3IL?=
- =?us-ascii?Q?hMbuKUvVVgRb1s0RBq7hPzTiQljCoyuxD0ijijkWLreJ9cKy9fZJPwt4o0US?=
- =?us-ascii?Q?eIRN5g7wuWTj9W4YQiWSaksdd9zkEHKvxY5Vtee08eFF1lsKodRanyHIZlS/?=
- =?us-ascii?Q?xns98MD8JeNoinRb9FJbM9Vx6Otm09xowXKKfM2xerUlXQ7+EASshIksCCxr?=
- =?us-ascii?Q?jzeYbDEaLwhAJP4JIBtGl9aRLdo3V+N7R1rnR8uhjr12RJMXnQ8OuLzVSIZq?=
- =?us-ascii?Q?wv9DzARH5h+YeFaVP6cssVWWqEwTqgakJWC3JydkX2N29nIWBb3PrLahDTrA?=
- =?us-ascii?Q?8VXVD+JsKypGUDlRseguBidQr5nngpvLuECek/ajw1f5I9HXlv+K5ixSeNzP?=
- =?us-ascii?Q?hlBZQWodlhl6g6etMBPtUzhgIeoYUjzIyfLV3Gar5TZ0HRg658FW2B77VxJ3?=
- =?us-ascii?Q?nQAC0aNvPtAQ42cjscNOARuyiMJJGtOBcDi+AWZpeyqHcQiuAgqaLqcTcE6z?=
- =?us-ascii?Q?jg5ejTmWVgoBn7eDVBL07l76iC+EXLsJz68DiPMW7kF16gggZwzh5tKE+Q9N?=
- =?us-ascii?Q?IQjkZvBswn3FCVkOr0wNgmcUFjrouArvq5AqQp9YIqdRcPxVCsRmqeM6n36j?=
- =?us-ascii?Q?la4DAArx61sqk+LtkMYdoe49+a9jfWdQAqDAvZUGq2CPDTtdRfin7dQ6I9NQ?=
- =?us-ascii?Q?7EHGwxxOVuuY5KYcWOtk82WmXZ/g1GbmgNe+QBPhZ/GWAO/OMH5nn+MahZY1?=
- =?us-ascii?Q?q+FuNG6nSX9p8klGJjKRyxehy+PcVv3YjlPsTcoW9Zo5BneDEeuPpzhebINX?=
- =?us-ascii?Q?x9pbWnJMz4L/BzMUKT/ac/svCKGW+E/tpQt+JPHonnS9uy16lecexbIwSofH?=
- =?us-ascii?Q?vXa93TIgR9tvLAKGUFB/SGgRWMdfrSu3bGT3IUT8HfchH1kALwOfq88HjiFT?=
- =?us-ascii?Q?pMa+fE8uNMnvpNzyZjnnYdhAY3q1oCLiDaur5ABHbBjiEC4mg66D59SkOdLM?=
- =?us-ascii?Q?0b2/W/DXSS9A7u0CB/7U13aEnoc8HQGYkv9S6vU1SerYYQ+En/qYIp3xOYqu?=
- =?us-ascii?Q?Z/oB6uUdK1rTbLl2Htd5zTXC3+yTyohA8Nod0Pn/meNP9rz1J5vJJBOYu1sv?=
- =?us-ascii?Q?R/ztrSrjD3BkYLyx3fclvFAfiHOrc1mIicCTWaokCoxI9c8rZzLHE1MH/Owa?=
- =?us-ascii?Q?ozp7tWd4aRlaYNJRDab49ktYF+ofCxhOyqG34aKuGO1emxlo089heRIakcLY?=
- =?us-ascii?Q?w36KxTIwymcM1o3I2bH1nP8Z8b2poerxC7RclkBPomR0DMJ6y6yLfK5j2l3q?=
- =?us-ascii?Q?+4yuMMpvTwyXK6so5STMFcYqU6xZlNRwGzYhvt4Vj9gfl7lcVe17u6AOlE6G?=
- =?us-ascii?Q?B7bn1TR7UZgTn8rMMFiM4w7K7nxL35vaTjAULF1yQ3t1HbP0BmDBpzCuc5WY?=
- =?us-ascii?Q?d27MDSblFiGFX6NQHIcX+dk+CBmKpmWoHoy+Szf2rpeyKB0GUHo0psvoq6xm?=
- =?us-ascii?Q?j661bJV9p6kQza8MaXHG3jzwZLbyXp8YFNterzOT4yYfMv9Lf+YpKLjJ2ILp?=
- =?us-ascii?Q?QFYfOEgYg6tGYRZdgvPXS9sJTK5ujlmH5t/dJThNi+k0pG0Uv6aVghTg8gx2?=
- =?us-ascii?Q?hAwpSITSPrN+6trWzY3uiFD10qgslF9TikW02PotlZyKHjC1eObv5DzE/EfY?=
- =?us-ascii?Q?7Jy9qFqVdGlTqAmCC9T4TosZhqhb2ubyL5XSToR0Qv2Dft+lZNflOjWyLeDr?=
- =?us-ascii?Q?W88bERgMhEO/x/HVlbpNIM0DvHW7Uau5Zv6XplAcePtY8WREmufW/zeJOYZF?=
-X-MS-Exchange-AntiSpam-MessageData-1: 3W7ugmaEm9cO6VPreik7K0YqXCBEEXzT3Qg=
+	=?us-ascii?Q?zCn/EEBaQ7roZ5KWzAiVDvBxfDNulX9+miUd90/k/NDvfFj4xAy1iJ2fGKEt?=
+ =?us-ascii?Q?ZowS4XhwSxAuv7Fpk4lVgail4bHuoKtAIpk5p1+7jhOmklfyUdKlLzI75AmX?=
+ =?us-ascii?Q?22HHHjy20mpNEfpcL68Ww6+vDaf2gZ04+muQA3nXcH5mt7g2C6q7vIRHwn0y?=
+ =?us-ascii?Q?pRO4HmbznDKP+qW/RDDWgd7IlmfN2rrW97ZOGnpra2fsZ3EljrhfW54fHps/?=
+ =?us-ascii?Q?IMzayNwIb3Zqb+JMzYNk/R+W1zuqZSePX3HqqV7/znvbvkPSe2hnL09EiiAy?=
+ =?us-ascii?Q?OB/x++4J8sT22G7mJlGWwMK+75UDGSH9a4fuylph8294DQ7vD4sRuIUUuMsW?=
+ =?us-ascii?Q?OBSXDWcyuSM4uRK8neCCHt6y8A95lAZBwZhAWkSdtxcC9ZYafTl83GrCW5k+?=
+ =?us-ascii?Q?iGF85Y6BuVivdNobOKUcMc2mEQAkZLb2On8zqCoFKixGu6w/ndYJVdn4YaEk?=
+ =?us-ascii?Q?pMYq1vfqwKrSHT0H88cFuI5uihmabNyROGvmkiK4+u9MYzDhe7FEAPylfPkj?=
+ =?us-ascii?Q?HqztIi0xo/ki8mqffLFEyHgKYzcNLfI2R54xG92efrf3Ai5K4wowY5tCdJ1T?=
+ =?us-ascii?Q?SWwwbQClJW2XKQZ0YDmvI3czIKeZZp/n3D14xWRm6mOsf0Cn+De70/CisWuY?=
+ =?us-ascii?Q?o64MtAqOPYPLhxQSI+0kI/CFS8Vrhd6deq0uHp/L3af+foc5ya2Cg/VMwIft?=
+ =?us-ascii?Q?S/EST12BsyoQybSrquqdEiZ1LMQZyRx+x1Ztrlc5khyxQAKAnmAh0ZQ7zI0/?=
+ =?us-ascii?Q?foniMjUSiAJ5xoMHe2mVtSeve+t/rqScMjr23wsf4DnrBH7Yzpmeh6yJkoHa?=
+ =?us-ascii?Q?o6XJ0D365RPGXzjrC59+Adw7WqusbHItD79xbJL1YCRUcNv8eqIHJ7iqW7ib?=
+ =?us-ascii?Q?4Jismxh6oc1hWujBR8QJn3FI7neKZkOwju5NM71CDn7ZAmEyE9PtsDXez6Fg?=
+ =?us-ascii?Q?rMZHCYLk1VQDoaAKL3FCZ8MfAOVyfu/yiqiI+NjE5FfArr6g9OJOkKLXgGfv?=
+ =?us-ascii?Q?NuV4/uUlKS7KdoR1I4ugo9mmMu2rzxAC8NS+7BFGEPQsnC0pbYYdYUJJf2v3?=
+ =?us-ascii?Q?7/wfFyoWDcXGfqXKtVFFsgNEcnRZrwzEhySfC9EVNABPMeGJgEI6nPKLD+US?=
+ =?us-ascii?Q?xAgFscnaRrKsEmR9mCVyd7YhIDV2xqcj7V5TipSd1FEsQFTF7c9bGsWxZbIg?=
+ =?us-ascii?Q?MyUGOaJJi7s9FTB5H6wkAlsR1+m4RiFDdz8tTnU6NGdPM3kWQZ+6a9siA62Q?=
+ =?us-ascii?Q?iqeMsNtz3K4XsQ1coXa+B8QFa2VoRSyuFXUlgr21g2UJIT14J0soZ9qwPpP4?=
+ =?us-ascii?Q?0xYQvXAczwbZDFltXLHZ2knkadXbSFTX31uU3Kh83zPyihRf8Rsj5WftI+Ks?=
+ =?us-ascii?Q?5vUt6oH/nnZTs75yhzXzAxNoL+eFcsyIDbE2ylaPha+d8a9Kwz0Q+SraWrBC?=
+ =?us-ascii?Q?NtsWHfbr+O6F7Ucj9cRINhwtKNXgugElJAqgPPEkujNXoIvjlK9MzknbIU4u?=
+ =?us-ascii?Q?ZQhd4K1QrE43q5TU7U1hLOvWBY00rZPNmScufprehTH5yMvSDkVAMVPwEFZ/?=
+ =?us-ascii?Q?rFcm6EaAP8XFzuY+pzLgjLc60gZ488qMAzYa+pL3vbU1aoBAtG29H9dQLW0j?=
+ =?us-ascii?Q?mC1bmVuXZCIdCPTZRqPbqDq/3gxnW3/yD1jZkxTH4ZF3R7E2BjkPrcv/0ZqK?=
+ =?us-ascii?Q?3zJp9fLCACsSm46dilDdv3lhBrdGjESRtIT482yw673w5iA0b7gdrKJFBBMB?=
+ =?us-ascii?Q?FowRB2Vtq8m9cYrgpsZZLbhkhfaGOHVRtLsPerCeHFG5XjG2mnuRpgrJI/ct?=
+X-MS-Exchange-AntiSpam-MessageData-1: 8jJvZvTE8eF6EL0S8fenm1s5wDRuYe8X0CA=
 X-OriginatorOrg: siemens.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b146d796-1f52-4b92-4789-08df4c8ceea7
+X-MS-Exchange-CrossTenant-Network-Message-Id: 34d028bb-21ee-47b7-fe75-08df4c8ceee5
 X-MS-Exchange-CrossTenant-AuthSource: AM9PR10MB4992.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2026 13:47:09.4438
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Nov 2026 13:47:09.8566
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 38ae3bcd-9579-4fd4-adda-b42e1495d55a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RfXxtPDhU+vMgwtBYApDR7E3d1pbYXoizSyW3pCu2Hb2UTKyGf+ih242HnvKq/o55pCatsUFNc1c7nfjpkXzBBkX62jGjXgKBYtWEcSa8uc=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1kUKQQSsixKrT2uJqfJ1BoWEM9/0DY2dxfsnmF66gCsBYN2Xe/JO0A89h+rzniCK0qb+EjomxuQDnSinZZ46coOIRDV2MipINqPk8derAs0=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA3PR10MB9260
 
-Add a tracepoint for the signal notification to the companion core, fired
-once the core handled it, and one in dovetail_oob_exit_to_user(), for use
-by the oob_signal RV monitor.
+Signals are delivered in-band only, so the companion core has to kick a
+task receiving a signal out-of-band, usually with a mayday.
+
+Add a monitor checking that such a task does not return to user mode
+out-of-band without a mayday pending.
 
 Signed-off-by: Tobias Schaffner <tobias.schaffner@siemens.com>
 ---
- include/linux/dovetail.h        | 8 +++++++-
- include/trace/events/dovetail.h | 8 ++++++++
- kernel/dovetail.c               | 6 ++++++
- 3 files changed, 21 insertions(+), 1 deletion(-)
+ Documentation/trace/rv/monitor_dovetail.rst   |  34 ++++++
+ kernel/trace/rv/Kconfig                       |   1 +
+ kernel/trace/rv/Makefile                      |   1 +
+ kernel/trace/rv/monitors/oob_signal/Kconfig   |  16 +++
+ .../trace/rv/monitors/oob_signal/oob_signal.c | 114 ++++++++++++++++++
+ .../trace/rv/monitors/oob_signal/oob_signal.h |  74 ++++++++++++
+ .../rv/monitors/oob_signal/oob_signal_trace.h |  15 +++
+ kernel/trace/rv/rv_trace.h                    |   1 +
+ tools/verification/models/oob_signal.dot      |  23 ++++
+ 9 files changed, 279 insertions(+)
+ create mode 100644 kernel/trace/rv/monitors/oob_signal/Kconfig
+ create mode 100644 kernel/trace/rv/monitors/oob_signal/oob_signal.c
+ create mode 100644 kernel/trace/rv/monitors/oob_signal/oob_signal.h
+ create mode 100644 kernel/trace/rv/monitors/oob_signal/oob_signal_trace.h
+ create mode 100644 tools/verification/models/oob_signal.dot
 
-diff --git a/include/linux/dovetail.h b/include/linux/dovetail.h
-index 3c079e5bf373..6e1333956a3c 100644
---- a/include/linux/dovetail.h
-+++ b/include/linux/dovetail.h
-@@ -85,10 +85,16 @@ void inband_event_notify(enum inband_event_type,
+diff --git a/Documentation/trace/rv/monitor_dovetail.rst b/Documentation/trace/rv/monitor_dovetail.rst
+index e660b5c9a1ea..de9f6f05db24 100644
+--- a/Documentation/trace/rv/monitor_dovetail.rst
++++ b/Documentation/trace/rv/monitor_dovetail.rst
+@@ -17,6 +17,10 @@ are per-task monitors fed by Dovetail and generic tracepoints only, meant for
+ validation: while enabled, they add work to out-of-band hot paths.
+ ``CONFIG_RV_DOVETAIL`` enables them with RV and the printk reactor.
  
- void inband_clock_was_set(void);
- 
-+DECLARE_TRACEPOINT(dovetail_signal_notify_tp);
-+void __trace_dovetail_signal_notify(struct task_struct *p);
++Each monitor takes one of ``CONFIG_RV_PER_TASK_MONITORS`` slots while
++enabled, so the container needs at least three, the default with
++``CONFIG_RV_DOVETAIL``.
 +
- static inline void inband_signal_notify(struct task_struct *p)
- {
--	if (test_ti_local_flags(task_thread_info(p), _TLF_DOVETAIL))
-+	if (test_ti_local_flags(task_thread_info(p), _TLF_DOVETAIL)) {
- 		inband_event_notify(INBAND_TASK_SIGNAL, p);
-+		if (tracepoint_enabled(dovetail_signal_notify_tp))
-+			__trace_dovetail_signal_notify(p);
-+	}
- }
+ The Dovetail tracepoints fire in the context given here, so their probes must
+ be safe there:
  
- static inline void inband_migration_notify(struct task_struct *p, int cpu)
-diff --git a/include/trace/events/dovetail.h b/include/trace/events/dovetail.h
-index 86d6405e84f5..6ac5a7fed420 100644
---- a/include/trace/events/dovetail.h
-+++ b/include/trace/events/dovetail.h
-@@ -26,6 +26,14 @@ DECLARE_TRACE(dovetail_trap_unwind,
- 	TP_PROTO(unsigned int trapnr, struct pt_regs *regs),
- 	TP_ARGS(trapnr, regs));
+@@ -29,6 +33,11 @@ dovetail_leave_inband_tp    oob     after a successful switch; oob stage
+ dovetail_leave_oob_tp       oob     before the switch to in-band, in the core
+ dovetail_trap_notify_tp     oob     hard IRQs off, before the core is notified
+ dovetail_trap_unwind_tp     either  hard IRQs off, before the core is notified
++dovetail_oob_return_tp      oob     on return to user mode from an interrupt
++                                    or an oob syscall; hard IRQs on at the oob
++                                    syscall return
++dovetail_signal_notify_tp   inband  after the core handled the notification,
++                                    siglock held
+ ==========================  ======  ============================================
  
-+DECLARE_TRACE(dovetail_oob_return,
-+	TP_PROTO(struct task_struct *p),
-+	TP_ARGS(p));
+ Monitor offstage
+@@ -73,6 +82,30 @@ out-of-band again. Traps taken in NMI context are ignored. The model uses no
+ clock, so the hybrid automaton core arms no timer and is safe on the
+ out-of-band stage.
+ 
++Monitor oob_signal
++++++++++++++++++++
 +
-+DECLARE_TRACE(dovetail_signal_notify,
-+	TP_PROTO(struct task_struct *p),
-+	TP_ARGS(p));
++Signals are delivered in-band, so the companion core has to kick a task
++signaled out-of-band, with a mayday if the task may return to user mode
++there. Once the core handled the notification, the task must not return to
++user mode out-of-band without a mayday pending. A task reaching the
++out-of-band stage with a signal pending is held to the same rule::
 +
- #endif /* _TRACE_DOVETAIL_H */
++    state     leave_   leave_  oob_    oob_return_  signal
++              inband   oob     return  mayday
++    inband    oob      -       -       -            inband
++    oob       -        inband  oob     oob          signaled
++    signaled  -        inband  -       signaled     signaled
++
++The monitor takes no lock. The core sets ``TIF_MAYDAY`` in its
++``INBAND_TASK_SIGNAL`` handler, before the notification moves the task to
++signaled, and a return reads ``TIF_MAYDAY`` only once it sees signaled. As the
++notifier holds ``siglock``, the task cannot consume the signal and come back
++out-of-band before the notification is seen. A return from a trap the core
++does not demote, or after a RETUSER switch, is not seen. The monitor is not
++available on 32-bit arm, whose out-of-band syscall fast path is not
++instrumented.
++
+ Usage
+ -----
  
- /* This part must be outside protection */
-diff --git a/kernel/dovetail.c b/kernel/dovetail.c
-index 0f7dae3beeda..93fd35828ca5 100644
---- a/kernel/dovetail.c
-+++ b/kernel/dovetail.c
-@@ -20,6 +20,11 @@ void __trace_dovetail_leave_oob(void)
- 	trace_dovetail_leave_oob_tp(current);
- }
+@@ -85,6 +118,7 @@ Usage
+   dovetail
+   dovetail:offstage
+   dovetail:oob_trap
++  dovetail:oob_signal
  
-+void __trace_dovetail_signal_notify(struct task_struct *p)
+ Violations are reported by the selected reactor and as ``error_*`` events in
+ ``events/rv``. The models are in ``tools/verification/models/``.
+diff --git a/kernel/trace/rv/Kconfig b/kernel/trace/rv/Kconfig
+index d7207d7e9892..cf1c81e3df3f 100644
+--- a/kernel/trace/rv/Kconfig
++++ b/kernel/trace/rv/Kconfig
+@@ -87,6 +87,7 @@ source "kernel/trace/rv/monitors/nomiss/Kconfig"
+ source "kernel/trace/rv/monitors/dovetail/Kconfig"
+ source "kernel/trace/rv/monitors/offstage/Kconfig"
+ source "kernel/trace/rv/monitors/oob_trap/Kconfig"
++source "kernel/trace/rv/monitors/oob_signal/Kconfig"
+ # Add new monitors here
+ 
+ config RV_REACTORS
+diff --git a/kernel/trace/rv/Makefile b/kernel/trace/rv/Makefile
+index c5848be60f5b..46bc8bf33e33 100644
+--- a/kernel/trace/rv/Makefile
++++ b/kernel/trace/rv/Makefile
+@@ -23,6 +23,7 @@ obj-$(CONFIG_RV_MON_NOMISS) += monitors/nomiss/nomiss.o
+ obj-$(CONFIG_RV_MON_DOVETAIL) += monitors/dovetail/dovetail.o
+ obj-$(CONFIG_RV_MON_OFFSTAGE) += monitors/offstage/offstage.o
+ obj-$(CONFIG_RV_MON_OOB_TRAP) += monitors/oob_trap/oob_trap.o
++obj-$(CONFIG_RV_MON_OOB_SIGNAL) += monitors/oob_signal/oob_signal.o
+ # Add new monitors here
+ obj-$(CONFIG_RV_REACTORS) += rv_reactors.o
+ obj-$(CONFIG_RV_REACT_PRINTK) += reactor_printk.o
+diff --git a/kernel/trace/rv/monitors/oob_signal/Kconfig b/kernel/trace/rv/monitors/oob_signal/Kconfig
+new file mode 100644
+index 000000000000..82d3ca1dbed7
+--- /dev/null
++++ b/kernel/trace/rv/monitors/oob_signal/Kconfig
+@@ -0,0 +1,16 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++config RV_MON_OOB_SIGNAL
++	depends on RV
++	depends on RV_MON_DOVETAIL
++	depends on !ARM
++	default y
++	select DA_MON_EVENTS_ID
++	bool "oob_signal monitor"
++	help
++	  Per-task monitor checking that a dovetailed task which receives a
++	  signal while out-of-band does not return to user mode out-of-band
++	  without a mayday pending, since signals are delivered in-band only.
++
++	  For further information, see:
++	    Documentation/trace/rv/monitor_dovetail.rst
+diff --git a/kernel/trace/rv/monitors/oob_signal/oob_signal.c b/kernel/trace/rv/monitors/oob_signal/oob_signal.c
+new file mode 100644
+index 000000000000..44c3d53d9366
+--- /dev/null
++++ b/kernel/trace/rv/monitors/oob_signal/oob_signal.c
+@@ -0,0 +1,114 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * oob_signal: a signaled task does not return to user mode out-of-band.
++ *
++ * Copyright (C) 2026 Siemens AG
++ * Author: Tobias Schaffner <tobias.schaffner@siemens.com>
++ */
++#include <linux/ftrace.h>
++#include <linux/tracepoint.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/rv.h>
++#include <linux/dovetail.h>
++#include <rv/instrumentation.h>
++
++#define MODULE_NAME "oob_signal"
++
++#include <trace/events/dovetail.h>
++#include <rv_trace.h>
++#include <monitors/dovetail/dovetail.h>
++
++#define RV_MON_TYPE RV_MON_PER_TASK
++#include "oob_signal.h"
++#include <rv/da_monitor.h>
++
++/*
++ * No locking: the core sets TIF_MAYDAY before the notification moves the task
++ * to signaled, and a return reads TIF_MAYDAY only after seeing signaled.
++ */
++static void handle_leave_inband(void *data, struct task_struct *p)
 +{
-+	trace_dovetail_signal_notify_tp(p);
++	da_handle_start_run_event(p, leave_inband_oob_signal);
++	/* A signal notified before the switch is seen here, a later one finds oob. */
++	if (task_sigpending(p))
++		da_handle_event(p, signal_oob_signal);
 +}
 +
- static bool dovetail_enabled;
++static void handle_leave_oob(void *data, struct task_struct *p)
++{
++	da_handle_event(p, leave_oob_oob_signal);
++}
++
++static void handle_oob_return(void *data, struct task_struct *p)
++{
++	struct da_monitor *da_mon = da_get_monitor(p);
++
++	if (!da_monitoring(da_mon))
++		return;
++	/* Pairs with the cmpxchg of the notification moving to signaled. */
++	if (smp_load_acquire(&da_mon->curr_state) != signaled_oob_signal)
++		return;
++	da_handle_event(p, test_ti_thread_flag(task_thread_info(p), TIF_MAYDAY) ?
++			oob_return_mayday_oob_signal : oob_return_oob_signal);
++}
++
++static void handle_signal_notify(void *data, struct task_struct *p)
++{
++	da_handle_event(p, signal_oob_signal);
++}
++
++static int enable_oob_signal(void)
++{
++	int retval;
++
++	retval = da_monitor_init();
++	if (retval)
++		return retval;
++
++	rv_attach_trace_probe("oob_signal", dovetail_leave_inband_tp, handle_leave_inband);
++	rv_attach_trace_probe("oob_signal", dovetail_leave_oob_tp, handle_leave_oob);
++	rv_attach_trace_probe("oob_signal", dovetail_oob_return_tp, handle_oob_return);
++	rv_attach_trace_probe("oob_signal", dovetail_signal_notify_tp, handle_signal_notify);
++
++	return 0;
++}
++
++static void disable_oob_signal(void)
++{
++	rv_this.enabled = 0;
++
++	rv_detach_trace_probe("oob_signal", dovetail_leave_inband_tp, handle_leave_inband);
++	rv_detach_trace_probe("oob_signal", dovetail_leave_oob_tp, handle_leave_oob);
++	rv_detach_trace_probe("oob_signal", dovetail_oob_return_tp, handle_oob_return);
++	rv_detach_trace_probe("oob_signal", dovetail_signal_notify_tp, handle_signal_notify);
++
++	da_monitor_destroy();
++}
++
++static struct rv_monitor rv_this = {
++	.name = "oob_signal",
++	.description = "a signaled task does not return to user mode out-of-band",
++	.enable = enable_oob_signal,
++	.disable = disable_oob_signal,
++	.reset = da_monitor_reset_all,
++	.enabled = 0,
++};
++
++static int __init register_oob_signal(void)
++{
++	return rv_register_monitor(&rv_this, &rv_dovetail);
++}
++
++static void __exit unregister_oob_signal(void)
++{
++	rv_unregister_monitor(&rv_this);
++}
++
++module_init(register_oob_signal);
++module_exit(unregister_oob_signal);
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Tobias Schaffner <tobias.schaffner@siemens.com>");
++MODULE_DESCRIPTION("oob_signal: a signaled task does not return to user mode out-of-band");
+diff --git a/kernel/trace/rv/monitors/oob_signal/oob_signal.h b/kernel/trace/rv/monitors/oob_signal/oob_signal.h
+new file mode 100644
+index 000000000000..655636a0cdef
+--- /dev/null
++++ b/kernel/trace/rv/monitors/oob_signal/oob_signal.h
+@@ -0,0 +1,74 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Automatically generated C representation of oob_signal automaton
++ * For further information about this format, see kernel documentation:
++ *   Documentation/trace/rv/deterministic_automata.rst
++ */
++
++#define MONITOR_NAME oob_signal
++
++enum states_oob_signal {
++	inband_oob_signal,
++	oob_oob_signal,
++	signaled_oob_signal,
++	state_max_oob_signal,
++};
++
++#define INVALID_STATE state_max_oob_signal
++
++enum events_oob_signal {
++	leave_inband_oob_signal,
++	leave_oob_oob_signal,
++	oob_return_oob_signal,
++	oob_return_mayday_oob_signal,
++	signal_oob_signal,
++	event_max_oob_signal,
++};
++
++struct automaton_oob_signal {
++	char *state_names[state_max_oob_signal];
++	char *event_names[event_max_oob_signal];
++	unsigned char function[state_max_oob_signal][event_max_oob_signal];
++	unsigned char initial_state;
++	bool final_states[state_max_oob_signal];
++};
++
++static const struct automaton_oob_signal automaton_oob_signal = {
++	.state_names = {
++		"inband",
++		"oob",
++		"signaled",
++	},
++	.event_names = {
++		"leave_inband",
++		"leave_oob",
++		"oob_return",
++		"oob_return_mayday",
++		"signal",
++	},
++	.function = {
++		{
++			oob_oob_signal,
++			INVALID_STATE,
++			INVALID_STATE,
++			INVALID_STATE,
++			inband_oob_signal,
++		},
++		{
++			INVALID_STATE,
++			inband_oob_signal,
++			oob_oob_signal,
++			oob_oob_signal,
++			signaled_oob_signal,
++		},
++		{
++			INVALID_STATE,
++			inband_oob_signal,
++			INVALID_STATE,
++			signaled_oob_signal,
++			signaled_oob_signal,
++		},
++	},
++	.initial_state = inband_oob_signal,
++	.final_states = { 1, 0, 0 },
++};
+diff --git a/kernel/trace/rv/monitors/oob_signal/oob_signal_trace.h b/kernel/trace/rv/monitors/oob_signal/oob_signal_trace.h
+new file mode 100644
+index 000000000000..63842f32effb
+--- /dev/null
++++ b/kernel/trace/rv/monitors/oob_signal/oob_signal_trace.h
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++/*
++ * Snippet to be included in rv_trace.h
++ */
++
++#ifdef CONFIG_RV_MON_OOB_SIGNAL
++DEFINE_EVENT(event_da_monitor_id, event_oob_signal,
++	     TP_PROTO(int id, char *state, char *event, char *next_state, bool final_state),
++	     TP_ARGS(id, state, event, next_state, final_state));
++
++DEFINE_EVENT(error_da_monitor_id, error_oob_signal,
++	     TP_PROTO(int id, char *state, char *event),
++	     TP_ARGS(id, state, event));
++#endif /* CONFIG_RV_MON_OOB_SIGNAL */
+diff --git a/kernel/trace/rv/rv_trace.h b/kernel/trace/rv/rv_trace.h
+index bcd7ee424e89..e590b753beab 100644
+--- a/kernel/trace/rv/rv_trace.h
++++ b/kernel/trace/rv/rv_trace.h
+@@ -157,6 +157,7 @@ DECLARE_EVENT_CLASS(error_da_monitor_id,
+ #include <monitors/nrp/nrp_trace.h>
+ #include <monitors/sssw/sssw_trace.h>
+ #include <monitors/offstage/offstage_trace.h>
++#include <monitors/oob_signal/oob_signal_trace.h>
+ // Add new monitors based on CONFIG_DA_MON_EVENTS_ID here
  
- void __weak arch_inband_task_init(struct task_struct *p)
-@@ -110,6 +115,7 @@ void dovetail_call_mayday(struct pt_regs *regs)
- /* Returning to user mode on the out-of-band stage. */
- void dovetail_oob_exit_to_user(struct pt_regs *regs)
- {
-+	trace_dovetail_oob_return_tp(current);
- 	if (test_thread_flag(TIF_MAYDAY))
- 		dovetail_call_mayday(regs);
- }
+ #ifdef CONFIG_HA_MON_EVENTS_ID
+diff --git a/tools/verification/models/oob_signal.dot b/tools/verification/models/oob_signal.dot
+new file mode 100644
+index 000000000000..1a9e9b5c9e17
+--- /dev/null
++++ b/tools/verification/models/oob_signal.dot
+@@ -0,0 +1,23 @@
++digraph state_automaton {
++	center = true;
++	size = "7,11";
++	{node [shape = plaintext, style=invis, label=""] "__init_inband"};
++	{node [shape = doublecircle] "inband"};
++	{node [shape = circle] "oob"};
++	{node [shape = circle] "signaled"};
++	"__init_inband" -> "inband";
++	"inband" [label = "inband", color = green3];
++	"oob" [label = "oob"];
++	"signaled" [label = "signaled"];
++	"inband" -> "inband" [ label = "signal" ];
++	"inband" -> "oob" [ label = "leave_inband" ];
++	"oob" -> "inband" [ label = "leave_oob" ];
++	"oob" -> "oob" [ label = "oob_return\noob_return_mayday" ];
++	"oob" -> "signaled" [ label = "signal" ];
++	"signaled" -> "inband" [ label = "leave_oob" ];
++	"signaled" -> "signaled" [ label = "signal\noob_return_mayday" ];
++	{ rank = min ;
++		"__init_inband";
++		"inband";
++	}
++}
 -- 
 2.53.0
 
